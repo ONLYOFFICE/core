@@ -208,6 +208,11 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
 
+		const std::wstring wsNormalizedText = StringNormalization(wsText);
+
+		if (wsNormalizedText.empty())
+			return;
+
 		AddClip();
 
 		NodeAttributes arNodeAttributes;
@@ -356,19 +361,19 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"xml:space", L"preserve"});
 
-		size_t unPosLineBreak = wsText.find(L"\n");
+		size_t unPosLineBreak = wsNormalizedText.find(L"\n");
 
 		std::wstring wsXCoord;
 
-		if (arDx.empty() || arDx.size() < wsText.length())
+		if (arDx.empty() || arDx.size() < wsNormalizedText.length())
 			wsXCoord = ConvertToWString(dXCoord);
 		else
 		{
-			std::vector<double> arXCoords(wsText.length());
+			std::vector<double> arXCoords(wsNormalizedText.length());
 
 			arXCoords[0] = dXCoord;
 
-			for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
+			for (unsigned int unIndex = 1; unIndex < wsNormalizedText.length(); ++unIndex)
 				arXCoords[unIndex] = arDx[unIndex - 1] + arXCoords[unIndex - 1];
 
 			wsXCoord = ConvertToWString(arXCoords);
@@ -379,7 +384,7 @@ namespace MetaFile
 			arNodeAttributes.push_back({L"x", wsXCoord});
 			arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
-			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
+			WriteNode(L"text", arNodeAttributes, wsNormalizedText);
 		}
 		else
 		{
@@ -390,14 +395,14 @@ namespace MetaFile
 
 			do
 			{
-				std::wstring wsTemp = StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart));
+				std::wstring wsTemp = StringNormalization(wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
 
 				WriteNode(L"tspan", {{L"x", wsXCoord},
-				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
+				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsNormalizedText.substr(unStart, unPosLineBreak - unStart)));
 
 				dYNewCoord += dFontHeight * 1.6;
-				unStart = wsText.find_first_not_of(L"\n", unPosLineBreak);
-				unPosLineBreak = wsText.find(L"\n", unStart);
+				unStart = wsNormalizedText.find_first_not_of(L"\n", unPosLineBreak);
+				unPosLineBreak = wsNormalizedText.find(L"\n", unStart);
 			}
 			while(unStart != std::wstring::npos);
 
@@ -635,11 +640,11 @@ namespace MetaFile
 		else
 			oOldTransform.Copy(m_pParser->GetTransform());
 
-		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
-		{
-			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
-			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
-		}
+//		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
+//		{
+//			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
+//			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
+//		}
 
 		bool bScale = false, bTranslate = false;
 

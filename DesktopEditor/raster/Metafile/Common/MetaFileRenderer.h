@@ -1121,11 +1121,11 @@ namespace MetaFile
 
 			oMatrix.Copy(m_pFile->GetTransform(iGraphicsMode));
 
-			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
-			{
-				oMatrix.M11 /= std::fabs(oMatrix.M11);
-				oMatrix.M22 /= std::fabs(oMatrix.M22);
-			}
+//			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
+//			{
+//				oMatrix.M11 /= std::fabs(oMatrix.M11);
+//				oMatrix.M22 /= std::fabs(oMatrix.M22);
+//			}
 
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(oMatrix.M11, oMatrix.M12 * dKoefY / dKoefX, oMatrix.M21 * dKoefX / dKoefY, oMatrix.M22, oMatrix.Dx * dKoefX, oMatrix.Dy * dKoefY);
@@ -1204,17 +1204,18 @@ namespace MetaFile
 
 			if (NULL != pDataDash && 0 != unSizeDash)
 			{
-				//на данный момент производьный стиль не отрисовывается,
-				//поэтому замещает по возможно его на стандартный
 				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
-				std::vector<double> arDashData;
+				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-					arDashData.push_back(pDataDash[unIndex] * dWidth);
+					arDashes[unIndex] = pDataDash[unIndex] * 2.;
 
-				m_pRenderer->PenDashPattern(arDashData.data(), unSizeDash);
+				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
+
 				nDashStyle = Aggplus::DashStyleCustom;
+				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
+				nJoinStyle = Aggplus::LineJoinMiter;
 			}
 			else if (PS_SOLID != ulPenStyle)
 			{

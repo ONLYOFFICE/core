@@ -80,7 +80,7 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
     pCell->m_oValue.Init();
 	pCell->m_oValue->m_sText = sText; // как есть
 
-	pCell->setRowCol(nRow, nCol);
+	pCell->setRowCol(nRow - 1, nCol);
 
 	if(tableRows_.size() - 1 < nRow)
 	{

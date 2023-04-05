@@ -220,7 +220,7 @@ namespace MetaFile
 		double dXCoord = oCoord.x;
 		double dYCoord = oCoord.y;
 
-		if (m_pParser->GetTextAlign() & TA_UPDATECP)
+		if (m_pParser->GetTextAlign() & TA_UPDATECP && (0. == oCoord.x && 0. == oCoord.y))
 		{
 			dXCoord = m_pParser->GetCurPos().x;
 			dYCoord = m_pParser->GetCurPos().y;

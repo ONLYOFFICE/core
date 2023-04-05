@@ -31,17 +31,18 @@
  */
 
 #include "XML2TableConverter.h"
+
+#include <algorithm>
+
 bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data)
 {
     readAttributes(reader);
     depth_ = reader.GetDepth();
-    data_.push_back(std::map<std::wstring, std::vector<std::wstring>>{});
+    data_.push_back(std::vector<std::vector<std::wstring>>{});
     while(readSiblings(reader))
     {
         depth_++;
-        data_.push_back(std::map<std::wstring, std::vector<std::wstring>>{});
     }
-    data_.pop_back();
     data = data_;
     return true;
 }
@@ -66,13 +67,24 @@ void XML2TableConverter::readAttributes(XmlUtils::CXmlLiteReader &reader)
 
 void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
-
-    if(data_.at(depth_).find(key) == data_.at(depth_).end())
+    ///проверяем, есть ли данные на этой глубине
+    if(data_.size() -1 < depth_)
     {
-        data_.at(depth_).insert({key, std::vector<std::wstring>{}});
+        data_.push_back(std::vector<std::vector<std::wstring>>{});
     }
 
-    data_.at(depth_)[key].push_back(value);
+    /// пытаемся найти вектор с таким же ключём на этой глубине
+    auto searchResult = std::find_if(data_[depth_].begin(), data_[depth_].end(),
+                         [&key](std::vector<std::wstring>& column) { return column[0] == key; });
+
+    if(searchResult != data_[depth_].end())
+    {
+        searchResult->push_back(value);
+        return;
+    }
+
+    std::vector<std::wstring> newColumn = {key, value};
+    data_.at(depth_).push_back(newColumn);
 }
 
 void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader)

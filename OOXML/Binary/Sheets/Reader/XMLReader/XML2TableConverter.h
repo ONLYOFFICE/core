@@ -39,7 +39,8 @@
 #include <map>
 #include "../../../../Base/Base.h"
 
-using XmlData = std::vector<std::map<std::wstring, std::vector<std::wstring>>>;
+/// @brief Первое измерение вектора хранит данные раздельно по глубине xml второе измерение хранит данные по ключу, третье - сами значения данных
+using XmlData = std::vector<std::vector<std::vector<std::wstring>>>;
 
 /// @brief класс -обертка над xmlLiteReader для превращения xml нод в табличные строки
 class XML2TableConverter

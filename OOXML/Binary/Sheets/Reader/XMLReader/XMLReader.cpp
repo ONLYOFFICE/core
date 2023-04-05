@@ -72,11 +72,9 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
     {
         for(auto dataColumn = data.at(i).begin(); dataColumn != data.at(i).end(); dataColumn++)
         {
-            table.AddCell(dataColumn->first, rowIndex, colIndex);
-            rowIndex++;
-            for(_UINT32 j = 0; j < dataColumn->second.size(); j++, rowIndex++)
+            for(_UINT32 j = 0; j < dataColumn->size(); j++, rowIndex++)
             {
-                table.AddCell(dataColumn->second[j], rowIndex, colIndex);
+                table.AddCell(dataColumn->at(j), rowIndex, colIndex);
             }
             rowIndex = 1;
             colIndex++;

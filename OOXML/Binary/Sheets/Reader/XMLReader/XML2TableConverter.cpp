@@ -31,16 +31,18 @@
  */
 
 #include "XML2TableConverter.h"
-
 bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data)
 {
     readAttributes(reader);
     depth_ = reader.GetDepth();
-    while(readSiblings(reader, depth_))
+    data_.push_back(std::map<std::wstring, std::vector<std::wstring>>{});
+    while(readSiblings(reader))
     {
         depth_++;
+        data_.push_back(std::map<std::wstring, std::vector<std::wstring>>{});
     }
-    data = std::move(data_);
+    data_.pop_back();
+    data = data_;
     return true;
 }
 
@@ -52,46 +54,47 @@ void XML2TableConverter::readAttributes(XmlUtils::CXmlLiteReader &reader)
     }
     reader.MoveToFirstAttribute();
 
-    insertValue(reader.GetName(), reader.GetText(),depth_);
+    insertValue(reader.GetName(), reader.GetText());
 
     while(reader.MoveToNextAttribute())
     {
-        insertValue(reader.GetName(), reader.GetText(),depth_);
+        insertValue(reader.GetName(), reader.GetText());
     }
 
     reader.MoveToElement();
 }
 
-void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value, _UINT32 depth)
+void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
-    if(data_.at(depth).find(key) == data_.at(depth).end())
+
+    if(data_.at(depth_).find(key) == data_.at(depth_).end())
     {
-        data_.at(depth).insert({key, std::vector<std::wstring>{}});
+        data_.at(depth_).insert({key, std::vector<std::wstring>{}});
     }
 
-    data_.at(depth)[key].push_back(value);
+    data_.at(depth_)[key].push_back(value);
 }
 
 void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader)
 {
     readAttributes(reader);
-    auto text = reader.GetText();
-    if(text.c_str())
+    auto text = reader.GetText2();
+    if(!text.empty())
     {
-        insertValue(reader.GetName(), text, depth_);
+        insertValue(reader.GetName(), text);
     }
 }
 
-bool XML2TableConverter::readSiblings(XmlUtils::CXmlLiteReader &reader, _UINT32 depth)
+bool XML2TableConverter::readSiblings(XmlUtils::CXmlLiteReader &reader)
 {
-    if(!reader.ReadNextSiblingNode(depth))
+    if(!reader.ReadNextSiblingNode(depth_))
     {
         return false;
     }
 
     processNode(reader);
 
-    while(reader.ReadNextSiblingNode(depth))
+    while(reader.ReadNextSiblingNode(depth_))
     {
         processNode(reader);
     }

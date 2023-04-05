@@ -44,7 +44,8 @@ class XLSXTableController
 
 public:
     /// @brief инициализация полей объекта
-    XLSXTableController();
+    /// @param book объект который будет заполнен данными с помощью метода FormBook
+    XLSXTableController(OOX::Spreadsheet::CXlsx &book);
 
     /// @brief добавление ячейки
     /// @param sText вставляемый текст
@@ -54,8 +55,7 @@ public:
     void AddCell(const std::wstring &sText, INT nRow, INT nCol);
 
     /// @brief получение документа xlsx
-    /// @return xlsx документ сформированный с помощью методов класса
-    OOX::Spreadsheet::CXlsx GetBook();
+    void FormBook();
 
 private:
     /// @brief добавление ряда
@@ -70,6 +70,6 @@ private:
     /// @param pageNumber номер страницы
     void addPage(OOX::Spreadsheet::CWorksheet *page, INT pageNumber);
 
-    OOX::Spreadsheet::CXlsx book_;
+    OOX::Spreadsheet::CXlsx *book_;
     std::vector<OOX::Spreadsheet::CRow*> tableRows_;
 };

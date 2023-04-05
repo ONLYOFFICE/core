@@ -65,7 +65,7 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
     }
 
     /// @brief заполняем xlsx таблицу из полученной структуры
-    XLSXTableController table = {};
+    XLSXTableController table = {oXlsx};
     _UINT32 rowIndex = 1;
     _UINT32 colIndex = 1;
     for (_UINT32 i = 0; i < data.size(); i++)
@@ -83,8 +83,8 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
         }
 
     }
+    table.FormBook();
 
-    oXlsx = table.GetBook();
     return 0;
 
 }

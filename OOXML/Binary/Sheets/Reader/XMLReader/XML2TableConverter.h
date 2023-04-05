@@ -65,11 +65,11 @@ private:
     /// @brief считывает потомков xml на выбранном уровне помещая их данные в структуру
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
     /// @return true если удалось считать хоть одну ноду, иначе false
-    bool readSiblings(XmlUtils::CXmlLiteReader &reader, _UINT32 depth);
+    bool readSiblings(XmlUtils::CXmlLiteReader &reader);
 
     /// @brief считывает аттрибуты текущей ноды
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
-    void insertValue(const std::wstring &key, const std::wstring &value, _UINT32 depth);
+    void insertValue(const std::wstring &key, const std::wstring &value);
 
     /// @return текущая глубина
     _UINT32 depth_;

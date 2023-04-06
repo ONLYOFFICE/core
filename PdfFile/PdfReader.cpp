@@ -1441,7 +1441,7 @@ void WriteAppearance(int nRx1, int nRx2, int nRy1, int nRy2, BYTE* pBgraData, in
                 pSubTemp[p++] = nColor;
             else
                 pSubTemp[p++] = pTemp[y * nWidth + x];
-            pTemp[y * nWidth + x] = 0;
+            pTemp[y * nWidth + x] = 0xFF000000 | nColor;
         }
     }
 
@@ -1579,8 +1579,8 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         int nRy2 = (int)round(dy2 * (double)nHeight / dHeight + 1);
         if (nRx1 < 0) nRx1 = 0;
         if (nRy1 < 0) nRy1 = 0;
-        if (nRx2 > nWidth) nRx1 = nWidth;
-        if (nRy2 > nHeight) nRy1 = nHeight;
+        if (nRx2 > nWidth) nRx2 = nWidth;
+        if (nRy2 > nHeight) nRy2 = nHeight;
         oRes.AddInt(nRx1);
         oRes.AddInt(nRy1);
         oRes.AddInt(nRx2 - nRx1);
@@ -1626,34 +1626,129 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         oAP.free();
         ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 
+        oRes.AddInt(nAPLength, nAPPos);
+
+        int nMKPos = oRes.GetSize();
+        unsigned int nMKLength = 0;
+        oRes.AddInt(nMKLength);
         if (pField->fieldLookup("MK", &oAP)->isDict())
         {
             std::vector<const char*> arrAPName { "I", "RI", "IX" };
             for (unsigned int j = 0; j < arrAPName.size(); ++j)
             {
-                std::string sMK = "MK";
                 std::string sAPName(arrAPName[j]);
-
-                Object oObj;
-                if (!oAP.dictLookup(sAPName.c_str(), &oObj)->isStream())
+                Object oStr;
+                if (!oAP.dictLookup(sAPName.c_str(), &oStr)->isStream())
                 {
-                    oObj.free();
+                    oStr.free();
                     continue;
                 }
-                oObj.free();
-
-                // TODO Должна быть не drawAnnot, а drawForm
-                // Необходима обработка словаря стрима и применение модификаторов и ограничений
-                oRes.WriteString((BYTE*)sMK.c_str(), sMK.size());
+                Dict *dict = oStr.streamGetDict();
                 oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.size());
-                DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, "MK", sAPName.c_str());
-                nAPLength++;
+
+                // BBox
+                Object bboxObj;
+                double bbox[4];
+                dict->lookup("BBox", &bboxObj);
+                if (bboxObj.isArray())
+                {
+                    for (i = 0; i < 4; ++i)
+                    {
+                        Object obj1;
+                        bboxObj.arrayGet(i, &obj1);
+                        bbox[i] = obj1.getNum();
+                        obj1.free();
+                    }
+                }
+                else
+                {
+                    bbox[0] = 0; bbox[1] = 0;
+                    bbox[2] = 0; bbox[3] = 0;
+                }
+                bboxObj.free();
+
+                // Matrix
+                double m[6];
+                m[0] = 1; m[1] = 0;
+                m[2] = 0; m[3] = 1;
+                m[4] = 0; m[5] = 0;
+
+                Object resObj;
+                dict->lookup("Resources", &resObj);
+                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
+
+                Object oStrRef;
+                oAP.dictLookupNF(sAPName.c_str(), &oStrRef);
+                gfx->drawForm(&oStrRef, resDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
+                oStr.free(); oStrRef.free(); resObj.free();
+
+                double dTemp = bbox[1];
+                bbox[1] = dHeight - bbox[3];
+                bbox[3] = dHeight - dTemp;
+
+                // Размеры внешнего вида
+                int nRx1 = (int)round(bbox[0] * (double)nWidth / dWidth);
+                int nRx2 = (int)round(bbox[2] * (double)nWidth / dWidth + 1);
+                int nRy1 = (int)round(bbox[1] * (double)nHeight / dHeight);
+                int nRy2 = (int)round(bbox[3] * (double)nHeight / dHeight + 1);
+                if (nRx1 < 0) nRx1 = 0;
+                if (nRy1 < 0) nRy1 = 0;
+                if (nRx2 > nWidth) nRx2 = nWidth;
+                if (nRy2 > nHeight) nRy2 = nHeight;
+                oRes.AddInt(nRx1);
+                oRes.AddInt(nRy1);
+                oRes.AddInt(nRx2 - nRx1);
+                oRes.AddInt(nRy2 - nRy1);
+
+                nMKLength++;
                 WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
             }
+
+            int nIFPos = oRes.GetSize();
+            unsigned int nIFFlag = 0;
+            oRes.AddInt(nIFFlag);
+            Object oIF;
+            if (oAP.dictLookup("IF", &oIF)->isDict())
+            {
+                nIFFlag = 1;
+                // 2 - Масштабирование - SW
+                Object oObj;
+                if (oIF.dictLookup("SW", &oObj)->isName())
+                {
+                    nIFFlag |= (1 << 1);
+                    std::string sName(oObj.getName());
+                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                }
+                oObj.free();
+                // 3 - Тип масштабирования - S
+                if (oIF.dictLookup("S", &oObj)->isName())
+                {
+                    nIFFlag |= (1 << 2);
+                    std::string sName(oObj.getName());
+                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                }
+                oObj.free();
+                // 4 - Смещение - A
+                if (oIF.dictLookup("A", &oObj)->isArray())
+                {
+                    Object oObj1;
+                    nIFFlag |= (1 << 3);
+                    oRes.AddDouble(oObj.arrayGet(0, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
+                    oObj1.free();
+                    oRes.AddDouble(oObj.arrayGet(1, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
+                    oObj1.free();
+                }
+                oObj.free();
+                // 5 - Полное соответствие - FB
+                if (oIF.dictLookup("FB", &oObj)->isBool() && oObj.getBool())
+                    nIFFlag |= (1 << 4);
+                oObj.free();
+            }
+            oIF.free();
+            oRes.AddInt(nIFFlag, nIFPos);
         }
         oAP.free();
-
-        oRes.AddInt(nAPLength, nAPPos);
+        oRes.AddInt(nMKLength, nMKPos);
     }
 
     delete gfx;

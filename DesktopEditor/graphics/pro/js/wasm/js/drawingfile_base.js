@@ -624,19 +624,67 @@
 			AP["y"] = reader.readInt();
 			AP["w"] = reader.readInt();
 			AP["h"] = reader.readInt();
-			let np1 = reader.readInt();
-			let np2 = reader.readInt();
-			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-			AP["retValue"] = np2 << 32 | np1;
 			let n = reader.readInt();
-			AP["fontInfo"] = [];
 			for (let i = 0; i < n; ++i)
 			{
-				let fontInfo = {};
-				fontInfo["text"] = reader.readString();
-				fontInfo["fontName"] = reader.readString();
-				fontInfo["fontSize"] = reader.readDouble();
-				AP["fontInfo"].push(fontInfo);
+				var APType = reader.readString();
+				AP[APType] = {};
+				var ASType = reader.readString();
+				AP[APType][ASType] = {};
+				let np1 = reader.readInt();
+				let np2 = reader.readInt();
+				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+				AP[APType][ASType]["retValue"] = np2 << 32 | np1;
+				let k = reader.readInt();
+				AP[APType][ASType]["fontInfo"] = [];
+				for (let i = 0; i < k; ++i)
+				{
+					let fontInfo = {};
+					fontInfo["text"] = reader.readString();
+					fontInfo["fontName"] = reader.readString();
+					fontInfo["fontSize"] = reader.readDouble();
+					AP[APType][ASType]["fontInfo"].push(fontInfo);
+				}
+			}
+			n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+			{
+				var MKType = reader.readString();
+				AP[MKType] = {};
+				AP[MKType]["x"] = reader.readInt();
+				AP[MKType]["y"] = reader.readInt();
+				AP[MKType]["w"] = reader.readInt();
+				AP[MKType]["h"] = reader.readInt();
+				let np1 = reader.readInt();
+				let np2 = reader.readInt();
+				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+				AP[MKType]["retValue"] = np2 << 32 | np1;
+				let k = reader.readInt();
+				AP[MKType]["fontInfo"] = [];
+				for (let i = 0; i < k; ++i)
+				{
+					let fontInfo = {};
+					fontInfo["text"] = reader.readString();
+					fontInfo["fontName"] = reader.readString();
+					fontInfo["fontSize"] = reader.readDouble();
+					AP[MKType]["fontInfo"].push(fontInfo);
+				}
+			}
+			let nIFflag = reader.readInt();
+			if (flags & (1 << 0))
+			{
+				AP["IF"] = {};
+				if (flags & (1 << 1))
+					AP["IF"]["SW"] = reader.readString();
+				if (flags & (1 << 2))
+					AP["IF"]["S"] = reader.readString();
+				if (flags & (1 << 3))
+				{
+					AP["IF"]["A"] = [];
+					AP["IF"]["A"].push(reader.readDouble());
+					AP["IF"]["A"].push(reader.readDouble());
+				}
+				AP["IF"]["FB"] = flags & (1 << 4);
 			}
 			res.push(AP);
 		}

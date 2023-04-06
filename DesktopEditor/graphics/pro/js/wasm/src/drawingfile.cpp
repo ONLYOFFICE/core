@@ -769,6 +769,91 @@ int main(int argc, char* argv[])
 				}
 			}
 			std::cout << std::endl;
+			unsigned int nMKLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			for (unsigned int j = 0; j < nMKLength; j++)
+			{
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
+				std::cout << "MK " << sAPName << ", ";
+				i += nPathLength;
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "X " << nPathLength << ", ";
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "Y " << nPathLength << ", ";
+				unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "W " << nWidgetWidth << ", ";
+				unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "H " << nWidgetHeight << ", ";
+
+				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
+				i += 4;
+				unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
+				i += 4;
+
+				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+				CBgraFrame oFrame;
+				oFrame.put_Data(res);
+				oFrame.put_Width(nWidgetWidth);
+				oFrame.put_Height(nWidgetHeight);
+				oFrame.put_Stride(4 * nWidgetWidth);
+				oFrame.put_IsRGBA(true);
+				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
+				oFrame.ClearNoAttack();
+				RELEASEARRAYOBJECTS(res);
+
+				unsigned int nTextSize = READ_INT(pWidgetsAP + i);
+				i += 4;
+				for (unsigned int k = 0; k < nTextSize; ++k)
+				{
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
+				}
+			}
+
+			unsigned int nIFFlag = READ_INT(pWidgetsAP + i);
+			i += 4;
+			if (nIFFlag & (1 << 0))
+			{
+				if (nIFFlag & (1 << 1))
+				{
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "SW " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nIFFlag & (1 << 2))
+				{
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "S " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nIFFlag & (1 << 3))
+				{
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "A " << (double)nPathLength / 100.0 << " ";
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << (double)nPathLength / 100.0 << ", ";
+				}
+				std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
+			}
 		}
 
 		if (pWidgetsAP)

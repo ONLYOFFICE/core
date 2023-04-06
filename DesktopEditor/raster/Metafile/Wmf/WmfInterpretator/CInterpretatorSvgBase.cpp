@@ -484,9 +484,27 @@ namespace MetaFile
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
 
+		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
+
 		unsigned int unMetaPenStyle = pPen->GetStyle();
-		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+		unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+		unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+
+		// svg не поддерживает разные стили для разных сторон линии
+		if (PS_STARTCAP_FLAT == ulPenStartCap)
+			arAttributes.push_back({L"stroke-linecap", L"butt"});
+		else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+			arAttributes.push_back({L"stroke-linecap", L"square"});
+		else if (PS_STARTCAP_ROUND == ulPenStartCap)
+			arAttributes.push_back({L"stroke-linecap", L"round"});
+
+		if (PS_JOIN_MITER == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"miter"});
+		else if (PS_JOIN_BEVEL == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+		else if (PS_JOIN_ROUND == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"round"});
 
 		double* arDatas = NULL;
 		unsigned int unDataSize = 0;
@@ -498,13 +516,15 @@ namespace MetaFile
 			std::wstring wsDashArray;
 
 			for (unsigned int unIndex = 0; unIndex < unDataSize; ++unIndex)
-				wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
-
+			{
+				if (PS_STARTCAP_ROUND == ulPenStartCap)
+					wsDashArray += ConvertToWString(dStrokeWidth * (arDatas[unIndex] - ((0 == unIndex % 2) ? 1 : -1))) + L' ';
+				else
+					wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
+			}
 			wsDashArray.pop_back();
 
 			arAttributes.push_back({L"stroke-dasharray", wsDashArray});
-
-			ulPenStyle = PS_USERSTYLE;
 		}
 		else if (PS_DASH == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
@@ -514,27 +534,6 @@ namespace MetaFile
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
 		else if (PS_DASHDOTDOT == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-		else
-		{
-			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
-			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
-			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-
-			// svg не поддерживает разные стили для сторон линии
-			if (PS_STARTCAP_FLAT == ulPenStartCap || PS_ENDCAP_FLAT == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"butt"});
-			else if (PS_STARTCAP_SQUARE == ulPenStartCap || PS_ENDCAP_SQUARE == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"square"});
-			else if (PS_STARTCAP_ROUND == ulPenStartCap || PS_ENDCAP_ROUND == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"round"});
-
-			if (PS_JOIN_MITER == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"miter"});
-			else if (PS_JOIN_BEVEL == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"bevel"});
-			else if (PS_JOIN_ROUND == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"round"});
-		}
 	}
 
 	void CInterpretatorSvgBase::AddFill(NodeAttributes &arAttributes, double dWidth, double dHeight)

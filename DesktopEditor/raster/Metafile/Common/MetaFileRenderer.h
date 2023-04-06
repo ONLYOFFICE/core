@@ -1209,13 +1209,15 @@ namespace MetaFile
 				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-					arDashes[unIndex] = pDataDash[unIndex] * 2.;
-
+				{
+					if (PS_STARTCAP_ROUND == ulPenStartCap)
+						arDashes[unIndex] = pDataDash[unIndex] * ((0 == unIndex % 2) ? (dWidth / 4) : (1.5 * dWidth));
+					else
+						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
+				}
 				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
 				nDashStyle = Aggplus::DashStyleCustom;
-				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
-				nJoinStyle = Aggplus::LineJoinMiter;
 			}
 			else if (PS_SOLID != ulPenStyle)
 			{

@@ -1614,6 +1614,7 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
 
         // Отрисовка всех внешних видов аннотации
         Object oAP;
+        AcroFormFieldType oType = pField->getAcroFormFieldType();
         ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
         if (pField->fieldLookup("AP", &oAP)->isDict())
         {
@@ -1628,7 +1629,13 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
                     {
                         std::string sASName(oObj.dictGetKey(k));
                         oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
-                        oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
+                        if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && sASName != "Off")
+                        {
+                            std::string sYes = "Yes";
+                            oRes.WriteString((BYTE*)sYes.c_str(), sYes.length());
+                        }
+                        else
+                            oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
                         DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), sASName.c_str());
                         nAPLength++;
                         WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);

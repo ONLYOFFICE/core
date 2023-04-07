@@ -7,7 +7,6 @@ TARGET = ooxml_crypt
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 
-CONFIG += core_static_link_libstd
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
@@ -55,5 +54,4 @@ core_windows {
 
 core_linux {
     LIBS += -lz -pthread -ldl
-    QMAKE_LFLAGS += -Wl,--rpath=./
 }

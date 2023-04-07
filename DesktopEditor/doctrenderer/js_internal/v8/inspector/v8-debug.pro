@@ -1,7 +1,7 @@
 CORE_BUILDS_PLATFORM_PREFIX = win_64
 BUILD_MODE=debug
 
-CONFIG += c++11 console
+CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 

@@ -472,7 +472,12 @@
 				// Характеристики внешнего вида - MK
 				// Заголовок - СА
 				if (flags & (1 << 10))
-					rec["caption"] = reader.readString();
+				{
+					if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
+						rec["style"] = reader.readString();
+					if (rec["type"] == "button")
+						rec["caption"] = reader.readString();
+				}
 				if (rec["type"] == "button")
 				{
 					// Заголовок прокрутки - RC
@@ -670,7 +675,7 @@
 					AP[MKType]["fontInfo"].push(fontInfo);
 				}
 			}
-			let nIFflag = reader.readInt();
+			let flags = reader.readInt();
 			if (flags & (1 << 0))
 			{
 				AP["IF"] = {};

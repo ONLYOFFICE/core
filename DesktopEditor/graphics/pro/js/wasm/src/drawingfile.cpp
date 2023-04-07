@@ -516,15 +516,15 @@ int main(int argc, char* argv[])
 			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
-				if (nFlags & (1 << 10))
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
 				if (sType == "button")
 				{
+					if (nFlags & (1 << 10))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
 					if (nFlags & (1 << 11))
 					{
 						nPathLength = READ_INT(pWidgets + i);
@@ -539,6 +539,12 @@ int main(int argc, char* argv[])
 						std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
 					}
+				}
+				else
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Style " << nPathLength << ", ";
 				}
 				if (nFlags & (1 << 13))
 				{

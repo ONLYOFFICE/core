@@ -470,16 +470,11 @@
 			{
 				rec["value"] = flags & (1 << 9) ? "Yes" : "Off";
 				// Характеристики внешнего вида - MK
-				// Заголовок - СА
-				if (flags & (1 << 10))
-				{
-					if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
-						rec["style"] = reader.readString();
-					if (rec["type"] == "button")
-						rec["caption"] = reader.readString();
-				}
 				if (rec["type"] == "button")
 				{
+					// Заголовок - СА
+					if (flags & (1 << 10))
+						rec["caption"] = reader.readString();
 					// Заголовок прокрутки - RC
 					if (flags & (1 << 11))
 						rec["rolloverCaption"] = reader.readString();
@@ -487,6 +482,8 @@
 					if (flags & (1 << 12))
 						rec["alternateCaption"] = reader.readString();
 				}
+				else
+					rec["style"] = reader.readInt();
 				// Расположение заголовка - TP
 				if (flags & (1 << 13))
 					rec["positionCaption"] = reader.readInt();

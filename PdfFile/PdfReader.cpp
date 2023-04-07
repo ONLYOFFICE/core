@@ -1181,14 +1181,36 @@ oObj.free();\
             if (pField->fieldLookup("MK", &oMK)->isDict())
             {
                 // 11 - Заголовок - СА
-                DICT_LOOKUP_STRING(oMK.dictLookup, "CA", 10);
-
                 // 12 - Заголовок прокрутки - RC
                 // 13 - Альтернативный заголовок - AC
                 if (oType == acroFormFieldPushbutton)
                 {
+                    DICT_LOOKUP_STRING(oMK.dictLookup, "CA", 10);
                     DICT_LOOKUP_STRING(oMK.dictLookup, "RC", 11);
                     DICT_LOOKUP_STRING(oMK.dictLookup, "AC", 12);
+                }
+                else
+                {
+                    unsigned int nStyle = (oType == acroFormFieldRadioButton ? 0 : 1);
+                    if (oMK.dictLookup("CA", &oObj)->isString())
+                    {
+                        std::string sCA(oObj.getString()->getCString());
+
+                        if (sCA == "l")
+                            nStyle = 0;
+                        else if (sCA == "4")
+                            nStyle = 1;
+                        else if (sCA == "8")
+                            nStyle = 2;
+                        else if (sCA == "u")
+                            nStyle = 3;
+                        else if (sCA == "n")
+                            nStyle = 4;
+                        else if (sCA == "H")
+                            nStyle = 5;
+                    }
+                    oObj.free();
+                    oRes.AddInt(nStyle);
                 }
 
                 // 14 - Положение заголовка - TP

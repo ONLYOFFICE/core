@@ -65,7 +65,6 @@ private:
     _UINT32 addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadsheet::CWorksheet *pWorkSheet,  INT nRow);
 
     /// @brief добавление страницы
-    /// @param book документ xlsx
     /// @param page указатель на лист
     /// @param pageNumber номер страницы
     void addPage(OOX::Spreadsheet::CWorksheet *page, INT pageNumber);

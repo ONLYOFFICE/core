@@ -36,12 +36,26 @@
 
 bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data)
 {
-    readAttributes(reader);
     depth_ = reader.GetDepth();
+    maxDepth_ = depth_;
     data_.push_back(std::vector<std::vector<std::wstring>>{});
-    while(readSiblings(reader))
+    auto nodeType = reader.GetNodeType();
+    /// запоминаем имя предыдущего узла, для вставки его в качестве ключа текстового узла
+    if(nodeType != XmlUtils::XmlNodeType::XmlNodeType_Text && nodeType != XmlUtils::XmlNodeType::XmlNodeType_CDATA)
     {
-        depth_++;
+        tempNodeName_ = reader.GetName();
+    }
+    processNode(reader, nodeType);
+    while(reader.Read(nodeType))
+    {
+        depth_ = reader.GetDepth();
+        /// расширяем вектор, если глубина увеличилась
+        if(depth_ > maxDepth_)
+        {
+            maxDepth_= depth_;
+            data_.push_back(std::vector<std::vector<std::wstring>>{});
+        }
+        processNode(reader, nodeType);
     }
     data = data_;
     return true;
@@ -67,12 +81,6 @@ void XML2TableConverter::readAttributes(XmlUtils::CXmlLiteReader &reader)
 
 void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
-    ///проверяем, есть ли данные на этой глубине
-    if(data_.size() -1 < depth_)
-    {
-        data_.push_back(std::vector<std::vector<std::wstring>>{});
-    }
-
     /// пытаемся найти вектор с таким же ключём на этой глубине
     auto searchResult = std::find_if(data_[depth_].begin(), data_[depth_].end(),
                          [&key](std::vector<std::wstring>& column) { return column[0] == key; });
@@ -87,28 +95,19 @@ void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring
     data_.at(depth_).push_back(newColumn);
 }
 
-void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader)
+void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type)
 {
     readAttributes(reader);
-    auto text = reader.GetText2();
-    if(!text.empty())
+    if(type == XmlUtils::XmlNodeType::XmlNodeType_Text || type == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
     {
-        insertValue(reader.GetName(), text);
+        auto text = reader.GetText();
+        if(!text.empty())
+        {
+            insertValue(tempNodeName_, text);
+        }
     }
-}
-
-bool XML2TableConverter::readSiblings(XmlUtils::CXmlLiteReader &reader)
-{
-    if(!reader.ReadNextSiblingNode(depth_))
+    else
     {
-        return false;
+        tempNodeName_ = reader.GetName();
     }
-
-    processNode(reader);
-
-    while(reader.ReadNextSiblingNode(depth_))
-    {
-        processNode(reader);
-    }
-    return true;
 }

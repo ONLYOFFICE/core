@@ -49,7 +49,7 @@ public:
 
     /// @brief метод, преобразующий xml документ в формат, удобный для табличного размещения
     /// @param reader xmlLiteReader с загруженным в него xml документом
-    /// @param cells map из номеров ячеек в качестве ключей и текстовых значений ячеек
+    /// @param data трехмерная структура из векторов строк, нужна для хранения табличных данных вместе с ключами в разрезе уровней глубины
     /// @return true в случае успеха, иначе false
     bool GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data);
 
@@ -61,19 +61,22 @@ private:
 
     /// @brief обрабатывает текущую ноду - считывает её атрибуты и текст
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
-    void processNode(XmlUtils::CXmlLiteReader &reader);
+    /// @param type тип обрабатываемой ноды
+    void processNode(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
 
-    /// @brief считывает потомков xml на выбранном уровне помещая их данные в структуру
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
-    /// @return true если удалось считать хоть одну ноду, иначе false
-    bool readSiblings(XmlUtils::CXmlLiteReader &reader);
-
-    /// @brief считывает аттрибуты текущей ноды
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    /// @brief вставляет значение во временную внутреннюю структуру
+    /// @param key ключ, по которому будет вставлено значение
+    /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
     /// @return текущая глубина
     _UINT32 depth_;
+
+    /// @return максимальная глубина
+    _UINT32 maxDepth_;
+
+    /// @return временное имя узла, которое будет ключо для текстовой ноды
+    std::wstring tempNodeName_;
 
     /// @return данные собранные с xml
     XmlData data_;

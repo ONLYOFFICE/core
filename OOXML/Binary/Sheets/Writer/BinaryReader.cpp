@@ -568,8 +568,8 @@ int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 
 		READ1_DEF(length, res, this->ReadAltTextTable, pOfficeArtExtension->m_oAltTextTable.GetPointer());
 
-		pOfficeArtExtension->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
-		pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+		pOfficeArtExtension->m_sUri = L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 		pTable->m_oExtLst.Init();
 		pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}

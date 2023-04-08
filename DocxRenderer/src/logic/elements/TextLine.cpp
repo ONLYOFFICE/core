@@ -62,10 +62,12 @@ namespace NSDocxRenderer
 			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
 			double dSpaceWideSize = pCurrent->CalculateWideSpace();
 
+			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
+
 			//todo возможно стоит доработать логику
 			bool bIsEqual = pFirst->IsEqual(pCurrent);
-			bool bIsBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > dSpaceDefaultSize;
-			bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > dSpaceWideSize;
+			bool bIsBigDelta = fabs(dDifference) > dSpaceDefaultSize;
+			bool bIsVeryBigDelta = fabs(dDifference) > dSpaceWideSize;
 
 			if (bIsVeryBigDelta)
 			{

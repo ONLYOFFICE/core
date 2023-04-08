@@ -352,6 +352,7 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(dTextX, dTextY);
 		m_pTransform->TransformPoint(dTextR, dTextB);
 
+		// иногда ширина приходит сильно меньше, почему?
 		double dTextW = dTextR - dTextX;
 		double dTextH = dTextB - dTextY;
 
@@ -362,7 +363,7 @@ namespace NSDocxRenderer
 				if (!IsUnicodeSymbol(pUnicodes[i]))
 					oText[i] = ' ';
 
-		// иногда приходит неверный? размер, нужно перемерить
+		// иногда приходит неверный? размер, нужно перемерить (XPS)
 		if(m_bIsRecalcFontSize)
 		{
 			m_pFont->Size *= ((m_pTransform->sx() + m_pTransform->sy()) / 2);
@@ -370,27 +371,29 @@ namespace NSDocxRenderer
 		}
 		m_pFontManager->LoadFontByFile(*m_pFont);
 
-		if (fabs(dTextW) < 0.01 || (dTextW > 10))
+		// закомментив это, все гуд
+		//if (fabs(dTextW) < 0.01 || (dTextW > 10))
+		//{
+
+		double _x = 0;
+		double _y = 0;
+		double _w = 0;
+		double _h = 0;
+
+		if (nullptr != pGids)
 		{
-			double _x = 0;
-			double _y = 0;
-			double _w = 0;
-			double _h = 0;
-
-			if (nullptr != pGids)
-			{
-				m_pFontManager->SetStringGid(1);
-				m_pFontManager->MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
-			}
-			else
-			{
-				// такого быть не должно (только из xps)
-				m_pFontManager->SetStringGid(0);
-				m_pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
-			}
-
-			dTextW = _w;
+			m_pFontManager->SetStringGid(1);
+			m_pFontManager->MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
+		else
+		{
+			// такого быть не должно (только из xps)
+			m_pFontManager->SetStringGid(0);
+			m_pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
+		}
+
+		dTextW = _w;
+		//}
 
 		double dBaseLinePos = dTextY + fBaseLineOffset;
 		dTextH = m_pFontManager->GetFontHeight();

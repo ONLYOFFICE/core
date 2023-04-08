@@ -35,6 +35,7 @@
 
 #include "../../PPTXFormat/Logic/SpTree.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
+#include "../Logic/Pict.h"
 
 namespace OOX
 {

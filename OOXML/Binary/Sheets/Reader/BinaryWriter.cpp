@@ -5640,7 +5640,7 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CW
 			OOX::CVmlDrawing* pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
 			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 			m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
-			m_pOfficeDrawingConverter->ClearShapeTypes();
+			m_pOfficeDrawingConverter->Clear();
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::Drawings);
 			WriteLegacyDrawingHFDrawings(pVmlDrawing);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);

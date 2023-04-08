@@ -44,6 +44,7 @@
 #include "../../DocxFormat/Media/Audio.h"
 #include "../../DocxFormat/Media/Video.h"
 #include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
@@ -404,7 +405,7 @@ namespace PPTX
 			}
 			else if (name == L"binData")
 			{
-				m_binaryData = node.GetText();
+				m_binaryData = node;
 			}
 			else m_elem.reset();
 		}

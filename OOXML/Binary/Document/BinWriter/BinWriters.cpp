@@ -489,7 +489,7 @@ void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty
 	
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
 	oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
@@ -8156,7 +8156,7 @@ void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsE
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	int nStart = m_oBcw.WriteItemWithLengthStart();
 	WriteCommentsContent(oComments, pCommentsExt, pCommentsExtensible, pCommentsUserData, pPeople, pCommentsIds, mapIgnoreComments, oParamsDocumentWriter);
@@ -8170,7 +8170,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	std::map<std::wstring, OOX::CPerson*> mapAuthorToUserId;
 	std::map<unsigned int, CCommentWriteTemp*> mapParaIdToComment;
@@ -9164,7 +9164,7 @@ void BinaryNotesTableWriter::WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNot
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	int nCurPos = 0;
 	for(size_t i = 0 ; i < arrNotes.size(); ++i)
@@ -9463,7 +9463,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 
 		m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-		m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+		m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
 		oBinaryDocumentTableWriter.poDocument = pDocument;
 		oBinaryDocumentTableWriter.pSectPr = pDocument->m_oSectPr.GetPointer();;
@@ -9595,7 +9595,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 
 				m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-				m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+				m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
 				oBinaryDocumentTableWriter.poDocument = pDocx->m_oGlossary.document;
 				oBinaryDocumentTableWriter.pSectPr = pDocx->m_oGlossary.document->m_oSectPr.GetPointer();;

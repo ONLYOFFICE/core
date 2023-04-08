@@ -45,9 +45,14 @@ namespace OOX
 	{
 		CBinData::CBinData(OOX::Document *pMain) : WritingElement(pMain) {}
 		CBinData::~CBinData() {}
+		
 		void CBinData::fromXML(XmlUtils::CXmlNode &oNode)
 		{
+			m_sName = oNode.GetAttribute(L"w:name");
+
+			m_sData = oNode.GetTextA();
 		}
+		
 		void CBinData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );

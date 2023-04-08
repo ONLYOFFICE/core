@@ -261,22 +261,26 @@ namespace PPTX
 				additionalPath	= mediaFilepath;
 				additionalType	= 2;
 			}
-
-			std::wstring imagePath;
-			if(!dataFilepathImage.empty())
+			NSShapeImageGen::CMediaInfo oId;
+			if(!dataFilepathImageA.empty())
 			{
-				imagePath = dataFilepathImage;
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
+			}
+			if (!dataFilepathImage.empty())
+			{
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}
 			else if(!oleFilepathImage.empty())
 			{
-				imagePath = oleFilepathImage;
+				std::wstring imagePath = oleFilepathImage;
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
 			}
 			else
 			{
-				imagePath = this->GetFullPicName(pRels);
+				std::wstring imagePath = this->GetFullPicName(pRels);
+				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
 			}
 
-			NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
 			std::wstring s = oId.GetPath2();
 
 			pWriter->StartRecord(3);

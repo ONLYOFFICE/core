@@ -146,6 +146,8 @@ gcc {
 core_windows {
     DEFINES += WIN32 _WIN32
     DEFINES += NOMINMAX
+
+    core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }
 core_win_64 {
     DEFINES += WIN64 _WIN64

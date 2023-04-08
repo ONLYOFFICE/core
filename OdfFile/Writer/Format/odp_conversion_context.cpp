@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,12 +55,19 @@ namespace odf_writer {
 
 
 odp_conversion_context::odp_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this), text_context_(NULL), drawing_context_(this)
+	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this)
 {
 }
 odf_text_context* odp_conversion_context::text_context()
 {
-	return text_context_; 
+	if (false == text_context_.empty())
+	{
+		return text_context_.back().get();
+	}
+	else
+	{
+		return NULL;
+	}
 }
 odp_slide_context* odp_conversion_context::slide_context()
 {
@@ -74,13 +81,17 @@ odf_controls_context* odp_conversion_context::controls_context()
 }
 odf_drawing_context* odp_conversion_context::drawing_context()
 {
-	if (slide_context_.page_state_list_.empty())
+	if (false == drawing_context_.empty())
 	{
-		return &drawing_context_;
+		return drawing_context_.back().get();
+	}
+	else if (false == slide_context_.page_state_list_.empty())
+	{
+		return slide_context_.state().drawing_context();
 	}
 	else
 	{
-		return slide_context_.state().drawing_context();
+		return NULL;
 	}
 }
 odf_comment_context* odp_conversion_context::comment_context()
@@ -95,8 +106,6 @@ void odp_conversion_context::start_document()
 	start_presentation();
 	
 	root_presentation_ = dynamic_cast<office_presentation*>(get_current_object_element().get());
-	
-	drawing_context_.set_styles_context(styles_context());
 }
 
 void odp_conversion_context::end_document()
@@ -150,10 +159,7 @@ void odp_conversion_context::end_layout_slide()
 	slide_context_.end_page();
 	slide_context_.set_styles_context(NULL); //возврат на базовый
 }
-void odp_conversion_context::start_text_context()
-{
-	text_context_ = new odf_text_context(this, slide_context_.get_styles_context());
-}
+
 odf_style_context* odp_conversion_context::styles_context()	
 {
 	odf_style_context* result = slide_context_.get_styles_context();
@@ -163,20 +169,6 @@ odf_style_context* odp_conversion_context::styles_context()
 	return result;
 }
 
-void odp_conversion_context::end_text_context()
-{
-	if (text_context_)
-		delete text_context_;
-	text_context_ = NULL;
-}
-
-void odp_conversion_context::start_drawings()
-{
-}
-void odp_conversion_context::end_drawings()
-{
-	current_slide().drawing_context()->clear();
-}
 void odp_conversion_context::start_note(bool bMaster)
 {
 	office_element_ptr note_elm;

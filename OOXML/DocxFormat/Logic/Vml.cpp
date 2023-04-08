@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,9 +39,11 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "Sdt.h"
 #include "Hyperlink.h"
 #include "Table.h"
+#include "Pict.h"
 
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
@@ -49,6 +51,7 @@
 #include "../../XlsxFormat/Drawing/CellAnchor.h"
 #include "../../XlsxFormat/Drawing/FromTo.h"
 
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace OOX
 {
@@ -178,6 +181,41 @@ namespace OOX
 					pItem = new OOX::VmlWord::CWrap(document);
 				else if (L"w10:wrap" == sName)
 					pItem = new OOX::VmlWord::CWrap(document);
+				else if (L"w:binData" == sName)
+				{
+					OOX::Logic::CBinData oBinData;
+					oBinData.fromXML(oReader);
+
+					if (oBinData.m_sData.IsInit())
+					{
+						OOX::CDocxFlat* docx_flat = dynamic_cast<OOX::CDocxFlat*>(document);
+						if (docx_flat)
+						{
+							smart_ptr<OOX::Image> pImageFile = smart_ptr<OOX::Image>(new OOX::Image(document, true));
+
+							int dstLen = Base64::Base64DecodeGetRequiredLength((int)oBinData.m_sData->size());
+							pImageFile->m_Data.resize(dstLen);
+							Base64::Base64Decode(oBinData.m_sData->c_str(), (int)oBinData.m_sData->size(), pImageFile->m_Data.data(), &dstLen);
+							pImageFile->m_Data.resize(dstLen);
+
+							CImageFileFormatChecker fileChecker;
+							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
+							if (false == ext.empty())
+							{
+								OOX::CPath filename(L"image." + ext);
+								pImageFile->set_filename(filename, false, true);
+
+								NSCommon::smart_ptr<OOX::File> file = pImageFile.smart_dynamic_cast<OOX::File>();
+								const OOX::RId rId = docx_flat->m_currentContainer->Add(file);
+
+								if (oBinData.m_sName.IsInit())
+								{
+									docx_flat->m_mapImages[*oBinData.m_sName] = file;
+								}
+							}
+						}
+					}
+				}
 
 				break;
 			case 'x':
@@ -191,8 +229,8 @@ namespace OOX
 
 			if (NULL != pItem)
 			{
-				m_arrItems.push_back(pItem);
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ((image_data) && (image_data->m_rId.IsInit()))
@@ -801,8 +839,8 @@ namespace OOX
 
 				if ( NULL != pItem )
 				{
-					m_arrElements.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrElements.push_back( pItem );
 				}
 			}
 		}
@@ -827,6 +865,12 @@ namespace OOX
 			sResult += L">";
 
 			sResult += CVmlCommonElements::WriteElements();
+
+			for (size_t i = 0; i < m_arrElements.size(); ++i)
+			{
+				if (m_arrElements[i])
+					sResult += m_arrElements[i]->toXML();
+			}
 
 			sResult += L"</v:group>";
 

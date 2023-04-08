@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,19 @@
  */
 
 #include "PPTXWriter.h"
+
+#include "../../PPTXFormat/NotesSlide.h"
+#include "../../PPTXFormat/Logic/ClrMapOvr.h"
+#include "../../PPTXFormat/Logic/TxStyles.h"
+#include "../../PPTXFormat/Logic/Hf.h"
+
+#include "../../PPTXFormat/ViewProps/GridSpacing.h"
+#include "../../PPTXFormat/ViewProps/NormalViewPr.h"
+#include "../../PPTXFormat/ViewProps/NotesTextViewPr.h"
+#include "../../PPTXFormat/ViewProps/NotesViewPr.h"
+#include "../../PPTXFormat/ViewProps/OutlineViewPr.h"
+#include "../../PPTXFormat/ViewProps/SlideViewPr.h"
+#include "../../PPTXFormat/ViewProps/SorterViewPr.h"
 
 namespace NSBinPptxRW
 {

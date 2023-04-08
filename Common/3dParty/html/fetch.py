@@ -17,12 +17,12 @@ if not base.is_dir("gumbo-parser"):
   base.replaceInFile(base_directory + "/gumbo-parser/src/tag.c", "isspace(*c)", "isspace((unsigned char)*c)")
 
 if not base.is_dir("katana-parser"):
-  base.cmd("git", ["clone", "https://github.com/hackers-painters/katana-parser.git"])
-  base.cmd_in_dir("katana-parser", "git", ["checkout", "499118d32c387a893fdc9dda2cb95eee524bdb9b"])
+  base.cmd("git", ["clone", "https://github.com/jasenhuang/katana-parser.git"])
+  base.cmd_in_dir("katana-parser", "git", ["checkout", "be6df458d4540eee375c513958dcb862a391cdd1"])
 
   # fix katana
   base.replaceInFile(base_directory + "/katana-parser/src/tokenizer.c", "static inline bool katana_is_html_space(char c);", "static inline bool2 katana_is_html_space(char c);")
   base.replaceInFile(base_directory + "/katana-parser/src/tokenizer.c", "inline bool katana_is_html_space(char c)", "static inline bool katana_is_html_space(char c)")
   base.replaceInFile(base_directory + "/katana-parser/src/tokenizer.c", "static inline bool2 katana_is_html_space(char c);", "static inline bool katana_is_html_space(char c);")
   base.replaceInFile(base_directory + "/katana-parser/src/parser.c", "katanaget_text(parser->scanner)", "/*katanaget_text(parser->scanner)*/\"error\"")
-
+  base.replaceInFile(base_directory + "/katana-parser/src/parser.c", "#define KATANA_PARSER_STRING(literal) (KatanaParserString){", "#define KATANA_PARSER_STRING(literal) {")

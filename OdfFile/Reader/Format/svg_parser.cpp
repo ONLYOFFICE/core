@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -565,10 +565,12 @@ namespace svg_path
 		for (size_t i = 0; i < points_str.size(); i++)
 		{
  			std::vector<std::wstring> point_str;
-			boost::algorithm::split(point_str, points_str[i], boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			
+			if (false == points_str[i].empty())
+				boost::algorithm::split(point_str, points_str[i], boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-			if (point_str.size()>0)last_x = boost::lexical_cast<int>(point_str[0]);
-			if (point_str.size()>1)last_y = boost::lexical_cast<int>(point_str[1]);
+			if (point_str.size() > 0) last_x = boost::lexical_cast<int>(point_str[0]);
+			if (point_str.size() > 1) last_y = boost::lexical_cast<int>(point_str[1]);
 			
 			aCurrPoly.points.push_back(_point (last_x,last_y));
 

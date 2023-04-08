@@ -55,7 +55,7 @@
 		"./../../../OfficeUtils/src",
 		"./../../../OfficeUtils/src/zlib-1.2.11"
 	],
-	"define": ["WIN32", "NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS", "FT2_BUILD_LIBRARY", "HAVE_FREETYPE", "FT_CONFIG_OPTION_SYSTEM_ZLIB"],
+	"define": ["__linux__", "_LINUX", "UNIX", "NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS", "FT2_BUILD_LIBRARY", "HAVE_FREETYPE", "FT_CONFIG_OPTION_SYSTEM_ZLIB"],
 	"compile_files_array": [
 	{
 		"name": "f",

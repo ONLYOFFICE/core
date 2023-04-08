@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,6 +56,7 @@
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramData.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 #include "../../../OOXML/DocxFormat/Math/oMathPara.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"
@@ -801,8 +802,10 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
         _CP_LOG << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
 	}
 }
-std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
+std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type, bool & bExternal)
 {
+	bExternal = false;
+
 	if (!oFile.IsInit()) return L"";
 	
     std::wstring ref;
@@ -813,6 +816,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pImage)
 		{
 			ref = pImage->filename().GetPath();
+			bExternal = pImage->IsExternal();
 		}
 	}
 	if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
@@ -822,6 +826,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pHyperlink && pHyperlink->bHyperlink)
 		{
 			ref = pHyperlink->Uri().GetPath();
+			bExternal = true;
 		}
 	}
 	if (type == 3)
@@ -831,6 +836,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pMedia)
 		{
 			ref = pMedia->filename().GetPath();
+			bExternal = pMedia->IsExternal();
 		}
 	}
 	if (type == 4)
@@ -840,6 +846,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pOleObject)
 		{
 			ref = pOleObject->filename().GetPath();
+			bExternal = pOleObject->IsExternal();
 		}
 	}
 	return ref;

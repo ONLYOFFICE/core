@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,11 +32,13 @@
 #include "../DocxFlat.h"
 #include "../Comments.h"
 
+#include "Table.h"
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "FldSimple.h"
 #include "Bdo.h"
 #include "Sdt.h"
@@ -46,6 +48,8 @@
 
 #include "../Math/OMath.h"
 #include "../Math/oMathPara.h"
+
+#include "../../Common/SimpleTypes_Word.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
@@ -62,13 +66,15 @@ namespace OOX
 		// CParagraph 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
 
-		CParagraph::CParagraph(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		CParagraph::CParagraph(OOX::Document *pMain, WritingElement *parent) : WritingElementWithChilds<>(pMain)
 		{
 			m_oParagraphProperty = NULL;
-		}		
+			m_oParent = parent;
+		}
 		CParagraph::~CParagraph()
 		{
 			m_oParagraphProperty = NULL;
+			m_oParent = NULL;
 		}
 		const CParagraph& CParagraph::operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -342,7 +348,7 @@ namespace OOX
 				else if (L"proofErr" == sName )
 					pItem = new CProofErr( document );
 				else if (L"r" == sName )
-					pItem = new CRun( document );
+					pItem = new CRun( document, this );
 				else if (L"sdt" == sName )
 					pItem = new CSdt( document );
 				else if (L"smartTag" == sName )
@@ -364,10 +370,24 @@ namespace OOX
 					int nWxSubSectDepth = oReader.GetDepth();
 					fromXML(nWxSubSectDepth, oReader);
 				}
+				else if (L"tbl" == sName)
+				{
+					WritingElementWithChilds *parent = dynamic_cast<WritingElementWithChilds*>(m_oParent);
+					if (parent)
+					{
+						WritingElement *pItemUpper = new CTbl(document);
+						if (pItemUpper)
+						{
+							pItemUpper->fromXML(oReader);
+							parent->m_arrItems.push_back(pItemUpper);
+						}
+					}
+				}
+
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}

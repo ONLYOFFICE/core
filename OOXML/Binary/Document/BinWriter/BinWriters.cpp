@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -3360,7 +3360,7 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 			{
 				OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
-				WriteSdt(pStd, 0, NULL, 0, 0, 0);
+				WriteSdt(pStd, 0, NULL, 0);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}break;
 			case OOX::et_w_smartTag:
@@ -3739,7 +3739,7 @@ void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::Wri
 			{
 				OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
-				WriteSdt(pStd, 1, NULL, 0, 0, 0);
+				WriteSdt(pStd, 1, NULL, 0);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);				
 			}break;
 			case OOX::et_w_smartTag:
@@ -4076,11 +4076,16 @@ void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pFldChar->m_oFldCharType->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-//FFData
 	if (pFldChar->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldChar->m_oFFData.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pFldChar->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldChar->m_sPrivateData);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -4099,19 +4104,25 @@ void BinaryDocumentTableWriter::WriteFldSimple(OOX::Logic::CFldSimple* pFldSimpl
 void BinaryDocumentTableWriter::WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple)
 {
 	int nCurPos = 0;
-	//порядок записи важен
-	//Instr
+
+//порядок записи важен
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
 		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sInstr);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
-	//FFData
 	if(pFldSimple->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldSimple->m_oFFData.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	//Content
+	if (pFldSimple->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sPrivateData);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
 		WriteParagraphContent(pFldSimple->m_arrItems);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
@@ -7203,23 +7214,14 @@ void BinaryDocumentTableWriter::WriteDocTable(OOX::Logic::CTbl* tbl)
 	if (!tbl) return;
 
 	int nCurPos = 0;
-	//ищем tblPr
-	//tblPr должна идти раньше Content
-	int nRows = 0;
-	int nCols = 0;
-	OOX::Logic::CTableProperty* pTblPr = NULL;
-//считаем количество строк и столбцов
-	GetTableSize(tbl->m_arrItems, nRows, nCols, &pTblPr);
-	if(nRows > 0 && nCols > 0)
 	{
 //TblPr
-		if(NULL != pTblPr)
+		if(NULL != tbl->m_oTableProperties)
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::tblPr);
-			btblPrs.WriteTblPr(pTblPr);
+			btblPrs.WriteTblPr(tbl->m_oTableProperties);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-
 //tblGrid
 		if(tbl->m_oTblGrid.IsInit())
 		{
@@ -7229,11 +7231,9 @@ void BinaryDocumentTableWriter::WriteDocTable(OOX::Logic::CTbl* tbl)
 		}
 //Content
 		nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Content);
-			WriteTableContent(tbl->m_arrItems, pTblPr, nRows, nCols);
+			WriteTableContent(tbl->m_arrItems, tbl->m_oTableProperties);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-
-	RELEASEOBJECT(pTblPr);
 }
 bool BinaryDocumentTableWriter::ValidateRow(const std::vector<OOX::WritingElement *> & arrItems)
 {
@@ -7284,57 +7284,6 @@ bool BinaryDocumentTableWriter::ValidateRow(const std::vector<OOX::WritingElemen
 		}
 	}
 	return false;
-}
-void BinaryDocumentTableWriter::GetTableSize(std::vector<OOX::WritingElement *> & rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr)
-{
-	for(size_t i = 0; i < rows.size(); ++i)
-	{
-		OOX::WritingElement* item = rows[i];
-
-		if(OOX::et_w_tblPr == item->getType())
-		{
-			*ppTblPr = new OOX::Logic::CTableProperty();
-			**ppTblPr = *static_cast<OOX::Logic::CTableProperty*>(item);
-		}
-		else if(OOX::et_w_tr == item->getType())
-		{
-			OOX::Logic::CTr* pTr = static_cast<OOX::Logic::CTr*>(item);
-			if(ValidateRow(pTr->m_arrItems))
-			{
-				nRows++;
-				if(0 == nCols)
-				{
-					OOX::Logic::CTr* pTr = static_cast<OOX::Logic::CTr*>(item);
-					nCols = GetColsCount(pTr->m_arrItems);
-				}
-			}
-			else
-			{
-				rows.erase(rows.begin() + i);
-			}
-		}
-		else if(OOX::et_w_sdt == item->getType())
-		{
-			OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
-			if(pStd->m_oSdtContent.IsInit())
-				GetTableSize(pStd->m_oSdtContent->m_arrItems, nRows, nCols, ppTblPr);
-		}
-		else if(OOX::et_w_smartTag == item->getType())
-		{
-			OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-			GetTableSize(pSmartTag->m_arrItems, nRows, nCols, ppTblPr);
-		}
-		else if(OOX::et_w_dir == item->getType())
-		{
-			OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-			GetTableSize(pDir->m_arrItems, nRows, nCols, ppTblPr);
-		}
-		else if(OOX::et_w_bdo == item->getType())
-		{
-			OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
-			GetTableSize(pBdo->m_arrItems, nRows, nCols, ppTblPr);
-		}
-	}
 }
 int BinaryDocumentTableWriter::GetColsCount(const std::vector<OOX::WritingElement *>& arrItems)
 {
@@ -7429,7 +7378,7 @@ void BinaryDocumentTableWriter::WriteTblGridChange(const OOX::Logic::CTblGridCha
 	}
 }
 
-void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr, int nRows, int nCols)
+void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr)
 {
 	int nCurPos			= 0;
 	int nCurRowIndex	= 0;
@@ -7441,7 +7390,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 		if(OOX::et_w_tr == item->getType())
 		{
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row);
-			WriteRow(*static_cast<OOX::Logic::CTr*>(item), pTblPr, nCurRowIndex, nRows, nCols);
+			WriteRow(*static_cast<OOX::Logic::CTr*>(item), pTblPr, nCurRowIndex);
 			m_oBcw.WriteItemEnd(nCurPos);
 			nCurRowIndex++;
 		}
@@ -7449,23 +7398,23 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 		{
 			OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Sdt);
-			WriteSdt(pStd, 2, pTblPr, 0, nRows, nCols);
+			WriteSdt(pStd, 2, pTblPr, 0);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		else if(OOX::et_w_smartTag == item->getType())
 		{
 			OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-			WriteTableContent(pSmartTag->m_arrItems, pTblPr, nRows, nCols);
+			WriteTableContent(pSmartTag->m_arrItems, pTblPr);
 		}
 		else if(OOX::et_w_dir == item->getType())
 		{
 			OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-			WriteTableContent(pDir->m_arrItems, pTblPr, nRows, nCols);
+			WriteTableContent(pDir->m_arrItems, pTblPr);
 		}
 		else if(OOX::et_w_bdo == item->getType())
 		{
 			OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
-			WriteTableContent(pBdo->m_arrItems, pTblPr, nRows, nCols);
+			WriteTableContent(pBdo->m_arrItems, pTblPr);
 		}
 		else if(OOX::et_w_bookmarkStart == item->getType())
 		{
@@ -7511,7 +7460,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 		}
 	}
 }
-void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
+void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
 {
 	int nCurPos = 0;
 
@@ -7524,11 +7473,11 @@ void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic:
 
 	//Content
 	nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row_Content);
-	WriteRowContent(Row.m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+	WriteRowContent(Row.m_arrItems, pTblPr, nCurRowIndex);
 	m_oBcw.WriteItemEnd(nCurPos);
 }
 
-void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
+void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
 {
 	int nCurPos = 0;
 	int nCurColIndex = 0;
@@ -7542,7 +7491,7 @@ void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingEl
 			OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);
 
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Cell);
-				WriteCell(*tc, pTblPr, nCurRowIndex, nCurColIndex, nRows, nCols);
+				WriteCell(*tc, pTblPr, nCurRowIndex, nCurColIndex);
 			m_oBcw.WriteItemEnd(nCurPos);
 
 			nCurColIndex++;
@@ -7551,23 +7500,23 @@ void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingEl
 		{
 			OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Sdt);
-			WriteSdt(pStd, 3, pTblPr, nCurRowIndex, nRows, nCols);
+			WriteSdt(pStd, 3, pTblPr, nCurRowIndex);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		else if(OOX::et_w_smartTag == item->getType())
 		{
 			OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-			WriteRowContent(pSmartTag->m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+			WriteRowContent(pSmartTag->m_arrItems, pTblPr, nCurRowIndex);
 		}
 		else if(OOX::et_w_dir == item->getType())
 		{
 			OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-			WriteRowContent(pDir->m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+			WriteRowContent(pDir->m_arrItems, pTblPr, nCurRowIndex);
 		}
 		else if(OOX::et_w_bdo == item->getType())
 		{
 			OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
-			WriteRowContent(pBdo->m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+			WriteRowContent(pBdo->m_arrItems, pTblPr, nCurRowIndex);
 		}
 		else if(OOX::et_w_bookmarkStart == item->getType())
 		{
@@ -7613,7 +7562,7 @@ void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingEl
 		}
 	}
 }
-void BinaryDocumentTableWriter::WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nCurColIndex, int nRows, int nCols)
+void BinaryDocumentTableWriter::WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nCurColIndex)
 {
 	int nCurPos = 0;
 //св-ва ячейки
@@ -7630,7 +7579,7 @@ void BinaryDocumentTableWriter::WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTabl
 		oBinaryDocumentTableWriter.WriteDocumentContent(tc.m_arrItems);
 	m_oBcw.WriteItemEnd(nCurPos);
 }
-void BinaryDocumentTableWriter::WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
+void BinaryDocumentTableWriter::WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
 {
 	if (!pStd) return;
 
@@ -7665,12 +7614,12 @@ void BinaryDocumentTableWriter::WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::
 			}
 			case 2:
 			{
-				WriteTableContent(pStd->m_oSdtContent->m_arrItems, pTblPr, nRows, nCols);
+				WriteTableContent(pStd->m_oSdtContent->m_arrItems, pTblPr);
 				break;
 			}
 			case 3:
 			{
-				WriteRowContent(pStd->m_oSdtContent.get().m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+				WriteRowContent(pStd->m_oSdtContent.get().m_arrItems, pTblPr, nCurRowIndex);
 				break;
 			}
 		}
@@ -7830,16 +7779,6 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComplexFormPr);
 		WriteSdtComplexFormPr(oStdPr.m_oComplexFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
-	}
-	if (oStdPr.m_oOformRid.IsInit())
-	{
-		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oStdPr.m_oOformRid->GetValue());
-		if (pFile.IsInit())
-		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
-			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
-			m_oBcw.WriteItemEnd(nCurPos);
-		}
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
@@ -8102,6 +8041,16 @@ void BinaryDocumentTableWriter::WriteSdtFormPr(const OOX::Logic::CFormPr& oFormP
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrShd);
 		m_oBcw.WriteShd(oFormPr.m_oShd.get());
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormPr.m_oFieldRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oFormPr.m_oFieldRid->GetValue());
+		if (pFile.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
+			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr)
@@ -9474,14 +9423,18 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	if ((pDocx) && (pDocx->m_pApp))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
-		pDocx->m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+		PPTX::App* pAppTmp = pDocx->m_pApp->ToPptxApp();
+		pAppTmp->toPPTY(&oBufferedStream);
+		delete pAppTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if ((pDocx) && (pDocx->m_pCore))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
-		pDocx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		PPTX::Core* pCoreTmp = pDocx->m_pCore->ToPptxCore();
+		pCoreTmp->toPPTY(&oBufferedStream);
+		delete pCoreTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 	if (NULL != m_oParamsWriter.m_pTheme)

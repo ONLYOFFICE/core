@@ -71,7 +71,9 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
-		m_oXmlWriter.WriteString(m_wsDefs);
+		ResetClip();
+		if (!m_wsDefs.empty())
+			m_oXmlWriter.WriteString(L"<defs>" + m_wsDefs + L"</defs>");
 		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -102,7 +104,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -128,7 +130,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -194,7 +196,12 @@ namespace MetaFile
 
 		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
 
-		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale);
+		std::vector<double> arDx(0);
+
+		if (NULL != pDx)
+			arDx = std::vector<double>(pDx, pDx + wsText.length());
+
+		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale, arDx);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
@@ -226,7 +233,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -252,7 +259,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"line", arAttributes);
 	}
@@ -273,7 +280,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -297,7 +304,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -317,7 +324,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -337,7 +344,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -364,7 +371,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -388,7 +395,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -402,18 +409,17 @@ namespace MetaFile
 		oNewRect.dRight  = shR;
 		oNewRect.dBottom = shB;
 
-
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
 									   {L"y",		ConvertToWString(oNewRect.dTop)},
 									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
 									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
-									   {L"rx",		ConvertToWString(shW)},
-									   {L"ry",		ConvertToWString(shH)}};
+		                               {L"rx",		ConvertToWString((double)shW / 2.)},
+		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -487,17 +493,17 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
@@ -549,10 +555,11 @@ namespace MetaFile
 			                               {L"y",      ConvertToWString(dY)},
 			                               {L"width",  ConvertToWString(dW)},
 			                               {L"height", ConvertToWString(dH)},
+			                               {L"preserveAspectRatio", L"xMinYMin slice"},
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);
-			AddClip(arAttributes);
+			AddClip();
 
 			WriteNode(L"image", arAttributes);
 		}
@@ -563,31 +570,16 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::ResetClip()
 	{
-		m_wsLastClipId.clear();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
-	void CWmfInterpretatorSvg::IntersectClip(const TRectD& oClip)
+	void CWmfInterpretatorSvg::IntersectClip(const TRectD &oClip)
 	{
-		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<rect x=\"" + ConvertToWString(oClip.dLeft, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop, 0) + L"\" width=\"" + ConvertToWString(oClip.dRight - oClip.dLeft, 0) + L"\" height=\"" + ConvertToWString(oClip.dBottom - oClip.dTop, 0) + L"\"/>" +
-		            L"</clipPath>";
+		CInterpretatorSvgBase::IntersectClip(oClip);
 	}
 
 	void CWmfInterpretatorSvg::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
-		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<path d=\"M" + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dTop) + L", L" + ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dTop) + L", " +
-		            ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dBottom) + L", " + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dBottom) + L", M" +
-		            ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dTop) + L", L" + ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dTop) + L", " +
-		            ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dBottom) + L", " + ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dLeft) + L"\" clip-rule=\"evenodd\"/>" +
-		            L"</clipPath>";
-	}
-
-	void CWmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
-	{
+		CInterpretatorSvgBase::ExcludeClip(oClip, oBB);
 	}
 }

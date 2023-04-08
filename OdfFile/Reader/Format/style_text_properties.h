@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -82,9 +82,9 @@ public:
 
 	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
 
-	void apply_from			(const text_format_properties_content & Other);
-	void apply_to			(std::vector<_property> & properties);
-    void set_r_style		(const std::wstring & rStyle) { r_style_ = rStyle; }
+	void apply_from (const text_format_properties_content & Other);
+	void apply_to (std::vector<_property> & properties);
+	void set_r_style(const std::wstring & rStyle);
    
 	int process_font_size	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
 

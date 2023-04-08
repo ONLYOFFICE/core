@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,10 +35,14 @@
 
 #include "../../Common/utils.h"
 
+#include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
+#include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
 #include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
 #include "../../../OOXML/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"
@@ -310,20 +314,23 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	bool bEmbedded = true;
+	bool bExternal = false;
 	std::wstring pathImage;
+
 	if (oox_picture->blipFill.blip.IsInit())
 	{
 		if (oox_picture->blipFill.blip->embed.IsInit())
 		{
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
-			pathImage = find_link_by_id(sID, 1);
+			pathImage = find_link_by_id(sID, 1, bExternal);
 			
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
-			pathImage = oox_picture->blipFill.blip->link->get();	
-			bEmbedded = false;
+			std::wstring sID = oox_picture->blipFill.blip->link->get();
+			pathImage = find_link_by_id(sID, 1, bExternal);
+
+			if (pathImage.empty()) pathImage = sID;
 		}
 	}
 //--------------------------------------------------------------------------------------
@@ -335,8 +342,8 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		{
 			PPTX::Logic::MediaFile & media = oox_picture->nvPicPr.nvPr.media.as<PPTX::Logic::MediaFile>();
 
-			std::wstring sID		= media.link.get();
-			std::wstring pathMedia	= find_link_by_id(sID, 3);
+			std::wstring sID = media.link.get();
+			std::wstring pathMedia = find_link_by_id(sID, 3, bExternal);
 
 			double start = -1, end = -1;
 
@@ -345,14 +352,14 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
 				if (pathMedia.empty() && ext.link.IsInit())
 				{
-					pathMedia = find_link_by_id(ext.link->get(), 3);
+					pathMedia = find_link_by_id(ext.link->get(), 3, bExternal);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;
 				if (ext.end.IsInit())	end		= *ext.end;
 			}
 			
-			std::wstring odf_ref_media = odf_context()->add_media(pathMedia);
+			std::wstring odf_ref_media = odf_context()->add_media(pathMedia, bExternal);
 
 			if (!odf_ref_media.empty())
 			{
@@ -362,7 +369,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
-				odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+				odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
 				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 				
 				odf_context()->drawing_context()->end_media();
@@ -381,7 +388,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	
 		if (oox_picture->oleObject->m_oId.IsInit())
 		{
-			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4);
+			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4, bExternal);
 		}
 		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
 
@@ -429,7 +436,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 			}
 
-			odf_ref_image = bEmbedded ? odf_context()->add_imageobject(pathImage) : pathImage; 			
+			odf_ref_image = bExternal ? pathImage : odf_context()->add_imageobject(pathImage);
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 
 			odf_context()->drawing_context()->end_object_ole();
@@ -437,7 +444,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+	odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
 	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
@@ -535,7 +542,7 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 			oox_current_child_document = pChart ? dynamic_cast<OOX::IFileContainer*>(pChart) : dynamic_cast<OOX::IFileContainer*>(pChartEx);	
 			
 			OOX::CChartDrawing* pChartDrawing = NULL;
-			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id)) )
+			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id.IsInit())) )
 			{
 				oFile = find_file_by_id (*pChart->m_oChartSpace.m_userShapes->m_id);
 				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.GetPointer());
@@ -560,12 +567,12 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 		
 					if (pChart)
 					{
-						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChart->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChart->m_oChartSpace);
 					}
 					else if (pChartEx)
 					{
-						OoxConverter::convert(pChartEx->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChartEx->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChartEx->m_oChartSpace);
 					}
 				odf_context()->end_chart();
@@ -1239,14 +1246,15 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		{
             std::wstring sID, pathImage;
             
+			bool bExternal = false;
 			if (oox_bitmap_fill->blip->embed.IsInit())
             {
                 sID         = oox_bitmap_fill->blip->embed->get();
-                pathImage   = find_link_by_id(sID, 1);
+                pathImage   = find_link_by_id(sID, 1, bExternal);
 
                 if (!pathImage.empty())
                 {
-                    odf_context()->drawing_context()->set_bitmap_link(pathImage);
+                    odf_context()->drawing_context()->set_bitmap_link(pathImage, bExternal);
                     _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 
 					Width /= 96; //to inch (current dpi file)
@@ -1255,10 +1263,14 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
             }
             else if (oox_bitmap_fill->blip->link.IsInit())
 			{
-                sID  = pathImage = oox_bitmap_fill->blip->link->get();
+                sID  = oox_bitmap_fill->blip->link->get();
 
-                odf_context()->drawing_context()->set_bitmap_link(pathImage);
-				//...
+				pathImage = find_link_by_id(sID, 1, bExternal); //reconstruction.pptx 
+
+				if (pathImage.empty())
+					pathImage = sID;
+
+                odf_context()->drawing_context()->set_bitmap_link(pathImage, bExternal);
 			}
 			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
 			{
@@ -1409,7 +1421,7 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 
 	if (nARGB != 0)
 	{	
-		hexString = XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		hexString = XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 
 		if ((nARGB >> 24) != 0xff)
 		{
@@ -1499,7 +1511,7 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	{
 		if (oox_line_prop->headEnd->len.IsInit() || oox_line_prop->headEnd->type.IsInit() || oox_line_prop->headEnd->w.IsInit())
 		{
-			int type = 1, w = 1, len = 1;//medium arrow
+			int type = 0, w = 1, len = 1;//medium arrow
 			if (oox_line_prop->headEnd->len.IsInit())	len		= oox_line_prop->headEnd->len->GetBYTECode();
 			if (oox_line_prop->headEnd->type.IsInit())	type	= oox_line_prop->headEnd->type->GetBYTECode();
 			if (oox_line_prop->headEnd->w.IsInit())		w		= oox_line_prop->headEnd->w->GetBYTECode();
@@ -1625,11 +1637,12 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
+		bool bExternal = false;
 		if (odf_context()->drawing_context()->is_current_empty())
 		{
 			if (oox_cnvPr->hlinkClick->id.IsInit())
 			{
-				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
 				
 				odf_context()->drawing_context()->start_link_object(hlink);	
 			}
@@ -1640,14 +1653,14 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 
 				if (oox_cnvPr->hlinkClick->snd.IsInit())
 				{
-					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
+					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3, bExternal);
 
-					std::wstring href = odf_context()->add_media(sound);				
+					std::wstring href = odf_context()->add_media(sound, bExternal);
 					odf_context()->drawing_context()->add_sound(href);	
 				}
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
-					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
 					
 					odf_context()->drawing_context()->add_link(hlink);	
 				}
@@ -1733,23 +1746,23 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		const PPTX::Logic::BuBlip & buBlip = bullet.as<PPTX::Logic::BuBlip>();
 		
 		std::wstring odf_ref;
-		bool bEmbedded = true;
+		bool bExternal = false;
 			
 		if (buBlip.blip.embed.IsInit())
 		{
 			std::wstring sID = buBlip.blip.embed->get();
 			
-			std::wstring pathImage = find_link_by_id(sID, 1);
+			std::wstring pathImage = find_link_by_id(sID, 1, bExternal);
 
 			if (pathImage.empty())
 				pathImage = buBlip.blip.GetFullPicName(); // only for presentation merge shapes !!
 			
-			odf_ref = odf_context()->add_image(pathImage);
+			odf_ref = odf_context()->add_image(pathImage, bExternal);
 		}
 		else if (buBlip.blip.link.IsInit())
 		{
 			odf_ref = buBlip.blip.link->get();	
-			bEmbedded = false;
+			bExternal = true;
 		}
 		
 		if (!odf_ref.empty())
@@ -2405,7 +2418,8 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_type_	= odf_types::line_type::Single;
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
-		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
+		bool bExternal = false;
+		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
 		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
@@ -2440,7 +2454,8 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 
 	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
 	{
-		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		bool bExternal = false;
+		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
 		
 		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText(), location);
@@ -2469,12 +2484,14 @@ void OoxConverter::convert(PPTX::Logic::MathParaWrapper *oox_math)
 {
 	if (!oox_math) return;
 
-	odf_context()->math_context()->in_text_box_ = true;
-	
+	odf_context()->math_context()->in_text_box_ = false;
+
+	odf_context()->start_drawing_context();
+
 	convert(oox_math->m_oMathPara.GetPointer());
 	convert(oox_math->m_oMath.GetPointer());
 
-	odf_context()->math_context()->in_text_box_ = false;
+	odf_context()->end_drawing_context();
 }
 void OoxConverter::convert(PPTX::Logic::LineTo *oox_geom_path)
 {
@@ -2515,7 +2532,25 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 
 	convert(oox_txBody->lstStyle.GetPointer());
 
-	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
+//single math - либра не тянет сложные вложенности
+	bool bSingleMath = false;
+	if (odf_context()->drawing_context()->is_text_box() &&
+		oox_txBody->Paragrs.size() == 1 && 
+		oox_txBody->Paragrs[0].RunElems.size() == 1 && 
+		oox_txBody->Paragrs[0].RunElems[0].getType() == OOX::et_p_MathPara)
+	{
+		bSingleMath = true;
+
+		odf_context()->math_context()->in_text_box_ = true;
+
+		PPTX::Logic::MathParaWrapper *oox_math = dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_txBody->Paragrs[0].RunElems[0].GetElem().GetPointer());
+		convert(oox_math->m_oMathPara.GetPointer());
+		convert(oox_math->m_oMath.GetPointer());
+
+		odf_context()->math_context()->in_text_box_ = false;
+	}
+//----------------------------------------------------------------------------------------------
+	for (size_t i = 0; !bSingleMath && i < oox_txBody->Paragrs.size(); i++)
 	{
 		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
 	
@@ -2577,7 +2612,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 
 	if (style_ref->idx.IsInit() == false)
 	{
-		std::wstring hexColor =  XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		std::wstring hexColor =  XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 		_CP_OPT(double) opacity;
 
 		if ((nARGB >> 24) != 0xff)

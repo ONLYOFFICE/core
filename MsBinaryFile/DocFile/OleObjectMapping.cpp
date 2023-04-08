@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,18 +49,18 @@ namespace DocFileFormat
 
 		if ( ole != NULL )
 		{
-			if (ole->isEmbedded)
+			if (ole->isEmbedded || ole->isPackage)
 			{
-				if (ole->isEquation)	ole->ClipboardFormat	= L"Equation";
-				else					ole->ClipboardFormat	= L"MSWordDocx";
+				if (ole->isEquation) ole->ClipboardFormat	= L"Equation";
+				else if (ole->ClipboardFormat.empty()) ole->ClipboardFormat	= L"MSWordDocx";
 
-				ole->Program			= L"Word.Document";
+				ole->Program = L"Word.Document";
 			}
 			m_pXmlWriter->WriteNodeBegin( L"o:OLEObject", TRUE );
 
 			int relID = -1;
 
-			if ( ole->bLinked )
+			if ( ole->isLinked)
 			{
 				relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
@@ -69,7 +69,7 @@ namespace DocFileFormat
 			}
 			else
 			{
-				if (ole->isEmbedded)
+				if (ole->isEmbedded || ole->isPackage)
 					relID = m_context->_docx->RegisterPackage(_caller, ole->ClipboardFormat);
 				else
 					relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
@@ -162,9 +162,9 @@ namespace DocFileFormat
 			object_descr.clsid = ole->ClipboardFormat;
 			object_descr.bNativeOnly = true;
 		}
-		if (ole->isEquation || ole->isEmbedded || ole->nWordVersion == 2)
+		if (ole->isEquation || ole->isEmbedded || ole->nWordVersion == 2 || ole->isPackage)
 		{
-			object_descr.data = ole->emeddedData;
+			object_descr.data = ole->embeddedData;
 		}
 
 		m_context->_docx->OleObjectsList.push_back(object_descr);

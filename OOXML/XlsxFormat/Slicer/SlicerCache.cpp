@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,9 +52,12 @@
 #include "../../XlsbFormat/Biff12_records/BeginSlicerCacheSiRange.h"
 #include "../../XlsbFormat/Biff12_records/SlicerCacheOlapItem.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {
@@ -1699,9 +1702,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 				pOfficeArtExtension->m_oSlicerCachePivotTables.push_back(pSlicerCachePivotTable);
 			}
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{03082B11-2C62-411c-B77F-237D8FCFBE4C}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();
@@ -1715,9 +1717,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			pOfficeArtExtension->m_oTableSlicerCache.Init();
 			pOfficeArtExtension->m_oTableSlicerCache->fromPPTY(pReader);
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();
@@ -1731,9 +1732,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData.Init();
 			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData->fromPPTY(pReader);
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();

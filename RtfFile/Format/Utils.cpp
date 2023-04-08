@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,16 +34,18 @@
 
 //------------------------------------------------------------------------------------------------------
 
-std::wstring Convert::ToString(int i)
+std::wstring Convert::ToString(_INT32 i)
 {
 	return std::to_wstring( i );
 }
-std::wstring Convert::ToStringHex( int i, int nLen )
+std::wstring Convert::ToStringHex(_INT32 i, size_t nLen )
 {
 	std::wstring result = XmlUtils::ToString(i, L"%X");
 
-	for(int i = (int)result.length(); i < nLen; i++ )
-		result.insert( result.begin() , '0' );
+	for (size_t i = result.length(); i < nLen; i++)
+	{
+		result.insert(result.begin(), '0');
+	}
 	return result;
 }
 int Convert::ToInt32(std::wstring str, int base)

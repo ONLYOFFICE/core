@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -832,6 +832,13 @@ void odf_drawing_context::start_shape(int ooxDrawPreset)
 	{
 		impl_->create_draw_base(drawCustom);
 	}
+}
+bool odf_drawing_context::is_text_box()
+{
+	if (impl_->current_drawing_state_.oox_shape_preset_ >= 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
+		return true;
+
+	return false;
 }
 
 bool odf_drawing_context::is_wordart()
@@ -2289,7 +2296,7 @@ void odf_drawing_context::set_corner_radius	(odf_types::length corner)
 
 std::wstring odf_drawing_context::add_marker_style(int type)
 {
-	if (type == 2) return L"";
+	if (type == 0) return L"";
 
 	std::wstring str_types [] = {L"None", L"ArrowMarker", L"DiamondMarker", L"OvalMarker", L"StealthMarker", L"TriangleMarker"};
 
@@ -3799,10 +3806,18 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
-void odf_drawing_context::set_bitmap_link(std::wstring file_path)
+void odf_drawing_context::set_bitmap_link(std::wstring path, bool bExternal)
 {
 	std::wstring odf_ref_name ;	
-	impl_->odf_context_->mediaitems()->add_or_find(file_path, _mediaitems::typeImage, odf_ref_name);
+
+	if (bExternal)
+	{
+		odf_ref_name = path;
+	}
+	else
+	{
+		impl_->odf_context_->mediaitems()->add_or_find(path, _mediaitems::typeImage, odf_ref_name);
+	}
 	
 	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000)
 	{

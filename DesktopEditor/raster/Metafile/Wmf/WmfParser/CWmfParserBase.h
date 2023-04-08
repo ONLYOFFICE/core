@@ -89,7 +89,9 @@ namespace MetaFile
 		void RegisterPoint(short shX, short shY);
 
 		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
-		void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage, unsigned int unRasterOperation);
+		void DrawImage(const TRect& oDestRect, const TRect& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
+
+		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRect& oNewRect);
 
 		void UpdateOutputDC();
 	private:

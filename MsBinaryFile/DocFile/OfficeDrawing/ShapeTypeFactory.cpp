@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,43 +32,7 @@
 
 
 #include "ShapeTypeFactory.h"
-
-#include "Shapetypes/PictureFrameType.h"
-#include "Shapetypes/LineType.h"
-#include "Shapetypes/OvalType.h"
-#include "Shapetypes/RectangleType.h"
-#include "Shapetypes/RoundedRectangleType.h"
-#include "Shapetypes/TextboxType.h"
-#include "Shapetypes/DiamondType.h"
-#include "Shapetypes/IsoscelesTriangleType.h"
-#include "Shapetypes/RightTriangleType.h"
-#include "Shapetypes/ParallelogramType.h"
-#include "Shapetypes/TrapezoidType.h"
-#include "Shapetypes/HexagonType.h"
-#include "Shapetypes/OctagonType.h"
-#include "Shapetypes/PlusType.h"
-#include "Shapetypes/StarType.h"
-#include "Shapetypes/CubeType.h"
-#include "Shapetypes/ArcType.h"
-#include "Shapetypes/PlaqueType.h"
-#include "Shapetypes/CanType.h"
-#include "Shapetypes/DonutType.h"
-#include "Shapetypes/BevelType.h"
-#include "Shapetypes/PentagonType.h"
-#include "Shapetypes/FoldedCornerlType.h"
-#include "Shapetypes/SmileyFaceType.h"
-#include "Shapetypes/NoSmokingType.h"
-#include "Shapetypes/BlockArcType.h"
-#include "Shapetypes/HeartType.h"
-#include "Shapetypes/LightningBoltType.h"
-#include "Shapetypes/SunType.h"
-#include "Shapetypes/MoonType.h"
-#include "Shapetypes/ArrowType.h"
-#include "Shapetypes/FlowChartType.h"
-#include "Shapetypes/BracketsType.h"
-#include "Shapetypes/CalloutsType.h"
-#include "Shapetypes/Connector.h"
-#include "Shapetypes/WordArtText.h"
+#include "PresetShapeTypes.h"
 
 namespace DocFileFormat
 {

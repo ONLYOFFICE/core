@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1223,10 +1223,17 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDocInfo:
 			{
-				std::wstring wsTitle    = ReadString(current, curindex);
-				std::wstring wsCreator  = ReadString(current, curindex);
-				std::wstring wsSubject  = ReadString(current, curindex);
-				std::wstring wsKeywords = ReadString(current, curindex);
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					wsTitle    = ReadString(current, curindex);
+				if (nFlags & 2)
+					wsCreator  = ReadString(current, curindex);
+				if (nFlags & 4)
+					wsSubject  = ReadString(current, curindex);
+				if (nFlags & 8)
+					wsKeywords = ReadString(current, curindex);
 
 				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
 				break;
@@ -1546,6 +1553,21 @@ namespace NSOnlineOfficeBinToPdf
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
+				break;
+			}
+			case ctDocInfo:
+			{
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					SkipString(current, curindex);
+				if (nFlags & 2)
+					SkipString(current, curindex);
+				if (nFlags & 4)
+					SkipString(current, curindex);
+				if (nFlags & 8)
+					SkipString(current, curindex);
 				break;
 			}
 			default:

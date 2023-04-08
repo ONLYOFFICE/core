@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -210,21 +210,7 @@ odf_text_context* odt_conversion_context::text_context()
 		return main_text_context_;
 	}
 } 
-void odt_conversion_context::start_text_context()
-{
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, /*odf_conversion_context::*/styles_context()));
-	//объекты с текстом в колонтитулах
-	if (!new_text_context_)return;
 
-	text_context_.push_back(new_text_context_);
-}
-void odt_conversion_context::end_text_context()
-{
-	if (text_context_.size() > 0)
-	{
-		text_context_.pop_back();
-	}
-}
 void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
@@ -258,31 +244,26 @@ void odt_conversion_context::add_to_root()
 	odf_element_state & state = text_context()->current_level_.back();
 	current_root_elements_.push_back(state);
 }
-void odt_conversion_context::start_drawings()
+void odt_conversion_context::start_drawing_context()
 {
-	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
-	if (!new_drawing_context_)return;
-	
-	new_drawing_context_->set_styles_context(styles_context());
+	odf_conversion_context::start_drawing_context();
 
-	new_drawing_context_->set_footer_state(is_footer_);
-	new_drawing_context_->set_header_state(is_header_);
-
-	drawing_context_.push_back(new_drawing_context_);
+	drawing_context()->set_footer_state(is_footer_);
+	drawing_context()->set_header_state(is_header_);
 }
 bool odt_conversion_context::start_math()
 {
 	if (false == math_context()->isEmpty()) return false;
 
-	start_drawings();
+	start_drawing_context();
 	return odf_conversion_context::start_math();
 }
 void odt_conversion_context::end_math()
 {
 	odf_conversion_context::end_math();
-	end_drawings();
+	end_drawing_context();
 }
-void odt_conversion_context::end_drawings()
+void odt_conversion_context::end_drawing_context()
 {
 	if (drawing_context_.empty()) return;
 
@@ -742,12 +723,35 @@ void odt_conversion_context::set_field_instr()
 		current_fields.back().in_span = false;
 		
 		std::wstring ref;
-		boost::match_results<std::wstring::const_iterator> res;
-		boost::wregex r2 (L"(\".*?\")+");	
-        if (boost::regex_search(instr, res, r2))
+		boost::wregex r2 (L"([\"'])(.+?)\\1");			
+
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), instr, r2);
+
+		if (b1 && !result1.empty())
         {
-            ref = res[1].str();
-			current_fields.back().value = ref.substr(1, ref.length() - 2);
+			std::list<std::wstring>::iterator it = result1.begin();
+			it++;
+
+			if (it != result1.end())
+			{
+				ref = *it;
+				if (ref.size() > 2)
+					current_fields.back().value = ref;
+
+				it++;
+				if (it != result1.end())
+				{
+					it++;
+					if (it != result1.end())
+					{
+						std::wstring ref2 = *it;
+
+						if (ref2.size() > 2)
+							current_fields.back().value += L"#" + ref2;
+					}
+				}
+			}
         }
 	}
 	res1 = instr.find(L"NUMPAGES");

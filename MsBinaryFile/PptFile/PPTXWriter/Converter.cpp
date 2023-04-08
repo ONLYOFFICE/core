@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -669,6 +669,18 @@ bool CPPTXWriter::HasRoundTrips() const
 
     if (m_pDocument->m_pNotesMaster && arrRTNotes.empty())
         return false;
+
+    if (m_pDocument->m_pHandoutMaster)
+    {
+        for (const auto& oIterSlide : m_pUserInfo->m_mapHandoutMasters)
+        {
+            std::vector<RoundTripTheme12Atom*> arrRTTheme;
+            oIterSlide.second->GetRecordsByType(&arrRTTheme, false, true);
+            if (arrRTTheme.empty())
+                return false;
+        }
+    }
+
 
     return arrRTTheme.size() && arrRTLayouts.size();
 }
@@ -1337,13 +1349,15 @@ void CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstr
 
 void CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
 {
-    oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
-
     m_pShapeWriter->SetRelsGenerator(&oRels);
-    {
-        oWriter.WriteString(m_pShapeWriter->ConvertBrush(oBackground));
-    }
-    oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
+	std::wstring sBg = m_pShapeWriter->ConvertBrush(oBackground);
+    
+	if (false == sBg.empty())
+	{
+		oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
+		oWriter.WriteString(sBg);
+		oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
+	}
 }
 void CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
@@ -1549,7 +1563,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     CGroupElement *pGroupElement = !pSlide->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pSlide->m_arElements[0].get()) : NULL;
 
     size_t start_index = 0;
-    std::unordered_set<int> realShapesId; // todo Wrap in context when code is restructured
 
     if (pGroupElement)
     {
@@ -1557,8 +1570,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
         {
             auto& element = pGroupElement->m_pChildElements[i];
             WriteElement(oWriter, oRels, element);
-            if (element)
-                realShapesId.insert(element->m_lID);
         }
 
         start_index = 1;
@@ -1568,8 +1579,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     {
         auto& element = pSlide->m_arElements[i];
         WriteElement(oWriter, oRels, element);
-        if (element)
-            realShapesId.insert(element->m_lID);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
@@ -1579,7 +1588,7 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-    WriteTiming(oWriter, oRels, nIndexSlide, realShapesId);
+    WriteTiming(oWriter, oRels, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -1875,13 +1884,14 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 }
 
 
-void CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID)
+void CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide)
 {
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    auto intermediateSlideAnimation = Intermediate::ParseSlideAnimation(slide_iter->second);
-    intermediateSlideAnimation.realShapesIds = shapesID;
+    CSlide* pCSlide = m_pDocument->m_arSlides[nIndexSlide];
+
+    auto intermediateSlideAnimation = Intermediate::ParseSlideAnimation(slide_iter->second, pCSlide);
     auto timing =
-            Converter::Timing(intermediateSlideAnimation, shapesID).
+            Converter::Timing(intermediateSlideAnimation).
             Convert(&(m_pUserInfo->m_oExMedia), &oRels);
     oWriter.WriteString(timing.toXML());
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,9 +43,15 @@ namespace NSBinPptxRW
 
 namespace OOX
 {
-#define AssignPtrXmlContent(Ptr, Class, Content) \
+#define AssignPtrXmlContentNoMain(Ptr, Class, Content) \
 {\
 	Ptr = new Class();\
+	Class *pClass = dynamic_cast<Class*>(Ptr);\
+	*pClass = Content;\
+}
+#define AssignPtrXmlContent(Ptr, Class, Content) \
+{\
+	Ptr = new Class(WritingElement::m_pMainDocument);\
 	Class *pClass = dynamic_cast<Class*>(Ptr);\
 	*pClass = Content;\
 }
@@ -53,13 +59,11 @@ namespace OOX
 #define WritingElement_AdditionMethods(Class) \
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
-	m_pMainDocument = NULL;\
 	fromXML( (XmlUtils::CXmlNode &)oNode );\
 	return *this;\
 }\
 	const Class& operator =(const XmlUtils::CXmlLiteReader& oReader)\
 	{\
-	m_pMainDocument = NULL;\
 	fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 	return *this;\
 }\
@@ -1161,6 +1165,10 @@ namespace OOX
 		et_ct_alternatecontent,
 		et_ct_alternatecontentchoice,
 		et_ct_alternatecontentfallback,
+		et_ct_CategoryFilterExceptions,
+		et_ct_CategoryFilterException,
+		et_ct_SeriesDataLabelsRange,
+		et_ct_SeriesFiltering,
 
 		et_ct_TickMarks,
 		et_ct_Gridlines,
@@ -1389,6 +1397,9 @@ namespace OOX
 		et_x_FormControlPr,
 		et_x_ListItems,
 		et_x_ListItem,
+
+		et_x_UserProtectedRange,
+		et_x_UserProtectedRanges,
 
 		et_x_WorkbookPivotCache,
 		et_x_WorkbookPivotCaches,

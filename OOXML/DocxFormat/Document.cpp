@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,6 +40,7 @@
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
 #include "Logic/DocParts.h"
+#include "Logic/Vml.h"
 
 namespace OOX
 {
@@ -323,7 +324,7 @@ namespace OOX
 			else if (L"m:oMathPara" == sName )
 				pItem = new Logic::COMathPara( document );
 			else if (L"p" == sName )
-				pItem = new Logic::CParagraph( document );
+				pItem = new Logic::CParagraph( document, this );
 			else if (L"permEnd" == sName )
 				pItem = new Logic::CPermEnd( document );
 			else if (L"permStart" == sName )
@@ -382,14 +383,15 @@ namespace OOX
 			else if (L"docParts" == sName && !oReader.IsEmptyNode())
 			{
 				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_arrItems.push_back(pItem);
+				
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ( pItem )
 			{
-				m_arrItems.push_back( pItem );
 				pItem->fromXML(oReader);
+				m_arrItems.push_back( pItem );
 			}
 		}
 	}

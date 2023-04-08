@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,9 +33,10 @@
 
 #include "../Common.h"
 
-#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../SharedStrings/Text.h"
 #include "../ComplexTypes_Spreadsheet.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../../XlsbFormat/ExternalLinkStream.h"
@@ -1496,11 +1497,11 @@ namespace Spreadsheet
 
 						for (size_t i = 0; (oExtLst.IsInit()) && (i < oExtLst->m_arrExt.size()); i++)
 						{
-							if (oExtLst->m_arrExt[i]->m_oFileId.IsInit() ||
-								oExtLst->m_arrExt[i]->m_oPortalName.IsInit())
+							if (oExtLst->m_arrExt[i]->m_oFileKey.IsInit() ||
+								oExtLst->m_arrExt[i]->m_oInstanceId.IsInit())
 							{
-								m_oFileId = oExtLst->m_arrExt[i]->m_oFileId;
-								m_oPortalName = oExtLst->m_arrExt[i]->m_oPortalName;
+								m_oFileKey = oExtLst->m_arrExt[i]->m_oFileKey;
+								m_oInstanceId = oExtLst->m_arrExt[i]->m_oInstanceId;
 								break;
 							}
 						}
@@ -1528,11 +1529,11 @@ namespace Spreadsheet
 		{
 			m_oDdeLink->toXML(sXml);
 		}
-		if (m_oFileId.IsInit() || m_oPortalName.IsInit())
+		if (m_oFileKey.IsInit() || m_oInstanceId.IsInit())
 		{
 			OOX::Drawing::COfficeArtExtension oExt;
-			oExt.m_oFileId = m_oFileId;
-			oExt.m_oPortalName = m_oPortalName;
+			oExt.m_oFileKey = m_oFileKey;
+			oExt.m_oInstanceId = m_oInstanceId;
 
 			oExt.m_sUri = L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}";
 

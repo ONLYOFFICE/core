@@ -199,20 +199,25 @@ function build() {
 
     echo "preparing $1 toolchain"
 
-    export BUILD_DIR="${PWD}/build-${2}"
+    export BUILD_DIR="${PWD}/build-${5}"
 
     SDKROOT="$(xcodebuild -version -sdk $4 | grep -E '^Path' | sed 's/Path: //')"
     ARCH=$2
 
     ICU_FLAGS="-I$ICU_SOURCE/common/ -I$ICU_SOURCE/tools/tzcode/ "
 
+    IOS_MIN_VER = "-miphoneos-version-min=11.0"
+    if [ "$4" = "iphonesimulator" ]; then 
+        IOS_MIN_VER = "-mios-simulator-version-min=11.0"
+    fi;
+
     export ADDITION_FLAG="-DIOS_SYSTEM_FIX"
 
     export CXX="$(xcrun -find clang++)"
     export CC="$(xcrun -find clang)"
-    export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
-    export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS ${ADDITION_FLAG}"
-    export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip -miphoneos-version-min=9.0 -lstdc++ ${ADDITION_FLAG}"
+    export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
+    export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS ${ADDITION_FLAG}"
+    export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip $IOS_MIN_VER -lstdc++ ${ADDITION_FLAG}"
 
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}
@@ -221,7 +226,6 @@ function build() {
 
     make clean
     make -j4
-    make install
 
     cd ..
 }
@@ -232,19 +236,25 @@ echo "------------------------------------------------------"
 echo " ICU build armv7 libraries"
 echo "------------------------------------------------------"
 
-build "armv7" "armv7" "armv7-apple-darwin" "iphoneos"
+build "armv7" "armv7" "armv7-apple-darwin" "iphoneos" "armv7"
 
 echo "------------------------------------------------------"
 echo " ICU build arm64 libraries"
 echo "------------------------------------------------------"
 
-build "arm64" "arm64" "aarch64-apple-darwin" "iphoneos"
+build "arm64" "arm64" "aarch64-apple-darwin" "iphoneos" "arm64"
 
 echo "------------------------------------------------------"
 echo " ICU combining x86_64 libraries"
 echo "------------------------------------------------------"
 
-build "x86_64" "x86_64" "x86_64-apple-darwin" "iphonesimulator"
+build "x86_64" "x86_64" "x86_64-apple-darwin" "iphonesimulator" "x86_64"
+
+echo "------------------------------------------------------"
+echo " ICU combining arm64 (simulator) libraries"
+echo "------------------------------------------------------"
+
+build "arm64" "arm64" "aarch64-apple-darwin" "iphonesimulator" "sim-arm64"
 
 cd ..
 
@@ -259,13 +269,31 @@ function buildUniversal() {
         "${PWD}/ios/build-armv7/lib/$1armv7.a"
 }
 
+function buildUniversalXC() {
+    lipo -create -output "${PWD}/ios/build_xc/$1.a" \
+        "${PWD}/ios/build-arm64/lib/$1arm64.a"
+
+    lipo -create -output "${PWD}/ios/build_xc/simulator/${1}.a" \
+        "${PWD}/ios/build-sim-arm64/lib/$1arm64.a" \
+        "${PWD}/ios/build-x86_64/lib/$1x86_64.a"
+}
+
 mkdir -p build
 mkdir -p ios/build
+mkdir -p ios/build_xc
+mkdir -p ios/build_xc/simulator
 mkdir -p ios/build/include
+mkdir -p ios/build_xc/include
 mkdir -p ios/build/include/unicode
+mkdir -p ios/build_xc/include/unicode
 
 cp ${ICU_SOURCE}/common/unicode/*.h ios/build/include/unicode
+cp ${ICU_SOURCE}/common/unicode/*.h ios/build_xc/include/unicode
 
 buildUniversal "libicuuc"
 buildUniversal "libicui18n"
 buildUniversal "libicudata"
+
+buildUniversalXC "libicuuc"
+buildUniversalXC "libicui18n"
+buildUniversalXC "libicudata"

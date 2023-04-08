@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,6 +55,7 @@ public:
 	Impl(odf_reader::odf_read_context & odf_context);
 public:
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
     
     void			start_paragraph(const std::wstring & styleName);
     void			end_paragraph();
@@ -65,7 +66,7 @@ public:
 
     void			start_cell_content();
 	void			set_cell_text_properties( odf_reader::text_format_properties_content_ptr text_properties);
-    int				end_cell_content();
+    int				end_cell_content(bool need_cache);
 
 	void			start_comment_content();
 	std::wstring	end_comment_content();
@@ -144,7 +145,10 @@ void xlsx_text_context::Impl::add_text(const std::wstring & text)
 	if (!in_comment && !in_draw && !only_text)
 		dump_run();
 }
-
+void xlsx_text_context::Impl::add_paragraph(const std::wstring & para)
+{
+	paragraph_ << para;
+}
 void xlsx_text_context::Impl::set_local_styles_container(odf_reader::styles_container * local_styles_)
 {
 	local_styles_ptr_= local_styles_;
@@ -572,7 +576,7 @@ std::wstring xlsx_text_context::Impl::end_drawing_content()
 	in_draw = false;
 	return draw;
 }
-int xlsx_text_context::Impl::end_cell_content()
+int xlsx_text_context::Impl::end_cell_content(bool need_cache)
 {
 	dump_run();
 
@@ -581,7 +585,7 @@ int xlsx_text_context::Impl::end_cell_content()
 	
 	in_cell_content = false;  
 
-	const int sharedStrId = cell_string.empty() ? (-1) :  xlsx_shared_strings_.add(cell_string);
+	const int sharedStrId = (!need_cache || cell_string.empty()) ? (-1) :  xlsx_shared_strings_.add(cell_string);
 	return sharedStrId;
 }
 
@@ -599,18 +603,18 @@ void xlsx_text_context::set_local_styles_container(odf_reader::styles_container*
 {
 	return impl_->set_local_styles_container(local_styles_);
 }
-
 void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
 {
 	return impl_->set_cell_text_properties(text_properties);
 }
-
-
 void xlsx_text_context::add_text(const std::wstring & text)
 {
     return impl_->add_text(text);
 }
-
+void xlsx_text_context::add_paragraph(const std::wstring & para)
+{
+	return impl_->add_paragraph(para);
+}
 void xlsx_text_context::start_paragraph(const std::wstring & styleName)
 {
     return impl_->start_paragraph(styleName);
@@ -643,9 +647,9 @@ void xlsx_text_context::start_cell_content()
 {
     return impl_->start_cell_content();
 }
-int xlsx_text_context::end_cell_content()
+int xlsx_text_context::end_cell_content(bool need_cache)
 {
-    return impl_->end_cell_content();
+    return impl_->end_cell_content(need_cache);
 }
 void xlsx_text_context::start_comment_content()
 {

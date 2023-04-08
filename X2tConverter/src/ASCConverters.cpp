@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -455,11 +455,13 @@ namespace NExtractTools
 
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
+		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo && (	*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+																	*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF));
 		m_oCDocxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-        std::wstring sXmlOptions = _T("");
+		std::wstring sXmlOptions;
         std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
         std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
         std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method
@@ -1614,6 +1616,7 @@ namespace NExtractTools
 		CPdfFile pdfWriter(pApplicationFonts);
 		pdfWriter.CreatePdf(params.getIsPDFA());
 		pdfWriter.SetTempDirectory(sTemp);
+		pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
 
 		CConvertFromBinParams oBufferParams;
 		oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -1771,7 +1774,7 @@ namespace NExtractTools
 			std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
 			NSDirectory::CreateDirectory(sEpubTemp);
 			oFile.SetTempDirectory(sEpubTemp);
-			if (S_FALSE == oFile.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
+			if (S_FALSE == oFile.FromHtml(sHtmlFile, sTo, params.m_sTitle ? *params.m_sTitle : L""))
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
@@ -1799,7 +1802,7 @@ namespace NExtractTools
 		{
 			CFb2File fb2File;
 			fb2File.SetTmpDirectory(sTemp);
-			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
+			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sTo, params.m_sTitle ? *params.m_sTitle : L""))
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
@@ -1879,6 +1882,7 @@ namespace NExtractTools
 			CPdfFile pdfWriter(pApplicationFonts);
 			pdfWriter.CreatePdf(params.getIsPDFA());
 			pdfWriter.SetTempDirectory(sTemp);
+			pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
 
 			CConvertFromBinParams oBufferParams;
 			oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -1891,9 +1895,6 @@ namespace NExtractTools
 			std::wstring password = params.getSavePassword();
 			if (false == password.empty())
 				pdfWriter.SetPassword(password);
-
-//			if (false == sResult.empty())
-//				pdfWriter.SetCore(sResult);
 
 			int nReg = (bPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -3555,6 +3556,7 @@ namespace NExtractTools
                                CPdfFile pdfWriter(pApplicationFonts);
                                pdfWriter.CreatePdf(params.getIsPDFA());
                                pdfWriter.SetTempDirectory(sTemp);
+							   pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
 
 							   CConvertFromBinParams oBufferParams;
 							   oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -3566,9 +3568,6 @@ namespace NExtractTools
 								std::wstring password = params.getSavePassword();
 								if (false == password.empty())
 									pdfWriter.SetPassword(password);
-
-//								if (false == sResult.empty())
-//									pdfWriter.SetCore(sResult);
 
                                int nReg = (bPaid == false) ? 0 : 1;
 							   nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut, &oBufferParams)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -4886,6 +4885,7 @@ namespace NExtractTools
 				CPdfFile pdfWriter(pApplicationFonts);
 				pdfWriter.CreatePdf(params.getIsPDFA());
 				pdfWriter.SetTempDirectory(sTemp);
+				pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
 
 				std::wstring documentID = params.getDocumentID();
 				if (false == documentID.empty())

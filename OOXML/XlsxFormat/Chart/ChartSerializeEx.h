@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,7 +33,7 @@
 #pragma once
 
 #include "ChartSerialize.h"
-#include "../../Common/SimpleTypes_Enums.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace SimpleTypes
 {
@@ -144,8 +144,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CText>										m_tx;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 //for chart title only (but not axis title)
@@ -414,8 +414,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CNumberFormat>								m_numFmt;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		nullable<CDataLabelVisibilities>					m_visibility;
 		nullable_string										m_separator; //node
@@ -441,8 +441,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CNumberFormat>								m_numFmt;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		nullable<CDataLabelVisibilities>					m_visibility;
 		nullable_string										m_separator;
@@ -467,7 +467,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 		nullable_int										m_idx;
@@ -498,7 +498,7 @@ namespace ChartEx
 		nullable<CText>									m_tx;
 		std::vector<unsigned long>						m_arAxisId;
 		nullable<ComplexTypes::CDecimalNumber>			m_dataId;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable<SimpleTypes::Spreadsheet::CSeriesLayout>	m_oLayoutId;
@@ -562,8 +562,8 @@ namespace ChartEx
 		virtual EElementType getType () const;
 
 		nullable<CText>									m_tx;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
@@ -601,7 +601,7 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 		std::wstring m_name;
@@ -655,8 +655,8 @@ namespace ChartEx
 
 		nullable_bool				m_tickLabels;//blank node
 
-		nullable<PPTX::Logic::SpPr>		m_oSpPr;
-		nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>		m_spPr;
+		nullable<PPTX::Logic::TxBody>	m_txPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable_uint					m_id;
@@ -676,7 +676,7 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
@@ -716,7 +716,7 @@ namespace ChartEx
 		CPlotAreaRegion									m_plotAreaRegion;
 
         std::vector<CAxis*>								m_arAxis;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
@@ -735,8 +735,8 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable<SimpleTypes::Spreadsheet::CSidePos>	m_pos;
@@ -894,8 +894,8 @@ namespace ChartEx
 		CChartData										m_chartData;
 		CChart											m_chart;
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;	
 
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		nullable<PPTX::Logic::ClrMap>					m_oClrMapOvr;

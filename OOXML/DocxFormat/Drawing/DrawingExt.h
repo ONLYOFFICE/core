@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,10 +33,10 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../RId.h"
 
 namespace OOX
 {
+	class RId;
 	class CPresenceInfo;
 
 	namespace Spreadsheet
@@ -54,6 +54,9 @@ namespace OOX
 		class CSlicerCacheHideNoData;
 		class CConnection;
         class CPivotCacheDefinitionExt;
+		class CT_DLbl;
+		class CSeriesFiltering;
+		class CUserProtectedRanges;
 	}
 
 	namespace Drawing
@@ -76,7 +79,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            nullable<std::wstring> m_sSpId;
+            nullable_string m_sSpId;
 		};
 
 		class CDataModelExt : public WritingElement
@@ -123,14 +126,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            nullable<std::wstring>                                  m_sUri;
+            nullable_string											m_sUri;
             std::wstring                                            m_sAdditionalNamespace;
 
             nullable<CCompatExt>                                    m_oCompatExt;
             nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
             nullable<CDataModelExt>                                 m_oDataModelExt;
             nullable<OOX::Spreadsheet::CAltTextTable>               m_oAltTextTable;
-            nullable<std::wstring>                                  m_oId;
+            nullable_string											m_oId;
             nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
             nullable<OOX::Spreadsheet::CConnection>                 m_oConnection;
@@ -152,8 +155,14 @@ namespace OOX
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 
-			nullable_string m_oFileId;
-			nullable_string m_oPortalName;
+			nullable_string m_oFileKey;
+			nullable_string m_oInstanceId;
+
+			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDataLabel;
+			nullable<OOX::Spreadsheet::CSeriesFiltering> m_oChartFiltering;
+
+			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
+
 		};
 
 		//--------------------------------------------------------------------------------

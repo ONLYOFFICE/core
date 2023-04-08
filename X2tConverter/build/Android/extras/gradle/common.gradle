@@ -1,0 +1,13 @@
+def getKeystore() {
+    def keystoreProperties = new Properties()
+    def keystorePropertiesFile = rootProject.file('Onlyoffice-keystore.properties')
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    return keystoreProperties
+}
+
+/*
+* Export functions for project visibility
+* */
+ext {
+    getKeystore = this.&getKeystore
+}

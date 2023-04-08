@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,6 +52,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
@@ -2828,7 +2829,7 @@ void BinaryWorkbookTableWriter::WriteConnectionWebPr(const OOX::Spreadsheet::CWe
 	if (webPr.m_oHtmlFormat.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSerWebPrTypes::HtmlFormat);
-		m_oBcw.m_oStream.WriteBOOL(*webPr.m_oHtmlTables);
+		m_oBcw.m_oStream.WriteLONG(webPr.m_oHtmlFormat->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -2852,16 +2853,16 @@ void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::
 
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalReference);
 
-		if (pExternalLink->m_oFileId.IsInit())
+		if (pExternalLink->m_oFileKey.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalFileId);
-			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oFileId);
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalFileKey);
+			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oFileKey);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
-		if (pExternalLink->m_oPortalName.IsInit())
+		if (pExternalLink->m_oInstanceId.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalPortalName);
-			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oPortalName);
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalInstanceId);
+			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oInstanceId);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		if (pExternalLink->m_oExternalBook.IsInit())
@@ -3468,7 +3469,13 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 				WriteSlicers(oWorksheet, pExt->m_oSlicerListExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-        }
+			else if (pExt->m_oUserProtectedRanges.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::UserProtectedRanges);
+				WriteUserProtectedRanges(pExt->m_oUserProtectedRanges.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
     }
 	// DataValidations (with ext)
 	if ( oWorksheet.m_oDataValidations.IsInit() )
@@ -6449,7 +6456,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
 	{
-		 pFind = mapCFRuleEx.find(oConditionalFormattingRule.m_oExtId.get2());
+		 pFind = mapCFRuleEx.find(*oConditionalFormattingRule.m_oExtId);
 
 		 if (pFind != mapCFRuleEx.end())
 		 {
@@ -6990,6 +6997,63 @@ void BinaryWorksheetTableWriter::WriteDataValidations(const OOX::Spreadsheet::CD
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidations);
 	WriteDataValidationsContent(oDataValidations);
 	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges)
+{
+	for (size_t i = 0; i < oUserProtectedRanges.m_arrItems.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UserProtectedRange);
+		WriteUserProtectedRange(*oUserProtectedRanges.m_arrItems[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc)
+{
+	if (desc.id.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Id);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.id);
+	}
+	if (desc.name.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.name);
+	}
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
+{
+	if (oUserProtectedRange.m_oName.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oSqref.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oText.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::User);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsers[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroups.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UsersGroup);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsersGroups[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations)
 {

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -64,7 +64,7 @@ namespace PPT {
 		class Timing_2010
 		{
 		public:
-			Timing_2010(CRecordPP10SlideBinaryTagExtension* pAnim_2010, const std::unordered_set<int>& shapesID);
+            Timing_2010(const Intermediate::SlideAnimation& sldAnim);
 			void Convert(PPTX::Logic::Timing& timing, CExMedia* pExMedia, CRelsGenerator* pRels);
 
 		public:
@@ -100,6 +100,8 @@ namespace PPT {
 			void FillCBhvr(
 				CRecordTimeBehaviorContainer *pBhvr,
 				PPTX::Logic::CBhvr &oBhvr);
+            bool isTextShape(UINT spid) const;
+            void FillTgtEl(PPTX::Logic::TgtEl& tgtEl, CRecordClientVisualElementContainer &clientVisualElement);
 			void FillCBhvr(
 				PPTX::Logic::CBhvr &oBhvr, int dur,
 				UINT spid, std::wstring attrname, int delay);
@@ -112,7 +114,9 @@ namespace PPT {
 
 			void FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
 			bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn);
-			bool IsSlideSpId(_INT32 spid) const;
+            bool CheckSlideSpid(_INT32 spid);
+            bool IsSlideSpId(_INT32 spid) const;
+            bool CheckMainSeqSyncWithAnim95(_INT32 spid) const;
 			bool IsCorrectAnimationSpId(_INT32 spid) const;
 			void InsertAnimationSpId(_INT32 spid);
 			void ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
@@ -157,9 +161,8 @@ namespace PPT {
 				PPTX::Logic::Video &oVideo);
 
 		private:
-			CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;
-			const std::unordered_set<int> slideShapes;
-			std::unordered_set<int> correctAnimatedShapes;
+            const Intermediate::SlideAnimation& slideAnim;
+            std::unordered_set<int> correctAnimatedShapes;
 			CExMedia *m_pExMedia = nullptr;
 			CRelsGenerator *m_pRels = nullptr;
 			bool isMainSeq = false;
@@ -168,7 +171,7 @@ namespace PPT {
 			PPTX::Logic::BldP   *m_currentBldP = nullptr;
 
 			int cTnId = 1;
-			int cTNLevel = TimeNodeLevel::zero;
+            int cTNLevel = TimeNodeLevel::zero;
 		};
 
 	}

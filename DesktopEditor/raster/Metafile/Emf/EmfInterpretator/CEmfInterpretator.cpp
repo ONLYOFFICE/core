@@ -1756,6 +1756,10 @@ namespace MetaFile
 		WriteRectangle(oBounds);
 	}
 
+	void CEmfInterpretator::HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex> &arVertex, const std::vector<std::pair<int, int> > &arIndexes, unsigned int unFillMode)
+	{
+	}
+
 	void CEmfInterpretator::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
 	{
 		unsigned int unRecordType, unRecordSize;

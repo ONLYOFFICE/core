@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,7 +49,6 @@ namespace DocFileFormat
 			OnCall = 3
 		};	
 		int					nWordVersion;				
-		bool				bLinked;		// The the value is true, the object is a linked object
 		
 		std::wstring		ObjectId;
 		std::wstring		ClassId;
@@ -58,13 +57,15 @@ namespace DocFileFormat
 		std::wstring		ClipboardFormat;
 		std::wstring		Link;
 		std::wstring		Program;
-		LinkUpdateOption	updateMode;
+		LinkUpdateOption	updateMode = NoLink;
 		std::wstring		UpdateMode;
 
-		bool				isEquation;
-		bool				isEmbedded;
+		bool				isLinked = false;
+		bool				isEquation = false;
+		bool				isEmbedded = false;
+		bool				isPackage = false;
 		
-		std::string			emeddedData;
+		std::pair<boost::shared_array<char>, size_t> embeddedData;
 		
 		PictureDescriptor	pictureDesciptor;
 
@@ -72,7 +73,7 @@ namespace DocFileFormat
 		virtual ~OleObject() {}
 
 	private:
-		POLE::Storage	*oleStorage;
+		POLE::Storage	*oleStorage = NULL;
 	  
 		bool processLinkInfoStream		( const std::wstring& linkStream );      
 		void processEquationNativeStream( const std::wstring& eqStream );
@@ -80,6 +81,7 @@ namespace DocFileFormat
 		void processMETAStream			( const std::wstring& metaStream );
 		bool processCompObjStream		( const std::wstring& compStream );
 		bool processOleStream			( const std::wstring& oleStreamName );
+		bool processPackageStream		(const std::wstring& oleStreamName);
 
 		void processOleStream			( VirtualStreamReader& reader );
 		void processLinkInfoStream		( VirtualStreamReader& reader );

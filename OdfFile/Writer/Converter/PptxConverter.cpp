@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,14 +35,25 @@
 #include "../../../OOXML/PPTXFormat/Folder.h"
 #include "../../../OOXML/PPTXFormat/Presentation.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
+#include "../../../OOXML/PPTXFormat/SlideLayout.h"
 #include "../../../OOXML/PPTXFormat/NotesMaster.h"
+#include "../../../OOXML/PPTXFormat/NotesSlide.h"
+#include "../../../OOXML/PPTXFormat/TableStyles.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Table/Table.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
+#include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
+#include "../../../OOXML/PPTXFormat/Logic/TablePartStyle.h"
 #include "../../../OOXML/PPTXFormat/Logic/CxnSp.h"
+#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
+#include "../../../OOXML/PPTXFormat/Logic/TxStyles.h"
+#include "../../../OOXML/PPTXFormat/Logic/ClrMapOvr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/Transition.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/EmptyTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/OrientationTransition.h"
@@ -53,6 +64,9 @@
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/WheelTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+#include "../../../OOXML/PPTXFormat/Presentation/SldSz.h"
+#include "../../../OOXML/PPTXFormat/Presentation/NotesSz.h"
 
 #include "../Format/odp_conversion_context.h"
 
@@ -153,8 +167,10 @@ NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(const std::wstring
 	return oFile;
 }
 
-std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
+std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type, bool & bExternal)
 {
+	bExternal = false;
+
 	if(!pptx_document) return L"";
 
     std::wstring			ref;
@@ -163,12 +179,12 @@ std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
 	if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
+		ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 	}
 	if (!ref.empty()) return ref;
 
 	oFile	= current_slide ? current_slide->Find(sId) : pptx_document->Find(sId);
-	ref		= OoxConverter::find_link_by(oFile, type);
+	ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 
 	return ref;
 }
@@ -668,9 +684,10 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 	{
 		std::wstring sID = oox_transition->sndAc->stSnd->embed.get();
 		
-		std::wstring pathAudio = find_link_by_id(sID, 3);
+		bool bExternal = false;
+		std::wstring pathAudio = find_link_by_id(sID, 3, bExternal);
 		
-		std::wstring odf_ref = odf_context()->add_media(pathAudio);
+		std::wstring odf_ref = odf_context()->add_media(pathAudio, bExternal);
 
 		odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
 	}
@@ -1451,7 +1468,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
 	odp_context->drawing_context()->set_background_state(false);
 
-	odp_context->end_drawings();
+	odp_context->drawing_context()->clear();
 }
 
 void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, _typePages type)

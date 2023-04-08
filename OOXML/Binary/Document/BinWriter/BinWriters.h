@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -473,15 +473,14 @@ namespace BinDocxRW
 		void WritePoint2D(const ComplexTypes::Drawing::CPoint2D& oPoint2D);
 		void WriteDocTable(OOX::Logic::CTbl* tbl);
 		bool ValidateRow(const std::vector<OOX::WritingElement *> & arrItems);
-		void GetTableSize(std::vector<OOX::WritingElement *> & rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr);
 		int GetColsCount(const std::vector<OOX::WritingElement *>& arrItems);
 		void WriteTblGrid(const OOX::Logic::CTblGrid& grid);
 		void WriteTblGridChange(const OOX::Logic::CTblGridChange& tblGridChange);
-		void WriteTableContent(std::vector<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr, int nRows, int nCols);
-		void WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols);
-		void WriteRowContent(const std::vector<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols);
-		void WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nCurColIndex, int nRows, int nCols);
-		void WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols);
+		void WriteTableContent(std::vector<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr);
+		void WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex);
+		void WriteRowContent(const std::vector<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex);
+		void WriteCell(OOX::Logic::CTc& tc, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nCurColIndex);
+		void WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex);
 		void WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr);
 		void WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox);
 		void WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox);

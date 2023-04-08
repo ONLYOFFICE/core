@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -515,26 +515,26 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 
 		bEmptyFile = (dwReadBytes < 1);
 
-		if (isOOXFlatFormatFile(buffer, sizeRead))
+		if (isBinaryDoctFormatFile(buffer, sizeRead)) // min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
+		}
+		else if (isBinaryXlstFormatFile(buffer, sizeRead))// min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
+		}
+		else if (isBinaryPpttFormatFile(buffer, sizeRead))// min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
+		}
+		else if (isOOXFlatFormatFile(buffer, sizeRead))
 		{
 			//nFileType;
 		}
 		else if ( isRtfFormatFile(buffer,sizeRead) ) // min size - 5
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		}
-		else if ( isBinaryDoctFormatFile(buffer,sizeRead) ) // min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
-		}
-		else if ( isBinaryXlstFormatFile(buffer,sizeRead) )// min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
-		}
-		else if ( isBinaryPpttFormatFile(buffer,sizeRead) )// min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-		}        
+		}		     
         else if (isPdfFormatFile(buffer,sizeRead, sDocumentID) )// min size - 5
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
@@ -613,7 +613,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		else if (0 == sExt.compare(L".odp"))
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 	}
-	else if (0 == sExt.compare(L".mht"))
+	else if (0 == sExt.compare(L".mht") || 0 == sExt.compare(L".mhtml"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
     else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
@@ -1140,9 +1140,9 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& sExt)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
     if (L".txt" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-    if (L".html" == ext)
+    if (L".html" == ext || L".htm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
-    if (L".mht" == ext)
+    if (L".mht" == ext || L".mhtml" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
     if (L".epub" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;

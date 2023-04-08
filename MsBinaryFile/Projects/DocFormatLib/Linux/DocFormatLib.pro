@@ -19,6 +19,9 @@ include(../../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+#SHAPETYPES
+include($$PWD/../../../DocFile/OfficeDrawing/Shapetypes/pri/shapetypes.pri)
+
 DEFINES +=  UNICODE \
         _UNICODE \
         DONT_WRITE_EMBEDDED_FONTS
@@ -269,6 +272,8 @@ HEADERS +=  \
 	../../../DocFile/WideString.h \
 	../../../DocFile/WordDocument.h \
 	../../../DocFile/WordprocessingDocument.h \
+	../../../DocFile/EncryptionHeader.h \
+	../../../DocFile/DrawingPrimitives.h \
 	\
 	../../../DocFile/OfficeDrawing/BitmapBlip.h \
 	../../../DocFile/OfficeDrawing/BlipStoreContainer.h \
@@ -293,44 +298,7 @@ HEADERS +=  \
 	../../../DocFile/OfficeDrawing/ShapeContainer.h \
 	../../../DocFile/OfficeDrawing/ShapeOptions.h \
 	../../../DocFile/OfficeDrawing/ShapeType.h \
+	../../../DocFile/OfficeDrawing/PresetShapeTypes.h \
 	../../../DocFile/OfficeDrawing/ShapeTypeFactory.h \
 	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.h \
-	../../../DocFile/OfficeDrawing/UnknownRecord.h \
-	\
-	../../../DocFile/OfficeDrawing/Shapetypes/ArcType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/ArrowType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BevelType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BlockArcType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BracketsType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CalloutsType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CanType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/Connector.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CubeType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/DiamondType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/DonutType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/FlowChartType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/FoldedCornerlType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/HeartType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/HexagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/IsoscelesTriangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/LightningBoltType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/LineType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/MoonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/NoSmokingType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/OctagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/OvalType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/ParallelogramType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PentagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PictureFrameType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PlaqueType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PlusType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RectangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RightTriangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RoundedRectangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/SmileyFaceType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/StarType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/SunType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/TextboxType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/TrapezoidType.h \
-	../../../DocFile/EncryptionHeader.h \
-	../../../DocFile/DrawingPrimitives.h
+	../../../DocFile/OfficeDrawing/UnknownRecord.h

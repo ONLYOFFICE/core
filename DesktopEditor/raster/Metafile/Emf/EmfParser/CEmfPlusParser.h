@@ -53,6 +53,9 @@ namespace MetaFile
 		CEmfPlusPath*   ReadPath();
 		CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 
+		void ReadBufferPath(CEmfPlusBuffer* pDataPath);
+		CEmfPlusBuffer*  GetBuffer(unsigned int unPathIndex);
+
 		CEmfPlusRegion*          ReadRegion();
 		CEmfPlusRegionNode*      ReadRegionNode(unsigned int& unIndex);
 		CEmfPlusRegionNodePath*  ReadRegionNodePath(unsigned int& unIndex);

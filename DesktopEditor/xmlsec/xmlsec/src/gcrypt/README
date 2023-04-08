@@ -1,9 +1,0 @@
-The xmlsec-gcrypt implementation is really limited and is not ready
-for production use. The only supported crypto transforms are:
-
-    - HMAC
-    - Tripple DES
-    - AES [128|192|256]
-    - SHA1
-
-

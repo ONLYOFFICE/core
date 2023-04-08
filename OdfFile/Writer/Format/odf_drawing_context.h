@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -137,10 +137,11 @@ public:
 	void start_image	(std::wstring odf_file_path);
 	void end_image		();
 	
-	bool change_text_box_2_wordart	();
-	bool is_wordart					();
+	bool change_text_box_2_wordart();
+	bool is_wordart();
+	bool is_text_box();
 	
-	graphic_format_properties*	get_graphic_properties();
+	graphic_format_properties* get_graphic_properties();
 
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
 	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
@@ -284,7 +285,7 @@ public:
 	void end_hatch_style();
 ////////////////////////////////////////////////////////////////////////////////////////
 	void start_bitmap_style();
-		void set_bitmap_link(std::wstring link);
+		void set_bitmap_link(std::wstring link, bool bExternal = false);
 	void end_bitmap_style();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_image_style_repeat		(int style);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,9 +48,8 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context		(SpreadsheetDocument, outputDocument), 
-		table_context_(*this), current_text_context_(NULL)
+ods_conversion_context::ods_conversion_context(package::odf_document* outputDocument) 
+	: odf_conversion_context(SpreadsheetDocument, outputDocument), table_context_(*this)
 {
 }
 
@@ -279,13 +278,13 @@ void ods_conversion_context::start_comment(int col, int row, std::wstring & auth
 	office_element_ptr paragr_elm;
 	create_element(L"text", L"p", paragr_elm, this);
 	
-	current_text_context_->start_paragraph(paragr_elm);
+	text_context()->start_paragraph(paragr_elm);
 }
 void ods_conversion_context::end_comment()
 {
-	if (current_text_context_)current_text_context_->end_paragraph();
+	if (text_context())text_context()->end_paragraph();
 
-	current_table()->end_comment(current_text_context_);
+	current_table()->end_comment(text_context());
 	end_text_context();
 }
 void ods_conversion_context::set_comment_color(const std::wstring & color)
@@ -598,34 +597,46 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		current_table()->set_column_default_cell_style(style_cell_name);
 	}
 }
-void ods_conversion_context::start_text_context()
-{
-	current_text_context_ = new odf_text_context(this, styles_context());
-}
-void ods_conversion_context::end_text_context()
-{
-	if (current_text_context_)
-		delete current_text_context_;
-	current_text_context_ = NULL;
-}
+
 void ods_conversion_context::add_text_content(const std::wstring & text)
 {
-	if (current_text_context_)
+	if (false == text_context_.empty())
 	{
-		current_text_context_->add_text_content(text);
+		text_context_.back()->add_text_content(text);
 	}
 }
-
+odf_drawing_context* ods_conversion_context::drawing_context() 
+{
+	if (false == drawing_context_.empty())
+	{
+		return drawing_context_.back().get();
+	}
+	else 
+	{
+		return current_table()->drawing_context();
+	}
+}
+odf_text_context* ods_conversion_context::text_context()
+{
+	if (false == text_context_.empty())
+	{
+		return text_context_.back().get();
+	}
+	else
+	{
+		return NULL;
+	}
+}
 void ods_conversion_context::add_text(const std::wstring &text)
 {
 	office_element_ptr paragr_elm;
 	create_element(L"text", L"p", paragr_elm, this);
 	
-	current_text_context_->start_paragraph(paragr_elm);
+	text_context()->start_paragraph(paragr_elm);
 
-	current_text_context_->add_text_content(text);
+	text_context()->add_text_content(text);
 
-	current_text_context_->end_paragraph();
+	text_context()->end_paragraph();
 }
 
 void ods_conversion_context::start_cell_text()
@@ -635,7 +646,7 @@ void ods_conversion_context::start_cell_text()
 	office_element_ptr paragr_elm;
 	create_element(L"text", L"p", paragr_elm, this);
 	
-	current_text_context_->start_paragraph(paragr_elm);
+	text_context()->start_paragraph(paragr_elm);
 
 	if (current_table()->is_cell_hyperlink())
 	{
@@ -650,29 +661,23 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
-		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		text_context()->start_element(text_a_elm); // может быть стоит сделать собственый???
 		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
 
-		current_text_context_->single_paragraph_ = true;
+		text_context()->single_paragraph_ = true;
 	}
 }
 
 void ods_conversion_context::end_cell_text()
 {
-	if (current_text_context_)
+	if (text_context())
 	{
-		if (current_table()->is_cell_hyperlink())	current_text_context_->end_element();
+		if (current_table()->is_cell_hyperlink()) text_context()->end_element();
 		
-		current_text_context_->end_paragraph();
+		text_context()->end_paragraph();
 	}
 }
-void ods_conversion_context::start_drawings()
-{
-}
-void ods_conversion_context::end_drawings()
-{
-	current_table()->drawing_context()->clear();
-}
+
 void ods_conversion_context::add_external_reference(const std::wstring & ref)
 {
 	ods_external_state external;

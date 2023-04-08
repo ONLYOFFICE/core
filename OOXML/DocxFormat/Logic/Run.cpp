@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,6 +41,8 @@
 #include "../Drawing/Drawing.h"
 #include "../Comments.h"
 
+#include "Table.h"
+#include "Paragraph.h"
 #include "AlternateContent.h"
 #include "RunProperty.h"
 #include "RunContent.h"
@@ -49,16 +51,18 @@
 #include "Pict.h"
 #include "Annotations.h"
 
+#include "../../Common/SimpleTypes_Word.h"
 #include "../../../DesktopEditor/common/StringExt.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
-		CRun::CRun(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		CRun::CRun(OOX::Document *pMain, WritingElement *parent) : WritingElementWithChilds<>(pMain)
 		{
 			m_oRunProperty = NULL;
-		}		
+			m_oParent = parent;
+		}
 		CRun::~CRun()
 		{
 			ClearItems();
@@ -278,6 +282,22 @@ namespace OOX
 						docx_flat->m_pSettings->m_oEndnotePr.Init();
 				}
 				pItem = pEndRef;
+			}
+			else if (L"tbl" == sName)
+			{//ERP
+				CParagraph *paragraph = dynamic_cast<CParagraph*>(m_oParent);
+				WritingElementWithChilds *parent = paragraph ? dynamic_cast<WritingElementWithChilds*>(paragraph->m_oParent) : NULL;
+
+				if (!parent) parent = dynamic_cast<WritingElementWithChilds*>(m_oParent);
+				if (parent)
+				{
+					WritingElement *pItemUpper = new CTbl(document);
+					if (pItemUpper)
+					{
+						pItemUpper->fromXML(oReader);
+						parent->m_arrItems.push_back(pItemUpper);
+					}
+				}
 			}
 			else if ( L"endnoteRef" == sName )
 				pItem = new CEndnoteRef( document );

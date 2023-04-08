@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,9 +40,8 @@
 
 using namespace PPT::Converter;
 
-Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
-    slideAnim(slideAnim),
-    shapesID(shapesID)
+Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim) :
+    slideAnim(slideAnim)
 {}
 
 PPTX::Logic::Timing Timing::Convert(PPT::CExMedia *pExMedia, CRelsGenerator *pRels)
@@ -72,7 +71,7 @@ bool Timing::TryToConvertTiming2010()
 {
     timing = PPTX::Logic::Timing();
     try {
-        Timing_2010(slideAnim.pAnim_2010, shapesID).
+        Timing_2010(slideAnim).
                 Convert(timing, pExMedia, pRels);
     } catch (const TimingExeption &ex) {
         return false;

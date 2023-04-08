@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -179,7 +179,7 @@ _mediaitems* odf_conversion_context::mediaitems()
 
 void odf_conversion_context::end_document()
 {
-	rels rels_;
+	rels	rels_;
 	for (size_t i = 0; i < objects_.size(); i++)
 	{
 		_object & object = *objects_[i];
@@ -296,9 +296,9 @@ void odf_conversion_context::create_object(bool bAddContentExt)
 		obj->style_context->set_odf_context(this);
 		obj->settings_context->set_odf_context(this);
 
-		objects_.push_back(obj);
+	objects_.push_back(obj);
 
-		current_object_ = objects_.size() - 1;
+	current_object_ = objects_.size() - 1;
 	}
 }
 void odf_conversion_context::end_chart()
@@ -308,6 +308,45 @@ void odf_conversion_context::end_chart()
 	end_object();
 	chart_context_.set_styles_context(styles_context());
 }
+void odf_conversion_context::start_text_context()
+{
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, styles_context()));
+	if (!new_text_context_)return;
+
+	text_context_.push_back(new_text_context_);
+}
+void odf_conversion_context::end_text_context()
+{
+	if (false == text_context_.empty())
+	{
+		text_context_.pop_back();
+	}
+}
+void odf_conversion_context::start_drawing_context()
+{
+	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
+	if (!new_drawing_context_)return;
+
+	new_drawing_context_->set_styles_context(styles_context());
+
+	drawing_context_.push_back(new_drawing_context_);
+}
+void odf_conversion_context::end_drawing_context()
+{
+	if (drawing_context_.empty()) return;
+
+	office_element_ptr & elm = drawing_context()->get_root_element();
+
+	if (elm)
+	{
+		text_context()->start_element(elm);
+		text_context()->end_element();
+	}
+
+	drawing_context()->clear();
+	drawing_context_.pop_back();
+}
+
 bool odf_conversion_context::start_math()
 {
 	if (false == math_context_.isEmpty()) return false;
@@ -331,20 +370,19 @@ bool odf_conversion_context::start_math()
 void odf_conversion_context::end_math()
 {
 	math_context_.end_math();
-
+	
 	end_object();
 	math_context_.set_styles_context(styles_context());
-	
-	calculate_font_metrix(L"Cambria Math", 12, false, false); // смотреть по формуле - перевычислять только если есть изменения
-	
-	int count_symbol_height = 3; //сосчитать в math_context_
-	int count_symbol_width = 10;
 
-	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
-	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
+	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
+	int count_symbol_height = 30; //сосчитать в math_context_ кол-во этажей
+	int count_symbol_width = 100; //длина символов
 
-	//if (false == math_context_.in_text_box_)
-	//	drawing_context()->set_size(width, height); 
+	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.73); // либра рамка формулы(её параметры)
+	_CP_OPT(double)height = convert_symbol_width(1.73 * (math_context_.lvl_max - math_context_.lvl_min));
+
+	if (false == math_context_.in_text_box_)
+		drawing_context()->set_size(width, height); // раскомиттить по завершению
 	
 	drawing_context()->end_object(!math_context_.in_text_box_);
 
@@ -352,6 +390,11 @@ void odf_conversion_context::end_math()
 	{
 		drawing_context()->end_drawing();
 	}
+	this->math_context()->symbol_counter = 0;
+	this->math_context()->lvl_max = 1;
+	this->math_context()->lvl_min = -1;
+	this->math_context()->lvl_down_counter = -1;
+	this->math_context()->lvl_up_counter = 1;
 }
 void odf_conversion_context::end_text()
 {
@@ -442,23 +485,37 @@ office_element_ptr odf_conversion_context::start_tabs()
 	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
 }
-std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
+std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name, bool bExternal)
 {
 	if (image_file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
+	if (bExternal)
+	{
+		return image_file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(image_file_name, _mediaitems::typeImage, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
-std::wstring odf_conversion_context::add_media(const std::wstring & file_name)
+std::wstring odf_conversion_context::add_media(const std::wstring & file_name, bool bExternal)
 {
 	if (file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(file_name,_mediaitems::typeMedia, odf_ref_name);
+	if (bExternal)
+	{
+		return file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(file_name, _mediaitems::typeMedia, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
 std::wstring odf_conversion_context::add_imageobject(const std::wstring & file_name)
 {

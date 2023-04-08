@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,6 +52,7 @@
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/FormField.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -95,13 +96,14 @@ static const long c_BrushTypeRadialGradient = 8002;
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer) : m_oCommandManager(this)
 {
     // Создаем менеджер шрифтов с собственным кэшем
     m_pFontManager = pAppFonts->GenerateFontManager();
     NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
     pMeasurerCache->SetStreams(pAppFonts->GetStreams());
     m_pFontManager->SetOwnerCache(pMeasurerCache);
+    m_pRenderer = pRenderer;
 
     m_pDocument = new PdfWriter::CDocument();
 
@@ -166,19 +168,18 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
     if (!IsValid())
         return;
 
-    std::string sTitle    = U_TO_UTF8(wsTitle);
-    std::string sAuthor   = U_TO_UTF8(wsCreator);
-    std::string sSubject  = U_TO_UTF8(wsSubject);
-    std::string sKeywords = U_TO_UTF8(wsKeywords);
-
-    if (!sTitle.empty())
-        m_pDocument->SetTitle(sTitle);
-    if (!sAuthor.empty())
+    if (!wsTitle.empty())
+        m_pDocument->SetTitle(U_TO_UTF8(wsTitle));
+    if (!wsCreator.empty())
+    {
+        std::string sAuthor = U_TO_UTF8(wsCreator);
+        NSStringUtils::string_replaceA(sAuthor, ";", ", ");
         m_pDocument->SetAuthor(sAuthor);
-    if (!sSubject.empty())
-        m_pDocument->SetSubject(sSubject);
-    if (!sKeywords.empty())
-        m_pDocument->SetKeywords(sKeywords);
+    }
+    if (!wsSubject.empty())
+        m_pDocument->SetSubject(U_TO_UTF8(wsSubject));
+    if (!wsKeywords.empty())
+        m_pDocument->SetKeywords(U_TO_UTF8(wsKeywords));
 }
 std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
@@ -631,6 +632,8 @@ HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid
 	unsigned int unUnicode = lUnicode;
 	unsigned int unGID     = lGid;
 	unsigned char* pCodes = EncodeGID(unGID, &unUnicode, 1);
+    if (!pCodes)
+        return DrawTextToRenderer(&unGID, 1, dX, dY) ? S_OK : S_FALSE;
 	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -668,8 +671,10 @@ HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const u
 			return S_FALSE;
 	}
 
-    unsigned char* pCodes = EncodeString(pUnicodes,  unLen, pGids);
+    unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
 	RELEASEARRAYOBJECTS(pUnicodes);
+    if (!pCodes)
+        return DrawTextToRenderer(pGids, unGidsCount, dX, dY) ? S_OK : S_FALSE;
 	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -678,6 +683,8 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 		return S_FALSE;
 
 	unsigned char* pCodes = EncodeGID(unGid, pUnicodes, unUnicodeCount);
+    if (!pCodes)
+        return DrawTextToRenderer(&unGid, 1, dX, dY) ? S_OK : S_FALSE;
 	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
@@ -1600,10 +1607,13 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	if (!IsPageValid() || !pMaskBuffer || !pImage)
 		return S_OK;
 
+	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
+	if (!pPdfImage)
+		return S_OK;
+
 	m_pPage->GrSave();
 	UpdateTransform();
-    PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-    pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;
@@ -1808,6 +1818,21 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 
 	return true;
 }
+bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY)
+{
+    // TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
+    Aggplus::CGraphicsPathSimpleConverter simplifier;
+    simplifier.SetRenderer(m_pRenderer);
+    m_pFontManager->LoadFontByName(m_oFont.GetName(), m_oFont.GetSize(), (int)m_oFont.GetFaceIndex(), 72.0, 72.0);
+    PathCommandEnd();
+    if (simplifier.PathCommandText2(L"", (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
+    {
+        DrawPath(NULL, L"", c_nWindingFillMode);
+        PathCommandEnd();
+        return true;
+    }
+    return false;
+}
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
     unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
@@ -1817,13 +1842,16 @@ bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen
 	m_oPath.AddText(m_pFont, pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), m_oFont.GetSize(), MM_2_PT(m_oFont.GetCharSpace()));
 	return true;
 }
-void CPdfWriter::UpdateFont()
+bool CPdfWriter::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
     std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
-        GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex);
+    {
+        if (!GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+            return false;
+    }
 
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
@@ -1841,8 +1869,9 @@ void CPdfWriter::UpdateFont()
 				m_oFont.SetNeedDoBold(true);
 		}
 	}
+    return true;
 }
-void CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
 {
 	bool bFind = false;
 	for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
@@ -1866,6 +1895,8 @@ void CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
         NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 		if (!NSFonts::CFontInfo::CanEmbedForPreviewAndPrint(pFontInfo->m_usType))
 		{
+            return false;
+
 			oFontSelect.Fill(pFontInfo);
 			if (NULL != oFontSelect.usType)
 				*oFontSelect.usType = NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW;
@@ -1880,6 +1911,7 @@ void CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 
 		m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
 	}
+    return true;
 }
 PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath, const LONG& lFaceIndex)
 {
@@ -2013,16 +2045,34 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
                  _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-            MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-            pMeta->LoadFromFile(wsTexturePath.c_str());
+			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+			pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
 
-			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
+			double dW = 300.0 * (dR - dL) / 72;
+			if (dW < 0) dW = -dW;
+			double dH = 300.0 * (dB - dT) / 72;
+			if (dH < 0) dH = -dH;
 
-            std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-            pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+			if (dW < 1) dW = 1;
+			if (dH < 1) dH = 1;
+
+			double dMax = 2000;
+			double dMin = 10;
+			if (dW > dMax || dH > dMax)
+			{
+				double dMaxSrc = (dW > dH) ? dW : dH;
+				dW *= (dMax / dMaxSrc);
+				dH *= (dMax / dMaxSrc);
+			}
+
+			if (dW < dMin) dW = dMin;
+			if (dH < dMin) dH = dMin;
+
+			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
             RELEASEOBJECT(pMeta);
 
@@ -2200,7 +2250,10 @@ void CPdfWriter::SetError()
 unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const unsigned int& unCount, const unsigned int *pGIDs)
 {
 	if (m_bNeedUpdateTextFont)
-        UpdateFont();
+    {
+        if (!UpdateFont())
+            return NULL;
+    }
 
 	if (!m_pFont)
 		return NULL;
@@ -2226,7 +2279,10 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount)
 {
 	if (m_bNeedUpdateTextFont)
-        UpdateFont();
+    {
+        if (!UpdateFont())
+            return NULL;
+    }
 
 	if (!m_pFont)
 		return NULL;

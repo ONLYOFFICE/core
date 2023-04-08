@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -396,7 +396,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
         return false;
     // Создание writer для редактирования
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
     if (!wsDstFile.empty())
         NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile);
 
@@ -789,6 +789,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 {
     if (!m_pInternal->pReader)
         return;
+	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
     m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
 std::wstring CPdfFile::GetInfo()
@@ -815,7 +816,7 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 void CPdfFile::CreatePdf(bool isPDFA)
 {
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {

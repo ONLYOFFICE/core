@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -544,7 +544,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					std::wstring parent = styleInst->parent_name();
 
 					if (false == parent.empty())
-                {
+					{
 						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
 					}
                     
@@ -555,7 +555,8 @@ void span::docx_convert(oox::docx_conversion_context & Context)
                     Context.get_styles_context().end_process_style();
                     addNewRun = true;
 
-					text_props->content_.r_style_ = boost::none;
+					if (text_props)
+						text_props->content_.r_style_ = boost::none;
                 }                            
             }
             else

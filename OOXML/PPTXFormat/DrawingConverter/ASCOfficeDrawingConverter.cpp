@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -53,9 +53,12 @@
 #include "../../../MsBinaryFile/Common/Vml/toVmlConvert.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../DocxFormat/VmlDrawing.h"
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../DocxFormat/Media/Image.h"
 #include "../../Common/SimpleTypes_Base.h"
 #include "../../Common/SimpleTypes_Vml.h"
@@ -3636,7 +3639,6 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
     else        pTree->m_lGroupIndex = 1;
 
 	XmlUtils::CXmlNodes oNodes;
-	XmlUtils::CXmlNode oNodeBinData;
 	
 	//сначала shape type
     if (oNode.GetNodes(L"*", oNodes))
@@ -3655,7 +3657,10 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 			}
 		}
 	}
-    if (oNode.GetNodes(L"*", oNodes))
+	
+	XmlUtils::CXmlNode oNodeBinData;
+
+	if (oNode.GetNodes(L"*", oNodes))
 	{
 		int nCount = oNodes.GetCount();
 		for (int i = 0; i < nCount; ++i)
@@ -3665,11 +3670,7 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-			if (L"binData" == strNameP)
-			{
-				oNodeBinData = oNode;
-			}
-			else if (L"shape"	== strNameP ||
+			if (L"shape"		== strNameP ||
                 L"rect"         == strNameP ||
                 L"oval"         == strNameP ||
                 L"line"         == strNameP ||
@@ -3677,6 +3678,16 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
                 L"background"   == strNameP ||
                 L"roundrect"    == strNameP)
 			{
+				if (false == oNodeBinData.IsValid() && i + 1 < nCount)
+				{
+					oNodes.GetAt(i + 1, oNodeBinData);
+					if (L"binData" != XmlUtils::GetNameNoNS(oNodeBinData.GetName()))
+					{
+						i++;
+					}
+					else
+						oNodeBinData.Clear();
+				}
 				PPTX::Logic::SpTreeElem _el; 
 				if (oNodeBinData.IsValid())
 				{
@@ -3688,7 +3699,11 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 				if (_el.is_init())
 					pTree->SpTreeElems.push_back(_el);
 			}
-            else if (L"group" == strNameP)
+			else if (L"binData" == strNameP)
+			{
+				oNodeBinData = oNodeT;
+			}
+			else if (L"group" == strNameP)
 			{
 				PPTX::Logic::SpTreeElem _el;
 				ConvertGroup(&_el, oNodeT, pMainProps, false);
@@ -5115,7 +5130,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	{
         XmlUtils::CXmlNode oNodeFillID = oNode.ReadNode(L"v:imagedata");
 
-		if (oNodeFillID.IsValid())
+		if (oNodeFillID.IsValid() || oElem->m_binaryData.IsInit())
 		{
 			nullable_string sRid;
             XmlMacroReadAttributeBase(oNodeFillID, L"r:id", sRid);

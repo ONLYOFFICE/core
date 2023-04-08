@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,8 @@
 #include "Table.h"
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
+
+#include "../../Common/ComplexTypes.h"
 
 namespace OOX
 {
@@ -64,9 +66,9 @@ namespace OOX
 				if (L"w:docPart" == sName)
 				{
 					CDocPart *pItem = new CDocPart(m_pMainDocument);
-					m_arrItems.push_back(pItem);
-
 					pItem->fromXML(oReader);
+
+					m_arrItems.push_back(pItem);
 				}
 			}
 		}
@@ -221,6 +223,8 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
@@ -274,7 +278,10 @@ namespace OOX
 				else if (L"m:oMathPara" == sName)
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
 				else if (L"w:p" == sName)
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if (L"w:permEnd" == sName)
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if (L"w:permStart" == sName)
@@ -287,7 +294,9 @@ namespace OOX
 					AssignPtrXmlContent(pItem, CTbl, oReader)
 
 				if (pItem)
+				{
 					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CDocPartBody::toXML() const

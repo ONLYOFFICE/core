@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -261,6 +261,7 @@ namespace PdfWriter
 		m_nAscent      = 1000;
 		m_nDescent     = -500;
 		m_nCapHeight   = 800;
+		m_nWeight      = 400;
 
 		Parse();
 	}
@@ -1227,10 +1228,14 @@ namespace PdfWriter
 		if (-1 != nIndex && m_pTables[nIndex].nLen > 0)
 		{
 			unsigned int unOffset = m_pTables[nIndex].nOffset;
+			int nTableVersion = GetS16BE(unOffset, &m_bSuccess);
 			m_nWeight	 = GetS16BE(unOffset + 4, &m_bSuccess); 
 			m_nAscent	 = GetS16BE(unOffset + 68, &m_bSuccess);
 			m_nDescent	 = GetS16BE(unOffset + 70, &m_bSuccess);
-			m_nCapHeight = GetS16BE(unOffset + 88, &m_bSuccess);
+
+			//https://learn.microsoft.com/en-us/typography/opentype/spec/os2#scapheight
+			if (nTableVersion >= 2)
+				m_nCapHeight = GetS16BE(unOffset + 88, &m_bSuccess);
 		}
 	}
 }

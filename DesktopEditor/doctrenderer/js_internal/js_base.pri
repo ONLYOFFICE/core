@@ -25,6 +25,8 @@ SOURCES += $$PWD/js_logger.cpp
         include($$PWD/../../../Common/3dParty/v8/v8_xp/v8.pri)
     }
 
+    build_xp:CONFIG -= v8_use_inspector
+
     v8_use_inspector {
         #define
         DEFINES += V8_INSPECTOR

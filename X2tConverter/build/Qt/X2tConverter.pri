@@ -11,7 +11,6 @@ TARGET = x2t
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 
-CONFIG += core_static_link_libstd
 CONFIG += core_x2t
 CONFIG += core_boost_date_time
 

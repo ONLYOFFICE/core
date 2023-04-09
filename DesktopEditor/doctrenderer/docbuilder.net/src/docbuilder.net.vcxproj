@@ -166,10 +166,14 @@
   <ItemGroup>
     <ClInclude Include="defines.h" />
     <ClInclude Include="docbuilder.net.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="docbuilder.net.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="docbuilder.net.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

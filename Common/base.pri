@@ -213,6 +213,11 @@ core_linux {
     }
 }
 
+core_linux {
+    equals(TEMPLATE, app):CONFIG += core_static_link_libstd
+    plugin:CONFIG += core_static_link_libstd
+}
+
 core_win_32 {
     CORE_BUILDS_PLATFORM_PREFIX = win_32
 }

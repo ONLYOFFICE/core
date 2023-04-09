@@ -35,6 +35,7 @@
 #include "Pic.h"
 #include "../Theme.h"
 #include "ClrMap.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {

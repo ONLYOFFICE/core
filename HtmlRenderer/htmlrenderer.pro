@@ -8,8 +8,6 @@ TEMPLATE = lib
 CONFIG += shared
 CONFIG += plugin
 
-CONFIG += core_static_link_libstd
-
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 
 CORE_ROOT_DIR = $$PWD/..

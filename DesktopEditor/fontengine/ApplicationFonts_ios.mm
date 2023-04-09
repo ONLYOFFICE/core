@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-﻿#include "ApplicationFonts.h"
+#include "ApplicationFonts.h"
 #include "../common/Directory.h"
 
 #ifdef BOOL

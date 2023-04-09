@@ -3195,6 +3195,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		CT_BubbleSer::CT_BubbleSer()
 		{
 			m_dLbls = NULL;
+			m_xVal = NULL;
+			m_yVal = NULL;
+			m_bubbleSize = NULL;
 		}
 		CT_BubbleSer::~CT_BubbleSer()
 		{

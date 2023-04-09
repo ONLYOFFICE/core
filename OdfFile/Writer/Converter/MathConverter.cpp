@@ -305,7 +305,11 @@ namespace Oox2Odf
 	returnValues OoxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
 	{
 		returnValues result;
-		if (!oox_ctrl_pr) result.auxFlag = false;		
+		if (!oox_ctrl_pr)
+		{
+			result.auxFlag = false;
+			return result;
+		}
 
 		convert(oox_ctrl_pr->m_oARPr.GetPointer());
 		convert(oox_ctrl_pr->m_oDel.GetPointer());
@@ -1360,14 +1364,23 @@ namespace Oox2Odf
 		if (odf_context()->math_context()->style_flag)
 		{
 			odf_context()->math_context()->style_flag = false;
-			odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
-			odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
+
 			odf_context()->settings_context()->start_view();
-			odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
-			odf_context()->settings_context()->add_config_content_item(L"FontNameFunctions", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
-			odf_context()->settings_context()->add_config_content_item(L"FontNameNumbers", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
-			odf_context()->settings_context()->add_config_content_item(L"FontNameText", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
-			odf_context()->settings_context()->add_config_content_item(L"FontNameVariables", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+				if (oox_r_pr->m_oSz.IsInit() && oox_r_pr->m_oSz->m_oVal.IsInit())
+				{
+					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
+					
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
+				}	
+				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
+				{
+					odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
+
+					odf_context()->settings_context()->add_config_content_item(L"FontNameFunctions", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+					odf_context()->settings_context()->add_config_content_item(L"FontNameNumbers", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+					odf_context()->settings_context()->add_config_content_item(L"FontNameText", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+					odf_context()->settings_context()->add_config_content_item(L"FontNameVariables", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+				}
 			odf_context()->settings_context()->end_view();
 		}
 

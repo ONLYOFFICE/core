@@ -72,7 +72,7 @@ namespace XmlUtils
 
         std::map<std::string, std::string> m_attributes;
         std::vector<CXmlNodeBase*> m_nodes;
-        std::wstring m_sText;
+        std::string m_sText;
         std::wstring m_sName;
 
     public:
@@ -89,7 +89,7 @@ namespace XmlUtils
 	CXmlNodeBase::CXmlNodeBase()
 	{
 		m_pDocument = NULL;
-		m_sText = L"";
+        m_sText = "";
 		m_sName = L"";
 	}
 	CXmlNodeBase::~CXmlNodeBase()
@@ -145,8 +145,7 @@ namespace XmlUtils
 		{
 			m_nodes[i]->GetXml(oWriter);
 		}
-
-		oWriter.WriteEncodeXmlString(m_sText.c_str());
+        oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_sText.c_str(), (LONG)m_sText.length()).c_str());
 
 		oWriter.WriteString(L"</", 2);
 		oWriter.WriteEncodeXmlString(m_sName.c_str());
@@ -257,11 +256,11 @@ namespace XmlUtils
 					nCurDepth = GetDepth();
 					if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
 					{
-						m_pCurrentNode->m_sText += GetText();
+                        m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_CDATA)
 					{
-						m_pCurrentNode->m_sText += GetText();
+                        m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_Element)
 					{
@@ -387,16 +386,30 @@ namespace XmlUtils
 	{
 		return (IsValid() ? m_pBase->m_sName : L"");
 	}
-	std::wstring CXmlNode::GetText()
+    std::string CXmlNode::GetTextA()
+    {
+        if (IsValid())
+        {
+            return m_pBase->m_sText;
+        }
+        else
+            return "";
+    }
+    std::wstring CXmlNode::GetText()
 	{
-		return (IsValid() ? m_pBase->m_sText : L"");
+        if (IsValid())
+        {
+            return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
+        }
+        else
+            return L"";
 	}
 	bool CXmlNode::GetTextIfExist(std::wstring& sOutput)
 	{
 		bool bRes = false;
 		if (IsValid() && !m_pBase->m_sText.empty())
 		{
-			sOutput = m_pBase->m_sText;
+            sOutput = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
 			bRes = true;
 		}
 		return bRes;

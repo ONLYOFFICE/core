@@ -19,8 +19,6 @@ build_x2t_as_library {
 
     CONFIG += shared
     CONFIG += plugin
-
-    CONFIG += core_static_link_libstd
 }
 
 include(X2tConverter.pri)

@@ -1,15 +1,14 @@
 ﻿#ifndef _BUILD_NATIVE_CONTROL_V8_BASE_H_
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
-#ifdef V8_INSPECTOR
 #include "inspector/inspector_pool.h"
-#endif
-
-#include <stack>
 
 #include "../js_base.h"
 #include "../js_logger.h"
 #include <iostream>
+#include <stack>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef __ANDROID__
 #ifndef DISABLE_MEMORY_LIMITATION
@@ -121,6 +120,7 @@ private:
     v8::Platform* m_platform;
 #endif
     v8::ArrayBuffer::Allocator* m_pAllocator;
+	bool m_bUseInspector = false;
 
 public:
     v8::Platform* getPlatform()
@@ -131,6 +131,12 @@ public:
         return m_platform;
 #endif
     }
+
+	bool isInspectorUsed()
+	{
+		return m_bUseInspector;
+	}
+
     CV8Initializer(const std::wstring& sDirectory = L"")
     {
         std::wstring sPrW = sDirectory.empty() ? NSFile::GetProcessPath() : sDirectory;
@@ -155,6 +161,12 @@ public:
         v8::V8::Initialize();
         v8::V8::InitializeICU();
     #endif
+
+		char* strEnv = std::getenv("V8_USE_INSPECTOR");
+		if (strEnv && std::strcmp(strEnv, "0"))
+		{
+			m_bUseInspector = true;
+		}
     }
 
     void Dispose()
@@ -478,9 +490,8 @@ namespace NSJSBase
 
         virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
         {
-#ifdef V8_INSPECTOR
-		CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent(false);
-#endif
+			if (CV8Worker::getInitializer().isInspectorUsed())
+				CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent(false);
 
             LOGGER_START
 

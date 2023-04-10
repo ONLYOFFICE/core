@@ -74,7 +74,6 @@ core_mac {
     !use_v8:CONFIG += use_javascript_core
 }
 
-CONFIG += v8_use_inspector
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {

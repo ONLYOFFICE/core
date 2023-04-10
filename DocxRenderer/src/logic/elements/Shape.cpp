@@ -117,10 +117,19 @@ namespace NSDocxRenderer
 
 				// недалеко друг от друга по горизонтали
 				(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
-				 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby) &&
+				 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
+
+				 // друг в друге тоже учитываем
+				 fabs(pShape->m_dRight - this->m_dRight) <= dHorNearby ||
+				 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
 				// недалеко друг от друга по вертикали
-				fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby)
+				(fabs(pShape->m_dBaselinePos - this->m_dTop) < dHorNearby ||
+				 fabs(pShape->m_dTop - this->m_dBaselinePos) < dHorNearby ||
+
+				 // друг в друге
+				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dHorNearby ||
+				 fabs(pShape->m_dTop - this->m_dTop) < dHorNearby))
 		{
 			CBaseItem::AddContent(pShape);
 			m_oVector.Join(std::move(pShape->m_oVector));

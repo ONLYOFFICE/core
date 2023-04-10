@@ -1353,17 +1353,279 @@ oObj.free();\
             oObj.free();
             oRes.AddInt(nSigFlag);
 
-            if (pField->fieldLookup("Lock", &oObj)->isDict())
+            Object oObj1;
+            // 10 - Action Lock
+            // 11 - Fields
+            if (pField->fieldLookup("Lock", &oObj)->isDict() && oObj.dictLookup("Type", &oObj1)->isName("SigFieldLock"))
             {
+                oObj1.free();
+                if (oObj.dictLookup("Action", &oObj1)->isName())
+                {
+                    nFlags |= (1 << 9);
+                    std::string sName(oObj1.getName());
+                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                }
+                oObj1.free();
 
+                if (oObj.dictLookup("Fields", &oObj1)->isArray())
+                {
+                    nFlags |= (1 << 10);
+                    int nFields = oObj1.arrayGetLength();
+                    oRes.AddInt(nFields);
+                    for (int j = 0; j < nFields; ++j)
+                    {
+                        Object oObj2;
+                        if (oObj1.arrayGet(j, &oObj2)->isString())
+                        {
+                            TextString* s = new TextString(oObj2.getString());
+                            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                            delete s;
+                        }
+                        else
+                            oRes.WriteString(NULL, 0);
+                        oObj2.free();
+                    }
+                }
+                oObj1.free();
             }
-            oObj.free();
+            oObj.free(); oObj1.free();
 
-            if (pField->fieldLookup("SV", &oObj)->isDict())
+            if (pField->fieldLookup("SV", &oObj)->isDict() && oObj.dictLookup("Type", &oObj1)->isName("SV"))
             {
+                oObj1.free();
+                int nSVFlag = 0;
+                int nSVPos = oRes.GetSize();
+                oRes.AddInt(nSVFlag);
 
+                // 1 - Ff
+                if (oObj.dictLookup("Ff", &oObj1)->isInt())
+                {
+                    nSVFlag |= (1 << 0);
+                    oRes.AddInt(oObj1.getInt());
+                }
+                oObj1.free();
+                // 2 - Filter
+                if (oObj.dictLookup("Filter", &oObj1)->isName())
+                {
+                    nSVFlag |= (1 << 1);
+                    std::string sName(oObj1.getName());
+                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                }
+                oObj1.free();
+                // 3 - SubFilter
+                if (oObj.dictLookup("SubFilter", &oObj1)->isArray())
+                {
+                    nSVFlag |= (1 << 2);
+                    int nFields = oObj1.arrayGetLength();
+                    oRes.AddInt(nFields);
+                    for (int j = 0; j < nFields; ++j)
+                    {
+                        Object oObj2;
+                        if (oObj1.arrayGet(j, &oObj2)->isName())
+                        {
+                            std::string sName(oObj2.getName());
+                            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        }
+                        else
+                            oRes.WriteString(NULL, 0);
+                        oObj2.free();
+                    }
+                }
+                oObj1.free();
+                // 4 - DigestMethod
+                if (oObj.dictLookup("DigestMethod", &oObj1)->isArray())
+                {
+                    nSVFlag |= (1 << 3);
+                    int nFields = oObj1.arrayGetLength();
+                    oRes.AddInt(nFields);
+                    for (int j = 0; j < nFields; ++j)
+                    {
+                        Object oObj2;
+                        if (oObj1.arrayGet(j, &oObj2)->isName())
+                        {
+                            std::string sName(oObj2.getName());
+                            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        }
+                        else
+                            oRes.WriteString(NULL, 0);
+                        oObj2.free();
+                    }
+                }
+                oObj1.free();
+                // 5 - V
+                if (oObj.dictLookup("V", &oObj1)->isNum())
+                {
+                    nSVFlag |= (1 << 4);
+                    oRes.AddDouble(oObj1.getNum());
+                }
+                oObj1.free();
+                // 6 - Cert
+                Object oObj2;
+                if (oObj.dictLookup("Cert", &oObj1)->isDict() && oObj1.dictLookup("Type", &oObj2)->isName("SVCert"))
+                {
+                    nSVFlag |= (1 << 5);
+                    oObj2.free();
+
+                    // 12 - Ff
+                    if (oObj1.dictLookup("Ff", &oObj2)->isInt())
+                    {
+                        nSVFlag |= (1 << 11);
+                        oRes.AddInt(oObj2.getInt());
+                    }
+                    oObj2.free();
+                    // 13 - Subject
+                    if (oObj1.dictLookup("Subject", &oObj2)->isArray())
+                    {
+                        nSVFlag |= (1 << 12);
+                        int nFields = oObj2.arrayGetLength();
+                        oRes.AddInt(nFields);
+                        for (int j = 0; j < nFields; ++j)
+                        {
+                            Object oObj3;
+                            if (oObj2.arrayGet(j, &oObj3)->isString())
+                            {
+                                TextString* s = new TextString(oObj3.getString());
+                                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                                delete s;
+                            }
+                            else
+                                oRes.WriteString(NULL, 0);
+                            oObj3.free();
+                        }
+                    }
+                    oObj2.free();
+                    // 14 - SubjectDN TODO
+                    // 15 - KeyUsage TODO
+                    // 16 - Issuer
+                    if (oObj1.dictLookup("Issuer", &oObj2)->isArray())
+                    {
+                        nSVFlag |= (1 << 15);
+                        int nFields = oObj2.arrayGetLength();
+                        oRes.AddInt(nFields);
+                        for (int j = 0; j < nFields; ++j)
+                        {
+                            Object oObj3;
+                            if (oObj2.arrayGet(j, &oObj3)->isString())
+                            {
+                                TextString* s = new TextString(oObj3.getString());
+                                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                                delete s;
+                            }
+                            else
+                                oRes.WriteString(NULL, 0);
+                            oObj3.free();
+                        }
+                    }
+                    oObj2.free();
+                    // 17 - OID
+                    if (oObj1.dictLookup("OID", &oObj2)->isArray())
+                    {
+                        nSVFlag |= (1 << 16);
+                        int nFields = oObj2.arrayGetLength();
+                        oRes.AddInt(nFields);
+                        for (int j = 0; j < nFields; ++j)
+                        {
+                            Object oObj3;
+                            if (oObj2.arrayGet(j, &oObj3)->isString())
+                            {
+                                TextString* s = new TextString(oObj3.getString());
+                                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                                delete s;
+                            }
+                            else
+                                oRes.WriteString(NULL, 0);
+                            oObj3.free();
+                        }
+                    }
+                    oObj2.free();
+                    // 18 - URL
+                    if (oObj1.dictLookup("URL", &oObj2)->isString())
+                    {
+                        nSVFlag |= (1 << 17);
+                        TextString* s = new TextString(oObj2.getString());
+                        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                        delete s;
+                    }
+                    oObj2.free();
+                    // 19 - URLType
+                    if (oObj1.dictLookup("URLType", &oObj2)->isName())
+                    {
+                        nSVFlag |= (1 << 1);
+                        std::string sName(oObj2.getName());
+                        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                    }
+                    oObj2.free();
+                }
+                oObj1.free(); oObj2.free();
+                // 7 - Reasons
+                if (oObj.dictLookup("Reasons", &oObj1)->isArray())
+                {
+                    nSVFlag |= (1 << 6);
+                    int nFields = oObj1.arrayGetLength();
+                    oRes.AddInt(nFields);
+                    for (int j = 0; j < nFields; ++j)
+                    {
+                        Object oObj2;
+                        if (oObj1.arrayGet(j, &oObj2)->isName())
+                        {
+                            std::string sName(oObj2.getName());
+                            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        }
+                        else
+                            oRes.WriteString(NULL, 0);
+                        oObj2.free();
+                    }
+                }
+                oObj1.free();
+                // 8 - MDP
+                if (oObj.dictLookup("MDP", &oObj1)->isDict())
+                {
+                    nSVFlag |= (1 << 7);
+                    // TODO
+                }
+                oObj1.free();
+                // 9 - TimeStamp
+                if (oObj.dictLookup("TimeStamp", &oObj1)->isDict())
+                {
+                    nSVFlag |= (1 << 8);
+                    // TODO
+                }
+                oObj1.free();
+                // 10 - LegalAttestation
+                if (oObj.dictLookup("LegalAttestation", &oObj1)->isArray())
+                {
+                    nSVFlag |= (1 << 9);
+                    int nFields = oObj1.arrayGetLength();
+                    oRes.AddInt(nFields);
+                    for (int j = 0; j < nFields; ++j)
+                    {
+                        Object oObj2;
+                        if (oObj1.arrayGet(j, &oObj2)->isName())
+                        {
+                            std::string sName(oObj2.getName());
+                            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        }
+                        else
+                            oRes.WriteString(NULL, 0);
+                        oObj2.free();
+                    }
+                }
+                oObj1.free();
+                // 11 - AddRevInfo
+                if (oObj.dictLookup("TimeStamp", &oObj1)->isBool() && oObj1.getBool())
+                {
+                    nSVFlag |= (1 << 10);
+                }
+                oObj1.free();
+
+                oRes.AddInt(nSVFlag, nSVPos);
             }
-            oObj.free();
+            oObj.free(); oObj1.free();
 
             break;
         }

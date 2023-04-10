@@ -630,7 +630,8 @@
 			for (let i = 0; i < n; ++i)
 			{
 				var APType = reader.readString();
-				AP[APType] = {};
+				if (!AP[APType])
+					AP[APType] = {};
 				var ASType = reader.readString();
 				AP[APType][ASType] = {};
 				let np1 = reader.readInt();

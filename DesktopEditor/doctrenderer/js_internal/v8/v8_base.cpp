@@ -203,8 +203,10 @@ namespace NSJSBase
 	}
 	void CJSContext::Dispose()
 	{
+#ifdef V8_INSPECTOR
 		if (CV8Worker::getInitializer().isInspectorUsed())
 			CInspectorPool::get().disposeInspector(m_internal->m_isolate);
+#endif
 
 		m_internal->m_contextPersistent.Reset();
 
@@ -358,8 +360,10 @@ namespace NSJSBase
 
 	JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
 	{
+#ifdef V8_INSPECTOR
 		if (CV8Worker::getInitializer().isInspectorUsed())
 			CInspectorPool::get().getInspector(m_internal->m_isolate).startAgent();
+#endif
 
 		LOGGER_START
 

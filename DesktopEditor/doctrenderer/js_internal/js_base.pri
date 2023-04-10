@@ -28,6 +28,7 @@ SOURCES += $$PWD/js_logger.cpp
 
     v8_use_inspector {
         core_windows:DEFINES += WIN32_LEAN_AND_MEAN
+        DEFINES += V8_INSPECTOR
 
         #paths
         V8_INSPECTOR_PATH = $$PWD/v8/inspector

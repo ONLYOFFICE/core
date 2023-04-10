@@ -3,7 +3,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../resources/resources.h"
 #include "managers/ImageManager.h"
-#include "managers/StyleManager.h"
+#include "managers/FontStyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -31,7 +31,7 @@ namespace NSDocxRenderer
 		CPage                           m_oCurrentPage;
 
 		CImageManager                   m_oImageManager;
-		CStyleManager                   m_oStyleManager;
+		CFontStyleManager               m_oFontStyleManager;
 		CFontManager                    m_oFontManager;
 		CFontSelector					m_oFontSelector;
 

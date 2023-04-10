@@ -3,7 +3,6 @@
 #include <numeric>
 
 #include "VectorGraphics.h"
-#include "../DesktopEditor/common/Types.h"
 
 
 namespace NSDocxRenderer

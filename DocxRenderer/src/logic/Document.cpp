@@ -812,10 +812,10 @@ namespace NSDocxRenderer
 		Clear();
 
 		m_lCurrentCommandType = 0;
-		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager, &m_oFontManager, &m_oFontSelector);
+		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oFontStyleManager, &m_oFontManager, &m_oFontSelector);
 
 		m_oImageManager.NewDocument();
-		m_oStyleManager.NewDocument();
+		m_oFontStyleManager.NewDocument();
 
 		// media
 		m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
@@ -1212,10 +1212,8 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:tblPr>");
 		oWriter.WriteString(L"</w:style>");
 
-		for (size_t i = 0; i < m_oStyleManager.m_arStyles.size(); ++i)
-		{
-			m_oStyleManager.m_arStyles[i]->ToXml(oWriter);
-		}
+
+		m_oFontStyleManager.ToXml(oWriter);
 
 		oWriter.WriteString(L"</w:styles>");
 

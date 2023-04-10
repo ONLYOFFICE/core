@@ -3,7 +3,7 @@
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
 #include "elements/Table.h"
-#include "managers/StyleManager.h"
+#include "managers/FontStyleManager.h"
 
 
 namespace NSDocxRenderer
@@ -20,7 +20,7 @@ namespace NSDocxRenderer
 		Aggplus::CMatrix*           m_pTransform {nullptr};
 		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
 
-		CStyleManager*              m_pStyleManager {nullptr};
+		CFontStyleManager*          m_pFontStyleManager {nullptr};
 		CFontManager*               m_pFontManager {nullptr};
 		CFontSelector*				m_pFontSelector {nullptr};
 		CVectorGraphics             m_oVector;
@@ -57,7 +57,7 @@ namespace NSDocxRenderer
 		~CPage();
 		void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 				  NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager,
+				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pStyleManager, CFontManager *pFontManager,
 				  CFontSelector* pFontSelector);
 
 
@@ -112,7 +112,7 @@ namespace NSDocxRenderer
 		void DetermineStrikeoutsUnderlinesHighlights();
 		bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 		bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-		bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+		bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 		void AddDiacriticalSymbols();
 		void MergeLinesByVertAlignType();
 		void DetermineTextColumns();

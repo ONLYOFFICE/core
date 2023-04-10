@@ -183,6 +183,7 @@ namespace NSDocxRenderer
 
 	CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine, double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph)
 	{
+		// поменять логику
 		if (!pCurrentLine || !pNextLine)
 		{
 			return tatUnknown;

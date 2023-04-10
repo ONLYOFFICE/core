@@ -35,10 +35,9 @@ HEADERS += \
     src/logic/elements/Shape.h \
     src/logic/elements/Table.h \
     src/logic/elements/TextLine.h \
+    src/logic/managers/FontStyleManager.h \
     src/logic/managers/ImageManager.h \
     src/logic/managers/FontManager.h \
-    src/logic/managers/StyleManager.h \
-    src/logic/styles/BaseStyle.h \
     src/logic/styles/FontStyle.h \
     src/resources/ColorTable.h \
     src/resources/Constants.h \
@@ -63,8 +62,8 @@ SOURCES += \
     src/logic/elements/Table.cpp \
     src/logic/elements/TextLine.cpp \
     src/logic/managers/FontManager.cpp \
+    src/logic/managers/FontStyleManager.cpp \
     src/logic/managers/ImageManager.cpp \
-    src/logic/managers/StyleManager.cpp \
     src/logic/styles/FontStyle.cpp \
     src/logic/Page.cpp \
     src/logic/Document.cpp \

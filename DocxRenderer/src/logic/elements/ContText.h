@@ -2,8 +2,7 @@
 #include "BaseItem.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../managers/FontManager.h"
-#include "../managers/StyleManager.h"
-#include "../styles/FontStyle.h"
+#include "../managers/FontStyleManager.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 
@@ -22,7 +21,7 @@ namespace NSDocxRenderer
 	class CContText : public CBaseItem
 	{
 	public:
-		std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
+		std::shared_ptr<const CFontStyle> m_pFontStyle {nullptr};
 
 		bool   m_bIsStrikeoutPresent {false};
 		bool   m_bIsDoubleStrikeout {false};
@@ -54,7 +53,7 @@ namespace NSDocxRenderer
 		UINT m_iNumDuplicates {0};
 
 	public:
-		CContText(CFontManager* m_pManager);
+		CContText(CFontManager* pManager);
 		CContText(const CContText& rCont);
 		virtual ~CContText();
 		virtual void Clear() override final;

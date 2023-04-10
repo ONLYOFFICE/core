@@ -131,7 +131,7 @@ namespace NSDocxRenderer
 		return false;
 	}
 
-	std::wstring CShape::PathToStr()
+	std::wstring CShape::PathToWString()
 	{
 		auto arData = m_oVector.GetData();
 
@@ -852,7 +852,7 @@ namespace NSDocxRenderer
 
 	void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter)
 	{
-		std::wstring strPath = std::move(PathToStr());
+		std::wstring strPath = PathToWString();
 		//отвечает за размеры прямоугольного фрейма шейпа
 		oWriter.WriteString(L"<a:xfrm");
 		if (fabs(m_dRotate) > 0.01)

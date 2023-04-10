@@ -1,0 +1,31 @@
+#pragma once
+#include <list>
+
+#include "../styles/FontStyle.h"
+
+namespace NSDocxRenderer
+{
+	class CFontStyleManager
+	{
+	public:
+		CFontStyleManager();
+		~CFontStyleManager();
+
+		void Clear();
+		void NewDocument();
+		void ToXml(NSStringUtils::CStringBuilder& oWriter);
+
+		const std::shared_ptr<CFontStyle> GetFontStyle(const std::wstring& wsFontStyleId) const;
+
+		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const CFontStyle& oFontStyle);
+		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
+									   const std::wstring& wsFontName,
+									   double dFontSize,
+									   bool bItalic,
+									   bool bBold);
+
+	private:
+		std::list<std::shared_ptr<CFontStyle>> m_arFontStyles;
+	};
+}
+

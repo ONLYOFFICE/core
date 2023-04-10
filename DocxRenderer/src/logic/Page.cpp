@@ -13,7 +13,7 @@ namespace NSDocxRenderer
 
 	void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 					 NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager,
+					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pFontStyleManager, CFontManager *pFontManager,
 					 CFontSelector* pFontSelector)
 	{
 		m_pFont     = pFont;
@@ -25,7 +25,7 @@ namespace NSDocxRenderer
 		m_pTransform               = pMatrix;
 		m_pSimpleGraphicsConverter = pSimple;
 
-		m_pStyleManager = pStyleManager;
+		m_pFontStyleManager = pFontStyleManager;
 		m_pFontManager = pFontManager;
 		m_pFontSelector = pFontSelector;
 
@@ -415,21 +415,13 @@ namespace NSDocxRenderer
 
 		pCont->m_oText = oText;
 
-		//Первичное заполнение стилей
-		m_pStyleManager->m_pCurrentStyle->m_oFont = *m_pFont;
-		m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
-
-		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = m_pFontSelector->GetSelectedName();
-
-		long lStyle = 0;
-		if (m_pFontSelector->IsSelectedBold()) lStyle |= 0x01;
-		if (m_pFontSelector->IsSelectedItalic()) lStyle |= 0x02;
-
-		m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle = lStyle;
-
-		//первичное получение стиля для текущего символа
-		//при дальнейшем анализе может измениться
-		pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+		// первичное получение стиля для текущего символа
+		// при дальнейшем анализе может измениться
+		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(*m_pBrush,
+																		m_pFontSelector->GetSelectedName(),
+																		m_pFont->Size,
+																		m_pFontSelector->IsSelectedItalic(),
+																		m_pFontSelector->IsSelectedBold());
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 
 		// собираем отдельно, т.к. такие символы не имею размера m_dWidth
@@ -1029,6 +1021,7 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineStrikeoutsUnderlinesHighlights()
 	{
+
 		//определение различных эффектов на основании взаимного расположения символов и шейпов
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
@@ -1057,7 +1050,6 @@ namespace NSDocxRenderer
 					{
 						continue;
 					}
-
 					eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pShape);
 					eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pShape);
 
@@ -1096,7 +1088,7 @@ namespace NSDocxRenderer
 
 					if (!bIsComplicatedFigure)
 					{
-						bool bIf1 = pCurrCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor;
+						bool bIf1 = pCurrCont->m_pFontStyle->GetBrush().Color1 == c_iGreyColor;
 						bool bIf2 = pCurrCont->m_bIsShadowPresent && pCurrCont->m_bIsOutlinePresent;
 						bool bIf3 = eVType == eVerticalCrossingType::vctCurrentOutsideNext;
 						bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
@@ -1106,9 +1098,14 @@ namespace NSDocxRenderer
 						{
 							if (!bIf2)
 							{
-								m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCurrCont->m_pFontStyle);
-								m_pStyleManager->m_pCurrentStyle->m_oBrush.Color1 = pShape->m_oPen.Color;
-								pCurrCont->m_pFontStyle = m_pStyleManager->GetStyle();
+								auto oBrush = pCurrCont->m_pFontStyle->GetBrush();
+								oBrush.Color1 = pShape->m_oPen.Color;
+
+								pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
+									pCurrCont->m_pFontStyle->GetFontName(),
+									pCurrCont->m_pFontStyle->GetFontSize(),
+									pCurrCont->m_pFontStyle->IsItalic(),
+									pCurrCont->m_pFontStyle->IsBold());
 
 								pCurrCont->m_bIsShadowPresent = true;
 								pCurrCont->m_bIsOutlinePresent = true;
@@ -1169,7 +1166,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
 
-	bool CPage::IsItHighlightingBackground(CShape *pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
+	bool CPage::IsItHighlightingBackground(const CShape *pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
 	{
 		double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
 		double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
@@ -1189,7 +1186,7 @@ namespace NSDocxRenderer
 				eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Цвета должны быть разными
-		bool bIf4 = pCont->m_pFontStyle->m_oBrush.Color1 != pShape->m_oBrush.Color1;
+		bool bIf4 = pCont->m_pFontStyle->GetBrush().Color1 != pShape->m_oBrush.Color1;
 		bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
 		bool bIf6 = pShape->m_bIsNoFill == false;
 		bool bIf7 = pShape->m_bIsNoStroke == true;
@@ -1295,16 +1292,17 @@ namespace NSDocxRenderer
 						{
 							continue;
 						}
-
-						dFontSize = pCont->m_pFontStyle->m_oFont.Size;
+						dFontSize = pCont->m_pFontStyle->GetFontSize();
 						break;
 					}
 
 					for (auto pCont : pCurrLine->m_arConts)
 					{
-						m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
-						m_pStyleManager->m_pCurrentStyle->m_oFont.Size = dFontSize;
-						pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->GetBrush(),
+							pCont->m_pFontStyle->GetFontName(),
+							dFontSize,
+							pCont->m_pFontStyle->IsItalic(),
+							pCont->m_pFontStyle->IsBold());
 
 						if (pBaseLine->m_dLeft > pCont->m_dLeft)
 						{
@@ -1337,16 +1335,17 @@ namespace NSDocxRenderer
 						{
 							continue;
 						}
-
-						dFontSize = pCont->m_pFontStyle->m_oFont.Size;
+						dFontSize = pCont->m_pFontStyle->GetFontSize();
 						break;
 					}
 
 					for (auto pCont : pSubLine->m_arConts)
 					{
-						m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
-						m_pStyleManager->m_pCurrentStyle->m_oFont.Size = dFontSize;
-						pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->GetBrush(),
+							pCont->m_pFontStyle->GetFontName(),
+							dFontSize,
+							pCont->m_pFontStyle->IsItalic(),
+							pCont->m_pFontStyle->IsBold());
 
 						if (pCurrLine->m_dLeft > pCont->m_dLeft)
 						{

@@ -94,6 +94,7 @@ namespace NSDocxRenderer
 		CTextLine* pCurrLine, *pNextLine, *pNextNextLine, *pPrevLine;
 		double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
 		double dBeforeSpacingWithShapes = 0;
+
 		//note Все параграфы были сдвинуты на данное значение от верхнего края страницы
 		double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
 		eVerticalCrossingType eCrossingType;

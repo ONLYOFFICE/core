@@ -26,13 +26,11 @@ namespace NSDocxRenderer
 			std::list<Point> points;
 		};
 
-	public:
 		CVectorGraphics();
 		~CVectorGraphics();
 
 		CVectorGraphics& operator=(CVectorGraphics&& other);
 
-	public:
 		const std::list<PathCommand>& GetData() const;
 
 		double GetLeft() const noexcept;
@@ -40,7 +38,6 @@ namespace NSDocxRenderer
 		double GetRight() const noexcept;
 		double GetBottom() const noexcept;
 
-	public:
 		void MoveTo(const double& x1, const double& y1);
 		void LineTo(const double& x1, const double& y1);
 		void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);

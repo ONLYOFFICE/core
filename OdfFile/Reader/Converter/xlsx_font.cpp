@@ -35,6 +35,9 @@
 #include "../Format/style_table_properties.h"
 #include "../Format/style_paragraph_properties.h"
 
+#include "../Format/odf_document.h"
+#include "../Format/odfcontext.h"
+
 #include <boost/functional.hpp>
 #include <xml/simple_xml_writer.h>
 
@@ -275,8 +278,9 @@ XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_conten
 }
 
 xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content_ptr	textProp,
-						const odf_reader::paragraph_format_properties			* parProp,
-						const odf_reader::style_table_cell_properties_attlist	* cellProp)
+						const odf_reader::paragraph_format_properties			*parProp,
+						const odf_reader::style_table_cell_properties_attlist	*cellProp, 
+						bool default_set, odf_reader::fonts_container & fonts)
 {
 	bEnabled = false;
 	if (!textProp) return;
@@ -309,11 +313,41 @@ xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content_ptr	text
     {
         family = family_;
     }
+	if (textProp->style_font_name_ || textProp->style_font_name_asian_ || textProp->style_font_name_complex_ || textProp->fo_font_family_)
+	{
+		std::wstring w_eastAsia;
+		std::wstring w_hAnsi;
+		std::wstring w_cs;
+		std::wstring w_ascii = w_hAnsi = w_cs = (textProp->fo_font_family_ ? *textProp->fo_font_family_ : L"");
 
-    if (textProp->style_font_name_)
-    {
-        name = textProp->style_font_name_.get();            
-    }
+		if (textProp->style_font_name_complex_)
+		{
+			odf_reader::font_instance * font = fonts.font_by_style_name(*textProp->style_font_name_complex_);
+			if (font)
+				w_cs = font->name();
+		}
+		if (textProp->style_font_name_asian_)
+		{
+			odf_reader::font_instance * font = fonts.font_by_style_name(*textProp->style_font_name_asian_);
+			if (font)
+				w_eastAsia = font->name();
+		}
+		if (textProp->style_font_name_)
+		{
+			odf_reader::font_instance * font = fonts.font_by_style_name(*textProp->style_font_name_);
+			if (font)
+			{
+				w_ascii = w_hAnsi = font->name();
+
+				if (font->charset() == L"02")
+				{
+					if (w_cs.empty()) w_cs = font->name();
+					if (w_eastAsia.empty()) w_eastAsia = font->name();
+				}
+			}
+		}
+		name = !w_ascii.empty() ? w_ascii : (!w_cs.empty() ? w_cs : (!w_eastAsia.empty() ? w_eastAsia : w_hAnsi));
+	}
 
     if (textProp->fo_font_size_)
     {
@@ -364,6 +398,11 @@ xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content_ptr	text
         color->rgb = L"ff" + textProp->fo_color_->get_hex_value();
 
     }
+
+	if (default_set && !name)
+	{
+		name = L"Liberation Sans";
+	}
 }
 
 }

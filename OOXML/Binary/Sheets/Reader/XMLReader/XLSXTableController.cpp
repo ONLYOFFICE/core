@@ -75,10 +75,12 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 
 	auto pCell = new OOX::Spreadsheet::CCell();
 	pCell->m_oType.Init();
-	pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
 
-    pCell->m_oValue.Init();
-	pCell->m_oValue->m_sText = sText; // как есть
+	pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+    pCell->m_oRichText.Init();
+    OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
+    pText->m_sText = sText;
+    pCell->m_oRichText->m_arrItems.push_back(pText);
 
 	pCell->setRowCol(nRow - 1, nCol);
 

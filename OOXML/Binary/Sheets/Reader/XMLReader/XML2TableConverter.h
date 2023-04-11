@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "columnNamesController.h"
+
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../Base/Base.h"
 

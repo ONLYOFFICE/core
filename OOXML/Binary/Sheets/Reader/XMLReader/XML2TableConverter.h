@@ -33,11 +33,10 @@
 #pragma once
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../Base/Base.h"
 
 #include <string>
 #include <vector>
-#include <map>
-#include "../../../../Base/Base.h"
 
 /// @brief Первое измерение вектора хранит данные раздельно по глубине xml второе измерение хранит данные по ключу, третье - сами значения данных
 using XmlData = std::vector<std::vector<std::vector<std::wstring>>>;
@@ -72,11 +71,8 @@ private:
     /// @return текущая глубина
     _UINT32 depth_;
 
-    /// @return максимальная глубина
-    _UINT32 maxDepth_;
-
-    /// @return временное имя узла, которое будет ключо для текстовой ноды
-    std::wstring tempNodeName_;
+    /// @return вектор с именами нод-предков
+    std::vector<std::wstring> parents_;
 
     /// @return данные собранные с xml
     XmlData data_;

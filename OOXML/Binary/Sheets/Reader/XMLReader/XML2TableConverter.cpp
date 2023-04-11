@@ -37,24 +37,22 @@
 bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data)
 {
     depth_ = reader.GetDepth();
-    maxDepth_ = depth_;
+    auto maxDepth = depth_;
+
     data_.push_back(std::vector<std::vector<std::wstring>>{});
     auto nodeType = reader.GetNodeType();
-    /// запоминаем имя предыдущего узла, для вставки его в качестве ключа текстового узла
-    if(nodeType != XmlUtils::XmlNodeType::XmlNodeType_Text && nodeType != XmlUtils::XmlNodeType::XmlNodeType_CDATA)
-    {
-        tempNodeName_ = reader.GetName();
-    }
+
     processNode(reader, nodeType);
     while(reader.Read(nodeType))
     {
         depth_ = reader.GetDepth();
         /// расширяем вектор, если глубина увеличилась
-        if(depth_ > maxDepth_)
+        if(depth_ > maxDepth)
         {
-            maxDepth_= depth_;
+            maxDepth= depth_;
             data_.push_back(std::vector<std::vector<std::wstring>>{});
         }
+
         processNode(reader, nodeType);
     }
     data = data_;
@@ -103,11 +101,16 @@ void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader, const Xml
         auto text = reader.GetText();
         if(!text.empty())
         {
-            insertValue(tempNodeName_, text);
+            /// подставляем имя последней ноды в иерархии
+            insertValue(parents_.at(parents_.size() -1), text);
         }
     }
-    else
+    if(type == XmlUtils::XmlNodeType::XmlNodeType_Element)
     {
-        tempNodeName_ = reader.GetName();
+        parents_.push_back(reader.GetName());
+    }
+    else if(type == XmlUtils::XmlNodeType::XmlNodeType_EndElement && parents_.size() > 0)
+    {
+        parents_.pop_back();
     }
 }

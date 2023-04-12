@@ -539,20 +539,15 @@ namespace NSDoctRenderer
 
 					bool bIsBreak = false;
 			JSSmart<CJSContext> context = new CJSContext();
-			context->Initialize();
 
 			if (true)
 			{
-				JSSmart<CJSIsolateScope> isolate_scope = context->CreateIsolateScope();
-				JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
-
-				context->CreateGlobalForContext();
+				context->CreateContext();
+				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
 				NSJSBase::CreateDefaults(context);
-				context->CreateContext();
 
-				JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
 				LOGGER_SPEED_LAP("compile")
@@ -1077,20 +1072,15 @@ namespace NSDoctRenderer
 				strScript += "\n$.ready();";
 
 			JSSmart<CJSContext> context = new CJSContext();
-			context->Initialize();
 
 			if (true)
 			{
-				JSSmart<CJSIsolateScope> isolate_scope = context->CreateIsolateScope();
-				JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
-
-				context->CreateGlobalForContext();
+				context->CreateContext();
+				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
 				NSJSBase::CreateDefaults(context);
-				context->CreateContext();
 
-				JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 
 				context->runScript(strScript, try_catch, sCachePath);

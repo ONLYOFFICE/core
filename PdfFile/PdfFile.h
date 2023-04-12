@@ -125,7 +125,8 @@ public:
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks(int nPageIndex);
     BYTE* GetWidgets();
-    BYTE* GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor);
+    BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL);
+    BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget = -1, const char* sIconView = NULL);
 
     // --- WRITER ---
 

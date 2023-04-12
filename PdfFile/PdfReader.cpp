@@ -2061,15 +2061,13 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
     if (!pAcroForms || !pPage)
         return NULL;
 
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(m_pFontManager);
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
     NSWasm::CData oRes;
     oRes.SkipLen();
 
-    int nIconPos = oRes.GetSize();
-    unsigned int nWidgetL = 0;
-    oRes.AddInt(nWidgetL);
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
@@ -2097,14 +2095,122 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                     oStr.free();
                     continue;
                 }
-                Dict *dict = oStr.streamGetDict();
                 oRes.WriteString((BYTE*)sMKName.c_str(), sMKName.size());
+
+                Dict *dict = oStr.streamGetDict();
+
+                // BBox
+                Object bboxObj;
+                double bbox[4];
+                dict->lookup("BBox", &bboxObj);
+                if (bboxObj.isArray())
+                {
+                    for (i = 0; i < 4; ++i)
+                    {
+                        Object obj1;
+                        bboxObj.arrayGet(i, &obj1);
+                        bbox[i] = obj1.getNum();
+                        obj1.free();
+                    }
+                }
+                else
+                {
+                    bbox[0] = 0; bbox[1] = 0;
+                    bbox[2] = 0; bbox[3] = 0;
+                }
+                bboxObj.free();
+
+                // Matrix
+                double m[6];
+                Object matrixObj;
+                dict->lookup("Matrix", &matrixObj);
+                if (false && matrixObj.isArray())
+                {
+                    for (i = 0; i < 6; ++i)
+                    {
+                        Object obj1;
+                        matrixObj.arrayGet(i, &obj1);
+                        m[i] = obj1.getNum();
+                        obj1.free();
+                    }
+                }
+                else
+                {
+                    m[0] = 1; m[1] = 0;
+                    m[2] = 0; m[3] = 1;
+                    m[4] = 0; m[5] = 0;
+                }
+                matrixObj.free();
+
+                // Resources
+                Object resObj;
+                dict->lookup("Resources", &resObj);
+                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
+
+                int nWidth  = (bbox[2] > 0) ? bbox[2] * (double)nRasterW / dWidth : (int)((int)dWidth  * 96 / dPageDpiX);
+                int nHeight = (bbox[3] > 0) ? bbox[3] * (double)nRasterH / dHeight : (int)((int)dHeight * 96 / dPageDpiY);
+                oRes.AddInt(nWidth);
+                oRes.AddInt(nHeight);
+
+                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+                unsigned int nColor = (unsigned int)nBackgroundColor;
+                unsigned int nSize = (unsigned int)(nWidth * nHeight);
+                unsigned int* pTemp = (unsigned int*)pBgraData;
+                for (unsigned int i = 0; i < nSize; ++i)
+                    *pTemp++ = 0xFF000000 | nColor;
+
+                CBgraFrame* pFrame = new CBgraFrame();
+                pFrame->put_Data(pBgraData);
+                pFrame->put_Width(nWidth);
+                pFrame->put_Height(nHeight);
+                pFrame->put_Stride(4 * nWidth);
+
+                NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+                pRenderer->SetFontManager(m_pFontManager);
+                pRenderer->CreateFromBgraFrame(pFrame);
+                pRenderer->SetSwapRGB(true);
+                pRenderer->put_Width(bbox[2] * 25.4 / dPageDpiX);
+                pRenderer->put_Height(bbox[3] * 25.4 / dPageDpiX);
+                if (nBackgroundColor != 0xFFFFFF)
+                    pRenderer->CommandLong(c_nDarkMode, 1);
+
+                PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
+                oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+
+                // Создание Gfx
+                GBool crop = gTrue;
+                PDFRectangle box;
+                int rotate = pPage->getRotate();
+                if (rotate >= 360)
+                    rotate -= 360;
+                else if (rotate < 0)
+                    rotate += 360;
+                pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+                PDFRectangle* cropBox = pPage->getCropBox();
+
+                Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+
+                Object oStrRef;
+                oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+                pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
+                gfx->drawForm(&oStrRef, resDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
+                oStr.free(); oStrRef.free(); resObj.free();
+
+                nMKLength++;
+                unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+                unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+                oRes.AddInt(npSubMatrix1);
+                oRes.AddInt(npSubMatrix >> 32);
+
+                delete gfx;
+                pFrame->ClearNoAttack();
+                RELEASEOBJECT(pFrame);
+                RELEASEOBJECT(pRenderer);
             }
         }
         oMK.free();
         oRes.AddInt(nMKLength, nMKPos);
     }
-    oRes.AddInt(nWidgetL, nIconPos);
 
     oRes.WriteLen();
     BYTE* bRes = oRes.GetBuffer();

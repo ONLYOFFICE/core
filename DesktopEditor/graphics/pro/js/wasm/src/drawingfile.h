@@ -116,10 +116,16 @@ public:
             return ((CPdfFile*)pReader)->GetWidgets();
         return NULL;
     }
-    BYTE* GetInteractiveFormsAP(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+    BYTE* GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL)
     {
         if (nType == 0)
-            return ((CPdfFile*)pReader)->GetAPWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+            return ((CPdfFile*)pReader)->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
+        return NULL;
+    }
+    BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget = -1, const char* sIconView = NULL)
+    {
+        if (nType == 0)
+            return ((CPdfFile*)pReader)->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
         return NULL;
     }
     std::wstring GetInfo()

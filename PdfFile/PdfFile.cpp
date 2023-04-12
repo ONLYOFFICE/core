@@ -817,12 +817,19 @@ BYTE* CPdfFile::GetWidgets()
         return NULL;
     return m_pInternal->pReader->GetWidgets();
 }
-BYTE* CPdfFile::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
 {
     if (!m_pInternal->pReader)
         return NULL;
-    return m_pInternal->pReader->GetAPWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+    return m_pInternal->pReader->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
+BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+{
+    if (!m_pInternal->pReader)
+        return NULL;
+    return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
+}
+
 
 // ------------------------------------------------------------------------
 

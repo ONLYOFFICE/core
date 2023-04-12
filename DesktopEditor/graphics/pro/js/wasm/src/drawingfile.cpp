@@ -154,9 +154,29 @@ WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
-	return pGraphics->GetInteractiveFormsAP(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+}
+WASM_EXPORT BYTE* GetInteractiveFormAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget)
+{
+	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget);
+}
+WASM_EXPORT BYTE* GetInteractiveFormAPView(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
+{
+	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
+}
+WASM_EXPORT BYTE* GetButtonInteractiveFormsIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
+{
+	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+}
+WASM_EXPORT BYTE* GetButtonInteractiveFormIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget)
+{
+	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget);
+}
+WASM_EXPORT BYTE* GetButtonInteractiveFormIcon(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+{
+	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -705,6 +725,7 @@ int main(int argc, char* argv[])
 		if (pWidgets)
 			free(pWidgets);
 
+		/*
 		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
 		nLength = READ_INT(pWidgetsAP);
 		i = 4;
@@ -864,6 +885,53 @@ int main(int argc, char* argv[])
 
 		if (pWidgetsAP)
 			free(pWidgetsAP);
+		*/
+
+		BYTE* pWidgetsMK = GetButtonInteractiveFormsIcons(pGrFile, nWidth * 5, nHeight * 5, 0xFFFFFF, nTestPage);
+		nLength = READ_INT(pWidgetsMK);
+		i = 4;
+		nLength -= 4;
+
+		while (i < nLength)
+		{
+			unsigned int nAP = READ_INT(pWidgetsMK + i);
+			i += 4;
+			std::cout << "AP " << nAP << ", ";
+			unsigned int nMKLength = READ_INT(pWidgetsMK + i);
+			i += 4;
+			for (unsigned int j = 0; j < nMKLength; ++j)
+			{
+				unsigned int nPathLength = READ_INT(pWidgetsMK + i);
+				i += 4;
+				std::string sMKName = std::string((char*)(pWidgetsMK + i), nPathLength);
+				i += nPathLength;
+				std::cout << "MK " << sMKName << ", ";
+				unsigned int nWidgetWidth = READ_INT(pWidgetsMK + i);
+				i += 4;
+				std::cout << "W " << nWidgetWidth << ", ";
+				unsigned int nWidgetHeight = READ_INT(pWidgetsMK + i);
+				i += 4;
+				std::cout << "H " << nWidgetHeight << ", ";
+				unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
+				i += 4;
+				unsigned long long npBgraData2 = READ_INT(pWidgetsMK + i);
+				i += 4;
+
+				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+				CBgraFrame oFrame;
+				oFrame.put_Data(res);
+				oFrame.put_Width(nWidgetWidth);
+				oFrame.put_Height(nWidgetHeight);
+				oFrame.put_Stride(4 * nWidgetWidth);
+				oFrame.put_IsRGBA(true);
+				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png", _CXIMAGE_FORMAT_PNG);
+				oFrame.ClearNoAttack();
+				RELEASEARRAYOBJECTS(res);
+			}
+		}
+
+		if (pWidgetsMK)
+			free(pWidgetsMK);
 	}
 
 	Close(pGrFile);

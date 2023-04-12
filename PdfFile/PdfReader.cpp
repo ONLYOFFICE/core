@@ -1766,7 +1766,7 @@ void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, 
 
     oFieldRef.free(); oField.free();
 }
-BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
@@ -2045,6 +2045,66 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
     delete gfx;
     RELEASEOBJECT(pFrame);
     RELEASEOBJECT(pRenderer);
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
+}
+BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+{
+    if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+        return NULL;
+
+    AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+    Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1);
+    if (!pAcroForms || !pPage)
+        return NULL;
+
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(m_pFontManager);
+
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
+    int nIconPos = oRes.GetSize();
+    unsigned int nWidgetL = 0;
+    oRes.AddInt(nWidgetL);
+    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+    {
+        AcroFormField* pField = pAcroForms->getField(i);
+        if (pField->getPageNum() != nPageIndex + 1 || (nButtonWidget >= 0 && i != nButtonWidget))
+            continue;
+
+        // Номер аннотации для сопоставления с AP
+        oRes.AddInt(i);
+
+        int nMKPos = oRes.GetSize();
+        unsigned int nMKLength = 0;
+        oRes.AddInt(nMKLength);
+        Object oMK;
+        if (pField->fieldLookup("MK", &oMK)->isDict())
+        {
+            std::vector<const char*> arrMKName { "I", "RI", "IX" };
+            for (unsigned int j = 0; j < arrMKName.size(); ++j)
+            {
+                if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
+                    continue;
+                std::string sMKName(arrMKName[j]);
+                Object oStr;
+                if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
+                {
+                    oStr.free();
+                    continue;
+                }
+                Dict *dict = oStr.streamGetDict();
+                oRes.WriteString((BYTE*)sMKName.c_str(), sMKName.size());
+            }
+        }
+        oMK.free();
+        oRes.AddInt(nMKLength, nMKPos);
+    }
+    oRes.AddInt(nWidgetL, nIconPos);
 
     oRes.WriteLen();
     BYTE* bRes = oRes.GetBuffer();

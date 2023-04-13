@@ -134,7 +134,7 @@ WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-WASM_EXPORT BYTE* GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+WASM_EXPORT BYTE* GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
 	return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
@@ -150,32 +150,38 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* GetInteractiveFormsInfo (CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
+WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, int nView, int nButtonView)
 {
-	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-}
-WASM_EXPORT BYTE* GetInteractiveFormAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget)
-{
-	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget);
-}
-WASM_EXPORT BYTE* GetInteractiveFormAPView(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
-{
+	const char* sView = NULL;
+	if (nView == 0)
+		sView = "N";
+	else if (nView == 1)
+		sView = "D";
+	else if (nView == 2)
+		sView = "R";
+
+	const char* sButtonView = NULL;
+	if (nButtonView == 0)
+		sButtonView = "Off";
+	else if (nButtonView == 1)
+		sButtonView = "Yes";
+
 	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-WASM_EXPORT BYTE* GetButtonInteractiveFormsIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
+WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, int nIconView)
 {
-	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-}
-WASM_EXPORT BYTE* GetButtonInteractiveFormIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget)
-{
-	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget);
-}
-WASM_EXPORT BYTE* GetButtonInteractiveFormIcon(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
-{
+	const char* sIconView = NULL;
+	if (nIconView == 0)
+		sIconView = "I";
+	else if (nIconView == 1)
+		sIconView = "RI";
+	else if (nIconView == 2)
+		sIconView = "IX";
+
 	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
@@ -754,7 +760,7 @@ int main(int argc, char* argv[])
 		if (pWidgets)
 			free(pWidgets);
 
-		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage);
+		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, -1, -1, -1);
 		nLength = READ_INT(pWidgetsAP);
 		i = 4;
 		nLength -= 4;
@@ -829,7 +835,7 @@ int main(int argc, char* argv[])
 		if (pWidgetsAP)
 			free(pWidgetsAP);
 
-		BYTE* pWidgetsMK = GetButtonInteractiveFormsIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage);
+		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;

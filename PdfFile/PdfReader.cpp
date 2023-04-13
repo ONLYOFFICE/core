@@ -1904,8 +1904,13 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
                 {
                     for (int k = 0; k < oObj.dictGetLength(); ++k)
                     {
-                        if (sButtonView && strcmp(sButtonView, oObj.dictGetKey(k)) != 0)
-                            continue;
+                        if (sButtonView)
+                        {
+                            if (strcmp(sButtonView, "Off") == 0 && strcmp(oObj.dictGetKey(k), "Off") != 0)
+                                continue;
+                            if (strcmp(sButtonView, "Yes") == 0 && strcmp(oObj.dictGetKey(k), "Off") == 0)
+                                continue;
+                        }
                         std::string sASName(oObj.dictGetKey(k));
                         oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
                         if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && sASName != "Off")
@@ -1968,7 +1973,8 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
-        if (pField->getPageNum() != nPageIndex + 1 || (nButtonWidget >= 0 && i != nButtonWidget))
+        AcroFormFieldType oType = pField->getAcroFormFieldType();
+        if (pField->getPageNum() != nPageIndex + 1 || oType != acroFormFieldPushbutton || (nButtonWidget >= 0 && i != nButtonWidget))
             continue;
 
         // Номер аннотации для сопоставления с AP

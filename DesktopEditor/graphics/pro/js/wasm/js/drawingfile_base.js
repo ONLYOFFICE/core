@@ -469,6 +469,7 @@
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
 			{
 				rec["value"] = flags & (1 << 9) ? "Yes" : "Off";
+				let IFflags = reader.readInt();
 				// Характеристики внешнего вида - MK
 				if (rec["type"] == "button")
 				{
@@ -487,6 +488,22 @@
 				// Расположение заголовка - TP
 				if (flags & (1 << 13))
 					rec["positionCaption"] = reader.readInt();
+				// Справочный словарь иконок - IF
+				if (IFflags & (1 << 0))
+				{
+					rec["IF"] = {};
+					if (IFflags & (1 << 1))
+						rec["IF"]["SW"] = reader.readString();
+					if (IFflags & (1 << 2))
+						rec["IF"]["S"] = reader.readString();
+					if (IFflags & (1 << 3))
+					{
+						rec["IF"]["A"] = [];
+						rec["IF"]["A"].push(reader.readDouble());
+						rec["IF"]["A"].push(reader.readDouble());
+					}
+					rec["IF"]["FB"] = IFflags & (1 << 4);
+				}
 			    if (flags & (1 << 14))
 				{
 					rec["NameOfYes"] = reader.readString();
@@ -597,10 +614,27 @@
 		Module["_free"](ext);
 		return res;
 	};
-	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor)
+	// необязательный nWidget - номер сопоставления аннотации - rec["AP"]["i"]
+	// необязательный sView   - определенный внешний вид аннотации - N/D/R
+	// необязательный sButtonView - состояние pushbutton-аннотации - Off/Yes(или rec["NameOfYes"])
+	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 	{
+		var nView = -1;
+		if (sView)
+		{
+			if (sView == "N")
+				nView = 0;
+			else if (sView == "D")
+				nView = 1;
+			else if (sView == "R")
+				nView = 2;
+		}
+		var nButtonView = -1;
+		if (sButtonView)
+			nButtonView = (sButtonView == "Off" ? 0 : 1);
+
 		var res = [];
-		var ext = Module["_GetInteractiveFormsAP"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
+		var ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
 		if (ext == 0)
 			return res;
 
@@ -654,47 +688,63 @@
 					APi["fontInfo"].push(fontInfo);
 				}
 			}
-			n = reader.readInt();
+			res.push(AP);
+		}
+
+		Module["_free"](ext);
+		return res;
+	};
+	// необязательный nWidget ...
+	// необязательный sIconView - определенная иконка - I/RI/IX
+	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, sIconView)
+	{
+		var nView = -1;
+		if (sIconView)
+		{
+			if (sIconView == "I")
+				nView = 0;
+			else if (sIconView == "RI")
+				nView = 1;
+			else if (sIconView == "IX")
+				nView = 2;
+		}
+
+		var res = [];
+		var ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
+		if (ext == 0)
+			return res;
+
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+			return res;
+
+		var len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+			return res;
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+
+		while (reader.isValid())
+		{
+			// Иконка pushbutton аннотации
+			var MK = {};
+			// Номер для сопоставление с AP
+			MK["i"] = reader.readInt();
+			let n = reader.readInt();
 			for (let i = 0; i < n; ++i)
 			{
 				var MKType = reader.readString();
-				AP[MKType] = {};
-				AP[MKType]["x"] = reader.readInt();
-				AP[MKType]["y"] = reader.readInt();
-				AP[MKType]["w"] = reader.readInt();
-				AP[MKType]["h"] = reader.readInt();
+				MK[MKType] = {};
+				MK[MKType]["w"] = reader.readInt();
+				MK[MKType]["h"] = reader.readInt();
 				let np1 = reader.readInt();
 				let np2 = reader.readInt();
 				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-				AP[MKType]["retValue"] = np2 << 32 | np1;
-				let k = reader.readInt();
-				AP[MKType]["fontInfo"] = [];
-				for (let i = 0; i < k; ++i)
-				{
-					let fontInfo = {};
-					fontInfo["text"] = reader.readString();
-					fontInfo["fontName"] = reader.readString();
-					fontInfo["fontSize"] = reader.readDouble();
-					AP[MKType]["fontInfo"].push(fontInfo);
-				}
+				MK[MKType]["retValue"] = np2 << 32 | np1;
 			}
-			let flags = reader.readInt();
-			if (flags & (1 << 0))
-			{
-				AP["IF"] = {};
-				if (flags & (1 << 1))
-					AP["IF"]["SW"] = reader.readString();
-				if (flags & (1 << 2))
-					AP["IF"]["S"] = reader.readString();
-				if (flags & (1 << 3))
-				{
-					AP["IF"]["A"] = [];
-					AP["IF"]["A"].push(reader.readDouble());
-					AP["IF"]["A"].push(reader.readDouble());
-				}
-				AP["IF"]["FB"] = flags & (1 << 4);
-			}
-			res.push(AP);
+			res.push(MK);
 		}
 
 		Module["_free"](ext);

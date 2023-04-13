@@ -401,7 +401,7 @@ int main(int argc, char* argv[])
 	{
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
 		nLength = READ_INT(pWidgets);
-		DWORD i = 4;
+		int i = 4;
 		nLength -= 4;
 		while (i < nLength)
 		{
@@ -536,6 +536,8 @@ int main(int argc, char* argv[])
 			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+				unsigned int nIFFlag = READ_INT(pWidgets + i);
+				i += 4;
 				if (sType == "button")
 				{
 					if (nFlags & (1 << 10))
@@ -571,6 +573,33 @@ int main(int argc, char* argv[])
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "TP " << nPathLength << ", ";
+				}
+				if (nIFFlag & (1 << 0))
+				{
+					if (nIFFlag & (1 << 1))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "SW " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+					if (nIFFlag & (1 << 2))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "S " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+					if (nIFFlag & (1 << 3))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "A " << (double)nPathLength / 100.0 << " ";
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << ", ";
+					}
+					std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
 				}
 				if (nFlags & (1 << 14))
 				{
@@ -725,8 +754,7 @@ int main(int argc, char* argv[])
 		if (pWidgets)
 			free(pWidgets);
 
-		/*
-		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
+		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage);
 		nLength = READ_INT(pWidgetsAP);
 		i = 4;
 		nLength -= 4;
@@ -750,7 +778,7 @@ int main(int argc, char* argv[])
 			std::cout << "H " << nWidgetHeight << ", ";
 			unsigned int nAPLength = READ_INT(pWidgetsAP + i);
 			i += 4;
-			for (unsigned int j = 0; j < nAPLength; j++)
+			for (unsigned int j = 0; j < nAPLength; ++j)
 			{
 				std::cout << std::endl;
 				nPathLength = READ_INT(pWidgetsAP + i);
@@ -759,7 +787,7 @@ int main(int argc, char* argv[])
 				i += nPathLength;
 				nPathLength = READ_INT(pWidgetsAP + i);
 				i += 4;
-				sAPName += ("." + std::string((char*)(pWidgetsAP + i), nPathLength));
+				sAPName += nPathLength ? ("." + std::string((char*)(pWidgetsAP + i), nPathLength)) : "";
 				i += nPathLength;
 				std::cout << "APName " << sAPName << ", ";
 				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
@@ -796,98 +824,12 @@ int main(int argc, char* argv[])
 				}
 			}
 			std::cout << std::endl;
-			unsigned int nMKLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			for (unsigned int j = 0; j < nMKLength; j++)
-			{
-				nPathLength = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
-				std::cout << "MK " << sAPName << ", ";
-				i += nPathLength;
-				nPathLength = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::cout << "X " << nPathLength << ", ";
-				nPathLength = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::cout << "Y " << nPathLength << ", ";
-				unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::cout << "W " << nWidgetWidth << ", ";
-				unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::cout << "H " << nWidgetHeight << ", ";
-
-				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
-				i += 4;
-				unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
-				i += 4;
-
-				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-				CBgraFrame oFrame;
-				oFrame.put_Data(res);
-				oFrame.put_Width(nWidgetWidth);
-				oFrame.put_Height(nWidgetHeight);
-				oFrame.put_Stride(4 * nWidgetWidth);
-				oFrame.put_IsRGBA(true);
-				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
-				oFrame.ClearNoAttack();
-				RELEASEARRAYOBJECTS(res);
-
-				unsigned int nTextSize = READ_INT(pWidgetsAP + i);
-				i += 4;
-				for (unsigned int k = 0; k < nTextSize; ++k)
-				{
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
-				}
-			}
-
-			unsigned int nIFFlag = READ_INT(pWidgetsAP + i);
-			i += 4;
-			if (nIFFlag & (1 << 0))
-			{
-				if (nIFFlag & (1 << 1))
-				{
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "SW " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nIFFlag & (1 << 2))
-				{
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "S " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				if (nIFFlag & (1 << 3))
-				{
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "A " << (double)nPathLength / 100.0 << " ";
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << (double)nPathLength / 100.0 << ", ";
-				}
-				std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
-			}
 		}
 
 		if (pWidgetsAP)
 			free(pWidgetsAP);
-		*/
 
-		BYTE* pWidgetsMK = GetButtonInteractiveFormsIcons(pGrFile, nWidth * 5, nHeight * 5, 0xFFFFFF, nTestPage);
+		BYTE* pWidgetsMK = GetButtonInteractiveFormsIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;
@@ -928,6 +870,7 @@ int main(int argc, char* argv[])
 				oFrame.ClearNoAttack();
 				RELEASEARRAYOBJECTS(res);
 			}
+			std::cout << std::endl;
 		}
 
 		if (pWidgetsMK)

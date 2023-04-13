@@ -632,21 +632,26 @@
 				var APType = reader.readString();
 				if (!AP[APType])
 					AP[APType] = {};
+				var APi = AP[APType];
 				var ASType = reader.readString();
-				AP[APType][ASType] = {};
+				if (ASType)
+				{
+					AP[APType][ASType] = {};
+					APi = AP[APType][ASType];
+				}
 				let np1 = reader.readInt();
 				let np2 = reader.readInt();
 				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-				AP[APType][ASType]["retValue"] = np2 << 32 | np1;
+				APi["retValue"] = np2 << 32 | np1;
 				let k = reader.readInt();
-				AP[APType][ASType]["fontInfo"] = [];
+				APi["fontInfo"] = [];
 				for (let i = 0; i < k; ++i)
 				{
 					let fontInfo = {};
 					fontInfo["text"] = reader.readString();
 					fontInfo["fontName"] = reader.readString();
 					fontInfo["fontSize"] = reader.readDouble();
-					AP[APType][ASType]["fontInfo"].push(fontInfo);
+					APi["fontInfo"].push(fontInfo);
 				}
 			}
 			n = reader.readInt();

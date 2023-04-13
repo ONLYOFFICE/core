@@ -1177,6 +1177,10 @@ oObj.free();\
             oParentObj.free();
             */
 
+            int nIFPos = oRes.GetSize();
+            unsigned int nIFFlag = 0;
+            oRes.AddInt(nIFFlag);
+
             Object oMK;
             if (pField->fieldLookup("MK", &oMK)->isDict())
             {
@@ -1221,9 +1225,46 @@ oObj.free();\
                 }
                 oObj.free();
 
-                // TODO Обычный значок - I Значок прокрутки - RI Альтернативный значок - IX Значок соответствия - IF
+                Object oIF;
+                if (oMK.dictLookup("IF", &oIF)->isDict())
+                {
+                    nIFFlag = 1;
+                    // 2 - Масштабирование - SW
+                    if (oIF.dictLookup("SW", &oObj)->isName())
+                    {
+                        nIFFlag |= (1 << 1);
+                        std::string sName(oObj.getName());
+                        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                    }
+                    oObj.free();
+                    // 3 - Тип масштабирования - S
+                    if (oIF.dictLookup("S", &oObj)->isName())
+                    {
+                        nIFFlag |= (1 << 2);
+                        std::string sName(oObj.getName());
+                        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                    }
+                    oObj.free();
+                    // 4 - Смещение - A
+                    if (oIF.dictLookup("A", &oObj)->isArray())
+                    {
+                        Object oObj1;
+                        nIFFlag |= (1 << 3);
+                        oRes.AddDouble(oObj.arrayGet(0, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
+                        oObj1.free();
+                        oRes.AddDouble(oObj.arrayGet(1, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
+                        oObj1.free();
+                    }
+                    oObj.free();
+                    // 5 - Полное соответствие - FB
+                    if (oIF.dictLookup("FB", &oObj)->isBool() && oObj.getBool())
+                        nIFFlag |= (1 << 4);
+                    oObj.free();
+                }
+                oIF.free();
             }
             oMK.free();
+            oRes.AddInt(nIFFlag, nIFPos);
 
             // 15 - Имя вкл состояния - AP - N - Yes
             Object oNorm;
@@ -1711,20 +1752,17 @@ oObj.free();\
     oRes.ClearWithoutAttack();
     return bRes;
 }
-void WriteAppearance(int nRx1, int nRx2, int nRy1, int nRy2, BYTE* pBgraData, int nWidth, unsigned int nColor, NSWasm::CData& oRes)
+void WriteAppearance(int nWidth, int nHeight, BYTE* pBgraData, unsigned int nColor, NSWasm::CData& oRes)
 {
-    BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
+    BYTE* pSubMatrix = new BYTE[nWidth * nHeight * 4];
     int p = 0;
     unsigned int* pTemp = (unsigned int*)pBgraData;
     unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
-    for (int y = nRy1; y < nRy2; ++y)
+    for (int y = 0; y < nHeight; ++y)
     {
-        for (int x = nRx1; x < nRx2; ++x)
+        for (int x = 0; x < nWidth; ++x)
         {
-            if (pTemp[y * nWidth + x] == (0xFF000000 | nColor))
-                pSubTemp[p++] = nColor;
-            else
-                pSubTemp[p++] = pTemp[y * nWidth + x];
+            pSubTemp[p++] = pTemp[y * nWidth + x];
             pTemp[y * nWidth + x] = 0xFF000000 | nColor;
         }
     }
@@ -1776,58 +1814,9 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
     if (!pAcroForms || !pPage)
         return NULL;
 
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(m_pFontManager);
-
     double dPageDpiX, dPageDpiY;
     double dWidth, dHeight;
     GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : (int)((int)dWidth  * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : (int)((int)dHeight * 96 / dPageDpiY);
-
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-    if (!pBgraData)
-    {
-        RELEASEOBJECT(pRenderer);
-        return NULL;
-    }
-
-    unsigned int nColor = (unsigned int)nBackgroundColor;
-    unsigned int nSize = (unsigned int)(nWidth * nHeight);
-    unsigned int* pTemp = (unsigned int*)pBgraData;
-    for (unsigned int i = 0; i < nSize; ++i)
-        *pTemp++ = 0xFF000000 | nColor;
-
-    CBgraFrame* pFrame = new CBgraFrame();
-    pFrame->put_Data(pBgraData);
-    pFrame->put_Width(nWidth);
-    pFrame->put_Height(nHeight);
-    pFrame->put_Stride(4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(pFrame);
-    pRenderer->SetSwapRGB(true);
-    pRenderer->put_Width(dWidth * 25.4 / dPageDpiX);
-    pRenderer->put_Height(dHeight * 25.4 / dPageDpiX);
-    if (nBackgroundColor != 0xFFFFFF)
-        pRenderer->CommandLong(c_nDarkMode, 1);
-
-    PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-    oRendererOut.NewPDF(m_pPDFDocument->getXRef());
-
-    // Создание Gfx
-    GBool crop = gTrue;
-    PDFRectangle box;
-    int rotate = pPage->getRotate();
-    if (rotate >= 360) {
-      rotate -= 360;
-    } else if (rotate < 0) {
-      rotate += 360;
-    }
-    pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
-    PDFRectangle* cropBox = pPage->getCropBox();
-
-    Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
 
     NSWasm::CData oRes;
     oRes.SkipLen();
@@ -1835,16 +1824,8 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
-        Object oFieldRef, oField;
-        XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict() || pField->getPageNum() != nPageIndex + 1)
-        {
-            // TODO Если ошибочная аннотация
-            oRes.AddInt(0xFFFFFFFF);
-            oFieldRef.free(); oField.free();
+        if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && i != nWidget))
             continue;
-        }
-        oFieldRef.free(); oField.free();
 
         // Номер аннотации для сопоставления с AP
         oRes.AddInt(i);
@@ -1852,29 +1833,61 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         // Координаты - BBox
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
-        double dTemp = dy1;
-        dy1 = dHeight - dy2;
-        dy2 = dHeight - dTemp;
 
-        // Размеры внешнего вида
-        int nRx1 = (int)round(dx1 * (double)nWidth / dWidth);
-        int nRx2 = (int)round(dx2 * (double)nWidth / dWidth + 1);
-        int nRy1 = (int)round(dy1 * (double)nHeight / dHeight);
-        int nRy2 = (int)round(dy2 * (double)nHeight / dHeight + 1);
-        if (nRx1 < 0) nRx1 = 0;
-        if (nRy1 < 0) nRy1 = 0;
-        if (nRx2 > nWidth) nRx2 = nWidth;
-        if (nRy2 > nHeight) nRy2 = nHeight;
+        int nWidth  = (int)round((dx2 - dx1) * (double)nRasterW / dWidth);
+        int nHeight = (int)round((dy2 - dy1) * (double)nRasterH / dHeight);
+
+        BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+        unsigned int nColor = (unsigned int)nBackgroundColor;
+        unsigned int nSize = (unsigned int)(nWidth * nHeight);
+        unsigned int* pTemp = (unsigned int*)pBgraData;
+        for (unsigned int i = 0; i < nSize; ++i)
+            *pTemp++ = 0xFF000000 | nColor;
+
+        CBgraFrame* pFrame = new CBgraFrame();
+        pFrame->put_Data(pBgraData);
+        pFrame->put_Width(nWidth);
+        pFrame->put_Height(nHeight);
+        pFrame->put_Stride(4 * nWidth);
+
+        NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+        pRenderer->SetFontManager(m_pFontManager);
+        pRenderer->CreateFromBgraFrame(pFrame);
+        pRenderer->SetSwapRGB(true);
+        pRenderer->put_Width ((dx2 - dx1) * 25.4 / dPageDpiX);
+        pRenderer->put_Height((dy2 - dy1) * 25.4 / dPageDpiX);
+        if (nBackgroundColor != 0xFFFFFF)
+            pRenderer->CommandLong(c_nDarkMode, 1);
+
+        PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
+        oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+
+        // Создание Gfx
+        GBool crop = gTrue;
+        PDFRectangle box;
+        int rotate = pPage->getRotate();
+        if (rotate >= 360)
+            rotate -= 360;
+        else if (rotate < 0)
+            rotate += 360;
+        pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+        PDFRectangle* cropBox = pPage->getCropBox();
+
+        Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+
+        // Координаты и размеры внешнего вида
+        int nRx1 = (int)round(dx1 * (double)nRasterW / dWidth);
+        int nRy1 = (int)round(dy1 * (double)nRasterH / dHeight);
         oRes.AddInt(nRx1);
-        oRes.AddInt(nRy1);
-        oRes.AddInt(nRx2 - nRx1);
-        oRes.AddInt(nRy2 - nRy1);
+        oRes.AddInt(nRasterH - nRy1);
+        oRes.AddInt(nWidth);
+        oRes.AddInt(nHeight);
 
         int nAPPos = oRes.GetSize();
         unsigned int nAPLength = 0;
         oRes.AddInt(nAPLength);
 
-        // Отрисовка всех внешних видов аннотации
+        // Отрисовка внешних видов аннотации
         Object oAP;
         AcroFormFieldType oType = pField->getAcroFormFieldType();
         ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
@@ -1883,12 +1896,16 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
             std::vector<const char*> arrAPName { "N", "D", "R" };
             for (unsigned int j = 0; j < arrAPName.size(); ++j)
             {
+                if (sView && strcmp(sView, arrAPName[j]) != 0)
+                    continue;
                 std::string sAPName(arrAPName[j]);
                 Object oObj;
                 if (oAP.dictLookup(sAPName.c_str(), &oObj)->isDict())
                 {
-                    for (int k = 0, nJLength = oObj.dictGetLength(); k < nJLength; ++k)
+                    for (int k = 0; k < oObj.dictGetLength(); ++k)
                     {
+                        if (sButtonView && strcmp(sButtonView, oObj.dictGetKey(k)) != 0)
+                            continue;
                         std::string sASName(oObj.dictGetKey(k));
                         oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
                         if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && sASName != "Off")
@@ -1898,153 +1915,33 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
                         }
                         else
                             oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
+                        pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth, dy2 * (double)nRasterH / dHeight - nRasterH);
                         DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), sASName.c_str());
                         nAPLength++;
-                        WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
+                        WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);
                     }
                 }
                 else if (!oObj.isNull())
                 {
                     oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
                     oRes.WriteString(NULL, 0);
+                    pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth, dy2 * (double)nRasterH / dHeight - nRasterH);
                     DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), NULL);
                     nAPLength++;
-                    WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
+                    WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);
                 }
                 oObj.free();
             }
         }
         oAP.free();
         ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
-
         oRes.AddInt(nAPLength, nAPPos);
 
-        int nMKPos = oRes.GetSize();
-        unsigned int nMKLength = 0;
-        oRes.AddInt(nMKLength);
-        if (pField->fieldLookup("MK", &oAP)->isDict())
-        {
-            std::vector<const char*> arrAPName { "I", "RI", "IX" };
-            for (unsigned int j = 0; j < arrAPName.size(); ++j)
-            {
-                std::string sAPName(arrAPName[j]);
-                Object oStr;
-                if (!oAP.dictLookup(sAPName.c_str(), &oStr)->isStream())
-                {
-                    oStr.free();
-                    continue;
-                }
-                Dict *dict = oStr.streamGetDict();
-                oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.size());
-
-                // BBox
-                Object bboxObj;
-                double bbox[4];
-                dict->lookup("BBox", &bboxObj);
-                if (bboxObj.isArray())
-                {
-                    for (i = 0; i < 4; ++i)
-                    {
-                        Object obj1;
-                        bboxObj.arrayGet(i, &obj1);
-                        bbox[i] = obj1.getNum();
-                        obj1.free();
-                    }
-                }
-                else
-                {
-                    bbox[0] = 0; bbox[1] = 0;
-                    bbox[2] = 0; bbox[3] = 0;
-                }
-                bboxObj.free();
-
-                // Matrix
-                double m[6];
-                m[0] = 1; m[1] = 0;
-                m[2] = 0; m[3] = 1;
-                m[4] = 0; m[5] = 0;
-
-                Object resObj;
-                dict->lookup("Resources", &resObj);
-                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
-
-                Object oStrRef;
-                oAP.dictLookupNF(sAPName.c_str(), &oStrRef);
-                gfx->drawForm(&oStrRef, resDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
-                oStr.free(); oStrRef.free(); resObj.free();
-
-                double dTemp = bbox[1];
-                bbox[1] = dHeight - bbox[3];
-                bbox[3] = dHeight - dTemp;
-
-                // Размеры внешнего вида
-                int nRx1 = (int)round(bbox[0] * (double)nWidth / dWidth);
-                int nRx2 = (int)round(bbox[2] * (double)nWidth / dWidth + 1);
-                int nRy1 = (int)round(bbox[1] * (double)nHeight / dHeight);
-                int nRy2 = (int)round(bbox[3] * (double)nHeight / dHeight + 1);
-                if (nRx1 < 0) nRx1 = 0;
-                if (nRy1 < 0) nRy1 = 0;
-                if (nRx2 > nWidth) nRx2 = nWidth;
-                if (nRy2 > nHeight) nRy2 = nHeight;
-                oRes.AddInt(nRx1);
-                oRes.AddInt(nRy1);
-                oRes.AddInt(nRx2 - nRx1);
-                oRes.AddInt(nRy2 - nRy1);
-
-                nMKLength++;
-                WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
-            }
-
-            int nIFPos = oRes.GetSize();
-            unsigned int nIFFlag = 0;
-            oRes.AddInt(nIFFlag);
-            Object oIF;
-            if (oAP.dictLookup("IF", &oIF)->isDict())
-            {
-                nIFFlag = 1;
-                // 2 - Масштабирование - SW
-                Object oObj;
-                if (oIF.dictLookup("SW", &oObj)->isName())
-                {
-                    nIFFlag |= (1 << 1);
-                    std::string sName(oObj.getName());
-                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
-                }
-                oObj.free();
-                // 3 - Тип масштабирования - S
-                if (oIF.dictLookup("S", &oObj)->isName())
-                {
-                    nIFFlag |= (1 << 2);
-                    std::string sName(oObj.getName());
-                    oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
-                }
-                oObj.free();
-                // 4 - Смещение - A
-                if (oIF.dictLookup("A", &oObj)->isArray())
-                {
-                    Object oObj1;
-                    nIFFlag |= (1 << 3);
-                    oRes.AddDouble(oObj.arrayGet(0, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
-                    oObj1.free();
-                    oRes.AddDouble(oObj.arrayGet(1, &oObj1)->isNum() ? oObj1.getNum() : 0.5);
-                    oObj1.free();
-                }
-                oObj.free();
-                // 5 - Полное соответствие - FB
-                if (oIF.dictLookup("FB", &oObj)->isBool() && oObj.getBool())
-                    nIFFlag |= (1 << 4);
-                oObj.free();
-            }
-            oIF.free();
-            oRes.AddInt(nIFFlag, nIFPos);
-        }
-        oAP.free();
-        oRes.AddInt(nMKLength, nMKPos);
+        delete gfx;
+        RELEASEOBJECT(pFrame);
+        RELEASEOBJECT(pRenderer);
     }
 
-    delete gfx;
-    RELEASEOBJECT(pFrame);
-    RELEASEOBJECT(pRenderer);
 
     oRes.WriteLen();
     BYTE* bRes = oRes.GetBuffer();
@@ -2147,8 +2044,8 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 dict->lookup("Resources", &resObj);
                 Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
 
-                int nWidth  = (bbox[2] > 0) ? bbox[2] * (double)nRasterW / dWidth : (int)((int)dWidth  * 96 / dPageDpiX);
-                int nHeight = (bbox[3] > 0) ? bbox[3] * (double)nRasterH / dHeight : (int)((int)dHeight * 96 / dPageDpiY);
+                int nWidth  = (bbox[2] > 0) ? (int)round(bbox[2] * (double)nRasterW / dWidth) : (int)((int)dWidth  * 96 / dPageDpiX);
+                int nHeight = (bbox[3] > 0) ? (int)round(bbox[3] * (double)nRasterH / dHeight): (int)((int)dHeight * 96 / dPageDpiY);
                 oRes.AddInt(nWidth);
                 oRes.AddInt(nHeight);
 
@@ -2157,7 +2054,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 unsigned int nSize = (unsigned int)(nWidth * nHeight);
                 unsigned int* pTemp = (unsigned int*)pBgraData;
                 for (unsigned int i = 0; i < nSize; ++i)
-                    *pTemp++ = 0xFF000000 | nColor;
+                    *pTemp++ = nColor;
 
                 CBgraFrame* pFrame = new CBgraFrame();
                 pFrame->put_Data(pBgraData);

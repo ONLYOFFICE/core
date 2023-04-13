@@ -1031,4 +1031,12 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_return(args, ret);                                                                                                                                       \
 	}
 
+static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext>& context, v8::FunctionCallback creator)
+{
+	v8::Isolate* current = CV8Worker::GetCurrent();
+	v8::Local<v8::Context> localContext = context->m_internal->m_context;
+	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, creator);
+	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
+}
+
 #endif // _BUILD_NATIVE_CONTROL_V8_BASE_H_

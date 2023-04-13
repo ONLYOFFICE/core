@@ -257,8 +257,5 @@ namespace NSGraphics
 
 void CGraphicsEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
-    v8::Isolate* current = CV8Worker::GetCurrent();
-	v8::Local<v8::Context> localContext = context->m_internal->m_context;
-	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSGraphics::CreateNativeGraphics);
-	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
+	InsertToGlobal(name, context, NSGraphics::CreateNativeGraphics);
 }

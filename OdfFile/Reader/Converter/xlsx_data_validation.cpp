@@ -278,7 +278,7 @@ public:
 							{
 								CP_XML_NODE(L"xm:f")
 								{
-									CP_XML_STREAM() << it->second->formula1;
+									CP_XML_STREAM() << XmlUtils::EncodeXmlString(it->second->formula1);
 								}
 							}
 						}
@@ -288,7 +288,7 @@ public:
 							{
 								CP_XML_NODE(L"xm:f")
 								{
-									CP_XML_STREAM() << it->second->formula2;
+									CP_XML_STREAM() << XmlUtils::EncodeXmlString(it->second->formula2);
 								}
 							}
 						}
@@ -420,28 +420,22 @@ void xlsx_dataValidations_context::add_formula(const std::wstring & name, const 
 	for (size_t i = 0; i < arrFormula.size(); ++i)
 	{
 		std::wstring & f = arrFormula[i];
-		size_t pos;
+		size_t pos = std::wstring::npos;
 
 		if (std::wstring::npos != (pos = f.find(L"cell-content-is-in-list"))) //oooc: , of:
 		{
 			pFind->second->type = L"list";
 			val = f.substr(24 + pos, f.size() - 25 - pos);
 
-			if (val.substr(0, 1) == L"\"")
-			{
-				std::wstring keep = val;
-				XmlUtils::replace_all(val, L"\"", L"");
-
-				pFind->second->formula1 = converter.convert(val);
-
-				if ((std::wstring::npos != val.find(L";")) ||	//convert formula replacing ; on ,
-					L"\"" + pFind->second->formula1 + L"\"" == keep)
-				{
-					pFind->second->formula1 = L"\"" + pFind->second->formula1 + L"\"";
-				}
+			if (!val.empty() && val.substr(0, 1) == L"\"")
+			{//list values
+				std::wstring sList = converter.convert_list_values(val);
+				if (255 < sList.size())
+					sList = sList.substr(0, 255);
+				pFind->second->formula1 = L"\"" + sList + L"\"";
 			}
 			else
-			{
+			{//formula
 				pFind->second->formula1 = converter.convert(val);
 			}
 		}

@@ -55,6 +55,8 @@ public:
 	std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true, std::wstring separator = L" ", bool bAbsoluteAlways = false);
 	std::wstring get_table_name();
 
+	std::wstring convert_list_values(std::wstring const & expr);
+
 	//a-la convert without check formula
     std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true, bool bAbsoluteAlways = false);
 	

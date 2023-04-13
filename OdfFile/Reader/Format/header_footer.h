@@ -82,15 +82,11 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties);
 
 
-// common-style-header-footer-attlist
 class common_style_header_footer_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-private:
-    bool style_display_; // default true
-    
+	bool style_display_ = true; // default
 };
 
 }

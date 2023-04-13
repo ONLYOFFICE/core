@@ -46,6 +46,8 @@ namespace cpdoccore {
 	class graphic_format_properties;
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
+
+	class fonts_container;
 }
 
 namespace oox {
@@ -53,7 +55,7 @@ namespace oox {
     class xlsx_dxfs
     {
     public:
-		xlsx_dxfs();
+		xlsx_dxfs(odf_reader::fonts_container & fonts);
 		~xlsx_dxfs();
 
 		size_t dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
@@ -65,6 +67,8 @@ namespace oox {
     private:
         class Impl;
         _CP_SCOPED_PTR(Impl) impl_;
+
+		odf_reader::fonts_container & fonts_container;
     };
 
 }

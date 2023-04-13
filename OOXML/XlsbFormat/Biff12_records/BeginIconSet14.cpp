@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,13 +53,25 @@ namespace XLSB
     void BeginIconSet14::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader;
-        unsigned short flags;
+        _UINT16 flags;
         record >> iSet >> flags;
 
         fCustom			= GETBIT(flags, 0);
         fIcon			= GETBIT(flags, 1);
         fReverse		= GETBIT(flags, 2);
     }
+
+	void BeginIconSet14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fCustom)
+		SETBIT(flags, 1, fIcon)
+		SETBIT(flags, 2, fReverse)
+
+		record << iSet << flags;
+	}
 
 } // namespace XLSB
 

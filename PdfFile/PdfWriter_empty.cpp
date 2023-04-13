@@ -32,7 +32,7 @@
 #include "PdfWriter.h"
 
 #ifdef BUILDING_WASM_MODULE
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_oCommandManager(this) {}
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer) : m_oCommandManager(this) {}
 CPdfWriter::~CPdfWriter() {}
 int CPdfWriter::SaveToFile(const std::wstring& wsPath) { return 0; }
 void CPdfWriter::SetPassword(const std::wstring& wsPassword) {}
@@ -141,8 +141,8 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
 //bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids) { return false; }
-void CPdfWriter::UpdateFont() {}
-void CPdfWriter::GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex) {}
+bool CPdfWriter::UpdateFont() { return false; }
+bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex) { return false; }
 PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex) { return NULL; }
 PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic) { return NULL; }
 void CPdfWriter::UpdateTransform() {}

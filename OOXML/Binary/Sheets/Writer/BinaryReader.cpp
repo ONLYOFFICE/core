@@ -568,8 +568,8 @@ int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 
 		READ1_DEF(length, res, this->ReadAltTextTable, pOfficeArtExtension->m_oAltTextTable.GetPointer());
 
-		pOfficeArtExtension->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
-		pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+		pOfficeArtExtension->m_sUri = L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 		pTable->m_oExtLst.Init();
 		pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
@@ -6403,8 +6403,25 @@ int BinaryWorksheetsTableReader::ReadUserProtectedRanges(BYTE type, long length,
 	if (c_oSer_UserProtectedRange::UserProtectedRange == type)
 	{
 		OOX::Spreadsheet::CUserProtectedRange* pUserProtectedRange = new OOX::Spreadsheet::CUserProtectedRange();
-		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
+		READ1_DEF(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
 		pUserProtectedRanges->m_arrItems.push_back(pUserProtectedRange);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc *desc = static_cast<OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oSer_UserProtectedRangeDesc::Name == type)
+	{
+		desc->name = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRangeDesc::Id == type)
+	{
+		desc->id = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6412,27 +6429,31 @@ int BinaryWorksheetsTableReader::ReadUserProtectedRanges(BYTE type, long length,
 }
 int BinaryWorksheetsTableReader::ReadUserProtectedRange(BYTE type, long length, void* poResult)
 {
-	OOX::Spreadsheet::CUserProtectedRange *pUserProtectedRanges = static_cast<OOX::Spreadsheet::CUserProtectedRange*>(poResult);
+	OOX::Spreadsheet::CUserProtectedRange *pUserProtectedRange = static_cast<OOX::Spreadsheet::CUserProtectedRange*>(poResult);
 	int res = c_oSerConstants::ReadOk;
 	if (c_oSer_UserProtectedRange::Name == type)
 	{
-		pUserProtectedRanges->m_oName = m_oBufferedStream.GetString4(length);
+		pUserProtectedRange->m_oName = m_oBufferedStream.GetString4(length);
 	}
 	else if (c_oSer_UserProtectedRange::Sqref == type)
 	{
-		pUserProtectedRanges->m_oSqref = m_oBufferedStream.GetString4(length);
+		pUserProtectedRange->m_oSqref = m_oBufferedStream.GetString4(length);
 	}
 	else if (c_oSer_UserProtectedRange::Text == type)
 	{
-		pUserProtectedRanges->m_oText = m_oBufferedStream.GetString4(length);
+		pUserProtectedRange->m_oText = m_oBufferedStream.GetString4(length);
 	}
-	else if (c_oSer_UserProtectedRange::UserId == type)
+	else if (c_oSer_UserProtectedRange::User == type)
 	{
-		pUserProtectedRanges->m_arUsersId.push_back(m_oBufferedStream.GetString4(length));
+		OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc desc;
+		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRangeDesc, &desc);
+		pUserProtectedRange->m_arUsers.push_back(desc);
 	}
 	else if (c_oSer_UserProtectedRange::UsersGroup == type)
 	{
-		pUserProtectedRanges->m_arUsersGroupsId.push_back(m_oBufferedStream.GetString4(length));
+		OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc desc;
+		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRangeDesc, &desc);
+		pUserProtectedRange->m_arUsersGroups.push_back(desc);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

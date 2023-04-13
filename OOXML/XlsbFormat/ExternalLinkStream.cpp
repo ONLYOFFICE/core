@@ -84,6 +84,14 @@ const bool ExternalLinkStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ExternalLinkStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_EXTERNALLINK != nullptr)
+		proc.mandatory(*m_EXTERNALLINK);
+
+	return true;
+}
+
 void ExternalLinkStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_, const std::wstring & rId)
 {
     for (size_t i = 0; i < global_info_->arXti_External.size(); i++)

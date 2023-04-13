@@ -303,6 +303,7 @@ namespace BinXlsxRW
 		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
 		void WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges);
 		void WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange);
+		void WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc);
 	};
 	class BinaryCustomsTableWriter
 	{

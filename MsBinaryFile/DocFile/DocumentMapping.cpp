@@ -153,12 +153,20 @@ namespace DocFileFormat
 
 		if ((m_document->Text) && (cpParaEnd < (int)m_document->Text->size()))
 		{
-            while ( ( m_document->Text->at( cpParaEnd ) != TextMark::ParagraphEnd ) &&
-                    ( m_document->Text->at( cpParaEnd ) != TextMark::CellOrRowMark ) &&
-                    !(( m_document->Text->at( cpParaEnd ) == TextMark::PageBreakOrSectionMark )&&
-                    isSectionEnd( cpParaEnd ) ) )
+            while (true)
 			{
-                if (cpParaEnd >= (int)m_document->Text->size()-1) break;
+				if (m_document->m_mapBadCP.end() != m_document->m_mapBadCP.find(cpParaEnd))
+				{
+					cpParaEnd++;
+					continue;
+				}
+				if ((m_document->Text->at(cpParaEnd) == TextMark::ParagraphEnd) ||
+					(m_document->Text->at(cpParaEnd) == TextMark::CellOrRowMark) ||
+					((m_document->Text->at(cpParaEnd) == TextMark::PageBreakOrSectionMark) &&
+						isSectionEnd(cpParaEnd)))
+					break;
+
+				if (cpParaEnd >= (int)m_document->Text->size()-1) break;
 				cpParaEnd++;
 			}
 

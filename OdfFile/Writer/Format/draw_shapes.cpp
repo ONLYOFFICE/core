@@ -198,9 +198,10 @@ void draw_custom_shape::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			draw_shape::serialize_attlist(CP_GET_XML_NODE());
-
-			if (draw_enhanced_geometry_)draw_enhanced_geometry_->serialize(CP_XML_STREAM());
 			draw_shape::serialize(CP_XML_STREAM());
+
+			if (draw_enhanced_geometry_)
+				draw_enhanced_geometry_->serialize(CP_XML_STREAM());
 		}
 	}
 }

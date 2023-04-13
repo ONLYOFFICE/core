@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -81,18 +81,44 @@ namespace XLSB
 
         if (proc.optional<EndPivotTableUISettings>())
         {
-            m_BrtEndPivotTableUISettings = elements_.back();
+            m_bBrtEndPivotTableUISettings = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotTableUISettings = false;
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<FRTEnd>())
+		{
+			m_bBrtFRTEnd = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginPivotTableUISettings && m_BrtEndPivotTableUISettings && m_BrtFRTEnd;
+        return m_BrtBeginPivotTableUISettings && m_bBrtEndPivotTableUISettings && m_bBrtFRTEnd;
     }
+
+	const bool PIVOTTABLEUISETTINGS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_BrtBeginPivotTableUISettings != nullptr)
+			proc.mandatory(*m_BrtBeginPivotTableUISettings);
+
+		for (auto& item : m_arBrtFieldListActiveItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPivotTableUISettings>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

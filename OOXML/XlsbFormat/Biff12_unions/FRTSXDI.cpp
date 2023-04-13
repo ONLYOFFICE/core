@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,6 +58,8 @@ namespace XLSB
     // FRTSXDI = [BrtFRTBegin BrtSXDI14 BrtFRTEnd] [BrtFRTBegin BrtSXDI15 BrtFRTEnd] *FRT
     const bool FRTSXDI::loadContent(BinProcessor& proc)
     {
+		m_bBrtFRTEnd = false;
+
         if (proc.optional<FRTBegin>())
         {
             m_BrtFRTBegin = elements_.back();
@@ -72,7 +74,7 @@ namespace XLSB
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
 
@@ -90,7 +92,7 @@ namespace XLSB
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+			m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
 
@@ -103,8 +105,39 @@ namespace XLSB
             count--;
         }        
 
-        return m_BrtFRTBegin && (m_BrtSXDI14 || m_BrtSXDI15) && m_BrtFRTEnd;
+        return m_BrtFRTBegin && (m_BrtSXDI14 || m_BrtSXDI15) && m_bBrtFRTEnd;
     }
+
+	const bool FRTSXDI::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtSXDI14 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_BrtSXDI14 != nullptr)
+				proc.mandatory(*m_BrtSXDI14);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		if (m_BrtSXDI15 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_BrtSXDI15 != nullptr)
+				proc.mandatory(*m_BrtSXDI15);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

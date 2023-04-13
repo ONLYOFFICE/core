@@ -8,8 +8,10 @@
 #ifndef CRYPTOPP_IMPORTS
 
 // Win32 has CryptoAPI and <wincrypt.h>. Windows 10 and Windows Store 10 have CNG and <bcrypt.h>.
-//  There's a hole for Windows Phone 8 and Windows Store 8. There is no userland crypto available.
-//  Also see http://stackoverflow.com/questions/36974545/random-numbers-for-windows-phone-8-and-windows-store-8
+//  There's a hole for Windows Phone 8 and Windows Store 8. There is no userland RNG available.
+//  Also see http://www.drdobbs.com/windows/using-c-and-com-with-winrt/240168150 and
+//  http://stackoverflow.com/questions/36974545/random-numbers-for-windows-phone-8-and-windows-store-8 and
+//  https://social.msdn.microsoft.com/Forums/vstudio/en-US/25b83e13-c85f-4aa1-a057-88a279ea3fd6/what-crypto-random-generator-c-code-could-use-on-wp81
 #if defined(CRYPTOPP_WIN32_AVAILABLE) && !defined(OS_RNG_AVAILABLE)
 # pragma message("WARNING: Compiling for Windows but an OS RNG is not available. This is likely a Windows Phone 8 or Windows Store 8 app.")
 #endif
@@ -19,9 +21,35 @@
 #include "osrng.h"
 #include "rng.h"
 
+// FreeBSD links /dev/urandom -> /dev/random. It showed up when we added
+// O_NOFOLLOW to harden the non-blocking generator. Use Arc4Random instead
+// for a non-blocking generator. Arc4Random is cryptograhic quality prng
+// based on ChaCha20. The ChaCha20 generator is seeded from /dev/random,
+// so we can't completely avoid the blocking.
+// https://www.freebsd.org/cgi/man.cgi?query=arc4random_buf.
+#ifdef __FreeBSD__
+# define DONT_USE_O_NOFOLLOW 1
+# define USE_FREEBSD_ARC4RANDOM 1
+# include <stdlib.h>
+#endif
+
+// Solaris links /dev/urandom -> ../devices/pseudo/random@0:urandom
+// We can't access the device. Avoid O_NOFOLLOW for the platform.
+#ifdef __sun
+# define DONT_USE_O_NOFOLLOW 1
+#endif
+
+// And other OSes that don't define it
+#ifndef O_NOFOLLOW
+# define DONT_USE_O_NOFOLLOW 1
+#endif
+
 #ifdef CRYPTOPP_WIN32_AVAILABLE
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#ifndef ERROR_INCORRECT_SIZE
+# define ERROR_INCORRECT_SIZE 0x000005B6
+#endif
 #if defined(USE_MS_CRYPTOAPI)
 #include <wincrypt.h>
 #ifndef CRYPT_NEWKEYSET
@@ -42,7 +70,7 @@
 # define STATUS_INVALID_HANDLE 0xC0000008
 #endif
 #endif
-#endif
+#endif  // Win32
 
 #ifdef CRYPTOPP_UNIX_AVAILABLE
 #include <errno.h>
@@ -128,16 +156,23 @@ MicrosoftCryptoProvider::~MicrosoftCryptoProvider()
 
 NonblockingRng::NonblockingRng()
 {
-#ifndef CRYPTOPP_WIN32_AVAILABLE
-	m_fd = open("/dev/urandom",O_RDONLY);
+#if !defined(CRYPTOPP_WIN32_AVAILABLE) && !defined(USE_FREEBSD_ARC4RANDOM)
+# ifndef DONT_USE_O_NOFOLLOW
+	const int flags = O_RDONLY|O_NOFOLLOW;
+# else
+	const int flags = O_RDONLY;
+# endif
+
+	m_fd = open("/dev/urandom", flags);
 	if (m_fd == -1)
 		throw OS_RNG_Err("open /dev/urandom");
+
 #endif
 }
 
 NonblockingRng::~NonblockingRng()
 {
-#ifndef CRYPTOPP_WIN32_AVAILABLE
+#if !defined(CRYPTOPP_WIN32_AVAILABLE) && !defined(USE_FREEBSD_ARC4RANDOM)
 	close(m_fd);
 #endif
 }
@@ -146,12 +181,33 @@ void NonblockingRng::GenerateBlock(byte *output, size_t size)
 {
 #ifdef CRYPTOPP_WIN32_AVAILABLE
 	// Acquiring a provider is expensive. Do it once and retain the reference.
+# if defined(CRYPTOPP_CXX11_STATIC_INIT)
+	static const MicrosoftCryptoProvider hProvider = MicrosoftCryptoProvider();
+# else
 	const MicrosoftCryptoProvider &hProvider = Singleton<MicrosoftCryptoProvider>().Ref();
+# endif
 # if defined(USE_MS_CRYPTOAPI)
-	if (!CryptGenRandom(hProvider.GetProviderHandle(), (DWORD)size, output))
+	DWORD dwSize;
+	CRYPTOPP_ASSERT(SafeConvert(size, dwSize));
+	if (!SafeConvert(size, dwSize))
+	{
+		SetLastError(ERROR_INCORRECT_SIZE);
+		throw OS_RNG_Err("GenerateBlock size");
+	}
+	BOOL ret = CryptGenRandom(hProvider.GetProviderHandle(), dwSize, output);
+	CRYPTOPP_ASSERT(ret != FALSE);
+	if (ret == FALSE)
 		throw OS_RNG_Err("CryptGenRandom");
 # elif defined(USE_MS_CNGAPI)
-	NTSTATUS ret = BCryptGenRandom(hProvider.GetProviderHandle(), output, (ULONG)size, 0);
+	ULONG ulSize;
+	CRYPTOPP_ASSERT(SafeConvert(size, ulSize));
+	if (!SafeConvert(size, ulSize))
+	{
+		SetLastError(ERROR_INCORRECT_SIZE);
+		throw OS_RNG_Err("GenerateBlock size");
+	}
+	NTSTATUS ret = BCryptGenRandom(hProvider.GetProviderHandle(), output, ulSize, 0);
+	CRYPTOPP_ASSERT(BCRYPT_SUCCESS(ret));
 	if (!(BCRYPT_SUCCESS(ret)))
 	{
 		// Hack... OS_RNG_Err calls GetLastError()
@@ -160,6 +216,12 @@ void NonblockingRng::GenerateBlock(byte *output, size_t size)
 	}
 # endif
 #else
+
+# if defined(USE_FREEBSD_ARC4RANDOM)
+	// Cryptographic quality prng based on ChaCha20,
+	// https://www.freebsd.org/cgi/man.cgi?query=arc4random_buf
+	arc4random_buf(output, size);
+# else
 	while (size)
 	{
 		ssize_t len = read(m_fd, output, size);
@@ -171,10 +233,11 @@ void NonblockingRng::GenerateBlock(byte *output, size_t size)
 
 			continue;
 		}
-
 		output += len;
 		size -= len;
 	}
+# endif  // USE_FREEBSD_ARC4RANDOM
+
 #endif  // CRYPTOPP_WIN32_AVAILABLE
 }
 
@@ -185,16 +248,22 @@ void NonblockingRng::GenerateBlock(byte *output, size_t size)
 #ifdef BLOCKING_RNG_AVAILABLE
 
 #ifndef CRYPTOPP_BLOCKING_RNG_FILENAME
-#ifdef __OpenBSD__
-#define CRYPTOPP_BLOCKING_RNG_FILENAME "/dev/srandom"
-#else
-#define CRYPTOPP_BLOCKING_RNG_FILENAME "/dev/random"
-#endif
+# ifdef __OpenBSD__
+#  define CRYPTOPP_BLOCKING_RNG_FILENAME "/dev/srandom"
+# else
+#  define CRYPTOPP_BLOCKING_RNG_FILENAME "/dev/random"
+# endif
 #endif
 
 BlockingRng::BlockingRng()
 {
-	m_fd = open(CRYPTOPP_BLOCKING_RNG_FILENAME,O_RDONLY);
+#ifndef DONT_USE_O_NOFOLLOW
+	const int flags = O_RDONLY|O_NOFOLLOW;
+#else
+	const int flags = O_RDONLY;
+#endif
+
+	m_fd = open(CRYPTOPP_BLOCKING_RNG_FILENAME, flags);
 	if (m_fd == -1)
 		throw OS_RNG_Err("open " CRYPTOPP_BLOCKING_RNG_FILENAME);
 }

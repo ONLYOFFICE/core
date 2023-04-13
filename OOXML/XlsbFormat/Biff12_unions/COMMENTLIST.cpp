@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,12 @@ namespace XLSB
     {
         if (proc.optional<BeginCommentList>())
         {
-            m_BrtBeginCommentList = elements_.back();
+            m_bBrtBeginCommentList = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginCommentList = false;
+
         int count = proc.repeated<COMMENT>(0, 0);
 
         while(count > 0)
@@ -71,12 +74,28 @@ namespace XLSB
         }
         if (proc.optional<EndCommentList>())
         {
-            m_BrtEndCommentList = elements_.back();
+            m_bBrtEndCommentList = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCommentList = false;
 
-        return m_BrtBeginCommentList && m_BrtEndCommentList;
+        return m_bBrtBeginCommentList && m_bBrtEndCommentList;
     }
+
+	const bool COMMENTLIST::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginCommentList>();
+
+		for (auto &item : m_arCOMMENT)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndCommentList>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

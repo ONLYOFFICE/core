@@ -11,6 +11,25 @@
 #include "algebra.cpp"
 #include "eprecomp.cpp"
 
+ANONYMOUS_NAMESPACE_BEGIN
+
+using CryptoPP::EC2N;
+
+#if defined(HAVE_GCC_INIT_PRIORITY)
+	#define INIT_ATTRIBUTE __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 51)))
+	const EC2N::Point g_identity INIT_ATTRIBUTE = EC2N::Point();
+#elif defined(HAVE_MSC_INIT_PRIORITY)
+	#pragma warning(disable: 4075)
+	#pragma init_seg(".CRT$XCU")
+	const EC2N::Point g_identity;
+	#pragma warning(default: 4075)
+#elif defined(HAVE_XLC_INIT_PRIORITY)
+	#pragma priority(290)
+	const EC2N::Point g_identity;
+#endif
+
+ANONYMOUS_NAMESPACE_END
+
 NAMESPACE_BEGIN(CryptoPP)
 
 EC2N::EC2N(BufferedTransformation &bt)
@@ -33,8 +52,8 @@ void EC2N::DEREncode(BufferedTransformation &bt) const
 {
 	m_field->DEREncode(bt);
 	DERSequenceEncoder seq(bt);
-	m_field->DEREncodeElement(seq, m_a);
-	m_field->DEREncodeElement(seq, m_b);
+	   m_field->DEREncodeElement(seq, m_a);
+	   m_field->DEREncodeElement(seq, m_b);
 	seq.MessageEnd();
 }
 
@@ -103,7 +122,7 @@ void EC2N::EncodePoint(BufferedTransformation &bt, const Point &P, bool compress
 		NullStore().TransferTo(bt, EncodedPointSize(compressed));
 	else if (compressed)
 	{
-		bt.Put(2 + (!P.x ? 0 : m_field->Divide(P.y, P.x).GetBit(0)));
+		bt.Put((byte)(2U + (!P.x ? 0U : m_field->Divide(P.y, P.x).GetBit(0))));
 		P.x.Encode(bt, m_field->MaxElementByteLength());
 	}
 	else
@@ -177,7 +196,14 @@ bool EC2N::Equal(const Point &P, const Point &Q) const
 
 const EC2N::Point& EC2N::Identity() const
 {
+#if defined(HAVE_GCC_INIT_PRIORITY) || defined(HAVE_MSC_INIT_PRIORITY) || defined(HAVE_XLC_INIT_PRIORITY)
+	return g_identity;
+#elif defined(CRYPTOPP_CXX11_STATIC_INIT)
+	static const EC2N::Point g_identity;
+	return g_identity;
+#else
 	return Singleton<Point>().Ref();
+#endif
 }
 
 const EC2N::Point& EC2N::Inverse(const Point &P) const
@@ -235,7 +261,7 @@ const EC2N::Point& EC2N::Double(const Point &P) const
 
 // ********************************************************
 
-/*
+#if 0
 EcPrecomputation<EC2N>& EcPrecomputation<EC2N>::operator=(const EcPrecomputation<EC2N> &rhs)
 {
 	m_ec = rhs.m_ec;
@@ -287,7 +313,7 @@ EC2N::Point EcPrecomputation<EC2N>::CascadeExponentiate(const Integer &exponent,
 {
 	return m_ep.CascadeExponentiate(exponent, static_cast<const EcPrecomputation<EC2N> &>(pc2).m_ep, exponent2);
 }
-*/
+#endif
 
 NAMESPACE_END
 

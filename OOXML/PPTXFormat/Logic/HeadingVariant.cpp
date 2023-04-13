@@ -148,14 +148,13 @@ namespace PPTX
 				case vtNull: break;
 				case vtVariant:
 					{
-						XmlUtils::CXmlNodes oNodes;
+						std::vector<XmlUtils::CXmlNode> oNodes;
 						if (node.GetNodes(_T("*"), oNodes))
 						{
-							int nCount = oNodes.GetCount();
-							for (int i = 0; i < nCount; ++i)
+							size_t nCount = oNodes.size();
+							for (size_t i = 0; i < nCount; ++i)
 							{
-								XmlUtils::CXmlNode oNode;
-								oNodes.GetAt(i, oNode);
+								XmlUtils::CXmlNode& oNode = oNodes[i];
 
 								m_oVariant = oNode;
 							}
@@ -460,14 +459,13 @@ namespace PPTX
 			m_eBaseType = CVariant::getTypeByString(sBaseType);
 			XmlMacroReadAttributeBase(node, _T("size"), m_nSize);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					arrVariants.emplace_back();
 					arrVariants.back() = oNode;
@@ -556,14 +554,13 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, _T("lBounds"), m_strLBounds);
 			XmlMacroReadAttributeBase(node, _T("uBounds"), m_strUBounds);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					arrVariants.emplace_back();
 					arrVariants.back() = oNode;
@@ -654,15 +651,13 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, _T("name"), m_strName);
 			XmlMacroReadAttributeBase(node, _T("linkTarget"), m_strLinkTarget);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
-
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 					m_oContent = oNode;
 				}
 			}
@@ -756,13 +751,12 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oNode.GetNodes(_T("property"), oNodes);
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oProperty;
-			oNodes.GetAt(i, oProperty);
+			XmlUtils::CXmlNode & oProperty = oNodes[i];
 
 			m_arProperties.emplace_back();
 			m_arProperties.back().fromXML(oProperty);

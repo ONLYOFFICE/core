@@ -79,7 +79,7 @@ namespace XLS
 
 		global_info = record.getGlobalWorkbookInfo();
 
-		unsigned short flags;
+		_UINT16 flags;
 		record >> dyHeight >> flags;		
 
 		fItalic = GETBIT(flags, 1);
@@ -150,6 +150,65 @@ namespace XLS
 		{
 			global_info->fonts_charsets.insert(std::make_pair(bCharSet, bFamily));
 		}
+	}
+
+	void Font::writeFields(CFRecord& record)
+	{
+		global_info = record.getGlobalWorkbookInfo();
+
+		_UINT16 flags = 0;
+		record << dyHeight;
+
+		SETBIT(flags, 1, fItalic)
+		SETBIT(flags, 3, fStrikeOut)
+		SETBIT(flags, 4, fOutline)
+		SETBIT(flags, 5, fShadow)
+		SETBIT(flags, 6, fCondense)
+		SETBIT(flags, 7, fExtend)
+
+		if (bls == 700)
+			SETBIT(flags, 0, true)
+
+		if (uls)
+			SETBIT(flags, 2, true)
+
+		record << flags;
+
+		if (global_info->Version > 0x0200 && global_info->Version < 0x0800)
+		{
+			record << icv;
+		}
+
+		if (global_info->Version > 0x400)
+		{
+			record << bls << sss << uls << bFamily << bCharSet;
+
+			unsigned char reserved = 0;
+			record << reserved;
+		}
+
+		if (global_info->Version < 0x0600)
+		{
+			ShortXLAnsiString name(fontName);
+
+			record << name;
+		}
+		else if (global_info->Version < 0x0800)
+		{
+			ShortXLUnicodeString	name(fontName);
+
+			record << name;
+		}
+		else
+		{
+			brtColor.writeFields(record);
+			record << bFontScheme;
+
+			XLSB::XLWideString	name(fontName);
+
+			record << name;
+		}
+
 	}
 
 	int Font::serialize(std::wostream & stream)

@@ -2069,11 +2069,14 @@ std::wstring PPT::CShapeWriter::ConvertImage()
             if (pImageElement->m_lpictureContrast < 0x10000)
             {
                 contrast = (0x10000 - pImageElement->m_lpictureContrast) * -1.5259;
-            } else
+            } 
+			else
             {
                 //                contrast = (pImageElement->m_lpictureContrast - 0x10000) * 0.76294; // 0.76294 - not correct, * - not correct
                 contrast = 0;
             }
+			if (contrast < -100000) 
+				contrast = -100000;
             m_oWriter.WriteString(L" contrast=\"" + std::to_wstring(contrast) + L"\"");
         }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace XLSB
 
     void BeginList::readFields(XLS::CFRecord& record)
     {
-        unsigned int flags;
+		_UINT32 flags;
         record >> rfxList >> lt >> idList >> crwHeader >> crwTotals >> flags;
 
         fShownTotalRow          = GETBIT(flags, 0);
@@ -67,6 +67,23 @@ namespace XLSB
         record.getGlobalWorkbookInfo()->mapTableNames.insert({idList, stDisplayName});
         record.getGlobalWorkbookInfo()->mapTableColumnNames.insert({idList, std::vector<std::wstring>()});
     }
+
+	void BeginList::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+		record << rfxList << lt << idList << crwHeader << crwTotals;
+
+		SETBIT(flags, 0, fShownTotalRow);
+		SETBIT(flags, 1, fSingleCell);
+		SETBIT(flags, 2, fForceInsertToBeVisible);
+		SETBIT(flags, 3, fInsertRowInsCells);
+		SETBIT(flags, 4, fPublished);
+
+		record << flags;
+
+		record << nDxfHeader << nDxfData << nDxfAgg << nDxfBorder << nDxfHeaderBorder << nDxfAggBorder << dwConnID
+			<< stName << stDisplayName << stComment << stStyleHeader << stStyleData << stStyleAgg;		
+	}
 
 } // namespace XLSB
 

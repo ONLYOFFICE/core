@@ -1000,14 +1000,14 @@ namespace OOX
 			XmlMacroReadAttributeBase( oNode, (L"w:sep"),        m_oSep );
 			XmlMacroReadAttributeBase( oNode, (L"w:space"),      m_oSpace );
 
-			XmlUtils::CXmlNodes oCols;
+			std::vector<XmlUtils::CXmlNode> oCols;
 
 			if ( oNode.GetNodes( (L"w:col"), oCols ) )
 			{
-				for ( int nIndex = 0; nIndex < oCols.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oCols.size(); nIndex++ )
 				{
-					XmlUtils::CXmlNode oCol;
-					if ( oCols.GetAt( nIndex, oCol ) )
+					XmlUtils::CXmlNode& oCol = oCols[nIndex];
+					if ( oCol.IsValid() )
 					{
 						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
 						*oColumn = oCol;
@@ -1554,16 +1554,16 @@ namespace OOX
 
 			if ( !m_bSectPrChange )
 			{
-				XmlUtils::CXmlNodes oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				if ( oNode.GetNodes( (L"w:footerReference"), oNodes ) )
 				{
-					XmlUtils::CXmlNode oFooterNode;
-					for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+					for ( int nIndex = 0; nIndex < oNodes.size(); nIndex++ )
 					{
-						if ( oNodes.GetAt( nIndex, oFooterNode ) )
+						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
+						if ( oNode.IsValid() )
 						{
 							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
-							*oFooter = oFooterNode;
+							oFooter->FromXML(oNode);
 
 							if (oFooter) m_arrFooterReference.push_back( oFooter );
 						}
@@ -1579,16 +1579,16 @@ namespace OOX
 
 			if ( !m_bSectPrChange )
 			{
-				XmlUtils::CXmlNodes oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				if ( oNode.GetNodes( L"w:headerReference", oNodes ) )
 				{
-					XmlUtils::CXmlNode oHeaderNode;
-					for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+					for ( size_t nIndex = 0; nIndex < oNodes.size(); nIndex++ )
 					{
-						if ( oNodes.GetAt( nIndex, oHeaderNode ) )
+						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
+						if ( oNode.IsValid())
 						{
 							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
-							*oHeader = oHeaderNode;
+							oHeader->FromXML(oNode);
 
 							if (oHeader) m_arrHeaderReference.push_back( oHeader );
 						}

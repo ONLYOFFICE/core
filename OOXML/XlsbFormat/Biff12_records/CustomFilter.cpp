@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,6 +68,25 @@ namespace XLSB
         else
             record.skipNunBytes(8);
     }
+
+	void CustomFilter::writeFields(XLS::CFRecord& record)
+	{
+		record << vts << grbitSgn;
+		if (vts == 0x00000004)
+			record << xdata;
+		else if (vts == 0x00000008)
+		{
+			record.reserveNunBytes(7);
+			record << bdata;
+		}
+		else if (vts == 0x00000006)
+		{
+			record.reserveNunBytes(8);
+			record << vtsStringXls;
+		}
+		else
+			record.reserveNunBytes(8);
+	}
 
 } // namespace XLSB
 

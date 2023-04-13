@@ -47,5 +47,10 @@ void XFPropBorder::load(CFRecord& record)
 	record >> color >> dgBorder;
 }
 
+void XFPropBorder::save(CFRecord& record)
+{
+	record << color << dgBorder;
+}
+
 
 } // namespace XLS

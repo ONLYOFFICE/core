@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class DBType : public XLS::BiffAttributeSimple<unsigned int>
+class DBType : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	DBType& operator= (const _UINT32& other_val);
 	enum
 	{
             DBTODBC         = 0x00000001,

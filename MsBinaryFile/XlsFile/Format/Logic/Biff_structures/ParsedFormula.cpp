@@ -32,8 +32,7 @@
 
 #include "NameParsedFormula.h"
 #include "StringPtgParser.h"
-
-
+#include <boost/algorithm/string/trim.hpp>
 namespace XLS
 {
 
@@ -43,7 +42,11 @@ ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 	rgce(cell_base_ref)
 {
 }
-
+ParsedFormula& ParsedFormula::operator=(const std::wstring& value)
+{
+    parseStringFormula(value, L"");
+	return *this;
+}
 void ParsedFormula::set_base_ref(const CellRef& cell_base_ref)
 {
 	rgce.set_base_ref(cell_base_ref);
@@ -114,15 +117,15 @@ const std::wstring ParsedFormula::getAssembledFormula(bool full_ref) const
 }
 
 
-//const bool ParsedFormula::parseStringFormula(const std::wstring formula, const std::wstring & tag_name)
-//{
-//	StringPtgParser parser;
-//	if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, tag_name))
-//	{
-//		return true;
-//	}
-//	return false;
-//}
+const bool ParsedFormula::parseStringFormula(const std::wstring formula, const std::wstring & tag_name)
+{
+    StringPtgParser parser;
+    if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, tag_name))
+    {
+        return true;
+    }
+    return false;
+}
 
 
 } // namespace XLS

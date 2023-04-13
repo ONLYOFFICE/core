@@ -60,14 +60,13 @@ namespace PPTX
 				bool bIsFound2 = false;
 				if (oNodeExtLst.IsValid())
 				{
-					XmlUtils::CXmlNodes oNodesExt;
+					std::vector<XmlUtils::CXmlNode> oNodesExt;
 					if (oNodeExtLst.GetNodes(_T("p:ext"), oNodesExt))
 					{
-						int nCountExts = oNodesExt.GetCount();
-						for (int nIndex = 0; nIndex < nCountExts; ++nIndex)
+						size_t nCountExts = oNodesExt.size();
+						for (size_t nIndex = 0; nIndex < nCountExts; ++nIndex)
 						{
-							XmlUtils::CXmlNode oNodeExt;
-							oNodesExt.GetAt(nIndex, oNodeExt);
+							XmlUtils::CXmlNode & oNodeExt = oNodesExt[nIndex];
 
 							// parent
 							if (!bIsFound1)
@@ -325,13 +324,12 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oNode.GetNodes(_T("p:cm"), oNodes);
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oCm;
-			oNodes.GetAt(i, oCm);
+			XmlUtils::CXmlNode &oCm = oNodes[i];
 
 			PPTX::Logic::Comment elm;
 			m_arComments.push_back(elm);

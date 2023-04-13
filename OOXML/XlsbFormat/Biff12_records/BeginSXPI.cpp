@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,20 +50,36 @@ namespace XLSB
         return BaseObjectPtr(new BeginSXPI(*this));
     }
 
-    void BeginSXPI::readFields(XLS::CFRecord& record)
-    {
-        BYTE flags;
-        record >> isxvd >> isxvi >> isxth >> flags;
+	void BeginSXPI::readFields(XLS::CFRecord& record)
+	{
+		BYTE flags;
+		record >> isxvd >> isxvi >> isxth >> flags;
 
-        fUnique  = GETBIT(flags, 0);
-        fDisplay = GETBIT(flags, 1);
+		fUnique = GETBIT(flags, 0);
+		fDisplay = GETBIT(flags, 1);
 
-        if(fUnique)
-            record >> irstUnique;
+		if (fUnique)
+			record >> irstUnique;
 
-        if(fDisplay)
-            record >> irstDisplay;
-    }
+		if (fDisplay)
+			record >> irstDisplay;
+	}
+
+	void BeginSXPI::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fUnique)
+    	SETBIT(flags, 1, fDisplay)
+
+    	record << isxvd << isxvi << isxth << flags;
+
+		if (fUnique)
+			record << irstUnique;
+
+		if (fDisplay)
+			record << irstDisplay;
+	}
 
 } // namespace XLSB
 

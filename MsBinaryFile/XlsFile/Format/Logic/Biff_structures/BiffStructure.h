@@ -49,6 +49,7 @@ class BiffStructure_NoVtbl
 public:
 	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 	void load(IBinaryReader* reader);
+    void save(CFRecord& record);
 };
 
 class BiffStructure;
@@ -65,6 +66,7 @@ public:
 	virtual void load(IBinaryReader* reader)
 	{
 	}
+	virtual void save(CFRecord& record) {}//= 0;
 
 	virtual ElementType get_type() = 0;
 
@@ -101,6 +103,20 @@ CFRecord& operator>>(CFRecord& record, T& val)
 	else
 	{
 		val.load(record);
+	}
+	return record;
+}
+
+template<class T>
+CFRecord& operator << (CFRecord& record, T& val)
+{
+	if (DiffBiff(val))
+	{
+		record.storeAnyData(val);
+	}
+	else
+	{
+		val.save(record);
 	}
 	return record;
 }

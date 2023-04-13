@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,11 +73,17 @@ class SupName_T: public SupNameBase, public XLS::BiffRecord
             return XLS::BaseObjectPtr(new SupName_T<T, id>(*this));
         }
 
-        void readFields(XLS::CFRecord& record)
+        void readFields(XLS::CFRecord& record) override
         {
             if(id != rt_SupNameNil)
                 record >> value;
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			if (id != rt_SupNameNil)
+				record << value;
+		}
 
         T value;
 };

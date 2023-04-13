@@ -165,6 +165,8 @@ namespace OOX
 			m_oSlicerCacheHideItemsWithNoData.reset();
             m_oPivotCacheDefinitionExt.reset();
 			m_oUserProtectedRanges.reset();
+			m_oChartDataLabel.reset();
+			m_oChartFiltering.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{

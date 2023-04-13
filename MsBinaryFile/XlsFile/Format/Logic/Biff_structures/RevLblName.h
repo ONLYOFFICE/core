@@ -49,12 +49,14 @@ public:
 
 	static const ElementType	type = typeRevLblName;
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 
 	const std::wstring toString() const;
 
 	std::wstring  st;
+	unsigned char iBuiltin;
 };
 
 } // namespace XLS

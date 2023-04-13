@@ -89,7 +89,9 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeMoon:				return boost::make_shared<oox_shape_moon>();
 	case SimpleTypes::shapetypeLightningBolt:		return boost::make_shared<oox_shape_lightningBolt>();
 	case SimpleTypes::shapetypeHeart:				return boost::make_shared<oox_shape_heart>();
-	
+	case SimpleTypes::shapetypeIrregularSeal1:		return boost::make_shared<oox_shape_IrregularSeal1>();
+	case SimpleTypes::shapetypeIrregularSeal2:		return boost::make_shared<oox_shape_IrregularSeal2>();
+
 	case SimpleTypes::shapetypeCircularArrow:		return boost::make_shared<oox_shape_CircularArrow>();
 	case SimpleTypes::shapetypeCurvedLeftArrow:		return boost::make_shared<oox_shape_CurvedLeftArrow>();
 	case SimpleTypes::shapetypeCurvedRightArrow:	return boost::make_shared<oox_shape_CurvedRightArrow>();

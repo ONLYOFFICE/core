@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -79,12 +79,39 @@ namespace XLSB
 
         if (proc.optional<EndCellStyleXFs>())
         {
-            m_BrtEndCellStyleXFs = elements_.back();
+			m_bBrtEndCellStyleXFs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCellStyleXFs = false;
 
-        return m_BrtBeginCellStyleXFs && !m_arBrtXF.empty() && m_BrtEndCellStyleXFs;
+        return m_BrtBeginCellStyleXFs && !m_arBrtXF.empty() && m_bBrtEndCellStyleXFs;
     }
+
+	const bool CELLSTYLEXFS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginCellStyleXFs == nullptr)
+			m_BrtBeginCellStyleXFs = XLS::BaseObjectPtr(new XLSB::BeginCellStyleXFs());
+
+		if (m_BrtBeginCellStyleXFs != nullptr)
+		{
+			auto ptrBrtBeginCellStyleXFs = static_cast<XLSB::BeginCellStyleXFs*>(m_BrtBeginCellStyleXFs.get());
+
+			if (ptrBrtBeginCellStyleXFs != nullptr)
+				ptrBrtBeginCellStyleXFs->cxfs = m_arBrtXF.size();
+
+			proc.mandatory(*m_BrtBeginCellStyleXFs);
+		}
+
+		for (auto &item : m_arBrtXF)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndCellStyleXFs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -96,6 +96,7 @@ namespace NExtractTools
 		TCD_XLTM2XLSX,
         TCD_XLTM2XLSM,
         TCD_XLSB2XLST,
+		TCD_XLSX2XLSB,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
@@ -295,13 +296,13 @@ namespace NExtractTools
 
         bool FromXmlNode(XmlUtils::CXmlNode& oNode)
         {
-                XmlUtils::CXmlNodes oXmlNodes;
+                std::vector<XmlUtils::CXmlNode> oXmlNodes;
                 if(TRUE == oNode.GetChilds(oXmlNodes))
                 {
-                    for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+                    for(size_t i = 0; i < oXmlNodes.size(); ++i)
                     {
-                        XmlUtils::CXmlNode oXmlNode;
-                        if(oXmlNodes.GetAt(i, oXmlNode))
+                        XmlUtils::CXmlNode & oXmlNode = oXmlNodes[i];
+                        if(oXmlNode.IsValid())
                         {
                             std::wstring sValue;
                             if(oXmlNode.GetTextIfExist(sValue))
@@ -370,13 +371,13 @@ namespace NExtractTools
 
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oXmlNodes;
+			std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if(TRUE == oNode.GetChilds(oXmlNodes))
 			{
-				for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+				for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
-					XmlUtils::CXmlNode oXmlNode;
-					if(oXmlNodes.GetAt(i, oXmlNode))
+					XmlUtils::CXmlNode& oXmlNode = oXmlNodes[i];
+					if (oXmlNode.IsValid())
 					{
                         std::wstring sValue;
 						if(oXmlNode.GetTextIfExist(sValue))
@@ -417,13 +418,13 @@ namespace NExtractTools
 
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oXmlNodes;
+			std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if (TRUE == oNode.GetChilds(oXmlNodes))
 			{
-				for (int i = 0; i < oXmlNodes.GetCount(); i++)
+				for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
-					XmlUtils::CXmlNode oXmlNode;
-					if (oXmlNodes.GetAt(i, oXmlNode))
+					XmlUtils::CXmlNode& oXmlNode = oXmlNodes[i];
+					if (oXmlNode.IsValid())
 					{
 						std::wstring sValue;
 						if (oXmlNode.GetTextIfExist(sValue))
@@ -581,13 +582,13 @@ namespace NExtractTools
 		}
 		bool FromXmlNode(XmlUtils::CXmlNode& oRoot)
 		{
-			XmlUtils::CXmlNodes oXmlNodes;
+			std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if(TRUE == oRoot.GetChilds(oXmlNodes))
 			{
-				for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+				for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
-					XmlUtils::CXmlNode oXmlNode;
-					if(oXmlNodes.GetAt(i, oXmlNode))
+					XmlUtils::CXmlNode& oXmlNode = oXmlNodes[i];
+					if (oXmlNode.IsValid())
 					{
 						std::wstring sName = oXmlNode.GetName();
 						if(_T("m_oMailMergeSend") == sName)
@@ -761,13 +762,13 @@ namespace NExtractTools
 
 		bool FromLimitsNode(XmlUtils::CXmlNode& oXmlNode)
 		{
-			XmlUtils::CXmlNodes oLimitsNode;
+			std::vector<XmlUtils::CXmlNode> oLimitsNode;
 			if (oXmlNode.GetNodes(L"m_oInputLimit", oLimitsNode))
 			{
-				for(int i = 0; i < oLimitsNode.GetCount(); ++i)
+				for(size_t i = 0; i < oLimitsNode.size(); ++i)
 				{
-					XmlUtils::CXmlNode oLimitNode;
-					if(oLimitsNode.GetAt(i, oLimitNode))
+					XmlUtils::CXmlNode & oLimitNode = oLimitsNode[i];
+					if(oLimitNode.IsValid())
 					{
 						std::wstring sType;
 						if (oLimitNode.GetAttributeIfExist(L"type", sType))

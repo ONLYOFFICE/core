@@ -34,6 +34,9 @@
 #include "xlsx_fill.h"
 #include "xlsx_font.h"
 
+#include "../Format/odf_document.h"
+#include "../Format/odfcontext.h"
+
 #include <xml/simple_xml_writer.h>
 
 #include <ostream>
@@ -42,22 +45,15 @@
 namespace cpdoccore {
 namespace oox {
 
-struct xlsx_dxf
-{
-	xlsx_fill fill;
-	xlsx_font font;
-
-};
-
 class xlsx_dxfs::Impl
 {
 public:
 	Impl(){}
 
-    std::vector<xlsx_dxf> dxf_array;
+    std::vector<std::pair<xlsx_fill, xlsx_font>> dxf_array;
 };
 
-xlsx_dxfs::xlsx_dxfs(): impl_( new xlsx_dxfs::Impl() )
+xlsx_dxfs::xlsx_dxfs(odf_reader::fonts_container & fonts) : fonts_container(fonts), impl_( new xlsx_dxfs::Impl() )
 {
 }
 
@@ -66,15 +62,13 @@ xlsx_dxfs::~xlsx_dxfs()
 }
 
 size_t xlsx_dxfs::dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-							const odf_reader::graphic_format_properties				* graphProp,
-							const odf_reader::style_table_cell_properties_attlist	* cellProp)
+							const odf_reader::graphic_format_properties				*graphProp,
+							const odf_reader::style_table_cell_properties_attlist	*cellProp)
 {
-	xlsx_dxf dxf;
+	xlsx_fill fill( graphProp, cellProp);
+	xlsx_font font( textProp, NULL, cellProp, false, fonts_container);
 
-	dxf.fill = xlsx_fill( graphProp, cellProp);
-	dxf.font = xlsx_font( textProp, NULL, cellProp);
-
-	impl_->dxf_array.push_back(dxf);
+	impl_->dxf_array.push_back(std::make_pair(fill, font));
 
 	return impl_->dxf_array.size() - 1;
 
@@ -94,8 +88,8 @@ void xlsx_dxfs::serialize(std::wostream & _Wostream)  const
             {
 				CP_XML_NODE(L"dxf")
 				{
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].font);
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].fill);
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].first);
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].second);
 				}
             }
         }

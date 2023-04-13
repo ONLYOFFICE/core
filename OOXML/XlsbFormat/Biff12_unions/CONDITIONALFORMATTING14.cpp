@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,14 +80,38 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndConditionalFormatting14>())
-        {
-            m_BrtEndConditionalFormatting14 = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndConditionalFormatting14>())
+		{
+			m_bBrtEndConditionalFormatting14 = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndConditionalFormatting14 = false;
 
-        return m_BrtBeginConditionalFormatting14 && !m_arCFRULE14.empty() && m_BrtEndConditionalFormatting14;
+        return m_BrtBeginConditionalFormatting14 && !m_arCFRULE14.empty() && m_bBrtEndConditionalFormatting14;
     }
+
+	const bool CONDITIONALFORMATTING14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginConditionalFormatting14 != nullptr)
+		{
+			auto ptrBeginConditionalFormatting14 = static_cast<XLSB::BeginConditionalFormatting14*>(m_BrtBeginConditionalFormatting14.get());
+
+			if (ptrBeginConditionalFormatting14 != nullptr)
+				ptrBeginConditionalFormatting14->ccf = m_arCFRULE14.size();
+
+			proc.mandatory(*m_BrtBeginConditionalFormatting14);
+		}
+
+		for (auto& item : m_arCFRULE14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndConditionalFormatting14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

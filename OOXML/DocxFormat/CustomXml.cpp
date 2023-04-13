@@ -118,13 +118,13 @@ namespace OOX
 	}
 	void CCustomXMLProps::CShemaRefs::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		if ( oNode.GetNodes( _T("ds:schemaRef"), oNodes ) )
 		{
-			XmlUtils::CXmlNode oItem;
-			for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+			for ( size_t nIndex = 0; nIndex < oNodes.size(); nIndex++ )
 			{
-				if ( oNodes.GetAt( nIndex, oItem ) )
+				XmlUtils::CXmlNode & oItem = oNodes[nIndex];
+				if ( oItem.IsValid() )
 				{
 					CShemaRef *oShemeRef = new CShemaRef(oItem);
 					if (oShemeRef) m_arrItems.push_back( oShemeRef );

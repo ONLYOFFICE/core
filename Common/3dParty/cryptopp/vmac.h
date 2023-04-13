@@ -11,10 +11,10 @@
 #include "iterhash.h"
 #include "seckey.h"
 
-// Clang 3.3 integrated assembler crash on Linux
-//  http://github.com/weidai11/cryptopp/issues/264
-#if (defined(CRYPTOPP_LLVM_CLANG_VERSION) && (CRYPTOPP_LLVM_CLANG_VERSION < 30400)) || CRYPTOPP_BOOL_X32
-# define CRYPTOPP_DISABLE_VMAC_ASM
+// Clang 3.3 integrated assembler crash on Linux. Clang 3.4 due to compiler
+// error with .intel_syntax, http://llvm.org/bugs/show_bug.cgi?id=24232
+#if CRYPTOPP_BOOL_X32 || defined(CRYPTOPP_DISABLE_MIXED_ASM)
+# define CRYPTOPP_DISABLE_VMAC_ASM 1
 #endif
 
 NAMESPACE_BEGIN(CryptoPP)
@@ -25,6 +25,7 @@ class VMAC_Base : public IteratedHashBase<word64, MessageAuthenticationCode>
 {
 public:
 	std::string AlgorithmName() const {return std::string("VMAC(") + GetCipher().AlgorithmName() + ")-" + IntToString(DigestSize()*8);}
+	std::string AlgorithmProvider() const {return GetCipher().AlgorithmProvider();}
 	unsigned int IVSize() const {return GetCipher().BlockSize();}
 	unsigned int MinIVLength() const {return 1;}
 	void Resynchronize(const byte *nonce, int length=-1);
@@ -51,10 +52,10 @@ protected:
 		void VHASH_Update_Template(const word64 *data, size_t blockRemainingInWord128);
 	void VHASH_Update(const word64 *data, size_t blocksRemainingInWord128);
 
-	CRYPTOPP_BLOCK_1(polyState, word64, 4*(m_is128+1))
+	CRYPTOPP_BLOCK_1(polyState, word64, (m_is128 ? 8 : 4))
 	CRYPTOPP_BLOCK_2(nhKey, word64, m_L1KeyLength/sizeof(word64) + 2*m_is128)
 	CRYPTOPP_BLOCK_3(data, byte, m_L1KeyLength)
-	CRYPTOPP_BLOCK_4(l3Key, word64, 2*(m_is128+1))
+	CRYPTOPP_BLOCK_4(l3Key, word64, (m_is128 ? 4 : 2))
 	CRYPTOPP_BLOCK_5(nonce, byte, IVSize())
 	CRYPTOPP_BLOCK_6(pad, byte, IVSize())
 	CRYPTOPP_BLOCKS_END(6)
@@ -67,10 +68,10 @@ protected:
 /// \tparam T_BlockCipher block cipher
 /// \tparam T_DigestBitSize digest size, in bits
 /// \details VMAC is a block cipher-based message authentication code algorithm
-///   using a universal hash proposed by Ted Krovetz and Wei Dai in April 2007. The
-///   algorithm was designed for high performance backed by a formal analysis.
+///  using a universal hash proposed by Ted Krovetz and Wei Dai in April 2007. The
+///  algorithm was designed for high performance backed by a formal analysis.
 /// \details The implementation is based on Ted Krovetz's public domain vmac.c
-///   and <a href="http://tools.ietf.org/html/draft-krovetz-vmac-01">draft-krovetz-vmac-01.txt</a>.
+///  and <a href="http://tools.ietf.org/html/draft-krovetz-vmac-01">draft-krovetz-vmac-01.txt</a>.
 /// \sa <a href="http://www.cryptolounge.org/wiki/VMAC">VMAC</a>.
 /// \since Crypto++ 5.5
 template <class T_BlockCipher, int T_DigestBitSize = 128>

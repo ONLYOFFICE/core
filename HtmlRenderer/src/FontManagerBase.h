@@ -541,14 +541,13 @@ namespace NSHtmlRenderer
                                     {
                                         LONG lCount		= 0;
                                         double dWidth	= 0;
-                                        XmlUtils::CXmlNodes oNodesW;
+                                        std::vector<XmlUtils::CXmlNode> oNodesW;
                                         if (oNodeWidths.GetNodes(L"Width", oNodesW))
                                         {
-                                            int nCountW = oNodesW.GetCount();
-                                            for (int i = 0; i < nCountW; ++i)
+                                            size_t nCountW = oNodesW.size();
+                                            for (size_t i = 0; i < nCountW; ++i)
                                             {
-                                                XmlUtils::CXmlNode oNodeMem;
-                                                oNodesW.GetAt(i, oNodeMem);
+                                                XmlUtils::CXmlNode & oNodeMem = oNodesW[i];
 
                                                 double dMem = oCurNode.GetAttributeDouble(L"value");
                                                 if (0 < dMem)

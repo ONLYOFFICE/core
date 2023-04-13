@@ -1,4 +1,8 @@
 CORE_V8_PATH_OVERRIDE=$$PWD
+
+core_windows:!v8_version_60:CONFIG += v8_version_89
+core_linux:!v8_version_60:CONFIG += v8_version_89
+
 v8_version_89 {
     CONFIG += c++14
     CONFIG += use_v8_monolith
@@ -23,7 +27,6 @@ core_windows {
 
     use_v8_monolith {
         LIBS += -L$$CORE_V8_PATH_LIBS -lv8_monolith
-		core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
     } else {
         LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
         LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc

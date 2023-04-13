@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,14 +83,36 @@ namespace XLSB
             countIcon--;
         }
 
-        if (proc.optional<EndIconSet14>())
-        {
-            m_BrtEndIconSet14 = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndIconSet14>())
+		{
+			m_bBrtEndIconSet14 = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndIconSet14 = false;
 
-        return m_BrtBeginIconSet14 && !m_arCFVO14.empty() && m_BrtEndIconSet14;
+        return m_BrtBeginIconSet14 && !m_arCFVO14.empty() && m_bBrtEndIconSet14;
     }
+
+	const bool ICONSET14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginIconSet14 != nullptr)
+			proc.mandatory(*m_BrtBeginIconSet14);
+
+		for (auto &item : m_arCFVO14)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtCFIcon)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndIconSet14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

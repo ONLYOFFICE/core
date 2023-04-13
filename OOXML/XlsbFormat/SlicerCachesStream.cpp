@@ -81,4 +81,12 @@ const bool SlicerCachesStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SlicerCachesStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_SLICERCACHE != nullptr)
+		proc.mandatory(*m_SLICERCACHE);
+
+	return true;
+}
+
 } // namespace XLSB

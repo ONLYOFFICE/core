@@ -398,13 +398,13 @@ namespace OOX
 			if ( L"w:tabs" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNodes oTabs;
+			std::vector<XmlUtils::CXmlNode> oTabs;
 			if ( oNode.GetNodes( L"w:tab", oTabs ) )
 			{
-				XmlUtils::CXmlNode oTab;
-				for ( int nIndex = 0; nIndex < oTabs.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oTabs.size(); nIndex++ )
 				{
-					if ( oTabs.GetAt( nIndex, oTab ) )
+					XmlUtils::CXmlNode & oTab = oTabs[nIndex];
+					if ( oTab.IsValid() )
 					{
 						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop();
 						*oTabStop = oTab;
@@ -486,15 +486,14 @@ namespace OOX
 			if ( L"w:pPr" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 
 			if (oNode.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oChild;
-					oNodes.GetAt(i, oChild);
+					XmlUtils::CXmlNode& oChild = oNodes[i];
 
 					std::wstring strName = oChild.GetName();
 

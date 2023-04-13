@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,8 +75,30 @@ namespace XLSB
         itmtypeVAR      = GETBIT(flags, 11);
         itmtypeVARP     = GETBIT(flags, 12);
         fSelected       = GETBIT(flags1, 0);
-
     }
+
+	void PRFilter::save(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+		BYTE    flags1 = 0;
+
+		SETBIT(flags, 0, itmtypeData)
+		SETBIT(flags, 1, itmtypeDEFAULT)
+		SETBIT(flags, 2, itmtypeSUM)
+		SETBIT(flags, 3, itmtypeCOUNTA)
+		SETBIT(flags, 4, itmtypeAVERAGE)
+		SETBIT(flags, 5, itmtypeMAX)
+		SETBIT(flags, 6, itmtypeMIN)
+		SETBIT(flags, 7, itmtypePRODUCT)
+		SETBIT(flags, 8, itmtypeCOUNT)
+		SETBIT(flags, 9, itmtypeSTDEV)
+		SETBIT(flags, 10, itmtypeSTDEVP)
+		SETBIT(flags, 11, itmtypeVAR)
+		SETBIT(flags, 12, itmtypeVARP)
+		SETBIT(flags1, 0, fSelected)
+
+		record << isxvd << cItems << flags << flags1;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,17 +68,44 @@ namespace XLSB
         {
             m_arPCDI.insert(m_arPCDI.begin(), elements_.back());
             elements_.pop_back();
-            countPCDI--;
+            --countPCDI;
         }
 
         if (proc.optional<EndECWPTables>())
         {
-            m_BrtEndEcWpTables = elements_.back();
+            m_bBrtEndEcWpTables = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndEcWpTables = false;
 
-        return m_BrtBeginEcWpTables && m_BrtEndEcWpTables;
+        return m_BrtBeginEcWpTables && m_bBrtEndEcWpTables;
     }
+
+	const bool ECWPTABLES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginEcWpTables == nullptr)
+			m_BrtBeginEcWpTables = XLS::BaseObjectPtr(new XLSB::BeginEcWpTables());
+
+		if (m_BrtBeginEcWpTables != nullptr)
+		{
+			auto ptrBrtBeginEcWpTables = static_cast<XLSB::BeginEcWpTables*>(m_BrtBeginEcWpTables.get());
+
+			if (ptrBrtBeginEcWpTables != nullptr)
+				ptrBrtBeginEcWpTables->cTables = m_arPCDI.size();
+
+			proc.mandatory(*m_BrtBeginEcWpTables);
+		}
+
+		for (auto &item : m_arPCDI)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndECWPTables>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

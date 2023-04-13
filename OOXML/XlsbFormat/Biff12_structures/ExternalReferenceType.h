@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class ExternalReferenceType : public XLS::BiffAttributeSimple<unsigned short>
+class ExternalReferenceType : public XLS::BiffAttributeSimple<_UINT16>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	ExternalReferenceType& operator= (const _UINT16& other_val);
 	enum
 	{
             WORKBOOK    = 0x0000,

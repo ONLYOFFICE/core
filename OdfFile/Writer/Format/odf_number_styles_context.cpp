@@ -593,9 +593,26 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 {
 	create_element(L"number", L"currency-style", root_elm, odf_context_);
 	{
-        int res1 = (int)state.format_code[0].rfind(L"]");
+        int res1 = (int)state.format_code[0].rfind(L"[");
         int res2 = (int)state.format_code[0].rfind(L"#");
         int res3 = (int)state.format_code[0].rfind(L"0");
+		int res4 = (int)state.format_code[0].rfind(L"]");
+
+		if (res1 >= 0 && res4 >= 0)
+		{
+			state.format_code[0].erase(state.format_code[0].begin() + res1, state.format_code[0].begin() + res4 + 1);
+			
+			std::vector<std::wstring> tmp;
+			boost::algorithm::split(tmp, state.format_code[0], boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < tmp.size(); ++i)
+			{
+				if (!tmp[i].empty())
+				{
+					state.format_code[0] = tmp[i];
+					break;
+				}
+			}
+		}
 
 		office_element_ptr elm_symbol;
 		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);
@@ -634,7 +651,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		office_element_ptr elm_text;
 		create_element(L"number", L"text", elm_text, odf_context_);
 		number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());		
-		if (number_text_)number_text_->add_text(L" "); 
+		if (number_text_) number_text_->add_text(L" "); 
 		styles_elments.push_back(elm_text);
 ////////////////////////////////////////////
 		if (res1 > res2 || res1 > res3)

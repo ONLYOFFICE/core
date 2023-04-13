@@ -38,7 +38,7 @@
 #include "../Format/odf_document.h"
 #include "calcs_styles.h"
 
-#include "odfcontext.h"
+#include "../Format/odfcontext.h"
 #include "../../DataTypes/fontvariant.h"
 
 #include "draw_shapes.h"

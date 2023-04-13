@@ -68,15 +68,14 @@ namespace NSDoctRenderer
 		}
 		void private_LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& files, const std::wstring& sConfigDir)
 		{
-			XmlUtils::CXmlNodes oNodes;
+            std::vector<XmlUtils::CXmlNode> oNodes;
 			if (oNode.GetNodes(L"file", oNodes))
 			{
-				int nCount = oNodes.GetCount();
+                size_t nCount = oNodes.size();
 				XmlUtils::CXmlNode node;
-				for (int i = 0; i < nCount; ++i)
+                for (size_t i = 0; i < nCount; ++i)
 				{
-					oNodes.GetAt(i, node);
-					files.push_back(private_GetFile(sConfigDir, node.GetText()));
+                    files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 				}
 			}
 		}
@@ -102,15 +101,14 @@ namespace NSDoctRenderer
 			XmlUtils::CXmlNode oNode;
 			if (oNode.FromXmlFile(sConfigPath))
 			{
-				XmlUtils::CXmlNodes oNodes;
+                std::vector<XmlUtils::CXmlNode> oNodes;
 				if (oNode.GetNodes(L"file", oNodes))
 				{
-					int nCount = oNodes.GetCount();
+                    size_t nCount = oNodes.size();
 					XmlUtils::CXmlNode node;
-					for (int i = 0; i < nCount; ++i)
+                    for (size_t i = 0; i < nCount; ++i)
 					{
-						oNodes.GetAt(i, node);
-						m_arrFiles.push_back(private_GetFile(sConfigDir, node.GetText()));
+                        m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 					}
 				}
 

@@ -84,6 +84,25 @@ void PtgExtraArray::load(CFRecord& record)
 	}
 }
 
+void PtgExtraArray::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		DColunByteU cols_xls;
+		DRw rows_xls;
+		cols_xls = cols;
+		rows_xls = rows;
+		record << cols_xls << rows_xls;
+	}
+	else
+	{
+		record << cols << rows;
+	}
+	for (auto& item : array_)
+	{		
+		record << *item;
+	}
+}
 
 const std::wstring PtgExtraArray::toString() const
 {

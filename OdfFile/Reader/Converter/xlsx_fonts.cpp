@@ -33,6 +33,8 @@
 #include "xlsx_fonts.h"
 #include "xlsx_font.h"
 
+#include "../Format/odfcontext.h"
+
 #include <xml/simple_xml_writer.h>
 
 #include <boost/functional.hpp>
@@ -44,13 +46,13 @@ namespace oox {
 class xlsx_fonts::Impl
 {
 public:
-	Impl(){}
+	Impl(odf_reader::fonts_container & fonts) : fonts_container(fonts){}
 
 
     size_t size() const;
     size_t fontId(	const odf_reader::text_format_properties_content_ptr	textProp,
 					const odf_reader::paragraph_format_properties			* parProp,
-					const odf_reader::style_table_cell_properties_attlist	* cellProp);
+					const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set);
 
 	void serialize(std::wostream & _Wostream) const;
 
@@ -58,6 +60,8 @@ public:
 private:
     typedef boost::unordered_set<xlsx_font, boost::hash<xlsx_font> > fonts_array_t;
     fonts_array_t fonts_;
+
+	odf_reader::fonts_container & fonts_container;
 
 };
 
@@ -101,9 +105,9 @@ void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
 
 size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content_ptr	textProp,
 								const odf_reader::paragraph_format_properties			* parProp,
-								const odf_reader::style_table_cell_properties_attlist	* cellProp)
+								const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set)
 {
-    xlsx_font fnt = xlsx_font(textProp, parProp, cellProp);
+    xlsx_font fnt = xlsx_font(textProp, parProp, cellProp, default_set, fonts_container);
    
 	fonts_array_t::const_iterator i = fonts_.find(fnt);
     if (i != fonts_.end())
@@ -142,7 +146,7 @@ size_t xlsx_fonts::Impl::size() const { return fonts_.size(); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-xlsx_fonts::xlsx_fonts(): impl_(new xlsx_fonts::Impl())
+xlsx_fonts::xlsx_fonts(odf_reader::fonts_container & fonts): impl_(new xlsx_fonts::Impl(fonts))
 {
 }
 
@@ -162,9 +166,9 @@ void xlsx_fonts::serialize(std::wostream & _Wostream) const
 
 size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content_ptr textProp,
     const odf_reader::paragraph_format_properties * parProp,
-    const odf_reader::style_table_cell_properties_attlist * cellProp)
+    const odf_reader::style_table_cell_properties_attlist * cellProp, bool default_set)
 {
-    return impl_->fontId(textProp, parProp, cellProp);
+    return impl_->fontId(textProp, parProp, cellProp, default_set);
 }
 
 //const xlsx_font & xlsx_fonts::getFont(size_t id) const

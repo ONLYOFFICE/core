@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,9 +74,11 @@ namespace XLSB
 
         if (proc.optional<BeginSparklines>())
         {
-            m_BrtBeginSparklines = elements_.back();
+            m_bBrtBeginSparklines = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSparklines = false;
 
         int count = proc.repeated<Sparkline>(0, 2147483647);
 
@@ -89,18 +91,41 @@ namespace XLSB
 
         if (proc.optional<EndSparklines>())
         {
-            m_BrtEndSparklines = elements_.back();
+            m_bBrtEndSparklines = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklines = false;
 
         if (proc.optional<EndSparklineGroup>())
         {
-            m_BrtEndSparklineGroup = elements_.back();
+            m_bBrtEndSparklineGroup = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklineGroup = false;
 
-        return m_BrtBeginSparklineGroup && m_BrtBeginSparklines && !m_arBrtSparkline.empty() && m_BrtEndSparklines && m_BrtEndSparklineGroup;
+        return m_BrtBeginSparklineGroup && m_bBrtBeginSparklines && !m_arBrtSparkline.empty() && m_bBrtEndSparklines && m_bBrtEndSparklineGroup;
     }
+
+	const bool SPARKLINEGROUP::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSparklineGroup != nullptr)
+			proc.mandatory(*m_BrtBeginSparklineGroup);
+
+		proc.mandatory<BeginSparklines>();
+
+		for (auto& item : m_arBrtSparkline)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSparklines>();
+
+		proc.mandatory<EndSparklineGroup>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginSXChanges>())
         {
-            m_BrtBeginSXChanges = elements_.back();
+            m_bBrtBeginSXChanges = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSXChanges = false;
 
         auto count = proc.repeated<SXCHANGE>(0, 0);
         while(count > 0)
@@ -72,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndSXChanges>())
         {
-            m_BrtEndSXChanges = elements_.back();
+            m_bBrtEndSXChanges = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXChanges = false;
 
-        return m_BrtBeginSXChanges && !m_arSXCHANGE.empty() && m_BrtEndSXChanges;
+        return m_bBrtBeginSXChanges && !m_arSXCHANGE.empty() && m_bBrtEndSXChanges;
     }
+
+	const bool SXCHANGES::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginSXChanges>();
+
+		for (auto &item : m_arSXCHANGE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXChanges>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

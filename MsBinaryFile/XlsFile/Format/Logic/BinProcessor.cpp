@@ -33,6 +33,7 @@
 #include "BinProcessor.h"
 #include "../Binary/CFStream.h"
 #include "../Binary/CFStreamCacheReader.h"
+#include "../Binary/CFStreamCacheWriter.h"
 #include "../Logic/Biff_structures/BiffString.h"
 
 
@@ -162,13 +163,13 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)			
 			for (BaseObjectPtrList::iterator it = wanted_objects.begin(); it != wanted_objects.end();)
 			{
-				const BaseObjectPtr w_object = *it;			
+				const BaseObjectPtr w_object = *it;				
 				BaseObjectPtrList::iterator it_del = wanted_objects.end();
 				if (w_object->read(reader_, parent_, false))
 				{
 					it_del = it;
 				}
-				++it;
+					++it;
 				if (it_del != wanted_objects.end())
 					wanted_objects.erase(it_del);
 			}
@@ -260,6 +261,49 @@ void BinReaderProcessor::SetRecordPosition(const int position)
 {
   if (reader_)
       reader_->SetRecordPosition(position);
+}
+	
+// =========================== Writer ======================================
+
+
+BinWriterProcessor::BinWriterProcessor(StreamCacheWriterPtr writer, BaseObject* parent)
+	: writer_(writer),
+	BinProcessor(parent, writer ? writer->getGlobalWorkbookInfo() : NULL)
+{
+}
+
+const bool BinWriterProcessor::optional(BaseObject& object)
+{
+	return writeChild(object, false);
+}
+const bool BinWriterProcessor::mandatory(BaseObject& object)
+{
+	return writeChild(object, true);
+}
+
+// object_copy is necessary in case we haven't found the desired record and have to put it to the queue
+const bool BinWriterProcessor::writeChild(BaseObject& object, const bool is_mandatory)
+{
+	if (!writer_)
+		return false;
+
+	bool ret_val = false;
+	try
+	{
+		ret_val = object.write(writer_, parent_);
+		if (!ret_val && is_mandatory)
+		{
+			if (global_info_->decryptor)
+			{
+				if (global_info_->decryptor->IsVerify() == false)
+					return false;
+			}
+		}
+	}
+	catch (...)
+	{
+	}
+	return ret_val;
 }
 
 

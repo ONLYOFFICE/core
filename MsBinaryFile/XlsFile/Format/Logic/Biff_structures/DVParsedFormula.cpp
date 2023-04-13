@@ -39,6 +39,11 @@ DVParsedFormula::DVParsedFormula() : cce(0), ParsedFormula(CellRef())
 {
 }
 
+DVParsedFormula& DVParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr DVParsedFormula::clone()
 {
@@ -49,7 +54,7 @@ void DVParsedFormula::load(CFRecord& record, bool bLoad)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce_;
+        _UINT16 cce_;
         record >> cce_;
         cce = cce_;
         record.skipNunBytes(2); // unused
@@ -73,12 +78,48 @@ void DVParsedFormula::load(CFRecord& record)
 
     if (record.getGlobalWorkbookInfo()->Version == 0x0800)
     {
-        unsigned int cb;
+        _UINT32 cb;
         record >> cb;
         record.skipNunBytes(cb);
 
         //rgcb.load(record, rgce.getPtgs(), true);
     }
+}
+
+void DVParsedFormula::save(CFRecord& record, bool bSave)
+{
+	if (bSave)
+		return save(record);
+	else
+	{
+		cce = 0;
+		record << cce;
+	}
+}
+
+void DVParsedFormula::save(CFRecord& record)
+{
+	auto saving = [&](BiffStructure& rgceORrgb)
+	{
+		record << cce;
+
+		auto rdPtr = record.getRdPtr();
+
+		rgceORrgb.save(record);
+
+		cce = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(cce + 4);
+		record << cce;
+		record.skipNunBytes(cce);
+	};
+
+	saving(rgce);
+
+	if (record.getGlobalWorkbookInfo()->Version == 0x0800)
+	{
+		saving(rgcb);
+	}
 }
 
 

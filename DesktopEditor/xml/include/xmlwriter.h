@@ -51,11 +51,13 @@ namespace XmlUtils
 	class KERNEL_DECL CXmlWriter
 	{
 	private:
-		std::wstring m_str;
+        class Impl;
+        Impl *impl_;
 	
 	public:
 
 		CXmlWriter();
+        ~CXmlWriter();
 		
 		std::wstring GetXmlString();
 		void SetXmlString(const std::wstring& strValue);

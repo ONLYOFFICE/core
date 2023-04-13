@@ -35,21 +35,18 @@
 
 namespace DocFileFormat
 {
-  class RectangleType: public ShapeType
-  {
-    public:
-	  RectangleType():
-	  ShapeType(msosptRectangle)
-      {
-        this->ShapeConcentricFill = true;
+	class RectangleType : public ShapeType
+	{
+	public:
+		RectangleType() : ShapeType(msosptRectangle)
+		{
+			ShapeConcentricFill = true;
+			Joins = miter;
+			Path = L"m,l,21600r21600,l21600,xe";
+		}
 
-        this->Joins = miter;
-
-        this->Path = L"m,l,21600r21600,l21600,xe";
-      }
-
-	  virtual ~RectangleType()
-	  {
-	  }
-  };
+		virtual ~RectangleType()
+		{
+		}
+	};
 }

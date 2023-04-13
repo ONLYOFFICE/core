@@ -53,8 +53,8 @@ void TableStyles::readFields(CFRecord& record)
 {	
     if(record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cchDefTableStyle;
-        unsigned short cchDefPivotStyle;
+        _UINT16 cchDefTableStyle;
+        _UINT16 cchDefPivotStyle;
         record >> frtHeader >> cts >> cchDefTableStyle >> cchDefPivotStyle;
 
         LPWideStringNoCch	rgchDefTableStyle_;
@@ -76,6 +76,31 @@ void TableStyles::readFields(CFRecord& record)
         rgchDefTableStyle = strDefList.value();
         rgchDefPivotStyle = strDefPivot.value();
     }
+}
+
+void TableStyles::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 cchDefTableStyle;
+		_UINT16 cchDefPivotStyle;
+
+		LPWideStringNoCch	rgchDefTableStyle_(rgchDefTableStyle);
+		LPWideStringNoCch	rgchDefPivotStyle_(rgchDefPivotStyle);
+
+		cchDefTableStyle = rgchDefTableStyle_.getSize();
+		cchDefPivotStyle = rgchDefPivotStyle_.getSize();
+
+		record << frtHeader << cts << cchDefTableStyle << cchDefPivotStyle;
+		record << rgchDefTableStyle_ << rgchDefPivotStyle_;
+	}
+	else
+	{
+		XLSB::XLNullableWideString    strDefList(rgchDefTableStyle);
+		XLSB::XLNullableWideString    strDefPivot(rgchDefPivotStyle);
+
+		record << cts << strDefList << strDefPivot;
+	}
 }
 
 } // namespace XLS

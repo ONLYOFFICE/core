@@ -171,7 +171,7 @@ namespace OOX
 				if (stylesStream != nullptr)
 				{
 					if (stylesStream->m_FMTS != nullptr)
-						m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
+						m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arBrtFmt;
 
 					if (stylesStream->m_FONTS != nullptr)
 						m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;

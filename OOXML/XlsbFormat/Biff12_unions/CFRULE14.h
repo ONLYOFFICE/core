@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace XLSB
 {
@@ -46,14 +46,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeCFRULE14;
 
         XLS::BaseObjectPtr               m_BrtBeginCFRule14;
         XLS::BaseObjectPtr               m_source;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndCFRule14;
+		bool							 m_bBrtEndCFRule14;
     };
 
 } // namespace XLSB

@@ -80,7 +80,7 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(number_number_style)
 
 //------------------------------------------------------------------------------------------------------
-class number_currency_style : public office_element_impl<number_currency_style>, number_style_base
+class number_currency_style : public office_element_impl<number_currency_style>, public number_style_base
 {
 public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -95,7 +95,7 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(number_currency_style)
 //------------------------------------------------------------------------------------------------------
-class number_boolean_style : public office_element_impl<number_boolean_style>, number_style_base
+class number_boolean_style : public office_element_impl<number_boolean_style>, public number_style_base
 {
 public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

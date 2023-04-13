@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -82,6 +82,40 @@ namespace XLSB
 
         record >> dManualMax >> dManualMin >> dLineWeight >> isltype;
     }
+
+	void BeginSparklineGroup::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fDateAxis)
+		SETBITS(flags, 1, 2, fShowEmptyCellAsZero)
+		SETBIT(flags, 3, fMarkers)
+		SETBIT(flags, 4, fHigh)
+		SETBIT(flags, 5, fLow)
+		SETBIT(flags, 6, fFirst)
+		SETBIT(flags, 7, fLast)
+		SETBIT(flags, 8, fNegative)
+		SETBIT(flags, 9, fAxis)
+		SETBIT(flags, 10, fDisplayHidden)
+		SETBIT(flags, 11, fIndividualAutoMax)
+		SETBIT(flags, 12, fIndividualAutoMin)
+		SETBIT(flags, 13, fGroupAutoMax)
+		SETBIT(flags, 14, fGroupAutoMin)
+		SETBIT(flags, 15, fRTL)
+
+		record << FRTheader << flags;
+
+		brtcolorSeries.writeFields(record);
+		brtcolorNegative.writeFields(record);
+		brtcolorAxis.writeFields(record);
+		brtcolorMarkers.writeFields(record);
+		brtcolorFirst.writeFields(record);
+		brtcolorLast.writeFields(record);
+		brtcolorHigh.writeFields(record);
+		brtcolorLow.writeFields(record);
+
+		record << dManualMax << dManualMin << dLineWeight << isltype;
+	}
 
 } // namespace XLSB
 

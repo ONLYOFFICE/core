@@ -35,14 +35,28 @@
 
 namespace DocFileFormat
 {
-	class RoundedRectangleType: public RectangleType
+	class RoundedRectangleType : public RectangleType
 	{
 	public:
 		RoundedRectangleType() : RectangleType()
 		{
-			TypeCode			=	msosptRoundRectangle;
-			Joins				=	round;
-            AdjustmentValues	=	L"5400";
+			TypeCode = msosptRoundRectangle;
+			Joins = miter;
+			AdjustmentValues = L"5400";
+
+			Path = L"m0@0qy@0,0l@1,0qx21600@0l21600@1qy@1,21600l@0,21600qx0@1xe";
+
+			TextBoxRectangle = L"0,0,21600,21600";
+
+			Formulas.push_back(L"val #0");
+			Formulas.push_back(L"sum 21600 0 #0");
+
+			Handle one;
+
+			one.position = L"#0,topLeft";
+			one.xrange = L"0,10800";
+
+			Handles.push_back(one);
 		}
 
 		virtual ~RoundedRectangleType()

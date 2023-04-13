@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace XLSB
 
     void BeginHeaderFooter::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+		_UINT16 flags;
 
         record >> flags;
 
@@ -63,6 +63,19 @@ namespace XLSB
 
         record >> stHeader >> stFooter >> stHeaderEven >> stFooterEven >> stHeaderFirst >> stFooterFirst;
     }
+
+	void BeginHeaderFooter::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fHFDiffOddEven);
+		SETBIT(flags, 1, fHFDiffFirst);
+		SETBIT(flags, 2, fHFScaleWithDoc);
+		SETBIT(flags, 3, fHFAlignMargins);
+
+		record << flags;
+		record << stHeader << stFooter << stHeaderEven << stFooterEven << stHeaderFirst << stFooterFirst;
+	}
 
 } // namespace XLSB
 

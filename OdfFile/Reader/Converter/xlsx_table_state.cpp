@@ -476,11 +476,12 @@ void xlsx_table_state::serialize_header_footer (std::wostream & strm)
 	{			
 		CP_XML_NODE(L"headerFooter")
 		{
-			if (master_style_->style_header_left_ || master_style_->style_footer_left_)
+			if ((header_even && header_even->attlist_.style_display_) || (footer_even && footer_even->attlist_.style_display_))
 			{
 				CP_XML_ATTR(L"differentOddEven",  1);
 			}
-			if (master_style_->style_header_first_ || master_style_->style_footer_first_)
+			if ((header_first && header_first->attlist_.style_display_ && !header_first->content_.empty()) ||
+				(footer_first && footer_first->attlist_.style_display_ && !footer_first->content_.empty()))
 			{
 				CP_XML_ATTR(L"differentFirst",  1);
 			}

@@ -111,7 +111,7 @@ public:
     static int GetSlideNumber(const std::wstring &str)
     {
         std::wstring sldHeader = L"Slide ";
-        int strIter = str.find(sldHeader);
+        int strIter = (int)str.find(sldHeader);
         if (strIter != -1)
         {
             std::wstring sNum(str.begin() + sldHeader.size() + strIter, str.end());
@@ -142,15 +142,15 @@ public:
     }
     static bool isHTTPLink(const std::wstring &str)
     {
-        int iter1 = str.find(L"http://");
-        int iter2 = str.find(L"https://");
+        int iter1 = (int)str.find(L"http://");
+        int iter2 = (int)str.find(L"https://");
         return iter1 != -1 || iter2 != -1;
     }
     static bool isAudioLink(const std::wstring &str)
     {
-        int iter1 = str.find(L".mp3");
-        int iter2 = str.find(L".wav");
-        int iter3 = str.find(L".waw");
+        int iter1 = (int)str.find(L".mp3");
+        int iter2 = (int)str.find(L".wav");
+        int iter3 = (int)str.find(L".waw");
         return iter1 != -1 || iter2 != -1 || iter3 != -1;
     }
 };

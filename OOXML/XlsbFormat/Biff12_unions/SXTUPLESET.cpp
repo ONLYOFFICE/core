@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,14 +75,32 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<EndSXTupleSet>())
-        {
-            m_BrtEndSXTupleSet = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndSXTupleSet>())
+		{
+			m_bBrtEndSXTupleSet = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndSXTupleSet = false;
 
-        return m_BrtBeginSXTupleSet && m_SXTUPLESETHEADER && m_SXTUPLESETDATA && m_BrtEndSXTupleSet;
+        return m_BrtBeginSXTupleSet && m_SXTUPLESETHEADER && m_SXTUPLESETDATA && m_bBrtEndSXTupleSet;
     }
+
+	const bool SXTUPLESET::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXTupleSet != nullptr)
+			proc.mandatory(*m_BrtBeginSXTupleSet);
+
+		if (m_SXTUPLESETHEADER != nullptr)
+			proc.mandatory(*m_SXTUPLESETHEADER);
+
+		if (m_SXTUPLESETDATA != nullptr)
+			proc.mandatory(*m_SXTUPLESETDATA);
+
+		proc.mandatory<EndSXTupleSet>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

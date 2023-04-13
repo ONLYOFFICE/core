@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,7 +59,7 @@ namespace XLSB
     {
         if (proc.optional<BeginColorScale14>())
         {
-            m_BrtBeginColorScale14 = elements_.back();
+            m_bBrtBeginColorScale14 = true;
             elements_.pop_back();
         }        
         else
@@ -85,12 +85,33 @@ namespace XLSB
 
         if (proc.optional<EndColorScale14>())
         {
-            m_BrtEndColorScale14 = elements_.back();
+            m_bBrtEndColorScale14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColorScale14 = false;
 
-        return m_BrtBeginColorScale14 && !m_arCFVO14.empty() && !m_arBrtColor14.empty() && m_BrtEndColorScale14;
+        return m_bBrtBeginColorScale14 && !m_arCFVO14.empty() && !m_arBrtColor14.empty() && m_bBrtEndColorScale14;
     }
+
+	const bool COLORSCALE14::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginColorScale14>();
+
+		for (auto &item : m_arCFVO14)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtColor14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndColorScale14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

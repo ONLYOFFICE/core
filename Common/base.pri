@@ -146,6 +146,9 @@ gcc {
 core_windows {
     DEFINES += WIN32 _WIN32
     DEFINES += NOMINMAX
+
+    # use default _ITERATOR_DEBUG_LEVEL value
+    #core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }
 core_win_64 {
     DEFINES += WIN64 _WIN64
@@ -211,6 +214,11 @@ core_linux {
         QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
         QMAKE_LFLAGS += -Wl,--disable-new-dtags
     }
+}
+
+core_linux {
+    equals(TEMPLATE, app):CONFIG += core_static_link_libstd
+    plugin:CONFIG += core_static_link_libstd
 }
 
 core_win_32 {

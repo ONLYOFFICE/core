@@ -68,5 +68,21 @@ void ShrFmla::readFields(CFRecord& record)
     }
 }
 
+void ShrFmla::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << ref_;
+		record.reserveNunBytes(1); // reserved
+		record << cUse;
+		formula.save(record);
+	}
+	else
+	{
+		record << rfx;
+		formula.save(record);
+	}
+}
+
 } // namespace XLS
 

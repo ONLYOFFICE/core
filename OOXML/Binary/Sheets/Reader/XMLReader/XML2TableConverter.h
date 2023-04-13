@@ -39,9 +39,9 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 
-/// @brief Первое измерение вектора хранит данные раздельно по глубине xml второе измерение хранит данные по ключу, третье - сами значения данных
-using XmlData = std::vector<std::vector<std::vector<std::wstring>>>;
+using keyValueArray = std::deque<std::pair<std::wstring, std::wstring>>;
 
 /// @brief класс -обертка над xmlLiteReader для превращения xml нод в табличные строки
 class XML2TableConverter
@@ -52,7 +52,7 @@ public:
     /// @param reader xmlLiteReader с загруженным в него xml документом
     /// @param data трехмерная структура из векторов строк, нужна для хранения табличных данных вместе с ключами в разрезе уровней глубины
     /// @return true в случае успеха, иначе false
-    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data);
+    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XLSXTableController &table &data);
 
 private:
 
@@ -60,23 +60,48 @@ private:
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
     void readAttributes(XmlUtils::CXmlLiteReader &reader);
 
-    /// @brief обрабатывает текущую ноду - считывает её атрибуты и текст
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    /// @brief обрабатывает текущую ноду
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно обработать
     /// @param type тип обрабатываемой ноды
     void processNode(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
+
+    /// @brief проверка ноды на возможность вставить её данные в таблицу с последующей их  вставкой в случае успеха
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно вставить
+    /// @param type тип обрабатываемой ноды
+    void tryInsesrtData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
+
+    /// @brief вставляет строку xml данных в таблицу
+    /// @param dataRow строка с данными
+    /// @param parentsRow строка с данными родительских нод
+    void insertRow(const keyValueArray &dataRow, const keyValueArray &parentsRow);
 
     /// @brief вставляет значение во временную внутреннюю структуру
     /// @param key ключ, по которому будет вставлено значение
     /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
-    /// @return текущая глубина
+    /// @brief текущая глубина
     _UINT32 depth_;
 
-    /// @return вектор с именами нод-предков
+    /// @brief глубина предыдущего элемента
+    _UINT32 tempDepth_;
+
+    /// @brief номер текущей строки с данными
+    _UINT32 rowIndex_ = 2;
+
+    /// @brief вектор с родительскими нодами
     std::vector<std::wstring> parents_;
 
-    /// @return данные собранные с xml
-    XmlData data_;
+    /// @brief дека с парами ключ значение для их вставки в таблицу
+    keyValueArray keyvalues_;
+
+    /// @brief дека с парами ключ значение родительских нод, вставляемых в строках дочерних нод
+    keyValueArray parentValues_;
+
+    /// @brief контроллер таблицы заполняемой во время обработки xml документа
+    XLSXTableController *table_;
+
+    /// @brief контроллер имен столбцов таблицы
+    ColumnNameController colNames_;
 
 };

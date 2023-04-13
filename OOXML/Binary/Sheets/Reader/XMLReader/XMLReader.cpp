@@ -56,31 +56,14 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
         return AVS_FILEUTILS_ERROR_CONVERT_READ_FILE;
     }
 
-    /// @brief переводим xml в считываемый вид
     XML2TableConverter converter = {};
-    XmlData data = {};
-    if(!converter.GetTableData(reader, data))
+    XLSXTableController table = {oXlsx};
+
+    if(!converter.GetTableData(reader, table))
     {
         return AVS_FILEUTILS_ERROR_CONVERT;
     }
 
-    /// @brief заполняем xlsx таблицу из полученной структуры
-    XLSXTableController table = {oXlsx};
-    _UINT32 rowIndex = 1;
-    _UINT32 colIndex = 0;
-    for (_UINT32 i = 0; i < data.size(); i++)
-    {
-        for(auto dataColumn = data.at(i).begin(); dataColumn != data.at(i).end(); dataColumn++)
-        {
-            for(_UINT32 j = 0; j < dataColumn->size(); j++, rowIndex++)
-            {
-                table.AddCell(dataColumn->at(j), rowIndex, colIndex);
-            }
-            rowIndex = 1;
-            colIndex++;
-        }
-
-    }
     table.FormBook();
 
     return 0;

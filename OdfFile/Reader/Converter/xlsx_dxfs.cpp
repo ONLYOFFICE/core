@@ -88,8 +88,8 @@ void xlsx_dxfs::serialize(std::wostream & _Wostream)  const
             {
 				CP_XML_NODE(L"dxf")
 				{
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].first);
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].second);
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].second); //font
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].first); //fill
 				}
             }
         }

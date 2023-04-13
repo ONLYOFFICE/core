@@ -354,7 +354,7 @@ namespace MetaFile
 		int nX = _shX;
 		int nY = _shY;
 
-		if (m_pDC->GetTextAlign() & TA_UPDATECP)
+		if (m_pDC->GetTextAlign() & TA_UPDATECP && (0 == _shX && 0 == _shY))
 		{
 			nX = m_pDC->GetCurPos().x;
 			nY = m_pDC->GetCurPos().y;

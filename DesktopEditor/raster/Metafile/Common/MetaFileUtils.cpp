@@ -1029,10 +1029,8 @@ namespace MetaFile
 			   wsText += L"&apos;";
 		    else if (wChar == L'"')
 			   wsText += L"&quot;";
-			else if (wChar == L'\r')
+			else if (wChar == L'\r' || (wChar >= 0x00 && wChar <=0x1F))
 				continue;
-		    else if (wChar == 0x00)
-			   return wsText;
 
 		    else wsText += wChar;
 		return wsText;

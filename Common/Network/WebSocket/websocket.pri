@@ -71,6 +71,8 @@ libsocketio {
         $$PWD/src/socketio/socketio_internal_private_no_tls.h
 
     SOURCES += $$PWD/src/socketio/socketio_internal.cpp
+
+    core_linux:LIBS += -lpthread
 }
 
 HEADERS += \

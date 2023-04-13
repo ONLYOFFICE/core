@@ -1548,6 +1548,7 @@ namespace MetaFile
 	}
 
 	CSvgClip::CSvgClip()
+        : m_bStartClip(false), m_bEndClip(false)
 	{}
 
 	void CSvgClip::Reset()

@@ -46,18 +46,7 @@ namespace NSZip
 
 	void CreateNativeZip(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		v8::Handle<v8::ObjectTemplate> ZipTemplate = NSZip::CreateZipTemplate(isolate);
-		CZipEmbed* pZip = new CZipEmbed();
-
-		v8::Local<v8::Object> obj = ZipTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pZip));
-
-		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CZipEmbed(), NSZip::CreateZipTemplate, args);
 	}
 }
 

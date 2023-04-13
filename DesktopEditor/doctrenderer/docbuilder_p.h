@@ -886,7 +886,7 @@ namespace NSDoctRenderer
 		{
 			Init();
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
 			CheckFileDir();
 			NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
@@ -908,7 +908,7 @@ namespace NSDoctRenderer
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
-			LOGGER_SPEED_LAP("open_convert")
+			LOGGER_SPEED_LAP("open_convert");
 
 			if (0 == nReturnCode)
 				return 0;
@@ -966,9 +966,9 @@ namespace NSDoctRenderer
 				return 1;
 			}
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					std::wstring sConvertionParams = L"";
+			std::wstring sConvertionParams = L"";
 			if (NULL != params)
 			{
 				sConvertionParams = std::wstring(params);
@@ -1162,10 +1162,10 @@ namespace NSDoctRenderer
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
 
-			LOGGER_SPEED_LAP("save_convert")
+			LOGGER_SPEED_LAP("save_convert");
 
-					if (0 == nReturnCode)
-					return 0;
+			if (0 == nReturnCode)
+				return 0;
 
 			std::wstring sErrorLog = L"save file error (" + std::to_wstring(nReturnCode) + L")";
 			CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);

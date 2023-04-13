@@ -108,43 +108,13 @@ namespace NSNativeControl
 
 	void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, CIsolateAdditionalData::iadtSingletonNative))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-
-		v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplate(isolate);
-		CNativeControlEmbed* pNativeObject = new CNativeControlEmbed();
-
-		v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObject));
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplate, args, CIsolateAdditionalData::iadtSingletonNative);
 	}
 
 	// Без SaveChanges
 	void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, CIsolateAdditionalData::iadtSingletonNative))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-
-		v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplateBuilder(isolate);
-		CNativeControlEmbed* pNativeObject = new CNativeControlEmbed();
-
-		v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObject));
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplateBuilder, args, CIsolateAdditionalData::iadtSingletonNative);
 	}
 }
 

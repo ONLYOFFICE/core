@@ -6,7 +6,8 @@
 
 namespace NSJSBase
 {
-	void CreateDefaults(JSSmart<CJSContext>& context) {
+	void CreateDefaults(JSSmart<CJSContext>& context)
+	{
 		CZipEmbed::CreateObjectInContext("CreateNativeZip", context);
 		CTextMeasurerEmbed::CreateObjectInContext("CreateNativeTextMeasurer", context);
 		CMemoryStreamEmbed::CreateObjectInContext("CreateNativeMemoryStream", context);

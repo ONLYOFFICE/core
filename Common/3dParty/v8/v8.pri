@@ -1,7 +1,7 @@
 CORE_V8_PATH_OVERRIDE=$$PWD
 
-core_windows:!v8_version_60:CONFIG += v8_version_89
-core_linux:!v8_version_60:CONFIG += v8_version_89
+!v8_version_60:CONFIG += v8_version_89
+v8_version_60:CONFIG -= v8_version_89
 
 v8_version_89 {
     CONFIG += c++14

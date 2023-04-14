@@ -81,6 +81,9 @@ private:
     /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
+    /// @brief заполняет первую строку таблицы именами столбцов
+    void insertColumnNames();
+
     /// @brief текущая глубина
     _UINT32 depth_;
 
@@ -98,6 +101,9 @@ private:
 
     /// @brief дека с парами ключ значение родительских нод, вставляемых в строках дочерних нод
     keyValueArray parentValues_;
+
+    /// @brief вектор содержащий количество значений родительских нод, хранящиеся для каждой ноды в parentValues_
+    std::vector<_UINT32> parentNodeValueCount_;
 
     /// @brief контроллер таблицы заполняемой во время обработки xml документа
     XLSXTableController *table_;

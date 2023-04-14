@@ -84,7 +84,7 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 
 	pCell->setRowCol(nRow - 1, nCol);
 
-	if(tableRows_.size() - 1 < nRow)
+	while(tableRows_.size() - 1 < nRow)
 	{
         tableRows_.push_back(new OOX::Spreadsheet::CRow);
 	}

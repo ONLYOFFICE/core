@@ -36,6 +36,9 @@
 #include <map>
 #include <string>
 
+
+/// @todo хранение имен в виде структуры настоящее имя, постфикс и номер ячейки
+
 /// @brief класс контролирующий уникальность имен столбцов при открытии  xml документов
 class ColumnNameController
 {
@@ -50,6 +53,10 @@ public:
     /// @param columnName строка с именем столбца
     /// @return номер столбца, если такой есть и -1, если такого столбца нет
     _INT64 GetColumnNumber(const std::wstring &columnName);
+
+    /// @brief Получение всех содержащихся имен и номеров их столбцов
+    /// @return значение копия map colNames_
+    std::map<std::wstring, _UINT32> GetColumnNames();
 
 private:
 

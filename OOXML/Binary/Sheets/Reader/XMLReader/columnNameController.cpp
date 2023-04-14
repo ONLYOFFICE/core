@@ -57,3 +57,8 @@ _INT64 ColumnNameController::GetColumnNumber(const std::wstring &columnName)
 
     return -1;
 }
+
+std::map<std::wstring, _UINT32> ColumnNameController::GetColumnNames()
+{
+    return colNames_;
+}

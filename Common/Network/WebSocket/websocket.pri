@@ -74,6 +74,11 @@ libsocketio {
     SOURCES += $$PWD/src/socketio/socketio_internal.cpp
 
     core_linux:LIBS += -lpthread
+
+    core_windows {
+	    LIBS += -lcrypt32
+		LIBS += -lUser32
+	}
 }
 
 HEADERS += \

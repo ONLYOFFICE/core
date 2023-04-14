@@ -64,5 +64,11 @@ namespace NSNetwork
         {
             delete m_internal;
         }
+
+        bool CIOWebSocket::setReconnectInfo(const int& attemtCount, const int& delay, const int& delayMax)
+        {
+            m_internal->setReconnectInfo(attemtCount, delay, delayMax);
+            return true;
+        }
     }
 }

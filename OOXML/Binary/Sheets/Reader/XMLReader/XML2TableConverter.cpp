@@ -126,7 +126,7 @@ void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader, const Xml
     }
 }
 
-void XML2TableConverter::tryInsesrtData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type)
+void XML2TableConverter::tryInsertData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type)
 {
     if(type == XmlUtils::XmlNodeType::XmlNodeType_Text || type == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
     {
@@ -136,7 +136,7 @@ void XML2TableConverter::tryInsesrtData(XmlUtils::CXmlLiteReader &reader, const 
                 keyvalues_.push_back(std::make_pair(parents_.at(parents_.size() -1), text));
             }
     }
-    else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader.IsEmptyNode() &&  reader.GetAttributesCount() == 0)
+    else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader.IsEmptyNode() && reader.GetAttributesCount() == 0)
     {
         keyvalues_.push_back(std::make_pair(reader.GetName(), L""));
     }

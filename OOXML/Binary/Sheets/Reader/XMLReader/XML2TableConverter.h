@@ -33,6 +33,7 @@
 #pragma once
 
 #include "columnNamesController.h"
+#include "XlSXTableController.h"
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../Base/Base.h"
@@ -52,7 +53,7 @@ public:
     /// @param reader xmlLiteReader с загруженным в него xml документом
     /// @param data трехмерная структура из векторов строк, нужна для хранения табличных данных вместе с ключами в разрезе уровней глубины
     /// @return true в случае успеха, иначе false
-    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XLSXTableController &table &data);
+    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XLSXTableController &table);
 
 private:
 
@@ -68,7 +69,7 @@ private:
     /// @brief проверка ноды на возможность вставить её данные в таблицу с последующей их  вставкой в случае успеха
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно вставить
     /// @param type тип обрабатываемой ноды
-    void tryInsesrtData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
+    void tryInsertData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
 
     /// @brief вставляет строку xml данных в таблицу
     /// @param dataRow строка с данными

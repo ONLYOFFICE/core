@@ -203,9 +203,93 @@ WASM_EXPORT void SetCMapData(CGraphicsFileDrawing* pGraphics, BYTE* data, int si
 
 #ifdef TEST_CPP_BINARY
 
+unsigned char READ_BYTE(BYTE* x)
+{
+	return x ? x[0] : 1;
+}
 unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
+}
+
+void ReadAction(BYTE* pWidgets, int& i)
+{
+	unsigned int nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::string sType((char*)(pWidgets + i), nPathLength);
+	std::cout << "Type " << sType << ", ";
+	i += nPathLength;
+
+	if (sType == "JavaScript")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "JS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	else if (sType == "GoTo")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
+		i += nPathLength;
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+	}
+	else if (sType == "Named")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	else if (sType == "URI")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	else if (sType == "Hide")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Hide flag " << nPathLength << ", ";
+
+		int nHideLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "THide: ";
+
+		for (int j = 0; j < nHideLength; ++j)
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << nPathLength << ", ";
+		}
+	}
+	else if (sType == "ResetForm")
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "ResetForm flag " << nPathLength << ", ";
+
+		int nResetLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "annots: ";
+
+		for (int j = 0; j < nResetLength; ++j)
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout  << nPathLength << ", ";
+		}
+	}
+
+	nPathLength = READ_BYTE(pWidgets + i);
+	i += 1;
+	if (nPathLength)
+		ReadAction(pWidgets, i);
 }
 
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
@@ -694,63 +778,13 @@ int main(int argc, char* argv[])
 			i += 4;
 			for (int j = 0; j < nActLength; ++j)
 			{
+				std::cout << std::endl;
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << std::to_string(j) << " Action " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 				i += nPathLength;
 
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::string sType((char*)(pWidgets + i), nPathLength);
-				std::cout << "Type " << sType << ", ";
-				i += nPathLength;
-
-				if (sType == "JavaScript")
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "JS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				else if (sType == "GoTo")
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
-					i += nPathLength;
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
-				}
-				else if (sType == "Named")
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				else if (sType == "URI")
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
-				}
-				else if (sType == "Hide")
-				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "Hide flag " << nPathLength << ", ";
-					int nHideLength = READ_INT(pWidgets + i);
-					i += 4;
-					for (int j = 0; j < nHideLength; ++j)
-					{
-						nPathLength = READ_INT(pWidgets + i);
-						i += 4;
-						std::cout << std::to_string(j) << " THide " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-						i += nPathLength;
-					}
-				}
+				ReadAction(pWidgets, i);
 			}
 			std::cout << std::endl;
 		}

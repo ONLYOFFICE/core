@@ -608,6 +608,13 @@ int AcroForm::findFieldIdx(int pg, double x, double y) {
   return -1;
 }
 
+int AcroForm::findFieldIdx(Object* oRefObj) {
+  return -1;
+}
+int AcroForm::findFieldIdx(GString* fullName) {
+  return -1;
+}
+
 //------------------------------------------------------------------------
 // AcroFormField
 //------------------------------------------------------------------------

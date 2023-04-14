@@ -59,6 +59,12 @@
 		this.pos = start;
 		this.limit = start + size;
 	}
+	CBinaryReader.prototype.readByte = function()
+	{
+		var val = this.data[this.pos];
+		this.pos += 1;
+		return val;
+	};
 	CBinaryReader.prototype.readInt = function()
 	{
 		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
@@ -368,6 +374,54 @@
 		Module["_free"](ext);
 		return res;
 	};
+
+	function readAction(reader, rec)
+	{
+		var SType = reader.readString();
+		rec["S"] = SType;
+		if (SType == "JavaScript")
+		{
+			rec["JS"] = reader.readString();
+		}
+		else if (SType == "GoTo")
+		{
+			rec["GoTo"]["link"] = reader.readString();
+			rec["GoTo"]["dest"] = reader.readDouble();
+		}
+		else if (SType == "Named")
+		{
+			rec["N"] = reader.readString();
+		}
+		else if (SType == "URI")
+		{
+			rec["URI"] = reader.readString();
+		}
+		else if (SType == "Hide")
+		{
+			rec["Hide"]["H"] = reader.readInt();
+			let m = reader.readInt();
+		    rec["Hide"]["T"] = [];
+			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
+		    for (let j = 0; j < m; ++j)
+				rec["Hide"]["T"].push(reader.readInt());
+		}
+		else if (SType == "ResetForm")
+		{
+			rec["ResetForm"]["Flags"] = reader.readInt();
+			let m = reader.readInt();
+		    rec["ResetForm"]["Fields"] = [];
+			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
+		    for (let j = 0; j < m; ++j)
+				rec["ResetForm"]["Fields"].push(reader.readInt());
+		}
+		let NextAction = reader.readByte();
+		if (NextAction)
+		{
+			rec["Next"] = {};
+			readAction(reader, rec["Next"]);
+		}
+	}
+
 	CFile.prototype["getInteractiveFormsInfo"] = function()
 	{
 		var res = [];
@@ -579,33 +633,7 @@
 			{
 				var AAType = reader.readString();
 				rec["AA"][AAType] = {};
-				var SType = reader.readString();
-				rec["AA"][AAType]["S"] = SType;
-				if (SType == "JavaScript")
-				{
-					rec["AA"][AAType]["JS"] = reader.readString();
-				}
-				else if (SType == "GoTo")
-				{
-					rec["AA"][AAType]["GoTo"]["link"] = reader.readString();
-					rec["AA"][AAType]["GoTo"]["dest"] = reader.readDouble();
-				}
-				else if (SType == "Named")
-				{
-					rec["AA"][AAType]["N"] = reader.readString();
-				}
-				else if (SType == "URI")
-				{
-					rec["AA"][AAType]["URI"] = reader.readString();
-				}
-				else if (SType == "Hide")
-				{
-					rec["AA"][AAType]["Hide"]["H"] = reader.readInt();
-					let m = reader.readInt();
-				    rec["AA"][AAType]["Hide"]["T"] = [];
-				    for (let j = 0; j < m; ++j)
-						rec["AA"][AAType]["Hide"]["T"].push(reader.readString());
-				}
+				readAction(reader, rec["AA"][AAType]);
 			}
 
 			res.push(rec);
@@ -728,7 +756,7 @@
 
 		while (reader.isValid())
 		{
-			// Иконка pushbutton аннотации
+			// Внешний вид pushbutton аннотации
 			var MK = {};
 			// Номер для сопоставление с AP
 			MK["i"] = reader.readInt();

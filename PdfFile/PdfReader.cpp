@@ -721,8 +721,17 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
 {
     AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
-    if (!pAcroForms)
-        return;
+
+    Object oActType;
+    std::string sSName;
+    if (oAction->dictLookup("S", &oActType)->isName())
+    {
+        sSName = oActType.getName();
+        oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
+    }
+    else
+        oRes.WriteString(NULL, 0);
+    oActType.free();
 
     LinkAction* oAct = LinkAction::parseAction(oAction);
     if (!oAct)
@@ -823,27 +832,19 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
             }
             if (oHide.isString())
             {
-                TextString* s = new TextString(oHide.getString());
-                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                delete s;
+                GString* sField = oHide.getString();
+                int nFind = pAcroForms->findFieldIdx(sField);
+                if (nFind >= 0)
+                {
+                    oRes.AddInt(nFind);
+                }
             }
             else if (oHide.isRef())
             {
-                for (int m = 0, nNum = pAcroForms->getNumFields(); m < nNum; ++m)
+                int nFind = pAcroForms->findFieldIdx(&oHide);
+                if (nFind >= 0)
                 {
-                     AcroFormField* pSField = pAcroForms->getField(nAnnot);
-                     Object oSFieldRef;
-                     if (pSField->getFieldRef(&oSFieldRef)->isRef() && oSFieldRef.getRefGen() == oHide.getRefGen() && oSFieldRef.getRefNum() == oHide.getRefNum())
-                     {
-                         // TODO нельзя однозначно идентифицировать аннотацию по Т-имени, лучше использовать i из сопоставления с AP
-                         int nLengthName;
-                         Unicode* uName = pSField->getName(&nLengthName);
-                         std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
-                         oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
-                         gfree(uName);
-                         break;
-                     }
+                    oRes.AddInt(nFind);
                 }
             }
             k++;
@@ -855,9 +856,63 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
     case actionUnknown:
     default:
     {
+        if (sSName == "ResetForm")
+        {
+            Object oObj;
+            if (oAction->dictLookup("Flags", &oObj)->isInt())
+                oRes.AddInt(oObj.getInt());
+            else
+                oRes.AddInt(0);
+            oObj.free();
+
+            if (oAction->dictLookup("Fields", &oObj)->isArray())
+            {
+                int nFieldsPos = oRes.GetSize();
+                int nFields = 0;
+                oRes.AddInt(nFields);
+                for (int j = 0; j < oObj.arrayGetLength(); ++j)
+                {
+                    Object oField;
+                    oObj.arrayGetNF(j, &oField);
+                    if (oField.isString())
+                    {
+                        GString* sField = oField.getString();
+                        int nFind = pAcroForms->findFieldIdx(sField);
+                        if (nFind >= 0)
+                        {
+                            nFields++;
+                            oRes.AddInt(nFind);
+                        }
+                    }
+                    else if (oField.isRef())
+                    {
+                        int nFind = pAcroForms->findFieldIdx(&oField);
+                        if (nFind >= 0)
+                        {
+                            nFields++;
+                            oRes.AddInt(nFind);
+                        }
+                    }
+                    oField.free();
+                }
+                oRes.AddInt(nFields, nFieldsPos);
+            }
+            else
+                oRes.AddInt(0);
+            oObj.free();
+        }
         break;
     }
     }
+
+    Object oNextAction;
+    if (oAction->dictLookup("Next", &oNextAction)->isDict())
+    {
+        oRes.WriteBYTE(1);
+        getAction(pdfDoc, oRes, &oNextAction, nAnnot);
+    }
+    else
+        oRes.WriteBYTE(0);
 
     RELEASEOBJECT(oAct);
 };
@@ -1698,21 +1753,16 @@ oObj.free();\
         oRes.AddInt(nActionLength);
 
         // Action - A
-        Object oAction, oActType;
-        if (pField->fieldLookup("A", &oAction)->isDict() && oAction.dictLookup("S", &oActType)->isName())
+        Object oAction;
+        if (pField->fieldLookup("A", &oAction)->isDict())
         {
             nActionLength++;
 
             std::string sAA = "A";
             oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
-
-            std::string sSName(oActType.getName());
-            oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
-            oActType.free();
-
             getAction(m_pPDFDocument, oRes, &oAction, i);
         }
-        oAction.free(); oActType.free();
+        oAction.free();
 
         // Actions - AA
         Object oAA;
@@ -1725,17 +1775,12 @@ oObj.free();\
                 std::string sAA(oAA.dictGetKey(j));
                 oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
 
-                if (!oAA.dictGetVal(j, &oAction)->isDict() || !oAction.dictLookup("S", &oActType)->isName())
+                if (!oAA.dictGetVal(j, &oAction)->isDict())
                 {
                     oRes.WriteString(NULL, 0);
                     oAction.free();
-                    oActType.free();
                     continue;
                 }
-
-                std::string sSName(oActType.getName());
-                oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
-                oActType.free();
 
                 getAction(m_pPDFDocument, oRes, &oAction, i);
                 oAction.free();

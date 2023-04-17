@@ -1882,6 +1882,12 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         int nWidth  = (int)round((dx2 - dx1) * (double)nRasterW / dWidth);
         int nHeight = (int)round((dy2 - dy1) * (double)nRasterH / dHeight);
 
+        double dWTale = nWidth  - (dx2 - dx1) * (double)nRasterW / dWidth;
+        double dHTale = nHeight - (dy2 - dy1) * (double)nRasterH / dHeight;
+
+        nWidth  += 2;
+        nHeight += 2;
+
         BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
         unsigned int nColor = (unsigned int)nBackgroundColor;
         unsigned int nSize = (unsigned int)(nWidth * nHeight);
@@ -1899,8 +1905,8 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         pRenderer->SetFontManager(m_pFontManager);
         pRenderer->CreateFromBgraFrame(pFrame);
         pRenderer->SetSwapRGB(true);
-        pRenderer->put_Width ((dx2 - dx1) * 25.4 / dPageDpiX);
-        pRenderer->put_Height((dy2 - dy1) * 25.4 / dPageDpiX);
+        pRenderer->put_Width ((dx2 - dx1 + (2 + dWTale) * dWidth / (double)nRasterW) * 25.4 / dPageDpiX);
+        pRenderer->put_Height((dy2 - dy1 + (2 + dHTale) * dWidth / (double)nRasterW) * 25.4 / dPageDpiX);
         if (nBackgroundColor != 0xFFFFFF)
             pRenderer->CommandLong(c_nDarkMode, 1);
 
@@ -1922,9 +1928,9 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 
         // Координаты и размеры внешнего вида
         int nRx1 = (int)round(dx1 * (double)nRasterW / dWidth);
-        int nRy1 = (int)round(dy1 * (double)nRasterH / dHeight);
+        int nRy2 = (int)round(dy2 * (double)nRasterH / dHeight);
         oRes.AddInt(nRx1);
-        oRes.AddInt(nRasterH - nRy1);
+        oRes.AddInt(nRasterH - nRy2);
         oRes.AddInt(nWidth);
         oRes.AddInt(nHeight);
 
@@ -1936,6 +1942,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         Object oAP;
         AcroFormFieldType oType = pField->getAcroFormFieldType();
         ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
+
         if (pField->fieldLookup("AP", &oAP)->isDict())
         {
             std::vector<const char*> arrAPName { "N", "D", "R" };
@@ -1965,7 +1972,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
                         }
                         else
                             oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
-                        pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth, dy2 * (double)nRasterH / dHeight - nRasterH);
+                        pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth + 1 + dWTale / 2, dy2 * (double)nRasterH / dHeight - nRasterH + 1 + dHTale / 2);
                         DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), sASName.c_str());
                         nAPLength++;
                         WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);
@@ -1975,7 +1982,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
                 {
                     oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
                     oRes.WriteString(NULL, 0);
-                    pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth, dy2 * (double)nRasterH / dHeight - nRasterH);
+                    pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth + 1 + dWTale / 2, dy2 * (double)nRasterH / dHeight - nRasterH + 1 + dHTale / 2);
                     DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), NULL);
                     nAPLength++;
                     WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);

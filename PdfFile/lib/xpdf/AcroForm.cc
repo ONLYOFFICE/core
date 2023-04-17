@@ -609,9 +609,35 @@ int AcroForm::findFieldIdx(int pg, double x, double y) {
 }
 
 int AcroForm::findFieldIdx(Object* oRefObj) {
+  AcroFormField *field;
+  int i;
+
+  if (!oRefObj || !oRefObj->isRef()) {
+    return -1;
+  }
+  for (i = 0; i < fields->getLength(); ++i) {
+    field = (AcroFormField *)fields->get(i);
+    if (oRefObj->getRefGen() == field->fieldRef.getRefGen() &&
+        oRefObj->getRefNum() == field->fieldRef.getRefNum()) {
+      return i;
+    }
+  }
   return -1;
 }
 int AcroForm::findFieldIdx(GString* fullName) {
+  AcroFormField *field;
+  GString* fieldName;
+  int i;
+
+  for (i = 0; i < fields->getLength(); ++i) {
+    field = (AcroFormField *)fields->get(i);
+    fieldName = field->name->toPDFTextString();
+    if (fieldName->cmp(fullName) == 0) {
+      delete fieldName;
+      return i;
+    }
+    delete fieldName;
+  }
   return -1;
 }
 

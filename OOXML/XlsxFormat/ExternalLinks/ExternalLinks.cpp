@@ -641,7 +641,7 @@ namespace Spreadsheet
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = oReader.GetNameNoNS();
 
 			if (L"sheetNames" == sName)
 			{
@@ -671,6 +671,10 @@ namespace Spreadsheet
 			writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
 		}
 		writer.WriteString(L">");
+		if (m_oAlternateUrls.IsInit())
+		{
+			m_oAlternateUrls ->toXML(writer);
+		}
 		if (m_oSheetNames.IsInit())
 		{
 			m_oSheetNames->toXML(writer);
@@ -1407,8 +1411,8 @@ namespace Spreadsheet
 	{
 		ReadAttributes(oReader);
 
-		if (!oReader.IsEmptyNode())
-			oReader.ReadTillEnd();
+		if (oReader.IsEmptyNode())
+			return;
 		
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -1453,7 +1457,7 @@ namespace Spreadsheet
 		{
 			writer.WriteString(L"<xxl21:relativeUrl r:id=\"" + m_oRelativeUrlRid->ToString() + L"\"/>");
 		}
-		writer.WriteString(L"<xxl21:alternateUrls>");
+		writer.WriteString(L"</xxl21:alternateUrls>");
 	}
 	std::wstring CAlternateUrls::toXML() const
 	{

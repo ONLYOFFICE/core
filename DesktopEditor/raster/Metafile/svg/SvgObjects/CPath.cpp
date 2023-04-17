@@ -319,28 +319,19 @@ namespace SVG
 
 			if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
 			{
-				Point oCenter = CArcElement::GetCenter( (*pArcElement)[0], (*pArcElement)[1], oRadius, 0, pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag);
+				Point oCenter{0, 0};
 
-				m_dStartAngle = pArcElement->GetAngle (oCenter.dX, oCenter.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
-				m_dEndAngle   = pArcElement->GetAngle (oCenter.dX, oCenter.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
+				double dAngle, dSweep;
 
-				double dSweep = 0.;
+				pArcElement->CalculateData(pArcElement->m_arPoints[0], pArcElement->m_arPoints[1], oRadius, oCenter, 0, pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, dAngle, dSweep);
 
-				if (!pArcElement->GetArcAngles(pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, m_dStartAngle, m_dEndAngle, dSweep))
-					return NextMove(dX, (*m_pCurrentElement)[-1]);
-
-				m_dEndAngle = m_dStartAngle + dSweep;
-
-				m_oPosition = oCenter + CArcElement::GetPoint(oRadius, m_dStartAngle);
-
-				if (m_dStartAngle > m_dEndAngle)
-					m_dArcStep *= -1;
-
-				m_oLastPoint = oCenter;
+				m_oLastPoint  = oCenter;
+				m_oPosition   = oCenter + pArcElement->GetPoint(oRadius, dAngle);
+				m_dStartAngle = dAngle;
+				m_dEndAngle   = dAngle + dSweep;
+				m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
 			}
 
-			// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
-			// поэтому необходимо разобраться в этом
 			double dPrevValue = dX;
 
 			while(std::abs(m_dEndAngle - m_dStartAngle) > ARCSTEP)
@@ -359,11 +350,20 @@ namespace SVG
 				else if (dX < 0)
 					m_dStartAngle -= m_dArcStep;
 				else
-					return false;
+					return true;
 
 				dPrevValue = dX;
 
 				UpdatePosition(m_oLastPoint + CArcElement::GetPoint(oRadius, m_dStartAngle), dX);
+
+				double dMainAngle = std::fmod(std::atan2(m_oLastPoint.dY - m_oPosition.dY, m_oLastPoint.dX - m_oPosition.dX) * 180. / M_PI, 360);
+
+				int nFirstQuarter  = (int)(dMainAngle / 90) + ((dMainAngle > 0) ? 1 : -1);
+				int nSecondQuarter = (int)(m_dAngle   / 90) + ((m_dAngle > 0)   ? 1 : -1) - 1;
+
+				if ((nFirstQuarter * nSecondQuarter < 0 && std::abs(nSecondQuarter - nFirstQuarter) == 3) ||
+					(nFirstQuarter * nSecondQuarter > 0 && std::abs(nSecondQuarter - nFirstQuarter) == 2))
+					m_dAngle += 180;
 			}
 
 			return NextMove(dX, (*m_pCurrentElement)[-1]);

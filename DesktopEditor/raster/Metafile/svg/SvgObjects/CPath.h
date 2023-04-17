@@ -71,6 +71,7 @@ namespace SVG
 		friend class CTBezierElement;
 		friend class CArcElement;
 		friend class CCloseElement;
+		friend class CMovingPath;
 
 		std::vector<Point> m_arPoints;
 	};
@@ -447,8 +448,8 @@ namespace SVG
 				oTranslatePoint = (*pPrevElement)[-1];
 
 			CArcElement *pArcElement = new CArcElement(Point{arValues[0], arValues[1]}, arValues[2],
-			                                           (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false,
-			                                           (NULL != pPrevElement) ? (*pPrevElement)[-1] : Point{0., 0.}, Point{arValues[5], arValues[6]} + oTranslatePoint);
+													  (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false,
+													  (NULL != pPrevElement) ? (*pPrevElement)[-1] : Point{0., 0.}, Point{arValues[5], arValues[6]} + oTranslatePoint);
 
 			arValues.erase(arValues.begin(), arValues.begin() + 7);
 
@@ -461,15 +462,51 @@ namespace SVG
 				return;
 
 			Point oRadius{m_oRadius};
-			Point oCenter = GetCenter(m_arPoints[0], m_arPoints[1], oRadius, 0, m_bLargeArcFlag, m_bSweepFlag);
+			Point oCenter{0, 0};
+			double dAngle = 0, dSweep = 0;
 
-			double dStartAngle	=	GetAngle (oCenter.dX, oCenter.dY, m_arPoints[0].dX, m_arPoints[0].dY);
-			double dEndAngle	=	GetAngle (oCenter.dX, oCenter.dY, m_arPoints[1].dX, m_arPoints[1].dY);
+			CalculateData(m_arPoints[0], m_arPoints[1], oRadius, oCenter, 0, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
 
-			double dSweep		=	0.0;
+			double dStartAngle = dAngle;
+			double dEndAngle;
 
-			if (GetArcAngles ( m_bLargeArcFlag, m_bSweepFlag, dStartAngle, dEndAngle, dSweep ))
-				pRenderer->PathCommandArcTo(oCenter.dX - oRadius.dX, oCenter.dY - oRadius.dY, oRadius.dX * 2.0, oRadius.dY * 2.0, dStartAngle, dSweep);
+			Point oStartPoint, oEndPoint, oControl1, oControl2;
+
+			pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
+
+			while (dStartAngle != (dAngle + dSweep))
+			{
+				dEndAngle = (int)((dStartAngle + ((dSweep > 0) ? 90 : -90)) / 90) * 90;
+
+				if (std::abs(dEndAngle) > std::abs(dAngle + dSweep))
+					dEndAngle = dAngle + dSweep;
+
+				oStartPoint = oCenter + GetPoint(oRadius, dStartAngle);
+				oEndPoint   = oCenter + GetPoint(oRadius, dEndAngle);
+
+				double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180;
+
+				if (std::abs(dSweepRad) > M_PI)
+				{
+					dSweepRad -= M_PI * 2.;
+					dSweepRad = fmod(dSweepRad, M_PI * 2.);
+				}
+
+				double dFactor = (4. / 3.) * std::tan(dSweepRad / 4.);
+
+				double distToCtrPointX = std::sqrt(oRadius.dX * oRadius.dX * (1 + dFactor * dFactor));
+				double distToCtrPointY = std::sqrt(oRadius.dY * oRadius.dY * (1 + dFactor * dFactor));
+
+				double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
+				double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
+
+				oControl1 = {oCenter.dX + std::cos(dAngle1) * distToCtrPointX, oCenter.dY + std::sin(dAngle1) * distToCtrPointY};
+				oControl2 = {oCenter.dX + std::cos(dAngle2) * distToCtrPointX, oCenter.dY + std::sin(dAngle2) * distToCtrPointY};
+
+				pRenderer->PathCommandCurveTo(oControl1.dX, oControl1.dY, oControl2.dX, oControl2.dY, oEndPoint.dX, oEndPoint.dY);
+
+				dStartAngle = dEndAngle;
+			}
 		}
 
 		CArcElement* Copy() const override
@@ -484,9 +521,9 @@ namespace SVG
 			return Point{oRadius.dX * std::cos(dAngle * M_PI / 180), oRadius.dY * std::sin(dAngle * M_PI / 180)};
 		}
 
-		static Point GetCenter(const Point& oFirst, const Point& oSecond, Point& oRadius, double dAngle, bool bLargeArc, bool bSweep)
+		static void CalculateData(const Point& oFirst, const Point& oSecond, Point& oRadius, Point& oCenter, double dAngle, bool bLargeArc, bool bSweep, double& dStartAngle, double& dSweep)
 		{
-			double dXp = ((oFirst.dX - oSecond.dX) / 2 * std::cos(dAngle)) + ((oFirst.dY - oSecond.dY) / 2 * std::sin(dAngle));
+			double dXp = ((oFirst.dX - oSecond.dX) / 2 * std::cos(dAngle))  + ((oFirst.dY - oSecond.dY) / 2 * std::sin(dAngle));
 			double dYp = ((oFirst.dX - oSecond.dX) / 2 * -std::sin(dAngle)) + ((oFirst.dY - oSecond.dY) / 2 * std::cos(dAngle));
 
 			int nSign = (bLargeArc == bSweep) ? -1 : 1;
@@ -500,114 +537,25 @@ namespace SVG
 
 			double dC0 = nSign * std::sqrt(((std::pow(oRadius.dX, 2) * std::pow(oRadius.dY, 2)) - (std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) - (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))) / ((std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) + (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))));
 
-			double dCp1 = dC0 * oRadius.dX * dYp / oRadius.dY;
-			double dCp2 = -dC0 * oRadius.dY * dXp / oRadius.dX;
+			double dCpx = dC0 * oRadius.dX * dYp / oRadius.dY;
+			double dCpy = -dC0 * oRadius.dY * dXp / oRadius.dX;
 
-			return Point{dCp1 * std::cos(dAngle) - dCp2 * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCp1 * std::sin(dAngle) + dCp2 * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
-		}
+			dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
+			dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
 
-		double GetAngle(const Point& oFirstPoint, const Point& oSecondPoint) const
-		{
-			Point oThirdPoint{oFirstPoint.dX - oSecondPoint.dX, oFirstPoint.dY - oSecondPoint.dX};
+			if (((dYp - dCpy) / oRadius.dY) < 0)
+				dStartAngle *= -1;
 
-			return std::atan2(oThirdPoint.dY, oThirdPoint.dX) * (180. / M_PI);
-		}
+			if ((((dXp - dCpx) / oRadius.dX * (-dYp - dCpy) / oRadius.dY) - ((dYp - dCpy) / oRadius.dY * (-dXp - dCpx) / oRadius.dX)) < 0)
+				dSweep *= -1;
 
-		double GetAngle(const double& CX, const double& CY, const double& X, const double& Y) const
-		{
-			double dAngle = 0.0;
+			if (!bSweep && dSweep > 0)
+				dSweep -= 360;
 
-			if (0.000001 > std::fabs(X - CX) && 0.000001 > std::fabs(Y - CY) )
-				return 0.0;
+			if (bSweep && dSweep < 0)
+				dSweep += 360;
 
-			if ( (X - CX) > 0.0 && 0.000001 > std::fabs(Y - CY) )
-				return 0.0;
-			if ( (X - CX) < 0.0 && 0.000001 > std::fabs(Y - CY) )
-				return 180.0;
-			if ( 0.000001 > std::fabs(X - CX) && 0.0 > (Y - CY) )
-				return 270.0;
-			if ( 0.000001 > std::fabs(X - CX) && 0.0 < (Y - CY) )
-				return 90.0;
-
-			dAngle	=	atan ( fabs ( X - CX ) / fabs ( Y - CY ) ) * 180.0 / M_PI;
-
-			if ( (X - CX) > 0.0 && (Y - CY) > 0.0 )			//	1
-			{
-				dAngle	=	90.0 - dAngle;
-			}
-
-			if ( (X - CX) < 0.0 && (Y - CY) > 0.0 )			//	2
-			{
-				dAngle	+=	90.0;
-			}
-
-			if ( ( (X - CX) < 0.0) && ((Y - CY) < 0.0) )	//	3
-			{
-				dAngle	=	( 90.0 - dAngle ) + 180.0;
-			}
-
-			if ( (X - CX) > 0.0 && (Y - CY) < 0.0 )			//	4
-			{
-				dAngle	+=	-90.0;
-			}
-
-			return dAngle;
-		}
-
-		bool GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep) const
-		{
-			dSweep		=	0.0;
-
-			if ( 1 == LargeFlag && 0 == SweepFlag )
-			{
-				if ( abs ( dEndAngle - dStartAngle ) > 180 )
-					dSweep	=	dEndAngle - dStartAngle;
-				else
-					dSweep	=	- ( 360 - abs ( dEndAngle - dStartAngle ) );
-
-				if ( SweepFlag )
-					dSweep	=	abs ( dSweep );
-				else
-					dSweep	=	-abs ( dSweep );
-			}
-			else if ( 0 == LargeFlag && 1 == SweepFlag )
-			{
-				if ( abs ( dEndAngle - dStartAngle ) < 180 )
-					dSweep	=	dEndAngle - dStartAngle;
-				else
-					dSweep	=	360 - abs ( dEndAngle - dStartAngle );
-
-				if ( SweepFlag )
-					dSweep	=	abs ( dSweep );
-				else
-					dSweep	=	-abs ( dSweep );
-			}
-			else if ( 0 == LargeFlag && 0 == SweepFlag )
-			{
-				if ( abs ( dEndAngle - dStartAngle ) > 180 )
-					dSweep	=	dEndAngle - dStartAngle;
-				else
-					dSweep	=	- ( 360 - abs ( dEndAngle - dStartAngle ) );
-
-				if ( SweepFlag )
-					dSweep	=	abs ( dEndAngle - dStartAngle );
-				else
-					dSweep	=	-abs ( dEndAngle - dStartAngle );
-			}
-			else if ( 1 == LargeFlag && 1 == SweepFlag )
-			{
-				if ( abs ( dEndAngle - dStartAngle ) > 180 )
-					dSweep	=	dEndAngle - dStartAngle;
-				else
-					dSweep	=	- ( 360 - abs ( dEndAngle - dStartAngle ) );
-
-				if ( SweepFlag )
-					dSweep	=	abs ( dSweep );
-				else
-					dSweep	=	-abs ( dSweep );
-			}
-
-			return true;
+			oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 		}
 
 		Point  m_oRadius;

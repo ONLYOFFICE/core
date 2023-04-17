@@ -223,6 +223,7 @@ namespace BinXlsxRW
 		int ReadExternalSheetData(BYTE type, long length, void* poResult);
 		int ReadExternalRow(BYTE type, long length, void* poResult);
 		int ReadExternalCell(BYTE type, long length, void* poResult);
+		int ReadExternalAlternateUrls(BYTE type, long length, void* poResult);
 		int ReadOleLink(BYTE type, long length, void* poResult);
 		int ReadOleItem(BYTE type, long length, void* poResult);
 		int ReadDdeLink(BYTE type, long length, void* poResult);

@@ -1321,7 +1321,12 @@ namespace BinXlsxRW
 		SheetDataRowCell = 14,
 		SheetDataRowCellRef = 15,
 		SheetDataRowCellType = 16,
-		SheetDataRowCellValue = 17
+		SheetDataRowCellValue = 17,
+		AlternateUrls = 18,
+		AbsoluteUrl = 19,
+		RelativeUrl = 20,
+		ExternalAlternateUrlsDriveId = 21,
+		ExternalAlternateUrlsItemId = 22
 	};}
 	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
 	{

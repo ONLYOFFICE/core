@@ -2906,38 +2906,33 @@ void BinaryNumberingTableWriter::WriteAbstractNums(const OOX::CNumbering& number
 void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstractNum& num, int nIndex, const std::vector<OOX::Numbering::CNum*>& aNums)
 {
 	int nCurPos = 0;
-	//Id
+
 	if(num.m_oAbstractNumId.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Id);
 		m_oBcw.m_oStream.WriteLONG(*num.m_oAbstractNumId);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-
-	//Type
-	if(false != num.m_oMultiLevelType.IsInit())
+	
+	if ((num.m_oMultiLevelType.IsInit()) && (num.m_oMultiLevelType->m_oVal.IsInit()))
 	{
-		//todo
-		//nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
-		//m_oBcw.m_oStream.WriteBYTE(num.Type);
-		//m_oBcw.WriteItemEnd(nCurPos);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
+		m_oBcw.m_oStream.WriteBYTE(num.m_oMultiLevelType->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 
-	//NumStyleLink
-	if(false != num.m_oNumStyleLink.IsInit())
+	if (false != num.m_oNumStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::NumStyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oNumStyleLink.get().ToString2());
 	}
 
-	//StyleLink
-	if(false != num.m_oStyleLink.IsInit())
+	if (false != num.m_oStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
 
-	//Lvl
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);

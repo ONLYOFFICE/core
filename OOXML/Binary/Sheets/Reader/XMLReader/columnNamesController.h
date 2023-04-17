@@ -33,11 +33,10 @@
 
 #include "../../../../Base/Base.h"
 
-#include <map>
+#include <pair>
 #include <string>
+#include <map>
 
-
-/// @todo хранение имен в виде структуры настоящее имя, постфикс и номер ячейки
 
 /// @brief класс контролирующий уникальность имен столбцов при открытии  xml документов
 class ColumnNameController
@@ -54,23 +53,23 @@ public:
     /// @return номер столбца, если такой есть и -1, если такого столбца нет
     _INT64 GetColumnNumber(const std::wstring &columnName);
 
+    /// @brief попытка поиска и получения изначального имени xml узла по уникальному
+    /// @param columnName уникальное имя узла, созданное контроллером
+    /// @return неуникальное имя xml ноды из которого было создано уникальное
+    std::wstring GetXmlName(const std::wstring &columnName);
+
     /// @brief Получение всех содержащихся имен и номеров их столбцов
-    /// @return значение копия map colNames_
-    std::map<std::wstring, _UINT32> GetColumnNames();
+    /// @return map с уникальными именами как ключами и номерами столбцов как значениями
+    std::map<std::wstring, UINT32> GetColumnNames();
 
 private:
 
-/// @brief хранит уникальные имена столбцов вместе с их номерами
-std::map<std::wstring, _UINT32> colNames_;
+/// @brief хранит уникальные имена столбцов как ключи и пару неуникальное имя и номер столбца как значение
+std::map<std::wstring, std::pair<std::wstring, _UINT32>> colNames_;
 
 /// @brief цифра добавляющаяся к повторяющимся именам столбцов для их уникальности
 _UINT32 colNamePostfix_ = 2;
 
-
 /// @brief максимальный номер столбца, который присваивается при получении нового имени
 _UINT32 colNumber_ = 0;
-
-
-
-
 };

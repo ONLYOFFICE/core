@@ -34,6 +34,7 @@
 
 _UINT32 ColumnNameController::CreateColumnName(std::wstring &column)
 {
+    std::wstring nodeName = column;
 
     if(colNames_.find(column) != colNames_.end())
     {
@@ -41,24 +42,40 @@ _UINT32 ColumnNameController::CreateColumnName(std::wstring &column)
         colNamePostfix_++;
     }
 
-    colNames_.emplace(column, colNumber_);
     auto colNumber = colNumber_;
     colNumber_ ++;
-    return colNumber;
 
+    colNames_.emplace(column, std::make_pair(nodeName, colNumber));
+    return colNumber;
 }
 
 _INT64 ColumnNameController::GetColumnNumber(const std::wstring &columnName)
 {
     if(colNames_.find(columnName) != colNames_.end())
     {
-        return colNames_.at(columnName);
+        return colNames_.at(columnName).second;
     }
 
     return -1;
 }
 
+std::wstring ColumnNameController::GetXmlName(const std::wstring &columnName)
+{
+    auto nodeName = colNames_.find(columnName);
+    if(nodeName == colNames_.end())
+    {
+        return L"";
+    }
+
+    return nodeName->first;
+}
+
 std::map<std::wstring, _UINT32> ColumnNameController::GetColumnNames()
 {
-    return colNames_;
+    std::map<std::wstring, _UINT32> columns = {};
+    for(auto i = colNames_.begin(); i != colNames_.end(); i++)
+    {
+        columns.insert(i->first, i->second.second);
+    }
+    return columns;
 }

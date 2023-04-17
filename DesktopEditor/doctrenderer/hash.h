@@ -17,6 +17,8 @@ public:
 		haWHIRLPOOL	= 8
 	};
 
+	static int getDigestLength(HashAlgs alg);
+
 public:
 	NSHash();
 	~NSHash();

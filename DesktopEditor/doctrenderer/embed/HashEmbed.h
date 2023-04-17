@@ -5,16 +5,16 @@
 #include "../hash.h"
 
 using namespace NSJSBase;
-class CZipEmbed : public CJSEmbedObject
+class CHashEmbed : public CJSEmbedObject
 {
 public:
 	NSHash* m_pHash;
 
-	CZipEmbed() : m_pHash(new NSHash())
+	CHashEmbed() : m_pHash(new NSHash())
 	{
 	}
 
-	~CZipEmbed()
+	~CHashEmbed()
 	{
 		RELEASEOBJECT(m_pHash);
 	}

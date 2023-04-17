@@ -38,7 +38,7 @@
 using namespace NSJSBase;
 int main(int argc, char *argv[])
 {
-#if 1
+#if 0
 	// Primitives example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext(false);
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 //	oContext1->Dispose();
 	oContext2->Dispose();
 
-#else
+#elif 0
 	// CZipEmbed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;
@@ -153,5 +153,53 @@ int main(int argc, char *argv[])
 	oContext1->Exit();
 
 #endif
+
+	// CHashEmbed example
+
+	JSSmart<CJSContext> oContext1 = new CJSContext;
+
+	// Create first context
+	oContext1->CreateContext();
+
+	// Call hash() on first context
+	oContext1->Enter();
+	CreateDefaults(oContext1);
+	JSSmart<CJSValue> oRes1 = oContext1->runScript(
+		"var oHash = new CreateNativeHash;\n"
+		"var str = 'test';\n"
+		"var hash = oHash.hash(str, str.length, 0);");
+	oContext1->Exit();
+
+	// Print first result
+	oContext1->Enter();
+	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
+	JSSmart<CJSArray> oHash = oGlobal1->get("hash")->toArray();
+	std::cout << "\nRESULTED HASH:\n";
+	for (int i = 0; i < oHash->getCount(); i++)
+	{
+		std::cout << std::hex << oHash->get(i)->toUInt32();
+	}
+	std::cout << std::endl;
+
+	// Call hash2() on first context
+	oContext1->Enter();
+	CreateDefaults(oContext1);
+	JSSmart<CJSValue> oRes2 = oContext1->runScript(
+		"var str2 = 'test';\n"
+		"var hash2 = oHash.hash2(str, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");
+	oContext1->Exit();
+
+	// Print first result
+	oContext1->Enter();
+	JSSmart<CJSArray> oHash2 = oGlobal1->get("hash2")->toArray();
+	std::cout << "\nRESULTED HASH2:\n";
+	for (int i = 0; i < oHash2->getCount(); i++)
+	{
+		std::cout << std::hex << oHash2->get(i)->toUInt32();
+	}
+	std::cout << std::endl;
+
+	oContext1->Exit();
+
 	return 0;
 }

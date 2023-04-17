@@ -12,6 +12,12 @@
 
 // this code was taken from "core/DesktopEditor/xmlsec/src/wasm/hash/main.cpp"
 
+int NSHash::getDigestLength(HashAlgs alg)
+{
+	static const int aDigestLengths[] = { 16, 16, 16, 20, 20, 32, 48, 64, 64 };
+	return aDigestLengths[alg];
+}
+
 NSHash::NSHash()
 {
 }

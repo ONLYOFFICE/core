@@ -1,7 +1,7 @@
 #ifndef NSHASH_H
 #define NSHASH_H
 
-class NSHash
+class CHash
 {
 public:
 	enum HashAlgs
@@ -20,8 +20,8 @@ public:
 	static int getDigestLength(HashAlgs alg);
 
 public:
-	NSHash();
-	~NSHash();
+	CHash();
+	~CHash();
 
 	unsigned char* hash(const unsigned char* data, int size, int alg);
 	unsigned char* hash2(const char* password, const char* salt, int spinCount, int alg);

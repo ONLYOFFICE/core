@@ -8,9 +8,9 @@ using namespace NSJSBase;
 class CHashEmbed : public CJSEmbedObject
 {
 public:
-	NSHash* m_pHash;
+	CHash* m_pHash;
 
-	CHashEmbed() : m_pHash(new NSHash())
+	CHashEmbed() : m_pHash(new CHash())
 	{
 	}
 

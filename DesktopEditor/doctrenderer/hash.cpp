@@ -12,21 +12,21 @@
 
 // this code was taken from "core/DesktopEditor/xmlsec/src/wasm/hash/main.cpp"
 
-int NSHash::getDigestLength(HashAlgs alg)
+int CHash::getDigestLength(HashAlgs alg)
 {
 	static const int aDigestLengths[] = { 16, 16, 16, 20, 20, 32, 48, 64, 64 };
 	return aDigestLengths[alg];
 }
 
-NSHash::NSHash()
+CHash::CHash()
 {
 }
 
-NSHash::~NSHash()
+CHash::~CHash()
 {
 }
 
-unsigned char* NSHash::hash(const unsigned char* data, int size, int alg)
+unsigned char* CHash::hash(const unsigned char* data, int size, int alg)
 {
 	unsigned int nBufLen = 0;
 	unsigned char* pBufData = NULL;
@@ -332,47 +332,47 @@ void hash_iteration(unsigned char*& input, int iter, unsigned char*& tmp, int al
 
 	switch (alg)
 	{
-	case NSHash::haMD2:
+	case CHash::haMD2:
 	{
 		MD2(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haMD4:
+	case CHash::haMD4:
 	{
 		MD4(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haMD5:
+	case CHash::haMD5:
 	{
 		MD5(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haRMD160:
+	case CHash::haRMD160:
 	{
 		RIPEMD160(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haSHA1:
+	case CHash::haSHA1:
 	{
 		SHA1(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haSHA256:
+	case CHash::haSHA256:
 	{
 		SHA256(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haSHA384:
+	case CHash::haSHA384:
 	{
 		SHA384(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haSHA512:
+	case CHash::haSHA512:
 	{
 		SHA512(input, alg_size + 4, tmp);
 		break;
 	}
-	case NSHash::haWHIRLPOOL:
+	case CHash::haWHIRLPOOL:
 	{
 		WHIRLPOOL(input, alg_size + 4, tmp);
 		break;
@@ -386,7 +386,7 @@ void hash_iteration(unsigned char*& input, int iter, unsigned char*& tmp, int al
 	tmp = mem;
 }
 
-unsigned char* NSHash::hash2(const char* password, const char* salt, int spinCount, int alg)
+unsigned char* CHash::hash2(const char* password, const char* salt, int spinCount, int alg)
 {
 	size_t inputSaltLen = std::strlen(salt);
 	unsigned char* passwordUtf16 = NULL;

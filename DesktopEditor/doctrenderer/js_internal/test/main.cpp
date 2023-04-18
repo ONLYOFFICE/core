@@ -162,44 +162,37 @@ int main(int argc, char *argv[])
 	oContext1->CreateContext();
 
 	// Call hash() on first context
-	oContext1->Enter();
+	CJSContextScope scope(oContext1);
 	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
 		"var oHash = new CreateNativeHash;\n"
 		"var str = 'test';\n"
 		"var hash = oHash.hash(str, str.length, 0);");
-	oContext1->Exit();
 
 	// Print first result
-	oContext1->Enter();
 	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
-	JSSmart<CJSArray> oHash = oGlobal1->get("hash")->toArray();
+	JSSmart<CJSTypedArray> oHash = oGlobal1->get("hash")->toTypedArray();
 	std::cout << "\nRESULTED HASH:\n";
 	for (int i = 0; i < oHash->getCount(); i++)
 	{
-		std::cout << std::hex << oHash->get(i)->toUInt32();
+		std::cout << std::hex << static_cast<unsigned>(oHash->getData().Data[i]);
 	}
 	std::cout << std::endl;
 
 	// Call hash2() on first context
-	oContext1->Enter();
 	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes2 = oContext1->runScript(
 		"var str2 = 'test';\n"
 		"var hash2 = oHash.hash2(str, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");
-	oContext1->Exit();
 
 	// Print first result
-	oContext1->Enter();
-	JSSmart<CJSArray> oHash2 = oGlobal1->get("hash2")->toArray();
+	JSSmart<CJSTypedArray> oHash2 = oGlobal1->get("hash2")->toTypedArray();
 	std::cout << "\nRESULTED HASH2:\n";
 	for (int i = 0; i < oHash2->getCount(); i++)
 	{
-		std::cout << std::hex << oHash2->get(i)->toUInt32();
+		std::cout << std::hex << static_cast<unsigned>(oHash2->getData().Data[i]);
 	}
 	std::cout << std::endl;
-
-	oContext1->Exit();
 
 	return 0;
 }

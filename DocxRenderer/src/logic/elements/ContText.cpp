@@ -80,22 +80,22 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:rPr>");
 
 		oWriter.WriteString(L"<w:rStyle w:val=\"");
-		oWriter.WriteString(m_pFontStyle->GetFontStyleId());
+		oWriter.WriteString(m_pFontStyle->wsFontStyleId);
 		oWriter.WriteString(L"\"/>");
 
 		LONG lCalculatedSpacing = 0;
 
-		if (!m_pFontStyle->GetFontName().empty() && !m_oText.empty())
+		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
 			if (m_eVertAlignType != eVertAlignType::vatSubscript &&
 					m_eVertAlignType != eVertAlignType::vatSuperscript)
 			{
 				// нужно перемерять...
 				NSStructures::CFont oFont;
-				oFont.Name = m_pFontStyle->GetFontName();
-				oFont.Bold = m_pFontStyle->IsBold();
-				oFont.Italic = m_pFontStyle->IsItalic();
-				oFont.Size = m_pFontStyle->GetFontSize();
+				oFont.Name = m_pFontStyle->wsFontName;
+				oFont.Bold = m_pFontStyle->bBold;
+				oFont.Italic = m_pFontStyle->bItalic;
+				oFont.Size = m_pFontStyle->dFontSize;
 				m_pManager->LoadFontByName(oFont);
 
 				double dBoxX;
@@ -105,7 +105,7 @@ namespace NSDocxRenderer
 				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
 
 				double dSpacing = (m_dWidth - dBoxWidth) / (m_oText.length());
-				//dSpacing *= c_dMMToDx;
+				dSpacing *= c_dMMToDx;
 
 				lCalculatedSpacing = static_cast<LONG>(dSpacing);
 			}
@@ -115,7 +115,7 @@ namespace NSDocxRenderer
 		//note 1 -> 0.5pt
 		lCalculatedSpacing -= 1;
 
-		if (lCalculatedSpacing > 0)
+		if (lCalculatedSpacing != 0)
 		{
 			oWriter.WriteString(L"<w:spacing w:val=\"");
 			oWriter.AddInt(lCalculatedSpacing);
@@ -159,7 +159,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:u w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
 
-			if (m_lUnderlineColor != m_pFontStyle->GetBrush().Color1)
+			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{
 				oWriter.WriteString(L" w:color=\"");
 				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
@@ -210,7 +210,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:r><w:rPr>");
 
 		oWriter.WriteString(L"<w:rStyle w:val=\"");
-		oWriter.WriteString(m_pFontStyle->GetFontStyleId());
+		oWriter.WriteString(m_pFontStyle->wsFontStyleId);
 		oWriter.WriteString(L"\"/>");
 
 		double dSpaceMMSize = m_dSpaceWidthMM;
@@ -262,7 +262,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:u w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
 
-			if (m_lUnderlineColor != m_pFontStyle->GetBrush().Color1)
+			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{
 				oWriter.WriteString(L" w:color=\"");
 				oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
@@ -299,7 +299,7 @@ namespace NSDocxRenderer
 
 	bool CContText::IsEqual(const CContText *pCont)
 	{
-		bool bIf1 = m_pFontStyle->GetFontStyleId() == pCont->m_pFontStyle->GetFontStyleId();
+		bool bIf1 = m_pFontStyle->wsFontStyleId == pCont->m_pFontStyle->wsFontStyleId;
 		bool bIf2 = m_bIsStrikeoutPresent == pCont->m_bIsStrikeoutPresent;
 		bool bIf3 = m_bIsDoubleStrikeout == pCont->m_bIsDoubleStrikeout;
 		bool bIf4 = m_bIsHighlightPresent == pCont->m_bIsHighlightPresent;
@@ -322,11 +322,11 @@ namespace NSDocxRenderer
 	UINT CContText::GetNumberOfFeatures()
 	{
 		UINT ret = 0;
-		if (m_pFontStyle->IsBold())
+		if (m_pFontStyle->bBold)
 		{
 			ret++;
 		}
-		if (m_pFontStyle->IsItalic())
+		if (m_pFontStyle->bItalic)
 		{
 			ret++;
 		}
@@ -377,16 +377,16 @@ namespace NSDocxRenderer
 		bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
 
 		//Размеры шрифта и текст должны бать одинаковыми
-		bool bIf5 = m_pFontStyle->GetFontSize() == m_pFontStyle->GetFontSize();
+		bool bIf5 = m_pFontStyle->dFontSize == m_pFontStyle->dFontSize;
 		bool bIf6 = m_oText == pCont->m_oText;
 
 		//Цвет тени должен быть серым
-		bool bIf7 = m_pFontStyle->GetBrush().Color1 == c_iGreyColor;
-		bool bIf8 = pCont->m_pFontStyle->GetBrush().Color1 == c_iGreyColor;
-		bool bIf9 = m_pFontStyle->GetBrush().Color1 == c_iBlackColor;
-		bool bIf10 = pCont->m_pFontStyle->GetBrush().Color1 == c_iBlackColor;
-		bool bIf11 = m_pFontStyle->GetBrush().Color1 == c_iGreyColor2;
-		bool bIf12 = pCont->m_pFontStyle->GetBrush().Color1 == c_iGreyColor2;
+		bool bIf7 = m_pFontStyle->oBrush.Color1 == c_iGreyColor;
+		bool bIf8 = pCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
+		bool bIf9 = m_pFontStyle->oBrush.Color1 == c_iBlackColor;
+		bool bIf10 = pCont->m_pFontStyle->oBrush.Color1 == c_iBlackColor;
+		bool bIf11 = m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
+		bool bIf12 = pCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor2;
 
 		//note Каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
 		//note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
@@ -461,8 +461,8 @@ namespace NSDocxRenderer
 					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
 				fabs(m_dLeft - pCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
 		//Размеры шрифта должны бать разными
-		bool bIf5 = m_pFontStyle->GetFontSize() * 0.7 > pCont->m_pFontStyle->GetFontSize();
-		bool bIf6 = m_pFontStyle->GetFontSize() <  pCont->m_pFontStyle->GetFontSize() * 0.7;
+		bool bIf5 = m_pFontStyle->dFontSize * 0.7 > pCont->m_pFontStyle->dFontSize;
+		bool bIf6 = m_pFontStyle->dFontSize <  pCont->m_pFontStyle->dFontSize * 0.7;
 
 		if (bIf3 || bIf4)
 		{
@@ -511,6 +511,6 @@ namespace NSDocxRenderer
 	double CContText::CalculateThinSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 0.8;
+		return m_dSpaceWidthMM * 0.4;
 	}
 }

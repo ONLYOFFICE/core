@@ -29,11 +29,11 @@ namespace NSDocxRenderer
 
 	std::shared_ptr<const CFontStyle> CFontStyleManager::GetOrAddFontStyle(const CFontStyle& oFontStyle)
 	{
-		return GetOrAddFontStyle(oFontStyle.GetBrush(),
-						  oFontStyle.GetFontName(),
-						  oFontStyle.GetFontSize(),
-						  oFontStyle.IsItalic(),
-						  oFontStyle.IsBold());
+		return GetOrAddFontStyle(oFontStyle.oBrush,
+						  oFontStyle.wsFontName,
+						  oFontStyle.dFontSize,
+						  oFontStyle.bItalic,
+						  oFontStyle.bBold);
 	}
 	std::shared_ptr<const CFontStyle> CFontStyleManager::GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
 								   const std::wstring& wsFontName,
@@ -43,24 +43,24 @@ namespace NSDocxRenderer
 	{
 		for(auto& val : m_arFontStyles)
 		{
-			if(oBrush.Type == val->GetBrush().Type &&
-					oBrush.Color1 == val->GetBrush().Color1 &&
-					oBrush.Color2 == val->GetBrush().Color2 &&
-					oBrush.Alpha1 == val->GetBrush().Alpha1 &&
-					oBrush.Alpha2 == val->GetBrush().Alpha2 &&
-					oBrush.LinearAngle == val->GetBrush().LinearAngle &&
-					dFontSize == val->GetFontSize() &&
-					wsFontName == val->GetFontName() &&
-					(bItalic == val->IsItalic()) && (bBold == val->IsBold()))
+			if(oBrush.Type == val->oBrush.Type &&
+					oBrush.Color1 == val->oBrush.Color1 &&
+					oBrush.Color2 == val->oBrush.Color2 &&
+					oBrush.Alpha1 == val->oBrush.Alpha1 &&
+					oBrush.Alpha2 == val->oBrush.Alpha2 &&
+					oBrush.LinearAngle == val->oBrush.LinearAngle &&
+					dFontSize == val->dFontSize &&
+					wsFontName == val->wsFontName &&
+					(bItalic == val->bItalic) && (bBold == val->bBold))
 
 				return val;
 		}
 		auto pFontStyle = std::make_shared<CFontStyle>();
-		pFontStyle->SetBrush(oBrush);
-		pFontStyle->SetFontName(wsFontName);
-		pFontStyle->SetFontSize(dFontSize);
-		pFontStyle->SetItalic(bItalic);
-		pFontStyle->SetBold(bBold);
+		pFontStyle->oBrush = oBrush;
+		pFontStyle->wsFontName = wsFontName;
+		pFontStyle->dFontSize = dFontSize;
+		pFontStyle->bItalic = bItalic;
+		pFontStyle->bBold = bBold;
 
 		m_arFontStyles.push_front(pFontStyle);
 		return pFontStyle;

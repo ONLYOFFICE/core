@@ -4,6 +4,8 @@
 #include "elements/Shape.h"
 #include "elements/Table.h"
 #include "managers/FontStyleManager.h"
+#include "managers/ParagraphStyleManager.h"
+#include "styles/ParagraphStyle.h"
 
 
 namespace NSDocxRenderer
@@ -21,6 +23,7 @@ namespace NSDocxRenderer
 		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
 
 		CFontStyleManager*          m_pFontStyleManager {nullptr};
+		CParagraphStyleManager*     m_pParagraphStyleManager {nullptr};
 		CFontManager*               m_pFontManager {nullptr};
 		CFontSelector*				m_pFontSelector {nullptr};
 		CVectorGraphics             m_oVector;
@@ -58,7 +61,7 @@ namespace NSDocxRenderer
 		void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 				  NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
 				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pStyleManager, CFontManager *pFontManager,
-				  CFontSelector* pFontSelector);
+				  CFontSelector* pFontSelector, CParagraphStyleManager* pParagraphStyleManager);
 
 
 		void BeginCommand(DWORD lType);

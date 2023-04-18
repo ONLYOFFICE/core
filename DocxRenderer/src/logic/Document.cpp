@@ -812,7 +812,7 @@ namespace NSDocxRenderer
 		Clear();
 
 		m_lCurrentCommandType = 0;
-		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oFontStyleManager, &m_oFontManager, &m_oFontSelector);
+		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oFontStyleManager, &m_oFontManager, &m_oFontSelector, &m_oParagraphStyleManager);
 
 		m_oImageManager.NewDocument();
 		m_oFontStyleManager.NewDocument();
@@ -1019,8 +1019,8 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:docDefaults>");
 
 		oWriter.WriteString(L"<w:latentStyles w:defLockedState=\"false\" w:defUIPriority=\"99\" w:defSemiHidden=\"true\" w:defUnhideWhenUsed=\"true\" w:defQFormat=\"false\" w:count=\"267\">");
-		oWriter.WriteString(L"<w:lsdException w:name=\"Normal\" w:semiHidden=\"false\" w:uiPriority=\"0\" w:unhideWhenUsed=\"false\"/>");
-		oWriter.WriteString(L"<w:lsdException w:name=\"heading 1\" w:semiHidden=\"false\" w:uiPriority=\"9\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+		oWriter.WriteString(L"<w:lsdException w:name=\"Normal\" w:semiHidden=\"false\" w:uiPriority=\"0\" w:unhideWhenUsed=\"true\"/>");
+		//oWriter.WriteString(L"<w:lsdException w:name=\"heading 1\" w:semiHidden=\"false\" w:uiPriority=\"9\" w:unhideWhenUsed=\"true\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 2\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 3\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 4\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
@@ -1158,9 +1158,6 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:lsdException w:name=\"TOC Heading\" w:uiPriority=\"39\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"</w:latentStyles>");
 
-		oWriter.WriteString(L"<w:style w:type=\"paragraph\" w:default=\"1\" w:styleId=\"Normal\"><w:name w:val=\"Normal\"/>");
-		oWriter.WriteString(L"</w:style>");
-
 		oWriter.WriteString(L"<w:style w:type=\"character\" w:default=\"1\" w:styleId=\"DefaultParagraphFont\">");
 		oWriter.WriteString(L"<w:name w:val=\"Default Paragraph Font\"/>");
 		oWriter.WriteString(L"<w:uiPriority w:val=\"1\"/>");
@@ -1212,8 +1209,12 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:tblPr>");
 		oWriter.WriteString(L"</w:style>");
 
+		//oWriter.WriteString(L"<w:style w:type=\"paragraph\" w:default=\"1\" w:styleId=\"Normal\"><w:name w:val=\"Normal\"/>");
+		//oWriter.WriteString(L"</w:style>");
+
 
 		m_oFontStyleManager.ToXml(oWriter);
+		m_oParagraphStyleManager.ToXml(oWriter);
 
 		oWriter.WriteString(L"</w:styles>");
 

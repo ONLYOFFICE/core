@@ -14,7 +14,7 @@ namespace NSDocxRenderer
 	void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 					 NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
 					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CFontStyleManager* pFontStyleManager, CFontManager *pFontManager,
-					 CFontSelector* pFontSelector)
+					 CFontSelector* pFontSelector, CParagraphStyleManager* pParagraphStyleManager)
 	{
 		m_pFont     = pFont;
 		m_pPen      = pPen;
@@ -28,6 +28,7 @@ namespace NSDocxRenderer
 		m_pFontStyleManager = pFontStyleManager;
 		m_pFontManager = pFontManager;
 		m_pFontSelector = pFontSelector;
+		m_pParagraphStyleManager = pParagraphStyleManager;
 
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
@@ -423,6 +424,7 @@ namespace NSDocxRenderer
 																		m_pFontSelector->IsSelectedItalic(),
 																		m_pFontSelector->IsSelectedBold());
 		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
+		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
 
 		// собираем отдельно, т.к. такие символы не имею размера m_dWidth
 		if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
@@ -942,7 +944,8 @@ namespace NSDocxRenderer
 		SingletonInstance<CConverter>().BuildLines(m_arTextLine);
 		SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType,
 														 CBaseItem::ElemType::etParagraph,
-														 m_arTextLine, m_arTables, m_arOutputObjects);
+														 m_arTextLine, m_arTables, m_arOutputObjects,
+														 m_pParagraphStyleManager);
 	}
 
 	void CPage::AnalyzeCollectedConts()
@@ -1088,7 +1091,7 @@ namespace NSDocxRenderer
 
 					if (!bIsComplicatedFigure)
 					{
-						bool bIf1 = pCurrCont->m_pFontStyle->GetBrush().Color1 == c_iGreyColor;
+						bool bIf1 = pCurrCont->m_pFontStyle->oBrush.Color1 == c_iGreyColor;
 						bool bIf2 = pCurrCont->m_bIsShadowPresent && pCurrCont->m_bIsOutlinePresent;
 						bool bIf3 = eVType == eVerticalCrossingType::vctCurrentOutsideNext;
 						bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
@@ -1098,14 +1101,14 @@ namespace NSDocxRenderer
 						{
 							if (!bIf2)
 							{
-								auto oBrush = pCurrCont->m_pFontStyle->GetBrush();
+								auto oBrush = pCurrCont->m_pFontStyle->oBrush;
 								oBrush.Color1 = pShape->m_oPen.Color;
 
 								pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(oBrush,
-									pCurrCont->m_pFontStyle->GetFontName(),
-									pCurrCont->m_pFontStyle->GetFontSize(),
-									pCurrCont->m_pFontStyle->IsItalic(),
-									pCurrCont->m_pFontStyle->IsBold());
+									pCurrCont->m_pFontStyle->wsFontName,
+									pCurrCont->m_pFontStyle->dFontSize,
+									pCurrCont->m_pFontStyle->bItalic,
+									pCurrCont->m_pFontStyle->bBold);
 
 								pCurrCont->m_bIsShadowPresent = true;
 								pCurrCont->m_bIsOutlinePresent = true;
@@ -1186,7 +1189,7 @@ namespace NSDocxRenderer
 				eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Цвета должны быть разными
-		bool bIf4 = pCont->m_pFontStyle->GetBrush().Color1 != pShape->m_oBrush.Color1;
+		bool bIf4 = pCont->m_pFontStyle->oBrush.Color1 != pShape->m_oBrush.Color1;
 		bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
 		bool bIf6 = pShape->m_bIsNoFill == false;
 		bool bIf7 = pShape->m_bIsNoStroke == true;
@@ -1292,17 +1295,17 @@ namespace NSDocxRenderer
 						{
 							continue;
 						}
-						dFontSize = pCont->m_pFontStyle->GetFontSize();
+						dFontSize = pCont->m_pFontStyle->dFontSize;
 						break;
 					}
 
 					for (auto pCont : pCurrLine->m_arConts)
 					{
-						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->GetBrush(),
-							pCont->m_pFontStyle->GetFontName(),
+						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
+							pCont->m_pFontStyle->wsFontName,
 							dFontSize,
-							pCont->m_pFontStyle->IsItalic(),
-							pCont->m_pFontStyle->IsBold());
+							pCont->m_pFontStyle->bItalic,
+							pCont->m_pFontStyle->bBold);
 
 						if (pBaseLine->m_dLeft > pCont->m_dLeft)
 						{
@@ -1335,17 +1338,17 @@ namespace NSDocxRenderer
 						{
 							continue;
 						}
-						dFontSize = pCont->m_pFontStyle->GetFontSize();
+						dFontSize = pCont->m_pFontStyle->dFontSize;
 						break;
 					}
 
 					for (auto pCont : pSubLine->m_arConts)
 					{
-						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->GetBrush(),
-							pCont->m_pFontStyle->GetFontName(),
+						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
+							pCont->m_pFontStyle->wsFontName,
 							dFontSize,
-							pCont->m_pFontStyle->IsItalic(),
-							pCont->m_pFontStyle->IsBold());
+							pCont->m_pFontStyle->bItalic,
+							pCont->m_pFontStyle->bBold);
 
 						if (pCurrLine->m_dLeft > pCont->m_dLeft)
 						{
@@ -1547,7 +1550,8 @@ namespace NSDocxRenderer
 
 					SingletonInstance<CConverter>().BuildLines(pCell->m_arTextLine);
 					SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType, CBaseItem::ElemType::etCell,
-																	 pCell->m_arTextLine, pCell->m_arOutputObjects);
+																	 pCell->m_arTextLine, pCell->m_arOutputObjects,
+																	 m_pParagraphStyleManager);
 
 					pRow->AddContent(pCell);
 				}

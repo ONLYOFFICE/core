@@ -17,32 +17,16 @@ namespace NSDocxRenderer
 		CFontStyle& operator=(const CFontStyle& oSrc);
 		bool operator==(const CFontStyle& oSrc);
 
-		const std::wstring& GetFontStyleId() const noexcept;
-		const std::wstring& GetFontName() const noexcept;
-		const NSStructures::CBrush& GetBrush() const noexcept;
-
-		double GetFontSize() const noexcept;
-		bool IsBold() const noexcept;
-		bool IsItalic() const noexcept;
-
-		void SetFontName(const std::wstring& wsFontName);
-		void SetBrush(const NSStructures::CBrush& oBrush);
-
-		void SetFontSize(double dFontSize);
-		void SetBold(bool bBold);
-		void SetItalic(double bItalic);
-
-		void CopyNoId(const CFontStyle& oSrc);
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
-	private:
-		std::wstring m_wsFontStyleId {L""};
-		NSStructures::CBrush m_oBrush;
-		std::wstring m_wsFontName {L""};
-		double m_dFontSize {0};
-		bool m_bItalic {false};
-		bool m_bBold {false};
+		std::wstring wsFontStyleId {L""};
+		NSStructures::CBrush oBrush;
+		std::wstring wsFontName {L""};
+		double dFontSize {0};
+		bool bItalic {false};
+		bool bBold {false};
 
+	private:
 		const std::wstring m_wsIdStart = L"fontstyle";
 	};
 }

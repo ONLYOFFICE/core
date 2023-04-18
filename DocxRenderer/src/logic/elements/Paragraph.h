@@ -45,6 +45,8 @@ namespace NSDocxRenderer
 
 		size_t              m_nNumLines {0};
 
+		std::wstring		m_wsStyleId;
+
 	public:
 		CParagraph();
 		virtual ~CParagraph();
@@ -54,7 +56,6 @@ namespace NSDocxRenderer
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
 		void RemoveHighlightColor();
-
 		void MergeLines();
 
 		static TextAlignmentType DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine,

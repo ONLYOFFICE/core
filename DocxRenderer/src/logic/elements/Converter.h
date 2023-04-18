@@ -1,5 +1,6 @@
 #pragma once
 #include "Table.h"
+#include "../managers/ParagraphStyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -11,10 +12,10 @@ namespace NSDocxRenderer
 
 		void BuildParagraphes(double dPageWidth, eTextAssociationType eType,
 							  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
-							  std::vector<CBaseItem*> &rOutputObjects);
+							  std::vector<CBaseItem*> &rOutputObjects, CParagraphStyleManager* pParagraphStyleManager);
 		void BuildParagraphes(double dPageWidth, eTextAssociationType eType,
 							  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
-							  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects);
+							  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects, CParagraphStyleManager* pParagraphStyleManager);
 
 		void CreateSingleLineParagraph(CTextLine *pLine, double dPageWidth, const double *pBeforeSpacing, std::vector<CBaseItem*> &rOutputObjects);
 		void CreateSingleLineShape(CTextLine *pLine, std::vector<CBaseItem*>& rOutputObjects);

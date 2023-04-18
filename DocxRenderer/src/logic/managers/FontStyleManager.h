@@ -15,8 +15,6 @@ namespace NSDocxRenderer
 		void NewDocument();
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
-		const std::shared_ptr<CFontStyle> GetFontStyle(const std::wstring& wsFontStyleId) const;
-
 		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const CFontStyle& oFontStyle);
 		std::shared_ptr<const CFontStyle> GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
 									   const std::wstring& wsFontName,

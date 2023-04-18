@@ -28,7 +28,8 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:p>");
 		oWriter.WriteString(L"<w:pPr>");
 
-		// тут должны быть стили для параграфов
+		// styles
+		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
 
 		oWriter.WriteString(L"<w:spacing");
 		if (m_dSpaceBefore > 0)

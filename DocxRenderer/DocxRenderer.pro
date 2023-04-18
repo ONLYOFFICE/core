@@ -38,7 +38,9 @@ HEADERS += \
     src/logic/managers/FontStyleManager.h \
     src/logic/managers/ImageManager.h \
     src/logic/managers/FontManager.h \
+    src/logic/managers/ParagraphStyleManager.h \
     src/logic/styles/FontStyle.h \
+    src/logic/styles/ParagraphStyle.h \
     src/resources/ColorTable.h \
     src/resources/Constants.h \
     src/resources/ImageInfo.h \
@@ -64,9 +66,11 @@ SOURCES += \
     src/logic/managers/FontManager.cpp \
     src/logic/managers/FontStyleManager.cpp \
     src/logic/managers/ImageManager.cpp \
+    src/logic/managers/ParagraphStyleManager.cpp \
     src/logic/styles/FontStyle.cpp \
     src/logic/Page.cpp \
     src/logic/Document.cpp \
+    src/logic/styles/ParagraphStyle.cpp \
     src/resources/VectorGraphics.cpp \
     src/resources/resources.cpp \
     DocxRenderer.cpp

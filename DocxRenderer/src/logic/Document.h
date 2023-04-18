@@ -4,6 +4,7 @@
 #include "../resources/resources.h"
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
+#include "managers/ParagraphStyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -32,6 +33,7 @@ namespace NSDocxRenderer
 
 		CImageManager                   m_oImageManager;
 		CFontStyleManager               m_oFontStyleManager;
+		CParagraphStyleManager			m_oParagraphStyleManager;
 		CFontManager                    m_oFontManager;
 		CFontSelector					m_oFontSelector;
 

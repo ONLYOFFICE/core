@@ -2,6 +2,7 @@
 #include "Shape.h"
 #include "src/resources/utils.h"
 
+
 namespace NSDocxRenderer
 {
 	//общая функция для сборки строк в любом текстовом объекте
@@ -79,17 +80,19 @@ namespace NSDocxRenderer
 
 	void CConverter::BuildParagraphes(double dPageWidth, eTextAssociationType eType, CBaseItem::ElemType eBaseType,
 									  std::vector<CTextLine*>& rTextLines,
-									  std::vector<CBaseItem*>& rOutputObjects)
+									  std::vector<CBaseItem*>& rOutputObjects,
+									  CParagraphStyleManager* pParagraphStyleManager)
 	{
 		std::vector<CTable*> oStubVector; //просто объект-заглушка
-		BuildParagraphes(dPageWidth, eType, eBaseType, rTextLines, oStubVector, rOutputObjects);
+		BuildParagraphes(dPageWidth, eType, eBaseType, rTextLines, oStubVector, rOutputObjects, pParagraphStyleManager);
 	}
 
 	// eBaseType == etCell или etParagraph
 	// eType == 2 - 5 из eTextAssociationType
 	void CConverter::BuildParagraphes(double dPageWidth, eTextAssociationType eType,
 									  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
-									  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects)
+									  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects,
+									  CParagraphStyleManager* pParagraphStyleManager)
 	{
 		CTextLine* pCurrLine, *pNextLine, *pNextNextLine, *pPrevLine;
 		double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
@@ -465,6 +468,7 @@ namespace NSDocxRenderer
 				pParagraph->m_dSpaceBefore = fabs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
 
 				pParagraph->RemoveHighlightColor();
+				//
 				pParagraph->MergeLines();
 			}
 			else
@@ -484,6 +488,7 @@ namespace NSDocxRenderer
 			}
 			else
 			{
+				pParagraph->m_wsStyleId = pParagraphStyleManager->GetDefaultParagraphStyleId(*pParagraph);
 				rOutputObjects.push_back(pParagraph);
 			}
 

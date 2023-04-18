@@ -59,9 +59,9 @@ void text_list_level_style_number_attr::serialize(CP_ATTR_NODE)
  }
 void text_list_level_style_bullet_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"text:style-name",			text_style_name_);
-    CP_XML_ATTR_OPT(L"text:bullet-char",		text_bullet_char_);
-    CP_XML_ATTR_OPT(L"text:bullet-relative-size",	text_bullet_relative_size_);
+    CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"text:bullet-char", text_bullet_char_);
+    CP_XML_ATTR_OPT(L"text:bullet-relative-size", text_bullet_relative_size_);
 
     prefix_suffix_attlist_.serialize(CP_GET_XML_NODE());
  }

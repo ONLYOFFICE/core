@@ -59,13 +59,13 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
     XML2TableConverter converter = {reader};
     XLSXTableController table = {oXlsx};
 
-    std::map<std::wstring, _UINT32> stringData = {};
+    std::map<_UINT32, std::wstring> stringData = {};
     auto rowNumber = converter.ReadNextString(stringData);
     while(rowNumber >= 0)
     {
         for(auto i = stringData.begin(); i != stringData.end(); i++)
         {
-            table.AddCell(i->first, rowNumber, i->second);
+            table.AddCell(i->second, rowNumber, i->first);
         }
         stringData.clear();
         rowNumber = converter.ReadNextString(stringData);

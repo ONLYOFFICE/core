@@ -55,7 +55,7 @@ public:
     /// @brief метод, считывающий следующую строку из xml
     /// @param string map со строковыми данными в качестве ключей и номерами их столбцов для вставки в качестве значений
     /// @return номер строки в случае успешного считывания или -1 в случае ошибки
-    _INT32 ReadNextString(std::map<std::wstring, _UINT32> &string);
+    _INT32 ReadNextString(std::map<_UINT32, std::wstring> &string);
 
 private:
 
@@ -74,7 +74,7 @@ private:
     /// @brief заполняет данными переданный map
     /// @param row map в который будут помещены данные и соответствующие им номера столбцов
     /// @return номер вставляемой строки
-    void insertRow(std::map<std::wstring, _UINT32> &row);
+    void insertRow(std::map<_UINT32, std::wstring> &row);
 
     /// @brief вставляет значение во временную внутреннюю структуру
     /// @param key ключ, по которому будет вставлено значение
@@ -83,7 +83,7 @@ private:
 
     /// @brief заполняет map собранными именами столбцов для их вставки в таблицу
     /// @param names map с именами столбцов
-    void insertColumnNames(std::map<std::wstring, _UINT32> &names);
+    void insertColumnNames(std::map<_UINT32, std::wstring> &names);
 
     /// @brief Получение уникального имени ноды, либо его поиском среди использованных либо генерацией
     /// @param имя ноды, прочитанное из xml
@@ -114,7 +114,7 @@ private:
     /// @brief контроллер имен столбцов таблицы
     ColumnNameController colNames_;
 
-    std::map<std::wstring, _UINT32> stringBuffer_;
+    std::map<_UINT32, std::wstring> stringBuffer_;
 
     bool xmlReaded_;
 

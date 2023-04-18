@@ -39,7 +39,7 @@ constexpr auto SheetName = L"Sheet";
 
 XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
 {
-	book_ = &book;
+    book_ = &book;
     book_->CreateWorkbook();
     book_->m_pWorkbook->m_oSheets.Init();
     tableRows_.push_back(nullptr);
@@ -66,64 +66,64 @@ void XLSXTableController::FormBook()
 void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 {
 
-	size_t length = sText.length();
+    size_t length = sText.length();
     // Пустую не пишем
-	if ((0 == length) || (sText[0] == L'\0'))
+    if ((0 == length) || (sText[0] == L'\0'))
     {
-		return;
+        return;
     }
 
-	auto pCell = new OOX::Spreadsheet::CCell();
-	pCell->m_oType.Init();
+    auto pCell = new OOX::Spreadsheet::CCell();
+    pCell->m_oType.Init();
 
-	pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+    pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
     pCell->m_oRichText.Init();
     OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
     pText->m_sText = sText;
     pCell->m_oRichText->m_arrItems.push_back(pText);
 
-	pCell->setRowCol(nRow - 1, nCol);
+    pCell->setRowCol(nRow - 1, nCol);
 
-	while(tableRows_.size() - 1 < nRow)
-	{
+    while(tableRows_.size() - 1 < nRow)
+    {
         tableRows_.push_back(new OOX::Spreadsheet::CRow);
-	}
+    }
 
-	tableRows_.at(nRow)->m_arrItems.push_back(pCell);
+    tableRows_.at(nRow)->m_arrItems.push_back(pCell);
 
 }
 
 void XLSXTableController::addPage(OOX::Spreadsheet::CWorksheet *page, INT pageNumber)
 {
-	book_->m_arWorksheets.push_back(page);
+    book_->m_arWorksheets.push_back(page);
 
-	smart_ptr<OOX::File> oWorksheetFile = page;
-	const OOX::RId oRid = book_->m_pWorkbook->Add(oWorksheetFile);
+    smart_ptr<OOX::File> oWorksheetFile = page;
+    const OOX::RId oRid = book_->m_pWorkbook->Add(oWorksheetFile);
 
-	book_->m_mapWorksheets.insert(std::make_pair(oRid.ToString(), page)); // for bin
+    book_->m_mapWorksheets.insert(std::make_pair(oRid.ToString(), page)); // for bin
 
-	OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
+    OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
 
-	std::wstring sheetName = SheetName + std::to_wstring(pageNumber);
-	pSheet->m_oName = sheetName;
-	pSheet->m_oSheetId.Init();
-	pSheet->m_oSheetId->SetValue(pageNumber);
-	pSheet->m_oRid.Init();
-	pSheet->m_oRid->SetValue(oRid.ToString());
+    std::wstring sheetName = SheetName + std::to_wstring(pageNumber);
+    pSheet->m_oName = sheetName;
+    pSheet->m_oSheetId.Init();
+    pSheet->m_oSheetId->SetValue(pageNumber);
+    pSheet->m_oRid.Init();
+    pSheet->m_oRid->SetValue(oRid.ToString());
 
-	book_->m_pWorkbook->m_oSheets.Init();
-	book_->m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
+    book_->m_pWorkbook->m_oSheets.Init();
+    book_->m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 }
 
 _UINT32 XLSXTableController::addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadsheet::CWorksheet *pWorkSheet,  INT nRow)
 {
-	if (pWorkSheet->m_oSheetData->m_arrItems.size() > 1048576)
-			{
-				return AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS; // ограниечние мс
-			}
-	pRow->m_oR.Init();
-	pRow->m_oR->SetValue(nRow);
-	pWorkSheet->m_oSheetData->m_arrItems.push_back(pRow);
+    if (pWorkSheet->m_oSheetData->m_arrItems.size() > 1048576)
+            {
+                return AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS; // ограниечние мс
+            }
+    pRow->m_oR.Init();
+    pRow->m_oR->SetValue(nRow);
+    pWorkSheet->m_oSheetData->m_arrItems.push_back(pRow);
 
-	return 0;
+    return 0;
 }

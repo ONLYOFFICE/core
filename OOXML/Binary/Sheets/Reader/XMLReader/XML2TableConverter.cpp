@@ -41,7 +41,7 @@ constexpr auto ColNamesRowNumber = 1;
 XML2TableConverter::XML2TableConverter(XmlUtils::CXmlLiteReader &reader)
 :reader_{&reader}{};
 
-_INT32 XML2TableConverter::ReadNextString(std::map<std::wstring, _UINT32> &string)
+_INT32 XML2TableConverter::ReadNextString(std::map<_UINT32, std::wstring> &string)
 {
 
     depth_ = reader_->GetDepth();
@@ -96,7 +96,10 @@ void XML2TableConverter::readAttributes()
 void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
     auto uniqueKey = getNodeName(key);
-    keyvalues_.emplace(uniqueKey, value);
+    if(!value.empty())
+    {
+        keyvalues_.emplace(uniqueKey, value);
+    }
 }
 
 std::wstring XML2TableConverter::getNodeName(const std::wstring &name)
@@ -127,22 +130,26 @@ std::wstring XML2TableConverter::getNodeName(const std::wstring &name)
     return resultName;
 }
 
- void XML2TableConverter::insertColumnNames(std::map<std::wstring, _UINT32> &names)
+ void XML2TableConverter::insertColumnNames(std::map<_UINT32, std::wstring> &names)
  {
-    names = colNames_.GetColumnNames();
+   auto tempNames = colNames_.GetColumnNames();
+   for(auto i = tempNames.begin(); i != tempNames.end(); i++)
+   {
+        names.emplace(i->second, i->first);
+   }
  }
 
 
-void XML2TableConverter::insertRow(std::map<std::wstring, _UINT32> &row)
+void XML2TableConverter::insertRow(std::map<_UINT32, std::wstring> &row)
 {
     for(auto i = keyvalues_.begin(); i != keyvalues_.end(); i++)
     {
-        row.emplace(i->second, colNames_.GetColumnNumber(i->first));
+        row.emplace(colNames_.GetColumnNumber(i->first), i->second);
     }
 
     for(auto i = parentValues_.begin(); i != parentValues_.end(); i++)
     {
-        row.emplace(i->second, colNames_.GetColumnNumber(i->first));
+        row.emplace(colNames_.GetColumnNumber(i->first), i->second);
     }
     rowIndex_++;
 }

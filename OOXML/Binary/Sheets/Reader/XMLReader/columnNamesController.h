@@ -33,10 +33,9 @@
 
 #include "../../../../Base/Base.h"
 
-#include <pair>
+#include  <utility>
 #include <string>
 #include <map>
-
 
 /// @brief класс контролирующий уникальность имен столбцов при открытии  xml документов
 class ColumnNameController
@@ -60,7 +59,7 @@ public:
 
     /// @brief Получение всех содержащихся имен и номеров их столбцов
     /// @return map с уникальными именами как ключами и номерами столбцов как значениями
-    std::map<std::wstring, UINT32> GetColumnNames();
+    std::map<std::wstring, _UINT32> GetColumnNames();
 
 private:
 

@@ -37,141 +37,170 @@
 /// @brief номер строки в которую устанавлииваются имена столбцов
 constexpr auto ColNamesRowNumber = 1;
 
-bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XLSXTableController &table)
+
+XML2TableConverter::XML2TableConverter(XmlUtils::CXmlLiteReader &reader)
+:reader_{&reader}{};
+
+_INT32 XML2TableConverter::ReadNextString(std::map<std::wstring, _UINT32> &string)
 {
-    table_ = &table;
 
-    depth_ = reader.GetDepth();
+    depth_ = reader_->GetDepth();
 
-    auto nodeType = reader.GetNodeType();
+    auto nodeType = reader_->GetNodeType();
 
-    processNode(reader, nodeType);
-    while(reader.Read(nodeType))
+    readAttributes();
+    storeData(nodeType);
+
+    while(reader_->Read(nodeType))
     {
-        depth_ = reader.GetDepth();
-        readAttributes(reader);
-        tryInsertData(reader, nodeType);
-        processNode(reader, nodeType);
-    }
+        depth_ = reader_->GetDepth();
+        readAttributes();
+        storeData(nodeType);
+        processNode(nodeType);
+        if(!stringBuffer_.empty())
+        {
+            string = stringBuffer_;
+            stringBuffer_.clear();
+            return rowIndex_-1;
+        }
 
-    return true;
+    }
+    if(!xmlReaded_)
+    {
+        xmlReaded_ = true;
+        insertColumnNames(string);
+        return 1;
+    }
+    return -1;
 }
 
-void XML2TableConverter::readAttributes(XmlUtils::CXmlLiteReader &reader)
+void XML2TableConverter::readAttributes()
 {
     ///@todo проверять нет ли в parents нод с таким же именем для вставки в их столбец вместо создания нового
-    if(!reader.GetAttributesCount())
+    if(!reader_->GetAttributesCount())
     {
         return;
     }
-    reader.MoveToFirstAttribute();
+    reader_->MoveToFirstAttribute();
 
-    keyvalues_.push_back(std::make_pair(reader.GetName(), reader.GetText()));
+    insertValue(reader_->GetName(), reader_->GetText());
 
-    while(reader.MoveToNextAttribute())
+    while(reader_->MoveToNextAttribute())
     {
-        keyvalues_.push_back(std::make_pair(reader.GetName(), reader.GetText()));
+        insertValue(reader_->GetName(), reader_->GetText());
     }
 
-    reader.MoveToElement();
+    reader_->MoveToElement();
 }
 
 void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
-    ///@todo проверять нет ли в parents нод с таким же именем для вставки в их столбец вместо создания нового
-    auto colname = key;
-    auto colCount = colNames_.GetColumnNumber(colname);
-    if(colCount < 0)
-    {
-        colCount = colNames_.CreateColumnName(colname);
-    }
-
-    table_->AddCell(value, rowIndex_, colCount);
+    auto uniqueKey = getNodeName(key);
+    keyvalues_.emplace(uniqueKey, value);
 }
 
- void XML2TableConverter::insertColumnNames()
- {
-    auto names = colNames_.GetColumnNames();
-    for(auto i = names.begin(); i != names.end(); i++)
+std::wstring XML2TableConverter::getNodeName(const std::wstring &name)
+{
+    std::set<std::wstring> valueNames = {};
+    auto parentsIndex = 0;
+    if(depth_ == 0)
     {
-        table_->AddCell(i->first, ColNamesRowNumber, i->second);
+        valueNames = parents_.at(0).second;
     }
+    else if(parents_.size() > 3)
+    {
+        parentsIndex = parents_.size()-3;
+        valueNames  = parents_.at(parentsIndex).second;
+    }
+    /// ищем среди использовавшихся имён нужное
+    for(auto i = valueNames.begin(); i != valueNames.end(); i++)
+    {
+        if(colNames_.GetXmlName(*i) == name)
+        {
+            return *i;
+        }
+    }
+    /// если не нашли, создаём его и вставляем
+    auto resultName = name;
+    colNames_.CreateColumnName(resultName);
+    parents_.at(parentsIndex).second.insert(resultName);
+    return resultName;
+}
+
+ void XML2TableConverter::insertColumnNames(std::map<std::wstring, _UINT32> &names)
+ {
+    names = colNames_.GetColumnNames();
  }
 
 
-void XML2TableConverter::insertRow(const keyValueArray &dataRow, const keyValueArray &parentsRow)
+void XML2TableConverter::insertRow(std::map<std::wstring, _UINT32> &row)
 {
-    auto index = 0;
-    for(auto index = 0; index < dataRow.size(); index++)
+    for(auto i = keyvalues_.begin(); i != keyvalues_.end(); i++)
     {
-        insertValue(dataRow.at(index).first, dataRow.at(index).second);
+        row.emplace(i->second, colNames_.GetColumnNumber(i->first));
     }
 
-    for(auto index = 0; index < parentsRow.size(); index++)
+    for(auto i = parentValues_.begin(); i != parentValues_.end(); i++)
     {
-        insertValue(parentsRow.at(index).first, parentsRow.at(index).second);
+        row.emplace(i->second, colNames_.GetColumnNumber(i->first));
     }
     rowIndex_++;
 }
 
-void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type)
+void XML2TableConverter::processNode(const XmlUtils::XmlNodeType &type)
 {
-    if(type == XmlUtils::XmlNodeType::XmlNodeType_Element)
+    if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && !reader_->IsEmptyNode())
     {
-        parents_.push_back(reader.GetName());
-        tempDepth_= reader.GetDepth();
+        parents_.push_back(std::make_pair(reader_->GetName(), std::set<std::wstring>()));
+        tempDepth_= reader_->GetDepth();
 
     }
     else if(type == XmlUtils::XmlNodeType::XmlNodeType_EndElement && parents_.size() > 0)
     {
-        parents_.pop_back();
 
         /// если глубина уменьшается извлекаем данные родительской ноды и записываем данные текущей
-        if(tempDepth_ > reader.GetDepth())
+        if(tempDepth_ > reader_->GetDepth())
         {
-            if(!parentNodeValueCount_.empty())
-            {
-                ///@todo очистка parents от данных ноды из которой мы вышли
-                for(auto i = 0; i < parentNodeValueCount_.back(); i++)
-                {
-                    parentValues_.pop_back();
-                }
-                parentNodeValueCount_.pop_back();
-            }
-
+            auto testName = reader_->GetName();
             /// если есть данные для записи, записываем их и чистим буфер с данными
             if(!keyvalues_.empty())
             {
-                insertRow(keyvalues_, parentValues_);
+                insertRow(stringBuffer_);
                 keyvalues_.clear();
+            }
+
+            /// очистка предков от данных ноды из которой вышли и удаление узла предка
+            auto parentNames = parents_.back().second;
+            for(auto i = parentNames.begin(); i != parentNames.end(); i++)
+            {
+                parentValues_.erase(*i);
             }
         }
         /// если глубина растет, не пишем ноды в таблицу а передаем их как атрибуты для дочерних нод
-        else if(tempDepth_ < reader.GetDepth())
+        else if(tempDepth_ < reader_->GetDepth())
         {
-            parentNodeValueCount_.push_back(keyvalues_.size());
-            while(!keyvalues_.empty())
-            {
-                parentValues_.push_back(keyvalues_.front());
-                keyvalues_.pop_front();
-            }
+            parentValues_.insert(keyvalues_.begin(), keyvalues_.end());
+            keyvalues_.clear();
         }
+        auto testVar = parents_.back().first;
+        auto nodeNaaame = reader_->GetName();
+        parents_.pop_back();
     }
 }
 
-void XML2TableConverter::tryInsertData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type)
+void XML2TableConverter::storeData(const XmlUtils::XmlNodeType &type)
 {
     ///@todo проверять нет ли в parents нод с таким же именем для вставки в их столбец вместо создания нового
     if(type == XmlUtils::XmlNodeType::XmlNodeType_Text || type == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
     {
-            auto text = reader.GetText();
+            auto text = reader_->GetText();
             if(!text.empty())
             {
-                keyvalues_.push_back(std::make_pair(parents_.at(parents_.size() -1), text));
+                insertValue(parents_.at(parents_.size() -1).first, text);
             }
     }
-    else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader.IsEmptyNode() && reader.GetAttributesCount() == 0)
+    else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader_->IsEmptyNode() && reader_->GetAttributesCount() == 0)
     {
-        keyvalues_.push_back(std::make_pair(reader.GetName(), L""));
+        insertValue(reader_->GetName(), L"");
     }
 }

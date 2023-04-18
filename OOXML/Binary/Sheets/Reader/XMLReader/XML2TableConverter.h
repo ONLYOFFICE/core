@@ -33,56 +33,65 @@
 #pragma once
 
 #include "columnNamesController.h"
-#include "XlSXTableController.h"
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../Base/Base.h"
 
 #include <string>
 #include <vector>
-#include <deque>
-
-using keyValueArray = std::deque<std::pair<std::wstring, std::wstring>>;
+#include <set>
+#include <map>
+#include  <utility>
 
 /// @brief класс -обертка над xmlLiteReader для превращения xml нод в табличные строки
 class XML2TableConverter
 {
 public:
 
-    /// @brief метод, преобразующий xml документ в формат, удобный для табличного размещения
+    /// @brief конструктор загружающий в обънет reader с прочитанным xml
     /// @param reader xmlLiteReader с загруженным в него xml документом
-    /// @param data трехмерная структура из векторов строк, нужна для хранения табличных данных вместе с ключами в разрезе уровней глубины
-    /// @return true в случае успеха, иначе false
-    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XLSXTableController &table);
+    XML2TableConverter(XmlUtils::CXmlLiteReader &reader);
+
+    /// @brief метод, считывающий следующую строку из xml
+    /// @param string map со строковыми данными в качестве ключей и номерами их столбцов для вставки в качестве значений
+    /// @return номер строки в случае успешного считывания или -1 в случае ошибки
+    _INT32 ReadNextString(std::map<std::wstring, _UINT32> &string);
 
 private:
 
     /// @brief считывает аттрибуты текущей ноды
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
-    void readAttributes(XmlUtils::CXmlLiteReader &reader);
+    void readAttributes();
 
     /// @brief обрабатывает текущую ноду
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно обработать
     /// @param type тип обрабатываемой ноды
-    void processNode(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
+    /// @return true если ноды в рамках строки считаны и можно выходить, иначе false
+    void processNode(const XmlUtils::XmlNodeType &type);
 
     /// @brief проверка ноды на возможность вставить её данные в таблицу с последующей их  вставкой в случае успеха
-    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно вставить
     /// @param type тип обрабатываемой ноды
-    void tryInsertData(XmlUtils::CXmlLiteReader &reader, const XmlUtils::XmlNodeType &type);
+    void storeData(const XmlUtils::XmlNodeType &type);
 
-    /// @brief вставляет строку xml данных в таблицу
-    /// @param dataRow строка с данными
-    /// @param parentsRow строка с данными родительских нод
-    void insertRow(const keyValueArray &dataRow, const keyValueArray &parentsRow);
+    /// @brief заполняет данными переданный map
+    /// @param row map в который будут помещены данные и соответствующие им номера столбцов
+    /// @return номер вставляемой строки
+    void insertRow(std::map<std::wstring, _UINT32> &row);
 
     /// @brief вставляет значение во временную внутреннюю структуру
     /// @param key ключ, по которому будет вставлено значение
     /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
-    /// @brief заполняет первую строку таблицы именами столбцов
-    void insertColumnNames();
+    /// @brief заполняет map собранными именами столбцов для их вставки в таблицу
+    /// @param names map с именами столбцов
+    void insertColumnNames(std::map<std::wstring, _UINT32> &names);
+
+    /// @brief Получение уникального имени ноды, либо его поиском среди использованных либо генерацией
+    /// @param имя ноды, прочитанное из xml
+    /// @return найденное или сгенерированное уникальное имя ноды
+    std::wstring getNodeName(const std::wstring &name);
+
+    /// @brief указатель на считавший xml данные reader
+    XmlUtils::CXmlLiteReader *reader_;
 
     /// @brief текущая глубина
     _UINT32 depth_;
@@ -93,22 +102,20 @@ private:
     /// @brief номер текущей строки с данными
     _UINT32 rowIndex_ = 2;
 
-    /// @brief вектор с родительскими нодами
-    std::vector<std::wstring> parents_;
+    /// @brief вектор с родительскими нодами и используемыми на их уровнях именами
+    std::vector<std::pair<std::wstring, std::set<std::wstring>>> parents_;
 
-    /// @brief дека с парами ключ значение для их вставки в таблицу
-    keyValueArray keyvalues_;
+    /// @brief map с набором ключей в виде уникальных имен и их значений для вставки в таблицу
+    std::map<std::wstring, std::wstring> keyvalues_;
 
-    /// @brief дека с парами ключ значение родительских нод, вставляемых в строках дочерних нод
-    keyValueArray parentValues_;
-
-    /// @brief вектор содержащий количество значений родительских нод, хранящиеся для каждой ноды в parentValues_
-    std::vector<_UINT32> parentNodeValueCount_;
-
-    /// @brief контроллер таблицы заполняемой во время обработки xml документа
-    XLSXTableController *table_;
+    /// @brief map с парами ключ значение родительских нод, вставляемых в строках дочерних нод
+    std::map<std::wstring, std::wstring> parentValues_;
 
     /// @brief контроллер имен столбцов таблицы
     ColumnNameController colNames_;
+
+    std::map<std::wstring, _UINT32> stringBuffer_;
+
+    bool xmlReaded_;
 
 };

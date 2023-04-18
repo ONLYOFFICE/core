@@ -75,7 +75,7 @@ std::map<std::wstring, _UINT32> ColumnNameController::GetColumnNames()
     std::map<std::wstring, _UINT32> columns = {};
     for(auto i = colNames_.begin(); i != colNames_.end(); i++)
     {
-        columns.insert(i->first, i->second.second);
+        columns.emplace(i->first, i->second.second);
     }
     return columns;
 }

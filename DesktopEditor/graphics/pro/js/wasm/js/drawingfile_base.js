@@ -385,8 +385,8 @@
 		}
 		else if (SType == "GoTo")
 		{
-			rec["GoTo"]["link"] = reader.readString();
-			rec["GoTo"]["dest"] = reader.readDouble();
+			rec["link"] = reader.readString();
+			rec["dest"] = reader.readDouble();
 		}
 		else if (SType == "Named")
 		{
@@ -398,21 +398,21 @@
 		}
 		else if (SType == "Hide")
 		{
-			rec["Hide"]["H"] = reader.readInt();
+			rec["H"] = reader.readInt();
 			let m = reader.readInt();
-		    rec["Hide"]["T"] = [];
+		    rec["T"] = [];
 			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
 		    for (let j = 0; j < m; ++j)
-				rec["Hide"]["T"].push(reader.readInt());
+				rec["T"].push(reader.readInt());
 		}
 		else if (SType == "ResetForm")
 		{
-			rec["ResetForm"]["Flags"] = reader.readInt();
+			rec["Flags"] = reader.readInt();
 			let m = reader.readInt();
-		    rec["ResetForm"]["Fields"] = [];
+		    rec["Fields"] = [];
 			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
 		    for (let j = 0; j < m; ++j)
-				rec["ResetForm"]["Fields"].push(reader.readInt());
+				rec["Fields"].push(reader.readInt());
 		}
 		let NextAction = reader.readByte();
 		if (NextAction)

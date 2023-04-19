@@ -42,7 +42,7 @@ public:
   AcroFormField *findField(int pg, double x, double y);
   int findFieldIdx(int pg, double x, double y);
   int findFieldIdx(Object* oRefObj);
-  int findFieldIdx(GString* fullName);
+  GList* findFieldIdx(GString* fullName);
 
 private:
 

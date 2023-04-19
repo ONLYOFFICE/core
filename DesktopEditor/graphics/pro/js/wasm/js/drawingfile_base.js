@@ -707,7 +707,7 @@
 				APi["retValue"] = np2 << 32 | np1;
 				let k = reader.readInt();
 				APi["fontInfo"] = [];
-				for (let i = 0; i < k; ++i)
+				for (let j = 0; j < k; ++j)
 				{
 					let fontInfo = {};
 					fontInfo["text"] = reader.readString();

@@ -825,10 +825,12 @@ int main(int argc, char* argv[])
 				i += 4;
 				std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
 				i += nPathLength;
+
 				nPathLength = READ_INT(pWidgetsAP + i);
 				i += 4;
 				sAPName += nPathLength ? ("." + std::string((char*)(pWidgetsAP + i), nPathLength)) : "";
 				i += nPathLength;
+
 				std::cout << "APName " << sAPName << ", ";
 				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
 				i += 4;
@@ -854,10 +856,12 @@ int main(int argc, char* argv[])
 					i += 4;
 					std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
 					i += nPathLength;
+
 					nPathLength = READ_INT(pWidgetsAP + i);
 					i += 4;
 					std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
 					i += nPathLength;
+
 					nPathLength = READ_INT(pWidgetsAP + i);
 					i += 4;
 					std::cout << "Size " << (double)nPathLength / 100.0 << ", ";

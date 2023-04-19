@@ -820,7 +820,10 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
         int nHide = 1, k = 0;
         if (oHideObj->isArray())
             nHide = oHideObj->arrayGetLength();
-        oRes.AddInt(nHide);
+        int nFieldsPos = oRes.GetSize();
+        int nFields = 0;
+        oRes.AddInt(nFields);
+
         Object oHide;
         oHideObj->copy(&oHide);
         do
@@ -833,23 +836,31 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
             if (oHide.isString())
             {
                 GString* sField = oHide.getString();
-                int nFind = pAcroForms->findFieldIdx(sField);
-                if (nFind >= 0)
+                GList* arrFind = pAcroForms->findFieldIdx(sField);
+                if (arrFind)
                 {
-                    oRes.AddInt(nFind);
+                    for (int i = 0; i < arrFind->getLength(); ++i)
+                    {
+                        nFields++;
+                        oRes.AddInt(*((int*)arrFind->get(i)));
+                    }
                 }
+                deleteGList(arrFind, int);
             }
             else if (oHide.isRef())
             {
                 int nFind = pAcroForms->findFieldIdx(&oHide);
                 if (nFind >= 0)
                 {
+                    nFields++;
                     oRes.AddInt(nFind);
                 }
             }
             k++;
         } while (k < nHide);
         oHide.free();
+
+        oRes.AddInt(nFields, nFieldsPos);
         break;
     }
     // Неизвестное действие
@@ -877,12 +888,16 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
                     if (oField.isString())
                     {
                         GString* sField = oField.getString();
-                        int nFind = pAcroForms->findFieldIdx(sField);
-                        if (nFind >= 0)
+                        GList* arrFind = pAcroForms->findFieldIdx(sField);
+                        if (arrFind)
                         {
-                            nFields++;
-                            oRes.AddInt(nFind);
+                            for (int i = 0; i < arrFind->getLength(); ++i)
+                            {
+                                nFields++;
+                                oRes.AddInt(*((int*)arrFind->get(i)));
+                            }
                         }
+                        deleteGList(arrFind, int);
                     }
                     else if (oField.isRef())
                     {

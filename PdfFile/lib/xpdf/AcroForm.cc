@@ -624,21 +624,22 @@ int AcroForm::findFieldIdx(Object* oRefObj) {
   }
   return -1;
 }
-int AcroForm::findFieldIdx(GString* fullName) {
+GList* AcroForm::findFieldIdx(GString* fullName) {
   AcroFormField *field;
   GString* fieldName;
+  GList* res;
   int i;
 
+  res = new GList();
   for (i = 0; i < fields->getLength(); ++i) {
     field = (AcroFormField *)fields->get(i);
     fieldName = field->name->toPDFTextString();
     if (fieldName->cmp(fullName) == 0) {
-      delete fieldName;
-      return i;
+      res->append(new int(i));
     }
     delete fieldName;
   }
-  return -1;
+  return res;
 }
 
 //------------------------------------------------------------------------

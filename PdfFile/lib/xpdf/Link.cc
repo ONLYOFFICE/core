@@ -752,7 +752,7 @@ LinkHide::LinkHide(Object *fieldsObj, Object *hideFlagObj) {
     hideFlag = hideFlagObj->getBool();
   } else {
     error(errSyntaxError, -1, "Hide action H value is wrong type");
-    hideFlag = gFalse;
+    hideFlag = gTrue;
   }
 }
 

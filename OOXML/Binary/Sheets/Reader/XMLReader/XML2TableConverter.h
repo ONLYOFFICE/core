@@ -81,14 +81,20 @@ private:
     /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
+    /// @brief вставляет атрибут ноды во временную внутреннюю структуру
+    /// @param key ключ, по которому будет вставлено значение
+    /// @param value значение которое нужно вставить
+    void insertAttribute(const std::wstring &key, const std::wstring &value);
+
     /// @brief заполняет map собранными именами столбцов для их вставки в таблицу
     /// @param names map с именами столбцов
     void insertColumnNames(std::map<_UINT32, std::wstring> &names);
 
-    /// @brief Получение уникального имени ноды, либо его поиском среди использованных либо генерацией
-    /// @param имя ноды, прочитанное из xml
+    /// @brief Получение уникального имени ноды, либо его поиск в переданном множестве
+    /// @param name имя ноды, прочитанное из xml
+    /// @param names set содержащий уникальные имена, среди которых будет осуществляться поиск
     /// @return найденное или сгенерированное уникальное имя ноды
-    std::wstring getNodeName(const std::wstring &name);
+    std::wstring getNodeName(const std::wstring &name, std::set<std::wstring> &names);
 
     /// @brief указатель на считавший xml данные reader
     XmlUtils::CXmlLiteReader *reader_;

@@ -83,11 +83,11 @@ void XML2TableConverter::readAttributes()
     }
     reader_->MoveToFirstAttribute();
 
-    insertValue(reader_->GetName(), reader_->GetText());
+    insertAttribute(reader_->GetName(), reader_->GetText());
 
     while(reader_->MoveToNextAttribute())
     {
-        insertValue(reader_->GetName(), reader_->GetText());
+        insertAttribute(reader_->GetName(), reader_->GetText());
     }
 
     reader_->MoveToElement();
@@ -95,28 +95,42 @@ void XML2TableConverter::readAttributes()
 
 void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value)
 {
-    auto uniqueKey = getNodeName(key);
+    std::wstring uniqueKey = {};
+    if(parents_.size() > 2)
+    {
+        auto parentsIndex = parents_.size()-3;
+        uniqueKey = getNodeName(key, parents_.at(parentsIndex).second);
+    }
+    else if(parents_.size() > 1)
+    {
+        auto parentsIndex = parents_.size()-2;
+        uniqueKey = getNodeName(key, parents_.at(parentsIndex).second);
+    }
+    else
+    {
+        uniqueKey = getNodeName(key, parents_.at(0).second);
+    }
+
     if(!value.empty())
     {
         keyvalues_.emplace(uniqueKey, value);
     }
 }
 
-std::wstring XML2TableConverter::getNodeName(const std::wstring &name)
+void XML2TableConverter::insertAttribute(const std::wstring &key, const std::wstring &value)
 {
-    std::set<std::wstring> valueNames = {};
-    auto parentsIndex = 0;
-    if(depth_ == 0)
+    auto uniqueKey = getNodeName(key, parents_.back().second);
+
+    if(!value.empty())
     {
-        valueNames = parents_.at(0).second;
+        keyvalues_.emplace(uniqueKey, value);
     }
-    else if(parents_.size() > 3)
-    {
-        parentsIndex = parents_.size()-3;
-        valueNames  = parents_.at(parentsIndex).second;
-    }
+}
+
+std::wstring XML2TableConverter::getNodeName(const std::wstring &name, std::set<std::wstring> &names)
+{
     /// ищем среди использовавшихся имён нужное
-    for(auto i = valueNames.begin(); i != valueNames.end(); i++)
+    for(auto i = names.begin(); i != names.end(); i++)
     {
         if(colNames_.GetXmlName(*i) == name)
         {
@@ -126,7 +140,7 @@ std::wstring XML2TableConverter::getNodeName(const std::wstring &name)
     /// если не нашли, создаём его и вставляем
     auto resultName = name;
     colNames_.CreateColumnName(resultName);
-    parents_.at(parentsIndex).second.insert(resultName);
+    names.insert(resultName);
     return resultName;
 }
 

@@ -67,7 +67,7 @@ std::wstring ColumnNameController::GetXmlName(const std::wstring &columnName)
         return L"";
     }
 
-    return nodeName->first;
+    return nodeName->second.first;
 }
 
 std::map<std::wstring, _UINT32> ColumnNameController::GetColumnNames()

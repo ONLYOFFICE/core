@@ -465,26 +465,30 @@ namespace SVG
 			Point oCenter{0, 0};
 			double dAngle = 0, dSweep = 0;
 
-			CalculateData(m_arPoints[0], m_arPoints[1], oRadius, oCenter, 0, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
+			CalculateData(m_arPoints[0], m_arPoints[1], oRadius, oCenter, m_dXAxisRotation, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
 
 			double dStartAngle = dAngle;
 			double dEndAngle;
 
-			Point oStartPoint, oEndPoint, oControl1, oControl2;
+			Point oEndPoint, oControl1, oControl2;
 
 			pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
 
 			while (dStartAngle != (dAngle + dSweep))
 			{
-				dEndAngle = (int)((dStartAngle + ((dSweep > 0) ? 90 : -90)) / 90) * 90;
+				if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
+					dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
+				else
+					dEndAngle = (int)(dStartAngle / 90.) * 90.;
 
-				if (std::abs(dEndAngle) > std::abs(dAngle + dSweep))
+				if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 					dEndAngle = dAngle + dSweep;
 
-				oStartPoint = oCenter + GetPoint(oRadius, dStartAngle);
-				oEndPoint   = oCenter + GetPoint(oRadius, dEndAngle);
+				oEndPoint = GetPoint(oRadius, dEndAngle);
+				oEndPoint.Rotate(m_dXAxisRotation);
+				oEndPoint += oCenter;
 
-				double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180;
+				double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180.;
 
 				if (std::abs(dSweepRad) > M_PI)
 				{
@@ -500,8 +504,14 @@ namespace SVG
 				double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
 				double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
 
-				oControl1 = {oCenter.dX + std::cos(dAngle1) * distToCtrPointX, oCenter.dY + std::sin(dAngle1) * distToCtrPointY};
-				oControl2 = {oCenter.dX + std::cos(dAngle2) * distToCtrPointX, oCenter.dY + std::sin(dAngle2) * distToCtrPointY};
+				oControl1 = {std::cos(dAngle1) * distToCtrPointX, std::sin(dAngle1) * distToCtrPointY};
+				oControl2 = {std::cos(dAngle2) * distToCtrPointX, std::sin(dAngle2) * distToCtrPointY};
+
+				oControl1.Rotate(m_dXAxisRotation);
+				oControl2.Rotate(m_dXAxisRotation);
+
+				oControl1 += oCenter;
+				oControl2 += oCenter;
 
 				pRenderer->PathCommandCurveTo(oControl1.dX, oControl1.dY, oControl2.dX, oControl2.dY, oEndPoint.dX, oEndPoint.dY);
 
@@ -518,27 +528,34 @@ namespace SVG
 
 		static Point GetPoint(const Point& oRadius, double dAngle)
 		{
-			return Point{oRadius.dX * std::cos(dAngle * M_PI / 180), oRadius.dY * std::sin(dAngle * M_PI / 180)};
+			return Point{oRadius.dX * std::cos(dAngle * M_PI / 180.), oRadius.dY * std::sin(dAngle * M_PI / 180.)};
 		}
 
 		static void CalculateData(const Point& oFirst, const Point& oSecond, Point& oRadius, Point& oCenter, double dAngle, bool bLargeArc, bool bSweep, double& dStartAngle, double& dSweep)
 		{
-			double dXp = ((oFirst.dX - oSecond.dX) / 2 * std::cos(dAngle))  + ((oFirst.dY - oSecond.dY) / 2 * std::sin(dAngle));
-			double dYp = ((oFirst.dX - oSecond.dX) / 2 * -std::sin(dAngle)) + ((oFirst.dY - oSecond.dY) / 2 * std::cos(dAngle));
+			dAngle *= M_PI / 180.;
 
-			int nSign = (bLargeArc == bSweep) ? -1 : 1;
+			double dXp = ((oFirst.dX - oSecond.dX) / 2. * std::cos(dAngle)) + ((oFirst.dY - oSecond.dY) / 2. * std::sin(dAngle));
+			double dYp = ((oFirst.dY - oSecond.dY) / 2. * std::cos(dAngle)) - ((oFirst.dX - oSecond.dX) / 2. * std::sin(dAngle));
 
 			double dLambda = ((dXp * dXp) / (oRadius.dX * oRadius.dX)) + ((dYp * dYp) / (oRadius.dY * oRadius.dY));
-			if(dLambda > 1)
+			if(dLambda > 1.)
 			{
 				oRadius.dX *= std::sqrt(dLambda);
 				oRadius.dY *= std::sqrt(dLambda);
 			}
 
-			double dC0 = nSign * std::sqrt(((std::pow(oRadius.dX, 2) * std::pow(oRadius.dY, 2)) - (std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) - (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))) / ((std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) + (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))));
+			double dRxRy = oRadius.dX * oRadius.dY;
+			double dRxYp = oRadius.dX * dYp;
+			double dRyXp = oRadius.dY * dXp;
+			double dSumOfSq = dRxYp * dRxYp + dRyXp * dRyXp;
 
-			double dCpx = dC0 * oRadius.dX * dYp / oRadius.dY;
-			double dCpy = -dC0 * oRadius.dY * dXp / oRadius.dX;
+			double dCoef = std::sqrt(std::abs(dRxRy * dRxRy - dSumOfSq) / dSumOfSq) * ((bLargeArc == bSweep) ? -1 : 1);
+
+			double dCpx =  dCoef * dRxYp / oRadius.dY;
+			double dCpy = -dCoef * dRyXp / oRadius.dX;
+
+			oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 
 			dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
 			dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
@@ -554,8 +571,6 @@ namespace SVG
 
 			if (bSweep && dSweep < 0)
 				dSweep += 360;
-
-			oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 		}
 
 		Point  m_oRadius;

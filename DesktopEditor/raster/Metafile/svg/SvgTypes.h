@@ -64,15 +64,14 @@ namespace SVG
 			return Point{dX - oPoint.dX, dY - oPoint.dY};
 		}
 
-		void Rotate(double dAngle, const Point& oPoint)
+		void Rotate(double dAngle)
 		{
 			double dOldX = dX;
-			double dOldY = dY;
 
-			dAngle *= 3.1415926535 / 180;
+			dAngle *= 3.1415926535 / 180.;
 
-			dX = dOldX + cos(dAngle) * (oPoint.dX - dOldX) - sin(dAngle) * (oPoint.dY - dOldY);
-			dY = dOldY + sin(dAngle) * (oPoint.dX - dOldX) + cos(dAngle) * (oPoint.dY - dOldY);
+			dX = dX * std::cos(dAngle) - dY * std::sin(dAngle);
+			dY = dOldX * std::sin(dAngle) + dY * std::cos(dAngle);
 		}
 	};
 

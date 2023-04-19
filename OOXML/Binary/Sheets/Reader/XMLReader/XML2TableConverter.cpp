@@ -34,10 +34,6 @@
 
 #include <algorithm>
 
-/// @brief номер строки в которую устанавлииваются имена столбцов
-constexpr auto ColNamesRowNumber = 1;
-
-
 XML2TableConverter::XML2TableConverter(XmlUtils::CXmlLiteReader &reader)
 :reader_{&reader}{};
 
@@ -203,8 +199,6 @@ void XML2TableConverter::processNode(const XmlUtils::XmlNodeType &type)
             parentValues_.insert(keyvalues_.begin(), keyvalues_.end());
             keyvalues_.clear();
         }
-        auto testVar = parents_.back().first;
-        auto nodeNaaame = reader_->GetName();
         parents_.pop_back();
     }
 }

@@ -71,4 +71,5 @@ private:
 
     OOX::Spreadsheet::CXlsx *book_;
     std::vector<OOX::Spreadsheet::CRow*> tableRows_;
+    OOX::Spreadsheet::CStyles *m_pStyles_ = NULL;
 };

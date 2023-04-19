@@ -35,6 +35,10 @@
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../../Common/OfficeFileErrorDescription.h"
 
+#include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+
 constexpr auto SheetName = L"Sheet";
 
 XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
@@ -43,6 +47,39 @@ XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
     book_->CreateWorkbook();
     book_->m_pWorkbook->m_oSheets.Init();
     tableRows_.push_back(nullptr);
+
+    // Создадим стили
+	book_->CreateStyles();
+
+	// Добавим стили для wrap-а
+	book_->m_pStyles->m_oCellXfs.Init();
+	book_->m_pStyles->m_oCellXfs->m_oCount.Init();
+	book_->m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
+
+	m_pStyles_ = book_->m_pStyles;
+
+// Normall default
+	OOX::Spreadsheet::CXfs* pXfs = NULL;
+	pXfs = new OOX::Spreadsheet::CXfs();
+	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
+	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
+	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
+	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
+
+	book_->m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+
+// Wrap style
+	pXfs = new OOX::Spreadsheet::CXfs();
+	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
+	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
+	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
+	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
+
+	pXfs->m_oApplyAlignment.Init();	pXfs->m_oApplyAlignment->SetValue(SimpleTypes::onoffTrue);
+	pXfs->m_oAligment.Init();		pXfs->m_oAligment->m_oWrapText.Init();
+	pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
+
+	book_->m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 }
 
 
@@ -83,6 +120,8 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
     pCell->m_oRichText->m_arrItems.push_back(pText);
 
     pCell->setRowCol(nRow - 1, nCol);
+
+    pCell->m_oStyle = 1;
 
     while(tableRows_.size() - 1 < nRow)
     {

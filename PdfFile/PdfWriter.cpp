@@ -1247,16 +1247,23 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 		{
 			unsigned short* pCodes2 = new unsigned short[unLen];
 			unsigned int* pWidths   = new unsigned int[unLen];
-
-			unsigned short ushSpaceCode = 0xFFFF;
+			
+			unsigned short ushSpaceCode   = 0xFFFF;
+			unsigned short ushNewLineCode = 0xFFFE;
 			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
 			{
-				pCodes2[unIndex] = (0x0020 == pUnicodes[unIndex] ? ushSpaceCode : 0);
+				unsigned short ushCode = 0;
+				if (0x0020 == pUnicodes[unIndex])
+					ushCode = ushSpaceCode;
+				else if (0x000D == pUnicodes[unIndex] || 0x000A == pUnicodes[unIndex])
+					ushCode = ushNewLineCode;
+				
+				pCodes2[unIndex] = ushCode;
 				pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
 			}
-
-			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
-
+			
+			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+			
 			// TODO: Разобраться более детально по какой именно высоте идет в Adobe расчет
 			//       пока временно оставим (H - 3 * margin)
 			if (pPr->IsAutoFit())

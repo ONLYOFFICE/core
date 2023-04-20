@@ -7,10 +7,9 @@
 #include "rpc.h"
 #include "rpcndr.h"
 
-#ifndef COM_NO_WINDOWS_H
-#include "windows.h"
-#include "ole2.h"
-#endif /*COM_NO_WINDOWS_H*/
+#ifdef CreateFile
+#undef CreateFile
+#endif
 
 /* Forward Declarations */ 
 typedef interface IONLYOFFICEDocBuilderValue IONLYOFFICEDocBuilderValue;

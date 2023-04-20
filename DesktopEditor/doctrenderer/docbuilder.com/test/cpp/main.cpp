@@ -22,7 +22,6 @@
 
 int main(int argc, char *argv[])
 {
-	wchar_t result_path[] = L"result.docx";
 	CoInitialize(NULL);
 
 	IONLYOFFICEDocBuilder* oBuilder = NULL;
@@ -46,7 +45,7 @@ int main(int argc, char *argv[])
 	VARIANT_BOOL b;
 
 	oBuilder->Initialize();
-	oBuilder->CreateFileW(_bstr_t(result_path), &b);
+	oBuilder->CreateFile(_bstr_t("docx"), &b);
 	oBuilder->GetContext(&oContext);
 
 	oContext->CreateScope(&oScope);
@@ -59,14 +58,13 @@ int main(int argc, char *argv[])
 	oApi->Call(_bstr_t("CreateParagraph"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), &oParagraph);
 	oContext->CreateArray(1, &oContent);
 	
-
 	oParagraph->Call(_bstr_t("SetSpacingAfter"), ATL::CComVariant(1000), ATL::CComVariant(VARIANT_FALSE), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
 	oParagraph->Call(_bstr_t("AddText"), ATL::CComVariant("Hello from COM!"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
 	oContent->Set(0, oParagraph);
 
 	oDocument->Call(_bstr_t("InsertContent"), ATL::CComVariant(oContent), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
 
-	oBuilder->SaveFile(_bstr_t("docx"), result_path, &b);
+	oBuilder->SaveFile(_bstr_t("docx"), _bstr_t("result.docx"), &b);
 
 	RELEASEINTERFACE(oContent);
 

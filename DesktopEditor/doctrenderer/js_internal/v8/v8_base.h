@@ -164,11 +164,9 @@ public:
 		v8::V8::InitializeICU();
 #endif
 
-		char* strEnv = std::getenv("V8_USE_INSPECTOR");
-		if (strEnv && std::strcmp(strEnv, "0"))
-		{
+		std::string sInspectorEnabled = NSSystemUtils::GetEnvVariableA(L"V8_USE_INSPECTOR");
+		if (!sInspectorEnabled.empty() && "0" != sInspectorEnabled)
 			m_bUseInspector = true;
-		}
 	}
 
 	void Dispose()

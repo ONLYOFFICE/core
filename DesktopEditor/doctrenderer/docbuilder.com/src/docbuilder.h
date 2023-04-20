@@ -843,6 +843,8 @@ public:
 			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
 		else if (L"png" == sType)
 			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+		else if (L"html" == sType)
+			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
 
 		bool bRet = m_pBuilder->SaveFile(nType, path);
 		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;

@@ -239,6 +239,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
 	if (!bIsBreak)
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+	if (!bIsBreak)
+		bIsBreak = !this->ExecuteCommand(L"Api.asc_showComments();");
 
 	LOGGER_SPEED_LAP("open");
 

@@ -1070,6 +1070,8 @@ namespace NSEditorApi
         js_wrapper<int>             m_nInsertPageNum;
         
         js_wrapper<CAscShadow>      m_oShadow;
+        
+        js_wrapper<int>             m_nVerticalTextAlign;
 
 	public:
 		CAscShapeProp()
@@ -1094,6 +1096,8 @@ namespace NSEditorApi
         LINK_PROPERTY_INT_JS(InsertPageNum)
         
         LINK_PROPERTY_OBJECT_JS(CAscShadow, Shadow)
+        
+        LINK_PROPERTY_INT_JS(VerticalTextAlign)
     };
     
     

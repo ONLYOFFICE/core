@@ -347,7 +347,23 @@ std::wstring CPdfReader::GetTempDirectory()
 {
     return m_wsTempFolder;
 }
+std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStream)
+{
+    XMLConverter oConverter(m_pPDFDocument->getXRef(), isPrintStream);
+    std::wstring wsXml = oConverter.GetXml();
 
+    if (wsFilePath != L"")
+    {
+        NSFile::CFileBinary oFile;
+        if (!oFile.CreateFileW(wsFilePath))
+            return wsXml;
+
+        oFile.WriteStringUTF8(wsXml);
+        oFile.CloseFile();
+    }
+
+    return wsXml;
+}
 void CPdfReader::ChangeLength(DWORD nLength)
 {
     m_nFileLength = nLength;

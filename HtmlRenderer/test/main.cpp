@@ -35,10 +35,9 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
-#include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
-#include "../../PdfWriter/PdfRenderer.h"
+#include "../../PdfFile/PdfFile.h"
 #include "../include/HTMLRenderer3.h"
 
 #include "../../DesktopEditor/raster/BgraFrame.h"
@@ -59,11 +58,11 @@ void Download_OnComplete(int error)
 //#define METAFILE_TEST
 //#define METAFILE_TEST_X2T
 //#define METAFILE_TEST_RASTER
-//#define ONLINE_WORD_TO_PDF
+#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
 //#define TO_HTML_RENDERER
 //#define ONLY_TEXT
-#define DOWNLOADER_TEST
+//#define DOWNLOADER_TEST
 
 #include "Windows.h"
 #include <wininet.h>
@@ -303,8 +302,8 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef ONLINE_WORD_TO_PDF
-    CPdfRenderer oPdfW(pFonts);
-    oPdfW.SetTempFolder(L"D:\\test\\Document");
+    CPdfFile oPdfW(pFonts);
+    oPdfW.SetTempDirectory(L"D:\\test\\Document");
     oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
     RELEASEOBJECT(pFonts);
     return 0;
@@ -341,7 +340,7 @@ int main(int argc, char *argv[])
     //NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
     IOfficeDrawingFile* pReader = NULL;
-    pReader = new PdfReader::CPdfReader(pFonts);
+    pReader = new CPdfFile(pFonts);
     //pReader = new CDjVuFile(pFonts);
     //pReader = new CXpsFile(pFonts);
 
@@ -359,8 +358,8 @@ int main(int argc, char *argv[])
     oRenderer.CreateOfficeFile(sDst);
 #endif
 #else
-    CPdfRenderer oRenderer(pFonts);
-    oRenderer.SetTempFolder(sDst);
+    CPdfFile oRenderer(pFonts);
+    oRenderer.SetTempDirectory(sDst);
 #endif
 
     int nPagesCount = pReader->GetPagesCount();

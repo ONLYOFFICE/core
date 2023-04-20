@@ -309,10 +309,6 @@ public:
 
                 m_oCurrentHtml.Clear();
                 m_oCurrentHtml.WriteString(m_sBeginHtml);
-                //for (int i = m_arrNodes.size() - 1; i >= 0; --i)
-                //{
-                //    m_oCurrentHtml.WriteString(m_arrNodes[i]);
-                //}
 
                 m_oXmlLightReader.MoveToStart();
                 m_oXmlLightReader.ReadNextNode(); // html
@@ -440,9 +436,15 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oContainerXml.CloseFile();
     }
 
+    // title
+    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
+    if (sIndexHtml.find(L"<title>") == std::wstring::npos)
+        sIndexHtml.insert(sIndexHtml.find(L"</head>"), L"<title>" + sTitle + L"</title>");
+
     // Разделение html по <br>
     int nFile = 0;
     nImage = sIndexHtml.find(L"<br");
+    sIndexHtml.replace(0, 6, L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\">");
     while (nImage != std::wstring::npos)
     {
         nImage += 3;
@@ -472,12 +474,11 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         }
 
         nImage = sIndexHtml.find(L"<br", nImage);
-    }
+    }  
 
     // content.opf
     NSFile::CFileBinary oContentOpf;
     bool bWasLanguage = false, bWasTitle = false;
-    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
@@ -543,11 +544,16 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             oContentOpf.WriteStringUTF8(L"<item id=\"" + sName + L"\" href=\"images/" + sName + L"\" media-type=\"image/png\"/>");
         }
         // spine & guide
+        std::wstring sItemRef;
         for (int i = 0; i < nFile; ++i)
         {
-            oContentOpf.WriteStringUTF8(L"<item id=\"index\" href=\"index" + std::to_wstring(i) + L".html\" media-type=\"application/xhtml+xml\"/>");
+            std::wstring sI = std::to_wstring(i);
+            oContentOpf.WriteStringUTF8(L"<item id=\"index" + sI + L"\" href=\"index" + sI + L".html\" media-type=\"application/xhtml+xml\"/>");
+            sItemRef += (L"<itemref idref=\"index" + sI + L"\"/>");
         }
-        oContentOpf.WriteStringUTF8(L"</manifest><spine toc=\"ncx\"><itemref idref=\"index\"/></spine></package>");
+        oContentOpf.WriteStringUTF8(L"</manifest><spine toc=\"ncx\">");
+        oContentOpf.WriteStringUTF8(sItemRef);
+        oContentOpf.WriteStringUTF8(L"</spine></package>");
         oContentOpf.CloseFile();
     }
 
@@ -559,21 +565,21 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oTocNcx.WriteStringUTF8(sUUID);
         oTocNcx.WriteStringUTF8(L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>");
         oTocNcx.WriteStringUTF8(sTitle);
-        oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index.html\"/></navPoint></navMap></ncx>");
+        oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index0.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
     }
 
     // write index.html
-    sIndexHtml.erase(0, 6);
-    if (sIndexHtml.find(L"<title>") == std::wstring::npos)
-        sIndexHtml.insert(sIndexHtml.find(L"</head>"), L"<title>" + sTitle + L"</title>");
-    NSFile::CFileBinary oIndexHtml;
-    if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
+    if (!nFile)
     {
-        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        oIndexHtml.WriteStringUTF8(sIndexHtml);
-        oIndexHtml.CloseFile();
+        NSFile::CFileBinary oIndexHtml;
+        if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
+        {
+            oIndexHtml.WriteStringUTF8(sIndexHtml);
+            oIndexHtml.CloseFile();
+        }
     }
+
     // compress
     COfficeUtils oOfficeUtils;
     return oOfficeUtils.CompressFileOrDirectory(m_sTempDir, sDstFile);

@@ -303,8 +303,9 @@ int main(int argc, char *argv[])
 
 #ifdef ONLINE_WORD_TO_PDF
     CPdfFile oPdfW(pFonts);
-    oPdfW.SetTempDirectory(L"D:\\test\\Document");
-    oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
+    oPdfW.CreatePdf();
+    oPdfW.SetTempDirectory(L"C:\\Git\\Test\\Temp");
+    oPdfW.OnlineWordToPdf(L"C:\\Git\\Test\\123.txt", L"C:\\Git\\Test\\123.pdf");
     RELEASEOBJECT(pFonts);
     return 0;
 #endif

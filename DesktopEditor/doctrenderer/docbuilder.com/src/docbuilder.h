@@ -787,14 +787,7 @@ public:
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 
-		int nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		CStringW sType = (CString)type;
-		if (L"pptx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"xlsx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-
-		bool bRet = m_pBuilder->CreateFile(nType);
+		bool bRet = m_pBuilder->CreateFile(type);
 		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
@@ -811,43 +804,8 @@ public:
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 
-		int nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		CStringW sType = (CString)type;
-		if (L"docx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		else if (L"doc" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-		else if (L"odt" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		else if (L"rtf" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		else if (L"txt" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-		else if (L"pptx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"odp" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		else if (L"xlsx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-		else if (L"xls" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-		else if (L"ods" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		else if (L"csv" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-		else if (L"pdf" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-		else if (L"image" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-		else if (L"jpg" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-		else if (L"png" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-		else if (L"html" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-
-		bool bRet = m_pBuilder->SaveFile(nType, path);
-		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
+		int nRet = m_pBuilder->SaveFile(type, path);
+		*result = (nRet == 0) ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
 	STDMETHOD(CloseFile)()

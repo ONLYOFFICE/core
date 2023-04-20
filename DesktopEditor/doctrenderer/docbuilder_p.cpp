@@ -1106,6 +1106,19 @@ namespace NSDoctRenderer
 
 		return m_pInternal->CreateFile(type);
 	}
+	bool CDocBuilder::CreateFile(const wchar_t* extension)
+	{
+		std::wstring sType = (NULL != extension) ? std::wstring(extension) : L"docx";
+		int type = AVS_OFFICESTUDIO_FILE_DOCUMENT;
+
+		if (L"pptx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
+		else if (L"xlsx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
+
+		return CreateFile(type);
+	}
+
 	void CDocBuilder::SetTmpFolder(const wchar_t* folder)
 	{
 		if (m_pInternal->m_bIsServerSafeVersion)

@@ -1202,6 +1202,45 @@ namespace NSDoctRenderer
 			return true;
 		}
 
+		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
+		{
+			int nType = -1;
+			if (L"docx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+			else if (L"doc" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+			else if (L"odt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+			else if (L"rtf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+			else if (L"txt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+			else if (L"pptx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+			else if (L"odp" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+			else if (L"xlsx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+			else if (L"xls" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+			else if (L"ods" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+			else if (L"csv" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+			else if (L"pdf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+			else if (L"image" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"jpg" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"png" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"html" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+
+			return SaveFile(nType, path, params);
+		}
+
 		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
 		{
 			if (command.length() < 7 && !retValue) // minimum command (!!!)

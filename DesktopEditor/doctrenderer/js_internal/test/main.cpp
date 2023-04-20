@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes2 = oContext1->runScript(
 		"var str2 = 'test';\n"
-		"var hash2 = oHash.hash2(str, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");
+		"var hash2 = oHash.hash2(str2, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");
 
 	// Print first result
 	JSSmart<CJSTypedArray> oHash2 = oGlobal1->get("hash2")->toTypedArray();

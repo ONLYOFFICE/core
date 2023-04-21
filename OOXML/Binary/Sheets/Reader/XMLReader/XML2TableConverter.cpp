@@ -35,21 +35,17 @@
 #include <algorithm>
 
 XML2TableConverter::XML2TableConverter(XmlUtils::CXmlLiteReader &reader)
-:reader_{&reader}{};
-
-_INT32 XML2TableConverter::ReadNextString(std::map<_UINT32, std::wstring> &string)
+:reader_{&reader}
 {
+    parents_.push_back(std::make_pair(L"root", std::set<std::wstring>()));
+};
 
-    depth_ = reader_->GetDepth();
-
-    auto nodeType = reader_->GetNodeType();
-
-    readAttributes();
-    storeData(nodeType);
+bool XML2TableConverter::ReadNextElement(std::map<_UINT32, std::wstring> &string)
+{
+    XmlUtils::XmlNodeType nodeType;
 
     while(reader_->Read(nodeType))
     {
-        depth_ = reader_->GetDepth();
         readAttributes();
         storeData(nodeType);
         processNode(nodeType);
@@ -57,17 +53,13 @@ _INT32 XML2TableConverter::ReadNextString(std::map<_UINT32, std::wstring> &strin
         {
             string = stringBuffer_;
             stringBuffer_.clear();
-            return rowIndex_-1;
+            return true;
         }
+    }
 
-    }
-    if(!xmlReaded_)
-    {
-        xmlReaded_ = true;
-        insertColumnNames(string);
-        return 1;
-    }
-    return -1;
+    insertColumnNames(string);
+    return false;
+
 }
 
 void XML2TableConverter::readAttributes()
@@ -123,6 +115,22 @@ void XML2TableConverter::insertAttribute(const std::wstring &key, const std::wst
     }
 }
 
+void XML2TableConverter::insertEmptyNode (const std::wstring &key)
+{
+    std::wstring uniqueKey = {};
+    if(parents_.size() > 1)
+    {
+        auto parentsIndex = parents_.size()-2;
+        uniqueKey = getNodeName(key, parents_.at(parentsIndex).second);
+    }
+    else
+    {
+        uniqueKey = getNodeName(key, parents_.at(0).second);
+    }
+
+    keyvalues_.emplace(uniqueKey, L"");
+}
+
 std::wstring XML2TableConverter::getNodeName(const std::wstring &name, std::set<std::wstring> &names)
 {
     /// ищем среди использовавшихся имён нужное
@@ -149,19 +157,12 @@ std::wstring XML2TableConverter::getNodeName(const std::wstring &name, std::set<
    }
  }
 
-
 void XML2TableConverter::insertRow(std::map<_UINT32, std::wstring> &row)
 {
     for(auto i = keyvalues_.begin(); i != keyvalues_.end(); i++)
     {
         row.emplace(colNames_.GetColumnNumber(i->first), i->second);
     }
-
-    for(auto i = parentValues_.begin(); i != parentValues_.end(); i++)
-    {
-        row.emplace(colNames_.GetColumnNumber(i->first), i->second);
-    }
-    rowIndex_++;
 }
 
 void XML2TableConverter::processNode(const XmlUtils::XmlNodeType &type)
@@ -169,38 +170,24 @@ void XML2TableConverter::processNode(const XmlUtils::XmlNodeType &type)
     if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && !reader_->IsEmptyNode())
     {
         parents_.push_back(std::make_pair(reader_->GetName(), std::set<std::wstring>()));
-        tempDepth_= reader_->GetDepth();
-
     }
-    else if(type == XmlUtils::XmlNodeType::XmlNodeType_EndElement && parents_.size() > 0)
+    else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader_->IsEmptyNode())
     {
-
-        /// если глубина уменьшается извлекаем данные родительской ноды и записываем данные текущей
-        if(tempDepth_ > reader_->GetDepth())
+        insertRow(stringBuffer_);
+        keyvalues_.clear();
+    }
+    else if(type == XmlUtils::XmlNodeType::XmlNodeType_EndElement)
+    {
+        //вставка ноды типа <node></node>
+        if(prevType_ == XmlUtils::XmlNodeType::XmlNodeType_Element)
         {
-            auto testName = reader_->GetName();
-            /// если есть данные для записи, записываем их и чистим буфер с данными
-            if(!keyvalues_.empty())
-            {
-                insertRow(stringBuffer_);
-                keyvalues_.clear();
-            }
-
-            /// очистка предков от данных ноды из которой вышли и удаление узла предка
-            auto parentNames = parents_.back().second;
-            for(auto i = parentNames.begin(); i != parentNames.end(); i++)
-            {
-                parentValues_.erase(*i);
-            }
+            insertValue(parents_.back().first, L"");
         }
-        /// если глубина растет, не пишем ноды в таблицу а передаем их как атрибуты для дочерних нод
-        else if(tempDepth_ < reader_->GetDepth())
-        {
-            parentValues_.insert(keyvalues_.begin(), keyvalues_.end());
-            keyvalues_.clear();
-        }
+        insertRow(stringBuffer_);
+        keyvalues_.clear();
         parents_.pop_back();
     }
+    prevType_ = type;
 }
 
 void XML2TableConverter::storeData(const XmlUtils::XmlNodeType &type)
@@ -208,14 +195,11 @@ void XML2TableConverter::storeData(const XmlUtils::XmlNodeType &type)
     ///@todo проверять нет ли в parents нод с таким же именем для вставки в их столбец вместо создания нового
     if(type == XmlUtils::XmlNodeType::XmlNodeType_Text || type == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
     {
-            auto text = reader_->GetText();
-            if(!text.empty())
-            {
-                insertValue(parents_.at(parents_.size() -1).first, text);
-            }
+        auto text = reader_->GetText();
+        insertValue(parents_.at(parents_.size() -1).first, text);
     }
     else if(type == XmlUtils::XmlNodeType::XmlNodeType_Element && reader_->IsEmptyNode() && reader_->GetAttributesCount() == 0)
     {
-        insertValue(reader_->GetName(), L"");
+        insertEmptyNode(reader_->GetName());
     }
 }

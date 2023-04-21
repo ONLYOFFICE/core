@@ -55,7 +55,7 @@ public:
     /// @brief метод, считывающий следующую строку из xml
     /// @param string map со строковыми данными в качестве ключей и номерами их столбцов для вставки в качестве значений
     /// @return номер строки в случае успешного считывания или -1 в случае ошибки
-    _INT32 ReadNextString(std::map<_UINT32, std::wstring> &string);
+    bool ReadNextElement(std::map<_UINT32, std::wstring> &string);
 
 private:
 
@@ -81,6 +81,10 @@ private:
     /// @param value значение которое нужно вставить
     void insertValue(const std::wstring &key, const std::wstring &value);
 
+    /// @brief вставляет имя пустой ноды
+    /// @param key имя ноды
+    void insertEmptyNode(const std::wstring &key);
+
     /// @brief вставляет атрибут ноды во временную внутреннюю структуру
     /// @param key ключ, по которому будет вставлено значение
     /// @param value значение которое нужно вставить
@@ -99,29 +103,19 @@ private:
     /// @brief указатель на считавший xml данные reader
     XmlUtils::CXmlLiteReader *reader_;
 
-    /// @brief текущая глубина
-    _UINT32 depth_;
-
-    /// @brief глубина предыдущего элемента
-    _UINT32 tempDepth_;
-
-    /// @brief номер текущей строки с данными
-    _UINT32 rowIndex_ = 2;
-
     /// @brief вектор с родительскими нодами и используемыми на их уровнях именами
     std::vector<std::pair<std::wstring, std::set<std::wstring>>> parents_;
 
     /// @brief map с набором ключей в виде уникальных имен и их значений для вставки в таблицу
     std::map<std::wstring, std::wstring> keyvalues_;
 
-    /// @brief map с парами ключ значение родительских нод, вставляемых в строках дочерних нод
-    std::map<std::wstring, std::wstring> parentValues_;
-
     /// @brief контроллер имен столбцов таблицы
     ColumnNameController colNames_;
 
+    /// @brief map в который выводятся данные при прочтении ноды
     std::map<_UINT32, std::wstring> stringBuffer_;
 
-    bool xmlReaded_;
+    /// @brief тип предыдущей ноды(для поиска нод вида <node></node>)
+    XmlUtils::XmlNodeType prevType_ = XmlUtils::XmlNodeType::XmlNodeType_None;
 
 };

@@ -58,18 +58,37 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
 
     XML2TableConverter converter = {reader};
     XLSXTableController table = {oXlsx};
-
+    // map хранящий текущий номер колонки для записи
+    std::map<_UINT32, _UINT32> rowNumbers = {};
     std::map<_UINT32, std::wstring> stringData = {};
-    auto rowNumber = converter.ReadNextString(stringData);
-    while(rowNumber >= 0)
+
+    while(converter.ReadNextElement(stringData))
     {
         for(auto i = stringData.begin(); i != stringData.end(); i++)
         {
+            _UINT32 rowNumber;
+            auto column = rowNumbers.find(i->first);
+            if(column != rowNumbers.end())
+            {
+                rowNumber = column->second;
+                column->second ++;
+
+            }
+            else
+            {
+                rowNumber = 2;
+                rowNumbers.emplace(i->first, 3);
+            }
             table.AddCell(i->second, rowNumber, i->first);
         }
         stringData.clear();
-        rowNumber = converter.ReadNextString(stringData);
     }
+
+    for(auto i = stringData.begin(); i != stringData.end(); i++)
+    {
+        table.AddCell(i->second, 1, i->first);
+    }
+    stringData.clear();
 
     table.FormBook();
 

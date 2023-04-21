@@ -58,6 +58,7 @@
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -1158,6 +1159,27 @@ namespace NSDoctRenderer
 				break;
 			}
 #endif
+
+			// html correct (TODO: move to x2t)
+			if (0 == nReturnCode && type == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER)
+			{
+				COfficeUtils oUtils;
+				if (S_OK == oUtils.IsArchive(_path))
+				{
+					std::wstring sTmpFile = sDstTmpDir + L"/tmp_html";
+					NSDirectory::CreateDirectory(sTmpFile);
+					if (S_OK == oUtils.ExtractToDirectory(_path, sTmpFile, NULL, 0))
+					{
+						std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sTmpFile);
+						if (arFiles.size() == 1)
+						{
+							NSFile::CFileBinary::Remove(_path);
+							NSFile::CFileBinary::Move(arFiles[0], _path);
+						}
+					}
+				}
+			}
+
 
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);

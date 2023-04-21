@@ -32,13 +32,13 @@
 
 #include <iostream>
 
-#include "../../embed/Default.h"
-#include "../js_base.h"
+#include "embed/Default.h"
+#include "js_internal/js_base.h"
 
 using namespace NSJSBase;
 int main(int argc, char *argv[])
 {
-#if 0
+#if 1
 	// Primitives example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext(false);
@@ -99,7 +99,9 @@ int main(int argc, char *argv[])
 //	oContext1->Dispose();
 	oContext2->Dispose();
 
-#elif 0
+#endif
+
+#if 0
 	// CZipEmbed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;
@@ -154,6 +156,7 @@ int main(int argc, char *argv[])
 
 #endif
 
+#if 0
 	// CHashEmbed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;
@@ -193,6 +196,8 @@ int main(int argc, char *argv[])
 		std::cout << std::hex << static_cast<unsigned>(oHash2->getData().Data[i]);
 	}
 	std::cout << std::endl;
+
+#endif
 
 	return 0;
 }

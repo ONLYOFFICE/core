@@ -3,8 +3,8 @@
 #include <sstream>
 #include <string>
 
-#include "Default.h"
-#include "../js_internal/js_base.h"
+#include "embed/Default.h"
+#include "js_internal/js_base.h"
 
 using namespace NSJSBase;
 

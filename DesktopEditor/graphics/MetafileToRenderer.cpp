@@ -1212,6 +1212,19 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 25))
 						pPr->SetCert(ReadString(current, curindex));
 				}
+				else if (oInfo.IsDateTime())
+				{
+					CFormFieldInfo::CDateTimeFormPr* pPr = oInfo.GetDateTimeFormPr();
+					
+					if (nFlags & (1 << 22))
+						pPr->SetValue(ReadString(current, curindex));
+					
+					if (nFlags & (1 << 25))
+						pPr->SetPlaceHolder(ReadString(current, curindex));
+					
+					if (nFlags & (1 << 26))
+						pPr->SetFormat(ReadString(current, curindex));
+				}
 
 				if (oInfo.IsValid())
 					pRenderer->AddFormField(&oInfo);

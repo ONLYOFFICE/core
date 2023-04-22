@@ -12,6 +12,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
+DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp

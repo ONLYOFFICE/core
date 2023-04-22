@@ -6,6 +6,17 @@
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../graphics/BaseThread.h"
 
+#ifdef DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
+#define JS_DECL
+#else
+#include "../../common/base_export.h"
+#ifdef DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
+#define JS_DECL Q_DECL_EXPORT
+#else
+#define JS_DECL Q_DECL_IMPORT
+#endif
+#endif
+
 #define JS_VALUE_EXIST(value) (value.is_init() && !value->isNull() && !value->isUndefined())
 #define JS_IS_VALUE_ARRAY(value) (value.is_init() && !value->isNull() && !value->isUndefined() && value->isArray())
 
@@ -19,7 +30,7 @@ namespace NSJSBase
 	class CJSTypedArray;
 	class CJSFunction;
 
-	class Q_DECL_EXPORT CJSValue
+	class JS_DECL CJSValue
 	{
 	public:
 		CJSValue();
@@ -54,14 +65,14 @@ namespace NSJSBase
 		virtual JSSmart<CJSObject> toObjectSmart();
 	};
 
-	class Q_DECL_EXPORT CJSEmbedObjectPrivateBase
+	class JS_DECL CJSEmbedObjectPrivateBase
 	{
 	public:
 		CJSEmbedObjectPrivateBase();
 		virtual ~CJSEmbedObjectPrivateBase();
 	};
 
-	class Q_DECL_EXPORT CJSEmbedObject
+    class JS_DECL CJSEmbedObject
 	{
 	public:
 		CJSEmbedObject();
@@ -77,7 +88,7 @@ namespace NSJSBase
 		friend class CJSEmbedObjectPrivate;
 	};
 
-	class Q_DECL_EXPORT CJSObject : public CJSValue
+	class JS_DECL CJSObject : public CJSValue
 	{
 	public:
 		CJSObject();
@@ -95,7 +106,7 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> toValue()                     = 0;
 	};
 
-	class Q_DECL_EXPORT CJSArray : public CJSValue
+	class JS_DECL CJSArray : public CJSValue
 	{
 	public:
 		CJSArray();
@@ -126,7 +137,7 @@ namespace NSJSBase
 		void Free(unsigned char* data, const size_t& size);
 	}
 
-	class Q_DECL_EXPORT CJSDataBuffer
+	class JS_DECL CJSDataBuffer
 	{
 	public:
 		BYTE* Data;
@@ -140,7 +151,7 @@ namespace NSJSBase
 		void Free();
 	};
 
-	class Q_DECL_EXPORT CJSTypedArray : public CJSValue
+	class JS_DECL CJSTypedArray : public CJSValue
 	{
 	public:
 		CJSTypedArray(BYTE* data = NULL, int count = 0);
@@ -151,7 +162,7 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> toValue() = 0;
 	};
 
-	class Q_DECL_EXPORT CJSFunction : public CJSValue
+	class JS_DECL CJSFunction : public CJSValue
 	{
 	public:
 		CJSFunction();
@@ -160,7 +171,7 @@ namespace NSJSBase
 		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
 	};
 
-	class Q_DECL_EXPORT CJSTryCatch
+	class JS_DECL CJSTryCatch
 	{
 	public:
 		CJSTryCatch();
@@ -169,7 +180,7 @@ namespace NSJSBase
 	};
 
 	class CJSContextPrivate;
-	class Q_DECL_EXPORT CJSContext
+	class JS_DECL CJSContext
 	{
 	public:
 		CJSContextPrivate* m_internal;
@@ -224,7 +235,7 @@ namespace NSJSBase
 	};
 
 	class CJSLocalScopePrivate;
-	class Q_DECL_EXPORT CJSLocalScope
+	class JS_DECL CJSLocalScope
 	{
 	public:
 		CJSLocalScopePrivate* m_internal;
@@ -234,7 +245,7 @@ namespace NSJSBase
 		~CJSLocalScope();
 	};
 
-	class Q_DECL_EXPORT CJSContextScope
+    class JS_DECL CJSContextScope
 	{
 	public:
 		JSSmart<CJSContext> m_context;

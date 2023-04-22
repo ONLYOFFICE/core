@@ -15,18 +15,8 @@ include(../../Common/base.pri)
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
+core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
-core_ios {
-    CONFIG += doct_renderer_empty
-}
-core_android {
-    DEFINES += DISABLE_MEMORY_LIMITATION
-    CONFIG += doct_renderer_empty
-}
-
-doct_renderer_empty {
-SOURCES += doctrenderer_empty.cpp
-} else {
 HEADERS += \
     config.h \
     doctrenderer.h \
@@ -70,10 +60,6 @@ SOURCES += \
     embed/TextMeasurerEmbed.cpp \
     embed/Default.cpp
 
-core_mac {
-    !use_v8:CONFIG += use_javascript_core
-}
-
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {
@@ -83,8 +69,8 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_NativeBuilder.cpp \
         embed/v8/v8_Graphics.cpp \
         embed/v8/v8_Zip.cpp \
-		embed/v8/v8_Pointer.cpp \
-		embed/v8/v8_TextMeasurer.cpp
+        embed/v8/v8_Pointer.cpp \
+        embed/v8/v8_TextMeasurer.cpp
 
     build_xp:DESTDIR=$$DESTDIR/xp
 } else {
@@ -95,11 +81,10 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm \
         embed/jsc/jsc_Zip.mm \
-		embed/jsc/jsc_Pointer.mm \
-		embed/jsc/jsc_TextMeasurer.mm
+        embed/jsc/jsc_Pointer.mm \
+        embed/jsc/jsc_TextMeasurer.mm
 
     LIBS += -framework Foundation
-}
 }
 
 include(../graphics/pro/textshaper.pri)

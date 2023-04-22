@@ -6,6 +6,9 @@
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../graphics/BaseThread.h"
 
+// disable export (ios/android problem (external embed objects))
+#define DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
+
 #ifdef DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
 #define JS_DECL
 #else

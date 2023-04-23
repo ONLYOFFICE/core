@@ -122,11 +122,10 @@ namespace PdfWriter
 		if (sScript.empty())
 			return;
 
-		CDictObject* _pAA = pAA;
-		if (!_pAA)
-			_pAA = GetAA();
+		if (!pAA)
+			pAA = GetAA();
 
-		if (!_pAA)
+		if (!pAA)
 			return;
 
 		CDictObject* pKey = new CDictObject();
@@ -1491,6 +1490,25 @@ namespace PdfWriter
 			m_pResources = new CResourcesDict(m_pXref, false, true);
 
 		return m_pResources;
+	}
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearance
+	//----------------------------------------------------------------------------------------
+	CDateTimeField::CDateTimeField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	{
+		Add("FT", "Tx");
+		SetFormat("d-mmm-yyyy");
+	}
+	void CDateTimeField::SetFormat(const std::wstring& wsFormat)
+	{
+		SetFormat(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsFormat));
+	}
+	void CDateTimeField::SetFormat(const std::string& sFormat)
+	{
+		std::string script = "AFDate_FormatEx(\"" + sFormat + "\");";
+		AddScriptToAA("F", script);
+		script = "AFDate_KeystrokeEx(\"" + sFormat + "\");";
+		AddScriptToAA("K", script);
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

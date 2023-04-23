@@ -50,7 +50,7 @@
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len = -1);
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
-#ifdef __ANDROID__
+#ifdef ANDROID_LOGS
 #include <JniLogUtils.h>
 #endif
 
@@ -164,11 +164,9 @@ public:
 		v8::V8::InitializeICU();
 #endif
 
-		char* strEnv = std::getenv("V8_USE_INSPECTOR");
-		if (strEnv && std::strcmp(strEnv, "0"))
-		{
+		std::string sInspectorEnabled = NSSystemUtils::GetEnvVariableA(L"V8_USE_INSPECTOR");
+		if (!sInspectorEnabled.empty() && "0" != sInspectorEnabled)
 			m_bUseInspector = true;
-		}
 	}
 
 	void Dispose()
@@ -798,9 +796,7 @@ namespace NSJSBase
 				}
 #endif
 
-#ifndef __ANDROID__
-				std::cerr << strException << std::endl;
-#else
+#ifdef ANDROID_LOGS
 				LOGE("NSJSBase::CV8TryCatch::Check() - error:");
 				LOGE(std::to_string(nLineNumber).c_str());
 				LOGE(strCode.c_str());

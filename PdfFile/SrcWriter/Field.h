@@ -265,7 +265,15 @@ namespace PdfWriter
 		CSignatureDict* m_pSig; // Словарь сигнатур
 		CResourcesDict* m_pResources;
 	};
-
+	
+	class CDateTimeField : public CFieldBase
+	{
+	public:
+		CDateTimeField(CXref* pXRef, CDocument* pDocument);
+		void SetFormat(const std::wstring& wsValue);
+		void SetFormat(const std::string& sValue);
+	};
+	
 	class CAnnotAppearance : public CDictObject
 	{
 	public:

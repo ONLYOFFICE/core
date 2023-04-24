@@ -747,8 +747,8 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
         LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
         if (!pLinkDest)
         {
-            oRes.WriteString(NULL, 0);
-            oRes.AddDouble(0.0);
+            oRes.AddInt(0);
+            oRes.WriteBYTE(8);
             break;
         }
         int pg;
@@ -759,10 +759,59 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
         }
         else
             pg = pLinkDest->getPageNum();
-        std::string sLink = "#" + std::to_string(pg - 1);
-        double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
-        oRes.WriteString((BYTE*)sLink.c_str(), (unsigned int)sLink.length());
-        oRes.AddDouble(dy);
+        LinkDestKind nKind = pLinkDest->getKind();
+        oRes.AddInt(pg - 1);
+        oRes.WriteBYTE(nKind);
+        switch (nKind)
+        {
+        case destXYZ:
+        case destFitH:
+        case destFitBH:
+        case destFitV:
+        case destFitBV:
+        {
+            size_t nKindPos = oRes.GetSize();
+            int nKindFlag = 0;
+            oRes.WriteBYTE(nKindFlag);
+            // 1 - left
+            if (pLinkDest->getChangeLeft())
+            {
+                nKindFlag |= (1 << 0);
+                oRes.AddDouble(pLinkDest->getLeft());
+            }
+            // 2 - top
+            if (pLinkDest->getChangeTop())
+            {
+                nKindFlag |= (1 << 1);
+                double dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
+                oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
+            }
+            // 3 - zoom
+            if (pLinkDest->getChangeZoom() && pLinkDest->getZoom())
+            {
+                nKindFlag |= (1 << 2);
+                oRes.AddDouble(pLinkDest->getZoom());
+            }
+            oRes.WriteBYTE(nKindFlag, nKindPos);
+            break;
+        }
+        case destFitR:
+        {
+            oRes.AddDouble(pLinkDest->getLeft());
+            double dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
+            oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
+            oRes.AddDouble(pLinkDest->getRight());
+            dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getBottom();
+            oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
+            break;
+        }
+        case destFit:
+        case destFitB:
+        default:
+            break;
+        }
+        if (str)
+            RELEASEOBJECT(pLinkDest);
         break;
     }
     // Переход к внешнему файлу
@@ -2044,12 +2093,9 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
         if (pField->getPageNum() != nPageIndex + 1 || oType != acroFormFieldPushbutton || (nButtonWidget >= 0 && i != nButtonWidget))
             continue;
 
-        // Номер аннотации для сопоставления с AP
-        oRes.AddInt(i);
-
-        int nMKPos = oRes.GetSize();
+        bool bFirst = true;
+        int nMKPos  = -1;
         unsigned int nMKLength = 0;
-        oRes.AddInt(nMKLength);
         Object oMK;
         if (pField->fieldLookup("MK", &oMK)->isDict())
         {
@@ -2065,6 +2111,16 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                     oStr.free();
                     continue;
                 }
+
+                if (bFirst)
+                {
+                    // Номер аннотации для сопоставления с AP
+                    oRes.AddInt(i);
+                    nMKPos = oRes.GetSize();
+                    oRes.AddInt(nMKLength);
+                    bFirst = false;
+                }
+
                 oRes.WriteString((BYTE*)sMKName.c_str(), sMKName.size());
 
                 Dict *dict = oStr.streamGetDict();
@@ -2179,7 +2235,8 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
             }
         }
         oMK.free();
-        oRes.AddInt(nMKLength, nMKPos);
+        if (nMKPos > 0)
+            oRes.AddInt(nMKLength, nMKPos);
     }
 
     oRes.WriteLen();

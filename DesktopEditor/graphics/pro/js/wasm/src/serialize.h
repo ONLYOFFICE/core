@@ -94,6 +94,11 @@ namespace NSWasm
             m_pDataCur += sizeof(BYTE);
             m_lSizeCur += sizeof(BYTE);
         }
+        void WriteBYTE(BYTE value, size_t pos)
+        {
+            if (pos < m_lSizeCur)
+                memcpy(m_pData + pos, &value, sizeof(BYTE));
+        }
         void WriteDouble(double value)
         {
             AddInt(value * 10000);

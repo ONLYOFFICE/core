@@ -385,8 +385,46 @@
 		}
 		else if (SType == "GoTo")
 		{
-			rec["link"] = reader.readString();
-			rec["dest"] = reader.readDouble();
+			rec["page"] = reader.readInt();
+			rec["kind"] = reader.readByte();
+			// 0 - XYZ
+			// 1 - Fit
+			// 2 - FitH
+			// 3 - FitV
+			// 4 - FitR
+			// 5 - FitB
+			// 6 - FitBH
+			// 7 - FitBV
+			switch (rec["kind"])
+			{
+				case 0:
+				case 2:
+				case 3:
+				case 6:
+				case 7:
+				{
+					let nFlag = reader.readByte();
+					if (nFlag & (1 << 0))
+						rec["left"] = reader.readDouble();
+					if (nFlag & (1 << 1))
+						rec["top"]  = reader.readDouble();
+					if (nFlag & (1 << 2))
+						rec["zoom"] = reader.readDouble();
+					break;
+				}
+				case 4:
+				{
+					rec["left"]   = reader.readDouble();
+					rec["bottom"] = reader.readDouble();
+					rec["right"]  = reader.readDouble();
+					rec["top"]    = reader.readDouble();
+					break;
+				}
+				case 1:
+				case 5:
+				default:
+					break;
+			}
 		}
 		else if (SType == "Named")
 		{

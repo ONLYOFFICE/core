@@ -231,11 +231,62 @@ void ReadAction(BYTE* pWidgets, int& i)
 	{
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
-		std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
-		i += nPathLength;
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+		std::cout << "Page " << nPathLength << ", ";
+
+		BYTE nKind = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::cout << "kind " << (int)nKind << ", ";
+		switch (nKind)
+		{
+		case 0:
+		case 2:
+		case 3:
+		case 6:
+		case 7:
+		{
+			BYTE nFlags = READ_BYTE(pWidgets + i);
+			i += 1;
+			if (nFlags & (1 << 0))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "left " << (double)nPathLength / 100.0 << ", ";
+			}
+			if (nFlags & (1 << 1))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "top " << (double)nPathLength / 100.0 << ", ";
+			}
+			if (nFlags & (1 << 2))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "zoom " << (double)nPathLength / 100.0 << ", ";
+			}
+			break;
+		}
+		case 4:
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "left " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "bottom " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "right " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "top " << (double)nPathLength / 100.0 << ", ";
+			break;
+		}
+		case 1:
+		case 5:
+		default:
+			break;
+		}
 	}
 	else if (sType == "Named")
 	{

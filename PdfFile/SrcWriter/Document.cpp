@@ -977,6 +977,20 @@ namespace PdfWriter
 
 		return pField;
 	}
+	CDateTimeField* CDocument::CreateDateTimeField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+		
+		CDateTimeField* pField = new CDateTimeField(m_pXref, this);
+		if (!pField)
+			return NULL;
+		
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+		
+		return pField;
+	}
 	CCheckBoxField* CDocument::CreateCheckBoxField()
 	{
 		if (!CheckAcroForm())

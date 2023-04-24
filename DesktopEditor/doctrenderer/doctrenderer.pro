@@ -12,21 +12,12 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
+DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
+core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
-core_ios {
-    CONFIG += doct_renderer_empty
-}
-core_android {
-    DEFINES += DISABLE_MEMORY_LIMITATION
-    CONFIG += doct_renderer_empty
-}
-
-doct_renderer_empty {
-SOURCES += doctrenderer_empty.cpp
-} else {
 HEADERS += \
     config.h \
     doctrenderer.h \
@@ -74,10 +65,6 @@ SOURCES += \
     embed/HashEmbed.cpp \
     embed/Default.cpp
 
-core_mac {
-    !use_v8:CONFIG += use_javascript_core
-}
-
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {
@@ -105,7 +92,6 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_Hash.mm
 
     LIBS += -framework Foundation
-}
 }
 
 include(../graphics/pro/textshaper.pri)

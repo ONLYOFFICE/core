@@ -115,10 +115,10 @@ namespace OOX
 	}
 	void Media::set_filename(const std::wstring & file_path, bool bExternal)
 	{
-		read(file_path);
+		read(OOX::CPath(file_path, !bExternal));
 			
-		m_bExternal			= bExternal;
-		m_sOutputFilename	= m_filename.GetFilename();
+		m_bExternal = bExternal;
+		m_sOutputFilename = m_filename.GetFilename();
 	}
 	void Media::set_filename(CPath & file_path, bool bExternal, bool bDefault)
 	{

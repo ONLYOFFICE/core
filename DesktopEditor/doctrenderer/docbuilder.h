@@ -355,6 +355,7 @@ namespace NSDoctRenderer
 		 * @return True if the operation is successful
 		 */
 		bool CreateFile(const int& type);
+		bool CreateFile(const wchar_t* extension);
 		/**
 		 * Sets the path to the folder where the program will temporarily save files needed for the program correct work.
 		 * After the successful document file creation, all the files will be deleted from the folder. If no temporary folder is set, the system one will be used.
@@ -380,6 +381,7 @@ namespace NSDoctRenderer
 		 * @return Process x2t return code
 		 */
 		int SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
+		int SaveFile(const wchar_t* extension, const wchar_t* path, const wchar_t* params = 0);
 		/**
 		 * Closes the file to stop working with it. You can use a single ONLYOFFICE Document Builder instance
 		 * to work with all your files, but you need to close the previous file before you can

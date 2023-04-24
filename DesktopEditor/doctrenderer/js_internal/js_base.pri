@@ -18,9 +18,17 @@ SOURCES += $$PWD/js_logger.cpp
     HEADERS += $$PWD/v8/v8_base.h
     SOURCES += $$PWD/v8/v8_base.cpp
 
+    core_mac:CONFIG += disable_v8_use_inspector
+    core_android:CONFIG += disable_v8_use_inspector
+    linux_arm64:CONFIG += disable_v8_use_inspector
+    build_xp::CONFIG += disable_v8_use_inspector
+
+    core_android:CONFIG += v8_version_60
+
+    !disable_v8_use_inspector:CONFIG += v8_use_inspector
+
     !build_xp {
         include($$PWD/../../../Common/3dParty/v8/v8.pri)
-        CONFIG += v8_use_inspector
     } else {
         DEFINES += V8_OS_XP
         include($$PWD/../../../Common/3dParty/v8/v8_xp/v8.pri)

@@ -1,7 +1,8 @@
 #include "hash.h"
 
-#include <cstring>
-#include <memory>
+#ifndef OWN_BASE_64
+#include "../common/Base64.h"
+#endif
 
 #include "openssl/sha.h"
 #include "openssl/md2.h"
@@ -10,7 +11,8 @@
 #include "openssl/whrlpool.h"
 #include "openssl/ripemd.h"
 
-// this code was taken from "core/DesktopEditor/xmlsec/src/wasm/hash/main.cpp"
+#include <cstring>
+#include <memory>
 
 int CHash::getDigestLength(HashAlgs alg)
 {
@@ -18,7 +20,7 @@ int CHash::getDigestLength(HashAlgs alg)
 	return aDigestLengths[alg];
 }
 
-CHash::CHash()
+CHash::CHash(std::function<void*(size_t)> allocator) : m_fAllocator(allocator)
 {
 }
 
@@ -37,63 +39,63 @@ unsigned char* CHash::hash(const unsigned char* data, int size, int alg)
 	case haMD2:
 	{
 		nBufLen = 16;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		MD2(data, d, pBufData);
 		break;
 	}
 	case haMD4:
 	{
 		nBufLen = 16;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		MD4(data, d, pBufData);
 		break;
 	}
 	case haMD5:
 	{
 		nBufLen = 16;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		MD5(data, d, pBufData);
 		break;
 	}
 	case haRMD160:
 	{
 		nBufLen = 20;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		RIPEMD160(data, d, pBufData);
 		break;
 	}
 	case haSHA1:
 	{
 		nBufLen = 20;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		SHA1(data, d, pBufData);
 		break;
 	}
 	case haSHA256:
 	{
 		nBufLen = 32;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		SHA256(data, d, pBufData);
 		break;
 	}
 	case haSHA384:
 	{
 		nBufLen = 48;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		SHA384(data, d, pBufData);
 		break;
 	}
 	case haSHA512:
 	{
 		nBufLen = 64;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		SHA512(data, d, pBufData);
 		break;
 	}
 	case haWHIRLPOOL:
 	{
 		nBufLen = 64;
-		pBufData = (unsigned char*)malloc(nBufLen);
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
 		WHIRLPOOL(data, d, pBufData);
 		break;
 	}
@@ -102,95 +104,6 @@ unsigned char* CHash::hash(const unsigned char* data, int size, int alg)
 	}
 
 	return pBufData;
-}
-
-// BASE64
-namespace NSBase64
-{
-	int DecodeBase64Char(unsigned int ch)
-	{
-		// returns -1 if the character is invalid
-		// or should be skipped
-		// otherwise, returns the 6-bit code for the character
-		// from the encoding table
-		if (ch >= 'A' && ch <= 'Z')
-			return ch - 'A' + 0;	// 0 range starts at 'A'
-		if (ch >= 'a' && ch <= 'z')
-			return ch - 'a' + 26;	// 26 range starts at 'a'
-		if (ch >= '0' && ch <= '9')
-			return ch - '0' + 52;	// 52 range starts at '0'
-		if (ch == '+')
-			return 62;
-		if (ch == '/')
-			return 63;
-		return -1;
-	}
-
-	bool Base64Decode(const char* szSrc, size_t nSrcLen, unsigned char *pbDest, size_t *pnDestLen)
-	{
-		// walk the source buffer
-		// each four character sequence is converted to 3 bytes
-		// CRLFs and =, and any characters not in the encoding table
-		// are skiped
-
-		if (szSrc == NULL || pnDestLen == NULL)
-			return false;
-
-		const char* szSrcEnd = szSrc + nSrcLen;
-		size_t nWritten = 0;
-
-		bool bOverflow = (pbDest == NULL) ? true : false;
-
-		while (szSrc < szSrcEnd &&(*szSrc) != 0)
-		{
-			unsigned int dwCurr = 0;
-			int i;
-			int nBits = 0;
-			for (i=0; i<4; i++)
-			{
-				if (szSrc >= szSrcEnd)
-					break;
-				int nCh = DecodeBase64Char(*szSrc);
-				szSrc++;
-				if (nCh == -1)
-				{
-					// skip this char
-					i--;
-					continue;
-				}
-				dwCurr <<= 6;
-				dwCurr |= nCh;
-				nBits += 6;
-			}
-
-			if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
-				bOverflow = true;
-
-			// dwCurr has the 3 bytes to write to the output buffer
-			// left to right
-			dwCurr <<= 24-nBits;
-			for (i=0; i<nBits/8; i++)
-			{
-				if(!bOverflow)
-				{
-					*pbDest = (unsigned char) ((dwCurr & 0x00ff0000) >> 16);
-					pbDest++;
-				}
-				dwCurr <<= 8;
-				nWritten++;
-			}
-
-		}
-
-		*pnDestLen = nWritten;
-
-		if(bOverflow)
-		{
-			return false;
-		}
-
-		return true;
-	}
 }
 
 namespace NSUtfs
@@ -388,12 +301,12 @@ void hash_iteration(unsigned char*& input, int iter, unsigned char*& tmp, int al
 
 unsigned char* CHash::hash2(const char* password, const char* salt, int spinCount, int alg)
 {
-	size_t inputSaltLen = std::strlen(salt);
+	int inputSaltLen = std::strlen(salt);
 	unsigned char* passwordUtf16 = NULL;
 	size_t passwordUtf16Len = 0;
 	NSUtfs::Utf8_to_utf16le(password, passwordUtf16, passwordUtf16Len);
 
-	size_t inputDataLen = inputSaltLen + passwordUtf16Len;
+	int inputDataLen = inputSaltLen + passwordUtf16Len;
 	unsigned char* inputData = (unsigned char*)malloc(inputDataLen);
 	NSBase64::Base64Decode(salt, inputSaltLen, inputData, &inputDataLen);
 	memcpy(inputData + inputDataLen, passwordUtf16, passwordUtf16Len);
@@ -408,63 +321,63 @@ unsigned char* CHash::hash2(const char* password, const char* salt, int spinCoun
 	case haMD2:
 	{
 		alg_size = 16;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		MD2(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haMD4:
 	{
 		alg_size = 16;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		MD4(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haMD5:
 	{
 		alg_size = 16;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		MD5(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haRMD160:
 	{
 		alg_size = 20;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		RIPEMD160(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haSHA1:
 	{
 		alg_size = 20;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		SHA1(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haSHA256:
 	{
 		alg_size = 32;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		SHA256(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haSHA384:
 	{
 		alg_size = 48;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		SHA384(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haSHA512:
 	{
 		alg_size = 64;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		SHA512(inputData, inputDataLen, pBuffer1);
 		break;
 	}
 	case haWHIRLPOOL:
 	{
 		alg_size = 64;
-		pBuffer1 = (unsigned char*)malloc(alg_size + 4);
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
 		WHIRLPOOL(inputData, inputDataLen, pBuffer1);
 		break;
 	}

@@ -10,7 +10,7 @@ class CHashEmbed : public CJSEmbedObject
 public:
 	CHash* m_pHash;
 
-	CHashEmbed() : m_pHash(new CHash())
+	CHashEmbed() : m_pHash(new CHash(NSJSBase::NSAllocator::Alloc))
 	{
 	}
 

@@ -1,8 +1,10 @@
 #ifndef NSHASH_H
 #define NSHASH_H
 
+#include <functional>
+
 class CHash
-{
+{	
 public:
 	enum HashAlgs
 	{
@@ -20,11 +22,14 @@ public:
 	static int getDigestLength(HashAlgs alg);
 
 public:
-	CHash();
+	CHash(std::function<void*(size_t)> allocator);
 	~CHash();
 
 	unsigned char* hash(const unsigned char* data, int size, int alg);
 	unsigned char* hash2(const char* password, const char* salt, int spinCount, int alg);
+
+private:
+	std::function<void*(size_t)> m_fAllocator;
 };
 
 #endif // NSHASH_H

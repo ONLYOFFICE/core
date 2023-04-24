@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -77,6 +77,33 @@ namespace XLSB
         else
             record >> irstName;
     }
+
+	void BeginPCDSCSet::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 index;
+		BYTE    flags = 0;
+
+		for (auto& item : rgiItem)
+		{
+			record << item;
+		}
+
+		SETBIT(flags, 0, fLoadRelId)
+		SETBIT(flags, 1, fLoadSheet)
+
+		record << fName << fBuiltIn << flags;
+
+		if (fLoadSheet)
+			record << irstSheet;
+
+		if (fLoadRelId)
+			record << irstRelId;
+
+		if (!fName.value().get())
+			record << rfx;
+		else
+			record << irstName;
+	}
 
 } // namespace XLSB
 

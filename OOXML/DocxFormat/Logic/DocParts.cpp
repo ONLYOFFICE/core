@@ -142,13 +142,13 @@ namespace OOX
 		}
 		void CDocPartBody::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;

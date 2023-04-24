@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,6 +56,13 @@ namespace XLSB
         record >> fLocked >> fObjects >> fScenarios >> fFormatCells >> fFormatColumns >> fFormatRows >> fInsertColumns >> fInsertRows;
         record >> fInsertHyperlinks >> fDeleteColumns >> fDeleteRows >> fSelLockedCells >> fSort >> fAutoFilter >> fPivotTables >> fSelUnlockedCells;
     }
+
+	void SheetProtection::writeFields(XLS::CFRecord& record)
+	{
+		record << protpwd;
+		record << fLocked << fObjects << fScenarios << fFormatCells << fFormatColumns << fFormatRows << fInsertColumns << fInsertRows;
+		record << fInsertHyperlinks << fDeleteColumns << fDeleteRows << fSelLockedCells << fSort << fAutoFilter << fPivotTables << fSelUnlockedCells;
+	}
 
 } // namespace XLSB
 

@@ -61,13 +61,13 @@ namespace OOX
 		}
 		void CAccPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -114,13 +114,13 @@ namespace OOX
 		}
 		void CAcc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -170,13 +170,13 @@ namespace OOX
 		}
 		void CArgPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -228,13 +228,13 @@ namespace OOX
 		}
 		void CBarPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -282,13 +282,13 @@ namespace OOX
 		}
 		void CBar::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -338,13 +338,13 @@ namespace OOX
 		}
 		void CBorderBoxPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -420,13 +420,13 @@ namespace OOX
 		}
 		void CBorderBox::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -515,13 +515,13 @@ namespace OOX
 		}
 		void CBoxPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -588,13 +588,13 @@ namespace OOX
 		}
 		void CBox::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -644,13 +644,13 @@ namespace OOX
 		}
 		void CDelimiterPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -756,13 +756,13 @@ namespace OOX
 		}
 		void CEqArrPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -827,13 +827,13 @@ namespace OOX
 		void CEqArr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_lRow = 0;
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -905,13 +905,13 @@ namespace OOX
 		}
 		void CFPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -972,13 +972,13 @@ namespace OOX
 		}
 		void CFraction::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1035,13 +1035,13 @@ namespace OOX
 		}
 		void CFuncPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1095,13 +1095,13 @@ namespace OOX
 		}
 		void CFunc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1158,13 +1158,13 @@ namespace OOX
 		}
 		void CGroupChrPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1239,13 +1239,13 @@ namespace OOX
 		}
 		void CGroupChr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1295,13 +1295,13 @@ namespace OOX
 		}
 		void CLimLowPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1356,13 +1356,13 @@ namespace OOX
 		}
 		void CLimLow::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1419,13 +1419,13 @@ namespace OOX
 		}
 		void CLimUppPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1548,13 +1548,13 @@ namespace OOX
 		}
 		void CMcPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1612,13 +1612,13 @@ namespace OOX
 		}
 		void CMc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1661,13 +1661,13 @@ namespace OOX
 		}
 		void CMcs::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1748,13 +1748,13 @@ namespace OOX
 		{
 			m_lCol = 0;
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1835,13 +1835,13 @@ namespace OOX
 		{
 			m_lRow = 0;
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -1932,13 +1932,13 @@ namespace OOX
 		}
 		void CNary::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2002,13 +2002,13 @@ namespace OOX
 		}
 		void COMathParaPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2060,13 +2060,13 @@ namespace OOX
 		}
 		void CPhantPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2155,13 +2155,13 @@ namespace OOX
 		}
 		void CPhant::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2295,13 +2295,13 @@ namespace OOX
 		}
 		void CMRun::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 
@@ -2659,13 +2659,13 @@ namespace OOX
 		}
 		void CRadPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2725,13 +2725,13 @@ namespace OOX
 		}
 		void CRad::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2805,13 +2805,13 @@ namespace OOX
 		}
 		void CSPrePr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2865,13 +2865,13 @@ namespace OOX
 		}
 		void CSPre::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -2955,13 +2955,13 @@ namespace OOX
 		}
 		void CSSubPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3014,13 +3014,13 @@ namespace OOX
 		}
 		void CSSub::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3093,13 +3093,13 @@ namespace OOX
 		}
 		void CSSubSupPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3159,13 +3159,13 @@ namespace OOX
 		}
 		void CSSubSup::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3248,13 +3248,13 @@ namespace OOX
 		}
 		void CSSupPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3307,13 +3307,13 @@ namespace OOX
 		}
 		void CSSup::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3378,13 +3378,13 @@ namespace OOX
 
 		void CMathPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = XmlUtils::GetNameNoNS(oItem.GetName());
 						WritingElement *pItem = NULL;
@@ -3498,13 +3498,13 @@ namespace OOX
 
 		void CMRPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3578,13 +3578,13 @@ namespace OOX
 
 		void CNaryPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3659,13 +3659,13 @@ namespace OOX
 
 		void CMPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
 				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3910,13 +3910,13 @@ namespace OOX
 
 		void CCtrlPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -3983,13 +3983,13 @@ namespace OOX
 		{
 			m_lColumn = 0;
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -4150,13 +4150,13 @@ namespace OOX
 		}
 		void CLimUpp::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if (oNode.GetNodes(L"*", oChilds))
 			{
-				XmlUtils::CXmlNode oItem;
-				for (int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++)
+				for (size_t nIndex = 0; nIndex < oChilds.size(); nIndex++)
 				{
-					if (oChilds.GetAt(nIndex, oItem))
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;

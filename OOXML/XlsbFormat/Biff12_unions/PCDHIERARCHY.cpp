@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -84,12 +84,33 @@ namespace XLSB
 
         if (proc.optional<EndPCDHierarchy>())
         {
-            m_BrtEndPCDHierarchy = elements_.back();
+            m_bBrtEndPCDHierarchy = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDHierarchy = false;
 
-        return m_BrtBeginPCDHierarchy && m_BrtEndPCDHierarchy;
+        return m_BrtBeginPCDHierarchy && m_bBrtEndPCDHierarchy;
     }
+
+	const bool PCDHIERARCHY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDHierarchy != nullptr)
+			proc.mandatory(*m_BrtBeginPCDHierarchy);
+
+		if (m_PCDHFIELDSUSAGE != nullptr)
+			proc.mandatory(*m_PCDHFIELDSUSAGE);
+
+		if (m_PCDHGLEVELS != nullptr)
+			proc.mandatory(*m_PCDHGLEVELS);
+
+		if (m_FRTPCDHIERARCHY != nullptr)
+			proc.mandatory(*m_FRTPCDHIERARCHY);
+
+		proc.mandatory<EndPCDHierarchy>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

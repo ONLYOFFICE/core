@@ -27,15 +27,9 @@ CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/Release
 }
 
-CONFIG += c++11
 TEMPLATE = app
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics -lHtmlFile
-
-linux-g++ | linux-g++-64 | linux-g++-32 {
-    QMAKE_LFLAGS += -Wl,--rpath=./
-    message(linux)
-}
 
 win32 {
 LIBS += -ladvapi32 \

@@ -65,6 +65,9 @@ std::wostream & operator << (std::wostream & _Wostream, const writing_mode & _Va
     case writing_mode::Page:
         _Wostream << L"page";
         break;
+	case writing_mode::BtLr:
+		_Wostream << L"bt-lr";
+		break;
     default:
         break;
     }
@@ -92,7 +95,9 @@ writing_mode writing_mode::parse(const std::wstring & Str)
         return writing_mode( Tb );
     else if (tmp == L"page")
         return writing_mode( Page );
-    else
+	else if (tmp == L"bt-lr")
+		return writing_mode( BtLr );
+	else
     {
         return writing_mode( LrTb );
     }

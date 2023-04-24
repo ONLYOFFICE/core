@@ -40,6 +40,7 @@ namespace OOX
 {
 	class CSettingsCustom;
 	class CSettings;
+	class CNumbering;
 }
 
 namespace BinDocxRW
@@ -168,13 +169,10 @@ class Binary_NumberingTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
-	Writers::NumberingWriter& oNumberingWriters;
-	Writers::FontTableWriter& m_oFontTableWriter;
-	std::vector<docNum*> m_aDocNums;
-	std::vector<docANum*> m_aDocANums;
-	std::map<int, int> m_mapANumToNum;
+	
+	OOX::CNumbering *m_pNumbering;
 public:
-	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CNumbering *numbering);
 	int Read();
 	int ReadNumberingContent(BYTE type, long length, void* poResult);
 	int ReadNums(BYTE type, long length, void* poResult);

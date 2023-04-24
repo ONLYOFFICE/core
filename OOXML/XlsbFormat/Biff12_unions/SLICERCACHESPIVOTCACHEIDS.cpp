@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,9 +66,11 @@ namespace XLSB
 
         if (proc.optional<BeginSlicerCachesPivotCacheIDs>())
         {
-            m_BrtBeginSlicerCachesPivotCacheIDs = elements_.back();
+            m_bBrtBeginSlicerCachesPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicerCachesPivotCacheIDs = false;
 
         int count = proc.repeated<SLICERCACHESPIVOTCACHEID>(0, 0);
 
@@ -81,18 +83,43 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCachesPivotCacheIDs>())
         {
-            m_BrtEndSlicerCachesPivotCacheIDs = elements_.back();
+            m_bBrtEndSlicerCachesPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCachesPivotCacheIDs = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginSlicerCachesPivotCacheIDs && m_BrtEndSlicerCachesPivotCacheIDs && m_BrtFRTEnd;
+        return m_bBrtBeginSlicerCachesPivotCacheIDs && m_bBrtEndSlicerCachesPivotCacheIDs && m_bBrtFRTEnd;
     }
+
+	const bool SLICERCACHESPIVOTCACHEIDS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginSlicerCachesPivotCacheIDs>();
+
+		for(auto& item : m_arSLICERCACHESPIVOTCACHEID)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCachesPivotCacheIDs>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

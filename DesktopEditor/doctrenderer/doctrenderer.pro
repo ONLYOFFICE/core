@@ -8,10 +8,6 @@ TEMPLATE = lib
 CONFIG += shared
 CONFIG += plugin
 
-CONFIG += c++11
-
-CONFIG += core_static_link_libstd
-
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
@@ -61,6 +57,7 @@ HEADERS += \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
     embed/TextMeasurerEmbed.h \
+    embed/Default.h \
     js_internal/js_base.h
 
 SOURCES += \
@@ -70,13 +67,13 @@ SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp \
-    embed/TextMeasurerEmbed.cpp
+    embed/TextMeasurerEmbed.cpp \
+    embed/Default.cpp
 
 core_mac {
     !use_v8:CONFIG += use_javascript_core
 }
 
-#CONFIG += v8_use_inspector
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {

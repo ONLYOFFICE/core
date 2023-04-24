@@ -179,8 +179,9 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring
 	return oFile;
 }
 
-std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
+std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type, bool & bExternal)
 {
+	bExternal = false;
 
     std::wstring			ref;
 	smart_ptr<OOX::File>	oFile;
@@ -188,7 +189,7 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
     if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
+		ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 	}
 	if (!ref.empty()) return ref;
 
@@ -196,7 +197,7 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 	if (docx_document->m_oMain.document == NULL) return L"";
 	
 	oFile	= docx_document->m_oMain.document->Find(sId);
-	ref		= OoxConverter::find_link_by(oFile, type);
+	ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 
 	return ref;
 }
@@ -1161,7 +1162,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	odt_context->start_field(true);
 	{	
 		if (oox_fld->m_sInstr.IsInit())	
-			odt_context->add_field_instr(oox_fld->m_sInstr.get2());
+			odt_context->add_field_instr(*oox_fld->m_sInstr);
 		
 		odt_context->separate_field();
 
@@ -3057,10 +3058,11 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	if (oox_obj->m_oOleObject.IsInit())
 	{
 		std::wstring pathOle;
+		bool bExternal = false;
 
 		if (oox_obj->m_oOleObject->m_oId.IsInit())
 		{
-			pathOle = find_link_by_id(oox_obj->m_oOleObject->m_oId->GetValue(), 4);
+			pathOle = find_link_by_id(oox_obj->m_oOleObject->m_oId->GetValue(), 4, bExternal);
 		}
 		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
 
@@ -3075,7 +3077,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			}
 			std::wstring sIdImageFileCache = GetImageIdFromVmlShape(oox_obj->m_oShape.GetPointer());
 			
-			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1);
+			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
 			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
 			
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
@@ -3579,10 +3581,11 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	if (oox_hyperlink == NULL)return;
 
 	std::wstring link, location;
+	bool bExternal = false;
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2, bExternal);
 	}
 	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
 	{
@@ -4737,7 +4740,8 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 		}
 	}
 
-	odt_context->start_table_cell( oox_table_cell->m_nNumCol, covered, convert(oox_table_cell->m_pTableCellProperties, oox_table_cell->m_nNumCol + 1));
+	bool styled = convert(oox_table_cell->m_pTableCellProperties, oox_table_cell->m_nNumCol + 1);
+	odt_context->start_table_cell( oox_table_cell->m_nNumCol, covered, styled);
 	
 	if (oox_table_cell->m_pTableCellProperties)
 	{
@@ -4908,7 +4912,7 @@ void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 }
 bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, bool base_styled)
 {
-	if (oox_table_pr && oox_table_pr->m_oTblBorders.IsInit())
+	if ((oox_table_pr && oox_table_pr->m_oTblBorders.IsInit()) || base_styled)
 	{//напрямую задать cell_prop на саму таблицу низя - тока как default-cell-style-name на columns & row
 
 		//общие свойства ячеек
@@ -5021,25 +5025,23 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		switch(oox_table_cell_pr->m_oTextDirection->m_oVal->GetValue())
 		{
+		case SimpleTypes::textdirectionRl:
+		{
+			table_cell_properties->content_.common_writing_mode_attlist_.loext_writing_mode_ = odf_types::writing_mode::TbRl;
+		}break;
 		case SimpleTypes::textdirectionTb  :
 		{
+			table_cell_properties->content_.common_writing_mode_attlist_.loext_writing_mode_ = odf_types::writing_mode::LrTb;
 			table_cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);
 		}break;
 		case SimpleTypes::textdirectionLr  ://повернутость буковок
+			table_cell_properties->content_.common_writing_mode_attlist_.loext_writing_mode_ = odf_types::writing_mode::BtLr;
 		case SimpleTypes::textdirectionLrV :
 		case SimpleTypes::textdirectionTbV :
 		case SimpleTypes::textdirectionRlV :
 		{
 			table_cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
-			odf_writer::style_text_properties *text_cell_properties	= odt_context->styles_context()->last_state()->get_text_properties();
-			if (text_cell_properties)
-			{
-				text_cell_properties->content_.style_text_rotation_angle_ = 90;
-				text_cell_properties->content_.style_text_rotation_scale_ = odf_types::text_rotation_scale::LineHeight;
-			}
 		}break;
-		case SimpleTypes::textdirectionRl  ://rtl
-			break;
 		}
 	}
 	convert(oox_table_cell_pr->m_oTcBorders.GetPointer() , table_cell_properties);

@@ -48,7 +48,8 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 	void set(FontInfo & info);
 
 	static const ElementType	type = typeFont;

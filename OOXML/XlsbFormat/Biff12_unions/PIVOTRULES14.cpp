@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace XLSB
         return BaseObjectPtr(new PIVOTRULES14(*this));
     }
 
-    //PIVOTRULES14 = BrtBeginSXRules14 PIVOTRULE14 BrtEndSXRules14
+    //PIVOTRULES14 = BrtBeginSXRules14 PIVOTRULE14 BrtEndSXRules14  // возможно ошибка и должно быть *PIVOTRULE14
     const bool PIVOTRULES14::loadContent(BinProcessor& proc)
     {
         if (proc.optional<BeginSXRules14>())
@@ -70,12 +70,27 @@ namespace XLSB
 
         if (proc.optional<EndSXRules14>())
         {
-            m_BrtEndSXRules14 = elements_.back();
+            m_bBrtEndSXRules14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXRules14 = false;
 
-        return m_BrtBeginSXRules14 && m_BrtEndSXRules14;
+        return m_BrtBeginSXRules14 && m_bBrtEndSXRules14;
     }
+
+	const bool PIVOTRULES14::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXRules14 != nullptr)
+			proc.mandatory(*m_BrtBeginSXRules14);
+
+		if (m_PIVOTRULE14 != nullptr)
+			proc.mandatory(*m_PIVOTRULE14);
+
+		proc.mandatory<EndSXRules14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

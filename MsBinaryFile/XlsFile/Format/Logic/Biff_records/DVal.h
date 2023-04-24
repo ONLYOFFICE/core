@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-
 // Logical representation of DVal record in BIFF8
 class DVal: public BiffRecord
 {
@@ -47,9 +46,9 @@ public:
 	~DVal();
 
 	BaseObjectPtr clone();
-
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeDVal;
 

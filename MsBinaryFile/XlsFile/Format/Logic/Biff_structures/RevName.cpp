@@ -75,6 +75,21 @@ void RevName::load(CFRecord& record)
 	}
 }
 
+void RevName::save(CFRecord& record)
+{
+	record << book;
+	
+	record << fExtern;
+	if (fExtern)
+	{
+		record << externName;
+	}
+	else
+	{
+		record << name;
+	}
+}
+
 
 } // namespace XLS
 

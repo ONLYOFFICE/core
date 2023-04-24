@@ -201,6 +201,7 @@ public:
 	odf_types::common_shadow_attlist			common_shadow_attlist_;
     odf_types::common_background_color_attlist	common_background_color_attlist_;
     odf_types::common_border_attlist			common_border_attlist_;
+	odf_types::common_writing_mode_attlist		common_writing_mode_attlist_;
 
 	_CP_OPT(std::wstring)				style_diagonal_tl_br_;
     _CP_OPT(odf_types::border_widths)	style_diagonal_tl_br_widths_;

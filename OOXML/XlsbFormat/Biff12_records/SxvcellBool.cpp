@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,6 +60,15 @@ namespace XLSB
 			record >> *sxvcellextra;
 		}
     }
+
+	void SxvcellBool::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << f;
+		if (sxvcellextra != nullptr)
+		{
+			record << *sxvcellextra;
+		}
+	}
 
 } // namespace XLSB
 

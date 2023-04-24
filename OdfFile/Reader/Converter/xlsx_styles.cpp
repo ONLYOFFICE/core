@@ -42,6 +42,9 @@
 #include "../Format/style_text_properties.h"
 #include "../Format/style_paragraph_properties.h"
 
+#include "../Format/odf_document.h"
+#include "../Format/odfcontext.h"
+
 #include <boost/unordered_set.hpp>
 #include <boost/functional.hpp>
 
@@ -53,7 +56,7 @@ class xlsx_style_manager::Impl
 public:
     typedef boost::unordered_set<xlsx_xf, boost::hash<xlsx_xf> > xlsx_xf_array;
 
-    Impl(xlsx_conversion_context * context);
+    Impl(xlsx_conversion_context *context);
    
 	size_t size() const;
    
@@ -95,7 +98,8 @@ private:
 };
 
 
-xlsx_style_manager::Impl::Impl(xlsx_conversion_context *context_) : next_index_(0), context(context_)
+xlsx_style_manager::Impl::Impl(xlsx_conversion_context *context_) : next_index_(0), context(context_), 
+	fonts_(context_->root()->odf_context().fontContainer()), dxfs_(context_->root()->odf_context().fontContainer())
 {
     xlsx_xf xfRecord;
     xfRecord.applyNumberForm = true;
@@ -126,7 +130,7 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
 									  bool  default_set, bool & is_visible )
 {
 	bool is_visible_set = is_visible;
-    const size_t fontId = fonts_.fontId(textProp, parProp, cellProp);
+    const size_t fontId = fonts_.fontId(textProp, parProp, cellProp, default_set);
     is_visible = false;
     
 	bool default_border = false;

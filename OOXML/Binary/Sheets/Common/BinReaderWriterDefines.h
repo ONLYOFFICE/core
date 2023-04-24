@@ -1152,10 +1152,14 @@ namespace BinXlsxRW
 		Sqref = 1,
 		Name = 2,
 		Text = 3,
-		UserId = 4,
+		User = 4,
 		UsersGroup = 5
 	};}
-	
+	namespace c_oSer_UserProtectedRangeDesc {enum c_oSer_UserProtectedRangeDesc
+	{
+		Id = 0,
+		Name = 1
+	};}
 	namespace c_oSer_DataValidation{enum c_oSer_DataValidation
 	{
 		DataValidations = 0,
@@ -1317,7 +1321,12 @@ namespace BinXlsxRW
 		SheetDataRowCell = 14,
 		SheetDataRowCellRef = 15,
 		SheetDataRowCellType = 16,
-		SheetDataRowCellValue = 17
+		SheetDataRowCellValue = 17,
+		AlternateUrls = 18,
+		AbsoluteUrl = 19,
+		RelativeUrl = 20,
+		ExternalAlternateUrlsDriveId = 21,
+		ExternalAlternateUrlsItemId = 22
 	};}
 	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
 	{

@@ -15,6 +15,14 @@
 # pragma warning(disable: 4146 4242 4244 4245)
 #endif
 
+// Can't use GetAlignmentOf<word32>() because of C++11 and constexpr
+// Can use 'const unsigned int' because of MSVC 2013
+#if (CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32 || CRYPTOPP_BOOL_X64)
+# define ALIGN_SPEC 16
+#else
+# define ALIGN_SPEC 4
+#endif
+
 #ifndef CRYPTOPP_DISABLE_NACL
 
 NAMESPACE_BEGIN(CryptoPP)
@@ -417,7 +425,7 @@ static void pow2523(gf o,const gf i)
 // https://github.com/jedisct1/libsodium/blob/master/src/libsodium/crypto_scalarmult/curve25519/ref10/x25519_ref10.c
 static int has_small_order(const byte s[32])
 {
-  CRYPTOPP_ALIGN_DATA(16)
+  CRYPTOPP_ALIGN_DATA(ALIGN_SPEC)
   const byte blacklist[][32] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
     { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
@@ -755,6 +763,25 @@ int crypto_sign_keypair(byte *pk, byte *sk)
   return 0;
 }
 
+int crypto_sign_sk2pk(byte *pk, const byte *sk)
+{
+  byte d[64];
+  gf p[4];
+  // int i;
+
+  // randombytes(sk, 32);
+  crypto_hash(d, sk, 32);
+  d[0] &= 248;
+  d[31] &= 127;
+  d[31] |= 64;
+
+  scalarbase(p,d);
+  pack(pk,p);
+
+  // for(i=0; i<32; ++i) sk[32 + i] = pk[i];
+  return 0;
+}
+
 static const word64 L[32] = {0xed, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58, 0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x10};
 
 static void modL(byte *r,sword64 x[64])
@@ -865,7 +892,7 @@ int crypto_sign_open(byte *m,word64 *mlen,const byte *sm,word64 n,const byte *pk
   byte t[32],h[64];
   gf p[4],q[4];
 
-  *mlen = -1;
+  *mlen = ~W64LIT(0);
   if (n < 64) return -1;
 
   if (unpackneg(q,pk)) return -1;
@@ -895,6 +922,3 @@ NAMESPACE_END  // CryptoPP
 NAMESPACE_END  // NaCl
 
 #endif  // NO_OS_DEPENDENCE
-
-
-

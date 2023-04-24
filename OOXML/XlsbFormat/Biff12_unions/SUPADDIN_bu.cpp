@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,9 +57,11 @@ namespace XLSB
     {
         if (proc.optional<SupAddin>())
         {
-            m_BrtSupAddin = elements_.back();
+			m_bBrtSupAddin = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtSupAddin = false;
 
         while (proc.optional<PlaceholderName>())
         {
@@ -67,8 +69,20 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSupAddin || !m_arBrtPlaceholderName.empty();
+        return m_bBrtSupAddin || !m_arBrtPlaceholderName.empty();
     }
+
+	const bool SUPADDIN::saveContent(BinProcessor& proc)
+	{
+		proc.optional<SupAddin>();
+
+		for (auto &item : m_arBrtPlaceholderName)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -339,13 +339,13 @@ namespace OOX
 			XmlMacroReadAttributeBase( oNode, L"w:defUIPriority",     m_oDefUiPriority );
 			XmlMacroReadAttributeBase( oNode, L"w:defUnhideWhenUsed", m_oDefUnhideWhenUsed );
 
-			XmlUtils::CXmlNodes oList;
+			std::vector<XmlUtils::CXmlNode> oList;
 			if ( oNode.GetNodes( L"w:lsdException", oList ) )
 			{
-				XmlUtils::CXmlNode oLsdNode;
-				for ( int nIndex = 0; nIndex < oList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oList.size(); nIndex++ )
 				{
-					if ( oList.GetAt( nIndex, oLsdNode ) )
+					XmlUtils::CXmlNode oLsdNode = oList[nIndex];
+					if (oLsdNode.IsValid())
 					{
 						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException();
 						*oLsdException = oLsdNode;
@@ -478,13 +478,13 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:semiHidden",      m_oSemiHidden );
 			WritingElement_ReadNode( oNode, oChild, L"w:tblPr",           m_oTblPr );
 
-			XmlUtils::CXmlNodes oList;
+			std::vector<XmlUtils::CXmlNode> oList;
 			if ( oNode.GetNodes( L"w:tblStylePr", oList ) )
 			{
-				XmlUtils::CXmlNode oTblStylePrNode;
-				for ( int nIndex = 0; nIndex < oList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oList.size(); nIndex++ )
 				{
-					if ( oList.GetAt( nIndex, oTblStylePrNode ) )
+					XmlUtils::CXmlNode & oTblStylePrNode = oList[nIndex];
+					if (oTblStylePrNode.IsValid())
 					{
 						OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties();
 						*oTblStylePr = oTblStylePrNode;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,6 +68,17 @@ namespace XLSB
 
         return m_BrtCellMeta || m_BrtValueMeta;
     }
+
+	const bool CELLMETA::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtCellMeta != nullptr)
+			proc.mandatory(*m_BrtCellMeta);
+
+		if (m_BrtValueMeta != nullptr)
+			proc.mandatory(*m_BrtValueMeta);
+
+		return true;
+	}
 
 } // namespace XLSB
 

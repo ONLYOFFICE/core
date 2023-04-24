@@ -585,11 +585,10 @@ int main(int argc, char** argv)
         XmlUtils::CXmlNode oNode;
         if (bIsNeedCorrectSdkAll && oNode.FromXmlFile(sPathDoctRendererConfig))
         {
-            XmlUtils::CXmlNodes oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
-            for (int i = 0; i < oNodesFile.GetCount(); ++i)
+            std::vector<XmlUtils::CXmlNode> oNodesFile = oNode.GetNode(L"PpttSdk").GetNodes(L"file");
+            for (size_t i = 0; i < oNodesFile.size(); ++i)
             {
-                XmlUtils::CXmlNode oNodeFile;
-                oNodesFile.GetAt(i, oNodeFile);
+                XmlUtils::CXmlNode & oNodeFile = oNodesFile[i];
 
                 std::wstring sFileSdk = oNodeFile.GetText();
 

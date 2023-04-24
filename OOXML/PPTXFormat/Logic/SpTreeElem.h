@@ -39,6 +39,13 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
+namespace OOX
+{
+	namespace Logic
+	{
+		class CBinData;
+	}
+}
 namespace PPTX
 {
 	namespace Logic
@@ -90,7 +97,7 @@ namespace PPTX
 			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 			std::wstring GetSlicerRequires();
 
-			nullable_string m_binaryData;
+			nullable<OOX::Logic::CBinData> m_binaryData;
 			std::wstring m_sRequires;//from mc:Choice
 
 		private:

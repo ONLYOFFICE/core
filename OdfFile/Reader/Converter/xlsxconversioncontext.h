@@ -74,10 +74,10 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context	(cpdoccore::odf_reader::odf_document * odfDocument);
+    xlsx_conversion_context	(cpdoccore::odf_reader::odf_document *odfDocument);
     ~xlsx_conversion_context();
 
-	void set_output_document(package::xlsx_document * document);
+	void set_output_document(package::xlsx_document *document);
     void set_font_directory	(std::wstring pathFonts);
 
     void start_document	();
@@ -148,7 +148,7 @@ public:
 	size_t get_table_parts_size() {return table_parts_.size();}
 //------------------------------------------------------------------------------------
 
-    odf_reader::odf_document * root()
+    odf_reader::odf_document *root()
     {
         return odf_document_;
     }

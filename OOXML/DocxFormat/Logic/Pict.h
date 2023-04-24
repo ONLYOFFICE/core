@@ -39,7 +39,6 @@ namespace OOX
 	{
 		class CShape;
 		class CShapeType;
-		class CBackground;
 	}
 	namespace VmlOffice
 	{

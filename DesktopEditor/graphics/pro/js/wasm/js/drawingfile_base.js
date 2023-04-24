@@ -39,6 +39,8 @@
 		return name;
 	}
 
+	var baseFontsPath = "../../../../fonts/";
+
 	var FS = undefined;
 
 	//desktop_fetch
@@ -183,6 +185,13 @@
 		// 4 - password
 		// else - error
 		return error;
+	};
+	CFile.prototype["getFileAsBase64"] = function()
+	{
+		if (0 >= this.stream)
+			return "";
+
+		return new Uint8Array(Module["HEAP8"].buffer, this.stream, this.stream_size);
 	};
 	CFile.prototype["isNeedPassword"] = function()
 	{
@@ -857,7 +866,9 @@
 	};
 	
 	self["AscViewer"]["CDrawingFile"] = CFile;
-	self["AscViewer"]["InitializeFonts"] = function() {
+	self["AscViewer"]["InitializeFonts"] = function(basePath) {
+		if (undefined !== basePath && "" !== basePath)
+			baseFontsPath = basePath;
 		if (!window["g_fonts_selection_bin"])
 			return;
 		var memoryBuffer = window["g_fonts_selection_bin"].toUtf8();
@@ -946,7 +957,7 @@
 			{
 				// шрифт не грузится - надо загрузить
 				var _t = file;
-				file.LoadFontAsync("../../../../fonts/", function(){
+				file.LoadFontAsync(baseFontsPath, function(){
 					fontToMemory(_t, true);
 
 					var pages = self.fontStreams[fileId].pages;

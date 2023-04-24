@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,13 +34,14 @@
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/Fmla.h"
 #include "../Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FMLACELL::FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    FMLACELL::FMLACELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref), isShared(false), m_sharedIndex(-1)
     {
     }
@@ -97,6 +98,16 @@ namespace XLSB
         elements_.pop_back();
         return true;
     }
+
+	const bool FMLACELL::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+		else
+			return false;
+
+		return true;
+	}
 
 } // namespace XLSB
 

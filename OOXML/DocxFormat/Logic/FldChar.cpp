@@ -370,13 +370,13 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:default", m_oDefault );
 			WritingElement_ReadNode( oNode, oChild, L"w:result",  m_oResult );
 
-			XmlUtils::CXmlNodes oListEntryNodes;
+			std::vector<XmlUtils::CXmlNode> oListEntryNodes;
 			if ( oNode.GetNodes( L"w:listEntry", oListEntryNodes ) )
 			{
-				XmlUtils::CXmlNode oListEntryNode;
-				for ( int nIndex = 0; nIndex < oListEntryNodes.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oListEntryNodes.size(); nIndex++ )
 				{
-					if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
+					XmlUtils::CXmlNode & oListEntryNode = oListEntryNodes[nIndex];
+					if ( oListEntryNode.IsValid() )
 					{
 						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
 						*oListEntry = oListEntryNode;
@@ -625,6 +625,8 @@ namespace OOX
 
 				if ( L"w:ffData" == sName )
 					m_oFFData = oReader;
+				else if (L"w:fldData" == sName)
+					m_sPrivateData = oReader.GetText2();
 			}
 		}
 		std::wstring CFldChar::toXML() const
@@ -635,10 +637,17 @@ namespace OOX
 			ComplexTypes_WriteAttribute( L" w:fldCharType=\"", m_oFldCharType );
 			ComplexTypes_WriteAttribute( L" w:fldLock=\"",     m_oFldLock );
 
-			if ( m_oFFData.IsInit() )
+			if ( m_oFFData.IsInit() || m_sPrivateData.IsInit())
 			{
 				sResult += L">";
-				sResult += m_oFFData->toXML();
+				if (m_oFFData.IsInit())
+				{
+					sResult += m_oFFData->toXML();
+				}
+				if (m_sPrivateData.IsInit())
+				{
+					sResult += L"<w:fldData xml:space=\"preserve\">" + *m_sPrivateData + L"</w:fldData>";
+				}
 				sResult += L"</w:fldChar>";
 			}
 			else

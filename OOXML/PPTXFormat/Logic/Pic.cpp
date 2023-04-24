@@ -797,14 +797,13 @@ namespace PPTX
 
 			XmlMacroReadAttributeBase(node, L"macro", macro);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode item;
-					oNodes.GetAt(i, item);
+					XmlUtils::CXmlNode& item = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(item.GetName());
 

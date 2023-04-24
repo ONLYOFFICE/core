@@ -778,9 +778,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		if (drawing->sub_type > 1) //without text-box
 		{
 			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
-			if (defaultStyle)instances.push_back(defaultStyle);
+			if (defaultStyle) instances.push_back(defaultStyle);
 		}
-		else if (styleInst->content())
+		if (styleInst->content())
 		{
 			style_paragraph_properties *para_props = styleInst->content()->get_style_paragraph_properties();
 			if ((para_props) && (para_props->content_.style_writing_mode_))

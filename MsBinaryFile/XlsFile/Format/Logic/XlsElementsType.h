@@ -789,6 +789,7 @@ enum ElementType
     typeSUPSAME,
     typeSUPADDIN,
     typeSupBookSrc,
+	typeSupSelf,
     typeDVALS,
     typeDVALS14,
     typeDVal14,
@@ -916,6 +917,14 @@ enum ElementType
     typeDATACELL,
     typeFMLACELL,
     typeSHRFMLACELL,
+	typeBookProtection,
+	typeBookProtectionIso,
+	typeBeginSortCond,
+	typeBeginSortCond14,
+	typeSLICERCACHEIDS,
+	typeTABLESLICERCACHEIDS,
+	typeSLICERCACHEID,
+	typeTABLESLICERCACHEID,
 };
 
 

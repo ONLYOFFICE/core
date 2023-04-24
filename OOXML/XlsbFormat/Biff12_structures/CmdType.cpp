@@ -43,5 +43,11 @@ BiffStructurePtr CmdType::clone()
     return BiffStructurePtr(new CmdType(*this));
 }
 
+CmdType& CmdType::operator= (const _UINT32& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

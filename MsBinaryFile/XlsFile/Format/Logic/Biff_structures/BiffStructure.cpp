@@ -41,6 +41,9 @@ void BiffStructure_NoVtbl::load(CFRecord& record)
 void BiffStructure_NoVtbl::load(IBinaryReader* reader)
 {
 }
+void BiffStructure_NoVtbl::save(CFRecord& record)
+{
+}
 
 
 bool DiffBiff(BiffStructure_NoVtbl& val)

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
-#define OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
@@ -65,16 +63,14 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			SimpleTypes::COnOff								m_oDirty;
-			SimpleTypes::COnOff								m_oFldLock;
-			nullable<std::wstring>							m_sInstr;
+			SimpleTypes::COnOff				m_oDirty;
+			SimpleTypes::COnOff				m_oFldLock;
+			nullable_string					m_sInstr;
+			nullable_string					m_sPrivateData;
 
-			nullable<OOX::Logic::CFFData>					m_oFFData;
+			nullable<OOX::Logic::CFFData>	m_oFFData;
 		};
 
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_

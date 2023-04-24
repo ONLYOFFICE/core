@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,22 +30,17 @@
  *
  */
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
-
+#pragma once
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include <memory.h>
-#include <iostream>
 #include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class StylesStream;
     typedef boost::shared_ptr<StylesStream>		StylesStreamPtr;
@@ -59,9 +54,10 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginStyleSheet;
+        bool				             m_bBrtBeginStyleSheet;
         XLS::BaseObjectPtr               m_FMTS;
         XLS::BaseObjectPtr               m_FONTS;
         XLS::BaseObjectPtr               m_FILLS;
@@ -72,12 +68,9 @@ namespace XLSB
         XLS::BaseObjectPtr               m_DXFS;
         XLS::BaseObjectPtr               m_TABLESTYLES;
         XLS::BaseObjectPtr               m_COLORPALETTE;
-        XLS::BaseObjectPtr               m_BrtEndStyleSheet;
+		bool							 m_bBrtEndStyleSheet;
         XLS::BaseObjectPtr               m_FRTSTYLESHEET;
 
     };
 
 }
-
-#endif // STYLESSTREAM_H
-

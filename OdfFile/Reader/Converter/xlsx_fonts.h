@@ -43,6 +43,8 @@ namespace odf_reader {
 
 	class paragraph_format_properties;
     class style_table_cell_properties_attlist;
+
+	class fonts_container;
 }
 }
 
@@ -54,15 +56,15 @@ namespace oox {
     class xlsx_fonts
     {
     public:
-        xlsx_fonts();
+        xlsx_fonts(odf_reader::fonts_container & fonts);
         ~xlsx_fonts();
 
-    public:
         size_t size() const;
         
 		size_t fontId(	const odf_reader::text_format_properties_content_ptr	textProp,
 						const odf_reader::paragraph_format_properties			* parProp,
-						const odf_reader::style_table_cell_properties_attlist	* cellProp);
+						const odf_reader::style_table_cell_properties_attlist	* cellProp,
+						bool default_set);
 		const xlsx_font & getFont(size_t id) const;
 
         void serialize(std::wostream & _Wostream) const;

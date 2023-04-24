@@ -150,58 +150,39 @@ namespace NSJSBase
 		}
 	};
 
-	class CJSIsolateScopeV8 : public CJSIsolateScope
-	{
-	public:
-		v8::Isolate::Scope  isolate_scope;
-		v8::Locker          isolate_locker;
-
-	public:
-		CJSIsolateScopeV8(v8::Isolate* isolate) : CJSIsolateScope(),
-			isolate_scope(isolate),
-			isolate_locker(isolate)
-		{
-		}
-		virtual ~CJSIsolateScopeV8()
-		{
-		}
-	};
-
-	class CJSContextScopeV8 : public CJSContextScope
-	{
-	public:
-		v8::Context::Scope m_scope;
-
-	public:
-		CJSContextScopeV8(v8::Local<v8::Context> context) : m_scope(context)
-		{
-		}
-		virtual ~CJSContextScopeV8()
-		{
-		}
-	};
-
-	class CJSLocalScopeV8 : public CJSLocalScope
+	class CJSLocalScopePrivate
 	{
 	public:
 		v8::HandleScope m_scope;
 
 	public:
-		CJSLocalScopeV8() : m_scope(CV8Worker::GetCurrent())
+		CJSLocalScopePrivate() : m_scope(CV8Worker::GetCurrent())
 		{
 		}
-		virtual ~CJSLocalScopeV8()
+		~CJSLocalScopePrivate()
 		{
 		}
 	};
 
+	CJSLocalScope::CJSLocalScope() : m_internal(new CJSLocalScopePrivate())
+	{
+	}
 
-	CJSContext::CJSContext()
+	CJSLocalScope::~CJSLocalScope()
+	{
+		delete m_internal;
+	}
+
+	CJSContext::CJSContext(const bool& bIsInitialize)
 	{
 		m_internal = new CJSContextPrivate();
+		if (bIsInitialize)
+			Initialize();
 	}
 	CJSContext::~CJSContext()
 	{
+		if (m_internal->m_isolate)
+			Dispose();
 		RELEASEOBJECT(m_internal);
 	}
 
@@ -212,13 +193,23 @@ namespace NSJSBase
 
 	void CJSContext::Initialize()
 	{
-		m_internal->m_isolate = CV8Worker::getInitializer().CreateNew();
+		if (m_internal->m_isolate == NULL)
+		{
+			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
+			m_internal->m_isolate = isolate;
+			v8::Isolate::Scope iscope(isolate);
+			v8::HandleScope scope(isolate);
+		}
 	}
 	void CJSContext::Dispose()
 	{
 #ifdef V8_INSPECTOR
-		v8_debug::disposeInspector(m_internal->m_context);
+		if (CV8Worker::getInitializer().isInspectorUsed())
+			CInspectorPool::get().disposeInspector(m_internal->m_isolate);
 #endif
+
+		m_internal->m_contextPersistent.Reset();
+
 		unsigned int nEmbedDataCount = m_internal->m_isolate->GetNumberOfDataSlots();
 		if (nEmbedDataCount > 0)
 		{
@@ -236,12 +227,10 @@ namespace NSJSBase
 
 	void CJSContext::CreateContext()
 	{
-		m_internal->m_context = v8::Context::New(CV8Worker::GetCurrent(), NULL, m_internal->m_global);
-	}
-
-	void CJSContext::CreateGlobalForContext()
-	{
-		m_internal->m_global = v8::ObjectTemplate::New(CV8Worker::GetCurrent());
+		v8::Isolate* isolate = m_internal->m_isolate;
+		v8::Isolate::Scope iscope(isolate);
+		v8::HandleScope scope(isolate);
+		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
 	}
 
 	CJSObject* CJSContext::GetGlobal()
@@ -251,24 +240,33 @@ namespace NSJSBase
 		return ret;
 	}
 
-	CJSIsolateScope* CJSContext::CreateIsolateScope()
+	void CJSContext::Enter()
 	{
-		return new CJSIsolateScopeV8(m_internal->m_isolate);
+		v8::Isolate* isolate = m_internal->m_isolate;
+#ifdef LOG_TO_COUT
+		std::cout << "Entering isolate \t" << m_internal->m_isolate << std::endl;
+#endif
+		isolate->Enter();
+		m_internal->m_scope.push(new CJSLocalScope());
+		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
+		if (!m_internal->m_context.IsEmpty())
+			m_internal->m_context->Enter();
 	}
 
-	CJSContextScope* CJSContext::CreateContextScope()
+	void CJSContext::Exit()
 	{
-		CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
-
-		JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
-		global->set("window", global.GetPointer());
-
-		return pScope;
-	}
-
-	CJSLocalScope* CJSContext::CreateLocalScope()
-	{
-		return new CJSLocalScopeV8();
+#ifdef LOG_TO_COUT
+		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
+#endif
+		if (!m_internal->m_context.IsEmpty())
+			m_internal->m_context->Exit();
+		delete m_internal->m_scope.top();
+		m_internal->m_scope.pop();
+		if (m_internal->m_scope.empty())
+			m_internal->m_context.Clear();
+		else
+			m_internal->m_context = m_internal->m_isolate->GetCurrentContext();
+		m_internal->m_isolate->Exit();
 	}
 
 	CJSValue* CJSContext::createUndefined()
@@ -363,8 +361,10 @@ namespace NSJSBase
 	JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
 	{
 #ifdef V8_INSPECTOR
-		v8_debug::before(m_internal->m_context, CV8Worker::getInitializer()->getPlatform(), "");
+		if (CV8Worker::getInitializer().isInspectorUsed())
+			CInspectorPool::get().getInspector(m_internal->m_isolate).startAgent();
 #endif
+
 		LOGGER_START
 
 		v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
@@ -402,10 +402,10 @@ namespace NSJSBase
 
 		LOGGER_LAP("run")
 
-				return _return;
+		return _return;
 	}
 
-	CJSContext* CJSContext::GetCurrent()
+	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
 		CJSContext* ret = new CJSContext();
 		ret->m_internal->m_isolate = CV8Worker::GetCurrent();

@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef ASC_OFFICE_DRAWING_CONVERTER
-#define ASC_OFFICE_DRAWING_CONVERTER
+#pragma once
 
 #include "../../Base/Nullable.h"
 
@@ -69,6 +68,10 @@ namespace OOX
 {
 	class CContentTypes;
 	class IFileContainer;
+	namespace Logic
+	{
+		class CBinData;
+	}
 }
 namespace NSBinPptxRW
 {
@@ -192,7 +195,8 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShapePtr>					m_mapShapeTypes;
+        std::map<std::wstring, CShapePtr> m_mapShapeTypes;
+		std::map<std::wstring, nullable<OOX::Logic::CBinData>> m_mapBinDatas;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -230,16 +234,17 @@ namespace NSBinPptxRW
         void SetMediaDstPath    (const std::wstring& sMediaPath);
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
-		void ClearShapeTypes	();
-		HRESULT AddShapeType	(const std::wstring& sXml);
-		void AddShapeType		(XmlUtils::CXmlNode& oNodeST);
+		void Clear();
+		HRESULT AddShapeType(const std::wstring& sXml);
+		void AddShapeType(XmlUtils::CXmlNode& oNode);
+		void AddBinData(XmlUtils::CXmlNode& oNode);
 
-        HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
+        HRESULT AddObject(const std::wstring& sXml, std::wstring** pMainProps);
 
 		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements);
 
-        HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
-        HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
+        HRESULT SaveObject(long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
+        HRESULT SaveObjectEx(long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
 
         void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, int lDocType);
         void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
@@ -303,8 +308,6 @@ namespace NSBinPptxRW
 
         void ConvertTextVML         (XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
 
-        void    Clear();
 		HRESULT SetCurrentRelsPath();
 	};
 }
-#endif //OOX_IFILE_CONTAINER_INCLUDE_H_

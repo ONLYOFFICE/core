@@ -58,7 +58,7 @@ void RevLblName::load(CFRecord& record)
 {
     XLUnicodeString       st_raw;
     XLSB::XLWideString    st_raw_xlsb;
-	unsigned char iBuiltin;
+
     record >> iBuiltin;
 
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
@@ -127,6 +127,31 @@ void RevLblName::load(CFRecord& record)
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported value of built-in name.", record.getTypeString());
 			break;
+	}
+}
+
+void RevLblName::save(CFRecord& record)
+{
+	XLUnicodeString       st_raw;
+	XLSB::XLWideString    st_raw_xlsb;
+
+	record << iBuiltin;
+
+	switch (iBuiltin)
+	{
+	case 0x00:
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		{
+			st_raw = st;
+			record << st_raw;
+		}
+		else
+		{
+			st_raw_xlsb = st;
+			record << st_raw_xlsb;
+		}
+		break;
+
 	}
 }
 

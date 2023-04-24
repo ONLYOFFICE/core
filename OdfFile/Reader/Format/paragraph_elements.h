@@ -71,7 +71,10 @@ public:
 	virtual void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
 	virtual void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
 
-	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context){}
+	virtual void xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
+	{
+		text_to_stream(_Wostream, true);
+	}
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}

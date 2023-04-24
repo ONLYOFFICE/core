@@ -278,13 +278,12 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 	bool default_output_formats = true;
 
 	XmlUtils::CXmlNode root;
-	XmlUtils::CXmlNodes nodes;
+	std::vector<XmlUtils::CXmlNode> nodes;
 	if(root.FromXmlFile(configPath) && root.GetChilds(nodes))
 	{
-		for(int i = 0; i < nodes.GetCount(); i++)
+		for(size_t i = 0; i < nodes.size(); i++)
 		{
-			XmlUtils::CXmlNode node;
-			nodes.GetAt(i, node);
+			XmlUtils::CXmlNode node = nodes[i];
 			std::wstring name = node.GetName();
 
 			// key-value
@@ -304,15 +303,14 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"inputFilesList" && !node.GetText().empty())
 			{
 				XmlUtils::CXmlNode files_list_root;
-				XmlUtils::CXmlNodes files_list_nodes;
+				std::vector<XmlUtils::CXmlNode> files_list_nodes;
 
 				std::wstring files_list = node.GetText();
 				if(files_list_root.FromXmlFile(files_list) && files_list_root.GetChilds(files_list_nodes))
 				{
-					for(int j = 0; j < files_list_nodes.GetCount(); j++)
+					for(size_t j = 0; j < files_list_nodes.size(); j++)
 					{
-						XmlUtils::CXmlNode n;
-						files_list_nodes.GetAt(j, n);
+						XmlUtils::CXmlNode &n = files_list_nodes[j];
 						m_inputFiles.push_back(n.GetText());
 					}
 				}
@@ -338,11 +336,10 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if (name == L"fonts")
 			{
 				m_bIsUseSystemFonts = (1 == node.ReadAttributeInt(L"system", 1)) ? true : false;
-				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directory");
-				for (int nIndex = 0, nCount = oNodeFontDirs.GetCount(); nIndex < nCount; ++nIndex)
+				std::vector<XmlUtils::CXmlNode> oNodeFontDirs = node.ReadNodesNoNS(L"directory");
+				for (size_t nIndex = 0, nCount = oNodeFontDirs.size(); nIndex < nCount; ++nIndex)
 				{
-					XmlUtils::CXmlNode oNodeDir;
-					oNodeFontDirs.GetAt(nIndex, oNodeDir);
+					XmlUtils::CXmlNode &oNodeDir = oNodeFontDirs[nIndex];
 					m_arAdditionalFontsDirs.push_back(oNodeDir.GetText());
 				}
 			}

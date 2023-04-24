@@ -635,8 +635,6 @@ namespace NSGuidesVML
 
 		m_arIndexDst.push_back(m_lIndexDst);
 
-		//            if (true)
-		//            {
 		m_oTextRect.WriteString(L"<a:rect l=\"");
 		GetValue(m_lIndexDst-4, ptFormula, true, m_oTextRect);
 		m_oTextRect.WriteString(L"\" t=\"");
@@ -646,11 +644,6 @@ namespace NSGuidesVML
 		m_oTextRect.WriteString(L"\" b=\"");
 		GetValue(m_lIndexDst-1, ptFormula, true, m_oTextRect);
 		m_oTextRect.WriteString(L"\" />");
-		//            } else
-		//            {
-		//        m_oTextRect.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
-		//            }
-
 	}
 	void CFormulaConverter::GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, NSBinPptxRW::CXmlWriter& oWriter)
 	{

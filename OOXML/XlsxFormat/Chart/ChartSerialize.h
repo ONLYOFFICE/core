@@ -850,15 +850,22 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
-		class CT_StrData
+		class CT_StrData : public WritingElement
 		{
 		public:
+			WritingElement_AdditionMethods(CT_StrData)
+
 			nullableUintVal			m_ptCount;
 			std::vector<CT_StrVal*> m_pt;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_StrData();
 			~CT_StrData();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
@@ -878,15 +885,21 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_Tx
+		class CT_Tx : public WritingElement
 		{
 		public:
+			WritingElement_AdditionMethods(CT_Tx)
+
 			nullable<PPTX::Logic::TxBody>	m_oRich;
 			CT_StrRef						*m_strRef;
 
 			CT_Tx();
-			~CT_Tx();
+			virtual ~CT_Tx();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1059,9 +1072,11 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_DLbl
+		class CT_DLbl : public WritingElement
 		{
 		public:
+			WritingElement_AdditionMethods(CT_DLbl)
+
 			nullableUintVal m_idx;
 			std::vector<ItemsChoiceType4*> m_ItemsElementName0;
 			std::vector<void*> m_Items;
@@ -1077,6 +1092,10 @@ namespace OOX
 			CT_DLbl();
 			~CT_DLbl();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEntry(const std::wstring& sNodeNS, NSStringUtils::CStringBuilder& writer) const;
@@ -1195,9 +1214,11 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_AxDataSource
+		class CT_AxDataSource : public WritingElement
 		{
 		public:
+			WritingElement_AdditionMethods(CT_AxDataSource)
+			
 			CT_MultiLvlStrRef* m_multiLvlStrRef;
 			CT_NumData* m_numLit;
 			CT_NumRef* m_numRef;
@@ -1205,15 +1226,22 @@ namespace OOX
 			CT_StrRef* m_strRef;
 
 			CT_AxDataSource();
-			~CT_AxDataSource();
+			virtual ~CT_AxDataSource();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_Marker
+		class CT_Marker : public WritingElement
 		{
 		public:
+			WritingElement_AdditionMethods(CT_Marker)
+
 			nullableComplexVal<CMarkerStyle>	m_symbol;
 			nullableUintVal						m_size;
 			nullable<PPTX::Logic::SpPr>			m_spPr;
@@ -1221,6 +1249,10 @@ namespace OOX
 
 			CT_Marker();
 			~CT_Marker();
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1319,7 +1351,7 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CBaseSer
+		class CBaseSer : public WritingElement
 		{
 		public:
 			CBaseSer();
@@ -1333,11 +1365,17 @@ namespace OOX
 
 			bool fromXML(const std::wstring nodeName, XmlUtils::CXmlLiteReader& oReader);
 			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual std::wstring toXML()  const
+			{
+				return L"";
+			}
 		};
 		//---------------------------------------------------------------------------------------------------
 		class CT_BubbleSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_BubbleSer)
+
 			nullableBoolVal				m_invertIfNegative;
             std::vector<CT_DPt*>		m_dPt;
             std::vector<CT_Trendline*>	m_trendline;
@@ -1351,6 +1389,8 @@ namespace OOX
 			CT_BubbleSer();
 			virtual  ~CT_BubbleSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1402,12 +1442,16 @@ namespace OOX
 		class CT_SurfaceSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_SurfaceSer)
+
 			CT_AxDataSource*	m_cat;
 			CT_NumDataSource*	m_val;
 
 			CT_SurfaceSer();
 			virtual ~CT_SurfaceSer();			
 			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1459,6 +1503,8 @@ namespace OOX
 		class CT_PieSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_PieSer)
+			
 			nullableUintVal m_explosion;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1468,6 +1514,8 @@ namespace OOX
 			CT_PieSer();
 			virtual ~CT_PieSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1497,6 +1545,8 @@ namespace OOX
 		class CT_BarSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_BarSer)
+
 			nullableBoolVal m_invertIfNegative;
 			CT_PictureOptions* m_pictureOptions;
 			std::vector<CT_DPt*> m_dPt;
@@ -1510,6 +1560,8 @@ namespace OOX
 			CT_BarSer();
 			virtual ~CT_BarSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1612,6 +1664,8 @@ namespace OOX
 		class CT_ScatterSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_ScatterSer)
+
 			CT_Marker* m_marker;
             std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1624,6 +1678,8 @@ namespace OOX
 			CT_ScatterSer();
 			virtual ~CT_ScatterSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1647,6 +1703,8 @@ namespace OOX
 		class CT_RadarSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_RadarSer)
+
 			CT_Marker* m_marker;
             std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1656,6 +1714,8 @@ namespace OOX
 			CT_RadarSer();
 			virtual ~CT_RadarSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1705,6 +1765,8 @@ namespace OOX
 		class CT_LineSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_LineSer)
+
 			CT_Marker* m_marker;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1717,6 +1779,8 @@ namespace OOX
 			CT_LineSer();
 			virtual ~CT_LineSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1786,6 +1850,8 @@ namespace OOX
 		class CT_AreaSer : public CBaseSer
 		{
 		public:
+			WritingElement_AdditionMethods(CT_AreaSer)
+				
 			CT_PictureOptions* m_pictureOptions;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1797,6 +1863,8 @@ namespace OOX
 			CT_AreaSer();
 			virtual ~CT_AreaSer();
 
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -2013,26 +2081,42 @@ namespace OOX
 			EElementType getType();
 		};
 
-		//class CSeriesDataLabelsRange : public WritingElement
-		//{//c15
-		//public:
-		//	WritingElement_AdditionConstructors(CSeriesDataLabelsRange)
-
-		//	CSeriesDataLabelsRange();
-		//	virtual ~CSeriesDataLabelsRange();
-
-		//	virtual void fromXML(XmlUtils::CXmlNode& oNode);
-		//	virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-		//	virtual std::wstring toXML() const;
-		//	virtual EElementType getType() const;
-
-		//	nullable<CT_StrData> m_dlblRangeCache;
-		//	nullable_string m_f;
-		//};
-		class CCategoryFilterException
+		class CSeriesDataLabelsRange : public WritingElement
 		{//c15
-			nullableStringVal			m_uniqueId;
+		public:
+			WritingElement_AdditionMethods(CSeriesDataLabelsRange)
+
+			CSeriesDataLabelsRange();
+			virtual ~CSeriesDataLabelsRange();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			virtual EElementType getType() const;
+
+			nullable<CT_StrData> m_dlblRangeCache;
+			nullable_string m_f;
+		};
+
+		class CCategoryFilterException : public WritingElement
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CCategoryFilterException)
+
+			CCategoryFilterException();
+			virtual ~CCategoryFilterException();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
+
+			nullable_string				m_sqref;
 			nullable<PPTX::Logic::SpPr>	m_spPr;
 			nullableUintVal				m_explosion;
 			nullableBoolVal				m_invertIfNegative;
@@ -2040,43 +2124,57 @@ namespace OOX
 			nullable<CT_Marker>			m_marker;
 			nullable<CT_DLbl>			m_dLbl;
 
-
 		};
-		class CCCategoryFilterExceptions : public WritingElementWithChilds<CCategoryFilterException>
+		class CCategoryFilterExceptions : public WritingElementWithChilds<CCategoryFilterException>
 		{//c15
+		public:
+			WritingElement_AdditionMethods(CCategoryFilterExceptions)
+
+			CCategoryFilterExceptions();
+			virtual ~CCategoryFilterExceptions();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
 		};
 
-		//class CSeriesFiltering : public WritingElement
-		//{//c15
-		//public:
-		//	WritingElement_AdditionConstructors(CSeriesFiltering)
+		class CSeriesFiltering : public WritingElement
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CSeriesFiltering)
 
-		//	CSeriesFiltering();
-		//	virtual ~CSeriesFiltering();
+			CSeriesFiltering();
+			virtual ~CSeriesFiltering();
 
-		//	virtual void fromXML(XmlUtils::CXmlNode& oNode);
-		//	virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-		//	virtual std::wstring toXML() const;
-		//	virtual EElementType getType() const;
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
 
-		//	nullable<CSeriesDataLabelsRange> m_chartDataLabelsRange;
-		//	nullable<CT_Tx> m_filteredSeriesTitle;
-		//	nullable<CT_AxDataSource> m_cat;
+			nullable<CSeriesDataLabelsRange> m_dataLabelsRange;
+			nullable<CT_Tx> m_filteredSeriesTitle;
+			nullable<CT_AxDataSource> m_filteredCategoryTitle;
 
-		//	//nullable<CLineSer> m_filteredLineSeries; 
-		//	//nullable<CScatterSer> m_filteredScatterSeries;
-		//	//nullable<CRadarSer> m_filteredRadarSeries;
-		//	//nullable<CBarSer> m_filteredBarSeries;
-		//	//nullable<CAreaSer> m_filteredAreaSeries;
-		//	//nullable<CBubbleSer> m_filteredBubbleSeries;
-		//	//nullable<CSurfaceSer> m_filteredSurfaceSeries;
-		//	//nullable<CPieSer> m_filteredPieSeries;
+			nullable<CT_LineSer>	m_filteredLineSeries; 
+			nullable<CT_ScatterSer> m_filteredScatterSeries;
+			nullable<CT_RadarSer>	m_filteredRadarSeries;
+			nullable<CT_BarSer>		m_filteredBarSeries;
+			nullable<CT_AreaSer>	m_filteredAreaSeries;
+			nullable<CT_BubbleSer>	m_filteredBubbleSeries;
+			nullable<CT_SurfaceSer> m_filteredSurfaceSeries;
+			nullable<CT_PieSer>		m_filteredPieSeries;
 
-		//	nullable_string m_fullRef; //sqref
-		//	nullable_string m_levelRef; //sqref
-		//	nullable_string m_formulaRef; //sqref
-		//};
+			nullable_string m_fullRef; 
+			nullable_string m_levelRef;
+			nullable_string m_formulaRef; 
+			
+			nullable<OOX::Spreadsheet::CCategoryFilterExceptions> m_categoryFilterExceptions;
+		};
 	}
 }
 

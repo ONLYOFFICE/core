@@ -1342,7 +1342,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 	if (external_data == NULL)return;
 	//данные для диаграммы внутренние !!!
 
-	if (external_data->m_id == NULL)return;
+	if (false == external_data->m_id.IsInit()) return;
 
 	//CString pathEmbeddings = GetEmbeddings(*external_data->m_id);
 	//oO

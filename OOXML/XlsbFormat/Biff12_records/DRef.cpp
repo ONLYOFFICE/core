@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,6 +63,20 @@ namespace XLSB
 
         record >> xstrName >> xstrSheet >> relId;
     }
+
+	void DRef::writeFields(XLS::CFRecord& record)
+	{
+		record << fName << fBuiltin;
+
+		if (!fName.value())
+			record << rfx;
+		else
+		{
+			record.reserveNunBytes(16);
+		}
+
+		record << xstrName << xstrSheet << relId;
+	}
 
 } // namespace XLSB
 

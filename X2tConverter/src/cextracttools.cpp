@@ -175,6 +175,7 @@ namespace NExtractTools
                             res = TCD_XLTM2XLSX;
                     }
                     else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
+					else if (0 == sExt2.compare(_T(".xlsb")))		res = TCD_XLSX2XLSB;
                 }break;
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
                 {

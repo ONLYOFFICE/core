@@ -86,6 +86,10 @@ namespace OOX
 			class CAxisUnitsLabel;
 		}
 	}
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
 	class CSizeAnchor;
 	class CFromTo;
 	class CExt;
@@ -128,7 +132,6 @@ namespace BinXlsxRW
 		int ReadCT_ChartStyle			(BYTE type, long length, void* poResult);
 		int ReadCT_StyleEntry			(BYTE type, long length, void* poResult);
 		int ReadCT_StyleMarkerLayout	(BYTE type, long length, void* poResult);
-		int ReadCT_extLst				(BYTE type, long length, void* poResult);
 		int ReadCT_ChartFileContent		(BYTE type, long length, void* poResult);
 		int ReadCT_PageSetup			(BYTE type, long length, void* poResult);
 		int ReadCT_PageMargins			(BYTE type, long length, void* poResult);
@@ -242,6 +245,13 @@ namespace BinXlsxRW
 		int ReadAlternateContentChoice	(BYTE type, long length, void* poResult);
 		int ReadAlternateContentFallback(BYTE type, long length, void* poResult);
 		int ReadCT_PptxElement			(BYTE type, long length, void* poResult);
+
+		int ReadExtensions				(BYTE type, long length, void* poResult);
+
+		int ReadCT_ChartFiltering		(BYTE type, long length, void* poResult);
+		int ReadCT_filterExceptions		(BYTE type, long length, void* poResult);
+		int ReadCT_filterException		(BYTE type, long length, void* poResult);
+		int ReadCT_dataLabelsRange		(BYTE type, long length, void* poResult);
 
 		int ReadCT_userShapes			(BYTE type, long length, void* poResult);
 		int ReadCT_userShape			(BYTE type, long length, void* poResult);
@@ -375,7 +385,7 @@ namespace BinXlsxRW
 		void WriteCT_Marker(OOX::Spreadsheet::CT_Marker& oVal);
 		void WriteCT_PictureOptions(OOX::Spreadsheet::CT_PictureOptions& oVal);
 		void WriteCT_DLbls(OOX::Spreadsheet::CT_DLbls& oVal);
-		void WriteCT_DLbl(OOX::Spreadsheet::CT_DLbl& oVal, bool bExt = false);
+		void WriteCT_DLbl(OOX::Spreadsheet::CT_DLbl& oVal);
 		void WriteCT_Trendline(OOX::Spreadsheet::CT_Trendline& oVal);
 		void WriteCT_TrendlineLbl(OOX::Spreadsheet::CT_TrendlineLbl& oVal);
 		void WriteCT_ErrBars(OOX::Spreadsheet::CT_ErrBars& oVal);
@@ -470,10 +480,34 @@ namespace BinXlsxRW
 		void WriteCT_ChartExTickMarks(OOX::Spreadsheet::ChartEx::CTickMarks *pVal);
 		void WriteCT_ChartExGridlines(OOX::Spreadsheet::ChartEx::CGridlines *pVal);
 		void WriteCT_ChartExAxisUnitsLabel(OOX::Spreadsheet::ChartEx::CAxisUnitsLabel *pVal);
+		
+		void WriteExtensions(OOX::Drawing::COfficeArtExtensionList *pVal);
+
+		void WriteChartFiltering(OOX::Spreadsheet::CSeriesFiltering *pVal);
+		void WriteDataLabelsRange(OOX::Spreadsheet::CSeriesDataLabelsRange *pVal);
+
+		void WriteFilteredSeriesTitle(OOX::Spreadsheet::CT_Tx *pVal);
+		void WriteFilteredCategoryTitle(OOX::Spreadsheet::CT_AxDataSource *pVal);
+
+		void WriteFilteredLineSeries(OOX::Spreadsheet::CT_LineSer *pVal);
+		void WriteFilteredScatterSeries(OOX::Spreadsheet::CT_ScatterSer *pVal);
+		void WriteFilteredRadarSeries(OOX::Spreadsheet::CT_RadarSer *pVal);
+		void WriteFilteredBarSeries(OOX::Spreadsheet::CT_BarSer *pVal);
+		void WriteFilteredAreaSeries(OOX::Spreadsheet::CT_AreaSer *pVal);
+		void WriteFilteredBubbleSeries(OOX::Spreadsheet::CT_BubbleSer *pVal);
+		void WriteFilteredSurfaceSeries(OOX::Spreadsheet::CT_SurfaceSer *pVal);
+		void WriteFilteredPieSeries(OOX::Spreadsheet::CT_PieSer *pVal);
+
+		void WriteFullRef(const std::wstring & ref);
+		void WriteLevelRef(const std::wstring & ref);
+		void WriteFormulaRef(const std::wstring & ref);
+
+		void WriteCategoryFilterExceptions(OOX::Spreadsheet::CCategoryFilterExceptions *pVal);
+		void WriteCategoryFilterException(OOX::Spreadsheet::CCategoryFilterException *pVal);
 
 		void toBin(OOX::Spreadsheet::ItemsChoiceType5 eType, void* pVal);
 		void toBin(OOX::Spreadsheet::ItemsChoiceType6 eType, void* pVal);
-		void toBin(OOX::Spreadsheet::ItemsChoiceType4 eType, void* pVal, bool bExt = false);
+		void toBin(OOX::Spreadsheet::ItemsChoiceType4 eType, void* pVal);
 		void toBin(OOX::Spreadsheet::ItemsChoiceType3 eType, void* pVal);
 	};
 }

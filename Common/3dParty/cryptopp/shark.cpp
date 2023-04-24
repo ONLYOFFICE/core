@@ -40,7 +40,7 @@ void SHARK::Base::UncheckedSetKey(const byte *key, unsigned int keyLen, const Na
 	m_rounds = GetRoundsAndThrowIfInvalid(params, this);
 	m_roundKeys.New(m_rounds+1);
 
-	// concatenate key enought times to fill a
+	// concatenate key enough times to fill a
 	for (unsigned int i=0; i<(m_rounds+1)*8; i++)
 		((byte *)m_roundKeys.begin())[i] = key[i%keyLen];
 
@@ -67,7 +67,7 @@ void SHARK::Base::UncheckedSetKey(const byte *key, unsigned int keyLen, const Na
 			m_roundKeys[i] = SHARKTransform(m_roundKeys[i]);
 	}
 
-#ifdef CRYPTOPP_LITTLE_ENDIAN
+#if (CRYPTOPP_LITTLE_ENDIAN)
 	m_roundKeys[0] = ByteReverse(m_roundKeys[0]);
 	m_roundKeys[m_rounds] = ByteReverse(m_roundKeys[m_rounds]);
 #endif
@@ -84,7 +84,7 @@ void SHARK::Enc::InitForKeySetup()
 
 	m_roundKeys[DEFAULT_ROUNDS] = SHARKTransform(cbox[0][DEFAULT_ROUNDS]);
 
-#ifdef CRYPTOPP_LITTLE_ENDIAN
+#if (CRYPTOPP_LITTLE_ENDIAN)
 	m_roundKeys[0] = ByteReverse(m_roundKeys[0]);
 	m_roundKeys[m_rounds] = ByteReverse(m_roundKeys[m_rounds]);
 #endif

@@ -65,6 +65,7 @@ public:
     int          GetError();
 
     NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
+    std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
     PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
     void ChangeLength(DWORD nLength);
 

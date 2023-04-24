@@ -47,6 +47,8 @@
 #include "../../../DocxFormat/Logic/DocParts.h"
 #include "../../../DocxFormat/Logic/SectionProperty.h"
 #include "../../../DocxFormat/Logic/Sdt.h"
+#include "../../../DocxFormat/Numbering.h"
+
 #include "../DocWrapper/XlsxSerializer.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
@@ -2897,32 +2899,18 @@ int Binary_tblPrReader::ReadTcPrChange(BYTE type, long length, void* poResult)
 	return res;
 }
 
-Binary_NumberingTableReader::Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+Binary_NumberingTableReader::Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CNumbering* numbering)
 	:
 	Binary_CommonReader(poBufferedStream), 
-	oNumberingWriters(oFileWriter.get_numbering_writer()),
-	m_oFontTableWriter(oFileWriter.get_font_table_writer()),
 	oBinary_pPrReader(poBufferedStream, oFileWriter), 
-	oBinary_rPrReader(poBufferedStream, oFileWriter)
+	oBinary_rPrReader(poBufferedStream, oFileWriter),
+	m_pNumbering(numbering)
 {
 }
 int Binary_NumberingTableReader::Read()
 {
 	int res = c_oSerConstants::ReadOk;
-	READ_TABLE_DEF(res, this->ReadNumberingContent, NULL);
-	for(size_t i = 0; i < m_aDocANums.size(); ++i)
-	{
-		docANum* pdocANum = m_aDocANums[i];
-		pdocANum->Write(oNumberingWriters.m_oANum);
-		delete m_aDocANums[i];
-	}
-	m_aDocANums.clear();
-	for(size_t i = 0; i < m_aDocNums.size(); ++i)
-	{
-		m_aDocNums[i]->Write(oNumberingWriters.m_oNumList);
-		delete m_aDocNums[i];
-	}
-	m_aDocNums.clear();
+	READ_TABLE_DEF(res, this->ReadNumberingContent, NULL);	
 	return res;
 };
 int Binary_NumberingTableReader::ReadNumberingContent(BYTE type, long length, void* poResult)
@@ -2945,11 +2933,13 @@ int Binary_NumberingTableReader::ReadNums(BYTE type, long length, void* poResult
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSerNumTypes::Num == type )
 	{
-		docNum* pdocNum = new docNum();
+		OOX::Numbering::CNum* pdocNum = new OOX::Numbering::CNum();
 		READ2_DEF(length, res, this->ReadNum, pdocNum);
-		if(pdocNum->bAId && pdocNum->bId)
-			m_mapANumToNum[pdocNum->AId] = pdocNum->Id;
-		m_aDocNums.push_back(pdocNum);
+		
+		if(pdocNum->m_oNumId.IsInit() && pdocNum->m_oAbstractNumId.IsInit())
+			m_pNumbering->m_mapAbstractNum[*pdocNum->m_oAbstractNumId->m_oVal] = *pdocNum->m_oNumId;
+		
+		m_pNumbering->m_arrNum.push_back(pdocNum);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2958,22 +2948,22 @@ int Binary_NumberingTableReader::ReadNums(BYTE type, long length, void* poResult
 int Binary_NumberingTableReader::ReadNum(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docNum* odocNum = static_cast<docNum*>(poResult);
+	OOX::Numbering::CNum* odocNum = static_cast<OOX::Numbering::CNum*>(poResult);
+	
 	if ( c_oSerNumTypes::Num_ANumId == type )
 	{
-		odocNum->bAId = true;
-		odocNum->AId = m_oBufferedStream.GetLong();
+		odocNum->m_oAbstractNumId.Init();
+		odocNum->m_oAbstractNumId->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerNumTypes::Num_NumId == type )
 	{
-		odocNum->bId = true;
-		odocNum->Id = m_oBufferedStream.GetLong();
+		odocNum->m_oNumId = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerNumTypes::Num_LvlOverride == type )
 	{
-		docLvlOverride* lvlOverride = new docLvlOverride();
+		OOX::Numbering::CNumLvl* lvlOverride = new OOX::Numbering::CNumLvl();
 		READ1_DEF(length, res, this->ReadLvlOverride, lvlOverride);
-		odocNum->LvlOverrides.push_back(lvlOverride);
+		odocNum->m_arrLvlOverride.push_back(lvlOverride);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2982,21 +2972,20 @@ int Binary_NumberingTableReader::ReadNum(BYTE type, long length, void* poResult)
 int Binary_NumberingTableReader::ReadLvlOverride(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docLvlOverride* lvlOverride = static_cast<docLvlOverride*>(poResult);
+	OOX::Numbering::CNumLvl* lvlOverride = static_cast<OOX::Numbering::CNumLvl*>(poResult);
 	if (c_oSerNumTypes::ILvl == type)
 	{
-		lvlOverride->bILvl = true;
-		lvlOverride->ILvl = m_oBufferedStream.GetLong();
+		lvlOverride->m_oIlvl = m_oBufferedStream.GetLong();
 	}
 	else if (c_oSerNumTypes::StartOverride == type)
 	{
-		lvlOverride->bStartOverride = true;
-		lvlOverride->StartOverride = m_oBufferedStream.GetLong();
+		lvlOverride->m_oStartOverride.Init();
+		lvlOverride->m_oStartOverride ->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if (c_oSerNumTypes::Lvl == type)
 	{
-		lvlOverride->Lvl = new docLvl();
-		READ2_DEF(length, res, this->ReadLevel, lvlOverride->Lvl);
+		lvlOverride->m_oLvl.Init();
+		READ2_DEF(length, res, this->ReadLevel, lvlOverride->m_oLvl.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3007,9 +2996,9 @@ int Binary_NumberingTableReader::ReadAbstractNums(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSerNumTypes::AbstractNum == type )
 	{
-		docANum* pdocANum = new docANum();
+		OOX::Numbering::CAbstractNum* pdocANum = new OOX::Numbering::CAbstractNum();
 		READ1_DEF(length, res, this->ReadAbstractNum, pdocANum);
-		m_aDocANums.push_back(pdocANum);
+		m_pNumbering->m_arrAbstractNum.push_back(pdocANum);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3018,24 +3007,32 @@ int Binary_NumberingTableReader::ReadAbstractNums(BYTE type, long length, void* 
 int Binary_NumberingTableReader::ReadAbstractNum(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docANum* odocANum = static_cast<docANum*>(poResult);
+	OOX::Numbering::CAbstractNum* odocANum = static_cast<OOX::Numbering::CAbstractNum*>(poResult);
+	
 	if ( c_oSerNumTypes::AbstractNum_Lvls == type )
 	{
 		READ1_DEF(length, res, this->ReadLevels, poResult);
 	}
 	else if ( c_oSerNumTypes::AbstractNum_Id == type )
 	{
-		odocANum->bId = true;
-		odocANum->Id = m_oBufferedStream.GetLong();
+		odocANum->m_oAbstractNumId = m_oBufferedStream.GetLong();
 	}
-	else if ( c_oSerNumTypes::NumStyleLink == type )
-		odocANum->NumStyleLink = m_oBufferedStream.GetString3(length);
-	else if ( c_oSerNumTypes::StyleLink == type )
-		odocANum->StyleLink = m_oBufferedStream.GetString3(length);
-	//else if ( c_oSerNumTypes::AbstractNum_Type == type )
-	//{
-	//	oNewNum.Type = this.stream.GetUChar();
-	//}
+	else if (c_oSerNumTypes::NumStyleLink == type)
+	{
+		odocANum->m_oNumStyleLink.Init();
+		odocANum->m_oNumStyleLink->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerNumTypes::StyleLink == type)
+	{
+		odocANum->m_oStyleLink.Init();
+		odocANum->m_oStyleLink->m_sVal = m_oBufferedStream.GetString3(length);
+	}
+	else if ( c_oSerNumTypes::AbstractNum_Type == type )
+	{
+		odocANum->m_oMultiLevelType.Init();
+		odocANum->m_oMultiLevelType->m_oVal.Init();
+		odocANum->m_oMultiLevelType->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -3043,13 +3040,14 @@ int Binary_NumberingTableReader::ReadAbstractNum(BYTE type, long length, void* p
 int Binary_NumberingTableReader::ReadLevels(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docANum* odocANum = static_cast<docANum*>(poResult);
+	OOX::Numbering::CAbstractNum* odocANum = static_cast<OOX::Numbering::CAbstractNum*>(poResult);
+	
 	if ( c_oSerNumTypes::Lvl == type )
 	{
-		docLvl* odocLvl = new docLvl();
-		odocLvl->ILvl = (long)odocANum->Lvls.size();
+		OOX::Numbering::CLvl* odocLvl = new OOX::Numbering::CLvl();
+		odocLvl->m_oIlvl = (long)odocANum->m_arrLvl.size();
 		READ2_DEF(length, res, this->ReadLevel, odocLvl);
-		odocANum->Lvls.push_back(odocLvl);
+		odocANum->m_arrLvl.push_back(odocLvl);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3058,95 +3056,83 @@ int Binary_NumberingTableReader::ReadLevels(BYTE type, long length, void* poResu
 int Binary_NumberingTableReader::ReadLevel(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docLvl* odocLvl = static_cast<docLvl*>(poResult);
+	OOX::Numbering::CLvl* odocLvl = static_cast<OOX::Numbering::CLvl*>(poResult);
+	
 	if ( c_oSerNumTypes::lvl_Format == type )
-	{
-		odocLvl->bFormat = true;
-		odocLvl->Format = m_oBufferedStream.GetLong();
+	{//old
 	}
 	else if ( c_oSerNumTypes::lvl_NumFmt == type )
 	{
-		ComplexTypes::Word::CNumFmt oNumFmt;
-		READ1_DEF(length, res, oBinary_pPrReader.ReadNumFmt, &oNumFmt);
-		odocLvl->sFormat = L"<w:numFmt " + oNumFmt.ToString() + L"/>";
+		odocLvl->m_oNumFmt.Init();
+		READ1_DEF(length, res, oBinary_pPrReader.ReadNumFmt, odocLvl->m_oNumFmt.GetPointer());
 	}
 	else if ( c_oSerNumTypes::lvl_Jc_deprecated == type )
-	{
-		odocLvl->bJc = true;
-		odocLvl->Jc = m_oBufferedStream.GetUChar();
+	{//old
 	}
 	else if ( c_oSerNumTypes::lvl_Jc == type )
 	{
-		ComplexTypes::Word::CJc oJc;
-		oJc.m_oVal.Init();
-		oJc.m_oVal->SetValue((SimpleTypes::EJc)m_oBufferedStream.GetUChar());
-		odocLvl->sJc = L"<w:lvlJc " + oJc.ToString() + L"/>";
+		odocLvl->m_oLvlJc.Init(); odocLvl->m_oLvlJc->m_oVal.Init();
+		odocLvl->m_oLvlJc->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else if ( c_oSerNumTypes::lvl_LvlText == type )
 	{
-		odocLvl->bText = true;
-		READ1_DEF(length, res, this->ReadLevelText, poResult);
+		odocLvl->m_oLvlText.Init();
+		READ1_DEF(length, res, this->ReadLevelText, odocLvl->m_oLvlText.GetPointer());
 	}
 	else if ( c_oSerNumTypes::lvl_Restart == type )
 	{
-		odocLvl->bRestart = true;
-		odocLvl->Restart = m_oBufferedStream.GetLong();
+		odocLvl->m_oLvlRestart.Init();
+		odocLvl->m_oLvlRestart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerNumTypes::lvl_Start == type )
 	{
-		odocLvl->bStart = true;
-		odocLvl->Start = m_oBufferedStream.GetLong();
+		odocLvl->m_oStart.Init();
+		odocLvl->m_oStart->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerNumTypes::lvl_Suff == type )
 	{
-		odocLvl->bSuff = true;
-		odocLvl->Suff = m_oBufferedStream.GetUChar();
+		odocLvl->m_oSuffix.Init();
+		odocLvl->m_oSuffix->m_oVal.Init();
+		odocLvl->m_oSuffix->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else if ( c_oSerNumTypes::lvl_PStyle == type )
 	{
-		odocLvl->bPStyle = true;
-		odocLvl->PStyle = m_oBufferedStream.GetString3(length);
+		odocLvl->m_oPStyle.Init();
+		odocLvl->m_oPStyle->m_sVal = m_oBufferedStream.GetString3(length);
 	}
 	else if ( c_oSerNumTypes::lvl_ParaPr == type )
 	{
-		odocLvl->bParaPr = true;
-        odocLvl->ParaPr.WriteString(std::wstring(_T("<w:pPr>")));
-		res = oBinary_pPrReader.Read(length, &odocLvl->ParaPr);
-        odocLvl->ParaPr.WriteString(std::wstring(_T("</w:pPr>")));
+		odocLvl->m_oPPr.Init();
+		res = oBinary_pPrReader.Read(length, odocLvl->m_oPPr.GetPointer());
 	}
 	else if ( c_oSerNumTypes::lvl_TextPr == type )
 	{
-		odocLvl->bTextPr = true;
-		
-		OOX::Logic::CRunProperty orPr;
-		res = oBinary_rPrReader.Read(length, &orPr);
-		if(orPr.IsNoEmpty())
-			odocLvl->TextPr.WriteString(orPr.toXML());
+		odocLvl->m_oRPr.Init();		
+		res = oBinary_rPrReader.Read(length, odocLvl->m_oRPr.GetPointer());
 	}
 	else if ( c_oSerNumTypes::ILvl == type )
 	{
-		odocLvl->bILvl = true;
-		odocLvl->ILvl = m_oBufferedStream.GetLong();
+		odocLvl->m_oIlvl = m_oBufferedStream.GetLong();
 	}
 	else if ( c_oSerNumTypes::Tentative == type )
 	{
-		odocLvl->bTentative = true;
-		odocLvl->Tentative = m_oBufferedStream.GetBool();
+		odocLvl->m_oTentative.Init();
+		odocLvl->m_oTentative->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if ( c_oSerNumTypes::Tplc == type )
 	{
-		odocLvl->bTplc = true;
-		odocLvl->Tplc = m_oBufferedStream.GetULong();
+		odocLvl->m_oTplc.Init();
+		odocLvl->m_oTplc->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if ( c_oSerNumTypes::IsLgl == type )
 	{
-		odocLvl->bIsLgl = true;
-		odocLvl->IsLgl = m_oBufferedStream.GetBool();
+		odocLvl->m_oIsLgl.Init();
+		odocLvl->m_oIsLgl->m_oVal.FromBool(m_oBufferedStream.GetBool());
 	}
 	else if ( c_oSerNumTypes::LvlLegacy == type )
 	{
-		odocLvl->bLvlLegacy = true;
-		READ1_DEF(length, res, this->ReadLvlLegacy, odocLvl);
+		odocLvl->m_oLegacy.Init();
+		READ1_DEF(length, res, this->ReadLvlLegacy, odocLvl->m_oLegacy.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3155,35 +3141,54 @@ int Binary_NumberingTableReader::ReadLevel(BYTE type, long length, void* poResul
 int Binary_NumberingTableReader::ReadLvlLegacy(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docLvl* odocLvl = static_cast<docLvl*>(poResult);
+	ComplexTypes::Word::CLvlLegacy* odocLvl = static_cast<ComplexTypes::Word::CLvlLegacy*>(poResult);
 	if ( c_oSerNumTypes::Legacy == type )
 	{
-		odocLvl->bLegacy = true;
-		odocLvl->Legacy = m_oBufferedStream.GetBool();
+		odocLvl->m_oLegacy = m_oBufferedStream.GetBool();
 	}
 	else if ( c_oSerNumTypes::LegacyIndent == type )
 	{
-		odocLvl->bLegacyIndent = true;
-		odocLvl->LegacyIndent = m_oBufferedStream.GetLong();
+		odocLvl->m_oLegacyIndent.Init();
+		odocLvl->m_oLegacyIndent->SetValue(m_oBufferedStream.GetLong());
 	}
 	else if ( c_oSerNumTypes::LegacySpace == type )
 	{
-		odocLvl->bLegacySpace = true;
-		odocLvl->LegacySpace = m_oBufferedStream.GetULong();
+		odocLvl->m_oLegacySpace.Init();
+		odocLvl->m_oLegacySpace->SetValue(m_oBufferedStream.GetULong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+struct docLvlText
+{
+	std::wstring Text;
+	BYTE Number = 0;
+
+	bool bText = false;
+	bool bNumber = false;
+};
 int Binary_NumberingTableReader::ReadLevelText(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	docLvl* odocLvl = static_cast<docLvl*>(poResult);
+	ComplexTypes::Word::CLevelText* oLvlText = static_cast<ComplexTypes::Word::CLevelText*>(poResult);
+
 	if ( c_oSerNumTypes::lvl_LvlTextItem == type )
 	{
-		docLvlText* odocLvlText = new docLvlText();
-		READ1_DEF(length, res, this->ReadLevelTextItem, odocLvlText);
-		odocLvl->Text.push_back(odocLvlText);
+		docLvlText odocLvlText;
+		READ1_DEF(length, res, this->ReadLevelTextItem, &odocLvlText);
+		
+		std::wstring sText;
+
+		if (odocLvlText.bText)
+		{
+			sText = odocLvlText.Text;
+		}
+		else if (odocLvlText.bNumber)
+		{
+			sText = L"%" + std::to_wstring(odocLvlText.Number + 1);
+		}
+		oLvlText->m_sVal += sText;
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5288,6 +5293,7 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Logic::CFldChar* pFldChar = static_cast<OOX::Logic::CFldChar*>(poResult);
+	
 	if ( c_oSer_FldSimpleType::CharType == type )
 	{
 		pFldChar->m_oFldCharType.Init();
@@ -5298,6 +5304,10 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 		pFldChar->m_oFFData.Init();
 		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		pFldChar->m_sPrivateData = m_oBufferedStream.GetString3(length);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5306,8 +5316,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 {
 	int res = c_oSerConstants::ReadOk;
 	CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
-	if ( c_oSer_FldSimpleType::Instr == type )
+	
+	if (c_oSer_FldSimpleType::Instr == type)
+	{
 		pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
+	}
 	else if ( c_oSer_FldSimpleType::Content == type )
 	{
 		NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
@@ -5320,6 +5333,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 		OOX::Logic::CFFData oFFData;
 		READ1_DEF(length, res, this->ReadFFData, &oFFData);
 		pFldSimple->writer.WriteString(oFFData.toXML());
+	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		std::wstring sVal = m_oBufferedStream.GetString3(length);
+		pFldSimple->writer.WriteString(L"<w:fldData xml:space=\"preserve\">" + sVal + L"</w:fldData>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9812,7 +9830,6 @@ int Binary_DocumentTableReader::ReadSdtTextFormPrComb(BYTE type, long length, vo
 	return res;
 }
 
-
 Binary_NotesTableReader::Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, bool bIsFootnote)
 	: 
 	Binary_CommonReader(poBufferedStream), 
@@ -10121,7 +10138,17 @@ int BinaryFileReader::ReadMainTable()
 		}break;
 		case c_oSerTableTypes::Numbering:
 		{
-			res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
+			OOX::CNumbering numbering(NULL);
+			res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter, &numbering).Read();
+			
+			for (size_t i = 0; i < numbering.m_arrAbstractNum.size(); ++i)
+			{
+				m_oFileWriter.get_numbering_writer().m_oANum.WriteString(numbering.m_arrAbstractNum[i]->toXML());
+			}
+			for (size_t i = 0; i < numbering.m_arrNum.size(); ++i)
+			{
+				m_oFileWriter.get_numbering_writer().m_oNumList.WriteString(numbering.m_arrNum[i]->toXML());
+			}
 		}break;
 		case c_oSerTableTypes::Footnotes:
 		{

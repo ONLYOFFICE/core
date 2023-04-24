@@ -171,6 +171,8 @@ namespace DocFileFormat
 
 		std::map<int, int> PictureBulletsCPsMap;
 
+		std::map<int, char>	m_mapBadCP;
+
 		struct _bmkStartEnd
 		{
 			int start;

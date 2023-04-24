@@ -2867,22 +2867,9 @@ void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::
 		}
 		if (pExternalLink->m_oExternalBook.IsInit())
 		{
-			std::wstring sLink;
-			if (pExternalLink->m_oExternalBook->m_oRid.IsInit())
-			{
-				smart_ptr<OOX::File> pFile = pExternalLink->Find(OOX::RId(pExternalLink->m_oExternalBook->m_oRid.get().GetValue()));
-				if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
-				{
-					OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
-					sLink = pLinkFile->Uri().GetPath();
-				}
-			}
-			if (!sLink.empty())
-			{
-				int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalBook);
-				WriteExternalBook(pExternalLink->m_oExternalBook.get(), sLink);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-			}
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalBook);
+			WriteExternalBook(pExternalLink->m_oExternalBook.get(), pExternalLink);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		else if (pExternalLink->m_oOleLink.IsInit())
 		{
@@ -2913,13 +2900,22 @@ void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::
 		m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 	}
 }
-void BinaryWorkbookTableWriter::WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink)
+void BinaryWorkbookTableWriter::WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, OOX::Spreadsheet::CExternalLink* pExternalLink)
 {
 	int nCurPos = 0;
-	nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::Id);
-	m_oBcw.m_oStream.WriteStringW3(sLink);
-	m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
+	if (pExternalLink && externalBook.m_oRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = pExternalLink->Find(OOX::RId(externalBook.m_oRid.get().GetValue()));
+		if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
+		{
+			OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
+			
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::Id);
+			m_oBcw.m_oStream.WriteStringW3(pLinkFile->Uri().GetPath());
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+	}
 	if (externalBook.m_oSheetNames.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetNames);
@@ -2937,6 +2933,52 @@ void BinaryWorkbookTableWriter::WriteExternalBook(const OOX::Spreadsheet::CExter
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataSet);
 		WriteExternalSheetDataSet(externalBook.m_oSheetDataSet.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (externalBook.m_oAlternateUrls.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::AlternateUrls);
+		WriteExternalAlternateUrls(externalBook.m_oAlternateUrls.get(), pExternalLink);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteExternalAlternateUrls(const OOX::Spreadsheet::CAlternateUrls& alternateUrls, OOX::Spreadsheet::CExternalLink* pExternalLink)
+{
+	int nCurPos = 0;
+	if (alternateUrls.m_oDriveId.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::ExternalAlternateUrlsDriveId);
+		m_oBcw.m_oStream.WriteStringW3(*alternateUrls.m_oDriveId);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (alternateUrls.m_oItemId.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::ExternalAlternateUrlsItemId);
+		m_oBcw.m_oStream.WriteStringW3(*alternateUrls.m_oItemId);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pExternalLink && alternateUrls.m_oAbsoluteUrlRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = pExternalLink->Find(OOX::RId(alternateUrls.m_oAbsoluteUrlRid.get().GetValue()));
+		if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
+		{
+			OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
+			
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::AbsoluteUrl);
+			m_oBcw.m_oStream.WriteStringW3(pLinkFile->Uri().GetPath());
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+	}
+	if (pExternalLink && alternateUrls.m_oRelativeUrlRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = pExternalLink->Find(OOX::RId(alternateUrls.m_oRelativeUrlRid.get().GetValue()));
+		if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
+		{
+			OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
+
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::RelativeUrl);
+			m_oBcw.m_oStream.WriteStringW3(pLinkFile->Uri().GetPath());
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
 	}
 }
 void BinaryWorkbookTableWriter::WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames)
@@ -5640,7 +5682,7 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CW
 			OOX::CVmlDrawing* pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
 			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 			m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
-			m_pOfficeDrawingConverter->ClearShapeTypes();
+			m_pOfficeDrawingConverter->Clear();
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::Drawings);
 			WriteLegacyDrawingHFDrawings(pVmlDrawing);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
@@ -7007,37 +7049,52 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRanges(const OOX::Spreadsheet
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
+void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc)
+{
+	if (desc.id.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Id);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.id);
+	}
+	if (desc.name.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.name);
+	}
+}
 void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
 {
 	if (oUserProtectedRange.m_oName.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Name);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oSqref.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Sqref);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oText.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Text);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	for (size_t i = 0; i < oUserProtectedRange.m_arUsersId.size(); ++i)
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::UserId);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oUserProtectedRange.m_arUsersId[i]);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::User);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsers[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroupsId.size(); ++i)
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroups.size(); ++i)
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::UsersGroup);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oUserProtectedRange.m_arUsersGroupsId[i]);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UsersGroup);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsersGroups[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations)

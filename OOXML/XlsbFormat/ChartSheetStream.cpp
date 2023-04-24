@@ -222,4 +222,49 @@ const bool ChartSheetStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ChartSheetStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginSheet>();
+
+	if (m_BrtDrawing != nullptr)
+		proc.mandatory(*m_BrtDrawing);
+
+	if (m_BrtLegacyDrawing != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawing);
+
+	if (m_BrtLegacyDrawingHF != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawingHF);
+
+	if (m_CSVIEWS != nullptr)
+		proc.mandatory(*m_CSVIEWS);
+
+	if (m_BrtMargins != nullptr)
+		proc.mandatory(*m_BrtMargins);
+
+	if (m_BrtCsPageSetup != nullptr)
+		proc.mandatory(*m_BrtCsPageSetup);
+	
+	if (m_BrtCsProp != nullptr)
+		proc.mandatory(*m_BrtCsProp);
+
+	if (m_HEADERFOOTER != nullptr)
+		proc.mandatory(*m_HEADERFOOTER);
+
+	if (m_BrtCsProtectionIso != nullptr)
+		proc.mandatory(*m_BrtCsProtectionIso);
+
+	if (m_BrtCsProtection != nullptr)
+		proc.mandatory(*m_BrtCsProtection);
+
+	if (m_USERCSVIEWS != nullptr)
+		proc.mandatory(*m_USERCSVIEWS);
+
+	if (m_WEBPUBITEMS != nullptr)
+		proc.mandatory(*m_WEBPUBITEMS);
+
+	proc.mandatory<EndSheet>();
+
+	return true;
+}
+
 } // namespace XLSB

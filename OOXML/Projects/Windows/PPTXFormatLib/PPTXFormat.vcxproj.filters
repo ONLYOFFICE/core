@@ -1858,9 +1858,6 @@
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\Aggregat.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\Callback.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -1896,6 +1893,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\VmlPath.h">
       <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h">
+      <Filter>Binary</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3717,12 +3717,6 @@
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Ppt2PptxShapeConverter.cpp">
       <Filter>Vml\PptShape</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp">
       <Filter>Common\Xml</Filter>
     </ClCompile>
@@ -3734,6 +3728,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\VmlPath.cpp">
       <Filter>Vml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
+      <Filter>Binary</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

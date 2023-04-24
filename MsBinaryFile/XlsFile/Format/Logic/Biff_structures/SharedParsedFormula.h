@@ -43,9 +43,11 @@ class SharedParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(SharedParsedFormula)
 public:
 	SharedParsedFormula(const bool is_part_of_a_revision, const CellRef& cell_base_ref);
+	SharedParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 
 	bool is_part_of_a_revision_;

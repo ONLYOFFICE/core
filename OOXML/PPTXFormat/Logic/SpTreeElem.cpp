@@ -44,6 +44,7 @@
 #include "../../DocxFormat/Media/Audio.h"
 #include "../../DocxFormat/Media/Video.h"
 #include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
@@ -365,17 +366,16 @@ namespace PPTX
 				if (node.GetNode(L"mc:Choice", oNodeChoice))
 				{
 					XmlUtils::CXmlNode oNodeFall;
-					XmlUtils::CXmlNodes oNodesC;
+					std::vector<XmlUtils::CXmlNode> oNodesC;
 					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
 					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.GetCount())
+						if (1 == oNodesC.size())
 						{
-							XmlUtils::CXmlNode oNodeC;
-							oNodesC.GetAt(0, oNodeC);
+							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
 							fromXML(oNodeC);
 				
@@ -386,10 +386,9 @@ namespace PPTX
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.GetCount())
+						if (1 == oNodesC.size())
 						{
-							XmlUtils::CXmlNode oNodeC;
-							oNodesC.GetAt(0, oNodeC);
+							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
 							fromXML(oNodeC);
 							isEmpty = false;
@@ -404,7 +403,7 @@ namespace PPTX
 			}
 			else if (name == L"binData")
 			{
-				m_binaryData = node.GetText();
+				m_binaryData = node;
 			}
 			else m_elem.reset();
 		}

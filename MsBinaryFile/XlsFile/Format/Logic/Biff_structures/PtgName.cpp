@@ -56,17 +56,35 @@ BiffStructurePtr PtgName::clone()
 
 void PtgName::loadFields(CFRecord& record)
 {
-	record >> nameindex;
 	
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
+		_UINT16 val;
+		record >> val;
+		nameindex = val;
 		record.skipNunBytes(12);
 	}
 	else
 	{
-		record.skipNunBytes(2);
+		record >> nameindex;		
 	}
 	
+	global_info = record.getGlobalWorkbookInfo();
+}
+
+void PtgName::writeFields(CFRecord& record)
+{
+	record << nameindex;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		record.reserveNunBytes(12);
+	}
+	else
+	{
+		record.reserveNunBytes(2);
+	}
+
 	global_info = record.getGlobalWorkbookInfo();
 }
 

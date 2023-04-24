@@ -1001,6 +1001,38 @@ namespace BinXlsxRW
 	const BYTE c_oserct_chartExDataValueIDX = 0;
 	const BYTE c_oserct_chartExDataValueCONTENT = 1;
 
+// extens ... 0x80
+	const BYTE c_oserct_dataLabel = 0x81;
+	const BYTE c_oserct_chartFiltering = 0x82;
+
+	const BYTE c_oserct_dataLabelsRange = 0x90;
+	const BYTE c_oserct_filteredLineSeries = 0x91;
+	const BYTE c_oserct_filteredScatterSeries = 0x92;
+	const BYTE c_oserct_filteredRadarSeries = 0x93;
+	const BYTE c_oserct_filteredBarSeries = 0x94;
+	const BYTE c_oserct_filteredAreaSeries = 0x95;
+	const BYTE c_oserct_filteredBubbleSeries = 0x96;
+	const BYTE c_oserct_filteredSurfaceSeries = 0x97;
+	const BYTE c_oserct_filteredPieSeries = 0x98;
+	const BYTE c_oserct_fullRef = 0x99;
+	const BYTE c_oserct_levelRef = 0x9A;
+	const BYTE c_oserct_formulaRef = 0x9B;
+	const BYTE c_oserct_categoryFilterExceptions = 0x9C;
+	const BYTE c_oserct_categoryFilterException = 0x9D;
+	const BYTE c_oserct_filteredSeriesTitle = 0x9E;
+	const BYTE c_oserct_filteredCategoryTitle = 0x9EF;
+
+	const BYTE c_oserct_dataLabelsRangeFormula = 0x100;
+	const BYTE c_oserct_dataLabelsRangeCache = 0x101;
+
+	const BYTE c_oserct_filterSqref = 0x110;
+	const BYTE c_oserct_filterSpPr = 0x111;
+	const BYTE c_oserct_filterExplosion = 0x112;
+	const BYTE c_oserct_filterInvertIfNegative = 0x113;
+	const BYTE c_oserct_filterBubble3D = 0x114;
+	const BYTE c_oserct_filterMarker = 0x115;
+	const BYTE c_oserct_filterLbl = 0x116;
+
 	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 		: Binary_CommonReader(oBufferedStream), m_oSaveParams(oSaveParams), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
@@ -2103,6 +2135,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_StrRef* poVal = static_cast<CT_StrRef*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_strrefF == type)
 		{
 			poVal->m_f = m_oBufferedStream.GetString4(length);
@@ -2720,6 +2759,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_BubbleSer* poVal = static_cast<CT_BubbleSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_bubbleserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -2958,6 +3004,191 @@ namespace BinXlsxRW
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int BinaryChartReader::ReadCT_dataLabelsRange(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Spreadsheet::CSeriesDataLabelsRange* pVal = static_cast<OOX::Spreadsheet::CSeriesDataLabelsRange*>(poResult);
+
+		if (type == c_oserct_dataLabelsRangeFormula)
+		{
+			pVal->m_f = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_dataLabelsRangeCache)
+		{
+			pVal->m_dlblRangeCache.Init();
+			READ1_DEF(length, res, this->ReadCT_StrData, pVal->m_dlblRangeCache.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int BinaryChartReader::ReadCT_filterException(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Spreadsheet::CCategoryFilterException* pVal = static_cast<OOX::Spreadsheet::CCategoryFilterException*>(poResult);
+
+		if (type == c_oserct_filterSqref)
+		{
+			pVal->m_sqref = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_filterSpPr)
+		{
+			pVal->m_spPr = new PPTX::Logic::SpPr;
+			pVal->m_spPr->m_namespace = L"c15";
+			res = ReadCT_PptxElement(0, length, pVal->m_spPr.GetPointer());
+		}
+		else if (type == c_oserct_filterExplosion)
+		{
+			unsigned int val;
+			READ1_DEF(length, res, this->ReadCT_UnsignedInt, &val);
+			pVal->m_explosion = val;
+		}
+		else if (type == c_oserct_filterInvertIfNegative)
+		{
+			bool pNewElem;
+			READ1_DEF(length, res, this->ReadCT_Boolean, &pNewElem);
+			pVal->m_invertIfNegative = pNewElem;
+		}
+		else if (type == c_oserct_filterBubble3D)
+		{
+			bool pNewElem;
+			READ1_DEF(length, res, this->ReadCT_Boolean, &pNewElem);
+			pVal->m_bubble3D = pNewElem;
+		}
+		else if (type == c_oserct_filterMarker)
+		{
+			pVal->m_marker.Init();
+			READ1_DEF(length, res, this->ReadCT_Marker, pVal->m_marker.GetPointer());
+		}
+		else if (type == c_oserct_filterLbl)
+		{
+			pVal->m_dLbl.Init();
+			READ1_DEF(length, res, this->ReadCT_DLbl, pVal->m_dLbl.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int BinaryChartReader::ReadCT_ChartFiltering(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Spreadsheet::CSeriesFiltering* pVal = static_cast<OOX::Spreadsheet::CSeriesFiltering*>(poResult);
+
+		if (type == c_oserct_dataLabelsRange)
+		{
+			pVal->m_dataLabelsRange.Init();
+			READ1_DEF(length, res, this->ReadCT_dataLabelsRange, pVal->m_dataLabelsRange.GetPointer());
+		}
+		else if (type == c_oserct_filteredSeriesTitle)
+		{
+			pVal->m_filteredSeriesTitle.Init();
+			READ1_DEF(length, res, this->ReadCT_Tx, pVal->m_filteredSeriesTitle.GetPointer());
+		}
+		else if (type == c_oserct_filteredCategoryTitle)
+		{
+			pVal->m_filteredCategoryTitle.Init();
+			READ1_DEF(length, res, this->ReadCT_AxDataSource, pVal->m_filteredCategoryTitle.GetPointer());
+		}
+		else if (type == c_oserct_filteredLineSeries)
+		{
+			pVal->m_filteredLineSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_LineSer, pVal->m_filteredLineSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredScatterSeries)
+		{
+			pVal->m_filteredScatterSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_ScatterSer, pVal->m_filteredScatterSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredRadarSeries)
+		{
+			pVal->m_filteredRadarSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_RadarSer, pVal->m_filteredRadarSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredBarSeries)
+		{
+			pVal->m_filteredBarSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_BarSer, pVal->m_filteredBarSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredAreaSeries)
+		{
+			pVal->m_filteredAreaSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_AreaSer, pVal->m_filteredAreaSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredBubbleSeries)
+		{
+			pVal->m_filteredBubbleSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_BubbleSer, pVal->m_filteredBubbleSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredSurfaceSeries)
+		{
+			pVal->m_filteredSurfaceSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_SurfaceSer, pVal->m_filteredSurfaceSeries.GetPointer());
+		}
+		else if (type == c_oserct_filteredPieSeries)
+		{
+			pVal->m_filteredPieSeries.Init();
+			READ1_DEF(length, res, this->ReadCT_PieSer, pVal->m_filteredPieSeries.GetPointer());
+		}
+		else if (type == c_oserct_fullRef)
+		{
+			pVal->m_fullRef = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_levelRef)
+		{
+			pVal->m_levelRef = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_formulaRef)
+		{
+			pVal->m_formulaRef = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_categoryFilterExceptions)
+		{
+			pVal->m_categoryFilterExceptions.Init();
+			READ1_DEF(length, res, this->ReadCT_filterExceptions, pVal->m_categoryFilterExceptions.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int BinaryChartReader::ReadCT_filterExceptions(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Spreadsheet::CCategoryFilterExceptions* pVal = static_cast<OOX::Spreadsheet::CCategoryFilterExceptions*>(poResult);
+
+		if (type == c_oserct_categoryFilterException)
+		{
+			pVal->m_arrItems.push_back(new OOX::Spreadsheet::CCategoryFilterException());
+			READ1_DEF(length, res, this->ReadCT_filterException, pVal->m_arrItems.back());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int BinaryChartReader::ReadExtensions(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::COfficeArtExtensionList* pVal = static_cast<OOX::Drawing::COfficeArtExtensionList*>(poResult);
+
+		if (type == c_oserct_dataLabel)
+		{
+			pVal->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+			pVal->m_arrExt.back()->m_sUri = L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}";
+			pVal->m_arrExt.back()->m_oChartDataLabel.Init();			
+			
+			READ1_DEF(length, res, this->ReadCT_DLbl, pVal->m_arrExt.back()->m_oChartDataLabel.GetPointer());
+		}
+		else if (type == c_oserct_chartFiltering)
+		{
+			pVal->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+			pVal->m_arrExt.back()->m_sUri = L"{02D57815-91ED-43cb-92C2-25804820EDAC}";
+			pVal->m_arrExt.back()->m_oChartFiltering.Init();
+
+			READ1_DEF(length, res, this->ReadCT_ChartFiltering, pVal->m_arrExt.back()->m_oChartFiltering.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	int BinaryChartReader::ReadCT_DLbls(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -2966,32 +3197,7 @@ namespace BinXlsxRW
 		if (type > 0x80)
 		{
 			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
-
-			CT_DLbl* pDlbl = NULL;
-			for (size_t i = 0; i < poVal->m_extLst->m_arrExt.size(); ++i)
-			{
-				if (!poVal->m_extLst->m_arrExt[i]) continue;
-
-				if (poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
-				{
-					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.GetPointer();
-					break;
-				}
-			}
-
-			if (!pDlbl)
-			{
-				poVal->m_extLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
-				poVal->m_extLst->m_arrExt.back()->m_sUri = L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}";
-				poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.Init();
-				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.GetPointer();
-			}
-			if (pDlbl)
-			{
-				return ReadCT_DLbl(type - 0x80, length, pDlbl);
-
-			}
-			else return c_oSerConstants::ReadUnknown;
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
 		}
 //-----------------------------------------------------------------------------------------
 		switch (type)
@@ -3146,34 +3352,9 @@ namespace BinXlsxRW
 		if (type > 0x80)
 		{
 			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
-
-			CT_DLbl* pDlbl = NULL;
-			for (size_t i = 0; i < poVal->m_extLst->m_arrExt.size(); ++i)
-			{
-				if (!poVal->m_extLst->m_arrExt[i]) continue;
-
-				if (poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
-				{
-					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.GetPointer();
-					break;
-				}
-			}
-
-			if (!pDlbl)
-			{
-				poVal->m_extLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
-				poVal->m_extLst->m_arrExt.back()->m_sUri = L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}";
-				poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.Init();
-				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.GetPointer();
-			}
-			if (pDlbl)
-			{
-				return ReadCT_DLbl(type - 0x80, length, pDlbl);
-
-			}
-			else return c_oSerConstants::ReadUnknown;
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
 		}
-	//----------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
 		switch (type)
 		{
 			case c_oserct_dlblIDX:
@@ -3634,6 +3815,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_NumRef* poVal = static_cast<CT_NumRef*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_numrefF == type)
 		{
 			std::wstring* pNewElem = new std::wstring;
@@ -3746,6 +3934,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_BubbleChart* poVal = static_cast<CT_BubbleChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_bubblechartVARYCOLORS == type)
 		{
 			bool pNewElem;
@@ -3815,6 +4010,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_Surface3DChart* poVal = static_cast<CT_Surface3DChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_surface3dchartWIREFRAME == type)
 		{
 			bool pNewElem;
@@ -3847,6 +4049,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_SurfaceSer* poVal = static_cast<CT_SurfaceSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_surfaceserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -3911,6 +4120,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_SurfaceChart* poVal = static_cast<CT_SurfaceChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_surfacechartWIREFRAME == type)
 		{
 			bool pNewElem;
@@ -3982,6 +4198,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_OfPieChart* poVal = static_cast<CT_OfPieChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_ofpiechartOFPIETYPE == type)
 		{
 			poVal->m_ofPieType.Init();
@@ -4048,6 +4271,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_PieSer* poVal = static_cast<CT_PieSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_pieserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -4110,6 +4340,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_Bar3DChart* poVal = static_cast<CT_Bar3DChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_bar3dchartBARDIR == type)
 		{
 			poVal->m_barDir.Init();
@@ -4185,6 +4422,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_BarSer* poVal = static_cast<CT_BarSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_barserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -4278,6 +4522,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_BarChart* poVal = static_cast<CT_BarChart*>(poResult);
+		
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_barchartBARDIR == type)
 		{
 			poVal->m_barDir.Init();
@@ -4376,6 +4627,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_Pie3DChart* poVal = static_cast<CT_Pie3DChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_pie3dchartVARYCOLORS == type)
 		{
 			bool pNewElem;
@@ -4402,6 +4660,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_PieChart* poVal = static_cast<CT_PieChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_piechartVARYCOLORS == type)
 		{
 			bool pNewElem;
@@ -4434,6 +4699,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_ScatterSer* poVal = static_cast<CT_ScatterSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_scatterserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -4526,6 +4798,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_ScatterChart* poVal = static_cast<CT_ScatterChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_scatterchartSCATTERSTYLE == type)
 		{
 			poVal->m_scatterStyle.Init();
@@ -4563,6 +4842,12 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_RadarSer* poVal = static_cast<CT_RadarSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}		
 		if (c_oserct_radarserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -4637,6 +4922,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_RadarChart* poVal = static_cast<CT_RadarChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_radarchartRADARSTYLE == type)
 		{
 			poVal->m_radarStyle.Init();
@@ -4718,6 +5010,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_LineSer* poVal = static_cast<CT_LineSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_lineserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -4838,6 +5137,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_Line3DChart* poVal = static_cast<CT_Line3DChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_line3dchartGROUPING == type)
 		{
 			poVal->m_grouping.Init();
@@ -4899,6 +5205,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_LineChart* poVal = static_cast<CT_LineChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_linechartGROUPING == type)
 		{
 			poVal->m_grouping.Init();
@@ -4967,6 +5280,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_Area3DChart* poVal = static_cast<CT_Area3DChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_area3dchartGROUPING == type)
 		{
 			poVal->m_grouping.Init();
@@ -5016,6 +5336,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_AreaSer* poVal = static_cast<CT_AreaSer*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_areaserIDX == type)
 		{
 			unsigned int pNewElem;
@@ -5090,6 +5417,13 @@ namespace BinXlsxRW
 	{
 		int res = c_oSerConstants::ReadOk;
 		CT_AreaChart* poVal = static_cast<CT_AreaChart*>(poResult);
+
+		if (type > 0x80)
+		{
+			if (!poVal->m_extLst.IsInit()) poVal->m_extLst.Init();
+			return ReadExtensions(type, length, poVal->m_extLst.GetPointer());
+		}
+//-----------------------------------------------------------------------------------------
 		if (c_oserct_areachartGROUPING == type)
 		{
 			poVal->m_grouping.Init();
@@ -6985,9 +7319,7 @@ namespace BinXlsxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 
 		if ((NULL != oVal.m_userShapes) && (oVal.m_userShapes->m_id.IsInit()))
 		{
@@ -7318,9 +7650,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_txPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 
 	void BinaryChartWriter::WriteCT_LegendPos(CLegendPos& oVal)
@@ -7373,9 +7703,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_txPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Layout(CT_Layout& oVal)
 	{
@@ -7385,9 +7713,7 @@ namespace BinXlsxRW
 			WriteCT_ManualLayout(*oVal.m_manualLayout);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_ManualLayout(CT_ManualLayout& oVal)
 	{
@@ -7445,9 +7771,7 @@ namespace BinXlsxRW
 			WriteCT_Double(*oVal.m_h);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_LayoutTarget(CLayoutTarget& oVal)
 	{
@@ -7529,9 +7853,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_txPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_SerAx(CT_SerAx& oVal)
 	{
@@ -7643,9 +7965,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_tickMarkSkip);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Scaling(CT_Scaling& oVal)
 	{
@@ -7673,9 +7993,7 @@ namespace BinXlsxRW
 			WriteCT_Double(*oVal.m_min);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Orientation(COrientation& oVal)
 	{
@@ -7730,9 +8048,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_txPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Tx(CT_Tx& oVal)
 	{
@@ -7763,9 +8079,7 @@ namespace BinXlsxRW
 			WriteCT_StrData(*oVal.m_strCache);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_StrData(CT_StrData& oVal)
 	{
@@ -7785,9 +8099,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_StrVal(CT_StrVal& oVal)
 	{
@@ -7983,9 +8295,7 @@ namespace BinXlsxRW
 			WriteCT_TimeUnit(*oVal.m_minorTimeUnit);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_LblAlgn(CLblAlgn& oVal)
 	{
@@ -8127,9 +8437,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_noMultiLvlLbl);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_DispUnitsLbl(CT_DispUnitsLbl& oVal)
 	{
@@ -8184,9 +8492,7 @@ namespace BinXlsxRW
 			WriteCT_DispUnitsLbl(*oVal.m_dispUnitsLbl);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_CrossBetween(CCrossBetween& oVal)
 	{
@@ -8316,9 +8622,7 @@ namespace BinXlsxRW
 			WriteCT_DispUnits(*oVal.m_dispUnits);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_SizeRepresents(CSizeRepresents& oVal)
 	{
@@ -8418,9 +8722,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_bubble3D);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_SerTx(CT_SerTx& oVal)
 	{
@@ -8481,9 +8783,7 @@ namespace BinXlsxRW
 			WriteCT_PictureOptions(*oVal.m_pictureOptions);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Marker(CT_Marker& oVal)
 	{
@@ -8505,9 +8805,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_spPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_MarkerStyle(CMarkerStyle& oVal)
 	{
@@ -8573,16 +8871,33 @@ namespace BinXlsxRW
 			ItemsChoiceType3 eType = *oVal.m_ItemsElementName0[i];
 			toBin(eType, oVal.m_Items[i]);
 		}
-		for (size_t i = 0; (oVal.m_extLst.IsInit()) && (i < oVal.m_extLst->m_arrExt.size()); ++i)
+		WriteExtensions(oVal.m_extLst.GetPointer());
+	}
+	void BinaryChartWriter::WriteExtensions(OOX::Drawing::COfficeArtExtensionList *pVal)
+	{
+		if (!pVal) return;
+		
+		for (size_t i = 0; i < pVal->m_arrExt.size(); ++i)
 		{
-			if (!oVal.m_extLst->m_arrExt[i]) continue;
-			if (oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
+			if (!pVal->m_arrExt[i]) continue;
+			
+			if (pVal->m_arrExt[i]->m_oChartDataLabel.IsInit())
 			{
-				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel, true);
+				int nCurPos = m_oBcw.WriteItemStart(c_oserct_dataLabel);
+				WriteCT_DLbl(*pVal->m_arrExt[i]->m_oChartDataLabel);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (pVal->m_arrExt[i]->m_oChartFiltering.IsInit())
+			{
+				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartFiltering);
+				WriteChartFiltering(pVal->m_arrExt[i]->m_oChartFiltering.GetPointer());
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
 	}
-	void BinaryChartWriter::toBin(ItemsChoiceType3 eType, void* pVal){
+
+	void BinaryChartWriter::toBin(ItemsChoiceType3 eType, void* pVal)
+	{
 		switch(eType)
 		{
 		case itemschoicetype3DLBLPOS:
@@ -8741,29 +9056,29 @@ namespace BinXlsxRW
 			break;
 		}
 	}
-	void BinaryChartWriter::WriteCT_DLbl(CT_DLbl& oVal, bool bExt)
+	void BinaryChartWriter::WriteCT_DLbl(CT_DLbl& oVal)
 	{
 		if (oVal.m_idx.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblIDX + (bExt ? 0x80 : 0));
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblIDX);
 			WriteCT_UnsignedInt(*oVal.m_idx);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		for (size_t i = 0; i < oVal.m_Items.size(); ++i)
 		{
 			ItemsChoiceType4 eType = *oVal.m_ItemsElementName0[i];
-			toBin(eType, oVal.m_Items[i], bExt);
+			toBin(eType, oVal.m_Items[i]);
 		}
 
 		if (oVal.m_xForSave.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_xForSave + (bExt ? 0x80 : 0));
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_xForSave);
 			WriteCT_Boolean(*oVal.m_xForSave);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if (oVal.m_showDataLabelsRange.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_showDataLabelsRange + (bExt ? 0x80 : 0));
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_showDataLabelsRange);
 			WriteCT_Boolean(*oVal.m_showDataLabelsRange);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -8771,27 +9086,20 @@ namespace BinXlsxRW
 
 		if (oVal.m_showLeaderLines.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_showLeaderLines + (bExt ? 0x80 : 0));
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_showLeaderLines);
 			WriteCT_Boolean(*oVal.m_showLeaderLines);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if (NULL != oVal.m_leaderLines)
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_leaderLines + (bExt ? 0x80 : 0));
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_leaderLines);
 			WriteCT_ChartLines(*oVal.m_leaderLines);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 
-		for (size_t i = 0; (oVal.m_extLst.IsInit()) && (i < oVal.m_extLst->m_arrExt.size()); ++i)
-		{
-			if (!oVal.m_extLst->m_arrExt[i]) continue;
-			if (oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
-			{
-				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel, true);
-			}
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
-	void BinaryChartWriter::toBin(ItemsChoiceType4 eType, void* pVal, bool bExt)
+	void BinaryChartWriter::toBin(ItemsChoiceType4 eType, void* pVal)
 	{
 		switch(eType)
 		{
@@ -8800,7 +9108,7 @@ namespace BinXlsxRW
 				CDLblPos* pTypeVal = static_cast<CDLblPos*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblDLBLPOS + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblDLBLPOS);
 					WriteCT_DLblPos(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8811,7 +9119,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblDELETE + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblDELETE);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8822,7 +9130,7 @@ namespace BinXlsxRW
 				CT_Layout* pTypeVal = static_cast<CT_Layout*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblLAYOUT + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblLAYOUT);
 					WriteCT_Layout(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8833,7 +9141,7 @@ namespace BinXlsxRW
 				CT_NumFmt* pTypeVal = static_cast<CT_NumFmt*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblNUMFMT + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblNUMFMT);
 					WriteCT_NumFmt(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8844,7 +9152,7 @@ namespace BinXlsxRW
 				std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSEPARATOR + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSEPARATOR);
 					m_oBcw.m_oStream.WriteStringW4(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8855,7 +9163,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWBUBBLESIZE + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWBUBBLESIZE);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8866,7 +9174,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWCATNAME + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWCATNAME);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8877,7 +9185,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWLEGENDKEY + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWLEGENDKEY);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8888,7 +9196,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWPERCENT + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWPERCENT);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8899,7 +9207,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWSERNAME + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWSERNAME);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8910,7 +9218,7 @@ namespace BinXlsxRW
 				bool* pTypeVal = static_cast<bool*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWVAL + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSHOWVAL);
 					WriteCT_Boolean(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8921,7 +9229,7 @@ namespace BinXlsxRW
 				PPTX::Logic::SpPr* pTypeVal = static_cast<PPTX::Logic::SpPr*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSPPR + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblSPPR);
 					m_oBcw.m_oStream.WriteRecord1(0, (*pTypeVal));
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8932,7 +9240,7 @@ namespace BinXlsxRW
 				CT_Tx* pTypeVal = static_cast<CT_Tx*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblTX + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblTX);
 					WriteCT_Tx(*pTypeVal);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -8943,7 +9251,7 @@ namespace BinXlsxRW
 				PPTX::Logic::TxBody* pTypeVal = static_cast<PPTX::Logic::TxBody*>(pVal);
 				if (NULL != pTypeVal)
 				{
-					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblTXPR + (bExt ? 0x80 : 0));
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_dlblTXPR);
 					m_oBcw.m_oStream.WriteRecord1(0, (*pTypeVal));
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
@@ -9025,9 +9333,7 @@ namespace BinXlsxRW
 			WriteCT_TrendlineLbl(*oVal.m_trendlineLbl);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_TrendlineType(CTrendlineType& oVal)
 	{
@@ -9067,9 +9373,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_txPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_ErrBars(CT_ErrBars& oVal)
 	{
@@ -9121,9 +9425,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_spPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_ErrDir(CErrDir& oVal)
 	{
@@ -9182,9 +9484,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_NumVal(CT_NumVal& oVal)
 	{
@@ -9221,9 +9521,7 @@ namespace BinXlsxRW
 			WriteCT_NumData(*oVal.m_numCache);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_AxDataSource(CT_AxDataSource& oVal)
 	{
@@ -9272,9 +9570,7 @@ namespace BinXlsxRW
 			WriteCT_MultiLvlStrData(*oVal.m_multiLvlStrCache);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_lvl(CT_lvl& oVal)
 	{
@@ -9307,9 +9603,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_BubbleChart(CT_BubbleChart& oVal)
 	{
@@ -9365,9 +9659,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_bandFmts(CT_bandFmts& oVal)
 	{
@@ -9412,9 +9704,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_SurfaceSer(CT_SurfaceSer& oVal)
 	{
@@ -9454,9 +9744,7 @@ namespace BinXlsxRW
 			WriteCT_NumDataSource(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_BandFmt(CT_BandFmt& oVal)
 	{
@@ -9503,9 +9791,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_SplitType(CSplitType& oVal)
 	{
@@ -9598,9 +9884,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_PieSer(CT_PieSer& oVal)
 	{
@@ -9662,9 +9946,7 @@ namespace BinXlsxRW
 			WriteCT_NumDataSource(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Bar3DChart(CT_Bar3DChart& oVal)
 	{
@@ -9726,9 +10008,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_BarDir(CBarDir& oVal)
 	{
@@ -9830,9 +10110,7 @@ namespace BinXlsxRW
 			WriteCT_Shape(*oVal.m_shape);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Shape(CShapeType& oVal)
 	{
@@ -9904,9 +10182,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_DoughnutChart(CT_DoughnutChart& oVal)
 	{
@@ -9944,9 +10220,7 @@ namespace BinXlsxRW
 			WriteCT_String(*oVal.m_holeSize);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Pie3DChart(CT_Pie3DChart& oVal)
 	{
@@ -9972,9 +10246,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_PieChart(CT_PieChart& oVal)
 	{
@@ -10006,9 +10278,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_firstSliceAng);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_ScatterSer(CT_ScatterSer& oVal)
 	{
@@ -10096,9 +10366,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_smooth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_ScatterStyle(CScatterStyle& oVal)
 	{
@@ -10142,9 +10410,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_RadarSer(CT_RadarSer& oVal)
 	{
@@ -10206,9 +10472,7 @@ namespace BinXlsxRW
 			WriteCT_NumDataSource(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_RadarStyle(CRadarStyle& oVal)
 	{
@@ -10252,9 +10516,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_StockChart(CT_StockChart& oVal)
 	{
@@ -10298,9 +10560,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_LineSer(CT_LineSer& oVal)
 	{
@@ -10384,9 +10644,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_smooth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_UpDownBars(CT_UpDownBars& oVal)
 	{
@@ -10408,9 +10666,7 @@ namespace BinXlsxRW
 			WriteCT_UpDownBar(*oVal.m_downBars);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_UpDownBar(CT_UpDownBar& oVal)
 	{
@@ -10469,9 +10725,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Grouping(CGrouping& oVal)
 	{
@@ -10545,9 +10799,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Area3DChart(CT_Area3DChart& oVal)
 	{
@@ -10597,9 +10849,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_AreaSer(CT_AreaSer& oVal)
 	{
@@ -10681,9 +10931,7 @@ namespace BinXlsxRW
 			WriteCT_NumDataSource(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_AreaChart(CT_AreaChart& oVal)
 	{
@@ -10727,9 +10975,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(oVal.m_axId[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_PlotArea(CT_PlotArea& oVal)
 	{
@@ -10761,9 +11007,7 @@ namespace BinXlsxRW
 			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_spPr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::toBin(ItemsChoiceType5 eType, void* pVal){
 		switch(eType)
@@ -11015,9 +11259,7 @@ namespace BinXlsxRW
 			WriteCT_PictureOptions(*oVal.m_pictureOptions);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 
 	void BinaryChartWriter::WriteCT_View3D(CT_View3D& oVal)
@@ -11058,9 +11300,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedByte(*oVal.m_perspective);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_PivotFmt(CT_PivotFmt& oVal)
 	{
@@ -11094,9 +11334,7 @@ namespace BinXlsxRW
 			WriteCT_DLbl(*oVal.m_dLbl);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_pivotFmts(CT_pivotFmts& oVal)
 	{
@@ -11185,9 +11423,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_showDLblsOverMax);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if (oVal.m_extLst.IsInit())
-		{
-		}
+		WriteExtensions(oVal.m_extLst.GetPointer());
 	}
 	void BinaryChartWriter::WriteCT_Protection(CT_Protection& oVal)
 	{
@@ -12484,6 +12720,214 @@ namespace BinXlsxRW
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartExGridlinesSPPR);
 			m_oBcw.m_oStream.WriteRecord2(0, pVal->m_spPr);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
+	void BinaryChartWriter::WriteChartFiltering(OOX::Spreadsheet::CSeriesFiltering *pVal)
+	{
+		if (!pVal) return;
+
+		WriteDataLabelsRange(pVal->m_dataLabelsRange.GetPointer());
+
+		WriteFilteredSeriesTitle(pVal->m_filteredSeriesTitle.GetPointer());
+		WriteFilteredCategoryTitle(pVal->m_filteredCategoryTitle.GetPointer());
+
+		WriteFilteredLineSeries(pVal->m_filteredLineSeries.GetPointer());
+		WriteFilteredScatterSeries(pVal->m_filteredScatterSeries.GetPointer());
+		WriteFilteredRadarSeries(pVal->m_filteredRadarSeries.GetPointer());
+		WriteFilteredBarSeries(pVal->m_filteredBarSeries.GetPointer());
+		WriteFilteredAreaSeries(pVal->m_filteredAreaSeries.GetPointer());
+		WriteFilteredBubbleSeries(pVal->m_filteredBubbleSeries.GetPointer());
+		WriteFilteredSurfaceSeries(pVal->m_filteredSurfaceSeries.GetPointer());
+		WriteFilteredPieSeries(pVal->m_filteredPieSeries.GetPointer());
+
+		WriteFullRef(pVal->m_fullRef.get_value_or(L""));
+		WriteLevelRef(pVal->m_levelRef.get_value_or(L""));
+		WriteFormulaRef(pVal->m_formulaRef.get_value_or(L""));
+
+		WriteCategoryFilterExceptions(pVal->m_categoryFilterExceptions.GetPointer());
+	}
+	void BinaryChartWriter::WriteDataLabelsRange(OOX::Spreadsheet::CSeriesDataLabelsRange *pVal)
+	{
+		if (!pVal) return;
+	
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oserct_dataLabelsRange);
+		if (pVal->m_f.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dataLabelsRangeFormula);
+			m_oBcw.m_oStream.WriteStringW4(*pVal->m_f);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_dlblRangeCache.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_dataLabelsRangeCache);
+			WriteCT_StrData(*pVal->m_dlblRangeCache);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	void BinaryChartWriter::WriteFilteredSeriesTitle(OOX::Spreadsheet::CT_Tx *pVal)
+	{
+		if (!pVal) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredSeriesTitle);
+		WriteCT_Tx(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredCategoryTitle(OOX::Spreadsheet::CT_AxDataSource *pVal)
+	{
+		if (!pVal) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredCategoryTitle);
+		WriteCT_AxDataSource(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredLineSeries(OOX::Spreadsheet::CT_LineSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredLineSeries);
+		WriteCT_LineSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredScatterSeries(OOX::Spreadsheet::CT_ScatterSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredScatterSeries);
+		WriteCT_ScatterSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredRadarSeries(OOX::Spreadsheet::CT_RadarSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredRadarSeries);
+		WriteCT_RadarSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredBarSeries(OOX::Spreadsheet::CT_BarSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredBarSeries);
+		WriteCT_BarSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredAreaSeries(OOX::Spreadsheet::CT_AreaSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredAreaSeries);
+		WriteCT_AreaSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredBubbleSeries(OOX::Spreadsheet::CT_BubbleSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredBubbleSeries);
+		WriteCT_BubbleSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredSurfaceSeries(OOX::Spreadsheet::CT_SurfaceSer *pVal)
+	{
+		if (!pVal) return;
+
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredSurfaceSeries);
+		WriteCT_SurfaceSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFilteredPieSeries(OOX::Spreadsheet::CT_PieSer *pVal)
+	{
+		if (!pVal) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_filteredPieSeries);
+		WriteCT_PieSer(*pVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFullRef(const std::wstring & ref)
+	{
+		if (ref.empty()) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_fullRef);
+		m_oBcw.m_oStream.WriteStringW4(ref);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteLevelRef(const std::wstring & ref)
+	{
+		if (ref.empty()) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_levelRef);
+		m_oBcw.m_oStream.WriteStringW4(ref);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteFormulaRef(const std::wstring & ref)
+	{
+		if (ref.empty()) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_formulaRef);
+		m_oBcw.m_oStream.WriteStringW4(ref);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteCategoryFilterExceptions(OOX::Spreadsheet::CCategoryFilterExceptions *pVal)
+	{
+		if (!pVal) return;
+		
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_categoryFilterExceptions);
+		for (size_t i = 0; i < pVal->m_arrItems.size(); ++i)
+		{
+			int nCurPos1 = m_oBcw.WriteItemStart(c_oserct_categoryFilterException);
+				WriteCategoryFilterException(pVal->m_arrItems[i]);
+			m_oBcw.WriteItemEnd(nCurPos1);
+		}
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteCategoryFilterException(OOX::Spreadsheet::CCategoryFilterException *pVal)
+	{
+		if (!pVal) return;
+		
+		if (pVal->m_sqref.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterSqref);
+			m_oBcw.m_oStream.WriteStringW4(*pVal->m_sqref);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_spPr.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterSpPr);
+			m_oBcw.m_oStream.WriteRecord2(0, pVal->m_spPr);
+			m_oBcw.WriteItemEnd(nCurPos);
+
+		}
+		if (pVal->m_explosion.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterExplosion);
+			WriteCT_UnsignedInt(*pVal->m_explosion);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_invertIfNegative.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterInvertIfNegative);
+			WriteCT_Boolean(*pVal->m_invertIfNegative);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_bubble3D.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterBubble3D);
+			WriteCT_Boolean(*pVal->m_bubble3D);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_marker.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterMarker);
+			WriteCT_Marker(*pVal->m_marker);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		if (pVal->m_dLbl.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_filterLbl);
+			WriteCT_DLbl(*pVal->m_dLbl);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}

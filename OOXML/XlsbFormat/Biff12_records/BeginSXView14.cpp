@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,8 +64,22 @@ namespace XLSB
         fCalcMembersInAdvFilters    = GETBIT(flags, 5);
 
         record >> irstAltText >> irstAltTextSummary >> irstWeight;
-
     }
+
+	void BeginSXView14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fFillDownLabelsDefault)
+		SETBIT(flags, 1, fVisualTotalsForSets)
+		SETBIT(flags, 2, fEnableWB)
+		SETBIT(flags, 3, fAutoApply)
+		SETBIT(flags, 4, fShowValuesRow)
+		SETBIT(flags, 5, fCalcMembersInAdvFilters)
+
+		record << FRTheader << flags << sxma;
+		record << irstAltText << irstAltTextSummary << irstWeight;
+	}
 
 } // namespace XLSB
 

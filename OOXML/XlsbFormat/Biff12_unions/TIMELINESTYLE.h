@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 namespace XLSB
 {
@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginTimelineStyle;
-        XLS::BaseObjectPtr               m_BrtBeginTimelineStyleElements;
-        std::vector<XLS::BaseObjectPtr>	m_arBrtTimelineStyleElement;
-        XLS::BaseObjectPtr               m_BrtEndTimelineStyleElements;
-        XLS::BaseObjectPtr               m_BrtEndTimelineStyle;
+		bool			                 m_bBrtBeginTimelineStyleElements;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtTimelineStyleElement;
+		bool							 m_bBrtEndTimelineStyleElements;
+		bool							 m_bBrtEndTimelineStyle;
 
     };
 

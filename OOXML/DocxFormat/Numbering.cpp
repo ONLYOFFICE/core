@@ -392,13 +392,13 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, _T("w:styleLink"),      m_oStyleLink );
 			WritingElement_ReadNode( oNode, oChild, _T("w:tmpl"),           m_oTmpl );
 
-			XmlUtils::CXmlNodes oLvlList;
+			std::vector<XmlUtils::CXmlNode> oLvlList;
 			if ( oNode.GetNodes( _T("w:lvl"), oLvlList ) )
 			{
-				XmlUtils::CXmlNode oLvlNode;
-				for ( int nIndex = 0; nIndex < oLvlList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oLvlList.size(); nIndex++ )
 				{
-					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+					XmlUtils::CXmlNode & oLvlNode = oLvlList[nIndex];
+					if ( oLvlNode.IsValid() )
 					{
 						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl();
 						*pLvl = oLvlNode;
@@ -597,13 +597,13 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:abstractNumId", m_oAbstractNumId );
 			WritingElement_ReadNode( oNode, oChild, L"w:ilst", m_oAbstractNumId );
 
-			XmlUtils::CXmlNodes oLvlList;
+			std::vector<XmlUtils::CXmlNode> oLvlList;
 			if ( oNode.GetNodes( L"w:lvlOverride", oLvlList ) )
 			{
-				XmlUtils::CXmlNode oLvlNode;
-				for ( int nIndex = 0; nIndex < oLvlList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oLvlList.size(); nIndex++ )
 				{
-					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+					XmlUtils::CXmlNode & oLvlNode = oLvlList[nIndex];
+					if (oLvlNode.IsValid())
 					{
 						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl();
 						*pNumLvl = oLvlNode;

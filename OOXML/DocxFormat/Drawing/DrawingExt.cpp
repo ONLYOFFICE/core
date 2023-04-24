@@ -165,6 +165,8 @@ namespace OOX
 			m_oSlicerCacheHideItemsWithNoData.reset();
             m_oPivotCacheDefinitionExt.reset();
 			m_oUserProtectedRanges.reset();
+			m_oChartDataLabel.reset();
+			m_oChartFiltering.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -188,7 +190,12 @@ namespace OOX
 				m_oChartDataLabel->fromXML(oReader);
 				return;
 			}
-
+			if ((m_sUri.IsInit()) && *m_sUri == L"{02D57815-91ED-43cb-92C2-25804820EDAC}")
+			{// http://schemas.microsoft.com/office/drawing/2012/chart)
+				m_oChartFiltering.Init();
+				m_oChartFiltering->fromXML(oReader);
+				return;
+			}
             if ((m_sUri.IsInit()) && (	*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
 										*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
 										*m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" ||
@@ -500,6 +507,12 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oChartDataLabel->toXMLEntry(L"c15", writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oChartFiltering.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oChartFiltering->toXML(writer);
 				sResult += writer.GetData().c_str();
 			}
 			sResult += L"</" + sNamespace + L"ext>";

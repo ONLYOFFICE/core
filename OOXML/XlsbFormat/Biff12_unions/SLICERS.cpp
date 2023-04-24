@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginSlicers>())
         {
-            m_BrtBeginSlicers = elements_.back();
+            m_bBrtBeginSlicers = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicers = false;
 
         auto count = proc.repeated<SLICER>(0, 2147483647);
         while(count > 0)
@@ -72,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndSlicers>())
         {
-            m_BrtEndSlicers = elements_.back();
+			m_bBrtEndSlicers = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicers = false;
 
-        return m_BrtBeginSlicers && !m_arSLICER.empty() && m_BrtEndSlicers;
+        return m_bBrtBeginSlicers && !m_arSLICER.empty() && m_bBrtEndSlicers;
     }
+
+	const bool SLICERS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginSlicers>();
+
+		for (auto &item : m_arSLICER)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicers>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

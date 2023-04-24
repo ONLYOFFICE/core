@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginSXTupleSetHeader>())
         {
-            m_BrtBeginSXTupleSetHeader = elements_.back();
+            m_bBrtBeginSXTupleSetHeader = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSXTupleSetHeader = false;
 
         auto count = proc.repeated<SXTupleSetHeaderItem>(0, 3000);
         while(count > 0)
@@ -72,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndSXTupleSetHeader>())
         {
-            m_BrtEndSXTupleSetHeader = elements_.back();
+            m_bBrtEndSXTupleSetHeader = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXTupleSetHeader = false;
 
-        return m_BrtBeginSXTupleSetHeader && !m_arBrtSXTupleSetHeaderItem.empty() && m_BrtEndSXTupleSetHeader;
+        return m_bBrtBeginSXTupleSetHeader && !m_arBrtSXTupleSetHeaderItem.empty() && m_bBrtEndSXTupleSetHeader;
     }
+
+	const bool SXTUPLESETHEADER::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginSXTupleSetHeader>();
+		
+		for (auto &item : m_arBrtSXTupleSetHeaderItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXTupleSetHeader>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

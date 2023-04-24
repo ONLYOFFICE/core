@@ -259,9 +259,11 @@ const bool PivotTableStream::loadContent(BinProcessor& proc)
                 {
                     if (proc.optional<EndSXView>())
                     {
-                        m_BrtEndSXView = elements_.back();
+                        m_bBrtEndSXView = true;
                         elements_.pop_back();
                     }
+					else
+						m_bBrtEndSXView = false;
                 }break;
 
                 default://skip
@@ -270,6 +272,65 @@ const bool PivotTableStream::loadContent(BinProcessor& proc)
                 }break;
             }
 	}
+
+	return true;
+}
+
+const bool PivotTableStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_BrtBeginSXView != nullptr)
+		proc.mandatory(*m_BrtBeginSXView);
+
+	if(m_SXLOCATION != nullptr)
+		proc.mandatory(*m_SXLOCATION);
+
+	if(m_SXVDS != nullptr)
+		proc.mandatory(*m_SXVDS);
+
+	if(m_ISXVDRWS != nullptr)
+		proc.mandatory(*m_ISXVDRWS);
+
+	if(m_SXLIRWS != nullptr)
+		proc.mandatory(*m_SXLIRWS);
+
+	if(m_ISXVDCOLS != nullptr)
+		proc.mandatory(*m_ISXVDCOLS);
+
+	if(m_SXLICOLS != nullptr)
+		proc.mandatory(*m_SXLICOLS);
+
+	if(m_SXPIS != nullptr)
+		proc.mandatory(*m_SXPIS);
+
+	if(m_SXDIS != nullptr)
+		proc.mandatory(*m_SXDIS);
+
+	if(m_SXFORMATS != nullptr)
+		proc.mandatory(*m_SXFORMATS);
+
+	if(m_SXCONDFMTS != nullptr)
+		proc.mandatory(*m_SXCONDFMTS);
+
+	if(m_SXCRTFORMATS != nullptr)
+		proc.mandatory(*m_SXCRTFORMATS);
+
+	if(m_SXTHS != nullptr)
+		proc.mandatory(*m_SXTHS);
+
+	if (m_BrtTableStyleClient != nullptr)
+		proc.mandatory(*m_BrtTableStyleClient);
+
+	if(m_SXFILTERS != nullptr)
+		proc.mandatory(*m_SXFILTERS);
+
+	if(m_ISXTHRWS != nullptr)
+		proc.mandatory(*m_ISXTHRWS);
+
+	if(m_ISXTHCOLS != nullptr)
+		proc.mandatory(*m_ISXTHCOLS);
+
+	if (m_FRTSXVIEW != nullptr)
+		proc.mandatory(*m_FRTSXVIEW);
 
 	return true;
 }

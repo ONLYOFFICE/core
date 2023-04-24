@@ -34,7 +34,12 @@
 #include "BiffStructure.h"
 #include "Boolean.h"
 
-#include "../../../../Common/Utils/simple_xml_writer.h"
+#include "../../../Common/Utils/simple_xml_writer.h"
+
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
 
 namespace XLS
 {
@@ -47,11 +52,13 @@ class XFPropGradient : public BiffStructure
 public:
 	BiffStructurePtr clone();
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	static const ElementType	type = typeXFPropGradient;
 
 	void serialize_attr(CP_ATTR_NODE);
+	int  deserialize(XmlUtils::CXmlLiteReader& oReader);
 
 	bool	type1;
 

@@ -2218,7 +2218,7 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.cpp">
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB_bu.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.cpp">

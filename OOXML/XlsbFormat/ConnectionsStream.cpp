@@ -80,4 +80,12 @@ const bool ConnectionsStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ConnectionsStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_EXTCONNECTIONS != nullptr)
+		proc.mandatory(*m_EXTCONNECTIONS);
+
+	return true;
+}
+
 } // namespace XLSB

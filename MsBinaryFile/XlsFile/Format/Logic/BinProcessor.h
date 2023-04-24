@@ -33,6 +33,7 @@
 
 #include "BaseObject.h"
 #include "Biff_structures/BiffAttribute.h"
+#include "Biff_structures/BiffStructure.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS
@@ -109,7 +110,7 @@ public:
 	const bool					getNextSubstreamType(_UINT16& type);
 	
 	void SeekToEOF();
-	void SkipRecord(bool log_debug = true);
+	virtual void SkipRecord(bool log_debug = true);
     const int GetRecordPosition();
     void SetRecordPosition(const int position);
 
@@ -119,6 +120,29 @@ private:
 	StreamCacheReaderPtr	reader_;
 	BaseObjectPtrList		wanted_objects;
 	bool			is_mandatory_;
+};
+
+class BinWriterProcessor : public BinProcessor
+{
+public:
+	BinWriterProcessor(StreamCacheWriterPtr writer, BaseObject* parent);
+
+	const bool	optional(BaseObject& object) override;
+	const bool	mandatory(BaseObject& object) override;
+
+	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) override { return false; }
+	virtual const CFRecordType::TypeId getNextRecordType() override { return CFRecordType::ANY_TYPE; }
+
+	virtual const bool getNextSubstreamType(_UINT16& type) override { return false; }
+	virtual void SeekToEOF() override {}
+	virtual void SkipRecord(bool log_debug = true) override {}
+	virtual const int GetRecordPosition() override { return 0; }
+	virtual void SetRecordPosition(const int position) override {}
+
+private:
+	const bool writeChild(BaseObject& object, const bool is_mandatory);
+
+	StreamCacheWriterPtr	writer_;
 };
 
 

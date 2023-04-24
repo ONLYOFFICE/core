@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 namespace XLSB
 {
@@ -45,16 +45,17 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginSlicerCache;
+		bool							 m_bBrtBeginSlicerCache;
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheDef;
         XLS::BaseObjectPtr               m_BrtSlicerCachePivotTables;
         XLS::BaseObjectPtr               m_slicerCacheData;
         XLS::BaseObjectPtr               m_FRTSLICERCACHE;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCacheDef;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCache;
+		bool							 m_bBrtEndSlicerCacheDef;
+		bool				             m_bBrtEndSlicerCache;
     };
 
 } // namespace XLSB

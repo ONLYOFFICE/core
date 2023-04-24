@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginPivotCacheIDs>())
         {
-            m_BrtBeginPivotCacheIDs = elements_.back();
+			m_bBrtBeginPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginPivotCacheIDs = false;
 
         auto count = proc.repeated<PIVOTCACHEID>(0, 0);
         while(count > 0)
@@ -72,12 +74,27 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheIDs>())
         {
-            m_BrtEndPivotCacheIDs = elements_.back();
+            m_bBrtEndPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheIDs = false;
 
-        return m_BrtBeginPivotCacheIDs && m_BrtEndPivotCacheIDs;
+        return m_bBrtBeginPivotCacheIDs && m_bBrtEndPivotCacheIDs;
     }
+
+	const bool PIVOTCACHEIDS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginPivotCacheIDs>();
+
+		for (auto &item : m_arPIVOTCACHEID)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndPivotCacheIDs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,13 +52,24 @@ namespace XLSB
 
     void Top10RichFilter::readFields(XLS::CFRecord& record)
     {
-        unsigned char flags;
+        BYTE flags;
         record >> flags >> xNumValue >> xNumFilter >> key;
 
         fTop     = GETBIT(flags, 0);
         fPercent = GETBIT(flags, 1);
         fApplied = GETBIT(flags, 2);
     }
+
+	void Top10RichFilter::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fTop)
+		SETBIT(flags, 1, fPercent)
+		SETBIT(flags, 2, fApplied)
+
+		record << flags << xNumValue << xNumFilter << key;
+	}
 
 } // namespace XLSB
 

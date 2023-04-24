@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
 
@@ -59,7 +60,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CMacroName > m_oVal;
+			nullable<SimpleTypes::CMacroName> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -106,7 +107,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CFFName > m_oVal;
+			nullable<SimpleTypes::CFFName> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -182,10 +183,10 @@ namespace OOX
 			virtual EElementType getType() const;
 
 		public:
-			nullable<ComplexTypes::Word::COnOff2     > m_oChecked;
-			nullable<ComplexTypes::Word::COnOff2     > m_oDefault;
-			nullable<ComplexTypes::Word::CHpsMeasure > m_oSize;
-			nullable<ComplexTypes::Word::COnOff2     > m_oSizeAuto;
+			nullable<ComplexTypes::Word::COnOff2> m_oChecked;
+			nullable<ComplexTypes::Word::COnOff2> m_oDefault;
+			nullable<ComplexTypes::Word::CHpsMeasure> m_oSize;
+			nullable<ComplexTypes::Word::COnOff2> m_oSizeAuto;
 
 		};
 
@@ -295,11 +296,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff         > m_oDirty;
-			nullable<SimpleTypes::CFldCharType   > m_oFldCharType;
-			nullable<SimpleTypes::COnOff         > m_oFldLock;
+			nullable<SimpleTypes::COnOff> m_oDirty;
+			nullable<SimpleTypes::CFldCharType> m_oFldCharType;
+			nullable<SimpleTypes::COnOff> m_oFldLock;
+			nullable_string m_sPrivateData;
 
-			nullable<OOX::Logic::CFFData         > m_oFFData;
+			nullable<OOX::Logic::CFFData> m_oFFData;
 		};
 	} // namespace Logic
 } // namespace OOX

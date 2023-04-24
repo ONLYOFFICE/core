@@ -1165,6 +1165,10 @@ namespace OOX
 		et_ct_alternatecontent,
 		et_ct_alternatecontentchoice,
 		et_ct_alternatecontentfallback,
+		et_ct_CategoryFilterExceptions,
+		et_ct_CategoryFilterException,
+		et_ct_SeriesDataLabelsRange,
+		et_ct_SeriesFiltering,
 
 		et_ct_TickMarks,
 		et_ct_Gridlines,
@@ -1367,6 +1371,7 @@ namespace OOX
 		et_x_ExternalSheetData,
 		et_x_ExternalRow,
 		et_x_ExternalCell,
+		et_x_AlternateUrls,
 		et_x_OleLink,
 		et_x_OleItems,
 		et_x_OleItem,

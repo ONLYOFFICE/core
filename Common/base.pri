@@ -135,10 +135,20 @@ mac {
     }
 }
 
+gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
+    lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
+    lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
+}
+
 # DEFINES
 core_windows {
     DEFINES += WIN32 _WIN32
     DEFINES += NOMINMAX
+
+    # use default _ITERATOR_DEBUG_LEVEL value
+    #core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }
 core_win_64 {
     DEFINES += WIN64 _WIN64
@@ -204,6 +214,11 @@ core_linux {
         QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN/system\'"
         QMAKE_LFLAGS += -Wl,--disable-new-dtags
     }
+}
+
+core_linux {
+    equals(TEMPLATE, app):CONFIG += core_static_link_libstd
+    plugin:CONFIG += core_static_link_libstd
 }
 
 core_win_32 {

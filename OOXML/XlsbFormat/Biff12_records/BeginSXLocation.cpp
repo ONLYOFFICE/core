@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,6 +57,14 @@ namespace XLSB
         rwFirstData  -=  rfxGeom.rowFirst;
         colFirstData -=  rfxGeom.columnFirst;
     }
+
+	void BeginSXLocation::writeFields(XLS::CFRecord& record)
+	{
+		rwFirstHead += rfxGeom.rowFirst;
+		rwFirstData += rfxGeom.rowFirst;
+		colFirstData += rfxGeom.columnFirst;
+		record << rfxGeom << rwFirstHead << rwFirstData << colFirstData << crwPage << ccolPage;
+	}
 
 } // namespace XLSB
 

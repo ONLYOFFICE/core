@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -81,18 +81,44 @@ namespace XLSB
 
         if (proc.optional<EndSxvcells>())
         {
-            m_BrtEndSxvcells = elements_.back();
+            m_bBrtEndSxvcells = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSxvcells = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginSxvcells && m_BrtEndSxvcells && m_BrtFRTEnd;
+        return m_BrtBeginSxvcells && m_bBrtEndSxvcells && m_bBrtFRTEnd;
     }
+
+	const bool PIVOTVALUECELLS15::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_BrtBeginSxvcells != nullptr)
+			proc.mandatory(*m_BrtBeginSxvcells);
+
+		for (auto& item : m_arPIVOTROWS15)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSxvcells>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

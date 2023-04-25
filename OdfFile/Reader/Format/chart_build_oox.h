@@ -253,7 +253,7 @@ private:
 	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
 	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
 
-	void ApplyTextProperties(std::wstring style, text_format_properties_content_ptr & propertiesOut);
+	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
 	
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);

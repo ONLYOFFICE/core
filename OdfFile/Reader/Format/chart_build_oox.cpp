@@ -702,7 +702,7 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 		}
     }
 }
-void process_build_object::ApplyTextProperties(std::wstring style, text_format_properties_content_ptr &propertiesOut)
+void process_build_object::ApplyTextProperties(std::wstring style, text_format_properties_ptr &propertiesOut)
 {
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
@@ -715,15 +715,18 @@ void process_build_object::ApplyGraphicProperties(std::wstring style, std::vecto
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
-		graphic_format_properties properties = calc_graphic_properties_content(styleInst);
+		graphic_format_properties_ptr properties = calc_graphic_properties_content(styleInst);
 
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill, false, false);
-
+		if (properties)
+		{
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, draw_styles_, fill, false, false);
+			
+			properties->apply_to(propertiesOut);
+		}
 		if (fill.bitmap)
 		{
 			fill.bitmap->xlink_href_ = object_odf_context_.baseRef_ + FILE_SEPARATOR_STR + fill.bitmap->xlink_href_;
 		}
-		properties.apply_to(propertiesOut);
     }
 }	
 

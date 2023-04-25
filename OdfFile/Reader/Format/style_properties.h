@@ -57,7 +57,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 	 
-    text_format_properties_content text_properties_;
+    text_format_properties text_properties_;
 	paragraph_format_properties paragraph_properties_;
 	graphic_format_properties graphic_properties_;
 	

@@ -210,6 +210,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	if (ns == L"w14")
 		ns_node = L"w14:textOutline";
 
+	_CP_OPT(std::wstring)	sStrokeGradient;
 	_CP_OPT(std::wstring)	strStrokeColor; 
 	_CP_OPT(int)			iStroke;
 	_CP_OPT(double)			dStrokeWidth;
@@ -222,8 +223,9 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
+	odf_reader::GetProperty(prop, L"stroke-gradient-name", sStrokeGradient);
 	
-	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
+	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw) return;
 
 	CP_XML_WRITER(strm)
     {

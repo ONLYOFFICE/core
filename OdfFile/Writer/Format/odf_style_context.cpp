@@ -379,7 +379,7 @@ std::wstring odf_style_context::get_name_family(style_family::type family)
         case style_family::Control:		return L"ctrl";//??
         case style_family::Ruby:		return L"rb";//??
  
-		case style_family::Gradient:	return L"Gradinent";
+		case style_family::Gradient:	return L"Gradient";
         case style_family::Hatch:		return L"Hatch";
 		case style_family::Opacity:		return L"Opacity";
 		case style_family::FillImage:	return L"FillImage";

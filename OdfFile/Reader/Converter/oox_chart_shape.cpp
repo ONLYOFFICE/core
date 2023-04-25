@@ -63,7 +63,7 @@ void oox_chart_shape::set(std::vector<odf_reader::_property> & prop, _oox_fill &
 	fill_ = fill;
 }
 
-void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_content_ptr properties)
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties)
 {
 	if (!properties) return;
 

@@ -935,7 +935,7 @@ void OoxConverter::convert(OOX::Drawing::COfficeArtExtension *art_ext)
 {
 	if (art_ext == NULL)return;
 
-	if (art_ext->m_oSparklineGroups.IsInit() || art_ext->m_oAltTextTable.IsInit() || !art_ext->m_arrConditionalFormatting.empty())
+	if (art_ext->m_oSparklineGroups.IsInit() || art_ext->m_oAltTextTable.IsInit())
 	{
 		XlsxConverter *xlsx_converter = dynamic_cast<XlsxConverter*>(this);
 		if (xlsx_converter)
@@ -944,7 +944,8 @@ void OoxConverter::convert(OOX::Drawing::COfficeArtExtension *art_ext)
 			xlsx_converter->convert(art_ext->m_oAltTextTable.GetPointer());
 		}
 	}
-
+	convert(art_ext->m_oChartFiltering.GetPointer());
+	convert(art_ext->m_oChartDataLabel.GetPointer());
 
 	//convert(art_ext->m_oCompatExt.GetPointer());
 	//convert(art_ext->m_oDataModelExt.GetPointer());

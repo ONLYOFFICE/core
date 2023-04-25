@@ -381,11 +381,13 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
 
-				odf_reader::graphic_format_properties style_graphic = odf_reader::calc_graphic_properties_content(instances);
+				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 				
-				odf_reader::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, style_graphic.style_background_image_,
-																							Context.root()->odf_context().drawStyles() ,fill);	
-				
+				if (graphic_props)
+				{
+					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_,
+						Context.root()->odf_context().drawStyles(), fill);
+				}
 				if (fill.bitmap)
 				{
 					bool isMediaInternal = true;

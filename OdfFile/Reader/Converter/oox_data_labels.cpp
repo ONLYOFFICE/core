@@ -51,12 +51,12 @@ oox_data_labels::oox_data_labels()//подписи на значениях
 	position_			= -1; //not set
 }
 
-void oox_data_labels::set_common_dLbl ( odf_reader::text_format_properties_content_ptr text_properties)
+void oox_data_labels::set_common_dLbl ( odf_reader::text_format_properties_ptr text_properties)
 {
 	textPr_ = text_properties;
 }
 
-void oox_data_labels::add_dLbl(int ind, odf_reader::text_format_properties_content_ptr text_properties)
+void oox_data_labels::add_dLbl(int ind, odf_reader::text_format_properties_ptr text_properties)
 {
 	dLbls_.insert(std::make_pair(ind, text_properties));
 }
@@ -77,7 +77,7 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 			}
 			oox_serialize_default_text(CP_XML_STREAM(), textPr_);
 	
-			for (std::map<int, odf_reader::text_format_properties_content_ptr>::iterator it = dLbls_.begin(); it != dLbls_.end(); ++it)
+			for (std::map<int, odf_reader::text_format_properties_ptr>::iterator it = dLbls_.begin(); it != dLbls_.end(); ++it)
 			{
 				CP_XML_NODE(L"c:dLbl")
 				{

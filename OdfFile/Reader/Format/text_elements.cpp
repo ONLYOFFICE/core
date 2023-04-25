@@ -95,7 +95,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	
-	text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
+	text_format_properties_ptr text_properties = calc_text_properties_content (styleInst);
 
 	if ((text_properties) && (!text_properties->fo_font_size_))
 	{		//default
@@ -229,7 +229,7 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 			{
 				styleInst = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
 			}
-			text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
+			text_format_properties_ptr text_properties = calc_text_properties_content (styleInst);
 
 			if ((text_properties) && (!text_properties->fo_font_size_))
 			{		//default

@@ -40,10 +40,12 @@
 namespace cpdoccore {
 	namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 
 	class graphic_format_properties;
+	typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
 
@@ -58,8 +60,8 @@ namespace oox {
 		xlsx_dxfs(odf_reader::fonts_container & fonts);
 		~xlsx_dxfs();
 
-		size_t dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-						const odf_reader::graphic_format_properties				* graphProp,
+		size_t dxfId(	const odf_reader::text_format_properties_ptr &textProp,
+						const odf_reader::graphic_format_properties_ptr &graphProp,
 						const odf_reader::style_table_cell_properties_attlist	* cellProp);
 		
         void serialize(std::wostream & _Wostream) const;
@@ -68,7 +70,7 @@ namespace oox {
         class Impl;
         _CP_SCOPED_PTR(Impl) impl_;
 
-		odf_reader::fonts_container & fonts_container;
+		odf_reader::fonts_container &fonts_container;
     };
 
 }

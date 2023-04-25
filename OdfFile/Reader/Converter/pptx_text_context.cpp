@@ -72,7 +72,7 @@ public:
 	void start_base_style(const std::wstring baseStyleName, const odf_types::style_family::type baseStyleType);
 	void end_base_style();
 
-	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut);
+	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut);
 	void ApplyParagraphProperties	(std::wstring para_style, odf_reader::paragraph_format_properties & propertiesOut);
 	void ApplyListProperties		(odf_reader::paragraph_format_properties & propertiesOut, int Level);
 
@@ -241,7 +241,7 @@ void pptx_text_context::Impl::end_hyperlink(std::wstring hId)
 	dump_run();
 	hyperlink_hId = L"";
 }
-void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::wstring para_style_name, odf_reader::text_format_properties_content & propertiesOut)
+void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::wstring para_style_name, odf_reader::text_format_properties & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -273,7 +273,7 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 	else if (para_style)	get_styles_context().start_process_style(para_style);
 	else					get_styles_context().start_process_style(baseStyle);
 
-	odf_reader::text_format_properties_content_ptr text_props = calc_text_properties_content(instances);
+	odf_reader::text_format_properties_ptr text_props = calc_text_properties_content(instances);
 	if (text_props)
 	{
 		propertiesOut.apply_from(*text_props.get());
@@ -414,7 +414,7 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 	if (paragraph_style_name_.empty() && span_style_name_.empty() && !(!hyperlink_hId.empty())  && base_style_name_.empty())
 		return;
 
-	odf_reader::text_format_properties_content text_properties_;
+	odf_reader::text_format_properties text_properties_;
 	
 	ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_);
 

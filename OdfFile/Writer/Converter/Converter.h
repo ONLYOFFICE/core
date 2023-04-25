@@ -230,6 +230,7 @@ namespace OOX
 		class CT_Style;
 		class CT_TextLanguageID;
 		class CTextProperties;
+		class CBaseSer;
 
 		namespace ChartEx
 		{
@@ -612,6 +613,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_RadarChart			*chart);
 		void convert(OOX::Spreadsheet::CT_StockChart			*chart);
 		void convert(OOX::Spreadsheet::CT_OfPieChart			*chart);
+		void convert(OOX::Spreadsheet::CBaseSer					*chart);
 		void convert(OOX::Spreadsheet::CT_AreaSer				*ser);
 		void convert(OOX::Spreadsheet::CT_BubbleSer				*ser);
 		void convert(OOX::Spreadsheet::CT_SurfaceSer			*ser);

@@ -50,9 +50,9 @@ public:
 
 
     size_t size() const;
-    size_t fontId(	const odf_reader::text_format_properties_content_ptr	textProp,
-					const odf_reader::paragraph_format_properties			* parProp,
-					const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set);
+    size_t fontId(	const odf_reader::text_format_properties_ptr &textProp,
+					const odf_reader::paragraph_format_properties			*parProp,
+					const odf_reader::style_table_cell_properties_attlist	*cellProp, bool default_set);
 
 	void serialize(std::wostream & _Wostream) const;
 
@@ -103,9 +103,9 @@ void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
 	}
 }
 
-size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content_ptr	textProp,
-								const odf_reader::paragraph_format_properties			* parProp,
-								const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set)
+size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_ptr &textProp,
+								const odf_reader::paragraph_format_properties			*parProp,
+								const odf_reader::style_table_cell_properties_attlist	*cellProp, bool default_set)
 {
     xlsx_font fnt = xlsx_font(textProp, parProp, cellProp, default_set, fonts_container);
    
@@ -127,7 +127,7 @@ size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content
 //}
 
 /*
-int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_content_ptr textProp,
+int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_ptr textProp,
                          const odf_reader::paragraph_format_properties * parProp,
                          const odf_reader::style_table_cell_properties_attlist * cellProp) const
 {
@@ -164,9 +164,9 @@ void xlsx_fonts::serialize(std::wostream & _Wostream) const
     return impl_->serialize(_Wostream);
 }
 
-size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content_ptr textProp,
-    const odf_reader::paragraph_format_properties * parProp,
-    const odf_reader::style_table_cell_properties_attlist * cellProp, bool default_set)
+size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_ptr &textProp,
+    const odf_reader::paragraph_format_properties *parProp,
+    const odf_reader::style_table_cell_properties_attlist *cellProp, bool default_set)
 {
     return impl_->fontId(textProp, parProp, cellProp, default_set);
 }

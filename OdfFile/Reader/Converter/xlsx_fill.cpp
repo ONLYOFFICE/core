@@ -136,8 +136,8 @@ bool xlsx_fill::operator != (const xlsx_fill & rVal) const
     return !(this->operator ==(rVal));
 }
 
-xlsx_fill::xlsx_fill(	const odf_reader::graphic_format_properties				* graphProp,
-						const odf_reader::style_table_cell_properties_attlist	* cellProp)
+xlsx_fill::xlsx_fill(	const odf_reader::graphic_format_properties *graphProp,
+						const odf_reader::style_table_cell_properties_attlist *cellProp)
 {
 	bEnabled = false;
 	bDefault = false;

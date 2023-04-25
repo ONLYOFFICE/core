@@ -80,6 +80,9 @@ public:
 	_CP_OPT(std::wstring)							draw_stroke_dash_;
 	_CP_OPT(odf_types::length_or_percent)			svg_stroke_width_;
 
+	_CP_OPT(std::wstring)							draw_stroke_gradient_name_;
+
+
 	_CP_OPT(odf_types::marker_style)				draw_marker_end_;
 	_CP_OPT(odf_types::marker_style)				draw_marker_start_;
 

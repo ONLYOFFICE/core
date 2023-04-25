@@ -48,11 +48,11 @@ namespace cpdoccore
 	}
 	namespace odf_reader 
 	{
-		graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance);
-		graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances);
+		graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance);
+		graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances);
 
-		text_format_properties_content_ptr calc_text_properties_content(const style_instance * styleInstance);
-		text_format_properties_content_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances);
+		text_format_properties_ptr calc_text_properties_content(const style_instance * styleInstance);
+		text_format_properties_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances);
 
 		paragraph_format_properties calc_paragraph_properties_content(const style_instance * styleInstance);
 		paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_instance *> & styleInstances);

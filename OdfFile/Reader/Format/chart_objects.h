@@ -37,8 +37,8 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 
 namespace chart {
 
@@ -49,7 +49,7 @@ namespace chart {
 		bool					bEnabled = false;
 		std::vector<_property>	properties_; 
  		
-		text_format_properties_content_ptr	text_properties_;
+		text_format_properties_ptr	text_properties_;
 		std::vector<_property>			graphic_properties_;
 		oox::_oox_fill					fill_;
 	};

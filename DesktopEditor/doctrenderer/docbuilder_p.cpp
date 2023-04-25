@@ -239,6 +239,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
 	if (!bIsBreak)
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+	if (!bIsBreak)
+		bIsBreak = !this->ExecuteCommand(L"Api.asc_showComments();");
 
 	LOGGER_SPEED_LAP("open");
 
@@ -1104,6 +1106,19 @@ namespace NSDoctRenderer
 
 		return m_pInternal->CreateFile(type);
 	}
+	bool CDocBuilder::CreateFile(const wchar_t* extension)
+	{
+		std::wstring sType = (NULL != extension) ? std::wstring(extension) : L"docx";
+		int type = AVS_OFFICESTUDIO_FILE_DOCUMENT;
+
+		if (L"pptx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
+		else if (L"xlsx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
+
+		return CreateFile(type);
+	}
+
 	void CDocBuilder::SetTmpFolder(const wchar_t* folder)
 	{
 		if (m_pInternal->m_bIsServerSafeVersion)

@@ -395,10 +395,8 @@ namespace MetaFile
 
 			do
 			{
-				std::wstring wsTemp = StringNormalization(wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
-
 				WriteNode(L"tspan", {{L"x", wsXCoord},
-				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsNormalizedText.substr(unStart, unPosLineBreak - unStart)));
+									 {L"y", ConvertToWString(dYNewCoord)}}, wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
 
 				dYNewCoord += dFontHeight * 1.6;
 				unStart = wsNormalizedText.find_first_not_of(L"\n", unPosLineBreak);

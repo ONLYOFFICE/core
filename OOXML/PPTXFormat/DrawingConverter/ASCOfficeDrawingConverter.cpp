@@ -1304,12 +1304,12 @@ void CDrawingConverter::AddBinData(XmlUtils::CXmlNode& oNode)
 }
 void CDrawingConverter::AddShapeType(XmlUtils::CXmlNode& oNode)
 {
-    std::wstring strId = oNode.GetAttribute(L"id");
+	std::wstring strId = oNode.GetAttribute(L"id");
 
 	if (strId.empty())
 	{
 		strId = oNode.GetAttribute(L"type");
-		if (strId[0] == (wchar_t)('#'))
+		if (!strId.empty() && strId[0] == (wchar_t)('#'))
 		{
 			strId = strId.substr(1);
 		}

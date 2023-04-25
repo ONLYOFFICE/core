@@ -17,6 +17,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 ############### destination path ###############
 DESTDIR = $$PWD/build
 ################################################
+INCLUDEPATH += ../..
 
 ADD_DEPENDENCY(doctrenderer)
 

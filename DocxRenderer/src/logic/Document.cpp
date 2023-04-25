@@ -1018,9 +1018,9 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:pPrDefault><w:pPr/></w:pPrDefault>");
 		oWriter.WriteString(L"</w:docDefaults>");
 
-		oWriter.WriteString(L"<w:latentStyles w:defLockedState=\"false\" w:defUIPriority=\"99\" w:defSemiHidden=\"true\" w:defUnhideWhenUsed=\"true\" w:defQFormat=\"false\" w:count=\"267\">");
-		oWriter.WriteString(L"<w:lsdException w:name=\"Normal\" w:semiHidden=\"false\" w:uiPriority=\"0\" w:unhideWhenUsed=\"true\"/>");
-		//oWriter.WriteString(L"<w:lsdException w:name=\"heading 1\" w:semiHidden=\"false\" w:uiPriority=\"9\" w:unhideWhenUsed=\"true\" w:qFormat=\"true\"/>");
+		oWriter.WriteString(L"<w:latentStyles w:defLockedState=\"0\" w:defUIPriority=\"99\" w:defSemiHidden=\"1\" w:defUnhideWhenUsed=\"1\" w:defQFormat=\"0\" w:count=\"267\">");
+		oWriter.WriteString(L"<w:lsdException w:name=\"Normal\" w:semiHidden=\"0\" w:uiPriority=\"0\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/>");
+		oWriter.WriteString(L"<w:lsdException w:name=\"heading 1\" w:semiHidden=\"0\" w:uiPriority=\"9\" w:unhideWhenUsed=\"0\" w:qFormat=\"1\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 2\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 3\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
 		oWriter.WriteString(L"<w:lsdException w:name=\"heading 4\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");

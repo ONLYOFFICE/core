@@ -8,13 +8,19 @@ namespace NSDocxRenderer
 		// стандартные стили
 		CParagraphStyle oNormal(L"Normal", L"Normal");
 		CParagraphStyle oHeading1(L"Heading1", L"Heading 1");
+		CParagraphStyle oHeading2(L"Heading2", L"Heading 2");
 
 		oNormal.bIsDefault = true;
+
 		oHeading1.wsBasedOn = oNormal.wsStyleId;
 		oHeading1.nUiPriority = 9;
 
+		oHeading2.wsBasedOn = oNormal.wsStyleId;
+		oHeading2.nUiPriority = 9;
+
 		m_arDefaultParagraphStyles.push_back(oNormal);
 		m_arDefaultParagraphStyles.push_back(oHeading1);
+		m_arDefaultParagraphStyles.push_back(oHeading2);
 
 	}
 	CParagraphStyleManager::~CParagraphStyleManager()

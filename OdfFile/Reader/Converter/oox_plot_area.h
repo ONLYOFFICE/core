@@ -50,10 +50,10 @@ public:
 	oox_chart_ptr						current_chart_;   
 	std::vector<oox_axis_content_ptr>	axis_;
 	
-	std::vector<odf_reader::_property>	graphic_properties_;
-	std::vector<odf_reader::_property>	properties_;
-	std::vector<odf_reader::_property>	properties_3d_;
-	_oox_fill							fill_; 
+	odf_reader::graphic_format_properties_ptr graphic_properties_;
+
+	odf_reader::chart_format_properties_ptr properties_;
+	_oox_fill fill_; 
 	
 	//std::vector<odf_reader::_property> wall_graphic_properties_;
 	

@@ -161,8 +161,8 @@ public:
 	chart::simple				stock_loss_marker_;
 	chart::simple				stock_range_line_;
 
-	std::vector<_property>		chart_properties_;
-	std::vector<_property>		chart_graphic_properties_;
+	chart_format_properties_ptr properties_;
+	graphic_format_properties_ptr graphic_properties_;
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
@@ -250,11 +250,10 @@ public:
 	process_build_object(object_odf_context & object_context, odf_read_context & context);
 
 private:
-	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
-	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
-
+	void ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill);
 	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
-	
+	void ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut);
+
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);

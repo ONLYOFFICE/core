@@ -113,36 +113,35 @@ public:
 		legend_.content_= l;
 	}
 
-	void set_chart_graphic_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
+	void set_chart_graphic_properties(odf_reader::graphic_format_properties_ptr & prop, _oox_fill &fill)
 	{
 		reset_fill(fill);
-		graphic_properties_= prop;
+		graphic_properties_ = prop;
 		fill_ = fill;
 	}
-	void set_plot_area_properties(std::vector<odf_reader::_property> & prop, std::vector<odf_reader::_property> & prop_3d, _oox_fill &fill)
+	void set_plot_area_properties(odf_reader::chart_format_properties_ptr & prop, _oox_fill &fill)
 	{
 		reset_fill(fill);
-		plot_area_.properties_		= prop; 
-		plot_area_.properties_3d_	= prop_3d; 
-		plot_area_.fill_			= fill; 
+		plot_area_.properties_ = prop;
+		plot_area_.fill_ = fill; 
 	}
 	bool no_used_local_tables_;
 
 	void set_cache_only	(bool val);
 private:
-	mediaitems_ptr						mediaitems_;
-	std::vector<_rel>					rels_;
+	mediaitems_ptr mediaitems_;
+	std::vector<_rel> rels_;
 	
-	cpdoccore::oox::oox_title			title_;
-	cpdoccore::oox::oox_plot_area		plot_area_;
-	cpdoccore::oox::oox_chart_legend	legend_;
+	oox::oox_title			title_;
+	oox::oox_plot_area		plot_area_;
+	oox::oox_chart_legend	legend_;
 
-	std::wstring						pivot_source_;
-	std::wstring						externalDataId_;
-	std::wstring						userShapesId_;
+	std::wstring pivot_source_;
+	std::wstring externalDataId_;
+	std::wstring userShapesId_;
 
-	std::vector<odf_reader::_property>	graphic_properties_;
-	_oox_fill							fill_;
+	odf_reader::graphic_format_properties_ptr graphic_properties_;
+	_oox_fill fill_;
 };
 
 }

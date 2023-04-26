@@ -58,7 +58,13 @@ namespace odf_reader {
 
 		odf_types::common_rotation_angle_attlist  common_rotation_angle_attlist_;
 	};
+	typedef boost::shared_ptr<chart_format_properties> chart_format_properties_ptr;
 
+	template <class T>
+	bool GetProperty(chart_format_properties_ptr & prop, const std::wstring Name, T & Val)
+	{
+		return prop ? GetProperty<T>(*prop, Name, Val) : false;
+	}
 // style:chart-properties
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {

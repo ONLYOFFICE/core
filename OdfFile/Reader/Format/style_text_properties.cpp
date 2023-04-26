@@ -1676,17 +1676,6 @@ void text_format_properties::set_r_style(const std::wstring & rStyle)
 	r_style_ = rStyle; 
 }
 
-void text_format_properties::apply_to(std::vector<_property> & properties)
-{
-	if (fo_font_weight_)	properties.push_back(_property(L"font-weight",	fo_font_weight_.get().get_type()) );
-	if (fo_font_family_)	properties.push_back(_property(L"font-family",	fo_font_family_.get()) );
-	if (style_font_name_)	properties.push_back(_property(L"font-name",	style_font_name_.get()) );
-	if (fo_font_size_)		properties.push_back(_property(L"font-size",	fo_font_size_.get().get_length().get_value_unit(length::pt)) );
-	if (fo_font_style_)		properties.push_back(_property(L"font-style",	fo_font_style_.get().get_type()) );
-	if (fo_color_)			properties.push_back(_property(L"font-color",	fo_color_.get().get_hex_value()) );
-
-}
-
 // style:text-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_text_properties::ns = L"style";

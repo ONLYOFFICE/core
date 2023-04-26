@@ -83,7 +83,6 @@ public:
 	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
 
 	void apply_from (const text_format_properties & Other);
-	void apply_to (std::vector<_property> & properties);
 	void set_r_style(const std::wstring & rStyle);
    
 	int process_font_size	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);

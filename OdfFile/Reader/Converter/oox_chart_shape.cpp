@@ -37,6 +37,8 @@
 
 #include "../Format/odfcontext.h"
 #include "../Format/style_text_properties.h"
+#include "../Format/style_graphic_properties.h"
+
 
 namespace cpdoccore {
 namespace oox {
@@ -56,7 +58,7 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 
 }
 
-void oox_chart_shape::set(std::vector<odf_reader::_property> & prop, _oox_fill & fill)
+void oox_chart_shape::set(odf_reader::graphic_format_properties_ptr & prop, _oox_fill & fill)
 {
 	bEnabled = true;
 	content_ = prop;

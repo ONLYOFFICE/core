@@ -381,8 +381,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
 	
-	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.properties_3d_, plot_area_.fill_);
-	chart_context.set_chart_graphic_properties	(chart_graphic_properties_, chart_fill_);
+	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties	(graphic_properties_, chart_fill_);
 	
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
@@ -417,7 +417,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		}
 
 		current->set_properties(plot_area_.properties_);
-		current->set_additional_properties(chart_graphic_properties_);
+		current->set_graphic_properties(graphic_properties_);
 	
 		current->add_series(series_id++);
 		
@@ -549,7 +549,6 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	_CP_OPT(bool) bIs3D;
 	odf_reader::GetProperty(plot_area_.properties_, L"three-dimensional", bIs3D);
 
-
 	for (size_t i = 0; i < axises_.size(); i++)
 	{
 		axis & a  = axises_[i];
@@ -582,7 +581,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				//или это банальная ошибка которую так никогда и не исправили???
 				//overlap & gap-width
 				oox::oox_chart_ptr current = chart_context.get_current_chart();
-				current->set_additional_properties(a.properties_);
+				current->set_graphic_properties(a.graphic_properties_);
 			}
 			y_enabled = true;
 		}
@@ -633,13 +632,16 @@ process_build_object::process_build_object(object_odf_context & object_odf, odf_
 		}
 	}
 }
-void process_build_object::ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut)
+void process_build_object::ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut)
 {
+	propertiesOut = boost::make_shared<chart_format_properties>();
+
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false);
-    if(styleInst)
+
+	if (styleInst)
 	{
-		const style_content * Content				= styleInst->content();
-		const style_chart_properties *properties	= Content->get_style_chart_properties();
+		const style_content * Content = styleInst->content();
+		const style_chart_properties *properties = Content->get_style_chart_properties();
 
 		std::wstring data_style_name = styleInst->data_style_name();
 		std::wstring percentage_data_style_name = styleInst->percentage_data_style_name();
@@ -648,7 +650,7 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 		{
 			office_value_type::type num_format_type = office_value_type::Custom;
 			std::wstring num_format = num_format_context_.find_complex_format(data_style_name, num_format_type);
-			
+
 			if (num_format.empty())
 			{
 				office_element_ptr elm = number_styles_.find_by_style_name(data_style_name);
@@ -666,14 +668,14 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 			if (false == num_format.empty())
 			{
 				_property p(L"num_format", num_format);
-				propertiesOut.push_back(p);
+				propertiesOut->push_back(p);
 			}
 		}
 		if (false == percentage_data_style_name.empty())
 		{
 			office_value_type::type num_format_type = office_value_type::Percentage;
 			std::wstring num_format = num_format_context_.find_complex_format(percentage_data_style_name, num_format_type);
-			
+
 			if (num_format.empty())
 			{
 				office_element_ptr elm = number_styles_.find_by_style_name(percentage_data_style_name);
@@ -688,19 +690,19 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 					num_format = num_format_context_.get_last_format();
 				}
 			}
- 			if (false == num_format.empty())
+			if (false == num_format.empty())
 			{
-				_property p(L"percentage_num_format", num_format); 
-				propertiesOut.push_back(p);		
+				_property p(L"percentage_num_format", num_format);
+				propertiesOut->push_back(p);
 			}
 		}
-		if (!properties)return;
+		if (!properties) return;
 
- 		for (size_t i = 0; i < properties->content_.size(); i++)
+		for (size_t i = 0; i < properties->content_.size(); i++)
 		{
-			propertiesOut.push_back(properties->content_[i]);
+			propertiesOut->push_back(properties->content_[i]);
 		}
-    }
+	}
 }
 void process_build_object::ApplyTextProperties(std::wstring style, text_format_properties_ptr &propertiesOut)
 {
@@ -710,18 +712,16 @@ void process_build_object::ApplyTextProperties(std::wstring style, text_format_p
 		propertiesOut = calc_text_properties_content(styleInst);
     }
 }
-void process_build_object::ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill)
+void process_build_object::ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill)
 {
 	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart, false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
-		graphic_format_properties_ptr properties = calc_graphic_properties_content(styleInst);
+		propertiesOut = calc_graphic_properties_content(styleInst);
 
-		if (properties)
+		if (propertiesOut)
 		{
-			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, draw_styles_, fill, false, false);
-			
-			properties->apply_to(propertiesOut);
+			Compute_GraphicFill(propertiesOut->common_draw_fill_attlist_, propertiesOut->style_background_image_, draw_styles_, fill, false, false);			
 		}
 		if (fill.bitmap)
 		{
@@ -809,7 +809,7 @@ void process_build_object::visit(chart_chart& val)
     {
         object_odf_context_.set_height(val.attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt));
     }
-	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.chart_graphic_properties_, object_odf_context_.chart_fill_);
+	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.graphic_properties_, object_odf_context_.chart_fill_);
 
 	object_odf_context_.set_class(val.attlist_.chart_class_.get_type());
 
@@ -906,7 +906,7 @@ void process_build_object::visit(chart_legend& val)
 	}
 	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
-	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_,object_odf_context_.legend_.fill_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_, object_odf_context_.legend_.fill_);
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.text_properties_);
 }
 
@@ -917,14 +917,14 @@ void process_build_object::visit(chart_plot_area& val)
 	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
 
 	odf_types::common_dr3d_attlist attr_3d = val.attlist_.common_dr3d_attlist_;
-
-	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"transform",	attr_3d.transform_.get()) );
-	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"distance",		attr_3d.distance_->get_value_unit(length::pt)) );
-	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_3d_.push_back(_property(L"focal",		attr_3d.focal_length_->get_value_unit(length::pt)) );
 	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.properties_);
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.graphic_properties_, object_odf_context_.plot_area_.fill_);
 	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.plot_area_.text_properties_);
+	
+	if (attr_3d.transform_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"transform", attr_3d.transform_.get()) );
+	if (attr_3d.distance_)		object_odf_context_.plot_area_.properties_->push_back(_property(L"distance", attr_3d.distance_->get_value_unit(length::pt)) );
+	if (attr_3d.focal_length_)	object_odf_context_.plot_area_.properties_->push_back(_property(L"focal", attr_3d.focal_length_->get_value_unit(length::pt)) );
 }
 
 void process_build_object::visit(chart_axis& val)
@@ -1051,7 +1051,8 @@ void process_build_object::visit(chart_stock_gain_marker & val)
 void process_build_object::visit(chart_regression_curve & val)
 {
 	oox::_oox_fill fill;
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().regression_curve_.line_properties_, fill);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.series_.back().regression_curve_.graphic_properties_, fill);
+	ApplyChartProperties(val.common_attlist_.chart_style_name_.get_value_or(L""), object_odf_context_.series_.back().regression_curve_.properties_);
 
 	if (val.chart_equation_)
 	{
@@ -1062,13 +1063,12 @@ void process_build_object::visit(chart_regression_curve & val)
 }
 void process_build_object::visit(chart_equation & val)
 {
-	if (object_odf_context_.series_.back().regression_curve_.bEquation == false)return;
-	
+	if (object_odf_context_.series_.back().regression_curve_.bEquation == false) return;	
 	
 	if (val.display_r_square_)
 		object_odf_context_.series_.back().regression_curve_.bREquation = val.display_r_square_.get();
 
-	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().regression_curve_.equation_properties_.graphic_properties_,object_odf_context_.series_.back().regression_curve_.equation_properties_.fill_);
+	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().regression_curve_.equation_properties_.graphic_properties_, object_odf_context_.series_.back().regression_curve_.equation_properties_.fill_);
 	ApplyTextProperties		(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().regression_curve_.equation_properties_.text_properties_);
 
 }

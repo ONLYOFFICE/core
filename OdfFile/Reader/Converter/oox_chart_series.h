@@ -80,7 +80,7 @@ public:
 
 	odf_reader::chart::series content_;
 
-	virtual void set_properties(std::vector<odf_reader::_property> g) {}
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop) {}
 
 	//extLst (Chart Extensibility) §21.2.2.64
 	//idx (Index) §21.2.2.84
@@ -99,7 +99,7 @@ public:
 	
 	static oox_series_ptr create();
 	
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	virtual void oox_serialize(std::wostream & _Wostream);
 	

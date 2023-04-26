@@ -41,7 +41,7 @@ namespace NSDoctRenderer
 	 * The string class with the wchar_t* property.
 	 */
 	class CString_Private;
-	class Q_DECL_EXPORT CString
+	class BUILDER_DECL CString
 	{
 	public:
 		CString();
@@ -61,7 +61,7 @@ namespace NSDoctRenderer
 	 * It represents a wrapper for a JS object.
 	 */
 	class CDocBuilderValue_Private;
-	class Q_DECL_EXPORT CDocBuilderValue
+	class BUILDER_DECL CDocBuilderValue
 	{
 	public:
 		CDocBuilderValue();
@@ -238,7 +238,7 @@ namespace NSDoctRenderer
 	 * All opened scopes will be closed automatically when the builder CloseFile method is called.
 	 */
 	class CDocBuilderContextScope_Private;
-	class Q_DECL_EXPORT CDocBuilderContextScope
+	class BUILDER_DECL CDocBuilderContextScope
 	{
 	public:
 		CDocBuilderContextScope();
@@ -261,7 +261,7 @@ namespace NSDoctRenderer
 	 * Class for getting JS context for working.
 	 */
 	class CDocBuilderContext_Private;
-	class Q_DECL_EXPORT CDocBuilderContext
+	class BUILDER_DECL CDocBuilderContext
 	{
 	public:
 		CDocBuilderContext();
@@ -333,7 +333,7 @@ namespace NSDoctRenderer
 	 * Base class used by ONLYOFFICE Document Builder for the document file (text document, spreadsheet, presentation, form document, PDF) to be generated.
 	 */
 	class CDocBuilder_Private;
-	class Q_DECL_EXPORT CDocBuilder
+	class BUILDER_DECL CDocBuilder
 	{
 	public:
 		CDocBuilder();

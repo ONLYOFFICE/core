@@ -2,6 +2,13 @@
 #define NSHASH_H
 
 #include <functional>
+#include "./common.h"
+
+// hide algs into lib
+namespace NSHash
+{
+	void BUILDER_DECL hash_internal(const unsigned char* src, unsigned char* dst, size_t size, int alg);
+}
 
 class CHash
 {	

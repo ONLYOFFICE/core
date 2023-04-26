@@ -29,7 +29,8 @@ SOURCES += \
     docbuilder.cpp \
     docbuilder_p.cpp \
     graphics.cpp \
-    hash.cpp
+	hash.cpp \
+	hash_engine.cpp
 
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \

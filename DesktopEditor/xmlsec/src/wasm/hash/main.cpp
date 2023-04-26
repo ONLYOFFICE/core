@@ -96,7 +96,7 @@ namespace NSBase64
 }
 
 #define OWN_BASE_64
-#include "../../../../doctrenderer/hash_engine.cpp"
+#define DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
 #include "../../../../doctrenderer/hash.cpp"
 
 #ifdef __cplusplus

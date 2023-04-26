@@ -4,6 +4,13 @@
 #include "../common/Base64.h"
 #endif
 
+#include "openssl/sha.h"
+#include "openssl/md2.h"
+#include "openssl/md4.h"
+#include "openssl/md5.h"
+#include "openssl/whrlpool.h"
+#include "openssl/ripemd.h"
+
 #include <cstring>
 #include <memory>
 
@@ -23,10 +30,79 @@ CHash::~CHash()
 
 unsigned char* CHash::hash(const unsigned char* data, int size, int alg)
 {
-	unsigned int nBufLen = (unsigned int)getDigestLength((HashAlgs)alg);
-	unsigned char* pBufData = (unsigned char*)m_fAllocator(nBufLen);
+	unsigned int nBufLen = 0;
+	unsigned char* pBufData = NULL;
+	size_t d = (size_t)size;
 
-	NSHash::hash_internal(data, pBufData, (size_t)size, alg);
+	switch (alg)
+	{
+	case haMD2:
+	{
+		nBufLen = 16;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		MD2(data, d, pBufData);
+		break;
+	}
+	case haMD4:
+	{
+		nBufLen = 16;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		MD4(data, d, pBufData);
+		break;
+	}
+	case haMD5:
+	{
+		nBufLen = 16;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		MD5(data, d, pBufData);
+		break;
+	}
+	case haRMD160:
+	{
+		nBufLen = 20;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		RIPEMD160(data, d, pBufData);
+		break;
+	}
+	case haSHA1:
+	{
+		nBufLen = 20;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		SHA1(data, d, pBufData);
+		break;
+	}
+	case haSHA256:
+	{
+		nBufLen = 32;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		SHA256(data, d, pBufData);
+		break;
+	}
+	case haSHA384:
+	{
+		nBufLen = 48;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		SHA384(data, d, pBufData);
+		break;
+	}
+	case haSHA512:
+	{
+		nBufLen = 64;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		SHA512(data, d, pBufData);
+		break;
+	}
+	case haWHIRLPOOL:
+	{
+		nBufLen = 64;
+		pBufData = (unsigned char*)m_fAllocator(nBufLen);
+		WHIRLPOOL(data, d, pBufData);
+		break;
+	}
+	default:
+		break;
+	}
+
 	return pBufData;
 }
 
@@ -167,7 +243,56 @@ void hash_iteration(unsigned char*& input, int iter, unsigned char*& tmp, int al
 	input[alg_size + 2] = 0xFF & (iter >> 16);
 	input[alg_size + 3] = 0xFF & (iter >> 24);
 
-	NSHash::hash_internal(input, tmp, alg_size + 4, alg);
+	switch (alg)
+	{
+	case CHash::haMD2:
+	{
+		MD2(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haMD4:
+	{
+		MD4(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haMD5:
+	{
+		MD5(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haRMD160:
+	{
+		RIPEMD160(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haSHA1:
+	{
+		SHA1(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haSHA256:
+	{
+		SHA256(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haSHA384:
+	{
+		SHA384(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haSHA512:
+	{
+		SHA512(input, alg_size + 4, tmp);
+		break;
+	}
+	case CHash::haWHIRLPOOL:
+	{
+		WHIRLPOOL(input, alg_size + 4, tmp);
+		break;
+	}
+	default:
+		break;
+	}
 
 	unsigned char* mem = input;
 	input = tmp;
@@ -189,9 +314,76 @@ unsigned char* CHash::hash2(const char* password, const char* salt, int spinCoun
 
 	free(passwordUtf16);
 
-	size_t alg_size = (size_t)getDigestLength((HashAlgs)alg);
-	unsigned char* pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
-	NSHash::hash_internal(inputData, pBuffer1, (size_t)inputDataLen, alg);
+	size_t alg_size = 0;
+	unsigned char* pBuffer1 = NULL;
+	switch (alg)
+	{
+	case haMD2:
+	{
+		alg_size = 16;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		MD2(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haMD4:
+	{
+		alg_size = 16;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		MD4(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haMD5:
+	{
+		alg_size = 16;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		MD5(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haRMD160:
+	{
+		alg_size = 20;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		RIPEMD160(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haSHA1:
+	{
+		alg_size = 20;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		SHA1(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haSHA256:
+	{
+		alg_size = 32;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		SHA256(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haSHA384:
+	{
+		alg_size = 48;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		SHA384(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haSHA512:
+	{
+		alg_size = 64;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		SHA512(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	case haWHIRLPOOL:
+	{
+		alg_size = 64;
+		pBuffer1 = (unsigned char*)m_fAllocator(alg_size + 4);
+		WHIRLPOOL(inputData, inputDataLen, pBuffer1);
+		break;
+	}
+	default:
+		break;
+	}
 
 	free(inputData);
 

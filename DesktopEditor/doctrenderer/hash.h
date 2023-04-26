@@ -10,7 +10,7 @@ namespace NSHash
 	void BUILDER_DECL hash_internal(const unsigned char* src, unsigned char* dst, size_t size, int alg);
 }
 
-class CHash
+class BUILDER_DECL CHash
 {	
 public:
 	enum HashAlgs

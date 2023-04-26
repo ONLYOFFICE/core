@@ -38,12 +38,18 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-linejoin"))
 			m_oStroke.m_oLineJoin.SetValue(mAttributes.at(L"stroke-linejoin"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-opacity"))
+			m_oStroke.m_oColor.SetOpacity(mAttributes.at(L"stroke-opacity"), ushLevel, bHardMode);
 	}
 
 	void CSvgGraphicsObject::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"fill"))
 			m_oFill.SetValue(mAttributes.at(L"fill"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"fill-opacity"))
+			m_oFill.SetOpacity(mAttributes.at(L"fill-opacity"), ushLevel, bHardMode);
 	}
 
 	void CSvgGraphicsObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -120,6 +126,7 @@ namespace SVG
 
 			nTypePath += c_nStroke;
 			pRenderer->put_PenColor(m_oStroke.m_oColor.ToInt());
+			pRenderer->put_PenAlpha(m_oStroke.m_oColor.GetOpacity());
 
 			double dStrokeWidth = m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
@@ -164,13 +171,16 @@ namespace SVG
 		{
 			nTypePath += c_nWindingFillMode;
 			pRenderer->put_BrushColor1(m_oFill.ToInt());
-			pRenderer->put_BrushAlpha1(255);
+			pRenderer->put_BrushAlpha1(m_oFill.GetOpacity());
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 		}
 		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
 		{
 			if (ApplyDef(pRenderer, pDefs, m_oFill.ToWString()))
+			{
 				nTypePath += c_nWindingFillMode;
+				pRenderer->put_BrushAlpha1(m_oFill.GetOpacity());
+			}
 		}
 		else if (bUseDedault)
 			ApplyDefaultFill(pRenderer, nTypePath);

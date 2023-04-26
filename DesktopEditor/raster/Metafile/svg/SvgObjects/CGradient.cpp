@@ -6,7 +6,7 @@ namespace SVG
 	    : CDefObject(oNode, pParent)
 	{
 		m_oColor.SetValue(oNode.GetAttribute(L"stop-color"));
-		if (m_oOffset.SetValue(oNode.GetAttribute(L"offset")) && m_oOffset > 1.)
+		if (m_oOffset.SetValue(oNode.GetAttribute(L"offset")) && m_oOffset.ToDouble() > 1.)
 			m_oOffset /= 100;
 		m_oColor.SetOpacity(oNode.GetAttribute(L"stop-opacity"));
 	}

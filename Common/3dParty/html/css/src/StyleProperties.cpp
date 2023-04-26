@@ -588,7 +588,13 @@ namespace NSCSS
 
 	int CColor::GetOpacity() const
 	{
-		return (m_oOpacity > 1.) ? m_oOpacity.ToInt() : (255 * m_oOpacity.ToDouble());
+		if (Percent == m_oOpacity.GetUnitMeasure())
+			return m_oOpacity.ToDouble() / 100.;
+
+		if (None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
+			return m_oOpacity.ToDouble();
+
+		return 1.;
 	}
 
 	int CColor::ToInt() const

@@ -126,7 +126,7 @@ namespace SVG
 
 			nTypePath += c_nStroke;
 			pRenderer->put_PenColor(m_oStroke.m_oColor.ToInt());
-			pRenderer->put_PenAlpha(m_oStroke.m_oColor.GetOpacity());
+			pRenderer->put_PenAlpha(255. * m_oStroke.m_oColor.GetOpacity());
 
 			double dStrokeWidth = m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
@@ -171,7 +171,7 @@ namespace SVG
 		{
 			nTypePath += c_nWindingFillMode;
 			pRenderer->put_BrushColor1(m_oFill.ToInt());
-			pRenderer->put_BrushAlpha1(m_oFill.GetOpacity());
+			pRenderer->put_BrushAlpha1(255. * m_oFill.GetOpacity());
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 		}
 		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
@@ -179,7 +179,7 @@ namespace SVG
 			if (ApplyDef(pRenderer, pDefs, m_oFill.ToWString()))
 			{
 				nTypePath += c_nWindingFillMode;
-				pRenderer->put_BrushAlpha1(m_oFill.GetOpacity());
+				pRenderer->put_BrushAlpha1(255. * m_oFill.GetOpacity());
 			}
 		}
 		else if (bUseDedault)

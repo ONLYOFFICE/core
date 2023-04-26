@@ -50,8 +50,8 @@
 
 void Download_OnComplete(int error)
 {
-    int y = error;
-    return;
+	int y = error;
+	return;
 }
 
 //#define RASTER_TEST
@@ -121,291 +121,302 @@ bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOut
 
 int main(int argc, char *argv[])
 {
-	DownloadFilePS(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", L"D:/222.jpg");
+	//DownloadFilePS(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", L"D:/222.jpg");
 
 #ifdef DOWNLOADER_TEST
 	NSNetwork::NSFileTransport::CFileDownloader oDownloader(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", false);
-    oDownloader.SetFilePath(L"D:\\111.jpg");
-    oDownloader.SetEvent_OnComplete(Download_OnComplete);
-    oDownloader.DownloadSync();
+	oDownloader.SetFilePath(L"D:\\111.jpg");
+	oDownloader.SetEvent_OnComplete(Download_OnComplete);
+	oDownloader.DownloadSync();
 #endif
 
 #ifdef RASTER_TEST
-    CBgraFrame oFrame;
-    oFrame.OpenFile(L"D:\\22.png");
-    oFrame.SaveFile(L"D:\\oleg.png", 4);
-    return 0;
+	CBgraFrame oFrame;
+	oFrame.OpenFile(L"D:\\22.png");
+	oFrame.SaveFile(L"D:\\oleg.png", 4);
+	return 0;
 #endif
 
-    CApplicationFontsWorker oWorker;
-    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
-    //oWorker.m_arAdditionalFolders.push_back(L"D:\\GIT\\core-fonts");
-    oWorker.m_bIsNeedThumbnails = false;
+	CApplicationFontsWorker oWorker;
+	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+	//oWorker.m_arAdditionalFolders.push_back(L"D:\\GIT\\core-fonts");
+	oWorker.m_bIsNeedThumbnails = false;
 
-    if (!NSDirectory::Exists(oWorker.m_sDirectory))
-        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+	if (!NSDirectory::Exists(oWorker.m_sDirectory))
+		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
-    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+#if 0
+	NSFonts::CFontSelectFormat oFormat;
+	oFormat.wsName = new std::wstring(L"@ËÎÌå");
+
+	NSFonts::IFontManager* pTestManager = pFonts->GenerateFontManager();
+
+	NSFonts::CFontInfo* pFontInfo = pTestManager->GetFontInfoByParams(oFormat);
+
+	pTestManager->Release();
+#endif
 
 #ifdef METAFILE_TEST_X2T
 
-    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    if (pMetafile->LoadFromFile(L"image.emf"))
-    {
-        NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+	if (pMetafile->LoadFromFile(L"image.emf"))
+	{
+		NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
 
-        double x = 0, y = 0, w = 0, h = 0;
-        pMetafile->GetBounds(&x, &y, &w, &h);
+		double x = 0, y = 0, w = 0, h = 0;
+		pMetafile->GetBounds(&x, &y, &w, &h);
 
-        double _max = (w >= h) ? w : h;
-        double dKoef = 1000.0 / _max;
+		double _max = (w >= h) ? w : h;
+		double dKoef = 1000.0 / _max;
 
-        int WW = (int)(dKoef * w + 0.5);
-        int HH = (int)(dKoef * h + 0.5);
+		int WW = (int)(dKoef * w + 0.5);
+		int HH = (int)(dKoef * h + 0.5);
 
-        NSHtmlRenderer::CASCSVGWriter oWriterSVG;
-        oWriterSVG.SetFontManager(pFontManager);
-        oWriterSVG.put_Width(WW);
-        oWriterSVG.put_Height(HH);
+		NSHtmlRenderer::CASCSVGWriter oWriterSVG;
+		oWriterSVG.SetFontManager(pFontManager);
+		oWriterSVG.put_Width(WW);
+		oWriterSVG.put_Height(HH);
 
-        bool bRes = true;
-        bool bIsBigestSVG = false;
-        bool bIsRaster = true;
-        try
-        {
-            bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
-        }
-        catch (...)
-        {
-            bRes = false;
-        }
+		bool bRes = true;
+		bool bIsBigestSVG = false;
+		bool bIsRaster = true;
+		try
+		{
+			bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+		}
+		catch (...)
+		{
+			bRes = false;
+		}
 
-        if (bRes)
-        {
-            oWriterSVG.IsRaster(&bIsRaster);
+		if (bRes)
+		{
+			oWriterSVG.IsRaster(&bIsRaster);
 
-            LONG lSvgDataSize = 0;
-            oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+			LONG lSvgDataSize = 0;
+			oWriterSVG.GetSVGDataSize(&lSvgDataSize);
 
-            bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
-        }
+			bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
+		}
 
-        if (bIsRaster || bIsBigestSVG || !bRes)
-        {
-            int nWidth = 0;
-            int nHeight = 0;
+		if (bIsRaster || bIsBigestSVG || !bRes)
+		{
+			int nWidth = 0;
+			int nHeight = 0;
 
-            int nMaxPixSize = 1000;
+			int nMaxPixSize = 1000;
 
-            double dKoef = nMaxPixSize / _max;
+			double dKoef = nMaxPixSize / _max;
 
-            nWidth = (int)(dKoef * w + 0.5);
-            nHeight = (int)(dKoef * h + 0.5);
+			nWidth = (int)(dKoef * w + 0.5);
+			nHeight = (int)(dKoef * h + 0.5);
 
-            pMetafile->ConvertToRaster(L"image.png", 4 /*CXIMAGE_FORMAT_PNG*/,  nWidth, nHeight);
-        }
-        else
-        {
-            oWriterSVG.SaveFile(L"image.svg");
-        }
+			pMetafile->ConvertToRaster(L"image.png", 4 /*CXIMAGE_FORMAT_PNG*/,  nWidth, nHeight);
+		}
+		else
+		{
+			oWriterSVG.SaveFile(L"image.svg");
+		}
 
-        RELEASEINTERFACE(pFontManager);
-    }
-    RELEASEOBJECT(pMetafile);
+		RELEASEINTERFACE(pFontManager);
+	}
+	RELEASEOBJECT(pMetafile);
 
 #endif
 
 #ifdef METAFILE_TEST
 
-    NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
+	NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
 
-    NSHtmlRenderer::CASCSVGWriter oWriterSVG;
-    oWriterSVG.SetFontManager(pManager);
+	NSHtmlRenderer::CASCSVGWriter oWriterSVG;
+	oWriterSVG.SetFontManager(pManager);
 
-    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 
-    //pMetafile->LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
-    pMetafile->LoadFromFile(L"D:\\SVG\\Disigner 2.svg");
+	//pMetafile->LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
+	pMetafile->LoadFromFile(L"D:\\SVG\\Disigner 2.svg");
 
-    double x = 0, y = 0, w = 0, h = 0;
-    pMetafile->GetBounds(&x, &y, &w, &h);
+	double x = 0, y = 0, w = 0, h = 0;
+	pMetafile->GetBounds(&x, &y, &w, &h);
 
-    double _max = (w >= h) ? w : h;
-    double dKoef = 100000.0 / _max;
+	double _max = (w >= h) ? w : h;
+	double dKoef = 100000.0 / _max;
 
-    int WW = (int)(dKoef * w + 0.5);
-    int HH = (int)(dKoef * h + 0.5);
+	int WW = (int)(dKoef * w + 0.5);
+	int HH = (int)(dKoef * h + 0.5);
 
-    oWriterSVG.put_Width(WW);
-    oWriterSVG.put_Height(HH);
-    pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+	oWriterSVG.put_Width(WW);
+	oWriterSVG.put_Height(HH);
+	pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
-    oWriterSVG.SaveFile(L"D:\\SVG\\out.png");
+	oWriterSVG.SaveFile(L"D:\\SVG\\out.png");
 
-    RELEASEOBJECT(pMetafile);
-    RELEASEINTERFACE(pManager);
-    RELEASEOBJECT(pFonts);
-    return 0;
+	RELEASEOBJECT(pMetafile);
+	RELEASEINTERFACE(pManager);
+	RELEASEOBJECT(pFonts);
+	return 0;
 
 #endif
 
 #ifdef METAFILE_TEST_RASTER
 
-    NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
+	NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
 
-    NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
-    pRasterRenderer->SetFontManager(pManager);
+	NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
+	pRasterRenderer->SetFontManager(pManager);
 
-    int nRasterW = 1000;
-    int nRasterH = 1000;
-    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-    //memset(pData, 255, 4 * nRasterW * nRasterH);
+	int nRasterW = 1000;
+	int nRasterH = 1000;
+	BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+	//memset(pData, 255, 4 * nRasterW * nRasterH);
 
-    unsigned int back = 0xffffff;
-    unsigned int* pData32 = (unsigned int*)pData;
-    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
-    //дефолтный тон должен быть прозрачным, а не белым
-    while (pData32 < pData32End)
-        *pData32++ = back;
+	unsigned int back = 0xffffff;
+	unsigned int* pData32 = (unsigned int*)pData;
+	unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+	//дефолтный тон должен быть прозрачным, а не белым
+	while (pData32 < pData32End)
+		*pData32++ = back;
 
-    CBgraFrame oFrame;
-    oFrame.put_Data(pData);
-    oFrame.put_Width(nRasterW);
-    oFrame.put_Height(nRasterH);
-    oFrame.put_Stride(4 * nRasterW);
+	CBgraFrame oFrame;
+	oFrame.put_Data(pData);
+	oFrame.put_Width(nRasterW);
+	oFrame.put_Height(nRasterH);
+	oFrame.put_Stride(4 * nRasterW);
 
-    pRasterRenderer->CreateFromBgraFrame(&oFrame);
-    pRasterRenderer->SetSwapRGB(false);
+	pRasterRenderer->CreateFromBgraFrame(&oFrame);
+	pRasterRenderer->SetSwapRGB(false);
 
-    double dW_MM = nRasterW * 25.4 / 96;
-    double dH_MM = nRasterH * 25.4 / 96;
+	double dW_MM = nRasterW * 25.4 / 96;
+	double dH_MM = nRasterH * 25.4 / 96;
 
-    pRasterRenderer->put_Width(dW_MM);
-    pRasterRenderer->put_Height(dH_MM);
+	pRasterRenderer->put_Width(dW_MM);
+	pRasterRenderer->put_Height(dH_MM);
 
-    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(L"D:\\test\\123.svg");
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+	pMetafile->LoadFromFile(L"D:\\test\\123.svg");
 
-    double x = 0, y = 0, w = 0, h = 0;
-    pMetafile->GetBounds(&x, &y, &w, &h);
+	double x = 0, y = 0, w = 0, h = 0;
+	pMetafile->GetBounds(&x, &y, &w, &h);
 
-    pMetafile->DrawOnRenderer(pRasterRenderer, dW_MM / 4, dW_MM / 4, dW_MM / 2, dH_MM / 2);
-    pMetafile->ConvertToRaster(L"D:\\SVG\\out2.png", 4, 1000);
+	pMetafile->DrawOnRenderer(pRasterRenderer, dW_MM / 4, dW_MM / 4, dW_MM / 2, dH_MM / 2);
+	pMetafile->ConvertToRaster(L"D:\\SVG\\out2.png", 4, 1000);
 
-    oFrame.SaveFile(L"D:\\SVG\\out.png", 4);
+	oFrame.SaveFile(L"D:\\SVG\\out.png", 4);
 
-    RELEASEOBJECT(pMetafile);
-    RELEASEINTERFACE(pManager);
-    RELEASEINTERFACE(pRasterRenderer);
-    return 0;
+	RELEASEOBJECT(pMetafile);
+	RELEASEINTERFACE(pManager);
+	RELEASEINTERFACE(pRasterRenderer);
+	return 0;
 
 #endif
 
 #ifdef ONLINE_WORD_TO_PDF
-    CPdfFile oPdfW(pFonts);
-    oPdfW.CreatePdf();
-    oPdfW.SetTempDirectory(L"C:\\Git\\Test\\Temp");
-    oPdfW.OnlineWordToPdf(L"C:\\Git\\Test\\123.txt", L"C:\\Git\\Test\\123.pdf");
-    RELEASEOBJECT(pFonts);
-    return 0;
+	CPdfFile oPdfW(pFonts);
+	oPdfW.CreatePdf();
+	oPdfW.SetTempDirectory(L"C:\\Git\\Test\\Temp");
+	oPdfW.OnlineWordToPdf(L"C:\\Git\\Test\\123.txt", L"C:\\Git\\Test\\123.pdf");
+	RELEASEOBJECT(pFonts);
+	return 0;
 #endif
 
 
-    //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
-    //std::wstring sFile = L"D:\\activex\\Pi(1p).pdf";
-    //std::wstring sFile = L"\\\\192.168.3.208\\allusers\\Files\\PDF\\AllPDF\\asia.pdf";
-    //std::wstring sFile = L"D:\\knut.djvu";
-    //std::wstring sFile = L"D:\\bankomats.xps";
-    //std::wstring sFile = L"\\\\kirillov8\\_Office\\DJVU\\Основы разработки приложений на платформе Microsoft .NET Framework. Учебный курс Microsoft экзамен 70-536.djvu";
-    //std::wstring sFile = L"D:\\TESTFILES\\Алгоритмы - построение и анализ.djvu";
+	//std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
+	//std::wstring sFile = L"D:\\activex\\Pi(1p).pdf";
+	//std::wstring sFile = L"\\\\192.168.3.208\\allusers\\Files\\PDF\\AllPDF\\asia.pdf";
+	//std::wstring sFile = L"D:\\knut.djvu";
+	//std::wstring sFile = L"D:\\bankomats.xps";
+	//std::wstring sFile = L"\\\\kirillov8\\_Office\\DJVU\\Основы разработки приложений на платформе Microsoft .NET Framework. Учебный курс Microsoft экзамен 70-536.djvu";
+	//std::wstring sFile = L"D:\\TESTFILES\\Алгоритмы - построение и анализ.djvu";
 #ifndef WIN32
-    std::wstring sFile = L"/home/oleg/GIT/ddd/ZfAvCwDsowJALpClgmE_/source/ZfAvCwDsowJALpClgmE_.pdf";
+	std::wstring sFile = L"/home/oleg/GIT/ddd/ZfAvCwDsowJALpClgmE_/source/ZfAvCwDsowJALpClgmE_.pdf";
 #else
-    //std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
-    //std::wstring sFile = L"D:\\2.pdf";
-    std::wstring sFile = L"D:\\OoPdfFormExample2.pdf";
+	//std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
+	//std::wstring sFile = L"D:\\2.pdf";
+	std::wstring sFile = L"D:\\OoPdfFormExample2.pdf";
 #endif
 
 #ifdef WIN32
-    std::wstring sDst = L"D:\\test\\Document";
+	std::wstring sDst = L"D:\\test\\Document";
 #else
-    std::wstring sDst = L"/home/oleg/test/Document";
+	std::wstring sDst = L"/home/oleg/test/Document";
 #endif
 
-    //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
-    //std::wstring sFile = L"/home/oleg/activex/Pi(1p).pdf";
-    //std::wstring sFile = L"/home/oleg/activex/knut.djvu";
-    //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
-    //std::wstring sDst = L"/home/oleg/activex/1";
+	//std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
+	//std::wstring sFile = L"/home/oleg/activex/Pi(1p).pdf";
+	//std::wstring sFile = L"/home/oleg/activex/knut.djvu";
+	//std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
+	//std::wstring sDst = L"/home/oleg/activex/1";
 
-    //NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
+	//NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
-    IOfficeDrawingFile* pReader = NULL;
-    pReader = new CPdfFile(pFonts);
-    //pReader = new CDjVuFile(pFonts);
-    //pReader = new CXpsFile(pFonts);
+	IOfficeDrawingFile* pReader = NULL;
+	pReader = new CPdfFile(pFonts);
+	//pReader = new CDjVuFile(pFonts);
+	//pReader = new CXpsFile(pFonts);
 
-    pReader->SetTempDirectory(sDst);
-    pReader->LoadFromFile(sFile);
+	pReader->SetTempDirectory(sDst);
+	pReader->LoadFromFile(sFile);
 
-    pReader->ConvertToRaster(0, L"D:\\111.png", 4);
+	pReader->ConvertToRaster(0, L"D:\\111.png", 4);
 
 #ifdef TO_HTML_RENDERER
-    NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;
+	NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;
 #ifdef ONLY_TEXT
-    oRenderer.SetOnlyTextMode(true);
-    oRenderer.CreateOfficeFile(L"temp/temp");
+	oRenderer.SetOnlyTextMode(true);
+	oRenderer.CreateOfficeFile(L"temp/temp");
 #else
-    oRenderer.CreateOfficeFile(sDst);
+	oRenderer.CreateOfficeFile(sDst);
 #endif
 #else
-    CPdfFile oRenderer(pFonts);
-    oRenderer.SetTempDirectory(sDst);
+	CPdfFile oRenderer(pFonts);
+	oRenderer.SetTempDirectory(sDst);
 #endif
 
-    int nPagesCount = pReader->GetPagesCount();
-    for (int i = 0; i < nPagesCount; ++i)
-    {
-        oRenderer.NewPage();
-        oRenderer.BeginCommand(c_nPageType);
+	int nPagesCount = pReader->GetPagesCount();
+	for (int i = 0; i < nPagesCount; ++i)
+	{
+		oRenderer.NewPage();
+		oRenderer.BeginCommand(c_nPageType);
 
-        double dPageDpiX, dPageDpiY;
-        double dWidth, dHeight;
-        pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+		double dPageDpiX, dPageDpiY;
+		double dWidth, dHeight;
+		pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
-        dWidth  *= 25.4 / dPageDpiX;
-        dHeight *= 25.4 / dPageDpiY;
+		dWidth  *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
 
-        oRenderer.put_Width(dWidth);
-        oRenderer.put_Height(dHeight);
+		oRenderer.put_Width(dWidth);
+		oRenderer.put_Height(dHeight);
 
 #ifdef ONLY_TEXT
-        oRenderer.SetAdditionalParam("DisablePageEnd", L"yes");
+		oRenderer.SetAdditionalParam("DisablePageEnd", L"yes");
 #endif
-        pReader->DrawPageOnRenderer(&oRenderer, i, NULL);
+		pReader->DrawPageOnRenderer(&oRenderer, i, NULL);
 
 #ifdef ONLY_TEXT
-        oRenderer.SetAdditionalParam("DisablePageEnd", L"no");
+		oRenderer.SetAdditionalParam("DisablePageEnd", L"no");
 
-        int paragraphs = 0;
-        int words = 0;
-        int symbols = 0;
-        int spaces = 0;
-        std::string info;
-        oRenderer.GetLastPageInfo(paragraphs, words, symbols, spaces, info);
+		int paragraphs = 0;
+		int words = 0;
+		int symbols = 0;
+		int spaces = 0;
+		std::string info;
+		oRenderer.GetLastPageInfo(paragraphs, words, symbols, spaces, info);
 #endif
 
-        oRenderer.EndCommand(c_nPageType);
-    }
+		oRenderer.EndCommand(c_nPageType);
+	}
 
 #ifdef TO_HTML_RENDERER
 #ifndef ONLY_TEXT
-    oRenderer.CloseFile();
+	oRenderer.CloseFile();
 #endif
 #else
-    oRenderer.SaveToFile(L"D:/11.pdf");
+	oRenderer.SaveToFile(L"D:/11.pdf");
 #endif
 
-    RELEASEOBJECT(pFonts);
-    return 0;
+	RELEASEOBJECT(pFonts);
+	return 0;
 }

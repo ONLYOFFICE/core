@@ -11,7 +11,7 @@ libsocketio:CONFIG += use_openssl
 ixwebsocket:CONFIG += use_openssl
 
 use_openssl {
-    include($$PWD/../../3dParty/ixwebsocket/openssl.pri)
+    include($$PWD/../../3dParty/openssl/openssl.pri)
 }
 
 libsocketio {
@@ -59,7 +59,8 @@ libsocketio {
         _WEBSOCKETPP_CPP11_CHRONO_ \
         \
         "SIO_TLS=1" \
-        "SIO_TLS_NO=0"
+        "SIO_TLS_NO=0" \
+        "PING_TIMEOUT_INTERVAL=20000"
 
     include($$PWD/../../3dParty/boost/boost.pri)
 
@@ -71,6 +72,13 @@ libsocketio {
         $$PWD/src/socketio/socketio_internal_private_no_tls.h
 
     SOURCES += $$PWD/src/socketio/socketio_internal.cpp
+
+    core_linux:LIBS += -lpthread
+
+    core_windows {
+	    LIBS += -lcrypt32
+		LIBS += -lUser32
+	}
 }
 
 HEADERS += \

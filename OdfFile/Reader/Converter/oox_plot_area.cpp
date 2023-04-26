@@ -38,6 +38,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "../Format/style_text_properties.h"
+#include "../Format/style_chart_properties.h"
 
 #include "oox_chart_shape.h"
 
@@ -141,7 +142,7 @@ namespace cpdoccore {
 			_CP_OPT(std::wstring)	strVal;
 			_CP_OPT(double)			doubleVal;
 
-			odf_reader::GetProperty(properties_3d_, L"transform", strVal);
+			odf_reader::GetProperty(properties_, L"transform", strVal);
 
 			if (!strVal) return;
 

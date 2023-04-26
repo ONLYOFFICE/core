@@ -230,6 +230,7 @@ namespace OOX
 		class CT_Style;
 		class CT_TextLanguageID;
 		class CTextProperties;
+		class CBaseSer;
 
 		namespace ChartEx
 		{
@@ -477,6 +478,7 @@ public:
 		}
 
         void set_fonts_directory (const std::wstring & fontsPath);
+		void set_temp_directory (const std::wstring & tempPath);
 		
 		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);
@@ -612,6 +614,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_RadarChart			*chart);
 		void convert(OOX::Spreadsheet::CT_StockChart			*chart);
 		void convert(OOX::Spreadsheet::CT_OfPieChart			*chart);
+		void convert(OOX::Spreadsheet::CBaseSer					*chart);
 		void convert(OOX::Spreadsheet::CT_AreaSer				*ser);
 		void convert(OOX::Spreadsheet::CT_BubbleSer				*ser);
 		void convert(OOX::Spreadsheet::CT_SurfaceSer			*ser);

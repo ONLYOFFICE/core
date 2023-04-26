@@ -64,9 +64,9 @@ enum BorderSide { sideTop, sideBottom, sideLeft, sideRight, sideMiddle };
 int get_value_emu(const _CP_OPT(odf_types::length) & len);
 int get_value_emu(double pt);
 
-int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
+int Compute_BorderWidth(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide);//emu
 
-int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
+int GetMargin(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide);//emu
 
 void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, 
 						 const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);

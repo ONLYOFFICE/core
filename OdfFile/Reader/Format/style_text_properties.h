@@ -65,10 +65,10 @@ namespace odf_reader {
 class style_instance;
 class fonts_container;
 
-class text_format_properties_content : public oox::conversion_element
+class text_format_properties : public oox::conversion_element
 {
 public:
-	text_format_properties_content() {}
+	text_format_properties() {}
 
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
@@ -82,8 +82,7 @@ public:
 
 	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
 
-	void apply_from (const text_format_properties_content & Other);
-	void apply_to (std::vector<_property> & properties);
+	void apply_from (const text_format_properties & Other);
 	void set_r_style(const std::wstring & rStyle);
    
 	int process_font_size	(const _CP_OPT(odf_types::font_size) & FontSize, const style_instance * currnetStyle, bool Complex = false, double Mul = 1.0);
@@ -171,7 +170,7 @@ public:
     _CP_OPT(std::wstring)					style_text_overline_style_;
 
 };
-typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 
 class style_text_properties;
 typedef shared_ptr<style_text_properties>::Type style_text_properties_ptr;
@@ -194,7 +193,7 @@ public:
     void docx_convert	(oox::docx_conversion_context & Context);
 	void pptx_convert	(oox::pptx_conversion_context & Context);
 
-    text_format_properties_content	content_;
+    text_format_properties	content_;
 
 
 private:

@@ -1,7 +1,5 @@
 CORE_V8_PATH_OVERRIDE=$$PWD
-
-core_windows:!v8_version_60:CONFIG += v8_version_89
-core_linux:!v8_version_60:CONFIG += v8_version_89
+!v8_version_60:CONFIG += v8_version_89
 
 v8_version_89 {
     CONFIG += c++14
@@ -17,6 +15,15 @@ v8_version_89 {
 
 CORE_V8_PATH_INCLUDE    = $$CORE_V8_PATH_OVERRIDE/v8
 CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
+
+core_android {
+    CORE_V8_PATH_INCLUDE    = $$CORE_V8_PATH_OVERRIDE/android/v8
+
+    isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_arm64_v8a):CORE_V8_PATH_LIBS=$$CORE_V8_PATH_OVERRIDE/android/build/arm64-v8a
+    isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_armv7):    CORE_V8_PATH_LIBS=$$CORE_V8_PATH_OVERRIDE/android/build/armeabi-v7a
+    isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_x86):      CORE_V8_PATH_LIBS=$$CORE_V8_PATH_OVERRIDE/android/build/x86
+    isEqual(CORE_BUILDS_PLATFORM_PREFIX, android_x86_64):   CORE_V8_PATH_LIBS=$$CORE_V8_PATH_OVERRIDE/android/build/x86_64
+}
 
 INCLUDEPATH += \
     $$CORE_V8_PATH_INCLUDE \
@@ -66,4 +73,9 @@ core_mac {
 
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override
     QMAKE_CFLAGS += -Wall -Wno-inconsistent-missing-override
+}
+
+core_android {
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_nosnapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS -licui18n -licuuc
 }

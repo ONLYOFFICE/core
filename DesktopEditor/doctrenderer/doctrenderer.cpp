@@ -533,9 +533,9 @@ namespace NSDoctRenderer
 
 		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
 		{
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					bool bIsBreak = false;
+			bool bIsBreak = false;
 			JSSmart<CJSContext> context = new CJSContext();
 
 			if (true)
@@ -548,19 +548,19 @@ namespace NSDoctRenderer
 
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
-				LOGGER_SPEED_LAP("compile")
+				LOGGER_SPEED_LAP("compile");
 
-						JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
+				JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
 				if(try_catch->Check())
 				{
 					strError = L"code=\"run\"";
 					bIsBreak = true;
 				}
 
-				LOGGER_SPEED_LAP("run")
+				LOGGER_SPEED_LAP("run");
 
-						//---------------------------------------------------------------
-						JSSmart<CJSObject> global_js = context->GetGlobal();
+				//---------------------------------------------------------------
+				JSSmart<CJSObject> global_js = context->GetGlobal();
 				JSSmart<CJSValue> args[1];
 				args[0] = CJSContext::createInt(0);
 
@@ -646,10 +646,10 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("open")
+				LOGGER_SPEED_LAP("open");
 
-						// CHANGES
-						if (!bIsBreak)
+				// CHANGES
+				if (!bIsBreak)
 				{
 					if (m_oParams.m_arChanges.size() != 0)
 					{
@@ -697,9 +697,9 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("changes")
+				LOGGER_SPEED_LAP("changes");
 
-						bool bIsMailMerge = false;
+				bool bIsMailMerge = false;
 				if (!m_oParams.m_strMailMergeDatabasePath.empty() &&
 						m_oParams.m_nMailMergeIndexEnd >= m_oParams.m_nMailMergeIndexStart &&
 						m_oParams.m_nMailMergeIndexEnd >= 0)
@@ -818,7 +818,7 @@ namespace NSDoctRenderer
 					bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
 				}
 
-				LOGGER_SPEED_LAP("save")
+				LOGGER_SPEED_LAP("save");
 			}
 
 			context->Dispose();

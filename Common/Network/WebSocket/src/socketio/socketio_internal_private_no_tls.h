@@ -234,6 +234,13 @@ namespace NSNetwork
 
                 m_socket.reset();
             }
+
+            virtual void setReconnectInfo(const int& attemtCount, const int& delay, const int& delayMax) override
+            {
+                m_socket->set_reconnect_attempts(attemtCount);
+                m_socket->set_reconnect_delay(delay);
+                m_socket->set_reconnect_delay_max(delayMax);
+            }
         };
     }
 }

@@ -5,7 +5,7 @@
 
 namespace NSJSBase
 {
-	void Q_DECL_EXPORT CreateDefaults(JSSmart<CJSContext>& context);
+	void JS_DECL CreateDefaults(JSSmart<CJSContext>& context);
 }
 
 #endif // _BUILD_NATIVE_DEFAULT_EMBED_H_

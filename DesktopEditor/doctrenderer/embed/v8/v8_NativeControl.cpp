@@ -108,58 +108,22 @@ namespace NSNativeControl
 
 	void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, CIsolateAdditionalData::iadtSingletonNative))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-
-		v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplate(isolate);
-		CNativeControlEmbed* pNativeObject = new CNativeControlEmbed();
-
-		v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObject));
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplate, args, CIsolateAdditionalData::iadtSingletonNative);
 	}
 
 	// Без SaveChanges
 	void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, CIsolateAdditionalData::iadtSingletonNative))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-
-		v8::Handle<v8::ObjectTemplate> NativeObjectTemplate = CreateNativeControlTemplateBuilder(isolate);
-		CNativeControlEmbed* pNativeObject = new CNativeControlEmbed();
-
-		v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObject));
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplateBuilder, args, CIsolateAdditionalData::iadtSingletonNative);
 	}
 }
 
 void CNativeControlEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
-    v8::Isolate* current = CV8Worker::GetCurrent();
-	v8::Local<v8::Context> localContext = context->m_internal->m_context;
-	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObject);
-	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
+	InsertToGlobal(name, context, NSNativeControl::CreateNativeObject);
 }
 
 void CNativeControlEmbed::CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context)
 {
-    v8::Isolate* current = CV8Worker::GetCurrent();
-	v8::Local<v8::Context> localContext = context->m_internal->m_context;
-	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObjectBuilder);
-	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
+	InsertToGlobal(name, context, NSNativeControl::CreateNativeObjectBuilder);
 }

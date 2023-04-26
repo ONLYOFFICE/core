@@ -1,0 +1,12 @@
+CORE_GTEST_PATH=$$PWD/googletest/googletest
+
+CONFIG += c++14
+
+CORE_GTEST_PATH_INCLUDE = $$CORE_GTEST_PATH/include
+
+INCLUDEPATH += $$CORE_GTEST_PATH
+INCLUDEPATH += $$CORE_GTEST_PATH_INCLUDE
+
+SOURCES += \
+    $$CORE_GTEST_PATH/src/gtest-all.cc \
+	$$CORE_GTEST_PATH/src/gtest_main.cc

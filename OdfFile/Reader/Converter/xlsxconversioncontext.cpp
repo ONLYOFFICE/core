@@ -119,8 +119,8 @@ void xlsx_conversion_context::start_document()
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
 	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
 
-    odf_reader::text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content(instances);
-    odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
+    odf_reader::text_format_properties_ptr		textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::paragraph_format_properties		parFormatProperties		= calc_paragraph_properties_content(instances);
     odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
 
     oox::xlsx_cell_format cellFormat;
@@ -704,11 +704,11 @@ int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 	
 	if (instStyle)
 	{
-		odf_reader::text_format_properties_content_ptr	textFormats = calc_text_properties_content(instStyle);
-		odf_reader::graphic_format_properties			graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::text_format_properties_ptr textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties_ptr graphicFormats = calc_graphic_properties_content(instStyle);
 		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
 
-		dxfId = get_style_manager().dxfId(textFormats, &graphicFormats, &cellFormats);
+		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
 	}
 	return dxfId;
 }
@@ -734,7 +734,7 @@ std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 			if (inst) instances.push_back(inst);
 		}
 
-		odf_reader::text_format_properties_content_ptr textFormatProperties	= calc_text_properties_content(instances);
+		odf_reader::text_format_properties_ptr textFormatProperties	= calc_text_properties_content(instances);
 
 		if (textFormatProperties)
 		{

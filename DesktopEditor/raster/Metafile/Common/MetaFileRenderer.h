@@ -288,7 +288,7 @@ namespace MetaFile
 			}
 
 			m_pRenderer->put_FontName(pFont->GetFaceName());
-			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72));
+			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72.));
 
 			int lStyle = 0;
 			if (pFont->GetWeight() > 550)
@@ -1121,11 +1121,11 @@ namespace MetaFile
 
 			oMatrix.Copy(m_pFile->GetTransform(iGraphicsMode));
 
-			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
-			{
-				oMatrix.M11 /= std::fabs(oMatrix.M11);
-				oMatrix.M22 /= std::fabs(oMatrix.M22);
-			}
+//			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
+//			{
+//				oMatrix.M11 /= std::fabs(oMatrix.M11);
+//				oMatrix.M22 /= std::fabs(oMatrix.M22);
+//			}
 
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(oMatrix.M11, oMatrix.M12 * dKoefY / dKoefX, oMatrix.M21 * dKoefX / dKoefY, oMatrix.M22, oMatrix.Dx * dKoefX, oMatrix.Dy * dKoefY);
@@ -1204,16 +1204,19 @@ namespace MetaFile
 
 			if (NULL != pDataDash && 0 != unSizeDash)
 			{
-				//на данный момент производьный стиль не отрисовывается,
-				//поэтому замещает по возможно его на стандартный
 				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
-				std::vector<double> arDashData;
+				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-					arDashData.push_back(pDataDash[unIndex] * dWidth);
+				{
+					if (PS_STARTCAP_ROUND == ulPenStartCap)
+						arDashes[unIndex] = pDataDash[unIndex] * ((0 == unIndex % 2) ? (dWidth / 4) : (1.5 * dWidth));
+					else
+						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
+				}
+				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
-				m_pRenderer->PenDashPattern(arDashData.data(), unSizeDash);
 				nDashStyle = Aggplus::DashStyleCustom;
 			}
 			else if (PS_SOLID != ulPenStyle)

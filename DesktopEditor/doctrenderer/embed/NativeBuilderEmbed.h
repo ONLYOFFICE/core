@@ -39,46 +39,46 @@ using namespace NSJSBase;
 class CBuilderEmbed : public CJSEmbedObject
 {
 public:
-    NSDoctRenderer::CDocBuilder* m_pBuilder;
+	NSDoctRenderer::CDocBuilder* m_pBuilder;
 
-    CBuilderEmbed() : m_pBuilder(NULL) {}
-    ~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
+	CBuilderEmbed() : m_pBuilder(NULL) {}
+	~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
 
-    virtual void* getObject() { return (void*)m_pBuilder; }
+	virtual void* getObject() { return (void*)m_pBuilder; }
 
 public:
-    JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
-    JSSmart<CJSValue> builder_CreateFile(JSSmart<CJSValue> type);
-    JSSmart<CJSValue> builder_SetTmpFolder(JSSmart<CJSValue> path);
-    JSSmart<CJSValue> builder_SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
-    JSSmart<CJSValue> builder_CloseFile();
-    JSSmart<CJSValue> builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
+	JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
+	JSSmart<CJSValue> builder_CreateFile(JSSmart<CJSValue> type);
+	JSSmart<CJSValue> builder_SetTmpFolder(JSSmart<CJSValue> path);
+	JSSmart<CJSValue> builder_SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
+	JSSmart<CJSValue> builder_CloseFile();
+	JSSmart<CJSValue> builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
 };
 
 class CBuilderDocumentEmbed : public CJSEmbedObject
 {
 public:
-    NSDoctRenderer::CDocBuilder* m_pBuilder;
-    bool m_bIsValid;
-    std::wstring m_sFolder;
+	NSDoctRenderer::CDocBuilder* m_pBuilder;
+	bool m_bIsValid;
+	std::wstring m_sFolder;
 
 public:
-    CBuilderDocumentEmbed() : m_pBuilder(NULL), m_bIsValid(false) {}
-    ~CBuilderDocumentEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
+	CBuilderDocumentEmbed() : m_pBuilder(NULL), m_bIsValid(false) {}
+	~CBuilderDocumentEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
 
-    virtual void* getObject() { return (void*)m_pBuilder; }
-    NSDoctRenderer::CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->GetPrivate(); }
-
-public:
-    void OpenFile(const std::wstring& sFile, const std::wstring& sParams);
-    void CloseFile();
+	virtual void* getObject() { return (void*)m_pBuilder; }
+	NSDoctRenderer::CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->GetPrivate(); }
 
 public:
-    JSSmart<CJSValue> builder_doc_IsValid();
-    JSSmart<CJSValue> builder_doc_GetBinary();
-    JSSmart<CJSValue> builder_doc_GetFolder();
-    JSSmart<CJSValue> builder_doc_CloseFile();
-    JSSmart<CJSValue> builder_doc_GetImageMap();
+	void OpenFile(const std::wstring& sFile, const std::wstring& sParams);
+	void CloseFile();
+
+public:
+	JSSmart<CJSValue> builder_doc_IsValid();
+	JSSmart<CJSValue> builder_doc_GetBinary();
+	JSSmart<CJSValue> builder_doc_GetFolder();
+	JSSmart<CJSValue> builder_doc_CloseFile();
+	JSSmart<CJSValue> builder_doc_GetImageMap();
 };
 
 void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder);

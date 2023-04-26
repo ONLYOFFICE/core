@@ -58,6 +58,7 @@
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -886,7 +887,7 @@ namespace NSDoctRenderer
 		{
 			Init();
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
 			CheckFileDir();
 			NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
@@ -908,7 +909,7 @@ namespace NSDoctRenderer
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
-			LOGGER_SPEED_LAP("open_convert")
+			LOGGER_SPEED_LAP("open_convert");
 
 			if (0 == nReturnCode)
 				return 0;
@@ -966,9 +967,9 @@ namespace NSDoctRenderer
 				return 1;
 			}
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					std::wstring sConvertionParams = L"";
+			std::wstring sConvertionParams = L"";
 			if (NULL != params)
 			{
 				sConvertionParams = std::wstring(params);
@@ -1159,13 +1160,34 @@ namespace NSDoctRenderer
 			}
 #endif
 
+			// html correct (TODO: move to x2t)
+			if (0 == nReturnCode && type == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER)
+			{
+				COfficeUtils oUtils;
+				if (S_OK == oUtils.IsArchive(_path))
+				{
+					std::wstring sTmpFile = sDstTmpDir + L"/tmp_html";
+					NSDirectory::CreateDirectory(sTmpFile);
+					if (S_OK == oUtils.ExtractToDirectory(_path, sTmpFile, NULL, 0))
+					{
+						std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sTmpFile);
+						if (arFiles.size() == 1)
+						{
+							NSFile::CFileBinary::Remove(_path);
+							NSFile::CFileBinary::Move(arFiles[0], _path);
+						}
+					}
+				}
+			}
+
+
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
 
-			LOGGER_SPEED_LAP("save_convert")
+			LOGGER_SPEED_LAP("save_convert");
 
-					if (0 == nReturnCode)
-					return 0;
+			if (0 == nReturnCode)
+				return 0;
 
 			std::wstring sErrorLog = L"save file error (" + std::to_wstring(nReturnCode) + L")";
 			CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
@@ -1200,6 +1222,45 @@ namespace NSDoctRenderer
 					return false;
 			}
 			return true;
+		}
+
+		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
+		{
+			int nType = -1;
+			if (L"docx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+			else if (L"doc" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+			else if (L"odt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+			else if (L"rtf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+			else if (L"txt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+			else if (L"pptx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+			else if (L"odp" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+			else if (L"xlsx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+			else if (L"xls" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+			else if (L"ods" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+			else if (L"csv" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+			else if (L"pdf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+			else if (L"image" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"jpg" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"png" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"html" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+
+			return SaveFile(nType, path, params);
 		}
 
 		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)

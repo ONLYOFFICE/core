@@ -47,8 +47,8 @@ namespace odf_reader
 	class styles_container;
 	typedef boost::shared_ptr<styles_container> styles_container_ptr;
 	
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 };
 namespace oox {
 	
@@ -61,7 +61,7 @@ public:
     ~xlsx_text_context	();
 
 	void set_local_styles_container	(odf_reader::styles_container *local_styles_);
-	void set_cell_text_properties	(odf_reader::text_format_properties_content_ptr text_properties);    
+	void set_cell_text_properties	(odf_reader::text_format_properties_ptr text_properties);    
     
     void			start_paragraph(const std::wstring & styleName);
     void			end_paragraph();

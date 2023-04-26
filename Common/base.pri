@@ -137,7 +137,8 @@ mac {
 
 gcc {
     COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
-    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
+    COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
+    COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
     lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
     lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
 }

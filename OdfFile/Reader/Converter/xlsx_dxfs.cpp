@@ -61,11 +61,11 @@ xlsx_dxfs::~xlsx_dxfs()
 {
 }
 
-size_t xlsx_dxfs::dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-							const odf_reader::graphic_format_properties				*graphProp,
+size_t xlsx_dxfs::dxfId(	const odf_reader::text_format_properties_ptr &textProp,
+							const odf_reader::graphic_format_properties_ptr &graphProp,
 							const odf_reader::style_table_cell_properties_attlist	*cellProp)
 {
-	xlsx_fill fill( graphProp, cellProp);
+	xlsx_fill fill( graphProp.get(), cellProp);
 	xlsx_font font( textProp, NULL, cellProp, false, fonts_container);
 
 	impl_->dxf_array.push_back(std::make_pair(fill, font));
@@ -88,8 +88,8 @@ void xlsx_dxfs::serialize(std::wostream & _Wostream)  const
             {
 				CP_XML_NODE(L"dxf")
 				{
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].first);
-					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].second);
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].second); //font
+					xlsx_serialize(CP_XML_STREAM(), impl_->dxf_array[i].first); //fill
 				}
             }
         }

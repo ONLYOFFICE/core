@@ -87,6 +87,7 @@ namespace PdfWriter
 	class CRadioGroupField;
 	class CPictureField;
 	class CSignatureField;
+	class CDateTimeField;
 	class CFieldBase;
 	//----------------------------------------------------------------------------------------
 	// CDocument
@@ -154,6 +155,7 @@ namespace PdfWriter
 		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
 		CPictureField*    CreatePictureField();
 		CSignatureField*  CreateSignatureField();
+		CDateTimeField*   CreateDateTimeField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);

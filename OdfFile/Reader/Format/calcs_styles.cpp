@@ -39,11 +39,11 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-text_format_properties_content_ptr calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
+text_format_properties_ptr calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
 {
-	if (textProps.empty()) return text_format_properties_content_ptr();
+	if (textProps.empty()) return text_format_properties_ptr();
 
-	text_format_properties_content_ptr result = boost::make_shared<text_format_properties_content>();
+	text_format_properties_ptr result = boost::make_shared<text_format_properties>();
  	
 	for (size_t i = 0; i < textProps.size(); i++)
     {
@@ -53,7 +53,7 @@ text_format_properties_content_ptr calc_text_properties_content(const std::vecto
     return result;
 }
 
-text_format_properties_content_ptr calc_text_properties_content(const style_instance * styleInstance)
+text_format_properties_ptr calc_text_properties_content(const style_instance * styleInstance)
 {
     std::vector<const style_text_properties*> textProps;
 
@@ -70,15 +70,15 @@ text_format_properties_content_ptr calc_text_properties_content(const style_inst
     return calc_text_properties_content(textProps);
 }
 
-text_format_properties_content_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances)
+text_format_properties_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
-	if (styleInstances.empty()) return text_format_properties_content_ptr();
+	if (styleInstances.empty()) return text_format_properties_ptr();
 
-	text_format_properties_content_ptr result = boost::make_shared<text_format_properties_content>();
+	text_format_properties_ptr result = boost::make_shared<text_format_properties>();
 
  	for (size_t i = 0; i < styleInstances.size(); i++)
     {
-		text_format_properties_content_ptr props = calc_text_properties_content(styleInstances[i]);
+		text_format_properties_ptr props = calc_text_properties_content(styleInstances[i]);
 		if (props)
 		{
 			result->apply_from(*props.get());
@@ -88,20 +88,25 @@ text_format_properties_content_ptr calc_text_properties_content(const std::vecto
 }
 
 //////////////
-graphic_format_properties calc_graphic_properties_content(const std::vector<const graphic_format_properties*> & graphicProps)
+graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const graphic_format_properties*> & graphicProps)
 {
-    graphic_format_properties result;
+	if (graphicProps.empty()) return graphic_format_properties_ptr();
+	
+	graphic_format_properties_ptr result = boost::make_shared<graphic_format_properties>();
+
  	for (size_t i = 0; i < graphicProps.size(); i++)
     {
         if (graphicProps[i])
-			result.apply_from(graphicProps[i]);
+			result->apply_from(graphicProps[i]);
     }
     return result;
 }
 
-graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance)
+graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance)
 {
-    std::vector<const graphic_format_properties*> graphicProps;
+	if (!styleInstance) return graphic_format_properties_ptr();
+	
+	std::vector<const graphic_format_properties*> graphicProps;
     while (styleInstance)
     {
         if (const style_content * content = styleInstance->content())
@@ -115,19 +120,19 @@ graphic_format_properties calc_graphic_properties_content(const style_instance *
     return calc_graphic_properties_content(graphicProps);
 }
 
-graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances)
+graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances)
 {
-    graphic_format_properties result;
+	if (styleInstances.empty()) return graphic_format_properties_ptr();
 
- 	for (size_t i = 0; i < styleInstances.size(); i++)
+	graphic_format_properties_ptr result = boost::make_shared<graphic_format_properties>();
+	
+	for (size_t i = 0; i < styleInstances.size(); i++)
 	{
-		graphic_format_properties f = calc_graphic_properties_content(styleInstances[i]);
-        result.apply_from(&f);
+		graphic_format_properties_ptr f = calc_graphic_properties_content(styleInstances[i]);
+		result->apply_from(f.get());
     }
     return result;
 }
-
-////
 
 paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_paragraph_properties*> & parProps)
 {

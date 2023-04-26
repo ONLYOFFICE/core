@@ -1838,7 +1838,7 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 	if (odf_reader::style_instance * styleInst =
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
-		double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 		if (font_size > 0) current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
@@ -1938,7 +1938,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
 		{
-			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 			if (font_size > 0) current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);

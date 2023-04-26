@@ -1130,6 +1130,11 @@ namespace MetaFile
 		if (NULL == pFont)
 			return;
 
+		const std::wstring wsText = StringNormalization(wsString);
+
+		if (wsText.empty())
+			return;
+
 		NodeAttributes arNodeAttributes;
 
 		TXForm oTransform;
@@ -1182,7 +1187,7 @@ namespace MetaFile
 		arNodeAttributes.push_back({L"x", wsX});
 		arNodeAttributes.push_back({L"y", wsY});
 
-		WriteNode(L"text", arNodeAttributes, wsString);
+		WriteNode(L"text", arNodeAttributes, wsText);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF &oRect)

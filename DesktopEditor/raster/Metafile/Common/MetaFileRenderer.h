@@ -288,7 +288,7 @@ namespace MetaFile
 			}
 
 			m_pRenderer->put_FontName(pFont->GetFaceName());
-			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72. * m_pFile->GetTransform()->M11));
+			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72.));
 
 			int lStyle = 0;
 			if (pFont->GetWeight() > 550)

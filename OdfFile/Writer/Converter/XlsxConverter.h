@@ -168,6 +168,8 @@ namespace Oox2Odf
 		void convert_styles();		
 		void convert();
 		
+		odf_writer::office_element_ptr convert_sheet(int id, const std::wstring &table_name);
+
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);

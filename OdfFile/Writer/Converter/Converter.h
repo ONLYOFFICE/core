@@ -478,6 +478,7 @@ public:
 		}
 
         void set_fonts_directory (const std::wstring & fontsPath);
+		void set_temp_directory (const std::wstring & tempPath);
 		
 		bool encrypt_document (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath);
 		bool encrypt_file (const std::wstring &password, const std::wstring & srcPath, const std::wstring & dstPath, std::wstring &encrypt_info, int &size);

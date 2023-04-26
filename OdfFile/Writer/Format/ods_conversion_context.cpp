@@ -49,7 +49,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 ods_conversion_context::ods_conversion_context(package::odf_document* outputDocument) 
-	: odf_conversion_context(SpreadsheetDocument, outputDocument), table_context_(*this)
+	: odf_conversion_context(SpreadsheetDocument, outputDocument), table_context_(*this), root_spreadsheet_(NULL)
 {
 }
 
@@ -120,11 +120,19 @@ void ods_conversion_context::add_header_footer_image(const std::wstring & name, 
 }
 void ods_conversion_context::start_sheet()
 {
-	create_element(L"table", L"table", root_spreadsheet_->getContent(), this);	
-	table_context_.start_table(root_spreadsheet_->getContent().back());
+	if (root_spreadsheet_)
+	{
+		create_element(L"table", L"table", root_spreadsheet_->getContent(), this);
+		table_context_.start_table(root_spreadsheet_->getContent().back());
+	}
+	else
+	{
+		create_element(L"table", L"table", get_current_object_element(), this);
+		table_context_.start_table(get_current_object_element());
+	}
 
-		drawing_context()->set_styles_context(styles_context());
-		page_layout_context()->set_styles_context(styles_context());
+	drawing_context()->set_styles_context(styles_context());
+	page_layout_context()->set_styles_context(styles_context());
 		
 	page_layout_context()->add_master_page(L"");
 

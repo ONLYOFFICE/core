@@ -1824,11 +1824,23 @@ void odf_chart_context::set_cash(std::wstring format_code, std::vector<std::wstr
 		}
 	}
 }
+void odf_chart_context::set_local_table(office_element_ptr & table_elm)
+{
+	if (!table_elm) return;
 
+	impl_->current_level_[0].elm->add_child_element(table_elm);
+	size_t level = impl_->current_level_.size();
+
+	odf_element_state state(table_elm, L"", office_element_ptr(), level + 1);
+	impl_->current_chart_state_.elements_.push_back(state);
+
+	impl_->local_table_enabled_ = false;
+	impl_->local_table_reset_ref_ = false;
+}
 void odf_chart_context::set_local_table (bool Val, bool use_cash_only)
 {
-	impl_->local_table_enabled_		= Val;
-	impl_->local_table_reset_ref_	= use_cash_only;
+	impl_->local_table_enabled_ = Val;
+	impl_->local_table_reset_ref_ = use_cash_only;
 }
 
 struct _sort_cells
@@ -2012,7 +2024,7 @@ void odf_chart_context::Impl::create_local_table()
 	//create tables
 
 	office_element_ptr table_elm;
-	create_element(L"table", L"table",table_elm, odf_context_);
+	create_element(L"table", L"table", table_elm, odf_context_);
 	ods_table_state * table_state = new ods_table_state(odf_context_, table_elm);
 
 	if (table_state)

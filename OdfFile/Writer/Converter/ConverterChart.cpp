@@ -32,6 +32,8 @@
 
 #include "Converter.h"
 
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+
 #include "../../../OOXML/XlsxFormat/Chart/ChartSerializeEx.h"
 
 #include "../../Common/utils.h"
@@ -114,8 +116,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 {
 	if (!oox_chart)return;
 
-	convert(oox_chart->m_externalData);
-
 	convert(oox_chart->m_spPr.GetPointer());	
 	convert_chart_text(oox_chart->m_txPr.GetPointer(), true);
 
@@ -137,6 +137,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
 	}
 	odf_context()->chart_context()->end_plot_area();
+	
+	convert(oox_chart->m_externalData);
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_View3D *oox_view3D)
 {
@@ -1330,17 +1332,33 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 
 	if (false == external_data->m_id.IsInit()) return;
 
-	//CString pathEmbeddings = GetEmbeddings(*external_data->m_id);
-	//oO
-	//unpack
+	smart_ptr<OOX::File> file = find_file_by_id(*external_data->m_id);
+	smart_ptr<OOX::Media> media = file.smart_dynamic_cast<OOX::Media>();
 
-	//get/check Format - xlsx
-	//конверт sheets -> table:table
-
-	//или
-	//convert xlsx -> ods & read tables???
-
-	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+	bool bConvertLocal = false;
+	if (media.IsInit() && NSFile::CFileBinary::Exists(media->filename().GetPath()))
+	{
+		std::wstring sTempUnpackedXLSX = odf_context()->temp_path_ + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
+		
+		COfficeUtils oCOfficeUtils(NULL);
+		if (S_OK == oCOfficeUtils.ExtractToDirectory(media->filename().GetPath(), sTempUnpackedXLSX, NULL, 0))
+		{
+			XlsxConverter converter(sTempUnpackedXLSX, false);
+			odf_writer::office_element_ptr local_table = converter.convert_sheet(0, L"local-table");
+			if (local_table)
+			{
+				odf_context()->chart_context()->set_local_table(local_table);
+				bConvertLocal = true;
+			}
+		}
+		NSDirectory::DeleteDirectory(sTempUnpackedXLSX);
+	}
+	
+	if (!bConvertLocal)
+	{
+		odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data, bool categories, bool label)
 {

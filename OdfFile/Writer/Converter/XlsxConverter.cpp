@@ -179,6 +179,21 @@ bool XlsxConverter::convertDocument()
 	
 	return true;
 }
+odf_writer::office_element_ptr XlsxConverter::convert_sheet(int id, const std::wstring &table_name)
+{
+	if (!xlsx_document) return odf_writer::office_element_ptr();
+	if (id < 0 && id > (int)xlsx_document->m_arWorksheets.size()) return odf_writer::office_element_ptr();
+
+	ods_context->create_object();
+	ods_context->start_sheet();
+	ods_context->current_table()->set_table_name(table_name);
+	
+	convert(xlsx_document->m_arWorksheets[id]);
+	ods_context->end_sheet();
+	ods_context->end_object();
+
+	return ods_context->get_current_object_element();
+}
 
 void XlsxConverter::convert_sheets()
 {

@@ -77,7 +77,7 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
-    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate)
+    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate, const std::wstring & tempPath)
     { 
 		impl_ = NULL;
 		
@@ -85,8 +85,11 @@ namespace Oox2Odf
         if (type == _T("spreadsheet"))	impl_ = new XlsxConverter(path, bTemplate);
         if (type == _T("presentation"))	impl_ = new PptxConverter(path, bTemplate);
 
-        if (impl_)
-            impl_->set_fonts_directory(fontsPath);
+		if (impl_)
+		{
+			impl_->set_fonts_directory(fontsPath);
+			impl_->set_temp_directory(tempPath);
+		}
 	}
 
 	Converter::~Converter() 
@@ -320,7 +323,12 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 	
 	return true;
 }
+void OoxConverter::set_temp_directory(const std::wstring & tempPath)
+{
+	if (odf_context() == NULL) return;
 
+	odf_context()->set_temp_directory(tempPath);
+}
 void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
 {
 	if (odf_context() == NULL) return;

@@ -156,6 +156,8 @@ public:
 		void set_layout_w(double val,int mode);
 		void set_layout_h(double val,int mode);
 
+		void set_local_table(office_element_ptr & table);
+
 		void set_local_table(bool Val, bool use_cash_only = false);
 		void set_cash(std::wstring format, std::vector<std::wstring> &data, bool categories, bool label);
 

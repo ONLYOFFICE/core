@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,12 +39,13 @@
 #ifdef _LINUX
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 #include <stdio.h>
 #endif
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath)
+	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutIsTimeout = nullptr)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -93,7 +94,14 @@ namespace NSX2T
 			AssignProcessToJobObject(ghJob, processinfo.hProcess);
 		}
 
-		::WaitForSingleObject(processinfo.hProcess, INFINITE);
+		if(nTimeout == 0)
+				nTimeout = INFINITE;
+
+		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout * 1000);
+
+		// true if timeout
+		if(bOutIsTimeout != nullptr)
+				*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 
@@ -156,6 +164,12 @@ namespace NSX2T
 			nenv[1] = sPATH.c_str();
 			nenv[2] = NULL;
 #endif
+			if(nTimeout != 0)
+			{
+				// 5 secs to send signal etc...
+				rlimit limit = {nTimeout, nTimeout + 5};
+				setrlimit(RLIMIT_CPU, &limit);
+			}
 
 			execve(sProgramm.c_str(),
 				   (char * const *)nargs,
@@ -164,9 +178,13 @@ namespace NSX2T
 			break;
 		}
 		default: // parent process, pid now contains the child pid
-			while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+
+			// wait for child to complete
+			while (-1 == waitpid(pid, &status, 0));
 			if(WIFSIGNALED(status))
 			{
+				if(bOutIsTimeout != nullptr && WTERMSIG(status) == SIGXCPU)
+					*bOutIsTimeout = true;
 				nReturnCode = status;
 			}
 			else if (WIFEXITED(status))

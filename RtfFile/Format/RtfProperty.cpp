@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -142,24 +142,19 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 }
 std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if( IsValid() == false) return L"";
+	if ( IsValid() == false) return L"";
 
     std::wstring sResult;
 	
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
     std::wstring sFontName = m_sName;
 
-    if ((sFontName.length() > 0 ) && (sFontName[0] == 0x00b9 || sFontName[0] > 0xff00) )//fondj.rtf
-	{
-        if (m_sAltName.length() > 0) sFontName = m_sAltName;
-        else sFontName.clear();
-	}
     if( sFontName.empty() )
 	{
-		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDeffFont )
+		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDefFont )
 		{
 			RtfFont oDefFont;
-			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDeffFont, oDefFont );
+			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDefFont, oDefFont );
 			sFontName = oDefFont.m_sName;
 		}
         if( sFontName.empty())
@@ -321,7 +316,7 @@ RtfColor::RtfColor()
 {
 	SetDefault();
 }
-RtfColor::RtfColor(int nHex)
+RtfColor::RtfColor(_UINT32 nHex)
 {
 	SetHEX( nHex );
 }
@@ -384,7 +379,7 @@ const RtfColor& RtfColor::operator=( const RtfColor& oColor )
 	m_bAuto		= oColor.m_bAuto;
 	return (*this);
 }
-void RtfColor::SetHEX(int color)
+void RtfColor::SetHEX(_UINT32 color)
 {
 	SetDefault();
 
@@ -392,11 +387,11 @@ void RtfColor::SetHEX(int color)
 	m_byteGreen = (color&0xFF00) >> 8;
 	m_byteBlue	= (color&0xFF);
 }
-int RtfColor::GetRGB()const
+_UINT32 RtfColor::GetRGB()const
 {
 	return (m_byteRed << 16) | (m_byteGreen << 8) | m_byteBlue;
 }
-void RtfColor::SetRGB(unsigned int color)
+void RtfColor::SetRGB(_UINT32 color)
 {
 	SetDefault();
 
@@ -420,7 +415,7 @@ void RtfColor::SetHSL(double dH, double dS,double dL)
 {
 	HSL2RGB(dH, dS, dL, m_byteRed, m_byteGreen, m_byteBlue);
 }
-void RtfColor::SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
+void RtfColor::SetRGBPercent(_INT32 nRedPer, _INT32 nGreenPer, _INT32 nBluePer)
 {
 	m_byteRed	= (BYTE)(nRedPer	* 255 / 100);
 	m_byteGreen = (BYTE)(nGreenPer	* 255 / 100);
@@ -430,7 +425,7 @@ void RtfColor::SetHEXString(std::wstring hex)
 {
 	if ( L"auto" != hex )
 	{
-		int color	= Strings::ToColor(hex);
+		_UINT32 color	= Strings::ToColor(hex);
 
 		SetRGB(color);
 	}
@@ -460,7 +455,7 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 	}
 	else
 	{
-		int nColor;
+		_INT32 nColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor(*this, nColor) )
             sResult += L"\\c" + std::to_wstring(nColor); //todo
 	}
@@ -1615,11 +1610,19 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF == m_nFont)
 	{
 		if (RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
-			m_nFont = poRtfDocument->m_oProperty.m_nDeffMathFont;
+			m_nFont = poRtfDocument->m_oProperty.m_nDefMathFont;
 		else
-			m_nFont = poRtfDocument->m_oProperty.m_nDeffFont;
+			m_nFont = poRtfDocument->m_oProperty.m_nDefFont;
 	}
-	if( PROP_DEF != m_nFont )
+	if (PROP_DEF == m_nLanguage)
+	{
+		m_nLanguage = poRtfDocument->m_oProperty.m_nDefLang;
+	}
+	if (PROP_DEF == m_nLanguageAsian)
+	{
+		m_nLanguageAsian = poRtfDocument->m_oProperty.m_nDefLangAsian;
+	}
+	if (PROP_DEF != m_nFont)
 	{
 		RtfFont oCurFont;
 		RenderParameter oNewParam = oRenderParameter;

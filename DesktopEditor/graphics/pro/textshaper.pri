@@ -9,7 +9,7 @@ core_windows {
 }
 
 core_linux {
-    !system( g++ --version | grep -e "\<5.[0-9]" ):CONFIG -= enable_support_shaper
+    build_gcc_less_5:CONFIG -= enable_support_shaper
 }
 
 enable_support_shaper {

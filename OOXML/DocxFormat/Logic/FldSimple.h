@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,20 +30,18 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
-#define OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
-#include "FldChar.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+		class CFFData;
+
 		//--------------------------------------------------------------------------------
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -65,16 +63,14 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			SimpleTypes::COnOff								m_oDirty;
-			SimpleTypes::COnOff								m_oFldLock;
-			nullable<std::wstring>							m_sInstr;
+			SimpleTypes::COnOff				m_oDirty;
+			SimpleTypes::COnOff				m_oFldLock;
+			nullable_string					m_sInstr;
+			nullable_string					m_sPrivateData;
 
-			nullable<OOX::Logic::CFFData>					m_oFFData;
+			nullable<OOX::Logic::CFFData>	m_oFFData;
 		};
 
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_

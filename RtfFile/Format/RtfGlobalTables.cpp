@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,10 +32,9 @@
 #include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
-int RtfFontTable::DirectAddItem( RtfFont piRend)
+void RtfFontTable::AddFont( RtfFont piRend)
 {
 	m_aArray.push_back(piRend);
-	return (int)m_aArray.size() - 1;
 }
 bool RtfFontTable::GetFont( int nId, RtfFont& oFont)
 {
@@ -43,6 +42,7 @@ bool RtfFontTable::GetFont( int nId, RtfFont& oFont)
 	{
 		if( nId == m_aArray[i].m_nID )
 		{
+			m_aArray[i].m_bUsed = true;
 			oFont =  m_aArray[i];
 			return true;
 		}
@@ -55,6 +55,7 @@ bool RtfFontTable::GetFont( std::wstring sName, RtfFont& oFont )
 	{
 		if( sName == m_aArray[i].m_sName )
 		{
+			m_aArray[i].m_bUsed = true;
 			oFont =  m_aArray[i];
 			return true;
 		}
@@ -66,8 +67,11 @@ std::wstring RtfFontTable::RenderToOOX(RenderParameter oRenderParameter)
 	std::wstring sResult;
 	if( !m_aArray.empty())
 	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+		for (size_t i = 0; i < m_aArray.size(); i++)
+		{
+			if (m_aArray[i].m_bUsed)
+				sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+		}
 
 	}
 	return sResult;
@@ -106,10 +110,9 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 RtfColorTable::RtfColorTable()
 {
 }
-int RtfColorTable::DirectAddItem( RtfColor piRend)
+void RtfColorTable::AddColor( RtfColor piRend)
 {
 	m_aArray.push_back(piRend);
-	return (int)m_aArray.size() - 1;
 }
 int RtfColorTable::AddItem( RtfColor piRend)
 {
@@ -152,7 +155,7 @@ bool RtfColorTable::GetColor( std::wstring sTheme, RtfColor& oColor)
 	}
 	return false;
 }
-bool RtfColorTable::GetColor( RtfColor oColor , int & nId)
+bool RtfColorTable::GetColor( RtfColor oColor , _INT32 & nId)
 {
 	for (size_t i = 0; i < m_aArray.size(); i++ )
 	{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,7 +41,7 @@ namespace NSDoctRenderer
 	 * The string class with the wchar_t* property.
 	 */
 	class CString_Private;
-	class Q_DECL_EXPORT CString
+	class BUILDER_DECL CString
 	{
 	public:
 		CString();
@@ -61,7 +61,7 @@ namespace NSDoctRenderer
 	 * It represents a wrapper for a JS object.
 	 */
 	class CDocBuilderValue_Private;
-	class Q_DECL_EXPORT CDocBuilderValue
+	class BUILDER_DECL CDocBuilderValue
 	{
 	public:
 		CDocBuilderValue();
@@ -238,7 +238,7 @@ namespace NSDoctRenderer
 	 * All opened scopes will be closed automatically when the builder CloseFile method is called.
 	 */
 	class CDocBuilderContextScope_Private;
-	class Q_DECL_EXPORT CDocBuilderContextScope
+	class BUILDER_DECL CDocBuilderContextScope
 	{
 	public:
 		CDocBuilderContextScope();
@@ -261,7 +261,7 @@ namespace NSDoctRenderer
 	 * Class for getting JS context for working.
 	 */
 	class CDocBuilderContext_Private;
-	class Q_DECL_EXPORT CDocBuilderContext
+	class BUILDER_DECL CDocBuilderContext
 	{
 	public:
 		CDocBuilderContext();
@@ -333,7 +333,7 @@ namespace NSDoctRenderer
 	 * Base class used by ONLYOFFICE Document Builder for the document file (text document, spreadsheet, presentation, form document, PDF) to be generated.
 	 */
 	class CDocBuilder_Private;
-	class Q_DECL_EXPORT CDocBuilder
+	class BUILDER_DECL CDocBuilder
 	{
 	public:
 		CDocBuilder();
@@ -355,6 +355,7 @@ namespace NSDoctRenderer
 		 * @return True if the operation is successful
 		 */
 		bool CreateFile(const int& type);
+		bool CreateFile(const wchar_t* extension);
 		/**
 		 * Sets the path to the folder where the program will temporarily save files needed for the program correct work.
 		 * After the successful document file creation, all the files will be deleted from the folder. If no temporary folder is set, the system one will be used.
@@ -380,6 +381,7 @@ namespace NSDoctRenderer
 		 * @return Process x2t return code
 		 */
 		int SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
+		int SaveFile(const wchar_t* extension, const wchar_t* path, const wchar_t* params = 0);
 		/**
 		 * Closes the file to stop working with it. You can use a single ONLYOFFICE Document Builder instance
 		 * to work with all your files, but you need to close the previous file before you can

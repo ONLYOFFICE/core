@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,7 +55,7 @@
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../OOXML/Base/Unit.h"
 
-static int current_id_changes = 0;
+static int current_id_changes = 1;
 
 namespace cpdoccore { 
 namespace oox {
@@ -237,7 +237,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 				get_styles_context().start();
 
 
-				if(( textProp) && (textProp->content_.r_style_))parenStyleId = _T("");
+				if(( textProp) && (textProp->content_.r_style_)) parenStyleId = _T("");
 				textProp->content_.docx_convert(*this);
 			}
 	        
@@ -1838,7 +1838,7 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 	if (odf_reader::style_instance * styleInst =
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
-		double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 		if (font_size > 0) current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
@@ -1938,7 +1938,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
 		{
-			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 			if (font_size > 0) current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
@@ -2375,23 +2375,27 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 
 		if (state_.in_paragraph_)
 		{
-			std::wstring format_change = L" w:date=\"" + state.date + L"\"" +
-				L" w:author=\"" + state.author + L"\"";
+			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + state.author + L"\"";
 
 			finish_run();
-			state.active = true;
 			state.in_drawing = get_drawing_state_content();
 
-			if (state.type == 1)
+			if (state.oox_id == 0)
 			{
-				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) << L"\">";
+				state.oox_id = current_id_changes++;
+			}			
+
+			if (state.type == 1 && !state.active)
+			{
+				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
+				state.active = true;
 			}
 
 			if (state.type == 2)
 			{
 				for (size_t i = 0; i < state.content.size(); i++)
 				{
-					output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) << L"\">";
+					output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
 
 					output_stream() << state.content[i];
 
@@ -2429,7 +2433,12 @@ void docx_conversion_context::start_changes()
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
 		change_attr += L" w:author=\"" + state.author + L"\"";
-		change_attr += L" w:id=\"" + std::to_wstring(current_id_changes++) + L"\"";
+
+		if (state.oox_id == 0)
+		{
+			state.oox_id = current_id_changes++;
+		}
+		change_attr += L" w:id=\"" + std::to_wstring(state.oox_id) + L"\"";
 		
 		if (state.out_active)
 		{

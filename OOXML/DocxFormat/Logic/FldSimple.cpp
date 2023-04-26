@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,10 +35,12 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "Sdt.h"
 #include "Hyperlink.h"
 #include "SmartTag.h"
 #include "Dir.h"
+#include "FldChar.h"
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
@@ -85,12 +87,12 @@ namespace OOX
 		}
 		void CFldSimple::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-            XmlMacroReadAttributeBase( oNode, _T("w:dirty"),   m_oDirty );
-            XmlMacroReadAttributeBase( oNode, _T("w:fldLock"), m_oFldLock );
-            XmlMacroReadAttributeBase( oNode, _T("w:instr"),   m_sInstr );
+            XmlMacroReadAttributeBase( oNode, L"w:dirty",   m_oDirty );
+            XmlMacroReadAttributeBase( oNode, L"w:fldLock", m_oFldLock );
+            XmlMacroReadAttributeBase( oNode, L"w:instr",   m_sInstr );
 
 			XmlUtils::CXmlNodes oChilds;
-			if ( oNode.GetNodes( _T("*"), oChilds ) )
+			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
 				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
@@ -100,80 +102,82 @@ namespace OOX
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
-						if ( _T("w:bdo") == sName )
+						if ( L"w:bdo" == sName )
 							AssignPtrXmlContent(pItem, CBdo, oItem)
-						else if ( _T("w:bookmarkEnd") == sName )
+						else if ( L"w:bookmarkEnd" == sName )
 							AssignPtrXmlContent(pItem, CBookmarkEnd, oItem)
-						else if ( _T("w:bookmarkStart") == sName )
+						else if ( L"w:bookmarkStart" == sName )
 							AssignPtrXmlContent(pItem, CBookmarkStart, oItem)
-						else if ( _T("w:commentRangeEnd") == sName )
+						else if ( L"w:commentRangeEnd" == sName )
 							AssignPtrXmlContent(pItem, CCommentRangeEnd, oItem)
-						else if ( _T("w:commentRangeStart") == sName )
+						else if ( L"w:commentRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CCommentRangeStart, oItem)
-						//else if ( _T("w:customXml") == sName )
+						//else if ( L"w:customXml" == sName )
 						//	pItem = new CCustomXml( oItem );
-						else if ( _T("w:customXmlDelRangeEnd") == sName )
+						else if ( L"w:customXmlDelRangeEnd" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlDelRangeEnd, oItem)
-						else if ( _T("w:customXmlDelRangeStart") == sName )
+						else if ( L"w:customXmlDelRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlDelRangeStart, oItem)
-						else if ( _T("w:customXmlInsRangeEnd") == sName )
+						else if ( L"w:customXmlInsRangeEnd" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlInsRangeEnd, oItem)
-						else if ( _T("w:customXmlInsRangeStart") == sName )
+						else if ( L"w:customXmlInsRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlInsRangeStart, oItem)
-						else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+						else if ( L"w:customXmlMoveFromRangeEnd" == sName ) 
 							AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeEnd, oItem)
-						else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+						else if ( L"w:customXmlMoveFromRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeStart, oItem)
-						else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+						else if ( L"w:customXmlMoveToRangeEnd" == sName ) 
 							AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeEnd, oItem)
-						else if ( _T("w:customXmlMoveToRangeStart") == sName )
+						else if ( L"w:customXmlMoveToRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeStart, oItem)
-						//else if ( _T("w:del") == sName )
+						//else if ( L"w:del" == sName )
 						//	pItem = new CDel( oItem );
-						else if ( _T("w:dir") == sName )
+						else if ( L"w:dir" == sName )
 							AssignPtrXmlContent(pItem, CDir, oItem)
-						else if ( _T("w:fldSimple") == sName )
+						else if ( L"w:fldSimple" == sName )
 							AssignPtrXmlContent(pItem, CFldSimple, oItem)
-						else if ( _T("w:hyperlink") == sName )
+						else if ( L"w:hyperlink" == sName )
 							AssignPtrXmlContent(pItem, CHyperlink, oItem)
-						//else if ( _T("w:ins") == sName )
+						//else if ( L"w:ins" == sName )
 						//	pItem = new CIns( oItem );
-						//else if ( _T("w:moveFrom") == sName )
+						//else if ( L"w:moveFrom" == sName )
 						//	pItem = new CMoveFrom( oItem );
-						else if ( _T("w:moveFromRangeEnd") == sName )
+						else if ( L"w:moveFromRangeEnd" == sName )
 							AssignPtrXmlContent(pItem, CMoveFromRangeEnd, oItem)
-						else if ( _T("w:moveFromRangeStart") == sName )
+						else if ( L"w:moveFromRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CMoveFromRangeStart, oItem)
-						//else if ( _T("w:moveTo") == sName )
+						//else if ( L"w:moveTo" == sName )
 						//	pItem = new CMoveTo( oItem );
-						else if ( _T("w:moveToRangeEnd") == sName )
+						else if ( L"w:moveToRangeEnd" == sName )
 							AssignPtrXmlContent(pItem, CMoveToRangeEnd, oItem)
-						else if ( _T("w:moveToRangeStart") == sName )
+						else if ( L"w:moveToRangeStart" == sName )
 							AssignPtrXmlContent(pItem, CMoveToRangeStart, oItem)
-						else if ( _T("m:oMath") == sName )
+						else if ( L"m:oMath" == sName )
 							AssignPtrXmlContent(pItem, COMath, oItem)
-						else if ( _T("m:oMathPara") == sName )
+						else if ( L"m:oMathPara" == sName )
 							AssignPtrXmlContent(pItem, COMathPara, oItem)
-						else if ( _T("w:permEnd") == sName )
+						else if ( L"w:permEnd" == sName )
 							AssignPtrXmlContent(pItem, CPermEnd, oItem)
-						else if ( _T("w:permStart") == sName )
+						else if ( L"w:permStart" == sName )
 							AssignPtrXmlContent(pItem, CPermStart, oItem)
-						else if ( _T("w:proofErr") == sName )
+						else if ( L"w:proofErr" == sName )
 							AssignPtrXmlContent(pItem, CProofErr, oItem)
-						else if ( _T("w:r") == sName )
+						else if ( L"w:r" == sName )
 							AssignPtrXmlContent(pItem, CRun, oItem)
-						else if ( _T("w:sdt") == sName )
+						else if ( L"w:sdt" == sName )
 							AssignPtrXmlContent(pItem, CSdt, oItem)
-						else if ( _T("w:smartTag") == sName )
+						else if ( L"w:smartTag" == sName )
 							AssignPtrXmlContent(pItem, CSmartTag, oItem)
-						//else if ( _T("w:subDoc") == sName )
+						//else if ( L"w:subDoc" == sName )
 						//	pItem = new CSubDoc( oItem );
-						else if ( _T("w:ffData") == sName )
+						else if ( L"w:ffData" == sName )
 						{
-							m_oFFData = new CFFData();
 							m_oFFData = oItem;
 						}
-
+						else if (L"w:fldData" == sName)
+						{
+							m_sPrivateData = oItem.GetText();
+						}
 						if ( pItem )
 							m_arrItems.push_back( pItem );
 					}
@@ -187,115 +191,123 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				if ( _T("w:bdo") == sName )
+				if ( L"w:bdo" == sName )
 					AssignPtrXmlContent(pItem, CBdo, oReader)
-				else if ( _T("w:bookmarkEnd") == sName )
+				else if ( L"w:bookmarkEnd" == sName )
 					AssignPtrXmlContent(pItem, CBookmarkEnd, oReader)
-				else if ( _T("w:bookmarkStart") == sName )
+				else if ( L"w:bookmarkStart" == sName )
 					AssignPtrXmlContent(pItem, CBookmarkStart, oReader)
-				else if ( _T("w:commentRangeEnd") == sName )
+				else if ( L"w:commentRangeEnd" == sName )
 					AssignPtrXmlContent(pItem, CCommentRangeEnd, oReader)
-				else if ( _T("w:commentRangeStart") == sName )
+				else if ( L"w:commentRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CCommentRangeStart, oReader)
-				//else if ( _T("w:customXml") == sName )
+				//else if ( L"w:customXml" == sName )
 				//	pItem = new CCustomXml( oReader );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
+				else if ( L"w:customXmlDelRangeEnd" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlDelRangeEnd, oReader)
-				else if ( _T("w:customXmlDelRangeStart") == sName )
+				else if ( L"w:customXmlDelRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlDelRangeStart, oReader)
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
+				else if ( L"w:customXmlInsRangeEnd" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlInsRangeEnd, oReader)
-				else if ( _T("w:customXmlInsRangeStart") == sName )
+				else if ( L"w:customXmlInsRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlInsRangeStart, oReader)
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+				else if ( L"w:customXmlMoveFromRangeEnd" == sName ) 
 					AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeEnd, oReader)
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+				else if ( L"w:customXmlMoveFromRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeStart, oReader)
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+				else if ( L"w:customXmlMoveToRangeEnd" == sName ) 
 					AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeEnd, oReader)
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+				else if ( L"w:customXmlMoveToRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeStart, oReader)
-				else if ( _T("w:del") == sName )
+				else if ( L"w:del" == sName )
 					AssignPtrXmlContent(pItem, CDel, oReader)
-				else if ( _T("w:dir") == sName )
+				else if ( L"w:dir" == sName )
 					AssignPtrXmlContent(pItem, CDir, oReader)
-				else if ( _T("w:fldSimple") == sName )
+				else if ( L"w:fldSimple" == sName )
 					AssignPtrXmlContent(pItem, CFldSimple, oReader)
-				else if ( _T("w:hyperlink") == sName )
+				else if ( L"w:hyperlink" == sName )
 					AssignPtrXmlContent(pItem, CHyperlink, oReader)
-				else if ( _T("w:ins") == sName )
+				else if ( L"w:ins" == sName )
 					AssignPtrXmlContent(pItem, CIns, oReader)
-				else if ( _T("w:moveFrom") == sName )
+				else if ( L"w:moveFrom" == sName )
 					AssignPtrXmlContent(pItem, CMoveFrom, oReader)
-				else if ( _T("w:moveFromRangeEnd") == sName )
+				else if ( L"w:moveFromRangeEnd" == sName )
 					AssignPtrXmlContent(pItem, CMoveFromRangeEnd, oReader)
-				else if ( _T("w:moveFromRangeStart") == sName )
+				else if ( L"w:moveFromRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CMoveFromRangeStart, oReader)
-				else if ( _T("w:moveTo") == sName )
+				else if ( L"w:moveTo" == sName )
 					AssignPtrXmlContent(pItem, CMoveTo, oReader)
-				else if ( _T("w:moveToRangeEnd") == sName )
+				else if ( L"w:moveToRangeEnd" == sName )
 					AssignPtrXmlContent(pItem, CMoveToRangeEnd, oReader)
-				else if ( _T("w:moveToRangeStart") == sName )
+				else if ( L"w:moveToRangeStart" == sName )
 					AssignPtrXmlContent(pItem, CMoveToRangeStart, oReader)
-				else if ( _T("m:oMath") == sName )
+				else if ( L"m:oMath" == sName )
 					AssignPtrXmlContent(pItem, COMath, oReader)
-				else if ( _T("m:oMathPara") == sName )
+				else if ( L"m:oMathPara" == sName )
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
-				else if ( _T("w:permEnd") == sName )
+				else if ( L"w:permEnd" == sName )
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
-				else if ( _T("w:permStart") == sName )
+				else if ( L"w:permStart" == sName )
 					AssignPtrXmlContent(pItem, CPermStart, oReader)
-				else if ( _T("w:proofErr") == sName )
+				else if ( L"w:proofErr" == sName )
 					AssignPtrXmlContent(pItem, CProofErr, oReader)
-				else if ( _T("w:r") == sName )
+				else if ( L"w:r" == sName )
 					AssignPtrXmlContent(pItem, CRun, oReader)
-				else if ( _T("w:sdt") == sName )
+				else if ( L"w:sdt" == sName )
 					AssignPtrXmlContent(pItem, CSdt, oReader)
-				else if ( _T("w:smartTag") == sName )
+				else if ( L"w:smartTag" == sName )
 					AssignPtrXmlContent(pItem, CSmartTag, oReader)
-				//else if ( _T("w:subDoc") == sName )
+				//else if ( L"w:subDoc" == sName )
 				//	pItem = new CSubDoc( oReader );
-				else if ( _T("w:ffData") == sName )
+				else if (L"w:ffData" == sName)
 				{
-					m_oFFData = new CFFData();
 					m_oFFData = oReader;
 				}
+				else if (L"w:fldData" == sName)
+				{
+					m_sPrivateData = oReader.GetText2();
+				}
 
-				if ( pItem )
-					m_arrItems.push_back( pItem );
+				if (pItem)
+				{
+					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CFldSimple::toXML() const
 		{
-			std::wstring sResult = _T("<w:fldSimple ");
+			std::wstring sResult = L"<w:fldSimple ";
 
-			sResult += _T("w:dirty=\"");
+			sResult += L"w:dirty=\"";
 			sResult += m_oDirty.ToString();
-			sResult += _T("\" ");
-			sResult += _T("w:fldLock=\"");
+			sResult += L"\" ";
+			sResult += L"w:fldLock=\"";
 			sResult += m_oFldLock.ToString();
-			sResult += _T("\" ");
+			sResult += L"\" ";
 
 			if ( m_sInstr.IsInit() )
 			{
-				sResult += _T("w:instr=\"");
-                sResult += m_sInstr.get2();
-				sResult += _T("\" ");
+				sResult += L"w:instr=\"" + *m_sInstr + L"\" ";
 			}
 
-			sResult += _T(">");
+			sResult += L">";
 
 			if (m_oFFData.IsInit())
 			{
 				sResult += m_oFFData->toXML();
 			}
-
+			if (m_sPrivateData.IsInit())
+			{
+				sResult += L"<w:fldData xml:space=\"preserve\">" + *m_sPrivateData + L"</w:fldData>";
+			}
             for ( size_t i = 0; i < m_arrItems.size(); ++i)
             {
                 if ( m_arrItems[i] )
@@ -304,7 +316,7 @@ namespace OOX
                 }
             }
 
-			sResult += _T("</w:fldSimple>");
+			sResult += L"</w:fldSimple>";
 
 			return sResult;
 		}
@@ -315,9 +327,9 @@ namespace OOX
 		void CFldSimple::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:dirty",   m_oDirty )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldLock", m_oFldLock )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:instr",   m_sInstr )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 

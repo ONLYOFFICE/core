@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -172,8 +172,9 @@ namespace NSShapeImageGen
 		}
 
 		CMediaInfo WriteImage(CBgraFrame& punkImage, double& x, double& y, double& width, double& height);
+		CMediaInfo WriteImage(const std::string& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
 		CMediaInfo WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile);
-        CMediaInfo WriteMedia(const std::wstring& strFile);
+		CMediaInfo WriteMedia(const std::wstring& strFile);
         void SetFontManager(NSFonts::IFontManager* pFontManager);
 	protected:
 		inline void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst)
@@ -186,6 +187,7 @@ namespace NSShapeImageGen
 		CMediaInfo GenerateImageID(CBgraFrame& punkData, double dWidth, double dHeight);
 		CMediaInfo GenerateImageID(std::wstring strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile);
 		CMediaInfo GenerateMediaID(const std::wstring& strFileName, const std::wstring & strUrl);
+		CMediaInfo GenerateImageID(std::string strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile);
 		MediaType GetImageType(CBgraFrame& pFrame);
 		void FlipY(CBgraFrame& punkImage);
 		void FlipX(CBgraFrame& punkImage);

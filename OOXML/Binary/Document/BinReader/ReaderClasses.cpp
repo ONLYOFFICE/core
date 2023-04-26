@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -457,7 +457,7 @@ namespace BinDocxRW {
 				pCStringWriter->WriteString(CellPr);
 				pCStringWriter->WriteString(L"</w:tcPr>");
 			}
-			for(int i = 0, length = (int)TblStylePr.size(); i < length; ++i)
+			for(_INT32 i = 0, length = (_INT32)TblStylePr.size(); i < length; ++i)
 			{
 				pCStringWriter->WriteString(TblStylePr[i]);
 			}
@@ -486,7 +486,7 @@ namespace BinDocxRW {
 		bBottom = false;
 	}
 
-	docImg::docImg(int nDocPr)
+	docImg::docImg(_INT32 nDocPr)
 	{
 		m_nDocPr = nDocPr;
 		bMediaId = false;
@@ -505,8 +505,8 @@ namespace BinDocxRW {
 			{
 				if(bWidth && bHeight)
 				{
-					__int64 nWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-					__int64 nHeight = (__int64)(g_dKoef_mm_to_emu * Height);
+					_INT64 nWidth = (_INT64)(g_dKoef_mm_to_emu * Width);
+					_INT64 nHeight = (_INT64)(g_dKoef_mm_to_emu * Height);
 					std::wstring sDrawing = L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" +
 							std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:docPr id=\"" +
 							std::to_wstring(m_nDocPr) + L"\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"" +
@@ -519,20 +519,20 @@ namespace BinDocxRW {
 			{
 				if(bX && bY && bWidth && bHeight)
 				{
-					__int64 nX = (__int64)(g_dKoef_mm_to_emu * X);
-					__int64 nY = (__int64)(g_dKoef_mm_to_emu * Y);
-					__int64 nWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-					__int64 nHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-					unsigned long nPaddingLeft = 0;
-					unsigned long nPaddingTop = 0;
-					unsigned long nPaddingRight = 0;
-					unsigned long nPaddingBottom = 0;
+					_INT64 nX = (_INT64)(g_dKoef_mm_to_emu * X);
+					_INT64 nY = (_INT64)(g_dKoef_mm_to_emu * Y);
+					_INT64 nWidth = (_INT64)(g_dKoef_mm_to_emu * Width);
+					_INT64 nHeight = (_INT64)(g_dKoef_mm_to_emu * Height);
+					_UINT32 nPaddingLeft = 0;
+					_UINT32 nPaddingTop = 0;
+					_UINT32 nPaddingRight = 0;
+					_UINT32 nPaddingBottom = 0;
 					if(bPaddings)
 					{
-						if(Paddings.bLeft)		nPaddingLeft	= (unsigned long)(g_dKoef_mm_to_emu * Paddings.Left);
-						if(Paddings.bTop)		nPaddingTop		= (unsigned long)(g_dKoef_mm_to_emu * Paddings.Top);
-						if(Paddings.bRight)		nPaddingRight	= (unsigned long)(g_dKoef_mm_to_emu * Paddings.Right);
-						if(Paddings.bBottom)	nPaddingBottom	= (unsigned long)(g_dKoef_mm_to_emu * Paddings.Bottom);
+						if(Paddings.bLeft)		nPaddingLeft	= (_UINT32)(g_dKoef_mm_to_emu * Paddings.Left);
+						if(Paddings.bTop)		nPaddingTop		= (_UINT32)(g_dKoef_mm_to_emu * Paddings.Top);
+						if(Paddings.bRight)		nPaddingRight	= (_UINT32)(g_dKoef_mm_to_emu * Paddings.Right);
+						if(Paddings.bBottom)	nPaddingBottom	= (_UINT32)(g_dKoef_mm_to_emu * Paddings.Bottom);
 
 					}
 					std::wstring sDrawing = L"<w:drawing><wp:anchor distT=\"" + std::to_wstring(nPaddingTop) + L"\" distB=\"" + std::to_wstring(nPaddingBottom)
@@ -568,7 +568,7 @@ namespace BinDocxRW {
 		if(bW || (bType && bWDocx))
 		{
 			std::wstring sType;
-			int nVal;
+			_INT32 nVal;
 			if(bW)
 			{
 				sType = _T("dxa");
@@ -714,7 +714,7 @@ namespace BinDocxRW {
 	}
 	docLvl::~docLvl()
 	{
-		for(int i = 0,length = (int)Text.size(); i < length; i++)
+		for(size_t i = 0,length = Text.size(); i < length; i++)
 		{
 			delete Text[i];
 		}
@@ -810,7 +810,7 @@ namespace BinDocxRW {
 		if(bText)
 		{
 			std::wstring sText;
-			for(int i = 0, length = (int)Text.size(); i < length; ++i)
+			for(size_t i = 0, length = Text.size(); i < length; ++i)
 			{
 				docLvlText* item = Text[i];
 				if(item->bText)
@@ -925,7 +925,7 @@ namespace BinDocxRW {
 	}
 	docANum::~docANum()
 	{
-		for(int i = 0, length = (int)Lvls.size(); i < length; i++)
+		for (size_t i = 0, length = Lvls.size(); i < length; i++)
 		{
 			delete Lvls[i];
 		}
@@ -945,7 +945,7 @@ namespace BinDocxRW {
 				std::wstring sCorrectNumStyleLink = XmlUtils::EncodeXmlString(NumStyleLink);
 				oWriterANum.WriteString(L"<w:numStyleLink w:val=\"" + sCorrectNumStyleLink + L"\"/>");
 			}
-			for(int i = 0, length = (int)Lvls.size(); i < length; ++i)
+			for(size_t i = 0, length = Lvls.size(); i < length; ++i)
 			{
 				Lvls[i]->Write(oWriterANum);
 			}
@@ -1005,7 +1005,7 @@ namespace BinDocxRW {
 			std::wstring sCurItem;
 			bool bDQuot = false;
 
-			for(int i = 0, length = (int)fld.length(); i < length; ++i)
+			for(size_t i = 0, length = fld.length(); i < length; ++i)
 			{
 				wchar_t sCurLetter = fld[i];
 				if('\"' == sCurLetter)
@@ -1029,7 +1029,7 @@ namespace BinDocxRW {
 			if(sCurItem.length() > 0)
 				aItems.push_back(sCurItem);
 
-			for(int i = 0, length = (int)aItems.size(); i < length; ++i)
+			for(size_t i = 0, length = aItems.size(); i < length; ++i)
 			{
 				std::wstring item = aItems[i];
 				if(bNextLink)
@@ -1053,7 +1053,7 @@ namespace BinDocxRW {
 				res = new WriteHyperlink();
 				boost::algorithm::trim(sLink);
 
-				int nAnchorIndex = (int)sLink.find(L"#");
+				_INT32 nAnchorIndex = (_INT32)sLink.find(L"#");
 				if(-1 != nAnchorIndex)
 				{
 					res->href   = sLink.substr(0, nAnchorIndex);
@@ -1097,17 +1097,17 @@ namespace BinDocxRW {
 		}
 	}
 
-	IdCounter::IdCounter(int nStart)
+	IdCounter::IdCounter(_INT32 nStart)
 	{
 		m_nId = nStart;
 	}
-	int IdCounter::getNextId(int nCount)
+	_INT32 IdCounter::getNextId(_INT32 nCount)
 	{
-		int nRes = m_nId;
+		_INT32 nRes = m_nId;
 		m_nId += nCount;
 		return nRes;
 	}
-	int IdCounter::getCurrentId()
+	_INT32 IdCounter::getCurrentId()
 	{
 		return m_nId;
 	}
@@ -1127,11 +1127,11 @@ namespace BinDocxRW {
 		}
 		replies.clear();
 	}
-	int CComment::getCount()
+	_INT32 CComment::getCount()
 	{
-		return (int)replies.size() + 1;
+		return (_INT32)replies.size() + 1;
 	}
-	void CComment::setFormatStart(int IdFormatStart)
+	void CComment::setFormatStart(_INT32 IdFormatStart)
 	{
 		bIdFormat = true;
 		IdFormat = IdFormatStart;
@@ -1140,7 +1140,7 @@ namespace BinDocxRW {
 		{
 			CComment* pComment	= replies[i];
 			pComment->bIdFormat = true;
-			pComment->IdFormat	= (int)(IdFormatStart + i + 1);
+			pComment->IdFormat	= (_INT32)(IdFormatStart + i + 1);
 		}
 	}
 	std::wstring CComment::writeRef(const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
@@ -1167,13 +1167,13 @@ namespace BinDocxRW {
 		sRes += (sAfter);
 		return sRes;
 	}
-	void CComment::writeContentWritePart(CComment* pComment, std::wstring& sText, int nPrevIndex, int nCurIndex, std::wstring& sRes)
+	void CComment::writeContentWritePart(CComment* pComment, std::wstring& sText, _INT32 nPrevIndex, _INT32 nCurIndex, std::wstring& sRes)
 	{
 		std::wstring sPart;
 		if(nPrevIndex < nCurIndex)
 			sPart = XmlUtils::EncodeXmlString(sText.substr(nPrevIndex, nCurIndex - nPrevIndex));
 
-		int nId = pComment->m_oParaIdCounter.getNextId();
+		_INT32 nId = pComment->m_oParaIdCounter.getNextId();
 
 		pComment->sParaId = XmlUtils::ToString(nId, L"%08X");
 		sRes += L"<w:p w14:paraId=\"" + pComment->sParaId + L"\" w14:textId=\"" + pComment->sParaId + L"\">";
@@ -1223,8 +1223,8 @@ namespace BinDocxRW {
 
 			XmlUtils::replace_all(sText, L"\r", L"");
 
-			int nPrevIndex = 0;
-			for (int i = 0; i < (int)sText.length(); i++)
+			_INT32 nPrevIndex = 0;
+			for (size_t i = 0; i < sText.length(); i++)
 			{
 				wchar_t cToken = sText[i];
 				if('\n' == cToken)
@@ -1233,7 +1233,7 @@ namespace BinDocxRW {
 					nPrevIndex = i + 1;
 				}
 			}
-			writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
+			writeContentWritePart(pComment, sText, nPrevIndex, (_INT32)sText.length(), sRes);
 		}
 		sRes += L"</w:comment>";
 		return sRes;
@@ -1313,7 +1313,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 	}
 	CComments::~CComments()
 	{
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			delete it->second;
 		}
@@ -1334,22 +1334,22 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		if(false == pComment->UserName.empty() && false == pComment->UserId.empty())
 			m_mapAuthors[pComment->UserName] = pComment;
 	}
-	CComment* CComments::get(int nInd)
+	CComment* CComments::get(_INT32 nInd)
 	{
 		CComment* pRes = NULL;
-		boost::unordered_map<int, CComment*>::const_iterator pair = m_mapComments.find(nInd);
+		boost::unordered_map<_INT32, CComment*>::const_iterator pair = m_mapComments.find(nInd);
 		if(m_mapComments.end() != pair)
 			pRes = pair->second;
 		return pRes;
 	}
-	int CComments::getNextId(int nCount)
+	_INT32 CComments::getNextId(_INT32 nCount)
 	{
 		return m_oFormatIdCounter.getNextId(nCount);
 	}
 	std::wstring CComments::writeContent()
 	{
 		std::wstring sRes;
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sRes += CComment::writeContent(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
@@ -1360,7 +1360,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 	std::wstring CComments::writeContentExt()
 	{
 		std::wstring sRes;
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sRes += CComment::writeContentExt(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
@@ -1371,7 +1371,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 	std::wstring CComments::writeContentExtensible()
 	{
 		std::wstring sRes;
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sRes += CComment::writeContentExtensible(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
@@ -1382,7 +1382,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 	std::wstring CComments::writeContentUserData()
 	{
 		std::wstring sRes;
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sRes += CComment::writeContentUserData(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
@@ -1393,7 +1393,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 	std::wstring CComments::writeContentsIds()
 	{
 		std::wstring sRes;
-		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		for (boost::unordered_map<_INT32, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			sRes += CComment::writeContentsIds(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
@@ -1430,7 +1430,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		Points.clear();
 	}
 
-	CDrawingProperty::CDrawingProperty(int nDocPr)
+	CDrawingProperty::CDrawingProperty(_INT32 nDocPr)
 	{
 		m_nDocPr    = nDocPr;
 
@@ -1532,10 +1532,10 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 										 && bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
 										|| (bBSimplePos && bSimplePosX && bSimplePosY)))
 			{
-				__int64 emuDistL = 0;
-				__int64 emuDistT = 0;
-				__int64 emuDistR = 0;
-				__int64 emuDistB = 0;
+				_INT64 emuDistL = 0;
+				_INT64 emuDistT = 0;
+				_INT64 emuDistR = 0;
+				_INT64 emuDistB = 0;
 
 				if(bDistL)
 					emuDistL = DistL;
@@ -1545,16 +1545,16 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 					emuDistR = DistR;
 				if(bDistB)
 					emuDistB = DistB;
-				int nSimplePos = 0;
+				_INT32 nSimplePos = 0;
 				if(bBSimplePos && BSimplePos)
 					nSimplePos = 1;
-				unsigned long nRelativeHeight = 0;
+				_UINT32 nRelativeHeight = 0;
 				if(bRelativeHeight)
 					nRelativeHeight = RelativeHeight;
-				int nBehindDoc = 0;
+				_INT32 nBehindDoc = 0;
 				if(bBehindDoc && BehindDoc)
 					nBehindDoc = 1;
-				int nLayoutInCell = 1;
+				_INT32 nLayoutInCell = 1;
 				if(bLayoutInCell && false == LayoutInCell)
 					nLayoutInCell = 0;
 
@@ -1576,10 +1576,10 @@ locked=\"0\" \
 layoutInCell=\"" + std::to_wstring(nLayoutInCell) + L"\" \
 allowOverlap=\"1\">";
 
-				__int64 emuX = 0;
+				_INT64 emuX = 0;
 				if(bSimplePosX)
 					emuX = SimplePosX;
-				__int64 emuY = 0;
+				_INT64 emuY = 0;
 				if(bSimplePosY)
 					emuY = SimplePosY;
 				sXml += L"<wp:simplePos x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
@@ -1616,7 +1616,7 @@ allowOverlap=\"1\">";
 					}
 					else if(bPositionHPctOffset)
 					{
-						long pctOffset = (long)(1000 * PositionHPctOffset);
+						_INT32 pctOffset = (_INT32)(1000 * PositionHPctOffset);
 						sContent = L"<wp14:pctPosHOffset>" + std::to_wstring(pctOffset) + L"</wp14:pctPosHOffset>";
 					}
 					sXml += L"<wp:positionH relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionH>";
@@ -1653,7 +1653,7 @@ allowOverlap=\"1\">";
 					}
 					else if(bPositionVPctOffset)
 					{
-						long pctOffset = (long)(1000 * PositionVPctOffset);
+						_INT32 pctOffset = (_INT32)(1000 * PositionVPctOffset);
 						sContent = L"<wp14:pctPosVOffset>" + std::to_wstring(pctOffset) + L"</wp14:pctPosVOffset>";
 					}
 					sXml += L"<wp:positionV relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionV>";
@@ -1688,7 +1688,7 @@ allowOverlap=\"1\">";
 						else
 							sXml += L"<wp:" + sTagName + L">";
 
-						int nEdited = 0;
+						_INT32 nEdited = 0;
 						if(DrawingPropertyWrap.bEdited && DrawingPropertyWrap.Edited)
 							nEdited = 1;
 						sXml += L"<wp:wrapPolygon edited=\"" + std::to_wstring(nEdited) + L"\">";

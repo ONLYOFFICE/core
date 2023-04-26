@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -53,62 +53,62 @@ FUNCTION_WRAPPER_V8(_builder_doc_GetImageMap, builder_doc_GetImageMap)
 
 v8::Local<v8::Value> _builder_CreateNativeTmpDoc(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* pBuilder, const std::wstring& sFile, const std::wstring& sParams)
 {
-    v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
-    _template->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
+	v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
+	_template->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
-    NSV8Objects::Template_Set(_template, "IsValid",     _builder_doc_IsValid);
-    NSV8Objects::Template_Set(_template, "GetBinary",   _builder_doc_GetBinary);
-    NSV8Objects::Template_Set(_template, "GetFolder",   _builder_doc_GetFolder);
-    NSV8Objects::Template_Set(_template, "Close",       _builder_doc_CloseFile);
-    NSV8Objects::Template_Set(_template, "GetImageMap", _builder_doc_GetImageMap);
+	NSV8Objects::Template_Set(_template, "IsValid",     _builder_doc_IsValid);
+	NSV8Objects::Template_Set(_template, "GetBinary",   _builder_doc_GetBinary);
+	NSV8Objects::Template_Set(_template, "GetFolder",   _builder_doc_GetFolder);
+	NSV8Objects::Template_Set(_template, "Close",       _builder_doc_CloseFile);
+	NSV8Objects::Template_Set(_template, "GetImageMap", _builder_doc_GetImageMap);
 
-    CBuilderDocumentEmbed* _embed = new CBuilderDocumentEmbed();
-    _embed->m_pBuilder = pBuilder;
-    _embed->OpenFile(sFile, sParams);
+	CBuilderDocumentEmbed* _embed = new CBuilderDocumentEmbed();
+	_embed->m_pBuilder = pBuilder;
+	_embed->OpenFile(sFile, sParams);
 
-    v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
-    obj->SetInternalField(0, v8::External::New(isolate, _embed));
+	v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
+	obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
-    return obj;
+	return obj;
 }
 v8::Local<v8::Value> _builder_CreateNative(v8::Isolate* isolate, NSDoctRenderer::CDocBuilder* builder)
 {
-    v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
-    _template->SetInternalFieldCount(1);
+	v8::Local<v8::ObjectTemplate> _template = v8::ObjectTemplate::New(isolate);
+	_template->SetInternalFieldCount(1);
 
-    NSV8Objects::Template_Set(_template, "OpenFile",     _builder_OpenFile);
-    NSV8Objects::Template_Set(_template, "CreateFile",   _builder_CreateFile);
-    NSV8Objects::Template_Set(_template, "SetTmpFolder", _builder_SetTmpFolder);
-    NSV8Objects::Template_Set(_template, "SaveFile",     _builder_SaveFile);
-    NSV8Objects::Template_Set(_template, "CloseFile",    _builder_CloseFile);
-    NSV8Objects::Template_Set(_template, "OpenTmpFile",  _builder_OpenTmpFile);
+	NSV8Objects::Template_Set(_template, "OpenFile",     _builder_OpenFile);
+	NSV8Objects::Template_Set(_template, "CreateFile",   _builder_CreateFile);
+	NSV8Objects::Template_Set(_template, "SetTmpFolder", _builder_SetTmpFolder);
+	NSV8Objects::Template_Set(_template, "SaveFile",     _builder_SaveFile);
+	NSV8Objects::Template_Set(_template, "CloseFile",    _builder_CloseFile);
+	NSV8Objects::Template_Set(_template, "OpenTmpFile",  _builder_OpenTmpFile);
 
-    CBuilderEmbed* _embed = new CBuilderEmbed();
-    _embed->m_pBuilder = builder;
+	CBuilderEmbed* _embed = new CBuilderEmbed();
+	_embed->m_pBuilder = builder;
 
-    v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
-    obj->SetInternalField(0, v8::External::New(isolate, _embed));
+	v8::Local<v8::Object> obj = _template->NewInstance(V8ContextOneArg).ToLocalChecked();
+	obj->SetInternalField(0, v8::External::New(isolate, _embed));
 
-    return obj;
+	return obj;
 }
 
 void builder_CreateNativeTmpDoc(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder, const std::wstring& sFile, const std::wstring& sParams)
 {
-    v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
+	v8::Isolate* current = CV8Worker::GetCurrent();
+	context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNativeTmpDoc(current, builder, sFile, sParams));
 }
 void builder_CreateNative      (const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder)
 {
-    v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNative(current, builder));
+	v8::Isolate* current = CV8Worker::GetCurrent();
+	context->m_internal->m_context->Global()->Set(context->m_internal->m_context, CreateV8String(current, name.c_str()), _builder_CreateNative(current, builder));
 }
 
 JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params)
 {
-    std::wstring sPath = path->toStringW();
-    std::wstring sParams = params->toStringW();
-    v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(CV8Worker::GetCurrent(), m_pBuilder, sPath, sParams);
-    CJSValueV8* res = new CJSValueV8();
-    res->value = obj;
-    return res;
+	std::wstring sPath = path->toStringW();
+	std::wstring sParams = params->toStringW();
+	v8::Local<v8::Value> obj = _builder_CreateNativeTmpDoc(CV8Worker::GetCurrent(), m_pBuilder, sPath, sParams);
+	CJSValueV8* res = new CJSValueV8();
+	res->value = obj;
+	return res;
 }

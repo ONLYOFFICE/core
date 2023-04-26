@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -167,19 +167,19 @@ namespace OOX
 
 		const FileType Image			(L"media", L"image", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true);
 
 		const FileType Audio			(L"media", L"audio", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true);
 
 		const FileType Video			(L"media", L"video", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true);
 
 		const FileType Media			(L"media", L"media", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true);
 
 		const FileType DiagramData		(L"diagrams", L"data.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",
@@ -376,7 +376,7 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
 
-		const FileType Unknow				(L"", L"", L"", L"");
+		const FileType Unknown				(L"", L"", L"", L"");
 
 	} // namespace FileTypes
 } // namespace OOX

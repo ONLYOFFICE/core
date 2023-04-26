@@ -12,6 +12,7 @@ namespace NSZip
 	FUNCTION_WRAPPER_V8_2(_addFile, addFile)
 	FUNCTION_WRAPPER_V8_1(_removeFile, removeFile)
 	FUNCTION_WRAPPER_V8  (_close, close)
+	FUNCTION_WRAPPER_V8  (_getPaths, getPaths)
 
 	FUNCTION_WRAPPER_V8_2(_decodeImage, decodeImage)
 	FUNCTION_WRAPPER_V8_6(_encodeImageData, encodeImageData)
@@ -33,6 +34,7 @@ namespace NSZip
 		NSV8Objects::Template_Set(result, "addFile",    _addFile);
 		NSV8Objects::Template_Set(result, "removeFile", _removeFile);
 		NSV8Objects::Template_Set(result, "close",      _close);
+		NSV8Objects::Template_Set(result, "getPaths",   _getPaths);
 
 		NSV8Objects::Template_Set(result, "decodeImage",     _decodeImage);
 		NSV8Objects::Template_Set(result, "encodeImageData", _encodeImageData);
@@ -44,23 +46,11 @@ namespace NSZip
 
 	void CreateNativeZip(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		v8::Isolate* isolate = args.GetIsolate();
-		v8::HandleScope scope(isolate);
-
-		v8::Handle<v8::ObjectTemplate> ZipTemplate = NSZip::CreateZipTemplate(isolate);
-		CZipEmbed* pZip = new CZipEmbed();
-
-		v8::Local<v8::Object> obj = ZipTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pZip));
-
-		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
-
-		args.GetReturnValue().Set(obj);
+		CreateNativeInternalField(new CZipEmbed(), NSZip::CreateZipTemplate, args);
 	}
 }
 
 void CZipEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
-	v8::Isolate* current = CV8Worker::GetCurrent();
-	context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSZip::CreateNativeZip));
+	InsertToGlobal(name, context, NSZip::CreateNativeZip);
 }

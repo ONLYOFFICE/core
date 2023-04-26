@@ -11,7 +11,7 @@ libsocketio:CONFIG += use_openssl
 ixwebsocket:CONFIG += use_openssl
 
 use_openssl {
-    include($$PWD/../../3dParty/ixwebsocket/openssl.pri)
+    include($$PWD/../../3dParty/openssl/openssl.pri)
 }
 
 libsocketio {
@@ -35,6 +35,19 @@ libsocketio {
         $$SOCKET_IO_LIB/src/sio_socket.cpp \
         $$SOCKET_IO_LIB/src/sio_client.cpp
 
+    HEADERS += \
+        $$SOCKET_IO_LIB/src_no_tls/internal/sio_client_impl.h \
+        $$SOCKET_IO_LIB/src_no_tls/internal/sio_packet.h \
+        $$SOCKET_IO_LIB/src_no_tls/sio_message.h \
+        $$SOCKET_IO_LIB/src_no_tls/sio_socket.h \
+        $$SOCKET_IO_LIB/src_no_tls/sio_client.h
+
+    SOURCES += \
+        $$SOCKET_IO_LIB/src_no_tls/internal/sio_client_impl.cpp \
+        $$SOCKET_IO_LIB/src_no_tls/internal/sio_packet.cpp \
+        $$SOCKET_IO_LIB/src_no_tls/sio_socket.cpp \
+        $$SOCKET_IO_LIB/src_no_tls/sio_client.cpp
+
     DEFINES += \
         BOOST_DATE_TIME_NO_LIB \
         BOOST_REGEX_NO_LIB \
@@ -45,14 +58,27 @@ libsocketio {
         _WEBSOCKETPP_CPP11_TYPE_TRAITS_ \
         _WEBSOCKETPP_CPP11_CHRONO_ \
         \
-        "SIO_TLS=1"
+        "SIO_TLS=1" \
+        "SIO_TLS_NO=0" \
+        "PING_TIMEOUT_INTERVAL=20000"
 
     include($$PWD/../../3dParty/boost/boost.pri)
 
     DEFINES += USE_IOWEBSOCKET
 
-    HEADERS += $$PWD/src/socketio/socketio_internal.h
+    HEADERS += \
+        $$PWD/src/socketio/socketio_internal.h \
+        $$PWD/src/socketio/socketio_internal_private.h \
+        $$PWD/src/socketio/socketio_internal_private_no_tls.h
+
     SOURCES += $$PWD/src/socketio/socketio_internal.cpp
+
+    core_linux:LIBS += -lpthread
+
+    core_windows {
+	    LIBS += -lcrypt32
+		LIBS += -lUser32
+	}
 }
 
 HEADERS += \

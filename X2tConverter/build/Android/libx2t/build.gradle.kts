@@ -3,6 +3,34 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 plugins {
     id("com.android.library")
     kotlin("android")
+    id("maven-publish")
+}
+
+apply {
+    from("../extras/gradle/common.gradle")
+}
+
+val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = PublishEditors.groupId
+            artifactId = PublishEditors.x2tId
+            version = PublishEditors.version
+            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("${PublishEditors.publishUrl}/")
+            credentials {
+                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
+                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
+            }
+        }
+    }
 }
 
 android {
@@ -10,6 +38,11 @@ android {
     buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
     compileSdk = AppDependency.COMPILE_SDK_VERSION
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
+
+    publishing {
+        singleVariant("release") {
+        }
+    }
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION

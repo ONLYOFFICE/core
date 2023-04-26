@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,6 +32,11 @@
 #pragma once
 
 #include "DiagramLayout.h"
+#include "../Drawing/DrawingExt.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Drawing.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 #define Diagram_Layout_Read_Xml() \
@@ -45,25 +50,25 @@ while (oReader.ReadNextSiblingNode(nParentDepth))\
 	std::wstring sName = oReader.GetName();\
 	WritingElement *pItem = NULL;\
 	if (L"dgm:alg" == sName)\
-		AssignPtrXmlContent(pItem, CAlg, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CAlg, oReader)\
 	else if (L"dgm:choose" == sName)\
-		AssignPtrXmlContent(pItem, CChoose, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CChoose, oReader)\
 	else if (L"dgm:constrLst" == sName)\
-		AssignPtrXmlContent(pItem, CConstrLst, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CConstrLst, oReader)\
 	else if (L"dgm:forEach" == sName)\
-		AssignPtrXmlContent(pItem, CForEach, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CForEach, oReader)\
 	else if (L"dgm:layoutNode" == sName)\
-		AssignPtrXmlContent(pItem, CLayoutNode, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CLayoutNode, oReader)\
 	else if (L"dgm:presOf" == sName)\
-		AssignPtrXmlContent(pItem, CPresOf, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CPresOf, oReader)\
 	else if (L"dgm:ruleLst" == sName)\
-		AssignPtrXmlContent(pItem, CRuleLst, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CRuleLst, oReader)\
 	else if (L"dgm:shape" == sName)\
-		AssignPtrXmlContent(pItem, CShape, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CShape, oReader)\
 	else if (L"dgm:varLst" == sName)\
-		AssignPtrXmlContent(pItem, CVariableList, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CVariableList, oReader)\
 	else if (L"dgm:extLst" == sName)\
-		AssignPtrXmlContent(pItem, OOX::Drawing::COfficeArtExtensionList, oReader)\
+		AssignPtrXmlContentNoMain(pItem, OOX::Drawing::COfficeArtExtensionList, oReader)\
 	if (pItem)\
 		m_arrItems.push_back(pItem);\
 }}

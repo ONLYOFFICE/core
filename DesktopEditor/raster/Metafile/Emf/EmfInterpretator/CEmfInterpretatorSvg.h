@@ -12,7 +12,7 @@ namespace MetaFile
 	struct TSvgConditional
 	{
 		IMetaFileBase *m_pParser = NULL;
-		std::wstring   m_wsLastClipId;
+		CSvgClip       m_oClip;
 	};
 
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase, public CInterpretatorSvgBase
@@ -72,7 +72,7 @@ namespace MetaFile
 		void HANDLE_EMR_SETBKCOLOR(const TEmfColor& oColor) override {};
 		void HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL& oClip) override ;
 		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_SETMETARGN() override {};
+		void HANDLE_EMR_SETMETARGN() override;
 		void HANDLE_EMR_SETROP2(const unsigned int& unRop2Mode) override {};
 		void HANDLE_EMR_CREATEPALETTE(const unsigned int& unPaletteIndex, const CEmfLogPalette* oEmfLogPalette) override {};
 		void HANDLE_EMR_SELECTPALETTE(const unsigned int& unPaletteIndex) override {};
@@ -112,6 +112,7 @@ namespace MetaFile
 		void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override ;
 		void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override ;
 		void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
+		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode) override;
 
 		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override {};
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
@@ -130,7 +131,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_COMMENT(CDataStream& oStream, unsigned int unSize) override {};
 
 		// 2.3.3 Control Record Types
-		void HANDLE_EMFPLUS_ENDOFFILE() override {};
+		void HANDLE_EMFPLUS_ENDOFFILE() override;
 		void HANDLE_EMFPLUS_GETDC() override {};
 		void HANDLE_EMFPLUS_HEADER(unsigned int unEmfPlusFlags, unsigned int m_unLogicalDpiX, unsigned int m_unLogicalDpiY) override {};
 
@@ -201,7 +202,7 @@ namespace MetaFile
 		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
-						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
+		                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
 
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override {};
 
@@ -220,9 +221,6 @@ namespace MetaFile
 		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
-
-		void AddClip(NodeAttributes &arAttributes);
-		void UpdateClip();
 
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};

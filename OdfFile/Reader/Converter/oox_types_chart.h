@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -108,9 +108,8 @@ public:
 	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 
 	std::vector<oox_series_ptr>		series_;	//	ser (Bar Chart Series) §21.2.2.170
 
-	virtual void set_properties(std::vector<odf_reader::_property> g);
-	virtual void set_additional_properties(std::vector<odf_reader::_property> g){}
-
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
+	virtual void set_graphic_properties(odf_reader::graphic_format_properties_ptr & g) {}
 
 	//extLst (Chart Extensibility) §21.2.2.64
 };
@@ -130,9 +129,9 @@ class oox_bar_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
-	virtual void set_additional_properties(std::vector<odf_reader::_property> g);
+	virtual void set_graphic_properties(odf_reader::graphic_format_properties_ptr & g);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -163,7 +162,7 @@ class oox_line_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -194,7 +193,7 @@ class oox_area_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -217,7 +216,7 @@ class oox_bubble_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);//тип серии чотко соответствует типу самого чарта - если нужны смешанные типы - нужно добавлять свой чарт.
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 	// то есть первична серия - в отличии от одф
 
 	static _CP_PTR(oox_chart) create();
@@ -244,7 +243,7 @@ class oox_doughnut_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -269,7 +268,7 @@ class oox_pie_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -293,7 +292,7 @@ class oox_radar_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create(std::wstring radarStyle = L"marker");
 
@@ -317,7 +316,7 @@ class oox_scatter_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
 
 	static _CP_PTR(oox_chart) create();
 
@@ -342,8 +341,8 @@ class oox_stock_chart: public oox_chart
  	
 	virtual void oox_serialize(std::wostream & _Wostream);
 	virtual void add_series(int id);
-	virtual void set_properties(std::vector<odf_reader::_property> g);
-	virtual void set_additional_properties(std::vector<odf_reader::_property> g)
+	virtual void set_properties(odf_reader::chart_format_properties_ptr & prop);
+	virtual void set_graphic_properties(odf_reader::graphic_format_properties_ptr & g)
 	{
 		graphic_properties_ = g;
 	}
@@ -356,10 +355,10 @@ class oox_stock_chart: public oox_chart
 
 	_CP_OPT(bool) bCandleStick;
 	
-	std::vector<odf_reader::_property> properties_;
-	std::vector<odf_reader::_property> graphic_properties_;
+	odf_reader::chart_format_properties_ptr properties_;
+	odf_reader::graphic_format_properties_ptr graphic_properties_;
 
-	_oox_fill					fill_;
+	_oox_fill fill_;
 
 	oox_chart_shape range_line;
 	//dropLines (Drop Lines) §21.2.2.53

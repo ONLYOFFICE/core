@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -153,7 +153,7 @@ namespace Oox2Odf
 		virtual OOX::IFileContainer					*current_document();
 		virtual odf_writer::odf_conversion_context	*odf_context();		
 		virtual PPTX::Theme							*oox_theme();
-        virtual std::wstring						find_link_by_id (const std::wstring & sId, int t);
+        virtual std::wstring						find_link_by_id (const std::wstring & sId, int t, bool & bExternal);
 		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id (const std::wstring & sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
@@ -168,6 +168,8 @@ namespace Oox2Odf
 		void convert_styles();		
 		void convert();
 		
+		odf_writer::office_element_ptr convert_sheet(int id, const std::wstring &table_name);
+
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);

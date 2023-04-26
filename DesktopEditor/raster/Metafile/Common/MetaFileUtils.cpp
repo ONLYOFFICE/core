@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1029,10 +1029,8 @@ namespace MetaFile
 			   wsText += L"&apos;";
 		    else if (wChar == L'"')
 			   wsText += L"&quot;";
-			else if (wChar == L'\r')
+			else if (wChar == L'\r' || (wChar >= 0x00 && wChar <=0x1F))
 				continue;
-		    else if (wChar == 0x00)
-			   return wsText;
 
 		    else wsText += wChar;
 		return wsText;
@@ -1077,4 +1075,15 @@ namespace MetaFile
 		return owsStream.str();
 	}
 
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy)
+	{
+		std::wstringstream owsStream;
+
+		for (double dValue : arValues)
+			owsStream << std::fixed << std::setprecision((-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue)) << dValue << L" ";
+
+		owsStream.seekp(-1, std::ios_base::end);
+
+		return owsStream.str();
+	}
 }

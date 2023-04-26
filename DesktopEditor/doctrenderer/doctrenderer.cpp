@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -380,25 +380,6 @@ namespace NSDoctRenderer
 				{
 					std::string sHTML_Utf8 = js_result2->toStringA();
 
-					JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
-					if(try_catch->Check())
-					{
-						strError = L"code=\"core_props\"";
-						bIsBreak = true;
-					}
-					else if (js_objectCoreVal->isObject())
-					{
-						JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
-						JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_title\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull() && sHTML_Utf8.find("<title>") == std::string::npos)
-							sHTML_Utf8.insert(sHTML_Utf8.find("</head>"), "<title>" + js_results->toStringA() + "</title>");
-					}
-
 					NSFile::CFileBinary oFile;
 					if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
 					{
@@ -554,39 +535,34 @@ namespace NSDoctRenderer
 
 		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
 		{
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					bool bIsBreak = false;
+			bool bIsBreak = false;
 			JSSmart<CJSContext> context = new CJSContext();
-			context->Initialize();
 
 			if (true)
 			{
-				JSSmart<CJSIsolateScope> isolate_scope = context->CreateIsolateScope();
-				JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
-
-				context->CreateGlobalForContext();
+				context->CreateContext();
+				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
 				NSJSBase::CreateDefaults(context);
-				context->CreateContext();
 
-				JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
-				LOGGER_SPEED_LAP("compile")
+				LOGGER_SPEED_LAP("compile");
 
-						JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
+				JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
 				if(try_catch->Check())
 				{
 					strError = L"code=\"run\"";
 					bIsBreak = true;
 				}
 
-				LOGGER_SPEED_LAP("run")
+				LOGGER_SPEED_LAP("run");
 
-						//---------------------------------------------------------------
-						JSSmart<CJSObject> global_js = context->GetGlobal();
+				//---------------------------------------------------------------
+				JSSmart<CJSObject> global_js = context->GetGlobal();
 				JSSmart<CJSValue> args[1];
 				args[0] = CJSContext::createInt(0);
 
@@ -672,10 +648,10 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("open")
+				LOGGER_SPEED_LAP("open");
 
-						// CHANGES
-						if (!bIsBreak)
+				// CHANGES
+				if (!bIsBreak)
 				{
 					if (m_oParams.m_arChanges.size() != 0)
 					{
@@ -723,9 +699,9 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("changes")
+				LOGGER_SPEED_LAP("changes");
 
-						bool bIsMailMerge = false;
+				bool bIsMailMerge = false;
 				if (!m_oParams.m_strMailMergeDatabasePath.empty() &&
 						m_oParams.m_nMailMergeIndexEnd >= m_oParams.m_nMailMergeIndexStart &&
 						m_oParams.m_nMailMergeIndexEnd >= 0)
@@ -844,130 +820,7 @@ namespace NSDoctRenderer
 					bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
 				}
 
-				// CORE PARAMS
-				if (!bIsBreak && !bIsMailMerge &&
-					(m_oParams.m_eDstFormat == DoctRendererFormat::HTML ||
-					 m_oParams.m_eDstFormat == DoctRendererFormat::PDF))
-				{
-					JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
-					if(try_catch->Check())
-					{
-						strError = L"code=\"core_props\"";
-						bIsBreak = true;
-					}
-					else if (js_objectCoreVal->isObject())
-					{
-						JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
-						JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_title\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<dc:title>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</dc:title>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getCreator", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_creator\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							if (!js_results->toStringW().empty())
-							{
-								strReturnParams += L"<dc:creator>";
-								strReturnParams += js_results->toStringW();
-								strReturnParams += L"</dc:creator>";
-							}
-						}
-
-						js_results = js_objectCore->call_func("asc_getDescription", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_description\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<dc:description>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</dc:description>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getSubject", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_subject\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<dc:subject>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</dc:subject>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getIdentifier", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_identifier\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<dc:identifier>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</dc:identifier>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getLanguage", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_language\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<dc:language>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</dc:language>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getKeywords", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_keywords\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<cp:keywords>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</cp:keywords>";
-						}
-
-						js_results = js_objectCore->call_func("asc_getVersion", 1, args);
-						if(try_catch->Check())
-						{
-							strError = L"code=\"get_version\"";
-							bIsBreak = true;
-						}
-						else if (!js_results->isNull())
-						{
-							strReturnParams += L"<cp:version>";
-							strReturnParams += js_results->toStringW();
-							strReturnParams += L"</cp:version>";
-						}
-					}
-				}
-
-				LOGGER_SPEED_LAP("save")
+				LOGGER_SPEED_LAP("save");
 			}
 
 			context->Dispose();
@@ -1219,20 +1072,15 @@ namespace NSDoctRenderer
 				strScript += "\n$.ready();";
 
 			JSSmart<CJSContext> context = new CJSContext();
-			context->Initialize();
 
 			if (true)
 			{
-				JSSmart<CJSIsolateScope> isolate_scope = context->CreateIsolateScope();
-				JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
-
-				context->CreateGlobalForContext();
+				context->CreateContext();
+				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
 				NSJSBase::CreateDefaults(context);
-				context->CreateContext();
 
-				JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 
 				context->runScript(strScript, try_catch, sCachePath);

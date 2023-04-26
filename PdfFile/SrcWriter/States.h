@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1507,25 +1507,27 @@ public:
         m_nAscent      = 0;
         m_nDescent     = 0;
     }
-    void Init(unsigned short* pCodes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned int& unLineHeight, const int& nAscent)
+    void Init(unsigned short* pCodes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned short& ushNewLineCode, const unsigned int& unLineHeight, const int& nAscent)
     {
-        m_pCodes       = pCodes;
-        m_pWidths      = pWidths;
-        m_unLen        = unLen;
-        m_ushSpaceCode = ushSpaceCode;
-        m_unLineHeight = unLineHeight;
-        m_nAscent      = nAscent;
-        m_nDescent     = unLineHeight - nAscent;
+        m_pCodes         = pCodes;
+        m_pWidths        = pWidths;
+        m_unLen          = unLen;
+        m_ushSpaceCode   = ushSpaceCode;
+        m_ushNewLineCode = ushNewLineCode;
+        m_unLineHeight   = unLineHeight;
+        m_nAscent        = nAscent;
+        m_nDescent       = unLineHeight - nAscent;
     }
     void Clear()
     {
-        m_pCodes       = NULL;
-        m_pWidths      = NULL;
-        m_unLen        = 0;
-        m_ushSpaceCode = 0;
-        m_unLineHeight = 0;
-        m_nAscent      = 0;
-        m_nDescent     = 0;
+        m_pCodes         = NULL;
+        m_pWidths        = NULL;
+        m_unLen          = 0;
+        m_ushSpaceCode   = 0;
+        m_ushNewLineCode = 0;
+        m_unLineHeight   = 0;
+        m_nAscent        = 0;
+        m_nDescent       = 0;
     }
     void CalculateLines(const double& dFontSize, const double& dW)
     {
@@ -1547,6 +1549,15 @@ public:
                 bLineStart        = false;
                 bFirstItemOnLine  = false;
             }
+			else if (IsNewLine(unPos))
+			{
+				bLineStart       = true;
+				bFirstItemOnLine = true;
+				bWord            = false;
+				dX               = 0;
+				dWordWidth       = 0;
+				m_vBreaks.push_back(unPos + 1);
+			}
             else
             {
                 double dLetterWidth = m_pWidths[unPos] * dKoef;
@@ -1656,13 +1667,15 @@ public:
 
         return m_vBreaks[nLineIndex - 1];
     }
-    unsigned int GetLineEndPos(const int& nLineIndex) const
-    {
-        if (nLineIndex >= m_vBreaks.size())
-            return m_unLen;
-
-        return m_vBreaks[nLineIndex];
-    }
+	unsigned int GetLineEndPos(const int& nLineIndex) const
+	{
+		unsigned int unLineStart = GetLineStartPos(nLineIndex);
+		unsigned int unLineEnd = nLineIndex >= m_vBreaks.size() ? m_unLen : m_vBreaks[nLineIndex];
+		while (unLineEnd > 0 && unLineEnd > unLineStart && IsNewLine(unLineEnd - 1))
+			--unLineEnd;
+		
+		return unLineEnd;
+	}
     double GetLineWidth(const int& nLineIndex, const double& dFontSize = 10.0)
     {
         if (nLineIndex < 0 || nLineIndex > m_vBreaks.size())
@@ -1699,9 +1712,13 @@ public:
     }
 
 private:
-    inline bool IsSpace(const unsigned int& unPos) const
+	inline bool IsSpace(const unsigned int& unPos) const
+	{
+		return (m_pCodes[unPos] == m_ushSpaceCode);
+	}
+    inline bool IsNewLine(const unsigned int& unPos) const
     {
-        return (m_pCodes[unPos] == m_ushSpaceCode);
+        return (m_pCodes[unPos] == m_ushNewLineCode);
     }
     inline bool CheckHeight(const double& dH, const double& dFontSize) const
     {
@@ -1714,6 +1731,7 @@ private:
     unsigned int*   m_pWidths;
     unsigned int    m_unLen;
     unsigned short  m_ushSpaceCode;
+    unsigned short  m_ushNewLineCode;
     unsigned int    m_unLineHeight;
     int             m_nAscent;
     int             m_nDescent;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -65,7 +65,7 @@ public:
 
     void			start_cell_content();
 	void			set_cell_text_properties( );
-    int				end_cell_content();
+    int				end_cell_content(bool need_cache);
 
 	void			start_comment_content();
 	std::wstring	end_comment_content();
@@ -258,7 +258,7 @@ std::wstring xlsx_text_context::Impl::dump_text()
 {
     const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 
-	if (content.length()<1) 
+	if (content.empty()) 
 		return content;
 
 	std::wstring	prefix_draw;
@@ -359,7 +359,7 @@ std::wstring xlsx_text_context::Impl::end_drawing_content()
 	in_draw = false;
 	return draw;
 }
-int xlsx_text_context::Impl::end_cell_content()
+int xlsx_text_context::Impl::end_cell_content(bool need_cache)
 {
 	dump_text();
 
@@ -428,9 +428,9 @@ void xlsx_text_context::start_cell_content()
     return impl_->start_cell_content();
 }
 
-int xlsx_text_context::end_cell_content()
+int xlsx_text_context::end_cell_content(bool need_cache)
 {
-    return impl_->end_cell_content();
+    return impl_->end_cell_content(need_cache);
 }
 
 void xlsx_text_context::start_comment_content()

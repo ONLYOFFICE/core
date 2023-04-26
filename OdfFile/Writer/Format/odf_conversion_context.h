@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,6 +38,7 @@
 
 #include "odf_page_layout_context.h"
 
+#include "odf_text_context.h"
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
 #include "odf_math_context.h"
@@ -98,11 +99,14 @@ class odf_conversion_context : boost::noncopyable
 
 public:
 	const _office_type_document	type;
+	std::wstring temp_path_;
 
     odf_conversion_context(_office_type_document type, package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
-    void set_fonts_directory(std::wstring pathFonts);
+    void set_fonts_directory(const std::wstring & fontsPath);
+	void set_temp_directory(const std::wstring & tempPath);
+	
 	void add_font(const std::wstring & font_name);
 
     virtual void	start_document() = 0 ;
@@ -115,11 +119,8 @@ public:
 	virtual odf_text_context		* text_context()		= 0;
 	virtual odf_controls_context	* controls_context()	= 0;
 
-	virtual void					start_text_context()	= 0;
-	virtual void					end_text_context()		= 0;
-
-    std::wstring add_image		(const std::wstring & image_file_name);
-    std::wstring add_media		(const std::wstring & file_name);
+    std::wstring add_image		(const std::wstring & image_file_name, bool bExternal = false);
+    std::wstring add_media		(const std::wstring & file_name, bool bExternal = false);
     std::wstring add_oleobject	(const std::wstring & ole_file_name);
     std::wstring add_imageobject(const std::wstring & ole_file_name);
 	
@@ -151,6 +152,12 @@ public:
 	void create_object(bool bAddContentExt = true);
 	void end_object();
 
+	virtual void start_text_context();
+	virtual void end_text_context();
+
+	virtual void start_drawing_context();
+	virtual void end_drawing_context();
+
 	std::wstring			get_next_name_object();
 	office_element_ptr &	get_current_object_element();
 
@@ -160,6 +167,11 @@ public:
 
 	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 	double convert_symbol_width(double val);
+
+protected:
+	std::vector<odf_text_context_ptr> text_context_;
+	std::vector<odf_drawing_context_ptr> drawing_context_;
+
 private:
 	_font_metrix font_metrix_;
 
@@ -175,23 +187,6 @@ private:
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
-
-	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
-	//fonts_container		& fontContainer()		{ return fonts_container_; }
-	//list_style_container	& listStyleContainer()	{ return list_style_container_; }
-
-	//notes_configuration &	noteConfiguration()		{ return notes_configuration_; }
-
-	//styles_lite_container &	Templates()			{ return template_container_; }
-
-
-    //styles_container		major_style_container_;
-	//page_layout_container	page_layout_container_;
-	//fonts_container		fonts_container_;
-	//list_style_container	list_style_container_;
-	//notes_configuration	notes_configuration_;
-
-	//styles_lite_container	template_container_;
 };
 
 }

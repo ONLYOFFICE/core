@@ -44,8 +44,6 @@ SOURCES += \
 	../../../Binary/Sheets/Reader/BinaryWriter.cpp \
 	../../../Binary/Sheets/Writer/BinaryReader.cpp \
 	../../../Binary/Sheets/Writer/CSVWriter.cpp \
-	../../../../OfficeCryptReader/source/ECMACryptFile.cpp \
-	../../../../OfficeCryptReader/source/CryptTransform.cpp \
 	../../../Binary/Document/BinReader/ReaderClasses.cpp \
 	../../../Binary/Document/BinReader/Readers.cpp \
 	../../../Binary/Document/BinReader/CustomXmlWriter.cpp \

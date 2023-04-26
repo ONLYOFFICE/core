@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,13 +40,16 @@
 #include "JBig2/source/JBig2File.h"
 #endif
 
-void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
+#include <cmath>
+#define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
+
+void CxImageToMediaFrame( CxImage* img, CBgraFrame* bgra )
 {
-	if( !img.IsValid() )
+	if( !img || !img->IsValid() )
 		return;
 
-	int nWidth  = img.GetWidth();
-	int nHeight = img.GetHeight();
+	int nWidth  = img->GetWidth();
+	int nHeight = img->GetHeight();
 
 	BYTE* pData = new BYTE[4 * nWidth * nHeight];
 
@@ -60,11 +63,11 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
 
 	BYTE* pPixels = bgra->get_Data();
 
-	int nBitsPerPixel = img.GetBpp();
-	int nStride = img.GetEffWidth();
-	BYTE* pBuffer = img.GetBits();
-	RGBQUAD* pPalette = img.GetPalette();
-	bool bIsAlphaPalettePresent = img.AlphaPaletteIsEnabled();
+	int nBitsPerPixel = img->GetBpp();
+	int nStride = img->GetEffWidth();
+	BYTE* pBuffer = img->GetBits();
+	RGBQUAD* pPalette = img->GetPalette();
+	bool bIsAlphaPalettePresent = img->AlphaPaletteIsEnabled();
 	bool bIsAlphaApplied = false;
 	bool bIsRGBA = !bgra->get_IsRGBA();
 
@@ -149,7 +152,7 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
 				BYTE* src = pBuffer;
 				BYTE* dst = pPixels;
 
-				int nTransIndex = img.GetTransIndex();
+				int nTransIndex = img->GetTransIndex();
 				if (bIsAlphaApplied)
 					nTransIndex = -1;
 
@@ -185,7 +188,7 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
 
 					nStride -= nWidth;
 
-					int nTransIndex = img.GetTransIndex();
+					int nTransIndex = img->GetTransIndex();
 					if (bIsAlphaApplied)
 						nTransIndex = -1;
 
@@ -269,10 +272,10 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
 					return;
 				}
 
-	if( img.AlphaIsValid() )
+	if( img->AlphaIsValid() )
 	{
-		BYTE* pAlpha  = img.AlphaGetPointer();
-		DWORD nMaxAlpha = img.AlphaGetMax();
+		BYTE* pAlpha  = img->AlphaGetPointer();
+		DWORD nMaxAlpha = img->AlphaGetMax();
 
 		if( 255 == nMaxAlpha )
 		{
@@ -440,13 +443,50 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	if (!oFile.OpenFile(strFileName))
 		return false;
 
-	CxImage img;
+	CxImage* img = new CxImage();
 
-	if (!img.Decode(oFile.GetFileNative(), m_nFileType))
+	if (!img->Decode(oFile.GetFileNative(), m_nFileType))
 		return false;
 
-	CxImageToMediaFrame(img, this);
-	m_bIsGrayScale = img.IsGrayScale();
+	CxImage* imgResample = NULL;
+
+	if (false)
+	{
+		// slow!!!
+		int nWidth  = img->GetWidth();
+		int nHeight = img->GetHeight();
+
+		double dSizeWH = (double)nWidth * nHeight;
+		double dSizeLimit = (double)BGRA_FRAME_CXIMAGE_MAX_MEMORY;
+		if (dSizeWH > dSizeLimit)
+		{
+			double dKoef = sqrt(dSizeLimit / dSizeWH);
+			int nW = (int)(dKoef * nWidth);
+			int nH = (int)(dKoef * nHeight);
+
+			if (nW > 10 && nH > 10)
+			{
+				imgResample = new CxImage();
+				if (!img->Resample(nW, nH, 2/*bicubic spline interpolation*/, imgResample))
+				{
+					delete imgResample;
+					imgResample = NULL;
+				}
+			}
+		}
+	}
+
+	CxImage* imageFinal = img;
+	if (imgResample)
+	{
+		delete img;
+		imageFinal = imgResample;
+	}
+
+	CxImageToMediaFrame(imageFinal, this);
+	m_bIsGrayScale = imageFinal->IsGrayScale();
+	delete imageFinal;
+
 	return true;
 }
 bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
@@ -472,7 +512,7 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 	if (!img.Decode(pBuffer, nSize, m_nFileType))
 		return false;
 
-	CxImageToMediaFrame(img, this);
+	CxImageToMediaFrame(&img, this);
 	m_bIsGrayScale = img.IsGrayScale();
 	return true;
 }
@@ -548,7 +588,7 @@ bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight, bool bDes
 	if (bDestroyData)
 		Destroy();
 
-	CxImageToMediaFrame( imgDst, this );
+	CxImageToMediaFrame( &imgDst, this );
 	return true;
 }
 bool CBgraFrame::ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore)

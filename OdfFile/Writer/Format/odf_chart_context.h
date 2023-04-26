@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -151,10 +151,12 @@ public:
 		void add_domain(const std::wstring & odf_ref);
 		void add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis);
 
-		void set_layout_x(double *val,int mode);
-		void set_layout_y(double *val,int mode);
-		void set_layout_w(double *val,int mode);
-		void set_layout_h(double *val,int mode);
+		void set_layout_x(double val,int mode);
+		void set_layout_y(double val,int mode);
+		void set_layout_w(double val,int mode);
+		void set_layout_h(double val,int mode);
+
+		void set_local_table(office_element_ptr & table);
 
 		void set_local_table(bool Val, bool use_cash_only = false);
 		void set_cash(std::wstring format, std::vector<std::wstring> &data, bool categories, bool label);

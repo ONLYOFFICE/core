@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -219,6 +219,7 @@ void style_table_cell_properties_attlist::serialize(std::wostream & _Wostream ,c
 			common_background_color_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_line_width_attlist_.serialize(CP_GET_XML_NODE());
+			common_writing_mode_attlist_.serialize(CP_GET_XML_NODE());
 		    
 			CP_XML_ATTR_OPT(L"style:diagonal-tl-br", style_diagonal_tl_br_);
 			CP_XML_ATTR_OPT(L"style:diagonal-tl-br-widths", style_diagonal_tl_br_widths_);
@@ -247,6 +248,7 @@ void style_table_cell_properties_attlist::apply_from(const style_table_cell_prop
     common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
     common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
     common_border_attlist_.apply_from(Other.common_border_attlist_);
+	common_writing_mode_attlist_.apply_from(Other.common_writing_mode_attlist_);
 
     _CP_APPLY_PROP(style_diagonal_tl_br_, Other.style_diagonal_tl_br_);
     _CP_APPLY_PROP(style_diagonal_tl_br_widths_, Other.style_diagonal_tl_br_widths_);

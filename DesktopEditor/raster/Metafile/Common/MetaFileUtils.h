@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -717,6 +717,17 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TTriVertex& oVertex)
+		{
+			*this >> oVertex.nX;
+			*this >> oVertex.nY;
+			*this >> oVertex.ushRed;
+			*this >> oVertex.ushGreen;
+			*this >> oVertex.ushBlue;
+			*this >> oVertex.ushAlpha;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusRect& oRect)
 		{
 			*this >> oRect.shX;
@@ -1219,6 +1230,8 @@ namespace MetaFile
 	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(std::wstring wsString);
+
 	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

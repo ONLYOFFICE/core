@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -149,17 +149,35 @@ int main(int argc, char *argv[])
 
     if (true)
     {
+		NSDoctRenderer::CDocBuilder::Initialize(L"/home/mihail/main/build_tools/out/linux_64/onlyoffice/documentbuilder");
         NSDoctRenderer::CDocBuilder oBuilder;
 
         // если отключена эта опция - то она отключится на parse_args
-        oBuilder.SetProperty("--check-fonts", L"");
+		oBuilder.SetProperty("--check-fonts", L"");
+		oBuilder.SetProperty("--cache-scripts", L"false");
+		oBuilder.SetTmpFolder(L"tmp");
 
-        //oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
-        //oBuilder.SetProperty("--work-directory", L"builder");
+		//oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
+		//oBuilder.SetProperty("--work-directory", L"builder");
 
         parse_args(&oBuilder, argc - 1, argv);
 
-        oBuilder.Run(sBuildFile.c_str());
+//		oBuilder.WriteData(L"result.log", L"Alert!", false);
+
+		// формируем документ SampleTetxt2.docx - с одним вырезанным из SampleDocument.docx абзаца
+		oBuilder.Run(sBuildFile.c_str());
+		// включаем вторую схему сохранения
+		oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
+		// перекрашиваем абзац в красный цвет
+		oBuilder.Run(L"/home/mihail/script2.docbuilder");
+//		oBuilder.OpenFile(L"SampleText2.docx", L"");
+//		oBuilder.ExecuteCommand(L"var oParagraph = Api.GetDocument().GetElement(1);\n"
+//								L"oParagraph.SetColor(255, 0, 0);\n"
+//								L"\n");
+//		// сохраняем
+//		oBuilder.SaveFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX, L"SampleText2.docx");
+//		oBuilder.CloseFile();
+
     }
 
     NSDoctRenderer::CDocBuilder::Dispose();

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,13 +34,6 @@
 
 namespace NSGuidesVML
 {
-	int __wstrlen(const wchar_t* str)
-	{
-		const wchar_t* s = str;
-		for (; *s != 0; ++s);
-		return (LONG)(s - str);
-	}
-
 	CSlicePath::CSlicePath(RulesType rule, LONG x, LONG y) : m_lX(x), m_lY(y), m_eRuler(rule)
 	{
 		m_nCountElementsPoint = 0;
@@ -56,7 +49,7 @@ namespace NSGuidesVML
 			point.x = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				point.x -= m_lX;
+				//point.x -= m_lX;
 			}
 			point.y = 0;
 			pointType.x = eParType;
@@ -69,7 +62,7 @@ namespace NSGuidesVML
 			m_arPoints.back().y = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				m_arPoints.back().y -= m_lY;
+				//m_arPoints.back().y -= m_lY;
 			}
 
 			m_arPointsType.back().y = eParType;
@@ -82,8 +75,10 @@ namespace NSGuidesVML
 		m_lIndexDst = 0;
 		m_lIndexSrc = -1;
 
-		m_lWidth	= 0;
-		m_lHeight	= 0;
+		//m_lWidth	= 0;
+		//m_lHeight	= 0;
+		m_lWidth	= ShapeSizeVML;
+		m_lHeight	= ShapeSizeVML;
 
 		m_lX = 0;
 		m_lY = 0;
@@ -265,15 +260,21 @@ namespace NSGuidesVML
 
 		for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 		{
-			if (oPath.m_arParts.size() <= nIndex)
-				break;
-			const CPartPath& oPart = oPath.m_arParts[nIndex];
+			//if (oPath.m_arParts.size() <= nIndex)
+			//	break;
 
-			m_lWidth = oPart.width;
-			m_lHeight = oPart.height;
+			if (oArray[nIndex].empty()) continue;
 
-			m_lX = oPart.x;
-			m_lY = oPart.y;
+			if (nIndex < (int)oPath.m_arParts.size() )
+			{
+				const CPartPath& oPart = oPath.m_arParts[nIndex];
+
+				m_lWidth = oPart.width;
+				m_lHeight = oPart.height;
+
+				//m_lX = oPart.x;
+				//m_lY = oPart.y;
+			}
 
 			bool bFill = false;
 			bool bStroke = false;
@@ -285,10 +286,15 @@ namespace NSGuidesVML
 			m_oPathRes.WriteAttribute(L"w",  m_lWidth);
 			m_oPathRes.WriteAttribute(L"h",  m_lHeight);
 
-			if (!bStroke)
+			/*if (!bStroke)
 				m_oPathRes.WriteAttribute(L"stroke",  (std::wstring)L"false");
 			if (!bFill)
-				m_oPathRes.WriteAttribute(L"fill",  (std::wstring)L"none");
+				m_oPathRes.WriteAttribute(L"fill",  (std::wstring)L"none");*/
+
+			m_oPathRes.WriteAttribute(L"fill"		, std::wstring(bFill ? L"norm" : L"none"));
+			m_oPathRes.WriteAttribute(L"stroke"		, bStroke ? 1	: 0);
+			m_oPathRes.WriteAttribute(L"extrusionOk", 0);
+
 			m_oPathRes.EndAttributes();
 
 			for (size_t i = 0; i < m_arSlicesPath.size(); ++i)
@@ -629,8 +635,6 @@ namespace NSGuidesVML
 
 		m_arIndexDst.push_back(m_lIndexDst);
 
-		//            if (true)
-		//            {
 		m_oTextRect.WriteString(L"<a:rect l=\"");
 		GetValue(m_lIndexDst-4, ptFormula, true, m_oTextRect);
 		m_oTextRect.WriteString(L"\" t=\"");
@@ -640,11 +644,6 @@ namespace NSGuidesVML
 		m_oTextRect.WriteString(L"\" b=\"");
 		GetValue(m_lIndexDst-1, ptFormula, true, m_oTextRect);
 		m_oTextRect.WriteString(L"\" />");
-		//            } else
-		//            {
-		//        m_oTextRect.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
-		//            }
-
 	}
 	void CFormulaConverter::GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, NSBinPptxRW::CXmlWriter& oWriter)
 	{
@@ -1214,8 +1213,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j+=4)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 4;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j];
 			pCurPointType	= oSlice.m_arPointsType[j];
 			pCurPoint1		= oSlice.m_arPoints[j+1];
@@ -1474,8 +1478,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 4)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 4;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j];
 			pCurPointType	= oSlice.m_arPointsType[j];
 			pCurPoint1		= oSlice.m_arPoints[j+1];
@@ -1857,8 +1866,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 3;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j+1];
 			pCurPointType	= oSlice.m_arPointsType[j+1];
 			pCurPoint1		= oSlice.m_arPoints[j+2];

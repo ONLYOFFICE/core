@@ -100,6 +100,7 @@ namespace MetaFile
 		virtual void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout&) = 0;
 		virtual void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL&) = 0;
 		virtual void HANDLE_EMR_STROKEPATH(const TEmfRectL&) = 0;
+		virtual void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>&, const std::vector<std::pair<int, int>>&, unsigned int) = 0;
 
 		virtual void HANDLE_EMR_UNKNOWN(CDataStream &) = 0;
 		virtual void HANDLE_EMR_FILLRGN(const TEmfRectL&, unsigned int, const TRegionDataHeader&, const std::vector<TEmfRectL>&) = 0;

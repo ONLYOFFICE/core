@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -381,11 +381,13 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
 
-				odf_reader::graphic_format_properties style_graphic = odf_reader::calc_graphic_properties_content(instances);
+				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 				
-				odf_reader::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, style_graphic.style_background_image_,
-																							Context.root()->odf_context().drawStyles() ,fill);	
-				
+				if (graphic_props)
+				{
+					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_,
+						Context.root()->odf_context().drawStyles(), fill);
+				}
 				if (fill.bitmap)
 				{
 					bool isMediaInternal = true;

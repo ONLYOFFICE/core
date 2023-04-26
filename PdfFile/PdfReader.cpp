@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -347,7 +347,23 @@ std::wstring CPdfReader::GetTempDirectory()
 {
     return m_wsTempFolder;
 }
+std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStream)
+{
+    XMLConverter oConverter(m_pPDFDocument->getXRef(), isPrintStream);
+    std::wstring wsXml = oConverter.GetXml();
 
+    if (wsFilePath != L"")
+    {
+        NSFile::CFileBinary oFile;
+        if (!oFile.CreateFileW(wsFilePath))
+            return wsXml;
+
+        oFile.WriteStringUTF8(wsXml);
+        oFile.CloseFile();
+    }
+
+    return wsXml;
+}
 void CPdfReader::ChangeLength(DWORD nLength)
 {
     m_nFileLength = nLength;
@@ -632,6 +648,8 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
                 str = new GString(sLink.c_str());
                 dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
             }
+            else
+                str = NULL;
             RELEASEOBJECT(pLinkDest);
         }
         else if (kind == actionURI)

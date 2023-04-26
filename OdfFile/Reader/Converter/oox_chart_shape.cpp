@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,6 +37,8 @@
 
 #include "../Format/odfcontext.h"
 #include "../Format/style_text_properties.h"
+#include "../Format/style_graphic_properties.h"
+
 
 namespace cpdoccore {
 namespace oox {
@@ -56,14 +58,14 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 
 }
 
-void oox_chart_shape::set(std::vector<odf_reader::_property> & prop, _oox_fill & fill)
+void oox_chart_shape::set(odf_reader::graphic_format_properties_ptr & prop, _oox_fill & fill)
 {
 	bEnabled = true;
 	content_ = prop;
 	fill_ = fill;
 }
 
-void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_content_ptr properties)
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties)
 {
 	if (!properties) return;
 

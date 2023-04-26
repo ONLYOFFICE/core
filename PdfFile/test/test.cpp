@@ -90,7 +90,7 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-    if (false)
+    if (true)
     {
         std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
         std::wstring wsPrivateKeyFile = L"";
@@ -114,10 +114,16 @@ int main()
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 8;
-        //for (int i = 0; i < pdfFile.GetPagesCount(); i++)
+        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
         {
             pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
             pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        }
+
+        if (pCertificate)
+        {
+            BYTE* pWidgets = pdfFile.VerifySign(wsSrcFile, pCertificate);
+            RELEASEARRAYOBJECTS(pWidgets);
         }
 
         RELEASEINTERFACE(pApplicationFonts);
@@ -125,7 +131,7 @@ int main()
         return 0;
     }
 
-    if (true)
+    if (false)
     {
         pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;

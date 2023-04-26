@@ -823,6 +823,12 @@ BYTE* CPdfFile::GetWidgets()
         return NULL;
     return m_pInternal->pReader->GetWidgets();
 }
+BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
+{
+    if (!m_pInternal->pReader)
+        return NULL;
+    return m_pInternal->pReader->VerifySign(sFile, pCertificate, nWidget);
+}
 BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
 {
     if (!m_pInternal->pReader)

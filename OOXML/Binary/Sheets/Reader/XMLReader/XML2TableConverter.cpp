@@ -127,8 +127,6 @@ void XML2TableConverter::insertEmptyNode (const std::wstring &key)
     {
         uniqueKey = getNodeName(key, parents_.at(0).second);
     }
-
-    keyvalues_.emplace(uniqueKey, L"");
 }
 
 std::wstring XML2TableConverter::getNodeName(const std::wstring &name, std::set<std::wstring> &names)

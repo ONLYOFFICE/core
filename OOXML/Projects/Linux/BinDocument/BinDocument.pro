@@ -63,7 +63,10 @@ SOURCES += \
         ../../../Binary/Sheets/Reader/XMLReader/XMLReader.cpp \
         ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.cpp \
         ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.cpp \
-        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.cpp
+        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLReader2.cpp
 
 HEADERS += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.h \
@@ -104,4 +107,6 @@ HEADERS += \
         ../../../Binary/Sheets/Reader/XMLReader/XMLReader.h \
         ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.h \
         ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.h \
-        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.h
+        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.h

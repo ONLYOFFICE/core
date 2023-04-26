@@ -1499,7 +1499,7 @@ namespace NExtractTools
 
 		XMLReader reader = {};
 
-		reader.Read(sFrom, oXlsx);
+		reader.Read2(sFrom, oXlsx);
 
 		oXlsx.PrepareToWrite();
 

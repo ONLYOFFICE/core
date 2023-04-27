@@ -52,13 +52,27 @@ _UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx 
         return AVS_FILEUTILS_ERROR_CONVERT_READ_FILE;
     }
 
+    ///считываем структуру xml файла
     XMLMap map{};
-
     auto rootNode = std::make_shared<XmlNode>();
-    ColumnNameController columnNames{};
-    map.ReadXmlStructure(reader, columnNames, rootNode);
+    ColumnNameController nameController{};
+    map.ReadXmlStructure(reader, nameController, rootNode);
 
+    ///создаем таблицу
     XLSXTableController table = {oXlsx};
+    ///заполняем первый ряд таблицы именами столбцов
+    auto colNames = nameController.GetColumnNames();
+    std::map<_UINT32, std::wstring> namesMap;
+    for(auto i = colNames.begin(); i != colNames.end(); i++)
+    {
+        namesMap.emplace(i->second, i->first);
+    }
+
+    for(auto i = namesMap.begin(); i != namesMap.end(); i++)
+    {
+        table.AddCell(i->second, 1, i->first);
+    }
+
     // map хранящий текущий номер колонки для записи
     std::map<_UINT32, _UINT32> rowNumbers = {};
     std::map<_UINT32, std::wstring> stringData = {};

@@ -31,3 +31,94 @@
  */
 
 #include "XMLConverter2.h"
+
+
+XMLConverter::XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController):
+    reader_{&reader},
+    nodeTree_{xmlStruct},
+    colNames_{&nameController},
+    nodePointer_{*nodeTree_->childs.begin()}
+{
+    parents_.push_back(xmlStruct);
+}
+
+void XMLConverter::ConvertXml(std::vector<std::vector<std::wstring>> &table)
+{
+    XmlUtils::XmlNodeType nodeType;
+
+    while(reader_->Read(nodeType))
+    {
+        if(nodeType == XmlUtils::XmlNodeType::XmlNodeType_Element)
+        {
+            openNode();
+        }
+        else if(nodeType == XmlUtils::XmlNodeType::XmlNodeType_Text || nodeType == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
+        {
+            insertValue(parents_.back()->name, reader_->GetText());
+        }
+        else if(nodeType == XmlUtils::XmlNodeType::XmlNodeType_EndElement)
+        {
+            closeNode();
+        }
+        prevType_ = nodeType;
+    }
+
+}
+
+void XMLConverter::openNode()
+{
+    auto nodename = reader_->GetName();
+    for(auto i = parents_.back()->childs.begin(); i != parents_.back()->childs.end(); i++)
+    {
+        if((*i)->name == nodename)
+        {
+            nodePointer_ = *i;
+        }
+    }
+    if(reader_->IsEmptyNode() && !nodePointer_->columns.empty())
+    {
+        readAttributes();
+        nodePointer_ = nodePointer_->parent;
+    }
+    else if(reader_->IsEmptyNode() && nodePointer_->columns.empty())
+    {
+        insertValue(nodePointer_->name, L"");
+        nodePointer_ = nodePointer_->parent;
+    }
+
+
+}
+
+void XMLConverter::readAttributes()
+{
+    if(!reader_->GetAttributesCount())
+    {
+        return;
+    }
+    reader_->MoveToFirstAttribute();
+
+    insertValue(reader_->GetName(), reader_->GetText());
+
+    while(reader_->MoveToNextAttribute())
+    {
+        insertValue(reader_->GetName(), reader_->GetText());
+    }
+
+    reader_->MoveToElement();
+}
+
+
+void XMLConverter::closeNode()
+{
+    if(prevType_ == XmlUtils::XmlNodeType::XmlNodeType_Element)
+    {
+        insertValue(nodePointer_->name, L"");
+    }
+    nodePointer_ = nodePointer_->parent;
+    parents_.pop_back();
+}
+
+void insertValue(const std::wstring &key, const std::wstring &value)
+{
+
+}

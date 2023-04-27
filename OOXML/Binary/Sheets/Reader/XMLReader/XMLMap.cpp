@@ -163,5 +163,17 @@ void XMLMap::closeNode()
     auto lastElem = parents_.back();
     parents_.pop_back();
     parents_.back()->childColumns.insert(lastElem->childColumns.begin(), lastElem->childColumns.end());
+
+    for(auto i = lastElem->childs.begin(); i != lastElem->childs.end(); i++)
+    {
+        if((*i)->counter < 2)
+        {
+            (*i)->counter = 0;
+        }
+    }
+    if(!(lastElem->columns.empty() || lastElem->childColumns.empty()) && lastElem->counter < 2)
+    {
+        lastElem->heritable = true;
+    }
 }
 

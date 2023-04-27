@@ -29,5 +29,86 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
+#include "XMLMap.h"
+
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../Base/Base.h"
+
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+
+/// @brief класс -обертка над xmlLiteReader для превращения xml нод в табличные строки
+class XMLConverter
+{
+public:
+
+    /// @brief конструктор загружающий в обънет reader с прочитанным xml
+    /// @param reader xmlLiteReader с загруженным в него xml документом
+    /// @param xmlStruct указатель на корневую ноду структуры xml документа
+    /// @param nameController контроллер имен, заполненный именами столбцов
+    XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController);
+
+    /// @brief метод, конвертирующий xml в табличный вид
+    /// @param table таблица с данными xml в строковом виде
+    void ConvertXml(std::vector<std::vector<std::wstring>> &table);
+
+private:
+
+    /// @brief считывает аттрибуты текущей ноды
+    void readAttributes();
+
+    /// @brief обрабатывает открытие текущей ноды
+    void openNode();
+
+    /// @brief обрабатывает закрытие текущей ноды
+    void closeNode();
+
+    /// @brief проверка ноды на возможность вставить её данные в таблицу с последующей их  вставкой в случае успеха
+    /// @param type тип обрабатываемой ноды
+    void storeData(const XmlUtils::XmlNodeType &type);
+
+    /// @brief заполняет данными переданный map
+    /// @param row map в который будут помещены данные и соответствующие им номера столбцов
+    /// @return номер вставляемой строки
+    void insertRow(std::map<_UINT32, std::wstring> &row);
+
+    /// @brief вставляет значение во временную внутреннюю структуру
+    /// @param key ключ, по которому будет вставлено значение
+    /// @param value значение которое нужно вставить
+    void insertValue(const std::wstring &key, const std::wstring &value);
+
+    /// @brief Получение уникального имени ноды
+    /// @param name имя ноды, прочитанное из xml
+    /// @return найденное или сгенерированное уникальное имя ноды
+    std::wstring getNodeName(const std::wstring &name);
+
+    /// @brief указатель на считавший xml данные reader
+    XmlUtils::CXmlLiteReader *reader_;
+
+    /// @brief вектор с родительскими нодами
+    std::vector<std::shared_ptr<XmlNode>> parents_;
+
+    /// @brief map с набором ключей в виде уникальных имен и их значений для вставки в таблицу
+    std::map<std::wstring, std::wstring> keyvalues_;
+
+    /// @brief контроллер имен столбцов таблицы
+    ColumnNameController *colNames_;
+
+    /// @brief map в который выводятся данные при прочтении ноды
+    std::map<_UINT32, std::wstring> stringBuffer_;
+
+    /// @brief дерево нод xml документа
+    std::shared_ptr<XmlNode> nodeTree_;
+
+    /// @brief указатель на текущую ноду в структуре
+    std::shared_ptr<XmlNode> nodePointer_;
+
+    /// @brief тип предыдущей ноды(для поиска нод вида <node></node>)
+    XmlUtils::XmlNodeType prevType_ = XmlUtils::XmlNodeType::XmlNodeType_None;
+
+};

@@ -534,7 +534,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 					}
 					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
 					{
-						shape.set(odf_reader::graphic_format_properties_ptr(), content_.points_[i].fill_);
+						odf_reader::graphic_format_properties_ptr empty;
+						shape.set(empty, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 

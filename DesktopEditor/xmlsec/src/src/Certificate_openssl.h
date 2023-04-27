@@ -397,6 +397,47 @@ public:
 		return true;
 	}
 
+	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
+							unsigned char* pData, unsigned int nSize)
+	{
+		int nRes = 0;
+		ERR_load_crypto_strings();
+		OpenSSL_add_all_algorithms();
+
+		BIO* outputbio = BIO_new(BIO_s_mem());
+		BIO_write(outputbio, pPKCS7Data, nPKCS7Size);
+
+		PKCS7* pkcs7 = d2i_PKCS7_bio(outputbio, NULL);
+		BIO_free(outputbio);
+		if (pkcs7 == NULL)
+			return nRes;
+
+		BIO* inputbio = BIO_new(BIO_s_mem());
+		BIO_write(inputbio, pData, nSize);
+
+		X509_STORE* store = X509_STORE_new();
+		X509_STORE_add_cert(store, m_cert);
+		STACK_OF(X509)* signers = sk_X509_new_null();
+
+		if (PKCS7_verify(pkcs7, signers, store, inputbio, NULL, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)
+		{
+			nRes |= (1 << 0);
+			nRes |= (1 << 1);
+		}
+		else if (PKCS7_verify(pkcs7, signers, store, inputbio, NULL, PKCS7_NOCHAIN | PKCS7_NOSIGS | PKCS7_NOVERIFY) == 1)
+		{
+			nRes |= (1 << 0);
+		}
+		BIO_free(inputbio);
+		PKCS7_free(pkcs7);
+		X509_STORE_free(store);
+		sk_X509_pop_free(signers, X509_free);
+
+		EVP_cleanup();
+
+		return nRes;
+	}
+
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
 	{
 		int nBufLen = 0;

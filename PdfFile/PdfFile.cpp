@@ -842,7 +842,6 @@ BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, 
     return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
 }
 
-
 // ------------------------------------------------------------------------
 
 void CPdfFile::CreatePdf(bool isPDFA)

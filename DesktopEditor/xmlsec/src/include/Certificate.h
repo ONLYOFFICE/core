@@ -53,6 +53,8 @@ public:
 	virtual std::string Sign(const std::string& sXml)                                   = 0;
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)            = 0;
+	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
+							unsigned char* pData, unsigned int nSize)                   = 0;
 
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
 	virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;

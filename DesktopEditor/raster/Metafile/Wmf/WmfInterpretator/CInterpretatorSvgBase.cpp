@@ -319,14 +319,14 @@ namespace MetaFile
 			if (arDx.empty())
 				arNodeAttributes.push_back({L"text-anchor", L"end"});
 			else
-				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0);
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0.0);
 		}
 		else if (ulTextAlign == TA_CENTER)
 		{
 			if (arDx.empty())
 				arNodeAttributes.push_back({L"text-anchor", L"middle"});
 			else
-				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0) / 2;
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0.0) / 2;
 		}
 		else  //if (ulTextAlign & TA_LEFT)
 		{

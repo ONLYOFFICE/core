@@ -972,19 +972,22 @@ namespace NSDocxRenderer
 
 			oWriter.WriteString(L"<w:charset w:val=\"00\"/>");
 
-			oWriter.WriteString(L"<w:sig w:usb0=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[0]);
-			oWriter.WriteString(L"\" w:usb1=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[1]);
-			oWriter.WriteString(L"\" w:usb2=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[2]);
-			oWriter.WriteString(L"\" w:usb3=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[3]);
-			oWriter.WriteString(L"\" w:csb0=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[4]);
-			oWriter.WriteString(L"\" w:csb1=\"");
-			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[5]);
-			oWriter.WriteString(L"\"/>");
+			if (!val.oFontSelectParams.arSignature.empty())
+			{
+				oWriter.WriteString(L"<w:sig w:usb0=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[0]);
+				oWriter.WriteString(L"\" w:usb1=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[1]);
+				oWriter.WriteString(L"\" w:usb2=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[2]);
+				oWriter.WriteString(L"\" w:usb3=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[3]);
+				oWriter.WriteString(L"\" w:csb0=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[4]);
+				oWriter.WriteString(L"\" w:csb1=\"");
+				oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[5]);
+				oWriter.WriteString(L"\"/>");
+			}
 
 			oWriter.WriteString(L"</w:font>");
 		}

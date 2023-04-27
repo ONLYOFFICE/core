@@ -268,8 +268,13 @@ namespace NSDocxRenderer
 		for(int i = 0; i < 10; i++)
 			bEqual &= arPANOSE[i] == oOther.arPANOSE[i];
 
-		for(int i = 0; i < arSignature.size(); i++)
-			bEqual &= arSignature[i] == oOther.arSignature[i];
+		if (arSignature.size() == oOther.arSignature.size())
+		{
+			for(int i = 0; i < arSignature.size(); i++)
+				bEqual &= arSignature[i] == oOther.arSignature[i];
+		}
+		else
+			bEqual = false;
 
 		return bEqual;
 	}
@@ -326,17 +331,25 @@ namespace NSDocxRenderer
 			}
 		}
 
-
 		// не нашли...
 		CFontSelectInfo oInfoCache;
 		oInfoCache.oFontSelectParams = oFontSelectParams;
 		oInfoCache.lRange = lRange;
 		oInfoCache.lRangeNum = lRangeNum;
 
-		UINT dwR1 = oFontSelectParams.arSignature[0];
-		UINT dwR2 = oFontSelectParams.arSignature[1];
-		UINT dwR3 = oFontSelectParams.arSignature[2];
-		UINT dwR4 = oFontSelectParams.arSignature[3];
+		UINT dwR1 = 0;
+		UINT dwR2 = 0;
+		UINT dwR3 = 0;
+		UINT dwR4 = 0;
+
+		if (!oFontSelectParams.arSignature.empty())
+		{
+			dwR1 = oFontSelectParams.arSignature[0];
+			dwR2 = oFontSelectParams.arSignature[1];
+			dwR3 = oFontSelectParams.arSignature[2];
+			dwR4 = oFontSelectParams.arSignature[3];
+		}
+
 		UINT dwCodePage1	= 0;
 		UINT dwCodePage2	= 0;
 
@@ -364,9 +377,21 @@ namespace NSDocxRenderer
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
-		oFormat.pPanose = new BYTE[10];
-		for(int i = 0; i < 10; i++)
-			oFormat.pPanose[i] = oFontSelectParams.arPANOSE[i];
+		bool bIsPanosePresent = false;
+		for (int i = 0; i < 10; i++)
+		{
+			if (0 != oFontSelectParams.arPANOSE[i])
+			{
+				bIsPanosePresent = true;
+				break;
+			}
+		}
+
+		if (bIsPanosePresent)
+		{
+			oFormat.pPanose = new BYTE[10];
+			memcpy(oFormat.pPanose, oFontSelectParams.arPANOSE, 10 * sizeof(BYTE));
+		}
 
 		oFormat.bBold = new INT(oFontSelectParams.bDefaultBold);
 		oFormat.bItalic = new INT(oFontSelectParams.bDefaultItalic);
@@ -388,7 +413,7 @@ namespace NSDocxRenderer
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 
-		oFormat.wsDefaultName = new std::wstring(sFontNameSelect);
+		oFormat.wsName = new std::wstring(sFontNameSelect);
 
 		NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
 
@@ -502,6 +527,9 @@ namespace NSDocxRenderer
 
 		LoadFontMetrics();
 		LoadFontSelectParams();
+
+		if (m_oFontSelectParams.wsDefaultName.empty())
+			m_oFontSelectParams.wsDefaultName = m_oFont.Name;
 
 		CheckPdfResources();
 	}
@@ -654,14 +682,20 @@ namespace NSDocxRenderer
 		// Signature
 		m_oFontSelectParams.arSignature.clear();
 
-		for ( unsigned int i = 0; i < 6; ++i )
-		{
-			DWORD value = 0;
-			for ( unsigned long bit = 0; bit < 32; ++bit )
-				if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
-					value |= ( 1 << bit );
+		// check os2 present:
+		bool bIsOS2Present = (-1 != m_pManager->GetFile()->IsUnicodeRangeAvailable(0, 0)) ? true : false;
 
-			m_oFontSelectParams.arSignature.push_back(value);
+		if (bIsOS2Present)
+		{
+			for ( unsigned int i = 0; i < 6; ++i )
+			{
+				DWORD value = 0;
+				for ( unsigned long bit = 0; bit < 32; ++bit )
+					if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
+						value |= ( 1 << bit );
+
+				m_oFontSelectParams.arSignature.push_back(value);
+			}
 		}
 	}
 

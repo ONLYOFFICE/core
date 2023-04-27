@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 class CBookItem
 {

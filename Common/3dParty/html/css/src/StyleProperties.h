@@ -176,7 +176,7 @@ namespace NSCSS
 
 		ColorType GetType() const;
 
-		int GetOpacity() const;
+		double GetOpacity() const;
 
 		int ToInt() const override;
 		double ToDouble() const override;

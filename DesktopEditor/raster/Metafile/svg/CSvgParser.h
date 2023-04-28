@@ -6,6 +6,7 @@
 #include "../../../xml/include/xmlutils.h"
 
 #include "SvgObjects/CContainer.h"
+#include "SvgObjects/CDefs.h"
 
 class CSvgFile;
 
@@ -31,12 +32,16 @@ namespace SVG
 		template <typename TypeContainer>
 		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent = NULL) const;
 
-		bool ScanElement(XmlUtils::CXmlNode& oElement, const std::wstring& wsElementName, CSvgFile* pFile) const;
+		bool ScanDefs(XmlUtils::CXmlNode& oElement,  CSvgFile* pFile) const;
+		bool ScanStyles(XmlUtils::CXmlNode& oElement,  CSvgFile* pFile) const;
 
 		bool IsDefs(const std::wstring& wsNodeName) const;
 
 		template <typename TypeObject, typename TypeContainer>
 		bool AddObject(TypeObject* pObject, CContainer<TypeContainer>* pContainer, CSvgFile* pFile) const;
+
+		template<typename ElementClass, typename ContainerClass>
+		CDefObject* CreateAndReadChildrens(XmlUtils::CXmlNode &oElement, CSvgFile* pFile) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
 	};

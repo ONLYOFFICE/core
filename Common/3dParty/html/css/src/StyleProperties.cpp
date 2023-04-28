@@ -472,17 +472,17 @@ namespace NSCSS
 
 	std::wstring CColor::CutURL(const std::wstring &wsValue)
 	{
-		size_t unStartURL = wsValue.find(L"url(");
+		size_t unStartURL = wsValue.find(L"#");
 		size_t unEndURL   = wsValue.find(L')', unStartURL);
 
-		if (std::wstring::npos != unStartURL && std::wstring::npos != unEndURL && (6 < unEndURL - unStartURL))
-			return wsValue.substr(unStartURL + 5, unEndURL - unStartURL - 5);
+		if (std::wstring::npos != unStartURL && std::wstring::npos != unEndURL && (2 < unEndURL - unStartURL))
+			return wsValue.substr(unStartURL + 1, unEndURL - unStartURL - 1);
 
 		return std::wstring();
 	}
 
 	CColor::CColor()
-	    : CValue({}, 0, false), m_oOpacity(255)
+		: CValue({}, 0, false), m_oOpacity(1.)
 	{}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -493,6 +493,8 @@ namespace NSCSS
 		std::wstring wsNewValue = wsValue;
 
 		bool bImportant = CutImportant(wsNewValue);
+
+		std::wstring wsCopyValue{wsNewValue};
 
 		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
 
@@ -528,7 +530,7 @@ namespace NSCSS
 		}
 		else if (5 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"url")
 		{
-			m_oValue.SetUrl(CutURL(wsNewValue));
+			m_oValue.SetUrl(CutURL(wsCopyValue));
 			m_unLevel    = unLevel;
 			m_bImportant = bImportant;;
 			return true;
@@ -586,7 +588,7 @@ namespace NSCSS
 		return m_oValue.m_enType;
 	}
 
-	int CColor::GetOpacity() const
+	double CColor::GetOpacity() const
 	{
 		if (Percent == m_oOpacity.GetUnitMeasure())
 			return m_oOpacity.ToDouble() / 100.;

@@ -37,7 +37,6 @@ namespace SVG
 				else if (L"id" == arProperties[unIndex])
 				{
 					m_oXmlNode.m_sId = arValues[unIndex];
-					std::transform(m_oXmlNode.m_sId.begin(), m_oXmlNode.m_sId.end(), m_oXmlNode.m_sId.begin(), std::towlower);
 				}
 				else if (L"style" == arProperties[unIndex])
 					m_oXmlNode.m_sStyle = arValues[unIndex];

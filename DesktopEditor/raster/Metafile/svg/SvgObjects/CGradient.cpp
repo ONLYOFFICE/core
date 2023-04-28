@@ -37,7 +37,7 @@ namespace SVG
 
 		for (const CStopElement* pStopElement : m_arObjects)
 		{
-			arColors.push_back(((LONG)pStopElement->GetColor().ToInt() + (pStopElement->GetColor().GetOpacity() << 24)));
+			arColors.push_back(((LONG)pStopElement->GetColor().ToInt() + ((int)(255. * pStopElement->GetColor().GetOpacity()) << 24)));
 			arPositions.push_back(pStopElement->GetOffset().ToDouble());
 		}
 

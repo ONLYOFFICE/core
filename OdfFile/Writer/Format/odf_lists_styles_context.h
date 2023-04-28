@@ -44,7 +44,7 @@ namespace odf_writer {
 class ods_conversion_context;
 class style_list_level_properties;
 class style_list_level_label_alignment;
-class style_text_properties;
+class text_format_properties;
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -69,7 +69,7 @@ public:
 		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
-			style_text_properties				* get_text_properties();
+			text_format_properties				* get_text_properties();
 
 			void set_bullet_image_size(double size);
 			void set_bullet_image	(std::wstring ref);

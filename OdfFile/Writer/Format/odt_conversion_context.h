@@ -144,12 +144,12 @@ public:
 
 	void set_master_page_name(std::wstring master_name);
 
-	void start_drop_cap			(style_paragraph_properties * paragraph_properties);
+	void start_drop_cap			(paragraph_format_properties* paragraph_properties);
 		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap			();
 	bool in_drop_cap			() {return drop_cap_state_.enabled;}
-	style_text_properties* get_drop_cap_properties();
+	text_format_properties* get_drop_cap_properties();
 	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
 	int start_comment			(int oox_comment_id);
@@ -279,7 +279,7 @@ private:
 		}
 
 		bool enabled = false;
-		style_paragraph_properties	*paragraph_properties = NULL;
+		paragraph_format_properties	*paragraph_properties = NULL;
 		office_element_ptr			text_properties;
 
 		int		lines = 0;

@@ -52,7 +52,7 @@ namespace odf_writer {
 static int style_family_counts_[1024]={};//согласно количеству разных стилей
 
 
-void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
+void calc_paragraph_properties_content(std::vector<paragraph_format_properties*> & parProps, paragraph_format_properties * result)
 {
 	if (result == NULL)return;
     if (parProps.empty()) return;
@@ -60,10 +60,10 @@ void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> 
     for (int i = (int)parProps.size() - 1; i >= 0; i--)
     {
         if (parProps[i])
-            result->apply_from(parProps[i]->content_);
+            result->apply_from(*parProps[i]);
     }
 }
-void calc_text_properties_content(std::vector<style_text_properties*> & textProps, text_format_properties_content * result)
+void calc_text_properties_content(std::vector<text_format_properties*> & textProps, text_format_properties * result)
 {
 	if (result == NULL)return;
     if (textProps.empty()) return;
@@ -71,7 +71,7 @@ void calc_text_properties_content(std::vector<style_text_properties*> & textProp
     for (int i = (int)textProps.size() - 1; i >= 0; i--)
     {
         if (textProps[i])
-            result->apply_from(textProps[i]->content_);
+            result->apply_from(*textProps[i]);
     }
 }
 odf_style_context::odf_style_context()
@@ -436,16 +436,16 @@ office_element_ptr & odf_style_context::add_or_find(std::wstring name, style_fam
 	
 	return style_state_list_.back()->get_office_element();
 }
-void odf_style_context::calc_text_properties(std::wstring style_name, odf_types::style_family::type family, text_format_properties_content * result)
+void odf_style_context::calc_text_properties(std::wstring style_name, odf_types::style_family::type family, text_format_properties * result)
 {
-    std::vector<style_text_properties*> textProps;
+    std::vector<text_format_properties*> textProps;
 	
 	while (!style_name.empty())
     {
 		style *style_ = NULL;
 		if (!find_odf_style(style_name, family, style_) || !style_)break;
 
-       if (style_text_properties * textProp = style_->content_.get_style_text_properties())
+       if (text_format_properties * textProp = style_->content_.add_get_style_text_properties())
 			textProps.push_back(textProp);
         		
 	   style_name = style_->style_parent_style_name_ ? *style_->style_parent_style_name_ : L"";
@@ -456,14 +456,14 @@ void odf_style_context::calc_text_properties(std::wstring style_name, odf_types:
 
 void odf_style_context::calc_paragraph_properties(std::wstring style_name, style_family::type family, paragraph_format_properties * result)
 {
-    std::vector<style_paragraph_properties*> parProps;
+    std::vector<paragraph_format_properties*> parProps;
 	
 	while (!style_name.empty())
     {
 		style *style_ = NULL;
 		if (!find_odf_style(style_name, family, style_) || !style_)break;
 
-       if (style_paragraph_properties * parProp = style_->content_.get_style_paragraph_properties())
+       if (paragraph_format_properties* parProp = style_->content_.add_get_style_paragraph_properties())
 			parProps.push_back(parProp);
         		
 	   style_name = style_->style_parent_style_name_ ? *style_->style_parent_style_name_ : L"";

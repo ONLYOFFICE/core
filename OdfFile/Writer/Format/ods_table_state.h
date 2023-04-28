@@ -433,6 +433,11 @@ public:
 
 	ods_hyperlink_state & current_hyperlink();
 
+	std::vector<table_part_state> & table_parts() 
+	{
+		return table_parts_;
+	}
+
     int current_column() const;
     int current_row() const;
 
@@ -450,8 +455,8 @@ public:
 	odf_drawing_context*	drawing_context(){return  drawing_context_.get();}
 	odf_controls_context*	controls_context(){return  &controls_context_;}
 
-	std::wstring					office_table_name_;
-	std::vector<ods_comment_state>	comments_;
+	std::wstring office_table_name_;
+	std::vector<ods_comment_state> comments_;
 
 	std::map<std::wstring, office_element_ptr> mapHeaderFooterImages;
 private:

@@ -42,8 +42,10 @@ std::wstring sCmdMarketplaceUrl =               L"--marketplace";
 
 std::wstring sCmdPrintInstalled =               L"--print-installed";
 std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
+std::wstring sCmdPrintBackup =                  L"--print-backup";
 
 std::wstring sCmdInstallPluginsList =           L"--install";
+std::wstring sCmdRestorePluginsList =           L"--restore";
 std::wstring sCmdRemovePluginsList =            L"--remove";
 std::wstring sCmdRemoveAllPlugins =             L"--remove-all";
 
@@ -63,10 +65,17 @@ L"  --print-installed    = Optional parameter. Print installed plugins. Paramete
 
 L"  --print-marketplace  = Optional parameter. Print available plugins from the marketplace. Parameter without value.\n\n" \
 
+L"  --print-backup       = Optional parameter. Print backup plugins. Parameter without value.\n" \
+L"                         Backup plugins can be restored using --restore option\n\n" \
+
 L"  --install            = Optional parameter. Set comma-separated quoted list of plugins to install.\n" \
 L"                         Installing by plugin name, GUID, URL, direct file path (without commas) is supported.\n" \
 L"                         For example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, /home/mark/plugins/speech.plugin, https://anysite.com/deploy/translator.plugin\"\n" \
 L"                         File extensions: .zip, .plugin\n\n" \
+
+L"  --restore            = Optional parameter. Set comma-separated quoted list of plugins to restore.\n" \
+L"                         Restoring by plugin name or GUID is supported.\n" \
+L"                         For example, --restore=\"Youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
 L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
 L"                         Removing by plugin name or GUID is supported.\n" \

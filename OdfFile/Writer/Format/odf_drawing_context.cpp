@@ -260,9 +260,9 @@ struct odf_drawing_state
 };
 struct odf_level_state
 {
-	style_text_properties		*text_properties = NULL;
+	text_format_properties		*text_properties = NULL;
 	graphic_format_properties	*graphic_properties = NULL;
-	style_paragraph_properties	*paragraph_properties = NULL;
+	paragraph_format_properties	*paragraph_properties = NULL;
 
 	office_element_ptr elm;
 
@@ -307,8 +307,8 @@ public:
 	office_element_ptr	create_draw_element(eOdfDrawElements type);
 
 	graphic_format_properties		*current_graphic_properties;
-	style_paragraph_properties		*current_paragraph_properties;
-	style_text_properties			*current_text_properties;
+	paragraph_format_properties		*current_paragraph_properties;
+	text_format_properties			*current_text_properties;
 
 	anchor_settings						anchor_settings_;
 
@@ -2419,7 +2419,7 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
-					impl_->current_text_properties = style_->content_.get_style_text_properties();
+					impl_->current_text_properties = style_->content_.add_get_style_text_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
 					
 					if (!impl_->current_level_.empty())
@@ -2433,9 +2433,9 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 		}
 	}
 	if (impl_->current_text_properties)
-		impl_->current_text_properties ->apply_from(text_properties);
+		impl_->current_text_properties->apply_from(text_properties->content_);
 }
-void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
+void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *paragraph_properties)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
@@ -2452,7 +2452,7 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
-					impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+					impl_->current_paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
 
 					if (!impl_->current_level_.empty())
@@ -2465,8 +2465,8 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 			}
 		}
 	}
-	if (impl_->current_paragraph_properties)
-		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+	if (impl_->current_paragraph_properties && paragraph_properties)
+		impl_->current_paragraph_properties ->apply_from(*paragraph_properties);
 }
 void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
 {
@@ -2522,7 +2522,7 @@ void odf_drawing_context::set_textarea_rotation(double val)
 
 	if (!impl_->current_text_properties) return;
 
-	impl_->current_text_properties->content_.style_text_rotation_angle_ = (int)val;
+	impl_->current_text_properties->style_text_rotation_angle_ = (int)val;
 }
 
 void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
@@ -2537,9 +2537,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
-	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
+	if (!ea.empty())	impl_->current_text_properties->fo_font_family_ = latin;
+	if (!cs.empty())	impl_->current_text_properties->style_font_family_complex_ = cs;
+	if (!latin.empty())	impl_->current_text_properties->style_font_family_asian_ = ea;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
@@ -2558,7 +2558,7 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 	if (std::wstring::npos == hexColor.find(L"#")) 
 		hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_text_properties->content_.fo_color_ = hexColor;
+	impl_->current_text_properties->fo_color_ = hexColor;
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
@@ -2597,14 +2597,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
 		if (style_)
 		{
-			impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+			impl_->current_paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 			
 			if (!impl_->current_level_.empty())
 				impl_->current_level_.back().paragraph_properties = impl_->current_paragraph_properties;
 		}
 	}
 	
-	style_paragraph_properties	* paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
+	paragraph_format_properties	*paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
@@ -2625,7 +2625,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		}
 		if (style_ && !paragraph_properties)
 		{
-			paragraph_properties = style_->content_.get_style_paragraph_properties();
+			paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 		}
 	}
 	
@@ -2639,14 +2639,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
 				
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 1://SimpleTypes::textverticaltypeHorz: 
 			default:
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 				break;
 		}
 	}
@@ -2659,14 +2659,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 1://SimpleTypes::textverticaltypeHorz: 
 			default:
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 				break;
 		}
 	}
@@ -3229,14 +3229,14 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
 	{
 		//настройки цвета - перетащить в линии и заливки - так уж нужно wordart-у оо
-		style_text_properties *text_properties_ = text_context->get_text_properties();
+		text_format_properties *text_properties_ = text_context->get_text_properties();
 		
 		if (text_properties_)
 		{
-			color color_ = text_properties_->content_.fo_color_.get_value_or(color(L"#000000"));
+			color color_ = text_properties_->fo_color_.get_value_or(color(L"#000000"));
 			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = color_;			
 			
-			if (text_properties_->content_.style_text_outline_)
+			if (text_properties_->style_text_outline_)
 			{
 				//line
 				impl_->current_graphic_properties->svg_stroke_color_	= color_;

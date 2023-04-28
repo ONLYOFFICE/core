@@ -80,10 +80,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (nContent != std::wstring::npos)
     {
         nContent += 11;
-        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
-        size_t posLastSlash = sContent.rfind(L'/');
-        if (posLastSlash != std::wstring::npos)
-            sContent = sContent.substr(posLastSlash + 1);
+        sContent = NSFile::GetFileName(sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent));
     }
     sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 

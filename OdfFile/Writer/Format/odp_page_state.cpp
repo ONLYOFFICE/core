@@ -120,7 +120,7 @@ void odp_page_state::set_page_style(office_element_ptr & elm)
 
 	if (!office_page_style_)return;
 
-	page_properties_ = office_page_style_->content_.get_style_drawing_page_properties();
+	page_properties_ = office_page_style_->content_.add_get_style_drawing_page_properties();
 
 	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 	if (page)

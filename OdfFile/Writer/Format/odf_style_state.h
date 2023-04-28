@@ -46,15 +46,15 @@ class odf_conversion_context;
 class odf_style_context;
 
 class graphic_format_properties;
+class text_format_properties;
+class paragraph_format_properties;
+class chart_format_properties;
 
-class style_text_properties;
-class style_paragraph_properties;
 class style_table_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
 class style_table_column_properties;
-class style_chart_properties;
 class style_drawing_page_properties;
 
 class odf_style_state;
@@ -95,16 +95,16 @@ public:
 
     void	set_display_name(const std::wstring &name);
 //////////////////////////////////////////////////////////////////////////////////////////
-    graphic_format_properties *		get_graphic_properties() ;
+    graphic_format_properties*		get_graphic_properties() ;    
+	text_format_properties*			get_text_properties();
+    paragraph_format_properties *	get_paragraph_properties() ;
+    chart_format_properties *		get_chart_properties() ;
     
-	style_text_properties *			get_text_properties();
-    style_paragraph_properties *	get_paragraph_properties() ;
-    style_table_properties *		get_table_properties();
+	style_table_properties *		get_table_properties();
     style_section_properties *		get_section_properties();
     style_table_cell_properties *	get_table_cell_properties();
     style_table_row_properties *	get_table_row_properties() ;
     style_table_column_properties * get_table_column_properties() ;
-    style_chart_properties *		get_chart_properties() ;
 	style_drawing_page_properties*	get_drawing_page_properties();
 
 	bool	get_list_style_exist();

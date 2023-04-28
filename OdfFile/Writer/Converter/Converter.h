@@ -54,17 +54,18 @@ namespace cpdoccore
 	{
 		class odf_conversion_context;
 
-		class style_paragraph_properties;
-		class style_text_properties;
+		class text_format_properties;
+		class paragraph_format_properties;
+		class chart_format_properties;
+		class graphic_format_properties;
+
 		class style_graphic_properties;
 		class style_section_properties;
 		class style_table_properties;
 		class style_table_cell_properties;
 		class style_table_row_properties;
 		class style_table_column_properties;
-		class style_chart_properties;
 		class style_drawing_page_properties;
-		class graphic_format_properties;
 		namespace package
 		{
 			class odf_document;
@@ -543,11 +544,11 @@ public:
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
 
-		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties,
-																							cpdoccore::odf_writer::style_text_properties		*text_properties);
-		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props,			cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties, 
-																							cpdoccore::odf_writer::style_text_properties		*text_properties);
-		void convert(PPTX::Logic::RunProperties					*oox_run_props,				cpdoccore::odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::paragraph_format_properties	*paragraph_properties,
+																							cpdoccore::odf_writer::text_format_properties		*text_properties);
+		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props,			cpdoccore::odf_writer::paragraph_format_properties	*paragraph_properties,
+																							cpdoccore::odf_writer::text_format_properties		*text_properties);
+		void convert(PPTX::Logic::RunProperties					*oox_run_props,				cpdoccore::odf_writer::text_format_properties		*text_properties);
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);

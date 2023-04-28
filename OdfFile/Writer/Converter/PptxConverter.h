@@ -155,9 +155,9 @@ namespace Oox2Odf
 		void convert(const std::wstring &id, PPTX::Logic::TableStyle *oox_table_style);
  		std::wstring convert(PPTX::Logic::TablePartStyle *oox_table_part_style, const std::wstring &base = L"");
 
-		void convert(PPTX::Logic::TcBdr *borders,	odf_writer::style_paragraph_properties	*para_properties);
+		void convert(PPTX::Logic::TcBdr *borders,	odf_writer::paragraph_format_properties	*para_properties);
 		void convert(PPTX::Logic::TcStyle* style,	odf_writer::graphic_format_properties	*graphic_properties);
-		void convert(PPTX::Logic::TcTxStyle* style,	odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::TcTxStyle* style,	odf_writer::text_format_properties		*text_properties);
 		
 		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
 private:

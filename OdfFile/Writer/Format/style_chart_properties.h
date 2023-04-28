@@ -121,8 +121,9 @@ public:
 	_CP_OPT(std::wstring)				axis_label_position_;
 	_CP_OPT(std::wstring)				axis_position_;									
 
-	odf_types::common_rotation_angle_attlist       common_rotation_angle_attlist_;
+	odf_types::common_rotation_angle_attlist common_rotation_angle_attlist_;
 };
+typedef boost::shared_ptr<chart_format_properties> chart_format_properties_ptr;
 
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {
@@ -130,9 +131,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleChartProperties;
-
-    
+    static const ElementType type = typeStyleChartProperties;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -141,7 +140,6 @@ public:
 	
 	chart_format_properties content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_chart_properties);
 
 }

@@ -69,11 +69,11 @@ namespace cpdoccore {
 namespace odf_writer {
 
 
-class text_format_properties_content 
+class text_format_properties 
 {
 public:
 	void serialize(std::wostream & strm,const wchar_t * ns, const wchar_t * name );
-    void apply_from(const text_format_properties_content & Other);    
+    void apply_from(const text_format_properties & Other);    
 	void set_r_style(const std::wstring & rStyle);
 
 	void clear();
@@ -191,9 +191,7 @@ public:
 	odf_types::common_border_attlist common_border_attlist_;
 
 };
-
-class style_text_properties;
-typedef shared_ptr<style_text_properties>::Type style_text_properties_ptr;
+typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 
 class style_text_properties : public office_element_impl<style_text_properties>
 {
@@ -201,9 +199,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleTextProperties;
-
-    
+    static const ElementType type = typeStyleTextProperties;    
     
 	void apply_from(const style_text_properties * Other);
 
@@ -215,10 +211,11 @@ public:
     style_text_properties(){};
     style_text_properties(const std::wstring & rStyle){ content_.set_r_style(rStyle); };
  
-    text_format_properties_content content_;
+    text_format_properties content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);
+
+typedef shared_ptr<style_text_properties>::Type style_text_properties_ptr;
 
 }
 }

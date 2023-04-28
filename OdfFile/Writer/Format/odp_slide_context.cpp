@@ -228,10 +228,10 @@ void odp_slide_context::start_table_cell(int col, bool covered, bool styled)
 
 				if (gr && gr_def) gr->apply_from(*gr_def);
 
-				style_paragraph_properties *para = style_state->get_paragraph_properties();
-				style_paragraph_properties *para_def = style_state_def->get_paragraph_properties();
+				paragraph_format_properties *para = style_state->get_paragraph_properties();
+				paragraph_format_properties *para_def = style_state_def->get_paragraph_properties();
 				
-				if (para && para_def) para->apply_from(para_def);
+				if (para && para_def) para->apply_from(*para_def);
 			}
 		}
 	}

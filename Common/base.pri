@@ -408,10 +408,6 @@ plugin {
 }
 }
 
-core_disable_all_warnings {
-    CONFIG += warn_off
-}
-
 # BUILD_PATHS
 # MUST BE DEFINED CORE_ROOT_DIR
 !core_no_dst {
@@ -546,3 +542,11 @@ defineTest(ADD_DEPENDENCY) {
 
 ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 !isEmpty(ADD_INC_PATH):INCLUDEPATH += $$ADD_INC_PATH
+
+!core_enable_all_warnings {
+    core_disable_all_warnings {
+	    QMAKE_CXXFLAGS_WARN_OFF = -w
+		QMAKE_CFLAGS_WARN_OFF = -w
+		CONFIG += warn_off
+	}
+}

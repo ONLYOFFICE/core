@@ -36,8 +36,13 @@
 // Commands
 std::wstring sCmdHelp =                         L"--h";
 std::wstring sCmdHelpFull =                     L"--help";
+
 std::wstring sCmdPluginsDir =                   L"--directory";
 std::wstring sCmdMarketplaceUrl =               L"--marketplace";
+
+std::wstring sCmdPrintInstalled =               L"--print-installed";
+std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
+
 std::wstring sCmdInstallPluginsList =           L"--install";
 std::wstring sCmdRemovePluginsList =            L"--remove";
 std::wstring sCmdRemoveAllPlugins =             L"--remove-all";
@@ -53,6 +58,10 @@ L"                         Must be first on the command line.\n\n" \
 
 L"  --marketplace        = Optional parameter. Set plugins marketplace URL in quotes.\n" \
 L"                         Default is https://onlyoffice.github.io\n\n" \
+
+L"  --print-installed    = Optional parameter. Print installed plugins. Parameter without value.\n\n" \
+
+L"  --print-marketplace  = Optional parameter. Print available plugins from the marketplace. Parameter without value.\n\n" \
 
 L"  --install            = Optional parameter. Set comma-separated quoted list of plugins to install.\n" \
 L"                         Installing by plugin name, GUID, URL, direct file path (without commas) is supported.\n" \

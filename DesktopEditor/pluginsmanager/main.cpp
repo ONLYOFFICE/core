@@ -350,8 +350,9 @@ public:
 	bool InstallPluginsList()
 	{
 		bool bResult = true;
+		Message(L"Install plugins ...", L"", true, true);
 
-		Message(L"Install plugins list ...", L"", true, true);
+		InitPlugins();
 
 		if (m_sPluginsDir.length() && m_arrInstallPlugins.size() && m_arrMarketplacePlugins.size())
 		{
@@ -370,10 +371,11 @@ public:
 	bool RemovePluginsList()
 	{
 		bool bResult = true;
+		Message(L"Remove plugins ...", L"", true, true);
 
-		Message(L"Remove plugins list ...", L"", true, true);
+		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrRemovePlugins.size())
+		if (m_sPluginsDir.length() && m_arrRemovePlugins.size() && m_arrMarketplacePlugins.size())
 		{
 			for (size_t i = 0; i < m_arrRemovePlugins.size(); i++)
 			{
@@ -390,8 +392,9 @@ public:
 	bool RemoveAllPlugins()
 	{
 		bool bResult = true;
-
 		Message(L"Remove all installed plugins ...", L"", true, true);
+
+		InitPlugins();
 
 		if (m_sPluginsDir.length() && m_arrInstalledPlugins.size())
 		{
@@ -410,9 +413,10 @@ public:
 	}
 
 	// Local and Marketplace
-	void GetInstalledPlugins()
+	void GetInstalledPlugins(bool bPrint = true)
 	{
-		Message(L"Installed plugins:", L"", true, true);
+		if ( bPrint )
+			Message(L"Installed plugins:", L"", true, true);
 
 		if (m_sPluginsDir.length())
 		{
@@ -424,32 +428,37 @@ public:
 			{
 				std::wstring sFile = arrDirs[i] + L"/config.json";
 
-				std::wstring sGuid = ReadPluginGuid(sFile);
-				std::wstring sPluginName = ReadPluginName(sFile);
-				std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
-
-				if ( !IsPluginManager(sGuid) )
+				if (NSFile::CFileBinary::Exists(sFile))
 				{
-					if (m_arrInstalledPlugins.find(sPluginName) == m_arrInstalledPlugins.end())
-					{
-						m_arrInstalledPlugins.insert(std::pair<std::wstring, std::wstring>(sPluginName, sGuid));
+					std::wstring sGuid = ReadPluginGuid(sFile);
+					std::wstring sPluginName = ReadPluginName(sFile);
+					std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
 
-						MessageTableView(sPluginName, sGuid);
+					if ( !IsPluginManager(sGuid) && sPluginName.length() && sGuid.length() )
+					{
+						if (m_arrInstalledPlugins.find(sPluginName) == m_arrInstalledPlugins.end())
+						{
+							m_arrInstalledPlugins.insert(std::pair<std::wstring, std::wstring>(sPluginName, sGuid));
+
+							if ( bPrint )
+								MessageTableView(sPluginName, sGuid);
+						}
 					}
 				}
 			}
 		}
 		else
 		{
-			Message(L"Error: set plugin folder. Use the following parameter: --plugins-dir", L"", true);
+			Message(L"Set plugin folder. Use the following parameter: " + sCmdPluginsDir, L"", true);
 		}
 	}
 
-	bool GetMarketplacePlugins()
+	bool GetMarketplacePlugins(bool bPrint = true)
 	{
 		bool bResult = false;
 
-		Message(L"Initialize marketplace plugins ...", L"", true, true);
+		if ( bPrint )
+			Message(L"Initialize marketplace plugins ...", L"", true, true);
 
 		if (m_sMarketplaceUrl.length())
 		{
@@ -493,10 +502,8 @@ public:
 									m_arrMarketplacePlugins.insert(std::pair<std::wstring, std::pair<std::wstring, std::wstring>>(sPluginName, std::make_pair(sNameLow, sGuid)));
 								}
 
-								//std::wstring sFullName = sName + L" (alias: " + sPluginName + L")";
-								//MessageTableView(sFullName, sGuid);
-
-								MessageTableView(sPluginName, sGuid);
+								if ( bPrint )
+									MessageTableView(sPluginName, sGuid);
 							}
 						}
 					}
@@ -527,6 +534,15 @@ public:
 	}
 
 private:
+	void InitPlugins()
+	{
+		if ( !m_arrInstallPlugins.size() )
+			GetInstalledPlugins(false);
+
+		if ( !m_arrMarketplacePlugins.size() )
+			GetMarketplacePlugins(false);
+	}
+
 	bool IsGuid(std::wstring& sStr)
 	{
 		return sStr.length() && sStr.at(0) == L'{' && sStr.at(sStr.length() - 1) == L'}';
@@ -714,19 +730,25 @@ int main(int argc, char** argv)
 			// Settings
 			else if (sKey == sCmdPluginsDir)
 			{
-				oManager.m_sPluginsDir = CorrectDir(sValue);
-
-				if ( NSDirectory::Exists(oManager.m_sPluginsDir) )
-				{
-					oManager.GetMarketplacePlugins();
-					oManager.GetInstalledPlugins();
-				}
+				sValue = CorrectValue(sValue);
+				if (sValue.length())
+					oManager.m_sPluginsDir = sValue;
 			}
 			else if (sKey == sCmdMarketplaceUrl)
 			{
 				sValue = CorrectValue(sValue);
 				if (sValue.length())
 					oManager.m_sMarketplaceUrl = sValue;
+			}
+
+			// Print
+			else if (sKey == sCmdPrintInstalled)
+			{
+				oManager.GetInstalledPlugins();
+			}
+			else if (sKey == sCmdPrintMarketplace)
+			{
+				oManager.GetMarketplacePlugins();
 			}
 
 			// Install / Remove

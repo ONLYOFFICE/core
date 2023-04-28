@@ -124,102 +124,6 @@ public:
 		Message(sHelpText);
 	}
 
-	bool MakeConfig()
-	{
-		bool bResult = false;
-
-		std::wstring sConfigPath = NSFile::GetProcessDirectory() + L"/" + m_sConfigFile;
-
-		if (NSFile::CFileBinary::Exists(sConfigPath))
-			NSFile::CFileBinary::Remove(sConfigPath);
-
-		NSFile::CFileBinary oFile;
-		if (oFile.CreateFileW(sConfigPath))
-		{
-			oFile.WriteStringUTF8(sConfigText);
-			oFile.CloseFile();
-
-			bResult = true;
-		}
-
-		Message(L"Make config ...", BoolToStr(bResult), true);
-
-		return bResult;
-	}
-
-	void ReadConfig()
-	{
-		std::wstring sConfigPath = NSFile::GetProcessDirectory() + L"/" + m_sConfigFile;
-
-		if (NSFile::CFileBinary::Exists(sConfigPath))
-		{
-			std::wstring sContent = L"";
-
-			if (NSFile::CFileBinary::ReadAllTextUtf8(sConfigPath, sContent))
-			{
-				std::vector<std::wstring> arrLines;
-				SplitStringAsVector(sContent, L"\n", arrLines);
-
-				Message(L"Read config ...", L"", true);
-
-				for (int i = 0; i < arrLines.size(); i++)
-				{
-					std::wstring sData = L"";
-					std::wstring sLine = arrLines[i];
-
-					// Settings
-					std::wstring::size_type pos = sLine.find(sCmdPluginsDir);
-					if (pos == 0)
-						m_sPluginsDir = sLine.substr(sCmdPluginsDir.length() + 2, sLine.length() - sCmdPluginsDir.length() - 3);
-
-					pos = sLine.find(sCmdMarketplaceUrl);
-					if (pos == 0)
-					{
-						sData = sLine.substr(sCmdMarketplaceUrl.length() + 2, sLine.length() - sCmdMarketplaceUrl.length() - 3);
-						if (sData.length())
-							m_sMarketplaceUrl = sData;
-					}
-
-					// Local and Marketplace
-					pos = sLine.find(sCmdMarketplacePlugins);
-					if (pos == 0)
-						GetMarketplacePlugins();
-
-					pos = sLine.find(sCmdInstalledPlugins);
-					if (pos == 0)
-						GetInstalledPlugins();
-
-					// Install / Remove
-					pos = sLine.find(sCmdInstallPluginsList);
-					if (pos == 0)
-					{
-						sData = sLine.substr(sCmdInstallPluginsList.length() + 2, sLine.length() - sCmdInstallPluginsList.length() - 3);
-						if (sData.length())
-						{
-							SetInstallPlugins(sData);
-							InstallPluginsList();
-						}
-					}
-
-					pos = sLine.find(sCmdRemovePluginsList);
-					if (pos == 0)
-					{
-						sData = sLine.substr(sCmdRemovePluginsList.length() + 2, sLine.length() - sCmdRemovePluginsList.length() - 3);
-						if (sData.length())
-						{
-							SetRemovePlugins(sData);
-							RemovePluginsList();
-						}
-					}
-
-					pos = sLine.find(sCmdRemoveAllPlugins);
-					if (pos == 0)
-						RemoveAllPlugins();
-				}
-			}
-		}
-	}
-
 	// Set
 	bool SetInstallPlugins(std::wstring& sPluginsList)
 	{
@@ -392,17 +296,25 @@ public:
 		return bResult;
 	}
 
-	bool RemovePlugin(std::wstring& sPlugin, bool bBackup = false /* TODO feature */)
+	bool RemovePlugin(std::wstring& sPlugin)
 	{
 		bool bResult = false;
 
 		if (sPlugin.length())
 		{
+			bool bBackup = false;
 			std::wstring sGuid = FindInstalledPlugin(sPlugin);
 
 			// Try find in marketplace if name isn't short alias
 			if ( !sGuid.length() )
 				sGuid = FindMarketplacePlugin(sPlugin, true);
+			else
+			{
+				// Need create backup for plugin if doesn't exist in the marketplace
+				std::wstring sCheckGuid = FindMarketplacePlugin(sPlugin, true);
+				if ( !sCheckGuid.length() )
+					bBackup = true;
+			}
 
 			if (sGuid.length())
 			{
@@ -413,7 +325,7 @@ public:
 					if (bBackup)
 					{
 						std::wstring sBackupDir = m_sPluginsDir + L"/backup";
-						std::wstring sPluginBackupDir = sBackupDir + L"/" + sPlugin;
+						std::wstring sPluginBackupDir = sBackupDir + L"/" + sGuid;
 
 						if (!NSDirectory::Exists(sBackupDir))
 							NSDirectory::CreateDirectory(sBackupDir);
@@ -497,7 +409,6 @@ public:
 
 		return bResult;
 	}
-
 
 	// Local and Marketplace
 	void GetInstalledPlugins()
@@ -779,9 +690,6 @@ int main(int argc, char** argv)
 		std::wstring sParam = UTF8_TO_U(sParamA);
 #endif
 
-		if (argc == 1)
-			oManager.ReadConfig();
-
 		if (sParam.find(L"--") == 0)
 		{
 			std::wstring sKey = L"";
@@ -799,35 +707,27 @@ int main(int argc, char** argv)
 			}
 
 			// Usability
-			if (sKey == sCmdHelp)
+			if (sKey == sCmdHelp || sKey == sCmdHelpFull)
 			{
 				oManager.ViewHelp();
-			}
-			else if (sKey == sCmdMakeConfig)
-			{
-				oManager.MakeConfig();
 			}
 
 			// Settings
 			else if (sKey == sCmdPluginsDir)
 			{
 				oManager.m_sPluginsDir = CorrectDir(sValue);
+
+				if ( NSDirectory::Exists(oManager.m_sPluginsDir) )
+				{
+					oManager.GetMarketplacePlugins();
+					oManager.GetInstalledPlugins();
+				}
 			}
 			else if (sKey == sCmdMarketplaceUrl)
 			{
 				sValue = CorrectValue(sValue);
 				if (sValue.length())
 					oManager.m_sMarketplaceUrl = sValue;
-			}
-
-			// Local and Marketplace
-			else if (sKey == sCmdMarketplacePlugins)
-			{
-				oManager.GetMarketplacePlugins();
-			}
-			else if (sKey == sCmdInstalledPlugins)
-			{
-				oManager.GetInstalledPlugins();
 			}
 
 			// Install / Remove
@@ -851,14 +751,11 @@ int main(int argc, char** argv)
 			}
 			else if (sKey == sCmdRemoveAllPlugins)
 			{
-				oManager.RemovePluginsList();
+				oManager.RemoveAllPlugins();
 			}
 		}
 	}
 
-	oManager.Message(L"Done. Press any key...", L"", true);
-
-	//getchar();
 	return 0;
 }
 

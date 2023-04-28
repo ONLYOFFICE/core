@@ -34,60 +34,35 @@
 #include <iostream>
 
 // Commands
-std::wstring sCmdHelp =                         L"--help";
-std::wstring sCmdMakeConfig =                   L"--make-config";
-std::wstring sCmdPluginsDir =                   L"--plugins-dir";
-std::wstring sCmdMarketplaceUrl =               L"--marketplace-url";
-std::wstring sCmdMarketplacePlugins =           L"--marketplace-plugins";
-std::wstring sCmdInstalledPlugins =             L"--installed-plugins";
-std::wstring sCmdInstallPluginsList =           L"--install-plugins-list";
-std::wstring sCmdRemovePluginsList =            L"--remove-plugins-list";
-std::wstring sCmdRemoveAllPlugins =             L"--remove-all-plugins";
+std::wstring sCmdHelp =                         L"--h";
+std::wstring sCmdHelpFull =                     L"--help";
+std::wstring sCmdPluginsDir =                   L"--directory";
+std::wstring sCmdMarketplaceUrl =               L"--marketplace";
+std::wstring sCmdInstallPluginsList =           L"--install";
+std::wstring sCmdRemovePluginsList =            L"--remove";
+std::wstring sCmdRemoveAllPlugins =             L"--remove-all";
 
 std::wstring sHelpText =
-L"\nPlugins Manager\n\n" \
-L"This file describes the settings to be used by the utility\n\n" \
+L"\nPlugins Manager Options\n\n" \
 
-L"Options\n" \
-L"  --help                       = Print usage information\n" \
-L"  --make-config                = Optional. Create an empty configuration file\n" \
-L"  --plugins-dir                = Required. Set plugins folder. Must be first on the command line\n" \
-L"  --marketplace-url            = Optional. Set plugins marketplace URL. Default is https://onlyoffice.github.io\n" \
-L"  --marketplace-plugins        = Required. Initialize and print a list of available plugins from the marketplace\n" \
-L"  --installed-plugins          = Required. Initialize and print a list of installed plugins\n" \
-L"  --install-plugins-list       = Optional. Comma-separated list of plugins to install\n" \
-L"  --remove-plugins-list        = Optional. Comma-separated list of plugins to remove\n" \
-L"  --remove-all-plugins         = Optional. Remove all installed plugins\n"
+L"  --h                                            \n" \
+L"  --help               = Print usage information.\n\n" \
+
+L"  --directory          = Required parameter. Set plugins folder in quotes.\n" \
+L"                         Must be first on the command line.\n\n" \
+
+L"  --marketplace        = Optional parameter. Set plugins marketplace URL in quotes.\n" \
+L"                         Default is https://onlyoffice.github.io\n\n" \
+
+L"  --install            = Optional parameter. Set comma-separated quoted list of plugins to install.\n" \
+L"                         Installing by plugin name, GUID, URL, direct file path (without commas) is supported.\n" \
+L"                         For example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, /home/mark/plugins/speech.plugin, https://anysite.com/deploy/translator.plugin\"\n" \
+L"                         File extensions: .zip, .plugin\n\n" \
+
+L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
+L"                         Removing by plugin name or GUID is supported.\n" \
+L"                         For example, --remove=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
+
+L"  --remove-all         = Optional parameter. Remove all installed plugins.\n"
+L"                         Parameter without value.\n" \
 ;
-
-std::wstring sConfigText =
-L"\n# Plugins Manager Configuration\n" \
-L"# This file describes the settings to be used by the utility\n\n" \
-
-L"# Required parameter. Set path to plugins folder in quotes\n" \
-L"--plugins-dir=\"\"\n\n" \
-
-L"# Optional parameter. Set plugins marketplace URL. Default is https://onlyoffice.github.io\n" \
-L"--marketplace-url=\"\"\n\n" \
-
-L"# Required parameter. Initialize and print a list of available plugins from the marketplace. Parameter without value\n" \
-L"--marketplace-plugins\n\n" \
-
-L"# Required parameter. Initialize and print a list of installed plugins. Parameter without value\n" \
-L"--installed-plugins\n\n" \
-
-L"# Optional parameter. Comma-separated list of plugins to install\n" \
-L"# Installing by plugin name, GUID, plugin URL, file path (without commas, extensions: .zip, .plugin) is supported\n" \
-L"# For example, \"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, c:\\\\plugins\\myplugin.plugin, https://onlyoffice.github.io/sdkjs-plugins/content/translator/deploy/translator.plugin\"\n" \
-L"--install-plugins-list=\"\"\n\n" \
-
-L"# Optional parameter. Comma-separated list of plugins to remove\n" \
-L"# Removing by plugin name or by GUID is supported\n" \
-L"# For example, \"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
-L"--remove-plugins-list=\"\"\n\n" \
-
-L"# Optional parameter. Remove all installed plugins. Parameter without value\n" \
-L"#--remove-all-plugins\n"
-;
-
-

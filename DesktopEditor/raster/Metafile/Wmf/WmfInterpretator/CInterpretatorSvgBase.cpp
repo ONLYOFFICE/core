@@ -260,12 +260,20 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFaceName = pFont->GetFaceName();
-		std::transform(wsFaceName.begin(), wsFaceName.end(), wsFaceName.begin(), towlower);
-		EraseWords(wsFaceName, {L" bold", L" italic"});
+		std::wstring wsFontName = L"Times New Roman";
 
-		if (!wsFaceName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFaceName});
+		if (!pFont->GetFaceName().empty())
+		{
+			NSFonts::CFontSelectFormat oFormat;
+			oFormat.wsName = new std::wstring(pFont->GetFaceName());
+
+			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
+
+			if (NULL != pFontInfo)
+				wsFontName = pFontInfo->m_wsFontName;
+		}
+
+		arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});

@@ -96,7 +96,6 @@ std::wstring CorrectValue(const std::wstring& value)
 class CPluginsManager
 {
 private:
-	std::wstring m_sConfigFile =		L"pmconfig";
 	std::wstring m_sManagerGuid =		L"{AA2EA9B6-9EC2-415F-9762-634EE8D9A95E}";
 	std::wstring m_sOldManagerGuid =	L"{8D67F3C5-7736-4BAE-A0F2-8C7127DC4BB8}";
 
@@ -197,7 +196,7 @@ public:
 					std::map<std::wstring, std::pair<std::wstring, std::wstring>>::iterator it;
 					for (it = m_arrMarketplacePlugins.begin(); it != m_arrMarketplacePlugins.end(); it++)
 					{
-						if (it->second.first == sPlugin)
+						if (it->second.first == sPluginName)
 						{
 							sName = bReturnGuid ? it->second.second : it->first;
 							break;

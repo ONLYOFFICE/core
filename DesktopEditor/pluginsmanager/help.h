@@ -42,6 +42,7 @@ std::wstring sCmdMarketplacePlugins =           L"--marketplace-plugins";
 std::wstring sCmdInstalledPlugins =             L"--installed-plugins";
 std::wstring sCmdInstallPluginsList =           L"--install-plugins-list";
 std::wstring sCmdRemovePluginsList =            L"--remove-plugins-list";
+std::wstring sCmdRemoveAllPlugins =             L"--remove-all-plugins";
 
 std::wstring sHelpText =
 L"\nPlugins Manager\n\n" \
@@ -55,7 +56,8 @@ L"  --marketplace-url            = Optional. Set plugins marketplace URL. Defaul
 L"  --marketplace-plugins        = Required. Initialize and print a list of available plugins from the marketplace\n" \
 L"  --installed-plugins          = Required. Initialize and print a list of installed plugins\n" \
 L"  --install-plugins-list       = Optional. Comma-separated list of plugins to install\n" \
-L"  --remove-plugins-list        = Optional. Comma-separated list of plugins to remove\n"
+L"  --remove-plugins-list        = Optional. Comma-separated list of plugins to remove\n" \
+L"  --remove-all-plugins         = Optional. Remove all installed plugins\n"
 ;
 
 std::wstring sConfigText =
@@ -82,7 +84,10 @@ L"--install-plugins-list=\"\"\n\n" \
 L"# Optional parameter. Comma-separated list of plugins to remove\n" \
 L"# Removing by plugin name or by GUID is supported\n" \
 L"# For example, \"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
-L"--remove-plugins-list=\"\"\n"
+L"--remove-plugins-list=\"\"\n\n" \
+
+L"# Optional parameter. Remove all installed plugins. Parameter without value\n" \
+L"#--remove-all-plugins\n"
 ;
 
 

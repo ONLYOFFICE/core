@@ -15,7 +15,7 @@ TARGET = pluginsmanager
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(kernel, kernel_network, UnicodeConverter)
+ADD_DEPENDENCY(kernel, kernel_network)
 
 core_windows {
     DEFINES += \

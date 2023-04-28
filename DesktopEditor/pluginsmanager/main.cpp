@@ -197,7 +197,7 @@ public:
 						if (sData.length())
 						{
 							SetInstallPlugins(sData);
-							InstallPlugins();
+							InstallPluginsList();
 						}
 					}
 
@@ -208,9 +208,13 @@ public:
 						if (sData.length())
 						{
 							SetRemovePlugins(sData);
-							RemovePlugins();
+							RemovePluginsList();
 						}
 					}
+
+					pos = sLine.find(sCmdRemoveAllPlugins);
+					if (pos == 0)
+						RemoveAllPlugins();
 				}
 			}
 		}
@@ -432,7 +436,7 @@ public:
 	}
 
 	// Multi
-	bool InstallPlugins()
+	bool InstallPluginsList()
 	{
 		bool bResult = true;
 
@@ -452,7 +456,7 @@ public:
 		return bResult;
 	}
 
-	bool RemovePlugins()
+	bool RemovePluginsList()
 	{
 		bool bResult = true;
 
@@ -471,6 +475,29 @@ public:
 
 		return bResult;
 	}
+
+	bool RemoveAllPlugins()
+	{
+		bool bResult = true;
+
+		Message(L"Remove all installed plugins ...", L"", true, true);
+
+		if (m_sPluginsDir.length() && m_arrInstalledPlugins.size())
+		{
+			std::map<std::wstring, std::wstring>::iterator it;
+
+			for (it = m_arrInstalledPlugins.begin(); it != m_arrInstalledPlugins.end(); it++)
+			{
+				std::wstring sGuid = it->second;
+				bResult &= RemovePlugin(sGuid);
+			}
+		}
+
+		GetInstalledPlugins();
+
+		return bResult;
+	}
+
 
 	// Local and Marketplace
 	void GetInstalledPlugins()
@@ -810,7 +837,7 @@ int main(int argc, char** argv)
 				if (sValue.length())
 				{
 					oManager.SetInstallPlugins(sValue);
-					oManager.InstallPlugins();
+					oManager.InstallPluginsList();
 				}
 			}
 			else if (sKey == sCmdRemovePluginsList)
@@ -819,15 +846,19 @@ int main(int argc, char** argv)
 				if (sValue.length())
 				{
 					oManager.SetRemovePlugins(sValue);
-					oManager.RemovePlugins();
+					oManager.RemovePluginsList();
 				}
+			}
+			else if (sKey == sCmdRemoveAllPlugins)
+			{
+				oManager.RemovePluginsList();
 			}
 		}
 	}
 
 	oManager.Message(L"Done. Press any key...", L"", true);
 
-	getchar();
+	//getchar();
 	return 0;
 }
 

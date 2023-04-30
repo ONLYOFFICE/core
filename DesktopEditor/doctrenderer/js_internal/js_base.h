@@ -7,7 +7,7 @@
 #include "../../graphics/BaseThread.h"
 
 // disable export (ios/android problem (external embed objects))
-#define JSBASE_NO_USE_DYNAMIC_LIBRARY
+//#define JSBASE_NO_USE_DYNAMIC_LIBRARY
 
 #ifdef JSBASE_NO_USE_DYNAMIC_LIBRARY
 #define JS_DECL
@@ -75,7 +75,14 @@ namespace NSJSBase
 		virtual ~CJSEmbedObjectPrivateBase();
 	};
 
-    class JS_DECL CJSEmbedObject
+	class JS_DECL CJSFunctionArguments
+	{
+	public:
+		virtual int GetCount() = 0;
+		virtual JSSmart<CJSValue> Get(const int& index) = 0;
+	};
+
+	class JS_DECL CJSEmbedObject
 	{
 	public:
 		CJSEmbedObject();
@@ -83,6 +90,9 @@ namespace NSJSBase
 
 	public:
 		virtual void* getObject();
+
+		virtual JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
+		JSSmart<CJSValue> createObject();
 
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
@@ -182,6 +192,13 @@ namespace NSJSBase
 		virtual bool Check() = 0;
 	};
 
+	using EmbedObjectCreator = CJSEmbedObject* (*)();
+
+	enum IsolateAdditionlDataType {
+		iadtSingletonNative = 0,
+		iadtUndefined = 255
+	};
+
 	class CJSContextPrivate;
 	class JS_DECL CJSContext
 	{
@@ -207,6 +224,8 @@ namespace NSJSBase
 		JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
 		CJSValue* JSON_Parse(const char* json_content);
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
+
+		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionlDataType& type = iadtUndefined);
 
 	public:
 		static CJSValue* createUndefined();
@@ -248,7 +267,7 @@ namespace NSJSBase
 		~CJSLocalScope();
 	};
 
-    class JS_DECL CJSContextScope
+	class JS_DECL CJSContextScope
 	{
 	public:
 		JSSmart<CJSContext> m_context;
@@ -257,6 +276,14 @@ namespace NSJSBase
 		CJSContextScope(JSSmart<CJSContext> context);
 		~CJSContextScope();
 	};
+
+	template<typename T>
+	void EmbedToContext(JSSmart<CJSContext>& context, const IsolateAdditionlDataType& type = iadtUndefined)
+	{
+		//context->AddEmbedCreator(T::getName(), []() { return (CJSEmbedObject*)(new T()); }, type);
+		context->AddEmbedCreator(T::getName(), T::getCreator, type);
+		context->runScript(T::getScript());
+	}
 }
 
 #endif // _CORE_EXT_JS_BASE_H_

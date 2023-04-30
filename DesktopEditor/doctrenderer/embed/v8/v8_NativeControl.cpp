@@ -108,13 +108,13 @@ namespace NSNativeControl
 
 	void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplate, args, CIsolateAdditionalData::iadtSingletonNative);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplate, args, NSJSBase::iadtSingletonNative);
 	}
 
 	// Без SaveChanges
 	void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplateBuilder, args, CIsolateAdditionalData::iadtSingletonNative);
+		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplateBuilder, args, NSJSBase::iadtSingletonNative);
 	}
 }
 

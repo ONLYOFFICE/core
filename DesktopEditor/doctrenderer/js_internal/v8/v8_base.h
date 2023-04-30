@@ -6,6 +6,7 @@
 #endif
 
 #include "../js_base.h"
+#include "../js_base_p.h"
 #include "../js_logger.h"
 #include <iostream>
 #include <stack>
@@ -78,17 +79,12 @@ public:
 class CIsolateAdditionalData
 {
 public:
-	enum IsolateAdditionlDataType {
-		iadtSingletonNative = 0,
-		iadtUndefined = 255
-	};
-
-	IsolateAdditionlDataType m_eType;
+	NSJSBase::IsolateAdditionlDataType m_eType;
 public:
-	CIsolateAdditionalData(const IsolateAdditionlDataType& type = iadtUndefined) { m_eType = type; }
+	CIsolateAdditionalData(const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined) { m_eType = type; }
 	virtual ~CIsolateAdditionalData() {}
 
-	static bool CheckSingletonType(v8::Isolate* isolate, const IsolateAdditionlDataType& type, const bool& isAdd = true)
+	static bool CheckSingletonType(v8::Isolate* isolate, const NSJSBase::IsolateAdditionlDataType& type, const bool& isAdd = true)
 	{
 		unsigned int nCount = isolate->GetNumberOfDataSlots();
 		if (nCount == 0)
@@ -821,9 +817,17 @@ namespace NSJSBase
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
 
+		static CEmbedObjectRegistrator m_oRegistrator;
+
 	public:
 		CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
 		{
+		}
+
+		static CEmbedObjectRegistrator& getEmbedRegistrator()
+		{
+			static CEmbedObjectRegistrator oRegistrator;
+			return oRegistrator;
 		}
 	};
 }
@@ -1038,12 +1042,12 @@ static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext
 
 using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
 static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
-									  const CIsolateAdditionalData::IsolateAdditionlDataType& type = CIsolateAdditionalData::iadtUndefined)
+									  const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined)
 {
 	v8::Isolate* isolate = args.GetIsolate();
 	v8::HandleScope scope(isolate);
 
-	if (CIsolateAdditionalData::iadtUndefined != type)
+	if (NSJSBase::iadtUndefined != type)
 	{
 		if (CIsolateAdditionalData::CheckSingletonType(isolate, type))
 		{

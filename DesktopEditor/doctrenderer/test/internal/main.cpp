@@ -34,6 +34,7 @@
 
 #include "embed/Default.h"
 #include "js_internal/js_base.h"
+#include "./Embed.h"
 
 using namespace NSJSBase;
 int main(int argc, char *argv[])
@@ -61,6 +62,11 @@ int main(int argc, char *argv[])
 		CJSLocalScope local_scope;
 		JSSmart<CJSValue> oResLocal = oContext1->runScript("function f() { return 'Local scope test'; }; f();");
 		std::cout << oResLocal->toStringA() << std::endl;
+
+		EmbedToContext<CTestEmbed>(oContext1);
+
+		JSSmart<CJSValue> oResTestEmbed = oContext1->runScript("(function() { var value = new CTestEmbed(); return value.FunctionSum(1, 2); })();");
+		std::cout << oResTestEmbed->toInt32() << std::endl;
 	}
 	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
 	JSSmart<CJSValue> oVar2 = oContext1->createString("Hel");

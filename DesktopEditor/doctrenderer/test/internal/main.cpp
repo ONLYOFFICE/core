@@ -120,6 +120,9 @@ int main(int argc, char *argv[])
 	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = new CTestEmbed(); return value.FunctionSquare(4); })();");
 	std::cout << oResTestEmbed2->toInt32() << std::endl;
 
+	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject(\"CTestEmbed\"); return value.FunctionDel(30, 3); })();");
+	std::cout << oResTestEmbed3->toInt32() << std::endl;
+
 #endif
 
 #if 0

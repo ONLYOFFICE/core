@@ -38,6 +38,11 @@ namespace NSJSBase {
 		return NULL;
 	}
 
+	std::vector<std::string> CJSEmbedObject::getNames()
+	{
+		return std::vector<std::string>();
+	}
+
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)
 	{
 		return m_functions[index](args);

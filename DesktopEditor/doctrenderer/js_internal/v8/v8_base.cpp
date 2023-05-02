@@ -487,11 +487,13 @@ namespace NSJSBase
 	{
 		const v8::FunctionCallbackInfo<v8::Value>* m_args;
 		int m_count;
+		int m_skip_count;
 	public:
-		CJSFunctionArgumentsV8(const v8::FunctionCallbackInfo<v8::Value>* args)
+		CJSFunctionArgumentsV8(const v8::FunctionCallbackInfo<v8::Value>* args, const bool skip_count = 1)
 		{
 			m_args = args;
-			m_count = m_args->Length() - 1;
+			m_skip_count = skip_count;
+			m_count = m_args->Length() - m_skip_count;
 		}
 	public:
 		virtual int GetCount() override
@@ -501,7 +503,7 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> Get(const int& index) override
 		{
 			if (index < m_count)
-				return js_value(m_args->operator[](index + 1));
+				return js_value(m_args->operator[](index + m_skip_count));
 			return js_value(v8::Undefined(m_args->GetIsolate()));
 		}
 	};
@@ -515,7 +517,31 @@ namespace NSJSBase
 		js_return(args, ret);
 	}
 
-	v8::Handle<v8::ObjectTemplate> CreateEmbedObjectTemplate(v8::Isolate* isolate)
+	#define	MAX_FUNCTIONS_COUNT 100
+	v8::FunctionCallback g_functions_objects[MAX_FUNCTIONS_COUNT];
+	bool g_functions_objects_init = false;
+
+	#define g_functions_objects_declare(i)												\
+	g_functions_objects[i] = [](const v8::FunctionCallbackInfo<v8::Value>& args) {		\
+		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());			\
+		CJSFunctionArgumentsV8 _args(&args, 0);											\
+		JSSmart<CJSValue> ret = _this->Call(i, &_args);									\
+		js_return(args, ret);															\
+	}
+
+	void g_functions_objects_init_check()
+	{
+		if (g_functions_objects_init)
+			return;
+
+		g_functions_objects_init = true;
+
+		g_functions_objects_declare(0);
+		g_functions_objects_declare(1);
+		g_functions_objects_declare(2);
+	}
+
+	v8::Handle<v8::ObjectTemplate> CreateEmbedObjectTemplate(v8::Isolate* isolate, CJSEmbedObject* pNativeObj)
 	{
 		v8::EscapableHandleScope handle_scope(isolate);
 
@@ -523,6 +549,13 @@ namespace NSJSBase
 		result->SetInternalFieldCount(1);
 
 		NSV8Objects::Template_Set(result, "Call", _Call);
+
+		g_functions_objects_init_check();
+		std::vector<std::string> arNames = pNativeObj->getNames();
+		for (int i = 0, len = arNames.size(); i < len; ++i)
+		{
+			NSV8Objects::Template_Set(result, arNames[i].c_str(), g_functions_objects[i]);
+		}
 
 		return handle_scope.Escape(result);
 	}
@@ -562,10 +595,11 @@ namespace NSJSBase
 			}
 		}
 
-		v8::Handle<v8::ObjectTemplate> oCurTemplate = CreateEmbedObjectTemplate(isolate);
+		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+		v8::Handle<v8::ObjectTemplate> oCurTemplate = CreateEmbedObjectTemplate(isolate, pNativeObj);
 		v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
 		v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), oInfo.m_creator()));
+		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObj));
 
 		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
 		args.GetReturnValue().Set(obj);

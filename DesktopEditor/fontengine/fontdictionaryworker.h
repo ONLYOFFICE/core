@@ -50,7 +50,8 @@ namespace NSFontDictionary
 
 		for (int i = 0; i < nNameLen; ++i)
 		{
-			if (pName[i] > 255 || pName[i] < 0)
+			// not 255
+			if (pName[i] > 128 || pName[i] < 0)
 			{
 				bIsAscii = false;
 				break;
@@ -75,19 +76,19 @@ namespace NSFontDictionary
 					bool bIsEqual = true;
 					for (int j = 1; j < nNameLen; ++j)
 					{
-                        if ('\0' == _name[j]) // короче чем нужно
-                        {
-                            bIsEqual = false;
-                            break;
-                        }
-                        if (pName[j] != (wchar_t)_name[j])
+						if ('\0' == _name[j]) // короче чем нужно
+						{
+							bIsEqual = false;
+							break;
+						}
+						if (pName[j] != (wchar_t)_name[j])
 						{
 							bIsEqual = false;
 							break;
 						}
 					}
 
-                    if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
+					if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 					{
 						nIndex = i;
 						break;
@@ -108,54 +109,54 @@ namespace NSFontDictionary
 					switch (nStyle)
 					{
 					case 1:
-						{
-							if (pRec->m_index_i != -1)
-								nFontIndex = pRec->m_index_i;
-							else if (pRec->m_index_bi != -1)
-								nFontIndex = pRec->m_index_bi;
-							else if (pRec->m_index_r != -1)
-								nFontIndex = pRec->m_index_r;
-							else
-								nFontIndex = pRec->m_index_b;
-							break;
-						}
+					{
+						if (pRec->m_index_i != -1)
+							nFontIndex = pRec->m_index_i;
+						else if (pRec->m_index_bi != -1)
+							nFontIndex = pRec->m_index_bi;
+						else if (pRec->m_index_r != -1)
+							nFontIndex = pRec->m_index_r;
+						else
+							nFontIndex = pRec->m_index_b;
+						break;
+					}
 					case 2:
-						{
-							if (pRec->m_index_b != -1)
-								nFontIndex = pRec->m_index_b;
-							else if (pRec->m_index_bi != -1)
-								nFontIndex = pRec->m_index_bi;
-							else if (pRec->m_index_r != -1)
-								nFontIndex = pRec->m_index_r;
-							else
-								nFontIndex = pRec->m_index_i;
-							break;
-						}
+					{
+						if (pRec->m_index_b != -1)
+							nFontIndex = pRec->m_index_b;
+						else if (pRec->m_index_bi != -1)
+							nFontIndex = pRec->m_index_bi;
+						else if (pRec->m_index_r != -1)
+							nFontIndex = pRec->m_index_r;
+						else
+							nFontIndex = pRec->m_index_i;
+						break;
+					}
 					case 3:
-						{
-							if (pRec->m_index_bi != -1)
-								nFontIndex = pRec->m_index_bi;
-							else if (pRec->m_index_b != -1)
-								nFontIndex = pRec->m_index_b;
-							else if (pRec->m_index_i != -1)
-								nFontIndex = pRec->m_index_i;
-							else
-								nFontIndex = pRec->m_index_r;
-							break;
-						}
+					{
+						if (pRec->m_index_bi != -1)
+							nFontIndex = pRec->m_index_bi;
+						else if (pRec->m_index_b != -1)
+							nFontIndex = pRec->m_index_b;
+						else if (pRec->m_index_i != -1)
+							nFontIndex = pRec->m_index_i;
+						else
+							nFontIndex = pRec->m_index_r;
+						break;
+					}
 					case 0:
 					default:
-						{
-							if (pRec->m_index_r != -1)
-								nFontIndex = pRec->m_index_r;
-							else if (pRec->m_index_i != -1)
-								nFontIndex = pRec->m_index_i;
-							else if (pRec->m_index_b != -1)
-								nFontIndex = pRec->m_index_b;
-							else
-								nFontIndex = pRec->m_index_bi;
-							break;
-						}
+					{
+						if (pRec->m_index_r != -1)
+							nFontIndex = pRec->m_index_r;
+						else if (pRec->m_index_i != -1)
+							nFontIndex = pRec->m_index_i;
+						else if (pRec->m_index_b != -1)
+							nFontIndex = pRec->m_index_b;
+						else
+							nFontIndex = pRec->m_index_bi;
+						break;
+					}
 					}
 
 					if (nFontIndex != -1)
@@ -175,7 +176,7 @@ namespace NSFontDictionary
 				bool bIsEqual = true;
 				for (int j = 1; j < nNameLen; ++j)
 				{
-                    if ('\0' == _name[j]) // короче чем нужно
+					if ('\0' == _name[j]) // короче чем нужно
 					{
 						bIsEqual = false;
 						break;
@@ -187,7 +188,7 @@ namespace NSFontDictionary
 					}
 				}
 
-                if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
+				if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 				{
 					nIndex = i;
 					break;
@@ -208,54 +209,54 @@ namespace NSFontDictionary
 				switch (nStyle)
 				{
 				case 1:
-					{
-						if (pRec->m_index_i != -1)
-							nFontIndex = pRec->m_index_i;
-						else if (pRec->m_index_bi != -1)
-							nFontIndex = pRec->m_index_bi;
-						else if (pRec->m_index_r != -1)
-							nFontIndex = pRec->m_index_r;
-						else
-							nFontIndex = pRec->m_index_b;
-						break;
-					}
+				{
+					if (pRec->m_index_i != -1)
+						nFontIndex = pRec->m_index_i;
+					else if (pRec->m_index_bi != -1)
+						nFontIndex = pRec->m_index_bi;
+					else if (pRec->m_index_r != -1)
+						nFontIndex = pRec->m_index_r;
+					else
+						nFontIndex = pRec->m_index_b;
+					break;
+				}
 				case 2:
-					{
-						if (pRec->m_index_b != -1)
-							nFontIndex = pRec->m_index_b;
-						else if (pRec->m_index_bi != -1)
-							nFontIndex = pRec->m_index_bi;
-						else if (pRec->m_index_r != -1)
-							nFontIndex = pRec->m_index_r;
-						else
-							nFontIndex = pRec->m_index_i;
-						break;
-					}
+				{
+					if (pRec->m_index_b != -1)
+						nFontIndex = pRec->m_index_b;
+					else if (pRec->m_index_bi != -1)
+						nFontIndex = pRec->m_index_bi;
+					else if (pRec->m_index_r != -1)
+						nFontIndex = pRec->m_index_r;
+					else
+						nFontIndex = pRec->m_index_i;
+					break;
+				}
 				case 3:
-					{
-						if (pRec->m_index_bi != -1)
-							nFontIndex = pRec->m_index_bi;
-						else if (pRec->m_index_b != -1)
-							nFontIndex = pRec->m_index_b;
-						else if (pRec->m_index_i != -1)
-							nFontIndex = pRec->m_index_i;
-						else
-							nFontIndex = pRec->m_index_r;
-						break;
-					}
+				{
+					if (pRec->m_index_bi != -1)
+						nFontIndex = pRec->m_index_bi;
+					else if (pRec->m_index_b != -1)
+						nFontIndex = pRec->m_index_b;
+					else if (pRec->m_index_i != -1)
+						nFontIndex = pRec->m_index_i;
+					else
+						nFontIndex = pRec->m_index_r;
+					break;
+				}
 				case 0:
 				default:
-					{
-						if (pRec->m_index_r != -1)
-							nFontIndex = pRec->m_index_r;
-						else if (pRec->m_index_i != -1)
-							nFontIndex = pRec->m_index_i;
-						else if (pRec->m_index_b != -1)
-							nFontIndex = pRec->m_index_b;
-						else
-							nFontIndex = pRec->m_index_bi;
-						break;
-					}
+				{
+					if (pRec->m_index_r != -1)
+						nFontIndex = pRec->m_index_r;
+					else if (pRec->m_index_i != -1)
+						nFontIndex = pRec->m_index_i;
+					else if (pRec->m_index_b != -1)
+						nFontIndex = pRec->m_index_b;
+					else
+						nFontIndex = pRec->m_index_bi;
+					break;
+				}
 				}
 
 				if (nFontIndex != -1)

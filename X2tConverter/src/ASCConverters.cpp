@@ -2442,7 +2442,7 @@ namespace NExtractTools
 		std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
 		NSDirectory::CreateDirectory(sTempUnpackedODP);
 
-		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
+		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate, sTemp);
 
        _UINT32 nRes = 0;
 		try
@@ -3097,7 +3097,7 @@ namespace NExtractTools
 		std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
 		NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-		Oox2Odf::Converter converter(sFrom, L"text", params.getFontPath(), false);
+		Oox2Odf::Converter converter(sFrom, L"text", params.getFontPath(), false, sTemp);
 
 		_UINT32 nRes = 0;
 		try
@@ -3123,7 +3123,7 @@ namespace NExtractTools
        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
+	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate, sTemp);
 
        _UINT32 nRes = 0;
        try
@@ -3163,7 +3163,7 @@ namespace NExtractTools
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
 	
-	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
+	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate, sTemp);
      
 	   _UINT32 nRes = 0;
 

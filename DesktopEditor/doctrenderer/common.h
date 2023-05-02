@@ -33,6 +33,15 @@
 #ifndef _BUILDER_COMMON_H
 #define _BUILDER_COMMON_H
 
-#include "./../common/base_export.h"
+#ifdef DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
+#define BUILDER_DECL
+#else
+#include "../common/base_export.h"
+#ifdef DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
+#define BUILDER_DECL Q_DECL_EXPORT
+#else
+#define BUILDER_DECL Q_DECL_IMPORT
+#endif
+#endif
 
 #endif // _BUILDER_COMMON_H

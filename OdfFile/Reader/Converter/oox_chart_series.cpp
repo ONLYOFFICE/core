@@ -30,19 +30,22 @@
  *
  */
 
-
 #include <boost/algorithm/string.hpp>
 #include <boost/ref.hpp>
 
 #include <xml/simple_xml_writer.h>
-#include "../Format/style_text_properties.h"
 
 #include "xlsx_utils.h"
 
 #include "oox_chart_series.h"
+#include "oox_chart_shape.h"
+
+#include "../Format/style_text_properties.h"
+#include "../Format/style_graphic_properties.h"
+#include "../Format/style_chart_properties.h"
+
 #include "../../Formulas/formulasconvert.h"
 
-#include "oox_chart_shape.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -452,17 +455,24 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				}
 			}
 		}		
-		if (content_.regression_curve_.line_properties_.size() > 0)
+		if (content_.regression_curve_.properties_)
 		{
 			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
-            _oox_fill oox_fill;
-            shape.set(content_.regression_curve_.line_properties_, oox_fill);
+            
+			_oox_fill oox_fill;
+            shape.set(content_.regression_curve_.graphic_properties_, oox_fill);
 			
 			_CP_OPT(int) iType;
-			odf_reader::GetProperty(content_.properties_, L"regression-type",iType);   //     none, linear, logarithmic, exponential, power
+			odf_reader::GetProperty(content_.regression_curve_.properties_, L"regression-type", iType);   //     none, linear, logarithmic, exponential, power
+			
 			if (iType)
 			{
-				switch(iType.get()){case 1: typeTrendline= L"linear";break;case 3: typeTrendline= L"exp";break;case 4: typeTrendline= L"power";break;}
+				switch(iType.get())
+				{
+					case 1: typeTrendline= L"linear";break;
+					case 3: typeTrendline= L"exp";break;
+					case 4: typeTrendline= L"power";break;
+				}
 			}
 
 			CP_XML_NODE(L"c:trendline")
@@ -480,20 +490,18 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				{
 					CP_XML_ATTR(L"val",content_.regression_curve_.bREquation);
 				}
-				if (content_.regression_curve_.equation_properties_.graphic_properties_.size()>0)
+				if (content_.regression_curve_.equation_properties_.graphic_properties_)
 				{
 					CP_XML_NODE(L"c:trendlineLbl")
 					{
-						shape.set(content_.regression_curve_.equation_properties_.graphic_properties_,content_.regression_curve_.equation_properties_.fill_);
+						shape.set(content_.regression_curve_.equation_properties_.graphic_properties_, content_.regression_curve_.equation_properties_.fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 				}		
 
                 _oox_fill oox_fill;
-                shape.set( content_.regression_curve_.line_properties_, oox_fill);
+                shape.set( content_.regression_curve_.graphic_properties_, oox_fill);
 				shape.oox_serialize(CP_XML_STREAM());
-
-
 			}
 		}
 		if (!content_.text_properties_)
@@ -524,9 +532,10 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 					{
 						CP_XML_ATTR(L"val", indPoint++);
 					}
-					if (content_.points_[i].graphic_properties_.size() > 0 && content_.points_[i].fill_.type >= 0)
+					if (content_.points_[i].graphic_properties_ && content_.points_[i].fill_.type >= 0)
 					{
-						shape.set( content_.points_[i].graphic_properties_, content_.points_[i].fill_);
+						odf_reader::graphic_format_properties_ptr empty;
+						shape.set(empty, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
 
@@ -590,11 +599,11 @@ void oox_bar_series::oox_serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void oox_bar_series::set_properties(std::vector<odf_reader::_property> g)
+void oox_bar_series::set_properties(odf_reader::chart_format_properties_ptr & prop)
 {
-	oox_chart_series::set_properties(g);
+	oox_chart_series::set_properties(prop);
 
-	odf_reader::GetProperty(g, L"solid-type", iSolidType);
+	odf_reader::GetProperty(prop, L"solid-type", iSolidType);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

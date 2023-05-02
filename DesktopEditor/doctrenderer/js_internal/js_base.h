@@ -7,13 +7,13 @@
 #include "../../graphics/BaseThread.h"
 
 // disable export (ios/android problem (external embed objects))
-#define DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
+#define JSBASE_NO_USE_DYNAMIC_LIBRARY
 
-#ifdef DOCTRENDERER_NO_USE_DYNAMIC_LIBRARY
+#ifdef JSBASE_NO_USE_DYNAMIC_LIBRARY
 #define JS_DECL
 #else
 #include "../../common/base_export.h"
-#ifdef DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
+#ifdef JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
 #define JS_DECL Q_DECL_EXPORT
 #else
 #define JS_DECL Q_DECL_IMPORT

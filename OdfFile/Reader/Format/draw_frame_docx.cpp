@@ -182,14 +182,26 @@ length ComputeContextWidth(const style_page_layout_properties			* pageProperties
 int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
                       const style_page_layout_properties_attlist	& pageProperties,
                       const union_common_draw_attlists				& attlists_,
-                      const graphic_format_properties				& graphicProperties,
+                      const graphic_format_properties_ptr			& graphicProperties,
 					  const std::vector<odf_reader::_property>		& additional)
 {
 
     const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 
-    _CP_OPT(horizontal_rel) styleHorizontalRel = graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
-    _CP_OPT(horizontal_pos) styleHorizontalPos = graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
+	_CP_OPT(horizontal_rel) styleHorizontalRel;
+	_CP_OPT(horizontal_pos) styleHorizontalPos;
+	_CP_OPT(style_wrap) styleWrap;
+	_CP_OPT(length) frameMarginLeft;
+	_CP_OPT(length) frameMarginRight;
+
+	if (graphicProperties)
+	{
+		styleHorizontalRel = graphicProperties->common_horizontal_rel_attlist_.style_horizontal_rel_;
+		styleHorizontalPos = graphicProperties->common_horizontal_pos_attlist_.style_horizontal_pos_;
+		styleWrap = graphicProperties->style_wrap_;
+		frameMarginLeft = GetOnlyLength(graphicProperties->common_horizontal_margin_attlist_.fo_margin_left_);
+		frameMarginRight = GetOnlyLength(graphicProperties->common_horizontal_margin_attlist_.fo_margin_right_);
+	}
 
 	_CP_OPT(double) dVal;	
 	GetProperty(additional, L"svg:translate_x", dVal);
@@ -202,8 +214,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 	length contextWidth = ComputeContextWidth(pagePropertiesNode, pageProperties, attlists_,
 												styleHorizontalRel, styleHorizontalPos, pageWidth, pageMarginLeft,pageMarginRight);
 
-    _CP_OPT(length)		contextSubstractedValue = length(0., length::pt);
-    _CP_OPT(style_wrap) styleWrap = graphicProperties.style_wrap_;
+    _CP_OPT(length) contextSubstractedValue = length(0., length::pt);
    
 	if (!styleWrap || 
         styleWrap->get_type() == style_wrap::None ||
@@ -211,9 +222,6 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
     {
         // TODO contextSubstractedValue
     }
-
-    const _CP_OPT(length) frameMarginLeft	= GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_left_);
-    const _CP_OPT(length) frameMarginRight	= GetOnlyLength(graphicProperties.common_horizontal_margin_attlist_.fo_margin_right_);
 
 	const _CP_OPT(length) frameWidth	= attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
     const _CP_OPT(length) frameHeight	= attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -571,7 +579,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 
 int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
                       const union_common_draw_attlists				& attlists_,
-                      const graphic_format_properties				& graphicProperties,
+                      const graphic_format_properties_ptr			& graphicProperties,
 					  const std::vector<odf_reader::_property>		& additional)
 {
     const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
@@ -582,9 +590,18 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 	//	common_text_anchor_attlist_.
 	//	page_number_;
 
-	_CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
-    _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
+	_CP_OPT(vertical_rel) styleVerticalRel;
+    _CP_OPT(vertical_pos) styleVerticallPos;
+	_CP_OPT(length) frameMarginTop;
+	_CP_OPT(length) frameMarginBottom;
 
+	if (graphicProperties)
+	{
+		styleVerticalRel = graphicProperties->common_vertical_rel_attlist_.style_vertical_rel_;
+		styleVerticallPos = graphicProperties->common_vertical_pos_attlist_.style_vertical_pos_;
+		frameMarginTop = GetOnlyLength(graphicProperties->common_vertical_margin_attlist_.fo_margin_top_);
+		frameMarginBottom = GetOnlyLength(graphicProperties->common_vertical_margin_attlist_.fo_margin_bottom_);
+	}
 	if (!styleVerticalRel && anchor)
 	{
 		switch(anchor->get_type())
@@ -602,9 +619,6 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
     // TODO : проверить, значения в процентах что именно означают
     const _CP_OPT(length) pageMarginTop		= CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_top_, pageHeight);
     const _CP_OPT(length) pageMarginBottom	= CalcResultLength(pageProperties.common_vertical_margin_attlist_.fo_margin_bottom_, pageHeight);
-
-    const _CP_OPT(length) frameMarginTop = GetOnlyLength(graphicProperties.common_vertical_margin_attlist_.fo_margin_top_);
-    const _CP_OPT(length) frameMarginBottom = GetOnlyLength(graphicProperties.common_vertical_margin_attlist_.fo_margin_bottom_);
 
     const _CP_OPT(length) frameWidth = attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
     const _CP_OPT(length) frameHeight = attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -797,7 +811,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		
 		instances.push_back(styleInst);
 	}
-	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
+	graphic_format_properties_ptr graphicProperties = calc_graphic_properties_content(instances);	
 
     const std::wstring pagePropertiesName = Context.get_page_properties();
     
@@ -812,23 +826,27 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		pagePropertiesNode ? pagePropertiesNode->attlist_ : emptyPageProperties;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+	_CP_OPT(anchor_type) anchor;
+	_CP_OPT(run_through) styleRunThrough;
 
-    drawing->styleWrap	= graphicProperties.style_wrap_;
-
-    if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::Parallel)
+	if (graphicProperties)
 	{
-        if (graphicProperties.style_number_wrapped_paragraphs_)
-            drawing->parallel = graphicProperties.style_number_wrapped_paragraphs_->get_value();
-	}
+		drawing->styleWrap = graphicProperties->style_wrap_;
 
-	_CP_OPT(run_through)	styleRunThrough	= graphicProperties.style_run_through_;
-    _CP_OPT(anchor_type)	anchor			= attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
-	
-	drawing->styleHorizontalRel	= graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
-    drawing->styleHorizontalPos	= graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
-    drawing->styleVerticalPos	= graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
-    drawing->styleVerticalRel	= graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
-	
+		if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::Parallel)
+		{
+			if (graphicProperties->style_number_wrapped_paragraphs_)
+				drawing->parallel = graphicProperties->style_number_wrapped_paragraphs_->get_value();
+		}
+
+		styleRunThrough = graphicProperties->style_run_through_;
+		anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
+
+		drawing->styleHorizontalRel = graphicProperties->common_horizontal_rel_attlist_.style_horizontal_rel_;
+		drawing->styleHorizontalPos = graphicProperties->common_horizontal_pos_attlist_.style_horizontal_pos_;
+		drawing->styleVerticalPos = graphicProperties->common_vertical_pos_attlist_.style_vertical_pos_;
+		drawing->styleVerticalRel = graphicProperties->common_vertical_rel_attlist_.style_vertical_rel_;
+	}
 	if (!drawing->styleVerticalRel && anchor)
 	{
 		switch(anchor->get_type())
@@ -907,19 +925,20 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		}
 
     }
-	drawing->number_wrapped_paragraphs = graphicProperties.style_number_wrapped_paragraphs_.
-									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value();
+	drawing->number_wrapped_paragraphs = graphicProperties ? (graphicProperties->style_number_wrapped_paragraphs_.
+									get_value_or( integer_or_nolimit( integer_or_nolimit::NoLimit) ).get_value()) : 0;
 	if (anchor && anchor->get_type() == anchor_type::AsChar && drawing->posOffsetV < 0)
 	{
 		drawing->posOffsetV = (int)(length(0.01, length::cm).get_value_unit(length::emu));
 	}
-//----------------------------------------------------
-	graphicProperties.apply_to(drawing->additional);
-//----------------------------------------------------
-	bool bTxbx = (drawing->sub_type == 1);
 
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles(),drawing->fill, bTxbx);	
-
+	if (graphicProperties)
+	{
+		graphicProperties->apply_to(drawing->additional);
+	
+		bool bTxbx = (drawing->sub_type == 1);
+		Compute_GraphicFill(graphicProperties->common_draw_fill_attlist_, graphicProperties->style_background_image_, Context.root()->odf_context().drawStyles(), drawing->fill, bTxbx);
+	}
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
@@ -932,16 +951,15 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 	drawing->additional.push_back(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(graphicProperties, sideRight)));
 	drawing->additional.push_back(odf_reader::_property(L"border_width_bottom",		Compute_BorderWidth(graphicProperties, sideBottom))); 
 	
-	if (graphicProperties.common_border_attlist_.fo_border_)
+	if (graphicProperties && graphicProperties->common_border_attlist_.fo_border_)
 	{
-		if (graphicProperties.common_border_attlist_.fo_border_->is_none() == false)
+		if (graphicProperties->common_border_attlist_.fo_border_->is_none() == false)
 		{
-			drawing->additional.push_back(_property(L"stroke-color",	graphicProperties.common_border_attlist_.fo_border_->get_color().get_hex_value() ));
-			drawing->additional.push_back(_property(L"stroke-width",	graphicProperties.common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
+			drawing->additional.push_back(_property(L"stroke-color",	graphicProperties->common_border_attlist_.fo_border_->get_color().get_hex_value() ));
+			drawing->additional.push_back(_property(L"stroke-width",	graphicProperties->common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
 
 		}
 	}
-//----------------------------------------------------
 //----------------------------------------------------
 	if (attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
 	{

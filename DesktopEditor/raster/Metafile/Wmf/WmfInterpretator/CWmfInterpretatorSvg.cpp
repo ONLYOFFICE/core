@@ -89,15 +89,23 @@ namespace MetaFile
 		double dXRadius = std::fabs(oNewRect.dRight - oNewRect.dLeft) / 2;
 		double dYRadius = std::fabs(oNewRect.dBottom - oNewRect.dTop) / 2;
 
-		std::wstring wsValue = L"M " + ConvertToWString(shXStartArc) + L' ' + ConvertToWString(shYStartArc);
+		double dStartAngle = GetEllipseAngle(oNewRect.dLeft, oNewRect.dTop, oNewRect.dRight, oNewRect.dBottom, shXStartArc, shYStartArc) / 180. * M_PI;
+		double dEndAngle   = GetEllipseAngle(oNewRect.dLeft, oNewRect.dTop, oNewRect.dRight, oNewRect.dBottom, shXEndArc, shYEndArc) / 180. * M_PI;
+
+		double dX1 = std::cos(dStartAngle) * dXRadius;
+		double dY1 = std::sin(dStartAngle) * dXRadius;
+		double dX2 = std::cos(dEndAngle) * dXRadius;
+		double dY2 = std::sin(dEndAngle) * dYRadius;
+
+		std::wstring wsValue = L"M " + ConvertToWString(dX1 + (shRight + shLeft) / 2.) + L' ' + ConvertToWString(dY1 + (shBottom + shTop) / 2.);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				ConvertToWString(dYRadius) + L' ' +
-				L"0 0 1 " +
-				//                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				//                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				ConvertToWString(shXEndArc) + L' ' +
-				ConvertToWString(shYEndArc);
+				   ConvertToWString(dYRadius) + L' ' +
+				   L"0 0 0 " +
+				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+				   ConvertToWString(dX2 + (shRight + shLeft) / 2.) + L' ' +
+				   ConvertToWString(dY2 + (shBottom + shTop) / 2.);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 

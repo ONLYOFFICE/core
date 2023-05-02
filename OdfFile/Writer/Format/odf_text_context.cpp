@@ -95,7 +95,7 @@ odf_style_context* odf_text_context::get_styles_context()
 {
 	return styles_context_;
 }
-void odf_text_context::set_single_object(bool bSingle, style_paragraph_properties *para_props, style_text_properties *text_props)
+void odf_text_context::set_single_object(bool bSingle, paragraph_format_properties *para_props, text_format_properties *text_props)
 {
 	single_paragraph_		= bSingle;
 	paragraph_properties_	= para_props;
@@ -240,9 +240,9 @@ void odf_text_context::set_symbol_font(const std::wstring & font)
 {
 	if (text_properties_ == NULL) return;
 
-	text_properties_->content_.fo_font_family_ = font;
-	text_properties_->content_.style_font_family_complex_ = font;
-	text_properties_->content_.style_font_family_asian_ = font;
+	text_properties_->fo_font_family_ = font;
+	text_properties_->style_font_family_complex_ = font;
+	text_properties_->style_font_family_asian_ = font;
 }
 void odf_text_context::set_symbol_text(int sym)
 {
@@ -304,7 +304,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		{
 			if (parent_paragraph_style_.length() >0)style_->style_parent_style_name_ = parent_paragraph_style_;
 			
-			paragraph_properties_ = style_->content_.get_style_paragraph_properties();
+			paragraph_properties_ = style_->content_.add_get_style_paragraph_properties();
 		}
 	}
 	else if (false == parent_paragraph_style_.empty())
@@ -317,7 +317,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 	}
 	if (paragraph_properties_ && need_break_)
 	{
-		paragraph_properties_->content_.fo_break_before_ = need_break_;
+		paragraph_properties_->fo_break_before_ = need_break_;
 		need_break_ = boost::none;
 	}
 	
@@ -409,7 +409,7 @@ void odf_text_context::start_span(bool styled)
 			{
 				style_->style_parent_style_name_ = parent_span_style_;
 			}
-			text_properties_ = style_->content_.get_style_text_properties();//для  буквиц на поле
+			text_properties_ = style_->content_.add_get_style_text_properties();//для  буквиц на поле
 		}
 	}
 
@@ -717,7 +717,7 @@ void odf_text_context::save_property_break()
 		}
 	}
 	if (paragraph_properties_ == NULL) return;
-	paragraph_properties_->content_.fo_break_before_ = need_break_;
+	paragraph_properties_->fo_break_before_ = need_break_;
 	need_break_ = boost::none;
 
 }

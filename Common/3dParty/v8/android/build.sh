@@ -48,7 +48,7 @@ restore_build_gn()
 
 if [ ! -d "v8" ]
 then
-    fetch v8
+    ./depot_tools/fetch v8
     cd v8
     git checkout -b 6.0 branch-heads/6.0
 

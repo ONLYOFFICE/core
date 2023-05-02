@@ -11,7 +11,7 @@ libsocketio:CONFIG += use_openssl
 ixwebsocket:CONFIG += use_openssl
 
 use_openssl {
-    include($$PWD/../../3dParty/ixwebsocket/openssl.pri)
+    include($$PWD/../../3dParty/openssl/openssl.pri)
 }
 
 libsocketio {

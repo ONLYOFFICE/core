@@ -83,19 +83,19 @@ function configure_make() {
 
     if [[ "${ARCH}" == "x86_64" ]]; then
 
-        ./Configure android-x86_64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-x86_64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
 
     elif [[ "${ARCH}" == "x86" ]]; then
 
-        ./Configure android-x86 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-x86 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
 
     elif [[ "${ARCH}" == "arm" ]]; then
 
-        ./Configure android-arm --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-arm --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
-        ./Configure android-arm64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-arm64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
 
     else
         log_error "not support" && exit 1

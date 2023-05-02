@@ -293,7 +293,10 @@ public:
             {
                 std::wstring sText = m_oLightReader.GetText();
                 if (sText.length() > 1)
+                {
                     sImageName = sText.substr(1);
+                    break;
+                }
             }
         }
         m_oLightReader.MoveToElement();
@@ -1053,12 +1056,15 @@ public:
     // Читает binary
     void getImage(const std::wstring& sImageId, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
     {
-        std::wstring sId;
+        std::wstring sId, sType = L".png";
         while (m_oLightReader.MoveToNextAttribute())
         {
+            std::wstring sName = m_oLightReader.GetName();
             // Читает id
-            if (m_oLightReader.GetName() == L"id")
+            if (sName == L"id")
                 sId = m_oLightReader.GetText();
+            else if (sName == L"content-type")
+                sType = m_oLightReader.GetText().find(L"jpeg") == std::wstring::npos ? L".png" : L".jpeg";
         }
         m_oLightReader.MoveToElement();
         if (sId.empty() || m_oLightReader.IsEmptyNode())
@@ -1066,7 +1072,8 @@ public:
 
         // Пишет картинку в файл
         NSFile::CFileBinary oImageWriter;
-        if (oImageWriter.CreateFileW(sMediaDirectory + L'/' + sId + (sId.find(L'.') == std::wstring::npos ? L".png" : L"")))
+        std::wstring sImagePath = sMediaDirectory + L"/image" + sImageId + sType;
+        if (oImageWriter.CreateFileW(sImagePath))
         {
             std::string sBase64 = contentA();
             int nSrcLen = (int)sBase64.length();
@@ -1079,7 +1086,7 @@ public:
 
             // Получаем размеры картинки
             CBgraFrame oBgraFrame;
-            oBgraFrame.OpenFile(sMediaDirectory + L'/' + sId);
+            oBgraFrame.OpenFile(sImagePath);
             int nHy = oBgraFrame.get_Height();
             int nWx = oBgraFrame.get_Width();
             if (nWx > nHy)
@@ -1113,7 +1120,7 @@ public:
             oRels += L"<Relationship Id=\"rPic";
             oRels += sImageId;
             oRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-            oRels += sId;
+            oRels += (L"image" + sImageId + sType);
             oRels += L"\"/>";
         }
     }

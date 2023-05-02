@@ -101,10 +101,14 @@ odf_conversion_context::~odf_conversion_context()
 	}
 	objects_.clear();
 }
-void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
+void odf_conversion_context::set_temp_directory(const std::wstring & tempPath)
+{
+	temp_path_ = tempPath;
+}
+void odf_conversion_context::set_fonts_directory(const std::wstring & fontsPath)
 {
     if (applicationFonts_)
-        applicationFonts_->InitializeFromFolder(pathFonts);
+        applicationFonts_->InitializeFromFolder(fontsPath);
 }
 void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
 {
@@ -296,9 +300,9 @@ void odf_conversion_context::create_object(bool bAddContentExt)
 		obj->style_context->set_odf_context(this);
 		obj->settings_context->set_odf_context(this);
 
-	objects_.push_back(obj);
+		objects_.push_back(obj);
 
-	current_object_ = objects_.size() - 1;
+		current_object_ = objects_.size() - 1;
 	}
 }
 void odf_conversion_context::end_chart()

@@ -159,18 +159,20 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 			instances.push_back(grStyleInst);
 		}
-		graphic_format_properties properties = calc_graphic_properties_content(instances);
-
-		////////////////////////////////////////////////////////////////////
-		properties.apply_to(Context.get_slide_context().get_properties());
-
 		oox::_oox_fill fill;
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-			Context.root()->odf_context().drawStyles(), fill);
-		if (properties.fo_clip_)
+		
+		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+		if (properties)
 		{
-			std::wstring strRectClip = properties.fo_clip_.get();
-			Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+			properties->apply_to(Context.get_slide_context().get_properties());
+
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
+				Context.root()->odf_context().drawStyles(), fill);
+			if (properties->fo_clip_)
+			{
+				std::wstring strRectClip = properties->fo_clip_.get();
+				Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+			}
 		}
 
 		Context.get_slide_context().set_fill(fill);

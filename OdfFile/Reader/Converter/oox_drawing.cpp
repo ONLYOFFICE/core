@@ -34,7 +34,9 @@
 
 #include "oox_drawing.h"
 #include <xml/simple_xml_writer.h>
+
 #include "../../DataTypes/custom_shape_types_convert.h"
+#include "../Format/style_graphic_properties.h"
 
 using namespace cpdoccore;
 
@@ -201,7 +203,25 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 		}
 	}
 }
+void oox_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val, bool always_draw, const std::wstring &ns)
+{
+	std::vector<odf_reader::_property> prop;
 
+	if (val)
+		val->apply_to(prop);
+	
+	oox_serialize_ln(strm, prop, always_draw, ns);
+}
+void vml_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val)
+{
+	std::vector<odf_reader::_property> prop;
+
+	if (val)
+		val->apply_to(prop);
+
+	vml_serialize_ln(strm, prop);
+
+}
 void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw, const std::wstring &ns)
 {
 	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
@@ -210,6 +230,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	if (ns == L"w14")
 		ns_node = L"w14:textOutline";
 
+	_CP_OPT(std::wstring)	sStrokeGradient;
 	_CP_OPT(std::wstring)	strStrokeColor; 
 	_CP_OPT(int)			iStroke;
 	_CP_OPT(double)			dStrokeWidth;
@@ -222,8 +243,9 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, dStrokeOpacity);
+	odf_reader::GetProperty(prop, L"stroke-gradient-name", sStrokeGradient);
 	
-	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
+	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw) return;
 
 	CP_XML_WRITER(strm)
     {

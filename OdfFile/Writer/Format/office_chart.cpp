@@ -617,5 +617,21 @@ void chart_date_scale::serialize(std::wostream & _Wostream)
 		}
 	}
 }
+// chartooo:date-scale
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_data_table::ns = L"loext";
+const wchar_t * chart_data_table::name = L"data-table";
+
+void chart_data_table::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+
 }
 }

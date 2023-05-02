@@ -289,7 +289,7 @@ void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.table_display_ = !Val;
@@ -299,7 +299,7 @@ void ods_table_state::set_table_rtl(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
@@ -316,7 +316,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.tableooo_tab_color_ = _color;
@@ -413,7 +413,7 @@ void ods_table_state::set_column_width(double width)//pt
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	columns_.back().size = width; //pt
@@ -425,7 +425,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -514,7 +514,7 @@ void ods_table_state::set_row_optimal_height(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = val;
@@ -525,7 +525,7 @@ void ods_table_state::set_row_height(double height)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	rows_.back().size = height;//pt
@@ -1297,7 +1297,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
 	if (!style_)return;	
 	
-	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.get_style_table_cell_properties();
+	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.add_get_style_table_cell_properties();
 
 	//if (table_cell_properties && cash_value == false)
 	//{

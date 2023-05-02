@@ -152,6 +152,7 @@ public:
 	chart::legend				legend_;
 	chart::plot_area			plot_area_;
 
+	chart::simple				data_table_;
 	chart::simple				wall_;
 	chart::simple				floor_;
 	
@@ -161,8 +162,8 @@ public:
 	chart::simple				stock_loss_marker_;
 	chart::simple				stock_range_line_;
 
-	std::vector<_property>		chart_properties_;
-	std::vector<_property>		chart_graphic_properties_;
+	chart_format_properties_ptr properties_;
+	graphic_format_properties_ptr graphic_properties_;
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
@@ -213,7 +214,10 @@ class process_build_object
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
 		public visitor<chart_date_scale>,
+		public visitor<chartooo_date_scale>,
 		public visitor<chart_grid>,
+
+		public visitor<chart_data_table>,
 
 		public visitor<chart_series>,
 		public visitor<chart_domain>,
@@ -250,11 +254,10 @@ public:
 	process_build_object(object_odf_context & object_context, odf_read_context & context);
 
 private:
-	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
-	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
+	void ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill);
+	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
+	void ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut);
 
-	void ApplyTextProperties(std::wstring style, text_format_properties_content_ptr & propertiesOut);
-	
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);
@@ -294,8 +297,10 @@ public:
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
 	virtual void visit(chart_date_scale		& val);
-	
-	virtual void visit(table_table			& val);
+	virtual void visit(chartooo_date_scale	& val);
+	virtual void visit(chart_data_table		& val);
+
+	virtual void visit(table_table				& val);
 
 	virtual void visit(table_table_rows			& val);
 	virtual void visit(table_table_row			& val);

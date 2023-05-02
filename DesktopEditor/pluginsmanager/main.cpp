@@ -33,11 +33,8 @@
 #include <iostream>
 #include <map>
 #include <iomanip>
-#include <filesystem>
 
-#ifdef WIN32
 #include <locale.h>
-#endif
 
 #include "help.h"
 #include "../common/File.h"
@@ -1028,9 +1025,7 @@ int wmain(int argc, wchar_t** argv)
 int main(int argc, char** argv)
 #endif
 {
-#ifdef _WIN32
 	setlocale(LC_ALL, "");
-#endif
 
 	CPluginsManager oManager;
 

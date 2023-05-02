@@ -265,19 +265,19 @@ std::size_t hash_value(xlsx_font const & val)
 
 //----------------------------------------------------------------------------------
 
-XlsxFontCharset GetXlsxFontCharset(const odf_reader::text_format_properties_content_ptr textProp)
+XlsxFontCharset GetXlsxFontCharset(const odf_reader::text_format_properties_ptr textProp)
 {
     // TODO
     return XCHARSET_EMPTY;    
 }
 
-XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_content_ptr textProp)
+XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_ptr textProp)
 {
     // TODO
     return XFAMILY_EMPTY;
 }
 
-xlsx_font::xlsx_font (	const odf_reader::text_format_properties_content_ptr	textProp,
+xlsx_font::xlsx_font (	const odf_reader::text_format_properties_ptr &textProp,
 						const odf_reader::paragraph_format_properties			*parProp,
 						const odf_reader::style_table_cell_properties_attlist	*cellProp, 
 						bool default_set, odf_reader::fonts_container & fonts)

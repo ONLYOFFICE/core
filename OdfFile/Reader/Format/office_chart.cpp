@@ -441,9 +441,12 @@ void chart_stock_range_line::add_attributes( const xml::attributes_wc_ptr & Attr
     common_attlist_.add_attributes(Attributes);
 }
 
-//chartooo:date-scale
+//chart:date-scale
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * chart_date_scale::ns = L"chartooo";
+const wchar_t * chartooo_date_scale::ns = L"chartooo";
+const wchar_t * chartooo_date_scale::name = L"date-scale";
+
+const wchar_t * chart_date_scale::ns = L"chart";
 const wchar_t * chart_date_scale::name = L"date-scale";
 
 void chart_date_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -454,6 +457,13 @@ void chart_date_scale::add_attributes( const xml::attributes_wc_ptr & Attributes
     CP_APPLY_ATTR(L"chart:minor-interval-value",	minor_interval_value_);
     CP_APPLY_ATTR(L"chart:minor-interval-unit",		minor_interval_unit_);
 }
-
+//loext:data-table
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_data_table::ns = L"loext";
+const wchar_t * chart_data_table::name = L"data-table";
+void chart_data_table::add_attributes(const xml::attributes_wc_ptr & Attributes)
+{
+	common_attlist_.add_attributes(Attributes);
+}
 }
 }

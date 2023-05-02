@@ -65,6 +65,8 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
     _CP_APPLY_PROP2(draw_ole_draw_aspect_);
 
+	_CP_APPLY_PROP2(draw_stroke_gradient_name_);
+
 	_CP_APPLY_PROP2(svg_stroke_color_); 
 	_CP_APPLY_PROP2(svg_stroke_width_);	
 	_CP_APPLY_PROP2(svg_stroke_opacity_); 
@@ -141,6 +143,8 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"svg:stroke-color",		svg_stroke_color_); 
 			CP_XML_ATTR_OPT(L"svg:stroke-width",		svg_stroke_width_);	
 			CP_XML_ATTR_OPT(L"svg:stroke-opacity",		svg_stroke_opacity_); 
+
+			CP_XML_ATTR_OPT(L"draw:stroke-gradient-name", draw_stroke_gradient_name_);
 
 			CP_XML_ATTR_OPT(L"fo:min-width",			fo_min_width_);
 			CP_XML_ATTR_OPT(L"fo:min-height",			fo_min_height_);

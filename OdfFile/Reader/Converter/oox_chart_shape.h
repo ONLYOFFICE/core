@@ -42,13 +42,16 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
+	
+	class graphic_format_properties;
+	typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 }
 
 namespace oox {
 
-void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_content_ptr properties);
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties);
 
 class oox_chart_shape : boost::noncopyable
 {
@@ -56,13 +59,13 @@ public:
 	oox_chart_shape() : bEnabled ( false) {}
 	~oox_chart_shape(){}
 
-	void set(std::vector<odf_reader::_property> & prop,_oox_fill & fill); 
+	void set(odf_reader::graphic_format_properties_ptr & prop,_oox_fill & fill);
     void oox_serialize(std::wostream & _Wostream);
 			
 	bool bEnabled;
 private:
-	std::vector<odf_reader::_property>	content_;
-	_oox_fill							fill_;
+	odf_reader::graphic_format_properties_ptr content_;
+	_oox_fill fill_;
 };
 
 }

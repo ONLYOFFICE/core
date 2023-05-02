@@ -63,11 +63,11 @@ std::wstring delete_apostroph_in_name(std::wstring value)
 	}
 	return value;
 }
-void text_format_properties_content::set_r_style(const std::wstring & rStyle) 
+void text_format_properties::set_r_style(const std::wstring & rStyle) 
 { 
 	r_style_ = rStyle; 
 }
-void text_format_properties_content::apply_from(const text_format_properties_content & Other)
+void text_format_properties::apply_from(const text_format_properties & Other)
 {
     _CP_APPLY_PROP( r_style_,							Other.r_style_);
 
@@ -166,7 +166,7 @@ void text_format_properties_content::apply_from(const text_format_properties_con
 	common_border_attlist_.apply_from(Other.common_border_attlist_);
 }
 
-void text_format_properties_content::clear()
+void text_format_properties::clear()
 {
     r_style_							= boost::none;
     fo_font_variant_					= boost::none;               
@@ -276,7 +276,7 @@ void text_format_properties_content::clear()
 	//todooo borders
 }
 
-void text_format_properties_content::serialize(std::wostream & _Wostream,const wchar_t * ns, const wchar_t * name  )
+void text_format_properties::serialize(std::wostream & _Wostream,const wchar_t * ns, const wchar_t * name  )
 {
     CP_XML_WRITER(_Wostream)
     {

@@ -41,8 +41,20 @@
 
 #include "../../../OOXML/Base/Base.h"
 
-namespace cpdoccore {
-namespace oox {
+namespace cpdoccore 
+{
+	namespace odf_reader
+	{
+
+		class text_format_properties;
+		typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
+
+		class graphic_format_properties;
+		typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+	}
+
+namespace oox 
+{
 
     struct _hlink_desc
     {
@@ -108,7 +120,7 @@ namespace oox {
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;
 
-        std::vector<odf_reader::_property>	additional;
+        std::vector<odf_reader::_property> additional;
 
 		virtual void serialize	(std::wostream & strm) = 0;
 
@@ -117,6 +129,9 @@ namespace oox {
 		void serialize_bodyPr	(std::wostream & strm, const std::wstring & namespace_ = L"a");
     };   
 	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
+
+	void oox_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val, bool always_draw = false, const std::wstring &ns = L"a");
+	void vml_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val);
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false, const std::wstring &ns = L"a");
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, const std::wstring &ns = L"a");

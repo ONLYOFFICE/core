@@ -957,14 +957,29 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_ARC(shYEndArc, shXEndArc, shYStartArc, shXStartArc, shBottom, shRight, shTop, shLeft);
 
-		double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
-		double dEndAngle   = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc);
+		double dXC = (shRight + shLeft) / 2.;
+		double dYC = (shTop + shBottom) / 2.;
+
+		double dXRadius = std::fabs(shRight - shLeft) / 2;
+		double dYRadius = std::fabs(shBottom - shTop) / 2;
+
+		double dStartAngle = agg::rad2deg(std::atan2(shYStartArc - dYC, shXStartArc - dXC));
+		double dEndAngle   = agg::rad2deg(std::atan2(shYEndArc - dYC, shXEndArc - dXC));
+
+		if ((shXStartArc - dXC) < 0 && (shYStartArc - dYC) < 0)
+			dStartAngle += 360;
+
+		if ((shXEndArc - dXC) < 0 && (shYEndArc - dYC) < 0)
+			dEndAngle += 360;
+
+		double dX1 = dXC + std::cos(agg::deg2rad(dStartAngle)) * dXRadius;
+		double dY1 = dYC + std::sin(agg::deg2rad(dStartAngle)) * dYRadius;
+
 		double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
-		m_pDC->SetCurPos(shXStartArc, shYStartArc);
+		MoveTo(dX1, dY1);
 		ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
-		m_pDC->SetCurPos(shXEndArc, shYEndArc);
 	}
 
 	void CWmfParserBase::HANDLE_META_CHORD(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft)

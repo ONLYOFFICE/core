@@ -40,7 +40,7 @@ namespace Oox2Odf
 	class Converter
 	{
 	public:
-        Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate);
+        Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate, const std::wstring & tempPath);
         virtual ~Converter();
 
 		bool convert();

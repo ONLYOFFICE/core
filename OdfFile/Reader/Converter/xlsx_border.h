@@ -40,7 +40,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-class text_format_properties_content;
+class text_format_properties;
 class paragraph_format_properties;
 class style_table_cell_properties;
 

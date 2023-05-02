@@ -57,16 +57,16 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 	 
-    text_format_properties_content text_properties_;
+    text_format_properties text_properties_;
 	paragraph_format_properties paragraph_properties_;
 	graphic_format_properties graphic_properties_;
+	chart_format_properties chart_properties_;
 	
 	table_format_properties table_properties_;
 	style_table_row_properties_attlist table_row_properties_;
 	style_table_column_properties_attlist table_column_properties_;
 	style_table_cell_properties_attlist	table_cell_properties_;
 
-	chart_format_properties chart_properties_;
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

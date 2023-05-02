@@ -1,4 +1,4 @@
-/*
+﻿/*
 * (c) Copyright Ascensio System SIA 2010-2023
 *
 * This program is a free software product. You can redistribute it and/or
@@ -327,7 +327,7 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(L"mover");				
 		OPEN_MATH_TAG(elm);		
 		lvl_up_counter_increace(1);
-		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
+		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"";
 		
 		std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->diak_symbols;
 		std::wstring symbol;		
@@ -1507,7 +1507,6 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CNary *oox_nary)
 	{
 		if (!oox_nary) return;
-		returnValues values = convert(oox_nary->m_oNaryPr.GetPointer());
 		mrow();
 
 		bool flag_nary = false;
@@ -1539,7 +1538,9 @@ namespace Oox2Odf
 			OPEN_MATH_TAG(elm);
 		}
 
-		std::wstring str1, str2;
+		returnValues values = convert(oox_nary->m_oNaryPr.GetPointer());
+		
+std::wstring str1, str2;
 		if (values.naryChr)
 		{
 			str1 = L" from {";

@@ -61,6 +61,8 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:marker-start",					draw_marker_start_); 
 	CP_APPLY_ATTR(L"draw:marker-end",					draw_marker_end_); 
 
+	CP_APPLY_ATTR(L"draw:stroke-gradient-name",			draw_stroke_gradient_name_);
+
 	CP_APPLY_ATTR(L"svg:stroke-color",					svg_stroke_color_); 
 	CP_APPLY_ATTR(L"svg:stroke-width",					svg_stroke_width_);	
 	CP_APPLY_ATTR(L"svg:stroke-opacity",				svg_stroke_opacity_); 
@@ -118,6 +120,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 		if (!draw_stroke_dash_->empty())
 			properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
 	}
+	if (draw_stroke_gradient_name_) properties.push_back(_property(L"stroke-gradient-name", draw_stroke_gradient_name_.get()));
 	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf_types::length::pt) ));
 	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_->get_percent().get_value()));	
 	if (draw_marker_start_)
@@ -188,6 +191,8 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 void graphic_format_properties::apply_from(const graphic_format_properties * Other)
 {
 	if (Other == NULL) return;
+
+	_CP_APPLY_PROP3(draw_stroke_gradient_name_);
 
 	_CP_APPLY_PROP3(draw_stroke_); 
 	_CP_APPLY_PROP3(draw_stroke_dash_); 

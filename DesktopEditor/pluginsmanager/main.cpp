@@ -380,12 +380,12 @@ public:
 		// Version control
 		GetMarketplacePlugins(false);
 
-		GetLocalPlugins(m_arrInstalledPlugins, false, bPrint);
+		GetLocalPlugins(false, bPrint);
 	}
 
 	bool GetBackupPlugins(bool bPrint = true)
 	{
-		return GetLocalPlugins(m_arrBackupPlugins, true, bPrint);
+		return GetLocalPlugins(true, bPrint);
 	}
 
 	bool GetMarketplacePlugins(bool bPrint = true)
@@ -597,7 +597,7 @@ private:
 
 	bool UpdatePlugin(const std::wstring& sPlugin)
 	{
-		bool bResult = true;
+		bool bResult = false;
 		std::wstring sVerToVer = L"";
 
 		if ( sPlugin.length() )
@@ -614,6 +614,7 @@ private:
 
 					bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false);
 					bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
+					bResult = true;
 
 					Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
 				}
@@ -723,7 +724,7 @@ private:
 		}
 	}
 
-	bool GetLocalPlugins(std::vector<CPluginInfo*>& arrPlugins, bool bBackup = false, bool bPrint = true)
+	bool GetLocalPlugins(bool bBackup = false, bool bPrint = true)
 	{
 		bool bResult = false;
 
@@ -732,7 +733,7 @@ private:
 
 		if (m_sPluginsDir.length())
 		{
-			arrPlugins.clear();
+			std::vector<CPluginInfo*> arrPlugins;
 
 			std::vector<std::wstring> arrDirs = NSDirectory::GetDirectories(m_sPluginsDir + (bBackup ? L"/backup" : L""));
 
@@ -775,6 +776,12 @@ private:
 					}
 				}
 			}
+
+			// Save to target array
+			if ( bBackup )
+				m_arrBackupPlugins = arrPlugins;
+			else
+				m_arrInstalledPlugins = arrPlugins;
 		}
 		else
 		{

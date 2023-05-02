@@ -936,7 +936,56 @@ void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::
 	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
+void odf_chart_context::start_data_table()
+{
+	office_element_ptr elm;
+	create_element(L"loext", L"data-table", elm, impl_->odf_context_);
+	
+	chart_data_table *data_table = dynamic_cast<chart_data_table*>(elm.get());
+	if (data_table == NULL)return;
+//////////	
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);
 
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
+
+	std::wstring style_name;
+
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_)
+	{
+		style_name = style_->style_name_;
+		data_table->common_attlist_.chart_style_name_ = style_name;
+
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
+		style_->content_.add_get_style_text_properties();
+	}
+	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::set_showHorzBorder(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_horizontal_border_ = val;
+}
+void odf_chart_context::set_m_showVertBorder(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_vertical_border_ = val;
+}
+void odf_chart_context::set_showOutline(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_outline_ = val;
+}
+void odf_chart_context::set_showKeys(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_keys_ = val;
+}
 void odf_chart_context::start_axis()
 {
 	office_element_ptr elm;

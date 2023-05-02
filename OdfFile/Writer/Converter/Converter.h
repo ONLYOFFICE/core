@@ -639,6 +639,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
+		void convert(OOX::Spreadsheet::CT_DTable				*dTable);
 		
 		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
 //.chart.ex...........................................................................................................................

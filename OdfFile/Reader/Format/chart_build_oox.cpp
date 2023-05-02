@@ -380,10 +380,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
-	
-	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.fill_);
-	chart_context.set_chart_graphic_properties	(graphic_properties_, chart_fill_);
-	
+	chart_context.set_data_table(data_table_);
+
+	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
+
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
 
@@ -1016,7 +1017,16 @@ void process_build_object::visit(chart_data_point & val)
 												object_odf_context_.series_.back().points_.back().fill_);
 		ApplyTextProperties		(style_name,	object_odf_context_.series_.back().points_.back().text_properties_);
 	}
+}
+void process_build_object::visit(chart_data_table & val)
+{
+	std::wstring style_name = val.common_attlist_.chart_style_name_.get_value_or(L"");
 
+	object_odf_context_.data_table_.bEnabled = true;
+	
+	ApplyChartProperties(style_name, object_odf_context_.data_table_.properties_);
+	ApplyGraphicProperties(style_name, object_odf_context_.data_table_.graphic_properties_, object_odf_context_.data_table_.fill_);
+	ApplyTextProperties(style_name, object_odf_context_.data_table_.text_properties_);
 }
 void process_build_object::visit(chart_mean_value & val)
 {
@@ -1025,6 +1035,10 @@ void process_build_object::visit(chart_mean_value & val)
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.graphic_properties_, object_odf_context_.series_.back().mean_value_.fill_);
 }
 void process_build_object::visit(chart_date_scale & val)
+{
+	object_odf_context_.axises_.back().type_ = 4;
+}
+void process_build_object::visit(chartooo_date_scale & val)
 {
 	object_odf_context_.axises_.back().type_ = 4;
 }

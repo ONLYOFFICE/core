@@ -69,6 +69,10 @@ public:
 		title_.set_content(t);
 		title_.set_sub_content(sub);
 	}
+	void set_data_table(odf_reader::chart::simple & v)
+	{
+		plot_area_.set_data_table(v);
+	}
 	void add_axis(int type, odf_reader::chart::axis & content)
 	{
 		plot_area_.add_axis(type, content);

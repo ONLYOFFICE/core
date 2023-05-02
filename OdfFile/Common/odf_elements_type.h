@@ -617,6 +617,7 @@ enum ElementType
 	typeChartRegressionCurve,
 	typeChartEquation,
 	typeChartDateScale,
+	typeChartDataTable,
 
 	typeStyleChartProperties,
 

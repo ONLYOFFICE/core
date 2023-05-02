@@ -226,22 +226,22 @@ public:
 	}
 
 	// Set
-	bool SetInstallPlugins(std::wstring& sPluginsList)
+	bool SetInstallPlugins(const std::wstring& sPluginsList)
 	{
 		return SplitStringAsVector(sPluginsList, L",", m_arrInstallPlugins);
 	}
 
-	bool SetRestorePlugins(std::wstring& sPluginsList)
+	bool SetRestorePlugins(const std::wstring& sPluginsList)
 	{
 		return SplitStringAsVector(sPluginsList, L",", m_arrRestorePlugins);
 	}
 
-	bool SetUpdatePlugins(std::wstring& sPluginsList)
+	bool SetUpdatePlugins(const std::wstring& sPluginsList)
 	{
 		return SplitStringAsVector(sPluginsList, L",", m_arrUpdatePlugins);
 	}
 
-	bool SetRemovePlugins(std::wstring& sPluginsList)
+	bool SetRemovePlugins(const std::wstring& sPluginsList)
 	{
 		return SplitStringAsVector(sPluginsList, L",", m_arrRemovePlugins);
 	}
@@ -447,31 +447,36 @@ public:
 
 private:
 	// Single
-	CPluginInfo* FindLocalPlugin(std::vector<CPluginInfo*>& arrPlugins, std::wstring& sPlugin)
+	CPluginInfo* FindLocalPlugin(const std::wstring& sPlugin, bool bInstalled = true)
 	{
 		CPluginInfo* pResult = NULL;
 
-		if (arrPlugins.size())
+		if ( sPlugin.length() )
 		{
-			// Find by name or GUID
-			std::wstring sPluginName = sPlugin;
-			std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
+			std::vector<CPluginInfo*>& arrPlugins = bInstalled ? m_arrInstalledPlugins : m_arrBackupPlugins;
 
-			std::vector<CPluginInfo*>::iterator it;
-			for (it = arrPlugins.begin(); it != arrPlugins.end(); it++)
+			if ( arrPlugins.size() )
 			{
-				if (IsGuid(sPlugin))
+				// Find by name or GUID
+				std::wstring sPluginName = sPlugin;
+				std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
+
+				std::vector<CPluginInfo*>::iterator it;
+				for (it = arrPlugins.begin(); it != arrPlugins.end(); it++)
 				{
-					if ( (*it)->m_sGuid == sPlugin )
+					if (IsGuid(sPlugin))
+					{
+						if ( (*it)->m_sGuid == sPlugin )
+						{
+							pResult = *it;
+							break;
+						}
+					}
+					else if ( (*it)->m_sName == sPluginName || (*it)->m_sNameConfig == sPluginName )
 					{
 						pResult = *it;
 						break;
 					}
-				}
-				else if ( (*it)->m_sName == sPluginName || (*it)->m_sNameConfig == sPluginName )
-				{
-					pResult = *it;
-					break;
 				}
 			}
 		}
@@ -479,7 +484,7 @@ private:
 		return pResult;
 	}
 
-	CPluginInfo* FindMarketplacePlugin(std::wstring& sPlugin)
+	CPluginInfo* FindMarketplacePlugin(const std::wstring& sPlugin)
 	{
 		CPluginInfo* pResult = NULL;
 
@@ -503,7 +508,7 @@ private:
 		return pResult;
 	}
 
-	bool InstallPlugin(std::wstring& sPlugin, bool bPrint = true)
+	bool InstallPlugin(const std::wstring& sPlugin, bool bPrint = true)
 	{
 		bool bResult = false;
 
@@ -590,17 +595,17 @@ private:
 		return bResult;
 	}
 
-	bool UpdatePlugin(std::wstring& sPlugin)
+	bool UpdatePlugin(const std::wstring& sPlugin)
 	{
 		bool bResult = true;
 		std::wstring sVerToVer = L"";
 
 		if ( sPlugin.length() )
 		{
-			// Check new version
-			CPluginInfo* pLocalPlugin = FindLocalPlugin(m_arrInstalledPlugins, sPlugin);
+			CPluginInfo* pLocalPlugin = FindLocalPlugin(sPlugin);
 			CPluginInfo* pMarketPlugin = FindMarketplacePlugin(sPlugin);
 
+			// Check new version
 			if ( pLocalPlugin && pMarketPlugin )
 			{
 				if ( *pMarketPlugin->m_pVersion > *pLocalPlugin->m_pVersion )
@@ -618,13 +623,13 @@ private:
 		return bResult;
 	}
 
-	bool RestorePlugin(std::wstring& sPlugin)
+	bool RestorePlugin(const std::wstring& sPlugin)
 	{
 		bool bResult = false;
 
 		if (sPlugin.length())
 		{
-			CPluginInfo* pResult = FindLocalPlugin(m_arrBackupPlugins, sPlugin);
+			CPluginInfo* pResult = FindLocalPlugin(sPlugin, false);
 
 			if ( pResult )
 			{
@@ -646,14 +651,14 @@ private:
 		return bResult;
 	}
 
-	bool RemovePlugin(std::wstring& sPlugin, bool bPrint = true)
+	bool RemovePlugin(const std::wstring& sPlugin, bool bPrint = true)
 	{
 		bool bResult = false;
 
 		if (sPlugin.length())
 		{
 			bool bBackup = false;
-			CPluginInfo* pResult = FindLocalPlugin(m_arrInstalledPlugins, sPlugin);
+			CPluginInfo* pResult = FindLocalPlugin(sPlugin);
 
 			// Try find in marketplace if name isn't short alias
 			if ( !pResult )
@@ -737,30 +742,34 @@ private:
 
 				if (NSFile::CFileBinary::Exists(sFile))
 				{
-					CPluginInfo* pInfo = ReadPluginInfo(sFile);
-					std::wstring sVersion = pInfo->m_pVersion->m_sVersion;
+					CPluginInfo* pPluginInfo = ReadPluginInfo(sFile);
 
-					if ( pInfo && pInfo->m_isValid && !IsPluginManager(pInfo->m_sGuid) )
+					if ( pPluginInfo && pPluginInfo->m_isValid && !IsPluginManager(pPluginInfo->m_sGuid) )
 					{
-						if (std::find(arrPlugins.begin(), arrPlugins.end(), pInfo) == arrPlugins.end())
+						if (std::find(arrPlugins.begin(), arrPlugins.end(), pPluginInfo) == arrPlugins.end())
 						{
+							// Sync short names with marketplace
+							// for example, we can't find 'openai' in installed
+							CPluginInfo* pMarketPlugin = FindMarketplacePlugin(pPluginInfo->m_sGuid);
+							if ( pMarketPlugin &&  (pPluginInfo->m_sName != pMarketPlugin->m_sName) )
+								pPluginInfo->m_sName = pMarketPlugin->m_sName;
+
+							// Save
+							arrPlugins.push_back(pPluginInfo);
 							bResult = true;
-							arrPlugins.push_back(pInfo);
 
 							if ( bPrint )
 							{
 								// Check new version from marketplace
-								if ( !bBackup )
+								std::wstring sVersion = pPluginInfo->m_pVersion->m_sVersion;
+
+								if ( !bBackup && pMarketPlugin)
 								{
-									CPluginInfo* pMarketPlugin = FindMarketplacePlugin(pInfo->m_sGuid);
-									if ( pMarketPlugin )
-									{
-										if ( *pMarketPlugin->m_pVersion > *pInfo->m_pVersion )
-											sVersion += L" (new " + pMarketPlugin->m_pVersion->m_sVersion + L")";
-									}
+									if ( *pMarketPlugin->m_pVersion > *pPluginInfo->m_pVersion )
+										sVersion += L" (new " + pMarketPlugin->m_pVersion->m_sVersion + L")";
 								}
 
-								MessagePluginInfo(pInfo->m_sNameConfig, sVersion, pInfo->m_sGuid);
+								MessagePluginInfo(pPluginInfo->m_sNameConfig, sVersion, pPluginInfo->m_sGuid);
 							}
 						}
 					}
@@ -775,12 +784,12 @@ private:
 		return bResult;
 	}
 
-	bool IsGuid(std::wstring& sStr)
+	bool IsGuid(const std::wstring& sStr)
 	{
 		return sStr.length() && sStr.at(0) == L'{' && sStr.at(sStr.length() - 1) == L'}';
 	}
 
-	bool IsNeedDownload(std::wstring& FilePath)
+	bool IsNeedDownload(const std::wstring& FilePath)
 	{
 		std::wstring::size_type n1 = FilePath.find(L"www.");
 		std::wstring::size_type n2 = FilePath.find(L"http://");
@@ -799,7 +808,7 @@ private:
 		return false;
 	}
 
-	bool IsPluginManager(std::wstring& sGuid)
+	bool IsPluginManager(const std::wstring& sGuid)
 	{
 		return sGuid == m_sManagerGuid || sGuid == m_sOldManagerGuid;
 	}
@@ -832,7 +841,7 @@ private:
 		return arrOutput.size() > 0;
 	}
 
-	bool DownloadFile(std::wstring& sUrl, std::wstring& sFile)
+	bool DownloadFile(const std::wstring& sUrl, const std::wstring& sFile)
 	{
 		if (NSFile::CFileBinary::Exists(sFile))
 			NSFile::CFileBinary::Remove(sFile);
@@ -848,7 +857,7 @@ private:
 		return NSFile::CFileBinary::Exists(sFile);
 	}
 
-	CPluginInfo* FetchPluginInfo(std::wstring& sPluginName)
+	CPluginInfo* FetchPluginInfo(const std::wstring& sPluginName)
 	{
 		CPluginInfo* pResult = NULL;
 
@@ -871,7 +880,7 @@ private:
 		return pResult;
 	}
 
-	CPluginInfo* ReadPluginInfo(std::wstring& sConfigFile)
+	CPluginInfo* ReadPluginInfo(const std::wstring& sConfigFile)
 	{
 		CPluginInfo* pResult = NULL;
 		std::wstring sJson = L"";

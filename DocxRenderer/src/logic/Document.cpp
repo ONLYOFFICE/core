@@ -20,13 +20,16 @@ namespace NSDocxRenderer
 		m_lClipMode = 0;
 
 		m_lPagesCount = 0;
+		for(auto& val : m_mapXmlString)
+			delete val.second;
+
 		m_mapXmlString.clear();
 	}
 
 	CDocument::~CDocument() {
+		Clear();
 		m_lClipMode = 0;
 		RELEASEINTERFACE(m_pFontManager);
-		m_mapXmlString.clear();
 	}
 
 	HRESULT CDocument::NewPage()
@@ -38,9 +41,7 @@ namespace NSDocxRenderer
 		m_oEdge.SetDefaultParams();
 
 		m_oTransform.Reset();
-
 		m_oCurrentPage.Clear();
-
 		return S_OK;
 	}
 	HRESULT CDocument::get_Height(double* dHeight)
@@ -543,7 +544,7 @@ namespace NSDocxRenderer
 			auto pWriter = new NSStringUtils::CStringBuilder();
 			pWriter->AddSize(100000);
 			m_oCurrentPage.ProcessingAndRecordingOfPageData(*pWriter, m_lPagesCount, m_lNumberPages);
-			m_mapXmlString[m_lPagesCount] = std::move(pWriter);
+			m_mapXmlString[m_lPagesCount] = pWriter;
 		}
 		else if (c_nPathType == lType)
 		{

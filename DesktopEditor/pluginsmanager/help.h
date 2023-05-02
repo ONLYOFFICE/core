@@ -44,10 +44,12 @@ std::wstring sCmdPrintInstalled =               L"--print-installed";
 std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
 std::wstring sCmdPrintBackup =                  L"--print-backup";
 
-std::wstring sCmdInstallPluginsList =           L"--install";
-std::wstring sCmdRestorePluginsList =           L"--restore";
-std::wstring sCmdRemovePluginsList =            L"--remove";
-std::wstring sCmdRemoveAllPlugins =             L"--remove-all";
+std::wstring sCmdInstall =                      L"--install";
+std::wstring sCmdRestore =                      L"--restore";
+std::wstring sCmdUpdate =                       L"--update";
+std::wstring sCmdUpdateAll =                    L"--update-all";
+std::wstring sCmdRemove =                       L"--remove";
+std::wstring sCmdRemoveAll =                    L"--remove-all";
 
 std::wstring sHelpText =
 L"\nPlugins Manager Options\n\n" \
@@ -76,6 +78,13 @@ L"                         File extensions: .zip, .plugin\n\n" \
 L"  --restore            = Optional parameter. Set comma-separated quoted list of plugins to restore.\n" \
 L"                         Restoring by plugin name or GUID is supported.\n" \
 L"                         For example, --restore=\"Youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
+
+L"  --update             = Optional parameter. Set comma-separated quoted list of plugins to update.\n" \
+L"                         Updating by plugin name or GUID is supported.\n" \
+L"                         For example, --update=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
+
+L"  --update-all         = Optional parameter. Update all installed plugins from marketplace.\n" \
+L"                         Parameter without value.\n\n" \
 
 L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
 L"                         Removing by plugin name or GUID is supported.\n" \

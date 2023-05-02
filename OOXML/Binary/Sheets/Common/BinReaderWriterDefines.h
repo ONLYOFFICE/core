@@ -231,7 +231,8 @@ namespace BinXlsxRW
 		Protection = 21,
 		OleSize = 22,
 		ExternalFileKey = 23,
-		ExternalInstanceId = 24
+		ExternalInstanceId = 24,
+		FileSharing = 25
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -242,6 +243,16 @@ namespace BinXlsxRW
 		LockWindows = 5,
 		Password = 6
 	}; }
+	
+	namespace c_oSerFileSharing {enum c_oSerFileSharing{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		UserName = 4,
+		ReadOnly = 5,
+		Password = 6
+	};}
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
 		Connection = 0,

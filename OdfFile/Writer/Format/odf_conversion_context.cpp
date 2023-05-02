@@ -183,7 +183,7 @@ _mediaitems* odf_conversion_context::mediaitems()
 
 void odf_conversion_context::end_document()
 {
-	rels	rels_;
+	rels rels_;
 	for (size_t i = 0; i < objects_.size(); i++)
 	{
 		_object & object = *objects_[i];
@@ -194,7 +194,8 @@ void odf_conversion_context::end_document()
 		process_styles	(object, isRoot);
 		process_settings(object, isRoot);
 
-		package::content_content_ptr content_root_ = package::content_content::create();		
+//------------------------
+		package::content_content_ptr content_root_ = package::content_content::create();
 
 		if (objects_.back()->scripts)
 			objects_.back()->scripts->serialize(content_root_->styles());	
@@ -205,14 +206,21 @@ void odf_conversion_context::end_document()
 		{
 			object.content_styles[i]->serialize(content_root_->styles());
 		}
+//------------------------
 		package::content_simple_ptr content_style_ = package::content_simple::create();
 		for (size_t i = 0; i < object.styles.size(); i++)
 		{// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
 			object.styles[i]->serialize(content_style_->content());
 		}
+//------------------------
 		package::content_simple_ptr content_settings_ = package::content_simple::create();
 		object.settings->serialize(content_settings_->content());
-////////////////////////////
+//------------------------
+		package::content_simple_ptr content_meta_ = package::content_simple::create();
+		
+		for (size_t i = 0; i < object.meta.size(); i++)
+			object.meta[i]->serialize(content_meta_->content());
+
 		package::object_files *object_files =  new package::object_files();
 		if (object_files)
 		{
@@ -220,7 +228,8 @@ void odf_conversion_context::end_document()
 			object_files->set_styles	(content_style_);
 			object_files->set_mediaitems(object.mediaitems);
 			object_files->set_settings	(content_settings_);
-			
+			object_files->set_meta		(content_meta_);
+
 			if (!isRoot)object_files->local_path = object.name + L"/";
 			
 			object.mediaitems.dump_rels(rels_, object_files->local_path);
@@ -488,6 +497,19 @@ office_element_ptr odf_conversion_context::start_tabs()
 {
 	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
+}
+void odf_conversion_context::add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content)
+{
+	if (name.empty()) return;
+	
+	office_element_ptr elm;
+	create_element(ns, name, elm, this, true);
+
+	if (elm)
+	{
+		elm->add_text(content);
+		objects_[current_object_]->meta.push_back(elm);
+	}
 }
 std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name, bool bExternal)
 {

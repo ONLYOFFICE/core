@@ -47,6 +47,7 @@
 
 #include "office_text.h"
 #include "office_annotation.h"
+#include "office_meta.h"
 
 #include "paragraph_elements.h"
 #include "text_elements.h"

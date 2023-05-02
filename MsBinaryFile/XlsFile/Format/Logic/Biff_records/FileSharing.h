@@ -39,7 +39,6 @@
 namespace XLS
 {
 
-// Logical representation of FileSharing record in BIFF8 and BrtFileSharing in BIFF12
 class FileSharing: public BiffRecord
 {
 

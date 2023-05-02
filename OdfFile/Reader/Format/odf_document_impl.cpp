@@ -600,13 +600,30 @@ void odf_document::Impl::parse_settings(office_element *element)
 
 		if (item_set->config_name_ == L"ooo:configuration-settings")
 		{
-			for (size_t j = 0; j < item_set->content_.size(); j++)
-			{	
-				office_element_ptr & elm_sett = item_set->content_[j];
-				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
-				if (!sett)continue;
+			for (auto conf = item_set->content_.begin(); conf != item_set->content_.end(); ++conf)
+			{
+				settings_config_item *item = dynamic_cast<settings_config_item *>(conf->get());
+				if (item)
+				{
+					context_->Settings().add(item->config_name_, item->content_);
+					continue;
+				}
+				settings_config_item_set *conf_item_set = dynamic_cast<settings_config_item_set *>(conf->get());
+				if (conf_item_set)
+				{
+					if (conf_item_set->config_name_ == L"ModifyPasswordInfo")
+					{
+						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
+						{
+							settings_config_item *info = dynamic_cast<settings_config_item *>(info_elm->get());
+							if (info)
+							{
+								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
+							}
+						}
+					}
+				}
 
-				context_->Settings().add(sett->config_name_, sett->content_);
 			}
 		}
 		else if (item_set->config_name_ == L"ooo:view-settings")

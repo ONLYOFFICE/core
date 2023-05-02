@@ -41,17 +41,14 @@ namespace XLSB
     {
     }
 
-
     FileSharingIso::~FileSharingIso()
     {
     }
 
-
     BaseObjectPtr FileSharingIso::clone()
     {
-            return BaseObjectPtr(new FileSharingIso(*this));
+		return BaseObjectPtr(new FileSharingIso(*this));
     }
-
 
     void FileSharingIso::readFields(XLS::CFRecord& record)
     {

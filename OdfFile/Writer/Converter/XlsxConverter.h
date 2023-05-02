@@ -103,6 +103,7 @@ namespace OOX
 		class CLegacyDrawingHFWorksheet;
 		class CPrintOptions;
 		class CProtection;
+		class CFileSharing;
 
 		class CPivotTableFile;
 		class CPivotTableDefinition;
@@ -180,6 +181,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CHeaderFooterElement	*oox_header_footer);
 		void convert(OOX::Spreadsheet::CPivotTableFile		*oox_pivot_table);
 		void convert(OOX::Spreadsheet::CPivotTableDefinition*oox_pivot_table, OOX::Spreadsheet::CPivotCacheDefinition* oox_pivot_cache);
+		void convert(OOX::Spreadsheet::CFileSharing			*oox_file_sharing);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);

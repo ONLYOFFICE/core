@@ -40,6 +40,8 @@
 #include "../../../OOXML/PPTXFormat/NotesMaster.h"
 #include "../../../OOXML/PPTXFormat/NotesSlide.h"
 #include "../../../OOXML/PPTXFormat/TableStyles.h"
+#include "../../../OOXML/PPTXFormat/App.h"
+#include "../../../OOXML/PPTXFormat/Core.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Table/Table.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
@@ -199,6 +201,11 @@ bool PptxConverter::convertDocument()
 	convert_styles();
 	convert_settings(); 
 	
+	smart_ptr<PPTX::App> app_ptr = pptx_document->Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+	smart_ptr<PPTX::Core> core_ptr = pptx_document->Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+
+	//convert_meta(app_ptr.GetPointer(), core_ptr.GetPointer()); -> привести к OOX::...
+
 	convert_slides();
 
 	//удалим уже ненужный документ pptx 

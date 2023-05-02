@@ -42,6 +42,7 @@
 #include "styles.h"
 
 #include "office_annotation.h"
+#include "office_meta.h"
 
 namespace cpdoccore 
 {

@@ -168,6 +168,7 @@ bool XlsxConverter::convertDocument()
 
 	ods_context->start_document();
 
+	convert_meta(xlsx_document->m_pApp, xlsx_document->m_pCore);
 	convert_styles();
 
 	convert_sheets();
@@ -210,6 +211,8 @@ void XlsxConverter::convert_sheets()
 		{
 			ods_context->set_tables_structure_lock(pWorkbook->m_oWorkbookProtection->m_oLockStructure->ToBool());
 		}
+
+		convert(pWorkbook->m_oFileSharing.GetPointer());
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 		
 		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(pWorkbook);
@@ -236,14 +239,14 @@ void XlsxConverter::convert_sheets()
 				}
 			}
 		}
-		if(pWorkbook->m_oBookViews.IsInit())
+		if (pWorkbook->m_oBookViews.IsInit())
 		{	
 			for (size_t i = 0; i < pWorkbook->m_oBookViews->m_arrItems.size(); i++)
 			{
 				convert(pWorkbook->m_oBookViews->m_arrItems[i]);
 			}
 		}
-		if(pWorkbook->m_oSheets.IsInit())
+		if (pWorkbook->m_oSheets.IsInit())
 		{				
 			for(size_t i = 0, length = pWorkbook->m_oSheets->m_arrItems.size(); i < length; ++i)
 			{
@@ -1694,9 +1697,25 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 		ods_context->current_table()->set_table_tab_color(odf_color);
 	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CFileSharing *oox_file_sharing)
+{
+	if (!oox_file_sharing) return;
+
+	ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
+
+	if (oox_file_sharing->m_oReadOnlyRecommended.get_value_or(false))
+	{
+		ods_context->settings_context()->add_config_content_item(L"LoadReadonly", L"boolean", L"true");
+	}
+	if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() && 
+		oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
+	{
+		ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+	}
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 {
-	if (!oox_book_views)return;
+	if (!oox_book_views) return;
 	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 

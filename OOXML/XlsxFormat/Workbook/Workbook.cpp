@@ -237,6 +237,11 @@ namespace OOX
 
 					if (workBookStream->m_FRTWORKBOOK != nullptr)
 						m_oExtLst = workBookStream->m_FRTWORKBOOK;
+					
+					if (workBookStream->m_BrtFileSharingIso != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
+					else if (workBookStream->m_BrtBookProtection != nullptr)
+						m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
 				}
 
 				//workBookStream.reset();
@@ -348,6 +353,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						m_oPivotCaches = oReader;
 					else if (L"extLst" == sName)
 						m_oExtLst = oReader;
+					else if (L"fileSharing" == sName)
+						m_oFileSharing = oReader;
 					else if (L"oleSize" == sName)
 					{
 						WritingElement_ReadAttributes_Start(oReader)
@@ -359,7 +366,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						WritingElement_ReadAttributes_Start(oReader)
 							WritingElement_ReadAttributes_Read_if(oReader, L"appName", m_oAppName)
 						WritingElement_ReadAttributes_End(oReader)
-					}					
+					}		
 					else if (L"WindowHeight" == sName)
 					{
 					}

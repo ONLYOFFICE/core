@@ -35,6 +35,8 @@
 #include "../../XlsbFormat/Biff12_records/WbProp.h"
 #include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/BookProtection.h"
+#include "../../XlsbFormat/Biff12_records/FileSharingIso.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
@@ -142,7 +144,6 @@ namespace OOX
 
 
 		}
-
 		CWorkbookProtection::CWorkbookProtection()
 		{
 		}
@@ -201,40 +202,112 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CWorkbookProtection::ReadAttributes(XLS::BaseObjectPtr& obj)
+		{
+			auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+			if (ptrRecord->getTypeId() == XLSB::rt_BookProtection)
 			{
-				auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+				auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
+				m_oLockRevision = ptr->wFlags.fLockRevision;
+				m_oLockStructure = ptr->wFlags.fLockStructure;
+				m_oLockWindows = ptr->wFlags.fLockWindow;
+			}
+			else if (ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
+			{
+				auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
+				m_oLockRevision = ptr->wFlags.fLockRevision;
+				m_oLockStructure = ptr->wFlags.fLockStructure;
+				m_oLockWindows = ptr->wFlags.fLockWindow;
 
-				if(ptrRecord->getTypeId() == XLSB::rt_BookProtection)
-				{
-					auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
-					m_oLockRevision            = ptr->wFlags.fLockRevision;
-					m_oLockStructure           = ptr->wFlags.fLockStructure;
-					m_oLockWindows             = ptr->wFlags.fLockWindow;
-				}
-				else if(ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
-				{
-					auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
-					m_oLockRevision            = ptr->wFlags.fLockRevision;
-					m_oLockStructure           = ptr->wFlags.fLockStructure;
-					m_oLockWindows             = ptr->wFlags.fLockWindow;
+				m_oWorkbookAlgorithmName = ptr->ipdBookPasswordData.szAlgName.value();
+				m_oWorkbookSpinCount = ptr->dwBookSpinCount;
+				m_oWorkbookHashValue = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+					ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+				m_oWorkbookSaltValue = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+					ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
 
-					m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
-					m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
-					m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
-															  ptr->ipdBookPasswordData.rgbHash.rgbData.end());
-					m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
-															  ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+				m_oRevisionsAlgorithmName = ptr->ipdRevPasswordData.szAlgName.value();
+				m_oRevisionsSpinCount = ptr->dwRevSpinCount;
+				m_oRevisionsHashValue = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+					ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+				m_oRevisionsSaltValue = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+					ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+			}
+		}
+		CFileSharing::CFileSharing()
+		{
+		}
+		CFileSharing::~CFileSharing()
+		{
+		}
+		void CFileSharing::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CFileSharing::toXML() const
+		{
+			return L"";
+		}
+		void CFileSharing::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<fileSharing");
+			WritingStringNullableAttrEncodeXmlString2(L"userName", m_oUserName);
+			WritingStringNullableAttrBool2(L"readOnlyRecommended", m_oReadOnlyRecommended);			
+			WritingStringNullableAttrString(L"algorithmName", m_oAlgorithmName, m_oAlgorithmName->ToString());
+			WritingStringNullableAttrString(L"hashValue", m_oHashValue, m_oHashValue.get());
+			WritingStringNullableAttrString(L"saltValue", m_oSaltValue, m_oSaltValue.get());
+			WritingStringNullableAttrInt(L"spinCount", m_oSpinCount, m_oSpinCount->GetValue());
+			WritingStringNullableAttrString(L"password", m_oPassword, m_oPassword.get());
+			writer.WriteString(L"/>");
+		}
+		void CFileSharing::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
 
-					m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
-					m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
-					m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
-															  ptr->ipdRevPasswordData.rgbHash.rgbData.end());
-					m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
-															  ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
-				}
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
+		}
+		void CFileSharing::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			ReadAttributes(obj);
+		}
+		EElementType CFileSharing::getType() const
+		{
+			return et_x_FileSharing;
+		}
+		void CFileSharing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, (L"algorithmName"), m_oAlgorithmName)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"hashValue"), m_oHashValue)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"saltValue"), m_oSaltValue)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"spinCount"), m_oSpinCount)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"password"), m_oPassword)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"userName"), m_oUserName)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"readOnlyRecommended"), m_oReadOnlyRecommended)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+		void CFileSharing::ReadAttributes(XLS::BaseObjectPtr& obj)
+		{
+			auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
 
+			if (ptrRecord->getTypeId() == XLSB::rt_FileSharing)
+			{
+				auto ptr = static_cast<XLSB::FileSharing*>(obj.get());
+				if (ptr->fReadOnlyRec.value())
+					m_oReadOnlyRecommended = *ptr->fReadOnlyRec.value();
+				m_oUserName = ptr->stUserName.value();
+				m_oPassword = ptr->wResPass;
+			}
+			else if (ptrRecord->getTypeId() == XLSB::rt_FileSharingIso)
+			{
+				auto ptr = static_cast<XLSB::FileSharingIso*>(obj.get());
+				m_oUserName = ptr->stUserName.value();
+				if (ptr->fReadOnlyRec.value())
+					m_oReadOnlyRecommended = *ptr->fReadOnlyRec.value();
 
+				m_oSpinCount = ptr->dwSpinCount;
 			}
 
+		}
 	} //Spreadsheet
 } // namespace OOX

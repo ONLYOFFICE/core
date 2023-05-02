@@ -369,7 +369,7 @@ namespace odf_writer
 			CP_XML_WRITER(resStream)
 			{
 				CP_XML_NODE(L"office:document-meta")
-				{  
+				{
 					CP_XML_ATTR(L"xmlns:office", L"urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 					CP_XML_ATTR(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 					CP_XML_ATTR(L"xmlns:dc", L"http://purl.org/dc/elements/1.1/");
@@ -377,15 +377,15 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:ooo", L"http://openoffice.org/2004/office");
 					CP_XML_ATTR(L"xmlns:text", L"urn:oasis:names:tc:opendocument:xmlns:text:1.0");
 					CP_XML_ATTR(L"xmlns:grddl", L"http://www.w3.org/2003/g/data-view#");
-					
-					CP_XML_ATTR(L"xmlns:presentation", L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0");					
+
+					CP_XML_ATTR(L"xmlns:presentation", L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0");
 					CP_XML_ATTR(L"xmlns:smil", L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0");
 					CP_XML_ATTR(L"xmlns:anim", L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0");
 					CP_XML_ATTR(L"xmlns:chartooo", L"http://openoffice.org/2010/chart");
-					CP_XML_ATTR(L"office:version", L"1.2");		
-		
+					CP_XML_ATTR(L"office:version", L"1.2");
+
 					CP_XML_NODE(L"office:meta")
-					{  
+					{
 						CP_XML_NODE(L"meta:generator")
 						{
 							std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
@@ -394,20 +394,25 @@ namespace odf_writer
 							CP_XML_STREAM() << sApplication;
 #if defined(INTVER)
 							std::string s = VALUE2STR(INTVER);
-							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );
+							CP_XML_STREAM() << L"/" << std::wstring(s.begin(), s.end());
 #endif					
 						}
-						CP_XML_NODE(L"meta:initial-creator");
-						CP_XML_NODE(L"meta:creation-date");
-						CP_XML_NODE(L"meta:editing-cycles");
-						CP_XML_NODE(L"meta:editing-duration");
-						CP_XML_NODE(L"dc:date");
-						CP_XML_NODE(L"dc:creator");
-						CP_XML_NODE(L"meta:document-statistic");
+						//CP_XML_NODE(L"meta:initial-creator");
+						//CP_XML_NODE(L"meta:creation-date");
+						//CP_XML_NODE(L"meta:editing-cycles");
+						//CP_XML_NODE(L"meta:editing-duration");
+						//CP_XML_NODE(L"dc:date");
+						//CP_XML_NODE(L"dc:creator");
+						//CP_XML_NODE(L"meta:document-statistic");
+						if ((content_) && (content_->content().rdbuf()->in_avail() != 0))
+						{
+							content_->content().flush();
+							CP_XML_STREAM() << content_->content().rdbuf();
+						}
 					}
 				}
-			}
-		    
+				content_.reset();
+			}		    
 			simple_element elm(L"meta.xml", resStream.str());
 			elm.write(RootPath, add_padding);
 		}
@@ -439,7 +444,6 @@ namespace odf_writer
 		void object_files::set_content(content_content_ptr & _content, bool bRootNode)
 		{
 			content.set_content(_content, bRootNode);
-			meta = element_ptr(new meta_file());
 		}
 		void object_files::set_mediaitems(_mediaitems & mediaitems)
 		{
@@ -468,13 +472,16 @@ namespace odf_writer
 		{
 			settings.set_content(_content);
 		}
+		void object_files::set_meta(content_simple_ptr & _content)
+		{
+			meta.set_content(_content);
+		}
 		void object_files::write(const std::wstring & RootPath, bool add_padding)
 		{
 			content.write(RootPath, add_padding);		
 			styles.write(RootPath, add_padding);
 			settings.write(RootPath, add_padding);
-			
-			if (meta)			meta->write(RootPath, add_padding);
+			meta.write(RootPath, add_padding);
 
 			if (media)			media->write(RootPath, add_padding);
 			if (pictures)		pictures->write(RootPath, add_padding);

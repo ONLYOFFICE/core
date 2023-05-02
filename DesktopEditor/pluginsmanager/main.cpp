@@ -204,14 +204,8 @@ public:
 	std::wstring m_sPluginsDir;
 	std::wstring m_sMarketplaceUrl;
 
-	std::vector<std::wstring> m_arrInstallPlugins;
-	std::vector<std::wstring> m_arrRestorePlugins;
-	std::vector<std::wstring> m_arrUpdatePlugins;
-	std::vector<std::wstring> m_arrRemovePlugins;
-
-	std::vector<CPluginInfo*> m_arrBackupPlugins;
-	std::vector<CPluginInfo*> m_arrInstalledPlugins;
-	std::vector<CPluginInfo*> m_arrMarketplacePlugins;
+	std::vector<std::wstring> m_arrInstall, m_arrRestore, m_arrUpdate, m_arrRemove;
+	std::vector<CPluginInfo*> m_arrBackup, m_arrInstalled, m_arrMarketplace;
 
 	CPluginsManager()
 	{
@@ -228,22 +222,22 @@ public:
 	// Set
 	bool SetInstallPlugins(const std::wstring& sPluginsList)
 	{
-		return SplitStringAsVector(sPluginsList, L",", m_arrInstallPlugins);
+		return SplitStringAsVector(sPluginsList, L",", m_arrInstall);
 	}
 
 	bool SetRestorePlugins(const std::wstring& sPluginsList)
 	{
-		return SplitStringAsVector(sPluginsList, L",", m_arrRestorePlugins);
+		return SplitStringAsVector(sPluginsList, L",", m_arrRestore);
 	}
 
 	bool SetUpdatePlugins(const std::wstring& sPluginsList)
 	{
-		return SplitStringAsVector(sPluginsList, L",", m_arrUpdatePlugins);
+		return SplitStringAsVector(sPluginsList, L",", m_arrUpdate);
 	}
 
 	bool SetRemovePlugins(const std::wstring& sPluginsList)
 	{
-		return SplitStringAsVector(sPluginsList, L",", m_arrRemovePlugins);
+		return SplitStringAsVector(sPluginsList, L",", m_arrRemove);
 	}
 
 	// Multi
@@ -254,11 +248,11 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrInstallPlugins.size() && m_arrMarketplacePlugins.size())
+		if (m_sPluginsDir.length() && m_arrInstall.size() && m_arrMarketplace.size())
 		{
-			for (size_t i = 0; i < m_arrInstallPlugins.size(); i++)
+			for (size_t i = 0; i < m_arrInstall.size(); i++)
 			{
-				std::wstring sPlugin = m_arrInstallPlugins[i];
+				std::wstring sPlugin = m_arrInstall[i];
 				bResult &= InstallPlugin(sPlugin);
 			}
 		}
@@ -275,11 +269,11 @@ public:
 
 		InitPlugins(true);
 
-		if (m_sPluginsDir.length() && m_arrRestorePlugins.size())
+		if (m_sPluginsDir.length() && m_arrRestore.size())
 		{
-			for (size_t i = 0; i < m_arrRestorePlugins.size(); i++)
+			for (size_t i = 0; i < m_arrRestore.size(); i++)
 			{
-				std::wstring sPlugin = m_arrRestorePlugins[i];
+				std::wstring sPlugin = m_arrRestore[i];
 				bResult &= RestorePlugin(sPlugin);
 			}
 		}
@@ -296,11 +290,11 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrInstalledPlugins.size() && m_arrMarketplacePlugins.size())
+		if (m_sPluginsDir.length() && m_arrInstalled.size() && m_arrMarketplace.size())
 		{
-			for (size_t i = 0; i < m_arrUpdatePlugins.size(); i++)
+			for (size_t i = 0; i < m_arrUpdate.size(); i++)
 			{
-				std::wstring sPlugin = m_arrUpdatePlugins[i];
+				std::wstring sPlugin = m_arrUpdate[i];
 				bResult &= UpdatePlugin(sPlugin);
 			}
 		}
@@ -317,10 +311,10 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrInstalledPlugins.size() && m_arrMarketplacePlugins.size())
+		if (m_sPluginsDir.length() && m_arrInstalled.size() && m_arrMarketplace.size())
 		{
 			std::vector<CPluginInfo*>::iterator it;
-			for (it = m_arrInstalledPlugins.begin(); it != m_arrInstalledPlugins.end(); it++)
+			for (it = m_arrInstalled.begin(); it != m_arrInstalled.end(); it++)
 			{
 				bResult &= UpdatePlugin((*it)->m_sName);
 			}
@@ -338,11 +332,11 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrRemovePlugins.size() && m_arrMarketplacePlugins.size())
+		if (m_sPluginsDir.length() && m_arrRemove.size() && m_arrMarketplace.size())
 		{
-			for (size_t i = 0; i < m_arrRemovePlugins.size(); i++)
+			for (size_t i = 0; i < m_arrRemove.size(); i++)
 			{
-				std::wstring sPlugin = m_arrRemovePlugins[i];
+				std::wstring sPlugin = m_arrRemove[i];
 				bResult &= RemovePlugin(sPlugin);
 			}
 		}
@@ -359,10 +353,10 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrInstalledPlugins.size())
+		if (m_sPluginsDir.length() && m_arrInstalled.size())
 		{
 			std::vector<CPluginInfo*>::iterator it;
-			for (it = m_arrInstalledPlugins.begin(); it != m_arrInstalledPlugins.end(); it++)
+			for (it = m_arrInstalled.begin(); it != m_arrInstalled.end(); it++)
 			{
 				std::wstring sName = (*it)->m_sNameConfig;
 				bResult &= RemovePlugin(sName);
@@ -378,7 +372,7 @@ public:
 	void GetInstalledPlugins(bool bPrint = true)
 	{
 		// Version control
-		GetMarketplacePlugins(false);
+		GetMarketPlugins(false);
 
 		GetLocalPlugins(false, bPrint);
 	}
@@ -388,7 +382,7 @@ public:
 		return GetLocalPlugins(true, bPrint);
 	}
 
-	bool GetMarketplacePlugins(bool bPrint = true)
+	bool GetMarketPlugins(bool bPrint = true)
 	{
 		bool bResult = false;
 
@@ -397,7 +391,7 @@ public:
 
 		if (m_sMarketplaceUrl.length())
 		{
-			m_arrMarketplacePlugins.clear();
+			m_arrMarketplace.clear();
 
 			std::wstring sConfigUrl = m_sMarketplaceUrl + L"/store/config.json";
 			std::wstring sTmpFile = NSFile::CFileBinary::GetTempPath() + L"/temp_asc_plugins_config.json";
@@ -424,13 +418,13 @@ public:
 							std::wstring sPluginName = arr[i];
 							std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
 
-							CPluginInfo* pPluginInfo = FindMarketplacePlugin(sPluginName);
+							CPluginInfo* pPluginInfo = FindMarketPlugin(sPluginName);
 							if ( !pPluginInfo )
 							{
 								pPluginInfo = FetchPluginInfo(sPluginName);
 								if ( pPluginInfo )
 								{
-									m_arrMarketplacePlugins.push_back(pPluginInfo);
+									m_arrMarketplace.push_back(pPluginInfo);
 
 									if ( bPrint )
 										MessagePluginInfo(sPluginName, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
@@ -453,7 +447,7 @@ private:
 
 		if ( sPlugin.length() )
 		{
-			std::vector<CPluginInfo*>& arrPlugins = bInstalled ? m_arrInstalledPlugins : m_arrBackupPlugins;
+			std::vector<CPluginInfo*>& arrPlugins = bInstalled ? m_arrInstalled : m_arrBackup;
 
 			if ( arrPlugins.size() )
 			{
@@ -484,20 +478,22 @@ private:
 		return pResult;
 	}
 
-	CPluginInfo* FindMarketplacePlugin(const std::wstring& sPlugin)
+	CPluginInfo* FindMarketPlugin(const std::wstring& sPlugin)
 	{
 		CPluginInfo* pResult = NULL;
 
-		if (m_arrMarketplacePlugins.size())
+		if (m_arrMarketplace.size())
 		{
 			std::wstring _sPlugin = sPlugin;
 			if ( !IsGuid(_sPlugin) )
 				std::transform(_sPlugin.begin(), _sPlugin.end(), _sPlugin.begin(), tolower);
 
 			std::vector<CPluginInfo*>::iterator it;
-			for (it = m_arrMarketplacePlugins.begin(); it != m_arrMarketplacePlugins.end(); it++)
+			for (it = m_arrMarketplace.begin(); it != m_arrMarketplace.end(); it++)
 			{
-				if ( (*it)->m_sName == _sPlugin || (*it)->m_sNameConfig == _sPlugin || (*it)->m_sGuid == _sPlugin )
+				if ( (*it)->m_sName == _sPlugin ||
+					 (*it)->m_sNameConfig == _sPlugin ||
+					 (*it)->m_sGuid == _sPlugin )
 				{
 					pResult = *it;
 					break;
@@ -514,7 +510,7 @@ private:
 
 		if (sPlugin.length())
 		{
-			bool isDownload = true;
+			bool isNeedDownload = true;
 			std::wstring sPackageUrl = L"";
 
 			std::wstring sTmpFile = NSFile::CFileBinary::GetTempPath() + L"/temp_asc_plugin.plugin";
@@ -525,7 +521,7 @@ private:
 			std::wstring sTempDirExt = sTempDir;
 
 			// Search by name or GUID
-			CPluginInfo* pResult = FindMarketplacePlugin(sPlugin);
+			CPluginInfo* pResult = FindMarketPlugin(sPlugin);
 
 			if (pResult)
 			{
@@ -539,10 +535,10 @@ private:
 			else if (NSFile::CFileBinary::Exists(sPlugin))
 			{
 				sTmpFile = sPlugin;
-				isDownload = false;
+				isNeedDownload = false;
 			}
 
-			if (isDownload)
+			if (isNeedDownload)
 			{
 				DownloadFile(sPackageUrl, sTmpFile);
 			}
@@ -567,11 +563,11 @@ private:
 					}
 				}
 
-				CPluginInfo* pInfo = ReadPluginInfo(sConfigFile);
+				CPluginInfo* pPluginInfo = ReadPluginInfo(sConfigFile);
 
-				if (pInfo)
+				if (pPluginInfo)
 				{
-					std::wstring sPluginDir = m_sPluginsDir + L"/" + pInfo->m_sGuid;
+					std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
 
 					if (NSDirectory::Exists(sPluginDir))
 						NSDirectory::DeleteDirectory(sPluginDir);
@@ -585,7 +581,7 @@ private:
 				NSDirectory::DeleteDirectory(sTempDir);
 			}
 
-			if ( isDownload )
+			if ( isNeedDownload )
 				NSFile::CFileBinary::Remove(sTmpFile);
 		}
 
@@ -597,13 +593,13 @@ private:
 
 	bool UpdatePlugin(const std::wstring& sPlugin)
 	{
-		bool bResult = false;
+		bool bResult = true;
 		std::wstring sVerToVer = L"";
 
 		if ( sPlugin.length() )
 		{
 			CPluginInfo* pLocalPlugin = FindLocalPlugin(sPlugin);
-			CPluginInfo* pMarketPlugin = FindMarketplacePlugin(sPlugin);
+			CPluginInfo* pMarketPlugin = FindMarketPlugin(sPlugin);
 
 			// Check new version
 			if ( pLocalPlugin && pMarketPlugin )
@@ -614,7 +610,6 @@ private:
 
 					bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false);
 					bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
-					bResult = true;
 
 					Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
 				}
@@ -663,11 +658,11 @@ private:
 
 			// Try find in marketplace if name isn't short alias
 			if ( !pResult )
-				pResult = FindMarketplacePlugin(sPlugin);
+				pResult = FindMarketPlugin(sPlugin);
 			else
 			{
 				// Need create backup for plugin if doesn't exist in the marketplace
-				CPluginInfo* pCheck = FindMarketplacePlugin(sPlugin);
+				CPluginInfo* pCheck = FindMarketPlugin(sPlugin);
 				if ( !pCheck )
 					bBackup = true;
 			}
@@ -710,17 +705,17 @@ private:
 	// Methods
 	void InitPlugins(bool bBackup = false)
 	{
-		if ( !m_arrBackupPlugins.size() )
+		if ( !m_arrBackup.size() )
 			GetBackupPlugins(false);
 
 		// Backup plugins don't exist in the marketplace, without additional initialization
 		if ( !bBackup )
 		{
-			if ( !m_arrInstallPlugins.size() )
+			if ( !m_arrInstall.size() )
 				GetInstalledPlugins(false);
 
-			if ( !m_arrMarketplacePlugins.size() )
-				GetMarketplacePlugins(false);
+			if ( !m_arrMarketplace.size() )
+				GetMarketPlugins(false);
 		}
 	}
 
@@ -751,7 +746,7 @@ private:
 						{
 							// Sync short names with marketplace
 							// for example, we can't find 'openai' in installed
-							CPluginInfo* pMarketPlugin = FindMarketplacePlugin(pPluginInfo->m_sGuid);
+							CPluginInfo* pMarketPlugin = FindMarketPlugin(pPluginInfo->m_sGuid);
 							if ( pMarketPlugin &&  (pPluginInfo->m_sName != pMarketPlugin->m_sName) )
 								pPluginInfo->m_sName = pMarketPlugin->m_sName;
 
@@ -779,9 +774,9 @@ private:
 
 			// Save to target array
 			if ( bBackup )
-				m_arrBackupPlugins = arrPlugins;
+				m_arrBackup = arrPlugins;
 			else
-				m_arrInstalledPlugins = arrPlugins;
+				m_arrInstalled = arrPlugins;
 		}
 		else
 		{
@@ -820,28 +815,28 @@ private:
 		return sGuid == m_sManagerGuid || sGuid == m_sOldManagerGuid;
 	}
 
-	bool SplitStringAsVector(const std::wstring& sStr, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
+	bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
 	{
 		arrOutput.clear();
 
-		if (sStr.length())
+		if ( sData.length() )
 		{
-			std::wstring _str = sStr;
-			NSStringUtils::string_replace(_str, L", ", L",");
+			std::wstring sTmp = sData;
+			NSStringUtils::string_replace(sTmp, L", ", L",");
 
 			size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
 			std::wstring token = L"";
 
-			while ((pos_end = _str.find(sDelimiter, pos_start)) != std::string::npos)
+			while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
 			{
-				token = _str.substr(pos_start, pos_end - pos_start);
+				token = sTmp.substr(pos_start, pos_end - pos_start);
 				pos_start = pos_end + delim_len;
 				if (token.length())
 					arrOutput.push_back(token);
 			}
 
-			token = _str.substr(pos_start);
-			if (token.length())
+			token = sTmp.substr(pos_start);
+			if ( token.length() )
 				arrOutput.push_back(token);
 		}
 
@@ -856,6 +851,7 @@ private:
 		NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
 		oDownloader.SetFilePath(sFile);
 		oDownloader.Start(0);
+
 		while (oDownloader.IsRunned())
 		{
 			NSThreads::Sleep(10);
@@ -1031,7 +1027,7 @@ int main(int argc, char** argv)
 			}
 			else if (sKey == sCmdPrintMarketplace)
 			{
-				oManager.GetMarketplacePlugins();
+				oManager.GetMarketPlugins();
 			}
 			else if (sKey == sCmdPrintBackup)
 			{

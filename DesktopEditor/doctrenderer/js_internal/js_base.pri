@@ -10,6 +10,8 @@ INCLUDEPATH += $$PWD
 HEADERS += $$PWD/js_base.h
 SOURCES += $$PWD/js_base.cpp
 
+HEADERS += $$PWD/js_base_p.h
+
 HEADERS += $$PWD/js_logger.h
 SOURCES += $$PWD/js_logger.cpp
 

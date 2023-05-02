@@ -817,8 +817,6 @@ namespace NSJSBase
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
 
-		static CEmbedObjectRegistrator m_oRegistrator;
-
 	public:
 		CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
 		{

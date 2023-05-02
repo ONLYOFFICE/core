@@ -40,7 +40,7 @@ namespace NSJSBase {
 
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)
 	{
-		return NULL;
+		return m_functions[index](args);
 	}
 
 	CJSObject::CJSObject()

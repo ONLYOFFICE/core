@@ -7,8 +7,13 @@ using namespace NSJSBase;
 class CTestEmbed : public CJSEmbedObject
 {
 public:
+	// NOTE: this may be generated
+	// TODO: delegate m_functions initialization to CJSEmbedObject
 	CTestEmbed()
 	{
+		m_functions.resize(2);
+		m_functions[0] = JS_FUNCTION_EMBED_2(FunctionSum);
+		m_functions[1] = JS_FUNCTION_EMBED_1(FunctionSquare);
 	}
 
 	~CTestEmbed()
@@ -24,30 +29,27 @@ public:
 		return CJSContext::createInt(n1 + n2);
 	}
 
+	JSSmart<CJSValue> FunctionSquare(JSSmart<CJSValue> param)
+	{
+		int n = param->toInt32();
+		return CJSContext::createInt(n * n);
+	}
+
 public:
+	// NOTE: this may be generated
 	static std::string getName() { return "CTestEmbed"; }
+
+	// NOTE: this may be generated
 	static std::string getScript()
 	{
-		return "function CTestEmbed(){ this.native = CreateEmbedObject(\"CTestEmbed\"); }\
-CTestEmbed.prototype.FunctionSum = function(a, b) { return this.native.Call(0, a, b); }";
+		return "function CTestEmbed(){ this.native = CreateEmbedObject(\"CTestEmbed\"); }"
+			   "CTestEmbed.prototype.FunctionSum = function(a, b) { return this.native.Call(0, a, b); };"
+			   "CTestEmbed.prototype.FunctionSquare = function(a) { return this.native.Call(1, a); };";
 	}
+
 	static CJSEmbedObject* getCreator()
 	{
 		return new CTestEmbed();
-	}
-
-	virtual JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args) override
-	{
-		switch (index)
-		{
-		case 0:
-		{
-			return FunctionSum(args->Get(0), args->Get(1));
-		}
-		default:
-			break;
-		}
-		return NULL;
 	}
 };
 

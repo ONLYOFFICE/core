@@ -28,4 +28,7 @@ core_linux {
 
 SOURCES += main.cpp
 
+HEADERS += \
+    Embed.h
+
 DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"

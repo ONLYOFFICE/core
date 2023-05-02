@@ -6,6 +6,8 @@
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../graphics/BaseThread.h"
 
+#include <functional>
+
 // disable export (ios/android problem (external embed objects))
 //#define JSBASE_NO_USE_DYNAMIC_LIBRARY
 
@@ -91,11 +93,12 @@ namespace NSJSBase
 	public:
 		virtual void* getObject();
 
-		virtual JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
+		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
 		JSSmart<CJSValue> createObject();
 
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
+		std::vector<std::function<JSSmart<CJSValue>(CJSFunctionArguments*)>> m_functions;
 
 		friend class CJSEmbedObjectPrivateBase;
 		friend class CJSEmbedObjectPrivate;
@@ -221,6 +224,14 @@ namespace NSJSBase
 		void Enter();
 		void Exit();
 
+		// Use this method for embedding external objects
+		template<typename T>
+		void Embed(const IsolateAdditionlDataType& type = iadtUndefined)
+		{
+			AddEmbedCreator(T::getName(), T::getCreator, type);
+			runScript(T::getScript());
+		}
+
 		JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
 		CJSValue* JSON_Parse(const char* json_content);
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
@@ -276,14 +287,11 @@ namespace NSJSBase
 		CJSContextScope(JSSmart<CJSContext> context);
 		~CJSContextScope();
 	};
-
-	template<typename T>
-	void EmbedToContext(JSSmart<CJSContext>& context, const IsolateAdditionlDataType& type = iadtUndefined)
-	{
-		//context->AddEmbedCreator(T::getName(), []() { return (CJSEmbedObject*)(new T()); }, type);
-		context->AddEmbedCreator(T::getName(), T::getCreator, type);
-		context->runScript(T::getScript());
-	}
 }
+
+// defines for embed
+#define JS_FUNCTION_EMBED(NAME)		[this](CJSFunctionArguments* args) { return this->NAME(); }
+#define JS_FUNCTION_EMBED_1(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0)); }
+#define JS_FUNCTION_EMBED_2(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1)); }
 
 #endif // _CORE_EXT_JS_BASE_H_

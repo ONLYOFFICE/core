@@ -109,6 +109,7 @@ public:
 		m_minor = 0;
 		m_revision = 0;
 		m_build = 0;
+
 		m_sVersion = L"1.0.0";
 	}
 
@@ -117,17 +118,10 @@ public:
 		m_sVersion = sVersion;
 		swscanf_s(m_sVersion.c_str(), L"%d.%d.%d.%d", &m_major, &m_minor, &m_revision, &m_build);
 
-		if (m_major < 0)
-			m_major = 0;
-
-		if (m_minor < 0)
-			m_minor = 0;
-
-		if (m_revision < 0)
-			m_revision = 0;
-
-		if (m_build < 0)
-			m_build = 0;
+		if (m_major < 0)		m_major = 0;
+		if (m_minor < 0)		m_minor = 0;
+		if (m_revision < 0)		m_revision = 0;
+		if (m_build < 0)		m_build = 0;
 	}
 
 	bool operator > (CVersion& oVersion)
@@ -144,12 +138,12 @@ public:
 
 		if (m_revision > oVersion.m_revision)
 			return true;
-		else if(m_revision < oVersion.m_revision)
+		else if (m_revision < oVersion.m_revision)
 			return false;
 
 		if (m_build > oVersion.m_build)
 			return true;
-		else if(m_build < oVersion.m_build)
+		else if (m_build < oVersion.m_build)
 			return false;
 
 		return false;
@@ -929,67 +923,6 @@ private:
 
 		return pResult;
 	}
-
-	/*std::wstring ReadPluginGuid(std::wstring& sConfigFile)
-	{
-		std::wstring sGuid = L"";
-		std::wstring sJson = L"";
-
-		if (NSFile::CFileBinary::ReadAllTextUtf8(sConfigFile, sJson))
-		{
-			std::wstring::size_type pos1 = sJson.find(L"asc.{");
-			std::wstring::size_type pos2 = sJson.find(L"}", pos1);
-
-			if (pos1 != std::wstring::npos && pos2 != std::wstring::npos && pos2 > pos1)
-			{
-				sGuid = sJson.substr(pos1 + 4, pos2 - pos1 - 3);
-			}
-		}
-
-		return sGuid;
-	}
-
-	std::wstring ReadPluginName(std::wstring& sConfigFile)
-	{
-		std::wstring sName = L"";
-		std::wstring sJson = L"";
-
-		if (NSFile::CFileBinary::ReadAllTextUtf8(sConfigFile, sJson))
-		{
-			std::wstring sDelim = L"\"name\"";
-			std::wstring::size_type pos1 = sJson.find(sDelim);
-			std::wstring::size_type pos2 = sJson.find(L"\"", pos1 + sDelim.length());
-			std::wstring::size_type pos3 = sJson.find(L"\"", pos2 + 1);
-
-			if (pos1 != std::wstring::npos && pos2 != std::wstring::npos && pos3 != std::wstring::npos && pos3 > pos2)
-			{
-				sName = sJson.substr(pos2 + 1, pos3 - pos2 - 1);
-			}
-		}
-
-		return sName;
-	}
-
-	std::wstring ReadPluginVersion(std::wstring& sConfigFile)
-	{
-		std::wstring sVersion = L"";
-		std::wstring sJson = L"";
-
-		if (NSFile::CFileBinary::ReadAllTextUtf8(sConfigFile, sJson))
-		{
-			std::wstring sDelim = L"\"version\"";
-			std::wstring::size_type pos1 = sJson.find(sDelim);
-			std::wstring::size_type pos2 = sJson.find(L"\"", pos1 + sDelim.length());
-			std::wstring::size_type pos3 = sJson.find(L"\"", pos2 + 1);
-
-			if (pos1 != std::wstring::npos && pos2 != std::wstring::npos && pos3 != std::wstring::npos && pos3 > pos2)
-			{
-				sVersion = sJson.substr(pos2 + 1, pos3 - pos2 - 1);
-			}
-		}
-
-		return sVersion;
-	}*/
 
 	std::wstring BoolToStr(bool bResult)
 	{

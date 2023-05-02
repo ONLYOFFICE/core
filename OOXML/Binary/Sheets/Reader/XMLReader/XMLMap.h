@@ -73,7 +73,8 @@ public:
     /// @param nameController контроллер имен в который будут загружаться имена столбцов
     /// @param nodeTree указатель на корневой элемент дерева нод, которое будет заполнено этим методом
     /// @return true в случае успеха, иначе false
-    bool ReadXmlStructure(XmlUtils::CXmlLiteReader &reader, ColumnNameController &nameController, std::shared_ptr<XmlNode> nodeTree);
+    bool ReadXmlStructure(XmlUtils::CXmlLiteReader &reader, ColumnNameController &nameController, std::shared_ptr<XmlNode> nodeTree,
+    std::set<std::wstring> &repeatebleValues);
 
 private:
 
@@ -113,5 +114,8 @@ private:
 
     /// @brief тип предыдущей ноды(для поиска нод вида <node></node>)
     XmlUtils::XmlNodeType prevType_ = XmlUtils::XmlNodeType::XmlNodeType_None;
+
+    /// @brief столбцы значений, ноды которых повторялись более 1 раза
+    std::set<std::wstring> *repeatebleValues_;
 
 };

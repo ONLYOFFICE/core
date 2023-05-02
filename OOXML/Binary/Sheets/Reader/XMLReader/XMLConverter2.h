@@ -33,6 +33,7 @@
 #pragma once
 
 #include "XMLMap.h"
+#include "XLSXTableController.h"
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../Base/Base.h"
@@ -51,11 +52,13 @@ public:
     /// @param reader xmlLiteReader с загруженным в него xml документом
     /// @param xmlStruct указатель на корневую ноду структуры xml документа
     /// @param nameController контроллер имен, заполненный именами столбцов
-    XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController);
+    /// @param repeatebleValues множество с повторяющимися столбцами, предназначенное для формирования строк таблицы
+    XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController,
+    std::set<std::wstring> &repeatebleValues);
 
     /// @brief метод, конвертирующий xml в табличный вид
-    /// @param table таблица с данными xml в строковом виде
-    void ConvertXml(std::vector<std::vector<std::wstring>> &table);
+    /// @param table контроллер  таблицы xlsx
+    void ConvertXml(XLSXTableController &table);
 
 private:
 
@@ -94,13 +97,13 @@ private:
     std::vector<std::shared_ptr<XmlNode>> parents_;
 
     /// @brief map с набором ключей в виде уникальных имен и их значений для вставки в таблицу
-    std::map<std::wstring, std::wstring> keyvalues_;
+    std::map<std::wstring, std::vector<std::wstring>> data_;
 
     /// @brief контроллер имен столбцов таблицы
     ColumnNameController *colNames_;
 
-    /// @brief map в который выводятся данные при прочтении ноды
-    std::map<_UINT32, std::wstring> stringBuffer_;
+    /// @brief множество содержащее список столбцов ноды которых встречаются несколько раз
+    std::set<std::wstring> *listableColumns_;
 
     /// @brief дерево нод xml документа
     std::shared_ptr<XmlNode> nodeTree_;
@@ -110,5 +113,8 @@ private:
 
     /// @brief тип предыдущей ноды(для поиска нод вида <node></node>)
     XmlUtils::XmlNodeType prevType_ = XmlUtils::XmlNodeType::XmlNodeType_None;
+
+    /// @brief вектор с нодами записываемых строк
+    std::vector<std::shared_ptr<XmlNode>> writingRows_;
 
 };

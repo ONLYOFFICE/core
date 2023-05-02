@@ -32,10 +32,12 @@
 
 #include "XMLMap.h"
 
-bool XMLMap::ReadXmlStructure(XmlUtils::CXmlLiteReader &reader, ColumnNameController &nameController, std::shared_ptr<XmlNode> nodeTree)
+bool XMLMap::ReadXmlStructure(XmlUtils::CXmlLiteReader &reader, ColumnNameController &nameController, std::shared_ptr<XmlNode> nodeTree,
+std::set<std::wstring> &repeatebleValues)
 {
     reader_ = &reader;
     colNames_ = &nameController;
+    repeatebleValues_ = &repeatebleValues;
     parents_.push_back(nodeTree);
 
     XmlUtils::XmlNodeType nodeType;
@@ -87,7 +89,7 @@ void XMLMap::insertValue(const std::wstring &key)
 
 std::wstring XMLMap::getNodeName(const std::wstring &name, std::set<std::wstring> &names)
 {
-    /// ищем среди использовавшихся имён нужное
+     /// ищем среди использовавшихся имён нужное
     for(auto i = names.begin(); i != names.end(); i++)
     {
         if(colNames_->GetXmlName(*i) == name)
@@ -169,6 +171,11 @@ void XMLMap::closeNode()
         if((*i)->counter < 2)
         {
             (*i)->counter = 0;
+        }
+        else
+        {
+            repeatebleValues_->insert((*i)->columns.begin(), (*i)->columns.end());
+            repeatebleValues_->insert((*i)->childColumns.begin(), (*i)->childColumns.end());
         }
     }
     if(!(lastElem->columns.empty() || lastElem->childColumns.empty()) && lastElem->counter < 2)

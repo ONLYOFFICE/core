@@ -87,7 +87,11 @@ namespace NSJSBase
 	class JS_DECL CJSEmbedObject
 	{
 	public:
+		using EmbedFunctionType = std::function<JSSmart<CJSValue>(CJSFunctionArguments*)>;
+
+	public:
 		CJSEmbedObject();
+		CJSEmbedObject(std::initializer_list<EmbedFunctionType> function_list);
 		virtual ~CJSEmbedObject();
 
 	public:
@@ -99,7 +103,7 @@ namespace NSJSBase
 
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
-		std::vector<std::function<JSSmart<CJSValue>(CJSFunctionArguments*)>> m_functions;
+		std::vector<EmbedFunctionType> m_functions;
 
 		friend class CJSEmbedObjectPrivateBase;
 		friend class CJSEmbedObjectPrivate;
@@ -230,7 +234,6 @@ namespace NSJSBase
 		void Embed(const IsolateAdditionlDataType& type = iadtUndefined)
 		{
 			AddEmbedCreator(T::getName(), T::getCreator, type);
-			runScript(T::getScript());
 		}
 
 		JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
@@ -294,5 +297,18 @@ namespace NSJSBase
 #define JS_FUNCTION_EMBED(NAME)		[this](CJSFunctionArguments* args) { return this->NAME(); }
 #define JS_FUNCTION_EMBED_1(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0)); }
 #define JS_FUNCTION_EMBED_2(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1)); }
+#define JS_FUNCTION_EMBED_3(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2)); }
+#define JS_FUNCTION_EMBED_4(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3)); }
+#define JS_FUNCTION_EMBED_5(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4)); }
+#define JS_FUNCTION_EMBED_6(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
+																						   args->Get(5)); }
+#define JS_FUNCTION_EMBED_7(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
+																						   args->Get(5), args->Get(6)); }
+#define JS_FUNCTION_EMBED_8(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
+																						   args->Get(5), args->Get(6), args->Get(7)); }
+#define JS_FUNCTION_EMBED_9(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
+																						   args->Get(5), args->Get(6), args->Get(7), args->Get(8)); }
+#define JS_FUNCTION_EMBED_10(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
+																						   args->Get(5), args->Get(6), args->Get(7), args->Get(8), args->Get(9)); }
 
 #endif // _CORE_EXT_JS_BASE_H_

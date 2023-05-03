@@ -463,26 +463,6 @@ namespace NSJSBase
 // embed
 namespace NSJSBase
 {
-	JSSmart<CJSValue> CJSEmbedObject::createObject()
-	{
-		v8::Isolate* isolate = CV8Worker::GetCurrent();
-		//v8::HandleScope scope(isolate);
-
-		v8::Handle<v8::ObjectTemplate> pointerTemplate = v8::ObjectTemplate::New(isolate);
-		pointerTemplate->SetInternalFieldCount(1);
-
-		v8::Local<v8::Object> obj = pointerTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), this));
-
-		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
-
-		CJSValueV8* returnValue = new CJSValueV8();
-		returnValue->value = obj;
-
-		JSSmart<CJSValue> ret = returnValue;
-		return ret;
-	}
-
 	class CJSFunctionArgumentsV8 : public CJSFunctionArguments
 	{
 		const v8::FunctionCallbackInfo<v8::Value>* m_args;
@@ -508,15 +488,8 @@ namespace NSJSBase
 		}
 	};
 
+	// this function is called when method from embedded object is called
 	void _Call(const v8::FunctionCallbackInfo<v8::Value>& args)
-	{
-		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
-		CJSFunctionArgumentsV8 _args(&args);
-		JSSmart<CJSValue> funcIndex = js_value(args[0]);
-		JSSmart<CJSValue> ret = _this->Call(funcIndex->toInt32(), &_args);
-		js_return(args, ret);
-	}
-	void _Call2(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
 		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
 		CJSFunctionArgumentsV8 _args(&args, 0);
@@ -532,12 +505,11 @@ namespace NSJSBase
 		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
 		result->SetInternalFieldCount(1);
 
-		NSV8Objects::Template_Set(result, "Call", _Call);
-
 		std::vector<std::string> arNames = pNativeObj->getNames();
 		for (int i = 0, len = arNames.size(); i < len; ++i)
 		{
-			result->Set(CreateV8String(isolate, arNames[i].c_str()), v8::FunctionTemplate::New(isolate, _Call2, v8::Integer::New(isolate, i)));
+			// associate all methods with corresponding Call() index
+			result->Set(CreateV8String(isolate, arNames[i].c_str()), v8::FunctionTemplate::New(isolate, _Call, v8::Integer::New(isolate, i)));
 		}
 
 		return handle_scope.Escape(result);

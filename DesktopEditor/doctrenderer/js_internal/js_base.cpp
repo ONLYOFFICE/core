@@ -28,6 +28,11 @@ namespace NSJSBase {
 		embed_native_internal = NULL;
 	}
 
+	CJSEmbedObject::CJSEmbedObject(std::initializer_list<EmbedFunctionType> function_list) : m_functions(function_list)
+	{
+		embed_native_internal = NULL;
+	}
+
 	CJSEmbedObject::~CJSEmbedObject()
 	{
 		RELEASEOBJECT(embed_native_internal);

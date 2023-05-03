@@ -7,14 +7,12 @@ using namespace NSJSBase;
 class CTestEmbed : public CJSEmbedObject
 {
 public:
-	// NOTE: this may be generated
-	// TODO: delegate m_functions initialization to CJSEmbedObject
-	CTestEmbed()
+	// NOTE: this method may be generated
+	CTestEmbed() : CJSEmbedObject({
+								  JS_FUNCTION_EMBED_2(FunctionSum),
+								  JS_FUNCTION_EMBED_1(FunctionSquare),
+								  JS_FUNCTION_EMBED_2(FunctionDel)})
 	{
-		m_functions.resize(3);
-		m_functions[0] = JS_FUNCTION_EMBED_2(FunctionSum);
-		m_functions[1] = JS_FUNCTION_EMBED_1(FunctionSquare);
-		m_functions[2] = JS_FUNCTION_EMBED_2(FunctionDel);
 	}
 
 	~CTestEmbed()
@@ -23,6 +21,7 @@ public:
 
 	virtual void* getObject() override { return NULL; }
 
+	// NOTE: this method may be generated
 	virtual std::vector<std::string> getNames() override
 	{
 		return std::vector<std::string> {
@@ -53,16 +52,8 @@ public:
 	}
 
 public:
-	// NOTE: this may be generated
+	// NOTE: this method may be generated
 	static std::string getName() { return "CTestEmbed"; }
-
-	// NOTE: this may be generated
-	static std::string getScript()
-	{
-		return "function CTestEmbed(){ this.native = CreateEmbedObject(\"CTestEmbed\"); }"
-			   "CTestEmbed.prototype.FunctionSum = function(a, b) { return this.native.Call(0, a, b); };"
-			   "CTestEmbed.prototype.FunctionSquare = function(a) { return this.native.Call(1, a); };";
-	}
 
 	static CJSEmbedObject* getCreator()
 	{

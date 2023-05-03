@@ -516,29 +516,13 @@ namespace NSJSBase
 		JSSmart<CJSValue> ret = _this->Call(funcIndex->toInt32(), &_args);
 		js_return(args, ret);
 	}
-
-	#define	MAX_FUNCTIONS_COUNT 100
-	v8::FunctionCallback g_functions_objects[MAX_FUNCTIONS_COUNT];
-	bool g_functions_objects_init = false;
-
-	#define g_functions_objects_declare(i)												\
-	g_functions_objects[i] = [](const v8::FunctionCallbackInfo<v8::Value>& args) {		\
-		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());			\
-		CJSFunctionArgumentsV8 _args(&args, 0);											\
-		JSSmart<CJSValue> ret = _this->Call(i, &_args);									\
-		js_return(args, ret);															\
-	}
-
-	void g_functions_objects_init_check()
+	void _Call2(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
-		if (g_functions_objects_init)
-			return;
-
-		g_functions_objects_init = true;
-
-		g_functions_objects_declare(0);
-		g_functions_objects_declare(1);
-		g_functions_objects_declare(2);
+		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
+		CJSFunctionArgumentsV8 _args(&args, 0);
+		JSSmart<CJSValue> funcIndex = js_value(args.Data());
+		JSSmart<CJSValue> ret = _this->Call(funcIndex->toInt32(), &_args);
+		js_return(args, ret);
 	}
 
 	v8::Handle<v8::ObjectTemplate> CreateEmbedObjectTemplate(v8::Isolate* isolate, CJSEmbedObject* pNativeObj)
@@ -550,11 +534,10 @@ namespace NSJSBase
 
 		NSV8Objects::Template_Set(result, "Call", _Call);
 
-		g_functions_objects_init_check();
 		std::vector<std::string> arNames = pNativeObj->getNames();
 		for (int i = 0, len = arNames.size(); i < len; ++i)
 		{
-			NSV8Objects::Template_Set(result, arNames[i].c_str(), g_functions_objects[i]);
+			result->Set(CreateV8String(isolate, arNames[i].c_str()), v8::FunctionTemplate::New(isolate, _Call2, v8::Integer::New(isolate, i)));
 		}
 
 		return handle_scope.Escape(result);

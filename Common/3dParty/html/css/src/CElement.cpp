@@ -52,15 +52,11 @@ namespace NSCSS
 		for (std::pair<std::wstring, std::wstring> pPropertie : mProperties)
 		{
 			std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
-			std::transform(pPropertie.second.begin(), pPropertie.second.end(), pPropertie.second.begin(), tolower);
 
 			if (!m_mStyle[pPropertie.first].empty() && m_mStyle[pPropertie.first].find(L'!') != std::wstring::npos)
 				continue;
 
-			if (pPropertie.second.substr(0, 3) == L"rgb")
-				 m_mStyle[pPropertie.first] = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(pPropertie.second);
-			else
-				 m_mStyle[pPropertie.first] = pPropertie.second;
+			m_mStyle[pPropertie.first] = pPropertie.second;
 		}
 	}
 

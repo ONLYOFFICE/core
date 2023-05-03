@@ -4,12 +4,7 @@ namespace SVG
 {
 	CStopElement::CStopElement(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CDefObject(oNode, pParent)
-	{
-		m_oColor.SetValue(oNode.GetAttribute(L"stop-color"));
-		if (m_oOffset.SetValue(oNode.GetAttribute(L"offset")) && m_oOffset.ToDouble() > 1.)
-			m_oOffset /= 100;
-		m_oColor.SetOpacity(oNode.GetAttribute(L"stop-opacity"));
-	}
+	{}
 
 	SvgDigit CStopElement::GetOffset() const
 	{
@@ -22,14 +17,23 @@ namespace SVG
 	}
 
 	void CStopElement::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{}
+	{
+		if (mAttributes.end() != mAttributes.find(L"stop-color"))
+			m_oColor.SetValue(mAttributes.at(L"stop-color"));
+
+		if (mAttributes.end() != mAttributes.find(L"offset") && m_oOffset.SetValue(mAttributes.at(L"offset")) && m_oOffset.ToDouble() > 1.)
+			m_oOffset /= 100;
+
+		if (mAttributes.end() != mAttributes.find(L"stop-opacity"))
+			m_oColor.SetOpacity(mAttributes.at(L"stop-opacity"));
+	}
 
 	CGradient::CGradient()
 	{}
 
 	bool CGradient::Apply(IRenderer *pRenderer) const
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || m_arObjects.empty())
 			return false;
 
 		std::vector<LONG> arColors;
@@ -37,12 +41,9 @@ namespace SVG
 
 		for (const CStopElement* pStopElement : m_arObjects)
 		{
-			arColors.push_back(((LONG)pStopElement->GetColor().ToInt() + ((int)(255. * pStopElement->GetColor().GetOpacity()) << 24)));
+			arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
 			arPositions.push_back(pStopElement->GetOffset().ToDouble());
 		}
-
-		if (arColors.size() < 2)
-			return false;
 
 		pRenderer->put_BrushGradientColors(arColors.data(), arPositions.data(), arColors.size());
 

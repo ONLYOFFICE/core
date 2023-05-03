@@ -1229,7 +1229,8 @@ namespace MetaFile
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
 	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
-	std::wstring StringNormalization(std::wstring wsString);
+	std::wstring StringNormalization(const std::wstring& wsString);
+	bool StringEquals(const std::wstring& wsFirstString, const std::wstring& wsSecondString);
 
 	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
 	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);

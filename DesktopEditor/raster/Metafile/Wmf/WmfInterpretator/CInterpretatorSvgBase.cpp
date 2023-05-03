@@ -253,6 +253,9 @@ namespace MetaFile
 
 		IFont *pFont = m_pParser->GetFont();
 
+		if (NULL == pFont)
+			return;
+
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
 		if (dFontHeight < 0.01)
@@ -260,20 +263,21 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFontName = L"Times New Roman";
+		std::wstring wsFontName = pFont->GetFaceName();
 
-		if (!pFont->GetFaceName().empty())
+		if (!wsFontName.empty())
 		{
 			NSFonts::CFontSelectFormat oFormat;
 			oFormat.wsName = new std::wstring(pFont->GetFaceName());
 
 			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
 
-			if (NULL != pFontInfo)
-				wsFontName = pFontInfo->m_wsFontName;
+			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
+				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
 		}
 
-		arNodeAttributes.push_back({L"font-family", wsFontName});
+		if (!wsFontName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});

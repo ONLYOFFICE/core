@@ -1,9 +1,6 @@
 #include "CEmfInterpretatorSvg.h"
 
 #include "../../Common/MetaFileUtils.h"
-
-#include "../../../../graphics/Image.h"
-
 #include "../../../BgraFrame.h"
 
 #include <algorithm>
@@ -1152,10 +1149,21 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFaceName = pFont->GetFaceName();
+		std::wstring wsFontName = pFont->GetFaceName();
 
-		if (!wsFaceName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFaceName});
+		if (!wsFontName.empty())
+		{
+			NSFonts::CFontSelectFormat oFormat;
+			oFormat.wsName = new std::wstring(pFont->GetFaceName());
+
+			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
+
+			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
+				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
+		}
+
+		if (!wsFontName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});

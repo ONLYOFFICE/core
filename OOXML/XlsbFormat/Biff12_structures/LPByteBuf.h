@@ -48,8 +48,9 @@ namespace XLSB
 		XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
-
         virtual void load(XLS::CFRecord& record);
+
+		std::wstring GetBase64();
 
         _UINT32             cbLength;
         std::vector<BYTE>   rgbData;

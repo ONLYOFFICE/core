@@ -221,17 +221,13 @@ namespace OOX
 
 				m_oWorkbookAlgorithmName = ptr->ipdBookPasswordData.szAlgName.value();
 				m_oWorkbookSpinCount = ptr->dwBookSpinCount;
-				m_oWorkbookHashValue = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
-					ptr->ipdBookPasswordData.rgbHash.rgbData.end());
-				m_oWorkbookSaltValue = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
-					ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+				m_oWorkbookHashValue = ptr->ipdBookPasswordData.rgbHash.GetBase64();
+				m_oWorkbookSaltValue = ptr->ipdBookPasswordData.rgbSalt.GetBase64();
 
 				m_oRevisionsAlgorithmName = ptr->ipdRevPasswordData.szAlgName.value();
 				m_oRevisionsSpinCount = ptr->dwRevSpinCount;
-				m_oRevisionsHashValue = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
-					ptr->ipdRevPasswordData.rgbHash.rgbData.end());
-				m_oRevisionsSaltValue = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
-					ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+				m_oRevisionsHashValue = ptr->ipdRevPasswordData.rgbHash.GetBase64();
+				m_oRevisionsSaltValue = ptr->ipdRevPasswordData.rgbSalt.GetBase64();
 			}
 		}
 		CFileSharing::CFileSharing()
@@ -306,6 +302,9 @@ namespace OOX
 					m_oReadOnlyRecommended = *ptr->fReadOnlyRec.value();
 
 				m_oSpinCount = ptr->dwSpinCount;
+				m_oAlgorithmName = ptr->ipdPasswordData.szAlgName.value();
+				m_oHashValue = ptr->ipdPasswordData.rgbHash.GetBase64();
+				m_oSaltValue = ptr->ipdPasswordData.rgbSalt.GetBase64();
 			}
 
 		}

@@ -891,7 +891,10 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 		{
 			CP_XML_NODE(L"fileSharing")
 			{
-				CP_XML_ATTR(L"readOnlyRecommended", file_sharing->fReadOnlyRec);
+				if (file_sharing->fReadOnlyRec.value())
+				{
+					CP_XML_ATTR(L"readOnlyRecommended", 0 != (*file_sharing->fReadOnlyRec.value()));
+				}
 				CP_XML_ATTR(L"userName", file_sharing->stUNUsername.value());
 				CP_XML_ATTR(L"password", file_sharing->wResPass);
 			}

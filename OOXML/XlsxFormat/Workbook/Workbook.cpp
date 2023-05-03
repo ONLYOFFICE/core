@@ -240,8 +240,8 @@ namespace OOX
 					
 					if (workBookStream->m_BrtFileSharingIso != nullptr)
 						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
-					else if (workBookStream->m_BrtBookProtection != nullptr)
-						m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+					else if (workBookStream->m_BrtFileSharing != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharing;
 				}
 
 				//workBookStream.reset();
@@ -259,7 +259,9 @@ namespace OOX
 		}
 		std::wstring CWorkbook::toXML() const
 		{
-			return _T("");
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
 		}
 		void CWorkbook::read(const CPath& oRootPath, const CPath& oPath)
 		{
@@ -299,6 +301,8 @@ namespace OOX
 			writer.WriteString(L"<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
+			if (m_oFileSharing.IsInit())
+				m_oFileSharing->toXML(writer);
 			if (m_oWorkbookPr.IsInit())
 				m_oWorkbookPr->toXML(writer);
 			if (m_oWorkbookProtection.IsInit())

@@ -1209,12 +1209,8 @@ namespace MetaFile
 				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-				{
-					if (PS_STARTCAP_ROUND == ulPenStartCap)
-						arDashes[unIndex] = pDataDash[unIndex] * ((0 == unIndex % 2) ? (dWidth / 4) : (1.5 * dWidth));
-					else
 						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
-				}
+
 				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
 				nDashStyle = Aggplus::DashStyleCustom;

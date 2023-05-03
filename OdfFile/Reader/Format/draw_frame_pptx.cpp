@@ -173,14 +173,14 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				std::wstring strRectClip = properties->fo_clip_.get();
 				Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
 			}
+			
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
 		}
 
 		Context.get_slide_context().set_fill(fill);
-
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
 
 		if (common_presentation_attlist_.presentation_class_)
 		{

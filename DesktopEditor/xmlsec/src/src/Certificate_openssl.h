@@ -397,21 +397,6 @@ public:
 		return true;
 	}
 
-	/*
-	static int verify_callback_ignore_expiration(int ok, X509_STORE_CTX *local_store)
-	{
-		int error;
-
-		if (!ok) {
-			error = X509_STORE_CTX_get_error(local_store);
-			if (error == X509_V_ERR_CERT_HAS_EXPIRED) {
-				return 1;
-			}
-		}
-
-		return ok;
-	}
-	*/
 
 	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
 							unsigned char* pData, unsigned int nSize)
@@ -430,74 +415,12 @@ public:
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
 
+		BIO* out_verify = BIO_new(BIO_s_mem());
+
 		X509_STORE* x509_store = X509_STORE_new();
 		X509_STORE_add_cert(x509_store, m_cert);
 		// Нужно ли доверять сертификату, если нет доступа к локальному хранилищу сертификатов?
 		X509_STORE_set_flags(x509_store, X509_V_FLAG_PARTIAL_CHAIN);
-
-		//X509_STORE_set_purpose(x509_store, 7);
-
-		/* Попытка изменения функции верификации
-		X509_STORE_set_verify_cb_func(x509_store, verify_callback_ignore_expiration);
-		*/
-
-		/*
-		X509_VERIFY_PARAM *param  = X509_STORE_get0_param(x509_store);
-		if (param && X509_VERIFY_PARAM_set_purpose(param, 7))
-		{
-			if (X509_STORE_set1_param(x509_store, param))
-			{
-
-			}
-		}
-		*/
-
-		/* Попытка создать доверие к сертификату с задействованием mscrypto
-#ifdef _WIN32
-		//X509_STORE_add_cert(x509_store, m_cert);
-
-		HCERTSTORE store;
-		PCCERT_CONTEXT context = NULL;
-
-		store = CertOpenStore(CERT_STORE_PROV_SYSTEM_A, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER, "ROOT");
-
-		X509* x509;
-		while (context = CertEnumCertificatesInStore(store, context))
-		{
-			const unsigned char* cert = context->pbCertEncoded;
-			x509 = d2i_X509(NULL, &cert, context->cbCertEncoded);
-
-			if (x509)
-			{
-				X509_STORE_add_cert(x509_store, x509);
-				X509_free(x509);
-			}
-		}
-
-		CertFreeCertificateContext(context);
-		CertCloseStore(store, 0);
-
-		store = CertOpenStore(CERT_STORE_PROV_SYSTEM_A, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER, "MY");
-
-		//X509* x509;
-		while (context = CertEnumCertificatesInStore(store, context))
-		{
-			const unsigned char* cert = context->pbCertEncoded;
-			x509 = d2i_X509(NULL, &cert, context->cbCertEncoded);
-
-			if (x509)
-			{
-				X509_STORE_add_cert(x509_store, x509);
-				X509_free(x509);
-			}
-		}
-
-		CertFreeCertificateContext(context);
-		CertCloseStore(store, 0);
-#endif
-		*/
-
-		BIO* out_verify = BIO_new(BIO_s_mem());
 
 		// Получала X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
 		if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)
@@ -507,7 +430,7 @@ public:
 		}
 		else
 		{
-			std::string sError = GetOpenSslErrors();
+			// std::string sError = GetOpenSslErrors();
 			BIO_free(out_verify);
 			out_verify = BIO_new(BIO_s_mem());
 

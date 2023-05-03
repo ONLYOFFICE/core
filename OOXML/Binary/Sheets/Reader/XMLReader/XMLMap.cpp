@@ -49,7 +49,7 @@ std::set<std::wstring> &repeatebleValues)
         }
         else if(nodeType == XmlUtils::XmlNodeType::XmlNodeType_Text || nodeType == XmlUtils::XmlNodeType::XmlNodeType_CDATA)
         {
-            insertValue(parents_.back()->name);
+            insertValue();
         }
         else if(nodeType == XmlUtils::XmlNodeType::XmlNodeType_EndElement)
         {
@@ -70,21 +70,32 @@ void XMLMap::readAttributes()
     }
     reader_->MoveToFirstAttribute();
 
-    insertValue(reader_->GetName());
+    insertAttribute(reader_->GetName());
 
     while(reader_->MoveToNextAttribute())
     {
-        insertValue(reader_->GetName());
+        insertAttribute(reader_->GetName());
     }
 
     reader_->MoveToElement();
 }
 
-void XMLMap::insertValue(const std::wstring &key)
+void XMLMap::insertValue()
 {
    auto parent = parents_.at(parents_.size()-2);
-   parent->childColumns.emplace(getNodeName(key, parent->childColumns));
-   parents_.back()->columns.insert(key);
+   auto node = parents_.back();
+   auto uniqueName = getNodeName(node->name, parent->childColumns);
+   parent->childColumns.emplace(uniqueName);
+   node->ValueColumnName = uniqueName;
+}
+
+void XMLMap::insertAttribute(const std::wstring &key)
+{
+   auto parent = parents_.at(parents_.size()-2);
+   auto node = parents_.back();
+   auto uniqueName = getNodeName(key, parent->childColumns);
+   parent->childColumns.emplace(uniqueName);
+   node->attributes.emplace(uniqueName);
 }
 
 std::wstring XMLMap::getNodeName(const std::wstring &name, std::set<std::wstring> &names)
@@ -145,7 +156,9 @@ void XMLMap::openNode()
     }
     else if(reader_->GetAttributesCount() == 0)
     {
-        insertValue(newElem->name);
+        parents_.push_back(newElem);
+        insertValue();
+        closeNode();
     }
     else
     {
@@ -160,12 +173,15 @@ void XMLMap::closeNode()
     //вставка ноды типа <node></node>
     if(prevType_ == XmlUtils::XmlNodeType::XmlNodeType_Element)
     {
-        insertValue(parents_.back()->name);
+        insertValue();
     }
     auto lastElem = parents_.back();
     parents_.pop_back();
     parents_.back()->childColumns.insert(lastElem->childColumns.begin(), lastElem->childColumns.end());
-
+    if(!lastElem->childs.empty())
+    {
+        lastElem->ValueColumnName = L"";
+    }
     for(auto i = lastElem->childs.begin(); i != lastElem->childs.end(); i++)
     {
         if((*i)->counter < 2)
@@ -174,13 +190,26 @@ void XMLMap::closeNode()
         }
         else
         {
-            repeatebleValues_->insert((*i)->columns.begin(), (*i)->columns.end());
             repeatebleValues_->insert((*i)->childColumns.begin(), (*i)->childColumns.end());
+            if(!(*i)->ValueColumnName.empty())
+            {
+                repeatebleValues_->insert((*i)->ValueColumnName);
+            }
         }
     }
-    if(!(lastElem->columns.empty() || lastElem->childColumns.empty()) && lastElem->counter < 2)
+    bool heritableChilds = true;
+    for(auto i:lastElem->childs)
+    {
+        if(!i->heritable)
+        {
+            heritableChilds = false;
+            break;
+        }
+    }
+    if((!lastElem->ValueColumnName.empty() || heritableChilds) && lastElem->counter < 2)
     {
         lastElem->heritable = true;
     }
+
 }
 

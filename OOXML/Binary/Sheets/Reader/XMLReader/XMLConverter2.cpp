@@ -69,6 +69,20 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
         }
         prevType_ = nodeType;
     }
+    for(auto nodeCount = 0; nodeCount < writingRows_.size(); nodeCount++)
+    {
+        auto nodeName = writingRows_.at(nodeCount)->ValueColumnName;
+        if(!nodeName.empty())
+        {
+            table.AddCell(data_.at(nodeName).at(nodeCount), nodeCount + 2, colNames_->GetColumnNumber(nodeName));
+        }
+        for( auto i : writingRows_.at(nodeCount)->childColumns)
+        {
+            table.AddCell(data_.at(i).at(nodeCount), nodeCount + 2, colNames_->GetColumnNumber(i));
+        }
+    }
+
+    ///@todo дописать вставку атрибутов
 
 }
 
@@ -80,19 +94,21 @@ void XMLConverter::openNode()
         if((*i)->name == nodename)
         {
             nodePointer_ = *i;
+            parents_.push_back(nodePointer_);
             break;
         }
     }
 
-    if(reader_->IsEmptyNode() && !nodePointer_->columns.empty())
+    if(reader_->IsEmptyNode() && !nodePointer_->attributes.empty())
     {
         readAttributes();
         nodePointer_ = nodePointer_->parent;
     }
-    else if(reader_->IsEmptyNode() && nodePointer_->columns.empty())
+    else if(reader_->IsEmptyNode() && nodePointer_->attributes.empty())
     {
         insertValue(nodePointer_->name, L"");
         nodePointer_ = nodePointer_->parent;
+        parents_.pop_back();
     }
     else
     {
@@ -128,11 +144,11 @@ void XMLConverter::closeNode()
     if(nodePointer_->counter > 1)
     {
         writingRows_.push_back(nodePointer_);
-        for(auto i : *listableColumns_)
+        for(auto i = listableColumns_->begin(); i != listableColumns_->end(); i++)
         {
-            if(data_.at(i).size() < writingRows_.size())
+            if(data_.at(*i).size() < writingRows_.size())
             {
-                data_.at(i).push_back(L"");
+                data_.at(*i).push_back(L"");
             }
         }
     }
@@ -144,13 +160,14 @@ void XMLConverter::closeNode()
 std::wstring XMLConverter::getNodeName(const std::wstring &name)
 {
     /// ищем среди использовавшихся имён нужное
-    for(auto i = nodePointer_->columns.begin(); i != nodePointer_->columns.end(); i++)
+    for(auto i = nodePointer_->attributes.begin(); i != nodePointer_->attributes.end(); i++)
     {
         if(colNames_->GetXmlName(*i) == name)
         {
             return *i;
         }
     }
+    return nodePointer_->ValueColumnName;
 }
 
 void XMLConverter::insertValue(const std::wstring &key, const std::wstring &value)

@@ -51,8 +51,10 @@ struct XmlNode
     std::wstring name;
     /// @brief предок ноды
     std::shared_ptr<XmlNode> parent;
-    /// @brief столбцы ноды
-    std::set<std::wstring> columns;
+    /// @brief атрибуты ноды
+    std::set<std::wstring> attributes;
+    /// @brief имя столбца с данными ноды, пустое если нода не имеет данных
+    std::wstring ValueColumnName;
     /// @brief наследуемые столбцы ноды
     std::set<std::wstring> childColumns;
     /// @brief потомки ноды
@@ -90,8 +92,11 @@ private:
     void closeNode();
 
     /// @brief вставляет значение во временную внутреннюю структуру
+    void insertValue();
+
+    /// @brief вставляет атрибут во временную внутреннюю структуру ноды
     /// @param key ключ, по которому будет вставлено значение
-    void insertValue(const std::wstring &key);
+    void insertAttribute(const std::wstring &key);
 
     /// @brief Получение уникального имени ноды, либо его поиск в переданном множестве
     /// @param name имя ноды, прочитанное из xml

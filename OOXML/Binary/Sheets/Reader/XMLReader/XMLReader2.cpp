@@ -56,7 +56,9 @@ _UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx 
     XMLMap map{};
     auto rootNode = std::make_shared<XmlNode>();
     ColumnNameController nameController{};
-    map.ReadXmlStructure(reader, nameController, rootNode);
+    std::set<std::wstring> repeatableColumns{};
+    map.ReadXmlStructure(reader, nameController, rootNode, repeatableColumns);
+    reader.MoveToStart();
 
     ///создаем таблицу
     XLSXTableController table = {oXlsx};
@@ -73,11 +75,10 @@ _UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx 
         table.AddCell(i->second, 1, i->first);
     }
 
-    // map хранящий текущий номер колонки для записи
-    std::map<_UINT32, _UINT32> rowNumbers = {};
-    std::map<_UINT32, std::wstring> stringData = {};
+    XMLConverter converter = {reader, rootNode, nameController, repeatableColumns};
+    converter.ConvertXml(table);
 
-    //table.FormBook();
+    table.FormBook();
 
     return 0;
 

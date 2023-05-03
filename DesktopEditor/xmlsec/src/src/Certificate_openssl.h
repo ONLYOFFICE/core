@@ -397,6 +397,22 @@ public:
 		return true;
 	}
 
+	/*
+	static int verify_callback_ignore_expiration(int ok, X509_STORE_CTX *local_store)
+	{
+		int error;
+
+		if (!ok) {
+			error = X509_STORE_CTX_get_error(local_store);
+			if (error == X509_V_ERR_CERT_HAS_EXPIRED) {
+				return 1;
+			}
+		}
+
+		return ok;
+	}
+	*/
+
 	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
 							unsigned char* pData, unsigned int nSize)
 	{
@@ -406,32 +422,128 @@ public:
 
 		BIO* outputbio = BIO_new(BIO_s_mem());
 		BIO_write(outputbio, pPKCS7Data, nPKCS7Size);
-
 		PKCS7* pkcs7 = d2i_PKCS7_bio(outputbio, NULL);
-		BIO_free(outputbio);
-		if (pkcs7 == NULL)
+
+		if (pkcs7 == NULL || !PKCS7_type_is_signed(pkcs7))
 			return nRes;
 
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
 
-		X509_STORE* store = X509_STORE_new();
-		X509_STORE_add_cert(store, m_cert);
-		STACK_OF(X509)* signers = sk_X509_new_null();
+		X509_STORE* x509_store = X509_STORE_new();
+		X509_STORE_add_cert(x509_store, m_cert);
+		// Нужно ли доверять сертификату, если нет доступа к локальному хранилищу сертификатов?
+		X509_STORE_set_flags(x509_store, X509_V_FLAG_PARTIAL_CHAIN);
 
-		if (PKCS7_verify(pkcs7, signers, store, inputbio, NULL, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)
+		//X509_STORE_set_purpose(x509_store, 7);
+
+		/* Попытка изменения функции верификации
+		X509_STORE_set_verify_cb_func(x509_store, verify_callback_ignore_expiration);
+		*/
+
+		/*
+		X509_VERIFY_PARAM *param  = X509_STORE_get0_param(x509_store);
+		if (param && X509_VERIFY_PARAM_set_purpose(param, 7))
 		{
-			nRes |= (1 << 0);
-			nRes |= (1 << 1);
+			if (X509_STORE_set1_param(x509_store, param))
+			{
+
+			}
 		}
-		else if (PKCS7_verify(pkcs7, signers, store, inputbio, NULL, PKCS7_NOCHAIN | PKCS7_NOSIGS | PKCS7_NOVERIFY) == 1)
+		*/
+
+		/* Попытка создать доверие к сертификату с задействованием mscrypto
+#ifdef _WIN32
+		//X509_STORE_add_cert(x509_store, m_cert);
+
+		HCERTSTORE store;
+		PCCERT_CONTEXT context = NULL;
+
+		store = CertOpenStore(CERT_STORE_PROV_SYSTEM_A, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER, "ROOT");
+
+		X509* x509;
+		while (context = CertEnumCertificatesInStore(store, context))
 		{
-			nRes |= (1 << 0);
+			const unsigned char* cert = context->pbCertEncoded;
+			x509 = d2i_X509(NULL, &cert, context->cbCertEncoded);
+
+			if (x509)
+			{
+				X509_STORE_add_cert(x509_store, x509);
+				X509_free(x509);
+			}
 		}
+
+		CertFreeCertificateContext(context);
+		CertCloseStore(store, 0);
+
+		store = CertOpenStore(CERT_STORE_PROV_SYSTEM_A, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER, "MY");
+
+		//X509* x509;
+		while (context = CertEnumCertificatesInStore(store, context))
+		{
+			const unsigned char* cert = context->pbCertEncoded;
+			x509 = d2i_X509(NULL, &cert, context->cbCertEncoded);
+
+			if (x509)
+			{
+				X509_STORE_add_cert(x509_store, x509);
+				X509_free(x509);
+			}
+		}
+
+		CertFreeCertificateContext(context);
+		CertCloseStore(store, 0);
+#endif
+		*/
+
+		BIO* out_verify = BIO_new(BIO_s_mem());
+
+		// Получала X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
+		if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)
+		{
+			nRes |= (1 << 0); // NOT CHANGED
+			nRes |= (1 << 1); // VERIFIED
+		}
+		else
+		{
+			std::string sError = GetOpenSslErrors();
+			BIO_free(out_verify);
+			out_verify = BIO_new(BIO_s_mem());
+
+			if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS | PKCS7_NOVERIFY) == 1)
+			{
+				nRes |= (1 << 0); // NOT CHANGED
+			}
+		}
+
+		/* Извлечение сертификата из подписи. Работает
+		PKCS7 *p7enc = d2i_PKCS7_bio(out_verify, NULL);
+		BIO* csr_bio = BIO_new(BIO_s_mem());
+		if (PKCS7_decrypt(p7enc, m_key, m_cert, csr_bio, 0))
+		{
+			X509_REQ *csr = d2i_X509_REQ_bio(csr_bio, NULL);
+			BIO* csr_pem = BIO_new(BIO_s_mem());
+			PEM_write_bio_X509_REQ(csr_pem, csr);
+
+			BUF_MEM *bptr_csr;
+			BIO_get_mem_ptr(csr_pem, &bptr_csr);
+
+			char* data = bptr_csr->data;
+			int length = bptr_csr->length;
+
+			X509_REQ_free(csr);
+		}
+
+		PKCS7_free(p7enc);
+		BIO_free(csr_bio);
+		*/
+
 		BIO_free(inputbio);
+		BIO_free(outputbio);
+		BIO_free(out_verify);
 		PKCS7_free(pkcs7);
-		X509_STORE_free(store);
-		sk_X509_pop_free(signers, X509_free);
+		X509_STORE_free(x509_store);
 
 		EVP_cleanup();
 

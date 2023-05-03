@@ -72,17 +72,25 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
     for(auto nodeCount = 0; nodeCount < writingRows_.size(); nodeCount++)
     {
         auto nodeName = writingRows_.at(nodeCount)->ValueColumnName;
+        auto rowNumber = nodeCount + 2;
         if(!nodeName.empty())
         {
-            table.AddCell(data_.at(nodeName).at(nodeCount), nodeCount + 2, colNames_->GetColumnNumber(nodeName));
+            table.AddCell(data_.at(nodeName).at(nodeCount), rowNumber, colNames_->GetColumnNumber(nodeName));
         }
         for( auto i : writingRows_.at(nodeCount)->childColumns)
         {
-            table.AddCell(data_.at(i).at(nodeCount), nodeCount + 2, colNames_->GetColumnNumber(i));
+            table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+        }
+        for( auto i : writingRows_.at(nodeCount)->attributes)
+        {
+            table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+        }
+        std::set<std::wstring> writedColumns = {};
+        for(auto i = writingRows_.at(nodeCount)->parent; i; i = i->parent)
+        {
+            fillAttribures(table, i, writedColumns, rowNumber);
         }
     }
-
-    ///@todo дописать вставку атрибутов
 
 }
 
@@ -175,4 +183,25 @@ void XMLConverter::insertValue(const std::wstring &key, const std::wstring &valu
     auto uniqueKey = getNodeName(key);
     auto dataRow = data_.find(uniqueKey);
     dataRow->second.push_back(value);
+}
+
+void XMLConverter::fillAttribures(XLSXTableController &table, std::shared_ptr<XmlNode> attribNode, std::set<std::wstring> &filledValues,
+        const _UINT32 &rowNumber)
+{
+    for(auto i:attribNode->attributes)
+    {
+        if(filledValues.find(i) == filledValues.end())
+        {
+            table.AddCell(data_.at(i).at(0), rowNumber, colNames_->GetColumnNumber(i));
+            filledValues.insert(i);
+        }
+    }
+    for(auto i:attribNode->childColumns)
+    {
+        if(filledValues.find(i) == filledValues.end() && listableColumns_->find(i) == listableColumns_->end())
+        {
+            table.AddCell(data_.at(i).at(0), rowNumber, colNames_->GetColumnNumber(i));
+            filledValues.insert(i);
+        }
+    }
 }

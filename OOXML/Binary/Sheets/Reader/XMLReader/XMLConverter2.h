@@ -90,6 +90,14 @@ private:
     /// @return найденное или сгенерированное уникальное имя ноды
     std::wstring getNodeName(const std::wstring &name);
 
+    /// @brief заполняет строку таблицы атрибутами
+    /// @param table контроллер  таблицы xlsx
+    /// @param attribNode нода из которой возьмутся атрибуты
+    /// @param filledValues set в котором храняться имена заполненных колонок
+    /// @param arowNumbe контроллер  таблицы xlsx
+    void fillAttribures(XLSXTableController &table, std::shared_ptr<XmlNode> attribNode, std::set<std::wstring> &filledValues,
+        const _UINT32 &rowNumber);
+
     /// @brief указатель на считавший xml данные reader
     XmlUtils::CXmlLiteReader *reader_;
 

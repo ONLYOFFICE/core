@@ -195,6 +195,10 @@ void XMLMap::closeNode()
             {
                 repeatebleValues_->insert((*i)->ValueColumnName);
             }
+            if(!(*i)->attributes.empty())
+            {
+                repeatebleValues_->insert((*i)->attributes.begin(), (*i)->attributes.end());
+            }
         }
     }
     bool heritableChilds = true;

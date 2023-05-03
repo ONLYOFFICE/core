@@ -116,7 +116,7 @@ public:
 	CVersion(std::wstring& sVersion)
 	{
 		m_sVersion = sVersion;
-		swscanf_s(m_sVersion.c_str(), L"%d.%d.%d.%d", &m_major, &m_minor, &m_revision, &m_build);
+		swscanf(m_sVersion.c_str(), L"%d.%d.%d.%d", &m_major, &m_minor, &m_revision, &m_build);
 
 		if (m_major < 0)		m_major = 0;
 		if (m_minor < 0)		m_minor = 0;

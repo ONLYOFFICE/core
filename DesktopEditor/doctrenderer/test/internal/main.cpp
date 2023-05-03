@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
 		"var oZip = new CreateNativeZip;\n"
-		"var files = oZip.open('" CURR_DIR "/../v8');\n"
+		"var files = oZip.open('" CURR_DIR "');\n"
 		"oZip.close();");
 	oContext1->Exit();
 
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 		CreateDefaults(oContext2);
 		JSSmart<CJSValue> oRes2 = oContext2->runScript(
 			"var oZip = new CreateNativeZip;\n"
-			"var files = oZip.open('" CURR_DIR "/../jsc');\n"
+			"var files = oZip.open('" CURR_DIR "/../embed');\n"
 			"oZip.close();");
 	}
 

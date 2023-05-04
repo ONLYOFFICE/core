@@ -2088,10 +2088,10 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
 
         // Координаты и размеры внешнего вида
-        int nRx1 = (int)round(dx1 * (double)nRasterW / dWidth);
-        int nRy2 = (int)round(dy2 * (double)nRasterH / dHeight);
-        oRes.AddInt(nRx1);
-        oRes.AddInt(nRasterH - nRy2);
+        int nRx1 = (int)round(dx1 * (double)nRasterW / dWidth) - 1;
+        int nRy2 = nRasterH - (int)round(dy2 * (double)nRasterH / dHeight) - 1;
+        oRes.AddInt(nRx1 < 0 ? 0 : nRx1);
+        oRes.AddInt(nRy2 < 0 ? 0 : nRy2);
         oRes.AddInt(nWidth);
         oRes.AddInt(nHeight);
 

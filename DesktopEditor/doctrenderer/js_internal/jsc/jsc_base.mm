@@ -1,4 +1,5 @@
 #import "jsc_base.h"
+#import <objc/runtime.h>
 #include <iostream>
 
 using namespace NSJSBase;
@@ -102,6 +103,11 @@ JSContext* CJSContextPrivate::GetCurrentContext()
 bool CJSContextPrivate::IsOldVersion()
 {
     return CGlobalContext::GetInstance().IsOldVersion();
+}
+CEmbedObjectRegistrator& CJSContextPrivate::getEmbedRegistrator()
+{
+	static CEmbedObjectRegistrator oRegistrator;
+	return oRegistrator;
 }
 
 template<typename T>
@@ -437,4 +443,118 @@ namespace NSJSBase
         exc = nil;
         return true;
     }
+}
+
+// embed
+namespace NSJSBase
+{
+	class CJSFunctionArgumentsJSC : public CJSFunctionArguments
+	{
+	private:
+		const NSArray* m_args;
+		int m_count;
+
+	public:
+		CJSFunctionArgumentsJSC(const NSArray* args)
+		{
+			m_args = args;
+			m_count = [m_args count];
+		}
+
+	public:
+		virtual int GetCount() override
+		{
+			return m_count;
+		}
+
+		virtual JSSmart<CJSValue> Get(const int& index) override
+		{
+			if (index < m_count)
+				return js_value([m_args objectAtIndex:index]);
+			return js_value(nil);
+		}
+	};
+}
+
+@interface CJSCEmbededObject : NSObject<JSEmbedObjectProtocol>
+{
+@public
+	CJSEmbedObject* m_internal;
+}
+
+@end
+
+@implementation CJSCEmbededObject
+-(id) init: (CJSEmbedObject*) internal
+{
+	self = [super init];
+	if (self)
+		m_internal = internal;
+	return self;
+}
+-(void) dealloc
+{
+	RELEASEOBJECT(m_internal);
+}
+-(void*) getNative
+{
+	return m_internal;
+}
+-(JSValue*) _Call: (int)index : (NSArray*)args
+{
+	CJSFunctionArgumentsJSC _args(args);
+	JSSmart<CJSValue> ret = m_internal->Call(index, &_args);
+	return js_return(ret);
+}
+@end
+
+namespace NSJSBase
+{
+	id CreateEmbedNativeObject(NSString* name)
+	{
+		std::string sName = [name stdstring];
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
+		if (itFound == oRegistrator.m_infos.end())
+			return nil;
+
+		CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
+
+		// TODO: singleton check
+
+		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+		CJSCEmbededObject* pEmbedObj = [[CJSCEmbededObject alloc] init:pNativeObj];
+		std::vector<std::string> arNames = pNativeObj->getNames();
+
+		for (int i = 0, len = arNames.size(); i < len; i++)
+		{
+			// associate all methods with corresponding Call() index
+			JSValue* (*funcImpl)(id, SEL, NSArray*) = [](id self, SEL _cmd, NSArray* args) {
+				CJSCEmbededObject* embedObj = (CJSCEmbededObject*)self;
+				// TODO: here 0 need to be changed to i, but it won't compile for now :(
+				return [embedObj _Call:0:args];
+			};
+
+			NSString* nsName = [NSString stringWithAString:arNames[i]];
+			SEL selector = NSSelectorFromString(nsName);
+			class_addMethod([CJSCEmbededObject class], selector, (IMP)funcImpl, "@@:@");
+		}
+		return pEmbedObj;
+	}
+
+	void CJSContext::AddEmbedCreator(const std::string& name,
+									 EmbedObjectCreator creator,
+									 const IsolateAdditionlDataType& type)
+	{
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+		if (0 == oRegistrator.m_infos.size())
+		{
+			JSSmart<CJSContext> context = CJSContext::GetCurrent();
+			context->m_internal->context[@"CreateEmbedObject"] = ^(NSString* name) {
+				return CreateEmbedNativeObject(name);
+			};
+		}
+
+		oRegistrator.Register(name, creator, type);
+	}
 }

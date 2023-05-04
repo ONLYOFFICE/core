@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
 	CJSContextScope scope(oContext1);
 	oContext1->Embed<CTestEmbed>();
 
+//	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { return CreateEmbedObject('Good', 'test', 'third', 'Wow'); })();");
+//	std::cout << oResTestEmbed1->toStringA() << std::endl;
 	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(1, 2); })();");
 	std::cout << oResTestEmbed1->toInt32() << std::endl;
 

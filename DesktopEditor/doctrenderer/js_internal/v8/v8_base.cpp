@@ -467,6 +467,7 @@ namespace NSJSBase
 	{
 		const v8::FunctionCallbackInfo<v8::Value>* m_args;
 		int m_count;
+		// TODO: do we actually need it?
 		int m_skip_count;
 	public:
 		CJSFunctionArgumentsV8(const v8::FunctionCallbackInfo<v8::Value>* args, const bool skip_count = 1)

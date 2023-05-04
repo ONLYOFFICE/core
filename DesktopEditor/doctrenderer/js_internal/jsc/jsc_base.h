@@ -2,6 +2,7 @@
 #define _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 
 #include "../js_base.h"
+#include "../js_base_p.h"
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
@@ -35,6 +36,7 @@ namespace NSJSBase
 
         static JSContext* GetCurrentContext();
         static bool IsOldVersion();
+		static CEmbedObjectRegistrator& getEmbedRegistrator();
     };
 }
 

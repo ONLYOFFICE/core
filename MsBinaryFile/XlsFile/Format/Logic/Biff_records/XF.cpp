@@ -74,14 +74,16 @@ namespace XLS
 
 		fill.fls = GETBIT(flags2, 7) ? 1 : 0;
 //---------------------------------------------------------------------------------------------------	
+		
 		if (ifmt_index < global_info->m_arNumFormats.size() && ifmt_index != 0xff)
 		{
 			Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
 			if (fmt)
-				ifmt = fmt->ifmt;
+			{
+				format_code = fmt->stFormat;
+				ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
+			}
 		}
-
-		global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
 
 		if (font_index >= 0 && font_index < global_info->m_arFonts.size())
 		{
@@ -146,10 +148,11 @@ namespace XLS
 		{
 			Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
 			if (fmt)
-				ifmt = fmt->ifmt;
+			{
+				format_code = fmt->stFormat;
+				ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
+			}
 		}
-
-		global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
 
 		if (font_index >= 0 && font_index < global_info->m_arFonts.size())
 		{
@@ -249,6 +252,8 @@ void XF::readFields(CFRecord& record)
 		record >> ifnt >> ifmt >> flags1 >> flags2 >> flags3 >> flags4 >> flags5;
 		font_index = ifnt.getValue();
 
+		ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update		
+
 		fLocked = GETBIT(flags1, 0);
 		fHidden = GETBIT(flags1, 1);
 		fStyle = GETBIT(flags1, 2);
@@ -290,7 +295,9 @@ void XF::readFields(CFRecord& record)
 		record >> ifnt >> ifmt >> flags1 >> flags2 >> flags3 >> flags4 >> flags5;
 		font_index = ifnt.getValue();
 
-        fLocked		= GETBIT(flags1, 0);
+		ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update		
+		
+		fLocked		= GETBIT(flags1, 0);
         fHidden		= GETBIT(flags1, 1);
         fStyle		= GETBIT(flags1, 2);
         f123Prefix	= GETBIT(flags1, 3);
@@ -350,7 +357,7 @@ void XF::readFields(CFRecord& record)
         unsigned char	trot_;
         record >> ixfParent >> ifmt >> font_index >> iFill >> ixBorder >> trot_ >> cIndent >> flags;
 
-		global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+		ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update		
 		
 		trot = trot_;
 
@@ -386,10 +393,11 @@ void XF::readFields(CFRecord& record)
 	{
 		Format* fmt = dynamic_cast<Format*>(global_info->m_arNumFormats[ifmt_index].get());
 		if (fmt)
-			ifmt = fmt->ifmt;
+		{
+			format_code = fmt->stFormat;
+			ifmt = fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, format_code); // return update
+		}
 	}
-
-	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
 
 	if (font_index >= 0 && font_index < global_info->m_arFonts.size())
 	{

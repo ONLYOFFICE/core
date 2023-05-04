@@ -83,7 +83,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		catch (...)
 		{
-			date_str = date;
+			date_str = std::to_wstring(date);
 		}
 		return date_str;
 	}

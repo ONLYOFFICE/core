@@ -53,13 +53,15 @@ void SXDI::readFields(CFRecord& record)
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> isxvdData >> iiftab >> df >> isxvd >> isxvi >> ifmt >> cchName;
 
-	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 	
 	if (cchName > 0 && cchName < 0xFFFF)
 	{
 		stName.setSize(cchName);
 		record >> stName;
 	}
+	
+	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 }
 
 int SXDI::serialize(std::wostream & strm)
@@ -74,7 +76,7 @@ int SXDI::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"fld",			isxvdData); 
 			CP_XML_ATTR(L"baseField",	df); 
 			CP_XML_ATTR(L"baseItem",	isxvi); 
-			CP_XML_ATTR(L"numFmtId",	ifmt); 
+			CP_XML_ATTR(L"numFmtId",	ifmt);
 			switch(iiftab)
 			{
 			case 0x0000: CP_XML_ATTR(L"subtotal", L"sum");		break;

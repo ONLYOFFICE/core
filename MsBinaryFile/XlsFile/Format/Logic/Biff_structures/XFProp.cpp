@@ -274,7 +274,7 @@ void XFProp::serialize_attr(CP_ATTR_NODE)
 		}break;
 		case 0x0029:
 		{
-			serialize_val_attr(CP_GET_XML_NODE(), L"numFmtId",	xfPropDataBlob);	
+			serialize_val_attr(CP_GET_XML_NODE(), L"numFmtId",	xfPropDataBlob);	// todooo -> used
 		}break;	
 	}
 }

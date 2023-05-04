@@ -840,13 +840,13 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
 
-					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
+					std::map<_UINT16, _UINT16>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
 
 					if (pFind != xls_global_info->mapUsedFormatCode.end())
 					{
 						CP_XML_STREAM() << L"<numFmt";
 						{
-							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt_used << L"\"";
 							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
 						}
 						CP_XML_STREAM() << L"/>";

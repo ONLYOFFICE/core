@@ -48,7 +48,7 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
 {
     XmlUtils::XmlNodeType nodeType;
 
-    for(auto i : nodePointer_->childColumns)
+    for(auto i : nodeTree_->childColumns)
     {
         data_.emplace(i, std::vector<std::wstring>());
     }
@@ -68,6 +68,15 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
             closeNode();
         }
         prevType_ = nodeType;
+    }
+    ///выписываем однократно содержимое нод, если нет повторяющихся
+    if(writingRows_.empty())
+    {
+        for(auto i :data_)
+        {
+            table.AddCell(*data_.at(i.first).begin(), 2, colNames_->GetColumnNumber(i.first));
+        }
+        return;
     }
     for(auto nodeCount = 0; nodeCount < writingRows_.size(); nodeCount++)
     {
@@ -110,13 +119,14 @@ void XMLConverter::openNode()
     if(reader_->IsEmptyNode() && !nodePointer_->attributes.empty())
     {
         readAttributes();
-        nodePointer_ = nodePointer_->parent;
+        prevType_ = XmlUtils::XmlNodeType::XmlNodeType_Text;
+        closeNode();
     }
     else if(reader_->IsEmptyNode() && nodePointer_->attributes.empty())
     {
         insertValue(nodePointer_->name, L"");
-        nodePointer_ = nodePointer_->parent;
-        parents_.pop_back();
+        prevType_ = XmlUtils::XmlNodeType::XmlNodeType_Text;
+        closeNode();
     }
     else
     {

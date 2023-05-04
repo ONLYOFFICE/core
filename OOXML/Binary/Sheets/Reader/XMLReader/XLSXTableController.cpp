@@ -99,7 +99,6 @@ void XLSXTableController::FormBook()
     }
 }
 
-
 void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 {
 
@@ -154,6 +153,11 @@ void XLSXTableController::addPage(OOX::Spreadsheet::CWorksheet *page, INT pageNu
     book_->m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 }
 
+bool CompareCells(const OOX::Spreadsheet::CCell *a, const OOX::Spreadsheet::CCell *b)
+{
+    return *a->m_oCol < *b->m_oCol;
+}
+
 _UINT32 XLSXTableController::addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadsheet::CWorksheet *pWorkSheet,  INT nRow)
 {
     if (pWorkSheet->m_oSheetData->m_arrItems.size() > 1048576)
@@ -162,6 +166,12 @@ _UINT32 XLSXTableController::addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadshe
             }
     pRow->m_oR.Init();
     pRow->m_oR->SetValue(nRow);
+
+    /// сортируем ячейки в ряду
+    if(pRow->m_arrItems.size() > 2)
+    {
+       std::sort(pRow->m_arrItems.begin(), pRow->m_arrItems.end(), CompareCells);
+    }
     pWorkSheet->m_oSheetData->m_arrItems.push_back(pRow);
 
     return 0;

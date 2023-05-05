@@ -977,12 +977,12 @@ int main(int argc, char** argv)
 	// Parse arguments
 	for (int i = 0; i < argc; ++i)
 	{
-#ifdef WIN32
-		std::wstring sParam(argv[i]);
-#else
-		std::string sParamA(argv[i]);
-		std::wstring sParam = UTF8_TO_U(sParamA);
-#endif
+		#ifdef WIN32
+				std::wstring sParam(argv[i]);
+		#else
+				std::string sParamA(argv[i]);
+				std::wstring sParam = UTF8_TO_U(sParamA);
+		#endif
 
 		if (sParam.find(L"--") == 0)
 		{
@@ -993,6 +993,27 @@ int main(int argc, char** argv)
 			if (std::wstring::npos == _pos)
 			{
 				sKey = sParam;
+
+				if ( IsNeedSetValue(sKey))
+				{
+					if (i < argc - 1)
+					{
+						i++;
+						#ifdef WIN32
+								sValue = std::wstring(argv[i]);
+						#else
+								std::string sValueA(argv[i]);
+								sValue = UTF8_TO_U(sParamA);
+						#endif
+					}
+
+					// Checks if value or next key exist
+					if ( !sValue.length() || (sValue.find(L"--") == 0) )
+					{
+						std::wcout << L"\nError. Check input parameters\n";
+						return 1;
+					}
+				}
 			}
 			else
 			{

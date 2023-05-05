@@ -51,6 +51,15 @@ std::wstring sCmdUpdateAll =                    L"--update-all";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
 
+bool IsNeedSetValue(std::wstring sParam)
+{
+	return sParam == sCmdPluginsDir ||
+			sParam == sCmdInstall ||
+			sParam == sCmdRestore ||
+			sParam == sCmdUpdate ||
+			sParam == sCmdRemove;
+}
+
 std::wstring sHelpText =
 L"\nPlugins Manager Options\n\n" \
 

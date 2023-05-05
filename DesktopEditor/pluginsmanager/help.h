@@ -31,6 +31,8 @@
  */
 
 #pragma once
+
+#include <vector>
 #include <iostream>
 
 // Commands
@@ -50,6 +52,16 @@ std::wstring sCmdUpdate =                       L"--update";
 std::wstring sCmdUpdateAll =                    L"--update-all";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
+
+std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
+									   sCmdPrintInstalled, sCmdPrintMarketplace, sCmdPrintBackup,
+									   sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
+									   sCmdRemove, sCmdRemoveAll};
+
+bool IsCommandExists(std::wstring sCommand)
+{
+	return std::find(arrCommands.begin(), arrCommands.end(), sCommand) != arrCommands.end();
+}
 
 bool IsNeedSetValue(std::wstring sParam)
 {

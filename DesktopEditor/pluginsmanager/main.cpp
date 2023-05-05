@@ -989,8 +989,9 @@ int main(int argc, char** argv)
 			std::wstring sKey = L"";
 			std::wstring sValue = L"";
 
-			std::wstring::size_type _pos = sParam.find('=');
-			if (std::wstring::npos == _pos)
+			// Parse key - value
+			std::wstring::size_type pos = sParam.find('=');
+			if ( pos == std::wstring::npos )
 			{
 				sKey = sParam;
 
@@ -1017,8 +1018,15 @@ int main(int argc, char** argv)
 			}
 			else
 			{
-				sKey = sParam.substr(0, _pos);
-				sValue = sParam.substr(_pos + 1);
+				sKey = sParam.substr(0, pos);
+				sValue = sParam.substr( pos + 1 );
+			}
+
+			// Check key
+			if ( !IsCommandExists(sKey) )
+			{
+				std::wcout << L"\nError. Unknown parameter " << sKey << L"\n" << "Print usage information --help\n";
+				return 1;
 			}
 
 			// Usability

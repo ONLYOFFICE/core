@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "../CellFormatController.h"
+
 #include "../../../../Base/Base.h"
 #include "../../../../XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../../XlsxFormat/Xlsx.h"
@@ -69,7 +71,12 @@ private:
     /// @param pageNumber номер страницы
     void addPage(OOX::Spreadsheet::CWorksheet *page, INT pageNumber);
 
+    /// @brief документ xlsx
     OOX::Spreadsheet::CXlsx *book_;
+
+    /// @brief вектор со строками таблицы
     std::vector<OOX::Spreadsheet::CRow*> tableRows_;
-    OOX::Spreadsheet::CStyles *m_pStyles_ = NULL;
+
+    /// @brief контроллер форматов
+    std::shared_ptr<CellFormatController> formates_;
 };

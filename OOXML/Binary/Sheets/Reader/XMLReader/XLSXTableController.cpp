@@ -42,8 +42,8 @@
 constexpr auto SheetName = L"Sheet";
 
 XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
+: book_{&book}
 {
-    book_ = &book;
     book_->CreateWorkbook();
     book_->m_pWorkbook->m_oSheets.Init();
     tableRows_.push_back(nullptr);
@@ -51,35 +51,7 @@ XLSXTableController::XLSXTableController(OOX::Spreadsheet::CXlsx &book)
     // Создадим стили
 	book_->CreateStyles();
 
-	// Добавим стили для wrap-а
-	book_->m_pStyles->m_oCellXfs.Init();
-	book_->m_pStyles->m_oCellXfs->m_oCount.Init();
-	book_->m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
-
-	m_pStyles_ = book_->m_pStyles;
-
-// Normall default
-	OOX::Spreadsheet::CXfs* pXfs = NULL;
-	pXfs = new OOX::Spreadsheet::CXfs();
-	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
-	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
-	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
-
-	book_->m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
-// Wrap style
-	pXfs = new OOX::Spreadsheet::CXfs();
-	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
-	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
-	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
-
-	pXfs->m_oApplyAlignment.Init();	pXfs->m_oApplyAlignment->SetValue(SimpleTypes::onoffTrue);
-	pXfs->m_oAligment.Init();		pXfs->m_oAligment->m_oWrapText.Init();
-	pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
-
-	book_->m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+    formates_ = std::make_shared<CellFormatController>(book_->m_pStyles);
 }
 
 
@@ -112,15 +84,9 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
     auto pCell = new OOX::Spreadsheet::CCell();
     pCell->m_oType.Init();
 
-    pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-    pCell->m_oRichText.Init();
-    OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
-    pText->m_sText = sText;
-    pCell->m_oRichText->m_arrItems.push_back(pText);
+    formates_->ProcessCellType(pCell, sText);
 
     pCell->setRowCol(nRow - 1, nCol);
-
-    pCell->m_oStyle = 1;
 
     while(tableRows_.size() - 1 < nRow)
     {

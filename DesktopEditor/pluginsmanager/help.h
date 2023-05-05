@@ -67,6 +67,8 @@ L"  --h                                            \n" \
 L"  --help               = Print usage information.\n\n" \
 
 L"  --directory          = Required parameter. Set plugins folder in quotes.\n" \
+L"                         For example, --directory=\"/home/mark/plugins\"\n" \
+L"                         The symbol = can be skipped for all parameters.\n" \
 L"                         Must be first on the command line.\n\n" \
 
 L"  --marketplace        = Optional parameter. Set plugins marketplace URL in quotes.\n" \

@@ -123,7 +123,7 @@ namespace NSNetwork
 						close(pipefd[1]);    // this descriptor is no longer needed
 					}
 
-					execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
+					execve(sProgramBinA.c_str(), (char * const *)nargs, (char * const *)nenv);
 					exit(EXIT_SUCCESS);
 					break;
 				}
@@ -245,7 +245,7 @@ namespace NSNetwork
 					nenv[0] = "LD_PRELOAD=";
 					nenv[1] = NULL;
 
-					execve("/usr/bin/wget", (char * const *)nargs, (char * const *)nenv);
+					execve(sProgramBinA.c_str(), (char * const *)nargs, (char * const *)nenv);
 					exit(EXIT_SUCCESS);
 					break;
 				}

@@ -31,6 +31,8 @@
  */
 
 #pragma once
+
+#include <vector>
 #include <iostream>
 
 // Commands
@@ -51,6 +53,25 @@ std::wstring sCmdUpdateAll =                    L"--update-all";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
 
+std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
+									   sCmdPrintInstalled, sCmdPrintMarketplace, sCmdPrintBackup,
+									   sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
+									   sCmdRemove, sCmdRemoveAll};
+
+bool IsCommandExists(std::wstring sCommand)
+{
+	return std::find(arrCommands.begin(), arrCommands.end(), sCommand) != arrCommands.end();
+}
+
+bool IsNeedSetValue(std::wstring sParam)
+{
+	return sParam == sCmdPluginsDir ||
+			sParam == sCmdInstall ||
+			sParam == sCmdRestore ||
+			sParam == sCmdUpdate ||
+			sParam == sCmdRemove;
+}
+
 std::wstring sHelpText =
 L"\nPlugins Manager Options\n\n" \
 
@@ -58,6 +79,8 @@ L"  --h                                            \n" \
 L"  --help               = Print usage information.\n\n" \
 
 L"  --directory          = Required parameter. Set plugins folder in quotes.\n" \
+L"                         For example, --directory=\"/home/mark/plugins\"\n" \
+L"                         The symbol = can be skipped for all parameters.\n" \
 L"                         Must be first on the command line.\n\n" \
 
 L"  --marketplace        = Optional parameter. Set plugins marketplace URL in quotes.\n" \

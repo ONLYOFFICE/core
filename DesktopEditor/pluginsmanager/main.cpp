@@ -977,27 +977,56 @@ int main(int argc, char** argv)
 	// Parse arguments
 	for (int i = 0; i < argc; ++i)
 	{
-#ifdef WIN32
-		std::wstring sParam(argv[i]);
-#else
-		std::string sParamA(argv[i]);
-		std::wstring sParam = UTF8_TO_U(sParamA);
-#endif
+		#ifdef WIN32
+				std::wstring sParam(argv[i]);
+		#else
+				std::string sParamA(argv[i]);
+				std::wstring sParam = UTF8_TO_U(sParamA);
+		#endif
 
 		if (sParam.find(L"--") == 0)
 		{
 			std::wstring sKey = L"";
 			std::wstring sValue = L"";
 
-			std::wstring::size_type _pos = sParam.find('=');
-			if (std::wstring::npos == _pos)
+			// Parse key - value
+			std::wstring::size_type pos = sParam.find('=');
+			if ( pos == std::wstring::npos )
 			{
 				sKey = sParam;
+
+				if ( IsNeedSetValue(sKey))
+				{
+					if (i < argc - 1)
+					{
+						i++;
+						#ifdef WIN32
+								sValue = std::wstring(argv[i]);
+						#else
+								std::string sValueA(argv[i]);
+								sValue = UTF8_TO_U(sParamA);
+						#endif
+					}
+
+					// Checks if value or next key exist
+					if ( !sValue.length() || (sValue.find(L"--") == 0) )
+					{
+						std::wcout << L"\nError. Check input parameters\n";
+						return 1;
+					}
+				}
 			}
 			else
 			{
-				sKey = sParam.substr(0, _pos);
-				sValue = sParam.substr(_pos + 1);
+				sKey = sParam.substr(0, pos);
+				sValue = sParam.substr( pos + 1 );
+			}
+
+			// Check key
+			if ( !IsCommandExists(sKey) )
+			{
+				std::wcout << L"\nError. Unknown parameter " << sKey << L"\n" << "Print usage information --help\n";
+				return 1;
 			}
 
 			// Usability

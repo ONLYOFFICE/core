@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 // Commands
 std::wstring sCmdHelp =                         L"--h";

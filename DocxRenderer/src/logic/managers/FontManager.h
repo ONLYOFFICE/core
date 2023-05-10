@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 		bool IsSelectedItalic() const noexcept;
 
 		const std::list<CFontSelectInfo>& GetCache() const;
+		void ClearCache();
 
 	private:
 		std::list<CFontSelectInfo> m_arParamsCache;

@@ -47,7 +47,6 @@ public:
 	}
 	~CDocxRenderer_Private()
 	{
-
 	}
 };
 
@@ -122,6 +121,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
 
 	HRESULT hr = S_OK;
 	m_pInternal->m_oDocument.Close();
+	m_pInternal->m_oDocument.Clear();
 	if (bIsOutCompress)
 		hr = Close();
 	return (hr == S_OK) ? 0 : 1;

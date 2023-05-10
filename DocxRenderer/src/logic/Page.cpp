@@ -54,6 +54,9 @@ namespace NSDocxRenderer
 
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
+		m_oVector.Clear();
+
+		m_pFontSelector->ClearCache();
 	}
 
 	void CPage::ClearImages()

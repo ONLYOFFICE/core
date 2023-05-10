@@ -32,6 +32,7 @@ namespace NSDocxRenderer
 			m_arOutputObjects[i]->Clear();
 
 		m_arOutputObjects.clear();
+		m_oVector.Clear();
 	}
 
 	UINT CShape::GenerateShapeId()

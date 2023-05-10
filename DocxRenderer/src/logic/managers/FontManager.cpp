@@ -286,6 +286,7 @@ namespace NSDocxRenderer
 	}
 	CFontSelector::~CFontSelector()
 	{
+		ClearCache();
 		RELEASEINTERFACE(m_pManager);
 	}
 
@@ -305,6 +306,12 @@ namespace NSDocxRenderer
 	const std::list<CFontSelector::CFontSelectInfo>& CFontSelector::GetCache() const
 	{
 		return m_arParamsCache;
+	}
+
+	void CFontSelector::ClearCache()
+	{
+		if(!m_arParamsCache.empty())
+			m_arParamsCache.clear();
 	}
 
 	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams,

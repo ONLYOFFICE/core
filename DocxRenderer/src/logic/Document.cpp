@@ -16,10 +16,9 @@ namespace NSDocxRenderer
 		m_oEdge.SetDefaultParams();
 
 		m_oTransform.Reset();
-
 		m_lClipMode = 0;
-
 		m_lPagesCount = 0;
+
 		for(auto& val : m_mapXmlString)
 			delete val.second;
 
@@ -28,7 +27,6 @@ namespace NSDocxRenderer
 
 	CDocument::~CDocument() {
 		Clear();
-		m_lClipMode = 0;
 		RELEASEINTERFACE(m_pFontManager);
 	}
 

@@ -2183,7 +2183,7 @@ void BinaryWorkbookTableWriter::WriteFileSharing(const OOX::Spreadsheet::CFileSh
 {
 	if (fileSharing.m_oAlgorithmName.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::AlgorithmName);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(fileSharing.m_oAlgorithmName->GetValue());
 	}

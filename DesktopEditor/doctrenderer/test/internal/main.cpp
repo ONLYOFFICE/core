@@ -114,16 +114,14 @@ int main(int argc, char *argv[])
 	CJSContextScope scope(oContext1);
 	oContext1->Embed<CTestEmbed>();
 
-//	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { return CreateEmbedObject('Good', 'test', 'third', 'Wow'); })();");
-//	std::cout << oResTestEmbed1->toStringA() << std::endl;
-	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(1, 2); })();");
+	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.test(); })();");
 	std::cout << oResTestEmbed1->toInt32() << std::endl;
 
-	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
-	std::cout << oResTestEmbed2->toInt32() << std::endl;
+//	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
+//	std::cout << oResTestEmbed2->toInt32() << std::endl;
 
-	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
-	std::cout << oResTestEmbed3->toInt32() << std::endl;
+//	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
+//	std::cout << oResTestEmbed3->toInt32() << std::endl;
 
 #endif
 

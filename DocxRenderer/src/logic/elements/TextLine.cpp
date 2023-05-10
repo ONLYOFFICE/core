@@ -11,6 +11,8 @@ namespace NSDocxRenderer
 
 	void CTextLine::Clear()
 	{
+		for(auto& val: m_arConts)
+			delete val;
 		m_arConts.clear();
 	}
 

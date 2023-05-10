@@ -61,46 +61,36 @@ namespace NSDocxRenderer
 
 	void CPage::ClearImages()
 	{
+		for(auto& val : m_arImages)
+				delete val;
 		m_arImages.clear();
 	}
 
 	void CPage::ClearTextData()
 	{
+		for(auto& val : m_arDiacriticalSymbol)
+				delete val;
 		m_arDiacriticalSymbol.clear();
 	}
 
 	void CPage::ClearTextLines()
 	{
+		for(auto& val : m_arTextLine)
+				val->Clear();
 		m_arTextLine.clear();
 	}
 
 	void CPage::ClearShapes()
 	{
+		for(auto& val : m_arShapes)
+				val->Clear();
 		m_arShapes.clear();
 	}
 
 	void CPage::ClearOutputObjects()
 	{
 		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			auto pObj = m_arOutputObjects[i];
-
-			switch(pObj->m_eType)
-			{
-			case CBaseItem::ElemType::etParagraph:
-				dynamic_cast<CParagraph*>(pObj)->Clear();
-				break;
-			case CBaseItem::ElemType::etTable:
-				dynamic_cast<CTable*>(pObj)->Clear();
-				break;
-			case CBaseItem::ElemType::etShape:
-				dynamic_cast<CShape*>(pObj)->Clear();
-				break;
-			default:
-				pObj->Clear();
-				break;
-			}
-		}
+			delete m_arOutputObjects[i];
 		m_arOutputObjects.clear();
 	}
 

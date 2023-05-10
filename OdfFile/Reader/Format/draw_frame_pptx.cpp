@@ -236,7 +236,12 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (true == href.empty())
 	{
+		office_binary_data* binary_data = dynamic_cast<office_binary_data*>(office_binary_data_.get());
 
+		if (binary_data)
+		{
+			href = binary_data->write_to(Context.root()->get_folder());
+		}
 	}
 	else
 	{

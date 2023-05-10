@@ -407,9 +407,14 @@ config_hidden_symbols {
     QMAKE_CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
     QMAKE_CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
 
-    plugin:QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
-    equals(TEMPLATE, app) {
-        QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+    core_mac:CONFIG += clang_no_exclude_libs
+    core_ios:CONFIG += clang_no_exclude_libs
+
+    !clang_no_exclude_libs {
+        plugin:QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        equals(TEMPLATE, app) {
+            QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        }
     }
 }
 

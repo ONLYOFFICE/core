@@ -14,11 +14,9 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
-
-		CSvgGraphicsObject* Copy() const;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pOtherStyles = NULL) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 
@@ -28,6 +26,9 @@ namespace SVG
 		SvgDigit m_oY;
 		SvgDigit m_oWidth;
 		SvgDigit m_oHeight;
+
+		std::wstring    m_wsHref;
+		const CSvgFile *m_pFile;
 	};
 }
 #endif // CUSE_H

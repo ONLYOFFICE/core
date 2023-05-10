@@ -124,7 +124,7 @@ namespace SVG
 			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
 	}
 
-	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || bIsClip)
 			return false;
@@ -136,14 +136,22 @@ namespace SVG
 
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
+
+		if (NULL != pOtherStyles)
+		{
+			TSvgStyles oNewStyles(m_oStyles);
+			oNewStyles += *pOtherStyles;
+			ApplyStyle(pRenderer, &oNewStyles, pDefs, nPathType, oOldMatrix);
+		}
+		else
+			ApplyStyle(pRenderer, &m_oStyles, pDefs, nPathType, oOldMatrix);
 
 		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, bIsClip);
+			pTSpan->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
@@ -164,30 +172,23 @@ namespace SVG
 	{
 		if (NULL != pTSpan)
 		{
-			m_oFill       = pTSpan->m_oFill;
-			m_oStroke     = pTSpan->m_oStroke;
-			m_oTransform  = pTSpan->m_oTransform;
-			m_oClip       = pTSpan->m_oClip;
+			m_oStyles = pTSpan->m_oStyles;
 
 			m_oFont = pTSpan->m_oFont;
 			m_oText = pTSpan->m_oText;
 		}
 	}
 
-	CTSpan *CTSpan::Copy() const
+	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CTSpan(*this);
-	}
+		Apply(pRenderer, &pStyles->m_oClip, pDefs);
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-	void CTSpan::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
+		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+			nTypePath += c_nStroke;
 
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyFill(pRenderer, pDefs, nTypePath, true);
-		ApplyStroke(pRenderer, nTypePath, true);
-		ApplyClip(pRenderer, pDefs);
+		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+			nTypePath += c_nWindingFillMode;
 	}
 
 	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
@@ -256,7 +257,7 @@ namespace SVG
 		if (m_oText.Underline() || m_oText.LineThrough() || m_oText.Overline())
 		{
 			pRenderer->put_PenSize((double)fUndSize);
-			pRenderer->put_PenColor(m_oStroke.m_oColor.ToInt());
+			pRenderer->put_PenColor(m_oStyles.m_oStroke.m_oColor.ToInt());
 			pRenderer->put_PenLineEndCap(0);
 			pRenderer->put_PenLineStartCap(0);
 
@@ -288,7 +289,7 @@ namespace SVG
 
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(m_oFill.ToInt());
+		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
 		pRenderer->put_BrushAlpha1(255);
 	}
 
@@ -361,7 +362,7 @@ namespace SVG
 		if (NULL == pRenderer)
 			return;
 
-		Aggplus::CMatrix oCurrentMatrix(m_oTransform.GetMatrix().GetFinalValue(NULL, NSCSS::NSProperties::TransformRotate));
+		Aggplus::CMatrix oCurrentMatrix(m_oStyles.m_oTransform.GetMatrix().GetFinalValue(NULL, NSCSS::NSProperties::TransformRotate));
 
 		double dXScale = 1., dYScale = 1.;
 
@@ -427,15 +428,15 @@ namespace SVG
 		return new CText(oNode, pParent, pFontManager);
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || NULL == pRenderer)
 			return false;
 
-		CTSpan::Draw(pRenderer, pDefs, bIsClip);
+		CTSpan::Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, bIsClip);
+			pTSpan->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
 	}
@@ -463,7 +464,7 @@ namespace SVG
 		}
 	}
 
-	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || bIsClip || NULL == m_pPath)
 			return false;

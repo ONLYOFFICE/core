@@ -54,8 +54,6 @@ namespace SVG
 			if (std::wstring::npos != unFound)
 				wsNewId.erase(0, unFound + 1);
 
-			std::transform(wsNewId.begin(), wsNewId.end(), wsNewId.begin(), std::towlower);
-
 			std::vector<TypeObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsNewId](TypeObject* pObject){ if (wsNewId == pObject->GetId()) return true; else return false;});
 
 			if (m_arObjects.end() != oFound)
@@ -81,15 +79,16 @@ namespace SVG
 	public:
 		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CGraphicsContainer(const CGraphicsContainer& oGraphicsContainer);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 

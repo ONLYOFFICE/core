@@ -21,7 +21,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -41,23 +41,17 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX1, dY1);
 		pRenderer->PathCommandLineTo(dX2, dY2);
 
-		EndPath(pRenderer, pDefs, bIsClip);
+		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
 	}
 
-	CLine *CLine::Copy() const
+	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CLine(*this);
-	}
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
-
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath);
+		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+			nTypePath += c_nStroke;
 	}
 
 	TBounds CLine::GetBounds() const

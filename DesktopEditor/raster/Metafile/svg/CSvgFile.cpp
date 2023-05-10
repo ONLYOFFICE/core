@@ -85,16 +85,22 @@ void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 
 const SVG::CSvgGraphicsObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
 {
-	std::wstring wsLowerId = wsId;
+		if (wsId.empty() || m_mMarkedObjects.empty())
+			return NULL;
 
-	std::transform(wsLowerId.begin(), wsLowerId.end(), wsLowerId.begin(), std::towlower);
+		std::wstring wsNewId = wsId;
 
-	MarkedMap::const_iterator oFound = m_mMarkedObjects.find(wsLowerId);
+		size_t unFound = wsNewId.find(L'#');
 
-	if (oFound != m_mMarkedObjects.end())
-		return oFound->second;
+		if (std::wstring::npos != unFound)
+			wsNewId.erase(0, unFound + 1);
 
-	return NULL;
+		MarkedMap::const_iterator oFound = std::find_if(m_mMarkedObjects.begin(), m_mMarkedObjects.end(), [&wsNewId](std::pair<std::wstring, const SVG::CSvgGraphicsObject*> oPair){ if (wsNewId == oPair.second->GetId()) return true; else return false;});
+
+		if (m_mMarkedObjects.end() != oFound)
+			return oFound->second;
+
+		return NULL;
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
@@ -175,4 +181,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 
 	return bResult;
+}
+
+SVG::CDefs *CSvgFile::GetDefs()
+{
+	return &m_oDefs;
 }

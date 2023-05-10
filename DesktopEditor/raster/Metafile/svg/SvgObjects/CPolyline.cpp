@@ -16,7 +16,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
@@ -28,19 +28,15 @@ namespace SVG
 		return true;
 	}
 
-	CPolyline *CPolyline::Copy() const
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CPolyline(*this);
-	}
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
+		if (Apply(pRenderer, &pStyles->m_oStroke))
+			nTypePath += c_nStroke;
 
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath, true);
+		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+			nTypePath += c_nWindingFillMode;
 	}
 
 	TBounds CPolyline::GetBounds() const

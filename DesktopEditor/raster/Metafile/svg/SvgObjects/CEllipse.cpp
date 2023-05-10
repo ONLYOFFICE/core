@@ -22,7 +22,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -42,24 +42,20 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, bIsClip);
+		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
 	}
 
-	CEllipse *CEllipse::Copy() const
+	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CEllipse(*this);
-	}
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-	void CEllipse::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
+		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+			nTypePath += c_nStroke;
 
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath);
+		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+			nTypePath += c_nWindingFillMode;
 	}
 
 	TBounds CEllipse::GetBounds() const

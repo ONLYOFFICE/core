@@ -24,7 +24,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_wsHref.empty() || bIsClip)
 			return false;
@@ -79,17 +79,9 @@ namespace SVG
 		return true;
 	}
 
-	CImage *CImage::Copy() const
+	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CImage(*this);
-	}
-
-	void CImage::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
-
-		ApplyTransform(pRenderer, oOldMatrix);
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 	}
 
 	TBounds CImage::GetBounds() const

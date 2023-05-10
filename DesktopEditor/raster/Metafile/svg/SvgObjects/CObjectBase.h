@@ -11,6 +11,46 @@ namespace SVG
 {
 	class CDefs;
 
+	struct TSvgStyles
+	{
+		SvgColor     m_oFill;
+		TStroke      m_oStroke;
+		SvgTransform m_oTransform;
+		struct TSvgClip
+		{
+			SvgColor  m_oHref;
+			SvgString m_oRule;
+		} m_oClip;
+
+		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles)
+		{
+			m_oTransform.SetMatrix(oSvgStyles.m_oTransform.GetMatrix().ToWString(), 0, false);
+
+			m_oFill.SetValue(L'#' + oSvgStyles.m_oFill.ToWString(), 0, false);
+			m_oFill.SetOpacity(std::to_wstring(oSvgStyles.m_oFill.GetOpacity()), 0, false);
+
+			m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
+			m_oStroke.m_oWidth.SetValue(oSvgStyles.m_oStroke.m_oWidth.ToWString(), 0, false);
+
+			if (m_oStroke.m_arDash.empty() && !oSvgStyles.m_oStroke.m_arDash.empty())
+				m_oStroke.m_arDash = oSvgStyles.m_oStroke.m_arDash;
+
+			if (m_oStroke.m_oLineCap.Empty() && !oSvgStyles.m_oStroke.m_oLineCap.Empty())
+				m_oStroke.m_oLineCap = oSvgStyles.m_oStroke.m_oLineCap;
+
+			if (m_oStroke.m_oLineJoin.Empty() && !oSvgStyles.m_oStroke.m_oLineJoin.Empty())
+				m_oStroke.m_oLineJoin = oSvgStyles.m_oStroke.m_oLineJoin;
+
+			if (m_oClip.m_oHref.Empty() && !oSvgStyles.m_oClip.m_oHref.Empty())
+				m_oClip.m_oHref = oSvgStyles.m_oClip.m_oHref;
+
+			if (m_oClip.m_oRule.Empty() && !oSvgStyles.m_oClip.m_oRule.Empty())
+				m_oClip.m_oRule = oSvgStyles.m_oClip.m_oRule;
+
+			return *this;
+		}
+	};
+
 	template <typename TypeParent>
 	class CSvgObject
 	{
@@ -130,11 +170,9 @@ namespace SVG
 		CSvgGraphicsObject(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		virtual ~CSvgGraphicsObject();
 
-		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const = 0;
+		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pStyles = NULL) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
-
-		virtual CSvgGraphicsObject* Copy() const;
 	private:
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
@@ -144,18 +182,16 @@ namespace SVG
 		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
 		void StartStandardPath(IRenderer* pRenderer) const;
 		void StartClipPath(IRenderer* pRenderer) const;
-		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
-		void EndStandardPath(IRenderer* pRenderer, const CDefs *pDefs) const;
+		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles = NULL) const;
+		void EndStandardPath(IRenderer* pRenderer, const CDefs *pDefs, const TSvgStyles* pOtherStyles) const;
 		void EndClipPath(IRenderer* pRenderer) const;
 
-		virtual void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
-		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath) const;
-		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
-		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const;
-		void ApplyFill(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, bool bUseDedault = false) const;
-		void ApplyClip(IRenderer* pRenderer, const CDefs *pDefs) const;
-		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
+		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
+		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CDefs *pDefs, bool bUseDefault = false) const;
+		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
+		bool Apply(IRenderer* pRenderer, const TSvgStyles::TSvgClip* pClip, const CDefs *pDefs) const;
 
 		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
 
@@ -171,16 +207,9 @@ namespace SVG
 		friend class CPolyline;
 		friend class CTextPath;
 		friend class CClipPath;
+		friend class CGraphicsContainer;
 
-		//Styles
-		SvgColor     m_oFill;
-		TStroke      m_oStroke;
-		SvgTransform m_oTransform;
-		struct
-		{
-			SvgColor  m_oHref;
-			SvgString m_oRule;
-		} m_oClip;
+		TSvgStyles m_oStyles;
 	};
 
 //	class CObjectBase

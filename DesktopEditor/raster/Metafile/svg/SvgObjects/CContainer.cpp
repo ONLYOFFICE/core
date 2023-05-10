@@ -29,19 +29,19 @@ namespace SVG
 	}
 
 	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
+		: CSvgGraphicsObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
 	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		for (const CSvgGraphicsObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pDefs, bIsClip);
+			pObject->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
 	}
@@ -56,7 +56,7 @@ namespace SVG
 		return m_oViewBox;
 	}
 
-	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{}
 
 	TBounds CGraphicsContainer::GetBounds() const

@@ -33,6 +33,8 @@ class GRAPHICS_DECL CSvgFile
 		const SVG::CSvgGraphicsObject* GetMarkedObject(const std::wstring& wsId) const;
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
+
+		SVG::CDefs *GetDefs();
 	private:
 
 		SVG::CSvgParser          m_oParser;

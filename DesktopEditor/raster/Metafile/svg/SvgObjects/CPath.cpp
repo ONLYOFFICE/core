@@ -32,7 +32,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
@@ -42,20 +42,9 @@ namespace SVG
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pDefs, bIsClip);
+		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
-	}
-
-	CPath *CPath::Copy() const
-	{
-		CPath* pNew = new CPath(*this);
-		pNew->m_arElements.clear();
-
-		for(const IPathElement* oElement : m_arElements)
-			pNew->m_arElements.push_back(oElement->Copy());
-
-		return pNew;
 	}
 
 	IPathElement *CPath::operator[](int nIndex) const
@@ -66,15 +55,17 @@ namespace SVG
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		if (NULL == pRenderer)
-			return;
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath, true);
+		if (Apply(pRenderer, &pStyles->m_oStroke))
+			nTypePath += c_nStroke;
+
+		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+			nTypePath += c_nWindingFillMode;
 	}
+
 	TBounds CPath::GetBounds() const
 	{
 		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;

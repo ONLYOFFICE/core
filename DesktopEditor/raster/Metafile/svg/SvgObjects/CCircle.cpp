@@ -21,7 +21,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -37,24 +37,20 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, bIsClip);
+		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
 
 		return true;
 	}
 
-	CCircle *CCircle::Copy() const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		return new CCircle(*this);
-	}
+		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		if (NULL == pRenderer)
-			return;
+		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+			nTypePath += c_nStroke;
 
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath, true);
+		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+			nTypePath += c_nWindingFillMode;
 	}
 
 	TBounds CCircle::GetBounds() const

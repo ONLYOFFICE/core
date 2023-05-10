@@ -4,16 +4,9 @@
 namespace SVG
 {
 	CUse::CUse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, const CSvgFile* pFile)
-	    : CSvgGraphicsObject(oNode, pParent), m_pUsedObject(NULL)
+		: CSvgGraphicsObject(oNode, pParent), m_pFile(pFile)
 	{
-		if (NULL != pFile)
-		{
-			std::wstring wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
-
-			const CSvgGraphicsObject *pFoundObj = pFile->GetMarkedObject(wsHref);
-			if (NULL != pFoundObj)
-				m_pUsedObject = pFoundObj->Copy();
-		}
+		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
 
 		m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oY     .SetValue(oNode.GetAttribute(L"y"));
@@ -22,40 +15,43 @@ namespace SVG
 	}
 
 	CUse::~CUse()
-	{
-		if (NULL != m_pUsedObject)
-			delete m_pUsedObject;
-	}
+	{}
 
 	void CUse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (NULL != m_pUsedObject)
-			m_pUsedObject->SetData(mAttributes, 0, false);
+		SetTransform(mAttributes, ushLevel, bHardMode);
+		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CUse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles) const
 	{
 		double dM11, dM12, dM21, dM22, dRx, dRy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx + m_oX.ToDouble(NSCSS::Pixel) * dM11, dRy + m_oY.ToDouble(NSCSS::Pixel) * dM22);
 
-		if (NULL != m_pUsedObject)
-			m_pUsedObject->Draw(pRenderer, pDefs, bIsClip);
+		const CSvgGraphicsObject *pFoundObj = m_pFile->GetMarkedObject(m_wsHref);
 
+		if (NULL != pFoundObj)
+		{
+			if (NULL != pOtherStyles)
+			{
+				TSvgStyles oNewStyles(m_oStyles);
+				oNewStyles += *pOtherStyles;
+				pFoundObj->Draw(pRenderer, pDefs, bIsClip, &oNewStyles);
+			}
+			else
+				pFoundObj->Draw(pRenderer, pDefs, bIsClip, &m_oStyles);
+		}
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 
 		return true;
 	}
 
-	CSvgGraphicsObject *CUse::Copy() const
-	{
-		return new CUse(*this);
-	}
-
-	void CUse::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
-	{
-	}
+	void CUse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	{}
 
 	TBounds CUse::GetBounds() const
 	{

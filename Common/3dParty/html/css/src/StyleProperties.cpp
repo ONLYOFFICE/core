@@ -838,6 +838,9 @@ namespace NSCSS
 			}
 			case TransformTranslate:
 			{
+				if (0. == oMatrix.tx() && 0. == oMatrix.ty())
+					return std::wstring();
+
 				wsValue = L"translate(";
 				wsValue += std::to_wstring(oMatrix.tx())  + L',';
 				wsValue += std::to_wstring(oMatrix.ty())  + L')';
@@ -845,6 +848,9 @@ namespace NSCSS
 			}
 			case TransformScale:
 			{
+				if (1. == oMatrix.sx() && 1. == oMatrix.sy())
+					return std::wstring();
+
 				wsValue = L"scale(";
 				wsValue += std::to_wstring(oMatrix.sx())  + L',';
 				wsValue += std::to_wstring(oMatrix.sy())  + L')';

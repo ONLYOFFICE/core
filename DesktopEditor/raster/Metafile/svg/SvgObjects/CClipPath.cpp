@@ -16,7 +16,7 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pDefs)
 			return false;
 
-		ApplyClip(pRenderer, pDefs);
+		CGraphicsContainer::Apply(pRenderer, &m_oStyles.m_oClip, pDefs);
 
 		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
 			pGraphicsObject->Draw(pRenderer, pDefs, true);

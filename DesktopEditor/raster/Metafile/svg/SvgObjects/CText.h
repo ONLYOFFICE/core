@@ -21,16 +21,13 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		bool AddObject(CTSpan* pObject) override;
 
 		void InheritStyles(const CTSpan* pTSpan);
-
-		CTSpan* Copy() const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
-
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
 		TBounds GetBounds() const override;
@@ -65,7 +62,7 @@ namespace SVG
 
 		static CText* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pOtherStyles = NULL) const override;
 	};
 
 	class CTextPath : public CText
@@ -73,7 +70,7 @@ namespace SVG
 	public:
 		CTextPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		static CTextPath* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 	private:

@@ -67,8 +67,7 @@ namespace SVG
 		// а лишь потом запускать само чтение)
 		// либо использовать SvgCalculator при отрисовке, а не при чтении
 		// (но тогда скорость самой отрисовки падает)
-		ScanStyles(oXml, pFile);
-		ScanDefs  (oXml, pFile);
+		ScanOther(oXml, pFile);
 
 		return LoadFromXmlNode(oXml, pContainer, pFile);
 	}
@@ -103,16 +102,10 @@ namespace SVG
 		{
 			CGraphicsContainer *pNewContainer = new CGraphicsContainer(oElement, pParent);
 
-			if (NULL == pNewContainer)
+			if (!AddObject<CSvgGraphicsObject>(pNewContainer, pContainer, pFile))
 				return false;
 
-			if (LoadFromXmlNode(oElement, pNewContainer, pFile))
-			{
-				pContainer->AddObject(pNewContainer);
-				return true;
-			}
-			else
-				return false;
+			return ReadChildrens(oElement, pNewContainer, pFile, pNewContainer);
 		}
 		else if (L"line" == wsElementName)
 			pObject = new CLine(oElement, pParent);
@@ -128,7 +121,7 @@ namespace SVG
 		{
 			CTextPath *pTextPath = CTextPath::Create(oElement, pParent, m_pFontManager, pFile);
 
-			if (!AddObject(pTextPath, pContainer, pFile))
+			if (!AddObject<CSvgGraphicsObject>(pTextPath, pContainer, pFile))
 				return false;
 
 			return ReadChildrens(oElement, pTextPath, pFile, pTextPath);
@@ -137,7 +130,7 @@ namespace SVG
 		{
 			CText *pText = CText::Create(oElement, pParent, m_pFontManager);
 
-			if (!AddObject(pText, pContainer, pFile))
+			if (!AddObject<CSvgGraphicsObject>(pText, pContainer, pFile))
 				return false;
 
 			return ReadChildrens(oElement, pText, pFile, pText);
@@ -146,7 +139,7 @@ namespace SVG
 		{
 			CTSpan *pTSpan = CTSpan::Create(oElement, pParent, m_pFontManager);
 
-			if (!AddObject(pTSpan, pContainer, pFile))
+			if (!AddObject<CSvgGraphicsObject>(pTSpan, pContainer, pFile))
 				return false;
 
 			return ReadChildrens(oElement, pTSpan, pFile, pTSpan);
@@ -171,7 +164,12 @@ namespace SVG
 		std::wstring wsElementName = oElement.GetName();
 
 		if (L"defs" == wsElementName)
-			return ReadChildrens(oElement, pDefs, pFile);
+			return ReadChildrens(oElement, (CGraphicsContainer*)pDefs, pFile);
+		else if (L"style" == wsElementName)
+		{
+			pFile->AddStyles(oElement.GetText());
+			return true;
+		}
 
 		CDefObject* pDefObject = NULL;
 
@@ -189,56 +187,48 @@ namespace SVG
 		return AddObject(pDefObject, pDefs, pFile);
 	}
 
-	bool CSvgParser::ScanDefs(XmlUtils::CXmlNode &oElement, CSvgFile *pFile) const
+	bool CSvgParser::ScanOther(XmlUtils::CXmlNode &oElement, CSvgFile *pFile) const
 	{
 		if (NULL == pFile || !oElement.IsValid())
 			return false;
 
-		XmlUtils::CXmlNodes arChilds;
+		const std::wstring& wsName = oElement.GetName();
 
-		oElement.GetChilds(arChilds);
-
-		XmlUtils::CXmlNode oChild;
-
-		for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
+		if (IsDefs(wsName))
 		{
-			if (!arChilds.GetAt(unChildrenIndex, oChild))
-				break;
+			pFile->AddDefs(oElement);
+			return true;
+		}
+		else if (L"style" == wsName)
+		{
+			pFile->AddStyles(oElement.GetText());
+			return true;
+		}
+		else if (L"svg" == wsName || L"g" == wsName)
+		{
+			XmlUtils::CXmlNodes arChilds;
 
-			if (L"defs" == oChild.GetName())
-				pFile->AddDefs(oChild);
+			oElement.GetChilds(arChilds);
 
-			oChild.Clear();
+			XmlUtils::CXmlNode oChild;
+
+			for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
+			{
+				if (!arChilds.GetAt(unChildrenIndex, oChild))
+					break;
+
+				ScanOther(oChild, pFile);
+
+				oChild.Clear();
+			}
 		}
 
 		return true;
 	}
 
-	bool CSvgParser::ScanStyles(XmlUtils::CXmlNode &oElement, CSvgFile *pFile) const
+	bool CSvgParser::IsDefs(const std::wstring &wsNodeName) const
 	{
-		if (NULL == pFile || !oElement.IsValid())
-			return false;
-
-		XmlUtils::CXmlNodes arChilds;
-
-		oElement.GetChilds(arChilds);
-
-		XmlUtils::CXmlNode oChild;
-
-		for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
-		{
-			if (!arChilds.GetAt(unChildrenIndex, oChild))
-				break;
-
-			if (L"style" == oChild.GetName())
-				pFile->AddStyles(oChild.GetText());
-			else if (L"defs" == oChild.GetName())
-				ScanStyles(oChild, pFile);
-
-			oChild.Clear();
-		}
-
-		return true;
+		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"clipPath" == wsNodeName || L"linearGradient" == wsNodeName || L"radialGradient" == wsNodeName;
 	}
 
 	template<typename TypeContainer>
@@ -269,8 +259,8 @@ namespace SVG
 		return true;
 	}
 
-	template <typename TypeObject, typename TypeContainer>
-	bool CSvgParser::AddObject(TypeObject *pObject, CContainer<TypeContainer> *pContainer, CSvgFile *pFile) const
+	template <typename TypeObject>
+	bool CSvgParser::AddObject(TypeObject *pObject, CContainer<TypeObject> *pContainer, CSvgFile *pFile) const
 	{
 		if (NULL == pObject || NULL == pContainer)
 			return false;

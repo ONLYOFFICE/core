@@ -170,6 +170,7 @@ public:
 	std::wstring m_sName;
 	std::wstring m_sNameConfig;
 	std::wstring m_sGuid;
+
 	CVersion* m_pVersion;
 	bool m_isValid;
 
@@ -632,8 +633,13 @@ private:
 				}
 
 				CPluginInfo* pPluginInfo = ReadPluginInfo(sConfigFile);
+				CPluginInfo* pInstalled = FindLocalPlugin(pPluginInfo->m_sGuid);
 
-				if (pPluginInfo)
+				if ( pInstalled )
+				{
+					sPrintInfo = L"Already installed";
+				}
+				else if ( pPluginInfo )
 				{
 					std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
 
@@ -701,7 +707,7 @@ private:
 				{
 					sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
 
-					bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false);
+					bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
 					bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
 
 					Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
@@ -740,7 +746,7 @@ private:
 		return bResult;
 	}
 
-	bool RemovePlugin(const std::wstring& sPlugin, bool bPrint = true)
+	bool RemovePlugin(const std::wstring& sPlugin, bool bSave = true, bool bPrint = true)
 	{
 		bool bResult = false;
 
@@ -785,8 +791,18 @@ private:
 
 					NSDirectory::DeleteDirectory(sPluginDir);
 
+					// Remove from array
+					for (size_t i = 0; i < m_arrInstalled.size(); i++)
+					{
+						if ( m_arrInstalled[i]->m_sGuid == pPlugin->m_sGuid )
+						{
+							m_arrInstalled.erase(m_arrInstalled.begin() + i);
+							break;
+						}
+					}
+
 					// Save to settings
-					if ( std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPlugin->m_sGuid) == m_arrRemovedGuids.end() )
+					if ( bSave && std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPlugin->m_sGuid) == m_arrRemovedGuids.end() )
 						m_arrRemovedGuids.push_back(pPlugin->m_sGuid);
 
 					bResult = true;
@@ -809,11 +825,8 @@ private:
 		// Backup plugins don't exist in the marketplace, without additional initialization
 		if ( !bBackup )
 		{
-			if ( !m_arrInstall.size() )
-				GetInstalledPlugins(false);
-
-			if ( !m_arrMarketplace.size() )
-				GetMarketPlugins(false);
+			GetInstalledPlugins(false);
+			GetMarketPlugins(false);
 		}
 	}
 

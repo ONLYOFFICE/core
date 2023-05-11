@@ -11,8 +11,8 @@ namespace NSDocxRenderer
 
 	void CTextLine::Clear()
 	{
-		for(auto& val: m_arConts)
-			delete val;
+		for(auto& val : m_arConts)
+				delete val;
 		m_arConts.clear();
 	}
 
@@ -64,12 +64,12 @@ namespace NSDocxRenderer
 			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
 			double dSpaceWideSize = pCurrent->CalculateWideSpace();
 
-			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
+			double dDifference = fabs(pCurrent->m_dLeft - pFirst->m_dRight);
 
 			//todo возможно стоит доработать логику
 			bool bIsEqual = pFirst->IsEqual(pCurrent);
-			bool bIsBigDelta = fabs(dDifference) > dSpaceDefaultSize;
-			bool bIsVeryBigDelta = fabs(dDifference) > dSpaceWideSize;
+			bool bIsBigDelta = dDifference > dSpaceDefaultSize;
+			bool bIsVeryBigDelta = dDifference > dSpaceWideSize;
 
 			if (bIsVeryBigDelta)
 			{

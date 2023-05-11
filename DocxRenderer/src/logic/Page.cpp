@@ -76,7 +76,8 @@ namespace NSDocxRenderer
 	void CPage::ClearTextLines()
 	{
 		for(auto& val : m_arTextLine)
-				val->Clear();
+				if(!val->m_bIsNotNecessaryToUse)
+					delete val;
 		m_arTextLine.clear();
 	}
 

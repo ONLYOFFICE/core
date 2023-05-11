@@ -298,7 +298,7 @@ namespace Oox2Odf
 			odf_context()->drawing_context()->set_position(x, y);
 
 			if (bTextRelativeX && bTextRelativeY)
-				odf_context()->drawing_context()->set_anchor(3);
+				odf_context()->drawing_context()->set_anchor(4);
 			else if ((anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
 				odf_context()->drawing_context()->set_anchor(*anchor_type_x);
 			else if (x && y)

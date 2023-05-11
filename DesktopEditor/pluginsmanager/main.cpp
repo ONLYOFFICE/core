@@ -100,6 +100,13 @@ std::wstring CorrectValue(const std::wstring& value)
 }
 
 // Manager
+enum PluginStatus
+{
+	Removed = 0,
+	Installed,
+	Backup
+};
+
 class CVersion
 {
 private:
@@ -157,10 +164,11 @@ public:
 
 	bool operator == (CVersion& oVersion)
 	{
-		return m_major == oVersion.m_major
-				&& m_minor == oVersion.m_minor
-				&& m_revision == oVersion.m_revision
-				&& m_build == oVersion.m_build;
+		return m_major == oVersion.m_major &&
+				m_minor == oVersion.m_minor &&
+				m_revision == oVersion.m_revision &&
+				m_build == oVersion.m_build &&
+				m_sVersion == oVersion.m_sVersion;
 	}
 };
 
@@ -192,12 +200,12 @@ public:
 		m_isValid = true;
 	}
 
-	bool operator == (CPluginInfo& oPlugin)
+	bool operator == (const CPluginInfo& oPlugin)
 	{
-		return m_sName == oPlugin.m_sName
-				&& m_sNameConfig == oPlugin.m_sNameConfig
-				&& m_sGuid == oPlugin.m_sGuid
-				&& m_pVersion == oPlugin.m_pVersion;
+		return m_sName == oPlugin.m_sName &&
+				m_sNameConfig == oPlugin.m_sNameConfig &&
+				m_sGuid == oPlugin.m_sGuid &&
+				m_pVersion == oPlugin.m_pVersion;
 	}
 };
 
@@ -215,10 +223,7 @@ public:
 	std::wstring m_sSettingsFile;
 
 	std::vector<std::wstring> m_arrInstall, m_arrRestore, m_arrUpdate, m_arrRemove;
-	std::vector<CPluginInfo*> m_arrInstalled, m_arrMarketplace, m_arrBackup;
-
-	// Setting
-	std::vector<std::wstring> m_arrRemovedGuids;
+	std::vector<CPluginInfo*> m_arrInstalled, m_arrRemoved, m_arrMarketplace, m_arrBackup;
 
 	CPluginsManager()
 	{
@@ -264,12 +269,15 @@ public:
 		if (NSFile::CFileBinary::Exists(m_sSettingsFile))
 			NSFile::CFileBinary::Remove(m_sSettingsFile);
 
-		m_arrRemovedGuids.clear();
+		m_arrRemoved.clear();
 	}
 
 	bool ReadSettings()
 	{
-		bool bResult = false;
+		// Format
+		// name|version|guid, ...
+
+		m_arrRemoved.clear();
 
 		if (NSFile::CFileBinary::Exists(m_sSettingsFile))
 		{
@@ -285,24 +293,41 @@ public:
 					NSStringUtils::string_replace(sRemovedGuids, L"\r", L"");
 					sRemovedGuids = CorrectValue(sRemovedGuids);
 
-					bResult = SplitStringAsVector(sRemovedGuids, L",", m_arrRemovedGuids);
+					std::vector<std::wstring> arrTmp;
+					if ( SplitStringAsVector(sRemovedGuids, L",", arrTmp) )
+					{
+						for (size_t i = 0; i < arrTmp.size(); i++)
+						{
+							std::vector<std::wstring> arrItems;
+							if ( SplitStringAsVector(arrTmp[i], L"|", arrItems) && (arrItems.size() == 3) )
+							{
+								CPluginInfo* pPluginInfo = new CPluginInfo(arrItems[0], arrItems[0], arrItems[2], new CVersion(arrItems[1]));
+								m_arrRemoved.push_back(pPluginInfo);
+							}
+						}
+					}
 				}
 			}
 		}
 
-		return bResult;
+		return m_arrRemoved.size() > 0;
 	}
 
 	bool SaveSettings()
 	{
 		bool bResult = false;
 
-		if ( m_arrRemovedGuids.size() )
+		if ( m_arrRemoved.size() )
 		{
 			std::wstring sData = sSetRemoved;
-			for (size_t i = 0; i < m_arrRemovedGuids.size(); i++)
+			std::wstring sDelim = L"|";
+
+			for (size_t i = 0; i < m_arrRemoved.size(); i++)
 			{
-				sData += m_arrRemovedGuids[i] + ((i < m_arrRemovedGuids.size() - 1) ? L"," : L"");
+				sData += m_arrRemoved[i]->m_sName + sDelim +
+						 m_arrRemoved[i]->m_pVersion->m_sVersion + sDelim +
+						 m_arrRemoved[i]->m_sGuid +
+						 ((i < m_arrRemoved.size() - 1) ? L"," : L"");
 			}
 			sData += L"\n";
 
@@ -406,12 +431,21 @@ public:
 		return bResult;
 	}
 
-	bool RemovePlugins()
+	bool RemovePlugins(bool bAll = false)
 	{
 		bool bResult = true;
-		Message(L"Remove plugins ...", L"", true, true);
+		Message(bAll ? L"Remove all installed plugins ..." : L"Remove plugins ...", L"", true, true);
 
 		InitPlugins();
+
+		if ( bAll )
+		{
+			m_arrRemove.clear();
+			for (size_t i = 0; i < m_arrInstalled.size(); i++)
+			{
+				m_arrRemove.push_back(m_arrInstalled[i]->m_sGuid);
+			}
+		}
 
 		if (m_sPluginsDir.length() && m_arrRemove.size() && m_arrMarketplace.size())
 		{
@@ -425,29 +459,7 @@ public:
 		GetInstalledPlugins();
 
 		return bResult;
-	}
-
-	bool RemoveAllPlugins()
-	{
-		bool bResult = true;
-		Message(L"Remove all installed plugins ...", L"", true, true);
-
-		InitPlugins();
-
-		if (m_sPluginsDir.length() && m_arrInstalled.size())
-		{
-			std::vector<CPluginInfo*>::iterator it;
-			for (it = m_arrInstalled.begin(); it != m_arrInstalled.end(); it++)
-			{
-				std::wstring sName = (*it)->m_sNameConfig;
-				bResult &= RemovePlugin(sName);
-			}
-		}
-
-		GetInstalledPlugins();
-
-		return bResult;
-	}
+	}	
 
 	// Local and Marketplace
 	void GetInstalledPlugins(bool bPrint = true)
@@ -508,15 +520,37 @@ public:
 		return bResult;
 	}
 
+	void PrintRemovedPlugins()
+	{
+		Message(L"Removed plugins:", L"", true, true);
+
+		for (size_t i = 0; i < m_arrRemoved.size(); i++)
+		{
+			MessagePluginInfo(m_arrRemoved[i]->m_sName, m_arrRemoved[i]->m_pVersion->m_sVersion, m_arrRemoved[i]->m_sGuid);
+		}
+	}
+
 private:
 	// Single
-	CPluginInfo* FindLocalPlugin(const std::wstring& sPlugin, bool bInstalled = true)
+	CPluginInfo* FindLocalPlugin(const std::wstring& sPlugin, PluginStatus status = Installed)
 	{
 		CPluginInfo* pResult = NULL;
 
 		if ( sPlugin.length() )
 		{
-			std::vector<CPluginInfo*>& arrPlugins = bInstalled ? m_arrInstalled : m_arrBackup;
+			std::vector<CPluginInfo*> arrPlugins;
+			switch (status)
+			{
+				case Removed:
+					arrPlugins = m_arrRemoved;
+					break;
+				case Backup:
+					arrPlugins = m_arrBackup;
+					break;
+				 default:
+					arrPlugins = m_arrInstalled;
+					break;
+			}
 
 			if ( arrPlugins.size() )
 			{
@@ -645,7 +679,8 @@ private:
 
 					// Check settings
 					// Can install if user hasn't deleted the plugin before
-					if ( std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPluginInfo->m_sGuid) == m_arrRemovedGuids.end() )
+					CPluginInfo* pRemoved = FindLocalPlugin(pPluginInfo->m_sGuid, Removed);
+					if ( !pRemoved )
 					{
 						if (NSDirectory::Exists(sPluginDir))
 							NSDirectory::DeleteDirectory(sPluginDir);
@@ -657,7 +692,7 @@ private:
 					}
 					else
 					{
-						sPrintInfo = L"Installation aborted. The plugin has been removed before.\n" \
+						sPrintInfo = L"Installation cancelled. The plugin has been removed before.\n" \
 									 L"Use --reset command to reset settings";
 					}
 				}
@@ -724,7 +759,7 @@ private:
 
 		if (sPlugin.length())
 		{
-			CPluginInfo* pResult = FindLocalPlugin(sPlugin, false);
+			CPluginInfo* pResult = FindLocalPlugin(sPlugin, Backup);
 
 			if ( pResult )
 			{
@@ -802,8 +837,9 @@ private:
 					}
 
 					// Save to settings
-					if ( bSave && std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPlugin->m_sGuid) == m_arrRemovedGuids.end() )
-						m_arrRemovedGuids.push_back(pPlugin->m_sGuid);
+					CPluginInfo* pRemoved = FindLocalPlugin(pPlugin->m_sGuid, Removed);
+					if ( bSave && !pRemoved )
+						m_arrRemoved.push_back(pPlugin);
 
 					bResult = true;
 				}
@@ -1186,6 +1222,10 @@ int main(int argc, char** argv)
 			{
 				oManager.GetInstalledPlugins();
 			}
+			else if (sKey == sCmdPrintRemoved)
+			{
+				oManager.PrintRemovedPlugins();
+			}
 			else if (sKey == sCmdPrintMarketplace)
 			{
 				oManager.GetMarketPlugins();
@@ -1242,7 +1282,7 @@ int main(int argc, char** argv)
 			}
 			else if (sKey == sCmdRemoveAll)
 			{
-				oManager.RemoveAllPlugins();
+				oManager.RemovePlugins(true);
 			}
 		}
 	}

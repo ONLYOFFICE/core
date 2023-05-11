@@ -44,6 +44,7 @@ std::wstring sCmdPluginsDir =                   L"--directory";
 std::wstring sCmdMarketplaceUrl =               L"--marketplace";
 
 std::wstring sCmdPrintInstalled =               L"--print-installed";
+std::wstring sCmdPrintRemoved =                 L"--print-removed";
 std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
 std::wstring sCmdPrintBackup =                  L"--print-backup";
 
@@ -59,7 +60,7 @@ std::wstring sCmdRemoveAll =                    L"--remove-all";
 std::wstring sSetRemoved =                      L"--removed=";
 
 std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
-									   sCmdPrintInstalled, sCmdPrintMarketplace, sCmdPrintBackup,
+									   sCmdPrintInstalled, sCmdPrintRemoved, sCmdPrintMarketplace, sCmdPrintBackup,
 									   sCmdReset, sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
 									   sCmdRemove, sCmdRemoveAll};
 
@@ -92,6 +93,8 @@ L"  --marketplace        = Optional parameter. Set plugins marketplace URL in qu
 L"                         Default is https://onlyoffice.github.io\n\n" \
 
 L"  --print-installed    = Optional parameter. Print installed plugins. Parameter without value.\n\n" \
+
+L"  --print-removed      = Optional parameter. Print removed plugins. Parameter without value.\n\n" \
 
 L"  --print-marketplace  = Optional parameter. Print available plugins from the marketplace. Parameter without value.\n\n" \
 

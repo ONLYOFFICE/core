@@ -443,7 +443,7 @@ void odf_drawing_context::start_group()
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 	group_state->graphic_properties = impl_->current_graphic_properties;
 
@@ -793,7 +793,7 @@ void odf_drawing_context::Impl::create_draw_base(eOdfDrawElements type)
 	if (style_)
 	{
         style_name = style_->style_name_;
-		current_graphic_properties = style_->content_.get_graphic_properties();
+		current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 
 	if (is_presentation_ && current_drawing_state_.presentation_class_)
@@ -1300,7 +1300,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 
 		if (impl_->current_drawing_state_.name_.empty())
 		{
@@ -2727,9 +2727,17 @@ void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 		start_frame();
 	else
 	{
-		//remove text_box - он лишний (оставляя фейковый, который не запишется)
-		impl_->current_level_.back().elm = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
-		
+		office_element_ptr elm = office_element_ptr();
+		if (impl_->current_level_.empty())
+		{
+			odf_level_state	level_state(elm);
+			impl_->current_level_.push_back(level_state);
+		}
+		else
+		{
+			//remove text_box - он лишний (оставляя фейковый, который не запишется)
+			impl_->current_level_.back().elm = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
+		}
 		if (impl_->current_level_.size() > 1)
 		{
 			draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_[impl_->current_level_.size() - 2].elm.get());
@@ -2776,7 +2784,7 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	if (style_)
 	{
         style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 	control->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 //--------------------	

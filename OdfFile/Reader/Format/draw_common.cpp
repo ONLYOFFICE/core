@@ -238,6 +238,9 @@ int GetMargin(const graphic_format_properties_ptr & graphicProperties, BorderSid
 }
 int Compute_BorderWidth(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide)
 {
+	if (!graphicProperties)
+		return 0;
+
     _CP_OPT(border_style)	borderValue;
     _CP_OPT(length)			lengthValue;
 

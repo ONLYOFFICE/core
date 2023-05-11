@@ -152,6 +152,7 @@ public:
 	chart::legend				legend_;
 	chart::plot_area			plot_area_;
 
+	chart::simple				data_table_;
 	chart::simple				wall_;
 	chart::simple				floor_;
 	
@@ -213,7 +214,10 @@ class process_build_object
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
 		public visitor<chart_date_scale>,
+		public visitor<chartooo_date_scale>,
 		public visitor<chart_grid>,
+
+		public visitor<chart_data_table>,
 
 		public visitor<chart_series>,
 		public visitor<chart_domain>,
@@ -293,8 +297,10 @@ public:
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
 	virtual void visit(chart_date_scale		& val);
-	
-	virtual void visit(table_table			& val);
+	virtual void visit(chartooo_date_scale	& val);
+	virtual void visit(chart_data_table		& val);
+
+	virtual void visit(table_table				& val);
 
 	virtual void visit(table_table_rows			& val);
 	virtual void visit(table_table_row			& val);

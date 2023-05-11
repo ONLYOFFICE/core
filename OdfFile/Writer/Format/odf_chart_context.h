@@ -105,8 +105,14 @@ public:
 		void set_label_show_legend_key (bool val);
 		void set_label_show_percent (bool val);
 		void set_label_show_ser_name( bool val);
-		void set_label_show_values (bool val);		
-		
+		void set_label_show_values (bool val);	
+
+		void start_data_table();
+			void set_showHorzBorder(bool val);
+			void set_m_showVertBorder(bool val);
+			void set_showOutline(bool val);
+			void set_showKeys(bool val);
+
 		void start_axis();
 			void set_axis_id(unsigned int id);
 			void set_axis_dimension(int type);

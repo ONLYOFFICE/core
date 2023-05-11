@@ -57,8 +57,8 @@ void SXVDEx::readFields(CFRecord& record)
 	unsigned char	flags2;
 
 	record >> flags1 >> flags2 >> citmAutoShow >> isxdiAutoSort >> isxdiAutoShow >> ifmt;
-
-	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
+	
 	fShowAllItems	= GETBIT(flags1, 0);
 	fDragToRow		= GETBIT(flags1, 1);
 	fDragToColumn	= GETBIT(flags1, 2);

@@ -307,9 +307,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 			case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)	ct_plotArea->m_Items[i]);break;			
 		}
 	}
-	if (ct_plotArea->m_dTable)
-	{
-	}
+	convert(ct_plotArea->m_dTable);
+
 	convert(ct_plotArea->m_spPr.GetPointer());
 	if (chart3D/* == false*/)
 	{
@@ -320,6 +319,26 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->end_element();
 	}
 }
+void OoxConverter::convert(OOX::Spreadsheet::CT_DTable *dTable)
+{
+	if (dTable == NULL)return;
+
+	odf_context()->chart_context()->start_data_table();
+	
+	if (dTable->m_showHorzBorder.IsInit())
+		odf_context()->chart_context()->set_showHorzBorder(*dTable->m_showHorzBorder);
+	if (dTable->m_showVertBorder.IsInit())
+		odf_context()->chart_context()->set_m_showVertBorder(*dTable->m_showVertBorder);
+	if (dTable->m_showOutline.IsInit())
+		odf_context()->chart_context()->set_showOutline(*dTable->m_showOutline);
+	if (dTable->m_showKeys.IsInit())
+		odf_context()->chart_context()->set_showKeys(*dTable->m_showKeys);
+
+	convert(dTable->m_spPr.GetPointer());
+	convert(dTable->m_txPr.GetPointer());
+	odf_context()->chart_context()->end_element();
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 {
 	if (axis == NULL)return;

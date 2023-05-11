@@ -494,22 +494,19 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			auto pColor = new XFPropColor;
 			pColor->deserialize(oReader);
 			xfPropDataBlob.reset(pColor);
-		}
-			break;
+		}break;
 		case 0x0003:
 		{
 			auto pGradient = new XFPropGradient;
 			pGradient->deserialize(oReader);
 			xfPropDataBlob.reset(pGradient);
-		}
-			break;
+		}break;
 		case 0x0004:
 		{
 			auto pGradientStop = new XFPropGradientStop;
 			pGradientStop->deserialize(oReader);
 			xfPropDataBlob.reset(pGradientStop);
-		}
-			break;
+		}break;
 		case 0x0006:
 		case 0x0007:
 		case 0x0008:
@@ -567,7 +564,6 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		case 0x0026:
 			xfPropDataBlob.reset(new LPWideString(oReader.GetText()));
 			break;		
-	
 	}
 }
 int XFProp::serialize(std::wostream & stream)

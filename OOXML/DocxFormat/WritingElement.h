@@ -1222,6 +1222,7 @@ namespace OOX
 		et_x_WorkbookPr,
 		et_x_WorkbookProtection,
 		et_x_WorkbookView, // <workbookView>
+		et_x_FileSharing,
 		et_x_DefinedNames, // <definedNames>
 		et_x_DefinedName, // <definedName>
 		et_x_Sheets, // <sheets>

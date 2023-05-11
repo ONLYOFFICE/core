@@ -31,6 +31,7 @@
  */
 
 #include "office_annotation.h"
+#include "office_meta.h"
 
 #include <xml/xmlchar.h>
 
@@ -42,46 +43,6 @@ namespace cpdoccore {
 	using namespace odf_types;
 
 namespace odf_writer {
-
-// dc:date
-//-------------------------------------------------------------------------------------------------------------------
-const wchar_t * dc_date::ns = L"dc";
-const wchar_t * dc_date::name = L"date";
-
-void dc_date::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
-void dc_date::serialize(std::wostream & _Wostream)
-{
- 	CP_XML_WRITER(_Wostream)
-    {
-		CP_XML_NODE_SIMPLE()
-        { 	
-			CP_XML_STREAM() << content_;
-		}
-	}
-}
-// dc:creator
-//-------------------------------------------------------------------------------------------------------------------
-const wchar_t * dc_creator::ns = L"dc";
-const wchar_t * dc_creator::name = L"creator";
-
-void dc_creator::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
-void dc_creator::serialize(std::wostream & _Wostream)
-{
- 	CP_XML_WRITER(_Wostream)
-    {
-		CP_XML_NODE_SIMPLE()
-        { 	
-			CP_XML_STREAM() << content_;
-		}
-	}
-}
-//-------------------------------------------------------------------------------------------------------------------
 
 void office_annotation_attr::serialize(CP_ATTR_NODE)
 {

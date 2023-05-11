@@ -86,12 +86,12 @@ public:
 	const size_t	RegisterFillId		(const FillInfo& fill);	
 	const size_t	RegisterFontId		(const FontInfo& font);
 	const int		RegistrDxfn			(const std::wstring& dx_style);
+	_UINT16			RegisterNumFormat	(_UINT16 ifmt, const std::wstring & format_code);
 
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
 	void			CalculateAnchor(int colL, int colR, int rowT, int rowB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy);
-
 
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
@@ -120,6 +120,7 @@ public:
 
 	_UINT32									last_Axes_id;
 	_UINT32									last_Extern_id;
+	_UINT32									last_User_NumFmt;
 
 	std::map<std::wstring, BaseObjectPtr>	mapStrConnection;
 	std::map<int, BaseObjectPtr>			mapIdConnection;
@@ -200,7 +201,7 @@ public:
 	int								cellStyleDxfs_count;
 
 	std::map<std::wstring, int>		mapDefaultFormatCode;
-	std::map<_UINT16, bool>			mapUsedFormatCode;
+	std::map<_UINT16, _UINT16>		mapUsedFormatCode; //original, used
 
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;
@@ -210,16 +211,17 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::wstring> mapTableNames;
     std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+
 	static std::unordered_map<int, std::wstring>		mapTableNames_static;
 	static std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames_static;
     std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
-    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
-    int                     		currentPivotCacheRecord;
+    std::unordered_map<int, std::vector<XLS::ElementType>> pivotCacheRecordType;
+    int currentPivotCacheRecord;
 
-	XlsConverter					*xls_converter;
+	XlsConverter *xls_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

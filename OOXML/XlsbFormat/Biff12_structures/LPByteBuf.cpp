@@ -54,8 +54,23 @@ namespace XLSB
     {
         return BiffStructurePtr(new LPByteBuf(*this));
     }
+	std::wstring LPByteBuf::GetBase64()
+	{
+		if (rgbData.empty()) return L"";
+		
+		int nLength = 0;
+		char *pData = NULL;
+		std::string result;
 
-    void LPByteBuf::load(XLS::CFRecord& record)
+		NSFile::CBase64Converter::Encode(rgbData.data(), rgbData.size(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+		if (pData)
+		{
+			result = std::string(pData, nLength);
+			delete[]pData; pData = NULL;
+		}
+		return std::wstring(result.begin(), result.end());
+	}
+	void LPByteBuf::load(XLS::CFRecord& record)
     {
         record >> cbLength;
 

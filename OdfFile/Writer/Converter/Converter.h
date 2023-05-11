@@ -498,7 +498,8 @@ public:
 		
 		OOX::IFileContainer							*oox_current_child_document;
 		
-		void convert (OOX::JsaProject *jsaProject);	
+		void convert_meta(OOX::CApp *app, OOX::CCore *core);
+		void convert (OOX::JsaProject *jsaProject);
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
 		bool convert (std::wstring sSchemeColor, DWORD & argb);
 		void convert_font(PPTX::Theme *theme, std::wstring & font);
@@ -639,6 +640,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
+		void convert(OOX::Spreadsheet::CT_DTable				*dTable);
 		
 		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
 //.chart.ex...........................................................................................................................

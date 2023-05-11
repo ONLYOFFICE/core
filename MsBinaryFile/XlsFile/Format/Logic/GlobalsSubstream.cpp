@@ -282,7 +282,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_FileSharing:		proc.optional<FileSharing>();	break;
+			case rt_FileSharing:
+			{
+				if (proc.optional<FileSharing>())
+				{
+					m_FileSharing = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CodePage:
 			{
 				if (proc.optional<CodePage>())
@@ -864,6 +871,7 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 {
 	BookExt *book_ext = dynamic_cast<BookExt*>(m_BookExt.get());
 	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
+	FileSharing *file_sharing = dynamic_cast<FileSharing*>(m_FileSharing.get());
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -877,6 +885,18 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 			{
 				CP_XML_ATTR(L"hidePivotFieldList",	book_ext->fHidePivotList);
 				CP_XML_ATTR(L"filterPrivacy",		book_ext->fFilterPrivacy);
+			}
+		}
+		if (file_sharing)
+		{
+			CP_XML_NODE(L"fileSharing")
+			{
+				if (file_sharing->fReadOnlyRec.value())
+				{
+					CP_XML_ATTR(L"readOnlyRecommended", 0 != (*file_sharing->fReadOnlyRec.value()));
+				}
+				CP_XML_ATTR(L"userName", file_sharing->stUNUsername.value());
+				CP_XML_ATTR(L"password", file_sharing->wResPass);
 			}
 		}
 	}

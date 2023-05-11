@@ -388,17 +388,7 @@ core_static_link_libstd {
     message(core_static_link_libstd)
 }
 plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
-
     TARGET_EXT = .so
-}
-}
-
-core_mac {
-plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
 }
 }
 
@@ -406,6 +396,26 @@ core_windows {
 plugin {
     TARGET_EXT = .dll
 }
+}
+
+!core_windows {
+    plugin:CONFIG += config_hidden_symbols
+    staticlib:CONFIG += config_hidden_symbols
+}
+
+config_hidden_symbols {
+    QMAKE_CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+    QMAKE_CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+
+    core_mac:CONFIG += clang_no_exclude_libs
+    core_ios:CONFIG += clang_no_exclude_libs
+
+    !clang_no_exclude_libs {
+        plugin:QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        equals(TEMPLATE, app) {
+            QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        }
+    }
 }
 
 # BUILD_PATHS

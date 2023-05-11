@@ -118,10 +118,15 @@ public:
 	_CP_OPT(odf_types::chart_error_category)		error_category_;
 	_CP_OPT(odf_types::Bool)						right_angled_axes_;
 
-	_CP_OPT(std::wstring)				axis_label_position_;
-	_CP_OPT(std::wstring)				axis_position_;									
+	_CP_OPT(std::wstring) axis_label_position_;
+	_CP_OPT(std::wstring) axis_position_;									
 
 	odf_types::common_rotation_angle_attlist common_rotation_angle_attlist_;
+	
+	_CP_OPT(odf_types::Bool) show_horizontal_border_;
+	_CP_OPT(odf_types::Bool) show_vertical_border_;
+	_CP_OPT(odf_types::Bool) show_outline_;
+	_CP_OPT(odf_types::Bool) show_keys_;
 };
 typedef boost::shared_ptr<chart_format_properties> chart_format_properties_ptr;
 

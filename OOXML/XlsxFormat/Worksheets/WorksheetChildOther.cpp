@@ -158,10 +158,8 @@ namespace OOX
 					if (!ptr->rangeProtectionTitleSDRel.rgchTitle.value().empty())
 						m_oName = ptr->rangeProtectionTitleSDRel.rgchTitle.value();
 
-					m_oHashValue = std::wstring(ptr->ipdPasswordData.rgbHash.rgbData.begin(),
-						ptr->ipdPasswordData.rgbHash.rgbData.end());
-					m_oSaltValue = std::wstring(ptr->ipdPasswordData.rgbSalt.rgbData.begin(),
-						ptr->ipdPasswordData.rgbSalt.rgbData.end());
+					m_oHashValue = ptr->ipdPasswordData.rgbHash.GetBase64();
+					m_oSaltValue = ptr->ipdPasswordData.rgbSalt.GetBase64();
 				}
 			}
 
@@ -2020,10 +2018,8 @@ namespace OOX
 				{
 					m_oAlgorithmName = ptr->ipdPasswordData.szAlgName.value();
 					m_oSpinCount = ptr->dwSpinCount;
-					m_oHashValue = std::wstring(ptr->ipdPasswordData.rgbHash.rgbData.begin(),
-						ptr->ipdPasswordData.rgbHash.rgbData.end());
-					m_oSaltValue = std::wstring(ptr->ipdPasswordData.rgbSalt.rgbData.begin(),
-						ptr->ipdPasswordData.rgbSalt.rgbData.end());
+					m_oHashValue = ptr->ipdPasswordData.rgbHash.GetBase64();
+					m_oSaltValue = ptr->ipdPasswordData.rgbSalt.GetBase64();
 					m_oAutoFilter = (bool)ptr->fAutoFilter;
 					m_oContent = true;
 					m_oDeleteColumns = (bool)ptr->fDeleteColumns;
@@ -2060,10 +2056,8 @@ namespace OOX
 				{
 					m_oAlgorithmName = ptr->ipdPasswordData.szAlgName.value();
 					m_oSpinCount = ptr->dwSpinCount;
-					m_oHashValue = std::wstring(ptr->ipdPasswordData.rgbHash.rgbData.begin(),
-						ptr->ipdPasswordData.rgbHash.rgbData.end());
-					m_oSaltValue = std::wstring(ptr->ipdPasswordData.rgbSalt.rgbData.begin(),
-						ptr->ipdPasswordData.rgbSalt.rgbData.end());
+					m_oHashValue = ptr->ipdPasswordData.rgbHash.GetBase64();
+					m_oSaltValue = ptr->ipdPasswordData.rgbSalt.GetBase64();
 					m_oObjects = (bool)ptr->fObjects;
 					m_oSheet = (bool)ptr->fLocked;
 				}

@@ -237,6 +237,11 @@ namespace OOX
 
 					if (workBookStream->m_FRTWORKBOOK != nullptr)
 						m_oExtLst = workBookStream->m_FRTWORKBOOK;
+					
+					if (workBookStream->m_BrtFileSharingIso != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
+					else if (workBookStream->m_BrtFileSharing != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharing;
 				}
 
 				//workBookStream.reset();
@@ -254,7 +259,9 @@ namespace OOX
 		}
 		std::wstring CWorkbook::toXML() const
 		{
-			return _T("");
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
 		}
 		void CWorkbook::read(const CPath& oRootPath, const CPath& oPath)
 		{
@@ -294,6 +301,8 @@ namespace OOX
 			writer.WriteString(L"<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
+			if (m_oFileSharing.IsInit())
+				m_oFileSharing->toXML(writer);
 			if (m_oWorkbookPr.IsInit())
 				m_oWorkbookPr->toXML(writer);
 			if (m_oWorkbookProtection.IsInit())
@@ -348,6 +357,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						m_oPivotCaches = oReader;
 					else if (L"extLst" == sName)
 						m_oExtLst = oReader;
+					else if (L"fileSharing" == sName)
+						m_oFileSharing = oReader;
 					else if (L"oleSize" == sName)
 					{
 						WritingElement_ReadAttributes_Start(oReader)
@@ -359,7 +370,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						WritingElement_ReadAttributes_Start(oReader)
 							WritingElement_ReadAttributes_Read_if(oReader, L"appName", m_oAppName)
 						WritingElement_ReadAttributes_End(oReader)
-					}					
+					}		
 					else if (L"WindowHeight" == sName)
 					{
 					}

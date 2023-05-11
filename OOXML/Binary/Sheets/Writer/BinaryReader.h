@@ -208,6 +208,7 @@ namespace BinXlsxRW
 		int ReadWorkbookTableContent(BYTE type, long length, void* poResult);
 		int ReadWorkbookPr(BYTE type, long length, void* poResult);
 		int ReadProtection(BYTE type, long length, void* poResult);
+		int ReadFileSharing(BYTE type, long length, void* poResult);
 		int ReadBookViews(BYTE type, long length, void* poResult);
 		int ReadWorkbookView(BYTE type, long length, void* poResult);
 		int ReadExternalReferences(BYTE type, long length, void* poResult);

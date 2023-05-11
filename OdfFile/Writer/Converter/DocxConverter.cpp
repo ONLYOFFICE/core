@@ -213,7 +213,8 @@ bool DocxConverter::convertDocument()
 	convert_styles();
 
 	convert_settings(); 
-	
+	convert_meta(docx_document->m_pApp, docx_document->m_pCore);
+
 	convert_document();
 
 	//удалим уже ненужный документ docx 

@@ -117,6 +117,11 @@ void chart_format_properties::serialize(std::wostream & _Wostream ,const wchar_t
 			CP_XML_ATTR_OPT(L"chart:right-angled-axes",		right_angled_axes_);
 
 			common_rotation_angle_attlist_.serialize(CP_GET_XML_NODE());
+			
+			CP_XML_ATTR_OPT(L"chart:show-horizontal-border", show_horizontal_border_);
+			CP_XML_ATTR_OPT(L"chart:show-vertical-border", show_vertical_border_);
+			CP_XML_ATTR_OPT(L"chart:show-outline", show_outline_);
+			CP_XML_ATTR_OPT(L"chart:show-keys", show_keys_);
 		}
 	}
 }

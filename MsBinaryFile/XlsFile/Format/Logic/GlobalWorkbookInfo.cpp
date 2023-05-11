@@ -102,6 +102,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	
 	last_Axes_id			= 0x2000000;
 	last_Extern_id			= 1;
+	last_User_NumFmt		= 165;
 	lcid_user				= -1;
 
 	Version					= 0x0600; 
@@ -221,7 +222,29 @@ void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
 	colors_palette.insert(std::make_pair(id, rgb));
 }
+_UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring & format_code)
+{
+	_UINT16 ifmt_used = ifmt;
 
+	std::map<_UINT16, _UINT16>::iterator pFind = mapUsedFormatCode.find(ifmt);
+	if (pFind != mapUsedFormatCode.end())
+	{
+		return pFind->second;
+	}
+	else
+	{
+		if (ifmt > 49)
+		{
+			ifmt_used = last_User_NumFmt++;
+		}
+		else
+		{
+			//todooo проверка по mapDefaultFormatCode -> ooxml fmtNum format code
+		}
+		mapUsedFormatCode.insert(std::make_pair(ifmt, ifmt_used));
+	}
+	return ifmt_used;
+}
 const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
 {
 	if (dxfn.empty() == true) return -1;

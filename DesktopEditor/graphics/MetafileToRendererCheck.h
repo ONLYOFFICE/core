@@ -39,7 +39,7 @@
 
 namespace NSOnlineOfficeBinToPdf
 {
-    class CMetafilePageInfo
+	class CMetafilePageInfo
 	{
 	public:
 		double width;
@@ -57,11 +57,11 @@ namespace NSOnlineOfficeBinToPdf
 		}
 	};
 
-	class CMetafilePagesInfo
+	class GRAPHICS_DECL CMetafilePagesInfo
 	{
 	public:
 		int PagesCount;
-        std::vector<CMetafilePageInfo> arSizes;
+		std::vector<CMetafilePageInfo> arSizes;
 
 	public:
 		CMetafilePagesInfo()
@@ -73,11 +73,11 @@ namespace NSOnlineOfficeBinToPdf
 		inline void AddPage()
 		{
 			++PagesCount;
-            arSizes.push_back(CMetafilePageInfo());
+			arSizes.push_back(CMetafilePageInfo());
 		}
 
-        void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);
-    };
+		void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);
+	};
 }
 
 #endif // _BUILD_METAFILE_TO_IRENDERER_H_

@@ -443,7 +443,7 @@ public:
 			m_arrRemove.clear();
 			for (size_t i = 0; i < m_arrInstalled.size(); i++)
 			{
-				m_arrRemove.push_back(m_arrInstalled[i]->m_sGuid);
+				m_arrRemove.push_back(m_arrInstalled[i]->m_sName);
 			}
 		}
 

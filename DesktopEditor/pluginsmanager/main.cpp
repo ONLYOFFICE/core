@@ -33,13 +33,13 @@
 #include <iostream>
 #include <map>
 #include <iomanip>
-
 #include <locale.h>
 
 #include "help.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -55,6 +55,12 @@
 #ifdef LINUX
 #include <unistd.h>
 #include <stdio.h>
+#endif
+
+#ifdef LINUX
+# define APP_DATA_PATH L"/desktopeditors/data"
+#else
+# define APP_DATA_PATH L"/DesktopEditors/data"
 #endif
 
 // Misc
@@ -204,13 +210,22 @@ public:
 	std::wstring m_sPluginsDir;
 	std::wstring m_sMarketplaceUrl;
 
+	std::wstring m_sSettingsDir;
+	std::wstring m_sSettingsFile;
+
 	std::vector<std::wstring> m_arrInstall, m_arrRestore, m_arrUpdate, m_arrRemove;
-	std::vector<CPluginInfo*> m_arrBackup, m_arrInstalled, m_arrMarketplace;
+	std::vector<CPluginInfo*> m_arrInstalled, m_arrMarketplace, m_arrBackup;
+
+	// Setting
+	std::vector<std::wstring> m_arrRemovedGuids;
 
 	CPluginsManager()
 	{
 		m_sPluginsDir = L"";
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
+
+		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + APP_DATA_PATH;
+		m_sSettingsFile = m_sSettingsDir + L"/plugins";
 	}
 
 	// Usability
@@ -238,6 +253,71 @@ public:
 	bool SetRemovePlugins(const std::wstring& sPluginsList)
 	{
 		return SplitStringAsVector(sPluginsList, L",", m_arrRemove);
+	}
+
+	// Settings
+	void ResetSettings()
+	{
+		Message(L"Reset settings", BoolToStr(true), false);
+
+		if (NSFile::CFileBinary::Exists(m_sSettingsFile))
+			NSFile::CFileBinary::Remove(m_sSettingsFile);
+
+		m_arrRemovedGuids.clear();
+	}
+
+	bool ReadSettings()
+	{
+		bool bResult = false;
+
+		if (NSFile::CFileBinary::Exists(m_sSettingsFile))
+		{
+			std::wstring sData = L"";
+			if (NSFile::CFileBinary::ReadAllTextUtf8(m_sSettingsFile, sData))
+			{
+				std::wstring::size_type pos1 = sData.find(sSetRemoved);
+				std::wstring::size_type pos2 = sData.find(L"\n", pos1);
+
+				if (pos1 != std::wstring::npos && pos2 != std::wstring::npos && pos2 > pos1)
+				{
+					std::wstring sRemovedGuids = sData.substr(pos1 + sSetRemoved.length(), pos2 - pos1 - sSetRemoved.length());
+					NSStringUtils::string_replace(sRemovedGuids, L"\r", L"");
+					sRemovedGuids = CorrectValue(sRemovedGuids);
+
+					bResult = SplitStringAsVector(sRemovedGuids, L",", m_arrRemovedGuids);
+				}
+			}
+		}
+
+		return bResult;
+	}
+
+	bool SaveSettings()
+	{
+		bool bResult = false;
+
+		if ( m_arrRemovedGuids.size() )
+		{
+			std::wstring sData = sSetRemoved;
+			for (size_t i = 0; i < m_arrRemovedGuids.size(); i++)
+			{
+				sData += m_arrRemovedGuids[i] + ((i < m_arrRemovedGuids.size() - 1) ? L"," : L"");
+			}
+			sData += L"\n";
+
+			if ( !NSDirectory::Exists(m_sSettingsDir) )
+				NSDirectory::CreateDirectory(m_sSettingsDir);
+
+			if ( NSFile::CFileBinary::Exists(m_sSettingsFile) )
+				NSFile::CFileBinary::Remove(m_sSettingsFile);
+
+			NSFile::CFileBinary oFile;
+			bResult = oFile.CreateFileW(m_sSettingsFile);
+			oFile.WriteStringUTF8(sData);
+			oFile.CloseFile();
+		}
+
+		return bResult;
 	}
 
 	// Multi
@@ -398,41 +478,29 @@ public:
 
 			if (DownloadFile(sConfigUrl, sTmpFile))
 			{
-				std::wstring sJson = L"";
-				if (NSFile::CFileBinary::ReadAllTextUtf8(sTmpFile, sJson))
+				std::vector<std::wstring> arr;
+				if ( ReadConfigJson(sTmpFile, arr) )
 				{
-					NSStringUtils::string_replace(sJson, L"\n", L"");
-					NSStringUtils::string_replace(sJson, L"\r", L"");
-					NSStringUtils::string_replace(sJson, L"\t", L"");
-					NSStringUtils::string_replace(sJson, L"[", L"");
-					NSStringUtils::string_replace(sJson, L"]", L"");
-					NSStringUtils::string_replace(sJson, L"\"", L"");
-
-					NSFile::CFileBinary::Remove(sTmpFile);
-
-					std::vector<std::wstring> arr;
-					if (SplitStringAsVector(sJson, L",", arr))
+					for (size_t i = 0; i < arr.size(); i++)
 					{
-						for (size_t i = 0; i < arr.size(); i++)
+						std::wstring sPluginName = arr[i];
+						std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
+
+						CPluginInfo* pPluginInfo = FindMarketPlugin(sPluginName);
+						if ( !pPluginInfo )
 						{
-							std::wstring sPluginName = arr[i];
-							std::transform(sPluginName.begin(), sPluginName.end(), sPluginName.begin(), tolower);
-
-							CPluginInfo* pPluginInfo = FindMarketPlugin(sPluginName);
-							if ( !pPluginInfo )
+							pPluginInfo = FetchPluginInfo(sPluginName);
+							if ( pPluginInfo )
 							{
-								pPluginInfo = FetchPluginInfo(sPluginName);
-								if ( pPluginInfo )
-								{
-									m_arrMarketplace.push_back(pPluginInfo);
+								m_arrMarketplace.push_back(pPluginInfo);
 
-									if ( bPrint )
-										MessagePluginInfo(sPluginName, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
-								}
+								if ( bPrint )
+									MessagePluginInfo(sPluginName, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
 							}
 						}
 					}
 				}
+				NSFile::CFileBinary::Remove(sTmpFile);
 			}
 		}
 
@@ -507,6 +575,7 @@ private:
 	bool InstallPlugin(const std::wstring& sPlugin, bool bPrint = true)
 	{
 		bool bResult = false;
+		std::wstring sPrintInfo = L"";
 
 		if (sPlugin.length())
 		{
@@ -521,11 +590,11 @@ private:
 			std::wstring sTempDirExt = sTempDir;
 
 			// Search by name or GUID
-			CPluginInfo* pResult = FindMarketPlugin(sPlugin);
+			CPluginInfo* pPlugin = FindMarketPlugin(sPlugin);
 
-			if (pResult)
+			if (pPlugin)
 			{
-				sPackageUrl = m_sMarketplaceUrl + L"/sdkjs-plugins/content/" + pResult->m_sName + L"/deploy/" + pResult->m_sName + L".plugin";
+				sPackageUrl = m_sMarketplaceUrl + L"/sdkjs-plugins/content/" + pPlugin->m_sName + L"/deploy/" + pPlugin->m_sName + L".plugin";
 			}
 			else if (IsNeedDownload(sPlugin))
 			{
@@ -539,14 +608,13 @@ private:
 			}
 
 			if (isNeedDownload)
-			{
 				DownloadFile(sPackageUrl, sTmpFile);
-			}
 
 			if (NSDirectory::Exists(sTempDir))
 				NSDirectory::DeleteDirectory(sTempDir);
 			NSDirectory::CreateDirectory(sTempDir);
 
+			// Archive
 			COfficeUtils oOfficeUtils(NULL);
 			if (S_OK == oOfficeUtils.ExtractToDirectory(sTmpFile, sTempDirExt, NULL, 0))
 			{
@@ -569,16 +637,41 @@ private:
 				{
 					std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
 
-					if (NSDirectory::Exists(sPluginDir))
-						NSDirectory::DeleteDirectory(sPluginDir);
-					NSDirectory::CreateDirectory(sPluginDir);
+					// Check settings
+					// Can install if user hasn't deleted the plugin before
+					if ( std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPluginInfo->m_sGuid) == m_arrRemovedGuids.end() )
+					{
+						if (NSDirectory::Exists(sPluginDir))
+							NSDirectory::DeleteDirectory(sPluginDir);
+						NSDirectory::CreateDirectory(sPluginDir);
 
-					NSDirectory::CopyDirectory(sTempDirExt, sPluginDir);
+						NSDirectory::CopyDirectory(sTempDirExt, sPluginDir);
 
-					bResult = true;
+						bResult = true;
+					}
+					else
+					{
+						sPrintInfo = L"Installation aborted. The plugin has been removed before.\n" \
+									 L"Use --reset command to reset settings";
+					}
 				}
 
 				NSDirectory::DeleteDirectory(sTempDir);
+			}
+			// Config
+			else
+			{
+				std::vector<std::wstring> arrPlugins;
+				if ( ReadConfigJson(sTmpFile, arrPlugins) )
+				{
+					// Recursion installation
+					bool _bResult = true;
+					for(size_t i = 0; i < arrPlugins.size(); i++)
+					{
+						_bResult &= InstallPlugin(arrPlugins[i], bPrint);
+					}
+					bResult = _bResult;
+				}
 			}
 
 			if ( isNeedDownload )
@@ -586,7 +679,7 @@ private:
 		}
 
 		if (bPrint)
-			Message(L"Install plugin: " + sPlugin, BoolToStr(bResult), true);
+			Message(L"Install plugin: " + sPlugin, sPrintInfo.length() ? sPrintInfo : BoolToStr(bResult), true);
 
 		return bResult;
 	}
@@ -654,11 +747,11 @@ private:
 		if (sPlugin.length())
 		{
 			bool bBackup = false;
-			CPluginInfo* pResult = FindLocalPlugin(sPlugin);
+			CPluginInfo* pPlugin = FindLocalPlugin(sPlugin);
 
 			// Try find in marketplace if name isn't short alias
-			if ( !pResult )
-				pResult = FindMarketPlugin(sPlugin);
+			if ( !pPlugin )
+				pPlugin = FindMarketPlugin(sPlugin);
 			else
 			{
 				// Need create backup for plugin if doesn't exist in the marketplace
@@ -667,16 +760,16 @@ private:
 					bBackup = true;
 			}
 
-			if (pResult)
+			if (pPlugin)
 			{
-				std::wstring sPluginDir = m_sPluginsDir + L"/" + pResult->m_sGuid;
+				std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
 
 				if (NSDirectory::Exists(sPluginDir))
 				{
 					if (bBackup)
 					{
 						std::wstring sBackupDir = m_sPluginsDir + L"/backup";
-						std::wstring sPluginBackupDir = sBackupDir + L"/" + pResult->m_sGuid;
+						std::wstring sPluginBackupDir = sBackupDir + L"/" + pPlugin->m_sGuid;
 
 						if (!NSDirectory::Exists(sBackupDir))
 							NSDirectory::CreateDirectory(sBackupDir);
@@ -691,6 +784,11 @@ private:
 					}
 
 					NSDirectory::DeleteDirectory(sPluginDir);
+
+					// Save to settings
+					if ( std::find(m_arrRemovedGuids.begin(), m_arrRemovedGuids.end(), pPlugin->m_sGuid) == m_arrRemovedGuids.end() )
+						m_arrRemovedGuids.push_back(pPlugin->m_sGuid);
+
 					bResult = true;
 				}
 			}
@@ -813,6 +911,26 @@ private:
 	bool IsPluginManager(const std::wstring& sGuid)
 	{
 		return sGuid == m_sManagerGuid || sGuid == m_sOldManagerGuid;
+	}
+
+	bool ReadConfigJson(const std::wstring& sFile, std::vector<std::wstring>& arrOutput)
+	{
+		bool bResult = false;
+
+		std::wstring sJson = L"";
+		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
+		{
+			NSStringUtils::string_replace(sJson, L"\n", L"");
+			NSStringUtils::string_replace(sJson, L"\r", L"");
+			NSStringUtils::string_replace(sJson, L"\t", L"");
+			NSStringUtils::string_replace(sJson, L"[", L"");
+			NSStringUtils::string_replace(sJson, L"]", L"");
+			NSStringUtils::string_replace(sJson, L"\"", L"");
+
+			bResult = SplitStringAsVector(sJson, L",", arrOutput);
+		}
+
+		return bResult;
 	}
 
 	bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
@@ -973,16 +1091,17 @@ int main(int argc, char** argv)
 	setlocale(LC_ALL, "");
 
 	CPluginsManager oManager;
+	oManager.ReadSettings();
 
 	// Parse arguments
 	for (int i = 0; i < argc; ++i)
 	{
-		#ifdef WIN32
-				std::wstring sParam(argv[i]);
-		#else
-				std::string sParamA(argv[i]);
-				std::wstring sParam = UTF8_TO_U(sParamA);
-		#endif
+#ifdef WIN32
+		std::wstring sParam(argv[i]);
+#else
+		std::string sParamA(argv[i]);
+		std::wstring sParam = UTF8_TO_U(sParamA);
+#endif
 
 		if (sParam.find(L"--") == 0)
 		{
@@ -1000,12 +1119,12 @@ int main(int argc, char** argv)
 					if (i < argc - 1)
 					{
 						i++;
-						#ifdef WIN32
-								sValue = std::wstring(argv[i]);
-						#else
-								std::string sValueA(argv[i]);
-								sValue = UTF8_TO_U(sParamA);
-						#endif
+#ifdef WIN32
+						sValue = std::wstring(argv[i]);
+#else
+						std::string sValueA(argv[i]);
+						sValue = UTF8_TO_U(sParamA);
+#endif
 					}
 
 					// Checks if value or next key exist
@@ -1063,7 +1182,11 @@ int main(int argc, char** argv)
 				oManager.GetBackupPlugins();
 			}
 
-			// Install / Update / Remove
+			// Reset / Install / Update / Remove
+			else if (sKey == sCmdReset)
+			{
+				oManager.ResetSettings();
+			}
 			else if (sKey == sCmdInstall)
 			{
 				sValue = CorrectValue(sValue);
@@ -1110,6 +1233,8 @@ int main(int argc, char** argv)
 			}
 		}
 	}
+
+	oManager.SaveSettings();
 
 	return 0;
 }

@@ -47,6 +47,7 @@ std::wstring sCmdPrintInstalled =               L"--print-installed";
 std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
 std::wstring sCmdPrintBackup =                  L"--print-backup";
 
+std::wstring sCmdReset =                        L"--reset";
 std::wstring sCmdInstall =                      L"--install";
 std::wstring sCmdRestore =                      L"--restore";
 std::wstring sCmdUpdate =                       L"--update";
@@ -54,9 +55,12 @@ std::wstring sCmdUpdateAll =                    L"--update-all";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
 
+// Settings
+std::wstring sSetRemoved =                      L"--removed=";
+
 std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
 									   sCmdPrintInstalled, sCmdPrintMarketplace, sCmdPrintBackup,
-									   sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
+									   sCmdReset, sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
 									   sCmdRemove, sCmdRemoveAll};
 
 bool IsCommandExists(std::wstring sCommand)
@@ -94,10 +98,17 @@ L"  --print-marketplace  = Optional parameter. Print available plugins from the 
 L"  --print-backup       = Optional parameter. Print backup plugins. Parameter without value.\n" \
 L"                         Backup plugins can be restored using --restore option\n\n" \
 
+L"  --reset              = Optional parameter. Reset user setting. Parameter without value.\n\n" \
+
 L"  --install            = Optional parameter. Set comma-separated quoted list of plugins to install.\n" \
-L"                         Installing by plugin name, GUID, URL, direct file path (without commas) is supported.\n" \
-L"                         For example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, /home/mark/plugins/speech.plugin, https://anysite.com/deploy/translator.plugin\"\n" \
-L"                         File extensions: .zip, .plugin\n\n" \
+L"                         Installing by plugin name,   for example, --install=\"photo editor\"\n" \
+L"                                       GUID,          for example, --install=\"{7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
+L"                                       URL,           for example, --install=\"https://anysite.com/deploy/chess.plugin\"\n" \
+L"                                       file path,     for example, --install=\"/home/mark/work/speech.plugin\"\n" \
+L"                                       config path,   for example, --install=\"/home/mark/work/plugins.json\"\n" \
+L"                         is supported.\n" \
+L"                         Combined installation is supported, for example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, etc\".\n" \
+L"                         File paths without quotes, plugin extensions: .zip, .plugin.\n\n" \
 
 L"  --restore            = Optional parameter. Set comma-separated quoted list of plugins to restore.\n" \
 L"                         Restoring by plugin name or GUID is supported.\n" \

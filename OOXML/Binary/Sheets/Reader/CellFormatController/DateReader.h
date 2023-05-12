@@ -32,35 +32,13 @@
 
 #pragma once
 
-#include "../../../Base/Base.h"
-#include "../../../XlsxFormat/Worksheets/Worksheet.h"
-#include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../../Base/Base.h"
 
+#include <string>
 
-/// @brief класс определяющий и корректирующий тип данных, помещаемых в ячейки таблицы
-class CellFormatController
+class DateReader
 {
-
 public:
-    /// @brief конструктор
-    /// @param styles стили из таблицы
-    CellFormatController(OOX::Spreadsheet::CStyles *styles);
-
-    /// @brief обрабатывает вставляемые в ячейку таблицы данные, переводя их в нужный тип, и заполняет ими ячейку
-    /// @param pCell указатель на ячейку
-    /// @param value вставляемые в ячейку данные в строковом типе
-    void ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
-
-private:
-
-    void processDigitalType();
-
-    std::wstring *value;
-
-    OOX::Spreadsheet::CCell *pCell;
-
-    std::map<std::wstring, unsigned int> mapDataNumber;
-
-	OOX::Spreadsheet::CStyles *m_pStyles;
-
+    _UINT32 GetDigitalDate(const std::wstring &date);
 };
+

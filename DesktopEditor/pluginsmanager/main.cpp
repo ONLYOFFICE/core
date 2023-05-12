@@ -811,6 +811,22 @@ private:
 
 		if (sPlugin.length())
 		{
+			// Check config file
+			if ( NSFile::CFileBinary::Exists(sPlugin) )
+			{
+				std::vector<std::wstring> arrPlugins;
+				if ( ReadConfigJson(sPlugin, arrPlugins) )
+				{
+					// Recursion removing
+					bool _bResult = true;
+					for(size_t i = 0; i < arrPlugins.size(); i++)
+					{
+						_bResult &= RemovePlugin(arrPlugins[i], bSave, bPrint);
+					}
+					bResult = _bResult;
+				}
+			}
+
 			bool bBackup = false;
 			CPluginInfo* pPlugin = FindLocalPlugin(sPlugin);
 

@@ -125,7 +125,7 @@ L"  --update-all         = Optional parameter. Update all installed plugins from
 L"                         Parameter without value.\n\n" \
 
 L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
-L"                         Removing by plugin name or GUID is supported.\n" \
+L"                         Removing by plugin name, GUID, config path is supported.\n" \
 L"                         For example, --remove=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
 L"  --remove-all         = Optional parameter. Remove all installed plugins.\n"

@@ -58,17 +58,6 @@ private:
     /// @param EndPtr указатель на конец числа
     void processNumberValue(double dValue, wchar_t *pEndPtr);
 
-
-    /// @brief определение типа ячейки по её значению
-    /// @param Cellvalue текст ячейки
-    /// @return тип содержимого ячейки
-    SimpleTypes::Spreadsheet::ECellTypeType getCellType(const std::wstring &Cellvalue);
-
-    /// @brief определение того, является ли содержимое ячейки валидным какому-либо формату даты
-    /// @param Cellvalue текст ячейки
-    /// @return true если содержимое может быть преобразовано в дату иначе false
-    bool isValidDate(const std::wstring &Cellvalue);
-
     /// @brief указатель на ячейку с которой ведется работа
     OOX::Spreadsheet::CCell *pCell_;
 

@@ -118,7 +118,7 @@ L"                         Restoring by plugin name or GUID is supported.\n" \
 L"                         For example, --restore=\"Youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
 L"  --update             = Optional parameter. Set comma-separated quoted list of plugins to update.\n" \
-L"                         Updating by plugin name or GUID is supported.\n" \
+L"                         Updating by plugin name, GUID, config path is supported.\n" \
 L"                         For example, --update=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
 L"  --update-all         = Optional parameter. Update all installed plugins from marketplace.\n" \

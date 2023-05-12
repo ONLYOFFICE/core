@@ -327,7 +327,7 @@ public:
 			sData += L"\n";
 
 			if ( !NSDirectory::Exists(m_sSettingsDir) )
-				NSDirectory::CreateDirectory(m_sSettingsDir);
+				NSDirectory::CreateDirectories(m_sSettingsDir);
 
 			if ( NSFile::CFileBinary::Exists(m_sSettingsFile) )
 				NSFile::CFileBinary::Remove(m_sSettingsFile);
@@ -728,30 +728,48 @@ private:
 
 		if ( sPlugin.length() )
 		{
-			CPluginInfo* pLocalPlugin = FindLocalPlugin(sPlugin);
-			CPluginInfo* pMarketPlugin = FindMarketPlugin(sPlugin);
-
-			if ( !pLocalPlugin )
+			// Check config file
+			if ( NSFile::CFileBinary::Exists(sPlugin) )
 			{
-				bResult = false;
-				Message(L"Plugin not found: " + sPlugin, BoolToStr(bResult), true);
-			}
-
-			// Check new version
-			if ( pLocalPlugin && pMarketPlugin )
-			{
-				if ( *pMarketPlugin->m_pVersion > *pLocalPlugin->m_pVersion )
+				std::vector<std::wstring> arrPlugins;
+				if ( ReadConfigJson(sPlugin, arrPlugins) )
 				{
-					sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
-
-					bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
-					bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
-
-					Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
+					// Recursion updating
+					bool _bResult = true;
+					for(size_t i = 0; i < arrPlugins.size(); i++)
+					{
+						_bResult &= UpdatePlugin(arrPlugins[i]);
+					}
+					bResult = _bResult;
 				}
-				else if ( *pMarketPlugin->m_pVersion == *pLocalPlugin->m_pVersion )
+			}
+			else
+			{
+				CPluginInfo* pLocalPlugin = FindLocalPlugin(sPlugin);
+				CPluginInfo* pMarketPlugin = FindMarketPlugin(sPlugin);
+
+				if ( !pLocalPlugin )
 				{
-					Message(L"Update plugin: " + sPlugin + L". No updates available", BoolToStr(bResult), true);
+					bResult = false;
+					Message(L"Plugin not found: " + sPlugin, BoolToStr(bResult), true);
+				}
+
+				// Check new version
+				if ( pLocalPlugin && pMarketPlugin )
+				{
+					if ( *pMarketPlugin->m_pVersion > *pLocalPlugin->m_pVersion )
+					{
+						sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
+
+						bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
+						bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
+
+						Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
+					}
+					else if ( *pMarketPlugin->m_pVersion == *pLocalPlugin->m_pVersion )
+					{
+						Message(L"Update plugin: " + sPlugin + L". No updates available", BoolToStr(bResult), true);
+					}
 				}
 			}
 		}

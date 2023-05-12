@@ -284,7 +284,7 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 odf_reader::style_list_level_properties* pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, odf_reader::text_list_style* text_list_style, int Level)
 {
 	if (!text_list_style) return NULL;
-	if (Level > (int)text_list_style->content_.size()) return NULL;
+	if (Level >= (int)text_list_style->content_.size()) return NULL;
 	
 	odf_reader::office_element_ptr  elm = text_list_style->content_[Level];
 	odf_reader::office_element_ptr  elm_list;

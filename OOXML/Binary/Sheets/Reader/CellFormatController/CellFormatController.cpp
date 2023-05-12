@@ -40,7 +40,7 @@
 #include <chrono>
 #include <iomanip>
 
-const std::wstring DefaultDateFormat = L"DD.MM.YYYY";
+const std::wstring DefaultDateFormat = L"dd/mm/yyyy";
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles{styles}
@@ -134,7 +134,6 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	auto digitalDate = dateReader.GetDigitalDate(value);
 	if(digitalDate != 0)
 	{
-		pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::ECellTypeType::celltypeDate);
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = std::to_wstring(digitalDate);
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber.find(DefaultDateFormat);

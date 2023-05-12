@@ -391,7 +391,7 @@ public:
 
 		InitPlugins();
 
-		if (m_sPluginsDir.length() && m_arrInstalled.size() && m_arrMarketplace.size())
+		if (m_sPluginsDir.length() && m_arrMarketplace.size())
 		{
 			for (size_t i = 0; i < m_arrUpdate.size(); i++)
 			{
@@ -734,11 +734,19 @@ private:
 				std::vector<std::wstring> arrPlugins;
 				if ( ReadConfigJson(sPlugin, arrPlugins) )
 				{
-					// Recursion updating
+					// Update if plugin exists
+					// Install if plugin is not installed and not removed before
 					bool _bResult = true;
 					for(size_t i = 0; i < arrPlugins.size(); i++)
 					{
-						_bResult &= UpdatePlugin(arrPlugins[i]);
+						CPluginInfo* pPlugin = FindLocalPlugin(arrPlugins[i]);
+						if ( pPlugin )
+							_bResult &= UpdatePlugin(arrPlugins[i]);
+						else
+						{
+							_bResult &= InstallPlugin(arrPlugins[i]);
+							GetLocalPlugins(false, false);
+						}
 					}
 					bResult = _bResult;
 				}
@@ -811,6 +819,22 @@ private:
 
 		if (sPlugin.length())
 		{
+			// Check config file
+			if ( NSFile::CFileBinary::Exists(sPlugin) )
+			{
+				std::vector<std::wstring> arrPlugins;
+				if ( ReadConfigJson(sPlugin, arrPlugins) )
+				{
+					// Recursion removing
+					bool _bResult = true;
+					for(size_t i = 0; i < arrPlugins.size(); i++)
+					{
+						_bResult &= RemovePlugin(arrPlugins[i], bSave, bPrint);
+					}
+					bResult = _bResult;
+				}
+			}
+
 			bool bBackup = false;
 			CPluginInfo* pPlugin = FindLocalPlugin(sPlugin);
 

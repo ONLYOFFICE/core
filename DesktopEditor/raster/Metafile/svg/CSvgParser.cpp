@@ -12,6 +12,7 @@
 #include "SvgObjects/CClipPath.h"
 #include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
+#include "SvgObjects/CMarker.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CStyle.h"
 #include "SvgObjects/CImage.h"
@@ -61,12 +62,6 @@ namespace SVG
 		if (!oXml.FromXmlString(wsContent))
 			return false;
 
-		// TODO:: Временный вариант
-		// В дальнейшем сделать либо мнетод поиска стиля и defs,
-		// (проблема в том что тогда придется 2 раза запускать поиск (сначала стиля, а потом defs),
-		// а лишь потом запускать само чтение)
-		// либо использовать SvgCalculator при отрисовке, а не при чтении
-		// (но тогда скорость самой отрисовки падает)
 		ScanOther(oXml, pFile);
 
 		return LoadFromXmlNode(oXml, pContainer, pFile);
@@ -164,7 +159,7 @@ namespace SVG
 		std::wstring wsElementName = oElement.GetName();
 
 		if (L"defs" == wsElementName)
-			return ReadChildrens(oElement, (CGraphicsContainer*)pDefs, pFile);
+			return ReadChildrens(oElement, pDefs, pFile);
 		else if (L"style" == wsElementName)
 		{
 			pFile->AddStyles(oElement.GetText());
@@ -183,6 +178,8 @@ namespace SVG
 			pDefObject = CreateAndReadChildrens<CPattern, CGraphicsContainer>(oElement, pFile);
 		else if (L"clipPath" == wsElementName)
 			pDefObject = CreateAndReadChildrens<CClipPath, CGraphicsContainer>(oElement, pFile);
+		else if (L"marker" == wsElementName)
+			pDefObject = CreateAndReadChildrens<CMarker, CGraphicsContainer>(oElement, pFile);
 
 		return AddObject(pDefObject, pDefs, pFile);
 	}
@@ -228,7 +225,7 @@ namespace SVG
 
 	bool CSvgParser::IsDefs(const std::wstring &wsNodeName) const
 	{
-		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"clipPath" == wsNodeName || L"linearGradient" == wsNodeName || L"radialGradient" == wsNodeName;
+		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"clipPath" == wsNodeName || L"linearGradient" == wsNodeName || L"radialGradient" == wsNodeName || L"marker" == wsNodeName;
 	}
 
 	template<typename TypeContainer>

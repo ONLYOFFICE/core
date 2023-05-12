@@ -1,6 +1,7 @@
 #include "CPath.h"
 
 #include <algorithm>
+#include "CMarker.h"
 
 namespace SVG
 {
@@ -30,6 +31,15 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker-start"))
+			m_oMarkers.m_oStart.SetValue(mAttributes.at(L"marker-start"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker-mid"))
+			m_oMarkers.m_oMid.SetValue(mAttributes.at(L"marker-mid"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker-end"))
+			m_oMarkers.m_oEnd.SetValue(mAttributes.at(L"marker-end"), ushLevel, bHardMode);
 	}
 
 	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
@@ -43,6 +53,8 @@ namespace SVG
 			oElement->Draw(pRenderer);
 
 		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+
+		DrawMarkers(pRenderer, pDefs);
 
 		return true;
 	}
@@ -64,6 +76,52 @@ namespace SVG
 
 		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
 			nTypePath += c_nWindingFillMode;
+	}
+
+	bool CPath::DrawMarkers(IRenderer *pRenderer, const CDefs *pDefs) const
+	{
+		if (NULL == pRenderer || NULL == pDefs || m_arElements.empty())
+			return false;
+
+		std::vector<Point> arPoints(m_arElements.size());
+
+		for (unsigned int unIndex = 0; unIndex < m_arElements.size(); ++unIndex)
+			arPoints[unIndex] = (*m_arElements[unIndex])[0];
+
+		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
+		{
+			CMarker *pStartMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oStart.ToWString()));
+
+			if (NULL != pStartMarker)
+			{
+				pStartMarker->Update(pDefs);
+				pStartMarker->Draw(pRenderer, {*arPoints.begin()});
+			}
+		}
+
+		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
+		{
+			CMarker *pMidMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oMid.ToWString()));
+
+			if (NULL != pMidMarker)
+			{
+				pMidMarker->Update(pDefs);
+				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1));
+			}
+		}
+
+		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
+		{
+			CMarker *pEndMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oEnd.ToWString()));
+
+			if (NULL != pEndMarker)
+			{
+				pEndMarker->Update(pDefs);
+				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)});
+			}
+		}
+
+		return true;
 	}
 
 	TBounds CPath::GetBounds() const

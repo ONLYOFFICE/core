@@ -67,6 +67,7 @@ namespace SVG
 		friend class CDefs;
 		friend class CText;
 		friend class CTSpan;
+		friend class CMarker;
 		friend class CPattern;
 		friend class CGradient;
 		friend class CClipPath;
@@ -93,6 +94,7 @@ namespace SVG
 		TBounds GetBounds() const override;
 
 		friend class CPattern;
+		friend class CMarker;
 
 		TRect m_oWindow;
 		TRect m_oViewBox;

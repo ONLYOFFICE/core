@@ -472,13 +472,22 @@ namespace NSCSS
 
 	std::wstring CColor::CutURL(const std::wstring &wsValue)
 	{
-		size_t unStartURL = wsValue.find(L"#");
-		size_t unEndURL   = wsValue.find(L')', unStartURL);
+		if (wsValue.length() < 6)
+			return std::wstring();
 
-		if (std::wstring::npos != unStartURL && std::wstring::npos != unEndURL && (2 < unEndURL - unStartURL))
-			return wsValue.substr(unStartURL + 1, unEndURL - unStartURL - 1);
+		size_t unBegin = wsValue.find(L"(#");
 
-		return std::wstring();
+		if (std::wstring::npos == unBegin || unBegin < 3 || wsValue.length() - unBegin < 2)
+			return std::wstring();
+
+		std::wstring wsCopyValue(wsValue);
+
+		std::transform(wsCopyValue.begin(), wsCopyValue.begin() + unBegin, wsCopyValue.begin(), std::tolower);
+
+		if (std::wstring::npos == wsCopyValue.find(L"url(#"))
+			return std::wstring();
+
+		return wsCopyValue.substr(unBegin + 2, wsCopyValue.find(L')') - unBegin - 2);
 	}
 
 	CColor::CColor()
@@ -490,11 +499,9 @@ namespace NSCSS
 		if (2 > wsValue.length() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
-		std::wstring wsNewValue = wsValue;
+		std::wstring wsNewValue(wsValue);
 
 		bool bImportant = CutImportant(wsNewValue);
-
-		std::wstring wsCopyValue{wsNewValue};
 
 		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
 
@@ -528,13 +535,6 @@ namespace NSCSS
 			m_bImportant = bImportant;
 			return true;
 		}
-		else if (5 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"url")
-		{
-			m_oValue.SetUrl(CutURL(wsCopyValue));
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;;
-			return true;
-		}
 		else if (L"none" == wsNewValue)
 		{
 			m_oValue.SetNone();
@@ -542,24 +542,33 @@ namespace NSCSS
 			m_bImportant = bImportant;
 			return true;
 		}
-		else
+		else if (wsNewValue == L"transparent")
 		{
-			if (wsNewValue == L"transparent")
-			{
-				m_oValue.SetNone();
-				m_unLevel    = unLevel;
-				m_bImportant = bImportant;
-				return true;
-			}
+			m_oValue.SetNone();
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
+			return true;
+		}
 
-			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(wsNewValue);
-			if (oHEX != NSConstValues::NSMaps::mColors.end())
+		if (5 <= wsNewValue.length())
+		{
+			m_oValue.SetUrl(CutURL(wsValue));
+
+			if (m_oValue.m_enType == ColorUrl)
 			{
-				m_oValue.SetHEX(oHEX->second);
 				m_unLevel    = unLevel;
-				m_bImportant = bImportant;
+				m_bImportant = bImportant;;
 				return true;
 			}
+		}
+
+		const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(wsNewValue);
+		if (oHEX != NSConstValues::NSMaps::mColors.end())
+		{
+			m_oValue.SetHEX(oHEX->second);
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
+			return true;
 		}
 
 		return false;
@@ -2175,7 +2184,7 @@ namespace NSCSS
 
 		m_pColor = new std::wstring(wsValue);
 
-		if (NULL == m_pColor)
+		if (NULL == m_pColor || ((std::wstring*)m_pColor)->empty())
 		{
 			m_enType = ColorEmpty;
 			return;

@@ -46,7 +46,7 @@ namespace SVG
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
-		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
 		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))

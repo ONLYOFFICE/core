@@ -28,6 +28,19 @@ namespace SVG
 		SvgEnum m_oLineJoin;
 	};
 
+	struct TClip
+	{
+		SvgColor  m_oHref;
+		SvgString m_oRule;
+	};
+
+	struct TMarkers
+	{
+		SvgColor m_oStart;
+		SvgColor m_oMid;
+		SvgColor m_oEnd;
+	};
+
 	struct Point
 	{
 		double dX;

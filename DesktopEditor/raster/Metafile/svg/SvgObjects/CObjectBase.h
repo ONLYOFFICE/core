@@ -16,11 +16,7 @@ namespace SVG
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
 		SvgTransform m_oTransform;
-		struct TSvgClip
-		{
-			SvgColor  m_oHref;
-			SvgString m_oRule;
-		} m_oClip;
+		TClip     m_oClip;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles)
 		{
@@ -191,7 +187,7 @@ namespace SVG
 		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CDefs *pDefs, bool bUseDefault = false) const;
 		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
-		bool Apply(IRenderer* pRenderer, const TSvgStyles::TSvgClip* pClip, const CDefs *pDefs) const;
+		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CDefs *pDefs) const;
 
 		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
 

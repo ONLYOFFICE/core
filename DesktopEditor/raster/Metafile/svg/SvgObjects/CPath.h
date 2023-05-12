@@ -613,6 +613,7 @@ namespace SVG
 		IPathElement* operator[](int nIndex) const;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+                bool DrawMarkers(IRenderer* pRenderer, const CDefs *pDefs) const;
 
 		TBounds GetBounds() const override;
 
@@ -622,6 +623,8 @@ namespace SVG
 		void AddElements(std::vector<double>& arValues, bool bRelativeCoordinate);
 
 		std::vector<IPathElement*> m_arElements;
+
+		TMarkers m_oMarkers;
 	};
 
 	class CMovingPath

@@ -205,7 +205,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CSvgGraphicsObject::Apply(IRenderer *pRenderer, const TSvgStyles::TSvgClip *pClip, const CDefs *pDefs) const
+	bool CSvgGraphicsObject::Apply(IRenderer *pRenderer, const TClip *pClip, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || NULL == pClip || NULL == pDefs)
 			return false;

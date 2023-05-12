@@ -57,11 +57,6 @@
 #include <stdio.h>
 #endif
 
-#ifdef LINUX
-# define APP_DATA_PATH L"/desktopeditors/data"
-#else
-# define APP_DATA_PATH L"/DesktopEditors/data"
-#endif
 
 // Misc
 std::wstring CorrectDir(const std::wstring& sDir)
@@ -230,8 +225,8 @@ public:
 		m_sPluginsDir = L"";
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
 
-		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + APP_DATA_PATH;
-		m_sSettingsFile = m_sSettingsDir + L"/plugins";
+		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
+		m_sSettingsFile = m_sSettingsDir + L"/settings";
 	}
 
 	// Usability
@@ -325,9 +320,9 @@ public:
 			for (size_t i = 0; i < m_arrRemoved.size(); i++)
 			{
 				sData += m_arrRemoved[i]->m_sName + sDelim +
-						 m_arrRemoved[i]->m_pVersion->m_sVersion + sDelim +
-						 m_arrRemoved[i]->m_sGuid +
-						 ((i < m_arrRemoved.size() - 1) ? L"," : L"");
+						m_arrRemoved[i]->m_pVersion->m_sVersion + sDelim +
+						m_arrRemoved[i]->m_sGuid +
+						((i < m_arrRemoved.size() - 1) ? L"," : L"");
 			}
 			sData += L"\n";
 
@@ -459,7 +454,7 @@ public:
 		GetInstalledPlugins();
 
 		return bResult;
-	}	
+	}
 
 	// Local and Marketplace
 	void GetInstalledPlugins(bool bPrint = true)
@@ -541,15 +536,15 @@ private:
 			std::vector<CPluginInfo*> arrPlugins;
 			switch (status)
 			{
-				case Removed:
-					arrPlugins = m_arrRemoved;
-					break;
-				case Backup:
-					arrPlugins = m_arrBackup;
-					break;
-				 default:
-					arrPlugins = m_arrInstalled;
-					break;
+			case Removed:
+				arrPlugins = m_arrRemoved;
+				break;
+			case Backup:
+				arrPlugins = m_arrBackup;
+				break;
+			default:
+				arrPlugins = m_arrInstalled;
+				break;
 			}
 
 			if ( arrPlugins.size() )
@@ -672,6 +667,7 @@ private:
 				if ( pInstalled )
 				{
 					sPrintInfo = L"Already installed";
+					bResult = true;
 				}
 				else if ( pPluginInfo )
 				{
@@ -735,6 +731,12 @@ private:
 			CPluginInfo* pLocalPlugin = FindLocalPlugin(sPlugin);
 			CPluginInfo* pMarketPlugin = FindMarketPlugin(sPlugin);
 
+			if ( !pLocalPlugin )
+			{
+				bResult = false;
+				Message(L"Plugin not found: " + sPlugin, BoolToStr(bResult), true);
+			}
+
 			// Check new version
 			if ( pLocalPlugin && pMarketPlugin )
 			{
@@ -746,6 +748,10 @@ private:
 					bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
 
 					Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
+				}
+				else if ( *pMarketPlugin->m_pVersion == *pLocalPlugin->m_pVersion )
+				{
+					Message(L"Update plugin: " + sPlugin + L". No updates available", BoolToStr(bResult), true);
 				}
 			}
 		}

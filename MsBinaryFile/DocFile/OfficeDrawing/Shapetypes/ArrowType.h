@@ -549,10 +549,10 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-			AdjustmentValues	=	L"12960,19440,14400";
-			ConnectorLocations	=	L"0,@17;@2,@14;@22,@8;@2,@12;@22,@16";
-			ConnectorAngles		=	L"180,90,0,0,0";
-			TextBoxRectangle	=	L"@47,@45,@48,@46";
+			AdjustmentValues	=	L"12960,19440,7200";
+			ConnectorLocations	=	L"0,@15;@2,@11;0,@8;@2,@13;@21,@16";
+			ConnectorAngles		=	L"180,180,180,90,0";
+			TextBoxRectangle	=	L"@43,@41,@44,@42";
 
 			Handle one;
             one.position		=	L"topLeft,#0";
@@ -1135,8 +1135,6 @@ namespace DocFileFormat
 			ShapeConcentricFill	=	false;
 			Joins				=	miter;
 
-            AdjustmentValues	=	L"-11796480,,5400";
-
             Path				=	L"al10800,10800@8@8@4@6,10800,10800,10800,10800@9@7l@30@31@17@18@24@25@15@16@32@33xe";
 
             Formulas.push_back(L"val #1");
@@ -1190,7 +1188,7 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @35 10800 0");
             Formulas.push_back(L"sum @36 10800 0");
 
-            AdjustmentValues	=	L"-11796480,,5400";
+            AdjustmentValues	=	L"-11796480,0,5400";
             ConnectorLocations	=	L"@44,@45;@48,@49;@46,@47;@17,@18;@24,@25;@15,@16";
             TextBoxRectangle	=	L"3163,3163,18437,18437";
 

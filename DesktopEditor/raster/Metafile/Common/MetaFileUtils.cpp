@@ -38,6 +38,7 @@
 #include <math.h>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 
 #ifndef DIB_RGB_COLORS
     #define DIB_RGB_COLORS  0x00
@@ -1038,11 +1039,26 @@ namespace MetaFile
 
 	bool StringEquals(const std::wstring& wsFirst, const std::wstring& wsSecond)
 	{
-		 return std::equal(wsFirst.begin(), wsFirst.end(),
-						   wsSecond.begin(), wsSecond.end(),
+#if 0
+		// since c++14!
+		return std::equal(wsFirst.begin(), wsFirst.end(),
+						  wsSecond.begin(), wsSecond.end(),
 						   [](wchar_t wchFirst, wchar_t wchSecond) {
 							   return tolower(wchFirst) == tolower(wchSecond);
 						   });
+#else
+		size_t sizeFirst = wsFirst.length();
+		size_t sizeSecond = wsSecond.length();
+		if (sizeFirst != sizeSecond)
+			return false;
+
+		for (size_t i = 0; i < sizeFirst; ++i)
+		{
+			if (tolower(wsFirst[i]) != tolower(wsSecond[i]))
+				return false;
+		}
+		return true;
+#endif
 	}
 
 	static int GetMinAccuracy(double dValue)

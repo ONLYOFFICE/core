@@ -288,7 +288,7 @@ namespace SVG
 			return NULL;
 
 		ElementClass* pSvgElement = new ElementClass(oElement);
-		if (ReadChildrens(oElement, (ContainerClass*)pSvgElement, pFile))
+		if (ReadChildrens(oElement, (ContainerClass*)pSvgElement, pFile, dynamic_cast<CSvgGraphicsObject*>(pSvgElement)))
 			return pSvgElement;
 		else
 			delete pSvgElement;

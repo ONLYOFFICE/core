@@ -57,10 +57,10 @@ namespace SVG
 	{
 		TBounds oBounds;
 
-		oBounds.m_dLeft   = (m_oCx - m_oR / 2).ToDouble(NSCSS::Pixel);
-		oBounds.m_dTop    = (m_oCy - m_oR / 2).ToDouble(NSCSS::Pixel);
-		oBounds.m_dRight  = oBounds.m_dLeft + m_oR.ToDouble(NSCSS::Pixel);
-		oBounds.m_dBottom = oBounds.m_dTop  + m_oR.ToDouble(NSCSS::Pixel);
+		oBounds.m_dLeft   = (m_oCx - m_oR).ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = (m_oCy - m_oR).ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = (m_oCx + m_oR).ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom = (m_oCy + m_oR).ToDouble(NSCSS::Pixel);
 
 		return oBounds;
 	}

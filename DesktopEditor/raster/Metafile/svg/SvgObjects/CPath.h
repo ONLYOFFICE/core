@@ -613,7 +613,9 @@ namespace SVG
 		IPathElement* operator[](int nIndex) const;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
-                bool DrawMarkers(IRenderer* pRenderer, const CDefs *pDefs) const;
+		bool DrawMarkers(IRenderer* pRenderer, const CDefs *pDefs) const;
+
+		void SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode);
 
 		TBounds GetBounds() const override;
 
@@ -621,6 +623,10 @@ namespace SVG
 		bool AddElement(IPathElement* pElement);
 		template <typename TypeElement>
 		void AddElements(std::vector<double>& arValues, bool bRelativeCoordinate);
+
+		friend class CLine;
+		friend class CPolygon;
+		friend class CPolyline;
 
 		std::vector<IPathElement*> m_arElements;
 

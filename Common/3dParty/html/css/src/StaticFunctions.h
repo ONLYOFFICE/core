@@ -329,16 +329,46 @@ namespace NSCSS
                 return std::vector<std::wstring>({sLine});
 
             std::vector<std::wstring> arWords;
-            arWords.reserve(16);
-            size_t posFirstNotSpace = sLine.find_first_not_of(sSigns);
-            while (posFirstNotSpace != std::wstring::npos)
+
+			std::wstring::const_iterator oFirstNotSpace = std::find_if_not(sLine.begin(), sLine.end(), std::iswspace);
+			std::wstring::const_iterator oLastNotSapce;
+
+			while (oFirstNotSpace != sLine.end())
             {
-                const size_t posLastNotSpace = sLine.find_first_of(sSigns, posFirstNotSpace);
-                arWords.push_back(sLine.substr(posFirstNotSpace, (posLastNotSpace != std::wstring::npos) ? posLastNotSpace - posFirstNotSpace + 1 : posLastNotSpace - posFirstNotSpace ));
-                posFirstNotSpace = sLine.find_first_not_of(sSigns, posLastNotSpace);
+				oLastNotSapce = std::find_first_of(oFirstNotSpace, sLine.end(), sSigns.begin(), sSigns.end());
+				arWords.push_back(std::wstring(oFirstNotSpace, oLastNotSapce));
+				oFirstNotSpace = std::find_if_not(oLastNotSapce, sLine.end(), std::iswspace);
             }
             return arWords;
         }
+
+		inline std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles)
+		{
+			if (wsStyles.empty())
+				return {};
+
+			std::map<std::wstring, std::wstring> mRules;
+
+			std::wstring::const_iterator oStartProperty = std::find_if_not(wsStyles.begin(), wsStyles.end(), std::iswspace);
+			std::wstring::const_iterator oEndProperty, oStartValue, oEndValue;
+
+			while (wsStyles.end() != oStartProperty)
+			{
+				oEndProperty = std::find_if(oStartProperty, wsStyles.end(), [](const wchar_t &wcChar){ return L':' == wcChar;});
+				oStartValue  = std::find_if_not(oEndProperty + 1, wsStyles.end(), std::iswspace);
+
+				if (wsStyles.end() == oEndProperty || wsStyles.end() == oStartValue)
+					break;
+
+				oEndValue    = std::find_if(oStartValue, wsStyles.end(), [](const wchar_t &wcChar){ return L';' == wcChar;});
+
+				mRules.insert({std::wstring(oStartProperty, oEndProperty), std::wstring(oStartValue, oEndValue)});
+
+				oStartProperty = std::find_if_not(oEndValue + 1, wsStyles.end(), std::iswspace);
+			}
+
+			return mRules;
+		}
 
         inline bool IsDigit(const std::wstring& sValue)
         {

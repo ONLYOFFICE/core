@@ -15,9 +15,7 @@ namespace SVG
 
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{
-		ReadFromString(oNode.GetAttribute(L"d"));
-	}
+	{}
 
 	CPath::~CPath()
 	{
@@ -27,19 +25,14 @@ namespace SVG
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		if (mAttributes.end() != mAttributes.find(L"d"))
+			ReadFromString(mAttributes.at(L"d"));
+
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"marker-start"))
-			m_oMarkers.m_oStart.SetValue(mAttributes.at(L"marker-start"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"marker-mid"))
-			m_oMarkers.m_oMid.SetValue(mAttributes.at(L"marker-mid"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"marker-end"))
-			m_oMarkers.m_oEnd.SetValue(mAttributes.at(L"marker-end"), ushLevel, bHardMode);
+		SetMarker(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
@@ -122,6 +115,18 @@ namespace SVG
 		}
 
 		return true;
+	}
+
+	void CPath::SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"marker-start"))
+			m_oMarkers.m_oStart.SetValue(mAttributes.at(L"marker-start"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker-mid"))
+			m_oMarkers.m_oMid.SetValue(mAttributes.at(L"marker-mid"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"marker-end"))
+			m_oMarkers.m_oEnd.SetValue(mAttributes.at(L"marker-end"), ushLevel, bHardMode);
 	}
 
 	TBounds CPath::GetBounds() const

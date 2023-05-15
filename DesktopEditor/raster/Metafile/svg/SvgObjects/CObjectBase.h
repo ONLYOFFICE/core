@@ -86,45 +86,7 @@ namespace SVG
 			if (wsStyles.empty())
 				return;
 
-			const std::vector<std::wstring> arWords = NSCSS::NS_STATIC_FUNCTIONS::GetWordsWithSigns(wsStyles, L":;");
-
-			if (arWords.empty())
-				return;
-
-			std::wstring wsProperty, wsValue;
-
-			std::map<std::wstring, std::wstring> mAttributes;
-
-			for (std::vector<std::wstring>::const_iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
-			{
-				if ((*iWord).back() == L':')
-				{
-					wsProperty = *iWord;
-					wsProperty.pop_back();
-				}
-				else
-				{
-					wsValue += *iWord;
-
-					if (L' ' == wsValue.front())
-						wsValue.erase(0, 1);
-
-					if (!wsValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
-					{
-						if (wsValue.back() == L';')
-							wsValue.pop_back();
-
-						std::transform(wsProperty.begin(), wsProperty.end(), wsProperty.begin(), tolower);
-						std::transform(wsValue.begin(), wsValue.end(), wsValue.begin(), tolower);
-						mAttributes[wsProperty] = wsValue;
-						wsProperty.clear();
-						wsValue.clear();
-					}
-				}
-			}
-
-			if (!mAttributes.empty())
-				SetData(mAttributes, ushLevel, bHardMode);
+			SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
 		};
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;

@@ -253,6 +253,9 @@ namespace MetaFile
 
 		IFont *pFont = m_pParser->GetFont();
 
+		if (NULL == pFont)
+			return;
+
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
 		if (dFontHeight < 0.01)
@@ -260,20 +263,21 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFontName = L"Times New Roman";
+		std::wstring wsFontName = pFont->GetFaceName();
 
-		if (!pFont->GetFaceName().empty())
+		if (!wsFontName.empty())
 		{
 			NSFonts::CFontSelectFormat oFormat;
 			oFormat.wsName = new std::wstring(pFont->GetFaceName());
 
 			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
 
-			if (NULL != pFontInfo)
-				wsFontName = pFontInfo->m_wsFontName;
+			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
+				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
 		}
 
-		arNodeAttributes.push_back({L"font-family", wsFontName});
+		if (!wsFontName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});
@@ -359,10 +363,15 @@ namespace MetaFile
 
 			double dSin = std::sin(dEscapement * M_PI / 180.);
 
-			dXCoord -= dFontHeight * dSin;
 			dYCoord -= dFontHeight * dSin;
 
+			if (oScale.y < -0.00001)
+				dXCoord -= dFontHeight * dSin;
+
 			arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
+
+			if (oScale.y > 0.00001)
+				dXCoord -= dFontHeight * dSin;
 		}
 
 		AddTransform(arNodeAttributes, &oTransform);
@@ -495,15 +504,27 @@ namespace MetaFile
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 		unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+		unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
 		unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
 
 		// svg не поддерживает разные стили для разных сторон линии
+		std::wstring wsLineCap;
+
+		if (PS_ENDCAP_ROUND == ulPenEndCap)
+			wsLineCap = L"round";
+		else if (PS_ENDCAP_SQUARE == ulPenEndCap)
+			wsLineCap = L"square";
+		else if (PS_ENDCAP_FLAT == ulPenEndCap)
+			wsLineCap = L"butt";
+
 		if (PS_STARTCAP_FLAT == ulPenStartCap)
-			arAttributes.push_back({L"stroke-linecap", L"butt"});
+			wsLineCap = L"butt";
 		else if (PS_STARTCAP_SQUARE == ulPenStartCap)
-			arAttributes.push_back({L"stroke-linecap", L"square"});
+			wsLineCap = L"square";
 		else if (PS_STARTCAP_ROUND == ulPenStartCap)
-			arAttributes.push_back({L"stroke-linecap", L"round"});
+			wsLineCap = L"round";
+
+		arAttributes.push_back({L"stroke-linecap", wsLineCap});
 
 		if (PS_JOIN_MITER == ulPenJoin)
 			arAttributes.push_back({L"stroke-linejoin", L"miter"});

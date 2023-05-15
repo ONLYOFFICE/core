@@ -1015,10 +1015,10 @@ namespace MetaFile
 		return sTmpFile;
 	}
 
-	std::wstring StringNormalization(std::wstring wsString)
+	std::wstring StringNormalization(const std::wstring& wsString)
 	{
 		std::wstring wsText;
-		for (wchar_t wChar : wsString)
+		for (const wchar_t& wChar : wsString)
 		    if (wChar == L'<')
 			   wsText += L"&lt;";
 		    else if (wChar == L'>')
@@ -1034,6 +1034,15 @@ namespace MetaFile
 
 		    else wsText += wChar;
 		return wsText;
+	}
+
+	bool StringEquals(const std::wstring& wsFirst, const std::wstring& wsSecond)
+	{
+		 return std::equal(wsFirst.begin(), wsFirst.end(),
+						   wsSecond.begin(), wsSecond.end(),
+						   [](wchar_t wchFirst, wchar_t wchSecond) {
+							   return tolower(wchFirst) == tolower(wchSecond);
+						   });
 	}
 
 	static int GetMinAccuracy(double dValue)

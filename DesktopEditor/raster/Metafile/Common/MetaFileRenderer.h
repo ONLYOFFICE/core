@@ -278,17 +278,21 @@ namespace MetaFile
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
 
 			double dM11, dM12, dM21, dM22, dRx, dRy;
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
 			if (dLogicalFontHeight < M_MINFONTSIZE)
 			{
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 				dFontScale = dM22;
 				dLogicalFontHeight *= dFontScale;
-				m_pRenderer->SetTransform(dM11 / std::fabs(dM11), dM12, dM21, dM22 / std::fabs(dM22), dRx, dRy);
+
+				dM11 /= std::fabs(dM11);
+				dM22 /= std::fabs(dM22);
+
+				m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 			}
 
 			m_pRenderer->put_FontName(pFont->GetFaceName());
-			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72.));
+			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72.) * dM22);
 
 			int lStyle = 0;
 			if (pFont->GetWeight() > 550)
@@ -1209,12 +1213,8 @@ namespace MetaFile
 				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-				{
-					if (PS_STARTCAP_ROUND == ulPenStartCap)
-						arDashes[unIndex] = pDataDash[unIndex] * ((0 == unIndex % 2) ? (dWidth / 4) : (1.5 * dWidth));
-					else
 						arDashes[unIndex] = pDataDash[unIndex] * dWidth;
-				}
+
 				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
 				nDashStyle = Aggplus::DashStyleCustom;

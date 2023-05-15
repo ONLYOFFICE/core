@@ -1013,7 +1013,8 @@ void process_build_object::visit(chart_data_point & val)
 		object_odf_context_.series_.back().points_.back().bEnabled = true;
 		std::wstring style_name = val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
 		
-		ApplyGraphicProperties	(style_name,	object_odf_context_.series_.back().points_.back().graphic_properties_, 
+		ApplyChartProperties(style_name, object_odf_context_.series_.back().points_.back().properties_);
+		ApplyGraphicProperties	(style_name,	object_odf_context_.series_.back().points_.back().graphic_properties_,
 												object_odf_context_.series_.back().points_.back().fill_);
 		ApplyTextProperties		(style_name,	object_odf_context_.series_.back().points_.back().text_properties_);
 	}

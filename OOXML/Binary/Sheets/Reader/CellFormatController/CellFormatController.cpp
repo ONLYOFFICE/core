@@ -131,8 +131,9 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
     }
 
 	DateReader dateReader = {};
-	auto digitalDate = dateReader.GetDigitalDate(value);
-	if(digitalDate != 0)
+	_INT32 digitalDate  = 0;
+	auto validDate = dateReader.GetDigitalDate(value, digitalDate);
+	if(validDate)
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = std::to_wstring(digitalDate);

@@ -35,10 +35,21 @@
 #include "../../../../Base/Base.h"
 
 #include <string>
+#include <chrono>
 
 class DateReader
 {
 public:
-    _UINT32 GetDigitalDate(const std::wstring &date);
+    /// @brief получение даты в виде числа в формате excel
+    /// @param date дата в строковом формате
+    /// @param result результат в формате excel
+    /// @param return true в случае успешной конвертации, иначе false
+    bool GetDigitalDate(const std::wstring &date, _INT32 &result);
+
+private:
+    /// @brief получение даты в виде числа в формате excel из дат позднее 1900 года
+    /// @param datetime структура с датой
+    /// @return дата в формате excel
+    _INT32 getStandartDate(tm &date);
 };
 

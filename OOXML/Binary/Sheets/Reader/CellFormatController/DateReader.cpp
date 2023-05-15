@@ -50,7 +50,7 @@ std::vector<std::wstring> DateFormats = {
     L"%m-%d-%y", L"%d-%m-%Y", L"%d-%m-%y"
 };
 
-_UINT32 DateReader::GetDigitalDate(const std::wstring &date)
+bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
 {
     // Перебор форматов даты, пока не найдется подходящий
     for (const auto& format : DateFormats) {
@@ -64,13 +64,25 @@ _UINT32 DateReader::GetDigitalDate(const std::wstring &date)
             continue;
         }
 
-        // Преобразование даты в формат excel
-        auto tp = std::chrono::system_clock::from_time_t(mktime(&time));
-        auto excelTime = (tp.time_since_epoch().count() / 10000000) + 2209161600;
-        double tempTime = excelTime / 86400.0;
-        return round(excelTime / 86400.0);
+        //определяем стандартная ли дата
+
+        if(time.tm_year > 0)
+        {
+            result = getStandartDate(time);
+            return true;
+        }
+        return false;
     }
 
-    // Если не найден подходящий формат даты, возвращаем 0
-    return 0;
+    // Если не найден подходящий формат даты, возвращаем false
+    return false;
+}
+
+_INT32 DateReader::getStandartDate(tm &date)
+{
+    // Преобразование даты в формат excel
+    auto tp = std::chrono::system_clock::from_time_t(mktime(&date));
+    auto excelTime = (tp.time_since_epoch().count() / 10000000) + 2209161600;
+    _INT32 tempTime = round(excelTime / 86400.0);
+    return tempTime;
 }

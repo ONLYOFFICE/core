@@ -59,7 +59,8 @@ libsocketio {
         _WEBSOCKETPP_CPP11_CHRONO_ \
         \
         "SIO_TLS=1" \
-        "SIO_TLS_NO=0"
+        "SIO_TLS_NO=0" \
+        "PING_TIMEOUT_INTERVAL=20000"
 
     include($$PWD/../../3dParty/boost/boost.pri)
 

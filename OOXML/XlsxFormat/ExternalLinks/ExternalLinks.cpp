@@ -64,6 +64,8 @@
 #include "../../XlsbFormat/Biff12_records/SupNameValueStart.h"
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+
 namespace OOX
 {
 namespace Spreadsheet

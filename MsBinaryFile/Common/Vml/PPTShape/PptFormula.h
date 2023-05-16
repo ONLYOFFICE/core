@@ -274,8 +274,8 @@ namespace NSGuidesVML
     class CFormulasManager
     {
     public:
-        std::vector<LONG>* m_pAdjustments;
-        std::vector<LONG> m_arResults;
+        std::vector<long>* m_pAdjustments;
+        std::vector<long> m_arResults;
 
         std::vector<CFormula> m_arFormulas;
 
@@ -289,7 +289,7 @@ namespace NSGuidesVML
 		CFormulasManager& operator =(const CFormulasManager& oSrc);
 
 		void Clear();
-		void Clear(std::vector<LONG>* pAdjusts);
+		void Clear(std::vector<long>* pAdjusts);
 
 		void AddFormula(std::wstring strFormula);
 		void AddFormula(CFormula oFormula);

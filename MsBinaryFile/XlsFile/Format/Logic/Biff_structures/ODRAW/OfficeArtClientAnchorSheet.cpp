@@ -32,8 +32,6 @@
 
 #include "OfficeArtClientAnchorSheet.h"
 
-#include <boost/lexical_cast.hpp>
-
 namespace ODRAW
 {
 

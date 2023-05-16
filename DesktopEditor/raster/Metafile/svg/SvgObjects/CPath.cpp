@@ -88,7 +88,7 @@ namespace SVG
 			if (NULL != pStartMarker)
 			{
 				pStartMarker->Update(pDefs);
-				pStartMarker->Draw(pRenderer, {*arPoints.begin()});
+				pStartMarker->Draw(pRenderer, {*arPoints.begin()}, m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace SVG
 			if (NULL != pMidMarker)
 			{
 				pMidMarker->Update(pDefs);
-				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1));
+				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1), m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace SVG
 			if (NULL != pEndMarker)
 			{
 				pEndMarker->Update(pDefs);
-				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)});
+				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)}, m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
 			}
 		}
 

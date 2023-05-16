@@ -23,7 +23,7 @@ namespace SVG
 
 		void Update(const CDefs *pDefs);
 
-		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints) const;
+		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints, double dStrokeWidth) const;
 	private:
 		TBounds GetBounds() const override;
 

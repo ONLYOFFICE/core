@@ -33,40 +33,21 @@
 #pragma once
 
 #include "../../../../Base/Base.h"
-#include "../../../../XlsxFormat/Worksheets/Worksheet.h"
-#include "../../../../XlsxFormat/Styles/Styles.h"
 
+#include <string>
+#include <chrono>
 
-/// @brief класс определяющий и корректирующий тип данных, помещаемых в ячейки таблицы
-class CellFormatController
+class CurrencyReader
 {
-
 public:
-    /// @brief конструктор
-    /// @param styles стили из таблицы
-    CellFormatController(OOX::Spreadsheet::CStyles *styles);
+    /// @brief проверка постфикса на валидность валюте
+    /// @param postfix проверяющийся на валидность валюте
+    /// @return true если постфикс валютный иначе false
+    bool CheckPostfix(const std::wstring &postfix);
 
-    /// @brief обрабатывает вставляемые в ячейку таблицы данные, переводя их в нужный тип, и заполняет ими ячейку
-    /// @param pCell указатель на ячейку
-    /// @param value вставляемые в ячейку данные в строковом типе
-    void ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
-
-private:
-
-    /// @brief создание стиля для указанного формата
-    /// @param format формат значения
-    void createFormatStyle(const std::wstring &format);
-
-    /// @brief указатель на ячейку с которой ведется работа
-    OOX::Spreadsheet::CCell *pCell_;
-
-    /// @brief map с форматами данных
-    std::map<std::wstring, unsigned int> mapDataNumber_;
-
-    /// @brief указатель на стили документа
-	OOX::Spreadsheet::CStyles *m_pStyles;
-
-    /// @brief указатель на полученное строковое значение
-    const std::wstring *value_;
-
+    /// @brief получение даты в виде числа в формате excel
+    /// @param currency валюта формат которой будет проверен
+    /// @return формат числа с использованием переданной валюты в строковом виде
+    std::wstring GetCurrencyFormat(const std::wstring &currency);
 };
+

@@ -32,6 +32,7 @@
 
 #include "CellFormatController.h"
 #include "DateReader.h"
+#include "DigitReader.h"
 
 #include "../../../../XlsxFormat/Styles/NumFmts.h"
 #include "../../../../XlsxFormat/Styles/Xfs.h"
@@ -42,6 +43,7 @@
 
 const std::wstring DefaultDateFormat = L"dd/mm/yyyy";
 const std::wstring DefaultPercentFormat = L"0.0%";
+const std::wstring DefaultDollarFormat = L"#,##0.00$";
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles{styles}
@@ -74,6 +76,7 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 
 	createFormatStyle(DefaultDateFormat);
 	createFormatStyle(DefaultPercentFormat);
+	createFormatStyle(DefaultDollarFormat);
 
 }
 
@@ -94,24 +97,28 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		pCell->m_oRichText->m_arrItems.push_back(pText);
 		return;
 	}
-
-    size_t length = value.length();
-    wchar_t *pEndPtr;
-	double dValue = wcstod(value.c_str(), &pEndPtr);
-	value_ = &value;
-
-	if (std::isnan(dValue) || std::isinf(dValue))
-		pEndPtr = (wchar_t *)value.c_str();
-
-	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) < 3))
+	DigitReader digits = {};
+	std::wstring digitFormat = {};
+	std::wstring digitValue = {};
+	if(digits.ReadDigit(value, digitValue, digitFormat))
 	{
-		processNumberValue(dValue, pEndPtr);
+		pCell_->m_oValue->m_sText = digitValue;
+		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
+		if (pFind != mapDataNumber_.end())
+		{
+			pCell_->m_oStyle = pFind->second;
+		}
+		else
+		{
+			if (!m_pStyles->m_oNumFmts.IsInit()) m_pStyles->m_oNumFmts.Init();
+			createFormatStyle(digitFormat);
+		}
 		if (bIsWrap)
 		{
 			pCell->m_oStyle = 1;
 		}
 		return;
-    }
+	}
 
 	DateReader dateReader = {};
 	_INT32 digitalDate  = 0;
@@ -147,7 +154,6 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 
 }
 
-
 void CellFormatController::createFormatStyle(const std::wstring &format)
 {
 	if (!m_pStyles->m_oNumFmts.IsInit())
@@ -173,78 +179,3 @@ void CellFormatController::createFormatStyle(const std::wstring &format)
 	mapDataNumber_.insert(std::make_pair(format, styleNum));
 }
 
-void CellFormatController::processNumberValue(double dValue, wchar_t *pEndPtr)
-{
-	std::wstring data_format;
-	std::wstring postfix;
-	auto length = value_->length();
-
-		if (0 != *pEndPtr)
-		{
-			size_t sz = length - (pEndPtr - value_->c_str());
-
-			while (sz > 0)
-			{
-				if (pEndPtr[sz - 1] != L' ')
-					break;
-				sz--;
-			}
-
-			if (sz > 0)
-			{
-				postfix = std::wstring(pEndPtr, sz);
-			}
-		}
-
-		size_t pos = value_->find(L".");
-		if (pos != std::wstring::npos)
-		{
-			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
-			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
-				data_format += L"0";
-		}
-		if (false == data_format.empty()) data_format = L"." + data_format;
-
-		pCell_->m_oValue.Init();
-
-		if (0 != *pEndPtr)
-		{
-			if (false == postfix.empty())
-			{
-				if (postfix[0] == L'%')
-				{
-					pCell_->m_oValue->m_sText = std::to_wstring(dValue / 100.);
-					pCell_->m_oStyle = mapDataNumber_.at(DefaultPercentFormat);
-				}
-				else
-				{
-					pCell_->m_oValue->m_sText = value_->substr(0, length - 1);
-
-					for (size_t i = 0; i < postfix.size(); ++i)
-					{
-						data_format += std::wstring(L"\\") + postfix[i];
-					}
-				}
-			}
-		}
-		else
-        {
-			pCell_->m_oValue->m_sText = *value_;
-        }
-		if (false == data_format.empty())
-		{
-			data_format = L"0" + data_format;
-
-			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(data_format);
-			if (pFind != mapDataNumber_.end())
-			{
-				pCell_->m_oStyle = pFind->second;
-			}
-			else
-			{
-				if (!m_pStyles->m_oNumFmts.IsInit()) m_pStyles->m_oNumFmts.Init();
-				createFormatStyle(data_format);
-
-			}
-		}
-}

@@ -48,9 +48,7 @@ namespace OOX {namespace Vml { class CShapeType; }}
 namespace cpdoccore {
 namespace odf_writer
 {
-
 class odf_conversion_context;
-class odf_style_context;
 class odf_text_context;
 
 class graphic_format_properties;
@@ -59,6 +57,9 @@ class paragraph_format_properties;
 class style_text_properties;
 class style_graphic_properties;
 class style_paragraph_properties;
+
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 class odf_drawing_context
 {
@@ -71,7 +72,7 @@ public:
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();
-	void set_styles_context	(odf_style_context*  styles_context);//для embedded 
+	void set_styles_context	(odf_style_context_ptr styles_context);//для embedded 
 
 	void set_parent_style	(std::wstring style_name);
 

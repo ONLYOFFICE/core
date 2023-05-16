@@ -198,7 +198,7 @@ public:
 ////////
 	void set_default_series_color();
 	void clear_current();
-	odf_style_context			*styles_context_;
+	odf_style_context_ptr		styles_context_;
 	odf_conversion_context		*odf_context_;
 
 	chart_chart					*get_current_chart();
@@ -356,7 +356,7 @@ odf_chart_context::odf_chart_context(odf_conversion_context *odf_context)
 odf_chart_context::~odf_chart_context()
 {
 } 
-void odf_chart_context::set_styles_context(odf_style_context * style_context)
+void odf_chart_context::set_styles_context(odf_style_context_ptr style_context)
 {
 	impl_->styles_context_ = style_context;
 	

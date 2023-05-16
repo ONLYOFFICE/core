@@ -127,8 +127,9 @@ public:
 	
 	void add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content);
 	
-	virtual odf_style_context		* styles_context();
-	
+	virtual odf_style_context_ptr	styles_context();
+	virtual void					set_styles_context(odf_style_context_ptr styles_context);
+
 	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();

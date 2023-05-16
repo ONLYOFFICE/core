@@ -99,7 +99,7 @@ namespace odf_writer
 			odf_conversion_context				*odf_context_;
 			office_math							*root_element_;
 			
-			odf_style_context					*styles_context_;
+			odf_style_context_ptr				styles_context_;
 	};
 
 	void odf_math_context::Impl::clear_current()
@@ -158,7 +158,7 @@ namespace odf_writer
 		//debug_stream.close();
 	}
 
-	void odf_math_context::set_styles_context(odf_style_context * style_context)
+	void odf_math_context::set_styles_context(odf_style_context_ptr style_context)
 	{
 		impl_->styles_context_ = style_context;
 

@@ -138,11 +138,18 @@ double odf_conversion_context::convert_symbol_width(double val)
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
-
-odf_style_context* odf_conversion_context::styles_context()
+void odf_conversion_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	if (!objects_.empty())
-		return objects_[current_object_]->style_context.get();
+	{
+		objects_[current_object_]->style_context = styles_context;
+	}
+}
+
+odf_style_context_ptr odf_conversion_context::styles_context()
+{
+	if (!objects_.empty())
+		return objects_[current_object_]->style_context;
 	else
 		return NULL;
 }

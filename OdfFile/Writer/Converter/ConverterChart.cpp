@@ -1370,12 +1370,19 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 		if (S_OK == oCOfficeUtils.ExtractToDirectory(media->filename().GetPath(), sTempUnpackedXLSX, NULL, 0))
 		{
 			XlsxConverter converter(sTempUnpackedXLSX, false);
+			
+			converter.odf_context()->create_object();
+			converter.odf_context()->set_styles_context(odf_context()->styles_context());
+
+			converter.convert_styles();
+
 			odf_writer::office_element_ptr local_table = converter.convert_sheet(0, L"local-table");
 			if (local_table)
 			{
 				odf_context()->chart_context()->set_local_table(local_table);
 				bConvertLocal = true;
 			}
+			converter.odf_context()->end_object();
 		}
 		NSDirectory::DeleteDirectory(sTempUnpackedXLSX);
 	}

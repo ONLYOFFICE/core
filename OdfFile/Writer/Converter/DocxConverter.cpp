@@ -3832,7 +3832,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 			oox_num_lvl->m_oRPr.reset();
 			oox_num_lvl->m_oRPr = new OOX::Logic::CRunProperty(run_props);
 		}
-		odf_writer::odf_style_context* styles_context = odf_context()->page_layout_context()->get_local_styles_context();
+		odf_writer::odf_style_context_ptr styles_context = odf_context()->page_layout_context()->get_local_styles_context();
 		
 		odf_writer::text_format_properties *text_props = odt_context->styles_context()->lists_styles().get_text_properties();
 		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props, true);

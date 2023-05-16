@@ -295,8 +295,8 @@ public:
 	
 	std::vector<odf_level_state>	current_level_;		//постоянно меняющийся список уровней наследования
 
-	odf_style_context				*styles_context_;
-	odf_conversion_context			*odf_context_;
+	odf_style_context_ptr styles_context_;
+	odf_conversion_context *odf_context_;
 
 	bool			is_footer_;
 	bool			is_header_;
@@ -346,7 +346,7 @@ office_element_ptr & odf_drawing_context::get_current_element()
 	return impl_->current_level_.back().elm;
 }
 
-void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
+void odf_drawing_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	impl_->styles_context_ = styles_context;
 }

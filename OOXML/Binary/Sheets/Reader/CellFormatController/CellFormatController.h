@@ -58,11 +58,15 @@ private:
     /// @param EndPtr указатель на конец числа
     void processNumberValue(double dValue, wchar_t *pEndPtr);
 
+    /// @brief создание стиля для указанного формата
+    /// @param format формат значения
+    void createFormatStyle(const std::wstring &format);
+
     /// @brief указатель на ячейку с которой ведется работа
     OOX::Spreadsheet::CCell *pCell_;
 
     /// @brief map с форматами данных
-    std::map<std::wstring, unsigned int> mapDataNumber;
+    std::map<std::wstring, unsigned int> mapDataNumber_;
 
     /// @brief указатель на стили документа
 	OOX::Spreadsheet::CStyles *m_pStyles;

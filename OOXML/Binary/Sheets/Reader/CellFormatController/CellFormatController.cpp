@@ -41,6 +41,7 @@
 #include <iomanip>
 
 const std::wstring DefaultDateFormat = L"dd/mm/yyyy";
+const std::wstring DefaultPercentFormat = L"0.0%";
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles{styles}
@@ -51,8 +52,7 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
 
 	// Normall default
-	OOX::Spreadsheet::CXfs* pXfs = NULL;
-	pXfs = new OOX::Spreadsheet::CXfs();
+	auto pXfs = new OOX::Spreadsheet::CXfs();
 	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
 	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
 	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
@@ -70,27 +70,10 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	pXfs->m_oApplyAlignment.Init();	pXfs->m_oApplyAlignment->SetValue(SimpleTypes::onoffTrue);
 	pXfs->m_oAligment.Init();		pXfs->m_oAligment->m_oWrapText.Init();
 	pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
-
-
 	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-    m_pStyles->m_oNumFmts.Init();
-	m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = DefaultDateFormat;
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
-	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
-
-	// Normal + data format
-	pXfs = new OOX::Spreadsheet::CXfs();
-
-	pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
-	pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
-	pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
-
-	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-	auto styleId = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
-	mapDataNumber.insert(std::make_pair(DefaultDateFormat, styleId));
+	createFormatStyle(DefaultDateFormat);
+	createFormatStyle(DefaultPercentFormat);
 
 }
 
@@ -137,7 +120,7 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = std::to_wstring(digitalDate);
-		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber.find(DefaultDateFormat);
+		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
 		pCell_->m_oStyle = pFind->second;
 	}
 	else
@@ -162,6 +145,32 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		pCell->m_oStyle = 1;
 	}
 
+}
+
+
+void CellFormatController::createFormatStyle(const std::wstring &format)
+{
+	if (!m_pStyles->m_oNumFmts.IsInit())
+	{
+		m_pStyles->m_oNumFmts.Init();
+	}
+	m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
+	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = format;
+	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
+	m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
+
+	// Normal + data format
+	OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
+
+	pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
+	pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
+	pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
+	pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
+
+	m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+
+	auto styleNum = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
+	mapDataNumber_.insert(std::make_pair(format, styleNum));
 }
 
 void CellFormatController::processNumberValue(double dValue, wchar_t *pEndPtr)
@@ -205,6 +214,7 @@ void CellFormatController::processNumberValue(double dValue, wchar_t *pEndPtr)
 				if (postfix[0] == L'%')
 				{
 					pCell_->m_oValue->m_sText = std::to_wstring(dValue / 100.);
+					pCell_->m_oStyle = mapDataNumber_.at(DefaultPercentFormat);
 				}
 				else
 				{
@@ -225,31 +235,16 @@ void CellFormatController::processNumberValue(double dValue, wchar_t *pEndPtr)
 		{
 			data_format = L"0" + data_format;
 
-			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber.find(data_format);
-			if (pFind != mapDataNumber.end())
+			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(data_format);
+			if (pFind != mapDataNumber_.end())
 			{
 				pCell_->m_oStyle = pFind->second;
 			}
 			else
 			{
 				if (!m_pStyles->m_oNumFmts.IsInit()) m_pStyles->m_oNumFmts.Init();
-				m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = data_format;
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
+				createFormatStyle(data_format);
 
-				// Normal + data format
-				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
-
-				pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
-				pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
-				pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
-				pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
-
-				m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
-				pCell_->m_oStyle = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
-				mapDataNumber.insert(std::make_pair(data_format, *pCell_->m_oStyle));
 			}
 		}
 }

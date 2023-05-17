@@ -552,6 +552,7 @@ namespace NSJSBase
 		}
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+		pNativeObj->initFunctions();
 		v8::Handle<v8::ObjectTemplate> oCurTemplate = CreateEmbedObjectTemplate(isolate, pNativeObj);
 		v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
 		v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();

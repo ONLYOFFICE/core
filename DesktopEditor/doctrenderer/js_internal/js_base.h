@@ -91,12 +91,12 @@ namespace NSJSBase
 
 	public:
 		CJSEmbedObject();
-		CJSEmbedObject(std::initializer_list<EmbedFunctionType> function_list);
 		virtual ~CJSEmbedObject();
 
 	public:
 		virtual void* getObject();
 		virtual std::vector<std::string> getNames();
+		virtual void initFunctions();
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
 		JSSmart<CJSValue> createObject();
@@ -294,7 +294,7 @@ namespace NSJSBase
 }
 
 // defines for embed
-#define JS_FUNCTION_EMBED(NAME)		[this](CJSFunctionArguments* args) { return this->NAME(); }
+#define JS_FUNCTION_EMBED_0(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(); }
 #define JS_FUNCTION_EMBED_1(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0)); }
 #define JS_FUNCTION_EMBED_2(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1)); }
 #define JS_FUNCTION_EMBED_3(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2)); }

@@ -28,11 +28,6 @@ namespace NSJSBase {
 		embed_native_internal = NULL;
 	}
 
-	CJSEmbedObject::CJSEmbedObject(std::initializer_list<EmbedFunctionType> function_list) : m_functions(function_list)
-	{
-		embed_native_internal = NULL;
-	}
-
 	CJSEmbedObject::~CJSEmbedObject()
 	{
 		RELEASEOBJECT(embed_native_internal);
@@ -46,6 +41,10 @@ namespace NSJSBase {
 	std::vector<std::string> CJSEmbedObject::getNames()
 	{
 		return std::vector<std::string>();
+	}
+
+	void CJSEmbedObject::initFunctions()
+	{
 	}
 
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)

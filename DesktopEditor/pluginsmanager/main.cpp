@@ -1066,6 +1066,7 @@ private:
 			NSStringUtils::string_replace(sJson, L"[", L"");
 			NSStringUtils::string_replace(sJson, L"]", L"");
 			NSStringUtils::string_replace(sJson, L"\"", L"");
+			NSStringUtils::string_replace(sJson, L" ", L"");
 
 			bResult = SplitStringAsVector(sJson, L",", arrOutput);
 		}

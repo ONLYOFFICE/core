@@ -31,12 +31,11 @@
  */
 
 #include "DigitReader.h"
+#include "CurrencyReader.h"
 
 #include <cmath>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
-
-const std::wstring DefaultDollarFormat = L"#,##0.00$";
 
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
@@ -45,13 +44,9 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 	double dValue = wcstod(value.c_str(), &pEndPtr);
 
 
-	if (std::isnan(dValue) || std::isinf(dValue))
+    if ((std::isnan(dValue) || std::isinf(dValue)))
     {
-		pEndPtr = (wchar_t *)value.c_str();
-    }
-    else
-    {
-        return false;
+		return false;
     }
 
 	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) < 3))
@@ -82,16 +77,17 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		{
 			if (false == postfix.empty())
 			{
+				CurrencyReader currency{};
 				if (postfix[0] == L'%')
 				{
 					digit =  std::to_wstring(dValue / 100.);
 					format = DefaultPercentFormat;
                     return true;
 				}
-				else if(postfix[0] == L'$')
+				else if(currency.CheckPostfix(postfix))
 				{
 					digit = std::to_wstring(dValue);
-					format = DefaultDollarFormat;
+					format = currency.GetCurrencyFormat(postfix);
 				}
 				else
 				{

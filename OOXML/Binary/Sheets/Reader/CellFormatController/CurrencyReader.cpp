@@ -36,23 +36,23 @@
 
 const std::wstring CurrencyFormatTemplate = L"#,##0.00";
 
-std::set<wchar_t> currencySymbols = {
-    L'$',    // Доллар США
-    L'€',    // Евро
-    L'¥',    // Японская иена
-    L'£',    // Фунт стерлингов Великобритании
-    L'A$',   // Австралийский доллар
-    L'C$',   // Канадский доллар
-    L'Fr.',  // Швейцарский франк
-    L'₽',    // Российский рубль
-    L'₸',    // Казахский тенге
-    L'元',   // Китайский юань
+std::set<std::wstring> currencySymbols = {
+    L"$",    // Доллар США
+    L"€",    // Евро
+    L"¥",    // Японская иена
+    L"£",    // Фунт стерлингов Великобритании
+    L"A$",   // Австралийский доллар
+    L"C$",   // Канадский доллар
+    L"Fr.",  // Швейцарский франк
+    L"₽",    // Российский рубль
+    L"₸",    // Казахский тенге
+    L"元",   // Китайский юань
     // ...
 };
 
 bool CurrencyReader::CheckPostfix(const std::wstring &postfix)
 {
-    auto find = currencySymbols.find(postfix[0]);
+    auto find = currencySymbols.find(postfix);
     return find != currencySymbols.end();
 }
 

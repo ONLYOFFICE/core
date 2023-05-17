@@ -87,14 +87,14 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	/// формат для булева значения в верхнем регистре
 	if(value == L"true" || value == L"false")
 	{
-		pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-		pCell->m_oRichText.Init();
+		pCell_->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+		pCell_->m_oRichText.Init();
 		OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
 		auto tempValue = value;
 		std::transform(tempValue.begin(), tempValue.end(), tempValue.begin(),
                  [](unsigned char c) { return std::toupper(c); });
 		pText->m_sText = tempValue;
-		pCell->m_oRichText->m_arrItems.push_back(pText);
+		pCell_->m_oRichText->m_arrItems.push_back(pText);
 		return;
 	}
 	DigitReader digits = {};
@@ -102,6 +102,10 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	std::wstring digitValue = {};
 	if(digits.ReadDigit(value, digitValue, digitFormat))
 	{
+		if(!pCell_->m_oValue.IsInit())
+		{
+			pCell_->m_oValue.Init();
+		}
 		pCell_->m_oValue->m_sText = digitValue;
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
 		if (pFind != mapDataNumber_.end())
@@ -110,12 +114,20 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		}
 		else
 		{
-			if (!m_pStyles->m_oNumFmts.IsInit()) m_pStyles->m_oNumFmts.Init();
-			createFormatStyle(digitFormat);
+
+			if (!m_pStyles->m_oNumFmts.IsInit())
+			{
+				m_pStyles->m_oNumFmts.Init();
+			}
+			if(!digitFormat.empty())
+			{
+				createFormatStyle(digitFormat);
+				pCell_->m_oStyle = mapDataNumber_.at(digitFormat);
+			}
 		}
 		if (bIsWrap)
 		{
-			pCell->m_oStyle = 1;
+			pCell_->m_oStyle = 1;
 		}
 		return;
 	}
@@ -125,8 +137,11 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	auto validDate = dateReader.GetDigitalDate(value, digitalDate);
 	if(validDate)
 	{
-		pCell->m_oValue.Init();
-		pCell->m_oValue->m_sText = std::to_wstring(digitalDate);
+		if(!pCell_->m_oValue.IsInit())
+		{
+			pCell_->m_oValue.Init();
+		}
+		pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
 		pCell_->m_oStyle = pFind->second;
 	}
@@ -134,22 +149,22 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	{
 		if (value[0] == L'='/* && bCalcFormulas*/)
 		{
-			pCell->m_oFormula.Init();
-			pCell->m_oFormula->m_sText = value;
+			pCell_->m_oFormula.Init();
+			pCell_->m_oFormula->m_sText = value;
 		}
 		else
 		{
-			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-			pCell->m_oRichText.Init();
+			pCell_->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+			pCell_->m_oRichText.Init();
 			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
 			pText->m_sText = value;
-			pCell->m_oRichText->m_arrItems.push_back(pText);
+			pCell_->m_oRichText->m_arrItems.push_back(pText);
 		}
 	}
 
 	if (bIsWrap)
 	{
-		pCell->m_oStyle = 1;
+		pCell_->m_oStyle = 1;
 	}
 
 }

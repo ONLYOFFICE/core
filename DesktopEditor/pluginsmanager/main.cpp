@@ -1065,14 +1065,30 @@ private:
 			NSStringUtils::string_replace(sJson, L"\t", L"");
 			NSStringUtils::string_replace(sJson, L"[", L"");
 			NSStringUtils::string_replace(sJson, L"]", L"");
+
+			StringReplaceExt(sJson, L" \"", L"\"");
+			StringReplaceExt(sJson, L"\" ", L"\"");
+
 			NSStringUtils::string_replace(sJson, L"\"", L"");
-			NSStringUtils::string_replace(sJson, L" ", L"");
 
 			bResult = SplitStringAsVector(sJson, L",", arrOutput);
 		}
 
 		return bResult;
-	}	
+	}
+
+	void StringReplaceExt(std::wstring& sText, const std::wstring& sFrom, const std::wstring& sTo)
+	{
+		if ( sText.length() )
+		{
+			std::wstring::size_type pos = sText.find(sFrom);
+			while ( pos != std::wstring::npos )
+			{
+				NSStringUtils::string_replace(sText, sFrom, sTo);
+				pos = sText.find(sFrom);
+			}
+		}
+	}
 
 	bool DownloadFile(const std::wstring& sUrl, const std::wstring& sFile)
 	{

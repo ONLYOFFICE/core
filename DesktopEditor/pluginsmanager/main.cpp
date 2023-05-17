@@ -516,7 +516,7 @@ public:
 		if ( bPrint )
 			Message(L"Initialize marketplace plugins ...", L"", true, true);
 
-		if (m_sMarketplaceUrl.length())
+		if ( !m_arrMarketplace.size() && m_sMarketplaceUrl.length() )
 		{
 			m_arrMarketplace.clear();
 
@@ -538,16 +538,20 @@ public:
 						{
 							pPluginInfo = FetchPluginInfo(sPluginName);
 							if ( pPluginInfo )
-							{
 								m_arrMarketplace.push_back(pPluginInfo);
-
-								if ( bPrint )
-									MessagePluginInfo(sPluginName, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
-							}
 						}
 					}
 				}
 				NSFile::CFileBinary::Remove(sTmpFile);
+			}
+		}
+
+		if ( bPrint )
+		{
+			for (size_t i = 0; i < m_arrMarketplace.size(); i++)
+			{
+				CPluginInfo* pPluginInfo = m_arrMarketplace[i];
+				MessagePluginInfo(pPluginInfo->m_sNameConfig, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
 			}
 		}
 

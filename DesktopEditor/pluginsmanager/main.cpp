@@ -1220,7 +1220,7 @@ int main(int argc, char** argv)
 						sValue = std::wstring(argv[i]);
 #else
 						std::string sValueA(argv[i]);
-						sValue = UTF8_TO_U(sParamA);
+						sValue = UTF8_TO_U(sValueA);
 #endif
 					}
 

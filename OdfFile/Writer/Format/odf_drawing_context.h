@@ -115,7 +115,9 @@ public:
 	void end_drawing();
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
-	size_t	get_group_level();	
+	void set_anchor_drawing();
+
+	size_t	get_group_level();
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
 		void set_group_flip_V	(bool bVal);
@@ -308,7 +310,6 @@ public:
 	void end_action();
 
 private:
-	
     class Impl;
     _CP_PTR(Impl) impl_;
 };

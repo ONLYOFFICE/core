@@ -94,6 +94,34 @@ std::wstring CorrectValue(const std::wstring& value)
 	return value.substr(pos1, pos2 - pos1);
 }
 
+bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
+{
+	arrOutput.clear();
+
+	if ( sData.length() )
+	{
+		std::wstring sTmp = sData;
+		NSStringUtils::string_replace(sTmp, L", ", L",");
+
+		size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
+		std::wstring token = L"";
+
+		while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
+		{
+			token = sTmp.substr(pos_start, pos_end - pos_start);
+			pos_start = pos_end + delim_len;
+			if (token.length())
+				arrOutput.push_back(token);
+		}
+
+		token = sTmp.substr(pos_start);
+		if ( token.length() )
+			arrOutput.push_back(token);
+	}
+
+	return arrOutput.size() > 0;
+}
+
 // Manager
 enum PluginStatus
 {
@@ -110,26 +138,37 @@ private:
 public:
 	std::wstring m_sVersion;
 
-	CVersion()
+	CVersion() : m_major(1), m_minor(0), m_revision(0), m_build(0), m_sVersion(L"1.0.0")
 	{
-		// Default if version is empty
-		m_major = 1;
-		m_minor = 0;
-		m_revision = 0;
-		m_build = 0;
-
-		m_sVersion = L"1.0.0";
 	}
 
-	CVersion(std::wstring& sVersion)
+	CVersion(std::wstring& sVersion) : m_major(1), m_minor(0), m_revision(0), m_build(0), m_sVersion(L"1.0.0")
 	{
-		m_sVersion = sVersion;
-		swscanf(m_sVersion.c_str(), L"%d.%d.%d.%d", &m_major, &m_minor, &m_revision, &m_build);
+		if ( sVersion.length() )
+		{
+			m_sVersion = sVersion;
 
-		if (m_major < 0)		m_major = 0;
-		if (m_minor < 0)		m_minor = 0;
-		if (m_revision < 0)		m_revision = 0;
-		if (m_build < 0)		m_build = 0;
+			std::vector<std::wstring> arr;
+			SplitStringAsVector(m_sVersion, L".", arr);
+
+			for (size_t i = 0; i < arr.size(); i++)
+			{
+				int iValue = std::stoi(arr[i]);
+				switch (i)
+				{
+					case 0: m_major =		iValue; break;
+					case 1: m_minor =		iValue; break;
+					case 2: m_revision =	iValue; break;
+					case 3: m_build =		iValue; break;
+					default: break;
+				}
+			}
+
+			if (m_major < 0)		m_major = 0;
+			if (m_minor < 0)		m_minor = 0;
+			if (m_revision < 0)		m_revision = 0;
+			if (m_build < 0)		m_build = 0;
+		}
 	}
 
 	bool operator > (CVersion& oVersion)
@@ -1028,35 +1067,7 @@ private:
 		}
 
 		return bResult;
-	}
-
-	bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
-	{
-		arrOutput.clear();
-
-		if ( sData.length() )
-		{
-			std::wstring sTmp = sData;
-			NSStringUtils::string_replace(sTmp, L", ", L",");
-
-			size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
-			std::wstring token = L"";
-
-			while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
-			{
-				token = sTmp.substr(pos_start, pos_end - pos_start);
-				pos_start = pos_end + delim_len;
-				if (token.length())
-					arrOutput.push_back(token);
-			}
-
-			token = sTmp.substr(pos_start);
-			if ( token.length() )
-				arrOutput.push_back(token);
-		}
-
-		return arrOutput.size() > 0;
-	}
+	}	
 
 	bool DownloadFile(const std::wstring& sUrl, const std::wstring& sFile)
 	{

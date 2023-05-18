@@ -76,8 +76,6 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 
 	createFormatStyle(DefaultDateFormat);
 	createFormatStyle(DefaultPercentFormat);
-	createFormatStyle(DefaultDollarFormat);
-
 }
 
 void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)

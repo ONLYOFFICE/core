@@ -46,8 +46,9 @@ public:
     bool CheckPostfix(const std::wstring &postfix);
 
     /// @brief получение даты в виде числа в формате excel
+    /// @param inputFormat формат в котором представлено число валюты
     /// @param currency валюта формат которой будет проверен
     /// @return формат числа с использованием переданной валюты в строковом виде
-    std::wstring GetCurrencyFormat(const std::wstring &currency);
+    std::wstring GetCurrencyFormat(const std::wstring &inputFormat,const std::wstring &currency);
 };
 

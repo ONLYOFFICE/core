@@ -87,23 +87,24 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 				else if(currency.CheckPostfix(postfix))
 				{
 					digit = std::to_wstring(dValue);
-					format = currency.GetCurrencyFormat(postfix);
+					format = currency.GetCurrencyFormat(data_format,postfix);
 				}
 				else
 				{
-					digit = value.substr(0, length - 1);
+					digit = std::to_wstring(dValue);
 
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];
 					}
+					format = data_format;
 				}
 			}
 		}
 		else
         {
-			digit = value;
-            format = L"";
+			digit = std::to_wstring(dValue);
+            format = data_format;
         }
         return true;
     }
@@ -122,5 +123,10 @@ std::wstring DigitReader::createFractionFormat(const std::wstring &value, wchar_
 				data_format += L"0";
 		}
 		if (false == data_format.empty()) data_format = L"." + data_format;
+		if(pos != std::string::npos)
+		{
+            std::wstring wholePart(pos, '0');
+			data_format = wholePart + data_format;
+		}
     return data_format;
 }

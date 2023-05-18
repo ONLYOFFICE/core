@@ -36,7 +36,7 @@
 
 const std::wstring CurrencyFormatTemplate = L"#,##0.00";
 
-std::set<std::wstring> currencySymbols = {
+const std::set<std::wstring> CurrencySymbols = {
     L"$",    // Доллар США
     L"€",    // Евро
     L"¥",    // Японская иена
@@ -46,18 +46,25 @@ std::set<std::wstring> currencySymbols = {
     L"Fr.",  // Швейцарский франк
     L"₽",    // Российский рубль
     L"₸",    // Казахский тенге
-    L"元",   // Китайский юань
-    // ...
+    L"元"   // Китайский юань
 };
 
 bool CurrencyReader::CheckPostfix(const std::wstring &postfix)
 {
-    auto find = currencySymbols.find(postfix);
-    return find != currencySymbols.end();
+    auto find = CurrencySymbols.find(postfix);
+    return find != CurrencySymbols.end();
 }
 
-std::wstring CurrencyReader::GetCurrencyFormat(const std::wstring &currency)
+std::wstring CurrencyReader::GetCurrencyFormat(const std::wstring &inputFormat,const std::wstring &currency)
 {
-    auto format = CurrencyFormatTemplate + currency;
+    std::wstring format;
+    if(!inputFormat.empty())
+    {
+        format = inputFormat + currency;
+    }
+    else
+    {
+        format = CurrencyFormatTemplate + currency;
+    }
     return format;
 }

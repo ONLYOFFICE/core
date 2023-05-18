@@ -67,12 +67,6 @@ namespace NSDocxRenderer
 		void BeginCommand(DWORD lType);
 
 		void Clear();
-		void ClearImages();
-		void ClearTextData();
-		void ClearTextLines();
-		void ClearShapes();
-		void ClearOutputObjects();
-
 		void ClearTables();
 
 		//удаляем то, что выходит за границы страницы

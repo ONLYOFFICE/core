@@ -44,6 +44,10 @@ namespace NSDocxRenderer
 
 	void CPage::Clear()
 	{
+		for(auto& val : m_arTextLine)
+				delete val;
+		m_arTextLine.clear();
+
 		for(auto& val : m_arDiacriticalSymbol)
 				delete val;
 		m_arDiacriticalSymbol.clear();
@@ -60,7 +64,7 @@ namespace NSDocxRenderer
 			delete val;
 		m_arOutputObjects.clear();
 
-		m_arTextLine.clear();
+
 		ClearTables();
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
@@ -1266,7 +1270,7 @@ namespace NSDocxRenderer
 						break;
 					}
 
-					for (auto pCont : pCurrLine->m_arConts)
+					for (auto& pCont : pCurrLine->m_arConts)
 					{
 						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
 							pCont->m_pFontStyle->wsFontName,
@@ -1285,7 +1289,8 @@ namespace NSDocxRenderer
 
 						pBaseLine->m_dWidth = pBaseLine->m_dRight - pBaseLine->m_dLeft;
 
-						pBaseLine->m_arConts.push_back(std::move(pCont));
+						pBaseLine->m_arConts.push_back(pCont);
+						pCont = nullptr;
 					}
 					CBaseItem::SortByLeft(pBaseLine->m_arConts);
 					pCurrLine->m_bIsNotNecessaryToUse = true;
@@ -1309,7 +1314,7 @@ namespace NSDocxRenderer
 						break;
 					}
 
-					for (auto pCont : pSubLine->m_arConts)
+					for (auto& pCont : pSubLine->m_arConts)
 					{
 						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
 							pCont->m_pFontStyle->wsFontName,
@@ -1328,7 +1333,8 @@ namespace NSDocxRenderer
 
 						pCurrLine->m_dWidth = pCurrLine->m_dRight - pCurrLine->m_dLeft;
 
-						pCurrLine->m_arConts.push_back(std::move(pCont));
+						pCurrLine->m_arConts.push_back(pCont);
+						pCont = nullptr;
 					}
 					CBaseItem::SortByLeft(pCurrLine->m_arConts);
 					pSubLine->m_bIsNotNecessaryToUse = true;

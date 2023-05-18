@@ -15,8 +15,6 @@ namespace NSDocxRenderer
 
 	void CParagraph::Clear()
 	{
-		for(auto& val: m_arLines)
-			delete val;
 		m_arLines.clear();
 	}
 
@@ -159,7 +157,6 @@ namespace NSDocxRenderer
 			pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthMM;
 
 			auto pNext = m_arLines[i];
-
 			auto pCont = pNext->m_arConts.front();
 
 			if (pLastCont->IsEqual(pCont))
@@ -169,19 +166,18 @@ namespace NSDocxRenderer
 				pLastCont->m_dRight = pCont->m_dRight;
 
 				pLastCont->m_bSpaceIsNotNeeded = false;
-
 				pCont->m_bIsNotNecessaryToUse = true;
 			}
 
 			for (size_t j = 0; j < pNext->m_arConts.size(); ++j)
 			{
-				auto pCont = pNext->m_arConts[j];
+				auto& pCont = pNext->m_arConts[j];
 				if (!pCont->m_bIsNotNecessaryToUse)
 				{
 					pLine->m_arConts.push_back(pCont);
+					pCont = nullptr;
 				}
 			}
-
 			pNext->m_bIsNotNecessaryToUse = true;
 		}
 	}

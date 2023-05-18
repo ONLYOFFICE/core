@@ -72,6 +72,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		}
 
         auto data_format = createFractionFormat(value, pEndPtr);
+		double fractionValue = 0;
 
 		if (0 != *pEndPtr)
 		{
@@ -89,10 +90,15 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					digit = std::to_wstring(dValue);
 					format = currency.GetCurrencyFormat(data_format,postfix);
 				}
+				else if(checkCommonFractionFormat(dValue, postfix, fractionValue, format))
+				{
+					digit = std::to_wstring(fractionValue);
+				}
 				else
 				{
 					digit = std::to_wstring(dValue);
 
+					data_format = createFractionFormat(value, pEndPtr);
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];
@@ -129,4 +135,22 @@ std::wstring DigitReader::createFractionFormat(const std::wstring &value, wchar_
 			data_format = wholePart + data_format;
 		}
     return data_format;
+}
+
+bool DigitReader::checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format)
+{
+	if (postfix[0] != L'/')
+	{
+		return false;
+	}
+
+	wchar_t *pEndPtr;
+	auto denominator = wcstod(postfix.substr(1, postfix.size()-1).c_str(), &pEndPtr);
+
+	if ((std::isnan(denominator) || std::isinf(denominator)) || denominator == 0 || *pEndPtr != 0)
+    {
+		return false;
+    }
+    format = L"?/?";
+	dvalue = numerator/denominator;
 }

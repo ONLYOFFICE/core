@@ -98,7 +98,18 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 				{
 					digit = std::to_wstring(dValue);
 
-					data_format = createFractionFormat(value, pEndPtr);
+					 // Удаление лишних нулей после запятой
+					size_t dotPos = digit.find('.');
+					if (dotPos != std::wstring::npos)
+					{
+						size_t lastNonZeroPos = digit.find_last_not_of(L'0');
+                        if (lastNonZeroPos <= dotPos)
+						{
+							digit.erase(lastNonZeroPos + 3);
+						}
+					}
+
+                    data_format = createFractionFormat(digit, pEndPtr);
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];

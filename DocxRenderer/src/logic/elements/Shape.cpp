@@ -29,7 +29,7 @@ namespace NSDocxRenderer
 	void CShape::Clear()
 	{
 		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-			m_arOutputObjects[i]->Clear();
+			delete m_arOutputObjects[i];
 
 		m_arOutputObjects.clear();
 		m_oVector.Clear();

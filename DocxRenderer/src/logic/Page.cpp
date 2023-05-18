@@ -44,55 +44,28 @@ namespace NSDocxRenderer
 
 	void CPage::Clear()
 	{
-		ClearTextData();
-		ClearTextLines();
-		ClearOutputObjects();
-		ClearShapes();
-		ClearImages();
-
-		ClearTables();
-
-		m_pCurrentLine = nullptr;
-		m_pCurrentRow = nullptr;
-		m_oVector.Clear();
-
-		m_pFontSelector->ClearCache();
-	}
-
-	void CPage::ClearImages()
-	{
-		for(auto& val : m_arImages)
-				delete val;
-		m_arImages.clear();
-	}
-
-	void CPage::ClearTextData()
-	{
 		for(auto& val : m_arDiacriticalSymbol)
 				delete val;
 		m_arDiacriticalSymbol.clear();
-	}
 
-	void CPage::ClearTextLines()
-	{
-		for(auto& val : m_arTextLine)
-				if(!val->m_bIsNotNecessaryToUse)
-					delete val;
-		m_arTextLine.clear();
-	}
+		for(auto& val : m_arImages)
+				delete val;
+		m_arImages.clear();
 
-	void CPage::ClearShapes()
-	{
 		for(auto& val : m_arShapes)
-				val->Clear();
+				delete val;
 		m_arShapes.clear();
-	}
 
-	void CPage::ClearOutputObjects()
-	{
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-			delete m_arOutputObjects[i];
+		for(auto& val : m_arOutputObjects)
+			delete val;
 		m_arOutputObjects.clear();
+
+		m_arTextLine.clear();
+		ClearTables();
+		m_pCurrentLine = nullptr;
+		m_pCurrentRow = nullptr;
+		m_oVector.Clear();
+		m_pFontSelector->ClearCache();
 	}
 
 	void CPage::ClearTables()

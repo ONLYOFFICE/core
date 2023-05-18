@@ -15,6 +15,8 @@ namespace NSDocxRenderer
 
 	void CParagraph::Clear()
 	{
+		for(auto& val: m_arLines)
+			delete val;
 		m_arLines.clear();
 	}
 

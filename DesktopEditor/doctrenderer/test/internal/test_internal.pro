@@ -26,9 +26,17 @@ core_linux {
     LIBS += -ldl
 }
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    Embed.cpp
+
+OBJECTIVE_SOURCES += \
+    jsc_Embed.mm
 
 HEADERS += \
     Embed.h
 
-DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
+QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
+
+LIBS += -framework JavaScriptCore
+
+DEFINES += JS_ENGINE_JAVASCRIPTCORE

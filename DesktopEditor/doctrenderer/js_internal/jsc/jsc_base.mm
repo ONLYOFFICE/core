@@ -474,26 +474,16 @@ namespace NSJSBase
 			return js_value(nil);
 		}
 	};
-
-	JSValue* funcImpl(id self, SEL _cmd)
-	{
-		JSSmart<CJSValue> val = CJSContext::createInt(42);
-		return js_return(val);
-	}
 }
 
-// without this protocol declaration at compile time this method simply won't export to JS
-//@protocol MyProtocol<JSExport>
-//-(JSValue*) test;
-//@end
-
-@interface CJSCEmbededObject : NSObject</*MyProtocol,*/ JSEmbedObjectProtocol>
+/*
+@interface CJSCEmbededObject : NSObject<JSEmbedObjectProtocol>
 {
 @public
 	CJSEmbedObject* m_internal;
 }
 -(JSValue*) _Call: (int)index : (NSArray*)args;
--(void) addProtocol: (NSString*)name;
++(void) addProtocol: (std::string)name;
 @end
 
 @implementation CJSCEmbededObject
@@ -518,29 +508,22 @@ namespace NSJSBase
 	JSSmart<CJSValue> ret = m_internal->Call(index, &_args);
 	return js_return(ret);
 }
-+(void) addProtocol: (NSString*)name
++(void) addProtocol: (std::string)name
 {
-	Protocol* protocol = objc_allocateProtocol([name UTF8String]);
-	protocol_addProtocol(protocol, @protocol(JSExport));
-	protocol_addMethodDescription(protocol, @selector(test), "@@:", YES, YES);
-	objc_registerProtocol(protocol);
-
-
+	std::string sProtoName = "IJS" + name;
+	Protocol* protocol = objc_getProtocol(sProtoName.c_str());
 	class_addProtocol([self class], protocol);
-	class_addMethod([self class], @selector(test), (IMP)NSJSBase::funcImpl, "@@:");
 }
-//-(JSValue*) test
-//{
-//	JSSmart<CJSValue> val = CJSContext::createInt(42);
-//	return js_return(val);
-//}
 @end
-
-
+*/
 
 namespace NSJSBase
 {
-
+	//	JSValue* funcImpl(id self, SEL _cmd)
+	//	{
+	//		JSSmart<CJSValue> val = CJSContext::createInt(42);
+	//		return js_return(val);
+	//	}
 
 	id CreateEmbedNativeObject(NSString* name)
 	{
@@ -554,42 +537,40 @@ namespace NSJSBase
 
 		// TODO: singleton check
 
-		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-
-#if 0
-		Protocol* jsExportProtocol = @protocol(JSExport);
-		Protocol* myProtocol = objc_allocateProtocol("MyProtocol");
-		protocol_addProtocol(myProtocol, jsExportProtocol);
-		protocol_addMethodDescription(myProtocol, @selector(test), "@@:", YES, YES);
-		objc_registerProtocol(myProtocol);
-
-		class_addProtocol([CJSCEmbededObject class], newProtocol);
-		class_addMethod([CJSCEmbededObject class], @selector(test), (IMP)funcImpl, "@@:");
-#else
-		[CJSCEmbededObject addProtocol:@"MyProtocol"];
-#endif
-		CJSCEmbededObject* pEmbedObj = [[CJSCEmbededObject alloc] init:pNativeObj];
+		std::string sJSCName = "CJS" + sName;
+		Class embedClass = objc_getClass(sJSCName.c_str());
+		id pEmbedObj = [[embedClass alloc] init];
 
 		/*
+//		std::string sProtoName = "MyProtocol";
+//		@protocol(MyProtocol);
+//		Protocol* protocol = objc_getProtocol("MyProtocol");
+//		if (protocol == NULL)
+//			std::cout << "No protocol " + sProtoName + " was found!" << std::endl;
+//		class_addProtocol([CJSCEmbededObject class], protocol);
+
+		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+//		CJSCEmbededObject* pEmbedObj = [[CJSCEmbededObject alloc] init:pNativeObj];
+
 		std::vector<std::string> arNames = pNativeObj->getNames();
 		for (int i = 0, len = arNames.size(); i < len; i++)
 		{
 			// associate all methods with corresponding Call() index
-			JSValue* (*funcImpl)(id, SEL, NSArray*) = [](id self, SEL _cmd, NSArray* args) {
-				CJSCEmbededObject* embedObj = (CJSCEmbededObject*)self;
-				// TODO: here 0 need to be changed to i, but it won't compile for now :(
-				return [embedObj _Call:0:args];
+			JSValue* (^implBlock)(id, SEL, NSArray*) = ^(id self, SEL _cmd, NSArray* args) {
+				return [self _Call:i:args];
 			};
 
 			NSString* nsName = [NSString stringWithAString:arNames[i]];
 			SEL selector = NSSelectorFromString(nsName);
-			class_addMethod([CJSCEmbededObject class], selector, (IMP)funcImpl, "@@:@");
+//			Method method = class_getClassMethod([CJSCEmbededObject class], selector);
+//			method_setImplementation(method, imp_implementationWithBlock(implBlock));
+			BOOL res = class_addMethod([CJSCEmbededObject class], selector, imp_implementationWithBlock(implBlock), "@@:@");
+			std::cout << "addMethod: " << (res ? "YES" : "NO") << std::endl;
 		}
 
-		JSValue* jsRes = [pEmbedObj performSelector:@selector(test)];
-		std::cout << [jsRes toInt32] << std::endl;
+//		JSValue* jsRes = [pEmbedObj performSelector:@selector(test)];
+//		std::cout << [jsRes toInt32] << std::endl;
 		*/
-
 
 		return pEmbedObj;
 	}

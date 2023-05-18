@@ -18,32 +18,40 @@ public:
 	virtual void* getObject() override { return NULL; }
 
 
-	JSSmart<CJSValue> FunctionSum(JSSmart<CJSValue> param1, JSSmart<CJSValue> param2)
+	JSSmart<CJSValue> FunctionSum(JSSmart<CJSValue> param1, JSSmart<CJSValue> param2);
+	JSSmart<CJSValue> FunctionSquare(JSSmart<CJSValue> param);
+	JSSmart<CJSValue> FunctionDel(JSSmart<CJSValue> param1, JSSmart<CJSValue> param2);
+	JSSmart<CJSValue> FunctionGet();
+
+// THIS CODE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT!
+// IF YOU NEED TO UPDATE THIS CODE, SIMPLY REMOVE ALL OF IT, SPECIFY "// @embed_external" COMMENT AND THEN RUN SCRIPT AS BEFORE.
+public:
+	static std::string getName() { return "CTestEmbed"; }
+
+	static CJSEmbedObject* getCreator()
 	{
-		int n1 = param1->toInt32();
-		int n2 = param2->toInt32();
-		return CJSContext::createInt(n1 + n2);
+		return new CTestEmbed();
 	}
 
-	JSSmart<CJSValue> FunctionSquare(JSSmart<CJSValue> param)
+	virtual std::vector<std::string> getNames() override
 	{
-		int n = param->toInt32();
-		return CJSContext::createInt(n * n);
+		return std::vector<std::string> {
+			"FunctionSum",
+			"FunctionSquare",
+			"FunctionDel",
+			"FunctionGet"
+		};
 	}
 
-	JSSmart<CJSValue> FunctionDel(JSSmart<CJSValue> param1, JSSmart<CJSValue> param2)
+	void initFunctions() override
 	{
-		int n1 = param1->toInt32();
-		int n2 = param2->toInt32();
-		return CJSContext::createInt(n1 / n2);
+		m_functions.resize(4);
+		m_functions[0] = JS_FUNCTION_EMBED_2(FunctionSum);
+		m_functions[1] = JS_FUNCTION_EMBED_1(FunctionSquare);
+		m_functions[2] = JS_FUNCTION_EMBED_2(FunctionDel);
+		m_functions[3] = JS_FUNCTION_EMBED_0(FunctionGet);
 	}
-
-	JSSmart<CJSValue> FunctionGet()
-	{
-		return CJSContext::createInt(42);
-	}
-
-	// @embed_external
+// END OF GENERATED CODE
 };
 
 #endif // _BUILD_NATIVE_HASH_EMBED_H_

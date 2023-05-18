@@ -99,7 +99,6 @@ namespace NSJSBase
 		virtual void initFunctions();
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
-		JSSmart<CJSValue> createObject();
 
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;

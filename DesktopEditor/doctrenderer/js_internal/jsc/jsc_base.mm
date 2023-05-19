@@ -448,82 +448,12 @@ namespace NSJSBase
 // embed
 namespace NSJSBase
 {
-	class CJSFunctionArgumentsJSC : public CJSFunctionArguments
+	JSValue* _CallImpl(id <JSEmbedObjectProtocol> self, SEL _cmd, NSArray* args)
 	{
-	private:
-		const NSArray* m_args;
-		int m_count;
-
-	public:
-		CJSFunctionArgumentsJSC(const NSArray* args)
-		{
-			m_args = args;
-			m_count = [m_args count];
-		}
-
-	public:
-		virtual int GetCount() override
-		{
-			return m_count;
-		}
-
-		virtual JSSmart<CJSValue> Get(const int& index) override
-		{
-			if (index < m_count)
-				return js_value([m_args objectAtIndex:index]);
-			return js_value(nil);
-		}
-	};
-}
-
-/*
-@interface CJSCEmbededObject : NSObject<JSEmbedObjectProtocol>
-{
-@public
-	CJSEmbedObject* m_internal;
-}
--(JSValue*) _Call: (int)index : (NSArray*)args;
-+(void) addProtocol: (std::string)name;
-@end
-
-@implementation CJSCEmbededObject
--(id) init: (CJSEmbedObject*) internal
-{
-	self = [super init];
-	if (self)
-		m_internal = internal;
-	return self;
-}
--(void) dealloc
-{
-	RELEASEOBJECT(m_internal);
-}
--(void*) getNative
-{
-	return m_internal;
-}
--(JSValue*) _Call: (int)index : (NSArray*)args
-{
-	CJSFunctionArgumentsJSC _args(args);
-	JSSmart<CJSValue> ret = m_internal->Call(index, &_args);
-	return js_return(ret);
-}
-+(void) addProtocol: (std::string)name
-{
-	std::string sProtoName = "IJS" + name;
-	Protocol* protocol = objc_getProtocol(sProtoName.c_str());
-	class_addProtocol([self class], protocol);
-}
-@end
-*/
-
-namespace NSJSBase
-{
-	//	JSValue* funcImpl(id self, SEL _cmd)
-	//	{
-	//		JSSmart<CJSValue> val = CJSContext::createInt(42);
-	//		return js_return(val);
-	//	}
+		CJSFunctionArgumentsJSC _args(args);
+		JSSmart<CJSValue> ret = ((CJSEmbedObject*)[self getNative])->Call(3, &_args);
+		return js_return(ret);
+	}
 
 	id CreateEmbedNativeObject(NSString* name)
 	{
@@ -537,41 +467,74 @@ namespace NSJSBase
 
 		// TODO: singleton check
 
+		// get embeded class
 		std::string sJSCName = "CJS" + sName;
 		Class embedClass = objc_getClass(sJSCName.c_str());
-		id pEmbedObj = [[embedClass alloc] init];
+		if (embedClass == NULL)
+			std::cout << "No class named " << sJSCName << " was found!" << std::endl;
 
-		/*
-//		std::string sProtoName = "MyProtocol";
-//		@protocol(MyProtocol);
-//		Protocol* protocol = objc_getProtocol("MyProtocol");
-//		if (protocol == NULL)
-//			std::cout << "No protocol " + sProtoName + " was found!" << std::endl;
-//		class_addProtocol([CJSCEmbededObject class], protocol);
+
+		// get protocol of embeded class
+//		sJSCName[0] = 'I';
+//		Protocol* embedProtocol = objc_getProtocol(sJSCName.c_str());
+//		if (embedProtocol == NULL)
+//			std::cout << "No protocol named " << sJSCName << " was found!" << std::endl;
+
+//		BOOL res = class_addMethod(embedClass, @selector(_Call), (IMP)_Call, "@@:i@");
+//		std::cout << "_Call addition: " << (res ? "SUCCESS" : "FAIL") << std::endl;
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-//		CJSCEmbededObject* pEmbedObj = [[CJSCEmbededObject alloc] init:pNativeObj];
+		pNativeObj->initFunctions();
 
+		/*
 		std::vector<std::string> arNames = pNativeObj->getNames();
 		for (int i = 0, len = arNames.size(); i < len; i++)
 		{
 			// associate all methods with corresponding Call() index
-			JSValue* (^implBlock)(id, SEL, NSArray*) = ^(id self, SEL _cmd, NSArray* args) {
-				return [self _Call:i:args];
+			JSValue* (^implBlock)(id, NSArray*) = ^(id self, NSArray* args) {
+				CJSFunctionArgumentsJSC _args(args);
+				JSSmart<CJSValue> ret = ((CJSEmbedObject*)[self getNative])->Call(i, &_args);
+				return js_return(ret);
+//				return [self _Call:i:args];
 			};
 
 			NSString* nsName = [NSString stringWithAString:arNames[i]];
 			SEL selector = NSSelectorFromString(nsName);
-//			Method method = class_getClassMethod([CJSCEmbededObject class], selector);
+//			Method method = class_getClassMethod(embedClass, selector);
 //			method_setImplementation(method, imp_implementationWithBlock(implBlock));
-			BOOL res = class_addMethod([CJSCEmbededObject class], selector, imp_implementationWithBlock(implBlock), "@@:@");
+			BOOL res = class_addMethod(embedClass, selector, imp_implementationWithBlock(implBlock), "@@:@");
+//			BOOL res = class_addMethod(embedClass, selector, (IMP)_CallImpl, "@@:@");
 			std::cout << "addMethod: " << (res ? "YES" : "NO") << std::endl;
 		}
-
-//		JSValue* jsRes = [pEmbedObj performSelector:@selector(test)];
-//		std::cout << [jsRes toInt32] << std::endl;
 		*/
 
+		/*
+		JSValue* (^implBlockGet)(id) = ^(id self) {
+			JSSmart<CJSValue> val = CJSContext::createInt(42);
+			return js_return(val);
+		};
+
+		BOOL (^implBlockResolve)(id, SEL) = ^(id self, SEL sel) {
+			if (sel == @selector(FunctionGet))
+			{
+				class_addMethod([self class], sel, imp_implementationWithBlock(implBlockGet), "@@:");
+				return YES;
+			}
+			return [[self superclass] resolveInstanceMethod:sel];
+		};
+
+		class_addMethod(embedClass, @selector(resolveInstanceMethod), imp_implementationWithBlock(implBlockResolve), "c@::");
+		*/
+
+//		NSObject* pEmbedObj = [[embedClass alloc] init:pNativeObj];
+//		BOOL isRespond = [pEmbedObj respondsToSelector:@selector(FunctionGet)];
+//		std::cout << "Was test() added: " <<  (isRespond ? "YES" : "NO") << std::endl;
+
+//		JSValue* jsRes = [pEmbedObj performSelector:@selector(FunctionGet)];
+//		std::cout << [jsRes toInt32] << std::endl;
+
+
+		NSObject* pEmbedObj = [[embedClass alloc] init:pNativeObj];
 		return pEmbedObj;
 	}
 

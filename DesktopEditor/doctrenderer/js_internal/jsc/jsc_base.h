@@ -14,6 +14,8 @@
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
+@optional
+- (id) init:(NSJSBase::CJSEmbedObject*)pNativeObj;
 @end
 
 namespace NSJSBase
@@ -482,6 +484,37 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
         return nil;
     NSJSBase::CJSValueJSC* _tmp = (NSJSBase::CJSValueJSC*)(_value.operator ->());
     return _tmp->value;
+}
+
+// EMBED
+namespace NSJSBase
+{
+	class CJSFunctionArgumentsJSC : public CJSFunctionArguments
+	{
+	private:
+		const NSArray* m_args;
+		int m_count;
+
+	public:
+		CJSFunctionArgumentsJSC(const NSArray* args)
+		{
+			m_args = args;
+			m_count = [m_args count];
+		}
+
+	public:
+		virtual int GetCount() override
+		{
+			return m_count;
+		}
+
+		virtual JSSmart<CJSValue> Get(const int& index) override
+		{
+			if (index < m_count)
+				return js_value([m_args objectAtIndex:index]);
+			return js_value(nil);
+		}
+	};
 }
 
 #define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED)                                       \

@@ -38,5 +38,6 @@ HEADERS += \
 QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
 
 LIBS += -framework JavaScriptCore
+LIBS += -framework Foundation
 
 DEFINES += JS_ENGINE_JAVASCRIPTCORE

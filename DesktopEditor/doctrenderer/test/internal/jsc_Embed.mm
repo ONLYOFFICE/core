@@ -1,10 +1,10 @@
 #include "Embed.h"
-#import "../../js_internal/jsc/jsc_base.h"
+#include "../../js_internal/jsc/jsc_base.h"
 
 @protocol IJSCTestEmbed <JSExport>
--(JSValue*) FunctionSum : (JSValue*)param1 : (JSValue*)param1;
--(JSValue*) FunctionSquare : (JSValue*)param;
--(JSValue*) FunctionDel : (JSValue*)param1 : (JSValue*)param1;
+//-(JSValue*) FunctionSum : (JSValue*)param1 : (JSValue*)param1;
+//-(JSValue*) FunctionSquare : (JSValue*)param;
+//-(JSValue*) FunctionDel : (JSValue*)param1 : (JSValue*)param1;
 -(JSValue*) FunctionGet;
 @end
 
@@ -17,26 +17,21 @@
 
 @implementation CJSCTestEmbed
 
--(id) init
+EMBED_OBJECT_WRAPPER_METHODS(CTestEmbed);
+
+-(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj
 {
 	self = [super init];
 	if (self)
-		m_internal = new CTestEmbed();
+		m_internal = (CTestEmbed*)pNativeObj;
 	return self;
 }
--(void) dealloc
-{
-	RELEASEOBJECT(m_internal);
-}
-- (void*) getNative
-{
-	return m_internal;
-}
-//EMBED_OBJECT_WRAPPER_METHODS(CTestEmbed)
 
-FUNCTION_WRAPPER_JS_2(FunctionSum, FunctionSum)
-FUNCTION_WRAPPER_JS_1(FunctionSquare, FunctionSquare)
-FUNCTION_WRAPPER_JS_2(FunctionDel, FunctionDel)
-FUNCTION_WRAPPER_JS(FunctionGet, FunctionGet)
+// this methods should be implemeted in runtime
+
+//FUNCTION_WRAPPER_JS_2(FunctionSum, FunctionSum)
+//FUNCTION_WRAPPER_JS_1(FunctionSquare, FunctionSquare)
+//FUNCTION_WRAPPER_JS_2(FunctionDel, FunctionDel)
+//FUNCTION_WRAPPER_JS(FunctionGet, FunctionGet)
 
 @end

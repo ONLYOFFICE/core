@@ -86,9 +86,12 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
         {
             table.AddCell(data_.at(nodeName).at(nodeCount), rowNumber, colNames_->GetColumnNumber(nodeName));
         }
-        for( auto i : writingRows_.at(nodeCount)->childColumns)
+        else
         {
-            table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+            for( auto i : writingRows_.at(nodeCount)->childColumns)
+            {
+                table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+            }
         }
         for( auto i : writingRows_.at(nodeCount)->attributes)
         {
@@ -159,7 +162,16 @@ void XMLConverter::closeNode()
     {
         insertValue(nodePointer_->name, L"");
     }
-    if(nodePointer_->counter > 1)
+    bool heritableChilds = true;
+    for(auto child : nodePointer_->childs)
+    {
+        if(child->counter > 1)
+        {
+            heritableChilds = false;
+            break;
+        }
+    }
+    if(nodePointer_->counter > 1 &&(!nodePointer_->ValueColumnName.empty() || heritableChilds))
     {
         writingRows_.push_back(nodePointer_);
         for(auto i = listableColumns_->begin(); i != listableColumns_->end(); i++)

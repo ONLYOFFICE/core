@@ -178,6 +178,7 @@ void XMLMap::closeNode()
     auto lastElem = parents_.back();
     parents_.pop_back();
     parents_.back()->childColumns.insert(lastElem->childColumns.begin(), lastElem->childColumns.end());
+    //убираем вырезаем значение ноды если у неё есть потомки
     if(!lastElem->childs.empty())
     {
         lastElem->ValueColumnName = L"";

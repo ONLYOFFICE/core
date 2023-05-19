@@ -192,7 +192,10 @@ void XMLConverter::insertValue(const std::wstring &key, const std::wstring &valu
 {
     auto uniqueKey = getNodeName(key);
     auto dataRow = data_.find(uniqueKey);
-    dataRow->second.push_back(value);
+    if(dataRow != data_.end())
+    {
+        dataRow->second.push_back(value);
+    }
 }
 
 void XMLConverter::fillAttribures(XLSXTableController &table, std::shared_ptr<XmlNode> attribNode, std::set<std::wstring> &filledValues,

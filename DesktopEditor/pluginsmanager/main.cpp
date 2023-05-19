@@ -1055,26 +1055,25 @@ private:
 
 	bool ReadConfigJson(const std::wstring& sFile, std::vector<std::wstring>& arrOutput)
 	{
-		bool bResult = false;
-
+		// [ "...", "...", "..." ]
 		std::wstring sJson = L"";
 		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
 		{
-			NSStringUtils::string_replace(sJson, L"\n", L"");
-			NSStringUtils::string_replace(sJson, L"\r", L"");
-			NSStringUtils::string_replace(sJson, L"\t", L"");
-			NSStringUtils::string_replace(sJson, L"[", L"");
-			NSStringUtils::string_replace(sJson, L"]", L"");
+			std::wstring sDelim = L"\"";
+			std::wstring::size_type pos1 = sJson.find(sDelim);
 
-			StringReplaceExt(sJson, L" \"", L"\"");
-			StringReplaceExt(sJson, L"\" ", L"\"");
+			while ( pos1 != std::wstring::npos )
+			{
+				std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
 
-			NSStringUtils::string_replace(sJson, L"\"", L"");
+				if (pos1 != std::wstring::npos && pos2 > pos1)
+					arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
 
-			bResult = SplitStringAsVector(sJson, L",", arrOutput);
+				pos1 = sJson.find(sDelim, pos2 + 1);
+			}
 		}
 
-		return bResult;
+		return arrOutput.size() > 0;
 	}
 
 	void StringReplaceExt(std::wstring& sText, const std::wstring& sFrom, const std::wstring& sTo)

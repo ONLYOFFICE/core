@@ -36,257 +36,285 @@
 
 namespace NSOnlineOfficeBinToPdf
 {
-    class CMetafileToRenderterRaster_private
-    {
-    public:
+	class CMetafileToRenderterRaster_private
+	{
+	public:
 		NSFonts::IApplicationFonts* appFonts;
 
-        int m_nRasterFormat;
-        int m_nSaveType; // 0 = stretch, 1 = aspect (width == maxsize)
-        bool m_bIsOnlyFirst;
-        std::wstring m_sFileName;
-        int m_nRasterW;
-        int m_nRasterH;
+		int m_nRasterFormat;
 
-        double m_dDpiX;
-        double m_dDpiY;
+		// save_type - combined integer
+		// saveType = save_type & 0x0F
+		// saveFlags = (save_type & 0xF0) >> 1
+		// saveType:
+		// 0 - stretch
+		// 1 - делаем максимально большую картинку с аспектом как у страницы и вписанную в [m_nRasterW x m_nRasterH]
+		// 2 - nRasterW = (int)((pageW * m_internal->m_dDpiX / 25.4) + 0.5);
+		//     nRasterH = (int)((pageH * m_internal->m_dDpiY / 25.4) + 0.5);
+		// 3 - special mode for clouds (see code)
+		//
+		// saveFlags & 1: change w/h by orientation
+		int m_nSaveType;
+		bool m_bIsOnlyFirst;
+		std::wstring m_sFileName;
+		int m_nRasterW;
+		int m_nRasterH;
 
-    public:
-        CMetafileToRenderterRaster_private()
-        {
-            appFonts = NULL;
+		double m_dDpiX;
+		double m_dDpiY;
 
-            m_nRasterFormat = 4;
-            m_nSaveType = 2;
-            m_bIsOnlyFirst = true;
-            m_sFileName = L"";
+	public:
+		CMetafileToRenderterRaster_private()
+		{
+			appFonts = NULL;
 
-            m_nRasterW = 100;
-            m_nRasterH = 100;
+			m_nRasterFormat = 4;
+			m_nSaveType = 2;
+			m_bIsOnlyFirst = true;
+			m_sFileName = L"";
 
-            m_dDpiX = 96.0;
-            m_dDpiY = 96.0;
-        }
+			m_nRasterW = 100;
+			m_nRasterH = 100;
+
+			m_dDpiX = 96.0;
+			m_dDpiY = 96.0;
+		}
 
 		~CMetafileToRenderterRaster_private()
-        {
-        }
-    };
+		{
+		}
+	};
 
-    CMetafileToRenderterRaster::CMetafileToRenderterRaster(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
-    {
-        m_internal = new CMetafileToRenderterRaster_private();
-    }
-    CMetafileToRenderterRaster::~CMetafileToRenderterRaster()
-    {
-        RELEASEOBJECT(m_internal);
-    }
+	CMetafileToRenderterRaster::CMetafileToRenderterRaster(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
+	{
+		m_internal = new CMetafileToRenderterRaster_private();
+	}
+	CMetafileToRenderterRaster::~CMetafileToRenderterRaster()
+	{
+		RELEASEOBJECT(m_internal);
+	}
 
-    bool CMetafileToRenderterRaster::ConvertBuffer(BYTE* pBuffer, LONG lBufferLen)
-    {
-        std::wstring sMain = m_internal->m_sFileName;
-        std::wstring sExt = L"";
-        if (!m_internal->m_bIsOnlyFirst)
-        {
-            std::wstring::size_type pos = m_internal->m_sFileName.find_last_of('.');
-            if (std::wstring::npos == pos)
-                return false;
+	bool CMetafileToRenderterRaster::ConvertBuffer(BYTE* pBuffer, LONG lBufferLen)
+	{
+		std::wstring sMain = m_internal->m_sFileName;
+		std::wstring sExt = L"";
+		if (!m_internal->m_bIsOnlyFirst)
+		{
+			std::wstring::size_type pos = m_internal->m_sFileName.find_last_of('.');
+			if (std::wstring::npos == pos)
+				return false;
 
-            sMain = m_internal->m_sFileName.substr(0, pos);
-            sExt = m_internal->m_sFileName.substr(pos);
-        }
+			sMain = m_internal->m_sFileName.substr(0, pos);
+			sExt = m_internal->m_sFileName.substr(pos);
+		}
 
-        CMetafilePagesInfo oInfo;
-        oInfo.CheckBuffer(pBuffer, lBufferLen);
+		CMetafilePagesInfo oInfo;
+		oInfo.CheckBuffer(pBuffer, lBufferLen);
 
-        int nPagesCount = oInfo.PagesCount;
-        if (0 == nPagesCount)
-            return false;
+		int nPagesCount = oInfo.PagesCount;
+		if (0 == nPagesCount)
+			return false;
 
-        if (m_internal->m_bIsOnlyFirst)
-            nPagesCount = 1;
+		if (m_internal->m_bIsOnlyFirst)
+			nPagesCount = 1;
 
 		NSFonts::IFontManager* pFontManager = m_internal->appFonts->GenerateFontManager();
 		NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();
-        pFontsCache->SetStreams(m_internal->appFonts->GetStreams());
-        pFontManager->SetOwnerCache(pFontsCache);
+		pFontsCache->SetStreams(m_internal->appFonts->GetStreams());
+		pFontManager->SetOwnerCache(pFontsCache);
 
-        CImageFilesCache* pImagesCache = new CImageFilesCache(m_internal->appFonts);
+		CImageFilesCache* pImagesCache = new CImageFilesCache(m_internal->appFonts);
 
-        for (int nPageIndex = 0; nPageIndex < nPagesCount; ++nPageIndex)
-        {
-            CBgraFrame oFrame;
-            int nRasterW = m_internal->m_nRasterW;
-            int nRasterH = m_internal->m_nRasterH;
+		for (int nPageIndex = 0; nPageIndex < nPagesCount; ++nPageIndex)
+		{
+			CBgraFrame oFrame;
+			int nRasterW = m_internal->m_nRasterW;
+			int nRasterH = m_internal->m_nRasterH;
 
-            int nOffsetX = 0;
-            int nResultW = nRasterW;
-            int nResultH = nRasterH;
+			int nOffsetX = 0;
+			int nResultW = nRasterW;
+			int nResultH = nRasterH;
 
-            if (1 == m_internal->m_nSaveType)
-            {
-                double w = oInfo.arSizes[nPageIndex].width;
-                double h = oInfo.arSizes[nPageIndex].height;
+			int nSaveType = m_internal->m_nSaveType & 0x0F;
+			int nSaveFlags = (m_internal->m_nSaveType & 0xF0) >> 4;
 
-                double dKoef1 = nRasterW / w;
-                double dKoef2 = nRasterH / h;
-                if (dKoef1 > dKoef2)
-                    dKoef1 = dKoef2;
+			if (nSaveFlags & 0x01)
+			{
+				// change w/h if needed
+				double w = oInfo.arSizes[nPageIndex].width;
+				double h = oInfo.arSizes[nPageIndex].height;
+				if ((w > h && nResultH > nResultW) || (w < h && nResultW > nResultH))
+				{
+					int nTmp = nResultW;
+					nResultW = nResultH;
+					nResultH = nTmp;
+				}
+			}
 
-                nRasterW = (int)(w * dKoef1 + 0.5);
-                nRasterH = (int)(h * dKoef1 + 0.5);
-            }
-            else if (2 == m_internal->m_nSaveType)
-            {
-                double w = oInfo.arSizes[nPageIndex].width;
-                double h = oInfo.arSizes[nPageIndex].height;
+			if (1 == nSaveType)
+			{
+				double w = oInfo.arSizes[nPageIndex].width;
+				double h = oInfo.arSizes[nPageIndex].height;
 
-                nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
-                nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
-            }
-            else if (3 == m_internal->m_nSaveType)
-            {
-                double w = oInfo.arSizes[nPageIndex].width;
-                double h = oInfo.arSizes[nPageIndex].height;
+				double dKoef1 = nRasterW / w;
+				double dKoef2 = nRasterH / h;
+				if (dKoef1 > dKoef2)
+					dKoef1 = dKoef2;
 
-                double dKoef1 = nRasterW / w;
-                double dKoef2 = nRasterH / h;
+				nRasterW = (int)(w * dKoef1 + 0.5);
+				nRasterH = (int)(h * dKoef1 + 0.5);
+			}
+			else if (2 == nSaveType)
+			{
+				double w = oInfo.arSizes[nPageIndex].width;
+				double h = oInfo.arSizes[nPageIndex].height;
 
-                if (dKoef1 > dKoef2)
-                {
-                    nRasterH = (int)(dKoef1 * h) + 1;
-                }
-                else
-                {
-                    nRasterW = (int)(dKoef2 * w) + 1;
-                    nOffsetX = (nRasterW - nResultW) >> 1;
-                }
-            }
+				nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
+				nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
+			}
+			else if (3 == nSaveType)
+			{
+				double w = oInfo.arSizes[nPageIndex].width;
+				double h = oInfo.arSizes[nPageIndex].height;
 
-            oFrame.put_Width(nRasterW);
-            oFrame.put_Height(nRasterH);
-            oFrame.put_Stride(4 * nRasterW);
+				double dKoef1 = nRasterW / w;
+				double dKoef2 = nRasterH / h;
 
-            BYTE* pDataRaster = new BYTE[4 * nRasterW * nRasterH];
-            memset(pDataRaster, 0xFF, 4 * nRasterW * nRasterH);
-            oFrame.put_Data(pDataRaster);
+				if (dKoef1 > dKoef2)
+				{
+					nRasterH = (int)(dKoef1 * h) + 1;
+				}
+				else
+				{
+					nRasterW = (int)(dKoef2 * w) + 1;
+					nOffsetX = (nRasterW - nResultW) >> 1;
+				}
+			}
 
-            CGraphicsRenderer oRenderer;
-            oRenderer.SetFontManager(pFontManager);
-            oRenderer.SetImageCache(pImagesCache);
+			oFrame.put_Width(nRasterW);
+			oFrame.put_Height(nRasterH);
+			oFrame.put_Stride(4 * nRasterW);
 
-            oRenderer.CreateFromBgraFrame(&oFrame);
-            oRenderer.SetTileImageDpi(96.0);
-            oRenderer.SetSwapRGB(false);
+			BYTE* pDataRaster = new BYTE[4 * nRasterW * nRasterH];
+			memset(pDataRaster, 0xFF, 4 * nRasterW * nRasterH);
+			oFrame.put_Data(pDataRaster);
 
-            this->m_pRenderer = &oRenderer;
-            BYTE* pBufferPage = oInfo.arSizes[nPageIndex].data;
-            LONG nLen = lBufferLen - ((LONG)(pBufferPage - pBuffer));
-            NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBufferPage, nLen, this);
+			CGraphicsRenderer oRenderer;
+			oRenderer.SetFontManager(pFontManager);
+			oRenderer.SetImageCache(pImagesCache);
 
-            if (3 == m_internal->m_nSaveType)
-            {
-                int nStride = 4 * nResultW;
-                BYTE* pDataResult = new BYTE[nStride * nResultH];
+			oRenderer.CreateFromBgraFrame(&oFrame);
+			oRenderer.SetTileImageDpi(96.0);
+			oRenderer.SetSwapRGB(false);
 
-                if (0 == nOffsetX)
-                {
-                    memcpy(pDataResult, pDataRaster, nStride * nResultH);
-                }
-                else
-                {
-                    BYTE* pDataCopy = pDataRaster + 4 * nOffsetX;
-                    BYTE* pDataDst = pDataResult;
-                    int nStrideSrc = 4 * nRasterW;
-                    for (int i = 0; i < nResultH; ++i)
-                    {
-                        memcpy(pDataDst, pDataCopy, nStride);
-                        pDataCopy += nStrideSrc;
-                        pDataDst += nStride;
-                    }
-                }
+			this->m_pRenderer = &oRenderer;
+			BYTE* pBufferPage = oInfo.arSizes[nPageIndex].data;
+			LONG nLen = lBufferLen - ((LONG)(pBufferPage - pBuffer));
+			NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBufferPage, nLen, this);
 
-                oFrame.put_Data(pDataResult);
-                oFrame.put_Width(nResultW);
-                oFrame.put_Height(nResultH);
-                oFrame.put_Stride(nStride);
+			if (3 == nSaveType)
+			{
+				int nStride = 4 * nResultW;
+				BYTE* pDataResult = new BYTE[nStride * nResultH];
 
-                RELEASEARRAYOBJECTS(pDataRaster);
-            }
+				if (0 == nOffsetX)
+				{
+					memcpy(pDataResult, pDataRaster, nStride * nResultH);
+				}
+				else
+				{
+					BYTE* pDataCopy = pDataRaster + 4 * nOffsetX;
+					BYTE* pDataDst = pDataResult;
+					int nStrideSrc = 4 * nRasterW;
+					for (int i = 0; i < nResultH; ++i)
+					{
+						memcpy(pDataDst, pDataCopy, nStride);
+						pDataCopy += nStrideSrc;
+						pDataDst += nStride;
+					}
+				}
 
-            if (m_internal->m_bIsOnlyFirst)
-                oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);
-            else
-                oFrame.SaveFile(sMain + std::to_wstring(nPageIndex + 1) + sExt, m_internal->m_nRasterFormat);
-        }
+				oFrame.put_Data(pDataResult);
+				oFrame.put_Width(nResultW);
+				oFrame.put_Height(nResultH);
+				oFrame.put_Stride(nStride);
 
-        RELEASEINTERFACE(pFontManager);
-        RELEASEINTERFACE(pImagesCache);
+				RELEASEARRAYOBJECTS(pDataRaster);
+			}
 
-        return true;
-    }
+			if (m_internal->m_bIsOnlyFirst)
+				oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);
+			else
+				oFrame.SaveFile(sMain + std::to_wstring(nPageIndex + 1) + sExt, m_internal->m_nRasterFormat);
+		}
 
-    std::wstring CMetafileToRenderterRaster::GetFileName()
-    {
-        return m_internal->m_sFileName;
-    }
-    void CMetafileToRenderterRaster::SetFileName(const std::wstring& value)
-    {
-        m_internal->m_sFileName = value;
-    }
+		RELEASEINTERFACE(pFontManager);
+		RELEASEINTERFACE(pImagesCache);
 
-    void CMetafileToRenderterRaster::SetApplication(NSFonts::IApplicationFonts* pFonts)
-    {
+		return true;
+	}
+
+	std::wstring CMetafileToRenderterRaster::GetFileName()
+	{
+		return m_internal->m_sFileName;
+	}
+	void CMetafileToRenderterRaster::SetFileName(const std::wstring& value)
+	{
+		m_internal->m_sFileName = value;
+	}
+
+	void CMetafileToRenderterRaster::SetApplication(NSFonts::IApplicationFonts* pFonts)
+	{
 		m_internal->appFonts = pFonts;
-    }
+	}
 
-    int CMetafileToRenderterRaster::GetRasterFormat()
-    {
-        return m_internal->m_nRasterFormat;
-    }
-    void CMetafileToRenderterRaster::SetRasterFormat(const int& value)
-    {
-        m_internal->m_nRasterFormat = value;
-    }
+	int CMetafileToRenderterRaster::GetRasterFormat()
+	{
+		return m_internal->m_nRasterFormat;
+	}
+	void CMetafileToRenderterRaster::SetRasterFormat(const int& value)
+	{
+		m_internal->m_nRasterFormat = value;
+	}
 
-    int CMetafileToRenderterRaster::GetSaveType()
-    {
-        return m_internal->m_nSaveType;
-    }
-    void CMetafileToRenderterRaster::SetSaveType(const int& value)
-    {
-        m_internal->m_nSaveType = value;
-    }
+	int CMetafileToRenderterRaster::GetSaveType()
+	{
+		return m_internal->m_nSaveType;
+	}
+	void CMetafileToRenderterRaster::SetSaveType(const int& value)
+	{
+		m_internal->m_nSaveType = value;
+	}
 
-    int CMetafileToRenderterRaster::GetRasterW()
-    {
-        return m_internal->m_nRasterW;
-    }
-    void CMetafileToRenderterRaster::SetRasterW(const int& value)
-    {
-        m_internal->m_nRasterW = value;
-    }
+	int CMetafileToRenderterRaster::GetRasterW()
+	{
+		return m_internal->m_nRasterW;
+	}
+	void CMetafileToRenderterRaster::SetRasterW(const int& value)
+	{
+		m_internal->m_nRasterW = value;
+	}
 
-    int CMetafileToRenderterRaster::GetRasterH()
-    {
-        return m_internal->m_nRasterH;
-    }
-    void CMetafileToRenderterRaster::SetRasterH(const int& value)
-    {
-        m_internal->m_nRasterH = value;
-    }
+	int CMetafileToRenderterRaster::GetRasterH()
+	{
+		return m_internal->m_nRasterH;
+	}
+	void CMetafileToRenderterRaster::SetRasterH(const int& value)
+	{
+		m_internal->m_nRasterH = value;
+	}
 
-    bool CMetafileToRenderterRaster::GetIsOnlyFirst()
-    {
-        return m_internal->m_bIsOnlyFirst;
-    }
-    void CMetafileToRenderterRaster::SetIsOnlyFirst(const bool& value)
-    {
-        m_internal->m_bIsOnlyFirst = value;
-    }
-    void CMetafileToRenderterRaster::SetOutputDpi(const double& dDpiX, const double& dDpiY)
-    {
-        m_internal->m_dDpiX = dDpiX;
-        m_internal->m_dDpiY = dDpiY;
-    }
+	bool CMetafileToRenderterRaster::GetIsOnlyFirst()
+	{
+		return m_internal->m_bIsOnlyFirst;
+	}
+	void CMetafileToRenderterRaster::SetIsOnlyFirst(const bool& value)
+	{
+		m_internal->m_bIsOnlyFirst = value;
+	}
+	void CMetafileToRenderterRaster::SetOutputDpi(const double& dDpiX, const double& dDpiY)
+	{
+		m_internal->m_dDpiX = dDpiX;
+		m_internal->m_dDpiY = dDpiY;
+	}
 }

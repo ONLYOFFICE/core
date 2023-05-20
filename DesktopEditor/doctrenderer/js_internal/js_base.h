@@ -95,7 +95,7 @@ namespace NSJSBase
 
 	public:
 		virtual void* getObject();
-		virtual std::vector<std::string> getNames();
+		virtual std::vector<std::string> getMethodNames(bool bObjc = false);
 		virtual void initFunctions();
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);

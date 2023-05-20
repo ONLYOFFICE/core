@@ -506,7 +506,7 @@ namespace NSJSBase
 		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
 		result->SetInternalFieldCount(1);
 
-		std::vector<std::string> arNames = pNativeObj->getNames();
+		std::vector<std::string> arNames = pNativeObj->getMethodNames();
 		for (int i = 0, len = arNames.size(); i < len; ++i)
 		{
 			// associate all methods with corresponding Call() index

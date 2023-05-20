@@ -14,7 +14,6 @@
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
-@optional
 - (id) init:(NSJSBase::CJSEmbedObject*)pNativeObj;
 @end
 
@@ -486,37 +485,6 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     return _tmp->value;
 }
 
-// EMBED
-namespace NSJSBase
-{
-	class CJSFunctionArgumentsJSC : public CJSFunctionArguments
-	{
-	private:
-		const NSArray* m_args;
-		int m_count;
-
-	public:
-		CJSFunctionArgumentsJSC(const NSArray* args)
-		{
-			m_args = args;
-			m_count = [m_args count];
-		}
-
-	public:
-		virtual int GetCount() override
-		{
-			return m_count;
-		}
-
-		virtual JSSmart<CJSValue> Get(const int& index) override
-		{
-			if (index < m_count)
-				return js_value([m_args objectAtIndex:index]);
-			return js_value(nil);
-		}
-	};
-}
-
 #define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED)                                       \
     -(JSValue*) NAME                                                                \
     {                                                                               \
@@ -568,18 +536,25 @@ namespace NSJSBase
 #define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
 -(id) init                                      \
 {                                               \
-    self = [super init];                        \
-    if (self)                                   \
-        m_internal = new CLASS();               \
-    return self;                                \
+	self = [super init];                        \
+	if (self)                                   \
+		m_internal = new CLASS();               \
+	return self;                                \
 }                                               \
+-(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj\
+{												\
+	self = [super init];						\
+	if (self)									\
+		m_internal = (CLASS*)pNativeObj;		\
+	return self;								\
+}												\
 -(void) dealloc                                 \
 {                                               \
-    RELEASEOBJECT(m_internal);                  \
+	RELEASEOBJECT(m_internal);                  \
 }                                               \
 - (void*) getNative                             \
 {                                               \
-    return m_internal;                          \
+	return m_internal;                          \
 }
 #else
 #define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
@@ -590,10 +565,17 @@ namespace NSJSBase
         m_internal = new CLASS();               \
     return self;                                \
 }                                               \
+-(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj\
+{												\
+	self = [super init];						\
+	if (self)									\
+		m_internal = (CLASS*)pNativeObj;		\
+	return self;								\
+}												\
 -(void) dealloc                                 \
 {                                               \
-    RELEASEOBJECT(m_internal);                  \
-    [super dealloc];                            \
+	RELEASEOBJECT(m_internal);                  \
+	[super dealloc];                            \
 }                                               \
 - (void*) getNative                             \
 {                                               \

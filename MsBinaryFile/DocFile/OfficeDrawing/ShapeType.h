@@ -34,6 +34,7 @@
 #include "../IVisitable.h"
 #include "../../Common/Base/XmlTools.h"
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 namespace ODRAW
 {

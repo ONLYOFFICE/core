@@ -515,6 +515,20 @@ namespace NSCSS
 			m_bImportant = bImportant;
 			return true;
 		}
+		else if (L"none" == wsNewValue)
+		{
+			m_oValue.SetNone();
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
+			return true;
+		}
+		else if (wsNewValue == L"transparent")
+		{
+			m_oValue.SetNone();
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
+			return true;
+		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
 			size_t unEnd = wsNewValue.find(L')', 4);
@@ -531,20 +545,9 @@ namespace NSCSS
 			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
 			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
 
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
-		}
-		else if (L"none" == wsNewValue)
-		{
-			m_oValue.SetNone();
-			m_unLevel    = unLevel;
-			m_bImportant = bImportant;
-			return true;
-		}
-		else if (wsNewValue == L"transparent")
-		{
-			m_oValue.SetNone();
+			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
+				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
+
 			m_unLevel    = unLevel;
 			m_bImportant = bImportant;
 			return true;

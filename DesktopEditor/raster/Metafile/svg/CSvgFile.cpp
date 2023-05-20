@@ -163,18 +163,10 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (!oWindow.m_oHeight.Zero() && !oViewBox.m_oHeight.Zero())
 		dScaleY = dWindowHeight / dViewBoxHeight;
 
-	double dScale = std::min(dScaleX, dScaleY);
+	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
+	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 
-	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScale * dM11;
-	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScale * dM22;
-
-//	if (dViewBoxHeight > dViewBoxWidth)
-//		dSkipX += (dViewBoxHeight - dViewBoxWidth) * (dScale + 1.);
-
-//	if (dViewBoxHeight < dViewBoxWidth)
-//		dSkipY += (dViewBoxWidth - dViewBoxHeight) * (dScale + 1.);
-
-	pRenderer->SetTransform(dM11 * dScale, 0, 0, dM22 * dScale, dSkipX, dSkipY);
+	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dSkipX, dSkipY);
 
 	bool bResult = m_pContainer->Draw(pRenderer, &m_oDefs);
 

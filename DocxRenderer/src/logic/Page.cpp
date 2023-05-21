@@ -442,6 +442,8 @@ namespace NSDocxRenderer
 
 	void CPage::TryMergeShapes()
 	{
+		if(m_arShapes.empty())
+			return;
 
 		for(size_t i = 0; i < m_arShapes.size() - 1; i++)
 		{

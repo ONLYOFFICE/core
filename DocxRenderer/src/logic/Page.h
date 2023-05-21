@@ -115,6 +115,8 @@ namespace NSDocxRenderer
 		void DetermineTextColumns();
 		void DetermineDominantGraphics();
 
+		void TryMergeShapes();
+
 		//конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 

@@ -294,15 +294,7 @@ namespace NSDocxRenderer
 			}
 
 			pShape->SetVector(std::move(m_oVector));
-
-			bool bIsMerged = false;
-			if(!m_arShapes.empty() && m_lLastCommand == m_lCurrentCommand)
-				bIsMerged = m_arShapes.back()->TryMergeShape(pShape);
-
-			if(!bIsMerged)
-				m_arShapes.push_back(pShape);
-			else
-				delete pShape;
+			m_arShapes.push_back(pShape);
 		}
 	}
 
@@ -443,8 +435,28 @@ namespace NSDocxRenderer
 	{
 		AnalyzeCollectedShapes();
 		AnalyzeCollectedTextLines();
+		TryMergeShapes();
 		ToXml(oWriter);
 		WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
+	}
+
+	void CPage::TryMergeShapes()
+	{
+
+		for(size_t i = 0; i < m_arShapes.size() - 1; i++)
+		{
+			bool bIsMerged = false;
+			auto& val = m_arShapes[i];
+			auto& nextVal = m_arShapes[i + 1];
+
+			if(!val->m_bIsNotNecessaryToUse && !nextVal->m_bIsNotNecessaryToUse)
+				bIsMerged = nextVal->TryMergeShape(val);
+
+			if(bIsMerged)
+			{
+				val->m_bIsNotNecessaryToUse = true;
+			}
+		}
 	}
 
 	void CPage::AnalyzeCollectedShapes()
@@ -1306,7 +1318,7 @@ namespace NSDocxRenderer
 					for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
 					{
 						auto pCont = pCurrLine->m_arConts[j];
-						if (pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
+						if (pCont == nullptr || pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
 						{
 							continue;
 						}
@@ -1316,6 +1328,9 @@ namespace NSDocxRenderer
 
 					for (auto& pCont : pSubLine->m_arConts)
 					{
+						if (pCont == nullptr)
+							continue;
+
 						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
 							pCont->m_pFontStyle->wsFontName,
 							dFontSize,

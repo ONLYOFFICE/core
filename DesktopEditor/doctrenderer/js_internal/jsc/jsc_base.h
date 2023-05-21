@@ -1,21 +1,14 @@
 #ifndef _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 #define _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 
-#include "../js_base.h"
+#include "../js_embed.h"
 #include "../js_base_p.h"
 
-#import <Foundation/Foundation.h>
-#import <JavaScriptCore/JavaScriptCore.h>
 #include <JavaScriptCore/JSTypedArray.h>
 #include <JavaScriptCore/JSValueRef.h>
 
 #import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 #include <vector>
-
-@protocol JSEmbedObjectProtocol
-- (void*) getNative;
-- (id) init:(NSJSBase::CJSEmbedObject*)pNativeObj;
-@end
 
 namespace NSJSBase
 {
@@ -531,56 +524,5 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     {                                                                                                                                                   \
         return js_return(m_internal->NAME_EMBED(js_value(p1), js_value(p2), js_value(p3), js_value(p4), js_value(p5), js_value(p6), js_value(p7), js_value(p8)));     \
     }
-
-#if __has_feature(objc_arc)
-#define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
--(id) init                                      \
-{                                               \
-	self = [super init];                        \
-	if (self)                                   \
-		m_internal = new CLASS();               \
-	return self;                                \
-}                                               \
--(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj\
-{												\
-	self = [super init];						\
-	if (self)									\
-		m_internal = (CLASS*)pNativeObj;		\
-	return self;								\
-}												\
--(void) dealloc                                 \
-{                                               \
-	RELEASEOBJECT(m_internal);                  \
-}                                               \
-- (void*) getNative                             \
-{                                               \
-	return m_internal;                          \
-}
-#else
-#define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
--(id) init                                      \
-{                                               \
-    self = [super init];                        \
-    if (self)                                   \
-        m_internal = new CLASS();               \
-    return self;                                \
-}                                               \
--(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj\
-{												\
-	self = [super init];						\
-	if (self)									\
-		m_internal = (CLASS*)pNativeObj;		\
-	return self;								\
-}												\
--(void) dealloc                                 \
-{                                               \
-	RELEASEOBJECT(m_internal);                  \
-	[super dealloc];                            \
-}                                               \
-- (void*) getNative                             \
-{                                               \
-    return m_internal;                          \
-}
-#endif
 
 #endif // _BUILD_NATIVE_CONTROL_JSC_BASE_H_

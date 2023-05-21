@@ -290,6 +290,11 @@ namespace NSJSBase
 		CJSContextScope(JSSmart<CJSContext> context);
 		~CJSContextScope();
 	};
+
+#ifdef JS_ENGINE_JAVASCRIPTCORE
+	JS_DECL JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue);
+	JS_DECL void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue);
+#endif
 }
 
 // defines for embed

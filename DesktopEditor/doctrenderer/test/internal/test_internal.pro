@@ -13,6 +13,7 @@ CORE_ROOT_DIR = $$PWD/../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base_embed.pri)
 
 ############### destination path ###############
 DESTDIR = $$PWD/build
@@ -34,10 +35,5 @@ OBJECTIVE_SOURCES += \
 
 HEADERS += \
     Embed.h
-
-QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
-
-#LIBS += -framework JavaScriptCore
-LIBS += -framework Foundation
 
 DEFINES += JS_ENGINE_JAVASCRIPTCORE

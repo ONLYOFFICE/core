@@ -7,7 +7,10 @@ core_ios {
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/js_base.h
+HEADERS += \
+    $$PWD/js_base.h \
+    $$PWD/js_embed.h
+
 SOURCES += $$PWD/js_base.cpp
 
 HEADERS += $$PWD/js_base_p.h

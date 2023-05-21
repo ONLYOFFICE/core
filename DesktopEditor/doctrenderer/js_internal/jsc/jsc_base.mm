@@ -554,4 +554,13 @@ namespace NSJSBase
 
 		oRegistrator.Register(name, creator, type);
 	}
+
+	JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue)
+	{
+		return js_value((__bridge JSValue*)jsValue);
+	}
+	void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue)
+	{
+		return (__bridge void*)js_return(smartValue);
+	}
 }

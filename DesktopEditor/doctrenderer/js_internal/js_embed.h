@@ -10,13 +10,12 @@
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
-- (id) init:(NSJSBase::CJSEmbedObject*)pNativeObj;
 @end
 
 #if __has_feature(objc_arc)
-#define SUPER_DEALLOC()
+#define SUPER_DEALLOC
 #else
-#define SUPER_DEALLOC() [super dealloc]
+#define SUPER_DEALLOC [super dealloc]
 #endif
 
 #define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
@@ -27,17 +26,10 @@
 		m_internal = new CLASS();               \
 	return self;                                \
 }                                               \
--(id) init:(NSJSBase::CJSEmbedObject*)pNativeObj\
-{												\
-	self = [super init];						\
-	if (self)									\
-		m_internal = (CLASS*)pNativeObj;		\
-	return self;								\
-}												\
 -(void) dealloc                                 \
 {                                               \
 	RELEASEOBJECT(m_internal);                  \
-	SUPER_DEALLOC();                            \
+	SUPER_DEALLOC;								\
 }                                               \
 - (void*) getNative                             \
 {                                               \

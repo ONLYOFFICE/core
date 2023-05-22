@@ -30,10 +30,7 @@ core_linux {
 SOURCES += main.cpp \
     Embed.cpp
 
-OBJECTIVE_SOURCES += \
-    jsc_Embed.mm
-
 HEADERS += \
     Embed.h
 
-DEFINES += JS_ENGINE_JAVASCRIPTCORE
+ADD_FILES_FOR_EMBED_CLASS_HEADER(Embed.h)

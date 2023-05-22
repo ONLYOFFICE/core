@@ -298,21 +298,17 @@ namespace NSJSBase
 }
 
 // defines for embed
-#define JS_FUNCTION_EMBED_0(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(); }
-#define JS_FUNCTION_EMBED_1(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0)); }
-#define JS_FUNCTION_EMBED_2(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1)); }
-#define JS_FUNCTION_EMBED_3(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2)); }
-#define JS_FUNCTION_EMBED_4(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3)); }
-#define JS_FUNCTION_EMBED_5(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4)); }
-#define JS_FUNCTION_EMBED_6(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
-																						   args->Get(5)); }
-#define JS_FUNCTION_EMBED_7(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
-																						   args->Get(5), args->Get(6)); }
-#define JS_FUNCTION_EMBED_8(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
-																						   args->Get(5), args->Get(6), args->Get(7)); }
-#define JS_FUNCTION_EMBED_9(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
-																						   args->Get(5), args->Get(6), args->Get(7), args->Get(8)); }
-#define JS_FUNCTION_EMBED_10(NAME)	[this](CJSFunctionArguments* args) { return this->NAME(args->Get(0), args->Get(1), args->Get(2), args->Get(3), args->Get(4),	\
-																						   args->Get(5), args->Get(6), args->Get(7), args->Get(8), args->Get(9)); }
+#ifndef JS_ENGINE_JAVASCRIPTCORE
+#define _DECLARE_EMBED_OVERRIDE_METHODS										\
+	virtual std::vector<std::string> getMethodNames(bool bObjc) override;	\
+	void initFunctions() override;
+#else
+#define _DECLARE_EMBED_OVERRIDE_METHODS
+#endif
+
+#define DECLARE_EMBED_METHODS				\
+	static std::string getName();			\
+	static CJSEmbedObject* getCreator();	\
+	_DECLARE_EMBED_OVERRIDE_METHODS
 
 #endif // _CORE_EXT_JS_BASE_H_

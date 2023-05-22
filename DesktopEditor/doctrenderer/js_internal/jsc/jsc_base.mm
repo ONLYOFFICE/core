@@ -448,95 +448,22 @@ namespace NSJSBase
 // embed
 namespace NSJSBase
 {
-	class CJSFunctionArgumentsJSC : public CJSFunctionArguments
-	{
-	private:
-		const NSArray* m_args;
-		int m_count;
-
-	public:
-		CJSFunctionArgumentsJSC(const NSArray* args)
-		{
-			m_args = args;
-			m_count = [m_args count];
-		}
-
-	public:
-		virtual int GetCount() override
-		{
-			return m_count;
-		}
-
-		virtual JSSmart<CJSValue> Get(const int& index) override
-		{
-			if (index < m_count)
-				return js_value(m_args[index]);
-			return js_value(nil);
-		}
-	};
-}
-
-namespace NSJSBase
-{
 	id CreateEmbedNativeObject(NSString* name)
 	{
+		// Check if this class name was registered
 		std::string sName = [name stdstring];
 		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
 		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
 		if (itFound == oRegistrator.m_infos.end())
 			return nil;
 
-		CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
-
 		// TODO: singleton check ?
 
 		// Get embeded class
 		std::string sJSCName = "CJS" + sName;
 		Class embedClass = objc_getClass(sJSCName.c_str());
-		if (embedClass == NULL)
-			std::cout << "No class named " << sJSCName << " was found!" << std::endl;
 
-		// Get protocol of embeded class (there is no need for this if we have method names with colons)
-		/*
-		sJSCName[0] = 'I';
-		Protocol* embedProtocol = objc_getProtocol(sJSCName.c_str());
-		if (embedProtocol == NULL)
-			std::cout << "No protocol named " << sJSCName << " was found!" << std::endl;
-
-		// Get protocol methods (they returned it mixed order)
-		unsigned nMethods;
-		objc_method_description* methods = protocol_copyMethodDescriptionList(embedProtocol, YES, YES, &nMethods);
-		if (methods == NULL)
-			std::cout << "No methods for protocol " << sJSCName << " were found!" << std::endl;
-		*/
-
-		// Create native object
-		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-		pNativeObj->initFunctions();
-
-		std::vector<std::string> arNames = pNativeObj->getMethodNames(true);
-		// Add all methods to embeded class
-		for (int i = 0, len = arNames.size(); i < len; i++)
-		{
-			// associate all methods with corresponding Call() index
-			JSValue* (^implBlock)(id) = ^(id self) {
-				NSArray* args = [JSContext currentArguments];
-				CJSFunctionArgumentsJSC _args(args);
-				JSSmart<CJSValue> ret = ((CJSEmbedObject*)[self getNative])->Call(i, &_args);
-				return js_return(ret);
-			};
-
-//			SEL selector = methods[i].name;
-			NSString* nsName = [NSString stringWithAString:arNames[i]];
-			SEL selector = NSSelectorFromString(nsName);
-			std::cout << "Add method " << arNames[i] << " = ";
-			BOOL res = class_addMethod(embedClass, selector, imp_implementationWithBlock(implBlock), "@@:");
-			std::cout << (res ? "SUCCESS" : "FAIL") << std::endl;
-		}
-//		free(methods);
-
-		id pEmbedObj = [[embedClass alloc] init:pNativeObj];
-		return pEmbedObj;
+		return [[embedClass alloc] init];
 	}
 
 	void CJSContext::AddEmbedCreator(const std::string& name,

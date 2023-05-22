@@ -162,7 +162,10 @@ namespace odf_writer
 	{
 		impl_->styles_context_ = style_context;
 
-		impl_->odf_context_->drawing_context()->set_styles_context(style_context);
+		if (impl_->odf_context_->drawing_context())
+		{
+			impl_->odf_context_->drawing_context()->set_styles_context(style_context);
+		}
 	}
 
 	odf_drawing_context * odf_math_context::drawing_context()
@@ -194,8 +197,7 @@ namespace odf_writer
 	}
 
 	bool odf_math_context::start_element(office_element_ptr & elm)
-	{		
-
+	{
 		if (!elm)
 			return false;
 		impl_->current_level_.back().elm->add_child_element(elm);
@@ -220,15 +222,9 @@ namespace odf_writer
 	}
 	void odf_math_context::end_math()
 	{
-		if (impl_->current_math_state_.elements_.empty()) return;
-
-		
+		if (impl_->current_math_state_.elements_.empty()) return;		
 
 		end_element();
-		///////////////////
-
-
-		
 
 		impl_->clear_current();
 	}

@@ -228,7 +228,8 @@ public:
 		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
 
 #ifdef LINUX
-		std::transform(m_sSettingsDir.begin(), m_sSettingsDir.end(), m_sSettingsDir.begin(), tolower);
+		//std::transform(m_sSettingsDir.begin(), m_sSettingsDir.end(), m_sSettingsDir.begin(), tolower);
+		NSStringUtils::string_replace(m_sSettingsDir, L"ONLYOFFICE", L"onlyoffice");
 #endif
 
 		m_sSettingsFile = m_sSettingsDir + L"/settings";

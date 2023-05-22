@@ -5,6 +5,467 @@
 
 namespace SVG
 {
+	// IpathElement
+	TBounds IPathElement::GetBounds() const
+	{
+		TBounds oBounds{0., 0., 0., 0.};
+
+		for (const Point& oPoint : m_arPoints)
+		{
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oPoint.dX);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oPoint.dY);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oPoint.dX);
+			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oPoint.dY);
+		}
+
+		return oBounds;
+	}
+
+	Point IPathElement::operator[](int nIndex) const
+	{
+		if (m_arPoints.empty() || (nIndex > 0 && nIndex >= m_arPoints.size()) || (nIndex < 0 && -nIndex > m_arPoints.size()))
+			return Point{0., 0.};
+
+		return m_arPoints[(nIndex >= 0) ? nIndex : m_arPoints.size() + nIndex];
+	}
+
+	//CMoveElement
+	CMoveElement::CMoveElement(const Point &oPoint)
+	{
+		m_arPoints.push_back(oPoint);
+	}
+
+	EPathElement CMoveElement::GetType() const
+	{
+		return EPathElement::Move;
+	}
+
+	CMoveElement *CMoveElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 2)
+				return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CMoveElement *pMoveElement = new CMoveElement(Point{arValues[0], arValues[1]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 2);
+
+		return pMoveElement;
+	}
+
+	void CMoveElement::Draw(IRenderer *pRenderer) const
+	{
+		if (m_arPoints.empty())
+			return;
+
+		pRenderer->PathCommandMoveTo(m_arPoints[0].dX, m_arPoints[0].dY);
+	}
+
+	//CLineElement
+	CLineElement::CLineElement(const Point &oPoint)
+	{
+		m_arPoints.push_back(oPoint);
+	}
+
+	CLineElement::~CLineElement()
+	{}
+
+	EPathElement CLineElement::GetType() const
+	{
+		return EPathElement::Line;
+	}
+
+	CLineElement *CLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 2)
+				return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CLineElement *pLineElement = new CLineElement(Point{arValues[0], arValues[1]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 2);
+
+		return pLineElement;
+	}
+
+	void CLineElement::Draw(IRenderer *pRenderer) const
+	{
+		if (m_arPoints.empty())
+			return;
+
+		pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
+	}
+
+	// CVLineElement
+	CVLineElement::CVLineElement(const Point &oPoint)
+		: CLineElement(oPoint)
+	{}
+
+	EPathElement CVLineElement::GetType() const
+	{
+		return EPathElement::VLine;
+	}
+
+	CVLineElement *CVLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.empty())
+			return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CVLineElement *pVLineElement = new CVLineElement(Point{0, arValues[0]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin());
+
+		return pVLineElement;
+	}
+
+	//CHLineElement
+	CHLineElement::CHLineElement(const Point &oPoint)
+		: CLineElement(oPoint)
+	{}
+
+	EPathElement CHLineElement::GetType() const
+	{
+		return EPathElement::HLine;
+	}
+
+	CHLineElement *CHLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.empty())
+			return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CHLineElement *pHLineElement = new CHLineElement(Point{arValues[0], 0} + oTranslatePoint);
+
+		arValues.erase(arValues.begin());
+
+		return pHLineElement;
+	}
+
+	//CCurveBezierElement
+	CCBezierElement::CCBezierElement(const Point &oPoint1, const Point &oPoint2, const Point &oPointE)
+	{
+		m_arPoints.push_back(oPoint1);
+		m_arPoints.push_back(oPoint2);
+		m_arPoints.push_back(oPointE);
+	}
+
+	EPathElement CCBezierElement::GetType() const
+	{
+		return EPathElement::CBezier;
+	}
+
+	CCBezierElement *CCBezierElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 6)
+				return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CCBezierElement *pCBezierElement = new CCBezierElement(Point{arValues[0], arValues[1]} + oTranslatePoint,
+															   Point{arValues[2], arValues[3]} + oTranslatePoint,
+															   Point{arValues[4], arValues[5]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 6);
+
+		return pCBezierElement;
+	}
+
+	void CCBezierElement::Draw(IRenderer *pRenderer) const
+	{
+		if (3 != m_arPoints.size())
+				return;
+
+		pRenderer->PathCommandCurveTo(m_arPoints[0].dX, m_arPoints[0].dY,
+									  m_arPoints[1].dX, m_arPoints[1].dY,
+									  m_arPoints[2].dX, m_arPoints[2].dY);
+	}
+
+	//CSBezierElement
+	CSBezierElement::CSBezierElement(const Point &oPoint1, const Point &oPoint2, const Point &oPointE)
+		: CCBezierElement(oPoint1, oPoint2, oPointE)
+	{}
+
+	EPathElement CSBezierElement::GetType() const
+	{
+		return EPathElement::SBezier;
+	}
+
+	CSBezierElement *CSBezierElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 4)
+			return NULL;
+
+		Point oFirstPoint{0., 0.}, oTranslatePoint{0., 0.};
+
+		if (NULL != pPrevElement)
+		{
+			oFirstPoint = (*pPrevElement)[-1];
+			if (bRelativeCoordinate)
+				oTranslatePoint = oFirstPoint;
+		}
+
+		if (EPathElement::SBezier == pPrevElement->GetType() ||
+			EPathElement::CBezier == pPrevElement->GetType())
+			oFirstPoint += oFirstPoint - (*pPrevElement)[-2];
+
+		CSBezierElement *pSBezierElement = new CSBezierElement(oFirstPoint + oTranslatePoint,
+															   Point{arValues[0], arValues[1]} + oTranslatePoint,
+															   Point{arValues[2], arValues[3]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 4);
+
+		return pSBezierElement;
+	}
+
+	//CQBezierElement
+	CQBezierElement::CQBezierElement(const Point &oPoint1, const Point &oPoint2, const Point &oPointE)
+		: CCBezierElement(oPoint1, oPoint2, oPointE)
+	{}
+
+	EPathElement CQBezierElement::GetType() const
+	{
+		return EPathElement::QBezier;
+	}
+
+	CQBezierElement *CQBezierElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 4)
+			return NULL;
+
+		Point oLastPoint{0., 0.}, oTranslatePoint{0., 0.};
+
+		if (NULL != pPrevElement)
+		{
+			oLastPoint = (*pPrevElement)[-1];
+			if (bRelativeCoordinate)
+				oTranslatePoint = oLastPoint;
+		}
+
+		CQBezierElement *pQBezierElement = new CQBezierElement(oLastPoint, Point{arValues[0], arValues[1]} + oTranslatePoint, Point{arValues[2], arValues[3]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 4);
+
+		return pQBezierElement;
+	}
+
+	//CTBezierElement
+	CTBezierElement::CTBezierElement(const Point &oPoint1, const Point &oPoint2, const Point &oPointE)
+		: CCBezierElement(oPoint1, oPoint2, oPointE)
+	{}
+
+	EPathElement CTBezierElement::GetType() const
+	{
+		return EPathElement::TBezier;
+	}
+
+	IPathElement *CTBezierElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 2)
+			return NULL;
+
+		Point oFirstPoint{0., 0.}, oSecondPoint{0., 0.}, oTranslatePoint{0., 0.};
+
+		if (NULL != pPrevElement)
+		{
+			oFirstPoint  = (*pPrevElement)[-1];
+			oSecondPoint = (*pPrevElement)[-2];
+			if (bRelativeCoordinate)
+				oTranslatePoint = oFirstPoint;
+		}
+
+		if (EPathElement::TBezier != pPrevElement->GetType() &&
+			EPathElement::QBezier != pPrevElement->GetType())
+		{
+			oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
+
+			return new CLineElement(oSecondPoint + oTranslatePoint);
+		}
+
+		oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
+
+		CTBezierElement *pTBezierElement = new CTBezierElement(oFirstPoint + oTranslatePoint, oSecondPoint + oTranslatePoint, Point{arValues[0], arValues[1]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 2);
+
+		return pTBezierElement;
+	}
+
+	//CArcElement
+	CArcElement::CArcElement(const Point &oRadius, double dXRotation, bool LargeArcFlag, bool bSweepFlag, const Point &oStart, const Point &oEnd)
+		: m_oRadius(oRadius), m_dXAxisRotation(dXRotation), m_bLargeArcFlag(LargeArcFlag), m_bSweepFlag(bSweepFlag)
+	{
+		m_arPoints.push_back(oStart);
+		m_arPoints.push_back(oEnd);
+	}
+
+	EPathElement CArcElement::GetType() const
+	{
+		return EPathElement::Arc;
+	}
+
+	CArcElement *CArcElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 7)
+			return NULL;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		CArcElement *pArcElement = new CArcElement(Point{arValues[0], arValues[1]}, arValues[2],
+												  (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false,
+												  (NULL != pPrevElement) ? (*pPrevElement)[-1] : Point{0., 0.}, Point{arValues[5], arValues[6]} + oTranslatePoint);
+
+		arValues.erase(arValues.begin(), arValues.begin() + 7);
+
+		return pArcElement;
+	}
+
+	void CArcElement::Draw(IRenderer *pRenderer) const
+	{
+		if (m_arPoints.size() != 2)
+			return;
+
+		Point oRadius{m_oRadius};
+		Point oCenter{0, 0};
+		double dAngle = 0, dSweep = 0;
+
+		CalculateData(m_arPoints[0], m_arPoints[1], oRadius, oCenter, m_dXAxisRotation, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
+
+		double dStartAngle = dAngle;
+		double dEndAngle;
+
+		Point oEndPoint, oControl1, oControl2;
+
+		pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
+
+		while (dStartAngle != (dAngle + dSweep))
+		{
+			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
+				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
+			else
+				dEndAngle = (int)(dStartAngle / 90.) * 90.;
+
+			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
+				dEndAngle = dAngle + dSweep;
+
+			oEndPoint = GetPoint(oRadius, dEndAngle);
+			oEndPoint.Rotate(m_dXAxisRotation);
+			oEndPoint += oCenter;
+
+			double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180.;
+
+			if (std::abs(dSweepRad) > M_PI)
+			{
+				dSweepRad -= M_PI * 2.;
+				dSweepRad = fmod(dSweepRad, M_PI * 2.);
+			}
+
+			double dFactor = (4. / 3.) * std::tan(dSweepRad / 4.);
+
+			double distToCtrPointX = std::sqrt(oRadius.dX * oRadius.dX * (1 + dFactor * dFactor));
+			double distToCtrPointY = std::sqrt(oRadius.dY * oRadius.dY * (1 + dFactor * dFactor));
+
+			double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
+			double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
+
+			oControl1 = {std::cos(dAngle1) * distToCtrPointX, std::sin(dAngle1) * distToCtrPointY};
+			oControl2 = {std::cos(dAngle2) * distToCtrPointX, std::sin(dAngle2) * distToCtrPointY};
+
+			oControl1.Rotate(m_dXAxisRotation);
+			oControl2.Rotate(m_dXAxisRotation);
+
+			oControl1 += oCenter;
+			oControl2 += oCenter;
+
+			pRenderer->PathCommandCurveTo(oControl1.dX, oControl1.dY, oControl2.dX, oControl2.dY, oEndPoint.dX, oEndPoint.dY);
+
+			dStartAngle = dEndAngle;
+		}
+	}
+
+	Point CArcElement::GetPoint(const Point &oRadius, double dAngle)
+	{
+		return Point{oRadius.dX * std::cos(dAngle * M_PI / 180.), oRadius.dY * std::sin(dAngle * M_PI / 180.)};
+	}
+
+	void CArcElement::CalculateData(const Point &oFirst, const Point &oSecond, Point &oRadius, Point &oCenter, double dAngle, bool bLargeArc, bool bSweep, double &dStartAngle, double &dSweep)
+	{
+		dAngle *= M_PI / 180.;
+
+		double dXp = ((oFirst.dX - oSecond.dX) / 2. * std::cos(dAngle)) + ((oFirst.dY - oSecond.dY) / 2. * std::sin(dAngle));
+		double dYp = ((oFirst.dY - oSecond.dY) / 2. * std::cos(dAngle)) - ((oFirst.dX - oSecond.dX) / 2. * std::sin(dAngle));
+
+		double dLambda = ((dXp * dXp) / (oRadius.dX * oRadius.dX)) + ((dYp * dYp) / (oRadius.dY * oRadius.dY));
+		if(dLambda > 1.)
+		{
+			oRadius.dX *= std::sqrt(dLambda);
+			oRadius.dY *= std::sqrt(dLambda);
+		}
+
+		double dRxRy = oRadius.dX * oRadius.dY;
+		double dRxYp = oRadius.dX * dYp;
+		double dRyXp = oRadius.dY * dXp;
+		double dSumOfSq = dRxYp * dRxYp + dRyXp * dRyXp;
+
+		double dCoef = std::sqrt(std::abs(dRxRy * dRxRy - dSumOfSq) / dSumOfSq) * ((bLargeArc == bSweep) ? -1 : 1);
+
+		double dCpx =  dCoef * dRxYp / oRadius.dY;
+		double dCpy = -dCoef * dRyXp / oRadius.dX;
+
+		oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
+
+		dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
+		dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
+
+		if (((dYp - dCpy) / oRadius.dY) < 0)
+			dStartAngle *= -1;
+
+		if ((((dXp - dCpx) / oRadius.dX * (-dYp - dCpy) / oRadius.dY) - ((dYp - dCpy) / oRadius.dY * (-dXp - dCpx) / oRadius.dX)) < 0)
+			dSweep *= -1;
+
+		if (!bSweep && dSweep > 0)
+			dSweep -= 360;
+
+		if (bSweep && dSweep < 0)
+			dSweep += 360;
+	}
+
+	//CCloseElement
+	CCloseElement::CCloseElement()
+	{}
+
+	EPathElement CCloseElement::GetType() const
+	{
+		return EPathElement::Close;
+	}
+
+	void CCloseElement::Draw(IRenderer *pRenderer) const
+	{
+		pRenderer->PathCommandClose();
+	}
+
     #define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
     #define RANGEALIGMENT(value, left, rigth) if (value < left) value = left; else if (value > rigth) value = rigth;
     #define EPSILON 0.05

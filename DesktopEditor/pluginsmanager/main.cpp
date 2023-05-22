@@ -226,6 +226,11 @@ public:
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
 
 		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
+
+#ifdef LINUX
+		std::transform(m_sSettingsDir.begin(), m_sSettingsDir.end(), m_sSettingsDir.begin(), tolower);
+#endif
+
 		m_sSettingsFile = m_sSettingsDir + L"/settings";
 	}
 

@@ -18,7 +18,7 @@ TEMPLATE = app
 CORE_ROOT_DIR = $$PWD/../../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
-include($$CORE_ROOT_DIR/3dParty/icu/icu.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 ADD_DEPENDENCY(kernel, graphics, UnicodeConverter)
 win32 {
@@ -33,6 +33,5 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 }
 
 SOURCES += main.cpp
-SOURCES += ../../../fontengine/ApplicationFontsWorker.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

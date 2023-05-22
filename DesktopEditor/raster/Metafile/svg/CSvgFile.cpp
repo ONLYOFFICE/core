@@ -111,9 +111,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	SVG::TRect oWindow  = m_pContainer->GetWindow();
 	SVG::TRect oViewBox = m_pContainer->GetViewBox();
 
-	if (oWindow.m_oWidth.Zero())
+	if (oWindow.m_oWidth.Empty() || oWindow.m_oWidth.Zero())
 	{
-		if (oViewBox.m_oWidth.Zero())
+		if (oViewBox.m_oWidth.Empty() || oViewBox.m_oWidth.Zero())
 			oWindow.m_oWidth =  300;
 		else
 		{
@@ -122,9 +122,9 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		}
 	}
 
-	if (oWindow.m_oHeight.Zero())
+	if (oWindow.m_oHeight.Empty() || oWindow.m_oHeight.Zero())
 	{
-		if (oViewBox.m_oHeight.Zero())
+		if (oViewBox.m_oHeight.Empty() || oViewBox.m_oHeight.Zero())
 			oWindow.m_oHeight =  150;
 		else
 		{
@@ -149,18 +149,18 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	double dM11 = 1;
 	double dM22 = 1;
 
-	if (!oWindow.m_oWidth.Zero())
+	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero())
 		dM11 = dWidth / dWindowWidth;
 
-	if (!oWindow.m_oHeight.Zero())
+	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero())
 		dM22 = dHeight / dWindowHeight;
 
 	double dScaleX = 1, dScaleY = 1;
 
-	if (!oWindow.m_oWidth.Zero() && !oViewBox.m_oWidth.Zero())
+	if (!oWindow.m_oWidth.Empty() && !oWindow.m_oWidth.Zero() && !oViewBox.m_oWidth.Empty() && !oViewBox.m_oWidth.Zero())
 		dScaleX = dWindowWidth / dViewBoxWidth;
 
-	if (!oWindow.m_oHeight.Zero() && !oViewBox.m_oHeight.Zero())
+	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero() && !oViewBox.m_oHeight.Empty() && !oViewBox.m_oHeight.Zero())
 		dScaleY = dWindowHeight / dViewBoxHeight;
 
 	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;

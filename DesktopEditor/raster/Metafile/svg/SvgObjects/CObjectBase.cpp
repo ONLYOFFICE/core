@@ -113,7 +113,7 @@ namespace SVG
 
 	bool CSvgGraphicsObject::Apply(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
 	{
-		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && (pStroke->m_oWidth.Zero() && pStroke->m_oColor.Empty())))
+		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))
 		{
 			pRenderer->put_PenSize(0);
 			return false;

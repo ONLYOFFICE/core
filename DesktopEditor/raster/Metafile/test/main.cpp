@@ -38,6 +38,10 @@
 #include "../../../raster/BgraFrame.h"
 #include "../../../common/Directory.h"
 
+#include <algorithm>
+#include <io.h>
+#include <fcntl.h>
+
 int main(int argc, char *argv[])
 {
     // Check system fonts
@@ -48,11 +52,11 @@ int main(int argc, char *argv[])
     if (!NSDirectory::Exists(oWorker.m_sDirectory))
         NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
-    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(L"PATH_TO_METAFILE");
-    pMetafile->ConvertToRaster(L"PATH_TO_RASTER", 4, 1000);
+	MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+	pMetafile->LoadFromFile(L"C:/Users/Kirill.Polyakov.AVSMEDIA/Desktop/svg/TestMarker.svg");
+	pMetafile->ConvertToRaster(L"C:/Users/Kirill.Polyakov.AVSMEDIA/Desktop/test.png", 4, 3000);
     pMetafile->Release();
 
     pFonts->Release();

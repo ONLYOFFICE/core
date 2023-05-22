@@ -255,7 +255,7 @@ namespace NSCSS
 
 	bool CDigit::Zero() const
 	{
-		return DBL_MIN == m_oValue || 0. == m_oValue;
+		return 0. == m_oValue;
 	}
 
 	void CDigit::Clear()

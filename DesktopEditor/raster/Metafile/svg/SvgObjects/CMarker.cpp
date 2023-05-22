@@ -40,10 +40,10 @@ namespace SVG
 
 		const std::wstring& wsUnits = oNode.GetAttribute(L"markerUnits");
 
-		if (L"strokeWidth" == wsUnits)
-			m_enUnits = Marker_StrokeWidth;
-		else if (L"userSpaceOnUse" == wsUnits)
+		if (L"userSpaceOnUse" == wsUnits)
 			m_enUnits = Marker_UserSpaceOnUse;
+		else
+			m_enUnits = Marker_StrokeWidth;
 	}
 
 	CMarker::~CMarker()
@@ -122,11 +122,11 @@ namespace SVG
 
 	void CMarker::Draw(IRenderer *pRenderer, const std::vector<Point> &arPoints, double dStrokeWidth) const
 	{
-		if (NULL == m_pImage || arPoints.empty())
+		if (NULL == m_pImage || arPoints.empty() || 0. == dStrokeWidth)
 			return;
 
-		double dWidth  = m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
-		double dHeight = m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
+		double dWidth  = m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel) * ((Marker_StrokeWidth == m_enUnits) ? dStrokeWidth : 1.);
+		double dHeight = m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel) * ((Marker_StrokeWidth == m_enUnits) ? dStrokeWidth : 1.);
 
 		double dVBWidth  = m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel);
 		double dVBHeight = m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel);

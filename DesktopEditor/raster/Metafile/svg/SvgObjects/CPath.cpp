@@ -73,8 +73,10 @@ namespace SVG
 
 	bool CPath::DrawMarkers(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
-		if (NULL == pRenderer || NULL == pDefs || m_arElements.empty())
+		if (NULL == pRenderer || NULL == pDefs || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero())
 			return false;
+
+		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
 		std::vector<Point> arPoints(m_arElements.size());
 
@@ -88,7 +90,7 @@ namespace SVG
 			if (NULL != pStartMarker)
 			{
 				pStartMarker->Update(pDefs);
-				pStartMarker->Draw(pRenderer, {*arPoints.begin()}, m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
+				pStartMarker->Draw(pRenderer, {*arPoints.begin()}, dStrokeWidth);
 			}
 		}
 
@@ -99,7 +101,7 @@ namespace SVG
 			if (NULL != pMidMarker)
 			{
 				pMidMarker->Update(pDefs);
-				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1), m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
+				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1), dStrokeWidth);
 			}
 		}
 
@@ -110,7 +112,7 @@ namespace SVG
 			if (NULL != pEndMarker)
 			{
 				pEndMarker->Update(pDefs);
-				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)}, m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel));
+				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)}, dStrokeWidth);
 			}
 		}
 

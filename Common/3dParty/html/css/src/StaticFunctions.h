@@ -364,6 +364,9 @@ namespace NSCSS
 
 				mRules.insert({std::wstring(oStartProperty, oEndProperty), std::wstring(oStartValue, oEndValue)});
 
+				if (wsStyles.end() == oEndValue)
+					break;
+
 				oStartProperty = std::find_if_not(oEndValue + 1, wsStyles.end(), std::iswspace);
 			}
 

@@ -16,10 +16,15 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pDefs)
 			return false;
 
-		CGraphicsContainer::Apply(pRenderer, &m_oStyles.m_oClip, pDefs);
+		pRenderer->BeginCommand(c_nClipType);
+		pRenderer->PathCommandStart();
 
 		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
 			pGraphicsObject->Draw(pRenderer, pDefs, true);
+
+		pRenderer->EndCommand(c_nClipType);
+		pRenderer->PathCommandEnd();
+
 
 		return true;
 	}

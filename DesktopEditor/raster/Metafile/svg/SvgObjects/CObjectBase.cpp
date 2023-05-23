@@ -61,31 +61,29 @@ namespace SVG
 			m_oStyles.m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
 	}
 
+	void CSvgGraphicsObject::SetMask(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"mask"))
+			m_oStyles.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
+	}
+
 	void CSvgGraphicsObject::StartPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		Apply(pRenderer, &m_oStyles.m_oClip, pDefs);
-		(bIsClip) ? StartClipPath(pRenderer) : StartStandardPath(pRenderer);
-	}
+		ApplyMask(pRenderer, &m_oStyles.m_oMask, pDefs);
 
-	void CSvgGraphicsObject::StartStandardPath(IRenderer *pRenderer) const
-	{
+		if (bIsClip)
+			return;
+
 		pRenderer->BeginCommand(c_nPathType);
-		pRenderer->PathCommandStart();
-	}
-
-	void CSvgGraphicsObject::StartClipPath(IRenderer *pRenderer) const
-	{
-		pRenderer->BeginCommand(c_nClipType);
 		pRenderer->PathCommandStart();
 	}
 
 	void CSvgGraphicsObject::EndPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles) const
 	{
-		(bIsClip) ? EndClipPath(pRenderer) : EndStandardPath(pRenderer, pDefs, pOtherStyles);
-	}
+		if (bIsClip)
+			return;
 
-	void CSvgGraphicsObject::EndStandardPath(IRenderer *pRenderer, const CDefs *pDefs, const TSvgStyles *pOtherStyles) const
-	{
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
@@ -103,12 +101,6 @@ namespace SVG
 		pRenderer->PathCommandEnd();
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
-	}
-
-	void CSvgGraphicsObject::EndClipPath(IRenderer *pRenderer) const
-	{
-		pRenderer->EndCommand(c_nClipType);
-		pRenderer->PathCommandEnd();
 	}
 
 	bool CSvgGraphicsObject::Apply(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
@@ -227,6 +219,14 @@ namespace SVG
 			return false;
 
 		return pClipObject->Apply(pRenderer, pDefs, GetBounds());
+	}
+
+	bool CSvgGraphicsObject::ApplyMask(IRenderer *pRenderer, const NSCSS::NSProperties::CColor *pMask, const CDefs *pDefs) const
+	{
+		if (NULL == pRenderer || NULL == pMask || NULL == pDefs || NSCSS::NSProperties::ColorType::ColorUrl != pMask->GetType())
+			return false;
+
+		return ApplyDef(pRenderer, pDefs, pMask->ToWString());
 	}
 
 	bool CSvgGraphicsObject::ApplyDef(IRenderer *pRenderer, const CDefs *pDefs, const std::wstring &wsUrl) const

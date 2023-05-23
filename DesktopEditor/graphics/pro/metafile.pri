@@ -76,6 +76,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.h \
 		$$METAFILE_PATH/svg/SvgObjects/CGradient.h \
 		$$METAFILE_PATH/svg/SvgObjects/CClipPath.h \
+		$$METAFILE_PATH/svg/SvgObjects/CMask.h \
 		$$METAFILE_PATH/svg/SvgObjects/CDefs.h \
 		$$METAFILE_PATH/svg/SvgObjects/CPattern.h \
 		$$METAFILE_PATH/svg/SvgObjects/CMarker.h \
@@ -100,6 +101,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CGradient.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CClipPath.cpp \
+		$$METAFILE_PATH/svg/SvgObjects/CMask.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CDefs.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CMarker.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CPattern.cpp \

@@ -22,11 +22,12 @@ namespace SVG
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || m_wsHref.empty() || bIsClip)
+		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -61,18 +62,38 @@ namespace SVG
 			Aggplus::CImage oImage;
 			oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
 
-			if (dImageW / dImageH == dWidth / dHeight)
-				pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);
-			else if (dImageW / dWidth > dImageH / dHeight)
+			StartPath(pRenderer, pDefs, bIsClip);
+
+			Aggplus::CMatrix oOldMatrix;
+			Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
+
+			if (dImageW / dWidth > dImageH / dHeight)
 			{
 				double dValue = dImageW / dWidth;
-				pRenderer->DrawImage(&oImage, dX, dY + (dHeight - (dImageH / dValue)) / 2, dWidth, dImageH / dValue);
+				dY += (dHeight - (dImageH / dValue)) / 2.;
+				dHeight = dImageH / dValue;
 			}
-			else
+			else if (dImageW / dWidth < dImageH / dHeight)
 			{
 				double dValue = dImageH / dHeight;
-				pRenderer->DrawImage(&oImage, dX + (dWidth - (dImageW / dValue)) / 2, dY, dImageW / dValue, dHeight);
+				dX += (dWidth - (dImageW / dValue)) / 2.;
+				dWidth = dImageW / dValue;
 			}
+
+			if (!bIsClip)
+				pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);
+			else
+			{
+				pRenderer->PathCommandMoveTo(dX, dY);
+				pRenderer->PathCommandLineTo(dX + dWidth, dY);
+				pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);
+				pRenderer->PathCommandLineTo(dX, dY + dHeight);
+				pRenderer->PathCommandClose();
+			}
+
+			EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+
+			pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 			delete[] pBuffer;
 		}
@@ -80,9 +101,7 @@ namespace SVG
 	}
 
 	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
-	{
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-	}
+	{}
 
 	TBounds CImage::GetBounds() const
 	{

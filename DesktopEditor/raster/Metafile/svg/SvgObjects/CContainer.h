@@ -66,6 +66,7 @@ namespace SVG
 
 		friend class CDefs;
 		friend class CText;
+		friend class CMask;
 		friend class CTSpan;
 		friend class CMarker;
 		friend class CPattern;
@@ -95,6 +96,7 @@ namespace SVG
 
 		friend class CPattern;
 		friend class CMarker;
+		friend class CMask;
 
 		TRect m_oWindow;
 		TRect m_oViewBox;

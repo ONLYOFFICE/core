@@ -16,7 +16,8 @@ namespace SVG
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
 		SvgTransform m_oTransform;
-		TClip     m_oClip;
+		TClip        m_oClip;
+		SvgColor     m_oMask;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles)
 		{
@@ -42,6 +43,9 @@ namespace SVG
 
 			if (m_oClip.m_oRule.Empty() && !oSvgStyles.m_oClip.m_oRule.Empty())
 				m_oClip.m_oRule = oSvgStyles.m_oClip.m_oRule;
+
+			if (m_oMask.Empty() && !oSvgStyles.m_oMask.Empty() && NSCSS::NSProperties::ColorUrl == oSvgStyles.m_oMask.GetType())
+				m_oMask= oSvgStyles.m_oMask;
 
 			return *this;
 		}
@@ -136,13 +140,10 @@ namespace SVG
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
-		void StartStandardPath(IRenderer* pRenderer) const;
-		void StartClipPath(IRenderer* pRenderer) const;
 		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles = NULL) const;
-		void EndStandardPath(IRenderer* pRenderer, const CDefs *pDefs, const TSvgStyles* pOtherStyles) const;
-		void EndClipPath(IRenderer* pRenderer) const;
 
 		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
@@ -151,12 +152,14 @@ namespace SVG
 		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
 		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CDefs *pDefs) const;
 
+		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CDefs *pDefs) const;
 		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
 
 		friend class CUse;
 		friend class CLine;
 		friend class CRect;
 		friend class CPath;
+		friend class CMask;
 		friend class CTSpan;
 		friend class CImage;
 		friend class CCircle;

@@ -859,7 +859,7 @@ private:
 			else
 			{
 				sPrintInfo = L"The plugin not found in the backup list, check using --print-backup\n" \
-							 L"This option is available for plugins that are not in the marketplace."
+							 L"This option is available for plugins that are not in the marketplace.\n" \
 							 L"Use --install command";
 			}
 		}

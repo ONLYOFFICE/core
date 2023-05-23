@@ -114,6 +114,7 @@ L"                         Combined installation is supported, for example, --in
 L"                         File paths without quotes, plugin extensions: .zip, .plugin.\n\n" \
 
 L"  --restore            = Optional parameter. Set comma-separated quoted list of plugins to restore.\n" \
+L"                         Print backup plugins using --print-backup option.\n" \
 L"                         Restoring by plugin name or GUID is supported.\n" \
 L"                         For example, --restore=\"Youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 

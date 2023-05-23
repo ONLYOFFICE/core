@@ -265,6 +265,12 @@ public:
 		m_sMarketplaceUrl = L"https://onlyoffice.github.io";
 
 		m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
+
+#ifdef LINUX
+		//std::transform(m_sSettingsDir.begin(), m_sSettingsDir.end(), m_sSettingsDir.begin(), tolower);
+		NSStringUtils::string_replace(m_sSettingsDir, L"ONLYOFFICE", L"onlyoffice");
+#endif
+
 		m_sSettingsFile = m_sSettingsDir + L"/settings";
 	}
 
@@ -831,6 +837,7 @@ private:
 	bool RestorePlugin(const std::wstring& sPlugin)
 	{
 		bool bResult = false;
+		std::wstring sPrintInfo = L"";
 
 		if (sPlugin.length())
 		{
@@ -849,9 +856,15 @@ private:
 					bResult = true;
 				}
 			}
+			else
+			{
+				sPrintInfo = L"The plugin not found in the backup list, check using --print-backup\n" \
+							 L"This option is available for plugins that are not in the marketplace.\n" \
+							 L"Use --install command";
+			}
 		}
 
-		Message(L"Restore plugin: " + sPlugin, BoolToStr(bResult), true);
+		Message(L"Restore plugin: " + sPlugin, sPrintInfo.length() ? sPrintInfo : BoolToStr(bResult), true);
 
 		return bResult;
 	}

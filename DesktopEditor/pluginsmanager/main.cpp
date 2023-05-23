@@ -94,6 +94,34 @@ std::wstring CorrectValue(const std::wstring& value)
 	return value.substr(pos1, pos2 - pos1);
 }
 
+bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
+{
+	arrOutput.clear();
+
+	if ( sData.length() )
+	{
+		std::wstring sTmp = sData;
+		NSStringUtils::string_replace(sTmp, L", ", L",");
+
+		size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
+		std::wstring token = L"";
+
+		while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
+		{
+			token = sTmp.substr(pos_start, pos_end - pos_start);
+			pos_start = pos_end + delim_len;
+			if (token.length())
+				arrOutput.push_back(token);
+		}
+
+		token = sTmp.substr(pos_start);
+		if ( token.length() )
+			arrOutput.push_back(token);
+	}
+
+	return arrOutput.size() > 0;
+}
+
 // Manager
 enum PluginStatus
 {
@@ -110,26 +138,37 @@ private:
 public:
 	std::wstring m_sVersion;
 
-	CVersion()
+	CVersion() : m_major(1), m_minor(0), m_revision(0), m_build(0), m_sVersion(L"1.0.0")
 	{
-		// Default if version is empty
-		m_major = 1;
-		m_minor = 0;
-		m_revision = 0;
-		m_build = 0;
-
-		m_sVersion = L"1.0.0";
 	}
 
-	CVersion(std::wstring& sVersion)
+	CVersion(std::wstring& sVersion) : m_major(1), m_minor(0), m_revision(0), m_build(0), m_sVersion(L"1.0.0")
 	{
-		m_sVersion = sVersion;
-		swscanf(m_sVersion.c_str(), L"%d.%d.%d.%d", &m_major, &m_minor, &m_revision, &m_build);
+		if ( sVersion.length() )
+		{
+			m_sVersion = sVersion;
 
-		if (m_major < 0)		m_major = 0;
-		if (m_minor < 0)		m_minor = 0;
-		if (m_revision < 0)		m_revision = 0;
-		if (m_build < 0)		m_build = 0;
+			std::vector<std::wstring> arr;
+			SplitStringAsVector(m_sVersion, L".", arr);
+
+			for (size_t i = 0; i < arr.size(); i++)
+			{
+				int iValue = std::stoi(arr[i]);
+				switch (i)
+				{
+					case 0: m_major =		iValue; break;
+					case 1: m_minor =		iValue; break;
+					case 2: m_revision =	iValue; break;
+					case 3: m_build =		iValue; break;
+					default: break;
+				}
+			}
+
+			if (m_major < 0)		m_major = 0;
+			if (m_minor < 0)		m_minor = 0;
+			if (m_revision < 0)		m_revision = 0;
+			if (m_build < 0)		m_build = 0;
+		}
 	}
 
 	bool operator > (CVersion& oVersion)
@@ -483,7 +522,7 @@ public:
 		if ( bPrint )
 			Message(L"Initialize marketplace plugins ...", L"", true, true);
 
-		if (m_sMarketplaceUrl.length())
+		if ( !m_arrMarketplace.size() && m_sMarketplaceUrl.length() )
 		{
 			m_arrMarketplace.clear();
 
@@ -505,16 +544,20 @@ public:
 						{
 							pPluginInfo = FetchPluginInfo(sPluginName);
 							if ( pPluginInfo )
-							{
 								m_arrMarketplace.push_back(pPluginInfo);
-
-								if ( bPrint )
-									MessagePluginInfo(sPluginName, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
-							}
 						}
 					}
 				}
 				NSFile::CFileBinary::Remove(sTmpFile);
+			}
+		}
+
+		if ( bPrint )
+		{
+			for (size_t i = 0; i < m_arrMarketplace.size(); i++)
+			{
+				CPluginInfo* pPluginInfo = m_arrMarketplace[i];
+				MessagePluginInfo(pPluginInfo->m_sNameConfig, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
 			}
 		}
 
@@ -1025,50 +1068,38 @@ private:
 
 	bool ReadConfigJson(const std::wstring& sFile, std::vector<std::wstring>& arrOutput)
 	{
-		bool bResult = false;
-
+		// [ "...", "...", "..." ]
 		std::wstring sJson = L"";
 		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
 		{
-			NSStringUtils::string_replace(sJson, L"\n", L"");
-			NSStringUtils::string_replace(sJson, L"\r", L"");
-			NSStringUtils::string_replace(sJson, L"\t", L"");
-			NSStringUtils::string_replace(sJson, L"[", L"");
-			NSStringUtils::string_replace(sJson, L"]", L"");
-			NSStringUtils::string_replace(sJson, L"\"", L"");
+			std::wstring sDelim = L"\"";
+			std::wstring::size_type pos1 = sJson.find(sDelim);
 
-			bResult = SplitStringAsVector(sJson, L",", arrOutput);
-		}
-
-		return bResult;
-	}
-
-	bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
-	{
-		arrOutput.clear();
-
-		if ( sData.length() )
-		{
-			std::wstring sTmp = sData;
-			NSStringUtils::string_replace(sTmp, L", ", L",");
-
-			size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
-			std::wstring token = L"";
-
-			while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
+			while ( pos1 != std::wstring::npos )
 			{
-				token = sTmp.substr(pos_start, pos_end - pos_start);
-				pos_start = pos_end + delim_len;
-				if (token.length())
-					arrOutput.push_back(token);
-			}
+				std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
 
-			token = sTmp.substr(pos_start);
-			if ( token.length() )
-				arrOutput.push_back(token);
+				if (pos1 != std::wstring::npos && pos2 > pos1)
+					arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+
+				pos1 = sJson.find(sDelim, pos2 + 1);
+			}
 		}
 
 		return arrOutput.size() > 0;
+	}
+
+	void StringReplaceExt(std::wstring& sText, const std::wstring& sFrom, const std::wstring& sTo)
+	{
+		if ( sText.length() )
+		{
+			std::wstring::size_type pos = sText.find(sFrom);
+			while ( pos != std::wstring::npos )
+			{
+				NSStringUtils::string_replace(sText, sFrom, sTo);
+				pos = sText.find(sFrom);
+			}
+		}
 	}
 
 	bool DownloadFile(const std::wstring& sUrl, const std::wstring& sFile)
@@ -1233,7 +1264,7 @@ int main(int argc, char** argv)
 						sValue = std::wstring(argv[i]);
 #else
 						std::string sValueA(argv[i]);
-						sValue = UTF8_TO_U(sParamA);
+						sValue = UTF8_TO_U(sValueA);
 #endif
 					}
 

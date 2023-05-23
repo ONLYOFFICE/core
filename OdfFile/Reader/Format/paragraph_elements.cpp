@@ -391,7 +391,7 @@ const wchar_t * bookmark_ref::name = L"bookmark-ref";
 
 void bookmark_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:ref-name", ref_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:ref-name", ref_name_);
     CP_APPLY_ATTR(L"text:reference-format", reference_format_);
 }
 void bookmark_ref::add_text(const std::wstring & Text)
@@ -405,7 +405,7 @@ const wchar_t * reference_ref::name = L"reference-ref";
 
 void reference_ref::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"text:ref-name", ref_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:ref-name", ref_name_);
     CP_APPLY_ATTR(L"text:reference-format", reference_format_);
 }
 void reference_ref::add_text(const std::wstring & Text)
@@ -1409,13 +1409,17 @@ void sequence::add_text(const std::wstring & Text)
 void sequence::docx_convert(oox::docx_conversion_context & Context) 
 {
 	std::wstring ref, sequence;
-	if (ref_name_)
+
+	std::wstring name = ref_name_ ? *ref_name_ : name_.get_value_or(L"");
+	
+	if (false == name.empty())
 	{
-		sequence = Context.get_table_content_context().get_sequence(*ref_name_);
-		size_t pos = ref_name_->find(L"ref" + ref);
+		sequence = Context.get_table_content_context().get_sequence(name);
+		
+		size_t pos = name.find(L"ref" + ref);
 		if (pos != std::wstring::npos)
 		{
-			ref = sequence + L"!" +  ref_name_->substr(pos + 3 + sequence.length()) + L"|sequence";
+			ref = sequence + L"!" + name.substr(pos + 3 + sequence.length()) + L"|sequence";
 		}
 	}
 	//if (!ref.empty())
@@ -1444,22 +1448,25 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 														num_format= L"ARABIC"; break;
 		}
 	}
-	Context.start_bookmark(*ref_name_);
-	Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << XmlUtils::EncodeXmlString(sequence) << L" \\* " << num_format << L" \">";
-	Context.add_new_run();
+	if (false == name.empty())
+	{
+		Context.start_bookmark(name);
+		Context.output_stream() << L"<w:fldSimple w:instr=\" SEQ " << XmlUtils::EncodeXmlString(sequence) << L" \\* " << num_format << L" \">";
+		Context.add_new_run();
 		for (size_t i = 0; i < text_.size(); i++)
 		{
 			text_[i]->docx_convert(Context);
 		}
-	Context.finish_run();
-	
-	//if (!ref.empty())
-	//{
-	//	Context.end_bookmark(ref);
-	//}
-	Context.output_stream() << L"</w:fldSimple>";
+		Context.finish_run();
 
-	Context.end_bookmark(*ref_name_);
+		//if (!ref.empty())
+		//{
+		//	Context.end_bookmark(ref);
+		//}
+		Context.output_stream() << L"</w:fldSimple>";
+
+		Context.end_bookmark(name);
+	}
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {

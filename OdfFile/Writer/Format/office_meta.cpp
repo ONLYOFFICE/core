@@ -54,7 +54,7 @@ void meta_generator::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -66,7 +66,7 @@ void meta_initial_creator::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -90,7 +90,7 @@ void meta_template::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -102,7 +102,7 @@ void meta_keyword::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -126,7 +126,7 @@ void dc_creator::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -138,7 +138,7 @@ void dc_description::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -174,7 +174,7 @@ void dc_title::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -186,7 +186,7 @@ void dc_subject::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -230,7 +230,7 @@ void meta_user_defined::serialize(std::wostream & _Wostream)
 		{
 			CP_XML_ATTR(L"meta:name", meta_name_);
 
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }

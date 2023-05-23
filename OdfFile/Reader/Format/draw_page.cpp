@@ -140,7 +140,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
@@ -322,7 +322,7 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				

@@ -635,7 +635,7 @@ public:
 		void convert(OOX::Spreadsheet::CT_ChartLines			*grid, int type);
 		void convert(OOX::Spreadsheet::CT_SerTx					*ser_tx);
 		void convert(OOX::Spreadsheet::CT_DLbls					*ser_lbls);
-		void convert(OOX::Spreadsheet::CT_Marker				*marker);
+		void convert(OOX::Spreadsheet::CT_Marker				*marker, bool bFill);
 		void convert(OOX::Spreadsheet::CT_Marker				*marker, std::vector<OOX::Spreadsheet::CT_DPt*> & dPt);
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);

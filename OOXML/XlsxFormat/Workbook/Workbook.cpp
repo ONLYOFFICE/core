@@ -42,6 +42,7 @@
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
 #include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"

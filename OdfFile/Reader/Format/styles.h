@@ -90,18 +90,19 @@ public:
  	
 	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
   
-	graphic_format_properties *		get_graphic_properties()			const;
+	graphic_format_properties*		get_graphic_properties()const;
   
-	style_text_properties *			get_style_text_properties()			const;
-    style_paragraph_properties *	get_style_paragraph_properties()	const;
-    style_table_properties *		get_style_table_properties()		const;
-    style_section_properties *		get_style_section_properties()		const;
-    style_table_row_properties *	get_style_table_row_properties()	const;
-    style_table_column_properties * get_style_table_column_properties() const;
-    style_chart_properties *		get_style_chart_properties()		const;
+	style_text_properties*			get_style_text_properties()	const;
+    style_paragraph_properties*		get_style_paragraph_properties()const;
+    style_table_properties*			get_style_table_properties()const;
+    style_section_properties*		get_style_section_properties()const;
+    style_table_row_properties*		get_style_table_row_properties()const;
+    style_table_column_properties* get_style_table_column_properties() const;
+    style_chart_properties*			get_style_chart_properties()const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
-    style_table_cell_properties *	get_style_table_cell_properties		(bool always =false);
-	
+    style_table_cell_properties*	get_style_table_cell_properties(bool always = false);
+
+	office_element_ptr text_list_style_;
 	odf_types::style_family style_family_;
 private:
     office_element_ptr		style_text_properties_;
@@ -354,24 +355,24 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
    
 public:
-    std::wstring			style_name_;
-    bool					style_auto_update_;	// default = false
+    std::wstring style_name_;
+    bool style_auto_update_;	// default = false
     
-	_CP_OPT( std::wstring ) style_display_name_; 
+	_CP_OPT(std::wstring) style_display_name_;
 
-    _CP_OPT( std::wstring ) style_parent_style_name_; 
-    _CP_OPT( std::wstring ) style_next_style_name_;	 
-    _CP_OPT( std::wstring ) style_list_style_name_;	
-	_CP_OPT( int )			style_list_level_;
-    _CP_OPT( std::wstring ) style_master_page_name_;
-    _CP_OPT( std::wstring ) style_data_style_name_;	
-	_CP_OPT( std::wstring ) style_percentage_data_style_name_;
-	_CP_OPT( std::wstring ) style_class_;
-    _CP_OPT( int )			style_default_outline_level_; 
+	_CP_OPT(std::wstring) style_parent_style_name_;
+	_CP_OPT(std::wstring) style_next_style_name_;
+	_CP_OPT(std::wstring) style_list_style_name_;
+	_CP_OPT(int) style_list_level_;
+	_CP_OPT(std::wstring) style_master_page_name_;
+	_CP_OPT(std::wstring) style_data_style_name_;
+	_CP_OPT(std::wstring) style_percentage_data_style_name_;
+	_CP_OPT(std::wstring) style_class_;
+	_CP_OPT(int) style_default_outline_level_;
 
-    style_content				content_;
+    style_content content_;
 	
-	office_element_ptr_array	style_map_;
+	office_element_ptr_array style_map_;
 
     friend class odf_document;
 };

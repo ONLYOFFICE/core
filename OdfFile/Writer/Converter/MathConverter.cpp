@@ -288,13 +288,15 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para) return;
 
-		odf_context()->start_math();
+		bool bStart = odf_context()->start_math();
 
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
-		odf_context()->end_math();
+
+		if (bStart)
+			odf_context()->end_math();
 	}
 
 	void OoxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)
@@ -311,10 +313,10 @@ namespace Oox2Odf
 			return result;
 		}
 
-		convert(oox_ctrl_pr->m_oARPr.GetPointer());
-		convert(oox_ctrl_pr->m_oDel.GetPointer());
-		convert(oox_ctrl_pr->m_oIns.GetPointer());
-		result.colorFlag = convert(oox_ctrl_pr->m_oRPr.GetPointer());
+		//convert(oox_ctrl_pr->m_oARPr.GetPointer());
+		//convert(oox_ctrl_pr->m_oDel.GetPointer());
+		//convert(oox_ctrl_pr->m_oIns.GetPointer());
+		//result.colorFlag = convert(oox_ctrl_pr->m_oRPr.GetPointer());
 		return result;
 	}
 
@@ -2023,11 +2025,12 @@ std::wstring str1, str2;
 				CLOSE_MATH_TAG				
 			}
 		}
-
+		mrow();
 		for (size_t i = 0; i < oox_elm->m_arrItems.size(); ++i)
 		{
 			convert(oox_elm->m_arrItems[i]);
 		}
+		endOfMrow();
 
 		if (!brackets()[lvl_of_me()].empty())
 		{

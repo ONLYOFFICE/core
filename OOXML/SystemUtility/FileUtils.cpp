@@ -228,14 +228,14 @@ namespace CDirectory
 	void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
 	{
 		pWriter->WriteNodeBegin(strName);
-		pWriter->WriteString(boost::lexical_cast<std::wstring>(value));
+		pWriter->WriteString(std::to_wstring(value));
 		pWriter->WriteNodeEnd(strName);
 	}
 
 	void WriteValueToNode(std::wstring strName, LONG value, XmlUtils::CXmlWriter* pWriter)
 	{
 		pWriter->WriteNodeBegin(strName);
-		pWriter->WriteString(boost::lexical_cast<std::wstring>(value));
+		pWriter->WriteString(std::to_wstring(value));
 		pWriter->WriteNodeEnd(strName);
 	}
 	void WriteValueToNode(std::wstring strName, std::wstring value, XmlUtils::CXmlWriter* pWriter)

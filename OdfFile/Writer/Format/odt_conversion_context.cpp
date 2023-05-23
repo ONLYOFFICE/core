@@ -178,7 +178,7 @@ odf_comment_context* odt_conversion_context::comment_context()
 	return &comment_context_;
 }
 
-odf_style_context* odt_conversion_context::styles_context()	
+odf_style_context_ptr odt_conversion_context::styles_context()	
 {
 	if (text_context_.size() > 0)
 	{

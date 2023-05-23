@@ -41,36 +41,36 @@ namespace DocFileFormat
 	  ParallelogramType():
       ShapeType(msosptParallelogram)
       {
-        this->ShapeConcentricFill = true;
+        ShapeConcentricFill = true;
 
-        this->Joins = miter;
+        Joins = miter;
 
-        this->Path = L"m@0,l,21600@1,21600,21600,xe";
+        Path = L"m@0,l,21600@1,21600,21600,xe";
 
-        this->Formulas.push_back( L"val #0");
-        this->Formulas.push_back( L"sum width 0 #0");
-        this->Formulas.push_back( L"prod #0 1 2");
-        this->Formulas.push_back( L"sum width 0 @2");
-        this->Formulas.push_back( L"mid #0 width");
-        this->Formulas.push_back( L"mid @1 0");
-        this->Formulas.push_back( L"prod height width #0");
-        this->Formulas.push_back( L"prod @6 1 2");
-        this->Formulas.push_back( L"sum height 0 @7");
-        this->Formulas.push_back( L"prod width 1 2");
-        this->Formulas.push_back( L"sum #0 0 @9");
-        this->Formulas.push_back( L"if @10 @8 0");
-        this->Formulas.push_back( L"if @10 @7 height");
+        Formulas.push_back( L"val #0");
+        Formulas.push_back( L"sum width 0 #0");
+        Formulas.push_back( L"prod #0 1 2");
+        Formulas.push_back( L"sum width 0 @2");
+        Formulas.push_back( L"mid #0 width");
+        Formulas.push_back( L"mid @1 0");
+        Formulas.push_back( L"prod height width #0");
+        Formulas.push_back( L"prod @6 1 2");
+        Formulas.push_back( L"sum height 0 @7");
+        Formulas.push_back( L"prod width 1 2");
+        Formulas.push_back( L"sum #0 0 @9");
+        Formulas.push_back( L"if @10 @8 0");
+        Formulas.push_back( L"if @10 @7 height");
 
-        this->AdjustmentValues = L"5400";
+		Adjustments.push_back(5400);
             
-        this->ConnectorLocations = L"@4,0;10800,@11;@3,10800;@5,21600;10800,@12;@2,10800";
+        ConnectorLocations = L"@4,0;10800,@11;@3,10800;@5,21600;10800,@12;@2,10800";
 
-        this->TextBoxRectangle = L"1800,1800,19800,19800;8100,8100,13500,13500;10800,10800,10800,10800";
+        TextBoxRectangle = L"1800,1800,19800,19800;8100,8100,13500,13500;10800,10800,10800,10800";
 
         Handle HandleOne;
         HandleOne.position = L"#0,topLeft";
         HandleOne.xrange = L"0,21600";
-        this->Handles.push_back( HandleOne );
+        Handles.push_back( HandleOne );
 	  }
 
 	  virtual ~ParallelogramType()

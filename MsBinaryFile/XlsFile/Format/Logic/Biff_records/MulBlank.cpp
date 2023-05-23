@@ -32,8 +32,6 @@
 
 #include "MulBlank.h"
 
-#include <boost/lexical_cast.hpp>
-
 namespace XLS
 {
 
@@ -57,7 +55,7 @@ std::wstring getColAddress(int col)
 
 std::wstring getRowAddress(int row)
 {
-    return boost::lexical_cast<std::wstring>(row+1);
+    return std::to_wstring(row + 1);
 }
 
 std::wstring getColRowRef(int col, int row)

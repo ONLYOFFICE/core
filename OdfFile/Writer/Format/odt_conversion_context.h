@@ -69,7 +69,7 @@ public:
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
 
-	virtual odf_style_context		* styles_context();
+	virtual odf_style_context_ptr	styles_context();
 		
 	odf_comment_context				* comment_context();
 	odf_table_context				* table_context();

@@ -48,7 +48,12 @@ namespace DocFileFormat
             Formulas.push_back( L"val #3");
             Formulas.push_back( L"val #4");
 
-            AdjustmentValues		=	L"-5898240,,,21600,21600";
+			Adjustments.push_back(-5898240);
+			Adjustments.push_back(0);
+			Adjustments.push_back(0);
+			Adjustments.push_back(21600);
+			Adjustments.push_back(21600);
+
             ConnectorLocations		=	L"0,0;21600,21600;0,21600";
 
 			Handle HandleOne;

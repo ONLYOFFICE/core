@@ -91,6 +91,19 @@ private:
 
 	int detect_format(std::wstring & format_code);
 	std::wstring convert_date_time(const std::wstring & sValue, std::wstring format_code, bool bDate = true, bool bTime = true);
+
+	struct _numberFormat
+	{
+		bool bFloat = false;
+		bool bThousands = false;
+		bool bPercent = false;
+
+		int count_int = 0;
+		int count_float = 0;
+
+		std::wstring format_string;
+	};
+	std::map<std::wstring, _numberFormat> mapNumberFormat;
 };
 
 CSVWriter::CSVWriter()
@@ -211,11 +224,11 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 	boost::wsmatch result;
 	bool b = boost::regex_search(strFormatCode, result, re);
 
-	std::wstring currency_str;
+	std::wstring strCurrencyLetter;
 
 	if (b && result.size() >= 3)
 	{
-		currency_str = result[1];
+		strCurrencyLetter = result[1];
 		int code = -1;
 		try
 		{
@@ -224,11 +237,19 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 			ss >> language_code;
 		}
 		catch (...) {}
-
+		
 		//format_code = boost::regex_replace( format_code,re,L"");
 	}
-	if (!currency_str.empty() && language_code != 0xF400 && language_code != 0xF800)
+	if (!strCurrencyLetter.empty() && language_code != 0xF400 && language_code != 0xF800)
 	{
+		size_t start = format_code.find(L"[");
+		size_t end = format_code.rfind(L"]");
+
+		if (start != std::wstring::npos && end != std::wstring::npos)
+		{
+			format_code.erase(start, end - start + 1);
+			format_code.insert(start, strCurrencyLetter);
+		}
 		return SimpleTypes::Spreadsheet::celltypeCurrency;
 	}
 
@@ -838,7 +859,6 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 		if (!format_type)
 			format_type = format_type_detect;
 	}
-
 	switch (format_type.get_value_or(SimpleTypes::Spreadsheet::celltypeStr))
 	{
 	case SimpleTypes::Spreadsheet::celltypeDate:		return convert_date_time(value, format_code, true, false);
@@ -853,101 +873,109 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 	case SimpleTypes::Spreadsheet::celltypeError:
 		return value;
 
+	case SimpleTypes::Spreadsheet::celltypeCurrency:
 	default:
 		if (format_code.empty())
 			return value;
 		else
 		{
-			try
+			double dValue = XmlUtils::GetDouble(value);
+			std::wstring format_string;
+			bool bFloat = false;
+
+			std::map<std::wstring, _numberFormat>::iterator pFind = mapNumberFormat.find(format_code);
+			if (pFind != mapNumberFormat.end())
 			{
-				std::wstring format_code_tmp;
+				format_string = pFind->second.format_string;
+				
+				if (pFind->second.bPercent)
+					dValue *= 100.;
+				
+				bFloat = pFind->second.bFloat;
+			}
+			else
+			{
+				_numberFormat numberFormat;
+				
+				size_t pos_sharp_end = format_code.rfind(L"#");
+				size_t pos_sharp_start = format_code.find(L"#");
 
-				int count_d = 0;
-				bool bFloat = false, bStart = true, bEnd = false, bPercent = false;
+				size_t pos_zero_end = format_code.rfind(L"0");
+				size_t pos_zero_start = format_code.find(L"0");
 
-				size_t pos_skip = format_code.rfind(L"#");
-				if (pos_skip == std::wstring::npos) pos_skip = 0;
-				else pos_skip++;
+				size_t pos_start = (std::min)(pos_zero_start, pos_sharp_start);
+				size_t pos_end = (pos_zero_end != std::wstring::npos) ? ((pos_sharp_end != std::wstring::npos) ? (std::max)(pos_zero_end, pos_sharp_end) : pos_zero_end) : pos_sharp_end;
 
-				for (size_t i = pos_skip; i < format_code.size(); ++i)
+				if (pos_start == std::wstring::npos)  pos_start = 0;
+				if (pos_end == std::wstring::npos)  pos_end = 0;
+
+				size_t pos_comma = format_code.find(L",", pos_start);
+				size_t pos_dot = format_code.find(L".", pos_start);
+
+				if (std::wstring::npos != pos_dot)
 				{
-					if (format_code[i] == L'\\' || format_code[i] == L'\"')
-						continue;
-					else if (format_code[i] != L'0')
-					{
-						if (count_d > 0)
-						{
-							if (bStart) format_code_tmp += L"% 0"; //padding
-							format_code_tmp += std::to_wstring(count_d);
-
-							if (!bStart && bFloat)
-							{
-								format_code_tmp += L"f";
-								bEnd = true;
-							}
-							bStart = false;
-							count_d = 0;
-						}
-						if (format_code[i] == L'.')
-						{
-							bFloat = true;
-							format_code_tmp += format_code[i];
-						}
-						else if (format_code[i] == L',')
-						{
-
-						}
-						else
-						{
-							if (!bStart && !bEnd)
-							{
-								format_code_tmp += L"d";
-								bEnd = true;
-							}
-
-							if ((bStart && count_d < 1) || bEnd)
-							{
-								if (format_code[i] == L'%')
-								{
-									bPercent = true;
-									format_code_tmp += (std::wstring(L"%") + format_code[i]);
-								}
-								else
-									format_code_tmp += format_code[i];
-							}
-						}
-					}
-					else if (!bEnd)
-					{
-						count_d++;
-					}
-				}
-				if (count_d > 0)
-				{
-					if (bStart) format_code_tmp += L"% 0"; //padding
-					format_code_tmp += std::to_wstring(count_d);
-					bStart = false;
-
+					numberFormat.bFloat = true;
+					numberFormat.count_float = (pos_zero_end != std::wstring::npos) ? (pos_zero_end - pos_dot) : 0; 
+					numberFormat.count_int = (pos_zero_start != std::wstring::npos) ? (pos_dot - pos_zero_start) : 0; 
 				}
 				else
-					format_code_tmp += L"%";
-				if (!bStart && !bEnd) format_code_tmp += bFloat ? L"f" : L"ld";
+				{
+					numberFormat.count_int = (pos_zero_start != std::wstring::npos) ? (pos_end - pos_zero_start + 1) : 0;
+				}
+				if (std::wstring::npos != pos_comma)
+				{
+					numberFormat.bThousands = true;
+				}
+				if (std::wstring::npos != format_code.find(L"%", pos_end))
+				{
+					numberFormat.bPercent = true;
+				}
 
+				std::wstring strStart = format_code.substr(0, pos_start);
+				XmlUtils::replace_all(strStart, L"\\", L"");
 
-				double dValue = XmlUtils::GetDouble(value);
-				if (bPercent)
+				format_string = strStart;
+				format_string += L"% 0"; //padding
+
+				if (numberFormat.count_int > 0)
+				{
+					format_string += std::to_wstring(numberFormat.count_int);
+				}
+
+				if (numberFormat.bFloat)
+				{
+					format_string += L".";
+					format_string += std::to_wstring(numberFormat.count_float);
+				}
+				if (numberFormat.bPercent) format_string += L"%";
+
+				std::wstring strEnd = format_code.substr(pos_end + 1);
+				XmlUtils::replace_all(strEnd, L"\\", L"");
+
+				format_string += numberFormat.bFloat ? L"f" : L"ld";
+				format_string += strEnd;
+
+				numberFormat.format_string = format_string;
+				mapNumberFormat.insert(std::make_pair(format_code, numberFormat));
+			
+				if (numberFormat.bPercent)
 					dValue *= 100.;
+				bFloat = numberFormat.bFloat;			
 
+			}
+
+			try
+			{
 				std::wstringstream stream;
 
 				if (bFloat)
 				{
-					stream << boost::wformat(format_code_tmp) % dValue;
+					stream << boost::wformat(format_string) % dValue;
 				}
 				else
 				{
 					_INT64 iValue = dValue;
-					stream << boost::wformat(format_code_tmp) % iValue;
+					stream << boost::wformat(format_string) % iValue;
 				}
 
 				return stream.str();

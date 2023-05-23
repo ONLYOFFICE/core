@@ -68,8 +68,9 @@ namespace DocFileFormat
             m_pXmlWriter->WriteAttribute( L"o:spt", FormatUtils::IntToWideString( pShape->GetTypeCode() ));
 
 			// Adj
-			if (pShape->AdjustmentValues.length())
-                m_pXmlWriter->WriteAttribute( L"adj", pShape->AdjustmentValues);
+			std::wstring sAdjustments = pShape->VectorToStr(pShape->Adjustments);
+			if (!sAdjustments.empty())
+                m_pXmlWriter->WriteAttribute( L"adj", sAdjustments);
 
 			// Path
 			if (!pShape->Path.empty())
@@ -113,10 +114,10 @@ namespace DocFileFormat
 			{
                 m_pXmlWriter->WriteNodeBegin( L"v:formulas");
 
-				for ( std::list<std::wstring>::iterator iter = pShape->Formulas.begin(); iter != pShape->Formulas.end(); iter++ )
+				for ( size_t i = 0; i < pShape->Formulas.size(); ++i)
 				{
                     m_pXmlWriter->WriteNodeBegin( L"v:f", true );
-                    m_pXmlWriter->WriteAttribute( L"eqn", *iter );
+                    m_pXmlWriter->WriteAttribute( L"eqn", pShape->Formulas[i]);
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 
@@ -160,8 +161,9 @@ namespace DocFileFormat
 				if (pShape->TextBoxRectangle.length())
                     m_pXmlWriter->WriteAttribute( L"textboxrect", pShape->TextBoxRectangle);
 
-				if (pShape->ConnectorAngles.length())
-                    m_pXmlWriter->WriteAttribute( L"o:connectangles", pShape->ConnectorAngles);
+				std::wstring sConnectorAngles = pShape->VectorToStr(pShape->ConnectorAngles);
+				if (!sConnectorAngles.empty())
+                    m_pXmlWriter->WriteAttribute( L"o:connectangles", sConnectorAngles);
 			}
 			WordArtTextType* wordArt = dynamic_cast<WordArtTextType*>(pShape);
 			if (wordArt)
@@ -192,27 +194,27 @@ namespace DocFileFormat
 			{
                 m_pXmlWriter->WriteNodeBegin( L"v:handles" );
 
-				for ( std::list<Handle>::iterator iter = pShape->Handles.begin(); iter != pShape->Handles.end(); ++iter)
+				for (size_t i = 0; i < pShape->Handles.size(); ++i)
 				{
                     m_pXmlWriter->WriteNodeBegin( L"v:h", true );
 
-					if (iter->position.length())
-                        m_pXmlWriter->WriteAttribute( L"position", iter->position);
+					if (pShape->Handles[i].position.length())
+                        m_pXmlWriter->WriteAttribute( L"position", pShape->Handles[i].position);
 
-					if (iter->switchHandle.length())
-                        m_pXmlWriter->WriteAttribute( L"switch", iter->switchHandle);
+					if (pShape->Handles[i].switchHandle.length())
+                        m_pXmlWriter->WriteAttribute( L"switch", pShape->Handles[i].switchHandle);
 
-					if (iter->xrange.length())
-                        m_pXmlWriter->WriteAttribute( L"xrange", iter->xrange);
+					if (pShape->Handles[i].xrange.length())
+                        m_pXmlWriter->WriteAttribute( L"xrange", pShape->Handles[i].xrange);
 
-					if (iter->yrange.length())
-                        m_pXmlWriter->WriteAttribute( L"yrange", iter->yrange);
+					if (pShape->Handles[i].yrange.length())
+                        m_pXmlWriter->WriteAttribute( L"yrange", pShape->Handles[i].yrange);
 
-					if (iter->polar.length())
-                        m_pXmlWriter->WriteAttribute( L"polar", iter->polar);
+					if (pShape->Handles[i].polar.length())
+                        m_pXmlWriter->WriteAttribute( L"polar", pShape->Handles[i].polar);
 
-					if (iter->radiusrange.length())
-                        m_pXmlWriter->WriteAttribute( L"radiusrange", iter->radiusrange );
+					if (pShape->Handles[i].radiusrange.length())
+                        m_pXmlWriter->WriteAttribute( L"radiusrange", pShape->Handles[i].radiusrange );
 
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}

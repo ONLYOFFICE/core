@@ -125,7 +125,7 @@ public:
 		default_cell_properties.clear();
 	}
 
-	odf_style_context *styles_context() {return odf_context_->styles_context();}
+	odf_style_context *styles_context() {return odf_context_->styles_context().get();}
 
 	odf_conversion_context *odf_context_; 
 

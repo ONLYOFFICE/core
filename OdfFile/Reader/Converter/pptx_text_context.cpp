@@ -74,8 +74,10 @@ public:
 
 	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut);
 	void ApplyParagraphProperties	(std::wstring para_style, odf_reader::paragraph_format_properties & propertiesOut);
-	void ApplyListProperties		(odf_reader::paragraph_format_properties & propertiesOut, int Level);
-
+	
+	void ApplyListProperties (odf_reader::paragraph_format_properties & propertiesOut, int Level);
+	odf_reader::style_list_level_properties* ApplyListProperties (odf_reader::paragraph_format_properties & propertiesOut, odf_reader::text_list_style* text_list_style, int Level);
+	
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
 	void end_hyperlink	(std::wstring hId);
@@ -279,44 +281,48 @@ void pptx_text_context::Impl::ApplyTextProperties(std::wstring style_name, std::
 		propertiesOut.apply_from(*text_props.get());
 	}
 }
+odf_reader::style_list_level_properties* pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, odf_reader::text_list_style* text_list_style, int Level)
+{
+	if (!text_list_style) return NULL;
+	if (Level >= (int)text_list_style->content_.size()) return NULL;
+	
+	odf_reader::office_element_ptr  elm = text_list_style->content_[Level];
+	odf_reader::office_element_ptr  elm_list;
 
+	if (elm->get_type() == typeTextListLevelStyleBullet)
+	{
+		odf_reader::text_list_level_style_bullet* list_bullet = dynamic_cast<odf_reader::text_list_level_style_bullet *>(elm.get());
+		if (list_bullet)elm_list = list_bullet->list_level_properties_;
+	}
+	if (elm->get_type() == typeTextListLevelStyleNumber)
+	{
+		odf_reader::text_list_level_style_number* list_number = dynamic_cast<odf_reader::text_list_level_style_number *>(elm.get());
+		if (list_number)elm_list = list_number->list_level_properties_;
+	}
+	if (elm->get_type() == typeTextListLevelStyleImage)
+	{
+		odf_reader::text_list_level_style_image* list_image = dynamic_cast<odf_reader::text_list_level_style_image *>(elm.get());
+		if (list_image)elm_list = list_image->list_level_properties_;
+	}
+	////////////////////
+	odf_reader::style_list_level_properties* list_properties = NULL;
+	if (elm_list)
+	{
+		list_properties = dynamic_cast<odf_reader::style_list_level_properties	*>(elm_list.get());
+	}
+
+	elm->pptx_convert(pptx_context_);
+	return list_properties;
+}
 void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_properties & propertiesOut, int Level)
 {
-	if (Level < 0)return;
-	if (list_style_stack_.empty())return;
+	if (Level < 0) return;
+	if (list_style_stack_.empty()) return;
 	
-	odf_reader::style_list_level_properties	*list_properties = NULL;
-
-	odf_reader::text_list_style * text_list_style = odf_context_.listStyleContainer().list_style_by_name(list_style_stack_.back());
+	odf_reader::text_list_style* text_list_style = odf_context_.listStyleContainer().list_style_by_name(list_style_stack_.back());
 	
-	if ((text_list_style) && (Level < (int)text_list_style->content_.size()))
-	{
-		odf_reader::office_element_ptr  elm = text_list_style->content_[Level];
-		odf_reader::office_element_ptr  elm_list;
-
-		if (elm->get_type() == typeTextListLevelStyleBullet)
-		{
-			odf_reader::text_list_level_style_bullet* list_bullet = dynamic_cast<odf_reader::text_list_level_style_bullet *>(elm.get());
-			if (list_bullet)elm_list = list_bullet->list_level_properties_;
-		}
-		if (elm->get_type() == typeTextListLevelStyleNumber)
-		{
-			odf_reader::text_list_level_style_number* list_number = dynamic_cast<odf_reader::text_list_level_style_number *>(elm.get());
-			if (list_number)elm_list = list_number->list_level_properties_;
-		}
-		if (elm->get_type() == typeTextListLevelStyleImage)
-		{
-			odf_reader::text_list_level_style_image* list_image = dynamic_cast<odf_reader::text_list_level_style_image *>(elm.get());
-			if (list_image)elm_list = list_image->list_level_properties_;
-		}
-		////////////////////
-		if (elm_list)
-		{
-			list_properties = dynamic_cast<odf_reader::style_list_level_properties	*>(elm_list.get());
-		}
-		
-		elm->pptx_convert(pptx_context_);
-	}
+	odf_reader::style_list_level_properties* list_properties = ApplyListProperties(propertiesOut, text_list_style, Level);
+	
 	if (list_properties)
 	{
 		propertiesOut.fo_text_indent_ = list_properties->text_min_label_width_;

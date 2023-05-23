@@ -239,8 +239,6 @@ namespace NSNetwork
 					nargs[8] = NULL;
 #endif
 
-					nargs[7] = NULL;
-
 					const char* nenv[2];
 					nenv[0] = "LD_PRELOAD=";
 					nenv[1] = NULL;

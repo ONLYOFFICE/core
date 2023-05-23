@@ -314,7 +314,7 @@ public:
 	CPDOCCORE_DEFINE_VISITABLE();
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
-    std::wstring			ref_name_;
+	_CP_OPT(std::wstring)	ref_name_;
     _CP_OPT(std::wstring)	reference_format_;
     std::wstring			content_;
 private:
@@ -337,7 +337,7 @@ public:
 	CPDOCCORE_DEFINE_VISITABLE();
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_; 
 
-    std::wstring			ref_name_;
+	_CP_OPT(std::wstring)	ref_name_;
     _CP_OPT(std::wstring)	reference_format_;
     std::wstring			content_;
 

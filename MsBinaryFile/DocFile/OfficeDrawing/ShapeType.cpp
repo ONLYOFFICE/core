@@ -49,6 +49,15 @@ namespace DocFileFormat
 	ShapeType::~ShapeType()
 	{
 	}
+	std::wstring ShapeType::VectorToStr(std::vector<long> & arr) const
+	{
+		std::wstring sRes;
+		for (size_t i = 0; i < arr.size(); ++i)
+		{
+			sRes += std::to_wstring(arr[i]) + L",";
+		}
+		return sRes.empty() ? L"" : sRes.substr(sRes.size() - 1);
+	}
 	unsigned int ShapeType::GetTypeCode() const
 	{
 		return TypeCode;

@@ -794,6 +794,7 @@ private:
 	bool RestorePlugin(const std::wstring& sPlugin)
 	{
 		bool bResult = false;
+		std::wstring sPrintInfo = L"";
 
 		if (sPlugin.length())
 		{
@@ -812,9 +813,15 @@ private:
 					bResult = true;
 				}
 			}
+			else
+			{
+				sPrintInfo = L"The plugin not found in the backup list, check using --print-backup\n" \
+							 L"This option is available for plugins that are not in the marketplace."
+							 L"Use --install command";
+			}
 		}
 
-		Message(L"Restore plugin: " + sPlugin, BoolToStr(bResult), true);
+		Message(L"Restore plugin: " + sPlugin, sPrintInfo.length() ? sPrintInfo : BoolToStr(bResult), true);
 
 		return bResult;
 	}

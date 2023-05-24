@@ -30,6 +30,21 @@ namespace SVG
 		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
 
+		size_t unStart = m_wsHref.find(L"data:image");
+
+		if (std::wstring::npos == unStart)
+			return false;
+
+		size_t unType = m_wsHref.find(L";base64", unStart);
+
+		if (std::wstring::npos == unType)
+			return false;
+
+		const std::wstring wsImageType = m_wsHref.substr(unStart + 11, unType - unStart - 11);
+
+		if (L"png" != wsImageType && L"jpeg" != wsImageType)
+			return false;
+
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
 		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
@@ -40,63 +55,61 @@ namespace SVG
 		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		if (std::wstring::npos != m_wsHref.find(L"data:image/png;base64,"))
+		std::wstring wsImageData = m_wsHref.substr(unType + 8, m_wsHref.length() - unType - 8);
+		BYTE* pBuffer;
+		int unSize = NSBase64::Base64DecodeGetRequiredLength(wsImageData.length());
+
+		pBuffer = new BYTE[unSize];
+
+		if (NULL == pBuffer)
+			return false;
+
+		NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &unSize);
+
+		CBgraFrame oBgraFrame;
+		oBgraFrame.Decode(pBuffer, unSize);
+
+		double dImageW = oBgraFrame.get_Width();
+		double dImageH = oBgraFrame.get_Height();
+
+		Aggplus::CImage oImage;
+		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
+
+		StartPath(pRenderer, pDefs, bIsClip);
+
+		Aggplus::CMatrix oOldMatrix;
+		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
+
+		if (dImageW / dWidth > dImageH / dHeight)
 		{
-			std::wstring wsImageData = m_wsHref.substr(22, m_wsHref.length() - 22);
-			BYTE* pBuffer;
-			int unSize = NSBase64::Base64DecodeGetRequiredLength(wsImageData.length());
-
-			pBuffer = new BYTE[unSize];
-
-			if (NULL == pBuffer)
-				return false;
-
-			NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &unSize);
-
-			CBgraFrame oBgraFrame;
-			oBgraFrame.Decode(pBuffer, unSize);
-
-			double dImageW = oBgraFrame.get_Width();
-			double dImageH = oBgraFrame.get_Height();
-
-			Aggplus::CImage oImage;
-			oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
-
-			StartPath(pRenderer, pDefs, bIsClip);
-
-			Aggplus::CMatrix oOldMatrix;
-			Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
-
-			if (dImageW / dWidth > dImageH / dHeight)
-			{
-				double dValue = dImageW / dWidth;
-				dY += (dHeight - (dImageH / dValue)) / 2.;
-				dHeight = dImageH / dValue;
-			}
-			else if (dImageW / dWidth < dImageH / dHeight)
-			{
-				double dValue = dImageH / dHeight;
-				dX += (dWidth - (dImageW / dValue)) / 2.;
-				dWidth = dImageW / dValue;
-			}
-
-			if (!bIsClip)
-				pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);
-			else
-			{
-				pRenderer->PathCommandMoveTo(dX, dY);
-				pRenderer->PathCommandLineTo(dX + dWidth, dY);
-				pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);
-				pRenderer->PathCommandLineTo(dX, dY + dHeight);
-				pRenderer->PathCommandClose();
-			}
-
-			EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
-
-			pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
-
-			delete[] pBuffer;
+			double dValue = dImageW / dWidth;
+			dY += (dHeight - (dImageH / dValue)) / 2.;
+			dHeight = dImageH / dValue;
 		}
+		else if (dImageW / dWidth < dImageH / dHeight)
+		{
+			double dValue = dImageH / dHeight;
+			dX += (dWidth - (dImageW / dValue)) / 2.;
+			dWidth = dImageW / dValue;
+		}
+
+		if (!bIsClip)
+			pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);
+		else
+		{
+			pRenderer->PathCommandMoveTo(dX, dY);
+			pRenderer->PathCommandLineTo(dX + dWidth, dY);
+			pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);
+			pRenderer->PathCommandLineTo(dX, dY + dHeight);
+			pRenderer->PathCommandClose();
+		}
+
+		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
+		delete[] pBuffer;
+
 		return true;
 	}
 

@@ -1331,14 +1331,20 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
-			break;
+		{
+			std::wstring date = utils::convert_date(value);
+			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = date;
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = date;
+		}break;
 		case office_value_type::Time:
+		{
 			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
-			break;
+		}break;
 		case office_value_type::DateTime:
 		{
 			std::wstring sVal = utils::convert_date_time(value, type);
+			
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = sVal;
 			
 			if (type == office_value_type::Date)
 				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;

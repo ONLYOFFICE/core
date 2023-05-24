@@ -32,6 +32,7 @@
 
 #include "XMLConverter2.h"
 
+#include <algorithm>
 
 XMLConverter::XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController
 , std::set<std::wstring> &repeatebleValues):
@@ -82,16 +83,16 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
     {
         auto nodeName = writingRows_.at(nodeCount)->ValueColumnName;
         auto rowNumber = nodeCount + 2;
-        if(!nodeName.empty())
-        {
-            table.AddCell(data_.at(nodeName).at(nodeCount), rowNumber, colNames_->GetColumnNumber(nodeName));
-        }
-        else
+        if(!writingRows_.at(nodeCount)->childColumns.empty())
         {
             for( auto i : writingRows_.at(nodeCount)->childColumns)
             {
                 table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
             }
+        }
+        else
+        {
+            table.AddCell(data_.at(nodeName).at(nodeCount), rowNumber, colNames_->GetColumnNumber(nodeName));
         }
         for( auto i : writingRows_.at(nodeCount)->attributes)
         {
@@ -118,7 +119,14 @@ void XMLConverter::openNode()
             break;
         }
     }
-
+    if(nodePointer_->counter > 1)
+    {
+        auto element = std::find(openednodes_.begin(), openednodes_.end(), nodePointer_);
+        if(element == openednodes_.end())
+        {
+            openednodes_.push_back(nodePointer_);
+        }
+    }
     if(reader_->IsEmptyNode() && !nodePointer_->attributes.empty())
     {
         readAttributes();
@@ -162,23 +170,36 @@ void XMLConverter::closeNode()
     {
         insertValue(nodePointer_->name, L"");
     }
-    bool heritableChilds = true;
-    for(auto child : nodePointer_->childs)
+    if(nodePointer_->counter > 1)
     {
-        if(child->counter > 1)
+        bool closedNode = true;
+        std::set<std::shared_ptr<XmlNode>> delitingNodes = {};
+        for(auto i:openednodes_)
         {
-            heritableChilds = false;
-            break;
-        }
-    }
-    if(nodePointer_->counter > 1 &&(!nodePointer_->ValueColumnName.empty() || heritableChilds))
-    {
-        writingRows_.push_back(nodePointer_);
-        for(auto i = listableColumns_->begin(); i != listableColumns_->end(); i++)
-        {
-            if(data_.at(*i).size() < writingRows_.size())
+            for(auto j = (i)->parent; j; j= j->parent)
             {
-                data_.at(*i).push_back(L"");
+                if(j == nodePointer_)
+                {   closedNode = false;
+                    delitingNodes.emplace(i);
+                    break;
+                }
+            }
+        }
+
+        // Удаление элементов из вектора, которые есть во множестве
+        openednodes_.erase(std::remove_if(openednodes_.begin(), openednodes_.end(), [&](std::shared_ptr<XmlNode> num) {
+            return delitingNodes.find(num) != delitingNodes.end();
+        }), openednodes_.end());
+
+        if((!nodePointer_->ValueColumnName.empty() || !nodePointer_->childs.empty()) && closedNode)
+        {
+            writingRows_.push_back(nodePointer_);
+            for(auto i = listableColumns_->begin(); i != listableColumns_->end(); i++)
+            {
+                if(data_.at(*i).size() < writingRows_.size())
+                {
+                    data_.at(*i).push_back(L"");
+                }
             }
         }
     }
@@ -225,8 +246,14 @@ void XMLConverter::fillAttribures(XLSXTableController &table, std::shared_ptr<Xm
     {
         if(filledValues.find(i) == filledValues.end() && listableColumns_->find(i) == listableColumns_->end())
         {
-            table.AddCell(data_.at(i).at(0), rowNumber, colNames_->GetColumnNumber(i));
-            filledValues.insert(i);
+            if(data_.find(i) != data_.end())
+            {
+                if(!data_.at(i).empty())
+                {
+                    table.AddCell(data_.at(i).at(0), rowNumber, colNames_->GetColumnNumber(i));
+                    filledValues.insert(i);
+                }
+            }
         }
     }
 }

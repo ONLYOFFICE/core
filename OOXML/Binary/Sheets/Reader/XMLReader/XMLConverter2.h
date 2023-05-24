@@ -125,4 +125,6 @@ private:
     /// @brief вектор с нодами записываемых строк
     std::vector<std::shared_ptr<XmlNode>> writingRows_;
 
+    std::vector<std::shared_ptr<XmlNode>> openednodes_;
+
 };

@@ -55,7 +55,10 @@ std::set<std::wstring> &repeatebleValues)
         {
             closeNode();
         }
-        prevType_ = nodeType;
+        if(nodeType !=XmlUtils::XmlNodeType::XmlNodeType_SIGNIFICANT_WHITESPACE && !reader_->IsEmptyNode())
+        {
+            prevType_ = nodeType;
+        }
     }
 
     return true;
@@ -178,11 +181,12 @@ void XMLMap::closeNode()
     auto lastElem = parents_.back();
     parents_.pop_back();
     parents_.back()->childColumns.insert(lastElem->childColumns.begin(), lastElem->childColumns.end());
-    //убираем вырезаем значение ноды если у неё есть потомки
+    //вырезаем значение ноды если у неё есть потомки
     if(!lastElem->childs.empty())
     {
         lastElem->ValueColumnName = L"";
     }
+
     for(auto i = lastElem->childs.begin(); i != lastElem->childs.end(); i++)
     {
         if((*i)->counter < 2)
@@ -201,19 +205,6 @@ void XMLMap::closeNode()
                 repeatebleValues_->insert((*i)->attributes.begin(), (*i)->attributes.end());
             }
         }
-    }
-    bool heritableChilds = true;
-    for(auto i:lastElem->childs)
-    {
-        if(!i->heritable)
-        {
-            heritableChilds = false;
-            break;
-        }
-    }
-    if((!lastElem->ValueColumnName.empty() || heritableChilds) && lastElem->counter < 2)
-    {
-        lastElem->heritable = true;
     }
 
 }

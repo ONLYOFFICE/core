@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
 
 	// Call hash() on first context
 	CJSContextScope scope(oContext1);
+#if 1
 	oContext1->Embed<CTestEmbed>();
 
 	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
@@ -125,6 +126,24 @@ int main(int argc, char *argv[])
 
 	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionGet(); })();");
 	std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+#endif
+#if 0
+	// TODO: is this correct ???
+	CTestEmbed::CreateObjectInContext("CreateTestEmbed", oContext1);
+
+	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = new CreateTestEmbed; return value.FunctionSum(10, 5); })();");
+	std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = new CreateTestEmbed; return value.FunctionSquare(4); })();");
+	std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = new CreateTestEmbed; return value.FunctionDel(30, 3); })();");
+	std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = new CreateTestEmbed; return value.FunctionGet(); })();");
+	std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+
+#endif
 
 #endif
 

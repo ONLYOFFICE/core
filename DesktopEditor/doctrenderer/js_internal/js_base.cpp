@@ -38,7 +38,7 @@ namespace NSJSBase {
 		return NULL;
 	}
 
-	std::vector<std::string> CJSEmbedObject::getMethodNames(bool bObjc)
+	std::vector<std::string> CJSEmbedObject::getMethodNames()
 	{
 		return std::vector<std::string>();
 	}

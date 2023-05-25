@@ -95,7 +95,7 @@ namespace NSJSBase
 
 	public:
 		virtual void* getObject();
-		virtual std::vector<std::string> getMethodNames(bool bObjc = false);
+        virtual std::vector<std::string> getMethodNames();
 		virtual void initFunctions();
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
@@ -295,20 +295,21 @@ namespace NSJSBase
 	JS_DECL JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue);
 	JS_DECL void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue);
 #endif
+	// TODO: V8 stuff ???
 }
 
 // defines for embed
 #ifndef JS_ENGINE_JAVASCRIPTCORE
-#define _DECLARE_EMBED_OVERRIDE_METHODS										\
-	virtual std::vector<std::string> getMethodNames(bool bObjc) override;	\
+#define _DECLARE_EMBED_EXTRA_METHODS							\
+    virtual std::vector<std::string> getMethodNames() override;	\
 	void initFunctions() override;
 #else
-#define _DECLARE_EMBED_OVERRIDE_METHODS
+#define _DECLARE_EMBED_EXTRA_METHODS
 #endif
 
 #define DECLARE_EMBED_METHODS				\
 	static std::string getName();			\
 	static CJSEmbedObject* getCreator();	\
-	_DECLARE_EMBED_OVERRIDE_METHODS
+	_DECLARE_EMBED_EXTRA_METHODS
 
 #endif // _CORE_EXT_JS_BASE_H_

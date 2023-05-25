@@ -148,6 +148,10 @@ namespace NSOnlineOfficeBinToPdf
 					int nTmp = nResultW;
 					nResultW = nResultH;
 					nResultH = nTmp;
+
+					nTmp = nRasterW;
+					nRasterW = nRasterH;
+					nRasterH = nTmp;
 				}
 			}
 

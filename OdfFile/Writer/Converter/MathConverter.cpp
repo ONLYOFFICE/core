@@ -1373,7 +1373,7 @@ namespace Oox2Odf
 				{
 					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
 					
-					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
 				}	
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{

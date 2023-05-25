@@ -395,11 +395,14 @@ void odf_conversion_context::end_math()
 
 	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
 
-	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.73); // либра рамка формулы(её параметры)
-	_CP_OPT(double)height = convert_symbol_width(1.73 * (math_context_.lvl_max - math_context_.lvl_min));
+	double h = math_context_.lvl_max - math_context_.lvl_min;
+	if (math_context_.lvl_min < 0) h += 1;
+	
+	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.2); // либра рамка формулы(её параметры)
+	_CP_OPT(double)height = convert_symbol_width(1.76 * h);
 
-	//if (false == math_context_.in_text_box_)
-	//	drawing_context()->set_size(width, height); // раскомиттить по завершению
+	if (false == math_context_.in_text_box_)
+		drawing_context()->set_size(width, height); // раскомиттить по завершению
 	
 	drawing_context()->end_object(!math_context_.in_text_box_);
 

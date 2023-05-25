@@ -575,4 +575,30 @@ namespace NSJSBase
 
 		oRegistrator.Register(name, creator, type);
 	}
+
+	JSSmart<CJSValue> _Native2Value(const void* jsValue)
+	{
+		return js_value(*reinterpret_cast<const v8::Local<v8::Value>*>(jsValue));
+	}
+
+	void _ReturnJSValue(const void* args, JSSmart<CJSValue>& value)
+	{
+		js_return(*reinterpret_cast<const v8::FunctionCallbackInfo<v8::Value>*>(args), value);
+	}
+
+	void _TemplateSet(void* obj, const char* name, void* callback)
+	{
+		NSV8Objects::Template_Set(*reinterpret_cast<v8::Local<v8::ObjectTemplate>*>(obj), name, reinterpret_cast<v8::FunctionCallback>(callback));
+	}
+
+	void _InsertToGlobal(const std::string& name, JSSmart<CJSContext>& context, void* creator)
+	{
+		InsertToGlobal(name, context, reinterpret_cast<v8::FunctionCallback>(creator));
+	}
+
+	void _CreateNativeInternalField(void* native, void* creator, const void* args, IsolateAdditionlDataType type)
+	{
+		CreateNativeInternalField(native, reinterpret_cast<FunctionCreateTemplate>(creator),
+								  *reinterpret_cast<const v8::FunctionCallbackInfo<v8::Value>*>(args), type);
+	}
 }

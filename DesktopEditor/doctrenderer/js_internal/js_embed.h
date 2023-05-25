@@ -3,7 +3,18 @@
 
 #include "./js_base.h"
 
-// TODO: V8 stuff ???
+#ifndef JS_ENGINE_JAVASCRIPTCORE
+
+#include "v8.h"
+
+inline NSJSBase::CJSEmbedObject* unwrap_native(const v8::Local<v8::Object>& value)
+{
+	v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
+	return (NSJSBase::CJSEmbedObject*)field->Value();
+}
+
+#endif
+
 #ifdef JS_ENGINE_JAVASCRIPTCORE
 
 #import <Foundation/Foundation.h>

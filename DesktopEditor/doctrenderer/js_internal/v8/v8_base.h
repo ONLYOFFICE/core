@@ -19,7 +19,7 @@
 #endif
 #endif
 
-#include "v8.h"
+#include "js_embed.h"
 #include "libplatform/libplatform.h"
 
 #ifndef DISABLE_MEMORY_LIMITATION
@@ -890,11 +890,6 @@ namespace NSV8Objects
 	}
 }
 
-inline NSJSBase::CJSEmbedObject* unwrap_native(const v8::Local<v8::Object>& value)
-{
-	v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
-	return (NSJSBase::CJSEmbedObject*)field->Value();
-}
 inline NSJSBase::CJSEmbedObject* unwrap_native2(const v8::Local<v8::Value>& value)
 {
 	v8::Local<v8::Object> _obj = value->ToObject(V8ContextOneArg).ToLocalChecked();

@@ -291,18 +291,26 @@ namespace NSJSBase
 		~CJSContextScope();
 	};
 
+#ifndef JS_ENGINE_JAVASCRIPTCORE
+	JS_DECL JSSmart<CJSValue> _Native2Value(const void* jsValue);
+	JS_DECL void _ReturnJSValue(const void* args, JSSmart<CJSValue>& value);
+	JS_DECL void _TemplateSet(void* obj, const char* name, void* callback);
+	JS_DECL void _InsertToGlobal(const std::string& name, JSSmart<CJSContext>& context, void* creator);
+	JS_DECL void _CreateNativeInternalField(void* native, void* creator, const void* args, IsolateAdditionlDataType type = iadtUndefined);
+#endif
+
 #ifdef JS_ENGINE_JAVASCRIPTCORE
 	JS_DECL JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue);
 	JS_DECL void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue);
 #endif
-	// TODO: V8 stuff ???
 }
 
 // defines for embed
 #ifndef JS_ENGINE_JAVASCRIPTCORE
-#define _DECLARE_EMBED_EXTRA_METHODS							\
-    virtual std::vector<std::string> getMethodNames() override;	\
-	void initFunctions() override;
+#define _DECLARE_EMBED_EXTRA_METHODS															\
+	virtual std::vector<std::string> getMethodNames() override;									\
+	void initFunctions() override;																\
+	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context); // do we need this ???
 #else
 #define _DECLARE_EMBED_EXTRA_METHODS
 #endif

@@ -20,6 +20,8 @@ DESTDIR = $$PWD/build
 ################################################
 INCLUDEPATH += ../..
 
+DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
+
 ADD_DEPENDENCY(doctrenderer)
 
 core_linux {

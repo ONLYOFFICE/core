@@ -281,6 +281,37 @@ public:
     }
 
     // Set
+    bool SetDirectory(const std::wstring& sDir)
+    {
+        bool bResult = false;
+        std::wstring sInfo = L"";
+
+        if ( sDir.length() )
+        {
+            m_sPluginsDir = sDir;
+
+            // Check access
+            if ( NSDirectory::Exists(m_sPluginsDir) )
+            {
+                std::wstring sTestDir = m_sPluginsDir + L"/pm-check-access-denied";
+                if ( NSDirectory::CreateDirectory(sTestDir) )
+                {
+                    NSDirectory::DeleteDirectory(sTestDir);
+                    bResult = true;
+                }
+                else
+                    sInfo = L"Folder: " + m_sPluginsDir + L"\n" + L"access is denied. Check permissions. Exit";
+            }
+            else
+                sInfo = L"Folder: " + m_sPluginsDir + L"\n" + L"does not exist. Exit";
+        }
+
+        if ( sInfo.length() )
+            Message(sInfo, L"", true);
+
+        return bResult;
+    }
+
     bool SetInstallPlugins(const std::wstring& sPluginsList)
     {
         return SplitStringAsVector(sPluginsList, L",", m_arrInstall);
@@ -1312,7 +1343,10 @@ int main(int argc, char** argv)
             {
                 sValue = CorrectValue(sValue);
                 if (sValue.length())
-                    oManager.m_sPluginsDir = sValue;
+                {
+                    if ( !oManager.SetDirectory(sValue) )
+                        return 1;
+                }
             }
             else if (sKey == sCmdMarketplaceUrl)
             {

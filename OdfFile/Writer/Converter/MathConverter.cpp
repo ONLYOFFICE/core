@@ -909,7 +909,8 @@ namespace Oox2Odf
 	bool OoxConverter::convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_fname) return false;
-		bool result;
+		
+		bool result = false;
 		for (size_t i = 0; i < oox_fname->m_arrItems.size(); ++i)
 		{
 			if (oox_fname->m_arrItems[i]->getType() == OOX::et_m_limLow)

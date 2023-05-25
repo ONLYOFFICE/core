@@ -929,8 +929,14 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		}
 	}
 //---------------------------------------------------------------------------------------------------------------------
-
-	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
+	if (odt_context->in_drop_cap())
+	{
+		odt_context->text_context()->set_KeepNextParagraph(true);
+	}
+	if (!odt_context->text_context()->get_KeepNextParagraph())
+	{
+		odt_context->end_paragraph();
+	}
 	
 	if(list_present && !odt_context->text_context()->get_KeepNextParagraph())
 	{

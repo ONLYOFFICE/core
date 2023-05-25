@@ -153,7 +153,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
-        current_process_comment_	(false),
+	current_process_comment_	(false),
 	odf_document_				(_odf_document),
 	math_context_				(_odf_document->odf_context().fontContainer(), false)
 {
@@ -662,12 +662,13 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 }
 _rels_type_place docx_conversion_context::get_type_place()
 {
-	if (current_process_comment_)					return oox::comment_place;
 	if (current_process_note_ == footNote || 
 		current_process_note_ == footNoteRefSet)	return oox::footnote_place;
 	if (current_process_note_ == endNote ||
 		current_process_note_ == endNoteRefSet )	return oox::endnote_place;
 	
+	if (current_process_comment_)					return oox::comment_place;
+
 	if (process_headers_footers_)					return oox::header_footer_place;
 
 	return oox::document_place;
@@ -2416,6 +2417,7 @@ void docx_conversion_context::start_changes()
 {
 	if (map_current_changes_.empty()) return;
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
@@ -2544,6 +2546,7 @@ void docx_conversion_context::start_changes()
 void docx_conversion_context::end_changes()
 {
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{

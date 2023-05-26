@@ -212,17 +212,21 @@ public:
     std::wstring m_sName;
     std::wstring m_sNameConfig;
     std::wstring m_sGuid;
+    std::wstring m_sDir;
 
     CVersion* m_pVersion;
     bool m_isValid;
+    bool m_isDirGuid;
 
     CPluginInfo()
     {
         m_sName = L"";
         m_sNameConfig = L"";
         m_sGuid = L"";
+        m_sDir = L"";
         m_pVersion = new CVersion();
         m_isValid = true;
+        m_isDirGuid  = true;
     }
 
     CPluginInfo(std::wstring& sName, std::wstring& sNameConfig, std::wstring& sGuid, CVersion* pVersion)
@@ -249,7 +253,6 @@ private:
     std::wstring m_sManagerGuid =		L"{AA2EA9B6-9EC2-415F-9762-634EE8D9A95E}";
     std::wstring m_sOldManagerGuid =	L"{8D67F3C5-7736-4BAE-A0F2-8C7127DC4BB8}";
 
-public:
     std::wstring m_sPluginsDir;
     std::wstring m_sMarketplaceUrl;
 
@@ -259,6 +262,9 @@ public:
     std::vector<std::wstring> m_arrInstall, m_arrRestore, m_arrUpdate, m_arrRemove;
     std::vector<CPluginInfo*> m_arrInstalled, m_arrRemoved, m_arrMarketplace, m_arrBackup;
 
+    bool m_isAutorename;
+
+public:
     CPluginsManager()
     {
         m_sPluginsDir = L"";
@@ -267,11 +273,14 @@ public:
         m_sSettingsDir = NSSystemUtils::GetAppDataDir() + L"/pluginsmanager";
 
 #ifdef LINUX
-        //std::transform(m_sSettingsDir.begin(), m_sSettingsDir.end(), m_sSettingsDir.begin(), tolower);
+        // GetAppDataDir creates folder with ONLYOFFICE on Linux
+        // as result - two folders in lower/upper case, working with the correct folder
         NSStringUtils::string_replace(m_sSettingsDir, L"ONLYOFFICE", L"onlyoffice");
 #endif
 
         m_sSettingsFile = m_sSettingsDir + L"/settings";
+
+        m_isAutorename = false;
     }
 
     // Usability
@@ -310,6 +319,24 @@ public:
             Message(sInfo, L"", true);
 
         return bResult;
+    }
+
+    bool SetMarketplace(const std::wstring& sUrl)
+    {
+        bool bResult = false;
+
+        if ( sUrl.length() )
+        {
+            m_sMarketplaceUrl = sUrl;
+            bResult = true;
+        }
+
+        return bResult;
+    }
+
+    void SetAutorename()
+    {
+        m_isAutorename = true;
     }
 
     bool SetInstallPlugins(const std::wstring& sPluginsList)
@@ -682,7 +709,7 @@ private:
         return pResult;
     }
 
-    bool InstallPlugin(const std::wstring& sPlugin, bool bPrint = true)
+    bool InstallPlugin(const std::wstring& sPlugin, bool bDirGuid = true, bool bPrint = true)
     {
         bool bResult = false;
         std::wstring sPrintInfo = L"";
@@ -762,14 +789,15 @@ private:
                     }
                     else if ( pPluginInfo )
                     {
-                        std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
+                        std::wstring sPluginDir = m_sPluginsDir + L"/" + (bDirGuid || m_isAutorename ?
+                                                                              pPluginInfo->m_sGuid : pPluginInfo->m_sName);
 
                         // Check settings
                         // Can install if user hasn't deleted the plugin before
                         CPluginInfo* pRemoved = FindLocalPlugin(pPluginInfo->m_sGuid, Removed);
                         if ( !pRemoved )
                         {
-                            if (NSDirectory::Exists(sPluginDir))
+                            if ( NSDirectory::Exists(sPluginDir) )
                                 NSDirectory::DeleteDirectory(sPluginDir);
                             NSDirectory::CreateDirectory(sPluginDir);
 
@@ -794,7 +822,7 @@ private:
                         bool _bResult = true;
                         for(size_t i = 0; i < arrPlugins.size(); i++)
                         {
-                            _bResult &= InstallPlugin(arrPlugins[i], bPrint);
+                            _bResult &= InstallPlugin(arrPlugins[i], bDirGuid, bPrint);
                         }
                         bResult = _bResult;
                     }
@@ -837,6 +865,7 @@ private:
                         else
                         {
                             _bResult &= InstallPlugin(arrPlugins[i]);
+                            // TODO: push result after installation
                             GetLocalPlugins(false, false);
                         }
                     }
@@ -862,7 +891,7 @@ private:
                         sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
 
                         bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
-                        bResult &= InstallPlugin(pLocalPlugin->m_sGuid, false);
+                        bResult &= InstallPlugin(pLocalPlugin->m_sGuid, pLocalPlugin->m_isDirGuid, false);
 
                         Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
                     }
@@ -950,19 +979,23 @@ private:
 
             if (pPlugin)
             {
+                // Plugin folder can be without GUID
                 std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
+                if ( !NSDirectory::Exists(sPluginDir) )
+                    sPluginDir = pPlugin->m_sDir;
 
                 if (NSDirectory::Exists(sPluginDir))
                 {
                     if (bBackup)
                     {
                         std::wstring sBackupDir = m_sPluginsDir + L"/backup";
+
                         std::wstring sPluginBackupDir = sBackupDir + L"/" + pPlugin->m_sGuid;
 
-                        if (!NSDirectory::Exists(sBackupDir))
+                        if ( !NSDirectory::Exists(sBackupDir) )
                             NSDirectory::CreateDirectory(sBackupDir);
 
-                        if (!NSDirectory::Exists(sPluginBackupDir))
+                        if ( NSDirectory::Exists(sPluginBackupDir) )
                             NSDirectory::DeleteDirectory(sPluginBackupDir);
 
                         NSDirectory::CopyDirectory(sPluginDir, sPluginBackupDir);
@@ -1036,6 +1069,10 @@ private:
 
                     if ( pPluginInfo && pPluginInfo->m_isValid && !IsPluginManager(pPluginInfo->m_sGuid) )
                     {
+                        // Save plugin folder for updating by name
+                        pPluginInfo->m_sDir = arrDirs[i];
+                        pPluginInfo->m_isDirGuid = IsFolderGuid(arrDirs[i]);
+
                         if (std::find(arrPlugins.begin(), arrPlugins.end(), pPluginInfo) == arrPlugins.end())
                         {
                             // Sync short names with marketplace
@@ -1082,7 +1119,28 @@ private:
 
     bool IsGuid(const std::wstring& sStr)
     {
-        return sStr.length() && sStr.at(0) == L'{' && sStr.at(sStr.length() - 1) == L'}';
+        return (sStr.length() && sStr.at(0) == L'{') && (sStr.at(sStr.length() - 1) == L'}');
+    }
+
+    bool IsFolderGuid(const std::wstring& sStr)
+    {
+        bool bResult = false;
+
+        if ( sStr.length() )
+        {
+            std::wstring sFolder = sStr;
+            std::vector<std::wstring> arrParts;
+
+            NSStringUtils::string_replace(sFolder, L"\\", L"/");
+
+            if ( SplitStringAsVector(sFolder, L"/", arrParts) )
+            {
+                std::wstring sDir = arrParts[arrParts.size() - 1];
+                bResult = IsGuid(sDir);
+            }
+        }
+
+        return bResult;
     }
 
     bool IsNeedDownload(const std::wstring& FilePath)
@@ -1342,17 +1400,17 @@ int main(int argc, char** argv)
             else if (sKey == sCmdPluginsDir)
             {
                 sValue = CorrectValue(sValue);
-                if (sValue.length())
-                {
-                    if ( !oManager.SetDirectory(sValue) )
-                        return 1;
-                }
+                if ( !oManager.SetDirectory(sValue) )
+                    return 1;
             }
             else if (sKey == sCmdMarketplaceUrl)
             {
                 sValue = CorrectValue(sValue);
-                if (sValue.length())
-                    oManager.m_sMarketplaceUrl = sValue;
+                oManager.SetMarketplace(sValue);
+            }
+            else if (sKey == sCmdAutorename)
+            {
+                oManager.SetAutorename();
             }
 
             // Print

@@ -7,16 +7,6 @@ core_ios {
 
 INCLUDEPATH += $$PWD
 
-!use_javascript_core {
-    core_android:CONFIG += v8_version_60
-    !build_xp {
-        include($$PWD/../../../Common/3dParty/v8/v8.pri)
-    } else {
-        DEFINES += V8_OS_XP
-        include($$PWD/../../../Common/3dParty/v8/v8_xp/v8.pri)
-    }
-}
-
 use_javascript_core {
     QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
 

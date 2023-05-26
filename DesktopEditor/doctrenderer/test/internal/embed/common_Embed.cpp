@@ -10,6 +10,11 @@ CJSEmbedObject* CTestEmbed::getCreator()
 	return new CTestEmbed();
 }
 
+void* CTestEmbed::GetDataForEmbedObject(void* data)
+{
+	return nullptr;
+}
+
 #ifndef JS_ENGINE_JAVASCRIPTCORE
 std::vector<std::string> CTestEmbed::getMethodNames()
 {

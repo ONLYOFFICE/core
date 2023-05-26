@@ -19,7 +19,7 @@
 #endif
 #endif
 
-#include "js_embed.h"
+#include "v8.h"
 #include "libplatform/libplatform.h"
 
 #ifndef DISABLE_MEMORY_LIMITATION
@@ -79,12 +79,12 @@ public:
 class CIsolateAdditionalData
 {
 public:
-	NSJSBase::IsolateAdditionlDataType m_eType;
+	NSJSBase::IsolateAdditionalDataType m_eType;
 public:
-	CIsolateAdditionalData(const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined) { m_eType = type; }
+	CIsolateAdditionalData(const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined) { m_eType = type; }
 	virtual ~CIsolateAdditionalData() {}
 
-	static bool CheckSingletonType(v8::Isolate* isolate, const NSJSBase::IsolateAdditionlDataType& type, const bool& isAdd = true)
+	static bool CheckSingletonType(v8::Isolate* isolate, const NSJSBase::IsolateAdditionalDataType& type, const bool& isAdd = true)
 	{
 		unsigned int nCount = isolate->GetNumberOfDataSlots();
 		if (nCount == 0)
@@ -890,6 +890,12 @@ namespace NSV8Objects
 	}
 }
 
+inline NSJSBase::CJSEmbedObject* unwrap_native(const v8::Local<v8::Object>& value)
+{
+	v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
+	return (NSJSBase::CJSEmbedObject*)field->Value();
+}
+
 inline NSJSBase::CJSEmbedObject* unwrap_native2(const v8::Local<v8::Value>& value)
 {
 	v8::Local<v8::Object> _obj = value->ToObject(V8ContextOneArg).ToLocalChecked();
@@ -1035,7 +1041,7 @@ static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext
 
 using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
 static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
-									  const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined)
+									  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
 {
 	v8::Isolate* isolate = args.GetIsolate();
 	v8::HandleScope scope(isolate);

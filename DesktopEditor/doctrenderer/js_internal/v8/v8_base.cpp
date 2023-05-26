@@ -506,6 +506,7 @@ namespace NSJSBase
 		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
 		result->SetInternalFieldCount(1);
 
+		pNativeObj->initFunctions();
 		std::vector<std::string> arNames = pNativeObj->getMethodNames();
 		for (int i = 0, len = arNames.size(); i < len; ++i)
 		{
@@ -533,14 +534,14 @@ namespace NSJSBase
 			sName = std::string((char*)*data, data.length());
 
 		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
-		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator find = oRegistrator.m_infos.find(sName);
-		if (find == oRegistrator.m_infos.end())
+		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
+		if (itFound == oRegistrator.m_infos.end())
 		{
 			args.GetReturnValue().Set(v8::Undefined(isolate));
 			return;
 		}
 
-		CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = find->second;
+		const CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
 
 		if (NSJSBase::iadtUndefined != oInfo.m_type)
 		{
@@ -552,8 +553,17 @@ namespace NSJSBase
 		}
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-		pNativeObj->initFunctions();
-		v8::Handle<v8::ObjectTemplate> oCurTemplate = CreateEmbedObjectTemplate(isolate, pNativeObj);
+		v8::Handle<v8::ObjectTemplate> oCurTemplate;
+		void* pInternalTemplate = pNativeObj->GetDataForEmbedObject((void*)isolate);
+		if (pInternalTemplate)
+		{
+			oCurTemplate = *reinterpret_cast<v8::Local<v8::ObjectTemplate>*>(pInternalTemplate);
+			delete pInternalTemplate;
+		}
+		else
+		{
+			oCurTemplate = CreateEmbedObjectTemplate(isolate, pNativeObj);
+		}
 		v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
 		v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
 		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObj));
@@ -564,7 +574,7 @@ namespace NSJSBase
 
 	void CJSContext::AddEmbedCreator(const std::string& name,
 									 EmbedObjectCreator creator,
-									 const IsolateAdditionlDataType& type)
+									 const IsolateAdditionalDataType& type)
 	{
 		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
 		if (0 == oRegistrator.m_infos.size())
@@ -574,31 +584,5 @@ namespace NSJSBase
 		}
 
 		oRegistrator.Register(name, creator, type);
-	}
-
-	JSSmart<CJSValue> _Native2Value(const void* jsValue)
-	{
-		return js_value(*reinterpret_cast<const v8::Local<v8::Value>*>(jsValue));
-	}
-
-	void _ReturnJSValue(const void* args, JSSmart<CJSValue>& value)
-	{
-		js_return(*reinterpret_cast<const v8::FunctionCallbackInfo<v8::Value>*>(args), value);
-	}
-
-	void _TemplateSet(void* obj, const char* name, void* callback)
-	{
-		NSV8Objects::Template_Set(*reinterpret_cast<v8::Local<v8::ObjectTemplate>*>(obj), name, reinterpret_cast<v8::FunctionCallback>(callback));
-	}
-
-	void _InsertToGlobal(const std::string& name, JSSmart<CJSContext>& context, void* creator)
-	{
-		InsertToGlobal(name, context, reinterpret_cast<v8::FunctionCallback>(creator));
-	}
-
-	void _CreateNativeInternalField(void* native, void* creator, const void* args, IsolateAdditionlDataType type)
-	{
-		CreateNativeInternalField(native, reinterpret_cast<FunctionCreateTemplate>(creator),
-								  *reinterpret_cast<const v8::FunctionCallbackInfo<v8::Value>*>(args), type);
 	}
 }

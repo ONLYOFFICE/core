@@ -11,9 +11,9 @@ public:
 	{
 	public:
 		NSJSBase::EmbedObjectCreator m_creator;
-		NSJSBase::IsolateAdditionlDataType m_type;
+		NSJSBase::IsolateAdditionalDataType m_type;
 
-		CEmdedClassInfo(NSJSBase::EmbedObjectCreator creator, const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined)
+		CEmdedClassInfo(NSJSBase::EmbedObjectCreator creator, const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
 		{
 			m_creator = creator;
 			m_type = type;
@@ -26,7 +26,7 @@ public:
 public:
 	void Register(const std::string& name,
 				  NSJSBase::EmbedObjectCreator creator,
-				  const NSJSBase::IsolateAdditionlDataType& type = NSJSBase::iadtUndefined)
+				  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
 	{
 		m_infos.insert(std::pair<std::string, CEmdedClassInfo>(name, CEmdedClassInfo(creator, type)));
 	}

@@ -47,6 +47,11 @@ namespace NSJSBase {
 	{
 	}
 
+	void* CJSEmbedObject::GetDataForEmbedObject(void* data)
+	{
+		return NULL;
+	}
+
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)
 	{
 		return m_functions[index](args);

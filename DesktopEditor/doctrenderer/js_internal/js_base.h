@@ -97,6 +97,7 @@ namespace NSJSBase
 		virtual void* getObject();
         virtual std::vector<std::string> getMethodNames();
 		virtual void initFunctions();
+		virtual void* GetDataForEmbedObject(void* data);
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
 
@@ -201,7 +202,7 @@ namespace NSJSBase
 
 	using EmbedObjectCreator = CJSEmbedObject* (*)();
 
-	enum IsolateAdditionlDataType {
+	enum IsolateAdditionalDataType {
 		iadtSingletonNative = 0,
 		iadtUndefined = 255
 	};
@@ -230,7 +231,7 @@ namespace NSJSBase
 
 		// Use this method for embedding external objects
 		template<typename T>
-		void Embed(const IsolateAdditionlDataType& type = iadtUndefined)
+		void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
 		{
 			AddEmbedCreator(T::getName(), T::getCreator, type);
 		}
@@ -239,7 +240,7 @@ namespace NSJSBase
 		CJSValue* JSON_Parse(const char* json_content);
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
 
-		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionlDataType& type = iadtUndefined);
+		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
 
 	public:
 		static CJSValue* createUndefined();
@@ -291,14 +292,6 @@ namespace NSJSBase
 		~CJSContextScope();
 	};
 
-#ifndef JS_ENGINE_JAVASCRIPTCORE
-	JS_DECL JSSmart<CJSValue> _Native2Value(const void* jsValue);
-	JS_DECL void _ReturnJSValue(const void* args, JSSmart<CJSValue>& value);
-	JS_DECL void _TemplateSet(void* obj, const char* name, void* callback);
-	JS_DECL void _InsertToGlobal(const std::string& name, JSSmart<CJSContext>& context, void* creator);
-	JS_DECL void _CreateNativeInternalField(void* native, void* creator, const void* args, IsolateAdditionlDataType type = iadtUndefined);
-#endif
-
 #ifdef JS_ENGINE_JAVASCRIPTCORE
 	JS_DECL JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue);
 	JS_DECL void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue);
@@ -307,17 +300,17 @@ namespace NSJSBase
 
 // defines for embed
 #ifndef JS_ENGINE_JAVASCRIPTCORE
-#define _DECLARE_EMBED_EXTRA_METHODS															\
-	virtual std::vector<std::string> getMethodNames() override;									\
-	void initFunctions() override;																\
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context); // do we need this ???
+#define _DECLARE_EMBED_EXTRA_METHODS								\
+	virtual std::vector<std::string> getMethodNames() override;		\
+	void initFunctions() override;
 #else
 #define _DECLARE_EMBED_EXTRA_METHODS
 #endif
 
-#define DECLARE_EMBED_METHODS				\
-	static std::string getName();			\
-	static CJSEmbedObject* getCreator();	\
+#define DECLARE_EMBED_METHODS										\
+	static std::string getName();									\
+	static CJSEmbedObject* getCreator();							\
+	virtual void* GetDataForEmbedObject(void* data) override;		\
 	_DECLARE_EMBED_EXTRA_METHODS
 
 #endif // _CORE_EXT_JS_BASE_H_

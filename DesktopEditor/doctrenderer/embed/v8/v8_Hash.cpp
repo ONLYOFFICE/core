@@ -21,14 +21,27 @@ namespace NSHash
 
 		return handle_scope.Escape(result);
 	}
-
-	void CreateNativeHash(const v8::FunctionCallbackInfo<v8::Value>& args)
-	{
-		CreateNativeInternalField(new CHashEmbed(), NSHash::CreateHashTemplate, args);
-	}
 }
 
-void CHashEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
+std::string CHashEmbed::getName() { return "CHashEmbed"; }
+
+CJSEmbedObject* CHashEmbed::getCreator()
 {
-	InsertToGlobal(name, context, NSHash::CreateNativeHash);
+	return new CHashEmbed();
+}
+
+void* CHashEmbed::GetDataForEmbedObject(void* data)
+{
+	v8::Isolate* isolate = reinterpret_cast<v8::Isolate*>(data);
+	v8::Local<v8::ObjectTemplate>* internalTemplate = new v8::Local<v8::ObjectTemplate>(NSHash::CreateHashTemplate(isolate));
+	return reinterpret_cast<void*>(internalTemplate);
+}
+
+std::vector<std::string> CHashEmbed::getMethodNames()
+{
+	return std::vector<std::string>();
+}
+
+void CHashEmbed::initFunctions()
+{
 }

@@ -1,6 +1,7 @@
 import sys
 import re
 import os
+import argparse
 
 class MethodInfo:
 	def __init__(self, name, args):
@@ -125,12 +126,14 @@ def writeToFile(file_name, content):
 		print("\t" + file_name)
 
 # MAIN
+parser = argparse.ArgumentParser(description='Generate some code for embeding your class into JS')
+parser.add_argument('filename', help='the .h file with class you want to embed');
+parser.add_argument('-i', '--internal', action='store_true', help='for internal library usage')
 
-if len(sys.argv) < 2:
-	print("Usage: python embed.py YourEmbedClass.h")
-	sys.exit(1);
+# if filename wasn't specified the programm will stop here
+args = parser.parse_args()
 
-header_file = sys.argv[1];
+header_file = args.filename;
 if header_file[-2:] != ".h":
 	print("Argument must be a header file with \".h\" extension!")
 	sys.exit(1);
@@ -142,12 +145,14 @@ if not class_name:
 	print("Proper class was not found in specified header file.")
 	sys.exit(1)
 
-if not os.path.exists("embed"):
-	os.mkdir("embed")
+if args.internal:
+	print("Internal generation")
+else:
+	if not os.path.exists("embed"):
+		os.mkdir("embed")
 
-print("Generated code was written to:")
-code_common = generateCommonCode(class_name, methods, header_file)
-writeToFile("embed/common_" + header_base_name + ".cpp", code_common)
-code_jsc = generateJSCCode(class_name, methods, header_file)
-writeToFile("embed/jsc_" + header_base_name + ".mm", code_jsc)
-# TODO: generateV8Code
+	print("Generated code was written to:")
+	code_common = generateCommonCode(class_name, methods, header_file)
+	writeToFile("embed/common_" + header_base_name + ".cpp", code_common)
+	code_jsc = generateJSCCode(class_name, methods, header_file)
+	writeToFile("embed/jsc_" + header_base_name + ".mm", code_jsc)

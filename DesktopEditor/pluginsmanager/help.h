@@ -126,9 +126,8 @@ L"                         For example, --update=\"Youtube, PhotoEditor, {7327FC
 L"  --update-all         = Optional parameter without value. Update all installed plugins from marketplace.\n\n" \
 
 L"  --autorename         = Optional parameter without value.\n" \
-L"                         Additional option for updating installed plugins with renaming folders from name to GUID.\n" \
-L"                         For example, youtube -> {38E022EA-AD92-45FC-B22B-49DF39746DB4}\n" \
-L"                         The parameter must be specified before --update or --update-all commands\n\n" \
+L"                         Rename installed plugins folders from name to GUID.\n" \
+L"                         For example, youtube -> {38E022EA-AD92-45FC-B22B-49DF39746DB4}\n\n" \
 
 L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
 L"                         Removing by plugin name, GUID, config path is supported.\n" \

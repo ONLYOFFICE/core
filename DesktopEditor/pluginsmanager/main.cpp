@@ -262,8 +262,6 @@ private:
     std::vector<std::wstring> m_arrInstall, m_arrRestore, m_arrUpdate, m_arrRemove;
     std::vector<CPluginInfo*> m_arrInstalled, m_arrRemoved, m_arrMarketplace, m_arrBackup;
 
-    bool m_isAutorename;
-
 public:
     CPluginsManager()
     {
@@ -279,8 +277,6 @@ public:
 #endif
 
         m_sSettingsFile = m_sSettingsDir + L"/settings";
-
-        m_isAutorename = false;
     }
 
     // Usability
@@ -332,11 +328,6 @@ public:
         }
 
         return bResult;
-    }
-
-    void SetAutorename()
-    {
-        m_isAutorename = true;
     }
 
     bool SetInstallPlugins(const std::wstring& sPluginsList)
@@ -557,6 +548,37 @@ public:
         GetInstalledPlugins();
 
         return bResult;
+    }
+
+    void RenamePlugins()
+    {
+        Message(L"Rename plugins ...", L"", true, true);
+
+        InitPlugins();
+
+        for (size_t i = 0; i < m_arrInstalled.size(); i++)
+        {
+            CPluginInfo* pPluginInfo = m_arrInstalled[i];
+
+            if ( !pPluginInfo->m_isDirGuid )
+            {
+                std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
+
+                if ( NSDirectory::Exists(sPluginDir) )
+                    NSDirectory::DeleteDirectory(sPluginDir);
+
+                bool bResult = NSDirectory::CreateDirectory(sPluginDir);
+                bResult &= NSDirectory::CopyDirectory(pPluginInfo->m_sDir, sPluginDir);
+
+                if ( bResult )
+                    NSDirectory::DeleteDirectory(pPluginInfo->m_sDir);
+
+                std::wstring sPrintInfo = L"Rename plugin: " + pPluginInfo->m_sName + L" -> " + pPluginInfo->m_sGuid;
+                Message(sPrintInfo, BoolToStr(bResult), true);
+            }
+        }
+
+        //GetInstalledPlugins();
     }
 
     // Local and Marketplace
@@ -789,8 +811,7 @@ private:
                     }
                     else if ( pPluginInfo )
                     {
-                        std::wstring sPluginDir = m_sPluginsDir + L"/" + (bDirGuid || m_isAutorename ?
-                                                                              pPluginInfo->m_sGuid : pPluginInfo->m_sName);
+                        std::wstring sPluginDir = m_sPluginsDir + L"/" + (bDirGuid ? pPluginInfo->m_sGuid : pPluginInfo->m_sName);
 
                         // Check settings
                         // Can install if user hasn't deleted the plugin before
@@ -1410,7 +1431,7 @@ int main(int argc, char** argv)
             }
             else if (sKey == sCmdAutorename)
             {
-                oManager.SetAutorename();
+                oManager.RenamePlugins();
             }
 
             // Print

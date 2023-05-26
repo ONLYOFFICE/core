@@ -9,7 +9,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 @protocol JSEmbedObjectProtocol
-- (void*) getNative;
+-(void*) getNative;
 @end
 
 #if __has_feature(objc_arc)
@@ -23,7 +23,14 @@
 {                                               \
 	self = [super init];                        \
 	if (self)                                   \
-		m_internal = new CLASS();               \
+		m_internal = new CLASS;			        \
+	return self;                                \
+}                                               \
+-(id) init : (CLASS*)pNativeObj					\
+{                                               \
+	self = [super init];                        \
+	if (self)                                   \
+		m_internal = pNativeObj;				\
 	return self;                                \
 }                                               \
 -(void) dealloc                                 \
@@ -31,7 +38,7 @@
 	RELEASEOBJECT(m_internal);                  \
 	SUPER_DEALLOC;								\
 }                                               \
-- (void*) getNative                             \
+-(void*) getNative								\
 {                                               \
 	return m_internal;                          \
 }

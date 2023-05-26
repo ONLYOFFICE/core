@@ -1,5 +1,4 @@
 #import "jsc_base.h"
-#import <objc/runtime.h>
 #include <iostream>
 
 using namespace NSJSBase;
@@ -457,18 +456,19 @@ namespace NSJSBase
 		if (itFound == oRegistrator.m_infos.end())
 			return nil;
 
+		const CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
+
 		// TODO: singleton check ?
 
-		// Get embeded class
-		std::string sJSCName = "CJS" + sName;
-		Class embedClass = objc_getClass(sJSCName.c_str());
+		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+		id pEmbedObj = (id)CFBridgingRelease(pNativeObj->GetDataForEmbedObject(pNativeObj));
 
-		return [[embedClass alloc] init];
+		return pEmbedObj;
 	}
 
 	void CJSContext::AddEmbedCreator(const std::string& name,
 									 EmbedObjectCreator creator,
-									 const IsolateAdditionlDataType& type)
+									 const IsolateAdditionalDataType& type)
 	{
 		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
 		if (0 == oRegistrator.m_infos.size())

@@ -23,9 +23,16 @@ FUNCTION_WRAPPER_JS_4(hash2, hash2)
 
 @end
 
-void CHashEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
+std::string CHashEmbed::getName() { return "CHashEmbed"; }
+
+CJSEmbedObject* CHashEmbed::getCreator()
 {
-	context->m_internal->context[[NSString stringWithAString:name]] = ^(){
-		return [[CJSCHash alloc] init];
-	};
+	return new CHashEmbed();
+}
+
+void* CHashEmbed::GetDataForEmbedObject(void* data)
+{
+	CHashEmbed* pNativeObj = reinterpret_cast<CHashEmbed*>(data);
+	CJSCHash* pEmbedObj = [[CJSCHash alloc] init:pNativeObj];
+	return (void*)CFBridgingRetain(pEmbedObj);
 }

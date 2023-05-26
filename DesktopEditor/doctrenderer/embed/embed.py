@@ -130,8 +130,8 @@ def writeToFile(file_name, content):
 		print("\t" + file_name)
 
 # MAIN
-parser = argparse.ArgumentParser(description='Generate some code for embeding your class into JS')
-parser.add_argument('filename', help='the .h file with class you want to embed');
+parser = argparse.ArgumentParser(description='Generate files for embedding your class into JS')
+parser.add_argument('filename', help='the path to .h file with class you want to embed');
 parser.add_argument('-i', '--internal', action='store_true', help='for internal library usage')
 
 # if filename wasn't specified the programm will stop here
@@ -141,6 +141,10 @@ header_file = args.filename;
 if header_file[-2:] != ".h":
 	print("Argument must be a header file with \".h\" extension!")
 	sys.exit(1);
+
+header_dir = os.path.dirname(header_file)
+if len(header_dir) == 0:
+	header_dir = "."
 
 header_base_name = header_file[:-2]
 class_name, methods = parseHeader(header_file)
@@ -152,12 +156,13 @@ if not class_name:
 if args.internal:
 	print("Internal generation")
 else:
-	if not os.path.exists("embed"):
-		os.mkdir("embed")
+	embed_dir = header_dir + "/embed"
+	if not os.path.exists(embed_dir):
+		os.mkdir(embed_dir)
 
 	print("Generated code was written to:")
 	code_common = generateCommonCode(class_name, methods, header_file)
 	code_v8 = generateV8Code(class_name, methods, header_file)
-	writeToFile("embed/v8_" + header_base_name + ".cpp", code_v8 + code_common)
+	writeToFile(embed_dir + "/v8_" + header_base_name + ".cpp", code_v8 + code_common)
 	code_jsc = generateJSCCode(class_name, methods, header_file)
-	writeToFile("embed/jsc_" + header_base_name + ".mm", code_jsc + code_common)
+	writeToFile(embed_dir + "/jsc_" + header_base_name + ".mm", code_jsc + code_common)

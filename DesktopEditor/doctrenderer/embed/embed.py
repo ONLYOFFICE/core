@@ -36,17 +36,18 @@ def parseHeader(header_file):
 	return class_name, methods
 
 def generateCommonCode(class_name, methods, header_file):
-	code =  "// THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT!\n"
-	code += "// IF YOU NEED TO UPDATE THIS CODE, JUST RERUN PYTHON SCRIPT.\n\n"
-	code += "#include \"../" + header_file + "\"\n\n"
-	code += "std::string " + class_name + "::getName() { return \"" + class_name + "\"; }\n"
+	code = "std::string " + class_name + "::getName() { return \"" + class_name + "\"; }\n"
 	code += "\n"
 	code += "CJSEmbedObject* " + class_name + "::getCreator()\n"
 	code += "{\n"
 	code += "	return new " + class_name + "();\n"
 	code += "}\n"
-	code += "\n"
-	code += "#ifndef JS_ENGINE_JAVASCRIPTCORE\n"
+	return code
+
+def generateV8Code(class_name, methods, header_file):
+	code =  "// THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT!\n"
+	code += "// IF YOU NEED TO UPDATE THIS CODE, JUST RERUN PYTHON SCRIPT.\n\n"
+	code += "#include \"../" + header_file + "\"\n\n"
 	code += "std::vector<std::string> " + class_name + "::getMethodNames()\n"
 	code += "{\n"
 	code += "	return std::vector<std::string> {\n"
@@ -72,9 +73,8 @@ def generateCommonCode(class_name, methods, header_file):
 			code += ","
 		code += "\n"
 	code += "	};\n"
-	code += "}\n"
-	code += "#endif\n"
-
+	code += "}\n\n"
+	code += "void* " + class_name + "::GetDataForEmbedObject(void* data) { return nullptr; }\n\n"
 	return code
 
 def generateJSCCode(class_name, methods, header_file):
@@ -115,9 +115,13 @@ def generateJSCCode(class_name, methods, header_file):
 		code += ");\n"
 		code += "	return (__bridge JSValue*)NSJSBase::Value2Native(ret);\n"
 		code += "}\n\n"
-
-	code += "@end\n"
-
+	code += "@end\n\n"
+	code += "void* " + class_name + "::GetDataForEmbedObject(void* data)\n"
+	code += "{\n"
+	code += "	" + class_name + "* pNativeObj = reinterpret_cast<" + class_name + "*>(data);\n"
+	code += "	" + objc_class_name + "* pEmbedObj = [[" + objc_class_name + " alloc] init:pNativeObj];\n"
+	code += "	return (void*)CFBridgingRetain(pEmbedObj);\n"
+	code += "}\n\n"
 	return code
 
 def writeToFile(file_name, content):
@@ -153,6 +157,7 @@ else:
 
 	print("Generated code was written to:")
 	code_common = generateCommonCode(class_name, methods, header_file)
-	writeToFile("embed/common_" + header_base_name + ".cpp", code_common)
+	code_v8 = generateV8Code(class_name, methods, header_file)
+	writeToFile("embed/v8_" + header_base_name + ".cpp", code_v8 + code_common)
 	code_jsc = generateJSCCode(class_name, methods, header_file)
-	writeToFile("embed/jsc_" + header_base_name + ".mm", code_jsc)
+	writeToFile("embed/jsc_" + header_base_name + ".mm", code_jsc + code_common)

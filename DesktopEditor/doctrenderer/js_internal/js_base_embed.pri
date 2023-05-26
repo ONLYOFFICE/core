@@ -19,7 +19,6 @@ use_javascript_core {
 defineTest(ADD_FILES_FOR_EMBED_CLASS_HEADER) {
     name_splitted = $$split(ARGS, .)
     name = $$first(name_splitted)
-    SOURCES += $$join(name,, embed/common_, .cpp)
     use_javascript_core {
         OBJECTIVE_SOURCES += $$join(name,, embed/jsc_, .mm)
     } else {

@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 0
+#if 1
 	// External embed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 1
+#if 0
 	// CHashEmbed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;

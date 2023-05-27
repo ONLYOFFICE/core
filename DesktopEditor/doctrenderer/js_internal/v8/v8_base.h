@@ -938,13 +938,15 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_return(info, ret);                                                                   \
 	}
 
-#define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED)                                       \
+#define FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)										\
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \
 {                                                                                   \
 	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());          \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED();                                    \
 	js_return(args, ret);                                                           \
 	}
+
+#define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED) FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)
 
 #define FUNCTION_WRAPPER_V8_1(NAME, NAME_EMBED)                                     \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \

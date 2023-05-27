@@ -478,11 +478,13 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     return _tmp->value;
 }
 
-#define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED)                                       \
+#define FUNCTION_WRAPPER_JS_0(NAME, NAME_EMBED)                                     \
     -(JSValue*) NAME                                                                \
     {                                                                               \
         return js_return(m_internal->NAME_EMBED());                                 \
     }
+
+#define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED) FUNCTION_WRAPPER_JS_0(NAME, NAME_EMBED)
 
 #define FUNCTION_WRAPPER_JS_1(NAME, NAME_EMBED)                                     \
     -(JSValue*) NAME:(JSValue*)p1                                                   \

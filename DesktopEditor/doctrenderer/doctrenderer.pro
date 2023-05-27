@@ -69,6 +69,11 @@ SOURCES += \
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {
+    build_xp:DESTDIR=$$DESTDIR/xp
+}
+
+# ALL THESE WILL BE REPLACED TO ADD_FILES_FOR_EMBEDDED_CLASS_HEADER()
+!use_javascript_core {
     SOURCES += \
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
@@ -76,10 +81,7 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_Graphics.cpp \
         embed/v8/v8_Zip.cpp \
         embed/v8/v8_Pointer.cpp \
-        embed/v8/v8_TextMeasurer.cpp \
-        embed/v8/v8_Hash.cpp
-
-    build_xp:DESTDIR=$$DESTDIR/xp
+	embed/v8/v8_TextMeasurer.cpp
 } else {
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
@@ -89,11 +91,10 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_NativeBuilder.mm \
         embed/jsc/jsc_Zip.mm \
         embed/jsc/jsc_Pointer.mm \
-        embed/jsc/jsc_TextMeasurer.mm \
-        embed/jsc/jsc_Hash.mm
-
-    LIBS += -framework Foundation
+	embed/jsc/jsc_TextMeasurer.mm
 }
+
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/HashEmbed.h)
 
 include(../graphics/pro/textshaper.pri)
 include(../../Common/3dParty/openssl/openssl.pri)

@@ -1,11 +1,4 @@
-core_mac {
-    !use_v8:CONFIG += use_javascript_core
-}
-core_ios {
-    CONFIG += use_javascript_core
-}
-
-INCLUDEPATH += $$PWD
+include($$PWD/js_base_embed.pri)
 
 HEADERS += \
     $$PWD/js_base.h \
@@ -85,13 +78,6 @@ SOURCES += $$PWD/js_logger.cpp
 }
 
 use_javascript_core {
-
     HEADERS += $$PWD/jsc/jsc_base.h
     OBJECTIVE_SOURCES += $$PWD/jsc/jsc_base.mm
-    QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
-
-    LIBS += -framework JavaScriptCore
-
-    DEFINES += JS_ENGINE_JAVASCRIPTCORE
-
 }

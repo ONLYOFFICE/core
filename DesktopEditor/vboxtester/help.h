@@ -37,29 +37,29 @@
 #include <algorithm>
 
 // Commands
-std::wstring sCmdHelp =                         L"--h";
-std::wstring sCmdHelpFull =                     L"--help";
+std::string sCmdHelp =                         "--h";
+std::string sCmdHelpFull =                     "--help";
 
-std::wstring sCmdDir =                          L"--directory";
+std::string sCmdDir =                          "--directory";
 
 
-std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdDir};
+std::vector<std::string> arrCommands {sCmdHelp, sCmdHelpFull, sCmdDir};
 
-bool IsCommandExists(std::wstring sCommand)
+bool IsCommandExists(std::string sCommand)
 {
 	return std::find(arrCommands.begin(), arrCommands.end(), sCommand) != arrCommands.end();
 }
 
-bool IsNeedSetValue(std::wstring sParam)
+bool IsNeedSetValue(std::string sParam)
 {
     return sParam == sCmdDir;
 }
 
-std::wstring sHelpText =
-L"\nVirtualBox Tester Options\n\n" \
+std::string sHelpText =
+"\nVirtualBox Tester Options\n\n" \
 
-L"  --h                                            \n" \
-L"  --help               = Print usage information.\n\n" \
+"  --h                                            \n" \
+"  --help               = Print usage information.\n\n" \
 
-L"  --directory          = Required parameter. Set working folder in quotes.\n" \
+"  --directory          = Required parameter. Set working folder in quotes.\n" \
 ;

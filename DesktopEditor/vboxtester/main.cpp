@@ -31,10 +31,8 @@
  */
 
 #include <iostream>
-#include <map>
-#include <iomanip>
+#include <fstream>
 #include <array>
-#include <locale.h>
 
 #include "help.h"
 #include "../common/File.h"
@@ -59,34 +57,15 @@
 #endif
 
 // Misc
-std::wstring CorrectDir(const std::wstring& sDir)
-{
-    if (sDir.empty())
-        return L"";
-
-    const wchar_t* data = sDir.c_str();
-
-    std::wstring::size_type pos1 = (data[0] == '\"') ? 1 : 0;
-    std::wstring::size_type pos2 = sDir.length();
-
-    if (data[pos2 - 1] == '\"')
-        --pos2;
-
-    if (pos2 > 0 && ((data[pos2 - 1] == '\\') || (data[pos2 - 1] == '/')))
-        --pos2;
-
-    return sDir.substr(pos1, pos2 - pos1);
-}
-
-std::wstring CorrectValue(const std::wstring& value)
+std::string CorrectValue(const std::string& value)
 {
     if (value.empty())
-        return L"";
+        return "";
 
-    const wchar_t* data = value.c_str();
+    const char* data = value.c_str();
 
-    std::wstring::size_type pos1 = (data[0] == '\"') ? 1 : 0;
-    std::wstring::size_type pos2 = value.length();
+    std::string::size_type pos1 = (data[0] == '\"') ? 1 : 0;
+    std::string::size_type pos2 = value.length();
 
     if (data[pos2 - 1] == '\"')
         --pos2;
@@ -94,17 +73,17 @@ std::wstring CorrectValue(const std::wstring& value)
     return value.substr(pos1, pos2 - pos1);
 }
 
-bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimiter, std::vector<std::wstring>& arrOutput)
+bool SplitStringAsVector(const std::string& sData, const std::string& sDelimiter, std::vector<std::string>& arrOutput)
 {
     arrOutput.clear();
 
     if ( sData.length() )
     {
-        std::wstring sTmp = sData;
-        NSStringUtils::string_replace(sTmp, L", ", L",");
+        std::string sTmp = sData;
+        NSStringUtils::string_replaceA(sTmp, ", ", ",");
 
         size_t pos_start = 0, pos_end, delim_len = sDelimiter.length();
-        std::wstring token = L"";
+        std::string token = "";
 
         while ((pos_end = sTmp.find(sDelimiter, pos_start)) != std::string::npos)
         {
@@ -126,16 +105,16 @@ bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimit
 class CVm
 {
 public:
-    std::wstring m_sName;
-    std::wstring m_sGuid;
+    std::string m_sName;
+    std::string m_sGuid;
 
     CVm()
     {
-        m_sName = L"";
-        m_sGuid = L"";
+        m_sName = "";
+        m_sGuid = "";
     }
 
-    CVm(const std::wstring& sName, const std::wstring& sGuid)
+    CVm(const std::string& sName, const std::string& sGuid)
     {
         m_sName = sName;
         m_sGuid = sGuid;
@@ -145,72 +124,67 @@ public:
 class CVirtualBox
 {
 private:
-    std::wstring m_sDir;
+    std::string m_sVBoxManagePath;
     std::vector<CVm*> m_arrVms;
 
 public:
     CVirtualBox()
     {
-        m_sDir = L"";
+#ifdef WIN32
+        m_sVBoxManagePath = "\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\" ";
+#endif
+
+#ifdef LINUX
+        m_sVBoxManagePath = "/usr/lib/virtualbox/VBoxManage ";
+#endif
     }
 
     bool GetVms()
     {
         bool bResult = false;
 
-        std::wstring sOutput = ExecuteCommand(L"list vms");
+        std::string sOutput = ExecuteCommand("list vms");
 
         return bResult;
     }
 
 private:
-    std::wstring ExecuteCommand(const std::wstring& sArgs)
+    std::string ExecuteCommand(const std::string& sArgs)
     {
-        std::wstring sResult = L"";
+        std::string sResult = "";
 
-        std::array<wchar_t, 128> aBuffer;
-        std::wstring command = L"VBoxManage " + sArgs;
+        std::array<char, 128> aBuffer;
+        std::string command = m_sVBoxManagePath + sArgs;
 
-        // пусть будет чисто юниксовой темой
-
-        /*FILE* pipe = _wpopen(command.c_str(), "r");
+        FILE* pipe = _popen(command.c_str(), "r");
         if (!pipe)
-            return false;
+            return sResult;
 
-        while ( fgetws(aBuffer.data(), 128, pipe) != NULL ) {
+        while ( fgets(aBuffer.data(), 128, pipe) != NULL )
+        {
             sResult += aBuffer.data();
-        }*/
+        }
 
         return sResult;
     }
 };
 
 // Main
-#ifdef WIN32
-int wmain(int argc, wchar_t** argv)
-#else
 int main(int argc, char** argv)
-#endif
 {
-    setlocale(LC_ALL, "");
-
     // Test
     CVirtualBox oTester;
+    oTester.GetVms();
 
     // Parse arguments
     for (int i = 0; i < argc; ++i)
     {
-#ifdef WIN32
-        std::wstring sParam(argv[i]);
-#else
-        std::string sParamA(argv[i]);
-        std::wstring sParam = UTF8_TO_U(sParamA);
-#endif
+        std::string sParam(argv[i]);
 
-        if (sParam.find(L"--") == 0)
+        if (sParam.find("--") == 0)
         {
-            std::wstring sKey = L"";
-            std::wstring sValue = L"";
+            std::string sKey = "";
+            std::string sValue = "";
 
             // Parse key - value
             std::wstring::size_type pos = sParam.find('=');
@@ -223,18 +197,13 @@ int main(int argc, char** argv)
                     if (i < argc - 1)
                     {
                         i++;
-#ifdef WIN32
-                        sValue = std::wstring(argv[i]);
-#else
-                        std::string sValueA(argv[i]);
-                        sValue = UTF8_TO_U(sValueA);
-#endif
+                        sValue = std::string(argv[i]);
                     }
 
                     // Checks if value or next key exist
-                    if ( !sValue.length() || (sValue.find(L"--") == 0) )
+                    if ( !sValue.length() || (sValue.find("--") == 0) )
                     {
-                        std::wcout << L"\nError. Check input parameters\n";
+                        std::cout << "\nError. Check input parameters\n";
                         return 1;
                     }
                 }
@@ -248,7 +217,7 @@ int main(int argc, char** argv)
             // Check key
             if ( !IsCommandExists(sKey) )
             {
-                std::wcout << L"\nError. Unknown parameter " << sKey << L"\n" << "Print usage information --help\n";
+                std::cout << "\nError. Unknown parameter " << sKey << "\n" << "Print usage information --help\n";
                 return 1;
             }
 
@@ -261,7 +230,6 @@ int main(int argc, char** argv)
             else if (sKey == sCmdDir)
             {
                 sValue = CorrectValue(sValue);
-
             }
 
         }

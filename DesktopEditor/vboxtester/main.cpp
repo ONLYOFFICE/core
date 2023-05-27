@@ -141,9 +141,77 @@ public:
 
     bool GetVms()
     {
+        m_arrVms.clear();
+        std::string sOutput = ExecuteCommand("list vms");
+
+        std::vector<std::string> arrLines;
+        if ( SplitStringAsVector(sOutput, "\n", arrLines) )
+        {
+            for (size_t i = 0; i < arrLines.size(); i++)
+            {
+                std::string sLine = arrLines[i];
+
+                std::string::size_type pos1 = sLine.find("{");
+                std::string::size_type pos2 = sLine.find("}", pos1);
+
+                if (pos1 != std::string::npos && pos2 != std::string::npos && pos2 > pos1)
+                {
+                    std::string sGuid = sLine.substr(pos1, pos2 - pos1 + 1);
+                    std::string sName = sLine.substr(0, pos1 - 1);
+                    sName = CorrectValue(sName);
+
+                    m_arrVms.push_back(new CVm(sName, sGuid));
+                }
+            }
+        }
+
+        return m_arrVms.size() > 0;
+    }
+
+    bool StartVm(const std::string& sGuid)
+    {
         bool bResult = false;
 
-        std::string sOutput = ExecuteCommand("list vms");
+        if ( sGuid.length() )
+        {
+            std::string command = "startvm " + sGuid;
+            std::string sOutput = ExecuteCommand(command);
+
+            bResult = sOutput.find("has been successfully started") != std::string::npos;
+        }
+
+        return bResult;
+    }
+
+    bool StopVm(const std::string& sGuid, bool bSaveState = false)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            std::string command = "controlvm " + sGuid + " poweroff";
+            std::string sOutput = ExecuteCommand(command);
+
+            bResult = sOutput.find("100%") != std::string::npos;
+        }
+
+        return bResult;
+    }
+
+    bool GetScreenshot(const std::string& sGuid, const std::string& sFilePath)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath)) )
+                NSFile::CFileBinary::Remove(UTF8_TO_U(sFilePath));
+
+            std::string command = "controlvm " + sGuid + " screenshotpng " + sFilePath;
+            std::string sOutput = ExecuteCommand(command);
+
+            bResult = NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath));
+        }
 
         return bResult;
     }
@@ -156,7 +224,12 @@ private:
         std::array<char, 128> aBuffer;
         std::string command = m_sVBoxManagePath + sArgs;
 
+ #ifdef WIN32
         FILE* pipe = _popen(command.c_str(), "r");
+ #endif
+ #ifdef LINUX
+        FILE* pipe = popen(command.c_str(), "r");
+ #endif
         if (!pipe)
             return sResult;
 
@@ -174,7 +247,11 @@ int main(int argc, char** argv)
 {
     // Test
     CVirtualBox oTester;
-    oTester.GetVms();
+
+    /*oTester.GetVms();
+    oTester.StartVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    oTester.GetScreenshot("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}", "c:\\Tmp\\123.png");
+    oTester.StopVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");*/
 
     // Parse arguments
     for (int i = 0; i < argc; ++i)

@@ -107,31 +107,46 @@ class CVm
 public:
     std::string m_sName;
     std::string m_sGuid;
+    std::string m_sGuestOS;
 
     CVm()
     {
         m_sName = "";
         m_sGuid = "";
+        m_sGuestOS = "";
     }
 
-    CVm(const std::string& sName, const std::string& sGuid)
+    CVm(const std::string& sName, const std::string& sGuid, const std::string& sGuestOS)
     {
         m_sName = sName;
         m_sGuid = sGuid;
+        m_sGuestOS = sGuestOS;
     }
 };
 
 class CVirtualBox
 {
 private:
-    std::string m_sVBoxManagePath;
+    std::string m_sVbmPath;
+
+    std::string m_sVmUser;
+    std::string m_sVmPassword;
+    std::string m_sDownloadsDir;
+    std::string m_sDesktopUrl;
+
     std::vector<CVm*> m_arrVms;
 
 public:
     CVirtualBox()
     {
+        m_sVmUser = "";
+        m_sVmPassword = "";
+
+        // test url, need parse somewhere
+        m_sDesktopUrl = "https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-125~cef107_amd64.deb";
+
 #ifdef WIN32
-        m_sVBoxManagePath = "\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\" ";
+        m_sVbmPath = "\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\" ";
 #endif
 
 #ifdef LINUX
@@ -139,7 +154,7 @@ public:
 #endif
     }
 
-    bool GetVms()
+    bool InitVms()
     {
         m_arrVms.clear();
         std::string sOutput = ExecuteCommand("list vms");
@@ -159,8 +174,9 @@ public:
                     std::string sGuid = sLine.substr(pos1, pos2 - pos1 + 1);
                     std::string sName = sLine.substr(0, pos1 - 1);
                     sName = CorrectValue(sName);
+                    std::string sOs = GetVmOS(sGuid);
 
-                    m_arrVms.push_back(new CVm(sName, sGuid));
+                    m_arrVms.push_back(new CVm(sName, sGuid, sOs));
                 }
             }
         }
@@ -174,8 +190,8 @@ public:
 
         if ( sGuid.length() )
         {
-            std::string command = "startvm " + sGuid;
-            std::string sOutput = ExecuteCommand(command);
+            std::string sCommand = "startvm " + sGuid;
+            std::string sOutput = ExecuteCommand(sCommand);
 
             bResult = sOutput.find("has been successfully started") != std::string::npos;
         }
@@ -189,8 +205,8 @@ public:
 
         if ( sGuid.length() )
         {
-            std::string command = "controlvm " + sGuid + " poweroff";
-            std::string sOutput = ExecuteCommand(command);
+            std::string sCommand = "controlvm " + sGuid + (bSaveState ? " savestate" : " poweroff");
+            std::string sOutput = ExecuteCommand(sCommand);
 
             bResult = sOutput.find("100%") != std::string::npos;
         }
@@ -207,8 +223,8 @@ public:
             if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath)) )
                 NSFile::CFileBinary::Remove(UTF8_TO_U(sFilePath));
 
-            std::string command = "controlvm " + sGuid + " screenshotpng " + sFilePath;
-            std::string sOutput = ExecuteCommand(command);
+            std::string sCcommand = "controlvm " + sGuid + " screenshotpng " + sFilePath;
+            std::string sOutput = ExecuteCommand(sCcommand);
 
             bResult = NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath));
         }
@@ -216,19 +232,109 @@ public:
         return bResult;
     }
 
+    bool DownloadDesktop(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() && m_sDesktopUrl.length() )
+        {
+            if ( PrepareWorkingDir(sGuid) )
+            {
+                std::string sCommand = "--nologo guestcontrol " + sGuid +
+                                      " run --exe /usr/bin/wget" +
+                                      " --username " + m_sVmUser +
+                                      " --password " + m_sVmPassword +
+                                      " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
+                                      " -P " + m_sDownloadsDir;
+
+                std::string sOutput = ExecuteCommand(sCommand);
+
+                bResult = sOutput.find("") != std::string::npos;
+            }
+        }
+
+        return bResult;
+    }
+
 private:
+    bool PrepareWorkingDir(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() && m_sVmUser.length() )
+        {
+            m_sDownloadsDir = "/home/" + m_sVmUser + "/vboxtester";
+
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " rmdir " + m_sDownloadsDir;
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            sCommand = "guestcontrol " + sGuid +
+                       " --username " + m_sVmUser +
+                       " --password " + m_sVmPassword +
+                       " mkdir " + m_sDownloadsDir;
+
+            sOutput = ExecuteCommand(sCommand);
+
+            bResult = true;
+        }
+
+        return bResult;
+    }
+
+    std::string GetVmOS(const std::string& sGuid)
+    {
+        std::string sOs = "";
+
+        if ( sGuid.length() )
+        {
+            std::string command = "showvminfo " + sGuid;
+            std::string sOutput = ExecuteCommand(command);
+
+            std::vector<std::string> arrLines;
+            if ( SplitStringAsVector(sOutput, "\n", arrLines) )
+            {
+                std::string sPrefix = "Guest OS:";
+
+                for (size_t i = 0; i < arrLines.size(); i++)
+                {
+                    std::string sLine = arrLines[i];
+
+                    std::string::size_type pos = sLine.find(sPrefix);
+                    if ( pos != std::string::npos )
+                    {
+                        sOs = sLine;
+                        pos = sOs.find(sPrefix + " ");
+                        while ( pos != std::string::npos )
+                        {
+                            NSStringUtils::string_replaceA(sOs, sPrefix + " ", sPrefix);
+                            pos = sOs.find(sPrefix + " ");
+                        }
+                        NSStringUtils::string_replaceA(sOs, sPrefix, "");
+                        break;
+                    }
+                }
+            }
+        }
+
+        return sOs;
+    }
+
     std::string ExecuteCommand(const std::string& sArgs)
     {
         std::string sResult = "";
 
         std::array<char, 128> aBuffer;
-        std::string command = m_sVBoxManagePath + sArgs;
+        std::string sCommand = m_sVbmPath + sArgs;
 
  #ifdef WIN32
-        FILE* pipe = _popen(command.c_str(), "r");
+        FILE* pipe = _popen(sCommand.c_str(), "r");
  #endif
  #ifdef LINUX
-        FILE* pipe = popen(command.c_str(), "r");
+        FILE* pipe = popen(sCommand.c_str(), "r");
  #endif
         if (!pipe)
             return sResult;
@@ -247,6 +353,8 @@ int main(int argc, char** argv)
 {
     // Test
     CVirtualBox oTester;
+
+    oTester.DownloadDesktop("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
 
     /*oTester.GetVms();
     oTester.StartVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");

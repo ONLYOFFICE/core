@@ -103,10 +103,10 @@ bool CJSContextPrivate::IsOldVersion()
 {
     return CGlobalContext::GetInstance().IsOldVersion();
 }
-CEmbedObjectRegistrator& CJSContextPrivate::getEmbedRegistrator()
+CEmbedObjectRegistrator& CJSContextPrivate::getEmbedRegistrator(JSContext* context)
 {
-	static CEmbedObjectRegistrator oRegistrator;
-	return oRegistrator;
+	static CEmbedObjectRegistratorPool registratorsPool;
+	return registratorsPool.getRegistrator((__bridge void*)context);
 }
 
 template<typename T>
@@ -449,9 +449,10 @@ namespace NSJSBase
 {
 	id CreateEmbedNativeObject(NSString* name)
 	{
-		// Check if this class name was registered
+		JSContext* context = [JSContext currentContext];
+
 		std::string sName = [name stdstring];
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(context);
 		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
 		if (itFound == oRegistrator.m_infos.end())
 			return nil;
@@ -470,11 +471,10 @@ namespace NSJSBase
 									 EmbedObjectCreator creator,
 									 const IsolateAdditionalDataType& type)
 	{
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(m_internal->context);
 		if (0 == oRegistrator.m_infos.size())
 		{
-			JSSmart<CJSContext> context = CJSContext::GetCurrent();
-			context->m_internal->context[@"CreateEmbedObject"] = ^(NSString* name) {
+			m_internal->context[@"CreateEmbedObject"] = ^(NSString* name) {
 				return CreateEmbedNativeObject(name);
 			};
 		}

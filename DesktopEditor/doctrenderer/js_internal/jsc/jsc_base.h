@@ -30,7 +30,7 @@ namespace NSJSBase
 
         static JSContext* GetCurrentContext();
         static bool IsOldVersion();
-		static CEmbedObjectRegistrator& getEmbedRegistrator();
+		static CEmbedObjectRegistrator& getEmbedRegistrator(JSContext* context);
     };
 }
 

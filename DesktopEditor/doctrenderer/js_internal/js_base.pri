@@ -23,8 +23,6 @@ SOURCES += $$PWD/js_logger.cpp
     linux_arm64:CONFIG += disable_v8_use_inspector
     build_xp::CONFIG += disable_v8_use_inspector
 
-    core_android:CONFIG += v8_version_60
-
     !disable_v8_use_inspector:CONFIG += v8_use_inspector
 
     !build_xp {

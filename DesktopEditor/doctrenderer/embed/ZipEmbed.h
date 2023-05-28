@@ -37,7 +37,7 @@ public:
 	JSSmart<CJSValue> encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> format);
 	JSSmart<CJSValue> getImageType(JSSmart<CJSValue> typedArray);
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_ZIP_EMBED_H_

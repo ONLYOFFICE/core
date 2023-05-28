@@ -3,6 +3,7 @@
 
 #include "./js_base.h"
 #include <map>
+#include <unordered_map>
 
 class CEmbedObjectRegistrator
 {
@@ -29,6 +30,18 @@ public:
 				  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
 	{
 		m_infos.insert(std::pair<std::string, CEmdedClassInfo>(name, CEmdedClassInfo(creator, type)));
+	}
+};
+
+class CEmbedObjectRegistratorPool
+{
+private:
+	std::unordered_map<void*, CEmbedObjectRegistrator> m_registrators;
+
+public:
+	CEmbedObjectRegistrator& getRegistrator(void* ptr)
+	{
+		return m_registrators[ptr];
 	}
 };
 

@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 1
+#if 0
 	// External embed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	// Create first context
 	oContext1->CreateContext();
 
-	// Call hash() on first context
+	// Embedding
 	CJSContextScope scope(oContext1);
 	oContext1->Embed<CTestEmbed>();
 
@@ -128,11 +128,11 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 0
+#if 1
 	// CZipEmbed example
 
-	JSSmart<CJSContext> oContext1 = new CJSContext;
-	JSSmart<CJSContext> oContext2 = new CJSContext;
+	JSSmart<CJSContext> oContext1 = new CJSContext();
+	JSSmart<CJSContext> oContext2 = new CJSContext();
 
 	// Create first context
 	oContext1->CreateContext();
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 	oContext1->Enter();
 	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
-		"var oZip = new CreateNativeZip;\n"
+		"var oZip = CreateEmbedObject('CZipEmbed');\n"
 		"var files = oZip.open('" CURR_DIR "');\n"
 		"oZip.close();");
 	oContext1->Exit();
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
 		CJSContextScope scope(oContext2);
 		CreateDefaults(oContext2);
 		JSSmart<CJSValue> oRes2 = oContext2->runScript(
-			"var oZip = new CreateNativeZip;\n"
+			"var oZip = CreateEmbedObject('CZipEmbed');\n"
 			"var files = oZip.open('" CURR_DIR "/../embed');\n"
 			"oZip.close();");
 	}

@@ -79,7 +79,6 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
         embed/v8/v8_Graphics.cpp \
-        embed/v8/v8_Zip.cpp \
         embed/v8/v8_Pointer.cpp \
 	embed/v8/v8_TextMeasurer.cpp
 } else {
@@ -89,12 +88,12 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm \
-        embed/jsc/jsc_Zip.mm \
         embed/jsc/jsc_Pointer.mm \
 	embed/jsc/jsc_TextMeasurer.mm
 }
 
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/HashEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/ZipEmbed.h)
 
 include(../graphics/pro/textshaper.pri)
 include(../../Common/3dParty/openssl/openssl.pri)

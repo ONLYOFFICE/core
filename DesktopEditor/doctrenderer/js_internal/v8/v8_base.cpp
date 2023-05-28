@@ -179,6 +179,7 @@ namespace NSJSBase
 		if (bIsInitialize)
 			Initialize();
 	}
+
 	CJSContext::~CJSContext()
 	{
 		if (m_internal->m_contextPersistent.IsEmpty())
@@ -200,8 +201,6 @@ namespace NSJSBase
 		{
 			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
 			m_internal->m_isolate = isolate;
-			v8::Isolate::Scope iscope(isolate);
-			v8::HandleScope scope(isolate);
 		}
 	}
 	void CJSContext::Dispose()
@@ -410,10 +409,9 @@ namespace NSJSBase
 
 	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
-		CJSContext* ret = new CJSContext();
+		CJSContext* ret = new CJSContext(false);
 		ret->m_internal->m_isolate = CV8Worker::GetCurrent();
 		ret->m_internal->m_context = ret->m_internal->m_isolate->GetCurrentContext();
-		// global???
 		return ret;
 	}
 
@@ -533,7 +531,7 @@ namespace NSJSBase
 		if (NULL != *data)
 			sName = std::string((char*)*data, data.length());
 
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(isolate);
 		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
 		if (itFound == oRegistrator.m_infos.end())
 		{
@@ -575,8 +573,9 @@ namespace NSJSBase
 	void CJSContext::AddEmbedCreator(const std::string& name,
 									 EmbedObjectCreator creator,
 									 const IsolateAdditionalDataType& type)
-	{
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
+	{		
+
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(m_internal->m_isolate);
 		if (0 == oRegistrator.m_infos.size())
 		{
 			JSSmart<CJSContext> context = CJSContext::GetCurrent();

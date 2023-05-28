@@ -240,7 +240,7 @@ namespace NSJSBase
 		CJSValue* JSON_Parse(const char* json_content);
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
 
-		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
+		void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
 
 	public:
 		static CJSValue* createUndefined();

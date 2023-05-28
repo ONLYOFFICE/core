@@ -46,6 +46,15 @@ def create_dir(path):
     os.makedirs(path2)
   return
 
+def copy_dir(src, dst):
+  if is_dir(dst):
+    delete_dir(dst)
+  try:
+    shutil.copytree(get_path(src), get_path(dst))    
+  except OSError as e:
+    print('Directory not copied. Error: %s' % e)
+  return
+
 def delete_dir(path):
   if not is_dir(path):
     print("delete warning [folder not exist]: " + path)

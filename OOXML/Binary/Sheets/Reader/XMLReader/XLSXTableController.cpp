@@ -76,7 +76,7 @@ void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 
     size_t length = sText.length();
     // Пустую не пишем
-    if ((0 == length) || (sText[0] == L'\0'))
+    if (sText.empty() || (sText[0] == L'\0'))
     {
         return;
     }

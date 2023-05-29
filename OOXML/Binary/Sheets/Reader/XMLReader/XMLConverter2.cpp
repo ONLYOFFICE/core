@@ -33,6 +33,7 @@
 #include "XMLConverter2.h"
 
 #include <algorithm>
+#include <unordered_set>
 
 XMLConverter::XMLConverter(XmlUtils::CXmlLiteReader &reader, std::shared_ptr<XmlNode> xmlStruct, ColumnNameController &nameController
 , std::set<std::wstring> &repeatebleValues):
@@ -83,9 +84,20 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
     {
         auto nodeName = writingRows_.at(nodeCount)->ValueColumnName;
         auto rowNumber = nodeCount + 2;
-        if(!writingRows_.at(nodeCount)->childColumns.empty())
+
+         ///  ищем самую старшую повторяющуюся ноду и заполняем унаследованные атрибуты
+        auto elderNode = writingRows_.at(nodeCount);
+        for(auto i = elderNode; i; i = i->parent)
         {
-            for( auto i : writingRows_.at(nodeCount)->childColumns)
+            if(i->counter > 1)
+            {
+                elderNode = i;
+            }
+        }
+        if(!elderNode->childColumns.empty())
+        {
+
+            for( auto i : elderNode->childColumns)
             {
                 table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
             }
@@ -94,15 +106,18 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
         {
             table.AddCell(data_.at(nodeName).at(nodeCount), rowNumber, colNames_->GetColumnNumber(nodeName));
         }
+        for( auto i : elderNode->attributes)
+        {
+            table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+        }
+
         for( auto i : writingRows_.at(nodeCount)->attributes)
         {
             table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
         }
+
         std::set<std::wstring> writedColumns = {};
-        for(auto i = writingRows_.at(nodeCount)->parent; i; i = i->parent)
-        {
-            fillAttribures(table, i, writedColumns, rowNumber);
-        }
+        fillAttribures(table, nodeTree_, writedColumns, rowNumber);
     }
 
 }
@@ -121,10 +136,21 @@ void XMLConverter::openNode()
     }
     if(nodePointer_->counter > 1)
     {
-        auto element = std::find(openednodes_.begin(), openednodes_.end(), nodePointer_);
+        auto element = openednodes_.find(nodePointer_);
         if(element == openednodes_.end())
         {
-            openednodes_.push_back(nodePointer_);
+            openednodes_.emplace(nodePointer_, 1);
+        }
+        else
+        {
+            element->second++;
+            for(auto i = openednodes_.begin(); i!= openednodes_.end(); i++)
+            {
+                if(element->first->parents.count(i->first))
+                {
+                    i->second++;
+                }
+            }
         }
     }
     if(reader_->IsEmptyNode() && !nodePointer_->attributes.empty())
@@ -174,22 +200,25 @@ void XMLConverter::closeNode()
     {
         bool closedNode = true;
         std::set<std::shared_ptr<XmlNode>> delitingNodes = {};
+        std::set<std::shared_ptr<XmlNode>> childNodes = {};
+        _UINT32 inheritersCount = 0;
         for(auto i:openednodes_)
         {
-            for(auto j = (i)->parent; j; j= j->parent)
-            {
-                if(j == nodePointer_)
-                {   closedNode = false;
-                    delitingNodes.emplace(i);
-                    break;
-                }
+            if(i.first->parents.count(nodePointer_))
+            {   closedNode = false;
+                delitingNodes.emplace(i.first);
+                inheritersCount += i.second;
+                childNodes.insert(i.first);
             }
         }
-
-        // Удаление элементов из вектора, которые есть во множестве
-        openednodes_.erase(std::remove_if(openednodes_.begin(), openednodes_.end(), [&](std::shared_ptr<XmlNode> num) {
-            return delitingNodes.find(num) != delitingNodes.end();
-        }), openednodes_.end());
+        if(!closedNode)
+        {
+            moveParentAttributes(nodePointer_, childNodes, inheritersCount);
+        }
+        for (const auto& key : delitingNodes)
+        {
+            openednodes_.erase(key); // Удаление элемента с указанным ключом
+        }
 
         if((!nodePointer_->ValueColumnName.empty() || !nodePointer_->childs.empty()) && closedNode)
         {
@@ -199,6 +228,16 @@ void XMLConverter::closeNode()
                 if(data_.at(*i).size() < writingRows_.size())
                 {
                     data_.at(*i).push_back(L"");
+                }
+            }
+        }
+        else if(!closedNode)
+        {
+            for(auto i:nodePointer_->childColumns)
+            {
+                if(data_.at(i).size() > writingRows_.size())
+                {
+                    data_.at(i).pop_back();
                 }
             }
         }
@@ -234,14 +273,6 @@ void XMLConverter::insertValue(const std::wstring &key, const std::wstring &valu
 void XMLConverter::fillAttribures(XLSXTableController &table, std::shared_ptr<XmlNode> attribNode, std::set<std::wstring> &filledValues,
         const _UINT32 &rowNumber)
 {
-    for(auto i:attribNode->attributes)
-    {
-        if(filledValues.find(i) == filledValues.end())
-        {
-            table.AddCell(data_.at(i).at(0), rowNumber, colNames_->GetColumnNumber(i));
-            filledValues.insert(i);
-        }
-    }
     for(auto i:attribNode->childColumns)
     {
         if(filledValues.find(i) == filledValues.end() && listableColumns_->find(i) == listableColumns_->end())
@@ -256,4 +287,81 @@ void XMLConverter::fillAttribures(XLSXTableController &table, std::shared_ptr<Xm
             }
         }
     }
+}
+
+void XMLConverter::moveParentAttributes(const std::shared_ptr<XmlNode> parent, const std::set<std::shared_ptr<XmlNode>>childs, const _UINT32 inheritersCount)
+{
+    std::unordered_set<std::wstring> nodeColumns{};
+    std::unordered_set<std::wstring> excludedColumns{};
+    uint32_t dataEndPos = writingRows_.size() -1;
+
+    for(auto i:childs)
+    {
+        if(!i->attributes.empty())
+        {
+            excludedColumns.insert(i->attributes.begin(), i->attributes.end());
+        }
+        if(!i->childColumns.empty())
+        {
+            excludedColumns.insert(i->childColumns.begin(), i->childColumns.end());
+        }
+        else
+        {
+            excludedColumns.insert(i->ValueColumnName);
+        }
+    }
+    if(!parent->attributes.empty())
+    {
+        nodeColumns.insert(parent->attributes.begin(), parent->attributes.end());
+    }
+    for(auto i:parent->childColumns)
+    {
+        if(!excludedColumns.count(i))
+        {
+            nodeColumns.insert(i);
+        }
+
+    }
+
+    for(auto i: nodeColumns)
+    {
+        if(data_.at(i).size() > writingRows_.size())
+        {
+            if(!data_.at(i).at(dataEndPos + 1).empty())
+            {
+                _INT32 limit = dataEndPos + 1 - inheritersCount;
+                for(_INT32 j = dataEndPos; j >= limit ; j--)
+                {
+                    data_.at(i).at(j) = data_.at(i).at(dataEndPos + 1);
+                }
+            }
+        }
+        else
+        {
+            _INT32 firstAttribIndex = dataEndPos + 1 - inheritersCount;
+            auto attrib = data_.at(i).at(firstAttribIndex);
+            if(!attrib.empty())
+            {
+                for(_INT32 j = firstAttribIndex + 1; j <= dataEndPos; j++)
+                {
+                    data_.at(i).at(j) = attrib;
+                }
+            }
+        }
+    }
+
+    for(auto i: parent->attributes)
+    {
+        if(data_.at(i).size() > writingRows_.size())
+        {
+            if(!data_.at(i).at(dataEndPos + 1).empty())
+            {
+                for(_INT32 j = dataEndPos; j >= dataEndPos + 1 - inheritersCount; j--)
+                {
+                    data_.at(i).at(j) = data_.at(i).at(dataEndPos + 1);
+                }
+            }
+        }
+    }
+
 }

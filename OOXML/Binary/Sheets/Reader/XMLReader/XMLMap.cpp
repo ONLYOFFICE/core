@@ -148,6 +148,8 @@ void XMLMap::openNode()
         newElem = std::make_shared<XmlNode>();
         newElem->name = reader_->GetName();
         newElem->parent = parents_.back();
+        newElem->parents = parents_.back()->parents;
+        newElem->parents.insert(newElem->parent);
         newElem->counter = 1;
         parents_.back()->childs.emplace(newElem);
     }
@@ -181,6 +183,7 @@ void XMLMap::closeNode()
     auto lastElem = parents_.back();
     parents_.pop_back();
     parents_.back()->childColumns.insert(lastElem->childColumns.begin(), lastElem->childColumns.end());
+    parents_.back()->childColumns.insert(lastElem->attributes.begin(), lastElem->attributes.end());
     //вырезаем значение ноды если у неё есть потомки
     if(!lastElem->childs.empty())
     {
@@ -208,4 +211,3 @@ void XMLMap::closeNode()
     }
 
 }
-

@@ -98,6 +98,11 @@ private:
     void fillAttribures(XLSXTableController &table, std::shared_ptr<XmlNode> attribNode, std::set<std::wstring> &filledValues,
         const _UINT32 &rowNumber);
 
+    /// @brief заполнение атрибутов дочерних нод родительскими в случае если родительская нода не идет как самостоятельная строка
+    /// @param childs дочерние ноды, атрибуты которой нужно заполнить родительскими
+    /// @param inheritersCount количество нод на которые будут распространены атрибуты родителской
+    void moveParentAttributes(const std::shared_ptr<XmlNode> parent, const std::set<std::shared_ptr<XmlNode>>childs, const _UINT32 inheritersCount);
+
     /// @brief указатель на считавший xml данные reader
     XmlUtils::CXmlLiteReader *reader_;
 
@@ -124,7 +129,7 @@ private:
 
     /// @brief вектор с нодами записываемых строк
     std::vector<std::shared_ptr<XmlNode>> writingRows_;
-
-    std::vector<std::shared_ptr<XmlNode>> openednodes_;
+    /// @brief вектор с указателями на повторяющиеся ноды, которые были открыты в данный момент
+    std::map<std::shared_ptr<XmlNode>, _UINT32> openednodes_;
 
 };

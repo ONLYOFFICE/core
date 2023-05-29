@@ -145,6 +145,10 @@ def deploy_libs():
     copy_file(input_dir + "/icudtl.dat", output_dir + "/icudtl.dat")
     copy_file(input_dir + "/icudtl_extra.dat", output_dir + "/icudtl_extra.dat")
     copy_file(input_dir + "/obj/libv8_monolith.a", output_dir + "/libv8_monolith.a")
+
+  create_dir("../build/v8")
+  copy_dir("./include", "../build/v8/include")
+  copy_dir("./src", "../build/v8/src")
   return
 
 def make():

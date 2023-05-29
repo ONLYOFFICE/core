@@ -1,4 +1,5 @@
 #include "js_base.h"
+#include "js_base_p.h"
 
 namespace NSJSBase {
 
@@ -55,6 +56,14 @@ namespace NSJSBase {
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)
 	{
 		return m_functions[index](args);
+	}
+
+	void CJSContext::AddEmbedCreator(const std::string& name,
+									 EmbedObjectCreator creator,
+									 const IsolateAdditionalDataType& type)
+	{
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		oRegistrator.Register(name, creator, type);
 	}
 
 	CJSObject::CJSObject()

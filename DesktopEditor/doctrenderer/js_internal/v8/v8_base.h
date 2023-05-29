@@ -821,12 +821,6 @@ namespace NSJSBase
 		{
 		}
 
-		static CEmbedObjectRegistrator& getEmbedRegistrator()
-		{
-			static CEmbedObjectRegistrator oRegistrator;
-			return oRegistrator;
-		}
-
 		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)
 		{
 			v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(m_isolate, creator);
@@ -834,12 +828,13 @@ namespace NSJSBase
 			m_context->Global()->Set(m_context, CreateV8String(m_isolate, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
 		}
 	};
+
+	// embed
+	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 }
 
 namespace NSJSBase
 {
-	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
-
 	class CJSEmbedObjectPrivate : public CJSEmbedObjectPrivateBase
 	{
 	public:

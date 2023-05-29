@@ -3,7 +3,6 @@
 
 #include "./js_base.h"
 #include <map>
-#include <unordered_map>
 
 class CEmbedObjectRegistrator
 {
@@ -22,7 +21,12 @@ public:
 	};
 
 public:
-	std::map<std::string, CEmdedClassInfo> m_infos;
+	using store_t = std::map<std::string, CEmdedClassInfo>;
+
+	store_t m_infos;
+
+private:
+	CEmbedObjectRegistrator() = default;
 
 public:
 	void Register(const std::string& name,
@@ -30,6 +34,12 @@ public:
 				  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
 	{
 		m_infos.insert(std::pair<std::string, CEmdedClassInfo>(name, CEmdedClassInfo(creator, type)));
+	}
+
+	static CEmbedObjectRegistrator& getInstance()
+	{
+		static CEmbedObjectRegistrator oRegistrator;
+		return oRegistrator;
 	}
 };
 

@@ -30,8 +30,10 @@ namespace NSJSBase
 
         static JSContext* GetCurrentContext();
         static bool IsOldVersion();
-		static CEmbedObjectRegistrator& getEmbedRegistrator(JSContext* context);
     };
+
+	// embed
+	id CreateEmbedNativeObject(NSString* name);
 }
 
 namespace NSJSBase

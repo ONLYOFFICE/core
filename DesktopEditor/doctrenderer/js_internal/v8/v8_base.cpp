@@ -534,8 +534,8 @@ namespace NSJSBase
 		if (NULL != *data)
 			sName = std::string((char*)*data, data.length());
 
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
-		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		CEmbedObjectRegistrator::store_t::iterator itFound = oRegistrator.m_infos.find(sName);
 		if (itFound == oRegistrator.m_infos.end())
 		{
 			args.GetReturnValue().Set(v8::Undefined(isolate));
@@ -571,13 +571,5 @@ namespace NSJSBase
 
 		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
 		args.GetReturnValue().Set(obj);
-	}
-
-	void CJSContext::AddEmbedCreator(const std::string& name,
-									 EmbedObjectCreator creator,
-									 const IsolateAdditionalDataType& type)
-	{
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
-		oRegistrator.Register(name, creator, type);
 	}
 }

@@ -55,7 +55,6 @@ bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
     // Перебор форматов даты, пока не найдется подходящий
     for (const auto& format : DateFormats) {
         std::wistringstream ss(date);
-        ss.imbue(std::locale("")); // Установка локали по умолчанию
 
         tm time = {};
         ss >> std::get_time(&time, format.c_str());

@@ -41,7 +41,7 @@
 #include <chrono>
 #include <iomanip>
 
-const std::wstring DefaultDateFormat = L"dd/mm/yyyy";
+const std::wstring DefaultDateFormat = L"dd.mm.yyyy";
 const std::wstring DefaultPercentFormat = L"0.0%";
 const std::wstring DefaultDollarFormat = L"#,##0.00$";
 

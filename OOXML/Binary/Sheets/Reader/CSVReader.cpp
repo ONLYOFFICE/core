@@ -30,6 +30,7 @@
  *
  */
 #include "CSVReader.h"
+#include "CellFormatController/CellFormatController.h"
 
 #include "../../../XlsbFormat/Xlsb.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
@@ -57,8 +58,7 @@ public:
 private:
 	void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
 
-	std::map<std::wstring, unsigned int> mapDataNumber;
-	OOX::Spreadsheet::CStyles *m_pStyles = NULL;
+	std::shared_ptr<CellFormatController>  cellFormatController_ = NULL;
 //---------------------------------------------------------------------------------------------------------
 	const std::wstring ansi_2_unicode(const unsigned char* data, DWORD data_size)
 	{
@@ -68,7 +68,7 @@ private:
 		std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
 
 		result.resize(data_size);
-	    
+
 		facet.widen((char*)data, (char*)data + data_size, &result[0]);
 		return result;
 	}
@@ -76,7 +76,7 @@ private:
 	{
 		wStr.resize(data_size + 1);
 		unsigned int nLength = data_size;
-		
+
 		ConversionResult eUnicodeConversionResult = conversionOK;
 		if (sizeof(wchar_t) == 2)//utf8 -> utf16
 		{
@@ -108,7 +108,7 @@ private:
 		}
 		if (conversionOK != eUnicodeConversionResult)
 		{
-			wStr.clear();	
+			wStr.clear();
 			std::string inp((char*)data, data_size);
 			wStr = std::wstring(inp.begin(), inp.end());
 		}
@@ -180,7 +180,7 @@ private:
 		}
 	}
 };
-//-----------------------------------------------------------------------------------------------	
+//-----------------------------------------------------------------------------------------------
 void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 {
 	while (!oDeleteChars.empty())
@@ -190,7 +190,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 		oDeleteChars.pop();
 	}
 	size_t length = sText.length();
-	
+
 // Пустую не пишем
 	if ((0 == length) || (sText[0] == L'\0'))
 		return;
@@ -198,123 +198,9 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 	OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 	pCell->m_oType.Init();
 
-	pCell->m_oCacheValue = sText; // как есть 
+	pCell->m_oCacheValue = sText; // как есть
 
-	wchar_t *pEndPtr;
-	double dValue = wcstod(sText.c_str(), &pEndPtr);
-
-	if (std::isnan(dValue) || std::isinf(dValue))
-		pEndPtr = (wchar_t *)sText.c_str();
-	
-	if ((0 == *pEndPtr) || (pEndPtr != sText.c_str() && (sText.c_str() + length  - pEndPtr) < 3))
-	{
-		std::wstring data_format;
-		std::wstring postfix;
-
-		if (0 != *pEndPtr)
-		{
-			size_t sz = length - (pEndPtr - sText.c_str());
-
-			while (sz > 0)
-			{
-				if (pEndPtr[sz - 1] != L' ')
-					break;
-				sz--;
-			}
-
-			if (sz > 0)
-			{
-				postfix = std::wstring(pEndPtr, sz);
-			}
-		}
-
-		size_t pos = sText.find(L".");
-		if (pos != std::wstring::npos)
-		{
-			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
-			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
-				data_format += L"0";
-		}
-		if (false == data_format.empty()) data_format = L"." + data_format;
-
-		pCell->m_oValue.Init();
-		
-		if (0 != *pEndPtr)
-		{
-			if (false == postfix.empty())
-			{
-				if (postfix[0] == L'%')
-				{
-					pCell->m_oValue->m_sText = std::to_wstring(dValue / 100.);
-				}
-				else
-				{
-					pCell->m_oValue->m_sText = sText.substr(0, length - 1);
-
-					for (size_t i = 0; i < postfix.size(); ++i)
-					{
-						data_format += std::wstring(L"\\") + postfix[i];
-					}
-				}
-			}	
-		}
-		else
-			pCell->m_oValue->m_sText = sText;
-
-		if (false == data_format.empty())
-		{
-			data_format = L"0" + data_format;
-
-			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber.find(data_format);
-			if (pFind != mapDataNumber.end())
-			{
-				pCell->m_oStyle = pFind->second;
-			}
-			else
-			{
-				if (!m_pStyles->m_oNumFmts.IsInit()) m_pStyles->m_oNumFmts.Init();
-
-				m_pStyles->m_oNumFmts->m_arrItems.push_back(new OOX::Spreadsheet::CNumFmt());
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oFormatCode = data_format;
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId.Init();
-				m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->SetValue(164 + m_pStyles->m_oNumFmts->m_arrItems.size());
-
-				// Normal + data format
-				OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
-
-				pXfs->m_oBorderId.Init();	pXfs->m_oBorderId->SetValue(0);
-				pXfs->m_oFillId.Init();		pXfs->m_oFillId->SetValue(0);
-				pXfs->m_oFontId.Init();		pXfs->m_oFontId->SetValue(0);
-				pXfs->m_oNumFmtId.Init();	pXfs->m_oNumFmtId->SetValue(m_pStyles->m_oNumFmts->m_arrItems.back()->m_oNumFmtId->GetValue());
-
-				m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
-				pCell->m_oStyle = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
-				mapDataNumber.insert(std::make_pair(data_format, *pCell->m_oStyle));
-			}
-		}
-	}
-	else
-	{
-		if (sText[0] == L'='/* && bCalcFormulas*/)
-		{
-			pCell->m_oFormula.Init();
-			pCell->m_oFormula->m_sText = sText;
-		}
-		else
-		{
-			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-			pCell->m_oRichText.Init();
-			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
-			pText->m_sText = sText;
-			pCell->m_oRichText->m_arrItems.push_back(pText);
-		}
-	}
-
-	if (bIsWrap)
-	{
-		pCell->m_oStyle = 1;
-	}
+	cellFormatController_->ProcessCellType(pCell, sText, bIsWrap);
 
 	pCell->setRowCol(nRow, nCol);
 	oRow.m_arrItems.push_back(pCell);
@@ -329,35 +215,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	// Создадим стили
 	oXlsx.CreateStyles();
 
-	// Добавим стили для wrap-а
-	oXlsx.m_pStyles->m_oCellXfs.Init();
-	oXlsx.m_pStyles->m_oCellXfs->m_oCount.Init();
-	oXlsx.m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
-
-	m_pStyles = oXlsx.m_pStyles;
-
-// Normall default
-	OOX::Spreadsheet::CXfs* pXfs = NULL;
-	pXfs = new OOX::Spreadsheet::CXfs();
-	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
-	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
-	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
-
-	oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
-// Wrap style
-	pXfs = new OOX::Spreadsheet::CXfs();
-	pXfs->m_oBorderId.Init();		pXfs->m_oBorderId->SetValue(0);
-	pXfs->m_oFillId.Init();			pXfs->m_oFillId->SetValue(0);
-	pXfs->m_oFontId.Init();			pXfs->m_oFontId->SetValue(0);
-	pXfs->m_oNumFmtId.Init();		pXfs->m_oNumFmtId->SetValue(0);
-
-	pXfs->m_oApplyAlignment.Init();	pXfs->m_oApplyAlignment->SetValue(SimpleTypes::onoffTrue);
-	pXfs->m_oAligment.Init();		pXfs->m_oAligment->m_oWrapText.Init();
-	pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
-
-	oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+	cellFormatController_ = std::make_shared<CellFormatController>(oXlsx.m_pStyles);
 
 	smart_ptr<OOX::Spreadsheet::CWorksheet> pWorksheet(new OOX::Spreadsheet::CWorksheet(NULL));
 	pWorksheet->m_oSheetData.Init();
@@ -407,7 +265,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 		NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
 		sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
 	}
-	//------------------------------------------------------------------------------------------------------------------------------     
+	//------------------------------------------------------------------------------------------------------------------------------
 	delete[]pFileData;
 
 	size_t nSize = sFileDataW.length();
@@ -481,7 +339,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + nDelimiterSize);
-				nSize -= (nIndex + nDelimiterSize); nIndex = 0; 
+				nSize -= (nIndex + nDelimiterSize); nIndex = 0;
 				pTemp = sFileDataW.c_str();
 			}
 			else
@@ -513,7 +371,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + 1);
-				nSize -= (nIndex + 1); nIndex = 0; 
+				nSize -= (nIndex + 1); nIndex = 0;
 				pTemp = sFileDataW.c_str();
 			}
 			else

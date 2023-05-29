@@ -80,6 +80,8 @@ public:
 	bool isVbaProjectFile(POLE::Storage * storage);
 	bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 
+	bool iXmlFile(const std::wstring & fileName);
+
     std::wstring getDocumentID		(const std::wstring & fileName);
 	
 	bool isOOXFlatFormatFile(unsigned char* pBuffer,int dwBytes);

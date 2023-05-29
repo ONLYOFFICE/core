@@ -231,7 +231,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 		size_t pos = sText.find(L".");
 		if (pos != std::wstring::npos)
 		{
-			size_t fraction = sText.length() - pos - ((0 != *pEndPtr) ? 2 : 1);
+			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
 			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
 				data_format += L"0";
 		}
@@ -562,7 +562,12 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 
 	if (nStartCell != nSize && !bMsLimit)
 	{
-		// New line
+		while (nSize > 0)
+		{
+			if (pTemp[nSize - 1] != L'\0')
+				break;
+			else nSize--;
+		}
 		std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
 		AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 		pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);

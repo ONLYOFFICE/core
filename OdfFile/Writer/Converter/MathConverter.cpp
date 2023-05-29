@@ -288,13 +288,15 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para) return;
 
-		odf_context()->start_math();
+		bool bStart = odf_context()->start_math();
 
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
-		odf_context()->end_math();
+
+		if (bStart)
+			odf_context()->end_math();
 	}
 
 	void OoxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)
@@ -311,10 +313,10 @@ namespace Oox2Odf
 			return result;
 		}
 
-		convert(oox_ctrl_pr->m_oARPr.GetPointer());
-		convert(oox_ctrl_pr->m_oDel.GetPointer());
-		convert(oox_ctrl_pr->m_oIns.GetPointer());
-		result.colorFlag = convert(oox_ctrl_pr->m_oRPr.GetPointer());
+		//convert(oox_ctrl_pr->m_oARPr.GetPointer());
+		//convert(oox_ctrl_pr->m_oDel.GetPointer());
+		//convert(oox_ctrl_pr->m_oIns.GetPointer());
+		//result.colorFlag = convert(oox_ctrl_pr->m_oRPr.GetPointer());
 		return result;
 	}
 
@@ -907,7 +909,8 @@ namespace Oox2Odf
 	bool OoxConverter::convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_fname) return false;
-		bool result;
+		
+		bool result = false;
 		for (size_t i = 0; i < oox_fname->m_arrItems.size(); ++i)
 		{
 			if (oox_fname->m_arrItems[i]->getType() == OOX::et_m_limLow)
@@ -1370,7 +1373,7 @@ namespace Oox2Odf
 				{
 					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
 					
-					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
 				}	
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
@@ -2023,11 +2026,12 @@ std::wstring str1, str2;
 				CLOSE_MATH_TAG				
 			}
 		}
-
+		mrow();
 		for (size_t i = 0; i < oox_elm->m_arrItems.size(); ++i)
 		{
 			convert(oox_elm->m_arrItems[i]);
 		}
+		endOfMrow();
 
 		if (!brackets()[lvl_of_me()].empty())
 		{

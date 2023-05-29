@@ -56,7 +56,8 @@ namespace DocFileFormat
 
 			Formulas.push_back(L"val #0");
 
-			AdjustmentValues	=	L"10800";
+			Adjustments.push_back(10800);
+
 			ConnectorLocations	=	L"0,0;21600,21600";
 		}
 	};
@@ -69,7 +70,6 @@ namespace DocFileFormat
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
             Path				=	L"m,l21600,r,21600e";
-            //AdjustmentValues	=	L"10800";
 
 			Filled				=	true;
 		}
@@ -82,10 +82,11 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-            Path				=	L"m,l@0,0@0,21600,21600,21600e";
-            AdjustmentValues	=	L"10800";
-
 			Filled				=	true;
+
+            Path				=	L"m,l@0,0@0,21600,21600,21600e";
+			
+			Adjustments.push_back(10800);
 
             Formulas.push_back(L"val #0");
 
@@ -102,11 +103,12 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-            Path				=	L"m,l@0,0@0,21600,21600,21600e";
-            AdjustmentValues	=	L"10800";
-
 			Filled				=	true;
-
+           
+			Path				=	L"m,l@0,0@0,21600,21600,21600e";
+          
+			Adjustments.push_back(10800);
+			
             Formulas.push_back(L"val #0");
 
 			Handle one;
@@ -122,10 +124,11 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	miter;
-            Path				=	L"m,l@0,0@0,21600,21600,21600e";
-            AdjustmentValues	=	L"10800";
-
 			Filled				=	true;
+            
+			Path				=	L"m,l@0,0@0,21600,21600,21600e";
+			
+			Adjustments.push_back(10800);
 
             Formulas.push_back(L"val #0");
 
@@ -142,13 +145,15 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill =	true;
 			Joins				=	round;
+			
 			Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
 
 			Formulas.push_back(L"mid #0 0");
 			Formulas.push_back(L"val #0");
 			Formulas.push_back(L"mid #0 21600");
 
-			AdjustmentValues	=	L"10800";
+			Adjustments.push_back(10800);
+
 			ConnectorLocations	=	L"0,0;21600,21600";
 		}
 	};

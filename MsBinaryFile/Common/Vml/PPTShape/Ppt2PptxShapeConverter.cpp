@@ -463,7 +463,7 @@ namespace NSGuidesVML
 									arAdj.push_back(0);
 							}
 
-							LONG lVal = (LONG)(dScale * arAdj[oHandle.gdRef.y]);
+							int lVal = (int)(dScale * arAdj[oHandle.gdRef.y]);
 							arAdj[oHandle.gdRef.y] =  lVal;
 						}
 

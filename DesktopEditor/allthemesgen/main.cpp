@@ -414,8 +414,8 @@ int main(int argc, char** argv)
     NSStringUtils::CStringBuilder oBuilderJS;
     oBuilderJS.WriteString(L"[");
 
-    #define COUNT_FONTS_SCALE 5
-    double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2 };
+	#define COUNT_FONTS_SCALE 11
+	double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4, 4.5, 5 };
 
     int nThemeIndex = 0;
     for (std::vector<std::wstring>::iterator iter = arThemes.begin(); iter != arThemes.end(); iter++)

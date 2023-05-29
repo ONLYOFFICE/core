@@ -5,7 +5,7 @@ import os
 
 if ("linux" == base.host_platform()):
   if not base.is_dir("./build"):
-    base.bash("./build")
+    base.cmd("python", ["./build.py"])
 
 if ("mac" == base.host_platform()):
   if not base.is_file("./build.zip"):
@@ -19,7 +19,5 @@ if ("mac" == base.host_platform()):
     old_cur = os.getcwd()
     os.environ["PATH"] = old_cur + "/depot_tools" + os.pathsep + os.environ["PATH"]
     base.cmd("./depot_tools/fetch", ["v8"], True)
-    os.chdir(old_cur + "/v8")
-    base.cmd("git", ["checkout", "-b", "6.0", "branch-heads/6.0"], True)
-    os.chdir(old_cur)
-    base.cmd("gclient", ["sync"])
+    base.cmd("./depot_tools/gclient", ["sync", "-r", "remotes/branch-heads/8.9"], True)
+    base.cmd("gclient", ["sync", "--force"], True)

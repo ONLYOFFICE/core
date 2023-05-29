@@ -41,24 +41,24 @@ namespace DocFileFormat
 	  HexagonType():
       ShapeType(msosptHexagon)
       {
-        this->ShapeConcentricFill = true;
+        ShapeConcentricFill = true;
 
-        this->Joins = miter;
+        Joins = miter;
 
-        this->Path = L"m@0,l,10800@0,21600@1,21600,21600,10800@1,xe";
+        Path = L"m@0,l,10800@0,21600@1,21600,21600,10800@1,xe";
 
-        this->Formulas.push_back( L"val #0");
-        this->Formulas.push_back( L"sum width 0 #0");
-        this->Formulas.push_back( L"sum height 0 #0");
-        this->Formulas.push_back( L"prod @0 2929 10000");
-        this->Formulas.push_back( L"sum width 0 @3");
-        this->Formulas.push_back( L"sum height 0 @3");
+        Formulas.push_back( L"val #0");
+        Formulas.push_back( L"sum width 0 #0");
+        Formulas.push_back( L"sum height 0 #0");
+        Formulas.push_back( L"prod @0 2929 10000");
+        Formulas.push_back( L"sum width 0 @3");
+        Formulas.push_back( L"sum height 0 @3");
 
-        this->AdjustmentValues = L"5400";
+		Adjustments.push_back(5400);
             
-        this->ConnectorLocations = L"Rectangle";
+        ConnectorLocations = L"Rectangle";
 
-        this->TextBoxRectangle = L"1800,1800,19800,19800;3600,3600,18000,18000;6300,6300,15300,15300";
+        TextBoxRectangle = L"1800,1800,19800,19800;3600,3600,18000,18000;6300,6300,15300,15300";
 
         Handle HandleOne;
         HandleOne.position = L"#0,topLeft";

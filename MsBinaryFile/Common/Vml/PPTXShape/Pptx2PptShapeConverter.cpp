@@ -133,9 +133,9 @@ namespace NSGuidesVML
 	{
 		LONG lVal = 0;
 
-		std::map<std::wstring, LONG>::iterator NumFmla	= m_arMapFormula.find(strParam);
-		std::map<std::wstring, LONG>::iterator NumAdj	= m_arMapAdj.find(strParam);
-		std::map<std::wstring, LONG>::iterator NumGuides = mapGuides.find(strParam);
+		std::map<std::wstring, long>::iterator NumFmla	= m_arMapFormula.find(strParam);
+		std::map<std::wstring, long>::iterator NumAdj	= m_arMapAdj.find(strParam);
+		std::map<std::wstring, long>::iterator NumGuides = mapGuides.find(strParam);
 
 		if (NumAdj != m_arMapAdj.end())
 		{

@@ -59,11 +59,14 @@ text_format_properties_ptr calc_text_properties_content(const style_instance * s
 
     while (styleInstance)
     {
-        if (const style_content * content = styleInstance->content())
-            if (const style_text_properties * textProp = content->get_style_text_properties())
+		if (const style_content * content = styleInstance->content())
+		{
+			const style_text_properties * textProp = content->get_style_text_properties();
+			if (textProp)
 			{
-                textProps.insert(textProps.begin(), textProp);
+				textProps.insert(textProps.begin(), textProp);
 			}
+		}
 		
         styleInstance = styleInstance->parent();
     }

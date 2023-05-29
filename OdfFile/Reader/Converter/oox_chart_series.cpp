@@ -538,12 +538,55 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 						shape.set(empty, content_.points_[i].fill_);
 						shape.oox_serialize(CP_XML_STREAM());
 					}
-
 					if (!content_.points_[i].text_properties_)
 					{
 						if (!data_labels_) data_labels_ = oox_data_labels();
 
 						data_labels_->add_dLbl(indPoint - 1, content_.points_[i].text_properties_);
+					}
+					_CP_OPT(int) intVal;
+					odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-type", intVal);   //    noneSymbol,    autoSymbol,     namedSymbol
+
+					if (intVal)
+					{
+						int symbol = intVal.get();
+						if (symbol == 2)
+						{
+							odf_reader::GetProperty(content_.points_[i].properties_, L"symbol-name", intVal);   //    квадратики, звездочки ...
+
+							if (intVal)	symbol = intVal.get();
+							else		symbol = 0;//выключим
+						}
+						CP_XML_NODE(L"c:marker")
+						{
+							CP_XML_NODE(L"c:symbol")
+							{
+								switch (symbol)
+								{
+								case 11:	CP_XML_ATTR(L"val", L"star"); break;
+								case 10:	CP_XML_ATTR(L"val", L"circle"); break;
+								case 15:	CP_XML_ATTR(L"val", L"dash"); break;
+								case 3:		CP_XML_ATTR(L"val", L"diamond"); break;
+								case 14:	CP_XML_ATTR(L"val", L"dot"); break;
+								case 8:		CP_XML_ATTR(L"val", L"picture"); break;
+								case 13:	CP_XML_ATTR(L"val", L"plus"); break;
+								case 2:		CP_XML_ATTR(L"val", L"square"); break;
+								case 9:		CP_XML_ATTR(L"val", L"triangle"); break;
+								case 12:	CP_XML_ATTR(L"val", L"x"); break;
+								case 0:	//none
+								case 1:	//auto
+								default:
+									CP_XML_ATTR(L"val", L"none");
+								}
+							}
+							if (symbol > 0)
+							{
+								oox_chart_shape shape;
+
+								shape.set(content_.points_[i].graphic_properties_, content_.points_[i].fill_);
+								shape.oox_serialize(CP_XML_STREAM());
+							}
+						}
 					}
 				}
 			}

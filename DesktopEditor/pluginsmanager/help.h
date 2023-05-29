@@ -44,19 +44,25 @@ std::wstring sCmdPluginsDir =                   L"--directory";
 std::wstring sCmdMarketplaceUrl =               L"--marketplace";
 
 std::wstring sCmdPrintInstalled =               L"--print-installed";
+std::wstring sCmdPrintRemoved =                 L"--print-removed";
 std::wstring sCmdPrintMarketplace =             L"--print-marketplace";
 std::wstring sCmdPrintBackup =                  L"--print-backup";
 
+std::wstring sCmdReset =                        L"--reset";
 std::wstring sCmdInstall =                      L"--install";
 std::wstring sCmdRestore =                      L"--restore";
 std::wstring sCmdUpdate =                       L"--update";
 std::wstring sCmdUpdateAll =                    L"--update-all";
+std::wstring sCmdAutorename =                   L"--autorename";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
 
+// Settings
+std::wstring sSetRemoved =                      L"--removed=";
+
 std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
-									   sCmdPrintInstalled, sCmdPrintMarketplace, sCmdPrintBackup,
-									   sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll,
+									   sCmdPrintInstalled, sCmdPrintRemoved, sCmdPrintMarketplace, sCmdPrintBackup,
+                                       sCmdReset, sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll, sCmdAutorename,
 									   sCmdRemove, sCmdRemoveAll};
 
 bool IsCommandExists(std::wstring sCommand)
@@ -87,33 +93,45 @@ L"                         Must be first on the command line.\n\n" \
 L"  --marketplace        = Optional parameter. Set plugins marketplace URL in quotes.\n" \
 L"                         Default is https://onlyoffice.github.io\n\n" \
 
-L"  --print-installed    = Optional parameter. Print installed plugins. Parameter without value.\n\n" \
+L"  --print-installed    = Optional parameter without value. Print installed plugins.\n\n" \
 
-L"  --print-marketplace  = Optional parameter. Print available plugins from the marketplace. Parameter without value.\n\n" \
+L"  --print-removed      = Optional parameter without value. Print removed plugins.\n\n" \
 
-L"  --print-backup       = Optional parameter. Print backup plugins. Parameter without value.\n" \
+L"  --print-marketplace  = Optional parameter without value. Print available plugins from the marketplace.\n\n" \
+
+L"  --print-backup       = Optional parameter without value. Print backup plugins.\n" \
 L"                         Backup plugins can be restored using --restore option\n\n" \
 
+L"  --reset              = Optional parameter without value. Reset user setting.\n\n" \
+
 L"  --install            = Optional parameter. Set comma-separated quoted list of plugins to install.\n" \
-L"                         Installing by plugin name, GUID, URL, direct file path (without commas) is supported.\n" \
-L"                         For example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, /home/mark/plugins/speech.plugin, https://anysite.com/deploy/translator.plugin\"\n" \
-L"                         File extensions: .zip, .plugin\n\n" \
+L"                         Installing by plugin name,   for example, --install=\"photo editor\"\n" \
+L"                                       GUID,          for example, --install=\"{7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
+L"                                       URL,           for example, --install=\"https://anysite.com/deploy/chess.plugin\"\n" \
+L"                                       file path,     for example, --install=\"/home/mark/work/speech.plugin\"\n" \
+L"                                       config path,   for example, --install=\"/home/mark/work/plugins.json\"\n" \
+L"                         is supported.\n" \
+L"                         Combined installation is supported, for example, --install=\"photo editor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}, etc\".\n" \
+L"                         File paths without quotes, plugin extensions: .zip, .plugin.\n\n" \
 
 L"  --restore            = Optional parameter. Set comma-separated quoted list of plugins to restore.\n" \
+L"                         Print backup plugins using --print-backup option.\n" \
 L"                         Restoring by plugin name or GUID is supported.\n" \
 L"                         For example, --restore=\"Youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
 L"  --update             = Optional parameter. Set comma-separated quoted list of plugins to update.\n" \
-L"                         Updating by plugin name or GUID is supported.\n" \
+L"                         Updating by plugin name, GUID, config path is supported.\n" \
 L"                         For example, --update=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
-L"  --update-all         = Optional parameter. Update all installed plugins from marketplace.\n" \
-L"                         Parameter without value.\n\n" \
+L"  --update-all         = Optional parameter without value. Update all installed plugins from marketplace.\n\n" \
+
+L"  --autorename         = Optional parameter without value.\n" \
+L"                         Rename installed plugins folders from name to GUID.\n" \
+L"                         For example, youtube -> {38E022EA-AD92-45FC-B22B-49DF39746DB4}\n\n" \
 
 L"  --remove             = Optional parameter. Set comma-separated quoted list of plugins to remove.\n" \
-L"                         Removing by plugin name or GUID is supported.\n" \
+L"                         Removing by plugin name, GUID, config path is supported.\n" \
 L"                         For example, --remove=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
-L"  --remove-all         = Optional parameter. Remove all installed plugins.\n"
-L"                         Parameter without value.\n" \
+L"  --remove-all         = Optional parameter without value. Remove all installed plugins.\n" \
 ;

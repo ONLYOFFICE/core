@@ -59,7 +59,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @1 6144 32768");
             Formulas.push_back(L"sum @12 @0 0");
 
-            AdjustmentValues	=	L"18900";
+			Adjustments.push_back(18900);
+
             TextBoxRectangle	=	L"0,0,21600,@13";
 
 			Handle one;

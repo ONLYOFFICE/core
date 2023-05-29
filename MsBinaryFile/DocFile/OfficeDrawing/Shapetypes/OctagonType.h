@@ -41,36 +41,36 @@ namespace DocFileFormat
 	  OctagonType():
       ShapeType(msosptOctagon)
       {
-        this->ShapeConcentricFill = true;
+        ShapeConcentricFill = true;
 
-        this->Joins = miter;
+        Joins = miter;
 
-        this->Path = L"m@0,l0@0,0@2@0,21600@1,21600,21600@2,21600@0@1,xe";
+        Path = L"m@0,l0@0,0@2@0,21600@1,21600,21600@2,21600@0@1,xe";
 
-        this->Formulas.push_back( L"val #0");
-        this->Formulas.push_back( L"sum width 0 #0");
-        this->Formulas.push_back( L"sum height 0 #0");
-        this->Formulas.push_back( L"prod @0 2929 10000");
-        this->Formulas.push_back( L"sum width 0 @3");
-        this->Formulas.push_back( L"sum height 0 @3");
-        this->Formulas.push_back( L"val width");
-        this->Formulas.push_back( L"val height");
-        this->Formulas.push_back( L"prod width 1 2");
-        this->Formulas.push_back( L"prod height 1 2");
+        Formulas.push_back( L"val #0");
+        Formulas.push_back( L"sum width 0 #0");
+        Formulas.push_back( L"sum height 0 #0");
+        Formulas.push_back( L"prod @0 2929 10000");
+        Formulas.push_back( L"sum width 0 @3");
+        Formulas.push_back( L"sum height 0 @3");
+        Formulas.push_back( L"val width");
+        Formulas.push_back( L"val height");
+        Formulas.push_back( L"prod width 1 2");
+        Formulas.push_back( L"prod height 1 2");
 
-        this->AdjustmentValues = L"6326";
+		Adjustments.push_back(6326);
 
-        this->ConnectorLocations = L"@8,0;0,@9;@8,@7;@6,@9";
+        ConnectorLocations = L"@8,0;0,@9;@8,@7;@6,@9";
 
-        this->TextBoxRectangle = L"0,0,21600,21600;2700,2700,18900,18900;5400,5400,16200,16200";
+        TextBoxRectangle = L"0,0,21600,21600;2700,2700,18900,18900;5400,5400,16200,16200";
 
         Handle HandleOne;
         HandleOne.position = L"#0,topLeft";
         HandleOne.switchHandle = L"true";
         HandleOne.xrange = L"0,10800";
-        this->Handles.push_back( HandleOne );
+        Handles.push_back( HandleOne );
 
-        this->Limo = L"10800,10800";
+        Limo = L"10800,10800";
 	  }
 
 	  virtual ~OctagonType()

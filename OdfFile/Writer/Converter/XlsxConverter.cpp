@@ -185,14 +185,12 @@ odf_writer::office_element_ptr XlsxConverter::convert_sheet(int id, const std::w
 	if (!xlsx_document) return odf_writer::office_element_ptr();
 	if (id < 0 && id > (int)xlsx_document->m_arWorksheets.size()) return odf_writer::office_element_ptr();
 
-	ods_context->create_object();
 	ods_context->start_sheet();
 	ods_context->current_table()->set_table_name(table_name);
 	ods_context->set_repeat_at_lasts(false);
 	
 	convert(xlsx_document->m_arWorksheets[id]);
 	ods_context->end_sheet();
-	ods_context->end_object();
 
 	return ods_context->get_current_object_element();
 }

@@ -183,9 +183,9 @@ void odf_page_layout_context::set_current_master_page_base()
 	master_state_list_.pop_back();
 }
 
-void odf_page_layout_context::set_styles_context(odf_style_context * Context)
+void odf_page_layout_context::set_styles_context(odf_style_context_ptr styles_context)
 {
-	style_context_	= Context;       
+	style_context_	= styles_context;
 }
 void odf_page_layout_context::create_layout_page()
 {

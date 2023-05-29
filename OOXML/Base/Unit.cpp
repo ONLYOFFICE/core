@@ -607,15 +607,15 @@ namespace XmlUtils
 	}
 	std::wstring ToString(const int& value)
 	{
-		return boost::lexical_cast<std::wstring>(value);
+		return std::to_wstring(value);
 	}
 	std::wstring ToString(const long& value)
 	{
-		return boost::lexical_cast<std::wstring>(value);
+		return std::to_wstring(value);
 	}
 	std::wstring ToString(const unsigned long& value)
 	{
-		return boost::lexical_cast<std::wstring>(value);
+		return std::to_wstring(value);
 	}
 	std::wstring ToString(const double& value)
 	{

@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "XlSXTableController.h"
+#include "XLSXTableController.h"
 
 #include "../../../../XlsxFormat/Workbook/Sheets.h"
 #include "../../../../XlsxFormat/Workbook/Workbook.h"

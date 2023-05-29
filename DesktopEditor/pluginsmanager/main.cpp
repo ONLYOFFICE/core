@@ -1026,6 +1026,8 @@ private:
                     }
 
                     NSDirectory::DeleteDirectory(sPluginDir);
+                    // Delete native folder by name, bug #62807
+                    NSDirectory::DeleteDirectory(pPlugin->m_sDir);
 
                     // Remove from array
                     for (size_t i = 0; i < m_arrInstalled.size(); i++)

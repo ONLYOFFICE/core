@@ -677,22 +677,39 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	
 	std::wstring s = state.format_code[0];
 	
-	boost::wregex re(L"([mMdDyYhHsS]+)([^m^M^d^D^y^Y^h^H^s^S]+)");
+	boost::wregex re(L"([mMdDyYhHsS^(AM)^(PM)^(am)^(pm)]+)([^m^M^d^D^y^Y^h^H^s^S^(AM)^(PM)^(am)^(pm)]+)");
 	
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
-	result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
+	result.push_back(s);
 
 	size_t sz = 0;
 	
 	bool bDate = false;
 	bool bTime = false;
+	bool bAM = false;
+
 	for (std::list<std::wstring>::iterator i = result.begin(); i != result.end(); ++i)
 	{
 		office_element_ptr elm;
 		s = *i;
+		if (s.empty()) continue;
+
 		sz = s.length();
-		if (std::wstring::npos != s.find(L"m") || std::wstring::npos != s.find(L"M"))
+		
+		if (std::wstring::npos != s.find(L"AM") || std::wstring::npos != s.find(L"am"))
+		{
+			bAM = true;
+		}
+		else if (std::wstring::npos != s.find(L"PM") || std::wstring::npos != s.find(L"pm"))
+		{
+			if (bAM)
+			{
+				create_element(L"number", L"am-pm", elm, odf_context_);
+				bAM = false;
+			}
+		}
+		else if (std::wstring::npos != s.find(L"m") || std::wstring::npos != s.find(L"M"))
 		{
 			if (bDate)
 			{
@@ -764,7 +781,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				else		number_year_->number_style_ = L"long";
 			}
 		}
-		else
+		else if (!bAM) // разделителя am.pm в либре нет
 		{	//////////////////// делитель ////////////////////	
 			if(sz > 1) 
 			{
@@ -898,15 +915,11 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 
 		//state.format_code[0] = boost::regex_replace( state.format_code[0],re,L"");
 	}
-	if (!state.currency_str.empty() && state.language_code != 0xF400 && state.language_code != 0xF800)
-	{
-		state.ods_type = office_value_type::Currency;
-		return;
-	}
+
 	if (state.format_code.size() > 0) //any
 	{
-		boost::wregex re1(L"([mMhHs{2,}S{2,}]+)");
-		boost::wregex re2(L"([mMdDy{2,}Y{2,}]+)");
+		boost::wregex re1(L"([mMhH{2,}sS{2,}]+)");
+		boost::wregex re2(L"([mMdD{1,}yY{2,}]+)");
 
 		std::wstring tmp = strFormatCode;
 		
@@ -927,9 +940,14 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 			state.ods_type = office_value_type::Time;
 			return;
 		}
-		if (b2 && result2.size() > 2)
+		if (b2 && result2.size() > 1)
 		{
 			state.ods_type = office_value_type::Date;
+			return;
+		}
+		if (!state.currency_str.empty() && state.language_code != 0xF400 && state.language_code != 0xF800)
+		{
+			state.ods_type = office_value_type::Currency;
 			return;
 		}
 		if (std::wstring::npos != strFormatCode.find(L"%"))

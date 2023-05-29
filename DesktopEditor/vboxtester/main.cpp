@@ -33,6 +33,7 @@
 #include <iostream>
 #include <fstream>
 #include <array>
+#include <algorithm>
 
 #include "help.h"
 #include "../common/File.h"
@@ -132,14 +133,19 @@ private:
     std::string m_sVmUser;
     std::string m_sVmPassword;
     std::string m_sDesktopUrl;
+    std::string m_sScriptName;
+    std::string m_sEditorsPath;
 
     std::vector<CVm*> m_arrVms;
 
 public:
     CVirtualBox()
     {
-        m_sVmUser = "";
-        m_sVmPassword = "";
+        m_sVmUser = "dmitry";
+        m_sVmPassword = "Dm-23";
+
+        m_sScriptName = "script";
+        m_sEditorsPath = "/opt/onlyoffice/desktopeditors/DesktopEditors";
 
         // test url, need parse somewhere
         m_sDesktopUrl = "https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-125~cef107_amd64.deb";
@@ -183,6 +189,22 @@ public:
         return m_arrVms.size() > 0;
     }
 
+    std::vector<CVm*> GetLinuxVms()
+    {
+        std::vector<CVm*> arrVms;
+
+        for (size_t i = 0; i < m_arrVms.size(); i++)
+        {
+            std::string sGuestOs = m_arrVms[i]->m_sGuestOS;
+            std::transform(sGuestOs.begin(), sGuestOs.end(), sGuestOs.begin(), tolower);
+
+            if ( sGuestOs.find("ubuntu") != std::string::npos )
+                arrVms.push_back(m_arrVms[i]);
+        }
+
+        return arrVms;
+    }
+
     bool StartVm(const std::string& sGuid)
     {
         bool bResult = false;
@@ -213,6 +235,17 @@ public:
         return bResult;
     }
 
+    void WaitLoadVm(const std::string& sGuid)
+    {
+        if ( sGuid.length() )
+        {
+            while (!IsVmLoggedIn(sGuid))
+            {
+                NSThreads::Sleep(1000);
+            }
+        }
+    }
+
     bool StopVm(const std::string& sGuid, bool bSaveState = false)
     {
         bool bResult = false;
@@ -223,6 +256,30 @@ public:
             std::string sOutput = ExecuteCommand(sCommand);
 
             bResult = sOutput.find("100%") != std::string::npos;
+        }
+
+        return bResult;
+    }
+
+    bool IsVmLoggedIn(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            /*std::string sStatus = GetVmInfoStatus(sGuid, "State");
+            if ( sStatus.length() )
+                bResult = sStatus.find("running (since") != std::string::npos;*/
+
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /usr/bin/whoami" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout";
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            bResult = sOutput.find(m_sVmUser) != std::string::npos;
         }
 
         return bResult;
@@ -245,75 +302,6 @@ public:
 
         return bResult;
     }
-
-    bool DownloadDistrib(const std::string& sGuid)
-    {
-        bool bResult = false;
-
-        if ( sGuid.length() && m_sDesktopUrl.length() )
-        {
-            if ( PrepareWorkingDir(sGuid) )
-            {
-                std::string sCommand = "guestcontrol " + sGuid +
-                                       " run --exe /usr/bin/wget" +
-                                       " --username " + m_sVmUser +
-                                       " --password " + m_sVmPassword +
-                                       " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
-                                       " -P " + GetWorkingDir();
-
-                std::string sOutput = ExecuteCommand(sCommand);
-
-                bResult = sOutput.find("") != std::string::npos;
-            }
-        }
-
-        return bResult;
-    }
-
-    bool CreateInstallScript(const std::string& sGuid)
-    {
-        bool bResult = false;
-
-        if ( sGuid.length() )
-        {
-            std::string sScriptName = "script.tmp";
-            std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + sScriptName;
-            std::string sDistriFile = GetDistribName();
-
-            if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
-                NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
-
-            std::string sData =  "#!/bin/bash\n" \
-                                "echo \"Install DesktopEditors\"\n" \
-                                "dpkg -i ./" + sDistriFile + "\n" \
-                                "apt install -f";
-
-            NSFile::CFileBinary oFile;
-            bResult = oFile.CreateFileW(UTF8_TO_U(sScriptPath));
-            oFile.WriteStringUTF8(UTF8_TO_U(sData));
-            oFile.CloseFile();
-
-            // Quotes for path ????
-            std::string sCommand = "guestcontrol " + sGuid +
-                                   " --username " + m_sVmUser +
-                                   " --password " + m_sVmPassword +
-                                   " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + sScriptName;
-
-            std::string sOutput = ExecuteCommand(sCommand);
-
-            NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
-        }
-
-        return bResult;
-    }
-
-    bool RunDesktop(const std::string& sGuid)
-    {
-        bool bResult = false;
-        return bResult;
-    }
-
-private:
 
     bool PrepareWorkingDir(const std::string& sGuid)
     {
@@ -341,6 +329,143 @@ private:
         return bResult;
     }
 
+    bool DownloadDistrib(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() && m_sDesktopUrl.length() )
+        {
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /usr/bin/wget" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
+                                   " -P " + GetWorkingDir();
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            bResult = sOutput.find("") != std::string::npos;
+        }
+
+        return bResult;
+    }
+
+    bool CopyScriptVm(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + m_sScriptName;
+            std::string sDistriFile = GetDistribName();
+
+            if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
+                NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+
+            std::string sData =  "#!/bin/bash\n" \
+                                "echo \"Install DesktopEditors\"\n" \
+                                "apt purge onlyoffice-desktopeditors -y\n" \
+                                "dpkg -i ./" + sDistriFile + "\n" \
+                                "apt install -f";
+
+            NSFile::CFileBinary oFile;
+            bResult = oFile.CreateFileW(UTF8_TO_U(sScriptPath));
+            oFile.WriteStringUTF8(UTF8_TO_U(sData));
+            oFile.CloseFile();
+
+            // ! not works with double quoted file path, need check in documentation
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + m_sScriptName;
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+        }
+
+        return bResult;
+    }
+
+    bool RemoveScriptVm(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            std::string sScriptPath = GetWorkingDir() + "/" + m_sScriptName;
+
+            if ( IsLocationExists(sGuid, sScriptPath) )
+            {
+                std::string sCommand = "guestcontrol " + sGuid +
+                                       " --username " + m_sVmUser +
+                                       " --password " + m_sVmPassword +
+                                       " rm " + sScriptPath;
+
+                std::string sOutput = ExecuteCommand(sCommand);
+
+                bResult = !IsLocationExists(sGuid, sScriptPath);
+            }
+        }
+
+        return bResult;
+    }
+
+    bool RunDesktopEditors(const std::string& sGuid)
+    {
+        bool bResult = true;
+
+        if ( sGuid.length() && IsLocationExists(sGuid, m_sEditorsPath) )
+        {
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " start --exe " + m_sEditorsPath +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --putenv DISPLAY=:0.0";
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            // Wait main page
+            NSThreads::Sleep(5000);
+        }
+
+        return bResult;
+    }
+
+private:
+    bool IsLocationExists(const std::string& sGuid, const std::string& sPath)
+    {
+        // check ile or folder
+        bool bResult = false;
+
+        if ( sGuid.length() && sPath.length() )
+        {
+            std::string sFile = "";
+            std::string sFolder = sPath;
+            std::vector<std::string> arrParts;
+            if ( SplitStringAsVector(sPath, "/", arrParts) )
+            {
+                sFile = arrParts[arrParts.size() - 1];
+                NSStringUtils::string_replaceA(sFolder, "/" + sFile, "");
+            }
+
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /bin/ls" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout -- ls/arg0 " + sFolder;
+
+            std::string sOutput = ExecuteCommand(sCommand);
+            if ( sOutput.length() )
+            {
+                if ( SplitStringAsVector(sOutput, "\n", arrParts) )
+                    bResult = std::find(arrParts.begin(), arrParts.end(), sFile) != arrParts.end();
+            }
+        }
+
+        return bResult;
+    }
+
     std::string GetWorkingDir()
     {
         std::string sDir = "";
@@ -353,9 +478,14 @@ private:
 
     std::string GetVmOS(const std::string& sGuid)
     {
-        std::string sOs = "";
+        return ParseVmInfo(sGuid, "Guest OS");
+    }
 
-        if ( sGuid.length() )
+    std::string ParseVmInfo(const std::string& sGuid, const std::string& sPref)
+    {
+        std::string sStatus = "";
+
+        if ( sGuid.length() && sPref.length() )
         {
             std::string command = "showvminfo " + sGuid;
             std::string sOutput = ExecuteCommand(command);
@@ -363,7 +493,7 @@ private:
             std::vector<std::string> arrLines;
             if ( SplitStringAsVector(sOutput, "\n", arrLines) )
             {
-                std::string sPrefix = "Guest OS:";
+                std::string sPrefix = sPref + ":";
 
                 for (size_t i = 0; i < arrLines.size(); i++)
                 {
@@ -372,21 +502,21 @@ private:
                     std::string::size_type pos = sLine.find(sPrefix);
                     if ( pos != std::string::npos )
                     {
-                        sOs = sLine;
-                        pos = sOs.find(sPrefix + " ");
+                        sStatus = sLine;
+                        pos = sStatus.find(sPrefix + " ");
                         while ( pos != std::string::npos )
                         {
-                            NSStringUtils::string_replaceA(sOs, sPrefix + " ", sPrefix);
-                            pos = sOs.find(sPrefix + " ");
+                            NSStringUtils::string_replaceA(sStatus, sPrefix + " ", sPrefix);
+                            pos = sStatus.find(sPrefix + " ");
                         }
-                        NSStringUtils::string_replaceA(sOs, sPrefix, "");
+                        NSStringUtils::string_replaceA(sStatus, sPrefix, "");
                         break;
                     }
                 }
             }
         }
 
-        return sOs;
+        return sStatus;
     }
 
     std::string GetDistribName()
@@ -434,15 +564,29 @@ int main(int argc, char** argv)
 {
     // Test
     CVirtualBox oTester;
+    oTester.InitVms();
 
-    //oTester.DownloadDistrib("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
-    //oTester.CreateInstallScript("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    std::vector<CVm*> arrLinux = oTester.GetLinuxVms();
+    for (size_t i = 0; i < arrLinux.size(); i++)
+    {
+        std::string sGuid = arrLinux[i]->m_sGuid;
 
-    //oTester.GetVms();
-    oTester.CreateInstallScript("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
-    //oTester.StartVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
-    //oTester.GetScreenshot("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}", "c:\\Tmp\\123.png");
-    //oTester.StopVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+        oTester.StartVm(sGuid);
+        oTester.WaitLoadVm(sGuid);
+
+        oTester.PrepareWorkingDir(sGuid);
+
+        oTester.DownloadDistrib(sGuid);
+        oTester.CopyScriptVm(sGuid);
+
+        oTester.ResetVm(sGuid);
+        oTester.WaitLoadVm(sGuid);
+
+        oTester.RunDesktopEditors(sGuid);
+        //oTester.GetScreenshot(sGuid, "c:\\Tmp\\123.png");
+
+        oTester.StopVm(sGuid);
+    }
 
     // Parse arguments
     for (int i = 0; i < argc; ++i)

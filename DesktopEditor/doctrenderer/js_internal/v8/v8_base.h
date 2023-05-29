@@ -821,16 +821,25 @@ namespace NSJSBase
 		{
 		}
 
-		static CEmbedObjectRegistrator& getEmbedRegistrator(v8::Isolate* isolate)
+		static CEmbedObjectRegistrator& getEmbedRegistrator()
 		{
-			static CEmbedObjectRegistratorPool registatorsPool;
-			return registatorsPool.getRegistrator(reinterpret_cast<void*>(isolate));
+			static CEmbedObjectRegistrator oRegistrator;
+			return oRegistrator;
+		}
+
+		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)
+		{
+			v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(m_isolate, creator);
+			v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(m_context);
+			m_context->Global()->Set(m_context, CreateV8String(m_isolate, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
 		}
 	};
 }
 
 namespace NSJSBase
 {
+	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+
 	class CJSEmbedObjectPrivate : public CJSEmbedObjectPrivateBase
 	{
 	public:
@@ -1031,6 +1040,7 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_return(args, ret);                                                                                                                                       \
 	}
 
+// TODO: remove this function
 static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext>& context, v8::FunctionCallback creator)
 {
 	v8::Isolate* current = CV8Worker::GetCurrent();
@@ -1040,6 +1050,7 @@ static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext
 	v8::Maybe<bool> oResultMayBe = localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
 }
 
+// TODO: remove this function
 using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
 static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
 									  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)

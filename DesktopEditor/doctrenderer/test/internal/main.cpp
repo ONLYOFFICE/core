@@ -48,12 +48,6 @@ int main(int argc, char *argv[])
 	JSSmart<CJSContext> oContext2 = new CJSContext;
 //	oContext2->Initialize();
 
-	// Create first context
-	oContext1->CreateContext();
-
-	// Create second context
-	oContext2->CreateContext();
-
 	// Work with first context
 	oContext1->Enter();
 
@@ -102,17 +96,14 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 0
+#if 1
 	// External embed example
 
-	JSSmart<CJSContext> oContext1 = new CJSContext;
-
-	// Create first context
-	oContext1->CreateContext();
+	JSSmart<CJSContext> oContext1 = new CJSContext();
 
 	// Embedding
 	CJSContextScope scope(oContext1);
-	oContext1->Embed<CTestEmbed>();
+	CJSContext::Embed<CTestEmbed>();
 
 	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
 	std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
@@ -128,21 +119,15 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 1
+#if 0
 	// CZipEmbed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext();
 	JSSmart<CJSContext> oContext2 = new CJSContext();
 
-	// Create first context
-	oContext1->CreateContext();
-
-	// Create second context
-	oContext2->CreateContext();
-
 	// Work with first context
 	oContext1->Enter();
-	CreateDefaults(oContext1);
+	CreateDefaults();
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
 		"var oZip = CreateEmbedObject('CZipEmbed');\n"
 		"var files = oZip.open('" CURR_DIR "');\n"
@@ -152,7 +137,7 @@ int main(int argc, char *argv[])
 	// Work with second context
 	{
 		CJSContextScope scope(oContext2);
-		CreateDefaults(oContext2);
+//		CreateDefaults();
 		JSSmart<CJSValue> oRes2 = oContext2->runScript(
 			"var oZip = CreateEmbedObject('CZipEmbed');\n"
 			"var files = oZip.open('" CURR_DIR "/../embed');\n"
@@ -186,14 +171,11 @@ int main(int argc, char *argv[])
 #if 0
 	// CHashEmbed example
 
-	JSSmart<CJSContext> oContext1 = new CJSContext;
-
-	// Create first context
-	oContext1->CreateContext();
+	JSSmart<CJSContext> oContext1 = new CJSContext();
 
 	// Call hash() on first context
 	CJSContextScope scope(oContext1);
-	CreateDefaults(oContext1);
+	CreateDefaults();
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
 		"var oHash = CreateEmbedObject('CHashEmbed');\n"
 		"var str = 'test';\n"
@@ -210,7 +192,6 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 	// Call hash2() on first context
-	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes2 = oContext1->runScript(
 		"var str2 = 'test';\n"
 		"var hash2 = oHash.hash2(str2, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");

@@ -33,16 +33,4 @@ public:
 	}
 };
 
-class CEmbedObjectRegistratorPool
-{
-private:
-	std::unordered_map<void*, CEmbedObjectRegistrator> m_registrators;
-
-public:
-	CEmbedObjectRegistrator& getRegistrator(void* ptr)
-	{
-		return m_registrators[ptr];
-	}
-};
-
 #endif // _CORE_EXT_JS_BASE_P_H_

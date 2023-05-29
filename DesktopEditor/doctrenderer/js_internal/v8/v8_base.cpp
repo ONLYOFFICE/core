@@ -199,8 +199,19 @@ namespace NSJSBase
 	{
 		if (m_internal->m_isolate == NULL)
 		{
+			// get new isolate
 			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
 			m_internal->m_isolate = isolate;
+			// get new context
+			v8::Isolate::Scope iscope(isolate);
+			v8::HandleScope scope(isolate);
+			m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
+			// create temporary local handle to context
+			m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
+			// insert CreateEmbedObject() function to global object of this context
+			m_internal->InsertToGlobal("CreateEmbedObject", CreateEmbedNativeObject);
+			// clear temporary local handle
+			m_internal->m_context.Clear();
 		}
 	}
 	void CJSContext::Dispose()
@@ -225,14 +236,6 @@ namespace NSJSBase
 
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
-	}
-
-	void CJSContext::CreateContext()
-	{
-		v8::Isolate* isolate = m_internal->m_isolate;
-		v8::Isolate::Scope iscope(isolate);
-		v8::HandleScope scope(isolate);
-		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
 	}
 
 	CJSObject* CJSContext::GetGlobal()
@@ -531,7 +534,7 @@ namespace NSJSBase
 		if (NULL != *data)
 			sName = std::string((char*)*data, data.length());
 
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(isolate);
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
 		std::map<std::string, CEmbedObjectRegistrator::CEmdedClassInfo>::iterator itFound = oRegistrator.m_infos.find(sName);
 		if (itFound == oRegistrator.m_infos.end())
 		{
@@ -573,15 +576,8 @@ namespace NSJSBase
 	void CJSContext::AddEmbedCreator(const std::string& name,
 									 EmbedObjectCreator creator,
 									 const IsolateAdditionalDataType& type)
-	{		
-
-		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator(m_internal->m_isolate);
-		if (0 == oRegistrator.m_infos.size())
-		{
-			JSSmart<CJSContext> context = CJSContext::GetCurrent();
-			InsertToGlobal("CreateEmbedObject", context, CreateEmbedNativeObject);
-		}
-
+	{
+		CEmbedObjectRegistrator& oRegistrator = CJSContextPrivate::getEmbedRegistrator();
 		oRegistrator.Register(name, creator, type);
 	}
 }

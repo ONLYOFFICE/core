@@ -222,7 +222,6 @@ namespace NSJSBase
 
 		CJSTryCatch* GetExceptions();
 
-		void CreateContext();
 		CJSObject* GetGlobal();
 
 		// Use this methods before working with needed context if you want to work with multiple contexts simultaneously (or use CJSContextScope)
@@ -231,7 +230,7 @@ namespace NSJSBase
 
 		// Use this method for embedding external objects
 		template<typename T>
-		void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
+		static void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
 		{
 			AddEmbedCreator(T::getName(), T::getCreator, type);
 		}
@@ -240,7 +239,7 @@ namespace NSJSBase
 		CJSValue* JSON_Parse(const char* json_content);
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
 
-		void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
+		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
 
 	public:
 		static CJSValue* createUndefined();

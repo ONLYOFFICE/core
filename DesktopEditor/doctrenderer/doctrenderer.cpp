@@ -542,11 +542,10 @@ namespace NSDoctRenderer
 
 			if (true)
 			{
-				context->CreateContext();
 				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
-				NSJSBase::CreateDefaults(context);
+				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
@@ -1075,11 +1074,10 @@ namespace NSDoctRenderer
 
 			if (true)
 			{
-				context->CreateContext();
 				CJSContextScope scope(context);
 				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
 				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
-				NSJSBase::CreateDefaults(context);
+				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 

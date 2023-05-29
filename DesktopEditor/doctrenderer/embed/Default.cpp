@@ -7,11 +7,11 @@
 
 namespace NSJSBase
 {
-	void CreateDefaults(JSSmart<CJSContext>& context)
+	void CreateDefaults()
 	{
-		context->Embed<CZipEmbed>();
+		CJSContext::Embed<CZipEmbed>();
 //		CTextMeasurerEmbed::CreateObjectInContext("CreateNativeTextMeasurer", context);
 //		CMemoryStreamEmbed::CreateObjectInContext("CreateNativeMemoryStream", context);
-		context->Embed<CHashEmbed>();
+		CJSContext::Embed<CHashEmbed>();
 	}
 }

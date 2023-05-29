@@ -242,11 +242,6 @@ namespace NSJSBase
         m_internal->context = nil;
     }
 
-    void CJSContext::CreateContext()
-    {
-        // NONE
-    }
-
     CJSObject* CJSContext::GetGlobal()
     {
         CJSObjectJSC* ret = new CJSObjectJSC();

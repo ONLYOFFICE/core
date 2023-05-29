@@ -28,7 +28,7 @@ def build_func():
 # archive built with this func
 if False:
   build_func()
-else
+else:
   if not base.is_file("./build.7z"):
     base.download("http://d2ettrnqo7v976.cloudfront.net/v8/android/build.7z", "./build.7z")
     base.extract("./build.7z", "./")

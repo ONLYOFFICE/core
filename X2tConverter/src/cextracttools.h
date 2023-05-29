@@ -151,6 +151,8 @@ namespace NExtractTools
         TCD_DOCT2RTF,
         TCD_DOCX2RTF,
         TCD_DOCT_BIN2RTF,
+//xml 2
+		TCD_XML2XLSX,
 //txt 2
 		TCD_TXT2DOCX,
 		TCD_TXT2DOCT,

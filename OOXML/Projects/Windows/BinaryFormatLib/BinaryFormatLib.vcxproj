@@ -48,6 +48,13 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CSVReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\columnNameController.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XLSXTableController.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XML2TableConverter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLConverter2.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader2.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Writer\CSVWriter.cpp" />
   </ItemGroup>
@@ -88,6 +95,12 @@
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CSVReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\columnNamesController.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XLSXTableController.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XML2TableConverter.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLConverter2.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryCommonReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\CSVWriter.h" />

@@ -33,10 +33,10 @@
 #include "XLSXTableController.h"
 #include "XML2TableConverter.h"
 
-#include "../../../../DesktopEditor/common/File.h"
-#include "../../../Base/unicode_util.h"
-#include "../../../../Common/OfficeFileErrorDescription.h"
-#include "../../../XlsxFormat/Workbook/Workbook.h"
+#include "../../../../../DesktopEditor/common/File.h"
+#include "../../../../Base/unicode_util.h"
+#include "../../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../XlsxFormat/Workbook/Workbook.h"
 
 #include <memory>
 

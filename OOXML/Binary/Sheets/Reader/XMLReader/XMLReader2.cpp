@@ -34,13 +34,12 @@
 #include "XMLConverter2.h"
 #include "XMLMap.h"
 
-#include "../../../../DesktopEditor/common/File.h"
-#include "../../../Base/unicode_util.h"
-#include "../../../../Common/OfficeFileErrorDescription.h"
-#include "../../../XlsxFormat/Workbook/Workbook.h"
+#include "../../../../../DesktopEditor/common/File.h"
+#include "../../../../Base/unicode_util.h"
+#include "../../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../XlsxFormat/Workbook/Workbook.h"
 
-
-#include "../../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include <memory>
 

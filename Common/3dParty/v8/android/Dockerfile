@@ -31,7 +31,8 @@ RUN sudo apt-get install -y \
                 cmake \
                 pkg-config \
                 libc6-i386 \
-                gcc-multilib
+                gcc-multilib \
+                software-properties-common
 WORKDIR /home/docker
 RUN mkdir v8
 WORKDIR /home/docker/v8

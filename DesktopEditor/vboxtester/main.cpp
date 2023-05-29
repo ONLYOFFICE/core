@@ -131,7 +131,6 @@ private:
 
     std::string m_sVmUser;
     std::string m_sVmPassword;
-    std::string m_sDownloadsDir;
     std::string m_sDesktopUrl;
 
     std::vector<CVm*> m_arrVms;
@@ -199,6 +198,21 @@ public:
         return bResult;
     }
 
+    bool ResetVm(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            std::string sCommand = "controlvm " + sGuid + " reset";
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            bResult = sOutput.find("") != std::string::npos;
+        }
+
+        return bResult;
+    }
+
     bool StopVm(const std::string& sGuid, bool bSaveState = false)
     {
         bool bResult = false;
@@ -232,7 +246,7 @@ public:
         return bResult;
     }
 
-    bool DownloadDesktop(const std::string& sGuid)
+    bool DownloadDistrib(const std::string& sGuid)
     {
         bool bResult = false;
 
@@ -240,12 +254,12 @@ public:
         {
             if ( PrepareWorkingDir(sGuid) )
             {
-                std::string sCommand = "--nologo guestcontrol " + sGuid +
-                                      " run --exe /usr/bin/wget" +
-                                      " --username " + m_sVmUser +
-                                      " --password " + m_sVmPassword +
-                                      " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
-                                      " -P " + m_sDownloadsDir;
+                std::string sCommand = "guestcontrol " + sGuid +
+                                       " run --exe /usr/bin/wget" +
+                                       " --username " + m_sVmUser +
+                                       " --password " + m_sVmPassword +
+                                       " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
+                                       " -P " + GetWorkingDir();
 
                 std::string sOutput = ExecuteCommand(sCommand);
 
@@ -256,26 +270,68 @@ public:
         return bResult;
     }
 
+    bool CreateInstallScript(const std::string& sGuid)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() )
+        {
+            std::string sScriptName = "script.tmp";
+            std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + sScriptName;
+            std::string sDistriFile = GetDistribName();
+
+            if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
+                NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+
+            std::string sData =  "#!/bin/bash\n" \
+                                "echo \"Install DesktopEditors\"\n" \
+                                "dpkg -i ./" + sDistriFile + "\n" \
+                                "apt install -f";
+
+            NSFile::CFileBinary oFile;
+            bResult = oFile.CreateFileW(UTF8_TO_U(sScriptPath));
+            oFile.WriteStringUTF8(UTF8_TO_U(sData));
+            oFile.CloseFile();
+
+            // Quotes for path ????
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + sScriptName;
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+        }
+
+        return bResult;
+    }
+
+    bool RunDesktop(const std::string& sGuid)
+    {
+        bool bResult = false;
+        return bResult;
+    }
+
 private:
+
     bool PrepareWorkingDir(const std::string& sGuid)
     {
         bool bResult = false;
 
         if ( sGuid.length() && m_sVmUser.length() )
         {
-            m_sDownloadsDir = "/home/" + m_sVmUser + "/vboxtester";
-
             std::string sCommand = "guestcontrol " + sGuid +
                                    " --username " + m_sVmUser +
                                    " --password " + m_sVmPassword +
-                                   " rmdir " + m_sDownloadsDir;
+                                   " rmdir --recursive " + GetWorkingDir();
 
             std::string sOutput = ExecuteCommand(sCommand);
 
             sCommand = "guestcontrol " + sGuid +
                        " --username " + m_sVmUser +
                        " --password " + m_sVmPassword +
-                       " mkdir " + m_sDownloadsDir;
+                       " mkdir " + GetWorkingDir();
 
             sOutput = ExecuteCommand(sCommand);
 
@@ -283,6 +339,16 @@ private:
         }
 
         return bResult;
+    }
+
+    std::string GetWorkingDir()
+    {
+        std::string sDir = "";
+
+        if ( m_sVmUser.length() )
+            sDir = "/home/" + m_sVmUser + "/vboxtester";
+
+        return sDir;
     }
 
     std::string GetVmOS(const std::string& sGuid)
@@ -323,6 +389,21 @@ private:
         return sOs;
     }
 
+    std::string GetDistribName()
+    {
+        std::string sName = "";
+
+        if ( m_sDesktopUrl.length() )
+        {
+            std::vector<std::string> arrParts;
+
+            if ( SplitStringAsVector(m_sDesktopUrl, "/", arrParts) )
+                sName = arrParts[arrParts.size() - 1];
+        }
+
+        return sName;
+    }
+
     std::string ExecuteCommand(const std::string& sArgs)
     {
         std::string sResult = "";
@@ -330,12 +411,12 @@ private:
         std::array<char, 128> aBuffer;
         std::string sCommand = m_sVbmPath + sArgs;
 
- #ifdef WIN32
+#ifdef WIN32
         FILE* pipe = _popen(sCommand.c_str(), "r");
- #endif
- #ifdef LINUX
+#endif
+#ifdef LINUX
         FILE* pipe = popen(sCommand.c_str(), "r");
- #endif
+#endif
         if (!pipe)
             return sResult;
 
@@ -354,12 +435,14 @@ int main(int argc, char** argv)
     // Test
     CVirtualBox oTester;
 
-    oTester.DownloadDesktop("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    //oTester.DownloadDistrib("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    //oTester.CreateInstallScript("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
 
-    /*oTester.GetVms();
-    oTester.StartVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
-    oTester.GetScreenshot("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}", "c:\\Tmp\\123.png");
-    oTester.StopVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");*/
+    //oTester.GetVms();
+    oTester.CreateInstallScript("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    //oTester.StartVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
+    //oTester.GetScreenshot("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}", "c:\\Tmp\\123.png");
+    //oTester.StopVm("{b9c4a4fe-afcc-47d5-b674-0fcbc11383e3}");
 
     // Parse arguments
     for (int i = 0; i < argc; ++i)

@@ -141,14 +141,14 @@ private:
 public:
     CVirtualBox()
     {
-        m_sVmUser = "dmitry";
-        m_sVmPassword = "Dm-23";
+        m_sVmUser = "";
+        m_sVmPassword = "";
 
         m_sScriptName = "script";
         m_sEditorsPath = "/opt/onlyoffice/desktopeditors/DesktopEditors";
 
         // test url, need parse somewhere
-        m_sDesktopUrl = "https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-125~cef107_amd64.deb";
+        m_sDesktopUrl = "http://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-125~cef107_amd64.deb";
 
 #ifdef WIN32
         m_sVbmPath = "\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\" ";
@@ -246,6 +246,19 @@ public:
         }
     }
 
+    void WaitInstall(const std::string& sGuid)
+    {
+        if ( sGuid.length() )
+        {
+            while ( IsProcessExists(sGuid, "dpkg") ||
+                    IsProcessExists(sGuid, "apt") ||
+                   !IsLocationExists(sGuid, m_sEditorsPath) )
+            {
+                NSThreads::Sleep(1000);
+            }
+        }
+    }
+
     bool StopVm(const std::string& sGuid, bool bSaveState = false)
     {
         bool bResult = false;
@@ -267,10 +280,6 @@ public:
 
         if ( sGuid.length() )
         {
-            /*std::string sStatus = GetVmInfoStatus(sGuid, "State");
-            if ( sStatus.length() )
-                bResult = sStatus.find("running (since") != std::string::npos;*/
-
             std::string sCommand = "guestcontrol " + sGuid +
                                    " run --exe /usr/bin/whoami" +
                                    " --username " + m_sVmUser +
@@ -335,16 +344,30 @@ public:
 
         if ( sGuid.length() && m_sDesktopUrl.length() )
         {
-            std::string sCommand = "guestcontrol " + sGuid +
+            // wget may not download the file to the end, use curl
+
+            /*std::string sCommand = "guestcontrol " + sGuid +
                                    " run --exe /usr/bin/wget" +
                                    " --username " + m_sVmUser +
                                    " --password " + m_sVmPassword +
                                    " --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
-                                   " -P " + GetWorkingDir();
+                                   " -P " + GetWorkingDir();*/
+
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /usr/bin/curl" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout -- curl/arg0 " + m_sDesktopUrl +
+                                   " --output " + GetWorkingDir() + "/" + GetFileName(m_sDesktopUrl);
 
             std::string sOutput = ExecuteCommand(sCommand);
 
-            bResult = sOutput.find("") != std::string::npos;
+            // Wait flush to disk. This problem with wget and curl
+            NSThreads::Sleep(30000);
+
+            bResult = true;
+            // sOutput is empty...
+            // bResult = sOutput.find("") != std::string::npos;
         }
 
         return bResult;
@@ -357,7 +380,7 @@ public:
         if ( sGuid.length() )
         {
             std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + m_sScriptName;
-            std::string sDistriFile = GetDistribName();
+            std::string sDistribFile = GetFileName(m_sDesktopUrl);
 
             if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
                 NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
@@ -365,7 +388,7 @@ public:
             std::string sData =  "#!/bin/bash\n" \
                                 "echo \"Install DesktopEditors\"\n" \
                                 "apt purge onlyoffice-desktopeditors -y\n" \
-                                "dpkg -i ./" + sDistriFile + "\n" \
+                                "dpkg -i ./" + sDistribFile + "\n" \
                                 "apt install -f";
 
             NSFile::CFileBinary oFile;
@@ -411,7 +434,7 @@ public:
         return bResult;
     }
 
-    bool RunDesktopEditors(const std::string& sGuid)
+    bool RunEditors(const std::string& sGuid)
     {
         bool bResult = true;
 
@@ -426,13 +449,92 @@ public:
             std::string sOutput = ExecuteCommand(sCommand);
 
             // Wait main page
-            NSThreads::Sleep(5000);
+            NSThreads::Sleep(10000);
+        }
+
+        return bResult;
+    }
+
+    bool IsReadyReset(const std::string& sGuid)
+    {
+        bool bResult = true;
+
+        if ( sGuid.length() )
+        {
+            std::string sScriptPath = GetWorkingDir() + "/" + m_sScriptName;
+            std::string sDistribPath = GetWorkingDir() + "/" + GetFileName(m_sDesktopUrl);
+
+            bResult = IsLocationExists(sGuid, sScriptPath) && IsLocationExists(sGuid, sDistribPath);
+        }
+
+        return bResult;
+    }
+
+    bool IsProcessExists(const std::string& sGuid, const std::string& sProcName)
+    {
+        bool bResult = false;
+
+        if ( sGuid.length() && sProcName.length() )
+        {
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /bin/ps" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout -- ps/arg0 -e";
+
+            std::string sOutput = ExecuteCommand(sCommand);
+
+            if ( sOutput.length() )
+            {
+                std::vector<std::string> arrLines;
+                std::vector<std::string> arrParts;
+
+                if ( SplitStringAsVector(sOutput, "\n", arrLines) )
+                {
+                    for (size_t i = 0; i < arrLines.size(); i++)
+                    {
+                        std::string sLine = arrLines[i];
+                        if ( (i > 0) && SplitStringAsVector(sLine, " ", arrParts) )
+                        {
+                            if ( arrParts[arrParts.size() - 1] == sProcName )
+                            {
+                                bResult = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return bResult;
+    }
+
+    bool IsEditorsRunned(const std::string& sGuid)
+    {
+        bool bResult = true;
+
+        if ( sGuid.length() )
+        {
+            std::string sEditorProc = GetFileName(m_sEditorsPath);
+
+            bResult = IsProcessExists(sGuid, sEditorProc);
         }
 
         return bResult;
     }
 
 private:
+    std::string GetWorkingDir()
+    {
+        std::string sDir = "";
+
+        if ( m_sVmUser.length() )
+            sDir = "/home/" + m_sVmUser + "/vboxtester";
+
+        return sDir;
+    }
+
     bool IsLocationExists(const std::string& sGuid, const std::string& sPath)
     {
         // check ile or folder
@@ -464,16 +566,6 @@ private:
         }
 
         return bResult;
-    }
-
-    std::string GetWorkingDir()
-    {
-        std::string sDir = "";
-
-        if ( m_sVmUser.length() )
-            sDir = "/home/" + m_sVmUser + "/vboxtester";
-
-        return sDir;
     }
 
     std::string GetVmOS(const std::string& sGuid)
@@ -519,15 +611,15 @@ private:
         return sStatus;
     }
 
-    std::string GetDistribName()
+    std::string GetFileName(const std::string& sFile)
     {
         std::string sName = "";
 
-        if ( m_sDesktopUrl.length() )
+        if ( sFile.length() )
         {
             std::vector<std::string> arrParts;
 
-            if ( SplitStringAsVector(m_sDesktopUrl, "/", arrParts) )
+            if ( SplitStringAsVector(sFile, "/", arrParts) )
                 sName = arrParts[arrParts.size() - 1];
         }
 
@@ -576,14 +668,25 @@ int main(int argc, char** argv)
 
         oTester.PrepareWorkingDir(sGuid);
 
-        oTester.DownloadDistrib(sGuid);
         oTester.CopyScriptVm(sGuid);
+        oTester.DownloadDistrib(sGuid);
 
-        oTester.ResetVm(sGuid);
-        oTester.WaitLoadVm(sGuid);
+        if ( oTester.IsReadyReset(sGuid) )
+        {
+            oTester.ResetVm(sGuid);
+            oTester.WaitLoadVm(sGuid);
+            oTester.WaitInstall(sGuid);
 
-        oTester.RunDesktopEditors(sGuid);
-        //oTester.GetScreenshot(sGuid, "c:\\Tmp\\123.png");
+            oTester.RunEditors(sGuid);
+
+            if ( oTester.IsEditorsRunned(sGuid) )
+            {
+                // Check successful or not
+                //oTester.GetScreenshot(sGuid, "c:\\Tmp\\123.png");
+            }
+
+            oTester.RemoveScriptVm(sGuid);
+        }
 
         oTester.StopVm(sGuid);
     }

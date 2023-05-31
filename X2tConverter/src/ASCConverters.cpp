@@ -4624,6 +4624,10 @@ namespace NExtractTools
 			   nRes = csv2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
 			   *params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		   }
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom)
+		   {
+			   nRes = xml2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+		   }
 		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))

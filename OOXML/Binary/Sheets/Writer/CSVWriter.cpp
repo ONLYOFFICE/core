@@ -50,12 +50,16 @@
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
 
+#include <ctime>
+#include <locale>
+#include <memory>
+
 class CSVWriter::Impl
 {
 public:
 	Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 	~Impl();
-	
+
 	void Start(const std::wstring &sFileDst);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
@@ -92,6 +96,8 @@ private:
 	int detect_format(std::wstring & format_code);
 	std::wstring convert_date_time(const std::wstring & sValue, std::wstring format_code, bool bDate = true, bool bTime = true);
 
+	std::locale loc_;
+
 	struct _numberFormat
 	{
 		bool bFloat = false;
@@ -119,9 +125,9 @@ void CSVWriter::Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, con
 void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& sDelimiter, bool bJSON)
 {
 	Init(oXlsx, nCodePage, sDelimiter, bJSON);
-	
+
 	impl_->Start(sFileDst);
-	
+
 	if (oXlsx.m_pWorkbook)
 	{
 		LONG lActiveSheet = oXlsx.m_pWorkbook->GetActiveSheetIndex();
@@ -237,7 +243,7 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 			ss >> language_code;
 		}
 		catch (...) {}
-		
+
 		//format_code = boost::regex_replace( format_code,re,L"");
 	}
 	if (!strCurrencyLetter.empty() && language_code != 0xF400 && language_code != 0xF800)
@@ -324,9 +330,21 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 			if (bDate)
 			{
-				date_str = boost::lexical_cast<std::wstring>(date_.year()) + L"-" +
-					(date_.month() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.month().as_number()) + L"-" +
-					(date_.day() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.day());
+				std::wstringstream wss;
+				wss.imbue(loc_);
+
+
+				std::time_t now = std::time(nullptr);
+    			std::tm* currentTime = std::localtime(&now);
+
+				currentTime->tm_year = date_.year() - 1900;  // Устанавливаем год
+				currentTime->tm_mon = date_.month() - 1;     // Устанавливаем месяц (от 0 до 11)
+				currentTime->tm_mday = date_.day();          // Устанавливаем день
+
+
+				wss << std::put_time(currentTime, L"%x");  // Формат "%x" - формат даты для текущей локали
+
+				date_str = wss.str();
 			}
 
 			if (bTime)
@@ -417,8 +435,34 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 					else
 					{
 						unsigned short month = date_.month().as_number();
-						if (symbol_size > 2 && month < 10) output += L"0";
-						/*if (symbol_size < 3) */output += std::to_wstring(month);
+                        if (symbol_size == 2 && month < 10)
+						{
+							output += L"0";
+						}
+						if(symbol_size < 3)
+						{
+							output += std::to_wstring(month);
+						}
+						else
+						{
+							std::shared_ptr<boost::gregorian::date_facet> df;
+							if(symbol_size == 3)
+							{
+								df = std::make_shared<boost::gregorian::date_facet>(2);
+
+							}
+							else
+							{
+								df = std::make_shared<boost::gregorian::date_facet>(12);
+							}
+							std::wstringstream wss;
+    						wss.imbue(std::locale(loc_, df.get()));
+							wss << date_.month();
+							output += wss.str();
+
+						}
+
+						/*if (symbol_size < 3) */
 						//else if (symbol_size == 3) output += date_.month().as_short_wstring();
 						//else output += date_.month().as_long_wstring();
 					}
@@ -439,7 +483,7 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				default:
 					output += format_code[i];
 				}
-				i += symbol_size - 1; 
+				i += symbol_size - 1;
 			}
 #endif
 			return output;
@@ -561,7 +605,7 @@ void WriteFile(NSFile::CFileBinary *pFile, wchar_t **pWriteBuffer, int &nCurrent
 		nCurrentIndex += (int)nCountChars;
 	}
 }
-CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON)
+CSVWriter::Impl::Impl(OOX::Spreadsheet::CXlsx &m_oXlsx, unsigned int m_nCodePage, const std::wstring& m_sDelimiter, bool m_bJSON) : m_oXlsx(m_oXlsx), m_nCodePage(m_nCodePage), m_sDelimiter(m_sDelimiter), m_bJSON(m_bJSON), loc_("")
 {
 	m_pWriteBuffer = NULL;
 	m_nCurrentIndex = 0;
@@ -672,7 +716,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	//{
 	//	sCellValue = *pCell->m_oCacheValue;
 	//}
-	//else 
+	//else
 	bool bString = false;
 	if (pCell->m_oValue.IsInit())
 	{
@@ -851,6 +895,7 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 {
 	if (false == format_code.empty())
 	{
+		format_code.erase(std::remove(format_code.begin(), format_code.end(), L'"'), format_code.end());//удаляем экранирующие кавычки из формата
 		std::vector<std::wstring> format_codes;
 		boost::algorithm::split(format_codes, format_code, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
@@ -887,16 +932,16 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 			if (pFind != mapNumberFormat.end())
 			{
 				format_string = pFind->second.format_string;
-				
+
 				if (pFind->second.bPercent)
 					dValue *= 100.;
-				
+
 				bFloat = pFind->second.bFloat;
 			}
 			else
 			{
 				_numberFormat numberFormat;
-				
+
 				size_t pos_sharp_end = format_code.rfind(L"#");
 				size_t pos_sharp_start = format_code.find(L"#");
 
@@ -915,8 +960,8 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 				if (std::wstring::npos != pos_dot)
 				{
 					numberFormat.bFloat = true;
-					numberFormat.count_float = (pos_zero_end != std::wstring::npos) ? (pos_zero_end - pos_dot) : 0; 
-					numberFormat.count_int = (pos_zero_start != std::wstring::npos) ? (pos_dot - pos_zero_start) : 0; 
+					numberFormat.count_float = (pos_zero_end != std::wstring::npos) ? (pos_zero_end - pos_dot) : 0;
+					numberFormat.count_int = (pos_zero_start != std::wstring::npos) ? (pos_dot - pos_zero_start) : 0;
 				}
 				else
 				{
@@ -957,10 +1002,10 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 
 				numberFormat.format_string = format_string;
 				mapNumberFormat.insert(std::make_pair(format_code, numberFormat));
-			
+
 				if (numberFormat.bPercent)
 					dValue *= 100.;
-				bFloat = numberFormat.bFloat;			
+				bFloat = numberFormat.bFloat;
 
 			}
 

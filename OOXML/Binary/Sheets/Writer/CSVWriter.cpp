@@ -240,19 +240,6 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 		
 		//format_code = boost::regex_replace( format_code,re,L"");
 	}
-	if (!strCurrencyLetter.empty() && language_code != 0xF400 && language_code != 0xF800)
-	{
-		size_t start = format_code.find(L"[");
-		size_t end = format_code.rfind(L"]");
-
-		if (start != std::wstring::npos && end != std::wstring::npos)
-		{
-			format_code.erase(start, end - start + 1);
-			format_code.insert(start, strCurrencyLetter);
-		}
-		return SimpleTypes::Spreadsheet::celltypeCurrency;
-	}
-
 	if (false == format_code.empty()) //any
 	{
 		boost::wregex re1(L"([mMhHs{2,}S{2,}]+)");
@@ -278,6 +265,18 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 		if (b2 && result2.size() > 2)
 		{
 			return SimpleTypes::Spreadsheet::celltypeDate;
+		}
+		if (!strCurrencyLetter.empty() && language_code != 0xF400 && language_code != 0xF800)
+		{
+			size_t start = format_code.find(L"[");
+			size_t end = format_code.rfind(L"]");
+
+			if (start != std::wstring::npos && end != std::wstring::npos)
+			{
+				format_code.erase(start, end - start + 1);
+				format_code.insert(start, strCurrencyLetter);
+			}
+			return SimpleTypes::Spreadsheet::celltypeCurrency;
 		}
 		if (std::wstring::npos != strFormatCode.find(L"%"))
 		{

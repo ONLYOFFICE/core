@@ -690,10 +690,10 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 			RtfFont oFont;
 			if( true == pDocument->m_oFontTable.GetFont( m_sGtextFont, oFont ) )
 			{
-				if( PROP_DEF != oFont.m_nCharset )
+				if (PROP_DEF != oFont.m_nCodePage)
+					nCodePage = oFont.m_nCodePage; 
+				else if( PROP_DEF != oFont.m_nCharset && oFont.m_nCharset > 2)
 					nCodePage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
-				else if( PROP_DEF != oFont.m_nCodePage )
-					nCodePage = oFont.m_nCodePage;
 			}
 		}
 

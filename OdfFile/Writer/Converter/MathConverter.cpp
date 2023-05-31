@@ -1439,7 +1439,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val;
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val);
 					sub_s_val.clear();
 				}
 				CREATE_MATH_TAG(L"mtext");
@@ -1448,7 +1448,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 
 			else if (w_val <= 57 && w_val >= 48)
@@ -1459,7 +1459,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val + L" ";
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1469,7 +1469,7 @@ namespace Oox2Odf
 				OPEN_MATH_TAG(elm);
 				
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
@@ -1479,7 +1479,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val + L" ";
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1489,7 +1489,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else // <mi>
 			{				
@@ -1502,7 +1502,7 @@ namespace Oox2Odf
 				elm->add_text(sub_s_val);
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += sub_s_val + L" ";
+				annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 			}
 		}	
 	}

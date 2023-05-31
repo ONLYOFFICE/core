@@ -932,35 +932,35 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"dc:creator")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_creator_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_creator_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_title_.empty())
 			{
 				CP_XML_NODE(L"dc:title")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_title_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_title_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_subject_.empty())
 			{
 				CP_XML_NODE(L"dc:subject")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_subject_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_subject_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_description_.empty())
 			{
 				CP_XML_NODE(L"dc:description")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_description_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_description_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_language_.empty())
 			{
 				CP_XML_NODE(L"dc:language")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_language_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_language_);
 				}
 			}
 			CP_XML_NODE(L"cp:lastModifiedBy")
@@ -978,7 +978,7 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"cp:keywords")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().keyword_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().keyword_);
 				}
 			}
 			if (odf_document_->odf_context().DocProps().revision_)

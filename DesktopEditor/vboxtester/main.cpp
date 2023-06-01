@@ -256,14 +256,14 @@ public:
     void WaitLoadVm(const std::string& sGuid)
     {
         // Wait success or 10 min
-        int iStep = 5000;
-        int iTime = 10 * 60 * 1000 / iStep;
+        int iSleep = 5000;
+        int iCount = 10 * 60 * 1000 / iSleep;
         if ( sGuid.length() )
         {
-            while ( (iTime > 0) && !IsVmLoggedIn(sGuid))
+            while ( (iCount > 0) && !IsVmLoggedIn(sGuid))
             {
-                NSThreads::Sleep(iStep);
-                iTime -= iStep;
+                NSThreads::Sleep(iSleep);
+                iCount--;
             }
         }
     }
@@ -271,20 +271,20 @@ public:
     bool WaitInstall(const std::string& sGuid)
     {
         // Wait success or 10 min
-        int iStep = 5000;
-        int iTime = 10 * 60 * 1000 / iStep;
+        int iSleep = 5000;
+        int iCount = 10 * 60 * 1000 / iSleep;
 
         if ( sGuid.length() )
         {
-            while ( (iTime > 0) && (IsProcessExists(sGuid, "dpkg") || IsProcessExists(sGuid, "apt") || !IsLocationExists(sGuid, m_sEditorsPath)) )
+            while ( (iCount > 0) && (IsProcessExists(sGuid, "dpkg") || IsProcessExists(sGuid, "apt") || !IsLocationExists(sGuid, m_sEditorsPath)) )
             {
-                NSThreads::Sleep(iStep);
-                iTime -= iStep;
+                NSThreads::Sleep(iSleep);
+                iCount--;
             }
         }
 
         // True - installation, False - timeout
-        return iTime > 0;
+        return iCount > 0;
     }
 
     bool StopVm(const std::string& sGuid, bool bSaveState = false)
@@ -515,12 +515,6 @@ public:
 
         if ( sGuid.length() && IsLocationExists(sGuid, m_sEditorsPath) )
         {
-            /*std::string sCommand = "guestcontrol " + sGuid +
-                                   " start --exe " + m_sEditorsPath +
-                                   " --username " + m_sVmUser +
-                                   " --password " + m_sVmPassword +
-                                   " --putenv DISPLAY=:0.0";*/
-
             std::string sRunScript = GetWorkingDir() + "/" + m_sRunScript;
 
             std::string sCommand = "guestcontrol " + sGuid +
@@ -793,8 +787,8 @@ int main(int argc, char** argv)
         std::string sGuid = pVm->m_sGuid;
         std::string sName = pVm->m_sName;
 
-        if ( sName != "Ubuntu20" )
-            continue;
+        //if ( sName != "Ubuntu16" )
+        //    continue;
 
         oTester.StartVm(sGuid);
         oTester.WaitLoadVm(sGuid);
@@ -828,10 +822,10 @@ int main(int argc, char** argv)
                 oTester.WriteReport(pVm, "installation - error, exit by timeout");
             }
 
-            //oTester.RemoveScripts(sGuid);
+            oTester.RemoveScripts(sGuid);
         }
 
-        //oTester.StopVm(sGuid);
+        oTester.StopVm(sGuid);
     }
 
     //oTester.RemoveReport();

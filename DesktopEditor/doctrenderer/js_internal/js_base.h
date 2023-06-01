@@ -77,6 +77,13 @@ namespace NSJSBase
 		virtual ~CJSEmbedObjectPrivateBase();
 	};
 
+	class JS_DECL CJSEmbedObjectAdapterBase
+	{
+	public:
+		CJSEmbedObjectAdapterBase();
+		virtual ~CJSEmbedObjectAdapterBase();
+	};
+
 	class JS_DECL CJSFunctionArguments
 	{
 	public:
@@ -97,12 +104,14 @@ namespace NSJSBase
 		virtual void* getObject();
         virtual std::vector<std::string> getMethodNames();
 		virtual void initFunctions();
-		virtual void* GetDataForEmbedObject(void* data);
+
+		virtual CJSEmbedObjectAdapterBase* getAdapter();
 
 		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args);
 
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
+		CJSEmbedObjectAdapterBase* m_pAdapter;
 		std::vector<EmbedFunctionType> m_functions;
 
 		friend class CJSEmbedObjectPrivateBase;
@@ -309,7 +318,7 @@ namespace NSJSBase
 #define DECLARE_EMBED_METHODS										\
 	static std::string getName();									\
 	static CJSEmbedObject* getCreator();							\
-	virtual void* GetDataForEmbedObject(void* data) override;		\
+	virtual CJSEmbedObjectAdapterBase* getAdapter() override;		\
 	_DECLARE_EMBED_EXTRA_METHODS
 
 #endif // _CORE_EXT_JS_BASE_H_

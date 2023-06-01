@@ -43,11 +43,22 @@ namespace NSZipEmbed
 	}
 }
 
-void* CZipEmbed::GetDataForEmbedObject(void* data)
+class CZipEmbedAdapter : public CJSEmbedObjectAdapterV8
 {
-	v8::Isolate* isolate = reinterpret_cast<v8::Isolate*>(data);
-	v8::Local<v8::ObjectTemplate>* internalTemplate = new v8::Local<v8::ObjectTemplate>(NSZipEmbed::CreateTemplate(isolate));
-	return reinterpret_cast<void*>(internalTemplate);
+public:
+	virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) override
+	{
+		v8::EscapableHandleScope handle_scope(isolate);
+		v8::Local<v8::ObjectTemplate> templ = NSZipEmbed::CreateTemplate(isolate);
+		return handle_scope.Escape(templ);
+	}
+};
+
+CJSEmbedObjectAdapterBase* CZipEmbed::getAdapter()
+{
+	if (m_pAdapter == nullptr)
+		m_pAdapter = new CZipEmbedAdapter();
+	return m_pAdapter;
 }
 
 std::vector<std::string> CZipEmbed::getMethodNames()

@@ -59,6 +59,7 @@ def generateV8InternalCode(class_name, methods, header_file):
 	code += "#define CURRENTWRAPPER " + class_name + "\n\n"
 	for method in methods:
 		code += "	FUNCTION_WRAPPER_V8_" + str(len(method.args)) + "(_" + method.name + ", " + method.name + ")\n"
+	code += "\n"
 	code += "	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)\n"
 	code += "	{\n"
 	code += "		v8::EscapableHandleScope handle_scope(isolate);\n"

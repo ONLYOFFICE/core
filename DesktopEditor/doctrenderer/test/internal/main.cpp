@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 1
+#if 0
 	// External embed example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext();
@@ -205,6 +205,58 @@ int main(int argc, char *argv[])
 	}
 	std::cout << std::endl;
 
+#endif
+
+#if 1
+	// Mixed embed example
+	JSSmart<CJSContext> oContext1 = new CJSContext();
+
+	// External CTestEmbed
+	CJSContextScope scope(oContext1);
+	CJSContext::Embed<CTestEmbed>();
+
+	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
+	std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
+	std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
+	std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionGet(); })();");
+	std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+
+	// Internal CHashEmbed
+	CreateDefaults();
+	oContext1->runScript(
+		"var oHash = CreateEmbedObject('CHashEmbed');\n"
+		"var str = 'test';\n"
+		"var hash = oHash.hash(str, str.length, 0);");
+
+	// Print hash
+	JSSmart<CJSObject> oGlobal = oContext1->GetGlobal();
+	JSSmart<CJSTypedArray> oHash = oGlobal->get("hash")->toTypedArray();
+	std::cout << "\nRESULTED HASH:\n";
+	for (int i = 0; i < oHash->getCount(); i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(oHash->getData().Data[i]);
+	}
+	std::cout << std::endl;
+
+	// Internal CZipEmbed
+	oContext1->runScript(
+		"var oZip = CreateEmbedObject('CZipEmbed');\n"
+		"var files = oZip.open('" CURR_DIR "');\n"
+		"oZip.close();");
+
+	// Print files
+	JSSmart<CJSArray> oFiles1 = oGlobal->get("files")->toArray();
+	std::cout << "\nFILES IN CURRENT DIRECTORY:\n";
+	for (int i = 0; i < oFiles1->getCount(); i++)
+	{
+		std::cout << oFiles1->get(i)->toStringA() << std::endl;
+	}
 #endif
 
 	return 0;

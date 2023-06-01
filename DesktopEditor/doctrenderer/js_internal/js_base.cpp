@@ -24,19 +24,29 @@ namespace NSJSBase {
 	{
 	}
 
+	CJSEmbedObjectAdapterBase::CJSEmbedObjectAdapterBase()
+	{
+	}
+
+	CJSEmbedObjectAdapterBase::~CJSEmbedObjectAdapterBase()
+	{
+	}
+
 	CJSEmbedObject::CJSEmbedObject()
 	{
-		embed_native_internal = NULL;
+		embed_native_internal = nullptr;
+		m_pAdapter = nullptr;
 	}
 
 	CJSEmbedObject::~CJSEmbedObject()
 	{
 		RELEASEOBJECT(embed_native_internal);
+		RELEASEOBJECT(m_pAdapter);
 	}
 
 	void* CJSEmbedObject::getObject()
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	std::vector<std::string> CJSEmbedObject::getMethodNames()
@@ -48,9 +58,9 @@ namespace NSJSBase {
 	{
 	}
 
-	void* CJSEmbedObject::GetDataForEmbedObject(void* data)
+	CJSEmbedObjectAdapterBase* CJSEmbedObject::getAdapter()
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)

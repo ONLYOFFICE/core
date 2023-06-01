@@ -831,6 +831,15 @@ namespace NSJSBase
 
 	// embed
 	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+	class CJSEmbedObjectAdapterV8 : public CJSEmbedObjectAdapterBase
+	{
+	public:
+		CJSEmbedObjectAdapterV8() = default;
+		virtual ~CJSEmbedObjectAdapterV8() = default;
+
+		virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) = 0;
+	};
 }
 
 namespace NSJSBase
@@ -879,6 +888,7 @@ namespace NSJSBase
 
 		static void CreateWeaker(v8::Local<v8::Object> obj)
 		{
+			// ???
 			new CJSEmbedObjectPrivate(obj);
 		}
 	};

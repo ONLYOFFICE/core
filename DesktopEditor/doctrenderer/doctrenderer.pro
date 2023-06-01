@@ -17,6 +17,7 @@ DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
+#CONFIG += v8_version_60
 core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
 HEADERS += \

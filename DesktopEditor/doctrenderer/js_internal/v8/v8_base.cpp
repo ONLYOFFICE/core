@@ -554,12 +554,11 @@ namespace NSJSBase
 		}
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-		v8::Handle<v8::ObjectTemplate> oCurTemplate;
-		void* pInternalTemplate = pNativeObj->GetDataForEmbedObject((void*)isolate);
-		if (pInternalTemplate)
+		v8::Local<v8::ObjectTemplate> oCurTemplate;
+		CJSEmbedObjectAdapterV8* pAdapter = dynamic_cast<CJSEmbedObjectAdapterV8*>(pNativeObj->getAdapter());
+		if (pAdapter)
 		{
-			oCurTemplate = *reinterpret_cast<v8::Local<v8::ObjectTemplate>*>(pInternalTemplate);
-			delete pInternalTemplate;
+			oCurTemplate = pAdapter->getTemplate(isolate);
 		}
 		else
 		{

@@ -23,11 +23,22 @@ namespace NSHashEmbed
 	}
 }
 
-void* CHashEmbed::GetDataForEmbedObject(void* data)
+class CHashEmbedAdapter : public CJSEmbedObjectAdapterV8
 {
-	v8::Isolate* isolate = reinterpret_cast<v8::Isolate*>(data);
-	v8::Local<v8::ObjectTemplate>* internalTemplate = new v8::Local<v8::ObjectTemplate>(NSHashEmbed::CreateTemplate(isolate));
-	return reinterpret_cast<void*>(internalTemplate);
+public:
+	virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) override
+	{
+		v8::EscapableHandleScope handle_scope(isolate);
+		v8::Local<v8::ObjectTemplate> templ = NSHashEmbed::CreateTemplate(isolate);
+		return handle_scope.Escape(templ);
+	}
+};
+
+CJSEmbedObjectAdapterBase* CHashEmbed::getAdapter()
+{
+	if (m_pAdapter == nullptr)
+		m_pAdapter = new CHashEmbedAdapter();
+	return m_pAdapter;
 }
 
 std::vector<std::string> CHashEmbed::getMethodNames()

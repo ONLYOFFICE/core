@@ -43,11 +43,20 @@ FUNCTION_WRAPPER_JS_2(encodeImage, encodeImage)
 FUNCTION_WRAPPER_JS_1(getImageType, getImageType)
 @end
 
-void* CZipEmbed::GetDataForEmbedObject(void* data)
+class CZipEmbedAdapter : public CJSEmbedObjectAdapterJSC
 {
-	CZipEmbed* pNativeObj = reinterpret_cast<CZipEmbed*>(data);
-	CJSCZipEmbed* pEmbedObj = [[CJSCZipEmbed alloc] init:pNativeObj];
-	return (void*)CFBridgingRetain(pEmbedObj);
+public:
+	id getExportedObject(CJSEmbedObject* pNative)
+	{
+		return [[CJSCZipEmbed alloc] init:(CZipEmbed*)pNative];
+	}
+};
+
+CJSEmbedObjectAdapterBase* CZipEmbed::getAdapter()
+{
+	if (m_pAdapter == nullptr)
+		m_pAdapter = new CZipEmbedAdapter();
+	return m_pAdapter;
 }
 
 std::string CZipEmbed::getName() { return "CZipEmbed"; }

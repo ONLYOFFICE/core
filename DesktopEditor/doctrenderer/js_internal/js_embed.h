@@ -43,6 +43,21 @@
 	return m_internal;                          \
 }
 
+namespace NSJSBase
+{
+	class JS_DECL CJSEmbedObjectAdapterJSC : public CJSEmbedObjectAdapterBase
+	{
+	public:
+		CJSEmbedObjectAdapterJSC() = default;
+		virtual ~CJSEmbedObjectAdapterJSC() = default;
+
+		virtual id getExportedObject(CJSEmbedObject* pNative) = 0;
+
+		static JSSmart<CJSValue> Native2Value(JSValue* value);
+		static JSValue* Value2Native(JSSmart<CJSValue> value);
+	};
+}
+
 #endif
 
 #endif // _BUILD_NATIVE_CONTROL_JS_EMBED_H_

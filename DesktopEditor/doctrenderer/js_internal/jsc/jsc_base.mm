@@ -456,17 +456,19 @@ namespace NSJSBase
 		// TODO: singleton check ?
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
-		id pEmbedObj = (id)CFBridgingRelease(pNativeObj->GetDataForEmbedObject(pNativeObj));
+		CJSEmbedObjectAdapterJSC* pAdapter = static_cast<CJSEmbedObjectAdapterJSC*>(pNativeObj->getAdapter());
+		id pEmbedObj = pAdapter->getExportedObject(pNativeObj);
 
 		return pEmbedObj;
 	}
 
-	JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue)
+	JSSmart<CJSValue> CJSEmbedObjectAdapterJSC::Native2Value(JSValue* value)
 	{
-		return js_value((__bridge JSValue*)jsValue);
+		return js_value(value);
 	}
-	void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue)
+
+	JSValue* CJSEmbedObjectAdapterJSC::Value2Native(JSSmart<CJSValue> value)
 	{
-		return (__bridge void*)js_return(smartValue);
+		return js_return(value);
 	}
 }

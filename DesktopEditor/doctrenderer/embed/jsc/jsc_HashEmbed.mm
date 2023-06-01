@@ -23,11 +23,20 @@ FUNCTION_WRAPPER_JS_3(hash, hash)
 FUNCTION_WRAPPER_JS_4(hash2, hash2)
 @end
 
-void* CHashEmbed::GetDataForEmbedObject(void* data)
+class CHashEmbedAdapter : public CJSEmbedObjectAdapterJSC
 {
-	CHashEmbed* pNativeObj = reinterpret_cast<CHashEmbed*>(data);
-	CJSCHashEmbed* pEmbedObj = [[CJSCHashEmbed alloc] init:pNativeObj];
-	return (void*)CFBridgingRetain(pEmbedObj);
+public:
+	id getExportedObject(CJSEmbedObject* pNative)
+	{
+		return [[CJSCHashEmbed alloc] init:(CHashEmbed*)pNative];
+	}
+};
+
+CJSEmbedObjectAdapterBase* CHashEmbed::getAdapter()
+{
+	if (m_pAdapter == nullptr)
+		m_pAdapter = new CHashEmbedAdapter();
+	return m_pAdapter;
 }
 
 std::string CHashEmbed::getName() { return "CHashEmbed"; }

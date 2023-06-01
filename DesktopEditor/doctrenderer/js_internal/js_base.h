@@ -237,7 +237,7 @@ namespace NSJSBase
 		void Enter();
 		void Exit();
 
-		// Use this method for embedding external objects
+		// Use this method for embedding objects into JS context
 		template<typename T>
 		static void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
 		{
@@ -299,11 +299,6 @@ namespace NSJSBase
 		CJSContextScope(JSSmart<CJSContext> context);
 		~CJSContextScope();
 	};
-
-#ifdef JS_ENGINE_JAVASCRIPTCORE
-	JS_DECL JSSmart<NSJSBase::CJSValue> Native2Value(void* jsValue);
-	JS_DECL void* Value2Native(JSSmart<NSJSBase::CJSValue> smartValue);
-#endif
 }
 
 // defines for embed

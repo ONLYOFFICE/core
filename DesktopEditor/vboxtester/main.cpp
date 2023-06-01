@@ -32,6 +32,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <array>
 #include <algorithm>
 
@@ -123,6 +124,16 @@ public:
         m_sGuid = sGuid;
         m_sGuestOS = sGuestOS;
     }
+
+    std::string ToString()
+    {
+        std::stringstream sInfo;
+
+        if ( m_sName.length() && m_sGuid.length() && m_sGuestOS.length() )
+            sInfo << m_sName << "-" << m_sGuestOS << "-" << m_sGuid;
+
+        return sInfo.str();
+    }
 };
 
 class CVirtualBox
@@ -132,19 +143,26 @@ private:
 
     std::string m_sVmUser;
     std::string m_sVmPassword;
-    std::string m_sDesktopUrl;
-    std::string m_sScriptName;
+    std::string m_sDesktopUrl;    
+    std::string m_sReportName;
     std::string m_sEditorsPath;
+
+    std::string m_sRunScript;
+    std::string m_sSetupScript;
 
     std::vector<CVm*> m_arrVms;
 
 public:
     CVirtualBox()
     {
-        m_sVmUser = "";
-        m_sVmPassword = "";
+        m_sVmUser = "dmitry";
+        m_sVmPassword = "Dm-23";
 
-        m_sScriptName = "script";
+        m_sRunScript = "run";
+        m_sSetupScript = "setup";
+
+        m_sReportName = "report.txt";
+
         m_sEditorsPath = "/opt/onlyoffice/desktopeditors/DesktopEditors";
 
         // test url, need parse somewhere
@@ -237,26 +255,36 @@ public:
 
     void WaitLoadVm(const std::string& sGuid)
     {
+        // Wait success or 10 min
+        int iStep = 5000;
+        int iTime = 10 * 60 * 1000 / iStep;
         if ( sGuid.length() )
         {
-            while (!IsVmLoggedIn(sGuid))
+            while ( (iTime > 0) && !IsVmLoggedIn(sGuid))
             {
-                NSThreads::Sleep(1000);
+                NSThreads::Sleep(iStep);
+                iTime -= iStep;
             }
         }
     }
 
-    void WaitInstall(const std::string& sGuid)
+    bool WaitInstall(const std::string& sGuid)
     {
+        // Wait success or 10 min
+        int iStep = 5000;
+        int iTime = 10 * 60 * 1000 / iStep;
+
         if ( sGuid.length() )
         {
-            while ( IsProcessExists(sGuid, "dpkg") ||
-                    IsProcessExists(sGuid, "apt") ||
-                   !IsLocationExists(sGuid, m_sEditorsPath) )
+            while ( (iTime > 0) && (IsProcessExists(sGuid, "dpkg") || IsProcessExists(sGuid, "apt") || !IsLocationExists(sGuid, m_sEditorsPath)) )
             {
-                NSThreads::Sleep(1000);
+                NSThreads::Sleep(iStep);
+                iTime -= iStep;
             }
         }
+
+        // True - installation, False - timeout
+        return iTime > 0;
     }
 
     bool StopVm(const std::string& sGuid, bool bSaveState = false)
@@ -280,6 +308,7 @@ public:
 
         if ( sGuid.length() )
         {
+            // not works on Ubuntu 20
             std::string sCommand = "guestcontrol " + sGuid +
                                    " run --exe /usr/bin/whoami" +
                                    " --username " + m_sVmUser +
@@ -288,23 +317,37 @@ public:
 
             std::string sOutput = ExecuteCommand(sCommand);
 
-            bResult = sOutput.find(m_sVmUser) != std::string::npos;
+            bool bWhoami = sOutput.find(m_sVmUser) != std::string::npos;
+
+            sCommand = "guestcontrol " + sGuid +
+                                   " run --exe /usr/bin/uptime" +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --wait-stdout";
+
+            sOutput = ExecuteCommand(sCommand);
+
+            bool bUptime = sOutput.find("user") != std::string::npos;
+
+            bResult = bWhoami || bUptime;
         }
 
         return bResult;
     }
 
-    bool GetScreenshot(const std::string& sGuid, const std::string& sFilePath)
+    bool SaveScreenshot(CVm* pVm)
     {
         bool bResult = false;
 
-        if ( sGuid.length() )
+        if ( pVm )
         {
+            std::string sFilePath = GetReportDir() + "/" + pVm->m_sGuid + ".png";
+
             if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath)) )
                 NSFile::CFileBinary::Remove(UTF8_TO_U(sFilePath));
 
-            std::string sCcommand = "controlvm " + sGuid + " screenshotpng " + sFilePath;
-            std::string sOutput = ExecuteCommand(sCcommand);
+            std::string sCommand = "controlvm " + pVm->m_sGuid + " screenshotpng " + sFilePath;
+            std::string sOutput = ExecuteCommand(sCommand);
 
             bResult = NSFile::CFileBinary::Exists(UTF8_TO_U(sFilePath));
         }
@@ -362,8 +405,8 @@ public:
 
             std::string sOutput = ExecuteCommand(sCommand);
 
-            // Wait flush to disk. This problem with wget and curl
-            NSThreads::Sleep(30000);
+            // Wait flush to disk. This problem with wget and curl. Wait min
+            NSThreads::Sleep(60000);
 
             bResult = true;
             // sOutput is empty...
@@ -373,13 +416,14 @@ public:
         return bResult;
     }
 
-    bool CopyScriptVm(const std::string& sGuid)
+    bool CopyScripts(const std::string& sGuid)
     {
         bool bResult = false;
 
         if ( sGuid.length() )
         {
-            std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + m_sScriptName;
+            // Setup
+            std::string sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + m_sSetupScript;
             std::string sDistribFile = GetFileName(m_sDesktopUrl);
 
             if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
@@ -396,13 +440,37 @@ public:
             oFile.WriteStringUTF8(UTF8_TO_U(sData));
             oFile.CloseFile();
 
-            // ! not works with double quoted file path, need check in documentation
             std::string sCommand = "guestcontrol " + sGuid +
                                    " --username " + m_sVmUser +
                                    " --password " + m_sVmPassword +
-                                   " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + m_sScriptName;
+                                   " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + m_sSetupScript;
 
             std::string sOutput = ExecuteCommand(sCommand);
+
+            NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+
+            // Run
+            sScriptPath = U_TO_UTF8(NSDirectory::GetTempPath()) + "/" + m_sRunScript;
+
+            if ( NSFile::CFileBinary::Exists(UTF8_TO_U(sScriptPath)) )
+                NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
+
+            std::string sEditorsFolder = m_sEditorsPath;
+            NSStringUtils::string_replaceA(sEditorsFolder, GetFileName(m_sEditorsPath), "");
+
+            sData =  "#!/bin/bash\n" \
+                     "LP_LIBRARY_PATH=" + sEditorsFolder + " " + m_sEditorsPath;
+
+            bResult = oFile.CreateFileW(UTF8_TO_U(sScriptPath));
+            oFile.WriteStringUTF8(UTF8_TO_U(sData));
+            oFile.CloseFile();
+
+            sCommand = "guestcontrol " + sGuid +
+                       " --username " + m_sVmUser +
+                       " --password " + m_sVmPassword +
+                       " copyto " + sScriptPath + " " + GetWorkingDir() + "/" + m_sRunScript;
+
+            sOutput = ExecuteCommand(sCommand);
 
             NSFile::CFileBinary::Remove(UTF8_TO_U(sScriptPath));
         }
@@ -410,24 +478,31 @@ public:
         return bResult;
     }
 
-    bool RemoveScriptVm(const std::string& sGuid)
+    bool RemoveScripts(const std::string& sGuid)
     {
-        bool bResult = false;
+        bool bResult = true;
 
         if ( sGuid.length() )
         {
-            std::string sScriptPath = GetWorkingDir() + "/" + m_sScriptName;
+            std::vector<std::string> arrScipts;
+            arrScipts.push_back(m_sRunScript);
+            arrScipts.push_back(m_sSetupScript);
 
-            if ( IsLocationExists(sGuid, sScriptPath) )
+            for (size_t i = 0; i < arrScipts.size(); i++)
             {
-                std::string sCommand = "guestcontrol " + sGuid +
-                                       " --username " + m_sVmUser +
-                                       " --password " + m_sVmPassword +
-                                       " rm " + sScriptPath;
+                std::string sScriptPath = GetWorkingDir() + "/" + arrScipts[i];
 
-                std::string sOutput = ExecuteCommand(sCommand);
+                if ( IsLocationExists(sGuid, sScriptPath) )
+                {
+                    std::string sCommand = "guestcontrol " + sGuid +
+                                           " --username " + m_sVmUser +
+                                           " --password " + m_sVmPassword +
+                                           " rm " + sScriptPath;
 
-                bResult = !IsLocationExists(sGuid, sScriptPath);
+                    std::string sOutput = ExecuteCommand(sCommand);
+
+                    bResult &= !IsLocationExists(sGuid, sScriptPath);
+                }
             }
         }
 
@@ -440,8 +515,16 @@ public:
 
         if ( sGuid.length() && IsLocationExists(sGuid, m_sEditorsPath) )
         {
-            std::string sCommand = "guestcontrol " + sGuid +
+            /*std::string sCommand = "guestcontrol " + sGuid +
                                    " start --exe " + m_sEditorsPath +
+                                   " --username " + m_sVmUser +
+                                   " --password " + m_sVmPassword +
+                                   " --putenv DISPLAY=:0.0";*/
+
+            std::string sRunScript = GetWorkingDir() + "/" + m_sRunScript;
+
+            std::string sCommand = "guestcontrol " + sGuid +
+                                   " start " + sRunScript +
                                    " --username " + m_sVmUser +
                                    " --password " + m_sVmPassword +
                                    " --putenv DISPLAY=:0.0";
@@ -461,10 +544,13 @@ public:
 
         if ( sGuid.length() )
         {
-            std::string sScriptPath = GetWorkingDir() + "/" + m_sScriptName;
+            std::string sRunScript = GetWorkingDir() + "/" + m_sRunScript;
+            std::string sInstallScript = GetWorkingDir() + "/" + m_sSetupScript;
             std::string sDistribPath = GetWorkingDir() + "/" + GetFileName(m_sDesktopUrl);
 
-            bResult = IsLocationExists(sGuid, sScriptPath) && IsLocationExists(sGuid, sDistribPath);
+            bResult = IsLocationExists(sGuid, sRunScript) &&
+                      IsLocationExists(sGuid, sInstallScript) &&
+                      IsLocationExists(sGuid, sDistribPath);
         }
 
         return bResult;
@@ -522,6 +608,46 @@ public:
         }
 
         return bResult;
+    }
+
+    // Report
+    std::string GetReportDir()
+    {
+        std::string sAppPath = U_TO_UTF8(NSFile::GetProcessDirectory());
+        sAppPath += "/report";
+
+        if ( !NSDirectory::Exists(UTF8_TO_U(sAppPath)) )
+            NSDirectory::CreateDirectory(UTF8_TO_U(sAppPath));
+
+        return sAppPath;
+    }
+
+    void CreateReport()
+    {
+        std::ofstream oFile;
+        std::string sReportPath = GetReportDir() + "/" + m_sReportName;
+        oFile.open(sReportPath, std::ofstream::out | std::ofstream::trunc);
+        oFile.close();
+    }
+
+    void WriteReport(CVm* pVm, const std::string& sText)
+    {
+        if ( pVm && sText.length() )
+        {
+            std::string sInfo = pVm->ToString() + " -> " + sText;
+
+            std::ofstream oFile;
+            std::string sReportPath = GetReportDir() + "/" + m_sReportName;
+            oFile.open(sReportPath, std::ios_base::app);
+            oFile << sInfo.c_str() << std::endl;
+            oFile.close();
+        }
+    }
+
+    void RemoveReport()
+    {
+        if ( NSDirectory::Exists(UTF8_TO_U(GetReportDir())) )
+            NSDirectory::DeleteDirectory(UTF8_TO_U(GetReportDir()));
     }
 
 private:
@@ -611,15 +737,15 @@ private:
         return sStatus;
     }
 
-    std::string GetFileName(const std::string& sFile)
+    std::string GetFileName(const std::string& sPath)
     {
         std::string sName = "";
 
-        if ( sFile.length() )
+        if ( sPath.length() )
         {
             std::vector<std::string> arrParts;
 
-            if ( SplitStringAsVector(sFile, "/", arrParts) )
+            if ( SplitStringAsVector(sPath, "/", arrParts) )
                 sName = arrParts[arrParts.size() - 1];
         }
 
@@ -658,38 +784,57 @@ int main(int argc, char** argv)
     CVirtualBox oTester;
     oTester.InitVms();
 
+    oTester.CreateReport();
     std::vector<CVm*> arrLinux = oTester.GetLinuxVms();
+
     for (size_t i = 0; i < arrLinux.size(); i++)
     {
-        std::string sGuid = arrLinux[i]->m_sGuid;
+        CVm* pVm = arrLinux[i];
+        std::string sGuid = pVm->m_sGuid;
+        std::string sName = pVm->m_sName;
+
+        if ( sName != "Ubuntu20" )
+            continue;
 
         oTester.StartVm(sGuid);
         oTester.WaitLoadVm(sGuid);
 
         oTester.PrepareWorkingDir(sGuid);
 
-        oTester.CopyScriptVm(sGuid);
+        oTester.CopyScripts(sGuid);
         oTester.DownloadDistrib(sGuid);
 
         if ( oTester.IsReadyReset(sGuid) )
         {
             oTester.ResetVm(sGuid);
             oTester.WaitLoadVm(sGuid);
-            oTester.WaitInstall(sGuid);
 
-            oTester.RunEditors(sGuid);
-
-            if ( oTester.IsEditorsRunned(sGuid) )
+            if ( oTester.WaitInstall(sGuid) )
             {
-                // Check successful or not
-                //oTester.GetScreenshot(sGuid, "c:\\Tmp\\123.png");
+                oTester.WriteReport(pVm, "installation - ok");
+
+                oTester.RunEditors(sGuid);
+
+                if ( oTester.IsEditorsRunned(sGuid) )
+                {
+                    // Check successful or not
+                    // Need more checks such as logs etc.
+
+                    oTester.SaveScreenshot(pVm);
+                }
+            }
+            else
+            {
+                oTester.WriteReport(pVm, "installation - error, exit by timeout");
             }
 
-            oTester.RemoveScriptVm(sGuid);
+            //oTester.RemoveScripts(sGuid);
         }
 
-        oTester.StopVm(sGuid);
+        //oTester.StopVm(sGuid);
     }
+
+    //oTester.RemoveReport();
 
     // Parse arguments
     for (int i = 0; i < argc; ++i)

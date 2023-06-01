@@ -277,7 +277,7 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 		{
 			return SimpleTypes::Spreadsheet::celltypeDateTime;
 		}
-		if (b1 && result1.size() > 2)
+        if (b1 && result1.size() >= 2)
 		{
 			return SimpleTypes::Spreadsheet::celltypeTime;
 		}
@@ -349,9 +349,18 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 			if (bTime)
 			{
-				time_str = (hours < 10 ? L"0" : L"") + std::to_wstring(hours) + L":" +
-					(minutes < 10 ? L"0" : L"") + std::to_wstring(minutes) + L":" +
-					(sec < 10 ? L"0" : L"") + std::to_wstring((int)sec);
+				std::wstringstream wss;
+
+				std::time_t now = std::time(nullptr);
+				std::tm* currentTime = std::localtime(&now);
+				currentTime->tm_hour = hours;     // Устанавливаем часы
+				currentTime->tm_min = minutes;    // Устанавливаем минуты
+				currentTime->tm_sec = sec;    // Устанавливаем секунды
+
+				wss.imbue(loc_);
+				wss << std::put_time(currentTime, L"%X");  // Формат "%X" - формат времени для текущей локали
+
+				time_str = wss.str();
 			}
 			return (bDate ? date_str : L"") + (bDate & bTime ? L" " : L"") + (bTime ? time_str : L"");
 		}
@@ -752,7 +761,8 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 							int numFmt = xfs->m_oNumFmtId->GetValue();
 
 							GetDefaultFormatCode(numFmt, format_code, format_type);
-
+							auto formatTypeIsDateTime = (*format_type == SimpleTypes::Spreadsheet::celltypeDate ||
+								*format_type == SimpleTypes::Spreadsheet::celltypeDateTime ||  SimpleTypes::Spreadsheet::celltypeTime);
 							if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
 							{
 								std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
@@ -764,7 +774,15 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 										if (fmt->m_oFormatCode.IsInit())
 											format_code = *fmt->m_oFormatCode;
 									}
+									else if(formatTypeIsDateTime)
+									{
+										format_code = L"";
+									}
 								}
+							}
+							else if(formatTypeIsDateTime) // если формат даты не задан явно, удаляем его и записываем дату в локальном формате
+							{
+								format_code = L"";
 							}
 						}
 					}

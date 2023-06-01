@@ -29,15 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "XlSXTableController.h"
+#include "XLSXTableController.h"
 
 #include "../../../../XlsxFormat/Workbook/Sheets.h"
-#include "../../../XlsxFormat/Workbook/Workbook.h"
-#include "../../../../Common/OfficeFileErrorDescription.h"
+#include "../../../../XlsxFormat/Workbook/Workbook.h"
+#include "../../../../../Common/OfficeFileErrorDescription.h"
 
-#include "../../../XlsxFormat/Styles/Styles.h"
-#include "../../../XlsxFormat/Styles/NumFmts.h"
-#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../../XlsxFormat/Styles/Styles.h"
+#include "../../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../../XlsxFormat/Styles/Xfs.h"
 
 constexpr auto SheetName = L"Sheet";
 

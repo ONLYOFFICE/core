@@ -1005,6 +1005,13 @@ private:
                 if ( !NSDirectory::Exists(sPluginDir) )
                     sPluginDir = pPlugin->m_sDir;
 
+                // Debug
+                if (bPrint)
+                {
+                    Message(L"Plugin folder: " + sPluginDir);
+                    Message(L"Plugin native folder: " + pPlugin->m_sDir);
+                }
+
                 if (NSDirectory::Exists(sPluginDir))
                 {
                     if (bBackup)

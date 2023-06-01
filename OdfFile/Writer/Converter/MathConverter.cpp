@@ -909,7 +909,8 @@ namespace Oox2Odf
 	bool OoxConverter::convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_fname) return false;
-		bool result;
+		
+		bool result = false;
 		for (size_t i = 0; i < oox_fname->m_arrItems.size(); ++i)
 		{
 			if (oox_fname->m_arrItems[i]->getType() == OOX::et_m_limLow)
@@ -1372,7 +1373,7 @@ namespace Oox2Odf
 				{
 					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
 					
-					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
 				}	
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
@@ -1438,7 +1439,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val;
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val);
 					sub_s_val.clear();
 				}
 				CREATE_MATH_TAG(L"mtext");
@@ -1447,7 +1448,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 
 			else if (w_val <= 57 && w_val >= 48)
@@ -1458,7 +1459,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val + L" ";
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1468,7 +1469,7 @@ namespace Oox2Odf
 				OPEN_MATH_TAG(elm);
 				
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
@@ -1478,7 +1479,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += sub_s_val + L" ";
+					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1488,7 +1489,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += std::wstring(1, s_val[i]) + L" ";
+				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else // <mi>
 			{				
@@ -1501,7 +1502,7 @@ namespace Oox2Odf
 				elm->add_text(sub_s_val);
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += sub_s_val + L" ";
+				annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 			}
 		}	
 	}

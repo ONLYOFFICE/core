@@ -283,6 +283,10 @@ namespace OOX
 				}
 				pItem = pEndRef;
 			}
+			else if (L"r" == sName)
+			{
+				fromXMLElems(oReader);
+			}
 			else if (L"tbl" == sName)
 			{//ERP
 				CParagraph *paragraph = dynamic_cast<CParagraph*>(m_oParent);

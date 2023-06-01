@@ -26,7 +26,7 @@ FUNCTION_WRAPPER_JS_4(hash2, hash2)
 class CHashEmbedAdapter : public CJSEmbedObjectAdapterJSC
 {
 public:
-	id getExportedObject(CJSEmbedObject* pNative)
+	virtual id getExportedObject(CJSEmbedObject* pNative) override
 	{
 		return [[CJSCHashEmbed alloc] init:(CHashEmbed*)pNative];
 	}

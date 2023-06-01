@@ -46,7 +46,7 @@ FUNCTION_WRAPPER_JS_1(getImageType, getImageType)
 class CZipEmbedAdapter : public CJSEmbedObjectAdapterJSC
 {
 public:
-	id getExportedObject(CJSEmbedObject* pNative)
+	virtual id getExportedObject(CJSEmbedObject* pNative) override
 	{
 		return [[CJSCZipEmbed alloc] init:(CZipEmbed*)pNative];
 	}

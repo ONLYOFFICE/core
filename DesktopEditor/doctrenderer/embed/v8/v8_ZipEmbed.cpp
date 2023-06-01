@@ -20,6 +20,7 @@ namespace NSZipEmbed
 	FUNCTION_WRAPPER_V8_6(_encodeImageData, encodeImageData)
 	FUNCTION_WRAPPER_V8_2(_encodeImage, encodeImage)
 	FUNCTION_WRAPPER_V8_1(_getImageType, getImageType)
+
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
 		v8::EscapableHandleScope handle_scope(isolate);

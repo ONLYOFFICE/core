@@ -23,10 +23,7 @@ void CTestEmbed::initFunctions()
 	};
 }
 
-CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter()
-{
-	return nullptr;
-}
+CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter() { return nullptr; }
 
 std::string CTestEmbed::getName() { return "CTestEmbed"; }
 

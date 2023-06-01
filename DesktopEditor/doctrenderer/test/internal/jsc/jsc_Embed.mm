@@ -50,7 +50,7 @@ EMBED_OBJECT_WRAPPER_METHODS(CTestEmbed);
 class CTestEmbedAdapter : public CJSEmbedObjectAdapterJSC
 {
 public:
-	id getExportedObject(CJSEmbedObject* pNative)
+	virtual id getExportedObject(CJSEmbedObject* pNative) override
 	{
 		return [[CJSCTestEmbed alloc] init:(CTestEmbed*)pNative];
 	}

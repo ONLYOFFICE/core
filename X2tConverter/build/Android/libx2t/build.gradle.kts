@@ -168,8 +168,13 @@ tasks.create("copyIcuDatFiles") {
             throw GradleException("Property PATH_SRC_ICU_V8_DAT_FILE with core repository path doesn't exist...")
         }
 
+        if (!project.hasProperty("PATH_SRC_ICU_V8_EXTRA_DAT_FILE")) {
+            throw GradleException("Property PATH_SRC_ICU_V8_EXTRA_DAT_FILE with core repository path doesn't exist...")
+        }
+
         val pathIcuDatFiles = project.extra.get("PATH_SRC_ICU_DAT_FILE") as String
         val pathIcuV8DatFiles = project.extra.get("PATH_SRC_ICU_V8_DAT_FILE") as String
+        val pathIcuV8DatExtraFiles = project.extra.get("PATH_SRC_ICU_V8_EXTRA_DAT_FILE") as String
 
         if (!file(pathIcuDatFiles).exists()) {
             throw GradleException("Path with build_tools repository doesn't exist...")
@@ -179,9 +184,13 @@ tasks.create("copyIcuDatFiles") {
             throw GradleException("Path with core repository doesn't exist...")
         }
 
+        if (!file(pathIcuV8DatExtraFiles).exists()) {
+            throw GradleException("Path with core repository doesn't exist...")
+        }
+        
         copy {
             println("\nCopy dat files...")
-            from(pathIcuDatFiles, pathIcuV8DatFiles)
+            from(pathIcuDatFiles, pathIcuV8DatFiles, pathIcuV8DatExtraFiles)
             into(pathAssets)
         }
     }

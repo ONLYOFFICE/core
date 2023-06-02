@@ -49,23 +49,9 @@ namespace NSJSBase {
 		return nullptr;
 	}
 
-	std::vector<std::string> CJSEmbedObject::getMethodNames()
-	{
-		return std::vector<std::string>();
-	}
-
-	void CJSEmbedObject::initFunctions()
-	{
-	}
-
 	CJSEmbedObjectAdapterBase* CJSEmbedObject::getAdapter()
 	{
 		return nullptr;
-	}
-
-	JSSmart<CJSValue> CJSEmbedObject::Call(const int& index, CJSFunctionArguments* args)
-	{
-		return m_functions[index](args);
 	}
 
 	void CJSContext::AddEmbedCreator(const std::string& name,

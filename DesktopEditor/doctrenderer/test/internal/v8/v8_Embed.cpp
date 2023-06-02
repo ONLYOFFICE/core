@@ -2,28 +2,38 @@
 // IF YOU NEED TO UPDATE THIS CODE, JUST RERUN PYTHON SCRIPT.
 
 #include "../Embed.h"
+#include "js_embed.h"
 
-std::vector<std::string> CTestEmbed::getMethodNames()
+class CTestEmbedAdapter : public CJSEmbedObjectAdapterV8
 {
-	return std::vector<std::string> {
-		"FunctionSum",
-		"FunctionSquare",
-		"FunctionDel",
-		"FunctionGet"
-	};
-}
+public:
+	virtual std::vector<std::string> getMethodNames() override
+	{
+		return std::vector<std::string> {
+			"FunctionSum",
+			"FunctionSquare",
+			"FunctionDel",
+			"FunctionGet"
+		};
+	}
 
-void CTestEmbed::initFunctions()
-{
-	m_functions = std::vector<EmbedFunctionType> {
-		[this](CJSFunctionArguments* args) { return this->FunctionSum(args->Get(0), args->Get(1)); },
-		[this](CJSFunctionArguments* args) { return this->FunctionSquare(args->Get(0)); },
-		[this](CJSFunctionArguments* args) { return this->FunctionDel(args->Get(0), args->Get(1)); },
-		[this](CJSFunctionArguments* args) { return this->FunctionGet(); }
-	};
-}
+	virtual void initFunctions(CJSEmbedObject* pNativeObjBase) override
+	{
+		CTestEmbed* pNativeObj = static_cast<CTestEmbed*>(pNativeObjBase);
+		m_functions = std::vector<EmbedFunctionType> {
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionSum(args->Get(0), args->Get(1)); },
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionSquare(args->Get(0)); },
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionDel(args->Get(0), args->Get(1)); },
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionGet(); }
+		};
+	}
+};
 
-CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter() { return nullptr; }
+CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter() {
+	if (m_pAdapter == nullptr)
+		m_pAdapter = new CTestEmbedAdapter();
+	return m_pAdapter;
+}
 
 std::string CTestEmbed::getName() { return "CTestEmbed"; }
 

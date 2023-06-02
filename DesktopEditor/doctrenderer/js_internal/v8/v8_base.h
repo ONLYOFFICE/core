@@ -5,6 +5,7 @@
 #include "inspector/inspector_pool.h"
 #endif
 
+#include "../js_embed.h"
 #include "../js_base.h"
 #include "../js_base_p.h"
 #include "../js_logger.h"
@@ -832,11 +833,11 @@ namespace NSJSBase
 	// embed
 	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-	class CJSEmbedObjectAdapterV8 : public CJSEmbedObjectAdapterBase
+	class CJSEmbedObjectAdapterV8Template : public CJSEmbedObjectAdapterBase
 	{
 	public:
-		CJSEmbedObjectAdapterV8() = default;
-		virtual ~CJSEmbedObjectAdapterV8() = default;
+		CJSEmbedObjectAdapterV8Template() = default;
+		virtual ~CJSEmbedObjectAdapterV8Template() = default;
 
 		virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) = 0;
 	};

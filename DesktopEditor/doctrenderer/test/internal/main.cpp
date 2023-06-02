@@ -209,6 +209,7 @@ int main(int argc, char *argv[])
 
 #if 1
 	// Mixed embed example
+
 	JSSmart<CJSContext> oContext1 = new CJSContext();
 
 	// External CTestEmbed
@@ -257,6 +258,7 @@ int main(int argc, char *argv[])
 	{
 		std::cout << oFiles1->get(i)->toStringA() << std::endl;
 	}
+
 #endif
 
 	return 0;

@@ -24,7 +24,7 @@ namespace NSHashEmbed
 	}
 }
 
-class CHashEmbedAdapter : public CJSEmbedObjectAdapterV8
+class CHashEmbedAdapter : public CJSEmbedObjectAdapterV8Template
 {
 public:
 	virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) override
@@ -40,15 +40,6 @@ CJSEmbedObjectAdapterBase* CHashEmbed::getAdapter()
 	if (m_pAdapter == nullptr)
 		m_pAdapter = new CHashEmbedAdapter();
 	return m_pAdapter;
-}
-
-std::vector<std::string> CHashEmbed::getMethodNames()
-{
-	return std::vector<std::string>();
-}
-
-void CHashEmbed::initFunctions()
-{
 }
 
 std::string CHashEmbed::getName() { return "CHashEmbed"; }

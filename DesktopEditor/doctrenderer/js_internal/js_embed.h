@@ -58,6 +58,33 @@ namespace NSJSBase
 	};
 }
 
+#else
+
+namespace NSJSBase
+{
+	class JS_DECL CJSEmbedObjectAdapterV8 : public CJSEmbedObjectAdapterBase
+	{
+	public:
+		using EmbedFunctionType = std::function<JSSmart<CJSValue>(CJSFunctionArguments*)>;
+
+	public:
+		CJSEmbedObjectAdapterV8() = default;
+		virtual ~CJSEmbedObjectAdapterV8() = default;
+
+		virtual std::vector<std::string> getMethodNames() = 0;
+		virtual void initFunctions(CJSEmbedObject* pNativeObjBase) = 0;
+
+	public:
+		JSSmart<CJSValue> Call(const int& index, CJSFunctionArguments* args)
+		{
+			return m_functions[index](args);
+		}
+
+	protected:
+		std::vector<EmbedFunctionType> m_functions;
+	};
+}
+
 #endif
 
 #endif // _BUILD_NATIVE_CONTROL_JS_EMBED_H_

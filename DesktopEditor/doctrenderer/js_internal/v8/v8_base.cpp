@@ -496,19 +496,21 @@ namespace NSJSBase
 		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
 		CJSFunctionArgumentsV8 _args(&args, 0);
 		JSSmart<CJSValue> funcIndex = js_value(args.Data());
-		JSSmart<CJSValue> ret = _this->Call(funcIndex->toInt32(), &_args);
+		CJSEmbedObjectAdapterV8* _adapter = static_cast<CJSEmbedObjectAdapterV8*>(_this->getAdapter());
+		JSSmart<CJSValue> ret = _adapter->Call(funcIndex->toInt32(), &_args);
 		js_return(args, ret);
 	}
 
 	v8::Handle<v8::ObjectTemplate> CreateEmbedObjectTemplate(v8::Isolate* isolate, CJSEmbedObject* pNativeObj)
 	{
 		v8::EscapableHandleScope handle_scope(isolate);
+		CJSEmbedObjectAdapterV8* pAdapter = static_cast<CJSEmbedObjectAdapterV8*>(pNativeObj->getAdapter());
 
 		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
 		result->SetInternalFieldCount(1);
 
-		pNativeObj->initFunctions();
-		std::vector<std::string> arNames = pNativeObj->getMethodNames();
+		pAdapter->initFunctions(pNativeObj);
+		std::vector<std::string> arNames = pAdapter->getMethodNames();
 		for (int i = 0, len = arNames.size(); i < len; ++i)
 		{
 			// associate all methods with corresponding Call() index
@@ -555,10 +557,10 @@ namespace NSJSBase
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
 		v8::Local<v8::ObjectTemplate> oCurTemplate;
-		CJSEmbedObjectAdapterV8* pAdapter = static_cast<CJSEmbedObjectAdapterV8*>(pNativeObj->getAdapter());
-		if (pAdapter)
+		CJSEmbedObjectAdapterV8Template* pTemplateAdapter = dynamic_cast<CJSEmbedObjectAdapterV8Template*>(pNativeObj->getAdapter());
+		if (pTemplateAdapter)
 		{
-			oCurTemplate = pAdapter->getTemplate(isolate);
+			oCurTemplate = pTemplateAdapter->getTemplate(isolate);
 		}
 		else
 		{

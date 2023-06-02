@@ -35,7 +35,7 @@
 #include <string>
 #include "../../Common/kernel_config.h"
 
-#define VALUE_STRINGIFY(d) L#d
+#define VALUE_STRINGIFY(d) L##d
 #define VALUE_TO_STR(v)    VALUE_STRINGIFY(v)
 
 namespace NSSystemUtils

@@ -29,7 +29,8 @@ public:
 	}
 };
 
-CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter() {
+CJSEmbedObjectAdapterBase* CTestEmbed::getAdapter()
+{
 	if (m_pAdapter == nullptr)
 		m_pAdapter = new CTestEmbedAdapter();
 	return m_pAdapter;

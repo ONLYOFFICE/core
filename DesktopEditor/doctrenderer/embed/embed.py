@@ -74,7 +74,7 @@ def generateV8InternalCode(class_name, methods, header_file):
 	code += "}\n"
 	code += "\n"
 	adapter_name = class_name + "Adapter"
-	code += "class " + adapter_name + " : public CJSEmbedObjectAdapterV8\n"
+	code += "class " + adapter_name + " : public CJSEmbedObjectAdapterV8Template\n"
 	code += "{\n"
 	code += "public:\n"
 	code += "	virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) override\n"
@@ -90,15 +90,6 @@ def generateV8InternalCode(class_name, methods, header_file):
 	code += "	if (m_pAdapter == nullptr)\n"
 	code += "		m_pAdapter = new " + adapter_name + "();\n"
 	code += "	return m_pAdapter;\n"
-	code += "}\n"
-	code += "\n"
-	code += "std::vector<std::string> " + class_name + "::getMethodNames()\n"
-	code += "{\n"
-	code += "	return std::vector<std::string>();\n"
-	code += "}\n"
-	code += "\n"
-	code += "void " + class_name + "::initFunctions()\n"
-	code += "{\n"
 	code += "}\n\n"
 	return code
 
@@ -150,23 +141,29 @@ def generateJSCInternalCode(class_name, methods, header_file):
 def generateV8ExternalCode(class_name, methods, header_file):
 	code =  "// THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT!\n"
 	code += "// IF YOU NEED TO UPDATE THIS CODE, JUST RERUN PYTHON SCRIPT.\n\n"
-	code += "#include \"../" + header_file + "\"\n\n"
-	code += "std::vector<std::string> " + class_name + "::getMethodNames()\n"
+	code += "#include \"../" + header_file + "\"\n"
+	code += "#include \"js_embed.h\"\n\n"
+	adapter_name = class_name + "Adapter"
+	code += "class " + adapter_name + " : public CJSEmbedObjectAdapterV8\n"
 	code += "{\n"
-	code += "	return std::vector<std::string> {\n"
+	code += "public:\n"
+	code += "	virtual std::vector<std::string> getMethodNames() override\n"
+	code += "	{\n"
+	code += "		return std::vector<std::string> {\n"
 	for method in methods:
-		code += "		\"" + method.name + "\""
+		code += "			\"" + method.name + "\""
 		if (method != methods[-1]):
 			code += ","
 		code += "\n"
-	code += "	};\n"
-	code += "}\n"
+	code += "		};\n"
+	code += "	}\n"
 	code += "\n"
-	code += "void " + class_name + "::initFunctions()\n"
-	code += "{\n"
-	code += "	m_functions = std::vector<EmbedFunctionType> {\n"
+	code += "	virtual void initFunctions(CJSEmbedObject* pNativeObjBase) override\n"
+	code += "	{\n"
+	code += "		" + class_name + "* pNativeObj = static_cast<" + class_name + "*>(pNativeObjBase);\n"
+	code += "		m_functions = std::vector<EmbedFunctionType> {\n"
 	for method in methods:
-		code += "		[this](CJSFunctionArguments* args) { return this->" + method.name + "("
+		code += "			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->" + method.name + "("
 		for i in range(len(method.args)):
 			code += "args->Get(" + str(i) + ")"
 			if i != len(method.args) - 1:
@@ -175,9 +172,16 @@ def generateV8ExternalCode(class_name, methods, header_file):
 		if (method != methods[-1]):
 			code += ","
 		code += "\n"
-	code += "	};\n"
+	code += "		};\n"
+	code += "	}\n"
+	code += "};\n"
+	code += "\n"
+	code += "CJSEmbedObjectAdapterBase* " + class_name + "::getAdapter()\n"
+	code += "{\n"
+	code += "	if (m_pAdapter == nullptr)\n"
+	code += "		m_pAdapter = new " + adapter_name + "();\n"
+	code += "	return m_pAdapter;\n"
 	code += "}\n\n"
-	code += "CJSEmbedObjectAdapterBase* " + class_name + "::getAdapter() { return nullptr; }\n\n"
 	return code
 
 def generateJSCExternalCode(class_name, methods, header_file):

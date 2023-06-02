@@ -110,10 +110,12 @@ void XMLConverter::ConvertXml(XLSXTableController &table)
         {
             table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
         }
-
-        for( auto i : writingRows_.at(nodeCount)->attributes)
+        if(elderNode != writingRows_.at(nodeCount))
         {
-            table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+            for( auto i : writingRows_.at(nodeCount)->attributes)
+            {
+                table.AddCell(data_.at(i).at(nodeCount), rowNumber, colNames_->GetColumnNumber(i));
+            }
         }
 
         std::set<std::wstring> writedColumns = {};

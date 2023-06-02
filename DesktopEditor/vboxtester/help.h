@@ -37,29 +37,37 @@
 #include <algorithm>
 
 // Commands
-std::string sCmdHelp =                         "--h";
-std::string sCmdHelpFull =                     "--help";
+std::wstring sCmdHelp =                         L"--h";
+std::wstring sCmdHelpFull =                     L"--help";
 
-std::string sCmdDir =                          "--directory";
+std::wstring sCmdUser =                         L"--user";
+std::wstring sCmdPassword =                     L"--password";
 
+std::wstring sCmdDistribUrl =                   L"--distrib-url";
 
-std::vector<std::string> arrCommands {sCmdHelp, sCmdHelpFull, sCmdDir};
+std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdUser, sCmdPassword, sCmdDistribUrl};
 
-bool IsCommandExists(std::string sCommand)
+bool IsCommandExists(std::wstring sCommand)
 {
 	return std::find(arrCommands.begin(), arrCommands.end(), sCommand) != arrCommands.end();
 }
 
-bool IsNeedSetValue(std::string sParam)
+bool IsNeedSetValue(std::wstring sParam)
 {
-    return sParam == sCmdDir;
+	return sParam == sCmdUser ||
+		   sParam == sCmdPassword ||
+		   sParam == sCmdDistribUrl;
 }
 
-std::string sHelpText =
-"\nVirtualBox Tester Options\n\n" \
+std::wstring sHelpText =
+L"\nVirtualBox Tester Options\n\n" \
 
-"  --h                                            \n" \
-"  --help               = Print usage information.\n\n" \
+L"  --h                                            \n" \
+L"  --help               = Print usage information.\n\n" \
 
-"  --directory          = Required parameter. Set working folder in quotes.\n" \
+L"  --user               = Required parameter.\n\n" \
+
+L"  --password           = Required parameter.\n\n" \
+
+L"  --distrib-url        = Required parameter.\n\n"
 ;

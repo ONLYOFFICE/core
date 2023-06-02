@@ -192,6 +192,34 @@ struct SPublishInfo
 };
 */
 
+void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+{
+    size_t pos = s.find(s1);
+    size_t l = s2.length();
+    while (pos != std::string::npos)
+    {
+        if (!(s1 == L"&" && s2 == L"&amp;" && s.length() > pos + 4 && s[pos] == L'&' && s[pos + 1] == L'a' && s[pos + 2] == L'm' && s[pos + 3] == L'p' && s[pos + 4] == L';'))
+            s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + l);
+    }
+}
+
+std::wstring EncodeXmlString(const std::wstring& s)
+{
+    std::wstring sRes = s;
+
+    replace_all(sRes, L"&", L"&amp;");
+    replace_all(sRes, L"<", L"&lt;");
+    replace_all(sRes, L">", L"&gt;");
+    replace_all(sRes, L"\"", L"&quot;");
+    replace_all(sRes, L"\'", L"&#39;");
+    replace_all(sRes, L"\n", L"&#xA;");
+    replace_all(sRes, L"\r", L"&#xD;");
+    replace_all(sRes, L"\t", L"&#x9;");
+
+    return sRes;
+}
+
 class CFb2File_Private
 {
 public:
@@ -1537,19 +1565,19 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     NSStringUtils::CStringBuilder oCore;
     // Заголовок
     oCore += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dc:title>";
-    oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.m_sBookTitle);
+    oCore.WriteString(EncodeXmlString(m_internal->m_oTitleInfo.m_sBookTitle));
     // Жанры
     oCore += L"</dc:title><dc:subject>";
-    oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.getGenres());
+    oCore.WriteString(EncodeXmlString(m_internal->m_oTitleInfo.getGenres()));
     // Авторы
     oCore += L"</dc:subject><dc:creator>";
-    oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.getAuthors());
+    oCore.WriteString(EncodeXmlString(m_internal->m_oTitleInfo.getAuthors()));
     oCore.WriteString(L"</dc:creator>");
     // Ключевые слова
     if (!m_internal->m_oTitleInfo.m_pKeywords.empty())
     {
         oCore.WriteString(L"<cp:keywords>");
-        oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.m_pKeywords);
+        oCore.WriteString(EncodeXmlString(m_internal->m_oTitleInfo.m_pKeywords));
         oCore.WriteString(L"</cp:keywords>");
     }
     // Конец core
@@ -1596,17 +1624,6 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
-{
-    size_t pos = s.find(s1);
-    size_t l = s2.length();
-    while (pos != std::string::npos)
-    {
-        s.replace(pos, s1.length(), s2);
-        pos = s.find(s1, pos + l);
-    }
-}
-
 void readLi(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuilder& oTitleInfo, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
 void readStream(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuilder& oTitleInfo, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
 {
@@ -1627,7 +1644,11 @@ void readStream(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuild
                 oXml.WriteString(L"</p>");
         }
         else if (sName == L"title")
-            oTitleInfo.WriteString(L"<book-title>" + oIndexHtml.GetText2() + L"</book-title>");
+        {
+            oTitleInfo.WriteString(L"<book-title>");
+            oTitleInfo.WriteString(EncodeXmlString(oIndexHtml.GetText2()));
+            oTitleInfo.WriteString(L"</book-title>");
+        }
         else if (sName == L"meta")
         {
             std::wstring sAtrName, sAtrContent;
@@ -1643,20 +1664,30 @@ void readStream(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuild
 
             if (!sAtrName.empty())
             {
-                replace_all(sAtrContent, L"&", L"&amp;");
-                replace_all(sAtrContent, L"<", L"&lt;");
-                replace_all(sAtrContent, L">", L"&gt;");
-                replace_all(sAtrContent, L"\"", L"&quot;");
-                replace_all(sAtrContent, L"\'", L"&#39;");
-
                 if (sAtrName == L"creator")
-                    oTitleInfo.WriteString(L"<author><nickname>" + sAtrContent + L"</nickname></author>");
+                {
+                    oTitleInfo.WriteString(L"<author><nickname>");
+                    oTitleInfo.WriteString(EncodeXmlString(sAtrContent));
+                    oTitleInfo.WriteString(L"</nickname></author>");
+                }
                 else if (sAtrName == L"description")
-                    oTitleInfo.WriteString(L"<annotation><p>" + sAtrContent + L"</p></annotation>");
+                {
+                    oTitleInfo.WriteString(L"<annotation><p>");
+                    oTitleInfo.WriteString(EncodeXmlString(sAtrContent));
+                    oTitleInfo.WriteString(L"</p></annotation>");
+                }
                 else if (sAtrName == L"subject")
-                    oTitleInfo.WriteString(L"<genre>" + sAtrContent + L"</genre>");
+                {
+                    oTitleInfo.WriteString(L"<genre>");
+                    oTitleInfo.WriteString(EncodeXmlString(sAtrContent));
+                    oTitleInfo.WriteString(L"</genre>");
+                }
                 else if (sAtrName == L"keywords")
-                    oTitleInfo.WriteString(L"<keywords>" + sAtrContent + L"</keywords>");
+                {
+                    oTitleInfo.WriteString(L"<keywords>");
+                    oTitleInfo.WriteString(EncodeXmlString(sAtrContent));
+                    oTitleInfo.WriteString(L"</keywords>");
+                }
             }
         }
         else if (sName == L"h1")
@@ -1952,6 +1983,10 @@ std::wstring GenerateUUID()
 
 HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sDst, const std::wstring& sInpTitle)
 {
+    std::wstring sTitle = sInpTitle;
+    if (sTitle.empty())
+        sTitle = NSFile::GetFileName(sDst);
+
     BYTE* pData;
     DWORD nLength;
     if (!NSFile::CFileBinary::ReadAllBytes(sHtmlFile, &pData, nLength))
@@ -1994,7 +2029,11 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
     oRes.WriteString(L"<description><title-info>");
     std::wstring sTitleInfo = oTitleInfo.GetData();
     if (sTitleInfo.find(L"<book-title>") == std::wstring::npos)
-		oRes.WriteString(L"<book-title>" + (sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle) + L"</book-title>");
+    {
+        oRes.WriteString(L"<book-title>");
+        oRes.WriteString(EncodeXmlString(sTitle));
+        oRes.WriteString(L"</book-title>");
+    }
     oRes.WriteString(sTitleInfo);
     oRes.WriteString(L"</title-info></description>");
     // body

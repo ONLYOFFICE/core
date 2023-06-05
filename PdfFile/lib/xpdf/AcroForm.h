@@ -43,6 +43,7 @@ public:
   int findFieldIdx(int pg, double x, double y);
   int findFieldIdx(Object* oRefObj);
   GList* findFieldIdx(GString* fullName);
+  Object* getAcroFormObj() { return &acroFormObj; }
 
 private:
 

@@ -1008,6 +1008,35 @@ BYTE* CPdfReader::GetWidgets()
     NSWasm::CData oRes;
     oRes.SkipLen();
 
+    // Порядок вычислений - CO
+    Object* oAcroForm = pAcroForms->getAcroFormObj();
+    Object oCO;
+    if (!oAcroForm)
+        oRes.AddInt(0);
+    else if (oAcroForm->dictLookup("CO", &oCO)->isArray())
+    {
+        int nFieldsPos = oRes.GetSize();
+        int nFields = 0;
+        oRes.AddInt(nFields);
+        for (int j = 0; j < oCO.arrayGetLength(); ++j)
+        {
+            Object oField;
+            oCO.arrayGetNF(j, &oField);
+            if (oField.isRef())
+            {
+                int nFind = pAcroForms->findFieldIdx(&oField);
+                if (nFind >= 0)
+                {
+                    nFields++;
+                    oRes.AddInt(nFind);
+                }
+            }
+            oField.free();
+        }
+        oRes.AddInt(nFields, nFieldsPos);
+    }
+    oCO.free();
+
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
@@ -1969,7 +1998,7 @@ void WriteAppearance(int nWidth, int nHeight, BYTE* pBgraData, unsigned int nCol
         for (int x = 0; x < nWidth; ++x)
         {
             pSubTemp[p++] = pTemp[y * nWidth + x];
-            pTemp[y * nWidth + x] = 0xFF000000 | nColor;
+            pTemp[y * nWidth + x] = /*0xFF000000 | */nColor;
         }
     }
 
@@ -2054,7 +2083,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         unsigned int nSize = (unsigned int)(nWidth * nHeight);
         unsigned int* pTemp = (unsigned int*)pBgraData;
         for (unsigned int i = 0; i < nSize; ++i)
-            *pTemp++ = 0xFF000000 | nColor;
+            *pTemp++ = /*0xFF000000 | */nColor;
 
         CBgraFrame* pFrame = new CBgraFrame();
         pFrame->put_Data(pBgraData);

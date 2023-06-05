@@ -544,6 +544,20 @@ int main(int argc, char* argv[])
 		nLength = READ_INT(pWidgets);
 		int i = 4;
 		nLength -= 4;
+
+        DWORD nCOLength = READ_INT(pWidgets + i);
+        i += 4;
+        if (nCOLength > 0)
+            std::cout << "CO ";
+        for (int j = 0; j < nCOLength; ++j)
+        {
+            DWORD nPathLength = READ_INT(pWidgets + i);
+            i += 4;
+            std::cout << nPathLength << ", ";
+        }
+        if (nCOLength > 0)
+            std::cout << std::endl;
+
 		while (i < nLength)
 		{
 			DWORD nPathLength = READ_INT(pWidgets + i);

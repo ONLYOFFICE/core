@@ -174,8 +174,7 @@ public:
 		m_pVm =				NULL;
 
 		m_sVmUser =			L"dmitry";
-		//m_sVmPassword =		L"Dm-23";
-		m_sVmPassword =		L"111111";
+		m_sVmPassword =		L"Dm-23";
 
 		m_sRunScript =		L"run";
 		m_sSetupScript =	L"setup";
@@ -186,8 +185,8 @@ public:
 		m_sEditorsPath =	L"/opt/onlyoffice/desktopeditors/DesktopEditors";
 		m_sSuccessOutput =	L"[DesktopEditors]: start page loaded";
 
-		//m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-139_amd64.deb";
-		m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/rhel/onlyoffice-desktopeditors-7.4.0-139.el7.x86_64.rpm";
+		m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-139_amd64.deb";
+		//m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/rhel/onlyoffice-desktopeditors-7.4.0-139.el7.x86_64.rpm";
 
 #ifdef WIN32
 		m_sVbmPath =		L"\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\"";
@@ -272,7 +271,7 @@ public:
 		m_pVm = pVm;
 	}
 
-	std::vector<CVm*> GetLinuxVms()
+	std::vector<CVm*> GetDebianVms()
 	{
 		std::vector<CVm*> arrVms;
 
@@ -300,7 +299,8 @@ public:
 			std::wstring sGuestOs = m_arrVms[i]->m_sGuestOS;
 			std::transform(sGuestOs.begin(), sGuestOs.end(), sGuestOs.begin(), tolower);
 
-			if ( sGuestOs.find(L"red hat") != std::wstring::npos )
+			if ( sGuestOs.find(L"red hat") != std::wstring::npos ||
+				 sGuestOs.find(L"fedora") != std::wstring::npos)
 			{
 				m_arrVms[i]->m_eType = RedHat;
 				arrVms.push_back(m_arrVms[i]);
@@ -962,8 +962,6 @@ int main(int argc, char** argv)
 {
 	// Test
 	CVirtualBox oTester;
-	oTester.RemoveReport();
-	oTester.CreateReport();
 
 	// Parse arguments
 	for (int i = 0; i < argc; ++i)
@@ -1023,7 +1021,7 @@ int main(int argc, char** argv)
 			// Usability
 			if (sKey == sCmdHelp || sKey == sCmdHelpFull)
 			{
-				oTester.WriteReport(sHelpText);
+				oTester.PrintHelp();
 			}
 
 			// Settings
@@ -1046,6 +1044,9 @@ int main(int argc, char** argv)
 	}
 
 	// Work
+	oTester.RemoveReport();
+	oTester.CreateReport();
+
 	oTester.InitVms();
 
 	std::vector<CVm*> arrLinux = oTester.GetRedHatVms();
@@ -1055,7 +1056,7 @@ int main(int argc, char** argv)
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		//if ( sName != L"Ubuntu20" )
+		//if ( sName != L"Ubuntu18" )
 		//	continue;
 
 		oTester.SetVm(pVm);

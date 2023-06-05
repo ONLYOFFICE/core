@@ -122,8 +122,8 @@ bool PPT::CFontProperty::IsValidPitchFamily(int value)
     if (value <= 0 || value > 255)
         return false;
 
-    std::set<int> BLPitchFamily = {148, 164};
-    return BLPitchFamily.find(value) == BLPitchFamily.end();
+    std::set<int> BLPitchFamily = { 0x00, 0x01, 0x02, 0x10, 0x11, 0x12, 0x20, 0x21, 0x22, 0x30, 0x31, 0x32, 0x40, 0x41, 0x42, 0x50, 0x51, 0x52};
+    return BLPitchFamily.find(value) != BLPitchFamily.end();
 }
 
 bool PPT::CBulletAutoNum::isDefault() const

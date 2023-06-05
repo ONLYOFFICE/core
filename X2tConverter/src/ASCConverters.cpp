@@ -5312,7 +5312,9 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Initialize();
+#endif
 
 		_UINT32 result = 0;
 		switch(conversion)
@@ -5794,7 +5796,10 @@ namespace NExtractTools
 		}
 
 		//clean up v8
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
+#endif
+
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

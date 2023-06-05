@@ -476,6 +476,17 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     // content.opf
     NSFile::CFileBinary oContentOpf;
     bool bWasLanguage = false, bWasTitle = false;
+
+    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
+    replace_all(sTitle, L"&", L"&amp;");
+    replace_all(sTitle, L"<", L"&lt;");
+    replace_all(sTitle, L">", L"&gt;");
+    replace_all(sTitle, L"\"", L"&quot;");
+    replace_all(sTitle, L"\'", L"&#39;");
+    replace_all(sTitle, L"\n", L"&#xA;");
+    replace_all(sTitle, L"\r", L"&#xD;");
+    replace_all(sTitle, L"\t", L"&#x9;");
+
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {

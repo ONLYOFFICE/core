@@ -72,6 +72,34 @@ struct CTextSettings
         bBdo(oTS.bBdo), bPre(oTS.bPre), nLi(oTS.nLi), sRStyle(oTS.sRStyle), sPStyle(oTS.sPStyle) {}
 };
 
+void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+{
+    size_t pos = s.find(s1);
+    size_t l = s2.length();
+    while (pos != std::string::npos)
+    {
+        if (!(s1 == L"&" && s2 == L"&amp;" && s.length() > pos + 4 && s[pos] == L'&' && s[pos + 1] == L'a' && s[pos + 2] == L'm' && s[pos + 3] == L'p' && s[pos + 4] == L';'))
+            s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + l);
+    }
+}
+
+std::wstring EncodeXmlString(const std::wstring& s)
+{
+    std::wstring sRes = s;
+
+    replace_all(sRes, L"&", L"&amp;");
+    replace_all(sRes, L"<", L"&lt;");
+    replace_all(sRes, L">", L"&gt;");
+    replace_all(sRes, L"\"", L"&quot;");
+    replace_all(sRes, L"\'", L"&#39;");
+    replace_all(sRes, L"\n", L"&#xA;");
+    replace_all(sRes, L"\r", L"&#xD;");
+    replace_all(sRes, L"\t", L"&#x9;");
+
+    return sRes;
+}
+
 class CHtmlFile2_Private
 {
 public:
@@ -99,11 +127,12 @@ private:
     NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
     NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
 
-    bool m_bInP; // <w:p> открыт?
+    bool m_bInP;       // <w:p> открыт?
     bool m_bWasPStyle; // <w:pStyle> записан?
+    bool m_bWasSpace;  // Был пробел?
 public:
 
-    CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false)
+    CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
     {
         //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
         //Это нужно для масштабирования некоторых значений
@@ -242,31 +271,31 @@ public:
             if(!oParams->m_sBookTitle.empty())
             {
                 sCore += L"<dc:title>";
-                sCore += oParams->m_sBookTitle;
+                sCore += EncodeXmlString(oParams->m_sBookTitle);
                 sCore += L"</dc:title>";
             }
             if(!oParams->m_sAuthors.empty())
             {
                 sCore += L"<dc:creator>";
-                sCore += oParams->m_sAuthors;
+                sCore += EncodeXmlString(oParams->m_sAuthors);
                 sCore += L"</dc:creator>";
             }
             if(!oParams->m_sGenres.empty())
             {
                 sCore += L"<dc:subject>";
-                sCore += oParams->m_sGenres;
+                sCore += EncodeXmlString(oParams->m_sGenres);
                 sCore += L"</dc:subject>";
             }
             if(!oParams->m_sDate.empty())
             {
                 sCore += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">";
-                sCore += oParams->m_sDate;
+                sCore += EncodeXmlString(oParams->m_sDate);
                 sCore += L"</dcterms:created>";
             }
             if(!oParams->m_sDescription.empty())
             {
                 sCore += L"<dc:description>";
-                sCore += oParams->m_sDescription;
+                sCore += EncodeXmlString(oParams->m_sDescription);
                 sCore += L"</dc:description>";
             }
         }
@@ -695,8 +724,11 @@ private:
             std::wstring sText = m_oLightReader.GetText();
             size_t find = sText.find_first_not_of(L" \n\t\r");
             if (find == std::wstring::npos)
-                sText = L" ";
-            else if(!(find == 1 && sText.front() == L' '))
+            {
+                m_bWasSpace = true;
+                return;
+            }
+            else if (find != 1 || m_bWasSpace || sText.front() != L' ')
                 sText.erase(0, find);
 
             std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
@@ -707,6 +739,11 @@ private:
             std::wstring::iterator end;
             if(oTS.bBdo)
                 std::reverse(sText.begin(), sText.end());
+            if (m_bWasSpace)
+            {
+                sText.insert(sText.begin(), L' ');
+                m_bWasSpace = false;
+            }
             if(oTS.bPre)
             {
                 size_t nAfter = sText.find_first_of(L"\n\r");
@@ -791,6 +828,7 @@ private:
             if(oStyle.m_pText.GetAlign() == L"both")
                 oXml->WriteString(L"<w:tab/>");
             oXml->WriteString(L"<w:br/></w:r>");
+            m_bWasSpace = false;
         }
         else if(sName == L"center")
         {
@@ -945,6 +983,7 @@ private:
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
+            m_bWasSpace = false;
 
             // Адрес
             if(sName == L"address")
@@ -1011,6 +1050,7 @@ private:
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
+            m_bWasSpace = false;
         }
         readNote(oXml, sSelectors, sNote);
         sSelectors.pop_back();
@@ -1159,6 +1199,7 @@ private:
                 }
                 else if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
                     oXml->WriteString(L"<w:p></w:p>");
+                m_bWasSpace = false;
                 oXml->WriteString(L"</w:tc>");
                 j++;
 
@@ -1194,8 +1235,8 @@ private:
 
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
-        if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-            oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+        //if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
+        //    oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
 
         // Начало таблицы
         std::wstring wsTable = L"<w:tbl><w:tblPr>";
@@ -1364,6 +1405,7 @@ private:
                     m_bInP = false;
                     m_bWasPStyle = false;
                 }
+                m_bWasSpace = false;
             }
             if(sName == L"thead")
                 readTr(&oHead, sSelectors, oTS, sBorders);
@@ -1443,6 +1485,7 @@ private:
                         oXml->WriteString(L"</w:p>");
                         m_bInP = false;
                     }
+                    m_bWasSpace = false;
                     wrP(oXml, sSelectors, oTS);
                     oXml->WriteString(L"<w:r>");
                     wrR(oXml, sSelectors, oTS);
@@ -1474,6 +1517,7 @@ private:
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
+            m_bWasSpace = false;
             CTextSettings oTSLiP(oTS);
             oTSLiP.nLi++;
             oTSLiP.sPStyle += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
@@ -1487,6 +1531,7 @@ private:
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
+            m_bWasSpace = false;
             sSelectors.pop_back();
         }
         // Нумерованный список

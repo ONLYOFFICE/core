@@ -285,6 +285,9 @@ namespace NSDocxRenderer
             pShape->GetDataFromVector(m_oVector);
 
             m_arShapes.push_back(pShape);
+
+			double dDeterminant = sqrt(m_pTransform->Determinant());
+			pShape->m_oPen.Size *= dDeterminant;
         }
     }
 

@@ -105,3 +105,8 @@
 #include "../../Reader/Converter/xlsx_xf.cpp"
 #include "../../Reader/Converter/xlsx_pivots_context.cpp"
 #include "../../Reader/Converter/xlsx_data_validation.cpp"
+#include "../../Reader/Converter/StarMath/parser_data_v5_x_x.cpp"
+#include "../../Reader/Converter/StarMath/parser_factory.cpp"
+#include "../../Reader/Converter/StarMath/parser_helpers.cpp"
+#include "../../Reader/Converter/StarMath/parser_iterator.cpp"
+#include "../../Reader/Converter/StarMath/parser_v5_x_x.cpp"

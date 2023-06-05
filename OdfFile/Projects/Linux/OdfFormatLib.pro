@@ -302,6 +302,11 @@ SOURCES += \
 	../../Reader/Converter/xlsx_data_validation.cpp \
 	../../Reader/Converter/xlsx_utils.cpp \
 	../../Reader/Converter/xlsx_xf.cpp \
+	../../Reader/Converter/StarMath/parser_data_v5_x_x.cpp \
+	../../Reader/Converter/StarMath/parser_factory.cpp \
+	../../Reader/Converter/StarMath/parser_helpers.cpp \
+	../../Reader/Converter/StarMath/parser_iterator.cpp \
+	../../Reader/Converter/StarMath/parser_v5_x_x.cpp \
 	\
 	../../Writer/Format/office_document.cpp \
 	../../Writer/Format/office_forms.cpp \
@@ -685,6 +690,19 @@ HEADERS += \
 	../../Reader/Converter/xlsx_xf.h \
 	../../Reader/Converter/conversionelement.h \
 	../../Reader/Converter/ConvertOO2OOX.h \
+	../../Reader/Converter/StarMath/attributes.h \
+	../../Reader/Converter/StarMath/base_types.h \
+	../../Reader/Converter/StarMath/iterator.h \
+	../../Reader/Converter/StarMath/parser.h \
+	../../Reader/Converter/StarMath/parser_data_v5_x_x.h \
+	../../Reader/Converter/StarMath/parser_factory.h \
+	../../Reader/Converter/StarMath/parser_helpers.h \
+	../../Reader/Converter/StarMath/parser_iterator.h \
+	../../Reader/Converter/StarMath/parser_v5_x_x.h \
+	../../Reader/Converter/StarMath/runtime_exception.h \
+	../../Reader/Converter/StarMath/token_with_attributes.h \
+	../../Reader/Converter/StarMath/unknown_symbol_exception.h \
+	../../Reader/Converter/StarMath/versioning.h \
 	\
 	../../Writer/Format/math_elementaries.h \
 	../../Writer/Format/math_elements.h \

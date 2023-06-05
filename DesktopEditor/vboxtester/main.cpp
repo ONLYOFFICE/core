@@ -706,7 +706,7 @@ public:
 	{
 		std::ofstream oFile;
 		std::wstring sReportPath = GetReportDir() + L"/" + m_sReportName;
-		oFile.open(sReportPath, std::ofstream::out | std::ofstream::trunc);
+		oFile.open(U_TO_UTF8(sReportPath), std::ofstream::out | std::ofstream::trunc);
 		oFile.close();
 	}
 
@@ -718,7 +718,7 @@ public:
 			{
 				std::wofstream oFile;
 				std::wstring sReportPath = GetReportDir() + L"/" + m_sReportName;
-				oFile.open(sReportPath, std::ios_base::app);
+				oFile.open(U_TO_UTF8(sReportPath), std::ios_base::app);
 				oFile << sText << std::endl;
 				oFile.close();
 			}
@@ -731,7 +731,7 @@ public:
 	{
 		std::wofstream oFile;
 		std::wstring sReportPath = GetReportDir() + L"/" + m_sReportName;
-		oFile.open(sReportPath, std::ios_base::app);
+		oFile.open(U_TO_UTF8(sReportPath), std::ios_base::app);
 		oFile << BoolToStr(bResult) + L"\n" << std::endl;
 		oFile.close();
 
@@ -927,22 +927,32 @@ private:
 	{
 		std::wstring sResult = L"";
 
-		std::array<wchar_t, 128> aBuffer;
 		std::wstring sCommand = m_sVbmPath + L" " + sArgs;
 
 #ifdef WIN32
+		std::array<wchar_t, 128> aBuffer;
 		FILE* pipe = _wpopen(sCommand.c_str(), L"r");
 #endif
 #ifdef LINUX
-		FILE* pipe = wpopen(sCommand.c_str(), L"r");
+		std::array<char, 128> aBuffer;
+		FILE* pipe = popen(U_TO_UTF8(sCommand).c_str(), "r");
 #endif
 		if (!pipe)
 			return sResult;
 
+#ifdef WIN32
 		while ( fgetws(aBuffer.data(), 128, pipe) != NULL )
 		{
 			sResult += aBuffer.data();
 		}
+#endif
+#ifdef LINUX
+		while ( fgets(aBuffer.data(), 128, pipe) != NULL )
+		{
+			std::string sBuf = aBuffer.data();
+			sResult += UTF8_TO_U(sBuf);
+		}
+#endif
 
 		return sResult;
 	}
@@ -1049,7 +1059,7 @@ int main(int argc, char** argv)
 
 	oTester.InitVms();
 
-	std::vector<CVm*> arrLinux = oTester.GetRedHatVms();
+	std::vector<CVm*> arrLinux = oTester.GetDebianVms();
 	for (size_t i = 0; i < arrLinux.size(); i++)
 	{
 		CVm* pVm = arrLinux[i];

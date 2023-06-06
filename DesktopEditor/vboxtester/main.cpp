@@ -326,6 +326,7 @@ public:
 
 	std::vector<CVm*> GetStartVms()
 	{
+		std::vector<CVm*> arrEmpty;
 		std::vector<CVm*> arrDebian = GetDebianVms();
 		std::vector<CVm*> arrRedHat = GetRedHatVms();
 
@@ -338,6 +339,8 @@ public:
 			return m_bStartRedHat ? arrAll : arrDebian;
 		if ( m_bStartRedHat )
 			return m_bStartDebian ? arrAll : arrRedHat;
+
+		return arrEmpty;
 	}
 
 	bool StartVm()

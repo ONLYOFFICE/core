@@ -408,7 +408,7 @@ public:
 			}
 			else if ( m_pVm->m_eType == RedHat )
 			{
-				arrProcess.push_back(L"rpm");
+				//arrProcess.push_back(L"rpm");
 				arrProcess.push_back(L"yum");
 			}
 
@@ -417,7 +417,7 @@ public:
 				bool bResult = IsLocationExists(m_sEditorsPath);
 				for (size_t i = 0; i < arrProcess.size(); i++)
 				{
-					bResult &= IsProcessExists(arrProcess[i]);
+					bResult &= !IsProcessExists(arrProcess[i]);
 				}
 				if ( bResult )
 					break;
@@ -482,7 +482,7 @@ public:
 		{
 			WriteReport(L"Saving screenshot");
 
-			std::wstring sFilePath = GetReportDir() + L"/" + m_pVm->m_sGuid + L".png";
+			std::wstring sFilePath = GetReportDir() + L"/" + m_pVm->m_sName + L".png";
 
 			if ( NSFile::CFileBinary::Exists(sFilePath) )
 				NSFile::CFileBinary::Remove(sFilePath);
@@ -587,8 +587,7 @@ public:
 				sData = L"#!/bin/bash\n" \
 						L"echo \"Install DesktopEditors\"\n" \
 						L"yum remove onlyoffice-desktopeditors -y\n" \
-						L"rpm -ivh ./" + sDistribFile + "\n" \
-						L"yum install ./" + sDistribFile;
+						L"yum install -y ./" + sDistribFile;
 			}
 
 			NSFile::CFileBinary oFile;
@@ -1091,15 +1090,15 @@ int main(int argc, char** argv)
 
 	oTester.InitVms();
 
-	std::vector<CVm*> arrLinux = oTester.GetDebianVms();
+	std::vector<CVm*> arrLinux = oTester.GetRedHatVms();
 	for (size_t i = 0; i < arrLinux.size(); i++)
 	{
 		CVm* pVm = arrLinux[i];
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		if ( sName != L"Ubuntu18" )
-			continue;
+		//if ( sName != L"Ubuntu18" )
+		//	continue;
 
 		oTester.SetVm(pVm);
 

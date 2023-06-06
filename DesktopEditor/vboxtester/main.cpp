@@ -135,6 +135,16 @@ public:
 		m_eType = eType;
 	}
 
+	bool IsDebian()
+	{
+		return m_eType == Debian;
+	}
+
+	bool IsRedHat()
+	{
+		return m_eType == RedHat;
+	}
+
 	std::wstring ToString()
 	{
 		std::wstringstream sInfo;
@@ -154,7 +164,8 @@ private:
 	std::wstring m_sVmUser;
 	std::wstring m_sVmPassword;
 
-	std::wstring m_sDistribUrl;
+	std::wstring m_sDebianUrl;
+	std::wstring m_sRedHatUrl;
 
 	std::wstring m_sEditorsPath;
 	std::wstring m_sSuccessOutput;
@@ -168,13 +179,20 @@ private:
 	std::vector<CVm*> m_arrVms;
 	CVm* m_pVm;
 
+	bool m_bStartAll;
+	bool m_bStartDebian;
+	bool m_bStartRedHat;
+
 public:
 	CVirtualBox()
 	{
 		m_pVm =				NULL;
+		m_bStartAll =		false;
+		m_bStartDebian =	false;
+		m_bStartRedHat =	false;
 
-		m_sVmUser =			L"dmitry";
-		m_sVmPassword =		L"Dm-23";
+		m_sVmUser =			L"";
+		m_sVmPassword =		L"";
 
 		m_sRunScript =		L"run";
 		m_sSetupScript =	L"setup";
@@ -185,8 +203,8 @@ public:
 		m_sEditorsPath =	L"/opt/onlyoffice/desktopeditors/DesktopEditors";
 		m_sSuccessOutput =	L"[DesktopEditors]: start page loaded";
 
-		m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/debian/onlyoffice-desktopeditors_7.4.0-139_amd64.deb";
-		//m_sDistribUrl =		L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux/rhel/onlyoffice-desktopeditors-7.4.0-139.el7.x86_64.rpm";
+		m_sDebianUrl =		L"";
+		m_sRedHatUrl =		L"";
 
 #ifdef WIN32
 		m_sVbmPath =		L"\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\"";
@@ -197,6 +215,21 @@ public:
 	}
 
 	// Settings
+	void SetStartAll()
+	{
+		m_bStartAll = true;
+	}
+
+	void SetStartDebian()
+	{
+		m_bStartDebian = true;
+	}
+
+	void SetStartRedHat()
+	{
+		m_bStartRedHat = true;
+	}
+
 	bool SetUser(const std::wstring& sUser)
 	{
 		bool bResult = false;
@@ -217,12 +250,22 @@ public:
 		return bResult;
 	}
 
-	bool SetDistribUrl(const std::wstring& sUrl)
+	bool SetDebianUrl(const std::wstring& sUrl)
 	{
 		bool bResult = false;
 
 		if ( sUrl.length() )
-			m_sDistribUrl = sUrl;
+			m_sDebianUrl = sUrl;
+
+		return bResult;
+	}
+
+	bool SetRedHatUrl(const std::wstring& sUrl)
+	{
+		bool bResult = false;
+
+		if ( sUrl.length() )
+			m_sRedHatUrl = sUrl;
 
 		return bResult;
 	}
@@ -264,7 +307,7 @@ public:
 					if ( sOsLower.find(L"ubuntu") != std::wstring::npos )
 						eType = Debian;
 					else if ( sOsLower.find(L"red hat") != std::wstring::npos ||
-							  sOsLower.find(L"fedora") != std::wstring::npos )
+							 sOsLower.find(L"fedora") != std::wstring::npos )
 						eType = RedHat;
 
 					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
@@ -281,34 +324,20 @@ public:
 		m_pVm = pVm;
 	}
 
-	std::vector<CVm*> GetDebianVms()
+	std::vector<CVm*> GetStartVms()
 	{
-		std::vector<CVm*> arrVms;
+		std::vector<CVm*> arrDebian = GetDebianVms();
+		std::vector<CVm*> arrRedHat = GetRedHatVms();
 
-		for (size_t i = 0; i < m_arrVms.size(); i++)
-		{
-			if ( m_arrVms[i]->m_eType == Debian )
-			{
-				arrVms.push_back(m_arrVms[i]);
-			}
-		}
+		std::vector<CVm*> arrAll = arrDebian;
+		arrAll.insert(arrAll.end(), arrRedHat.begin(), arrRedHat.end());
 
-		return arrVms;
-	}
-
-	std::vector<CVm*> GetRedHatVms()
-	{
-		std::vector<CVm*> arrVms;
-
-		for (size_t i = 0; i < m_arrVms.size(); i++)
-		{
-			if ( m_arrVms[i]->m_eType == RedHat )
-			{
-				arrVms.push_back(m_arrVms[i]);
-			}
-		}
-
-		return arrVms;
+		if ( m_bStartAll )
+			return arrAll;
+		if ( m_bStartDebian )
+			return m_bStartRedHat ? arrAll : arrDebian;
+		if ( m_bStartRedHat )
+			return m_bStartDebian ? arrAll : arrRedHat;
 	}
 
 	bool StartVm()
@@ -404,12 +433,12 @@ public:
 		{
 			std::vector<std::wstring> arrProcess;
 
-			if ( m_pVm->m_eType == Debian )
+			if ( m_pVm->IsDebian() )
 			{
 				arrProcess.push_back(L"apt");
 				arrProcess.push_back(L"dpkg");
 			}
-			else if ( m_pVm->m_eType == RedHat )
+			else if ( m_pVm->IsRedHat() )
 			{
 				//arrProcess.push_back(L"rpm");
 				arrProcess.push_back(L"yum");
@@ -531,24 +560,26 @@ public:
 	{
 		bool bResult = false;
 
-		if ( m_pVm && m_sDistribUrl.length() )
+		if ( m_pVm )
 		{
-			WriteReport(L"Start downloading: " + m_sDistribUrl);
+			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
+
+			WriteReport(L"Start downloading: " + sUrl);
 
 			// wget may not download the file to the end, use curl
 			/*std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
 									L" run --exe /usr/bin/wget" +
 									L" --username " + m_sVmUser +
 									L" --password " + m_sVmPassword +
-									L" --wait-stdout -- wget/arg0 " + m_sDesktopUrl +
+									L" --wait-stdout -- wget/arg0 " + sUrl +
 									L" -P " + GetWorkingDir();*/
 
 			std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
 									L" run --exe /usr/bin/curl" +
 									L" --username " + m_sVmUser +
 									L" --password " + m_sVmPassword +
-									L" --wait-stdout -- curl/arg0 " + m_sDistribUrl +
-									L" --output " + GetWorkingDir() + L"/" + NSFile::GetFileName(m_sDistribUrl);
+									L" --wait-stdout -- curl/arg0 " + sUrl +
+									L" --output " + GetWorkingDir() + L"/" + NSFile::GetFileName(sUrl);
 
 			std::wstring sOutput = ExecuteCommand(sCommand);
 
@@ -572,13 +603,14 @@ public:
 
 			// Setup
 			std::wstring sData = L"";
+			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
 			std::wstring sScriptPath = NSDirectory::GetTempPath() + L"/" + m_sSetupScript;
-			std::wstring sDistribFile = NSFile::GetFileName(m_sDistribUrl);
+			std::wstring sDistribFile = NSFile::GetFileName(sUrl);
 
 			if ( NSFile::CFileBinary::Exists(sScriptPath) )
 				NSFile::CFileBinary::Remove(sScriptPath);
 
-			if ( m_pVm->m_eType == Debian )
+			if ( m_pVm->IsDebian() )
 			{
 				sData = L"#!/bin/bash\n" \
 						L"echo \"Install DesktopEditors\"\n" \
@@ -586,7 +618,7 @@ public:
 						L"dpkg -i ./" + sDistribFile + "\n" \
 						L"apt install -f";
 			}
-			else if ( m_pVm->m_eType == RedHat )
+			else if ( m_pVm->IsRedHat() )
 			{
 				sData = L"#!/bin/bash\n" \
 						L"echo \"Install DesktopEditors\"\n" \
@@ -707,9 +739,10 @@ public:
 		{
 			WriteReport(L"Ready restart");
 
+			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
 			std::wstring sRunScript = GetWorkingDir() + L"/" + m_sSetupScript;
 			std::wstring sSetupScript = GetWorkingDir() + L"/" + m_sSetupScript;
-			std::wstring sDistribPath = GetWorkingDir() + L"/" + NSFile::GetFileName(m_sDistribUrl);
+			std::wstring sDistribPath = GetWorkingDir() + L"/" + NSFile::GetFileName(sUrl);
 
 			bResult = IsLocationExists(sRunScript) &&
 					  IsLocationExists(sSetupScript) &&
@@ -884,7 +917,7 @@ private:
 		{
 			// whoami check
 			std::wstring sBin = L"/usr/bin/whoami";
-			if ( m_pVm->m_eType == RedHat )
+			if ( m_pVm->IsRedHat() )
 				NSStringUtils::string_replace(sBin, L"/usr", L"");
 
 			std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
@@ -898,7 +931,7 @@ private:
 
 			// uptime check
 			sBin = L"/usr/bin/uptime";
-			if ( m_pVm->m_eType == RedHat )
+			if ( m_pVm->IsRedHat() )
 				NSStringUtils::string_replace(sBin, L"/usr", L"");
 
 			sCommand = L"guestcontrol " + m_pVm->m_sGuid +
@@ -915,6 +948,36 @@ private:
 		}
 
 		return bResult;
+	}
+
+	std::vector<CVm*> GetDebianVms()
+	{
+		std::vector<CVm*> arrVms;
+
+		for (size_t i = 0; i < m_arrVms.size(); i++)
+		{
+			if ( m_arrVms[i]->IsDebian() )
+			{
+				arrVms.push_back(m_arrVms[i]);
+			}
+		}
+
+		return arrVms;
+	}
+
+	std::vector<CVm*> GetRedHatVms()
+	{
+		std::vector<CVm*> arrVms;
+
+		for (size_t i = 0; i < m_arrVms.size(); i++)
+		{
+			if ( m_arrVms[i]->IsRedHat() )
+			{
+				arrVms.push_back(m_arrVms[i]);
+			}
+		}
+
+		return arrVms;
 	}
 
 	std::wstring GetVmOS(const std::wstring& sGuid)
@@ -1082,10 +1145,28 @@ int main(int argc, char** argv)
 				sValue = CorrectValue(sValue);
 				oTester.SetPassword(sValue);
 			}
-			else if (sKey == sCmdDistribUrl)
+			else if (sKey == sCmdDebianUrl)
 			{
 				sValue = CorrectValue(sValue);
-				oTester.SetDistribUrl(sValue);
+				oTester.SetDebianUrl(sValue);
+			}
+			else if (sKey == sCmdRedhatUrl)
+			{
+				sValue = CorrectValue(sValue);
+				oTester.SetRedHatUrl(sValue);
+			}
+			// Start
+			else if (sKey == sCmdStartAll)
+			{
+				oTester.SetStartAll();
+			}
+			else if (sKey == sCmdStartDebian)
+			{
+				oTester.SetStartDebian();
+			}
+			else if (sKey == sCmdStartAll)
+			{
+				oTester.SetStartRedHat();
 			}
 		}
 	}
@@ -1095,11 +1176,11 @@ int main(int argc, char** argv)
 	oTester.CreateReport();
 
 	oTester.InitVms();
+	std::vector<CVm*> arrStartVms = oTester.GetStartVms();
 
-	std::vector<CVm*> arrLinux = oTester.GetRedHatVms();
-	for (size_t i = 0; i < arrLinux.size(); i++)
+	for (size_t i = 0; i < arrStartVms.size(); i++)
 	{
-		CVm* pVm = arrLinux[i];
+		CVm* pVm = arrStartVms[i];
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 

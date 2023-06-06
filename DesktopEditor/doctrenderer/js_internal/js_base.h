@@ -35,6 +35,10 @@ namespace NSJSBase
 	class CJSTypedArray;
 	class CJSFunction;
 
+	/**
+	 * The class represents a wrapper for primitive values and objects in JS.
+	 * Objects of this class are used to interact with variables in JS contexts.
+	 */
 	class JS_DECL CJSValue
 	{
 	public:
@@ -70,6 +74,9 @@ namespace NSJSBase
 		virtual JSSmart<CJSObject> toObjectSmart();
 	};
 
+	/**
+	 * The base class for member of CJSEmbedObject class.
+	 */
 	class JS_DECL CJSEmbedObjectPrivateBase
 	{
 	public:
@@ -77,6 +84,10 @@ namespace NSJSBase
 		virtual ~CJSEmbedObjectPrivateBase();
 	};
 
+	/**
+	 * The base class for member of CJSEmbedObject class.
+	 * Inheritors of this class implement engine-specific behaviour for embedding external C++ class in a JS context.
+	 */
 	class JS_DECL CJSEmbedObjectAdapterBase
 	{
 	public:
@@ -84,6 +95,9 @@ namespace NSJSBase
 		virtual ~CJSEmbedObjectAdapterBase();
 	};
 
+	/**
+	 * The class that used for getting arguments of the function called in a JS context.
+	 */
 	class JS_DECL CJSFunctionArguments
 	{
 	public:
@@ -91,6 +105,9 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> Get(const int& index) = 0;
 	};
 
+	/**
+	 * The base class that should be inherited by classes intended to be embedded in a JS context.
+	 */
 	class JS_DECL CJSEmbedObject
 	{
 	public:
@@ -98,7 +115,13 @@ namespace NSJSBase
 		virtual ~CJSEmbedObject();
 
 	public:
+		/**
+		 * Returns a pointer to the member of the embedded class.
+		 */
 		virtual void* getObject();
+		/**
+		 * Creates and returns an adapter for the embedded class (its implementation is generated).
+		 */
 		virtual CJSEmbedObjectAdapterBase* getAdapter();
 
 	protected:
@@ -109,6 +132,9 @@ namespace NSJSBase
 		friend class CJSEmbedObjectPrivate;
 	};
 
+	/**
+	 * The class represents a wrapper for objects in JS.
+	 */
 	class JS_DECL CJSObject : public CJSValue
 	{
 	public:
@@ -127,6 +153,9 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> toValue()                     = 0;
 	};
 
+	/**
+	 * The class represents a wrapper for arrays in JS.
+	 */
 	class JS_DECL CJSArray : public CJSValue
 	{
 	public:
@@ -158,6 +187,9 @@ namespace NSJSBase
 		void Free(unsigned char* data, const size_t& size);
 	}
 
+	/**
+	 * The class that stores raw chunks of binary data.
+	 */
 	class JS_DECL CJSDataBuffer
 	{
 	public:
@@ -172,6 +204,9 @@ namespace NSJSBase
 		void Free();
 	};
 
+	/**
+	 * The class represents a wrapper for typed arrays in JS.
+	 */
 	class JS_DECL CJSTypedArray : public CJSValue
 	{
 	public:
@@ -183,6 +218,9 @@ namespace NSJSBase
 		virtual JSSmart<CJSValue> toValue() = 0;
 	};
 
+	/**
+	 * The class represents a wrapper for functions in JS.
+	 */
 	class JS_DECL CJSFunction : public CJSValue
 	{
 	public:
@@ -192,6 +230,9 @@ namespace NSJSBase
 		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
 	};
 
+	/**
+	 * The class for tracking exceptions during code execution in JS contexts.
+	 */
 	class JS_DECL CJSTryCatch
 	{
 	public:
@@ -207,6 +248,10 @@ namespace NSJSBase
 		iadtUndefined = 255
 	};
 
+
+	/**
+	 * The class for getting JS context instance for working with it.
+	 */
 	class CJSContextPrivate;
 	class JS_DECL CJSContext
 	{
@@ -224,11 +269,23 @@ namespace NSJSBase
 
 		CJSObject* GetGlobal();
 
-		// Use this methods before working with needed context if you want to work with multiple contexts simultaneously (or use CJSContextScope)
+		/**
+		 * Enters the JS context and makes it the active context for further work.
+		 * This method is called in the constructor of CJSContextScope class.
+		 */
 		void Enter();
+		/**
+		 * Exits the JS context, which restores the context that was in place when entering the current context.
+		 * This method is called in the destructor of CJSContextScope class.
+		 */
 		void Exit();
 
-		// Use this method for embedding objects into JS context
+		/**
+		 * Embeds specified class in all JS contexts.
+		 * You can then call `CreateEmbedOjbect('EmbeddedClassName')` for getting an instance of embedded class.
+		 * @tparam T Embedded class name.
+		 * @param type Specifies how an object of the embedded class will be created.
+		 */
 		template<typename T>
 		static void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
 		{
@@ -270,6 +327,11 @@ namespace NSJSBase
 		static bool IsSupportNativeTypedArrays();
 	};
 
+
+	/**
+	 * The class that sets a new scope for any local variables created after its construction.
+	 * In the destructor of the class this scope and all local variables created in it will be removed.
+	 */
 	class CJSLocalScopePrivate;
 	class JS_DECL CJSLocalScope
 	{
@@ -281,6 +343,10 @@ namespace NSJSBase
 		~CJSLocalScope();
 	};
 
+	/**
+	 * The class that sets execution context for further work.
+	 * This class can be used instead of Enter() and Exit() methods, cause it calls them on its creation and destruction, respectively.
+	 */
 	class JS_DECL CJSContextScope
 	{
 	public:
@@ -292,10 +358,22 @@ namespace NSJSBase
 	};
 }
 
-// macro for embedding
+// Macro for embedding
 #define DECLARE_EMBED_METHODS										\
 	static std::string getName();									\
 	static CJSEmbedObject* getCreator();							\
 	virtual CJSEmbedObjectAdapterBase* getAdapter() override;
+
+/**
+ * If you want to embed your external C++ class in a JS context then do the following:
+ *
+ * 1. Make sure that your class is inherit CJSEmbedObject class.
+ * 2. Override `getObject()` method and write its implementation.
+ * 3. Use macro `DECLARE_EMBED_METHODS` in the `public` section of your class declaration.
+ * 4. Include "doctrenderer/js_internal/js_base_embed.pri" in your .pro file.
+ * 5. Add a line `ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(YourClassHeader.h)` to your .pro file.
+ * 6. Run the script "doctrenderer/embed/embed.py" with the name of your class header as an argument.
+ *	  If you embedding a class for doctrenderer library, then also specify `--internal` (or just `-i`) option.
+ */
 
 #endif // _CORE_EXT_JS_BASE_H_

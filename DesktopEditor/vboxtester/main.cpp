@@ -384,6 +384,9 @@ public:
 				NSThreads::Sleep(iSleep);
 				iCount--;
 			}
+
+			// Wait min
+			NSThreads::Sleep(60000);
 		}
 
 		WriteReportResult(iCount > 0);
@@ -516,6 +519,7 @@ public:
 					   L" mkdir " + GetWorkingDir();
 
 			sOutput = ExecuteCommand(sCommand);
+			NSThreads::Sleep(10000);
 
 			bResult = true;
 		}
@@ -603,6 +607,7 @@ public:
 			std::wstring sOutput = ExecuteCommand(sCommand);
 
 			NSFile::CFileBinary::Remove(sScriptPath);
+			NSThreads::Sleep(10000);
 
 			// Run
 			sScriptPath = NSDirectory::GetTempPath() + L"/" + m_sRunScript;
@@ -629,6 +634,7 @@ public:
 			sOutput = ExecuteCommand(sCommand);
 
 			NSFile::CFileBinary::Remove(sScriptPath);
+			NSThreads::Sleep(10000);
 
 			WriteReportResult(bResult);
 		}
@@ -1096,9 +1102,6 @@ int main(int argc, char** argv)
 		CVm* pVm = arrLinux[i];
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
-
-		//if ( sName != L"Ubuntu18" )
-		//	continue;
 
 		oTester.SetVm(pVm);
 

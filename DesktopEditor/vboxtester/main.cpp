@@ -104,7 +104,7 @@ bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimit
 }
 
 //
-enum LinuxType
+enum SystemType
 {
 	Debian = 0,
 	RedHat,
@@ -117,7 +117,7 @@ public:
 	std::wstring	m_sName;
 	std::wstring	m_sGuid;
 	std::wstring	m_sGuestOS;
-	LinuxType		m_eType;
+	SystemType		m_eType;
 
 	CVm()
 	{
@@ -127,12 +127,12 @@ public:
 		m_eType = Empty;
 	}
 
-	CVm(const std::wstring& sName, const std::wstring& sGuid, const std::wstring& sGuestOS)
+	CVm(const std::wstring& sName, const std::wstring& sGuid, const std::wstring& sGuestOS, const SystemType& eType)
 	{
 		m_sName = sName;
 		m_sGuid = sGuid;
 		m_sGuestOS = sGuestOS;
-		m_eType = Empty;
+		m_eType = eType;
 	}
 
 	std::wstring ToString()
@@ -257,7 +257,17 @@ public:
 					sName = CorrectValue(sName);
 					std::wstring sOs = GetVmOS(sGuid);
 
-					m_arrVms.push_back(new CVm(sName, sGuid, sOs));
+					SystemType eType = Empty;
+					std::wstring sOsLower = sOs;
+					std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
+
+					if ( sOsLower.find(L"ubuntu") != std::wstring::npos )
+						eType = Debian;
+					else if ( sOsLower.find(L"red hat") != std::wstring::npos ||
+							  sOsLower.find(L"fedora") != std::wstring::npos )
+						eType = RedHat;
+
+					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
 				}
 			}
 			WriteReportResult(m_arrVms.size() > 0);
@@ -277,12 +287,8 @@ public:
 
 		for (size_t i = 0; i < m_arrVms.size(); i++)
 		{
-			std::wstring sGuestOs = m_arrVms[i]->m_sGuestOS;
-			std::transform(sGuestOs.begin(), sGuestOs.end(), sGuestOs.begin(), tolower);
-
-			if ( sGuestOs.find(L"ubuntu") != std::wstring::npos )
+			if ( m_arrVms[i]->m_eType == Debian )
 			{
-				m_arrVms[i]->m_eType = Debian;
 				arrVms.push_back(m_arrVms[i]);
 			}
 		}
@@ -296,13 +302,8 @@ public:
 
 		for (size_t i = 0; i < m_arrVms.size(); i++)
 		{
-			std::wstring sGuestOs = m_arrVms[i]->m_sGuestOS;
-			std::transform(sGuestOs.begin(), sGuestOs.end(), sGuestOs.begin(), tolower);
-
-			if ( sGuestOs.find(L"red hat") != std::wstring::npos ||
-				 sGuestOs.find(L"fedora") != std::wstring::npos)
+			if ( m_arrVms[i]->m_eType == RedHat )
 			{
-				m_arrVms[i]->m_eType = RedHat;
 				arrVms.push_back(m_arrVms[i]);
 			}
 		}
@@ -398,10 +399,29 @@ public:
 
 		if ( m_pVm )
 		{
-			while ( (iCount > 0) && (IsProcessExists(L"dpkg") ||
-									IsProcessExists(L"apt") ||
-									!IsLocationExists(m_sEditorsPath)) )
+			std::vector<std::wstring> arrProcess;
+
+			if ( m_pVm->m_eType == Debian )
 			{
+				arrProcess.push_back(L"apt");
+				arrProcess.push_back(L"dpkg");
+			}
+			else if ( m_pVm->m_eType == RedHat )
+			{
+				arrProcess.push_back(L"rpm");
+				arrProcess.push_back(L"yum");
+			}
+
+			while ( iCount > 0 )
+			{
+				bool bResult = IsLocationExists(m_sEditorsPath);
+				for (size_t i = 0; i < arrProcess.size(); i++)
+				{
+					bResult &= IsProcessExists(arrProcess[i]);
+				}
+				if ( bResult )
+					break;
+
 				NSThreads::Sleep(iSleep);
 				iCount--;
 			}
@@ -547,17 +567,29 @@ public:
 			WriteReport(L"Copiyng scripts");
 
 			// Setup
+			std::wstring sData = L"";
 			std::wstring sScriptPath = NSDirectory::GetTempPath() + L"/" + m_sSetupScript;
 			std::wstring sDistribFile = NSFile::GetFileName(m_sDistribUrl);
 
 			if ( NSFile::CFileBinary::Exists(sScriptPath) )
 				NSFile::CFileBinary::Remove(sScriptPath);
 
-			std::wstring sData = L"#!/bin/bash\n" \
-								 L"echo \"Install DesktopEditors\"\n" \
-								 L"apt purge onlyoffice-desktopeditors -y\n" \
-								 L"dpkg -i ./" + sDistribFile + "\n" \
-								 L"apt install -f";
+			if ( m_pVm->m_eType == Debian )
+			{
+				sData = L"#!/bin/bash\n" \
+						L"echo \"Install DesktopEditors\"\n" \
+						L"apt purge onlyoffice-desktopeditors -y\n" \
+						L"dpkg -i ./" + sDistribFile + "\n" \
+						L"apt install -f";
+			}
+			else if ( m_pVm->m_eType == RedHat )
+			{
+				sData = L"#!/bin/bash\n" \
+						L"echo \"Install DesktopEditors\"\n" \
+						L"yum remove onlyoffice-desktopeditors -y\n" \
+						L"rpm -ivh ./" + sDistribFile + "\n" \
+						L"yum install ./" + sDistribFile;
+			}
 
 			NSFile::CFileBinary oFile;
 			bResult = oFile.CreateFileW(sScriptPath);
@@ -1066,8 +1098,8 @@ int main(int argc, char** argv)
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		//if ( sName != L"Ubuntu18" )
-		//	continue;
+		if ( sName != L"Ubuntu18" )
+			continue;
 
 		oTester.SetVm(pVm);
 

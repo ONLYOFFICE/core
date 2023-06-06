@@ -78,9 +78,9 @@ L"  --user               = Required parameter.\n\n" \
 
 L"  --password           = Required parameter.\n\n" \
 
-L"  --debian-url         = Required parameter if --start-all or --start-debian.\n\n" \
+L"  --debian-url         = Required parameter if exist --start-all or --start-debian\n\n" \
 
-L"  --redhat-url         = Required parameter if --start-all or --start-redhat.\n\n" \
+L"  --redhat-url         = Required parameter if exist --start-all or --start-redhat\n\n" \
 
 L"  --start-all          = Optional parameter. Start Debian and RedHat VMs\n\n" \
 

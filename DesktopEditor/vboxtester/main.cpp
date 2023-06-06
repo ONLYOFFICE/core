@@ -1210,7 +1210,8 @@ int main(int argc, char** argv)
 			}
 		}
 
-		//oTester.StopVm(sGuid);
+		oTester.RemoveScripts();
+		oTester.StopVm();
 	}
 
 	return 0;

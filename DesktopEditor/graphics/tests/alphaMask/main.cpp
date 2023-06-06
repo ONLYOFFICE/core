@@ -7,8 +7,6 @@
 #include "../../../agg-2.4/include/agg_renderer_scanline.h"
 #include "../../../agg-2.4/include/agg_scanline_u.h"
 
-#include "../../../agg-2.4/include/agg_pixfmt_amask_adaptor.h"
-
 #include "../../../agg-2.4/svg/agg_svg_rasterizer.h"
 
 #include "../../../agg-2.4/include/agg_renderer_base.h"
@@ -21,18 +19,11 @@
 typedef agg::rendering_buffer rendering_buffer_type;
 typedef agg::pixfmt_bgra32 pixformat_type;
 
-typedef agg::blender_rgba< agg::svg::color_type, agg::svg::component_order >						blender_type;
-typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >				blender_type_comp;
-typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >	pixfmt_type;
-typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>					pixfmt_type_comp;
-
 typedef agg::rasterizer_scanline_aa<> rasterizer_type;
 
-typedef agg::renderer_base<pixfmt_type> base_renderer_type;
-typedef agg::renderer_base<pixfmt_type_comp> comp_renderer_type;
 typedef agg::scanline_u8 scanline_type;
 
-typedef agg::amask_no_clip_bgra32gray			  alpha_mask_type;
+typedef agg::alpha_mask_bgra32gray			      alpha_mask_type;
 typedef agg::renderer_base<pixformat_type>        ren_base;
 typedef agg::renderer_scanline_aa_solid<ren_base> renderer;
 
@@ -40,7 +31,7 @@ typedef unsigned char BYTE;
 
 void testAlphaMask(const std::wstring& wsResultPath, unsigned int unWidth, unsigned int unHeight)
 {
-	if (0 == unWidth || 0 == unHeight)
+	if (wsResultPath.empty() || 0 == unWidth || 0 == unHeight)
 		return;
 
 	rasterizer_type oRasterizer;
@@ -56,6 +47,9 @@ void testAlphaMask(const std::wstring& wsResultPath, unsigned int unWidth, unsig
 
 	pixformat_type oPixfAlpha(oAlphaMaskRbuf);
 	ren_base oRenBaseAlpha(oPixfAlpha);
+
+	oRenBaseAlpha.clear(agg::rgba(0, 0, 0));
+
 	renderer oRendereAlpha(oRenBaseAlpha);
 
 	agg::ellipse ell;
@@ -68,6 +62,8 @@ void testAlphaMask(const std::wstring& wsResultPath, unsigned int unWidth, unsig
 	agg::scanline_p8 oScanLineAlpha;
 
 	agg::render_scanlines(oRasterizer, oScanLineAlpha, oRendereAlpha);
+
+	//
 
 	ell.init(500, 500, 500, 500, 100);
 	oRasterizer.add_path(ell);
@@ -83,6 +79,8 @@ void testAlphaMask(const std::wstring& wsResultPath, unsigned int unWidth, unsig
 	pixformat_type pixf(oRBuf);
 	ren_base oRenBase(pixf);
 	renderer oRenderer(oRenBase);
+
+	oRenBase.clear(agg::rgba8(0, 0, 255));
 	oRenderer.color(agg::rgba8(0, 255, 0));
 
 	agg::render_scanlines(oRasterizer, oScanLine, oRenderer);

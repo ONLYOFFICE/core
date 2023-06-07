@@ -77,6 +77,7 @@ public:
 };
 #endif
 
+// TODO: remove this class
 class CIsolateAdditionalData
 {
 public:

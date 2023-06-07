@@ -245,7 +245,8 @@ namespace NSJSBase
 
 	enum IsolateAdditionalDataType {
 		iadtSingletonNative = 0,
-		iadtUndefined = 255
+		iadtUndefined = 1,
+		iadtNone = 2
 	};
 
 

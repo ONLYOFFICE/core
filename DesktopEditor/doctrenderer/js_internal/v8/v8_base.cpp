@@ -544,16 +544,13 @@ namespace NSJSBase
 			return;
 		}
 
-		const CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
+		CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
 
-		if (NSJSBase::iadtUndefined != oInfo.m_type)
-		{
-			if (CIsolateAdditionalData::CheckSingletonType(isolate, oInfo.m_type))
-			{
-				args.GetReturnValue().Set(v8::Undefined(isolate));
-				return;
-			}
-		}
+		if (oInfo.m_type == NSJSBase::iadtNone)
+			return;
+
+		if (oInfo.m_type == NSJSBase::iadtSingletonNative)
+			oInfo.m_type = NSJSBase::iadtNone;
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
 		v8::Local<v8::ObjectTemplate> oCurTemplate;

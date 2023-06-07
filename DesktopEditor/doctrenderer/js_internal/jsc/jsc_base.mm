@@ -453,8 +453,6 @@ namespace NSJSBase
 
 		const CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
 
-		// TODO: singleton check ?
-
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
 		CJSEmbedObjectAdapterJSC* pAdapter = static_cast<CJSEmbedObjectAdapterJSC*>(pNativeObj->getAdapter());
 		id pEmbedObj = pAdapter->getExportedObject(pNativeObj);

@@ -608,21 +608,60 @@ int AcroForm::findFieldIdx(int pg, double x, double y) {
   return -1;
 }
 
-int AcroForm::findFieldIdx(Object* oRefObj) {
+int AcroForm::findFirstFieldIdx(Object* fieldRef) {
   AcroFormField *field;
-  int i;
+  Object fieldObj, kidsObj, kidRef, kidObj, subtypeObj;
+  GBool isTerminal;
+  int i, nRes;
+  nRes = -1;
 
-  if (!oRefObj || !oRefObj->isRef()) {
-    return -1;
+  if (!fieldRef || !fieldRef->isRef()) {
+    return nRes;
   }
-  for (i = 0; i < fields->getLength(); ++i) {
-    field = (AcroFormField *)fields->get(i);
-    if (oRefObj->getRefGen() == field->fieldRef.getRefGen() &&
-        oRefObj->getRefNum() == field->fieldRef.getRefNum()) {
-      return i;
+
+  fieldRef->fetch(doc->getXRef(), &fieldObj);
+  if (!fieldObj.isDict()) {
+    fieldObj.free();
+    return nRes;
+  }
+
+  isTerminal = gTrue;
+  if (fieldObj.dictLookup("Kids", &kidsObj)->isArray()) {
+    isTerminal = gFalse;
+    for (i = 0; !isTerminal && i < kidsObj.arrayGetLength(); ++i) {
+      kidsObj.arrayGet(i, &kidObj);
+      if (kidObj.isDict()) {
+    if (kidObj.dictLookup("Parent", &subtypeObj)->isNull()) {
+      isTerminal = gTrue;
+    }
+    subtypeObj.free();
+      }
+      kidObj.free();
+    }
+    if (!isTerminal) {
+      for (i = 0; !isTerminal && i < kidsObj.arrayGetLength(); ++i) {
+    kidsObj.arrayGetNF(i, &kidRef);
+    nRes = findFirstFieldIdx(&kidRef);
+    kidRef.free();
+    if (nRes >= 0)
+      break;
+      }
     }
   }
-  return -1;
+  kidsObj.free();
+  fieldObj.free();
+
+  if (isTerminal) {
+    for (i = 0; i < fields->getLength(); ++i) {
+      field = (AcroFormField *)fields->get(i);
+      if (fieldRef->getRefGen() == field->fieldRef.getRefGen() &&
+          fieldRef->getRefNum() == field->fieldRef.getRefNum()) {
+        return i;
+      }
+    }
+  }
+
+  return nRes;
 }
 GList* AcroForm::findFieldIdx(GString* fullName) {
   AcroFormField *field;

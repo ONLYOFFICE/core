@@ -914,7 +914,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
             }
             else if (oHide.isRef())
             {
-                int nFind = pAcroForms->findFieldIdx(&oHide);
+                int nFind = pAcroForms->findFirstFieldIdx(&oHide);
                 if (nFind >= 0)
                 {
                     nFields++;
@@ -966,7 +966,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
                     }
                     else if (oField.isRef())
                     {
-                        int nFind = pAcroForms->findFieldIdx(&oField);
+                        int nFind = pAcroForms->findFirstFieldIdx(&oField);
                         if (nFind >= 0)
                         {
                             nFields++;
@@ -1024,7 +1024,7 @@ BYTE* CPdfReader::GetWidgets()
             oCO.arrayGetNF(j, &oField);
             if (oField.isRef())
             {
-                int nFind = pAcroForms->findFieldIdx(&oField);
+                int nFind = pAcroForms->findFirstFieldIdx(&oField);
                 if (nFind >= 0)
                 {
                     nFields++;
@@ -1035,6 +1035,8 @@ BYTE* CPdfReader::GetWidgets()
         }
         oRes.AddInt(nFields, nFieldsPos);
     }
+    else
+        oRes.AddInt(0);
     oCO.free();
 
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
@@ -2078,6 +2080,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         nWidth  += 2;
         nHeight += 2;
 
+        // Отрисовка на прозрачном холсте с заданым цветом фона
         BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
         unsigned int nColor = (unsigned int)nBackgroundColor;
         unsigned int nSize = (unsigned int)(nWidth * nHeight);

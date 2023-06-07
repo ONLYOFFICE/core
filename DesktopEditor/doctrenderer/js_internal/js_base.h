@@ -282,7 +282,6 @@ namespace NSJSBase
 
 		/**
 		 * Embeds specified class in all JS contexts.
-		 * You can then call `CreateEmbedOjbect('EmbeddedClassName')` for getting an instance of embedded class.
 		 * @tparam T Embedded class name.
 		 * @param type Specifies how an object of the embedded class will be created.
 		 */
@@ -368,12 +367,15 @@ namespace NSJSBase
  * If you want to embed your external C++ class in a JS context then do the following:
  *
  * 1. Make sure that your class is inherit CJSEmbedObject class.
- * 2. Override `getObject()` method and write its implementation.
+ * 2. Override `getObject()` method and write its implementation if needed.
  * 3. Use macro `DECLARE_EMBED_METHODS` in the `public` section of your class declaration.
  * 4. Include "doctrenderer/js_internal/js_base_embed.pri" in your .pro file.
  * 5. Add a line `ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(YourClassHeader.h)` to your .pro file.
- * 6. Run the script "doctrenderer/embed/embed.py" with the name of your class header as an argument.
- *	  If you embedding a class for doctrenderer library, then also specify `--internal` (or just `-i`) option.
+ * 6. Run the script "doctrenderer/embed/embed.py" with the name of your class header as an argument for generating some necessary files for embedding.
+ *	  If you're going to embed a class for doctrenderer library, then also specify `--internal` (or just `-i`) option.
+ * 7. In C++ code call `CJSContext::Embed<YourClassName>()`.
+ *
+ * You can then call `CreateEmbedOjbect('YourClassName')` in JS code for getting an instance of the embedded class and use its methods.
  */
 
 #endif // _CORE_EXT_JS_BASE_H_

@@ -889,7 +889,6 @@ namespace NSJSBase
 
 		static void CreateWeaker(v8::Local<v8::Object> obj)
 		{
-			// ???
 			new CJSEmbedObjectPrivate(obj);
 		}
 	};

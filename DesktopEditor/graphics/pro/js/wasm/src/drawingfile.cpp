@@ -553,7 +553,8 @@ int main(int argc, char* argv[])
         {
             DWORD nPathLength = READ_INT(pWidgets + i);
             i += 4;
-            std::cout << nPathLength << ", ";
+            std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+            i += nPathLength;
         }
         if (nCOLength > 0)
             std::cout << std::endl;

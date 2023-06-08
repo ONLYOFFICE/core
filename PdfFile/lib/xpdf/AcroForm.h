@@ -41,7 +41,8 @@ public:
   AcroFormField *getField(int idx);
   AcroFormField *findField(int pg, double x, double y);
   int findFieldIdx(int pg, double x, double y);
-  int findFirstFieldIdx(Object* oRefObj);
+  int findFieldIdx(Object* oRefObj);
+  GString* findFieldName(GString* sName);
   GList* findFieldIdx(GString* fullName);
   Object* getAcroFormObj() { return &acroFormObj; }
 

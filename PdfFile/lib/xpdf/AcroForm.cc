@@ -608,7 +608,7 @@ int AcroForm::findFieldIdx(int pg, double x, double y) {
   return -1;
 }
 
-int AcroForm::findFirstFieldIdx(Object* fieldRef) {
+int AcroForm::findFieldIdx(Object* fieldRef) {
   AcroFormField *field;
   Object fieldObj, kidsObj, kidRef, kidObj, subtypeObj;
   GBool isTerminal;
@@ -641,7 +641,7 @@ int AcroForm::findFirstFieldIdx(Object* fieldRef) {
     if (!isTerminal) {
       for (i = 0; !isTerminal && i < kidsObj.arrayGetLength(); ++i) {
     kidsObj.arrayGetNF(i, &kidRef);
-    nRes = findFirstFieldIdx(&kidRef);
+    nRes = findFieldIdx(&kidRef);
     kidRef.free();
     if (nRes >= 0)
       break;
@@ -663,6 +663,48 @@ int AcroForm::findFirstFieldIdx(Object* fieldRef) {
 
   return nRes;
 }
+
+GString* AcroForm::findFieldName(GString* sName)
+{
+  AcroFormField* field;
+  int i, j, k;
+  GString* fieldName;
+  bool bFind;
+
+  if (!sName) {
+    return NULL;
+  }
+
+  for (i = 0; i < fields->getLength(); ++i) {
+    field = (AcroFormField *)fields->get(i);
+    fieldName = field->name->toPDFTextString();
+    if (fieldName->getLength() < sName->getLength()) {
+      delete fieldName;
+      return NULL;
+    } else if (fieldName->getLength() == sName->getLength()) {
+      if (fieldName->cmp(sName) == 0) {
+        return fieldName;
+      }
+    } else {
+      bFind = false;
+      for (j = 0; j < fieldName->getLength(); ++j) {
+        if (fieldName->getChar(j) == sName->getChar(0)) {
+          bFind = true;
+          for (k = 1; k < sName->getLength(); ++k) {
+            if (j + k >= fieldName->getLength() || fieldName->getChar(j + k) != sName->getChar(k)) {
+              bFind = false;
+              break;
+            }
+          }
+        }
+        if (bFind)
+          return fieldName;
+      }
+    }
+    delete fieldName;
+  }
+}
+
 GList* AcroForm::findFieldIdx(GString* fullName) {
   AcroFormField *field;
   GString* fieldName;

@@ -914,7 +914,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
             }
             else if (oHide.isRef())
             {
-                int nFind = pAcroForms->findFirstFieldIdx(&oHide);
+                int nFind = pAcroForms->findFieldIdx(&oHide);
                 if (nFind >= 0)
                 {
                     nFields++;
@@ -966,7 +966,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
                     }
                     else if (oField.isRef())
                     {
-                        int nFind = pAcroForms->findFirstFieldIdx(&oField);
+                        int nFind = pAcroForms->findFieldIdx(&oField);
                         if (nFind >= 0)
                         {
                             nFields++;
@@ -1020,18 +1020,22 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddInt(nFields);
         for (int j = 0; j < oCO.arrayGetLength(); ++j)
         {
-            Object oField;
-            oCO.arrayGetNF(j, &oField);
-            if (oField.isRef())
+            Object oField, oName;
+            oCO.arrayGet(j, &oField);
+            if (oField.isDict() && oField.dictLookup("T", &oName) && oName.isString())
             {
-                int nFind = pAcroForms->findFirstFieldIdx(&oField);
-                if (nFind >= 0)
+                GString* sFindName = pAcroForms->findFieldName(oName.getString());
+                if (sFindName)
                 {
                     nFields++;
-                    oRes.AddInt(nFind);
+                    TextString* s = new TextString(sFindName);
+                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                    delete s;
                 }
+                RELEASEOBJECT(sFindName);
             }
-            oField.free();
+            oField.free(); oName.free();
         }
         oRes.AddInt(nFields, nFieldsPos);
     }

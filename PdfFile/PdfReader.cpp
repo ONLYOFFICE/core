@@ -889,41 +889,37 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
         int nFields = 0;
         oRes.AddInt(nFields);
 
-        Object oHide;
+        Object oHide, oName;
         oHideObj->copy(&oHide);
         do
         {
+            GString* sField = NULL;
             if (oHideObj->isArray())
             {
                 oHide.free();
-                oHideObj->arrayGetNF(k, &oHide);
+                oHideObj->arrayGet(k, &oHide);
             }
             if (oHide.isString())
+                sField = oHide.getString();
+            else if (oHide.isDict() && oHide.dictLookup("T", &oName) && oName.isString())
+                sField = oName.getString();
+
+            if (sField)
             {
-                GString* sField = oHide.getString();
-                GList* arrFind = pAcroForms->findFieldIdx(sField);
-                if (arrFind)
-                {
-                    for (int i = 0; i < arrFind->getLength(); ++i)
-                    {
-                        nFields++;
-                        oRes.AddInt(*((int*)arrFind->get(i)));
-                    }
-                }
-                deleteGList(arrFind, int);
-            }
-            else if (oHide.isRef())
-            {
-                int nFind = pAcroForms->findFieldIdx(&oHide);
-                if (nFind >= 0)
+                GString* sFindName = pAcroForms->findFieldName(sField);
+                if (sFindName)
                 {
                     nFields++;
-                    oRes.AddInt(nFind);
+                    TextString* s = new TextString(sFindName);
+                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                    delete s;
                 }
+                RELEASEOBJECT(sFindName);
             }
             k++;
         } while (k < nHide);
-        oHide.free();
+        oHide.free(); oName.free();
 
         oRes.AddInt(nFields, nFieldsPos);
         break;
@@ -948,32 +944,28 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
                 oRes.AddInt(nFields);
                 for (int j = 0; j < oObj.arrayGetLength(); ++j)
                 {
-                    Object oField;
-                    oObj.arrayGetNF(j, &oField);
+                    Object oField, oName;
+                    oObj.arrayGet(j, &oField);
+                    GString* sField = NULL;
                     if (oField.isString())
+                        sField = oField.getString();
+                    else if (oField.isDict() && oField.dictLookup("T", &oName) && oName.isString())
+                        sField = oName.getString();
+
+                    if (sField)
                     {
-                        GString* sField = oField.getString();
-                        GList* arrFind = pAcroForms->findFieldIdx(sField);
-                        if (arrFind)
-                        {
-                            for (int i = 0; i < arrFind->getLength(); ++i)
-                            {
-                                nFields++;
-                                oRes.AddInt(*((int*)arrFind->get(i)));
-                            }
-                        }
-                        deleteGList(arrFind, int);
-                    }
-                    else if (oField.isRef())
-                    {
-                        int nFind = pAcroForms->findFieldIdx(&oField);
-                        if (nFind >= 0)
+                        GString* sFindName = pAcroForms->findFieldName(sField);
+                        if (sFindName)
                         {
                             nFields++;
-                            oRes.AddInt(nFind);
+                            TextString* s = new TextString(sFindName);
+                            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                            delete s;
                         }
+                        RELEASEOBJECT(sFindName);
                     }
-                    oField.free();
+                    oField.free(); oName.free();
                 }
                 oRes.AddInt(nFields, nFieldsPos);
             }

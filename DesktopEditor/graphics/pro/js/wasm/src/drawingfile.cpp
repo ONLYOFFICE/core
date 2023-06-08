@@ -316,7 +316,8 @@ void ReadAction(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << nPathLength << ", ";
+            std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+            i += nPathLength;
 		}
 	}
 	else if (sType == "ResetForm")
@@ -333,7 +334,8 @@ void ReadAction(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout  << nPathLength << ", ";
+            std::cout  << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+            i += nPathLength;
 		}
 	}
 

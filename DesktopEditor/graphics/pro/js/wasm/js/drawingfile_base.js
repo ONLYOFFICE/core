@@ -448,18 +448,18 @@
 			rec["H"] = reader.readInt();
 			let m = reader.readInt();
 		    rec["T"] = [];
-			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
+			// В массиве используются имена аннотаций - rec["name"]
 		    for (let j = 0; j < m; ++j)
-				rec["T"].push(reader.readInt());
+				rec["T"].push(reader.readString());
 		}
 		else if (SType == "ResetForm")
 		{
 			rec["Flags"] = reader.readInt();
 			let m = reader.readInt();
 		    rec["Fields"] = [];
-			// В массиве используются номера аннотации из сопоставления с AP - rec["AP"]["i"]
+			// В массиве используются имена аннотаций - rec["name"]
 		    for (let j = 0; j < m; ++j)
-				rec["Fields"].push(reader.readInt());
+				rec["Fields"].push(reader.readString());
 		}
 		let NextAction = reader.readByte();
 		if (NextAction)
@@ -492,7 +492,8 @@
 		if (n > 0)
 			res["CO"] = [];
 		for (let i = 0; i < n; ++i)
-			res["CO"].push(reader.readInt());
+			// В массиве используются имена аннотаций - rec["name"]
+			res["CO"].push(reader.readString());
 
 		res["Fields"] = [];
 		while (reader.isValid())

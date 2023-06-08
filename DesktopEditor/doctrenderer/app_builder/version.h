@@ -1,14 +1,17 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION             1,0,0,2
-#define VER_FILEVERSION_STR         "1.0.0.2\0"
+#define VER_STRINGIFY(d)            #d
+#define TO_STR(v)                   VER_STRINGIFY(v)
+
+#define VER_FILEVERSION             WIN_INTVER
+#define VER_FILEVERSION_STR         TO_STR(WIN_INTVER)"\0"
 
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR      "1.0\0"
 
 #define VER_COMPANYNAME_STR         "Ascensio System SIA\0"
-#define VER_LEGALCOPYRIGHT_STR      "Ascensio System SIA 2016\0"
+#define VER_LEGALCOPYRIGHT_STR      "Ascensio System SIA " TO_STR(COPYRIGHT_YEAR) "\0"
 #define VER_COMPANYDOMAIN_STR       "www.onlyoffice.com\0"
 #define ABOUT_COPYRIGHT_STR         VER_LEGALCOPYRIGHT_STR
 

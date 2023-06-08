@@ -480,7 +480,8 @@ public:
 			}
 		}
 
-		GetInstalledPlugins();
+		if ( bResult )
+			GetInstalledPlugins();
 
 		return bResult;
 	}
@@ -954,19 +955,26 @@ private:
 
 		if (sPlugin.length())
 		{
-			CPluginInfo* pResult = FindLocalPlugin(sPlugin, Backup);
+			CPluginInfo* pPlugin = FindLocalPlugin(sPlugin, Backup);
 
-			if ( pResult )
+			if ( pPlugin )
 			{
-				std::wstring sPluginDir = m_sPluginsDir + L"/" + pResult->m_sGuid;
-				std::wstring sPluginBackupDir = m_sPluginsDir + L"/backup/" + pResult->m_sGuid;
-
-				if (NSDirectory::Exists(sPluginBackupDir))
+				if ( pPlugin->m_bIgnore )
 				{
-					NSDirectory::CopyDirectory(sPluginBackupDir, sPluginDir);
-					NSDirectory::DeleteDirectory(sPluginBackupDir);
+					sPrintInfo = L"Ignored";
+				}
+				else
+				{
+					std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
+					std::wstring sPluginBackupDir = m_sPluginsDir + L"/backup/" + pPlugin->m_sGuid;
 
-					bResult = true;
+					if (NSDirectory::Exists(sPluginBackupDir))
+					{
+						NSDirectory::CopyDirectory(sPluginBackupDir, sPluginDir);
+						NSDirectory::DeleteDirectory(sPluginBackupDir);
+
+						bResult = true;
+					}
 				}
 			}
 			else

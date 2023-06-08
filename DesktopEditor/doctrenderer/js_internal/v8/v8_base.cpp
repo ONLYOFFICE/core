@@ -182,10 +182,7 @@ namespace NSJSBase
 
 	CJSContext::~CJSContext()
 	{
-		if (m_internal->m_contextPersistent.IsEmpty())
-			return;
-
-		if (m_internal->m_isolate)
+		if (m_internal->m_isolate && !m_internal->m_contextPersistent.IsEmpty())
 			Dispose();
 		RELEASEOBJECT(m_internal);
 	}

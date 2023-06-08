@@ -44,33 +44,101 @@ namespace NSJSBase
 	public:
 		CJSValue();
 		virtual ~CJSValue();
-
+		/**
+		 * Returns true if the value is undefined.
+		 */
 		virtual bool isUndefined()          = 0;
+		/**
+		 * Returns true if the value is null.
+		 */
 		virtual bool isNull()               = 0;
+		/**
+		 * Returns true if the value is a boolean value.
+		 */
 		virtual bool isBool()               = 0;
+		/**
+		 * Returns true if the value is a number.
+		 */
 		virtual bool isNumber()             = 0;
+		/**
+		 * Returns true if the value is a string.
+		 */
 		virtual bool isString()             = 0;
+		/**
+		 * Returns true if the value is an array.
+		 */
 		virtual bool isArray()              = 0;
+		/**
+		 * Returns true if the value is a typed array.
+		 */
 		virtual bool isTypedArray()         = 0;
+		/**
+		 * Returns true if the value is an object.
+		 */
 		virtual bool isObject()             = 0;
+		/**
+		 * Returns true if the value is a function.
+		 */
 		virtual bool isFunction()           = 0;
+		/**
+		 * Returns true if the value is empty.
+		 */
 		virtual bool isEmpty()              = 0;
 
+		/**
+		 * Makes this value undefined.
+		 */
 		virtual void doUndefined()          = 0;
+		/**
+		 * Makes this value null.
+		 */
 		virtual void doNull()               = 0;
 
+		/**
+		 * Converts the value to a boolean value.
+		 */
 		virtual bool toBool()               = 0;
+		/**
+		 * Converts the value to a 32-bit integer.
+		 */
 		virtual int toInt32()               = 0;
+		/**
+		 * Converts the value to a 32-bit unsigned integer.
+		 */
 		virtual unsigned int toUInt32()     = 0;
+		/**
+		 * Converts the value to a double value.
+		 */
 		virtual double toDouble()           = 0;
+		/**
+		 * Converts the value to an ASCII string.
+		 */
 		virtual std::string toStringA()     = 0;
+		/**
+		 * Converts the value to a wchar string.
+		 */
 		virtual std::wstring toStringW()    = 0;
 
+		/**
+		 * Converts the value to an object.
+		 */
 		virtual CJSObject* toObject()       = 0;
+		/**
+		 * Converts the value to an array.
+		 */
 		virtual CJSArray* toArray()         = 0;
+		/**
+		 * Converts the value to a typed array.
+		 */
 		virtual CJSTypedArray* toTypedArray() = 0;
+		/**
+		 * Converts the value to a function.
+		 */
 		virtual CJSFunction* toFunction()   = 0;
 
+		/**
+		 * Converts the value to an object and returns a smart pointer to an object.
+		 */
 		virtual JSSmart<CJSObject> toObjectSmart();
 	};
 
@@ -101,7 +169,14 @@ namespace NSJSBase
 	class JS_DECL CJSFunctionArguments
 	{
 	public:
+		/**
+		 * Returns number of the arguments.
+		 */
 		virtual int GetCount() = 0;
+		/**
+		 * Returns a value of the argument by its index.
+		 * @param index The index of an argument.
+		 */
 		virtual JSSmart<CJSValue> Get(const int& index) = 0;
 	};
 
@@ -141,15 +216,34 @@ namespace NSJSBase
 		CJSObject();
 		virtual ~CJSObject();
 
+		/**
+		 * Returns specified property of the object.
+		 * @param name The name of a property.
+		 */
 		virtual CJSValue* get(const char* name)                 = 0;
+		/**
+		 * Sets a property of the object.
+		 * @param name The name of a property.
+		 * @param value The value of a property.
+		 */
 		virtual void set(const char* name, CJSValue* value)     = 0;
-
 		virtual void set(const char* name, const int& value)    = 0;
 		virtual void set(const char* name, const double& value) = 0;
-
+		/**
+		 * Returns a pointer to the native embedded object.
+		 */
 		virtual CJSEmbedObject* getNative()                     = 0;
-
+		/**
+		 * Calls a function of the object.
+		 * @param name The name of a function to call.
+		 * @param argc Number of arguments.
+		 * @param argv The array of arguments.
+		 * @return The value returned by function.
+		 */
 		virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL) = 0;
+		/**
+		 * Converts the object to a value.
+		 */
 		virtual JSSmart<CJSValue> toValue()                     = 0;
 	};
 
@@ -162,28 +256,87 @@ namespace NSJSBase
 		CJSArray();
 		virtual ~CJSArray();
 
+		/**
+		 * Returns the number of elements.
+		 */
 		virtual int getCount()                                  = 0;
+		/**
+		 * Returns an array value by its index.
+		 * @param index The index of the array value.
+		 */
 		virtual JSSmart<CJSValue> get(const int& index)         = 0;
+		/**
+		 * Sets an array value by its index.
+		 * @param index The index of the array value.
+		 * @param value The array value to be set.
+		 */
 		virtual void set(const int& index, CJSValue* value)     = 0;
 		virtual void set(const int& index, const bool& value)   = 0;
 		virtual void set(const int& index, const int& value)    = 0;
 		virtual void set(const int& index, const double& value) = 0;
 
+		/**
+		 * Add the specified value to the array.
+		 * @param value The value to be added.
+		 */
 		virtual void add(CJSValue* value)                       = 0;
+		/**
+		 * Add null to the array.
+		 */
 		virtual void add_null()                                 = 0;
+		/**
+		 * Add undefined to the array.
+		 */
 		virtual void add_undefined()                            = 0;
+		/**
+		 * Add a boolean value to the array.
+		 * @param value The boolean value to be added.
+		 */
 		virtual void add_bool(const bool& value)                = 0;
+		/**
+		 * Add a byte of data to the array.
+		 * @param value The byte to be added.
+		 */
 		virtual void add_byte(const BYTE& value)                = 0;
+		/**
+		 * Add an integer value to the array.
+		 * @param value The integer value to be added.
+		 */
 		virtual void add_int(const int& value)                  = 0;
+		/**
+		 * Add a double value to the array.
+		 * @param value The double value to be added.
+		 */
 		virtual void add_double(const double& value)            = 0;
+		/**
+		 * Add an ASCII string to the array.
+		 * @param value The string to be added.
+		 */
 		virtual void add_stringa(const std::string& value)      = 0;
+		/**
+		 * Add a wchar string to the array.
+		 * @param value The wstring to be added.
+		 */
 		virtual void add_string(const std::wstring& value)      = 0;
+		/**
+		 * Converts the array to a value.
+		 */
 		virtual JSSmart<CJSValue> toValue()                     = 0;
 	};
 
 	namespace NSAllocator
 	{
+		/**
+		 * Engine-specific memory allocator
+		 * @param size The size of allocated memory in bytes.
+		 * @return Pointer to the allocated memory. Returns nullptr if allocation was not successful.
+		 */
 		unsigned char* Alloc(const size_t& size);
+		/**
+		 * Engine-specific memory deallocator
+		 * @param data Pointer to the previously allocated with Alloc() memory.
+		 * @param size The size of allocated memory.
+		 */
 		void Free(unsigned char* data, const size_t& size);
 	}
 
@@ -199,8 +352,15 @@ namespace NSJSBase
 		bool IsExternalize;
 
 	public:
-		BYTE* Copy();
 		CJSDataBuffer();
+
+		/**
+		 * Returns a pointer to the new allocated memory that contains a copy of the binary data.
+		 */
+		BYTE* Copy();
+		/**
+		 * Frees the memory for the binary data.
+		 */
 		void Free();
 	};
 
@@ -213,8 +373,17 @@ namespace NSJSBase
 		CJSTypedArray(BYTE* data = NULL, int count = 0);
 		virtual ~CJSTypedArray();
 
+		/**
+		 * Returns the length of the typed array in bytes.
+		 */
 		virtual int getCount()          = 0;
+		/**
+		 * Returns the binary data stored in the typed array.
+		 */
 		virtual CJSDataBuffer getData() = 0;
+		/**
+		 * Converts the typed array to a value.
+		 */
 		virtual JSSmart<CJSValue> toValue() = 0;
 	};
 
@@ -227,6 +396,13 @@ namespace NSJSBase
 		CJSFunction();
 		virtual ~CJSFunction();
 
+		/**
+		 * Calls the function.
+		 * @param recv The reciever of the function call.
+		 * @param argc Number of arguments.
+		 * @param argv The array of arguments.
+		 * @return The value returned by the function.
+		 */
 		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
 	};
 
@@ -238,17 +414,24 @@ namespace NSJSBase
 	public:
 		CJSTryCatch();
 		virtual ~CJSTryCatch();
+
+		/**
+		 * Returns true if exception was caught and print some info about it to stdout.
+		 */
 		virtual bool Check() = 0;
 	};
 
 	using EmbedObjectCreator = CJSEmbedObject* (*)();
 
+	/**
+	 * Used to specify creation mode for an embedded object.
+	 * By default the creation mode is iadtUndefined.
+	 */
 	enum IsolateAdditionalDataType {
 		iadtSingletonNative = 0,
 		iadtUndefined = 1,
 		iadtNone = 2
 	};
-
 
 	/**
 	 * The class for getting JS context instance for working with it.
@@ -263,11 +446,24 @@ namespace NSJSBase
 		CJSContext(const bool& bIsInitialize = true);
 		~CJSContext();
 
+		/**
+		 * Initializes the JS context.
+		 * By default it happens automatically when creating a CJSConext instance.
+		 */
 		void Initialize();
+		/**
+		 * Releases any resources taken by the JS context.
+		 * Generally there is no need to call it manually, cause this method called when CJSConext is being destructed.
+		 */
 		void Dispose();
 
+		/**
+		 * Returns an object for tracking exceptions during code execution in current JS context.
+		 */
 		CJSTryCatch* GetExceptions();
-
+		/**
+		 * Returns a global object for this JS context.
+		 */
 		CJSObject* GetGlobal();
 
 		/**
@@ -282,7 +478,7 @@ namespace NSJSBase
 		void Exit();
 
 		/**
-		 * Embeds specified class in all JS contexts.
+		 * Embeds specified class in JS contexts.
 		 * @tparam T Embedded class name.
 		 * @param type Specifies how an object of the embedded class will be created.
 		 */
@@ -292,38 +488,135 @@ namespace NSJSBase
 			AddEmbedCreator(T::getName(), T::getCreator, type);
 		}
 
+		/**
+		 * Run the script in the current JS context.
+		 * @param script The script to be executed.
+		 * @param exception The object for handling exceptions.
+		 * @param scriptPath The path to the script, where cache files will be created for further usage.
+		 * If scriptPath is not specified, cache is not used.
+		 * @return The value returned from JS context after script execution.
+		 */
 		JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
+		/**
+		 * Parses the JSON string and convert it to corresponding JS value.
+		 * @param json_content The JSON string to be parsed.
+		 * @return The resulted JS value after parsing.
+		 */
 		CJSValue* JSON_Parse(const char* json_content);
+		/**
+		 * Do not use this function. It is for internal needs.
+		 * Associates current context with the specifed thread id.
+		 * @param id The id of a thread.
+		 */
 		void MoveToThread(ASC_THREAD_ID* id = NULL);
 
+		/**
+		 * Do not use this function manually. It is called from CJSContext::Embed method.
+		 * Adds a creator object for corresponding embedded class name.
+		 * @param name The name of an embedded class.
+		 * @param creator The creator function for an embedded class.
+		 * @param type The type of an embedded object being created.
+		 */
 		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
 
 	public:
+		/**
+		 * Creates and returns undefined JS value in current context.
+		 */
 		static CJSValue* createUndefined();
+		/**
+		 * Creates and returns null JS value in current context.
+		 */
 		static CJSValue* createNull();
+		/**
+		 * Creates and returns a boolean JS value in current context.
+		 * @param value The boolean value.
+		 */
 		static CJSValue* createBool(const bool& value);
+		/**
+		 * Creates and returns an integer JS value in current context.
+		 * @param value The integer value.
+		 */
 		static CJSValue* createInt(const int& value);
+		/**
+		 * Creates and returns an unsigned integer JS value in current context.
+		 * @param value The unsigned integer value.
+		 */
 		static CJSValue* createUInt(const unsigned int& value);
+		/**
+		 * Creates and returns a double JS value in current context.
+		 * @param value The double value.
+		 */
 		static CJSValue* createDouble(const double& value);
+		/**
+		 * Creates and returns a JS string in current context.
+		 * @param value The pointer to a null terminated char array.
+		 * @param length The length of a created string. By default the whole string will be created.
+		 */
 		static CJSValue* createString(const char* value, const int& length = -1);
+		/**
+		 * Creates and returns a JS string in current context.
+		 * @param value The pointer to a null terminated wchar_t array.
+		 * @param length The length of a created string. By default the whole string will be created.
+		 */
 		static CJSValue* createString(const wchar_t* value, const int& length = -1);
+		/**
+		 * Creates and returns a JS string in current context.
+		 * @param value The ASCII string.
+		 */
 		static CJSValue* createString(const std::string& value);
+		/**
+		 * Creates and returns a JS string in current context.
+		 * @param value The wchar string.
+		 */
 		static CJSValue* createString(const std::wstring& value);
 
+		/**
+		 * Creates and returns an empty JS object in current context.
+		 */
 		static CJSObject* createObject();
 
+		/**
+		 * Creates and returns a JS array of specified length in current context.
+		 * @param count The length of an array.
+		 */
 		static CJSArray* createArray(const int& count);
 
+		/**
+		 * Creates and returns a JS typed array in current context.
+		 * @param data The pointer to binary data.
+		 * @param count The length of an array in bytes.
+		 * @param isExternalize If true the memory block will not be reclaimed when the created JS array is destroyed.
+		 * If this parameter is false then the memory block will be released using NSAllocator::Free function when the JS typed array is destroyed.
+		 */
 		static CJSTypedArray* createUint8Array(BYTE* data = NULL, int count = 0, const bool& isExternalize = true);
 
+		/**
+		 * Creates and returns a JS typed array in current context from the specified binary file.
+		 * @param sFilePath The path to a binary file.
+		 * @return The JS typed array as JS value. Or null value if the binary file was not found.
+		 */
 		static CJSValue* createUint8Array(const std::wstring& sFilePath);
 
 	public:
+		/**
+		 * Returns a copy of the last entered JS context.
+		 */
 		static JSSmart<CJSContext> GetCurrent();
 
 	public:
+		/**
+		 * Sets directory for external initialization.
+		 * @param sDirectory The directory path.
+		 */
 		static void ExternalInitialize(const std::wstring& sDirectory);
+		/**
+		 * Externally reclaim any resources for all JS contexts.
+		 */
 		static void ExternalDispose();
+		/**
+		 * Returns true if typed arrays are supported natively on current platform.
+		 */
 		static bool IsSupportNativeTypedArrays();
 	};
 

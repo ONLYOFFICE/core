@@ -57,7 +57,7 @@ public:
 
 	void Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 
-	void Start(const std::wstring &sFileDst);
+	bool Start(const std::wstring &sFileDst);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);

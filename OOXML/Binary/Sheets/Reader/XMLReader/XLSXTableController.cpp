@@ -124,6 +124,11 @@ bool CompareCells(const OOX::Spreadsheet::CCell *a, const OOX::Spreadsheet::CCel
     return *a->m_oCol < *b->m_oCol;
 }
 
+bool CompareColumns(const OOX::Spreadsheet::CCell *a, const OOX::Spreadsheet::CCell *b)
+{
+    return *a->m_oCol == *b->m_oCol;
+}
+
 _UINT32 XLSXTableController::addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadsheet::CWorksheet *pWorkSheet,  INT nRow)
 {
     if (pWorkSheet->m_oSheetData->m_arrItems.size() > 1048576)
@@ -134,9 +139,12 @@ _UINT32 XLSXTableController::addRow(OOX::Spreadsheet::CRow *pRow, OOX::Spreadshe
     pRow->m_oR->SetValue(nRow);
 
     /// сортируем ячейки в ряду
-    if(pRow->m_arrItems.size() > 2)
+    if(pRow->m_arrItems.size() > 1)
     {
-       std::sort(pRow->m_arrItems.begin(), pRow->m_arrItems.end(), CompareCells);
+        std::sort(pRow->m_arrItems.begin(), pRow->m_arrItems.end(), CompareCells);
+        // Удаляем дубликаты с помощью алгоритма unique
+        auto it = std::unique(pRow->m_arrItems.begin(), pRow->m_arrItems.end(), CompareColumns);
+        pRow->m_arrItems.erase(it, pRow->m_arrItems.end());
     }
     pWorkSheet->m_oSheetData->m_arrItems.push_back(pRow);
 

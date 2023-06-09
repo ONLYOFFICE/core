@@ -138,6 +138,6 @@ L"                         For example, --remove=\"Youtube, PhotoEditor, {7327FC
 L"  --remove-all         = Optional parameter without value. Remove all installed plugins.\n\n" \
 
 L"  --ignore             = Optional parameter. Set comma-separated quoted list of plugins to ignore actions,\n" \
-L"                         such as update, remove, rename or restore.\n" \
+L"                         such as update, remove or rename.\n" \
 L"                         For example, --ignore=\"youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
 ;

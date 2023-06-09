@@ -942,9 +942,10 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		}
 	}
 //-------------------------------------------------------------------
+	bool result = true;
 	if (bLargeFile)
 	{
-		pStorageNew->Save(file_name_out);
+		result = pStorageNew->Save(file_name_out);
 		pStorageNew->Close();
 		delete pStorageNew;
 	}
@@ -974,7 +975,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	}
 ////test back---------------------------------------------------------------------------------test back
 
-	return true;
+	return result;
 }
 bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity)
 {

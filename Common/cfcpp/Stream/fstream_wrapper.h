@@ -68,6 +68,9 @@ public:
     inline void close() override {
         std::fstream::close();
     }
+	inline bool isError() override {
+		return (std::fstream::bad() || std::fstream::fail());
+	}
 };
 
 }

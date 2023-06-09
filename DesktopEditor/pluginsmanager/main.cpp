@@ -217,7 +217,6 @@ public:
 	CVersion* m_pVersion;
 	bool m_isValid;
 	bool m_isDirGuid;
-	bool m_bIgnore;
 
 	CPluginInfo()
 	{
@@ -228,7 +227,6 @@ public:
 		m_pVersion = new CVersion();
 		m_isValid = true;
 		m_isDirGuid  = true;
-		m_bIgnore = false;
 	}
 
 	CPluginInfo(std::wstring& sName, std::wstring& sNameConfig, std::wstring& sGuid, CVersion* pVersion)
@@ -569,11 +567,7 @@ public:
 		{
 			CPluginInfo* pPluginInfo = m_arrInstalled[i];
 
-			if ( pPluginInfo->m_bIgnore )
-			{
-				Message(L"Rename plugin: " + pPluginInfo->m_sName + L". Ignored", BoolToStr(bResult), true);
-			}
-			else if ( !pPluginInfo->m_isDirGuid )
+			if ( !pPluginInfo->m_isDirGuid )
 			{
 				std::wstring sPluginDir = m_sPluginsDir + L"/" + pPluginInfo->m_sGuid;
 
@@ -921,25 +915,18 @@ private:
 				// Check new version
 				if ( pLocalPlugin && pMarketPlugin )
 				{
-					if ( pLocalPlugin->m_bIgnore )
+					if ( *pMarketPlugin->m_pVersion > *pLocalPlugin->m_pVersion )
 					{
-						Message(L"Update plugin: " + sPlugin + L". Ignored", BoolToStr(false), true);
+						sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
+
+						bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
+						bResult &= InstallPlugin(pLocalPlugin->m_sGuid, pLocalPlugin->m_isDirGuid, false);
+
+						Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
 					}
-					else
+					else if ( *pMarketPlugin->m_pVersion == *pLocalPlugin->m_pVersion )
 					{
-						if ( *pMarketPlugin->m_pVersion > *pLocalPlugin->m_pVersion )
-						{
-							sVerToVer = L"(" + pLocalPlugin->m_pVersion->m_sVersion + L" -> " + pMarketPlugin->m_pVersion->m_sVersion + L")";
-
-							bResult &= RemovePlugin(pLocalPlugin->m_sGuid, false, false);
-							bResult &= InstallPlugin(pLocalPlugin->m_sGuid, pLocalPlugin->m_isDirGuid, false);
-
-							Message(L"Update plugin: " + sPlugin + L" " + sVerToVer, BoolToStr(bResult), true);
-						}
-						else if ( *pMarketPlugin->m_pVersion == *pLocalPlugin->m_pVersion )
-						{
-							Message(L"Update plugin: " + sPlugin + L". No updates available", BoolToStr(bResult), true);
-						}
+						Message(L"Update plugin: " + sPlugin + L". No updates available", BoolToStr(bResult), true);
 					}
 				}
 			}
@@ -959,22 +946,15 @@ private:
 
 			if ( pPlugin )
 			{
-				if ( pPlugin->m_bIgnore )
-				{
-					sPrintInfo = L"Ignored";
-				}
-				else
-				{
-					std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
-					std::wstring sPluginBackupDir = m_sPluginsDir + L"/backup/" + pPlugin->m_sGuid;
+				std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
+				std::wstring sPluginBackupDir = m_sPluginsDir + L"/backup/" + pPlugin->m_sGuid;
 
-					if (NSDirectory::Exists(sPluginBackupDir))
-					{
-						NSDirectory::CopyDirectory(sPluginBackupDir, sPluginDir);
-						NSDirectory::DeleteDirectory(sPluginBackupDir);
+				if (NSDirectory::Exists(sPluginBackupDir))
+				{
+					NSDirectory::CopyDirectory(sPluginBackupDir, sPluginDir);
+					NSDirectory::DeleteDirectory(sPluginBackupDir);
 
-						bResult = true;
-					}
+					bResult = true;
 				}
 			}
 			else
@@ -993,7 +973,6 @@ private:
 	bool RemovePlugin(const std::wstring& sPlugin, bool bSave = true, bool bPrint = true)
 	{
 		bool bResult = false;
-		bool bIgnore = false;
 
 		if (sPlugin.length())
 		{
@@ -1036,58 +1015,51 @@ private:
 
 				if (NSDirectory::Exists(sPluginDir))
 				{
-					if ( pPlugin->m_bIgnore )
+					if (bBackup)
 					{
-						bIgnore = true;
+						std::wstring sBackupDir = m_sPluginsDir + L"/backup";
+
+						std::wstring sPluginBackupDir = sBackupDir + L"/" + pPlugin->m_sGuid;
+
+						if ( !NSDirectory::Exists(sBackupDir) )
+							NSDirectory::CreateDirectory(sBackupDir);
+
+						if ( NSDirectory::Exists(sPluginBackupDir) )
+							NSDirectory::DeleteDirectory(sPluginBackupDir);
+
+						NSDirectory::CopyDirectory(sPluginDir, sPluginBackupDir);
+
+						if (bPrint)
+							Message(L"Backup plugin: " + sPlugin, BoolToStr(bBackup), true);
 					}
-					else
+
+					NSDirectory::DeleteDirectory(sPluginDir);
+
+					// Update installed
+					GetLocalPlugins(false, false);
+
+					// Check duplicate (bug #62807)
+					CPluginInfo* pDuplicate = FindLocalPlugin(pPlugin->m_sGuid);
+					if ( pDuplicate )
 					{
-						if (bBackup)
-						{
-							std::wstring sBackupDir = m_sPluginsDir + L"/backup";
-
-							std::wstring sPluginBackupDir = sBackupDir + L"/" + pPlugin->m_sGuid;
-
-							if ( !NSDirectory::Exists(sBackupDir) )
-								NSDirectory::CreateDirectory(sBackupDir);
-
-							if ( NSDirectory::Exists(sPluginBackupDir) )
-								NSDirectory::DeleteDirectory(sPluginBackupDir);
-
-							NSDirectory::CopyDirectory(sPluginDir, sPluginBackupDir);
-
-							if (bPrint)
-								Message(L"Backup plugin: " + sPlugin, BoolToStr(bBackup), true);
-						}
-
-						NSDirectory::DeleteDirectory(sPluginDir);
-
-						// Update installed
-						GetLocalPlugins(false, false);
-
-						// Check duplicate (bug #62807)
-						CPluginInfo* pDuplicate = FindLocalPlugin(pPlugin->m_sGuid);
-						if ( pDuplicate )
-						{
-							bool bRes = RemovePlugin(pDuplicate->m_sName, false, false);
-							if (bPrint)
-								Message(L"Remove duplicate plugin: " + pDuplicate->m_sName, BoolToStr(bRes), true);
-						}
-
-						// Save to settings
-						CPluginInfo* pRemoved = FindLocalPlugin(pPlugin->m_sGuid, Removed);
-						if ( bSave && !pRemoved )
-							m_arrRemoved.push_back(pPlugin);
-
-						bResult = true;
+						bool bRes = RemovePlugin(pDuplicate->m_sName, false, false);
+						if (bPrint)
+							Message(L"Remove duplicate plugin: " + pDuplicate->m_sName, BoolToStr(bRes), true);
 					}
+
+					// Save to settings
+					CPluginInfo* pRemoved = FindLocalPlugin(pPlugin->m_sGuid, Removed);
+					if ( bSave && !pRemoved )
+						m_arrRemoved.push_back(pPlugin);
+
+					bResult = true;
 				}
 			}
 		}
 
 		if (bPrint)
 		{
-			std::wstring sInfo = L"Remove plugin: " + sPlugin + (bIgnore ? L". Ignored" : L"");
+			std::wstring sInfo = L"Remove plugin: " + sPlugin;
 			Message(sInfo, BoolToStr(bResult), true);
 		}
 
@@ -1144,6 +1116,7 @@ private:
 								pPluginInfo->m_sName = pMarketPlugin->m_sName;
 
 							// Check ignored
+							bool bIgnored = false;
 							if ( m_arrIgnore.size() )
 							{
 								for (size_t i = 0; i < m_arrIgnore.size(); i++)
@@ -1157,14 +1130,17 @@ private:
 										pPluginInfo->m_sNameConfig == sName ||
 										pPluginInfo->m_sGuid == sGuid)
 									{
-										pPluginInfo->m_bIgnore = true;
+										bIgnored = true;
 									}
 								}
 							}
 
 							// Save
-							arrPlugins.push_back(pPluginInfo);
-							bResult = true;
+							if ( !bIgnored )
+							{
+								arrPlugins.push_back(pPluginInfo);
+								bResult = true;
+							}
 
 							if ( bPrint )
 							{
@@ -1177,7 +1153,7 @@ private:
 										sVersion += L" (new " + pMarketPlugin->m_pVersion->m_sVersion + L")";
 								}
 
-								MessagePluginInfo(pPluginInfo->m_sNameConfig, sVersion, pPluginInfo->m_sGuid, pPluginInfo->m_bIgnore);
+								MessagePluginInfo(pPluginInfo->m_sNameConfig, sVersion, pPluginInfo->m_sGuid, bIgnored);
 							}
 						}
 					}

@@ -1070,10 +1070,6 @@ xmlns:c15=\"http://schemas.microsoft.com/office/drawing/2012/chart\" \
 xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\" \
 xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
-			if (m_userShapes)
-			{
-				writer.WriteString(L" xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
-			}
 			writer.WriteString(L">");
 			
 			m_date1904.toXML(L"c:date1904", writer);

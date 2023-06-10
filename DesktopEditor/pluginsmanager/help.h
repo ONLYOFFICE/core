@@ -56,14 +56,15 @@ std::wstring sCmdUpdateAll =                    L"--update-all";
 std::wstring sCmdAutorename =                   L"--autorename";
 std::wstring sCmdRemove =                       L"--remove";
 std::wstring sCmdRemoveAll =                    L"--remove-all";
+std::wstring sCmdIgnore =                       L"--ignore";
 
 // Settings
 std::wstring sSetRemoved =                      L"--removed=";
 
 std::vector<std::wstring> arrCommands {sCmdHelp, sCmdHelpFull, sCmdPluginsDir, sCmdMarketplaceUrl,
-									   sCmdPrintInstalled, sCmdPrintRemoved, sCmdPrintMarketplace, sCmdPrintBackup,
-                                       sCmdReset, sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll, sCmdAutorename,
-									   sCmdRemove, sCmdRemoveAll};
+									  sCmdPrintInstalled, sCmdPrintRemoved, sCmdPrintMarketplace, sCmdPrintBackup,
+									  sCmdReset, sCmdInstall, sCmdRestore, sCmdUpdate, sCmdUpdateAll, sCmdAutorename,
+									  sCmdRemove, sCmdRemoveAll, sCmdIgnore};
 
 bool IsCommandExists(std::wstring sCommand)
 {
@@ -73,10 +74,11 @@ bool IsCommandExists(std::wstring sCommand)
 bool IsNeedSetValue(std::wstring sParam)
 {
 	return sParam == sCmdPluginsDir ||
-			sParam == sCmdInstall ||
-			sParam == sCmdRestore ||
-			sParam == sCmdUpdate ||
-			sParam == sCmdRemove;
+		   sParam == sCmdInstall ||
+		   sParam == sCmdRestore ||
+		   sParam == sCmdUpdate ||
+		   sParam == sCmdRemove ||
+		   sParam == sCmdIgnore;
 }
 
 std::wstring sHelpText =
@@ -133,5 +135,9 @@ L"  --remove             = Optional parameter. Set comma-separated quoted list o
 L"                         Removing by plugin name, GUID, config path is supported.\n" \
 L"                         For example, --remove=\"Youtube, PhotoEditor, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n\n" \
 
-L"  --remove-all         = Optional parameter without value. Remove all installed plugins.\n" \
+L"  --remove-all         = Optional parameter without value. Remove all installed plugins.\n\n" \
+
+L"  --ignore             = Optional parameter. Set comma-separated quoted list of plugins to ignore actions,\n" \
+L"                         such as update, remove, rename or restore.\n" \
+L"                         For example, --ignore=\"youtube, {7327FC95-16DA-41D9-9AF2-0E7F449F6800}\"\n" \
 ;

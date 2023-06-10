@@ -194,6 +194,15 @@ namespace agg
 			calc_type b = p[Order::B];
 			calc_type a = p[Order::A];
 
+			if (a == base_mask)
+			{
+				p[Order::R] = (value_type)(((cr - r) * alpha + (r << base_shift)) >> base_shift);
+				p[Order::G] = (value_type)(((cg - g) * alpha + (g << base_shift)) >> base_shift);
+				p[Order::B] = (value_type)(((cb - b) * alpha + (b << base_shift)) >> base_shift);
+				p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
+				return;
+			}
+
 			p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
 			p[Order::R] = (value_type)((alpha * cr + a * r - ((a * r * alpha + base_mask) >> base_shift)) / p[Order::A]);
 			p[Order::G] = (value_type)((alpha * cg + a * r - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);

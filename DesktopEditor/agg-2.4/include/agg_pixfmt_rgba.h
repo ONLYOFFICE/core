@@ -170,6 +170,52 @@ namespace agg
         }
     };
 
+	//=============================================================blender_rgba_src_over
+	template<class ColorT, class Order> struct blender_rgba_unpre
+	{
+		typedef ColorT color_type;
+		typedef Order order_type;
+		typedef typename color_type::value_type value_type;
+		typedef typename color_type::calc_type calc_type;
+		enum base_scale_e
+		{
+			base_shift = color_type::base_shift,
+			base_mask  = color_type::base_mask
+		};
+
+		//--------------------------------------------------------------------
+		static AGG_INLINE void blend_pix(value_type* p,
+										 unsigned cr, unsigned cg, unsigned cb,
+										 unsigned alpha,
+										 unsigned cover=0)
+		{
+			calc_type r = p[Order::R];
+			calc_type g = p[Order::G];
+			calc_type b = p[Order::B];
+			calc_type a = p[Order::A];
+
+			p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
+			p[Order::R] = (value_type)((alpha * cr + a * r - ((a * r * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			p[Order::G] = (value_type)((alpha * cg + a * r - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			p[Order::B] = (value_type)((alpha * cb + a * r - ((a * b * alpha + base_mask) >> base_shift)) / p[Order::A]);
+		}
+
+		static AGG_INLINE void blend_pix_subpix(value_type* p,
+										 unsigned cr, unsigned cg, unsigned cb,
+										 unsigned* covers,
+										 unsigned cover=0)
+		{
+			calc_type r = p[Order::R];
+			calc_type g = p[Order::G];
+			calc_type b = p[Order::B];
+			//calc_type a = p[Order::A];
+			p[Order::R] = (value_type)(((cr - r) * covers[Order::R] + (r << base_shift)) >> base_shift);
+			p[Order::G] = (value_type)(((cg - g) * covers[Order::G] + (g << base_shift)) >> base_shift);
+			p[Order::B] = (value_type)(((cb - b) * covers[Order::B] + (b << base_shift)) >> base_shift);
+			//p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
+		}
+	};
+
     //=========================================================blender_rgba_pre
     template<class ColorT, class Order> struct blender_rgba_pre
     {

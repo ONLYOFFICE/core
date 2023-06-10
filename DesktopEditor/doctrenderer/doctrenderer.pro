@@ -76,21 +76,21 @@ include($$PWD/js_internal/js_base.pri)
 # ALL THESE WILL BE REPLACED TO ADD_FILES_FOR_EMBEDDED_CLASS_HEADER()
 !use_javascript_core {
     SOURCES += \
-        embed/v8/v8_MemoryStream.cpp \
+	    embed/v8/v8_MemoryStreamEmbed.cpp \
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
         embed/v8/v8_Graphics.cpp \
         embed/v8/v8_Pointer.cpp \
-	embed/v8/v8_TextMeasurer.cpp
+		embed/v8/v8_TextMeasurer.cpp
 } else {
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
         embed/jsc/jsc_Graphics.mm \
-        embed/jsc/jsc_MemoryStream.mm \
+		embed/jsc/jsc_MemoryStreamEmbed.mm \
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm \
         embed/jsc/jsc_Pointer.mm \
-	embed/jsc/jsc_TextMeasurer.mm
+		embed/jsc/jsc_TextMeasurer.mm
 }
 
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/HashEmbed.h)

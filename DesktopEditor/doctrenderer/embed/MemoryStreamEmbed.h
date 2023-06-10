@@ -29,7 +29,7 @@ public:
 	JSSmart<CJSValue> WriteString(JSSmart<CJSValue> value);
 	JSSmart<CJSValue> WriteString2(JSSmart<CJSValue> value);
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_MEMORYSTREAM_EMBED_H_

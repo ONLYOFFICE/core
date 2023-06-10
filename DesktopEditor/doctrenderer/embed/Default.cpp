@@ -2,7 +2,7 @@
 
 #include "./ZipEmbed.h"
 //#include "./TextMeasurerEmbed.h"
-//#include "./MemoryStreamEmbed.h"
+#include "./MemoryStreamEmbed.h"
 #include "./HashEmbed.h"
 
 namespace NSJSBase
@@ -10,8 +10,8 @@ namespace NSJSBase
 	void CreateDefaults()
 	{
 		CJSContext::Embed<CZipEmbed>();
+		CJSContext::Embed<CMemoryStreamEmbed>();
 //		CTextMeasurerEmbed::CreateObjectInContext("CreateNativeTextMeasurer", context);
-//		CMemoryStreamEmbed::CreateObjectInContext("CreateNativeMemoryStream", context);
 		CJSContext::Embed<CHashEmbed>();
 	}
 }

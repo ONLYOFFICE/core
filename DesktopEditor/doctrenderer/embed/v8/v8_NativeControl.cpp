@@ -32,43 +32,6 @@ namespace NSNativeControl
 	FUNCTION_WRAPPER_V8_1(_GetImageOriginalSize, GetImageOriginalSize)
 	FUNCTION_WRAPPER_V8(_GetImagesPath, GetImagesPath)
 
-	v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
-	{
-		v8::EscapableHandleScope handle_scope(isolate);
-
-		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(V8IsolateOneArg);
-		result->SetInternalFieldCount(1);
-
-		NSV8Objects::Template_Set(result, "SetFilePath",        _SetFilePath);
-		NSV8Objects::Template_Set(result, "GetFilePath",        _GetFilePath);
-		NSV8Objects::Template_Set(result, "SetFileId",          _SetFileId);
-		NSV8Objects::Template_Set(result, "GetFileId",          _GetFileId);
-		NSV8Objects::Template_Set(result, "GetFileBinary",      _GetFileArrayBuffer);
-		NSV8Objects::Template_Set(result, "GetFontBinary",      _GetFontArrayBuffer);
-		NSV8Objects::Template_Set(result, "GetFontsDirectory",  _GetFontsDirectory);
-		NSV8Objects::Template_Set(result, "GetFileString",      _GetFileString);
-		NSV8Objects::Template_Set(result, "GetEditorType",      _GetEditorType);
-		NSV8Objects::Template_Set(result, "CheckNextChange",    _CheckNextChange);
-		NSV8Objects::Template_Set(result, "GetCountChanges",    _GetChangesCount);
-		NSV8Objects::Template_Set(result, "GetChangesFile",     _GetChangesFile);
-		//NSV8Objects::Template_Set(result, "Save_AllocNative",   _Save_AllocNative);
-		//NSV8Objects::Template_Set(result, "Save_ReAllocNative", _Save_ReAllocNative);
-		NSV8Objects::Template_Set(result, "Save_End",           _Save_End);
-		NSV8Objects::Template_Set(result, "AddImageInChanges",  _AddImageInChanges);
-		NSV8Objects::Template_Set(result, "ConsoleLog",         _ConsoleLog);
-		NSV8Objects::Template_Set(result, "SaveChanges",        _SaveChanges);
-		NSV8Objects::Template_Set(result, "ZipOpen",            _zipOpenFile);
-		NSV8Objects::Template_Set(result, "ZipOpenBase64",      _zipOpenFileBase64);
-		NSV8Objects::Template_Set(result, "ZipFileAsString",    _zipGetFileAsString);
-		NSV8Objects::Template_Set(result, "ZipFileAsBinary",    _zipGetFileAsBinary);
-		NSV8Objects::Template_Set(result, "ZipClose",           _zipCloseFile);
-		NSV8Objects::Template_Set(result, "getImageUrl",        _GetImageUrl);
-		NSV8Objects::Template_Set(result, "getImagesDirectory", _GetImagesPath);
-		NSV8Objects::Template_Set(result, "GetImageOriginalSize", _GetImageOriginalSize);
-
-		return handle_scope.Escape(result);
-	}
-
 	// Без SaveChanges
 	v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* isolate)
 	{
@@ -89,8 +52,6 @@ namespace NSNativeControl
 		NSV8Objects::Template_Set(result, "CheckNextChange",    _CheckNextChange);
 		NSV8Objects::Template_Set(result, "GetCountChanges",    _GetChangesCount);
 		NSV8Objects::Template_Set(result, "GetChangesFile",     _GetChangesFile);
-		//NSV8Objects::Template_Set(result, "Save_AllocNative",   _Save_AllocNative);
-		//NSV8Objects::Template_Set(result, "Save_ReAllocNative", _Save_ReAllocNative);
 		NSV8Objects::Template_Set(result, "Save_End",           _Save_End);
 		NSV8Objects::Template_Set(result, "AddImageInChanges",  _AddImageInChanges);
 		NSV8Objects::Template_Set(result, "ConsoleLog",         _ConsoleLog);
@@ -106,21 +67,11 @@ namespace NSNativeControl
 		return handle_scope.Escape(result);
 	}
 
-	void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
-	{
-		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplate, args, NSJSBase::iadtSingletonNative);
-	}
-
 	// Без SaveChanges
 	void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
 		CreateNativeInternalField(new CNativeControlEmbed(), CreateNativeControlTemplateBuilder, args, NSJSBase::iadtSingletonNative);
 	}
-}
-
-void CNativeControlEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
-{
-	InsertToGlobal(name, context, NSNativeControl::CreateNativeObject);
 }
 
 void CNativeControlEmbed::CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context)

@@ -71,12 +71,6 @@ FUNCTION_WRAPPER_JS_1(GetImageOriginalSize, GetImageOriginalSize);
 
 @end
 
-void CNativeControlEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
-{
-    context->m_internal->context[[NSString stringWithAString:name]] = ^(){
-        return [[CJSCNativeControl alloc] init];
-    };
-}
 void CNativeControlEmbed::CreateObjectBuilderInContext(const std::string &name, JSSmart<CJSContext> context)
 {
     context->m_internal->context[[NSString stringWithAString:name]] = ^(){

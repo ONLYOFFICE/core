@@ -1,4 +1,5 @@
 #include "./TextMeasurerEmbed.h"
+#include "./PointerEmbed.h"
 #include "./../../fontengine/TextShaper.h"
 
 #define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObjectSmart()->getNative())->Data

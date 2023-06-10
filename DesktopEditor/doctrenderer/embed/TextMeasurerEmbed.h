@@ -2,7 +2,6 @@
 #define _BUILD_NATIVE_TEXT_MEASURER_EMBED_H_
 
 #include "../js_internal/js_base.h"
-#include "./PointerEmbed.h"
 
 #if defined(__ANDROID__) || defined(_IOS)
 #define SUPPORT_HARFBUZZ_SHAPER

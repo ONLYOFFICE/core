@@ -20,7 +20,7 @@ def makeDir(dirname):
 def getMethods(content):
 	methods = []
 	# Extract name and argument list of the methods that return JSSmart<CJSValue>
-	src_methods = re.findall(r'JSSmart\<CJSValue\>\s+(\w+)\s*\((.*)\)\s*;', content)
+	src_methods = re.findall(r'JSSmart\<CJSValue\>\s+(\w+)\s*\(([^\)]*)\)\s*;', content)
 	# Get method names and argument lists
 	for src_method in src_methods:
 		args = re.findall(r'JSSmart\<CJSValue\>\s+(\w+)', src_method[1])
@@ -45,7 +45,7 @@ def parseHeader(header_file):
 			sys.exit(1)
 
 		# Remove all functions which start with "/*[noexport]*/" comment
-		content = re.sub(r'/\*\[noexport\]\*/\s*JSSmart\<CJSValue\>\s+\w+\s*\(.*\)\s*;', '', content)
+		content = re.sub(r'/\*\[noexport\]\*/\s*JSSmart\<CJSValue\>\s+\w+\s*\([^\)]*\)\s*;', '', content)
 
 		# Handle methods inside of ifdef blocks
 		ifdef_blocks = re.findall(r'#ifdef\s+([\w\d_]+)\s+(.*?)#endif', content, re.DOTALL)

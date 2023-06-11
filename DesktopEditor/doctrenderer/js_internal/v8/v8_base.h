@@ -77,40 +77,6 @@ public:
 };
 #endif
 
-// TODO: remove this class
-class CIsolateAdditionalData
-{
-public:
-	NSJSBase::IsolateAdditionalDataType m_eType;
-public:
-	CIsolateAdditionalData(const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined) { m_eType = type; }
-	virtual ~CIsolateAdditionalData() {}
-
-	static bool CheckSingletonType(v8::Isolate* isolate, const NSJSBase::IsolateAdditionalDataType& type, const bool& isAdd = true)
-	{
-		unsigned int nCount = isolate->GetNumberOfDataSlots();
-		if (nCount == 0)
-			return false;
-
-		void* pSingletonData = isolate->GetData(0);
-		if (NULL != pSingletonData)
-		{
-			CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
-			if (pData->m_eType == type)
-				return true;
-
-			return false;
-		}
-
-		if (isAdd)
-		{
-			isolate->SetData(0, (void*)(new CIsolateAdditionalData(type)));
-		}
-
-		return false;
-	}
-};
-
 class CV8Initializer
 {
 private:
@@ -1045,41 +1011,5 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_value(args[12]));                                                                                                                                        \
 	js_return(args, ret);                                                                                                                                       \
 	}
-
-// TODO: remove this function
-static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext>& context, v8::FunctionCallback creator)
-{
-	v8::Isolate* current = CV8Worker::GetCurrent();
-	v8::Local<v8::Context> localContext = context->m_internal->m_context;
-	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, creator);
-	v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(localContext);
-	v8::Maybe<bool> oResultMayBe = localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
-}
-
-// TODO: remove this function
-using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
-static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
-									  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
-{
-	v8::Isolate* isolate = args.GetIsolate();
-	v8::HandleScope scope(isolate);
-
-	if (NSJSBase::iadtUndefined != type)
-	{
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, type))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-	}
-
-	v8::Handle<v8::ObjectTemplate> oCurTemplate = creator(isolate);
-	v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
-	v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
-	obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), native));
-
-	NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
-	args.GetReturnValue().Set(obj);
-}
 
 #endif // _BUILD_NATIVE_CONTROL_V8_BASE_H_

@@ -45,7 +45,7 @@ public:
 	JSSmart<CJSValue> GetImagesPath();
 	JSSmart<CJSValue> GetImageOriginalSize(JSSmart<CJSValue> sUrl);
 
-	static void CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_NATIVECONTROL_EMBED_H_

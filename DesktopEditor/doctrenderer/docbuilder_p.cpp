@@ -50,8 +50,8 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 	m_context = new CJSContext();
 	CJSContextScope scope(m_context);
 
-	CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
-	CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", m_context);
+	CJSContext::Embed<CNativeControlEmbed>();
+	CJSContext::Embed<CGraphicsEmbed>();
 	NSJSBase::CreateDefaults();
 
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();

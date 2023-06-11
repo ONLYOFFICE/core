@@ -10,10 +10,14 @@ public:
 	virtual std::vector<std::string> getMethodNames() override
 	{
 		return std::vector<std::string> {
+#ifdef ENABLE_SUM_DEL
 			"FunctionSum",
-			"FunctionSquare",
 			"FunctionDel",
-			"FunctionGet"
+#endif
+#ifdef ENABLE_GET
+			"FunctionGet",
+#endif
+			"FunctionSquare",
 		};
 	}
 
@@ -21,10 +25,14 @@ public:
 	{
 		CTestEmbed* pNativeObj = static_cast<CTestEmbed*>(pNativeObjBase);
 		m_functions = std::vector<EmbedFunctionType> {
+#ifdef ENABLE_SUM_DEL
 			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionSum(args->Get(0), args->Get(1)); },
-			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionSquare(args->Get(0)); },
 			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionDel(args->Get(0), args->Get(1)); },
-			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionGet(); }
+#endif
+#ifdef ENABLE_GET
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionGet(); },
+#endif
+			[pNativeObj](CJSFunctionArguments* args) { return pNativeObj->FunctionSquare(args->Get(0)); },
 		};
 	}
 };

@@ -50,7 +50,7 @@ public:
 	JSSmart<CJSValue> HB_FontFree(JSSmart<CJSValue> font);
 #endif
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_TEXT_MEASURER_EMBED_H_

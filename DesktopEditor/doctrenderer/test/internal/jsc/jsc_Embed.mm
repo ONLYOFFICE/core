@@ -5,10 +5,14 @@
 #import "js_embed.h"
 
 @protocol IJSCTestEmbed <JSExport>
+#ifdef ENABLE_SUM_DEL
 -(JSValue*) FunctionSum : (JSValue*)param1 : (JSValue*)param2;
--(JSValue*) FunctionSquare : (JSValue*)param;
 -(JSValue*) FunctionDel : (JSValue*)param1 : (JSValue*)param2;
+#endif
+#ifdef ENABLE_GET
 -(JSValue*) FunctionGet;
+#endif
+-(JSValue*) FunctionSquare : (JSValue*)param;
 @end
 
 @interface CJSCTestEmbed : NSObject<IJSCTestEmbed, JSEmbedObjectProtocol>
@@ -21,30 +25,32 @@
 @implementation CJSCTestEmbed
 EMBED_OBJECT_WRAPPER_METHODS(CTestEmbed);
 
+#ifdef ENABLE_SUM_DEL
 -(JSValue*) FunctionSum : (JSValue*)param1 : (JSValue*)param2
 {
 	JSSmart<CJSValue> ret = m_internal->FunctionSum(CJSEmbedObjectAdapterJSC::Native2Value(param1), CJSEmbedObjectAdapterJSC::Native2Value(param2));
 	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
 }
+-(JSValue*) FunctionDel : (JSValue*)param1 : (JSValue*)param2
+{
+	JSSmart<CJSValue> ret = m_internal->FunctionDel(CJSEmbedObjectAdapterJSC::Native2Value(param1), CJSEmbedObjectAdapterJSC::Native2Value(param2));
+	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
+}
+#endif
+
+#ifdef ENABLE_GET
+-(JSValue*) FunctionGet
+{
+	JSSmart<CJSValue> ret = m_internal->FunctionGet();
+	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
+}
+#endif
 
 -(JSValue*) FunctionSquare : (JSValue*)param
 {
 	JSSmart<CJSValue> ret = m_internal->FunctionSquare(CJSEmbedObjectAdapterJSC::Native2Value(param));
 	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
 }
-
--(JSValue*) FunctionDel : (JSValue*)param1 : (JSValue*)param2
-{
-	JSSmart<CJSValue> ret = m_internal->FunctionDel(CJSEmbedObjectAdapterJSC::Native2Value(param1), CJSEmbedObjectAdapterJSC::Native2Value(param2));
-	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
-}
-
--(JSValue*) FunctionGet
-{
-	JSSmart<CJSValue> ret = m_internal->FunctionGet();
-	return CJSEmbedObjectAdapterJSC::Value2Native(ret);
-}
-
 @end
 
 class CTestEmbedAdapter : public CJSEmbedObjectAdapterJSC

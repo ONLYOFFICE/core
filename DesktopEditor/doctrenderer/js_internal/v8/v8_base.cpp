@@ -219,18 +219,6 @@ namespace NSJSBase
 #endif
 
 		m_internal->m_contextPersistent.Reset();
-
-		unsigned int nEmbedDataCount = m_internal->m_isolate->GetNumberOfDataSlots();
-		if (nEmbedDataCount > 0)
-		{
-			void* pSingletonData = m_internal->m_isolate->GetData(0);
-			if (NULL != pSingletonData)
-			{
-				CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
-				delete pData;
-			}
-		}
-
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}

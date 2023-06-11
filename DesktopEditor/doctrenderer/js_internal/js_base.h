@@ -670,6 +670,10 @@ namespace NSJSBase
  * 7. In C++ code call `CJSContext::Embed<YourClassName>()`.
  *
  * You can then call `CreateEmbedOjbect('YourClassName')` in JS code for getting an instance of the embedded class and use its methods.
+ *
+ * NOTE: If you don't want to export certain functions from your embedded class for some reason,
+ *       then add the inline comment "[noexport]" at the start of a function declaration.
+ *       Also you can use `#ifdef ... #endif` blocks (see doctrenderer/test/internal/Embed.h for an example).
  */
 
 #endif // _CORE_EXT_JS_BASE_H_

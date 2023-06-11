@@ -132,7 +132,7 @@ public:
 	JSSmart<CJSValue> CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty);
 	JSSmart<CJSValue> GetTransform();
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_GRAPHICS_EMBED_H_

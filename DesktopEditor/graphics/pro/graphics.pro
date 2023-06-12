@@ -92,6 +92,7 @@ HEADERS += \
     ./../ArrowHead.h \
 	./../Brush.h \
 	./../Clip.h \
+	./../CAlphaMask.h \
 	./../Color.h \
 	./../Defines.h \
 	./../Graphics.h \
@@ -111,6 +112,7 @@ SOURCES += \
     ./../ArrowHead.cpp \
 	./../Brush.cpp \
 	./../Clip.cpp \
+	./../CAlphaMask.cpp \
 	./../Graphics.cpp \
 	./../GraphicsRenderer.cpp \
 	./../MetafileToRenderer.cpp \

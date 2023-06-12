@@ -494,6 +494,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const

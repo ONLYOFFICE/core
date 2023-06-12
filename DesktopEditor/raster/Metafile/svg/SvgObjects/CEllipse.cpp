@@ -20,6 +20,7 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const

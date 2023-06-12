@@ -442,7 +442,7 @@ namespace Aggplus
 		m_rasterizer.get_rasterizer().reset_clipping();
 		m_rasterizer.get_rasterizer().clip_box(m_dClipLeft, m_dClipTop, m_dClipWidth + m_dClipLeft, m_dClipHeight + m_dClipTop);
 
-		m_frame_buffer.ren_base().clip_box((int)m_dClipLeft, (int)m_dClipTop, (int)(m_dClipWidth + m_dClipLeft), (int)(m_dClipHeight + m_dClipTop));
+		GetRendererBase().clip_box((int)m_dClipLeft, (int)m_dClipTop, (int)(m_dClipWidth + m_dClipLeft), (int)(m_dClipHeight + m_dClipTop));
 
 		m_oClip.Reset();
 		
@@ -1200,6 +1200,26 @@ namespace Aggplus
 		return TRUE;
 	}
 
+	Status CGraphics::CreateAlphaMask()
+	{
+		if (0 == m_frame_buffer.width() || 0 == m_frame_buffer.height())
+			return GenericError;
+
+		return m_oAlphaMask.Create(m_frame_buffer.width(), m_frame_buffer.height());
+	}
+
+	Status CGraphics::ResetAlphaMask()
+	{
+		m_oAlphaMask.Destroy();
+		return Ok;
+	}
+
+	Status CGraphics::StartApplyingAlphaMask()
+	{
+		m_oAlphaMask.StartApplying();
+		return Ok;
+	}
+
 	void CGraphics::CalculateFullTransform()
 	{
 		m_oFullTransform	= m_oCoordTransform;
@@ -1211,11 +1231,30 @@ namespace Aggplus
 		return m_oClip.IsClip();
 	}
 
+	agg::rendering_buffer &CGraphics::GetRenderingBuffer()
+	{
+		if (GenerationAlphaMask == m_oAlphaMask.GetStatus())
+			return m_oAlphaMask.GetRenderingBuffer();
+
+		return m_frame_buffer.ren_buf();
+	}
+
+	base_renderer_type &CGraphics::GetRendererBase()
+	{
+		if (GenerationAlphaMask == m_oAlphaMask.GetStatus())
+			return m_oAlphaMask.GetRendereBase();
+
+		return m_frame_buffer.ren_base();
+	}
+
 	template<class Renderer>
 	void CGraphics::render_scanlines(Renderer& ren)
     {
 		if (!m_oClip.IsClip())
 		{
+			if (ApplyingAlphaMask == m_oAlphaMask.GetStatus())
+				return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.GetScanline(), ren);
+
 			return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
 		}
 		else
@@ -1268,6 +1307,9 @@ namespace Aggplus
     {
 		if (!m_oClip.IsClip())
 		{
+			if (ApplyingAlphaMask == m_oAlphaMask.GetStatus())
+				return agg::render_scanlines(ras, m_oAlphaMask.GetScanline(), ren);
+
 			return agg::render_scanlines(ras, m_rasterizer.get_scanline(), ren);
 		}
 		else
@@ -1308,7 +1350,7 @@ namespace Aggplus
 			comp_renderer_type ren_base;
 			pixfmt_type_comp pixfmt;
 
-			pixfmt.attach(m_frame_buffer.ren_buf());
+			pixfmt.attach(GetRenderingBuffer());
 			pixfmt.comp_op(m_nBlendMode);
 			ren_base.attach(pixfmt);
 			ren_solid.attach(ren_base);
@@ -1319,7 +1361,7 @@ namespace Aggplus
 		else
 		{
 			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+			solid_renderer_type ren_fine(GetRendererBase());
 			ren_fine.color(dwColor.GetAggColor());
 
 			render_scanlines(ren_fine);
@@ -1387,7 +1429,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
 
         if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
         {
@@ -1465,7 +1507,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
 
         if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
         {
@@ -1524,7 +1566,7 @@ namespace Aggplus
 		hatch_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, hatch_span_alloc, hatch_span_gen> renderer_hatch_type;
-		renderer_hatch_type ren_hatch( m_frame_buffer.ren_base(), span_alloc, span_gen );
+		renderer_hatch_type ren_hatch( GetRendererBase(), span_alloc, span_gen );
 
         if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
         {
@@ -1566,7 +1608,7 @@ namespace Aggplus
 		pixfmt          img_pixf(PatRendBuff);
 		img_source_type img_src(img_pixf);
 		span_gen_type sg(img_src, interpolator);
-		renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+		renderer_type ri(GetRendererBase(), span_allocator, sg);
 		
         if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
         {
@@ -1604,7 +1646,7 @@ namespace Aggplus
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
 			span_gen_type sg(img_src, interpolator);
-			renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			renderer_type ri(GetRendererBase(), span_allocator, sg);
 			//agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
 			render_scanlines(ri);
 		}
@@ -1636,7 +1678,7 @@ namespace Aggplus
                     typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     span_gen_type sg(img_src, interpolator);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1645,7 +1687,7 @@ namespace Aggplus
                     typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     span_gen_type sg(img_src, interpolator);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1656,7 +1698,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bicubic(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1667,7 +1709,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_spline16(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1678,7 +1720,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_blackman256(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1689,7 +1731,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1712,7 +1754,7 @@ namespace Aggplus
                     typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     span_gen_type sg(img_src, interpolator);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1721,7 +1763,7 @@ namespace Aggplus
                     typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     span_gen_type sg(img_src, interpolator);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1732,7 +1774,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bicubic(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1743,7 +1785,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_spline16(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1754,7 +1796,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_blackman256(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1765,7 +1807,7 @@ namespace Aggplus
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);
                     span_gen_type sg(img_src, interpolator, filter);
-                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+					renderer_type ri(GetRendererBase(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
@@ -1807,7 +1849,7 @@ namespace Aggplus
             pixfmt          img_pixf(PatRendBuff);
             img_source_type img_src(img_pixf);
             span_gen_type sg(img_src, interpolator);
-            renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			renderer_type ri(GetRendererBase(), span_allocator, sg);
             
             double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
             if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1833,7 +1875,7 @@ namespace Aggplus
             pixfmt          img_pixf(PatRendBuff);
             img_source_type img_src(img_pixf);
             span_gen_type sg(img_src, interpolator);
-            renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			renderer_type ri(GetRendererBase(), span_allocator, sg);
             
             double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
             if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1859,7 +1901,7 @@ namespace Aggplus
             pixfmt          img_pixf(PatRendBuff);
             img_source_type img_src(img_pixf);
             span_gen_type sg(img_src, interpolator);
-            renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			renderer_type ri(GetRendererBase(), span_allocator, sg);
             
             double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
             if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -1885,7 +1927,7 @@ namespace Aggplus
             pixfmt          img_pixf(PatRendBuff);
             img_source_type img_src(img_pixf);
             span_gen_type sg(img_src, interpolator);
-            renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+			renderer_type ri(GetRendererBase(), span_allocator, sg);
             
             double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
             if (fabs(dAlpha - 1.0) < FLT_EPSILON)
@@ -2016,7 +2058,7 @@ namespace Aggplus
 			((CBrushSolid*)pBrush)->GetColor(&clr);
 			
 			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+			solid_renderer_type ren_fine(GetRendererBase());
 			ren_fine.color(clr.GetAggColor());
 
 			//agg::render_scanlines(storage, m_rasterizer.get_scanline(), ren_fine);
@@ -2031,7 +2073,7 @@ namespace Aggplus
 		((CBrushSolid*)pBrush)->GetColor(&clr);
 
 		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+		solid_renderer_type ren_fine(GetRendererBase());
 		ren_fine.color(clr.GetAggColor());
 
         if (m_nTextRenderMode == FT_RENDER_MODE_LCD)
@@ -2161,7 +2203,7 @@ namespace Aggplus
 		gradient_span_alloc span_alloc;
 
 		typedef agg::renderer_scanline_aa<base_renderer_type, gradient_span_alloc, gradient_span_gen> renderer_gradient_type;
-		renderer_gradient_type ren_gradient( m_frame_buffer.ren_base(), span_alloc, span_gen );
+		renderer_gradient_type ren_gradient( GetRendererBase(), span_alloc, span_gen );
 
         if (fabs(m_dGlobalAlpha - 1.0) < FLT_EPSILON)
         {

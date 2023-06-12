@@ -804,6 +804,11 @@ HRESULT CGraphicsRenderer::BeginCommand(const DWORD& lType)
 		{
 			return NewPage();
 		}
+	case c_nMaskType:
+		{
+			m_pRenderer->CreateAlphaMask();
+			break;
+		}
 	default:
 		break;
 	};
@@ -831,6 +836,16 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 		{
 			m_pRenderer->ResetClip();
 			m_bIsSetupClip = FALSE;
+			break;
+		}
+	case c_nMaskType:
+		{
+			m_pRenderer->StartApplyingAlphaMask();
+			break;
+		}
+	case c_nResetMaskType:
+		{
+			m_pRenderer->ResetAlphaMask();
 			break;
 		}
 	default:

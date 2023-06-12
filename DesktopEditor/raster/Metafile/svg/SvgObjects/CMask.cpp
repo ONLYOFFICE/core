@@ -15,13 +15,13 @@ namespace SVG
 
 		CGraphicsContainer::ApplyMask(pRenderer, &m_oStyles.m_oMask, pDefs);
 
-		pRenderer->BeginCommand(c_nClipType);
+		pRenderer->BeginCommand(c_nMaskType);
 		pRenderer->PathCommandStart();
 
 		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
-			pGraphicsObject->Draw(pRenderer, pDefs, true);
+			pGraphicsObject->Draw(pRenderer, pDefs);
 
-		pRenderer->EndCommand(c_nClipType);
+		pRenderer->EndCommand(c_nMaskType);
 		pRenderer->PathCommandEnd();
 
 		return true;

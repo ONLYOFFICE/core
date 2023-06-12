@@ -87,6 +87,7 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))

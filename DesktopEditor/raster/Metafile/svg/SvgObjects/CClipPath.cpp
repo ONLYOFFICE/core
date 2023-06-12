@@ -9,6 +9,7 @@ namespace SVG
 	void CClipPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetClip(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CClipPath::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)

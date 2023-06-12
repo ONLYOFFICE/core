@@ -64,6 +64,9 @@ const long c_nComplexFigureType = 0x0800;
 const long c_nPDFGradientType   = 0x1000;
 const long c_nTableCell			= 0x2000;
 
+const long c_nMaskType          = 0x3000;
+const long c_nResetMaskType     = 0x4000;
+
 const long c_nPDFTilingFill				= 0x2001;
 const long c_nPDFTilingFillIteration	= 0x2002;
 

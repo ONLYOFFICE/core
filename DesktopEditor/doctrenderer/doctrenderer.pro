@@ -51,6 +51,7 @@ HEADERS += \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
+    embed/NativeBuilderDocumentEmbed.h \
     embed/TextMeasurerEmbed.h \
     embed/HashEmbed.h \
     embed/Default.h \
@@ -63,6 +64,7 @@ SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp \
+    embed/NativeBuilderDocumentEmbed.cpp \
     embed/TextMeasurerEmbed.cpp \
     embed/HashEmbed.cpp \
     embed/Default.cpp
@@ -73,21 +75,18 @@ include($$PWD/js_internal/js_base.pri)
     build_xp:DESTDIR=$$DESTDIR/xp
 }
 
-!use_javascript_core {
-    SOURCES += \
-        embed/v8/v8_NativeBuilder.cpp \
-        embed/v8/v8_Pointer.cpp
-} else {
+use_javascript_core {
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
-    OBJECTIVE_SOURCES += \
-        embed/jsc/jsc_NativeBuilder.mm \
-        embed/jsc/jsc_Pointer.mm
 }
 
+# files for embedded classes
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/GraphicsEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/HashEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/MemoryStreamEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeBuilderEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeBuilderDocumentEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeControlEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/PointerEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/TextMeasurerEmbed.h)
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/ZipEmbed.h)
 

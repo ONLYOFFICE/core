@@ -598,6 +598,12 @@ namespace NSJSBase
 		 */
 		static CJSValue* createUint8Array(const std::wstring& sFilePath);
 
+		/**
+		 * Creates and returns a JS object, which is a wrapper around specified embedded class.
+		 * @param name The name of an embedded class.
+		 */
+		static JSSmart<CJSObject> createEmbedObject(const std::string& name);
+
 	public:
 		/**
 		 * Returns a copy of the last entered JS context.
@@ -669,7 +675,8 @@ namespace NSJSBase
  *	  If you're going to embed a class for doctrenderer library, then also specify `--internal` (or just `-i`) option.
  * 7. In C++ code call `CJSContext::Embed<YourClassName>()`.
  *
- * You can then call `CreateEmbedOjbect('YourClassName')` in JS code for getting an instance of the embedded class and use its methods.
+ * Then you can call `CreateEmbedOjbect('YourClassName')` in JS code or `CJSContext::createEmbedObject('YourClassName')` in C++ code
+ * to get a JS object-wrapper for the embedded class.
  *
  * NOTE: If you don't want to export certain functions from your embedded class for some reason,
  *       then add the inline comment "[noexport]" at the start of a function declaration.

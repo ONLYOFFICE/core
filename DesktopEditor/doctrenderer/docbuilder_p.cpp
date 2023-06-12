@@ -56,7 +56,12 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-	builder_CreateNative("builderJS", m_context, pBuilder);
+	CJSContext::Embed<CBuilderEmbed>();
+	CJSContext::Embed<CBuilderDocumentEmbed>();
+	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
+	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
+	pBuilderJSNative->m_pBuilder = pBuilder;
+	m_context->GetGlobal()->set("builderJS", oBuilderJS->toValue().GetPointer());
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {

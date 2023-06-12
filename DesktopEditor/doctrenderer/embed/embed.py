@@ -50,8 +50,10 @@ def parseHeader(header_file):
 		# Handle methods inside of ifdef blocks
 		ifdef_blocks = re.findall(r'#ifdef\s+([\w\d_]+)\s+(.*?)#endif', content, re.DOTALL)
 		for ifdef_block in ifdef_blocks:
-			method_lists.append(MethodList(ifdef_block[0], getMethods(ifdef_block[1])))
-			content = content.replace(ifdef_block[1], '')
+			methods = getMethods(ifdef_block[1])
+			if len(methods) > 0:
+				method_lists.append(MethodList(ifdef_block[0], methods))
+				content = content.replace(ifdef_block[1], '')
 
 		# Add all other methods
 		method_lists.append(MethodList(None, getMethods(content)))

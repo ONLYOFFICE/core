@@ -147,6 +147,17 @@ namespace NSJSBase {
 		return CJSContext::createNull();
 	}
 
+	JSSmart<CJSObject> CJSContext::createEmbedObject(const std::string& name)
+	{
+		JSSmart<CJSContext> context = CJSContext::GetCurrent();
+		JSSmart<CJSValue> args[1];
+		args[0] = CJSContext::createString(name);
+		JSSmart<CJSValue> res = context->GetGlobal()->call_func("CreateEmbedObject", 1 , args);
+		if (!res->isObject())
+			return nullptr;
+		return res->toObject();
+	}
+
 	CJSContextScope::CJSContextScope(JSSmart<CJSContext> context) : m_context(context)
 	{
 		m_context->Enter();

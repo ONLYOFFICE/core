@@ -44,6 +44,7 @@
 
 #include "js_internal/js_base.h"
 #include "embed/NativeBuilderEmbed.h"
+#include "embed/NativeBuilderDocumentEmbed.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/GraphicsEmbed.h"
 #include "embed/Default.h"

@@ -141,7 +141,10 @@ namespace PPTX
 			void Transition::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->WriteString(_T("<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">\
-<mc:Choice xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" Requires=\"p14\">"));
+<mc:Choice \
+xmlns:p159=\"http://schemas.microsoft.com/office/powerpoint/2015/09/main\" \
+xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" \
+Requires=\"p159\">"));
 
 				pWriter->StartNode(_T("p:transition"));
 				pWriter->StartAttributes();

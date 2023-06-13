@@ -189,6 +189,9 @@ namespace agg
 										 unsigned alpha,
 										 unsigned cover=0)
 		{
+			if (0 == alpha)
+				return;
+
 			calc_type r = p[Order::R];
 			calc_type g = p[Order::G];
 			calc_type b = p[Order::B];

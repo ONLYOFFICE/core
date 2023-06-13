@@ -403,6 +403,44 @@ public:
 	void start_pilot_table(office_element_ptr & elm);
 	void end_pilot_table();
 
+	void start_sparkline_groups();
+		void start_sparkline_group();
+		void set_sparkline_id(const std::wstring& val);
+		void set_sparkline_type(int type);
+		void set_sparkline_manual_max(double val);
+		void set_sparkline_manual_min(double val);
+		void set_sparkline_line_weight(double val);
+		void set_sparkline_minAxisType(int val);
+		void set_sparkline_maxAxisType(int val);
+		void set_sparkline_emptyCellsAs(int val);
+		void set_sparkline_markers(bool val);
+		void set_sparkline_date_axis(bool val);
+		void set_sparkline_high(bool val);
+		void set_sparkline_low(bool val);
+		void set_sparkline_first(bool val);
+		void set_sparkline_last(bool val);
+		void set_sparkline_negative(bool val);
+		void set_sparkline_display_xAxis(bool val);
+		void set_sparkline_display_hidden(bool val);
+		void set_sparkline_rtl(bool val);
+
+		void set_sparkline_color_series(_CP_OPT(odf_types::color) &color);
+		void set_sparkline_color_negative(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_axis(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_markers(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_first(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_last(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_high(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_low(_CP_OPT(odf_types::color)& color);
+
+			void start_sparklines();
+				void start_sparkline();
+					void set_sparkline_range(const std::wstring& ref);
+					void set_sparkline_cell(const std::wstring& ref);
+				void end_sparkline();
+			void end_sparklines();
+		void end_sparkline_group();
+	void end_sparkline_groups();
 ///////////////////////////////
     void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location);
 	

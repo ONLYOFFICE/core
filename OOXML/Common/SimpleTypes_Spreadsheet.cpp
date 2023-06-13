@@ -2009,10 +2009,10 @@ namespace SimpleTypes
 
 		ESparklineAxisMinMax ST_SparklineAxisMinMax::FromString(const std::wstring &sValue)
 		{
-			if(L"individual" == sValue)			this->m_eValue = Individual;
-			else if(L"group" == sValue)		this->m_eValue = Group;
+			if(L"individual" == sValue)	this->m_eValue = Individual;
+			else if(L"group" == sValue)	this->m_eValue = Group;
 			else if(L"custom" == sValue)	this->m_eValue = Custom;
-			else 								this->m_eValue = Individual;
+			else							this->m_eValue = Individual;
 			return this->m_eValue;
 		}
 

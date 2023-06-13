@@ -568,7 +568,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 			if (!c2.empty() && c2.substr(0, 1) == L":") 
 				c2 = c2.substr(1);
 
-			s =  sheet + L"." + c1 + (c2.empty() ? L"" : (L":" + sheet  + L"." + c2)) + std::wstring(L"");
+			s = (sheet.empty() ? L"" : (sheet + L".")) + c1 + (c2.empty() ? L"" : (L":" + (sheet.empty() ? L"" : (sheet + L".")) + c2)) + std::wstring(L"");
 		}
         return s;
 	}

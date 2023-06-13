@@ -56,8 +56,8 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-	CJSContext::Embed<CBuilderEmbed>();
-	CJSContext::Embed<CBuilderDocumentEmbed>();
+	CJSContext::Embed<CBuilderEmbed>(false);
+	CJSContext::Embed<CBuilderDocumentEmbed>(false);
 	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
 	pBuilderJSNative->m_pBuilder = pBuilder;

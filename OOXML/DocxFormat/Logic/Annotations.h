@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,12 +32,16 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/ComplexTypes.h"
-
 #include "./../WritingElement.h"
+
+namespace SimpleTypes
+{
+	class CEdGrp;
+	class CProofErr;
+	class CDateTime;
+	class CDecimalNumber;
+	class CDisplacedByCustomXml;
+}
 
 namespace OOX
 {
@@ -50,7 +54,7 @@ namespace OOX
 		class CCommentRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCommentRangeEnd)
+			WritingElement_AdditionMethods(CCommentRangeEnd)
 
 			CCommentRangeEnd(OOX::Document *pMain = NULL);
 			CCommentRangeEnd(CCommentRangeEnd *pOther);
@@ -76,7 +80,7 @@ namespace OOX
 		class CCommentRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCommentRangeStart)
+			WritingElement_AdditionMethods(CCommentRangeStart)
 
 			CCommentRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CCommentRangeStart();
@@ -104,7 +108,7 @@ namespace OOX
 		class CCustomXmlDelRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlDelRangeEnd)
+			WritingElement_AdditionMethods(CCustomXmlDelRangeEnd)
 
 			CCustomXmlDelRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlDelRangeEnd();
@@ -128,7 +132,7 @@ namespace OOX
 		class CCustomXmlDelRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlDelRangeStart)
+			WritingElement_AdditionMethods(CCustomXmlDelRangeStart)
 
 			CCustomXmlDelRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlDelRangeStart();
@@ -156,7 +160,7 @@ namespace OOX
 		class CCustomXmlInsRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlInsRangeEnd)
+			WritingElement_AdditionMethods(CCustomXmlInsRangeEnd)
 
 			CCustomXmlInsRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlInsRangeEnd();
@@ -180,7 +184,7 @@ namespace OOX
 		class CCustomXmlInsRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlInsRangeStart)
+			WritingElement_AdditionMethods(CCustomXmlInsRangeStart)
 
 			CCustomXmlInsRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlInsRangeStart();
@@ -207,7 +211,7 @@ namespace OOX
 		class CCustomXmlMoveFromRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeEnd)
+			WritingElement_AdditionMethods(CCustomXmlMoveFromRangeEnd)
 
 			CCustomXmlMoveFromRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlMoveFromRangeEnd();
@@ -231,7 +235,7 @@ namespace OOX
 		class CCustomXmlMoveFromRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeStart)
+			WritingElement_AdditionMethods(CCustomXmlMoveFromRangeStart)
 
 			CCustomXmlMoveFromRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlMoveFromRangeStart();
@@ -260,7 +264,7 @@ namespace OOX
 		class CCustomXmlMoveToRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeEnd)
+			WritingElement_AdditionMethods(CCustomXmlMoveToRangeEnd)
 
 			CCustomXmlMoveToRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlMoveToRangeEnd();
@@ -284,7 +288,7 @@ namespace OOX
 		class CCustomXmlMoveToRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeStart)
+			WritingElement_AdditionMethods(CCustomXmlMoveToRangeStart)
 
 			CCustomXmlMoveToRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CCustomXmlMoveToRangeStart();
@@ -313,7 +317,7 @@ namespace OOX
 		class CMoveFromRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMoveFromRangeEnd)
+			WritingElement_AdditionMethods(CMoveFromRangeEnd)
 
 			CMoveFromRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CMoveFromRangeEnd();
@@ -339,7 +343,7 @@ namespace OOX
 		class CMoveFromRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMoveFromRangeStart)
+			WritingElement_AdditionMethods(CMoveFromRangeStart)
 
 			CMoveFromRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CMoveFromRangeStart();
@@ -372,7 +376,7 @@ namespace OOX
 		class CMoveToRangeEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMoveToRangeEnd)
+			WritingElement_AdditionMethods(CMoveToRangeEnd)
 
 			CMoveToRangeEnd(OOX::Document *pMain = NULL);
 			virtual ~CMoveToRangeEnd();
@@ -399,7 +403,7 @@ namespace OOX
 		class CMoveToRangeStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMoveToRangeStart)
+			WritingElement_AdditionMethods(CMoveToRangeStart)
 
 			CMoveToRangeStart(OOX::Document *pMain = NULL);
 			virtual ~CMoveToRangeStart();
@@ -428,9 +432,8 @@ namespace OOX
 		class CMoveFrom : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveFrom(OOX::Document *pMain = NULL);
-			CMoveFrom(XmlUtils::CXmlNode &oNode);
-			CMoveFrom(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement_AdditionMethods(CMoveFrom)
+			CMoveFrom(OOX::Document *pMain = NULL);			
 			virtual ~CMoveFrom();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -451,9 +454,8 @@ namespace OOX
 		class CMoveTo : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveTo(OOX::Document *pMain = NULL);
-			CMoveTo(XmlUtils::CXmlNode &oNode);
-			CMoveTo(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement_AdditionMethods(CMoveTo)
+			CMoveTo(OOX::Document *pMain = NULL);			
 			virtual ~CMoveTo();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -483,7 +485,7 @@ namespace OOX
 		class CBookmarkEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBookmarkEnd)
+			WritingElement_AdditionMethods(CBookmarkEnd)
 
 			CBookmarkEnd(OOX::Document *pMain = NULL);
 			CBookmarkEnd(CBookmarkEnd* pOther);
@@ -509,7 +511,7 @@ namespace OOX
 		class CBookmarkStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBookmarkStart)
+			WritingElement_AdditionMethods(CBookmarkStart)
 
 			CBookmarkStart(OOX::Document *pMain = NULL);
 			CBookmarkStart(CBookmarkStart *pOther);
@@ -541,7 +543,7 @@ namespace OOX
 		class CPermEnd : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPermEnd)
+			WritingElement_AdditionMethods(CPermEnd)
 
 			CPermEnd(OOX::Document *pMain = NULL);
 			virtual ~CPermEnd();
@@ -566,7 +568,7 @@ namespace OOX
 		class CPermStart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPermStart)
+			WritingElement_AdditionMethods(CPermStart)
 
 			CPermStart(OOX::Document *pMain = NULL);
 			virtual ~CPermStart();
@@ -598,7 +600,7 @@ namespace OOX
 		class CProofErr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProofErr)
+			WritingElement_AdditionMethods(CProofErr)
 
 			CProofErr(OOX::Document *pMain = NULL);
 			virtual ~CProofErr();
@@ -619,9 +621,8 @@ namespace OOX
 		class CIns : public WritingElementWithChilds<>
 		{
 		public:
-			CIns(OOX::Document *pMain = NULL);
-			CIns(XmlUtils::CXmlNode &oNode);
-			CIns(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement_AdditionMethods(CIns)
+			CIns(OOX::Document *pMain = NULL);			
 			virtual ~CIns();;
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -647,9 +648,8 @@ namespace OOX
 		class CDel : public WritingElementWithChilds<>
 		{
 		public:
-			CDel(OOX::Document *pMain = NULL);
-			CDel(XmlUtils::CXmlNode &oNode);
-			CDel(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement_AdditionMethods(CDel)
+			CDel(OOX::Document *pMain = NULL);			
 			virtual ~CDel();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);

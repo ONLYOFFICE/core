@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -840,13 +840,13 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
 
-					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
+					std::map<_UINT16, _UINT16>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
 
 					if (pFind != xls_global_info->mapUsedFormatCode.end())
 					{
 						CP_XML_STREAM() << L"<numFmt";
 						{
-							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt_used << L"\"";
 							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
 						}
 						CP_XML_STREAM() << L"/>";

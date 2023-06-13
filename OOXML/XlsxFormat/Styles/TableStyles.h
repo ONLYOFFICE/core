@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,10 +31,18 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "rPr.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CTableStyleType;
+	}
+}
 
 namespace OOX
 {
@@ -43,7 +51,7 @@ namespace OOX
 		class CTableStyleElement : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyleElement)
+			WritingElement_AdditionMethods(CTableStyleElement)
             WritingElement_XlsbConstructors(CTableStyleElement)
 			CTableStyleElement();
 			virtual ~CTableStyleElement();
@@ -69,7 +77,7 @@ namespace OOX
 		class CTableStyle : public WritingElementWithChilds<CTableStyleElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyle)
+			WritingElement_AdditionMethods(CTableStyle)
             WritingElement_XlsbConstructors(CTableStyle)
 			CTableStyle();
 			virtual ~CTableStyle();
@@ -98,7 +106,7 @@ namespace OOX
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyles)
+			WritingElement_AdditionMethods(CTableStyles)
             WritingElement_XlsbConstructors(CTableStyles)
 			CTableStyles();
 			virtual ~CTableStyles();

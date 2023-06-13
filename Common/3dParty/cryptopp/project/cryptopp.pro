@@ -327,3 +327,13 @@ SOURCES += \
     ../zdeflate.cpp \
     ../zinflate.cpp \
     ../zlib.cpp
+
+# OfficeCryptReader
+include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
+HEADERS += \
+    $$CORE_ROOT_DIR/OfficeCryptReader/source/ECMACryptFile.h \
+    $$CORE_ROOT_DIR/OfficeCryptReader/source/CryptTransform.h
+
+SOURCES += \
+    $$CORE_ROOT_DIR/OfficeCryptReader/source/ECMACryptFile.cpp \
+    $$CORE_ROOT_DIR/OfficeCryptReader/source/CryptTransform.cpp

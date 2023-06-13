@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			m_strValue = strValue;
 		}
-		BYTE LightRigType::GetBYTECode() const
+		unsigned char LightRigType::GetBYTECode() const
 		{
 			if (L"balanced" == m_strValue)		return 0;
 			if (L"brightRoom" == m_strValue)	return 1;
@@ -75,7 +75,7 @@ namespace PPTX
 			if (L"twoPt" == m_strValue)			return 26;
 			return 0;
 		}
-		void LightRigType::SetBYTECode(const BYTE& val)
+		void LightRigType::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{
@@ -107,7 +107,6 @@ namespace PPTX
 				case 25:	m_strValue = L"threePt";	break;
 				case 26:	m_strValue = L"twoPt";		break;
 				default:	m_strValue = L"balanced";
-
 			}
 		}
 	} // namespace Limit

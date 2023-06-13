@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,9 +38,9 @@ namespace PPTX
 	{		
 		TLRestart::TLRestart()
 		{
-			m_strValue = _T("never");
+			m_strValue = L"never";
 		}
-		TLRestart::TLRestart(UINT restart)
+		TLRestart::TLRestart(unsigned int restart)
 		{
 			if      (   restart == 0     ||
 						restart == 3) m_strValue = L"never";
@@ -49,14 +49,14 @@ namespace PPTX
 		}
 		void TLRestart::set(const std::wstring& strValue)
 		{
-			if ((_T("always") == strValue) ||
-				(_T("never") == strValue) ||
-				(_T("whenNotActive") == strValue))
+			if ((L"always" == strValue) ||
+				(L"never" == strValue) ||
+				(L"whenNotActive" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLRestart::GetBYTECode() const
+		unsigned char TLRestart::GetBYTECode() const
 		{
 			if (L"always" == m_strValue)	return 0;
 			if (L"never" == m_strValue)	return 1;
@@ -64,7 +64,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLRestart::SetBYTECode(const BYTE& src)
+		void TLRestart::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,14 +35,27 @@
 #include "../../../OOXML/PPTXFormat/Folder.h"
 #include "../../../OOXML/PPTXFormat/Presentation.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
+#include "../../../OOXML/PPTXFormat/SlideLayout.h"
 #include "../../../OOXML/PPTXFormat/NotesMaster.h"
+#include "../../../OOXML/PPTXFormat/NotesSlide.h"
+#include "../../../OOXML/PPTXFormat/TableStyles.h"
+#include "../../../OOXML/PPTXFormat/App.h"
+#include "../../../OOXML/PPTXFormat/Core.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Table/Table.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
+#include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
+#include "../../../OOXML/PPTXFormat/Logic/TablePartStyle.h"
 #include "../../../OOXML/PPTXFormat/Logic/CxnSp.h"
+#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
+#include "../../../OOXML/PPTXFormat/Logic/TxStyles.h"
+#include "../../../OOXML/PPTXFormat/Logic/ClrMapOvr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/Transition.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/EmptyTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/OrientationTransition.h"
@@ -53,6 +66,9 @@
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/WheelTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+#include "../../../OOXML/PPTXFormat/Presentation/SldSz.h"
+#include "../../../OOXML/PPTXFormat/Presentation/NotesSz.h"
 
 #include "../Format/odp_conversion_context.h"
 
@@ -185,6 +201,11 @@ bool PptxConverter::convertDocument()
 	convert_styles();
 	convert_settings(); 
 	
+	smart_ptr<PPTX::App> app_ptr = pptx_document->Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+	smart_ptr<PPTX::Core> core_ptr = pptx_document->Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+
+	//convert_meta(app_ptr.GetPointer(), core_ptr.GetPointer()); -> привести к OOX::...
+
 	convert_slides();
 
 	//удалим уже ненужный документ pptx 
@@ -205,8 +226,8 @@ void PptxConverter::convert_styles()
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Graphic);					
 	
-	odf_writer::style_paragraph_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
-	odf_writer::style_text_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::paragraph_format_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+	odf_writer::text_format_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
 
 	if (presentation->defaultTextStyle.IsInit())
 	{
@@ -239,11 +260,12 @@ void PptxConverter::convert_styles()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
 	odp_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic, false, true);		
+	
 	odf_writer::graphic_format_properties	* frame_graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
-	odf_writer::style_text_properties		* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::text_format_properties		* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
 
 	if (frame_text_properties && text_properties)
-		frame_text_properties->apply_from(text_properties);
+		frame_text_properties->apply_from(*text_properties);
 
 	odp_context->page_layout_context()->create_layer_sets();
 }
@@ -300,10 +322,10 @@ std::wstring PptxConverter::convert(PPTX::Logic::TablePartStyle* style, const st
 
 			if (gr && gr_base) gr->apply_from(*gr_base);
 
-			odf_writer::style_paragraph_properties *para = style_state->get_paragraph_properties();
-			odf_writer::style_paragraph_properties *para_base = style_state_base->get_paragraph_properties();
+			odf_writer::paragraph_format_properties *para = style_state->get_paragraph_properties();
+			odf_writer::paragraph_format_properties *para_base = style_state_base->get_paragraph_properties();
 			
-			if (para && para_base) para->apply_from(para_base);
+			if (para && para_base) para->apply_from(*para_base);
 		}
 	}
 
@@ -347,7 +369,7 @@ void PptxConverter::convert(PPTX::Logic::TcStyle* style, odf_writer::graphic_for
 
 }
 
-void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::style_text_properties *text_properties)
+void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::text_format_properties *text_properties)
 {
 	if (!style) return;
 	if (!text_properties) return;
@@ -1126,7 +1148,7 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 		odf_writer::style * style_ = NULL;		
 		if (odp_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
 		{
-			parent_cell_properties = style_->content_.get_style_table_cell_properties();
+			parent_cell_properties = style_->content_.add_get_style_table_cell_properties();
 		}
 	}
 	
@@ -1251,13 +1273,13 @@ void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders)
 
 	//НИ ГРАФИКА НИ СВОЙСТВА ЯЧЕЕК .. ПАРАГРАФ блять !! - идиетский odf !!!
 	//odf_writer::style_table_cell_properties *odf_cell_props = odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_table_cell_properties();
-	odf_writer::style_paragraph_properties *odf_para_props = odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
+	odf_writer::paragraph_format_properties *odf_para_props = odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
 
 	convert(oox_table_borders, odf_para_props);
 }
 
 
-void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders, odf_writer::style_paragraph_properties *odf_para_props)
+void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders, odf_writer::paragraph_format_properties *odf_para_props)
 {
 	if (!oox_table_borders) return;
 	if (!odf_para_props) return;
@@ -1293,31 +1315,31 @@ void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders, odf_writer::s
 
 	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		odf_para_props->content_.common_border_attlist_.fo_border_ = left;
+		odf_para_props->common_border_attlist_.fo_border_ = left;
 
-		odf_para_props->content_.common_border_attlist_.fo_border_bottom_ =
-		odf_para_props->content_.common_border_attlist_.fo_border_top_	= 
-		odf_para_props->content_.common_border_attlist_.fo_border_left_ = 
-		odf_para_props->content_.common_border_attlist_.fo_border_right_ = boost::none;
+		odf_para_props->common_border_attlist_.fo_border_bottom_ =
+		odf_para_props->common_border_attlist_.fo_border_top_	= 
+		odf_para_props->common_border_attlist_.fo_border_left_ = 
+		odf_para_props->common_border_attlist_.fo_border_right_ = boost::none;
 	}
 	else
 	{
-		if (odf_para_props->content_.common_border_attlist_.fo_border_)
+		if (odf_para_props->common_border_attlist_.fo_border_)
 		{
-			odf_para_props->content_.common_border_attlist_.fo_border_bottom_	= 
-			odf_para_props->content_.common_border_attlist_.fo_border_top_		= 
-			odf_para_props->content_.common_border_attlist_.fo_border_left_		= 
-			odf_para_props->content_.common_border_attlist_.fo_border_right_	= odf_para_props->content_.common_border_attlist_.fo_border_;
+			odf_para_props->common_border_attlist_.fo_border_bottom_	= 
+			odf_para_props->common_border_attlist_.fo_border_top_		= 
+			odf_para_props->common_border_attlist_.fo_border_left_		= 
+			odf_para_props->common_border_attlist_.fo_border_right_	= odf_para_props->common_border_attlist_.fo_border_;
 		}
-		odf_para_props->content_.common_border_attlist_.fo_border_ = boost::none;
+		odf_para_props->common_border_attlist_.fo_border_ = boost::none;
 
-		if ( !bottom.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if ( !top.empty() )		odf_para_props->content_.common_border_attlist_.fo_border_top_		= top;
-		if ( !left.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_left_		= left;
-		if ( !right.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_right_	= right;
+		if ( !bottom.empty() )	odf_para_props->common_border_attlist_.fo_border_bottom_	= bottom;
+		if ( !top.empty() )		odf_para_props->common_border_attlist_.fo_border_top_		= top;
+		if ( !left.empty() )	odf_para_props->common_border_attlist_.fo_border_left_		= left;
+		if ( !right.empty() )	odf_para_props->common_border_attlist_.fo_border_right_	= right;
 	}
-	//if (other2BR.empty() == false)	odf_para_props->content_.style_diagonal_tl_br_ = other2BR;
-	//if (other2BL.empty() == false)	odf_para_props->content_.style_diagonal_bl_tr_ = other2BL;
+	//if (other2BR.empty() == false)	odf_para_props->style_diagonal_tl_br_ = other2BR;
+	//if (other2BL.empty() == false)	odf_para_props->style_diagonal_bl_tr_ = other2BL;
 }
 
 bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
@@ -1325,7 +1347,7 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 	if (!oox_table_cell_pr)	return false;
 	
 	odf_writer::style_table_cell_properties *odf_cell_props = odp_context->slide_context()->get_styles_context()->last_state()->get_table_cell_properties();
-	odf_writer::style_paragraph_properties *odf_para_props	= odp_context->slide_context()->get_styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
+	odf_writer::paragraph_format_properties *odf_para_props	= odp_context->slide_context()->get_styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
 	
 	if (!odf_para_props)	return false;
 
@@ -1341,11 +1363,11 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 	//	switch(oox_table_cell_pr->Vert->GetBYTECode())
 	//	{
 	//	case 1  :
-	//		odf_para_props->content_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);break;
+	//		odf_para_props->style_direction_ = odf_types::direction(odf_types::direction::Ltr);break;
 	//	case 6 ://rtl vert
 	//		break;
 	//	default:
-	//		odf_para_props->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);break;
+	//		odf_para_props->style_direction_ = odf_types::direction(odf_types::direction::Ttb);break;
 	//	}
 	//}
 	if (oox_table_cell_pr->MarL.IsInit())
@@ -1371,13 +1393,13 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 		default:
 			break;
 		//case SimpleTypes::verticaljcBoth   : //??????
-		//	odf_para_props->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
+		//	odf_para_props->style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
 		//case SimpleTypes::verticaljcBottom :
-		//	odf_para_props->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
+		//	odf_para_props->style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
 		//case SimpleTypes::verticaljcCenter :
-		//	odf_para_props->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle); break;
+		//	odf_para_props->style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle); break;
 		//case SimpleTypes::verticaljcTop    :
-		//	odf_para_props->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top); break;
+		//	odf_para_props->style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top); break;
 		}
 	}
 //borders
@@ -1390,36 +1412,36 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 
 	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		odf_para_props->content_.common_border_attlist_.fo_border_ = left;
+		odf_para_props->common_border_attlist_.fo_border_ = left;
 
-		odf_para_props->content_.common_border_attlist_.fo_border_bottom_ =
-		odf_para_props->content_.common_border_attlist_.fo_border_top_	= 
-		odf_para_props->content_.common_border_attlist_.fo_border_left_ = 
-		odf_para_props->content_.common_border_attlist_.fo_border_right_ = boost::none;
+		odf_para_props->common_border_attlist_.fo_border_bottom_ =
+		odf_para_props->common_border_attlist_.fo_border_top_	= 
+		odf_para_props->common_border_attlist_.fo_border_left_ = 
+		odf_para_props->common_border_attlist_.fo_border_right_ = boost::none;
 	}
 	else
 	{
-		if (odf_para_props->content_.common_border_attlist_.fo_border_)
+		if (odf_para_props->common_border_attlist_.fo_border_)
 		{
-			odf_para_props->content_.common_border_attlist_.fo_border_bottom_	= 
-			odf_para_props->content_.common_border_attlist_.fo_border_top_		= 
-			odf_para_props->content_.common_border_attlist_.fo_border_left_		= 
-			odf_para_props->content_.common_border_attlist_.fo_border_right_	= odf_para_props->content_.common_border_attlist_.fo_border_;
+			odf_para_props->common_border_attlist_.fo_border_bottom_	= 
+			odf_para_props->common_border_attlist_.fo_border_top_		= 
+			odf_para_props->common_border_attlist_.fo_border_left_		= 
+			odf_para_props->common_border_attlist_.fo_border_right_	= odf_para_props->common_border_attlist_.fo_border_;
 		}
-		odf_para_props->content_.common_border_attlist_.fo_border_ = boost::none;
+		odf_para_props->common_border_attlist_.fo_border_ = boost::none;
 
-		if ( !bottom.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if ( !top.empty() )		odf_para_props->content_.common_border_attlist_.fo_border_top_		= top;
-		if ( !left.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_left_		= left;
-		if ( !right.empty() )	odf_para_props->content_.common_border_attlist_.fo_border_right_	= right;
+		if ( !bottom.empty() )	odf_para_props->common_border_attlist_.fo_border_bottom_	= bottom;
+		if ( !top.empty() )		odf_para_props->common_border_attlist_.fo_border_top_		= top;
+		if ( !left.empty() )	odf_para_props->common_border_attlist_.fo_border_left_		= left;
+		if ( !right.empty() )	odf_para_props->common_border_attlist_.fo_border_right_	= right;
 	}
 	//convert(oox_border->m_oTL2BR.GetPointer()	, other);
-	//if (other.empty() == false) odf_para_props->content_.style_diagonal_tl_br_ = other;
+	//if (other.empty() == false) odf_para_props->style_diagonal_tl_br_ = other;
 	//
 	//convert(oox_border->m_oTR2BL.GetPointer()	, other);
 	//if (other.empty() == false)
 	//{
-	//	odf_para_props->content_.style_diagonal_bl_tr_ = other;
+	//	odf_para_props->style_diagonal_bl_tr_ = other;
 	//}	
 	return true;
 }
@@ -1443,7 +1465,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 			OoxConverter::convert(oox_background->bgRef.GetPointer(), 1);
 		}
 	odf_writer::style* page_style_ = dynamic_cast<odf_writer::style*>(odp_context->current_slide().page_style_elm_.get());
-	odf_writer::style_drawing_page_properties* page_props = page_style_->content_.get_style_drawing_page_properties();
+	odf_writer::style_drawing_page_properties* page_props = page_style_->content_.add_get_style_drawing_page_properties();
 	
 	//необязательно
 	//if (page_props->content_.common_draw_fill_attlist_.draw_fill_image_name_)

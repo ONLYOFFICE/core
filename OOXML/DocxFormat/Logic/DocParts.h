@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,7 +33,16 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../Common/ComplexTypes.h"
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class String;
+		class CDocPartBehavior;
+		class CDocPartGallery;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +51,7 @@ namespace OOX
 		class CDocPartTypes : public WritingElementWithChilds<ComplexTypes::Word::String>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartTypes)
+			WritingElement_AdditionMethods(CDocPartTypes)
 
 			CDocPartTypes(OOX::Document *pMain = NULL);
 			virtual ~CDocPartTypes();
@@ -62,7 +71,7 @@ namespace OOX
 		class CDocPartBehaviors : public WritingElementWithChilds<ComplexTypes::Word::CDocPartBehavior>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartBehaviors)
+			WritingElement_AdditionMethods(CDocPartBehaviors)
 
 			CDocPartBehaviors(OOX::Document *pMain = NULL);
 			virtual ~CDocPartBehaviors();
@@ -77,7 +86,7 @@ namespace OOX
 		class CDocPartCategory : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartCategory)
+			WritingElement_AdditionMethods(CDocPartCategory)
 
 			CDocPartCategory(OOX::Document *pMain = NULL);
 			virtual ~CDocPartCategory();
@@ -95,7 +104,7 @@ namespace OOX
 		class CDocPartPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartPr)
+			WritingElement_AdditionMethods(CDocPartPr)
 
 			CDocPartPr(OOX::Document *pMain = NULL);
 			virtual ~CDocPartPr();
@@ -118,7 +127,7 @@ namespace OOX
 		class CDocPartBody : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartBody)
+			WritingElement_AdditionMethods(CDocPartBody)
 
 			CDocPartBody(OOX::Document *pMain = NULL);
 
@@ -132,7 +141,7 @@ namespace OOX
 		class CDocPart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPart)
+			WritingElement_AdditionMethods(CDocPart)
 
 			CDocPart(OOX::Document *pMain = NULL);
 			virtual ~CDocPart();
@@ -150,7 +159,7 @@ namespace OOX
 		class CDocParts : public WritingElementWithChilds<CDocPart>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocParts)
+			WritingElement_AdditionMethods(CDocParts)
 
 			CDocParts(OOX::Document *pMain = NULL);
 			virtual ~CDocParts();

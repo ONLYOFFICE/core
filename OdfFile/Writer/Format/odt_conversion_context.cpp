@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,6 +47,7 @@
 
 #include "office_text.h"
 #include "office_annotation.h"
+#include "office_meta.h"
 
 #include "paragraph_elements.h"
 #include "text_elements.h"
@@ -177,7 +178,7 @@ odf_comment_context* odt_conversion_context::comment_context()
 	return &comment_context_;
 }
 
-odf_style_context* odt_conversion_context::styles_context()	
+odf_style_context_ptr odt_conversion_context::styles_context()	
 {
 	if (text_context_.size() > 0)
 	{
@@ -218,13 +219,13 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
         int count = (int)text.length();
 		drop_cap_state_.characters += count;
 		
-		style_text_properties * props = text_context()->get_text_properties();
+		text_format_properties * props = text_context()->get_text_properties();
 		if (props)
 		{
 			if (drop_cap_state_.inline_style == false)
 			{
-				std::wstring f_name = props->content_.fo_font_family_.get_value_or(L"Arial");
-				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
+				std::wstring f_name = props->fo_font_family_.get_value_or(L"Arial");
+				double f_size = props->fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
 					
 				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
@@ -1029,9 +1030,9 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties	= style_->content_.get_style_section_properties();
+	style_section_properties* section_properties = style_->content_.add_get_style_section_properties();
 	
-	create_element(L"style", L"columns",section_properties->style_columns_,this);	
+	create_element(L"style", L"columns", section_properties->style_columns_,this);	
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -1061,8 +1062,8 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties		= style_->content_.get_style_section_properties();
-	//section_properties->text_dont_balance_text_columns_	= true;
+	style_section_properties* section_properties = style_->content_.add_get_style_section_properties();
+	//section_properties->text_dont_balance_text_columns_ = true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -1290,9 +1291,9 @@ void odt_conversion_context::start_run(bool styled)
 
 	if (drop_cap_state_.enabled)
 	{
-		style_text_properties *props = text_context()->get_text_properties();
-		if (props)
-			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get()));
+		text_format_properties *props = text_context()->get_text_properties();
+		if (props && drop_cap_state_.text_properties)
+			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get())->content_);
 
 	}
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
@@ -1547,15 +1548,15 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-style_text_properties* odt_conversion_context::get_drop_cap_properties() 
+text_format_properties* odt_conversion_context::get_drop_cap_properties()
 {
 	if (!drop_cap_state_.text_properties)
 	{
 		create_element(L"style", L"text-properties", drop_cap_state_.text_properties, this);
 	}
-	return dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get());
+	return &(dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get()))->content_;
 }
-void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
+void odt_conversion_context::start_drop_cap(paragraph_format_properties *paragraph_properties)
 {
 	if (drop_cap_state_.enabled) 
 		end_drop_cap(); // 2 подряд ваще возможны ???
@@ -1566,7 +1567,7 @@ void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragrap
 	drop_cap_state_.paragraph_properties = paragraph_properties;
 
 	office_element_ptr comm_elm;
-	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content_.style_drop_cap_, this);
+	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->style_drop_cap_, this);
 }
 
 void odt_conversion_context::set_drop_cap_lines(int lines)
@@ -1574,7 +1575,7 @@ void odt_conversion_context::set_drop_cap_lines(int lines)
 	if (!drop_cap_state_.enabled) return;
 	if (!drop_cap_state_.paragraph_properties) return;
 
-	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
+	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->style_drop_cap_.get());
 	if (drop_cap)drop_cap->style_lines_ = lines;
 
 	drop_cap_state_.lines = lines;
@@ -1590,7 +1591,7 @@ void odt_conversion_context::end_drop_cap()
 
 	if (drop_cap_state_.characters > 0 && drop_cap_state_.paragraph_properties)
 	{
-		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
+		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->style_drop_cap_.get());
 		if (drop_cap)
 		{
 			drop_cap->style_length_ = drop_cap_length(drop_cap_state_.characters);
@@ -1608,7 +1609,7 @@ void odt_conversion_context::end_drop_cap()
 			//		indent_percent = drop_cap_state_.paragraph_properties->content_.fo_text_indent_->get_percent()->get_value();
 			//}
 			
-			drop_cap_state_.paragraph_properties->content_.fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
+			drop_cap_state_.paragraph_properties->fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
 			//drop_cap_state_.characters * size_char;
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		PlaceholderSize::PlaceholderSize()
 		{
-			m_strValue = _T("full");
+			m_strValue = L"full";
 		}
 		void PlaceholderSize::set(const std::wstring& strValue)
 		{
-			if ((_T("full") == strValue) ||
-				(_T("half") == strValue) ||
-				(_T("quarter") == strValue))
+			if ((L"full" == strValue) ||
+				(L"half" == strValue) ||
+				(L"quarter" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PlaceholderSize::GetBYTECode() const
+		unsigned char PlaceholderSize::GetBYTECode() const
 		{
-			if (_T("full") == m_strValue)
+			if (L"full" == m_strValue)
 				return 0;
-			if (_T("half") == m_strValue)
+			if (L"half" == m_strValue)
 				return 1;
-			if (_T("quarter") == m_strValue)
+			if (L"quarter" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void PlaceholderSize::SetBYTECode(const BYTE& src)
+		void PlaceholderSize::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 1:
-				m_strValue = _T("half");
+				m_strValue = L"half";
 				break;
 			case 2:
-				m_strValue = _T("quarter");
+				m_strValue = L"quarter";
 				break;
 			default:
-				m_strValue = _T("full");
+				m_strValue = L"full";
 				break;
 			}
 		}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,6 +38,10 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
 	namespace Spreadsheet
 	{
 		enum ST_PageSetupOrientation
@@ -157,40 +161,6 @@ namespace OOX
 			st_pictureformatSTACK = 1,
 			st_pictureformatSTACKSCALE = 2
 		};
-		enum ItemsChoiceType3
-		{
-			itemschoicetype3DLBLPOS = 0,
-			itemschoicetype3DELETE = 1,
-			itemschoicetype3LEADERLINES = 2,
-			itemschoicetype3NUMFMT = 3,
-			itemschoicetype3SEPARATOR = 4,
-			itemschoicetype3SHOWBUBBLESIZE = 5,
-			itemschoicetype3SHOWCATNAME = 6,
-			itemschoicetype3SHOWLEADERLINES = 7,
-			itemschoicetype3SHOWLEGENDKEY = 8,
-			itemschoicetype3SHOWPERCENT = 9,
-			itemschoicetype3SHOWSERNAME = 10,
-			itemschoicetype3SHOWVAL = 11,
-			itemschoicetype3SPPR = 12,
-			itemschoicetype3TXPR = 13
-		};
-		enum ItemsChoiceType4
-		{
-			itemschoicetype4DLBLPOS = 0,
-			itemschoicetype4DELETE = 1,
-			itemschoicetype4LAYOUT = 2,
-			itemschoicetype4NUMFMT = 3,
-			itemschoicetype4SEPARATOR = 4,
-			itemschoicetype4SHOWBUBBLESIZE = 5,
-			itemschoicetype4SHOWCATNAME = 6,
-			itemschoicetype4SHOWLEGENDKEY = 7,
-			itemschoicetype4SHOWPERCENT = 8,
-			itemschoicetype4SHOWSERNAME = 9,
-			itemschoicetype4SHOWVAL = 10,
-			itemschoicetype4SPPR = 11,
-			itemschoicetype4TX = 12,
-			itemschoicetype4TXPR = 13
-		};
 		enum ST_DLblPos
 		{
 			st_dlblposBESTFIT = 0,
@@ -286,7 +256,289 @@ namespace OOX
 			st_groupingSTANDARD = 1,
 			st_groupingSTACKED = 2
 		};
-		enum ItemsChoiceType5
+		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs val, std::wstring& sOut);
+		bool FromXml_ST_DispBlanksAs(const std::wstring& val, ST_DispBlanksAs& eOut);
+		
+		DEFINE_SIMPLE_TYPE(CGrouping, ST_Grouping, st_groupingSTANDARD)
+		DEFINE_SIMPLE_TYPE(CRadarStyle, ST_RadarStyle, st_radarstyleSTANDARD)
+		DEFINE_SIMPLE_TYPE(CScatterStyle, ST_ScatterStyle, st_scatterstyleMARKER)
+		DEFINE_SIMPLE_TYPE(CShapeType, ST_Shape, st_shapeBOX)
+		DEFINE_SIMPLE_TYPE(CBarGrouping, ST_BarGrouping, st_bargroupingCLUSTERED)
+		DEFINE_SIMPLE_TYPE(CBarDir, ST_BarDir, st_bardirBAR)
+		DEFINE_SIMPLE_TYPE(COfPieType, ST_OfPieType, st_ofpietypePIE)
+		DEFINE_SIMPLE_TYPE(CSplitType, ST_SplitType, st_splittypeAUTO)
+		DEFINE_SIMPLE_TYPE(CErrValType, ST_ErrValType, st_errvaltypeSTDERR)
+		DEFINE_SIMPLE_TYPE(CErrBarType, ST_ErrBarType, st_errbartypeBOTH)
+		DEFINE_SIMPLE_TYPE(CErrDir, ST_ErrDir, st_errdirX)
+		DEFINE_SIMPLE_TYPE(CTrendlineType, ST_TrendlineType, st_trendlinetypeLINEAR)
+		DEFINE_SIMPLE_TYPE(CDLblPos, ST_DLblPos, st_dlblposBESTFIT)		
+		DEFINE_SIMPLE_TYPE(CPictureFormat, ST_PictureFormat, st_pictureformatSTRETCH)
+		DEFINE_SIMPLE_TYPE(CMarkerStyle, ST_MarkerStyle, st_markerstyleAUTO)
+		DEFINE_SIMPLE_TYPE(CSizeRepresents, ST_SizeRepresents, st_sizerepresentsAREA)
+		DEFINE_SIMPLE_TYPE(CCrossBetween, ST_CrossBetween, st_crossbetweenBETWEEN)
+		DEFINE_SIMPLE_TYPE(CBuiltInUnit, ST_BuiltInUnit, st_builtinunitHUNDREDS)
+		DEFINE_SIMPLE_TYPE(CLblAlgn, ST_LblAlgn, st_lblalgnCTR)
+		DEFINE_SIMPLE_TYPE(CTimeUnit, ST_TimeUnit, st_timeunitYEARS)
+		DEFINE_SIMPLE_TYPE(CCrosses, ST_Crosses, st_crossesAUTOZERO)
+		DEFINE_SIMPLE_TYPE(CTickLblPos, ST_TickLblPos, st_ticklblposNEXTTO)
+		DEFINE_SIMPLE_TYPE(CTickMark, ST_TickMark, st_tickmarkCROSS)
+		DEFINE_SIMPLE_TYPE(CAxPos, ST_AxPos, st_axposB)
+		DEFINE_SIMPLE_TYPE(COrientation, ST_Orientation, st_orientationMINMAX)
+		DEFINE_SIMPLE_TYPE(CLayoutMode, ST_LayoutMode, st_layoutmodeEDGE)
+		DEFINE_SIMPLE_TYPE(CLayoutTarget, ST_LayoutTarget, st_layouttargetINNER)
+		DEFINE_SIMPLE_TYPE(CLegendPos, ST_LegendPos, st_legendposR)
+		DEFINE_SIMPLE_TYPE(CDispBlanksAs, ST_DispBlanksAs, st_dispblanksasZERO)
+		DEFINE_SIMPLE_TYPE(CPageSetupOrientation, ST_PageSetupOrientation, st_pagesetuporientationDEFAULT)
+//----------------------------
+		template<class T>
+		class nullableComplexVal : public nullable<T>
+		{
+		public:
+			nullableComplexVal() : nullable<T>()
+			{
+			}
+			nullableComplexVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					T* pType = new T();
+
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"val", *pType)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+
+					this->m_pPointer = pType;
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + this->m_pPointer->ToString() + L"\"/>");
+				}
+			}
+		};
+		class nullableBoolVal : public nullable_bool
+		{
+		public:
+			nullableBoolVal() : nullable_bool()
+			{
+			}
+			void operator=(const bool& value)
+			{
+				nullable_bool::operator=(value);
+			}
+			nullableBoolVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						if (L"val" == wsName)
+						{
+							this->m_pPointer = new bool(XmlUtils::GetBoolean2(oReader.GetText()));
+							break;
+						}
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + (*this->m_pPointer ? L"1" : L"0") + L"\"/>");
+				}
+			}
+		};
+		class nullableIntVal : public nullable_int
+		{
+		public:
+			nullableIntVal() : nullable_int()
+			{
+			}
+			void operator=(const int& value)
+			{
+				nullable_int::operator=(value);
+			}
+			nullableIntVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						if (L"val" == wsName)
+						{
+							this->m_pPointer = new int(XmlUtils::GetInteger(oReader.GetText()));
+							break;
+						}
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+						if (!oReader.IsEmptyNode())
+							oReader.ReadTillEnd();
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + std::to_wstring(*this->m_pPointer) + L"\"/>");
+				}
+			}
+		};
+		class nullableUintVal : public nullable_uint
+		{
+		public:
+			nullableUintVal() : nullable_uint()
+			{
+			}
+			void operator=(const unsigned int& value)
+			{
+				nullable_uint::operator=(value);
+			}
+			nullableUintVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						if (L"val" == wsName)
+						{
+							this->m_pPointer = new unsigned int(XmlUtils::GetUInteger(oReader.GetText()));
+							break;
+						}
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + std::to_wstring(*this->m_pPointer) + L"\"/>");
+				}
+			}
+		};
+		class nullableDoubleVal : public nullable_double
+		{
+		public:
+			nullableDoubleVal() : nullable_double()
+			{
+			}
+			void operator=(const double& value)
+			{
+				nullable_double::operator=(value);
+			}
+			nullableDoubleVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						if (L"val" == wsName)
+						{
+							this->m_pPointer = new double(XmlUtils::GetDouble(oReader.GetText()));
+							break; 
+						}
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + std::to_wstring(*this->m_pPointer) + L"\"/>");
+				}
+			}
+		};
+		class nullableStringVal : public nullable_string
+		{
+		public:
+			nullableStringVal() : nullable_string()
+			{
+			}
+			void operator=(const std::wstring& value)
+			{
+				nullable_string::operator=(value);
+			}
+			nullableStringVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					std::wstring* pType = new std::wstring();
+
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"val", *pType)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+
+					this->m_pPointer = pType;
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + XmlUtils::EncodeXmlString(*this->m_pPointer) + L"\"/>");
+				}
+			}
+		};
+		//----------------------------		
+		enum ItemsChoiceType3
+		{
+			itemschoicetype3DLBLPOS = 0,
+			itemschoicetype3DELETE = 1,
+			itemschoicetype3LEADERLINES = 2,
+			itemschoicetype3NUMFMT = 3,
+			itemschoicetype3SEPARATOR = 4,
+			itemschoicetype3SHOWBUBBLESIZE = 5,
+			itemschoicetype3SHOWCATNAME = 6,
+			itemschoicetype3SHOWLEADERLINES = 7,
+			itemschoicetype3SHOWLEGENDKEY = 8,
+			itemschoicetype3SHOWPERCENT = 9,
+			itemschoicetype3SHOWSERNAME = 10,
+			itemschoicetype3SHOWVAL = 11,
+			itemschoicetype3SPPR = 12,
+			itemschoicetype3TXPR = 13
+		};
+		enum ItemsChoiceType4
+		{
+			itemschoicetype4DLBLPOS = 0,
+			itemschoicetype4DELETE = 1,
+			itemschoicetype4LAYOUT = 2,
+			itemschoicetype4NUMFMT = 3,
+			itemschoicetype4SEPARATOR = 4,
+			itemschoicetype4SHOWBUBBLESIZE = 5,
+			itemschoicetype4SHOWCATNAME = 6,
+			itemschoicetype4SHOWLEGENDKEY = 7,
+			itemschoicetype4SHOWPERCENT = 8,
+			itemschoicetype4SHOWSERNAME = 9,
+			itemschoicetype4SHOWVAL = 10,
+			itemschoicetype4SPPR = 11,
+			itemschoicetype4TX = 12,
+			itemschoicetype4TXPR = 13
+		};
+		enum ItemsChoiceType5 // -> to BaseChart
 		{
 			itemschoicetype5AREA3DCHART = 0,
 			itemschoicetype5AREACHART = 1,
@@ -312,2520 +564,34 @@ namespace OOX
 			itemschoicetype6SERAX = 2,
 			itemschoicetype6VALAX = 3
 		};
-
-		class CT_extLst;
-		class CT_ChartSpace;
-		class CT_Boolean;
-		class CT_RelId;
-		class CT_PageSetup;
-		class CT_PageMargins;
-		class CT_HeaderFooter;
-		class CT_PrintSettings;
-		class CT_ExternalData;
-		class CT_DispBlanksAs;
-		class CT_LegendEntry;
-		class CT_UnsignedInt;
-		class CT_Extension;
-		class CT_LegendPos;
-		class CT_Legend;
-		class CT_Layout;
-		class CT_ManualLayout;
-		class CT_LayoutTarget;
-		class CT_LayoutMode;
-		class CT_Double;
-		class CT_DTable;
-		class CT_SerAx;
-		class CT_Scaling;
-		class CT_LogBase;
-		class CT_Orientation;
-		class CT_AxPos;
-		class CT_ChartLines;
-		class CT_Title;
-		class CT_Tx;
-		class CT_StrRef;
-		class CT_StrData;
-		class CT_StrVal;
-		class CT_NumFmt;
-		class CT_TickMark;
-		class CT_TickLblPos;
-		class CT_Crosses;
-		class CT_Skip;
-		class CT_TimeUnit;
-		class CT_DateAx;
-		class CT_LblOffset;
-		class CT_AxisUnit;
-		class CT_LblAlgn;
-		class CT_CatAx;
-		class CT_DispUnitsLbl;
-		class CT_BuiltInUnit;
-		class CT_DispUnits;
-		class CT_CrossBetween;
-		class CT_ValAx;
-		class CT_SizeRepresents;
-		class CT_BubbleScale;
-		class CT_BubbleSer;
-		class CT_SerTx;
-		class CT_DPt;
-		class CT_Marker;
-		class CT_MarkerStyle;
-		class CT_MarkerSize;
-		class CT_PictureOptions;
-		class CT_PictureFormat;
-		class CT_PictureStackUnit;
-		class CT_DLbls;
-		class CT_DLbl;
-		class CT_DLblPos;
-		class CT_Trendline;
-		class CT_TrendlineType;
-		class CT_Order;
-		class CT_Period;
-		class CT_TrendlineLbl;
-		class CT_ErrBars;
-		class CT_ErrDir;
-		class CT_ErrBarType;
-		class CT_ErrValType;
-		class CT_NumDataSource;
-		class CT_NumData;
-		class CT_NumVal;
-		class CT_NumRef;
-		class CT_AxDataSource;
-		class CT_MultiLvlStrRef;
-		class CT_lvl;
-		class CT_MultiLvlStrData;
-		class CT_BubbleChart;
-		class CT_bandFmts;
-		class CT_Surface3DChart;
-		class CT_SurfaceSer;
-		class CT_BandFmt;
-		class CT_SurfaceChart;
-		class CT_SecondPieSize;
-		class CT_SplitType;
-		class CT_OfPieType;
-		class CT_custSplit;
-		class CT_OfPieChart;
-		class CT_PieSer;
-		class CT_GapAmount;
-		class CT_Bar3DChart;
-		class CT_BarDir;
-		class CT_BarGrouping;
-		class CT_BarSer;
-		class CT_Shape;
-		class CT_Overlap;
-		class CT_BarChart;
-		class CT_HoleSize;
-		class CT_DoughnutChart;
-		class CT_FirstSliceAng;
-		class CT_Pie3DChart;
-		class CT_PieChart;
-		class CT_ScatterSer;
-		class CT_ScatterStyle;
-		class CT_ScatterChart;
-		class CT_RadarSer;
-		class CT_RadarStyle;
-		class CT_RadarChart;
-		class CT_StockChart;
-		class CT_LineSer;
-		class CT_UpDownBars;
-		class CT_UpDownBar;
-		class CT_Line3DChart;
-		class CT_Grouping;
-		class CT_LineChart;
-		class CT_Area3DChart;
-		class CT_AreaSer;
-		class CT_AreaChart;
-		class CT_PlotArea;
-		class CT_Thickness;
-		class CT_Surface;
-		class CT_Perspective;
-		class CT_DepthPercent;
-		class CT_RotY;
-		class CT_HPercent;
-		class CT_RotX;
-		class CT_View3D;
-		class CT_PivotFmt;
-		class CT_pivotFmts;
-		class CT_Chart;
-		class CT_Protection;
-		class CT_PivotSource;
-		class CT_Style1;
-		class CT_Style;
-		class CT_TextLanguageID;
-		class AlternateContent;
-		class AlternateContentChoice;
-		class AlternateContentFallback;
-		class CTextProperties;
-
-		bool FromXml_ST_DispBlanksAs(std::wstring& val, ST_DispBlanksAs& eOut);
-		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs& val, std::wstring& sOut);
-	///////////////////////////////////////////////////
-		class CT_extLst
-		{
-		public:
-			//Member
-            std::vector<CT_Extension*> m_ext;
-			CT_extLst();
-			~CT_extLst();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ChartSpace
-		{
-		public:
-			CT_Boolean*								m_date1904;
-			CT_TextLanguageID*						m_lang;
-			CT_Boolean*								m_roundedCorners;
-			AlternateContent*						m_AlternateContent;
-			CT_Style*								m_style;
-			CT_PivotSource*							m_pivotSource;
-			CT_Protection*							m_protection;
-			CT_Chart*								m_chart;
-
-			nullable<PPTX::Logic::ClrMap>			m_oClrMapOvr;
-
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-
-			CT_ExternalData*						m_externalData;
-			CT_PrintSettings*						m_printSettings;
-			CT_RelId*								m_userShapes;
-			CT_extLst*								m_extLst;
-
-			CT_ChartSpace();
-			~CT_ChartSpace();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Boolean
-		{
-		public:
-			//Attribute
-			bool* m_val;
-			CT_Boolean();
-			~CT_Boolean();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_RelId
-		{
-		public:
-			//Attribute
-			std::wstring* m_id;
-			CT_RelId();
-			~CT_RelId();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_PageSetup
-		{
-		public:
-			//Attribute
-			unsigned long* m_paperSize;
-			//Attribute
-			std::wstring* m_paperHeight;
-			//Attribute
-			std::wstring* m_paperWidth;
-			//Attribute
-			unsigned long* m_firstPageNumber;
-			//Attribute
-			ST_PageSetupOrientation* m_orientation;
-			//Attribute
-			bool* m_blackAndWhite;
-			//Attribute
-			bool* m_draft;
-			//Attribute
-			bool* m_useFirstPageNumber;
-			//Attribute
-			long* m_horizontalDpi;
-			//Attribute
-			long* m_verticalDpi;
-			//Attribute
-			unsigned long* m_copies;
-			CT_PageSetup();
-			~CT_PageSetup();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_PageMargins
-		{
-		public:
-			//Attribute
-			double* m_l;
-			//Attribute
-			double* m_r;
-			//Attribute
-			double* m_t;
-			//Attribute
-			double* m_b;
-			//Attribute
-			double* m_header;
-			//Attribute
-			double* m_footer;
-			CT_PageMargins();
-			~CT_PageMargins();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_HeaderFooter
-		{
-		public:
-			//Member
-			std::wstring* m_oddHeader;
-			//Member
-			std::wstring* m_oddFooter;
-			//Member
-			std::wstring* m_evenHeader;
-			//Member
-			std::wstring* m_evenFooter;
-			//Member
-			std::wstring* m_firstHeader;
-			//Member
-			std::wstring* m_firstFooter;
-			//Attribute
-			bool* m_alignWithMargins;
-			//Attribute
-			bool* m_differentOddEven;
-			//Attribute
-			bool* m_differentFirst;
-			CT_HeaderFooter();
-			~CT_HeaderFooter();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_PrintSettings
-		{
-		public:
-			//Member
-			CT_HeaderFooter* m_headerFooter;
-			//Member
-			CT_PageMargins* m_pageMargins;
-			//Member
-			CT_PageSetup* m_pageSetup;
-			CT_PrintSettings();
-			~CT_PrintSettings();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ExternalData
-		{
-		public:
-			//Member
-			CT_Boolean* m_autoUpdate;
-			//Attribute
-			std::wstring* m_id;
-			CT_ExternalData();
-			~CT_ExternalData();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DispBlanksAs
-		{
-		public:
-			//Attribute
-			ST_DispBlanksAs* m_val;
-			CT_DispBlanksAs();
-			~CT_DispBlanksAs();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_LegendEntry
-		{
-		public:
-			CT_UnsignedInt*					m_idx;
-			CT_Boolean*						m_delete;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			CT_extLst*						m_extLst;
-
-			CT_LegendEntry();
-			~CT_LegendEntry();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_UnsignedInt
-		{
-		public:
-			//Attribute
-			unsigned long* m_val;
-			CT_UnsignedInt();
-			~CT_UnsignedInt();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Extension
-		{
-		public:
-			//Member
-			std::wstring* m_Any;
-			//Attribute
-			std::wstring* m_uri;
-			CT_Extension();
-			~CT_Extension();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_LegendPos
-		{
-		public:
-			//Attribute
-			ST_LegendPos* m_val;
-			CT_LegendPos();
-			~CT_LegendPos();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Legend
-		{
-		public:
-			CT_LegendPos							*m_legendPos;
-            std::vector<CT_LegendEntry*>			m_legendEntry;
-			CT_Layout								*m_layout;
-			CT_Boolean								*m_overlay;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_extLst								* m_extLst;
-		/*--------------------------------------------------*/
-			CT_Legend();
-			~CT_Legend();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Layout
-		{
-		public:
-			//Member
-			CT_ManualLayout* m_manualLayout;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Layout();
-			~CT_Layout();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ManualLayout
-		{
-		public:
-			//Member
-			CT_LayoutTarget* m_layoutTarget;
-			//Member
-			CT_LayoutMode* m_xMode;
-			//Member
-			CT_LayoutMode* m_yMode;
-			//Member
-			CT_LayoutMode* m_wMode;
-			//Member
-			CT_LayoutMode* m_hMode;
-			//Member
-			CT_Double* m_x;
-			//Member
-			CT_Double* m_y;
-			//Member
-			CT_Double* m_w;
-			//Member
-			CT_Double* m_h;
-			//Member
-			CT_extLst* m_extLst;
-			CT_ManualLayout();
-			~CT_ManualLayout();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_LayoutTarget
-		{
-		public:
-			//Attribute
-			ST_LayoutTarget* m_val;
-			CT_LayoutTarget();
-			~CT_LayoutTarget();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_LayoutMode
-		{
-		public:
-			//Attribute
-			ST_LayoutMode* m_val;
-			CT_LayoutMode();
-			~CT_LayoutMode();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Double
-		{
-		public:
-			double* m_val;
-			CT_Double();
-			~CT_Double();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DTable
-		{
-		public:
-			CT_Boolean* m_showHorzBorder;
-			CT_Boolean* m_showVertBorder;
-			CT_Boolean* m_showOutline;
-			CT_Boolean* m_showKeys;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			CT_extLst*						m_extLst;
-			
-			CT_DTable();
-			~CT_DTable();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SerAx
-		{
-		public:
-			CT_UnsignedInt							*m_axId;
-			CT_Scaling								*m_scaling;
-			CT_Boolean								*m_delete;
-			CT_AxPos								*m_axPos;
-			CT_ChartLines							*m_majorGridlines;
-			CT_ChartLines							*m_minorGridlines;
-			CT_Title								*m_title;
-			CT_NumFmt								*m_numFmt;
-			CT_TickMark								*m_majorTickMark;
-			CT_TickMark								*m_minorTickMark;
-			CT_TickLblPos							*m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_UnsignedInt							*m_crossAx;
-			CT_Crosses								*m_crosses;
-			CT_Double								*m_crossesAt;
-			CT_Skip									*m_tickLblSkip;
-			CT_Skip									*m_tickMarkSkip;
-			CT_extLst								*m_extLst;
-		/*--------------------------------------------------------------*/
-			CT_SerAx();
-			~CT_SerAx();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Scaling
-		{
-		public:
-			//Member
-			CT_LogBase* m_logBase;
-			//Member
-			CT_Orientation* m_orientation;
-			//Member
-			CT_Double* m_max;
-			//Member
-			CT_Double* m_min;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Scaling();
-			~CT_Scaling();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_LogBase
-		{
-		public:
-			//Attribute
-			double	* m_val;
-			CT_LogBase();
-			~CT_LogBase();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Orientation
-		{
-		public:
-			//Attribute
-			ST_Orientation	* m_val;
-			CT_Orientation();
-			~CT_Orientation();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_AxPos
-		{
-		public:
-			//Attribute
-			ST_AxPos	* m_val;
-			CT_AxPos();
-			~CT_AxPos();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_ChartLines
-		{
-		public:
-			nullable<PPTX::Logic::SpPr>     m_oSpPr;
-		/*--------------------------------------------------------------*/
-			CT_ChartLines();
-			~CT_ChartLines();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Title
-		{
-		public:
-			CT_Tx								*m_tx;
-			CT_Layout							*m_layout;
-			CT_Boolean							*m_overlay;
-			nullable<PPTX::Logic::SpPr>			m_oSpPr;
-			nullable<PPTX::Logic::TxBody>		m_oTxPr;	
-			CT_extLst							*m_extLst;
-		/*--------------------------------------------------------------*/
-			CT_Title();
-			~CT_Title();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		//--------------------------------------------------------------------------------
-		// 21.2.2.214 tx (Chart Text)
-		//--------------------------------------------------------------------------------	
-		class CT_Tx
-		{
-		public:
-			nullable<PPTX::Logic::TxBody>	m_oRich;	
-			CT_StrRef						*m_strRef;
-		/*--------------------------------------------------------------*/
-			CT_Tx();
-			~CT_Tx();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_StrRef
-		{
-		public:
-			std::wstring	* m_f;
-			CT_StrData		* m_strCache;
-			CT_extLst		* m_extLst;
-		/*--------------------------------------------------------------*/
-			CT_StrRef();
-			~CT_StrRef();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_StrData
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_ptCount;
-			//Member
-            std::vector<CT_StrVal*> m_pt;
-			//Member
-			CT_extLst* m_extLst;
-			CT_StrData();
-			~CT_StrData();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_StrVal
-		{
-		public:
-			//Member
-			std::wstring* m_v;
-			//Attribute
-			unsigned long* m_idx;
-			CT_StrVal();
-			~CT_StrVal();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_NumFmt
-		{
-		public:
-			//Attribute
-			std::wstring* m_formatCode;
-			//Attribute
-			bool* m_sourceLinked;
-			CT_NumFmt();
-			~CT_NumFmt();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_TickMark
-		{
-		public:
-			//Attribute
-			ST_TickMark* m_val;
-			CT_TickMark();
-			~CT_TickMark();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_TickLblPos
-		{
-		public:
-			//Attribute
-			ST_TickLblPos* m_val;
-			CT_TickLblPos();
-			~CT_TickLblPos();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Crosses
-		{
-		public:
-			//Attribute
-			ST_Crosses* m_val;
-			CT_Crosses();
-			~CT_Crosses();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Skip
-		{
-		public:
-			//Attribute
-			unsigned long* m_val;
-			CT_Skip();
-			~CT_Skip();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_TimeUnit
-		{
-		public:
-			//Attribute
-			ST_TimeUnit* m_val;
-			CT_TimeUnit();
-			~CT_TimeUnit();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DateAx
-		{
-		public:
-			CT_UnsignedInt*							m_axId;
-			CT_Scaling*								m_scaling;
-			CT_Boolean*								m_delete;
-			CT_AxPos*								m_axPos;
-			CT_ChartLines*							m_majorGridlines;
-			CT_ChartLines*							m_minorGridlines;
-			CT_Title*								m_title;
-			CT_NumFmt*								m_numFmt;
-			CT_TickMark*							m_majorTickMark;
-			CT_TickMark*							m_minorTickMark;
-			CT_TickLblPos*							m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_UnsignedInt*							m_crossAx;
-			CT_Crosses*								m_crosses;
-			CT_Double*								m_crossesAt;
-			CT_Boolean*								m_auto;
-			CT_LblOffset*							m_lblOffset;
-			CT_TimeUnit*							m_baseTimeUnit;
-			CT_AxisUnit*							m_majorUnit;
-			CT_TimeUnit*							m_majorTimeUnit;
-			CT_AxisUnit*							m_minorUnit;
-			CT_TimeUnit*							m_minorTimeUnit;
-			CT_extLst*								m_extLst;
-
-			CT_DateAx();
-			~CT_DateAx();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_LblOffset
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_LblOffset();
-			~CT_LblOffset();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_AxisUnit
-		{
-		public:
-			double* m_val;
-			CT_AxisUnit();
-			~CT_AxisUnit();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_LblAlgn
-		{
-		public:
-			//Attribute
-			ST_LblAlgn* m_val;
-			CT_LblAlgn();
-			~CT_LblAlgn();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_CatAx
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_axId;
-			//Member
-			CT_Scaling* m_scaling;
-			//Member
-			CT_Boolean* m_delete;
-			//Member
-			CT_AxPos* m_axPos;
-			//Member
-			CT_ChartLines* m_majorGridlines;
-			//Member
-			CT_ChartLines* m_minorGridlines;
-			//Member
-			CT_Title* m_title;
-			//Member
-			CT_NumFmt* m_numFmt;
-			//Member
-			CT_TickMark* m_majorTickMark;
-			//Member
-			CT_TickMark* m_minorTickMark;
-			//Member
-			CT_TickLblPos* m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			CT_UnsignedInt* m_crossAx;
-			//Member
-			CT_Crosses* m_crosses;
-			//Member
-			CT_Double* m_crossesAt;
-			//Member
-			CT_Boolean* m_auto;
-			//Member
-			CT_LblAlgn* m_lblAlgn;
-			//Member
-			CT_LblOffset* m_lblOffset;
-			//Member
-			CT_Skip* m_tickLblSkip;
-			//Member
-			CT_Skip* m_tickMarkSkip;
-			//Member
-			CT_Boolean* m_noMultiLvlLbl;
-			//Member
-			CT_extLst* m_extLst;
-			CT_CatAx();
-			~CT_CatAx();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_DispUnitsLbl
-		{
-		public:
-			CT_Layout*								m_layout;
-			CT_Tx*									m_tx;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-
-			CT_DispUnitsLbl();
-			~CT_DispUnitsLbl();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_BuiltInUnit
-		{
-		public:
-			//Attribute
-			ST_BuiltInUnit* m_val;
-			CT_BuiltInUnit();
-			~CT_BuiltInUnit();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DispUnits
-		{
-		public:
-			//Member
-			CT_BuiltInUnit* m_builtInUnit;
-			//Member
-			CT_Double* m_custUnit;
-			//Member
-			CT_DispUnitsLbl* m_dispUnitsLbl;
-			//Member
-			CT_extLst* m_extLst;
-			CT_DispUnits();
-			~CT_DispUnits();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_CrossBetween
-		{
-		public:
-			//Attribute
-			ST_CrossBetween* m_val;
-			CT_CrossBetween();
-			~CT_CrossBetween();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_ValAx
-		{
-		public:
-			CT_UnsignedInt*							m_axId;
-			CT_Scaling*								m_scaling;
-			CT_Boolean*								m_delete;
-			CT_AxPos*								m_axPos;
-			CT_ChartLines*							m_majorGridlines;
-			CT_ChartLines*							m_minorGridlines;
-			CT_Title*								m_title;
-			CT_NumFmt*								m_numFmt;
-			CT_TickMark*							m_majorTickMark;
-			CT_TickMark*							m_minorTickMark;
-			CT_TickLblPos*							m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_UnsignedInt*							m_crossAx;
-			CT_Crosses*								m_crosses;
-			CT_Double*								m_crossesAt;
-			CT_CrossBetween*						m_crossBetween;
-			CT_AxisUnit*							m_majorUnit;
-			CT_AxisUnit*							m_minorUnit;
-			CT_DispUnits*							m_dispUnits;
-			CT_extLst*								m_extLst;
-
-			CT_ValAx();
-			~CT_ValAx();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SizeRepresents
-		{
-		public:
-			//Attribute
-			ST_SizeRepresents* m_val;
-			CT_SizeRepresents();
-			~CT_SizeRepresents();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_BubbleScale
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_BubbleScale();
-			~CT_BubbleScale();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_BubbleSer
-		{
-		public:
-			CT_UnsignedInt* m_idx;
-			CT_UnsignedInt* m_order;
-			CT_SerTx*		m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_Boolean* m_invertIfNegative;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_Trendline*> m_trendline;
-			//Member
-            std::vector<CT_ErrBars*> m_errBars;
-			//Member
-			CT_AxDataSource* m_xVal;
-			//Member
-			CT_NumDataSource* m_yVal;
-			//Member
-			CT_NumDataSource* m_bubbleSize;
-			//Member
-			CT_Boolean* m_bubble3D;
-			//Member
-			CT_extLst* m_extLst;
-			CT_BubbleSer();
-			~CT_BubbleSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SerTx
-		{
-		public:
-			//Member
-			CT_StrRef* m_strRef;
-			//Member
-			std::wstring* m_v;
-			CT_SerTx();
-			~CT_SerTx();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_DPt
-		{
-		public:
-			CT_UnsignedInt*				m_idx;
-			CT_Boolean*					m_invertIfNegative;
-			CT_Marker*					m_marker;
-			CT_Boolean*					m_bubble3D;
-			CT_UnsignedInt*				m_explosion;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_PictureOptions*			m_pictureOptions;
-			CT_extLst*					m_extLst;
-			
-			CT_DPt();
-			~CT_DPt();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Marker
-		{
-		public:
-			CT_MarkerStyle*				m_symbol;
-			CT_MarkerSize*				m_size;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_extLst*					m_extLst;
-
-			CT_Marker();
-			~CT_Marker();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_MarkerStyle
-		{
-		public:
-			//Attribute
-			ST_MarkerStyle* m_val;
-			CT_MarkerStyle();
-			~CT_MarkerStyle();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_MarkerSize
-		{
-		public:
-			//Attribute
-			unsigned char* m_val;
-			CT_MarkerSize();
-			~CT_MarkerSize();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_PictureOptions
-		{
-		public:
-			//Member
-			CT_Boolean* m_applyToFront;
-			//Member
-			CT_Boolean* m_applyToSides;
-			//Member
-			CT_Boolean* m_applyToEnd;
-			//Member
-			CT_PictureFormat* m_pictureFormat;
-			//Member
-			CT_PictureStackUnit* m_pictureStackUnit;
-			CT_PictureOptions();
-			~CT_PictureOptions();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PictureFormat
-		{
-		public:
-			//Attribute
-			ST_PictureFormat* m_val;
-			CT_PictureFormat();
-			~CT_PictureFormat();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_PictureStackUnit
-		{
-		public:
-			//Attribute
-			double* m_val;
-			CT_PictureStackUnit();
-			~CT_PictureStackUnit();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DLbls
-		{
-		public:
-            std::vector<CT_DLbl*>			m_dLbl;
-            std::vector<ItemsChoiceType3*>	m_ItemsElementName0;
-            std::vector<void*>				m_Items;
-			CT_extLst*						m_extLst;
-			
-			CT_DLbls();
-			~CT_DLbls();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const;
-		private: void toDelete(ItemsChoiceType3 eType, void* pVal);
-		};
-		class CT_DLbl
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-            std::vector<ItemsChoiceType4*> m_ItemsElementName0;
-			//Member
-            std::vector<void*> m_Items;
-			//Member
-			CT_extLst* m_extLst;
-			CT_DLbl();
-			~CT_DLbl();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal) const;
-		private: void toDelete(ItemsChoiceType4 eType, void* pVal);
-		};
-		class CT_DLblPos
-		{
-		public:
-			//Attribute
-			ST_DLblPos* m_val;
-			CT_DLblPos();
-			~CT_DLblPos();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Trendline
-		{
-		public:
-			std::wstring*				m_name;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_TrendlineType*			m_trendlineType;
-			//Member
-			CT_Order* m_order;
-			//Member
-			CT_Period* m_period;
-			//Member
-			CT_Double* m_forward;
-			//Member
-			CT_Double* m_backward;
-			//Member
-			CT_Double* m_intercept;
-			//Member
-			CT_Boolean* m_dispRSqr;
-			//Member
-			CT_Boolean* m_dispEq;
-			//Member
-			CT_TrendlineLbl* m_trendlineLbl;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Trendline();
-			~CT_Trendline();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_TrendlineType
-		{
-		public:
-			//Attribute
-			ST_TrendlineType* m_val;
-			CT_TrendlineType();
-			~CT_TrendlineType();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Order
-		{
-		public:
-			//Attribute
-			unsigned char* m_val;
-			CT_Order();
-			~CT_Order();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Period
-		{
-		public:
-			//Attribute
-			unsigned long* m_val;
-			CT_Period();
-			~CT_Period();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_TrendlineLbl
-		{
-		public:
-			CT_Layout*								m_layout;
-			CT_Tx*									m_tx;
-			CT_NumFmt*								m_numFmt;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_extLst*								m_extLst;
-
-			CT_TrendlineLbl();
-			~CT_TrendlineLbl();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ErrBars
-		{
-		public:
-			//Member
-			CT_ErrDir* m_errDir;
-			//Member
-			CT_ErrBarType* m_errBarType;
-			//Member
-			CT_ErrValType* m_errValType;
-			//Member
-			CT_Boolean* m_noEndCap;
-			//Member
-			CT_NumDataSource* m_plus;
-			//Member
-			CT_NumDataSource* m_minus;
-			//Member
-			CT_Double* m_val;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_extLst*					m_extLst;
-
-			CT_ErrBars();
-			~CT_ErrBars();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ErrDir
-		{
-		public:
-			//Attribute
-			ST_ErrDir* m_val;
-			CT_ErrDir();
-			~CT_ErrDir();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_ErrBarType
-		{
-		public:
-			//Attribute
-			ST_ErrBarType* m_val;
-			CT_ErrBarType();
-			~CT_ErrBarType();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_ErrValType
-		{
-		public:
-			//Attribute
-			ST_ErrValType* m_val;
-			CT_ErrValType();
-			~CT_ErrValType();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_NumDataSource
-		{
-		public:
-			//Member
-			CT_NumData* m_numLit;
-			//Member
-			CT_NumRef* m_numRef;
-			CT_NumDataSource();
-			~CT_NumDataSource();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_NumData
-		{
-		public:
-			//Member
-			std::wstring* m_formatCode;
-			//Member
-			CT_UnsignedInt* m_ptCount;
-			//Member
-            std::vector<CT_NumVal*> m_pt;
-			//Member
-			CT_extLst* m_extLst;
-			CT_NumData();
-			~CT_NumData();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_NumVal
-		{
-		public:
-			//Member
-			std::wstring* m_v;
-			//Attribute
-			unsigned long* m_idx;
-			//Attribute
-			std::wstring* m_formatCode;
-			CT_NumVal();
-			~CT_NumVal();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_NumRef
-		{
-		public:
-			//Member
-			std::wstring* m_f;
-			//Member
-			CT_NumData* m_numCache;
-			//Member
-			CT_extLst* m_extLst;
-			CT_NumRef();
-			~CT_NumRef();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_AxDataSource
-		{
-		public:
-			//Member
-			CT_MultiLvlStrRef* m_multiLvlStrRef;
-			//Member
-			CT_NumData* m_numLit;
-			//Member
-			CT_NumRef* m_numRef;
-			//Member
-			CT_StrData* m_strLit;
-			//Member
-			CT_StrRef* m_strRef;
-			CT_AxDataSource();
-			~CT_AxDataSource();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_MultiLvlStrRef
-		{
-		public:
-			//Member
-			std::wstring* m_f;
-			//Member
-			CT_MultiLvlStrData* m_multiLvlStrCache;
-			//Member
-			CT_extLst* m_extLst;
-			CT_MultiLvlStrRef();
-			~CT_MultiLvlStrRef();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_lvl
-		{
-		public:
-			//Member
-            std::vector<CT_StrVal*> m_pt;
-			CT_lvl();
-			~CT_lvl();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_MultiLvlStrData
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_ptCount;
-			//Member
-            std::vector<CT_lvl*> m_lvl;
-			//Member
-			CT_extLst* m_extLst;
-			CT_MultiLvlStrData();
-			~CT_MultiLvlStrData();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_BubbleChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_BubbleSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_Boolean* m_bubble3D;
-			//Member
-			CT_BubbleScale* m_bubbleScale;
-			//Member
-			CT_Boolean* m_showNegBubbles;
-			//Member
-			CT_SizeRepresents* m_sizeRepresents;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_BubbleChart();
-			~CT_BubbleChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_bandFmts
-		{
-		public:
-			//Member
-            std::vector<CT_BandFmt*> m_bandFmt;
-			CT_bandFmts();
-			~CT_bandFmts();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Surface3DChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_wireframe;
-			//Member
-            std::vector<CT_SurfaceSer*> m_ser;
-			//Member
-			CT_bandFmts* m_bandFmts;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Surface3DChart();
-			~CT_Surface3DChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SurfaceSer
-		{
-		public:
-			CT_UnsignedInt*				m_idx;
-			CT_UnsignedInt*				m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_AxDataSource*			m_cat;
-			CT_NumDataSource*			m_val;
-			CT_extLst*					m_extLst;
-
-			CT_SurfaceSer();
-			~CT_SurfaceSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_BandFmt
-		{
-		public:
-			CT_UnsignedInt*				m_idx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			
-			CT_BandFmt();
-			~CT_BandFmt();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SurfaceChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_wireframe;
-			//Member
-            std::vector<CT_SurfaceSer*> m_ser;
-			//Member
-			CT_bandFmts* m_bandFmts;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_SurfaceChart();
-			~CT_SurfaceChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_SecondPieSize
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_SecondPieSize();
-			~CT_SecondPieSize();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_SplitType
-		{
-		public:
-			//Attribute
-			ST_SplitType* m_val;
-			CT_SplitType();
-			~CT_SplitType();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_OfPieType
-		{
-		public:
-			//Attribute
-			ST_OfPieType* m_val;
-			CT_OfPieType();
-			~CT_OfPieType();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_custSplit
-		{
-		public:
-			//Member
-            std::vector<CT_UnsignedInt*> m_secondPiePt;
-			CT_custSplit();
-			~CT_custSplit();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_OfPieChart
-		{
-		public:
-			//Member
-			CT_OfPieType* m_ofPieType;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_PieSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_GapAmount* m_gapWidth;
-			//Member
-			CT_SplitType* m_splitType;
-			//Member
-			CT_Double* m_splitPos;
-			//Member
-			CT_custSplit* m_custSplit;
-			//Member
-			CT_SecondPieSize* m_secondPieSize;
-			//Member
-            std::vector<CT_ChartLines*> m_serLines;
-			//Member
-			CT_extLst* m_extLst;
-			CT_OfPieChart();
-			~CT_OfPieChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PieSer
-		{
-		public:
-			CT_UnsignedInt*				m_idx;
-			CT_UnsignedInt*				m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_UnsignedInt*				m_explosion;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_extLst* m_extLst;
-			CT_PieSer();
-			~CT_PieSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_GapAmount
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_GapAmount();
-			~CT_GapAmount();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Bar3DChart
-		{
-		public:
-			//Member
-			CT_BarDir* m_barDir;
-			//Member
-			CT_BarGrouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_BarSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_GapAmount* m_gapWidth;
-			//Member
-			CT_GapAmount* m_gapDepth;
-			//Member
-			CT_Shape* m_shape;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Bar3DChart();
-			~CT_Bar3DChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_BarDir
-		{
-		public:
-			//Attribute
-			ST_BarDir* m_val;
-			CT_BarDir();
-			~CT_BarDir();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_BarGrouping
-		{
-		public:
-			//Attribute
-			ST_BarGrouping* m_val;
-			CT_BarGrouping();
-			~CT_BarGrouping();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_BarSer
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_Boolean* m_invertIfNegative;
-			//Member
-			CT_PictureOptions* m_pictureOptions;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_Trendline*> m_trendline;
-			//Member
-			CT_ErrBars* m_errBars;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_Shape* m_shape;
-			//Member
-			CT_extLst* m_extLst;
-			CT_BarSer();
-			~CT_BarSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Shape
-		{
-		public:
-			//Attribute
-			ST_Shape* m_val;
-			CT_Shape();
-			~CT_Shape();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Overlap
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_Overlap();
-			~CT_Overlap();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_BarChart
-		{
-		public:
-			//Member
-			CT_BarDir* m_barDir;
-			//Member
-			CT_BarGrouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_BarSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_GapAmount* m_gapWidth;
-			//Member
-			CT_Overlap* m_overlap;
-			//Member
-            std::vector<CT_ChartLines*> m_serLines;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_BarChart();
-			~CT_BarChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_HoleSize
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_HoleSize();
-			~CT_HoleSize();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DoughnutChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_PieSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_FirstSliceAng* m_firstSliceAng;
-			//Member
-			CT_HoleSize* m_holeSize;
-			//Member
-			CT_extLst* m_extLst;
-			CT_DoughnutChart();
-			~CT_DoughnutChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_FirstSliceAng
-		{
-		public:
-			//Attribute
-			unsigned long* m_val;
-			CT_FirstSliceAng();
-			~CT_FirstSliceAng();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Pie3DChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_PieSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Pie3DChart();
-			~CT_Pie3DChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PieChart
-		{
-		public:
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_PieSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_FirstSliceAng* m_firstSliceAng;
-			//Member
-			CT_extLst* m_extLst;
-			CT_PieChart();
-			~CT_PieChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ScatterSer
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx* m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_Marker* m_marker;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_Trendline*> m_trendline;
-			//Member
-            std::vector<CT_ErrBars*> m_errBars;
-			//Member
-			CT_AxDataSource* m_xVal;
-			//Member
-			CT_NumDataSource* m_yVal;
-			//Member
-			CT_Boolean* m_smooth;
-			//Member
-			CT_extLst* m_extLst;
-			CT_ScatterSer();
-			~CT_ScatterSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_ScatterStyle
-		{
-		public:
-			//Attribute
-			ST_ScatterStyle* m_val;
-			CT_ScatterStyle();
-			~CT_ScatterStyle();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_ScatterChart
-		{
-		public:
-			//Member
-			CT_ScatterStyle* m_scatterStyle;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_ScatterSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_ScatterChart();
-			~CT_ScatterChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_RadarSer
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_Marker* m_marker;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_extLst* m_extLst;
-			CT_RadarSer();
-			~CT_RadarSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_RadarStyle
-		{
-		public:
-			//Attribute
-			ST_RadarStyle* m_val;
-			CT_RadarStyle();
-			~CT_RadarStyle();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_RadarChart
-		{
-		public:
-			//Member
-			CT_RadarStyle* m_radarStyle;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_RadarSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_RadarChart();
-			~CT_RadarChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_StockChart
-		{
-		public:
-			//Member
-            std::vector<CT_LineSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_ChartLines* m_dropLines;
-			//Member
-			CT_ChartLines* m_hiLowLines;
-			//Member
-			CT_UpDownBars* m_upDownBars;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_StockChart();
-			~CT_StockChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_LineSer
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_Marker* m_marker;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_Trendline*> m_trendline;
-			//Member
-			CT_ErrBars* m_errBars;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_Boolean* m_smooth;
-			//Member
-			CT_extLst* m_extLst;
-			CT_LineSer();
-			~CT_LineSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_UpDownBars
-		{
-		public:
-			CT_GapAmount*	m_gapWidth;
-			CT_UpDownBar*	m_upBars;
-			CT_UpDownBar*	m_downBars;
-			CT_extLst*		m_extLst;
-
-			CT_UpDownBars();
-			~CT_UpDownBars();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_UpDownBar
-		{
-		public:
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-
-			CT_UpDownBar();
-			~CT_UpDownBar();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Line3DChart
-		{
-		public:
-			//Member
-			CT_Grouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_LineSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_ChartLines* m_dropLines;
-			//Member
-			CT_GapAmount* m_gapDepth;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Line3DChart();
-			~CT_Line3DChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Grouping
-		{
-		public:
-			//Attribute
-			ST_Grouping* m_val;
-			CT_Grouping();
-			~CT_Grouping();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_LineChart
-		{
-		public:
-			//Member
-			CT_Grouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_LineSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_ChartLines* m_dropLines;
-			//Member
-			CT_ChartLines* m_hiLowLines;
-			//Member
-			CT_UpDownBars* m_upDownBars;
-			//Member
-			CT_Boolean* m_marker;
-			//Member
-			CT_Boolean* m_smooth;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_LineChart();
-			~CT_LineChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Area3DChart
-		{
-		public:
-			//Member
-			CT_Grouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_AreaSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_ChartLines* m_dropLines;
-			//Member
-			CT_GapAmount* m_gapDepth;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Area3DChart();
-			~CT_Area3DChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_AreaSer
-		{
-		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx* m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_PictureOptions* m_pictureOptions;
-			//Member
-            std::vector<CT_DPt*> m_dPt;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-            std::vector<CT_Trendline*> m_trendline;
-			//Member
-            std::vector<CT_ErrBars*> m_errBars;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_extLst* m_extLst;
-			CT_AreaSer();
-			~CT_AreaSer();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_AreaChart
-		{
-		public:
-			//Member
-			CT_Grouping* m_grouping;
-			//Member
-			CT_Boolean* m_varyColors;
-			//Member
-            std::vector<CT_AreaSer*> m_ser;
-			//Member
-			CT_DLbls* m_dLbls;
-			//Member
-			CT_ChartLines* m_dropLines;
-			//Member
-            std::vector<CT_UnsignedInt*> m_axId;
-			//Member
-			CT_extLst* m_extLst;
-			CT_AreaChart();
-			~CT_AreaChart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PlotArea
-		{
-		public:
-			//Member
-			CT_Layout* m_layout;
-			//Member
-            std::vector<ItemsChoiceType5*> m_ItemsElementName0;
-			//Member
-            std::vector<void*> m_Items;
-			//Member
-            std::vector<ItemsChoiceType6*> m_ItemsElementName1;
-			//Member
-            std::vector<void*> m_Items1;
-			//Member
-			CT_DTable* m_dTable;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			//Member
-			CT_extLst* m_extLst;
-			CT_PlotArea();
-			~CT_PlotArea();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const;
-		private: void toDelete(ItemsChoiceType5 eType, void* pVal);
-		private: void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const;
- 		private: void toDelete(ItemsChoiceType6 eType, void* pVal);
-		};
-		class CT_Thickness
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_Thickness();
-			~CT_Thickness();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_Surface
-		{
-		public:
-			CT_Thickness*				m_thickness;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_PictureOptions*			m_pictureOptions;
-			CT_extLst*					m_extLst;
-
-			CT_Surface();
-			~CT_Surface();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Perspective
-		{
-		public:
-			//Attribute
-			unsigned char* m_val;
-			CT_Perspective();
-			~CT_Perspective();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_DepthPercent
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_DepthPercent();
-			~CT_DepthPercent();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_RotY
-		{
-		public:
-			//Attribute
-			unsigned long* m_val;
-			CT_RotY();
-			~CT_RotY();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_HPercent
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_HPercent();
-			~CT_HPercent();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_RotX
-		{
-		public:
-			//Attribute
-			signed char* m_val;
-			CT_RotX();
-			~CT_RotX();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_View3D
-		{
-		public:
-			//Member
-			CT_RotX* m_rotX;
-			//Member
-			CT_HPercent* m_hPercent;
-			//Member
-			CT_RotY* m_rotY;
-			//Member
-			CT_DepthPercent* m_depthPercent;
-			//Member
-			CT_Boolean* m_rAngAx;
-			//Member
-			CT_Perspective* m_perspective;
-			//Member
-			CT_extLst* m_extLst;
-			CT_View3D();
-			~CT_View3D();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PivotFmt
-		{
-		public:
-			CT_UnsignedInt*							m_idx;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			CT_Marker*								m_marker;
-			CT_DLbl*								m_dLbl;
-			CT_extLst*								m_extLst;
-
-			CT_PivotFmt();
-			~CT_PivotFmt();
-			
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_pivotFmts
-		{
-		public:
-			//Member
-            std::vector<CT_PivotFmt*> m_pivotFmt;
-			CT_pivotFmts();
-			~CT_pivotFmts();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Chart
-		{
-		public:
-			//Member
-			CT_Title* m_title;
-			//Member
-			CT_Boolean* m_autoTitleDeleted;
-			//Member
-			CT_pivotFmts* m_pivotFmts;
-			//Member
-			CT_View3D* m_view3D;
-			//Member
-			CT_Surface* m_floor;
-			//Member
-			CT_Surface* m_sideWall;
-			//Member
-			CT_Surface* m_backWall;
-			//Member
-			CT_PlotArea* m_plotArea;
-			//Member
-			CT_Legend* m_legend;
-			//Member
-			CT_Boolean* m_plotVisOnly;
-			//Member
-			CT_DispBlanksAs* m_dispBlanksAs;
-			//Member
-			CT_Boolean* m_showDLblsOverMax;
-			//Member
-			CT_extLst* m_extLst;
-			CT_Chart();
-			~CT_Chart();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_Protection
-		{
-		public:
-			//Member
-			CT_Boolean* m_chartObject;
-			//Member
-			CT_Boolean* m_data;
-			//Member
-			CT_Boolean* m_formatting;
-			//Member
-			CT_Boolean* m_selection;
-			//Member
-			CT_Boolean* m_userInterface;
-			CT_Protection();
-			~CT_Protection();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
-		class CT_PivotSource
-		{
-		public:
-			//Member
-			std::wstring* m_name;
-			//Member
-			CT_UnsignedInt* m_fmtId;
-			//Member
-            std::vector<CT_extLst*> m_extLst;
-			CT_PivotSource();
-			~CT_PivotSource();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		};
+//---------------------------------------------------------------------------------------------------
 		class CT_Style
 		{
 		public:
 			std::wstring m_namespace;
-
-			unsigned char* m_val;
+			nullable_uint m_val;
 
 			CT_Style();
 			~CT_Style();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
-		private: 
+		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class CT_TextLanguageID
-		{
-		public:
-			//Attribute
-			std::wstring* m_val;
-			CT_TextLanguageID();
-			~CT_TextLanguageID();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-		class AlternateContent
-		{
-		public:
-            std::vector<AlternateContentChoice*> m_Choice;
-			AlternateContentFallback* m_Fallback;
-
-			AlternateContent();
-			~AlternateContent();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
 		};
 		class AlternateContentChoice
 		{
 		public:
 			CT_Style* m_style;
-			std::wstring* m_Requires;
+			nullable_string m_Requires;
 
 			AlternateContentChoice();
 			~AlternateContentChoice();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
-		private: 
+		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class AlternateContentFallback
@@ -2838,6 +604,1576 @@ namespace OOX
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
+		};
+		class AlternateContent
+		{
+		public:
+			std::vector<AlternateContentChoice*> m_Choice;
+			AlternateContentFallback* m_Fallback;
+
+			AlternateContent();
+			~AlternateContent();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_RelId
+		{
+		public:
+			nullable_string m_id;
+
+			CT_RelId();
+			~CT_RelId();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+
+		class CT_PageSetup
+		{
+		public:
+			nullable_uint m_paperSize;
+			nullable_string m_paperHeight;
+			nullable_string m_paperWidth;
+			nullable_uint m_firstPageNumber;
+			nullable<CPageSetupOrientation> m_orientation;
+			nullable_bool m_blackAndWhite;
+			nullable_bool m_draft;
+			nullable_bool m_useFirstPageNumber;
+			nullable_uint m_horizontalDpi; // -?
+			nullable_uint m_verticalDpi;
+			nullable_uint m_copies;
+
+			CT_PageSetup();
+			~CT_PageSetup();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_PageMargins
+		{
+		public:
+			nullable_double m_l;
+			nullable_double m_r;
+			nullable_double m_t;
+			nullable_double m_b;
+			nullable_double m_header;
+			nullable_double m_footer;
+
+			CT_PageMargins();
+			~CT_PageMargins();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_HeaderFooter
+		{
+		public:
+			nullable_string m_oddHeader;
+			nullable_string m_oddFooter;
+			nullable_string m_evenHeader;
+			nullable_string m_evenFooter;
+			nullable_string m_firstHeader;
+			nullable_string m_firstFooter;
+
+			nullable_bool m_alignWithMargins;
+			nullable_bool m_differentOddEven;
+			nullable_bool m_differentFirst;
+			
+			CT_HeaderFooter();
+			~CT_HeaderFooter();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_PrintSettings
+		{
+		public:
+			CT_HeaderFooter* m_headerFooter;
+			CT_PageMargins* m_pageMargins;
+			CT_PageSetup* m_pageSetup;
+			
+			CT_PrintSettings();
+			~CT_PrintSettings();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ExternalData
+		{
+		public:
+			nullableBoolVal m_autoUpdate;
+			nullable_string m_id;
+
+			CT_ExternalData();
+			~CT_ExternalData();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_LegendEntry
+		{
+		public:
+			nullableUintVal					m_idx;
+			nullableBoolVal					m_delete;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_LegendEntry();
+			~CT_LegendEntry();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ManualLayout
+		{
+		public:
+			nullableComplexVal<CLayoutTarget> m_layoutTarget;
+			nullableComplexVal<CLayoutMode> m_xMode;
+			nullableComplexVal<CLayoutMode> m_yMode;
+			nullableComplexVal<CLayoutMode> m_wMode;
+			nullableComplexVal<CLayoutMode> m_hMode;
+			nullableDoubleVal m_x;
+			nullableDoubleVal m_y;
+			nullableDoubleVal m_w;
+			nullableDoubleVal m_h;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_ManualLayout();
+			~CT_ManualLayout();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Layout
+		{
+		public:
+			CT_ManualLayout* m_manualLayout;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Layout();
+			~CT_Layout();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Legend
+		{
+		public:
+			nullableComplexVal<CLegendPos>	m_legendPos;
+            std::vector<CT_LegendEntry*>	m_legendEntry;
+			CT_Layout						*m_layout;
+			nullableBoolVal					m_overlay;
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+	/*--------------------------------------------------*/
+			CT_Legend();
+			~CT_Legend();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_DTable
+		{
+		public:
+			nullableBoolVal m_showHorzBorder;
+			nullableBoolVal m_showVertBorder;
+			nullableBoolVal m_showOutline;
+			nullableBoolVal m_showKeys;
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			
+			CT_DTable();
+			~CT_DTable();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Scaling
+		{
+		public:
+			nullableDoubleVal					m_logBase;
+			nullableComplexVal<COrientation>	m_orientation;
+			nullableDoubleVal					m_max;
+			nullableDoubleVal					m_min;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Scaling();
+			~CT_Scaling();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ChartLines
+		{
+		public:
+			nullable<PPTX::Logic::SpPr> m_spPr;
+			/*--------------------------------------------------------------*/
+			CT_ChartLines();
+			~CT_ChartLines();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_StrVal
+		{
+		public:
+			nullable_string m_v;
+			nullable_uint m_idx;
+
+			CT_StrVal();
+			~CT_StrVal();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_StrData : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CT_StrData)
+
+			nullableUintVal			m_ptCount;
+			std::vector<CT_StrVal*> m_pt;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_StrData();
+			~CT_StrData();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_StrRef
+		{
+		public:
+			nullable_string m_f;
+			CT_StrData		* m_strCache;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_StrRef();
+			~CT_StrRef();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Tx : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CT_Tx)
+
+			nullable<PPTX::Logic::TxBody>	m_oRich;
+			CT_StrRef						*m_strRef;
+
+			CT_Tx();
+			virtual ~CT_Tx();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Title
+		{
+		public:
+			CT_Tx								*m_tx;
+			CT_Layout							*m_layout;
+			nullableBoolVal						m_overlay;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
+			nullable<PPTX::Logic::TxBody>		m_txPr;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Title();
+			~CT_Title();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_NumFmt
+		{
+		public:
+			nullable_string m_formatCode;
+			nullable_bool m_sourceLinked;
+
+			CT_NumFmt();
+			~CT_NumFmt();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+
+		class CBaseAx
+		{
+		public:
+			CBaseAx();
+			virtual ~CBaseAx();
+
+			bool fromXML(const std::wstring & nodeName, XmlUtils::CXmlLiteReader& oReader);
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			nullableIntVal					m_axId;
+			CT_Scaling						*m_scaling;
+			nullableBoolVal					m_delete;
+			nullableComplexVal<CAxPos>		m_axPos;
+			CT_ChartLines					*m_majorGridlines;
+			CT_ChartLines					*m_minorGridlines;
+			CT_Title						*m_title;
+			CT_NumFmt						*m_numFmt;
+			nullableComplexVal<CTickMark>	m_majorTickMark;
+			nullableComplexVal<CTickMark>	m_minorTickMark;
+			nullableComplexVal<CTickLblPos> m_tickLblPos;
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;
+			nullableIntVal					m_crossAx;
+			nullableComplexVal<CCrosses>	m_crosses;
+			nullableDoubleVal				m_crossesAt;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+		};
+		class CT_SerAx : public CBaseAx
+		{
+		public:
+			nullableUintVal m_tickLblSkip;
+			nullableUintVal m_tickMarkSkip;
+
+			CT_SerAx();
+			virtual ~CT_SerAx();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DateAx : public CBaseAx
+		{
+		public:
+			nullableBoolVal					m_auto;
+			nullableStringVal				m_lblOffset;
+			nullableComplexVal<CTimeUnit>	m_baseTimeUnit;
+			nullableDoubleVal				m_majorUnit;
+			nullableComplexVal<CTimeUnit>	m_majorTimeUnit;
+			nullableDoubleVal				m_minorUnit;
+			nullableComplexVal<CTimeUnit>	m_minorTimeUnit;
+			
+			CT_DateAx();
+			virtual ~CT_DateAx();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_CatAx : public CBaseAx
+		{
+		public:
+			nullableBoolVal					m_auto;
+			nullableComplexVal<CLblAlgn>	m_lblAlgn;
+			nullableStringVal				m_lblOffset;
+			nullableUintVal					m_tickLblSkip;
+			nullableUintVal					m_tickMarkSkip;
+			nullableBoolVal					m_noMultiLvlLbl;
+
+			CT_CatAx();
+			virtual ~CT_CatAx();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DispUnitsLbl
+		{
+		public:
+			CT_Layout*						m_layout;
+			CT_Tx*							m_tx;
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
+
+			CT_DispUnitsLbl();
+			~CT_DispUnitsLbl();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DispUnits
+		{
+		public:
+			nullableComplexVal<CBuiltInUnit> m_builtInUnit;
+			nullableDoubleVal m_custUnit;
+			CT_DispUnitsLbl* m_dispUnitsLbl;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_DispUnits();
+			~CT_DispUnits();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ValAx : public CBaseAx
+		{
+		public:
+			nullableComplexVal<CCrossBetween>	m_crossBetween;
+			nullableDoubleVal					m_majorUnit;
+			nullableDoubleVal					m_minorUnit;
+			CT_DispUnits*						m_dispUnits;
+
+			CT_ValAx();
+			virtual ~CT_ValAx();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_SerTx
+		{
+		public:
+			CT_StrRef* m_strRef;
+			nullable_string m_v;
+
+			CT_SerTx();
+			~CT_SerTx();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DLbl : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CT_DLbl)
+
+			nullableUintVal m_idx;
+			std::vector<ItemsChoiceType4*> m_ItemsElementName0;
+			std::vector<void*> m_Items;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			//ext
+			nullableBoolVal m_xForSave;
+			nullableBoolVal m_showDataLabelsRange;
+			//CT_DlblFieldTable* m_dlblFieldTable
+
+			nullableBoolVal m_showLeaderLines;		//for CT_DLbls
+			CT_ChartLines* m_leaderLines;		//for CT_DLbls
+
+			CT_DLbl();
+			~CT_DLbl();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXMLEntry(const std::wstring& sNodeNS, NSStringUtils::CStringBuilder& writer) const;
+
+			EElementType getType();
+		private:
+			void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal, const std::wstring & nodeNS) const;
+			void toDelete(ItemsChoiceType4 eType, void* pVal);
+		};
+		class CT_DLbls
+		{
+		public:
+			std::vector<CT_DLbl*>			m_dLbl;
+			std::vector<ItemsChoiceType3*>	m_ItemsElementName0;
+			std::vector<void*>				m_Items;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_DLbls();
+			~CT_DLbls();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private:
+			void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const;
+			void toDelete(ItemsChoiceType3 eType, void* pVal);
+		};
+		class CT_lvl
+		{
+		public:
+			std::vector<CT_StrVal*> m_pt;
+
+			CT_lvl();
+			~CT_lvl();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_MultiLvlStrData
+		{
+		public:
+			nullableUintVal m_ptCount;
+			std::vector<CT_lvl*> m_lvl;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_MultiLvlStrData();
+			~CT_MultiLvlStrData();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_MultiLvlStrRef
+		{
+		public:
+			nullable_string m_f;
+			CT_MultiLvlStrData* m_multiLvlStrCache;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_MultiLvlStrRef();
+			~CT_MultiLvlStrRef();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_NumVal
+		{
+		public:
+			nullable_string m_v;
+			nullable_uint m_idx;
+			nullable_string m_formatCode;
+
+			CT_NumVal();
+			~CT_NumVal();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		};
+		class CT_NumData
+		{
+		public:
+			nullable_string m_formatCode;
+			nullableUintVal m_ptCount;
+			std::vector<CT_NumVal*> m_pt;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_NumData();
+			~CT_NumData();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_NumRef
+		{
+		public:
+			nullable_string m_f;
+			CT_NumData* m_numCache;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_NumRef();
+			~CT_NumRef();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_NumDataSource
+		{
+		public:
+			CT_NumData* m_numLit;
+			CT_NumRef* m_numRef;
+
+			CT_NumDataSource();
+			~CT_NumDataSource();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_AxDataSource : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CT_AxDataSource)
+			
+			CT_MultiLvlStrRef* m_multiLvlStrRef;
+			CT_NumData* m_numLit;
+			CT_NumRef* m_numRef;
+			CT_StrData* m_strLit;
+			CT_StrRef* m_strRef;
+
+			CT_AxDataSource();
+			virtual ~CT_AxDataSource();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Marker : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CT_Marker)
+
+			nullableComplexVal<CMarkerStyle>	m_symbol;
+			nullableUintVal						m_size;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Marker();
+			~CT_Marker();
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			virtual std::wstring toXML() const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PictureOptions
+		{
+		public:
+			nullableBoolVal m_applyToFront;
+			nullableBoolVal m_applyToSides;
+			nullableBoolVal m_applyToEnd;
+			nullableComplexVal<CPictureFormat> m_pictureFormat;
+			nullableDoubleVal m_pictureStackUnit;
+
+			CT_PictureOptions();
+			~CT_PictureOptions();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DPt
+		{
+		public:
+			nullableUintVal				m_idx;
+			nullableBoolVal				m_invertIfNegative;
+			CT_Marker*					m_marker;
+			nullableBoolVal				m_bubble3D;
+			nullableUintVal				m_explosion;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+			CT_PictureOptions*			m_pictureOptions;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_DPt();
+			~CT_DPt();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_TrendlineLbl
+		{
+		public:
+			CT_Layout*								m_layout;
+			CT_Tx*									m_tx;
+			CT_NumFmt*								m_numFmt;
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_TrendlineLbl();
+			~CT_TrendlineLbl();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Trendline
+		{
+		public:
+			nullable_string						m_name;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
+			nullableComplexVal<CTrendlineType>	m_trendlineType;
+			nullableUintVal		m_order;
+			nullableUintVal		m_period;
+			nullableDoubleVal	m_forward;
+			nullableDoubleVal	m_backward;
+			nullableDoubleVal	m_intercept;
+			nullableBoolVal		m_dispRSqr;
+			nullableBoolVal		m_dispEq;
+			CT_TrendlineLbl* m_trendlineLbl;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Trendline();
+			~CT_Trendline();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ErrBars
+		{
+		public:
+			nullableComplexVal<CErrDir> m_errDir;
+			nullableComplexVal<CErrBarType> m_errBarType;
+			nullableComplexVal<CErrValType> m_errValType;
+			nullableBoolVal m_noEndCap;
+			CT_NumDataSource* m_plus;
+			CT_NumDataSource* m_minus;
+			nullableDoubleVal m_val;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_ErrBars();
+			~CT_ErrBars();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CBaseSer : public WritingElement
+		{
+		public:
+			CBaseSer();
+			virtual ~CBaseSer();
+
+			nullableUintVal									m_idx;
+			nullableUintVal									m_order;
+			CT_SerTx*										m_tx;
+			nullable<PPTX::Logic::SpPr>						m_spPr;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			bool fromXML(const std::wstring nodeName, XmlUtils::CXmlLiteReader& oReader);
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual std::wstring toXML()  const
+			{
+				return L"";
+			}
+		};
+		//---------------------------------------------------------------------------------------------------
+		class CT_BubbleSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_BubbleSer)
+
+			nullableBoolVal				m_invertIfNegative;
+            std::vector<CT_DPt*>		m_dPt;
+            std::vector<CT_Trendline*>	m_trendline;
+            std::vector<CT_ErrBars*>	m_errBars;
+			CT_DLbls*					m_dLbls;
+			CT_AxDataSource*			m_xVal;
+			CT_NumDataSource*			m_yVal;
+			CT_NumDataSource*			m_bubbleSize;
+			nullableBoolVal				m_bubble3D;
+
+			CT_BubbleSer();
+			virtual  ~CT_BubbleSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_BubbleChart
+		{
+		public:
+			nullableBoolVal m_varyColors;
+            std::vector<CT_BubbleSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			nullableBoolVal m_bubble3D;
+			nullableStringVal m_bubbleScale;
+			nullableBoolVal m_showNegBubbles;
+			nullableComplexVal<CSizeRepresents> m_sizeRepresents;
+			std::vector<_INT32> m_axId;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_BubbleChart();
+			~CT_BubbleChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_BandFmt
+		{
+		public:
+			nullableUintVal				m_idx;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+
+			CT_BandFmt();
+			~CT_BandFmt();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_bandFmts
+		{
+		public:
+            std::vector<CT_BandFmt*> m_bandFmt;
+
+			CT_bandFmts();
+			~CT_bandFmts();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_SurfaceSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_SurfaceSer)
+
+			CT_AxDataSource*	m_cat;
+			CT_NumDataSource*	m_val;
+
+			CT_SurfaceSer();
+			virtual ~CT_SurfaceSer();			
+			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Surface3DChart
+		{
+		public:
+			nullableBoolVal m_wireframe;
+            std::vector<CT_SurfaceSer*> m_ser;
+			CT_bandFmts* m_bandFmts;
+			std::vector<_INT32> m_axId;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Surface3DChart();
+			~CT_Surface3DChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_SurfaceChart
+		{
+		public:
+			nullableBoolVal m_wireframe;
+            std::vector<CT_SurfaceSer*> m_ser;
+			CT_bandFmts* m_bandFmts;
+			std::vector<_INT32> m_axId;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_SurfaceChart();
+			~CT_SurfaceChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_custSplit
+		{
+		public:
+            std::vector<unsigned int> m_secondPiePt;
+
+			CT_custSplit();
+			~CT_custSplit();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PieSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_PieSer)
+			
+			nullableUintVal m_explosion;
+			std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+			CT_AxDataSource* m_cat;
+			CT_NumDataSource* m_val;
+
+			CT_PieSer();
+			virtual ~CT_PieSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_OfPieChart
+		{
+		public:
+			nullableComplexVal<COfPieType>	m_ofPieType;
+			nullableBoolVal					m_varyColors;
+            std::vector<CT_PieSer*>			m_ser;
+			CT_DLbls*						m_dLbls;
+			nullableStringVal				m_gapWidth;
+			nullableComplexVal<CSplitType>	m_splitType;
+			nullableDoubleVal				m_splitPos;
+			CT_custSplit*					m_custSplit;
+			nullableStringVal				m_secondPieSize;
+            std::vector<CT_ChartLines*>		m_serLines;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_OfPieChart();
+			~CT_OfPieChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_BarSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_BarSer)
+
+			nullableBoolVal m_invertIfNegative;
+			CT_PictureOptions* m_pictureOptions;
+			std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+			std::vector<CT_Trendline*> m_trendline;
+			CT_ErrBars* m_errBars;
+			CT_AxDataSource* m_cat;
+			CT_NumDataSource* m_val;
+			nullableComplexVal<CShapeType> m_shape;
+
+			CT_BarSer();
+			virtual ~CT_BarSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Bar3DChart
+		{
+		public:
+			nullableComplexVal<CBarDir> m_barDir;
+			nullableComplexVal<CBarGrouping> m_grouping;
+			nullableBoolVal m_varyColors;
+            std::vector<CT_BarSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			nullableStringVal m_gapWidth;
+			nullableStringVal m_gapDepth;
+			nullableComplexVal<CShapeType> m_shape;
+			std::vector<_INT32> m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Bar3DChart();
+			~CT_Bar3DChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_BarChart
+		{
+		public:
+			nullableComplexVal<CBarDir> m_barDir;
+			nullableComplexVal<CBarGrouping> m_grouping;
+			nullableBoolVal m_varyColors;
+            std::vector<CT_BarSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			nullableStringVal m_gapWidth;
+			nullableStringVal m_overlap;
+            std::vector<CT_ChartLines*> m_serLines;
+			std::vector<_INT32> m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_BarChart();
+			~CT_BarChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_DoughnutChart
+		{
+		public:
+			nullableBoolVal			m_varyColors;
+            std::vector<CT_PieSer*> m_ser;
+			CT_DLbls*				m_dLbls;
+			nullableUintVal			m_firstSliceAng;
+			nullableStringVal		m_holeSize;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_DoughnutChart();
+			~CT_DoughnutChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Pie3DChart
+		{
+		public:
+			nullableBoolVal m_varyColors;
+            std::vector<CT_PieSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			
+			CT_Pie3DChart();
+			~CT_Pie3DChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PieChart
+		{
+		public:
+			nullableBoolVal m_varyColors;
+            std::vector<CT_PieSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			nullableUintVal m_firstSliceAng;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_PieChart();
+			~CT_PieChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ScatterSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_ScatterSer)
+
+			CT_Marker* m_marker;
+            std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+            std::vector<CT_Trendline*> m_trendline;
+            std::vector<CT_ErrBars*> m_errBars;
+			CT_AxDataSource* m_xVal;
+			CT_NumDataSource* m_yVal;
+			nullableBoolVal m_smooth;
+
+			CT_ScatterSer();
+			virtual ~CT_ScatterSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ScatterChart
+		{
+		public:
+			nullableComplexVal<CScatterStyle> m_scatterStyle;
+			nullableBoolVal m_varyColors;
+            std::vector<CT_ScatterSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			std::vector<_INT32> m_axId;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_ScatterChart();
+			~CT_ScatterChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_RadarSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_RadarSer)
+
+			CT_Marker* m_marker;
+            std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+			CT_AxDataSource* m_cat;
+			CT_NumDataSource* m_val;
+
+			CT_RadarSer();
+			virtual ~CT_RadarSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_RadarChart
+		{
+		public:
+			nullableComplexVal<CRadarStyle> m_radarStyle;
+			nullableBoolVal m_varyColors;
+            std::vector<CT_RadarSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			std::vector<_INT32> m_axId;
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			
+			CT_RadarChart();
+			~CT_RadarChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_UpDownBar
+		{
+		public:
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+
+			CT_UpDownBar();
+			~CT_UpDownBar();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_UpDownBars
+		{
+		public:
+			nullableStringVal	m_gapWidth;
+			CT_UpDownBar*	m_upBars;
+			CT_UpDownBar*	m_downBars;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_UpDownBars();
+			~CT_UpDownBars();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_LineSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_LineSer)
+
+			CT_Marker* m_marker;
+			std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+			std::vector<CT_Trendline*> m_trendline;
+			CT_ErrBars* m_errBars;
+			CT_AxDataSource* m_cat;
+			CT_NumDataSource* m_val;
+			nullableBoolVal m_smooth;
+
+			CT_LineSer();
+			virtual ~CT_LineSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CT_StockChart
+		{
+		public:
+            std::vector<CT_LineSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			CT_ChartLines* m_dropLines;
+			CT_ChartLines* m_hiLowLines;
+			CT_UpDownBars* m_upDownBars;
+			std::vector<_INT32> m_axId;
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_StockChart();
+			~CT_StockChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Line3DChart
+		{
+		public:
+			nullableComplexVal<CGrouping> m_grouping;
+			nullableBoolVal m_varyColors;
+            std::vector<CT_LineSer*> m_ser;
+			CT_DLbls* m_dLbls;
+			CT_ChartLines* m_dropLines;
+			nullableStringVal m_gapDepth;
+			std::vector<_INT32> m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Line3DChart();
+			~CT_Line3DChart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_LineChart
+		{
+		public:
+			nullableComplexVal<CGrouping>	m_grouping;
+			nullableBoolVal					m_varyColors;
+            std::vector<CT_LineSer*>		m_ser;
+			CT_DLbls*						m_dLbls;
+			CT_ChartLines*					m_dropLines;
+			CT_ChartLines*					m_hiLowLines;
+			CT_UpDownBars*					m_upDownBars;
+			nullableBoolVal					m_marker;
+			nullableBoolVal					m_smooth;
+            std::vector<_INT32>				m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_LineChart();
+			~CT_LineChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_AreaSer : public CBaseSer
+		{
+		public:
+			WritingElement_AdditionMethods(CT_AreaSer)
+				
+			CT_PictureOptions* m_pictureOptions;
+			std::vector<CT_DPt*> m_dPt;
+			CT_DLbls* m_dLbls;
+			std::vector<CT_Trendline*> m_trendline;
+			std::vector<CT_ErrBars*> m_errBars;
+			CT_AxDataSource* m_cat;
+			CT_NumDataSource* m_val;
+
+			CT_AreaSer();
+			virtual ~CT_AreaSer();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Area3DChart
+		{
+		public:
+			nullableComplexVal<CGrouping>	m_grouping;
+			nullableBoolVal					m_varyColors;
+            std::vector<CT_AreaSer*>		m_ser;
+			CT_DLbls*						m_dLbls;
+			CT_ChartLines*					m_dropLines;
+			nullableStringVal				m_gapDepth;
+			std::vector<_INT32>				m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Area3DChart();
+			~CT_Area3DChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_AreaChart
+		{
+		public:
+			nullableComplexVal<CGrouping>	m_grouping;
+			nullableBoolVal					m_varyColors;
+            std::vector<CT_AreaSer*>		m_ser;
+			CT_DLbls*						m_dLbls;
+			CT_ChartLines*					m_dropLines;
+			std::vector<_INT32>				m_axId;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_AreaChart();
+			~CT_AreaChart();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PlotArea
+		{
+		public:
+			CT_Layout* m_layout;
+            std::vector<ItemsChoiceType5*> m_ItemsElementName0;
+            std::vector<void*> m_Items;
+            std::vector<ItemsChoiceType6*> m_ItemsElementName1;
+            std::vector<void*> m_Items1;
+			CT_DTable* m_dTable;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_PlotArea();
+			~CT_PlotArea();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		private:
+			void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const;
+			void toDelete(ItemsChoiceType5 eType, void* pVal);
+			void toXML(NSStringUtils::CStringBuilder& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const;
+			void toDelete(ItemsChoiceType6 eType, void* pVal);
+		};
+		class CT_Surface
+		{
+		public:
+			nullableStringVal			m_thickness;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+			CT_PictureOptions*			m_pictureOptions;
+			
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Surface();
+			~CT_Surface();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_View3D
+		{
+		public:
+			nullableIntVal			m_rotX;
+			nullableUintVal			m_rotY;
+			nullableStringVal		m_hPercent;
+			nullableStringVal		m_depthPercent;
+			nullableBoolVal			m_rAngAx;
+			nullableUintVal			m_perspective;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_View3D();
+			~CT_View3D();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PivotFmt
+		{
+		public:
+			nullableUintVal							m_idx;
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;	
+			CT_Marker*								m_marker;
+			CT_DLbl*								m_dLbl;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_PivotFmt();
+			~CT_PivotFmt();
+			
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_pivotFmts
+		{
+		public:
+            std::vector<CT_PivotFmt*> m_pivotFmt;
+
+			CT_pivotFmts();
+			~CT_pivotFmts();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Chart
+		{
+		public:
+			CT_Title* m_title;
+			CT_pivotFmts* m_pivotFmts;
+			CT_View3D* m_view3D;
+			CT_Surface* m_floor;
+			CT_Surface* m_sideWall;
+			CT_Surface* m_backWall;
+			CT_PlotArea* m_plotArea;
+			CT_Legend* m_legend;
+			nullableBoolVal m_autoTitleDeleted;
+			nullableBoolVal m_plotVisOnly;
+			nullableComplexVal<CDispBlanksAs> m_dispBlanksAs;
+			nullableBoolVal m_showDLblsOverMax;
+		
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_Chart();
+			~CT_Chart();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_Protection
+		{
+		public:
+			nullableBoolVal m_chartObject;
+			nullableBoolVal m_data;
+			nullableBoolVal m_formatting;
+			nullableBoolVal m_selection;
+			nullableBoolVal m_userInterface;
+
+			CT_Protection();
+			~CT_Protection();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_PivotSource
+		{
+		public:
+			nullable_string m_name;
+			nullableUintVal m_fmtId;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+
+			CT_PivotSource();
+			~CT_PivotSource();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+		class CT_ChartSpace
+		{
+		public:
+			nullableBoolVal							m_date1904;
+			nullableStringVal						m_lang;
+			nullableBoolVal							m_roundedCorners;
+			AlternateContent*						m_AlternateContent;
+			CT_Style*								m_style;
+			CT_PivotSource*							m_pivotSource;
+			CT_Protection*							m_protection;
+			CT_Chart*								m_chart;
+
+			nullable<PPTX::Logic::ClrMap>			m_oClrMapOvr;
+
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;
+
+			CT_ExternalData*						m_externalData;
+			CT_PrintSettings*						m_printSettings;
+			CT_RelId*								m_userShapes;
+			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+
+			CT_ChartSpace();
+			~CT_ChartSpace();
+
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			EElementType getType();
+		};
+
+		class CSeriesDataLabelsRange : public WritingElement
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CSeriesDataLabelsRange)
+
+			CSeriesDataLabelsRange();
+			virtual ~CSeriesDataLabelsRange();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			virtual EElementType getType() const;
+
+			nullable<CT_StrData> m_dlblRangeCache;
+			nullable_string m_f;
+		};
+
+		class CCategoryFilterException : public WritingElement
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CCategoryFilterException)
+
+			CCategoryFilterException();
+			virtual ~CCategoryFilterException();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
+
+			nullable_string				m_sqref;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+			nullableUintVal				m_explosion;
+			nullableBoolVal				m_invertIfNegative;
+			nullableBoolVal				m_bubble3D;
+			nullable<CT_Marker>			m_marker;
+			nullable<CT_DLbl>			m_dLbl;
+
+		};
+		class CCategoryFilterExceptions : public WritingElementWithChilds<CCategoryFilterException>
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CCategoryFilterExceptions)
+
+			CCategoryFilterExceptions();
+			virtual ~CCategoryFilterExceptions();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
+		};
+
+		class CSeriesFiltering : public WritingElement
+		{//c15
+		public:
+			WritingElement_AdditionMethods(CSeriesFiltering)
+
+			CSeriesFiltering();
+			virtual ~CSeriesFiltering();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual EElementType getType() const;
+
+			nullable<CSeriesDataLabelsRange> m_dataLabelsRange;
+			nullable<CT_Tx> m_filteredSeriesTitle;
+			nullable<CT_AxDataSource> m_filteredCategoryTitle;
+
+			nullable<CT_LineSer>	m_filteredLineSeries; 
+			nullable<CT_ScatterSer> m_filteredScatterSeries;
+			nullable<CT_RadarSer>	m_filteredRadarSeries;
+			nullable<CT_BarSer>		m_filteredBarSeries;
+			nullable<CT_AreaSer>	m_filteredAreaSeries;
+			nullable<CT_BubbleSer>	m_filteredBubbleSeries;
+			nullable<CT_SurfaceSer> m_filteredSurfaceSeries;
+			nullable<CT_PieSer>		m_filteredPieSeries;
+
+			nullable_string m_fullRef; 
+			nullable_string m_levelRef;
+			nullable_string m_formulaRef; 
+			
+			nullable<OOX::Spreadsheet::CCategoryFilterExceptions> m_categoryFilterExceptions;
 		};
 	}
 }

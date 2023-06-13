@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,18 +48,13 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 	m_nFileType = -1;
 
 	m_context = new CJSContext();
-	m_context->Initialize();
+	m_context->CreateContext();
+	CJSContextScope scope(m_context);
 
-	m_isolate_scope = m_context->CreateIsolateScope();
-	m_handle_scope  = m_context->CreateLocalScope();
-
-	m_context->CreateGlobalForContext();
 	CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
 	CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", m_context);
 	NSJSBase::CreateDefaults(m_context);
-	m_context->CreateContext();
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	builder_CreateNative("builderJS", m_context, pBuilder);
@@ -67,14 +62,12 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
 	m_oContextData.Clear();
-	m_handle_scope = NULL;
-	m_isolate_scope = NULL;
 	m_context->Dispose();
 }
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue)
 {
-	LOGGER_SPEED_START
+	LOGGER_SPEED_START();
 
 	if (retValue)
 		retValue->Clear();
@@ -82,10 +75,10 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-	LOGGER_SPEED_LAP("compile_command")
+	LOGGER_SPEED_LAP("compile_command");
 
 	JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
 	if(try_catch->Check())
@@ -98,7 +91,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 		privateRet->m_value = retNativeVal;
 	}
 
-	LOGGER_SPEED_LAP("run_command")
+	LOGGER_SPEED_LAP("run_command");
 
 	return true;
 }
@@ -107,7 +100,7 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 {
 	std::string commandA = "JSON.stringify(GlobalVariable);";
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
@@ -124,7 +117,7 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 	NSStringUtils::string_replaceA(sParamA, "\\\"", "\"");
 	std::string commandA = "(function(){ return (" + sParamA + "); })()";
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
@@ -137,10 +130,10 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 
 bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
-	LOGGER_SPEED_START
+	LOGGER_SPEED_START();
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
-	JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
+	CJSContextScope scope(m_context);
+	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile");
 
@@ -148,7 +141,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	if(try_catch->Check())
 		return false;
 
-	LOGGER_SPEED_LAP("run")
+	LOGGER_SPEED_LAP("run");
 
 	if (true)
 	{
@@ -246,8 +239,10 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
 	if (!bIsBreak)
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+	if (!bIsBreak)
+		bIsBreak = !this->ExecuteCommand(L"Api.asc_showComments();");
 
-	LOGGER_SPEED_LAP("open")
+	LOGGER_SPEED_LAP("open");
 
 	return !bIsBreak;
 }
@@ -259,10 +254,12 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
 	else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
-	else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
+	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
+	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
+		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	NSNativeControl::CNativeControl* pNative = NULL;
@@ -285,7 +282,12 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	if (pNative == NULL)
 		return false;
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	bool bIsSilentMode = false;
+	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF ||
+		_formatDst == NSDoctRenderer::DoctRendererFormat::IMAGE)
+		bIsSilentMode = true;
+
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);");
 
 	std::wstring strError;
@@ -297,7 +299,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 													  strError,
 													  sJsonParams);
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
 
 	return bIsError;
@@ -1051,7 +1053,7 @@ namespace NSDoctRenderer
 	{
 		CDocBuilderContextScope ret;
 		ret.m_internal->m_scope_wrap = new CDocBuilderContextScopeWrap();
-		ret.m_internal->m_scope_wrap->m_scope = m_internal->m_context->CreateContextScope();
+		ret.m_internal->m_scope_wrap->m_scope = new CJSContextScope(m_internal->m_context);
 		ret.m_internal->m_context_data = m_internal->m_context_data;
 
 		m_internal->m_context_data->AddScope(ret.m_internal->m_scope_wrap);
@@ -1111,6 +1113,19 @@ namespace NSDoctRenderer
 
 		return m_pInternal->CreateFile(type);
 	}
+	bool CDocBuilder::CreateFile(const wchar_t* extension)
+	{
+		std::wstring sType = (NULL != extension) ? std::wstring(extension) : L"docx";
+		int type = AVS_OFFICESTUDIO_FILE_DOCUMENT;
+
+		if (L"pptx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
+		else if (L"xlsx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
+
+		return CreateFile(type);
+	}
+
 	void CDocBuilder::SetTmpFolder(const wchar_t* folder)
 	{
 		if (m_pInternal->m_bIsServerSafeVersion)

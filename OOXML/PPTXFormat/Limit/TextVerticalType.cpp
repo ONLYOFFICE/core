@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,52 +38,52 @@ namespace PPTX
 	{		
 		TextVerticalType::TextVerticalType()
 		{
-			m_strValue = _T("horz");
+			m_strValue = L"horz";
 		}
 		void TextVerticalType::set(const std::wstring& strValue)
 		{
-			if ((_T("eaVert") == strValue) ||
-				(_T("horz") == strValue) ||
-				(_T("mongolianVert") == strValue) ||
-				(_T("vert") == strValue) ||
-				(_T("vert270") == strValue) ||
-				(_T("wordArtVert") == strValue) ||
-				(_T("wordArtVertRtl") == strValue))
+			if ((L"eaVert" == strValue) ||
+				(L"horz" == strValue) ||
+				(L"mongolianVert" == strValue) ||
+				(L"vert" == strValue) ||
+				(L"vert270" == strValue) ||
+				(L"wordArtVert" == strValue) ||
+				(L"wordArtVertRtl" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextVerticalType::GetBYTECode() const
+		unsigned char TextVerticalType::GetBYTECode() const
 		{
-			if (_T("eaVert") == m_strValue)
+			if (L"eaVert" == m_strValue)
 				return 0;
-			if (_T("horz") == m_strValue)
+			if (L"horz" == m_strValue)
 				return 1;
-			if (_T("mongolianVert") == m_strValue)
+			if (L"mongolianVert" == m_strValue)
 				return 2;
-			if (_T("vert") == m_strValue)
+			if (L"vert" == m_strValue)
 				return 3;
-			if (_T("vert270") == m_strValue)
+			if (L"vert270" == m_strValue)
 				return 4;
-			if (_T("wordArtVert") == m_strValue)
+			if (L"wordArtVert" == m_strValue)
 				return 5;
-			if (_T("wordArtVertRtl") == m_strValue)
+			if (L"wordArtVertRtl" == m_strValue)
 				return 6;
 			return 1;
 		}
-		void TextVerticalType::SetBYTECode(const BYTE& src)
+		void TextVerticalType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
-			case 0: m_strValue = _T("eaVert"); break;
-			case 1: m_strValue = _T("horz"); break;
-			case 2: m_strValue = _T("mongolianVert"); break;
-			case 3: m_strValue = _T("vert"); break;
-			case 4: m_strValue = _T("vert270"); break;
-			case 5: m_strValue = _T("wordArtVert"); break;
-			case 6: m_strValue = _T("wordArtVertRtl"); break;
+			case 0: m_strValue = L"eaVert"; break;
+			case 1: m_strValue = L"horz"; break;
+			case 2: m_strValue = L"mongolianVert"; break;
+			case 3: m_strValue = L"vert"; break;
+			case 4: m_strValue = L"vert270"; break;
+			case 5: m_strValue = L"wordArtVert"; break;
+			case 6: m_strValue = L"wordArtVertRtl"; break;
 			default:
-				m_strValue = _T("horz");
+				m_strValue = L"horz";
 				break;
 			}
 		}

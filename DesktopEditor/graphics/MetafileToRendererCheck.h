@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,7 +39,7 @@
 
 namespace NSOnlineOfficeBinToPdf
 {
-    class CMetafilePageInfo
+	class CMetafilePageInfo
 	{
 	public:
 		double width;
@@ -57,11 +57,11 @@ namespace NSOnlineOfficeBinToPdf
 		}
 	};
 
-	class CMetafilePagesInfo
+	class GRAPHICS_DECL CMetafilePagesInfo
 	{
 	public:
 		int PagesCount;
-        std::vector<CMetafilePageInfo> arSizes;
+		std::vector<CMetafilePageInfo> arSizes;
 
 	public:
 		CMetafilePagesInfo()
@@ -73,11 +73,11 @@ namespace NSOnlineOfficeBinToPdf
 		inline void AddPage()
 		{
 			++PagesCount;
-            arSizes.push_back(CMetafilePageInfo());
+			arSizes.push_back(CMetafilePageInfo());
 		}
 
-        void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);
-    };
+		void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);
+	};
 }
 
 #endif // _BUILD_METAFILE_TO_IRENDERER_H_

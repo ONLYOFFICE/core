@@ -8,6 +8,7 @@ core_ios {
 INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/js_base.h
+SOURCES += $$PWD/js_base.cpp
 
 HEADERS += $$PWD/js_logger.h
 SOURCES += $$PWD/js_logger.cpp
@@ -17,6 +18,13 @@ SOURCES += $$PWD/js_logger.cpp
     HEADERS += $$PWD/v8/v8_base.h
     SOURCES += $$PWD/v8/v8_base.cpp
 
+    core_mac:CONFIG += disable_v8_use_inspector
+    core_android:CONFIG += disable_v8_use_inspector
+    linux_arm64:CONFIG += disable_v8_use_inspector
+    build_xp::CONFIG += disable_v8_use_inspector
+
+    !disable_v8_use_inspector:CONFIG += v8_use_inspector
+
     !build_xp {
         include($$PWD/../../../Common/3dParty/v8/v8.pri)
     } else {
@@ -25,30 +33,28 @@ SOURCES += $$PWD/js_logger.cpp
     }
 
     v8_use_inspector {
-        #define
+        core_windows:DEFINES += WIN32_LEAN_AND_MEAN
         DEFINES += V8_INSPECTOR
 
         #paths
         V8_INSPECTOR_PATH = $$PWD/v8/inspector
 
         #inspector files
-        HEADERS += \
-            $$V8_INSPECTOR_PATH/channel.h \
-            $$V8_INSPECTOR_PATH/client.h \
-            $$V8_INSPECTOR_PATH/inspector_impl.h \
-            $$V8_INSPECTOR_PATH/singleconnectionserver.h \
-            $$V8_INSPECTOR_PATH/singlethreadutils.h \
-            $$V8_INSPECTOR_PATH/inspector_pool.h \
-            $$V8_INSPECTOR_PATH/inspector_interface.h
-
         SOURCES += \
-            $$V8_INSPECTOR_PATH/channel.cpp \
-            $$V8_INSPECTOR_PATH/client.cpp \
-            $$V8_INSPECTOR_PATH/inspector_impl.cpp \
-            $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
-            $$V8_INSPECTOR_PATH/singlethreadutils.cpp \
             $$V8_INSPECTOR_PATH/inspector_pool.cpp \
-            $$V8_INSPECTOR_PATH/inspector_interface.cpp
+            $$V8_INSPECTOR_PATH/inspector.cpp \
+            $$V8_INSPECTOR_PATH/utils.cpp \
+            $$V8_INSPECTOR_PATH/v8_inspector_channel.cpp \
+            $$V8_INSPECTOR_PATH/v8_inspector_client.cpp \
+            $$V8_INSPECTOR_PATH/websocket_server.cpp
+
+        HEADERS += \
+            $$V8_INSPECTOR_PATH/inspector.h \
+            $$V8_INSPECTOR_PATH/inspector_pool.h \
+            $$V8_INSPECTOR_PATH/utils.h\
+            $$V8_INSPECTOR_PATH/v8_inspector_channel.h \
+            $$V8_INSPECTOR_PATH/v8_inspector_client.h \
+            $$V8_INSPECTOR_PATH/websocket_server.h
 
 
         #to include inspector files
@@ -58,6 +64,10 @@ SOURCES += $$PWD/js_logger.cpp
         #inspector lib
         !use_v8_monolith {
             LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
+        }
+
+        core_linux {
+            LIBS += -lpthread
         }
 
         #boost

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,9 @@
  */
 
 #include "Sparkline.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h"
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
@@ -156,7 +159,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("sparkline") == sName )
-					m_arrItems.push_back(new CSparkline( oReader ));
+				{
+					CSparkline* pSparkline = new CSparkline();
+					*pSparkline = oReader;
+					m_arrItems.push_back(pSparkline);
+				}
 			}
 		}
 		void CSparklines::fromBin(XLS::BaseObjectPtr& obj)
@@ -534,7 +541,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("sparklineGroup") == sName )
-					m_arrItems.push_back(new CSparklineGroup( oReader ));
+				{
+					CSparklineGroup* pSparklineGroup = new CSparklineGroup();
+					*pSparklineGroup = oReader;
+					m_arrItems.push_back(pSparklineGroup);
+				}
 			}
 		}
 		void CSparklineGroups::fromBin(XLS::BaseObjectPtr& obj)
@@ -551,8 +562,8 @@ namespace OOX
 			return et_x_SparklineGroups;
 		}
 		void CSparklineGroups::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+		{
+		}
 
 	} //Spreadsheet
 } // namespace OOX

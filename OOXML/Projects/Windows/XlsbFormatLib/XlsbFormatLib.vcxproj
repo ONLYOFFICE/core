@@ -2091,6 +2091,11 @@
     <ClInclude Include="..\..\..\XlsbFormat\Xlsb.h" />
     <ClInclude Include="..\..\..\XlsbFormat\XlsbElementsType.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DocxFormatLib\DocxFormatLib.vcxproj">
+      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{13E13907-49DA-482E-AD58-026D06A5CD11}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -2143,10 +2148,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\XlsbFormat\</OutDir>
+    <OutDir>$(Configuration)\</OutDir>
     <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
-    <IntDir>$(Configuration)\XlsbFormat\</IntDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>

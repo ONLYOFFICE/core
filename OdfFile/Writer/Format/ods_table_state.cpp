@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -83,7 +83,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		catch (...)
 		{
-			date_str = date;
+			date_str = std::to_wstring(date);
 		}
 		return date_str;
 	}
@@ -289,7 +289,7 @@ void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.table_display_ = !Val;
@@ -299,7 +299,7 @@ void ods_table_state::set_table_rtl(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
@@ -316,7 +316,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.tableooo_tab_color_ = _color;
@@ -413,7 +413,7 @@ void ods_table_state::set_column_width(double width)//pt
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	columns_.back().size = width; //pt
@@ -425,7 +425,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -514,7 +514,7 @@ void ods_table_state::set_row_optimal_height(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = val;
@@ -525,7 +525,7 @@ void ods_table_state::set_row_height(double height)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	rows_.back().size = height;//pt
@@ -1297,7 +1297,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
 	if (!style_)return;	
 	
-	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.get_style_table_cell_properties();
+	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.add_get_style_table_cell_properties();
 
 	//if (table_cell_properties && cash_value == false)
 	//{
@@ -1331,14 +1331,20 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
-			break;
+		{
+			std::wstring date = utils::convert_date(value);
+			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = date;
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = date;
+		}break;
 		case office_value_type::Time:
+		{
 			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
-			break;
+		}break;
 		case office_value_type::DateTime:
 		{
 			std::wstring sVal = utils::convert_date_time(value, type);
+			
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = sVal;
 			
 			if (type == office_value_type::Date)
 				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;

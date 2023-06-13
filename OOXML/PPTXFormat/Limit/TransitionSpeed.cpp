@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,42 +38,42 @@ namespace PPTX
 	{		
 		TransitionSpeed::TransitionSpeed()
 		{
-			m_strValue = _T("fast");
+			m_strValue = L"fast";
 		}
 		void TransitionSpeed::set(const std::wstring& strValue)
 		{
-			if ((_T("fast") == strValue) ||
-				(_T("med") == strValue) ||
-				(_T("slow") == strValue))
+			if ((L"fast" == strValue) ||
+				(L"med" == strValue) ||
+				(L"slow" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TransitionSpeed::GetBYTECode() const
+		unsigned char TransitionSpeed::GetBYTECode() const
 		{
-			if (_T("fast") == m_strValue)
+			if (L"fast" == m_strValue)
 				return 0;
-			if (_T("med") == m_strValue)
+			if (L"med" == m_strValue)
 				return 1;
-			if (_T("slow") == m_strValue)
+			if (L"slow" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void TransitionSpeed::SetBYTECode(const BYTE& src)
+		void TransitionSpeed::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("fast");
+				m_strValue = L"fast";
 				break;
 			case 1:
-				m_strValue = _T("med");
+				m_strValue = L"med";
 				break;
 			case 2:
-				m_strValue = _T("slow");
+				m_strValue = L"slow";
 				break;
 			default:
-				m_strValue = _T("fast");
+				m_strValue = L"fast";
 				break;
 			}
 		}

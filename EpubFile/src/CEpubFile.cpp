@@ -80,10 +80,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (nContent != std::wstring::npos)
     {
         nContent += 11;
-        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
-        size_t posLastSlash = sContent.rfind(L'/');
-        if (posLastSlash != std::wstring::npos)
-            sContent = sContent.substr(posLastSlash + 1);
+        sContent = NSFile::GetFileName(sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent));
     }
     sContent = m_sTempDir + (sContent.empty() ? L"/content.opf" : L'/' + sContent);
 
@@ -306,6 +303,14 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     NSFile::CFileBinary oContentOpf;
     bool bWasLanguage = false, bWasTitle = false;
     std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
+    replace_all(sTitle, L"&", L"&amp;");
+    replace_all(sTitle, L"<", L"&lt;");
+    replace_all(sTitle, L">", L"&gt;");
+    replace_all(sTitle, L"\"", L"&quot;");
+    replace_all(sTitle, L"\'", L"&#39;");
+    replace_all(sTitle, L"\n", L"&#xA;");
+    replace_all(sTitle, L"\r", L"&#xD;");
+    replace_all(sTitle, L"\t", L"&#x9;");
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {

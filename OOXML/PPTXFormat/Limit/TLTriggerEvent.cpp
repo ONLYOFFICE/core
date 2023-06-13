@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,26 +38,26 @@ namespace PPTX
 	{
 		TLTriggerEvent::TLTriggerEvent()
 		{
-			m_strValue = _T("begin");
+			m_strValue = L"begin";
 		}
 		void TLTriggerEvent::set(const std::wstring& strValue)
 		{
-			if ((_T("begin") == strValue) ||
-				(_T("end") == strValue) ||
-				(_T("onBegin") == strValue) ||
-				(_T("onClick") == strValue) ||
-				(_T("onDblClick") == strValue) ||
-				(_T("onEnd") == strValue) ||
-				(_T("onMouseOut") == strValue) ||
-				(_T("onMouseOver") == strValue) ||
-				(_T("onNext") == strValue) ||
-				(_T("onPrev") == strValue) ||
-				(_T("onStopAudio") == strValue))
+			if ((L"begin" == strValue) ||
+				(L"end" == strValue) ||
+				(L"onBegin" == strValue) ||
+				(L"onClick" == strValue) ||
+				(L"onDblClick" == strValue) ||
+				(L"onEnd" == strValue) ||
+				(L"onMouseOut" == strValue) ||
+				(L"onMouseOver" == strValue) ||
+				(L"onNext" == strValue) ||
+				(L"onPrev" == strValue) ||
+				(L"onStopAudio" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLTriggerEvent::GetBYTECode() const
+		unsigned char TLTriggerEvent::GetBYTECode() const
 		{
 			if (L"begin" == m_strValue)		return 0;
 			if (L"end" == m_strValue)		return 1;
@@ -73,7 +73,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLTriggerEvent::SetBYTECode(const BYTE& src)
+		void TLTriggerEvent::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

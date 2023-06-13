@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -286,6 +286,8 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 
 		if (common_props)
 		{
+			text_list_style_ = common_props->text_list_style_;
+
 			switch (style_family_.get_type())
 			{
 			case style_family::Text:
@@ -340,7 +342,7 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 				if (text_props)
 					text_props->content_.apply_from(common_props->text_properties_);
 
-				style_text_properties_ = elm;
+				style_text_properties_ = text_elm;
 			}break;
 			case style_family::Chart:
 			{
@@ -365,6 +367,8 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 
 				if (text_props)
 					text_props->content_.apply_from(common_props->text_properties_);
+				
+				style_text_properties_ = text_elm;
 			}break;
 			case style_family::TableCell:
 			{
@@ -395,6 +399,42 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
 					table_column_props->attlist_.apply_from(common_props->table_column_properties_);
 
 				style_table_column_properties_ = elm;
+			}break;
+			case style_family::Presentation:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"graphic-properties", Context, false);
+				style_graphic_properties *graphic_props = dynamic_cast<style_graphic_properties *>(elm.get());
+
+				if (graphic_props)
+					graphic_props->content_.apply_from(&common_props->graphic_properties_);
+
+				style_graphic_properties_ = elm;
+
+				office_element_ptr para_elm = office_element_creator::get()->create(L"style", L"paragraph-properties", Context, false);
+				style_paragraph_properties *para_props = dynamic_cast<style_paragraph_properties *>(para_elm.get());
+
+				if (para_props)
+					para_props->content_.apply_from(common_props->paragraph_properties_);
+
+				style_paragraph_properties_ = para_elm;
+
+				office_element_ptr text_elm = office_element_creator::get()->create(L"style", L"text-properties", Context, false);
+				style_text_properties *text_props = dynamic_cast<style_text_properties *>(text_elm.get());
+
+				if (text_props)
+					text_props->content_.apply_from(common_props->text_properties_);
+
+				style_text_properties_ = text_elm;
+			}break;
+			case style_family::DrawingPage:
+			{
+				office_element_ptr elm = office_element_creator::get()->create(L"style", L"drawing-page-properties", Context, false);
+				style_drawing_page_properties *drawing_page_props = dynamic_cast<style_drawing_page_properties *>(elm.get());
+
+				if (drawing_page_props)
+					drawing_page_props->content().apply_from(common_props->drawing_page_properties_);
+
+				style_drawing_page_properties_ = elm;
 			}break;
 			}
 		}
@@ -1736,7 +1776,7 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 		
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				

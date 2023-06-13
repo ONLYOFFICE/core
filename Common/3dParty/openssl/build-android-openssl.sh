@@ -83,25 +83,28 @@ function configure_make() {
 
     if [[ "${ARCH}" == "x86_64" ]]; then
 
-        ./Configure android-x86_64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-x86_64 --prefix="${PREFIX_DIR}" no-shared no-tests enable-ssl3 enable-ssl3-method enable-md2 no-asm
 
     elif [[ "${ARCH}" == "x86" ]]; then
 
-        ./Configure android-x86 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-x86 --prefix="${PREFIX_DIR}" no-shared no-tests enable-ssl3 enable-ssl3-method enable-md2 no-asm
 
     elif [[ "${ARCH}" == "arm" ]]; then
 
-        ./Configure android-arm --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-arm --prefix="${PREFIX_DIR}" no-shared no-tests enable-ssl3 enable-ssl3-method enable-md2 no-asm
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
-        ./Configure android-arm64 --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
+        ./Configure android-arm64 --prefix="${PREFIX_DIR}" no-shared no-tests enable-ssl3 enable-ssl3-method enable-md2 no-asm
 
     else
         log_error "not support" && exit 1
     fi
 
     log_info "make $ABI start..."
+
+    sed -ie 's/LIB_CFLAGS=/LIB_CFLAGS=-fvisibility=hidden /g' ./Makefile
+    sed -ie 's/LIB_CXXFLAGS=/LIB_CXXFLAGS=-fvisibility=hidden /g' ./Makefile
 
     make clean >"${OUTPUT_ROOT}/log/${ABI}.log"
     if make -j$(get_cpu_count) >>"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1; then

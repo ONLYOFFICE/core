@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -93,7 +93,7 @@ private:
 	bool in_cell_content;
 
 	//odf_reader::styles_container				& styles_;
-	//odf_reader::text_format_properties_content	* text_properties_cell_;
+	//odf_reader::text_format_properties	* text_properties_cell_;
 	//odf_reader::styles_container				* local_styles_ptr_;
 
     std::wstring dump_text();
@@ -202,7 +202,7 @@ void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
 	hyperlink_hId = hId;
 }
 
-void xlsx_text_context::Impl::ApplyTextProperties(/*std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type*/)
+void xlsx_text_context::Impl::ApplyTextProperties(/*std::wstring style,odf_reader::text_format_properties & propertiesOut, odf_types::style_family::type Type*/)
 {
 
 }
@@ -219,7 +219,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 		if (in_draw)
 		{
 			//oox_serialize_style_text(strm,text_properties_);
-			//oox_serialize_style_text(strm,odf_reader::text_format_properties_content & properties);
+			//oox_serialize_style_text(strm,odf_reader::text_format_properties & properties);
 			CP_XML_NODE(L"a:rPr")
 			{
 				//стр 3197

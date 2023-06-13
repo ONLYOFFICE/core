@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,25 +33,51 @@
 #ifndef OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/SimpleTypes_Word.h"
-
+#include "../../Base/Nullable.h"
 #include "./../WritingElement.h"
 
-#include "RunProperty.h"
-#include "SectionProperty.h"
+namespace SimpleTypes
+{
+	class CDateTime;
+	class CDecimalNumber;
+}
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class CJc;
+		class CInd;
+		class CCnf;
+		class COnOff2;
+		class CFramePr;
+		class CBorder;
+		class String;
+		class CSpacing;
+		class CShading;
+		class CTabStop;
+		class CTrackChange;
+		class CTextAlignment;
+		class CDecimalNumber;
+		class CTextDirection;
+		class CTextboxTightWrap;
+	}
+}
 
 namespace OOX
 {
 	namespace Logic
 	{
+		class CRunProperty;
+		class CSectionProperty;
+
 		//--------------------------------------------------------------------------------
 		// NumPr 17.13.1.19 (Part 1)
 		//--------------------------------------------------------------------------------
 		class CNumPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumPr)
+			WritingElement_AdditionMethods(CNumPr)
 
 			CNumPr();
 			virtual ~CNumPr();
@@ -66,7 +92,6 @@ namespace OOX
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oIlvl;
 			nullable<ComplexTypes::Word::CTrackChange   > m_oIns;
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oNumID;
-
 		};
 
 		//--------------------------------------------------------------------------------
@@ -75,7 +100,7 @@ namespace OOX
 		class CPBdr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPBdr)
+			WritingElement_AdditionMethods(CPBdr)
 
 			CPBdr();
 			virtual ~CPBdr();
@@ -154,7 +179,7 @@ namespace OOX
 		class CTabs : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabs)
+			WritingElement_AdditionMethods(CTabs)
 
 			CTabs(OOX::Document *pMain = NULL);
 			virtual ~CTabs();

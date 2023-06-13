@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,7 +30,6 @@
  *
  */
 
-#include <stdio.h>
 #include "BinaryWriter.h"
 #include "../Writer/BinaryReader.h"
 
@@ -53,6 +52,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
@@ -60,6 +60,18 @@
 #include "../../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../../XlsxFormat/Slicer/Slicer.h"
 #include "../../../XlsxFormat/NamedSheetViews/NamedSheetViews.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/Colors.h"
+#include "../../../XlsxFormat/Styles/Fills.h"
+#include "../../../XlsxFormat/Styles/Fonts.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/CellStyles.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/TableStyles.h"
+
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace BinXlsxRW 
 {
@@ -1135,49 +1147,49 @@ void BinaryStyleTableWriter::WriteBorder(const OOX::Spreadsheet::CBorder& border
 {
 	int nCurPos = 0;
 	//Bottom
-	if(false != border.m_oBottom.IsInit() && false != border.m_oBottom->m_oStyle.IsInit())
+	if(false != border.m_oBottom.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Bottom);
 		WriteBorderProp(border.m_oBottom.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Diagonal
-	if(false != border.m_oDiagonal.IsInit() && false != border.m_oDiagonal->m_oStyle.IsInit())
+	if(false != border.m_oDiagonal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Diagonal);
 		WriteBorderProp(border.m_oDiagonal.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//End
-	if(false != border.m_oEnd.IsInit() && false != border.m_oEnd->m_oStyle.IsInit())
+	if(false != border.m_oEnd.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::End);
 		WriteBorderProp(border.m_oEnd.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Horizontal
-	if(false != border.m_oHorizontal.IsInit() && false != border.m_oHorizontal->m_oStyle.IsInit())
+	if(false != border.m_oHorizontal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Horizontal);
 		WriteBorderProp(border.m_oHorizontal.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Start
-	if(false != border.m_oStart.IsInit() && false != border.m_oStart->m_oStyle.IsInit())
+	if(false != border.m_oStart.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Start);
 		WriteBorderProp(border.m_oStart.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Top
-	if(false != border.m_oTop.IsInit() && false != border.m_oTop->m_oStyle.IsInit())
+	if(false != border.m_oTop.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Top);
 		WriteBorderProp(border.m_oTop.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Vertical
-	if(false != border.m_oVertical.IsInit() && false != border.m_oVertical->m_oStyle.IsInit())
+	if(false != border.m_oVertical.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Vertical);
 		WriteBorderProp(border.m_oVertical.get(), pIndexedColors, pTheme);
@@ -2050,7 +2062,7 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteWorkbookPr(workbook.m_oWorkbookPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-//WorkbookPr
+//WorkbookProtection
 	if (workbook.m_oWorkbookProtection.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Protection);
@@ -2084,7 +2096,14 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteExternalReferences(workbook.m_oExternalReferences.get(), workbook);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	//Ext
+//FileSharing
+	if (workbook.m_oFileSharing.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::FileSharing);
+		WriteFileSharing(workbook.m_oFileSharing.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+//Ext
 	if (workbook.m_oExtLst.IsInit())
 	{
 		for(size_t i = 0; i < workbook.m_oExtLst->m_arrExt.size(); ++i)
@@ -2158,6 +2177,51 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::OleSize);
 		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oOleSize);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing)
+{
+	if (fileSharing.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(fileSharing.m_oAlgorithmName->GetValue());
+	}
+	if (fileSharing.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(fileSharing.m_oSpinCount->GetValue());
+	}
+	if (fileSharing.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oHashValue);
+	}
+	if (fileSharing.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oSaltValue);
+	}
+	if (fileSharing.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oPassword);
+	}
+	if (fileSharing.m_oUserName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::UserName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oUserName);
+	}
+	if (fileSharing.m_oReadOnlyRecommended.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::ReadOnly);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*fileSharing.m_oReadOnlyRecommended);
 	}
 }
 void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection)
@@ -3457,7 +3521,13 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 				WriteSlicers(oWorksheet, pExt->m_oSlicerListExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-        }
+			else if (pExt->m_oUserProtectedRanges.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::UserProtectedRanges);
+				WriteUserProtectedRanges(pExt->m_oUserProtectedRanges.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
     }
 	// DataValidations (with ext)
 	if ( oWorksheet.m_oDataValidations.IsInit() )
@@ -5622,7 +5692,7 @@ void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CW
 			OOX::CVmlDrawing* pVmlDrawing = (OOX::CVmlDrawing*)oFileV.GetPointer();
 			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 			m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
-			m_pOfficeDrawingConverter->ClearShapeTypes();
+			m_pOfficeDrawingConverter->Clear();
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_LegacyDrawingHF::Drawings);
 			WriteLegacyDrawingHFDrawings(pVmlDrawing);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
@@ -6438,7 +6508,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
 	{
-		 pFind = mapCFRuleEx.find(oConditionalFormattingRule.m_oExtId.get2());
+		 pFind = mapCFRuleEx.find(*oConditionalFormattingRule.m_oExtId);
 
 		 if (pFind != mapCFRuleEx.end())
 		 {
@@ -6979,6 +7049,63 @@ void BinaryWorksheetTableWriter::WriteDataValidations(const OOX::Spreadsheet::CD
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_DataValidation::DataValidations);
 	WriteDataValidationsContent(oDataValidations);
 	m_oBcw.WriteItemEnd(nCurPos);
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges)
+{
+	for (size_t i = 0; i < oUserProtectedRanges.m_arrItems.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UserProtectedRange);
+		WriteUserProtectedRange(*oUserProtectedRanges.m_arrItems[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc)
+{
+	if (desc.id.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Id);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.id);
+	}
+	if (desc.name.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.name);
+	}
+}
+void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
+{
+	if (oUserProtectedRange.m_oName.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oSqref.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oUserProtectedRange.m_oText.IsInit())
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
+		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::User);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsers[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroups.size(); ++i)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UsersGroup);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsersGroups[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations)
 {

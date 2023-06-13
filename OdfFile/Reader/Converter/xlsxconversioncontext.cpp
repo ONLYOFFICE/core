@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -119,8 +119,8 @@ void xlsx_conversion_context::start_document()
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
 	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
 
-    odf_reader::text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content(instances);
-    odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
+    odf_reader::text_format_properties_ptr		textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::paragraph_format_properties		parFormatProperties		= calc_paragraph_properties_content(instances);
     odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
 
     oox::xlsx_cell_format cellFormat;
@@ -189,7 +189,7 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name",	XmlUtils::EncodeXmlString(sheet->name())); // office 2010 ! ограничение на длину имени !!!
+                CP_XML_ATTR(L"name",	XmlUtils::EncodeXmlString(sheet->name())); // ms office ! ограничение на длину имени 31!!!
                 CP_XML_ATTR(L"sheetId", i + 1);
 				CP_XML_ATTR(L"state",	sheet->hidden() ? L"hidden" : L"visible");
                 CP_XML_ATTR(L"r:id",	id);            
@@ -237,7 +237,40 @@ void xlsx_conversion_context::end_document()
             {
                 CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+				CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+				CP_XML_ATTR(L"mc:Ignorable", L"x15 xr xr6 xr10 xr2");
+				CP_XML_ATTR(L"xmlns:x15", L"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main");
+				CP_XML_ATTR(L"xmlns:xr", L"http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
+				CP_XML_ATTR(L"xmlns:xr6", L"http://schemas.microsoft.com/office/spreadsheetml/2016/revision6");
+				CP_XML_ATTR(L"xmlns:xr10", L"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10");
+				CP_XML_ATTR(L"xmlns:xr2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2");
+				
+				_CP_OPT(std::wstring) str = root()->odf_context().Settings().find_by_name(L"IsDocumentShared");
+				if (str)
+				{
+					CP_XML_NODE(L"fileSharing")
+					{
+						str = root()->odf_context().Settings().find_by_name(L"LoadReadonly");
+						if (str) CP_XML_ATTR(L"readOnlyRecommended", *str);
 
+						if (false == root()->odf_context().DocProps().dc_creator_.empty())
+						{
+							CP_XML_ATTR(L"userName", root()->odf_context().DocProps().dc_creator_);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+							if (str) CP_XML_ATTR(L"algorithmName", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:hash");
+							if (str) CP_XML_ATTR(L"hashValue", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:salt");
+							if (str) CP_XML_ATTR(L"saltValue", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+							if (str) CP_XML_ATTR(L"spinCount", *str);
+						}
+					}
+				}
 				if (table_structure_protected_)
 				{
 					CP_XML_NODE(L"workbookProtection")
@@ -704,11 +737,11 @@ int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 	
 	if (instStyle)
 	{
-		odf_reader::text_format_properties_content_ptr	textFormats = calc_text_properties_content(instStyle);
-		odf_reader::graphic_format_properties			graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::text_format_properties_ptr textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties_ptr graphicFormats = calc_graphic_properties_content(instStyle);
 		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
 
-		dxfId = get_style_manager().dxfId(textFormats, &graphicFormats, &cellFormats);
+		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
 	}
 	return dxfId;
 }
@@ -734,7 +767,7 @@ std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 			if (inst) instances.push_back(inst);
 		}
 
-		odf_reader::text_format_properties_content_ptr textFormatProperties	= calc_text_properties_content(instances);
+		odf_reader::text_format_properties_ptr textFormatProperties	= calc_text_properties_content(instances);
 
 		if (textFormatProperties)
 		{

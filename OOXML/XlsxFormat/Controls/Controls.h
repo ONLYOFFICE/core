@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,19 +31,42 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Drawing/FromTo.h"
 #include "../Ole/OleObjects.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+#include "../Drawing/FromTo.h"
+
+
+namespace SimpleTypes
+{
+	class CColorType;
+
+	namespace Spreadsheet
+	{
+		class CObjectType;
+		class CDropStyle;
+		class CChecked;
+		class CSelType;
+		class CHorizontalAlignment;
+		class CVerticalAlignment;
+		class CEditValidation;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 //------------------------------------------------------------------------------------------------------------------------------
 		class CListItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CListItem)
+			WritingElement_AdditionMethods(CListItem)
 			
 			CListItem();
 			virtual ~CListItem();
@@ -64,7 +87,7 @@ namespace OOX
 		class CListItems : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CListItems)
+			WritingElement_AdditionMethods(CListItems)
 			
 			CListItems();
 			virtual ~CListItems();
@@ -86,7 +109,7 @@ namespace OOX
 		class CFormControlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormControlPr)
+			WritingElement_AdditionMethods(CFormControlPr)
 			CFormControlPr();
 			virtual ~CFormControlPr();
 
@@ -143,7 +166,7 @@ namespace OOX
 		class CControlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControlPr)
+			WritingElement_AdditionMethods(CControlPr)
 			CControlPr();
 			virtual ~CControlPr();
 
@@ -182,7 +205,7 @@ namespace OOX
 		class CControl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControl)
+			WritingElement_AdditionMethods(CControl)
 			WritingElement_XlsbConstructors(CControl)
 			CControl();
 			virtual ~CControl();
@@ -219,7 +242,7 @@ namespace OOX
 		class CControls : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControls)
+			WritingElement_AdditionMethods(CControls)
 			WritingElement_XlsbConstructors(CControls)
 			CControls();
 			virtual ~CControls();

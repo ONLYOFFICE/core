@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -85,8 +85,9 @@ public:
 
 	void remove_page();
 
-	void				set_styles_context(odf_style_context*  styles_context);
-	odf_style_context*	get_styles_context();
+	void set_styles_context(odf_style_context_ptr  styles_context);
+	odf_style_context_ptr get_styles_context();
+
 	odf_table_context*	table_context();
 
 	void start_table				();
@@ -107,7 +108,7 @@ public:
 private:
 
     odp_conversion_context&		context_;
-	odf_style_context*			styles_context_;
+	odf_style_context_ptr		styles_context_;
 	
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;

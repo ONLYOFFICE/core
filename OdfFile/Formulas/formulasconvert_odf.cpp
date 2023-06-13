@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -51,11 +51,13 @@ namespace formulasconvert {
 		std::wstring convert(const std::wstring& expr);
 		std::wstring convert_chart_distance(const std::wstring& expr);
 
+		std::wstring convert_list_values(const std::wstring& expr);
+
 		void split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out);
 		
 		void replace_cells_range(std::wstring& expr, bool withTableName, bool bAbsoluteAlways = false);
 		bool check_formula(std::wstring& expr);
-		void replace_semicolons(std::wstring& expr);
+		void replace_semicolons(std::wstring& expr, bool del_quotes = false);
 		void replace_tilda(std::wstring& expr);
 		void replace_vertical(std::wstring& expr);
 		void replace_space(std::wstring& expr);
@@ -87,6 +89,20 @@ namespace formulasconvert {
 				return what[2].str();
 			else if (what[3].matched)
 				return what[3].str();
+			else
+				return L"";
+		}
+		static std::wstring replace_semicolons_formater_del(boost::wsmatch const & what)
+		{
+			if (what[1].matched)
+				return L",";
+			else if (what[2].matched)
+			{
+				std::wstring res = what[2].str();
+				if (res.length() > 1 && res[0] == L'\"')
+					res = res.substr(1, res.length() - 2);
+				return res;
+			}
 			else
 				return L"";
 		}
@@ -504,17 +520,14 @@ namespace formulasconvert {
 		else   
 			return false;
 	}
-
-
-
-	// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
-	void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr)
+// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
+	void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr, bool del_quotes)
 	{
 		 const std::wstring res = boost::regex_replace(
 			expr,
 			//boost::wregex(L"(;)|(?:\".*?\")|(?:'.*?')"),
 			boost::wregex(L"(;)|(\".*?\")|('.*?')"),
-			&replace_semicolons_formater,
+			del_quotes ? &replace_semicolons_formater_del : &replace_semicolons_formater,
 			boost::match_default | boost::format_all);
 
 		 expr = res;
@@ -624,6 +637,12 @@ namespace formulasconvert {
 	//Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
 	//в
 	//Sheet2!C3:C19,Sheet2!L27:L34
+	std::wstring odf2oox_converter::Impl::convert_list_values(const std::wstring& expr)
+	{
+		std::wstring workstr = expr;
+		replace_semicolons(workstr, true);
+		return workstr;
+	}
 
 	std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 	{
@@ -765,7 +784,10 @@ namespace formulasconvert {
 	{
 		return impl_->table_name_;
 	}
-
+	std::wstring odf2oox_converter::convert_list_values(std::wstring const & expr)
+	{
+		return impl_->convert_list_values(expr);
+	}
 	std::wstring odf2oox_converter::convert(const std::wstring& expr)
 	{
 		return impl_->convert(expr);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,9 +30,10 @@
  *
  */
 #pragma once
+
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Word.h"
+
 #include "../../Common/ComplexTypes.h"
 
 namespace ComplexTypes
@@ -59,7 +60,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CMacroName > m_oVal;
+			nullable<SimpleTypes::CMacroName> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -106,7 +107,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CFFName > m_oVal;
+			nullable<SimpleTypes::CFFName> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -169,9 +170,7 @@ namespace OOX
 		class CFFCheckBox : public WritingElement
 		{
 		public:
-			CFFCheckBox();
-			CFFCheckBox(XmlUtils::CXmlNode &oNode);
-			CFFCheckBox(XmlUtils::CXmlLiteReader& oReader);
+			CFFCheckBox();			
 			virtual ~CFFCheckBox();
 
 			const CFFCheckBox &operator=(const XmlUtils::CXmlNode &oNode);
@@ -184,10 +183,10 @@ namespace OOX
 			virtual EElementType getType() const;
 
 		public:
-			nullable<ComplexTypes::Word::COnOff2     > m_oChecked;
-			nullable<ComplexTypes::Word::COnOff2     > m_oDefault;
-			nullable<ComplexTypes::Word::CHpsMeasure > m_oSize;
-			nullable<ComplexTypes::Word::COnOff2     > m_oSizeAuto;
+			nullable<ComplexTypes::Word::COnOff2> m_oChecked;
+			nullable<ComplexTypes::Word::COnOff2> m_oDefault;
+			nullable<ComplexTypes::Word::CHpsMeasure> m_oSize;
+			nullable<ComplexTypes::Word::COnOff2> m_oSizeAuto;
 
 		};
 
@@ -197,9 +196,7 @@ namespace OOX
 		class CFFDDList : public WritingElement
 		{
 		public:
-			CFFDDList();
-			CFFDDList(XmlUtils::CXmlNode &oNode);
-			CFFDDList(XmlUtils::CXmlLiteReader& oReader);
+			CFFDDList();			
 			virtual ~CFFDDList();
 
 			virtual void ClearItems();
@@ -225,9 +222,7 @@ namespace OOX
 		class CFFTextInput : public WritingElement
 		{
 		public:
-			CFFTextInput();
-			CFFTextInput(XmlUtils::CXmlNode &oNode);
-			CFFTextInput(XmlUtils::CXmlLiteReader& oReader);
+			CFFTextInput();			
 			virtual ~CFFTextInput();
 
 			const CFFTextInput &operator=(const XmlUtils::CXmlNode &oNode);
@@ -251,9 +246,7 @@ namespace OOX
 		class CFFData : public WritingElement
 		{
 		public:
-			CFFData();
-			CFFData(XmlUtils::CXmlNode &oNode);
-			CFFData(XmlUtils::CXmlLiteReader& oReader);
+			CFFData();			
 			virtual ~CFFData();
 
 			const CFFData &operator=(const XmlUtils::CXmlNode &oNode);
@@ -287,9 +280,7 @@ namespace OOX
 		class CFldChar : public WritingElement
 		{
 		public:
-			CFldChar(OOX::Document *pMain = NULL);
-			CFldChar(XmlUtils::CXmlNode &oNode);
-			CFldChar(XmlUtils::CXmlLiteReader& oReader);
+			CFldChar(OOX::Document *pMain = NULL);			
 			virtual ~CFldChar();
 
 			const CFldChar &operator=(const XmlUtils::CXmlNode &oNode);
@@ -305,11 +296,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff         > m_oDirty;
-			nullable<SimpleTypes::CFldCharType   > m_oFldCharType;
-			nullable<SimpleTypes::COnOff         > m_oFldLock;
+			nullable<SimpleTypes::COnOff> m_oDirty;
+			nullable<SimpleTypes::CFldCharType> m_oFldCharType;
+			nullable<SimpleTypes::COnOff> m_oFldLock;
+			nullable_string m_sPrivateData;
 
-			nullable<OOX::Logic::CFFData         > m_oFFData;
+			nullable<OOX::Logic::CFFData> m_oFFData;
 		};
 	} // namespace Logic
 } // namespace OOX

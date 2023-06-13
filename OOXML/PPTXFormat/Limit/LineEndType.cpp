@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,57 +38,57 @@ namespace PPTX
 	{		
 		LineEndType::LineEndType()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void LineEndType::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("arrow") == strValue) ||
-				(_T("diamond") == strValue) ||
-				(_T("oval") == strValue) ||
-				(_T("stealth") == strValue) ||
-				(_T("triangle") == strValue))
+			if ((L"none" == strValue) ||
+				(L"arrow" == strValue) ||
+				(L"diamond" == strValue) ||
+				(L"oval" == strValue) ||
+				(L"stealth" == strValue) ||
+				(L"triangle" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE LineEndType::GetBYTECode() const
+		unsigned char LineEndType::GetBYTECode() const
 		{
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 0;
-			if (_T("arrow") == m_strValue)
+			if (L"arrow" == m_strValue)
 				return 1;
-			if (_T("diamond") == m_strValue)
+			if (L"diamond" == m_strValue)
 				return 2;
-			if (_T("oval") == m_strValue)
+			if (L"oval" == m_strValue)
 				return 3;
-			if (_T("stealth") == m_strValue)
+			if (L"stealth" == m_strValue)
 				return 4;
-			if (_T("triangle") == m_strValue)
+			if (L"triangle" == m_strValue)
 				return 5;
 			return 0;
 		}
-		void LineEndType::SetBYTECode(const BYTE& src)
+		void LineEndType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			case 1:
-				m_strValue = _T("arrow");
+				m_strValue = L"arrow";
 				break;
 			case 2:
-				m_strValue = _T("diamond");
+				m_strValue = L"diamond";
 				break;
 			case 3:
-				m_strValue = _T("oval");
+				m_strValue = L"oval";
 				break;
 			case 4:
-				m_strValue = _T("stealth");
+				m_strValue = L"stealth";
 				break;
 			case 5:
-				m_strValue = _T("triangle");
+				m_strValue = L"triangle";
 				break;
 			default:
 				break;

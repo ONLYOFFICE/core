@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -74,10 +74,10 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context	(cpdoccore::odf_reader::odf_document * odfDocument);
+    xlsx_conversion_context	(cpdoccore::odf_reader::odf_document *odfDocument);
     ~xlsx_conversion_context();
 
-	void set_output_document(package::xlsx_document * document);
+	void set_output_document(package::xlsx_document *document);
     void set_font_directory	(std::wstring pathFonts);
 
     void start_document	();
@@ -148,7 +148,7 @@ public:
 	size_t get_table_parts_size() {return table_parts_.size();}
 //------------------------------------------------------------------------------------
 
-    odf_reader::odf_document * root()
+    odf_reader::odf_document *root()
     {
         return odf_document_;
     }

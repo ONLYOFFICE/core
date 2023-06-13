@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -86,12 +86,12 @@ public:
 	const size_t	RegisterFillId		(const FillInfo& fill);	
 	const size_t	RegisterFontId		(const FontInfo& font);
 	const int		RegistrDxfn			(const std::wstring& dx_style);
+	_UINT16			RegisterNumFormat	(_UINT16 ifmt, const std::wstring & format_code);
 
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
 	void			CalculateAnchor(int colL, int colR, int rowT, int rowB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy);
-
 
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
@@ -120,6 +120,7 @@ public:
 
 	_UINT32									last_Axes_id;
 	_UINT32									last_Extern_id;
+	_UINT32									last_User_NumFmt;
 
 	std::map<std::wstring, BaseObjectPtr>	mapStrConnection;
 	std::map<int, BaseObjectPtr>			mapIdConnection;
@@ -198,7 +199,7 @@ public:
 	int								cellStyleDxfs_count;
 
 	std::map<std::wstring, int>		mapDefaultFormatCode;
-	std::map<_UINT16, bool>			mapUsedFormatCode;
+	std::map<_UINT16, _UINT16>		mapUsedFormatCode; //original, used
 
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;
@@ -208,14 +209,14 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::wstring> mapTableNames;
     std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+    std::unordered_map<std::wstring, int> mapTableGuidsIndex;
 
-    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
-    int                     		currentPivotCacheRecord;
+    std::unordered_map<int, std::vector<XLS::ElementType>> pivotCacheRecordType;
+    int currentPivotCacheRecord;
 
-	XlsConverter					*xls_converter;
+	XlsConverter *xls_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

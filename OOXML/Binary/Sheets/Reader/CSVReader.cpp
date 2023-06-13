@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,6 +46,8 @@
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
 
 class CSVReader::Impl
 {
@@ -229,7 +231,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 		size_t pos = sText.find(L".");
 		if (pos != std::wstring::npos)
 		{
-			size_t fraction = sText.length() - pos - ((0 != *pEndPtr) ? 2 : 1);
+			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
 			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
 				data_format += L"0";
 		}
@@ -552,7 +554,12 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 
 	if (nStartCell != nSize && !bMsLimit)
 	{
-		// New line
+		while (nSize > 0)
+		{
+			if (pTemp[nSize - 1] != L'\0')
+				break;
+			else nSize--;
+		}
 		std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
 		AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 		pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);

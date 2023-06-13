@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,31 +34,24 @@
 #include "BinReaderWriterDefines.h"
 
 #include "../../../DocxFormat/DocxFlat.h"
-#include "../../../DocxFormat/Docx.h"
-#include "../../../Binary/MathEquation/MathEquation.h"
-
 #include "../../../DocxFormat/Document.h"
-#include "../../../DocxFormat/FontTable.h"
 #include "../../../DocxFormat/Numbering.h"
 #include "../../../DocxFormat/Styles.h"
 #include "../../../DocxFormat/Comments.h"
 #include "../../../DocxFormat/Settings/Settings.h"
-#include "../../../DocxFormat/External/HyperLink.h"
-#include "../../../DocxFormat/Media/VbaProject.h"
 #include "../../../DocxFormat/Media/JsaProject.h"
 #include "../../../DocxFormat/HeaderFooter.h"
-#include "../../../DocxFormat/App.h"
-#include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/Footnote.h"
 #include "../../../DocxFormat/Endnote.h"
-#include "../../../DocxFormat/Math/OMath.h"
 #include "../../../DocxFormat/Math/oMathPara.h"
+
 #include "../../../DocxFormat/Logic/Sdt.h"
 #include "../../../DocxFormat/Logic/Table.h"
 #include "../../../DocxFormat/Logic/Paragraph.h"
 #include "../../../DocxFormat/Logic/Annotations.h"
 #include "../../../DocxFormat/Logic/Hyperlink.h"
 #include "../../../DocxFormat/Logic/FldSimple.h"
+#include "../../../DocxFormat/Logic/DocParts.h"
 
 namespace NSBinPptxRW
 {

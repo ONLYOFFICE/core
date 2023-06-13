@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1009,7 +1009,9 @@ namespace OOX
 					XmlUtils::CXmlNode oCol;
 					if ( oCols.GetAt( nIndex, oCol ) )
 					{
-						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oCol);
+						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
+						*oColumn = oCol;
+
 						if (oColumn) m_arrColumns.push_back( oColumn );
 					}
 				}
@@ -1028,7 +1030,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:col" == sName )
 				{
-					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
+					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
+					*oColumn = oReader;
+
 					if (oColumn) m_arrColumns.push_back( oColumn );
 				}
 			}
@@ -1396,21 +1400,7 @@ namespace OOX
 		{
 			m_pSecPr.Init();
 			m_pSecPr->m_bSectPrChange = true;
-		}
-		CSectPrChange::CSectPrChange(XmlUtils::CXmlNode& oNode)
-		{
-			m_pSecPr.Init();
-			m_pSecPr->m_bSectPrChange = true;
-
-			fromXML( oNode );
-		}
-		CSectPrChange::CSectPrChange(XmlUtils::CXmlLiteReader& oReader)
-		{
-			m_pSecPr.Init();
-			m_pSecPr->m_bSectPrChange = true;
-
-			fromXML( oReader );
-		}
+		}		
 		CSectPrChange::~CSectPrChange()
 		{
 		}
@@ -1505,17 +1495,7 @@ namespace OOX
 		CSectionProperty::CSectionProperty(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_bSectPrChange = false;
-		}
-		CSectionProperty::CSectionProperty(XmlUtils::CXmlNode &oNode)
-		{
-			m_bSectPrChange = false;
-			fromXML( oNode );
-		}
-		CSectionProperty::CSectionProperty(XmlUtils::CXmlLiteReader& oReader)
-		{
-			m_bSectPrChange = false;
-			fromXML( oReader );
-		}
+		}		
 		CSectionProperty::~CSectionProperty()
 		{
 			ClearItems();
@@ -1536,13 +1516,13 @@ namespace OOX
 			}
 			m_arrHeaderReference.clear();
 		}
-		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode &oNode)
+		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode& oNode)
 		{
 			ClearItems();
 			fromXML( (XmlUtils::CXmlNode &)oNode );
 			return *this;
 		}
-		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
 		{
 			ClearItems();
 			fromXML( (XmlUtils::CXmlNode &)oReader );
@@ -1582,7 +1562,9 @@ namespace OOX
 					{
 						if ( oNodes.GetAt( nIndex, oFooterNode ) )
 						{
-							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oFooterNode);
+							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
+							*oFooter = oFooterNode;
+
 							if (oFooter) m_arrFooterReference.push_back( oFooter );
 						}
 					}
@@ -1605,7 +1587,9 @@ namespace OOX
 					{
 						if ( oNodes.GetAt( nIndex, oHeaderNode ) )
 						{
-							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef(oHeaderNode);
+							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
+							*oHeader = oHeaderNode;
+
 							if (oHeader) m_arrHeaderReference.push_back( oHeader );
 						}
 					}
@@ -1677,7 +1661,9 @@ namespace OOX
 					m_oEndnotePr = oReader;
 				else if ( !m_bSectPrChange && L"w:footerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oReader);
+					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
+					*oFooter = oReader;
+
 					if (oFooter) m_arrFooterReference.push_back( oFooter );
 				}
 				else if ( L"w:footnotePr" == sName )
@@ -1686,7 +1672,9 @@ namespace OOX
 					m_oFormProt = oReader;
 				else if ( !m_bSectPrChange && L"w:headerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef( oReader);
+					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
+					*oHeader = oReader;
+
 					if (oHeader) m_arrHeaderReference.push_back( oHeader );
 				}
 				else if ( L"w:lnNumType" == sName )

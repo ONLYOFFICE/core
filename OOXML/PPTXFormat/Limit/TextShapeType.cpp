@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,146 +38,146 @@ namespace PPTX
 	{		
 		TextShapeType::TextShapeType()
 		{
-			m_strValue = _T("textNoShape");
+			m_strValue = L"textNoShape";
 		}
 		void TextShapeType::set(const std::wstring& strValue)
 		{
-			if ((_T("textArchDown") == strValue) ||
-				(_T("textArchDownPour") == strValue) ||
-				(_T("textArchUp") == strValue) ||
-				(_T("textArchUpPour") == strValue) ||
-				(_T("textButton") == strValue) ||
-				(_T("textButtonPour") == strValue) ||
-				(_T("textCanDown") == strValue) ||
-				(_T("textCanUp") == strValue) ||
-				(_T("textCascadeDown") == strValue) ||
-				(_T("textCascadeUp") == strValue) ||
-				(_T("textChevron") == strValue) ||
-				(_T("textChevronInverted") == strValue) ||
-				(_T("textCircle") == strValue) ||
-				(_T("textCirclePour") == strValue) ||
-				(_T("textCurveDown") == strValue) ||
-				(_T("textCurveUp") == strValue) ||
-				(_T("textDeflate") == strValue) ||
-				(_T("textDeflateBottom") == strValue) ||
-				(_T("textDeflateInflate") == strValue) ||
-				(_T("textDeflateInflateDeflate") == strValue) ||
-				(_T("textDeflateTop") == strValue) ||
-				(_T("textDoubleWave1") == strValue) ||
-				(_T("textFadeDown") == strValue) ||
-				(_T("textFadeLeft") == strValue) ||
-				(_T("textFadeRight") == strValue) ||
-				(_T("textFadeUp") == strValue) ||
-				(_T("textInflate") == strValue) ||
-				(_T("textInflateBottom") == strValue) ||
-				(_T("textInflateTop") == strValue) ||
-				(_T("textNoShape") == strValue) ||
-				(_T("textPlain") == strValue) ||
-				(_T("textRingInside") == strValue) ||
-				(_T("textRingOutside") == strValue) ||
-				(_T("textSlantDown") == strValue) ||
-				(_T("textSlantUp") == strValue) ||
-				(_T("textStop") == strValue) ||
-				(_T("textTriangle") == strValue) ||
-				(_T("textTriangleInverted") == strValue) ||
-				(_T("textWave1") == strValue) ||
-				(_T("textWave2") == strValue) ||
-				(_T("textWave4") == strValue))
+			if ((L"textArchDown" == strValue) ||
+				(L"textArchDownPour" == strValue) ||
+				(L"textArchUp" == strValue) ||
+				(L"textArchUpPour" == strValue) ||
+				(L"textButton" == strValue) ||
+				(L"textButtonPour" == strValue) ||
+				(L"textCanDown" == strValue) ||
+				(L"textCanUp" == strValue) ||
+				(L"textCascadeDown" == strValue) ||
+				(L"textCascadeUp" == strValue) ||
+				(L"textChevron" == strValue) ||
+				(L"textChevronInverted" == strValue) ||
+				(L"textCircle" == strValue) ||
+				(L"textCirclePour" == strValue) ||
+				(L"textCurveDown" == strValue) ||
+				(L"textCurveUp" == strValue) ||
+				(L"textDeflate" == strValue) ||
+				(L"textDeflateBottom" == strValue) ||
+				(L"textDeflateInflate" == strValue) ||
+				(L"textDeflateInflateDeflate" == strValue) ||
+				(L"textDeflateTop" == strValue) ||
+				(L"textDoubleWave1" == strValue) ||
+				(L"textFadeDown" == strValue) ||
+				(L"textFadeLeft" == strValue) ||
+				(L"textFadeRight" == strValue) ||
+				(L"textFadeUp" == strValue) ||
+				(L"textInflate" == strValue) ||
+				(L"textInflateBottom" == strValue) ||
+				(L"textInflateTop" == strValue) ||
+				(L"textNoShape" == strValue) ||
+				(L"textPlain" == strValue) ||
+				(L"textRingInside" == strValue) ||
+				(L"textRingOutside" == strValue) ||
+				(L"textSlantDown" == strValue) ||
+				(L"textSlantUp" == strValue) ||
+				(L"textStop" == strValue) ||
+				(L"textTriangle" == strValue) ||
+				(L"textTriangleInverted" == strValue) ||
+				(L"textWave1" == strValue) ||
+				(L"textWave2" == strValue) ||
+				(L"textWave4" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextShapeType::GetBYTECode() const
+		unsigned char TextShapeType::GetBYTECode() const
 		{
-			if (_T("textArchDown") == m_strValue) return 0;
-			if (_T("textArchDownPour") == m_strValue) return 1;
-			if (_T("textArchUp") == m_strValue) return 2;
-			if (_T("textArchUpPour") == m_strValue) return 3;
-			if (_T("textButton") == m_strValue) return 4;
-			if (_T("textButtonPour") == m_strValue) return 5;
-			if (_T("textCanDown") == m_strValue) return 6;
-			if (_T("textCanUp") == m_strValue) return 7;
-			if (_T("textCascadeDown") == m_strValue) return 8;
-			if (_T("textCascadeUp") == m_strValue) return 9;
-			if (_T("textChevron") == m_strValue) return 10;
-			if (_T("textChevronInverted") == m_strValue) return 11;
-			if (_T("textCircle") == m_strValue) return 12;
-			if (_T("textCirclePour") == m_strValue) return 13;
-			if (_T("textCurveDown") == m_strValue) return 14;
-			if (_T("textCurveUp") == m_strValue) return 15;
-			if (_T("textDeflate") == m_strValue) return 16;
-			if (_T("textDeflateBottom") == m_strValue) return 17;
-			if (_T("textDeflateInflate") == m_strValue) return 18;
-			if (_T("textDeflateInflateDeflate") == m_strValue) return 19;
-			if (_T("textDeflateTop") == m_strValue) return 20;
-			if (_T("textDoubleWave1") == m_strValue) return 21;
-			if (_T("textFadeDown") == m_strValue) return 22;
-			if (_T("textFadeLeft") == m_strValue) return 23;
-			if (_T("textFadeRight") == m_strValue) return 24;
-			if (_T("textFadeUp") == m_strValue) return 25;
-			if (_T("textInflate") == m_strValue) return 26;
-			if (_T("textInflateBottom") == m_strValue) return 27;
-			if (_T("textInflateTop") == m_strValue) return 28;
-			if (_T("textNoShape") == m_strValue) return 29;
-			if (_T("textPlain") == m_strValue) return 30;
-			if (_T("textRingInside") == m_strValue) return 31;
-			if (_T("textRingOutside") == m_strValue) return 32;
-			if (_T("textSlantDown") == m_strValue) return 33;
-			if (_T("textSlantUp") == m_strValue) return 34;
-			if (_T("textStop") == m_strValue) return 35;
-			if (_T("textTriangle") == m_strValue) return 36;
-			if (_T("textTriangleInverted") == m_strValue) return 37;
-			if (_T("textWave1") == m_strValue) return 38;
-			if (_T("textWave2") == m_strValue) return 39;
-			if (_T("textWave4") == m_strValue) return 40;
+			if (L"textArchDown" == m_strValue) return 0;
+			if (L"textArchDownPour" == m_strValue) return 1;
+			if (L"textArchUp" == m_strValue) return 2;
+			if (L"textArchUpPour" == m_strValue) return 3;
+			if (L"textButton" == m_strValue) return 4;
+			if (L"textButtonPour" == m_strValue) return 5;
+			if (L"textCanDown" == m_strValue) return 6;
+			if (L"textCanUp" == m_strValue) return 7;
+			if (L"textCascadeDown" == m_strValue) return 8;
+			if (L"textCascadeUp" == m_strValue) return 9;
+			if (L"textChevron" == m_strValue) return 10;
+			if (L"textChevronInverted" == m_strValue) return 11;
+			if (L"textCircle" == m_strValue) return 12;
+			if (L"textCirclePour" == m_strValue) return 13;
+			if (L"textCurveDown" == m_strValue) return 14;
+			if (L"textCurveUp" == m_strValue) return 15;
+			if (L"textDeflate" == m_strValue) return 16;
+			if (L"textDeflateBottom" == m_strValue) return 17;
+			if (L"textDeflateInflate" == m_strValue) return 18;
+			if (L"textDeflateInflateDeflate" == m_strValue) return 19;
+			if (L"textDeflateTop" == m_strValue) return 20;
+			if (L"textDoubleWave1" == m_strValue) return 21;
+			if (L"textFadeDown" == m_strValue) return 22;
+			if (L"textFadeLeft" == m_strValue) return 23;
+			if (L"textFadeRight" == m_strValue) return 24;
+			if (L"textFadeUp" == m_strValue) return 25;
+			if (L"textInflate" == m_strValue) return 26;
+			if (L"textInflateBottom" == m_strValue) return 27;
+			if (L"textInflateTop" == m_strValue) return 28;
+			if (L"textNoShape" == m_strValue) return 29;
+			if (L"textPlain" == m_strValue) return 30;
+			if (L"textRingInside" == m_strValue) return 31;
+			if (L"textRingOutside" == m_strValue) return 32;
+			if (L"textSlantDown" == m_strValue) return 33;
+			if (L"textSlantUp" == m_strValue) return 34;
+			if (L"textStop" == m_strValue) return 35;
+			if (L"textTriangle" == m_strValue) return 36;
+			if (L"textTriangleInverted" == m_strValue) return 37;
+			if (L"textWave1" == m_strValue) return 38;
+			if (L"textWave2" == m_strValue) return 39;
+			if (L"textWave4" == m_strValue) return 40;
 			return 29;
 		}
-		void TextShapeType::SetBYTECode(const BYTE& src)
+		void TextShapeType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
-			case 0: m_strValue = _T("textArchDown"); break;
-			case 1: m_strValue = _T("textArchDownPour"); break;
-			case 2: m_strValue = _T("textArchUp"); break;
-			case 3: m_strValue = _T("textArchUpPour"); break;
-			case 4: m_strValue = _T("textButton"); break;
-			case 5: m_strValue = _T("textButtonPour"); break;
-			case 6: m_strValue = _T("textCanDown"); break;
-			case 7: m_strValue = _T("textCanUp"); break;
-			case 8: m_strValue = _T("textCascadeDown"); break;
-			case 9: m_strValue = _T("textCascadeUp"); break;
-			case 10: m_strValue = _T("textChevron"); break;
-			case 11: m_strValue = _T("textChevronInverted"); break;
-			case 12: m_strValue = _T("textCircle"); break;
-			case 13: m_strValue = _T("textCirclePour"); break;
-			case 14: m_strValue = _T("textCurveDown"); break;
-			case 15: m_strValue = _T("textCurveUp"); break;
-			case 16: m_strValue = _T("textDeflate"); break;
-			case 17: m_strValue = _T("textDeflateBottom"); break;
-			case 18: m_strValue = _T("textDeflateInflate"); break;
-			case 19: m_strValue = _T("textDeflateInflateDeflate"); break;
-			case 20: m_strValue = _T("textDeflateTop"); break;
-			case 21: m_strValue = _T("textDoubleWave1"); break;
-			case 22: m_strValue = _T("textFadeDown"); break;
-			case 23: m_strValue = _T("textFadeLeft"); break;
-			case 24: m_strValue = _T("textFadeRight"); break;
-			case 25: m_strValue = _T("textFadeUp"); break;
-			case 26: m_strValue = _T("textInflate"); break;
-			case 27: m_strValue = _T("textInflateBottom"); break;
-			case 28: m_strValue = _T("textInflateTop"); break;
-			case 29: m_strValue = _T("textNoShape"); break;
-			case 30: m_strValue = _T("textPlain"); break;
-			case 31: m_strValue = _T("textRingInside"); break;
-			case 32: m_strValue = _T("textRingOutside"); break;
-			case 33: m_strValue = _T("textSlantDown"); break;
-			case 34: m_strValue = _T("textSlantUp"); break;
-			case 35: m_strValue = _T("textStop"); break;
-			case 36: m_strValue = _T("textTriangle"); break;
-			case 37: m_strValue = _T("textTriangleInverted"); break;
-			case 38: m_strValue = _T("textWave1"); break;
-			case 39: m_strValue = _T("textWave2"); break;
-			case 40: m_strValue = _T("textWave4"); break;
-			default:m_strValue = _T("textNoShape"); break;
+			case 0: m_strValue = L"textArchDown"; break;
+			case 1: m_strValue = L"textArchDownPour"; break;
+			case 2: m_strValue = L"textArchUp"; break;
+			case 3: m_strValue = L"textArchUpPour"; break;
+			case 4: m_strValue = L"textButton"; break;
+			case 5: m_strValue = L"textButtonPour"; break;
+			case 6: m_strValue = L"textCanDown"; break;
+			case 7: m_strValue = L"textCanUp"; break;
+			case 8: m_strValue = L"textCascadeDown"; break;
+			case 9: m_strValue = L"textCascadeUp"; break;
+			case 10: m_strValue = L"textChevron"; break;
+			case 11: m_strValue = L"textChevronInverted"; break;
+			case 12: m_strValue = L"textCircle"; break;
+			case 13: m_strValue = L"textCirclePour"; break;
+			case 14: m_strValue = L"textCurveDown"; break;
+			case 15: m_strValue = L"textCurveUp"; break;
+			case 16: m_strValue = L"textDeflate"; break;
+			case 17: m_strValue = L"textDeflateBottom"; break;
+			case 18: m_strValue = L"textDeflateInflate"; break;
+			case 19: m_strValue = L"textDeflateInflateDeflate"; break;
+			case 20: m_strValue = L"textDeflateTop"; break;
+			case 21: m_strValue = L"textDoubleWave1"; break;
+			case 22: m_strValue = L"textFadeDown"; break;
+			case 23: m_strValue = L"textFadeLeft"; break;
+			case 24: m_strValue = L"textFadeRight"; break;
+			case 25: m_strValue = L"textFadeUp"; break;
+			case 26: m_strValue = L"textInflate"; break;
+			case 27: m_strValue = L"textInflateBottom"; break;
+			case 28: m_strValue = L"textInflateTop"; break;
+			case 29: m_strValue = L"textNoShape"; break;
+			case 30: m_strValue = L"textPlain"; break;
+			case 31: m_strValue = L"textRingInside"; break;
+			case 32: m_strValue = L"textRingOutside"; break;
+			case 33: m_strValue = L"textSlantDown"; break;
+			case 34: m_strValue = L"textSlantUp"; break;
+			case 35: m_strValue = L"textStop"; break;
+			case 36: m_strValue = L"textTriangle"; break;
+			case 37: m_strValue = L"textTriangleInverted"; break;
+			case 38: m_strValue = L"textWave1"; break;
+			case 39: m_strValue = L"textWave2"; break;
+			case 40: m_strValue = L"textWave4"; break;
+			default:m_strValue = L"textNoShape"; break;
 			}
 		}
 	} // namespace Limit

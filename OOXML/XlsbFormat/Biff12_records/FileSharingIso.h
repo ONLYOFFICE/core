@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,8 +34,8 @@
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-#include "../Biff12_structures/LPByteBuf.h"
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Boolean.h"
+#include "../Biff12_structures/IsoPasswordData.h"
 
 namespace XLSB
 {
@@ -52,11 +52,11 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            _UINT32                      dwSpinCount;
-            XLS::Boolean<unsigned short> fReadOnlyRec;
-            XLNullableWideString         stUserName;
-            LPByteBuf                    ipdPasswordData;
-    };
+            _UINT32							dwSpinCount;
+            XLS::Boolean<unsigned short>	fReadOnlyRec;
+            XLNullableWideString			stUserName;
+			IsoPasswordData					ipdPasswordData;
+	    };
 
 } // namespace XLSB
 

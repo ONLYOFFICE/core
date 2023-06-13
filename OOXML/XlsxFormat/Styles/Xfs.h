@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,20 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CHorizontalAlignment;
+		class CVerticalAlignment;
+	}
+}
 
 namespace OOX
 {
@@ -40,7 +53,7 @@ namespace OOX
 		class CAligment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAligment)
+			WritingElement_AdditionMethods(CAligment)
             WritingElement_XlsbConstructors(CAligment)
 			CAligment();
 			virtual ~CAligment();
@@ -77,7 +90,7 @@ namespace OOX
 		class CProtection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProtection)
+			WritingElement_AdditionMethods(CProtection)
             WritingElement_XlsbConstructors(CProtection)
 			CProtection();
 			virtual ~CProtection();
@@ -107,7 +120,7 @@ namespace OOX
 		class CXfs : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CXfs)
+			WritingElement_AdditionMethods(CXfs)
             WritingElement_XlsbConstructors(CXfs)
 			CXfs();
 			virtual ~CXfs();
@@ -150,7 +163,7 @@ namespace OOX
 		class CCellXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellXfs)
+			WritingElement_AdditionMethods(CCellXfs)
             WritingElement_XlsbVectorConstructors(CCellXfs)
 			CCellXfs();
 			virtual ~CCellXfs();
@@ -175,7 +188,7 @@ namespace OOX
 		class CCellStyleXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellStyleXfs)
+			WritingElement_AdditionMethods(CCellStyleXfs)
             WritingElement_XlsbVectorConstructors(CCellStyleXfs)
 			CCellStyleXfs();
 			virtual ~CCellStyleXfs();

@@ -18,23 +18,12 @@ DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 core_windows {
-    DEFINES += \
-    JAS_WIN_MSVC_BUILD \
-    WIN32
-
     DEFINES -= UNICODE
-    DEFINES -= _DEBUG
-
-    message(windows)
 
     LIBS += -lAdvapi32
     LIBS += -lShell32
     LIBS += -lGdi32
     LIBS += -lUser32
-}
-
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./
 }
 
 SOURCES += main.cpp

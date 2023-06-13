@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,51 +38,51 @@ namespace PPTX
 	{		
 		TextAnchor::TextAnchor()
 		{
-			m_strValue = _T("t");
+			m_strValue = L"t";
 		}
 		void TextAnchor::set(const std::wstring& strValue)
 		{
-			if ((_T("b") == strValue) ||
-				(_T("ctr") == strValue) ||
-				(_T("dist") == strValue) ||
-				(_T("just") == strValue) ||
-				(_T("t") == strValue))
+			if ((L"b" == strValue) ||
+				(L"ctr" == strValue) ||
+				(L"dist" == strValue) ||
+				(L"just" == strValue) ||
+				(L"t" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextAnchor::GetBYTECode() const
+		unsigned char TextAnchor::GetBYTECode() const
 		{
-			if (_T("b") == m_strValue)
+			if (L"b" == m_strValue)
 				return 0;
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 1;
-			if (_T("dist") == m_strValue)
+			if (L"dist" == m_strValue)
 				return 2;
-			if (_T("just") == m_strValue)
+			if (L"just" == m_strValue)
 				return 3;
-			if (_T("t") == m_strValue)
+			if (L"t" == m_strValue)
 				return 4;
 			return 4;
 		}
-		void TextAnchor::SetBYTECode(const BYTE& src)
+		void TextAnchor::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("b");
+				m_strValue = L"b";
 				break;
 			case 1:
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 				break;
 			case 2:
-				m_strValue = _T("dist");
+				m_strValue = L"dist";
 				break;
 			case 3:
-				m_strValue = _T("just");
+				m_strValue = L"just";
 				break;
 			default:
-				m_strValue = _T("t");
+				m_strValue = L"t";
 				break;
 			}
 		}

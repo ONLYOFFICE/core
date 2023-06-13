@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,11 +56,11 @@ namespace PPTX
 			std::wstring strName = oReader.GetName();
 
 			if (strName == _T("a:buSzTx"))
-				m_Size.reset(new Logic::BuSzTx(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(oReader));
 			else if (strName == _T("a:buSzPct"))
-				m_Size.reset(new Logic::BuSzPct(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(oReader));
 			else if (strName == _T("a:buSzPts"))
-				m_Size.reset(new Logic::BuSzPts(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(oReader));
 			else
 				m_Size.reset();
 		}
@@ -69,11 +69,11 @@ namespace PPTX
 			std::wstring strName = node.GetName();
 
 			if (strName == _T("a:buSzTx"))
-				m_Size.reset(new Logic::BuSzTx(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(node));
 			else if (strName == _T("a:buSzPct"))
-				m_Size.reset(new Logic::BuSzPct(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(node));
 			else if (strName == _T("a:buSzPts"))
-				m_Size.reset(new Logic::BuSzPts(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(node));
 			else
 				m_Size.reset();
 		}
@@ -81,11 +81,11 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if(element.GetNode(_T("a:buSzTx"), oNode))
-				m_Size.reset(new Logic::BuSzTx(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(oNode));
 			else if(element.GetNode(_T("a:buSzPct"), oNode))
-				m_Size.reset(new Logic::BuSzPct(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(oNode));
 			else if(element.GetNode(_T("a:buSzPts"), oNode))
-				m_Size.reset(new Logic::BuSzPts(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(oNode));
 			else
 				m_Size.reset();
 		}

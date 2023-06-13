@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -118,11 +118,17 @@ public:
 	_CP_OPT(odf_types::chart_error_category)		error_category_;
 	_CP_OPT(odf_types::Bool)						right_angled_axes_;
 
-	_CP_OPT(std::wstring)				axis_label_position_;
-	_CP_OPT(std::wstring)				axis_position_;									
+	_CP_OPT(std::wstring) axis_label_position_;
+	_CP_OPT(std::wstring) axis_position_;									
 
-	odf_types::common_rotation_angle_attlist       common_rotation_angle_attlist_;
+	odf_types::common_rotation_angle_attlist common_rotation_angle_attlist_;
+	
+	_CP_OPT(odf_types::Bool) show_horizontal_border_;
+	_CP_OPT(odf_types::Bool) show_vertical_border_;
+	_CP_OPT(odf_types::Bool) show_outline_;
+	_CP_OPT(odf_types::Bool) show_keys_;
 };
+typedef boost::shared_ptr<chart_format_properties> chart_format_properties_ptr;
 
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {
@@ -130,9 +136,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleChartProperties;
-
-    
+    static const ElementType type = typeStyleChartProperties;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -141,7 +145,6 @@ public:
 	
 	chart_format_properties content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_chart_properties);
 
 }

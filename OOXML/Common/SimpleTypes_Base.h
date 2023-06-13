@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,28 +31,27 @@
  */
 #pragma once
 
-#include <string>
 #include "../Base/Base.h"
 
 namespace SimpleTypes
 {
-#define SimpleTypes_DefaultString(Class)                                                                              \
-	Class(const std::wstring &sValue) { FromString(sValue); }                                                         \
+#define SimpleTypes_DefaultString(Class)																		\
+	Class(const std::wstring &sValue) { FromString(sValue); }													\
 	Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
 
-#define SimpleTypes_Default(Class)                                                                                    \
-    bool operator==(const Class& oOther) const { return (this->m_eValue == oOther.m_eValue) ? true : false; }         \
+#define SimpleTypes_Default(Class)																				\
+	bool operator==(const Class& oOther) const { return (this->m_eValue == oOther.m_eValue) ? true : false; }	\
 	SimpleTypes_DefaultString(Class)
 
-#define SimpleTypes_DefaultD(Class)                                                                                   \
-    bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }         \
+#define SimpleTypes_DefaultD(Class)																				\
+	bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }	\
 	SimpleTypes_DefaultString(Class)
 
-#define SimpleTypes_DefaultS(Class)                                                                                   \
-    bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }         \
+#define SimpleTypes_DefaultS(Class)																				\
+	bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }	\
 	SimpleTypes_DefaultString(Class)
 
-	#define DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)														\
+#define DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)															\
 	class Class                                                                                                 \
 	{                                                                                                           \
 	public:                                                                                                     \
@@ -69,33 +68,33 @@ namespace SimpleTypes
 	public:                                                                                                     \
 		Type m_eValue;
 
-	#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                      \
+#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)															\
 	DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)                                                               \
 	public:                                                                                                     \
 		Class() { m_eValue = Default; }                                                                         \
 		void SetValue(const Type& value) { m_eValue = value; }
 
-	#define DEFINE_SIMPLE_TYPE_START_NSV(Class, Type, Default)                                                  \
+#define DEFINE_SIMPLE_TYPE_START_NSV(Class, Type, Default)											            \
 	DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)                                                               \
 	public:                                                                                                     \
 		Class() { m_eValue = Default; }                                                                         \
 		void SetValue(const Type value);
 
-	#define DEFINE_SIMPLE_TYPE_START_NC(Class, Type, Default)                                                   \
+#define DEFINE_SIMPLE_TYPE_START_NC(Class, Type, Default)												        \
 	DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)                                                               \
 	public:                                                                                                     \
 		void SetValue(const Type& value) { m_eValue = value; }
 
-	#define DEFINE_SIMPLE_TYPE(Class, Type, Default)                                                            \
+#define DEFINE_SIMPLE_TYPE(Class, Type, Default)															    \
 	DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                              \
 	};
 
-	#define DEFINE_SIMPLE_TYPE_NSV(Class, Type, Default)                                                        \
+#define DEFINE_SIMPLE_TYPE_NSV(Class, Type, Default)															\
 	DEFINE_SIMPLE_TYPE_START_NSV(Class, Type, Default)                                                          \
 	};
 
-	#define DEFINE_SIMPLE_TYPE_NC(Class, Type, Default)                                                         \
-	DEFINE_SIMPLE_TYPE_START_NC(Class, Type, Default)                                                           \
+#define DEFINE_SIMPLE_TYPE_NC(Class, Type, Default)																\
+	DEFINE_SIMPLE_TYPE_START_NC(Class, Type, Default)															\
 	};
 
 	//--------------------------------------------------------------------------------

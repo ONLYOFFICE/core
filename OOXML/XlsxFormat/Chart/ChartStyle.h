@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,18 +32,37 @@
 //Generated code
 #pragma once
 
-#include "../../Base/Nullable.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
 #include "../../PPTXFormat/Logic/StyleRef.h"
 #include "../../PPTXFormat/Logic/FontRef.h"
-#include "../../PPTXFormat/Logic/RunProperties.h"
-#include "../../PPTXFormat/Logic/SpPr.h"
-#include "../../PPTXFormat/Logic/BodyPr.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CChartSymbol;
+	}
+}
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class RunProperties;
+		class SpPr;
+		class BodyPr;
+	}
+}
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx
@@ -51,7 +70,7 @@ namespace ChartEx
 	class CStyleEntry : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CStyleEntry)
+		WritingElement_AdditionMethods(CStyleEntry)
 
 		CStyleEntry();
 
@@ -86,7 +105,7 @@ namespace ChartEx
 	class CMarkerLayout : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CMarkerLayout)
+		WritingElement_AdditionMethods(CMarkerLayout)
 
 		CMarkerLayout();
 
@@ -111,7 +130,7 @@ namespace ChartEx
 		CChartStyle();
 		virtual ~CChartStyle();
 
-		WritingElement_AdditionConstructors(CChartStyle)
+		WritingElement_AdditionMethods(CChartStyle)
 
 		virtual void fromXML(XmlUtils::CXmlNode& node);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

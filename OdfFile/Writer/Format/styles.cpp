@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -57,24 +57,59 @@ namespace odf_writer {
     
 using xml::xml_char_wc;
 //
-style_text_properties * style_content::get_style_text_properties() 
+text_format_properties * style_content::add_get_style_text_properties()
 {
-	//если запросили .. значит надо - создаем
 	if (!style_text_properties_)
 		create_element(L"style", L"text-properties",style_text_properties_, Context);
 	
-	return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
+	return get_text_properties();
 }
 
-style_paragraph_properties * style_content::get_style_paragraph_properties()
+paragraph_format_properties * style_content::add_get_style_paragraph_properties()
 {
  	if (!style_paragraph_properties_)
 		create_element(L"style", L"paragraph-properties",style_paragraph_properties_, Context);
 
-	return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
+	return get_paragraph_properties();
 }
+graphic_format_properties* style_content::get_graphic_properties()
+{
+	style_graphic_properties * style_gr = dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());
+	loext_graphic_properties * loext_gr = dynamic_cast<loext_graphic_properties *>(style_graphic_properties_.get());
 
-graphic_format_properties * style_content::get_graphic_properties() 
+	if (style_gr)
+	{
+		return &style_gr->content_;
+	}
+	else if (loext_gr)
+	{
+		return &loext_gr->content_;
+	}
+	else
+		return NULL;
+}
+paragraph_format_properties* style_content::get_paragraph_properties()
+{
+	style_paragraph_properties *style_paragraph = dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());
+	if (style_paragraph)
+		return &(style_paragraph->content_);
+	return NULL;
+}
+chart_format_properties* style_content::get_chart_properties()
+{
+	style_chart_properties *style_chart = dynamic_cast<style_chart_properties *>(style_chart_properties_.get());
+	if (style_chart)
+		return &(style_chart->content_);
+	return NULL;
+}
+text_format_properties* style_content::get_text_properties()
+{
+	style_text_properties *style_text = dynamic_cast<style_text_properties *>(style_text_properties_.get());
+	if (style_text)
+		return &(style_text->content_);
+	return NULL;
+}
+graphic_format_properties * style_content::add_get_style_graphic_properties()
 {
 	if (!style_graphic_properties_)
 	{
@@ -83,21 +118,10 @@ graphic_format_properties * style_content::get_graphic_properties()
 		else
 			create_element(L"style", L"graphic-properties", style_graphic_properties_, Context);
 	}
-	style_graphic_properties * style_gr = dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());
-	loext_graphic_properties * loext_gr = dynamic_cast<loext_graphic_properties *>(style_graphic_properties_.get());
-	
-	if (style_gr)
-	{
-		return &style_gr->content_;    
-	}
-	else if (loext_gr)
-	{
-		return &loext_gr->content_;
-	}
-	return NULL;
-
+	return get_graphic_properties();
 }
-style_table_properties * style_content::get_style_table_properties()
+
+style_table_properties* style_content::add_get_style_table_properties()
 {
   	if (!style_table_properties_)
 		create_element(L"style", L"table-properties", style_table_properties_, Context);
@@ -105,7 +129,7 @@ style_table_properties * style_content::get_style_table_properties()
     return dynamic_cast<style_table_properties *>(style_table_properties_.get());    
 }
 
-style_section_properties * style_content::get_style_section_properties()
+style_section_properties * style_content::add_get_style_section_properties()
 {
   	if (!style_section_properties_)
 		create_element(L"style", L"section-properties",style_section_properties_, Context);
@@ -113,7 +137,7 @@ style_section_properties * style_content::get_style_section_properties()
 	return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
 
-style_table_cell_properties * style_content::get_style_table_cell_properties()
+style_table_cell_properties * style_content::add_get_style_table_cell_properties()
 {
 	//если запросили .. значит надо - создаем
 	if (!style_table_cell_properties_)
@@ -122,7 +146,7 @@ style_table_cell_properties * style_content::get_style_table_cell_properties()
 	return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
 }
 
-style_table_row_properties * style_content::get_style_table_row_properties() 
+style_table_row_properties * style_content::add_get_style_table_row_properties()
 {
   	if (!style_table_row_properties_)
 		create_element(L"style", L"table-row-properties",style_table_row_properties_, Context);
@@ -130,7 +154,7 @@ style_table_row_properties * style_content::get_style_table_row_properties()
 	return dynamic_cast<style_table_row_properties *>(style_table_row_properties_.get());
 }
 
-style_table_column_properties * style_content::get_style_table_column_properties() 
+style_table_column_properties* style_content::add_get_style_table_column_properties()
 {
    	if (!style_table_column_properties_)
 		create_element(L"style", L"table-column-properties",style_table_column_properties_, Context);
@@ -138,21 +162,20 @@ style_table_column_properties * style_content::get_style_table_column_properties
 	return dynamic_cast<style_table_column_properties *>(style_table_column_properties_.get());
 }
 
-style_chart_properties * style_content::get_style_chart_properties() 
+chart_format_properties* style_content::add_get_style_chart_properties()
 {
    	if (!style_chart_properties_)
-		create_element(L"style", L"chart-properties",style_chart_properties_, Context);
+		create_element(L"style", L"chart-properties", style_chart_properties_, Context);
 
-	return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
+	return get_chart_properties();
 }
-style_drawing_page_properties * style_content::get_style_drawing_page_properties()
+style_drawing_page_properties * style_content::add_get_style_drawing_page_properties()
 {
     if (!style_drawing_page_properties_)
-		create_element(L"style", L"drawing-page-properties",style_drawing_page_properties_, Context);
+		create_element(L"style", L"drawing-page-properties", style_drawing_page_properties_, Context);
 
    return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 }
-
 void style_content::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;

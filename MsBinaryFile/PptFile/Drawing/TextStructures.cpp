@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -122,8 +122,8 @@ bool PPT::CFontProperty::IsValidPitchFamily(int value)
     if (value <= 0 || value > 255)
         return false;
 
-    std::set<int> BLPitchFamily = {148, 164};
-    return BLPitchFamily.find(value) == BLPitchFamily.end();
+    std::set<int> BLPitchFamily = { 0x00, 0x01, 0x02, 0x10, 0x11, 0x12, 0x20, 0x21, 0x22, 0x30, 0x31, 0x32, 0x40, 0x41, 0x42, 0x50, 0x51, 0x52};
+    return BLPitchFamily.find(value) != BLPitchFamily.end();
 }
 
 bool PPT::CBulletAutoNum::isDefault() const

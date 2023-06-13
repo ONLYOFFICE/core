@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,12 +34,18 @@
 #define OOX_VML_WORD_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/SimpleTypes_Vml.h"
-
 #include "../WritingElement.h"
-#include "../RId.h"
+
+namespace SimpleTypes
+{
+	class CBorderType;
+	class CBorderShadow;
+	class CDecimalNumber;
+	class CHorizontalAnchor;
+	class CVerticalAnchor;
+	class CWrapSide;
+	class CWrapType;
+}
 
 namespace OOX
 {
@@ -51,7 +57,7 @@ namespace OOX
 		class CAnchorLock : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnchorLock)
+			WritingElement_AdditionMethods(CAnchorLock)
 			CAnchorLock(OOX::Document *pMain = NULL);
 			virtual ~CAnchorLock();
 
@@ -68,7 +74,7 @@ namespace OOX
 		class CBorder : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorder)
+			WritingElement_AdditionMethods(CBorder)
 			CBorder(OOX::Document *pMain = NULL);
 			virtual ~CBorder();
 
@@ -94,7 +100,7 @@ namespace OOX
 		class CWrap : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrap)
+			WritingElement_AdditionMethods(CWrap)
 			CWrap(OOX::Document *pMain = NULL);
 			virtual ~CWrap();
 

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,13 +56,13 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (strName == _T("buNone"))
-				m_Bullet.reset(new Logic::BuNone(oReader));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuNone>(oReader));
 			else if (strName == _T("buChar"))
-				m_Bullet.reset(new Logic::BuChar(oReader));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuChar>(oReader));
 			else if (strName == _T("buAutoNum"))
-				m_Bullet.reset(new Logic::BuAutoNum(oReader));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuAutoNum>(oReader));
 			else if (strName == _T("buBlip"))
-				m_Bullet.reset(new Logic::BuBlip(oReader));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuBlip>(oReader));
 			else
 				m_Bullet.reset();
 		}
@@ -71,13 +71,13 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (strName == _T("buNone"))
-				m_Bullet.reset(new Logic::BuNone(node));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuNone>(node));
 			else if (strName == _T("buChar"))
-				m_Bullet.reset(new Logic::BuChar(node));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuChar>(node));
 			else if (strName == _T("buAutoNum"))
-				m_Bullet.reset(new Logic::BuAutoNum(node));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuAutoNum>(node));
 			else if (strName == _T("buBlip"))
-				m_Bullet.reset(new Logic::BuBlip(node));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuBlip>(node));
 			else
 				m_Bullet.reset();
 		}
@@ -85,13 +85,13 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:buNone"), oNode))
-				m_Bullet.reset(new Logic::BuNone(oNode));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuNone>(oNode));
 			else if (element.GetNode(_T("a:buChar"), oNode))
-				m_Bullet.reset(new Logic::BuChar(oNode));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuChar>(oNode));
 			else if (element.GetNode(_T("a:buAutoNum"), oNode))
-				m_Bullet.reset(new Logic::BuAutoNum(oNode));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuAutoNum>(oNode));
 			else if (element.GetNode(_T("a:buBlip"), oNode))
-				m_Bullet.reset(new Logic::BuBlip(oNode));
+				m_Bullet.reset(CreatePtrXmlContent<Logic::BuBlip>(oNode));
 			else
 				m_Bullet.reset();
 		}

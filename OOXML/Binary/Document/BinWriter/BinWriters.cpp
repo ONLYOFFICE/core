@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,6 +48,10 @@
 #endif
 #include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
+
+#include "../../../DocxFormat/App.h"
+#include "../../../DocxFormat/Core.h"
+#include "../../../DocxFormat/FontTable.h"
 
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Logic/AlternateContent.h"
@@ -485,7 +489,7 @@ void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty
 	
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
 	oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
@@ -4072,11 +4076,16 @@ void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pFldChar->m_oFldCharType->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-//FFData
 	if (pFldChar->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldChar->m_oFFData.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pFldChar->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldChar->m_sPrivateData);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -4095,19 +4104,25 @@ void BinaryDocumentTableWriter::WriteFldSimple(OOX::Logic::CFldSimple* pFldSimpl
 void BinaryDocumentTableWriter::WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple)
 {
 	int nCurPos = 0;
-	//порядок записи важен
-	//Instr
+
+//порядок записи важен
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
 		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sInstr);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
-	//FFData
 	if(pFldSimple->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldSimple->m_oFFData.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	//Content
+	if (pFldSimple->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sPrivateData);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
 		WriteParagraphContent(pFldSimple->m_arrItems);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
@@ -8141,7 +8156,7 @@ void BinaryCommentsTableWriter::Write(OOX::CComments& oComments, OOX::CCommentsE
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	int nStart = m_oBcw.WriteItemWithLengthStart();
 	WriteCommentsContent(oComments, pCommentsExt, pCommentsExtensible, pCommentsUserData, pPeople, pCommentsIds, mapIgnoreComments, oParamsDocumentWriter);
@@ -8155,7 +8170,7 @@ void BinaryCommentsTableWriter::WriteCommentsContent(OOX::CComments& oComments, 
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	std::map<std::wstring, OOX::CPerson*> mapAuthorToUserId;
 	std::map<unsigned int, CCommentWriteTemp*> mapParaIdToComment;
@@ -9149,7 +9164,7 @@ void BinaryNotesTableWriter::WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNot
 
 	smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
 	m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-	m_pOfficeDrawingConverter->ClearShapeTypes();
+	m_pOfficeDrawingConverter->Clear();
 
 	int nCurPos = 0;
 	for(size_t i = 0 ; i < arrNotes.size(); ++i)
@@ -9448,7 +9463,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 		BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 
 		m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-		m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+		m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
 		oBinaryDocumentTableWriter.poDocument = pDocument;
 		oBinaryDocumentTableWriter.pSectPr = pDocument->m_oSectPr.GetPointer();;
@@ -9580,7 +9595,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 
 				m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
-				m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+				m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
 				oBinaryDocumentTableWriter.poDocument = pDocx->m_oGlossary.document;
 				oBinaryDocumentTableWriter.pSectPr = pDocx->m_oGlossary.document->m_oSectPr.GetPointer();;

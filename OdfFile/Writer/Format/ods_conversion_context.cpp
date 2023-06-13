@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,7 +49,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 ods_conversion_context::ods_conversion_context(package::odf_document* outputDocument) 
-	: odf_conversion_context(SpreadsheetDocument, outputDocument), table_context_(*this)
+	: odf_conversion_context(SpreadsheetDocument, outputDocument), table_context_(*this), root_spreadsheet_(NULL)
 {
 }
 
@@ -64,7 +64,10 @@ void ods_conversion_context::set_tables_structure_lock(bool val)
 {
 	root_spreadsheet_->table_structure_protected_ = val;
 }
-
+void ods_conversion_context::set_repeat_at_lasts(bool Val)
+{
+	repeat_at_lasts_ = Val;
+}
 void ods_conversion_context::end_document()
 {
 	if (table_context_.table_database_ranges_.root)
@@ -120,11 +123,19 @@ void ods_conversion_context::add_header_footer_image(const std::wstring & name, 
 }
 void ods_conversion_context::start_sheet()
 {
-	create_element(L"table", L"table", root_spreadsheet_->getContent(), this);	
-	table_context_.start_table(root_spreadsheet_->getContent().back());
+	if (root_spreadsheet_)
+	{
+		create_element(L"table", L"table", root_spreadsheet_->getContent(), this);
+		table_context_.start_table(root_spreadsheet_->getContent().back());
+	}
+	else
+	{
+		create_element(L"table", L"table", get_current_object_element(), this);
+		table_context_.start_table(get_current_object_element());
+	}
 
-		drawing_context()->set_styles_context(styles_context());
-		page_layout_context()->set_styles_context(styles_context());
+	drawing_context()->set_styles_context(styles_context());
+	page_layout_context()->set_styles_context(styles_context());
 		
 	page_layout_context()->add_master_page(L"");
 
@@ -241,7 +252,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
 
-		style_table_row_properties * row_properties = _style->content_.get_style_table_row_properties();
+		style_table_row_properties * row_properties = _style->content_.add_get_style_table_row_properties();
  		if (row_properties == NULL)return; //error ????
 
 		if (bBreak)
@@ -249,9 +260,20 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 		else
 			row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
-
+	header_row_ = false;
+	if (_start_row == 1 && (false == current_table()->table_parts().empty()) && (false == current_table()->table_parts().back().columns.empty()))
+	{
+		header_row_ = true;
+		repeated = 1;
+	}
+	if (header_row_)
+	{
+		office_element_ptr row_headers_elm;
+		create_element(L"table", L"table-header-rows", row_headers_elm, this);
+		current_table()->start_headers(row_headers_elm);
+	}
 	office_element_ptr row_elm;
-	create_element(L"table", L"table-row",row_elm,this);
+	create_element(L"table", L"table-row", row_elm, this);
 	
 	current_table()->add_row(row_elm, repeated, style_elm);
 
@@ -263,11 +285,17 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 }
 void ods_conversion_context::end_row()
 {
-	//add default last cells
-	int repeated = 1024;// max dimension columns???
-	
-	current_table()->add_default_cell(repeated);
+	if (repeat_at_lasts_)
+	{
+		//add default last cells
+		int repeated = 1024;// max dimension columns???
 
+		current_table()->add_default_cell(repeated);
+	}
+	if (header_row_)
+	{
+		current_table()->end_headers();
+	}
 }
 //////////////////////
 void ods_conversion_context::start_comment(int col, int row, std::wstring & author)
@@ -465,10 +493,21 @@ void ods_conversion_context::end_columns()
 	//if (current_table()->current_column() < 1 )
 	//	add_column(current_table()->current_column() + 1,1024, 0, true);
 	//else
-    int repeat = (std::max)(current_table()->dimension_columns, 1024) - current_table()->current_column();
-	if (repeat < 0) repeat = 1;
-	
-	add_column(current_table()->current_column() + 1, repeat, 0, true);
+	if (false == current_table()->table_parts().empty())
+	{
+		int columns = current_table()->table_parts().back().columns.size();
+		if (current_table()->current_column() < current_table()->table_parts().back().columns.size())
+		{
+			add_column(current_table()->current_column() + 1, columns - current_table()->current_column(), 0, true);
+		}
+	}
+	if (repeat_at_lasts_)
+	{
+		int repeat = (std::max)(current_table()->dimension_columns, 1024) - current_table()->current_column();
+		if (repeat < 0) repeat = 1;
+
+		add_column(current_table()->current_column() + 1, repeat, 0, true);
+	}
 }
 void ods_conversion_context::start_rows()
 {
@@ -505,7 +544,7 @@ void ods_conversion_context::add_default_row(int repeated)
 		}
 	}
 	
-	if (repeated > 0 && current_table()->get_last_row_repeated() < 1024)
+	if (repeated > 0 && current_table()->get_last_row_repeated() < 1024 && repeat_at_lasts_)
 	{
 		start_row(current_table()->current_row() + 1, repeated, 0, true);
 		end_row();
@@ -577,7 +616,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
 
-		style_table_column_properties * column_properties = _style->content_.get_style_table_column_properties();
+		style_table_column_properties * column_properties = _style->content_.add_get_style_table_column_properties();
  		if (column_properties == NULL)return; //error ????
 
 		if (bBreak)

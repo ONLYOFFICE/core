@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -65,7 +65,7 @@ public:
     std::wstring	end_span2();
 
     void			start_cell_content();
-	void			set_cell_text_properties( odf_reader::text_format_properties_content_ptr text_properties);
+	void			set_cell_text_properties( odf_reader::text_format_properties_ptr text_properties);
     int				end_cell_content(bool need_cache);
 
 	void			start_comment_content();
@@ -79,7 +79,7 @@ public:
 	
 	void serialize_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut);
+	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut);
 	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut);
 
 	void set_local_styles_container	(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
@@ -102,7 +102,7 @@ private:
 	odf_reader::odf_read_context & odf_context_;
 	odf_reader::styles_container * local_styles_ptr_;
 
-	odf_reader::text_format_properties_content_ptr text_properties_cell_;
+	odf_reader::text_format_properties_ptr text_properties_cell_;
    
 	std::wstring	dump_paragraph();
 	std::wstring	dump_run();
@@ -261,7 +261,7 @@ void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_
 	
 	propertiesOut.apply_from(calc_paragraph_properties_content(instances));
 }
-void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut)
+void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstring para_style, odf_reader::text_format_properties & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
@@ -286,14 +286,14 @@ void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstri
 	if (paraStyle)		instances.push_back(paraStyle);
 	if (textStyle)		instances.push_back(textStyle);
 
-	odf_reader::text_format_properties_content_ptr text_props = calc_text_properties_content(instances);
+	odf_reader::text_format_properties_ptr text_props = calc_text_properties_content(instances);
 	if (text_props)
 	{
 		propertiesOut.apply_from(*text_props.get());
 	}
 }
 
-void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
+void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_properties_ptr text_properties)
 {
 	text_properties_cell_ = text_properties;
 }
@@ -314,7 +314,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 			&& !(!hyperlink_hId.empty()	&& in_draw) 
 			&& !(text_properties_cell_	&& in_cell_content))return;
 
-	odf_reader::text_format_properties_content text_properties_;
+	odf_reader::text_format_properties text_properties_;
 	if (in_cell_content && text_properties_cell_)
 	{
 		text_properties_.apply_from(*text_properties_cell_);
@@ -603,7 +603,7 @@ void xlsx_text_context::set_local_styles_container(odf_reader::styles_container*
 {
 	return impl_->set_local_styles_container(local_styles_);
 }
-void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
+void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_ptr text_properties)
 {
 	return impl_->set_cell_text_properties(text_properties);
 }

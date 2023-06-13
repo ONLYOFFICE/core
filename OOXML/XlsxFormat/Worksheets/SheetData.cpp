@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,15 +32,21 @@
 
 #include "../Workbook/Workbook.h"
 
+#include "../Common.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+
 #include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"
+#include "../Styles/Xfs.h"
 #include "../SharedStrings/SharedStrings.h"
 #include "DataValidation.h"
 #include "../Comments/ThreadedComments.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
 #include "../../../DesktopEditor/common/StreamWriter.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
 #include "../../XlsbFormat/Biff12_unions/ACCELLTABLE.h"
 #include "../../XlsbFormat/Biff12_records/RwDescent.h"
@@ -1234,7 +1240,8 @@ namespace OOX
 					m_oValue = oReader;
 				else if (strcmp("Data", sName) == 0)
 				{
-					CData data(oReader);
+					CData data;
+					data = oReader;
 
 					m_oType = data.m_oType;
 					m_oValue = data.m_oValue;

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -64,6 +64,19 @@
 #include "../../XlsbFormat/Biff12_records/CFVO14.h"
 #include "../../XlsbFormat/Biff12_records/Color14.h"
 #include "../../XlsbFormat/Biff12_records/CFIcon.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+//#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
+#include "../Styles/dxf.h"
+#include "../Styles/Colors.h"
+#include "../Styles/Xfs.h"
+#include "../Styles/NumFmts.h"
+#include "../Styles/Fonts.h"
+#include "../Styles/Fills.h"
+#include "../Styles/Borders.h"
 
 using namespace XLS;
 
@@ -2175,7 +2188,11 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 		if (L"cfRule" == sName)
-			m_arrItems.push_back(new CConditionalFormattingRule(oReader));
+		{
+			CConditionalFormattingRule* pConditionalFormattingRule = new CConditionalFormattingRule();
+			*pConditionalFormattingRule = oReader;
+			m_arrItems.push_back(pConditionalFormattingRule);
+		}
 		if (L"sqref" == sName || L"Range" == sName)
 			m_oSqRef = oReader.GetText2();
 	}

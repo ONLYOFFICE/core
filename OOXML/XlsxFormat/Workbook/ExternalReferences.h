@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,8 +31,13 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
+namespace SimpleTypes
+{
+	class CRelationshipId;
+}
 
 namespace OOX
 {
@@ -41,7 +46,7 @@ namespace OOX
 		class CExternalReference : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalReference)
+			WritingElement_AdditionMethods(CExternalReference)
 			WritingElement_XlsbConstructors(CExternalReference)
 			CExternalReference();
 			virtual ~CExternalReference();
@@ -51,7 +56,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -66,7 +71,7 @@ namespace OOX
 		class CExternalReferences  : public WritingElementWithChilds<CExternalReference>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalReferences)
+			WritingElement_AdditionMethods(CExternalReferences)
 			WritingElement_XlsbVectorConstructors(CExternalReferences)
 			CExternalReferences();
 			virtual ~CExternalReferences();
@@ -77,7 +82,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 
 			virtual EElementType getType () const;
 

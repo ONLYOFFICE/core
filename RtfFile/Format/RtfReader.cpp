@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -342,71 +342,74 @@ void RtfAbstractReader::ExecuteTextInternalSkipChars(std::wstring & sResult, Rtf
 }
 std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
 {
-    std::wstring sResult;
+	if (sCharString.empty()) return L"";
+	if (sCharString == "*") return L"*";
+	
+	std::wstring sResult;
 
-    if( false == sCharString.empty())
-    {
-		if (sCharString == "*") return L"*";
+	int nCodepage = -1;
 
-        int nCodepage = -1;
-
-        //применяем параметры codepage от текущего шрифта todo associated fonts.
-        RtfFont oFont;
-        if ( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) && !m_bUseGlobalCodepage)
-        {
-            if( PROP_DEF != oFont.m_nCodePage )
-            {
-                nCodepage = oFont.m_nCodePage;
-            }
-			else if (PROP_DEF != oFont.m_nCharset && (PROP_DEF == oDocument.m_oProperty.m_nAnsiCodePage || 0 == oDocument.m_oProperty.m_nAnsiCodePage))
+	//применяем параметры codepage от текущего шрифта todo associated fonts.
+	RtfFont oFont;
+	if ((!m_bUseGlobalCodepage) && (true == oDocument.m_oFontTable.GetFont(oReader.m_oState->m_oCharProp.m_nFont, oFont)))
+	{
+		if (PROP_DEF != oFont.m_nCodePage)
+		{
+			nCodepage = oFont.m_nCodePage;
+		}
+		else if ((PROP_DEF != oFont.m_nCharset  && oFont.m_nCharset > 2)
+			&& (PROP_DEF == oDocument.m_oProperty.m_nAnsiCodePage || 0 == oDocument.m_oProperty.m_nAnsiCodePage))
+		{
+			nCodepage = RtfUtility::CharsetToCodepage(oFont.m_nCharset);
+		}
+	}
+	//от настроек документа
+	if (-1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage)
+	{
+		switch (oDocument.m_oProperty.m_eCodePage)
+		{
+		case RtfDocumentProperty::cp_ansi:
+		{
+			if (PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage)
 			{
-				nCodepage = RtfUtility::CharsetToCodepage(oFont.m_nCharset);
+				nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
 			}
-        }
-        //от настроек документа
-        if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
-        {
-            switch ( oDocument.m_oProperty.m_eCodePage )
-            {
-            case RtfDocumentProperty::cp_ansi:
-                {
-                    if( PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage )
-                    {
-                        nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
-                    }
-                    else
-                        nCodepage = CP_ACP;
-                    break;
-                }
-            case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   break; //?? todooo
-            case RtfDocumentProperty::cp_pc:    nCodepage = 437;        break; //ms dos latin us
-            case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
-            }
-        }
-        //если ничего нет ставим ANSI или default from user
-        if( -1 == nCodepage )
-		{
-            nCodepage = CP_ACP;
+			else
+				nCodepage = CP_ACP;
+			break;
 		}
-		if (nCodepage == CP_ACP && oDocument.m_nUserLCID > 0)
-		{
-			nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
+		case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   break; //?? todooo
+		case RtfDocumentProperty::cp_pc:    nCodepage = 437;        break; //ms dos latin us
+		case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
 		}
+	}
+	//если ничего нет ставим ANSI или default from user
+	if (-1 == nCodepage)
+	{
+		nCodepage = CP_ACP;
+	}
+	if (nCodepage == CP_ACP && oDocument.m_nUserLCID > 0)
+	{
+		nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
+	}
+	if (m_bUseGlobalCodepage && nCodepage == 0 && PROP_DEF != oDocument.m_oProperty.m_nDefLang )
+	{
+		nCodepage = msLCID2DefCodePage(oDocument.m_oProperty.m_nDefLang);
+	}
 
-		if (m_bUseGlobalCodepage && nCodepage == 0)
-		{
-			sResult = std::wstring(sCharString.begin(), sCharString.end());
-		}
-		else
-		{
-			sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
-		}
+	if (m_bUseGlobalCodepage && nCodepage == 0)
+	{
+		sResult = std::wstring(sCharString.begin(), sCharString.end());
+	}
+	else
+	{
+		sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+	}
 
-		//if (!sCharString.empty() && sResult.empty())
-		//{
-		//	//code page not support in icu !!!
-		//	sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage); .. to UnicodeConverter
-		//}
-    }
+	//if (!sCharString.empty() && sResult.empty())
+	//{
+	//	//code page not support in icu !!!
+	//	sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage); .. to UnicodeConverter
+	//}
     return sResult;
 }

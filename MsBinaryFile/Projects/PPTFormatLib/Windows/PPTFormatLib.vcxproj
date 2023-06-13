@@ -22,6 +22,7 @@
     <ProjectGuid>{7B27E40E-F70A-4A74-A77C-0944D7931D15}</ProjectGuid>
     <RootNamespace>ASCOfficePPTFile</RootNamespace>
     <Keyword>AtlProj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

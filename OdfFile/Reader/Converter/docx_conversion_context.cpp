@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -153,7 +153,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
-        current_process_comment_	(false),
+	current_process_comment_	(false),
 	odf_document_				(_odf_document),
 	math_context_				(_odf_document->odf_context().fontContainer(), false)
 {
@@ -662,12 +662,13 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 }
 _rels_type_place docx_conversion_context::get_type_place()
 {
-	if (current_process_comment_)					return oox::comment_place;
 	if (current_process_note_ == footNote || 
 		current_process_note_ == footNoteRefSet)	return oox::footnote_place;
 	if (current_process_note_ == endNote ||
 		current_process_note_ == endNoteRefSet )	return oox::endnote_place;
 	
+	if (current_process_comment_)					return oox::comment_place;
+
 	if (process_headers_footers_)					return oox::header_footer_place;
 
 	return oox::document_place;
@@ -931,35 +932,35 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"dc:creator")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_creator_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_creator_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_title_.empty())
 			{
 				CP_XML_NODE(L"dc:title")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_title_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_title_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_subject_.empty())
 			{
 				CP_XML_NODE(L"dc:subject")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_subject_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_subject_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_description_.empty())
 			{
 				CP_XML_NODE(L"dc:description")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_description_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_description_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_language_.empty())
 			{
 				CP_XML_NODE(L"dc:language")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_language_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_language_);
 				}
 			}
 			CP_XML_NODE(L"cp:lastModifiedBy")
@@ -977,7 +978,7 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"cp:keywords")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().keyword_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().keyword_);
 				}
 			}
 			if (odf_document_->odf_context().DocProps().revision_)
@@ -1838,7 +1839,7 @@ int docx_conversion_context::process_paragraph_style(_CP_OPT(std::wstring) style
 	if (odf_reader::style_instance * styleInst =
 			root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::Paragraph, process_headers_footers_))
     {
-		double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+		double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 		if (font_size > 0) current_fontSize.push_back(font_size);
 		
 		process_page_break_after(styleInst);
@@ -1938,7 +1939,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				root()->odf_context().styleContainer().style_by_name(Attr->text_style_name_, odf_types::style_family::Paragraph, process_headers_footers_)
             )
 		{
-			double font_size = odf_reader::text_format_properties_content::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
+			double font_size = odf_reader::text_format_properties::process_font_size_impl(odf_types::font_size(odf_types::percent(100.0)), styleInst);
 			if (font_size > 0) current_fontSize.push_back(font_size);
 			
 			_CP_OPT(int) outline_level = calc_outline_level(Attr->outline_level_, styleInst);
@@ -2416,6 +2417,7 @@ void docx_conversion_context::start_changes()
 {
 	if (map_current_changes_.empty()) return;
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
@@ -2544,6 +2546,7 @@ void docx_conversion_context::start_changes()
 void docx_conversion_context::end_changes()
 {
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{

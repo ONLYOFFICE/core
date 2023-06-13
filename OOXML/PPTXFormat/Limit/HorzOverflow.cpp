@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,30 +38,30 @@ namespace PPTX
 	{		
 		HorzOverflow::HorzOverflow()
 		{
-			m_strValue = _T("clip");
+			m_strValue = L"clip";
 		}
 		void HorzOverflow::set(const std::wstring& strValue)
 		{
-			if ((_T("clip") == strValue) ||
-				(_T("overflow") == strValue))
+			if ((L"clip" == strValue) ||
+				(L"overflow" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE HorzOverflow::GetBYTECode() const
+		unsigned char HorzOverflow::GetBYTECode() const
 		{
-			if (_T("clip") == m_strValue)
+			if (L"clip" == m_strValue)
 				return 0;
-			if (_T("overflow") == m_strValue)
+			if (L"overflow" == m_strValue)
 				return 1;
 			return 0;
 		}
-		void HorzOverflow::SetBYTECode(const BYTE& src)
+		void HorzOverflow::SetBYTECode(const unsigned char& src)
 		{
 			if (1 == src)
-				m_strValue = _T("overflow");
+				m_strValue = L"overflow";
 			else
-				m_strValue = _T("clip");
+				m_strValue = L"clip";
 		}
 	} // namespace Limit
 } // namespace PPTX

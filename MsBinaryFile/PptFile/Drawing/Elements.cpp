@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -276,8 +276,6 @@ namespace PPT
 
 		return ConvertPPTtoPPTX(/*pPPTShape,*/ pParamCoef, bIsNamespace);
 	}
-
-
 	std::wstring CImageElement::ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace)
 	{
 		if (bIsNamespace)
@@ -316,7 +314,6 @@ namespace PPT
 
 		m_pShape = CShapePtr(new CShape(NSBaseShape::unknown, 0x1000));
 	}
-
 	CShapeElement::CShapeElement(const std::wstring& str) : CElement()
 	{
 		m_lShapeType = 0x1000;
@@ -327,22 +324,21 @@ namespace PPT
 
 		m_ClassType = m_pShape->getBaseShape()->GetClassType();
 	}
-			//virtual void NormalizeCoordsByMetric()
-			//{
-			//	CElement::NormalizeCoordsByMetric();
+	//virtual void NormalizeCoordsByMetric()
+	//{
+	//	CElement::NormalizeCoordsByMetric();
 	
-			//	double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
-			//	double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
+	//	double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
+	//	double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
 	
-			//	m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
-			//	m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
-			//	m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
-			//	m_pShape->m_oText.m_oBounds.bottom	= (int)(dScaleY * m_pShape->m_oText.m_oBounds.bottom);
-			//}
+	//	m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
+	//	m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
+	//	m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
+	//	m_pShape->m_oText.m_oBounds.bottom	= (int)(dScaleY * m_pShape->m_oText.m_oBounds.bottom);
+	//}
 	CShapeElement::~CShapeElement()
 	{
 	}
-
 	CElementPtr CShapeElement::CreateDublicate()
 	{
 		CShapeElement* pShapeElement = new CShapeElement(m_ClassType, m_lShapeType);
@@ -358,7 +354,6 @@ namespace PPT
 
 		return pElement;
 	}
-
 	void CShapeElement::SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 	{
 		m_pShape->m_oText.m_lPlaceholderType = m_lPlaceholderType;
@@ -388,7 +383,6 @@ namespace PPT
 
 		return ConvertPPTtoPPTX(pPPTShape, pParamCoef, bIsNamespace);
 	}
-
 	std::wstring CShapeElement::ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace)
 	{
 		if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame || pPPTShape->m_eType == PPTShapes::sptCTextBox)
@@ -510,11 +504,9 @@ namespace PPT
 		m_dClipStartTime = 0.0;
 		m_dClipEndTime = -1.0;
 	}
-
 	CAudioElement::~CAudioElement()
 	{
 	}
-
 	CElementPtr CAudioElement::CreateDublicate()
 	{
 		CAudioElement* pAudioElement = new CAudioElement();
@@ -546,11 +538,9 @@ namespace PPT
 		m_dClipEndTime = -1.0;
 		m_bLoop = false;
 	}
-
 	CVideoElement::~CVideoElement()
 	{
 	}
-
 	CElementPtr CVideoElement::CreateDublicate()
 	{
 		CVideoElement* pVideoElement = new CVideoElement();

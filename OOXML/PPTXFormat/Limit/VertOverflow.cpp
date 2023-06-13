@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,35 +38,35 @@ namespace PPTX
 	{		
 		VertOverflow::VertOverflow()
 		{
-			m_strValue = _T("clip");
+			m_strValue = L"clip";
 		}
 		void VertOverflow::set(const std::wstring& strValue)
 		{
-			if ((_T("clip") == strValue) ||
-				(_T("ellipsis") == strValue) ||
-				(_T("overflow") == strValue))
+			if ((L"clip" == strValue) ||
+				(L"ellipsis" == strValue) ||
+				(L"overflow" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE VertOverflow::GetBYTECode() const
+		unsigned char VertOverflow::GetBYTECode() const
 		{
-			if (_T("clip") == m_strValue)
+			if (L"clip" == m_strValue)
 				return 0;
-			if (_T("ellipsis") == m_strValue)
+			if (L"ellipsis" == m_strValue)
 				return 1;
-			if (_T("overflow") == m_strValue)
+			if (L"overflow" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void VertOverflow::SetBYTECode(const BYTE& src)
+		void VertOverflow::SetBYTECode(const unsigned char& src)
 		{
 			if (2 == src)
-				m_strValue = _T("overflow");
+				m_strValue = L"overflow";
 			else if (1 == src)
-				m_strValue = _T("ellipsis");
+				m_strValue = L"ellipsis";
 			else
-				m_strValue = _T("clip");
+				m_strValue = L"clip";
 		}
 	} // namespace Limit
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -90,6 +90,11 @@ class style_chart_properties;
 class style_table_properties;
 class style_drawing_page_properties;
 
+class graphic_format_properties;
+class paragraph_format_properties;
+class chart_format_properties;
+class text_format_properties;
+
 class style_content : noncopyable
 {
 public:
@@ -98,18 +103,23 @@ public:
 	void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
     void add_child_element		( const office_element_ptr & child);
 	void serialize				(std::wostream & strm);
-  
-    graphic_format_properties *		get_graphic_properties() ;
-    
-	style_text_properties *			get_style_text_properties();
-    style_paragraph_properties *	get_style_paragraph_properties() ;
-    style_table_properties *		get_style_table_properties();
-    style_section_properties *		get_style_section_properties();
-    style_table_cell_properties *	get_style_table_cell_properties();
-    style_table_row_properties *	get_style_table_row_properties() ;
-    style_table_column_properties * get_style_table_column_properties() ;
-    style_chart_properties *		get_style_chart_properties() ;
-	style_drawing_page_properties*	get_style_drawing_page_properties();
+//get 
+    graphic_format_properties*		get_graphic_properties();
+	paragraph_format_properties*	get_paragraph_properties();
+	chart_format_properties*		get_chart_properties();
+	text_format_properties*			get_text_properties();
+//add & get
+	graphic_format_properties*		add_get_style_graphic_properties();
+	text_format_properties*			add_get_style_text_properties();
+	paragraph_format_properties*	add_get_style_paragraph_properties() ;
+	chart_format_properties*		add_get_style_chart_properties() ;
+   
+	style_table_properties*			add_get_style_table_properties();
+    style_section_properties*		add_get_style_section_properties();
+    style_table_cell_properties*	add_get_style_table_cell_properties();
+    style_table_row_properties*		add_get_style_table_row_properties() ;
+    style_table_column_properties*	add_get_style_table_column_properties() ;
+	style_drawing_page_properties*	add_get_style_drawing_page_properties();
 
     odf_types::style_family style_family_;
 private:

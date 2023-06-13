@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,7 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "FldSimple.h"
 #include "Bdo.h"
 #include "Sdt.h"
@@ -43,6 +44,8 @@
 #include "Dir.h"
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
+
+#include "../../Common/ComplexTypes.h"
 
 
 // TO DO: Нехватающие классы:
@@ -58,15 +61,7 @@ namespace OOX
 	{
 		CHyperlink::CHyperlink(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
-		}
-		CHyperlink::CHyperlink(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CHyperlink::CHyperlink(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CHyperlink::~CHyperlink()
 		{
 		}
@@ -120,71 +115,71 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("w:bdo") == sName )
-							pItem = new CBdo( oItem );
+							AssignPtrXmlContent(pItem, CBdo, oItem)
 						else if ( _T("w:bookmarkEnd") == sName )
-							pItem = new CBookmarkEnd( oItem );
+							AssignPtrXmlContent(pItem, CBookmarkEnd, oItem)
 						else if ( _T("w:bookmarkStart") == sName )
-							pItem = new CBookmarkStart( oItem );
+							AssignPtrXmlContent(pItem, CBookmarkStart, oItem)
 						else if ( _T("w:commentRangeEnd") == sName )
-							pItem = new CCommentRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CCommentRangeEnd, oItem)
 						else if ( _T("w:commentRangeStart") == sName )
-							pItem = new CCommentRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CCommentRangeStart, oItem)
 						//else if ( _T("w:customXml") == sName )
 						//	pItem = new CCustomXml( oItem );
 						else if ( _T("w:customXmlDelRangeEnd") == sName )
-							pItem = new CCustomXmlDelRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlDelRangeEnd, oItem)
 						else if ( _T("w:customXmlDelRangeStart") == sName )
-							pItem = new CCustomXmlDelRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlDelRangeStart, oItem)
 						else if ( _T("w:customXmlInsRangeEnd") == sName )
-							pItem = new CCustomXmlInsRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlInsRangeEnd, oItem)
 						else if ( _T("w:customXmlInsRangeStart") == sName )
-							pItem = new CCustomXmlInsRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlInsRangeStart, oItem)
 						else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-							pItem = new CCustomXmlMoveFromRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeEnd, oItem)
 						else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-							pItem = new CCustomXmlMoveFromRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlMoveFromRangeStart, oItem)
 						else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-							pItem = new CCustomXmlMoveToRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeEnd, oItem)
 						else if ( _T("w:customXmlMoveToRangeStart") == sName )
-							pItem = new CCustomXmlMoveToRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CCustomXmlMoveToRangeStart, oItem)
 						//else if ( _T("w:del") == sName )
 						//	pItem = new CDel( oItem );
 						else if ( _T("w:dir") == sName )
-							pItem = new CDir( oItem );
+							AssignPtrXmlContent(pItem, CDir, oItem)
 						else if ( _T("w:fldSimple") == sName )
-							pItem = new CFldSimple( oItem );
+							AssignPtrXmlContent(pItem, CFldSimple, oItem)
 						else if ( _T("w:hyperlink") == sName )
-							pItem = new CHyperlink( oItem );
+							AssignPtrXmlContent(pItem, CHyperlink, oItem)
 						//else if ( _T("w:ins") == sName )
 						//	pItem = new CIns( oItem );
 						//else if ( _T("w:moveFrom") == sName )
 						//	pItem = new CMoveFrom( oItem );
 						else if ( _T("w:moveFromRangeEnd") == sName )
-							pItem = new CMoveFromRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CMoveFromRangeEnd, oItem)
 						else if ( _T("w:moveFromRangeStart") == sName )
-							pItem = new CMoveFromRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CMoveFromRangeStart, oItem)
 						//else if ( _T("w:moveTo") == sName )
 						//	pItem = new CMoveTo( oItem );
 						else if ( _T("w:moveToRangeEnd") == sName )
-							pItem = new CMoveToRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, CMoveToRangeEnd, oItem)
 						else if ( _T("w:moveToRangeStart") == sName )
-							pItem = new CMoveToRangeStart( oItem );
+							AssignPtrXmlContent(pItem, CMoveToRangeStart, oItem)
 						else if ( _T("m:oMath") == sName )
-							pItem = new COMath( oItem );
+							AssignPtrXmlContent(pItem, COMath, oItem)
 						else if ( _T("m:oMathPara") == sName )
-							pItem = new COMathPara( oItem );
+							AssignPtrXmlContent(pItem, COMathPara, oItem)
 						else if ( _T("w:permEnd") == sName )
-							pItem = new CPermEnd( oItem );
+							AssignPtrXmlContent(pItem, CPermEnd, oItem)
 						else if ( _T("w:permStart") == sName )
-							pItem = new CPermStart( oItem );
+							AssignPtrXmlContent(pItem, CPermStart, oItem)
 						else if ( _T("w:proofErr") == sName )
-							pItem = new CProofErr( oItem );
+							AssignPtrXmlContent(pItem, CProofErr, oItem)
 						else if ( _T("w:r") == sName )
-							pItem = new CRun( oItem );
+							AssignPtrXmlContent(pItem, CRun, oItem)
 						else if ( _T("w:sdt") == sName )
-							pItem = new CSdt( oItem );
+							AssignPtrXmlContent(pItem, CSdt, oItem)
 						else if ( _T("w:smartTag") == sName )
-							pItem = new CSmartTag( oItem );
+							AssignPtrXmlContent(pItem, CSmartTag, oItem)
 						//else if ( _T("w:subDoc") == sName )
 						//	pItem = new CSubDoc( oItem );
 
@@ -383,7 +378,7 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( L"w:matchSrc" == sName )
-							m_oMatchSrc = new ComplexTypes::Word::CMatchSrc( oItem );
+							m_oMatchSrc = PPTX::CreatePtrXmlContent<ComplexTypes::Word::CMatchSrc>(oItem);
 					}
 				}
 			}
@@ -423,6 +418,7 @@ namespace OOX
 			return et_w_altChunkPr;
 		}
 
+		CAltChunk::CAltChunk(){}
 		CAltChunk::CAltChunk(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
@@ -450,7 +446,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( L"w:altChunkPr" == sName )
-							m_oAltChunkPr = new CAltChunkPr( oItem );
+						{
+							m_oAltChunkPr = new CAltChunkPr();
+							m_oAltChunkPr = oItem;
+						}
 					}
 				}
 			}

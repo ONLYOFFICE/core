@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,6 +44,7 @@
 #include "../../DocxFormat/Media/Audio.h"
 #include "../../DocxFormat/Media/Video.h"
 #include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
@@ -288,9 +289,9 @@ namespace PPTX
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(oReader));
 			else if (name == L"lockedCanvas")
-				m_elem.reset(new Logic::LockedCanvas(oReader));
+				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(oReader));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(new Logic::SpTree(oReader));
+				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
 			else if (name == L"graphicFrame")
 			{
 				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame();
@@ -344,9 +345,9 @@ namespace PPTX
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(node));
 			else if (name == L"lockedCanvas")
-				m_elem.reset(new Logic::LockedCanvas(node));
+				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(node));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(new Logic::SpTree(node));
+				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
 			else if (name == L"graphicFrame")
 			{
 				m_elem.reset(new Logic::GraphicFrame(node));
@@ -404,7 +405,7 @@ namespace PPTX
 			}
 			else if (name == L"binData")
 			{
-				m_binaryData = node.GetText();
+				m_binaryData = node;
 			}
 			else m_elem.reset();
 		}

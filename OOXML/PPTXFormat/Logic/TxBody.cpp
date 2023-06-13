@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,7 +38,237 @@
 namespace PPTX
 {
 	namespace Logic
-	{
+	{		
+		TxBody::TxBody(std::wstring name)
+		{
+			m_name = name;
+		}
+		TxBody::~TxBody() {}
+		TxBody::TxBody(XmlUtils::CXmlNode& node)
+		{
+			fromXML(node);
+		}
+		const TxBody& TxBody::operator =(XmlUtils::CXmlNode& node)
+		{
+			fromXML(node);
+			return *this;
+		}
+		TxBody::TxBody(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const TxBody& TxBody::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		TxBody::TxBody(const TxBody& oSrc) { *this = oSrc; }
+		TxBody& TxBody::operator=(const TxBody& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			sp3d		= oSrc.sp3d;
+			bodyPr		= oSrc.bodyPr;
+			lstStyle	= oSrc.lstStyle;
+			Paragrs		= oSrc.Paragrs;
+
+			m_name		= oSrc.m_name;
+
+			return *this;
+		}
+		void TxBody::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_name = oReader.GetName();
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring strName = oReader.GetName();
+				if (L"a:bodyPr" == strName)
+				{
+					bodyPr = oReader;
+				}
+				else if (L"a:lstStyle" == strName)
+				{
+					lstStyle = oReader;
+				}
+				else if (L"a:sp3d" == strName)
+				{
+					sp3d = oReader;
+				}
+				else if (L"a:p" == strName)
+				{
+					Paragraph p;
+					Paragrs.push_back(p);
+					Paragrs.back().fromXML(oReader);
+				}
+			}
+			FillParentPointersForChilds();
+		}
+		void TxBody::fromXML(XmlUtils::CXmlNode& node)
+		{
+			Paragrs.clear();
+
+			m_name		= node.GetName();
+
+			bodyPr		= node.ReadNode(L"a:bodyPr");
+			lstStyle	= node.ReadNode(L"a:lstStyle");
+			sp3d		= node.ReadNode(L"a:sp3d");
+
+			XmlMacroLoadArray(node, L"a:p", Paragrs, Paragraph);
+
+			FillParentPointersForChilds();
+		}
+		std::wstring TxBody::toXML() const
+		{
+			XmlUtils::CNodeValue oValue;
+
+			oValue.WriteNullable(bodyPr);
+			oValue.WriteNullable(lstStyle);
+			oValue.WriteArray(Paragrs);
+
+			return XmlUtils::CreateNode(m_name, oValue);
+		}
+		void TxBody::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(m_name);
+			pWriter->EndAttributes();
+
+			if (bodyPr.IsInit())
+			{
+				bodyPr->m_namespace = L"a";
+				bodyPr->toXmlWriter(pWriter);
+			}
+			if (sp3d.IsInit())
+			{
+				sp3d->toXmlWriter(pWriter);
+			}
+			if (lstStyle.IsInit())
+				lstStyle->m_name = L"a:lstStyle";
+			pWriter->Write(lstStyle);
+
+			size_t nCount = Paragrs.size();
+			for (size_t i = 0; i < nCount; ++i)
+				Paragrs[i].toXmlWriter(pWriter);
+
+			pWriter->EndNode(m_name);
+		}
+		void TxBody::toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (bodyPr.IsInit())
+			{
+				bodyPr->m_namespace = L"a";
+				bodyPr->toXmlWriter(pWriter);
+			}
+			if (sp3d.IsInit())
+			{
+				sp3d->toXmlWriter(pWriter);
+			}
+			if (lstStyle.is_init())
+				lstStyle->m_name = L"a:lstStyle";
+			pWriter->Write(lstStyle);
+
+			size_t nCount = Paragrs.size();
+			for (size_t i = 0; i < nCount; ++i)
+				Paragrs[i].toXmlWriter(pWriter);
+
+			/*
+			pWriter->EndNode(L"c:rich"));
+			*/
+		}
+		std::wstring TxBody::GetText(bool bParagraphSeparator)const
+		{
+			std::wstring result;
+			size_t count = Paragrs.size();
+
+			for (size_t i = 0; i < count; ++i)
+				result += Paragrs[i].GetText(bParagraphSeparator);
+			return result;
+		}
+		void TxBody::Merge(nullable<TxBody>& txBody)
+		{
+			if (!bodyPr.IsInit())
+				bodyPr = new Logic::BodyPr();
+
+			bodyPr->Merge(txBody->bodyPr);
+
+			if(lstStyle.IsInit())
+				lstStyle->Merge(txBody->lstStyle);
+		}
+		void TxBody::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord2(0, bodyPr);
+			pWriter->WriteRecord2(1, lstStyle);
+			pWriter->WriteRecordArray(2, 0, Paragrs);
+			pWriter->WriteRecord2(3, sp3d);
+		}
+		void TxBody::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						bodyPr = new Logic::BodyPr();
+						bodyPr->fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						lstStyle = new Logic::TextListStyle();
+						lstStyle->fromPPTY(pReader);
+						break;
+					}
+					case 2:
+					{
+						pReader->Skip(4);
+						ULONG _c = pReader->GetULong();
+						for (ULONG i = 0; i < _c; ++i)
+						{
+							pReader->Skip(1); // type
+							Paragrs.push_back(Paragraph());
+							Paragrs.back().fromPPTY(pReader);
+						}
+						break;
+					}
+					case 3:
+					{
+						sp3d = new Logic::Sp3d();
+						sp3d->fromPPTY(pReader);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+
+			if (!bodyPr.IsInit())
+				bodyPr = new Logic::BodyPr();
+		}
+		void TxBody::FillParentPointersForChilds()
+		{
+			if(bodyPr.is_init())
+				bodyPr->SetParentPointer(this);
+
+			if(lstStyle.is_init())
+				lstStyle->SetParentPointer(this);
+
+			size_t count = Paragrs.size();
+			for (size_t i = 0; i < count; ++i)
+				Paragrs[i].SetParentPointer(this);
+		}
 		std::wstring TxBody::GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<ShapeStyle>& shape_style)
 		{
 			std::wstring strXml = _T("<w:txbxContent ");

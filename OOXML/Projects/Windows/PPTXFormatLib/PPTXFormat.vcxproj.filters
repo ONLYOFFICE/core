@@ -1081,6 +1081,822 @@
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Paragraph.h">
       <Filter>Logic\Text</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\BinReaderWriterDefines.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\BinWriters.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\CalculatorCRC32.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\converter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\DefaultNotesMaster.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\DefaultNotesTheme.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\FontCutter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\FontPicker.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\imagemanager.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\pptxwriter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.h">
+      <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\Common.h">
+      <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.h">
+      <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.h">
+      <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.h">
+      <Filter>Vml\PptxShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.h">
+      <Filter>Vml\PptxShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.h">
+      <Filter>Vml\PptxShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PresetShapesHeader.h">
+      <Filter>Vml\PptxShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBackPrevious.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBeginning.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBlank.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonDocument.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonEnd.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonForwardNext.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHelp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHome.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonInformation.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonMovie.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonReturn.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonSound.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CArc.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector4.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector5.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentUpArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBevel.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBlockArc.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracePair.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracketPair.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCan.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartPlus.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartStar.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartX.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChevron.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChord.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCircularArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloud.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloudCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCorner.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCornerTabs.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCube.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector3.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector4.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector5.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedDownArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedLeftArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedRightArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedUpArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDecagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiagStripe.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiamond.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDodecagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDonut.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDoubleWave.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipse.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartAlternateProcess.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartCollate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartConnector.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDecision.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDelay.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDisplay.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDocument.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartExtract.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInputOutput.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInternalStorage.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDisk.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDrum.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticTape.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualInput.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualOperation.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMerge.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMultidocument.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOfflineStorage.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOffpageConnector.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOnlineStorage.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOr.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPredefinedProcess.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPreparation.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartProcess.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedCard.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedTape.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSort.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSummingJunction.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartTerminator.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFoldedCorner.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFrame.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFunnel.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear6.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear9.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHalfFrame.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeart.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeptagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHexagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHomePlate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHorizontalScroll.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBrace.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBracket.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftCircularArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightCircularArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightRibbon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightUpArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftUpArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLightningBolt.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLine.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLineInv.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathDivide.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathEqual.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMinus.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMultiply.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathNotEqual.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathPlus.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMoon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNonIsoscelesTrapezoid.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNoSmoking.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNotchedRightArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\COctagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CParallelogram.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPentagon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPie.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPieWedge.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaque.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaqueTabs.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlus.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBrace.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBracket.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound1Rect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2DiagRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2SameRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRoundRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRtTriangle.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSmileyFace.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip1Rect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2DiagRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2SameRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnipRoundRect.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSquareTabs.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar10.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar12.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar16.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar24.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar32.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar4.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar5.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar6.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar7.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar8.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStraightConnector1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStripedRightArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSun.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSwooshArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTeardrop.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDownPour.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUpPour.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButton.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButtonPour.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevron.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevronInverted.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCircle.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCirclePour.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateBottom.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflateDeflate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateTop.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDoubleWave1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeLeft.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeRight.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflate.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateBottom.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateTop.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextPlain.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingInside.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingOutside.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantDown.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantUp.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextStop.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangle.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangleInverted.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave1.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave2.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave4.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTrapezoid.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTriangle.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrowCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUturnArrow.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CVerticalScroll.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWave.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeEllipseCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRectCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRoundRectCallout.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\_template.h">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\BinaryReader.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\CustomGeomShape.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Enums.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Ppt2PptxShapeConverter.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShapeEnum.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PresetShapesHeader.h">
+      <Filter>Vml\PptShape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\Aggregat.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\Callback.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\FormatUtils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\IOperand.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\IVirtualConstructor.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\LanguageCodes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\Singleton.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\SPRMCodes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\TargetOptions.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\TextMark.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\utf8.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.h">
+      <Filter>Common\Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\VmlPath.h">
+      <Filter>Vml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -2159,6 +2975,766 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Paragraph.cpp">
       <Filter>Logic\Text</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\WrapperWritingElement.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\Converter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesMaster.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesTheme.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\FontCutter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp">
+      <Filter>Vml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.cpp">
+      <Filter>Vml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.cpp">
+      <Filter>Vml\PptxShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.cpp">
+      <Filter>Vml\PptxShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBackPrevious.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBeginning.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBlank.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonDocument.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonEnd.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonForwardNext.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHelp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHome.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonInformation.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonMovie.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonReturn.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonSound.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CArc.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector4.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector5.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentUpArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBevel.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBlockArc.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracePair.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracketPair.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCan.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartPlus.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartStar.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartX.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChevron.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChord.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCircularArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloud.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloudCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCorner.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCornerTabs.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCube.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector3.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector4.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector5.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedDownArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedLeftArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedRightArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedUpArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDecagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiagStripe.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiamond.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDodecagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDonut.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDoubleWave.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipse.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartAlternateProcess.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartCollate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartConnector.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDecision.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDelay.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDisplay.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDocument.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartExtract.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInputOutput.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInternalStorage.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDisk.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDrum.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticTape.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualInput.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualOperation.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMerge.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMultidocument.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOfflineStorage.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOffpageConnector.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOnlineStorage.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOr.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPredefinedProcess.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPreparation.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartProcess.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedCard.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedTape.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSort.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSummingJunction.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartTerminator.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFoldedCorner.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFrame.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFunnel.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear6.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear9.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHalfFrame.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeart.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeptagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHexagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHomePlate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHorizontalScroll.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBrace.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBracket.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftCircularArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightCircularArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightRibbon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightUpArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftUpArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLightningBolt.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLine.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLineInv.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathDivide.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathEqual.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMinus.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMultiply.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathNotEqual.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathPlus.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMoon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNonIsoscelesTrapezoid.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNoSmoking.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNotchedRightArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\COctagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CParallelogram.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPentagon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPie.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPieWedge.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaque.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaqueTabs.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlus.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBrace.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBracket.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound1Rect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2DiagRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2SameRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRoundRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRtTriangle.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSmileyFace.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip1Rect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2DiagRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2SameRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnipRoundRect.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSquareTabs.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar10.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar12.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar16.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar24.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar32.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar4.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar5.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar6.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar7.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar8.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStraightConnector1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStripedRightArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSun.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSwooshArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTeardrop.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDownPour.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUpPour.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButton.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButtonPour.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevron.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevronInverted.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCircle.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCirclePour.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateBottom.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflateDeflate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateTop.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDoubleWave1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeLeft.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeRight.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflate.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateBottom.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateTop.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextPlain.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingInside.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingOutside.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantDown.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantUp.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextStop.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangle.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangleInverted.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave1.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave2.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave4.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTrapezoid.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTriangle.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrowCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUturnArrow.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CVerticalScroll.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWave.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeEllipseCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRectCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRoundRectCallout.cpp">
+      <Filter>Vml\PptxShape\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\BinaryReader.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\CustomGeomShape.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Ppt2PptxShapeConverter.cpp">
+      <Filter>Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp">
+      <Filter>Common\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.cpp">
+      <Filter>Vml\PptxShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.cpp">
+      <Filter>Vml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\VmlPath.cpp">
+      <Filter>Vml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
+      <Filter>Binary</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">
@@ -2208,6 +3784,27 @@
     </Filter>
     <Filter Include="Logic\Text">
       <UniqueIdentifier>{55fb0e4f-f959-4e64-ba5c-696a63abf2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Binary">
+      <UniqueIdentifier>{4748df5e-82d5-4948-84a6-cf2db1ad227b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vml">
+      <UniqueIdentifier>{653e5593-857f-4e11-93eb-8689e851176f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vml\PptxShape">
+      <UniqueIdentifier>{4206a5fa-c983-4c81-abdf-0ee14f37703c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vml\PptxShape\Shapes">
+      <UniqueIdentifier>{5666f499-3c86-4354-95e6-071ccd4a7ee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vml\PptShape">
+      <UniqueIdentifier>{725cbeb1-b00a-4b91-bb3c-e08004908675}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{b5bd29c4-aaa3-42c1-bcb4-7ef80a910b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Xml">
+      <UniqueIdentifier>{1461f41f-a436-4c57-bb70-199577dca246}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

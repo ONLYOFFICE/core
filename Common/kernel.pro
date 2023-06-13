@@ -8,8 +8,6 @@ TEMPLATE = lib
 CONFIG += shared
 CONFIG += plugin
 
-CONFIG += core_static_link_libstd
-
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
 
 # CONFIG

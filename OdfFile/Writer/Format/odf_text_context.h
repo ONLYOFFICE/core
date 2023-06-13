@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -66,25 +66,27 @@ namespace odf_writer
 		fieldToc
 	};	
 class odf_conversion_context;
-class odf_style_context;
 class paragraph;
-class style_paragraph_properties;
-class style_text_properties;
+class paragraph_format_properties;
+class text_format_properties;
+
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 class odf_text_context: boost::noncopyable
 {
 public:
-	odf_text_context	(odf_conversion_context *odf_context, odf_style_context *styles_context);
+	odf_text_context	(odf_conversion_context *odf_context, odf_style_context_ptr styles_context);
     ~odf_text_context	();
 public:
- 	odf_style_context*		get_styles_context();//для embedded
-	void					set_styles_context(odf_style_context*  styles_context);//для embedded
+ 	odf_style_context_ptr	get_styles_context();//для embedded
+	void					set_styles_context(odf_style_context_ptr styles_context);//для embedded
 		
 	void clear_params();
    
 	void add_text_style		(office_element_ptr & style_elm, std::wstring style_name);
 
-	void set_single_object	(bool bSingle, style_paragraph_properties *para_props, style_text_properties *text_props);
+	void set_single_object	(bool bSingle, paragraph_format_properties *para_props, text_format_properties *text_props);
 	
     void add_text_content	(const std::wstring &text);
 	void add_text_space		(int count);
@@ -137,8 +139,8 @@ public:
 	bool get_KeepNextParagraph		()			{return keep_next_paragraph_;}
 	void set_KeepNextParagraph		(bool val)	{keep_next_paragraph_ = val;}
 	
-	style_text_properties		*get_text_properties		()	{return text_properties_;}
-	style_paragraph_properties	*get_paragraph_properties	()	{return paragraph_properties_;}
+	text_format_properties		*get_text_properties		()	{return text_properties_;}
+	paragraph_format_properties	*get_paragraph_properties	()	{return paragraph_properties_;}
 //------------------------------------------------------------------------------------
 	int		current_outline_;
 	bool	in_field_;
@@ -158,10 +160,10 @@ private:
 
 	_CP_OPT(odf_types::fo_break) need_break_; 
 
-	style_paragraph_properties	*paragraph_properties_;	//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
-	style_text_properties		*text_properties_;		//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
+	paragraph_format_properties	*paragraph_properties_;	//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
+	text_format_properties		*text_properties_;		//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
 
-	odf_style_context		*styles_context_;
+	odf_style_context_ptr styles_context_;
 	odf_conversion_context	*odf_context_;
 
 	std::wstring			parent_span_style_;

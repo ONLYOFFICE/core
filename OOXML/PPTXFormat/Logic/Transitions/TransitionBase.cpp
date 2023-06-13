@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,42 +70,42 @@ namespace PPTX
 						strName == L"p:comb"	|| 
 						strName == L"p:randomBar")
 			{
-				base.reset(new Logic::OrientationTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::OrientationTransition>(oNode));
 			}
 			else if (	strName == L"p:cover"	|| 
 						strName == L"p:pull")
 			{
-				base.reset(new Logic::EightDirectionTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::EightDirectionTransition>(oNode));
 			}
 			else if (	strName == L"p:cut"	|| 
 						strName == L"p:fade")
 			{
-				base.reset(new Logic::OptionalBlackTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::OptionalBlackTransition>(oNode));
 			}
 			else if (	strName == L"p:push"	|| 
 						strName == L"p:wipe")
 			{
-				base.reset(new Logic::SideDirectionTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::SideDirectionTransition>(oNode));
 			}
 			else if (	strName == L"p:strips")
 			{
-				base.reset(new Logic::CornerDirectionTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::CornerDirectionTransition>(oNode));
 			}
 			else if (	strName == L"p:wheel")
 			{
-				base.reset(new Logic::WheelTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::WheelTransition>(oNode));
 			}
 			else if (	strName == L"p:split")
 			{
-				base.reset(new Logic::SplitTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::SplitTransition>(oNode));
 			}
 			else if (	strName == L"p:zoom")
 			{
-				base.reset(new Logic::ZoomTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::ZoomTransition>(oNode));
 			}
 			else
 			{
-				base.reset(new Logic::EmptyTransition(oNode));
+				base.reset(CreatePtrXmlContent<Logic::EmptyTransition>(oNode));
 			}
 		}
 		std::wstring TransitionBase::toXML() const

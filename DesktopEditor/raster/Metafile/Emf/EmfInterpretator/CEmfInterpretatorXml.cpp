@@ -708,6 +708,11 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH");
 	}
 
+	void CEmfInterpretatorXml::HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex> &arVertex, const std::vector<std::pair<int, int> > &arIndexes, unsigned int unFillMode)
+	{
+
+	}
+
 	void CEmfInterpretatorXml::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
 	{
 		unsigned int unRecordSize;

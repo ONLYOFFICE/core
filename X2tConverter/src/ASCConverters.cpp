@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1909,7 +1909,7 @@ namespace NExtractTools
 	_UINT32 doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params, const std::wstring& sDocxDir = L"")
 	{
 		_UINT32 nRes = 0;
-		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::IMAGE;
 		std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
 		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
@@ -2442,7 +2442,7 @@ namespace NExtractTools
 		std::wstring sTempUnpackedODP = sTemp + FILE_SEPARATOR_STR + _T("odp_unpacked");
 		NSDirectory::CreateDirectory(sTempUnpackedODP);
 
-		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate);
+		Oox2Odf::Converter converter(sPptxDir, _T("presentation"), params.getFontPath(), bTemplate, sTemp);
 
        _UINT32 nRes = 0;
 		try
@@ -3097,7 +3097,7 @@ namespace NExtractTools
 		std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
 		NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-		Oox2Odf::Converter converter(sFrom, L"text", params.getFontPath(), false);
+		Oox2Odf::Converter converter(sFrom, L"text", params.getFontPath(), false, sTemp);
 
 		_UINT32 nRes = 0;
 		try
@@ -3123,7 +3123,7 @@ namespace NExtractTools
        std::wstring sTempUnpackedODT = sTemp + FILE_SEPARATOR_STR + L"odt_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODT);
 
-	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate);
+	   Oox2Odf::Converter converter(sDocxDir, L"text", params.getFontPath(), bTemplate, sTemp);
 
        _UINT32 nRes = 0;
        try
@@ -3163,7 +3163,7 @@ namespace NExtractTools
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
 	
-	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
+	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate, sTemp);
      
 	   _UINT32 nRes = 0;
 
@@ -5279,7 +5279,9 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Initialize();
+#endif
 
 		_UINT32 result = 0;
 		switch(conversion)
@@ -5757,7 +5759,10 @@ namespace NExtractTools
 		}
 
 		//clean up v8
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
+#endif
+
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

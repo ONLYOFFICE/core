@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -195,9 +195,9 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"", bool bAlways = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
-		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::style_paragraph_properties	*paragraph_properties);
-		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,	odf_writer::style_paragraph_properties	*paragraph_properties);
-		void convert(OOX::Logic::CRunProperty			*oox_run_prop,	odf_writer::style_text_properties		*text_properties, bool is_para_props = false);
+		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::paragraph_format_properties	*paragraph_properties);
+		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,	odf_writer::paragraph_format_properties	*paragraph_properties);
+		void convert(OOX::Logic::CRunProperty			*oox_run_prop,	odf_writer::text_format_properties		*text_properties, bool is_para_props = false);
 		void convert(OOX::Logic::CFldSimple				*oox_fld);
 		void convert(OOX::Logic::CFldChar				*oox_fld);
 		void convert(OOX::Logic::CInstrText				*oox_instrText);
@@ -239,7 +239,7 @@ namespace Oox2Odf
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		
-		void convert(OOX::Logic::CPBdr					*oox_border,			odf_writer::style_paragraph_properties		*paragraph_properties);
+		void convert(OOX::Logic::CPBdr					*oox_border,			odf_writer::paragraph_format_properties		*paragraph_properties);
 		void convert(OOX::Logic::CTcBorders 			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
 		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_properties			*table_properties);

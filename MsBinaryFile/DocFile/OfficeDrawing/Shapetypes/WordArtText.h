@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -59,7 +59,7 @@ namespace DocFileFormat
             Formulas.push_back(L"mid @6 @7");
             Formulas.push_back(L"sum @6 0 @5");
 
-            AdjustmentValues	=	L"10800";
+			Adjustments.push_back(10800);
 
 			//<v:textpath on="t" fitshape="t"/>
 		}
@@ -84,7 +84,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 0 @0 0");
             Formulas.push_back(L"sum height 0 @0");
 
-            AdjustmentValues	=	L"5400";
+			Adjustments.push_back(5400);
+
 			Handle one;
             one.position		=	L"0,@0";
 			Handles.push_back (one);
@@ -128,7 +129,8 @@ namespace DocFileFormat
             Formulas.push_back(L"if @9 0 21600");
             Formulas.push_back(L"sum 10800 0 @18");
 
-            AdjustmentValues	=	L"11796480";
+			Adjustments.push_back(11796480);
+
 			Handle one;
             one.position		=	L"@16,#0";
             one.polar			=	L"10800,10800";
@@ -152,7 +154,8 @@ namespace DocFileFormat
             Formulas.push_back(L"val #0");
             Formulas.push_back(L"sum 21600 0 #0");
 
-            AdjustmentValues	=	L"4050";
+			Adjustments.push_back(4050);
+
 			Handle one;
             one.position		=	L"enter,#0";
             one.yrange			=	L"0,8100";
@@ -179,7 +182,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @1 1 2");
             Formulas.push_back(L"sum @4 10800 0");
 
-            AdjustmentValues	=	L"12000";
+			Adjustments.push_back(12000);
+
 			Handle one;
             one.position		=	L"topLeft,#0";
             one.yrange			=	L"0,15429";
@@ -202,7 +206,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @1 1 2");
             Formulas.push_back(L"sum @2 10800 0");
 
-            AdjustmentValues	=	L"3086";
+			Adjustments.push_back(3086);
+
 			Handle one;
             one.position		=	L"center,#0";
             one.yrange			=	L"0,7200";
@@ -260,7 +265,9 @@ namespace DocFileFormat
             Formulas.push_back(L"mid @22 @23");
             Formulas.push_back(L"mid @21 @25");
 
-            AdjustmentValues	=	L"2809,10800";
+			Adjustments.push_back(2809);
+			Adjustments.push_back(10800);
+
 			Handle one;
             one.position		=	L"topLeft,#0";
             one.yrange			=	L"0,4459";
@@ -338,7 +345,9 @@ namespace DocFileFormat
             Formulas.push_back(L"mid @36 @43");
             Formulas.push_back(L"mid @30 @37");
 
-            AdjustmentValues	=	L"1404,10800";
+			Adjustments.push_back(1404);
+			Adjustments.push_back(10800);
+
 			Handle one;
             one.position		=	L"topLeft,#0";
             one.yrange			=	L"0,2229";
@@ -415,7 +424,9 @@ namespace DocFileFormat
             Formulas.push_back(L"mid @36 @43");
             Formulas.push_back(L"mid @30 @37");
 
-            AdjustmentValues	=	L"1404,10800";
+			Adjustments.push_back(1404);
+			Adjustments.push_back(10800);
+
 			Handle one;
             one.position		=	L"topLeft,#0";
             one.yrange			=	L"0,2229";
@@ -456,7 +467,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @13 1 4");
             Formulas.push_back(L"sum @11 14400 @14");
 
-            AdjustmentValues	=	L"9931";
+			Adjustments.push_back(9931);
+
 			Handle one;
             one.position		=	L"topLeft,#0";
             one.yrange			=	L"0,12169";
@@ -483,7 +495,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 @2");
             Formulas.push_back(L"sum @1 21600 @0");
 
-            AdjustmentValues	=	L"7200";
+			Adjustments.push_back(7200);
+
 			Handle one;
             one.position		=	L"#0,topLeft";
             one.xrange			=	L"0,10792";
@@ -509,7 +522,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @1 10800 0");
             Formulas.push_back(L"sum 21600 0 @1");
 
-            AdjustmentValues	=	L"10800";
+			Adjustments.push_back(10800);
+
 			Handle one;
             one.position		=	L"#topLeft,#0";
             one.xrange			=	L"0,21600";
@@ -540,7 +554,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @0 21600 @2");
             Formulas.push_back(L"prod @7 1 2");
 
-            AdjustmentValues	=	L"9600";
+			Adjustments.push_back(9600);
+
 			Handle one;
             one.position		=	L"bottomRight,#0";
             one.yrange			=	L"6171,21600";
@@ -567,7 +582,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod #0 2 3");
             Formulas.push_back(L"sum @3 7200 0");
 
-            AdjustmentValues	=	L"11475";
+			Adjustments.push_back(11475);
+
 			Handle one;
             one.position		=	L"center,#0";
             one.yrange			=	L"1350,21600";

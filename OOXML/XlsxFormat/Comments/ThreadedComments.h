@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,16 +35,23 @@
 
 #include "../Xlsx.h"
 #include "../Workbook/Workbook.h"
-#include "../SharedStrings/Si.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class CDateTime;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CText;
+
 		class CPerson : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPerson)
+			WritingElement_AdditionMethods(CPerson)
 			CPerson();
 			virtual ~CPerson();
 
@@ -101,7 +108,7 @@ namespace OOX
 		class CThreadedCommentMention : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMention)
+			WritingElement_AdditionMethods(CThreadedCommentMention)
 			CThreadedCommentMention();
 			virtual ~CThreadedCommentMention();
 
@@ -124,7 +131,7 @@ namespace OOX
 		class CThreadedCommentMentions : public WritingElementWithChilds<CThreadedCommentMention>
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMentions)
+			WritingElement_AdditionMethods(CThreadedCommentMentions)
 			CThreadedCommentMentions();
 			virtual ~CThreadedCommentMentions();
 
@@ -142,7 +149,7 @@ namespace OOX
 		class CThreadedComment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedComment)
+			WritingElement_AdditionMethods(CThreadedComment)
 			CThreadedComment();
 			virtual ~CThreadedComment();
 

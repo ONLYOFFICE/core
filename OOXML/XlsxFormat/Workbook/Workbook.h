@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,7 @@
 #include "../XlsxFlat.h"
 #include "../../XlsbFormat/Xlsb.h"
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
 
 #include "BookViews.h"
 #include "CalcPr.h"
@@ -46,6 +46,11 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CPersonList;
@@ -54,7 +59,6 @@ namespace OOX
 		//<customWorkbookViews>
 		//<extLst>
 		//<fileRecoveryPr>
-		//<fileSharing>
 		//<fileVersion>
 		//<functionGroups>
 		//<smartTagPr>
@@ -65,8 +69,9 @@ namespace OOX
 		class CWorkbookPivotCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPivotCache)
+			WritingElement_AdditionMethods(CWorkbookPivotCache)
 			WritingElement_XlsbConstructors(CWorkbookPivotCache)
+
 			CWorkbookPivotCache();
 			virtual ~CWorkbookPivotCache();
 
@@ -90,7 +95,7 @@ namespace OOX
 		class CWorkbookPivotCaches : public WritingElementWithChilds<CWorkbookPivotCache>
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPivotCaches)
+			WritingElement_AdditionMethods(CWorkbookPivotCaches)
             WritingElement_XlsbConstructors(CWorkbookPivotCaches)
 			CWorkbookPivotCaches(OOX::Document *pMain = NULL);
 			virtual ~CWorkbookPivotCaches();
@@ -148,6 +153,7 @@ namespace OOX
 			nullable_string									m_oOleSize;
 			nullable<OOX::Spreadsheet::CWorkbookPivotCaches>m_oPivotCaches;
 			nullable<std::wstring>							m_oPivotCachesXml;
+			nullable<OOX::Spreadsheet::CFileSharing>		m_oFileSharing;
 			
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;

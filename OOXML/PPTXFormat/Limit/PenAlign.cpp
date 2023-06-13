@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,30 +38,30 @@ namespace PPTX
 	{		
 		PenAlign::PenAlign()
 		{
-			m_strValue = _T("ctr");
+			m_strValue = L"ctr";
 		}
 		void PenAlign::set(const std::wstring& strValue)
 		{
-			if ((_T("ctr") == strValue) ||
-				(_T("in") == strValue))
+			if ((L"ctr" == strValue) ||
+				(L"in" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PenAlign::GetBYTECode() const
+		unsigned char PenAlign::GetBYTECode() const
 		{
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 0;
-			if (_T("in") == m_strValue)
+			if (L"in" == m_strValue)
 				return 1;
 			return 0;
 		}
-		void PenAlign::SetBYTECode(const BYTE& src)
+		void PenAlign::SetBYTECode(const unsigned char& src)
 		{
 			if (1 == src)
-				m_strValue = _T("in");
+				m_strValue = L"in";
 			else
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 		}
 	} // namespace Limit
 } // namespace PPTX

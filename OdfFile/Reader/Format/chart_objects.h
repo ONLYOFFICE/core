@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,8 +37,14 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
+
+	class graphic_format_properties;
+	typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+	
+	class chart_format_properties;
+	typedef boost::shared_ptr<chart_format_properties> chart_format_properties_ptr;
 
 namespace chart {
 
@@ -46,27 +52,31 @@ namespace chart {
 
 	struct simple
 	{
-		bool					bEnabled = false;
-		std::vector<_property>	properties_; 
- 		
-		text_format_properties_content_ptr	text_properties_;
-		std::vector<_property>			graphic_properties_;
-		oox::_oox_fill					fill_;
+		bool bEnabled = false;
+
+		odf_reader::chart_format_properties_ptr properties_; 		
+		odf_reader::text_format_properties_ptr text_properties_;
+		odf_reader::graphic_format_properties_ptr graphic_properties_;
+
+		oox::_oox_fill fill_;
 	};
 	struct title : public simple
 	{
-		std::wstring			content_;
+		std::wstring content_;
 		
-		double					pos_x = 0;
-		double					pos_y = 0;		
+		double pos_x = 0;
+		double pos_y = 0;		
 	}; 
 
 	struct treadline
 	{
-		bool					bEquation = false;
-		bool					bREquation = false;
-		std::vector<_property>	line_properties_;
-		simple					equation_properties_;
+		bool bEquation = false;
+		bool bREquation = false;
+
+		graphic_format_properties_ptr graphic_properties_;
+		chart_format_properties_ptr properties_;
+
+		simple equation_properties_;
 	};
 	struct legend : public simple
     {
@@ -75,8 +85,8 @@ namespace chart {
 	};
 	struct plot_area : public simple
     {
-		std::wstring			cell_range_address_;
-		std::vector<_property>	properties_3d_; 
+		std::wstring cell_range_address_;
+		chart_format_properties_ptr	properties_;
 		//series_in_column_or_row
 		//uses_first_as_label
 	};
@@ -86,12 +96,12 @@ namespace chart {
         {
             enum grid_type {major, minor};
 
-            grid_type				type_ = major;
-            std::wstring			style_name_;
+            grid_type type_ = major;
+            std::wstring style_name_;
  			
-			std::vector<_property>	graphic_properties_;
-       };
-		bool				bCategories_ = false;
+			graphic_format_properties_ptr graphic_properties_;
+		};
+		bool bCategories_ = false;
 		
 		title title_;
         

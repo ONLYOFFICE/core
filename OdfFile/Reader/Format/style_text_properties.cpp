@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,7 +38,7 @@
 #include "../Format/odf_document.h"
 #include "calcs_styles.h"
 
-#include "odfcontext.h"
+#include "../Format/odfcontext.h"
 #include "../../DataTypes/fontvariant.h"
 
 #include "draw_shapes.h"
@@ -70,7 +70,7 @@ std::wstring delete_apostroph_in_name(std::wstring value)
 	return value;
 }
 
-void text_format_properties_content::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void text_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"fo:font-variant",					fo_font_variant_);
     CP_APPLY_ATTR(L"fo:text-transform",					fo_text_transform_);
@@ -154,7 +154,7 @@ void text_format_properties_content::add_attributes( const xml::attributes_wc_pt
 
 
 
-int text_format_properties_content::process_font_size(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
+int text_format_properties::process_font_size(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
 {
     if (FontSize)
     {
@@ -165,7 +165,7 @@ int text_format_properties_content::process_font_size(const _CP_OPT(font_size) &
     return 0;
 }
 
-double text_format_properties_content::process_font_size_impl(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
+double text_format_properties::process_font_size_impl(const _CP_OPT(font_size) & FontSize, const style_instance * currnetStyle, bool Complex, double Mul)
 {
     font_size usedFontSize = (!FontSize) ? font_size(percent(100)) : *FontSize;
 
@@ -201,7 +201,7 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
     return -1.0;
 }
 
-int text_format_properties_content::process_font_weight(const _CP_OPT(font_weight) & FontWeight)
+int text_format_properties::process_font_weight(const _CP_OPT(font_weight) & FontWeight)
 {
     if (FontWeight)
     {
@@ -213,7 +213,7 @@ int text_format_properties_content::process_font_weight(const _CP_OPT(font_weigh
     return 0; //not set
 }
 
-int text_format_properties_content::process_font_style(const _CP_OPT(font_style) & FontStyle)
+int text_format_properties::process_font_style(const _CP_OPT(font_style) & FontStyle)
 {
     if (FontStyle)
     {
@@ -224,7 +224,7 @@ int text_format_properties_content::process_font_style(const _CP_OPT(font_style)
     }
     return 0;   
 }
-void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_context & Context)
+void text_format_properties::pptx_convert_as_list(oox::pptx_conversion_context & Context)
 {
 	oox::styles_context & styles_context_ = Context.get_text_context().get_styles_context();
 	CP_XML_WRITER(styles_context_.text_style())
@@ -311,7 +311,7 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 		}
 	}
 }
-void text_format_properties_content::drawing_serialize(std::wostream & strm, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style, std::wstring hlink)
+void text_format_properties::drawing_serialize(std::wostream & strm, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style, std::wstring hlink)
 {
 	CP_XML_WRITER(strm)
 	{  
@@ -552,7 +552,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 		}
 	}
 }
-void text_format_properties_content::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
+void text_format_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
 	double font_size = process_font_size_impl(fo_font_size_, NULL);
 
@@ -617,7 +617,7 @@ void text_format_properties_content::xlsx_serialize(std::wostream & strm, oox::x
 		strm << L"&amp;K" << fo_color_->get_hex_value();
 	}
 }
-void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_container & fonts)
+void text_format_properties::docx_serialize(std::wostream & _rPr, fonts_container & fonts)
 {//упрощенный вариант
 	
 	_rPr << L"<w:rPr>";
@@ -1026,7 +1026,7 @@ void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_
 	_rPr << L"</w:rPr>";	
 }
 
-void text_format_properties_content::pptx_convert(oox::pptx_conversion_context & Context)
+void text_format_properties::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	oox::styles_context	& styles_context_	= Context.get_text_context().get_styles_context();
 	fonts_container & fonts_			= Context.root()->odf_context().fontContainer();	  
@@ -1034,7 +1034,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 	drawing_serialize(styles_context_.text_style(), styles_context_.extern_node(), fonts_, styles_context_.get_current_processed_style(), styles_context_.hlinkClick());
 }
 
-void text_format_properties_content::docx_convert(oox::docx_conversion_context & Context)
+void text_format_properties::docx_convert(oox::docx_conversion_context & Context)
 {//расширенный вариант
     std::wostream & _pPr = Context.get_styles_context().paragraph_nodes();
 
@@ -1457,16 +1457,19 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 				if (defaultStyle)instances.push_back(defaultStyle);
 				instances.push_back(styleInst);
 			}
-			graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);
-
 			draw_fill fill = draw_fill::solid;
-			if (graphicProperties.common_draw_fill_attlist_.draw_fill_)
-				fill = *graphicProperties.common_draw_fill_attlist_.draw_fill_;
-
-			if (graphicProperties.common_draw_fill_attlist_.draw_fill_color_ &&
-				( fill.get_type() != draw_fill::bitmap &&  fill.get_type() != draw_fill::none ))
+			
+			graphic_format_properties_ptr graphicProperties = calc_graphic_properties_content(instances);
+			if (graphicProperties)
 			{
-				color_text = graphicProperties.common_draw_fill_attlist_.draw_fill_color_;
+				if (graphicProperties->common_draw_fill_attlist_.draw_fill_)
+					fill = *graphicProperties->common_draw_fill_attlist_.draw_fill_;
+
+				if (graphicProperties->common_draw_fill_attlist_.draw_fill_color_ &&
+					(fill.get_type() != draw_fill::bitmap &&  fill.get_type() != draw_fill::none))
+				{
+					color_text = graphicProperties->common_draw_fill_attlist_.draw_fill_color_;
+				}
 			}
 		}
 	}
@@ -1540,7 +1543,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 }
 
 
-void text_format_properties_content::oox_serialize(std::wostream & strm, bool graphic, fonts_container & fonts, bool default_)
+void text_format_properties::oox_serialize(std::wostream & strm, bool graphic, fonts_container & fonts, bool default_)
 {
 	if (graphic)
 	{	
@@ -1570,7 +1573,7 @@ void apply_font_size(optional<font_size>::Type & A, const optional<font_size>::T
 
 
 
-void text_format_properties_content::apply_from(const text_format_properties_content & Other)
+void text_format_properties::apply_from(const text_format_properties & Other)
 {
     _CP_APPLY_PROP(r_style_, Other.r_style_);
 
@@ -1668,20 +1671,9 @@ void text_format_properties_content::apply_from(const text_format_properties_con
     _CP_APPLY_PROP(style_text_overline_style_, Other.style_text_overline_style_);
 
 }
-void text_format_properties_content::set_r_style(const std::wstring & rStyle)
+void text_format_properties::set_r_style(const std::wstring & rStyle)
 { 
 	r_style_ = rStyle; 
-}
-
-void text_format_properties_content::apply_to(std::vector<_property> & properties)
-{
-	if (fo_font_weight_)	properties.push_back(_property(L"font-weight",	fo_font_weight_.get().get_type()) );
-	if (fo_font_family_)	properties.push_back(_property(L"font-family",	fo_font_family_.get()) );
-	if (style_font_name_)	properties.push_back(_property(L"font-name",	style_font_name_.get()) );
-	if (fo_font_size_)		properties.push_back(_property(L"font-size",	fo_font_size_.get().get_length().get_value_unit(length::pt)) );
-	if (fo_font_style_)		properties.push_back(_property(L"font-style",	fo_font_style_.get().get_type()) );
-	if (fo_color_)			properties.push_back(_property(L"font-color",	fo_color_.get().get_hex_value()) );
-
 }
 
 // style:text-properties

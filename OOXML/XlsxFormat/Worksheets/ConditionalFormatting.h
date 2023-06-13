@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,19 +31,45 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Styles/dxf.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDecimalNumber;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class ST_CfvoType;
+		class ST_IconSetType;
+		class ST_DataBarAxisPosition;
+		class ST_DataBarDirection;
+		class ST_CfOperator;
+		class ST_TimePeriod;
+		class ST_CfType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
+		class CDxf;
+		class CColor;
+
 		//необработано:
 		//<extLst>
 		class CFormulaCF : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormulaCF)
+			WritingElement_AdditionMethods(CFormulaCF)
 
 			CFormulaCF();
 			virtual ~CFormulaCF();
@@ -66,7 +92,7 @@ namespace OOX
 		class CConditionalFormatValueObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatValueObject)
+			WritingElement_AdditionMethods(CConditionalFormatValueObject)
             WritingElement_XlsbConstructors(CConditionalFormatValueObject)
 
 			CConditionalFormatValueObject();
@@ -99,7 +125,7 @@ namespace OOX
 		class CConditionalFormatIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+			WritingElement_AdditionMethods(CConditionalFormatIconSet)
             WritingElement_XlsbConstructors(CConditionalFormatIconSet)
 
 			CConditionalFormatIconSet();
@@ -126,7 +152,7 @@ namespace OOX
 		class CColorScale : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorScale)
+			WritingElement_AdditionMethods(CColorScale)
             WritingElement_XlsbConstructors(CColorScale)
 
 			CColorScale();
@@ -157,7 +183,7 @@ namespace OOX
 		class CDataBar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataBar)
+			WritingElement_AdditionMethods(CDataBar)
             WritingElement_XlsbConstructors(CDataBar)
 
 			CDataBar();
@@ -211,7 +237,7 @@ namespace OOX
 		class CIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CIconSet)
+			WritingElement_AdditionMethods(CIconSet)
             WritingElement_XlsbConstructors(CIconSet)
 
 			CIconSet();
@@ -253,7 +279,7 @@ namespace OOX
 		class CConditionalFormattingRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormattingRule)
+			WritingElement_AdditionMethods(CConditionalFormattingRule)
             WritingElement_XlsbConstructors(CConditionalFormattingRule)
 
 			CConditionalFormattingRule();
@@ -299,7 +325,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
-			nullable<std::wstring>								m_oExtId;
+			nullable_string										m_oExtId;
 
 			nullable<CIconSet>					m_oIconSet;
 			nullable<CColorScale>				m_oColorScale;
@@ -312,7 +338,7 @@ namespace OOX
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatting)
+			WritingElement_AdditionMethods(CConditionalFormatting)
             WritingElement_XlsbConstructors(CConditionalFormatting)
 
 			CConditionalFormatting(OOX::Document *pMain = NULL);

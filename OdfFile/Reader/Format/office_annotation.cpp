@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -215,14 +215,16 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 			instances.push_back(styleInst);
 		}
-		graphic_format_properties properties = calc_graphic_properties_content(instances);
-
-//-----------------------------------------------
-		properties.apply_to(Context.get_drawing_context().get_properties());
-		
 		oox::_oox_fill fill;
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																		Context.root()->odf_context().drawStyles(), fill);	
+
+		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+		if (properties)
+		{
+			properties->apply_to(Context.get_drawing_context().get_properties());
+
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
+				Context.root()->odf_context().drawStyles(), fill);
+		}
 		Context.get_drawing_context().set_fill(fill);
 	}
 //-----------------------------------------------
@@ -236,7 +238,7 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		instances.push_back(styleInst);
 	}
-	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
+	graphic_format_properties_ptr graphicProperties = calc_graphic_properties_content(instances);	
 
 	const std::wstring textStyleName = attr_.draw_text_style_name_.get_value_or(L"");
 	
@@ -314,9 +316,12 @@ void officeooo_annotation::pptx_convert(oox::pptx_conversion_context & Context)
 
 		instances.push_back(styleInst);
 	}
-	graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);	
+	graphic_format_properties_ptr graphicProperties = calc_graphic_properties_content(instances);	
 
-	graphicProperties.apply_to(Context.get_comments_context().get_draw_properties());
+	if (graphicProperties)
+	{
+		graphicProperties->apply_to(Context.get_comments_context().get_draw_properties());
+	}
 
 	const std::wstring textStyleName = attr_.draw_text_style_name_.get_value_or(L"");
 

@@ -127,6 +127,7 @@ namespace MetaFile
 		void Read_EMR_SMALLTEXTOUT();
 		void Read_EMR_STROKEANDFILLPATH();
 		void Read_EMR_STROKEPATH();
+		void Read_EMR_GRADIENTFILL();
 
 		void Read_EMR_COMMENT();
 		void Read_EMR_FILLRGN();

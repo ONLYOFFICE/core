@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -414,8 +414,8 @@ int main(int argc, char** argv)
     NSStringUtils::CStringBuilder oBuilderJS;
     oBuilderJS.WriteString(L"[");
 
-    #define COUNT_FONTS_SCALE 5
-    double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2 };
+	#define COUNT_FONTS_SCALE 11
+	double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4, 4.5, 5 };
 
     int nThemeIndex = 0;
     for (std::vector<std::wstring>::iterator iter = arThemes.begin(); iter != arThemes.end(); iter++)

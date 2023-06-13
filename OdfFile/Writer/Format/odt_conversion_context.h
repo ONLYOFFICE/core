@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -69,7 +69,7 @@ public:
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
 
-	virtual odf_style_context		* styles_context();
+	virtual odf_style_context_ptr	styles_context();
 		
 	odf_comment_context				* comment_context();
 	odf_table_context				* table_context();
@@ -144,12 +144,12 @@ public:
 
 	void set_master_page_name(std::wstring master_name);
 
-	void start_drop_cap			(style_paragraph_properties * paragraph_properties);
+	void start_drop_cap			(paragraph_format_properties* paragraph_properties);
 		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap			();
 	bool in_drop_cap			() {return drop_cap_state_.enabled;}
-	style_text_properties* get_drop_cap_properties();
+	text_format_properties* get_drop_cap_properties();
 	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
 	int start_comment			(int oox_comment_id);
@@ -279,7 +279,7 @@ private:
 		}
 
 		bool enabled = false;
-		style_paragraph_properties	*paragraph_properties = NULL;
+		paragraph_format_properties	*paragraph_properties = NULL;
 		office_element_ptr			text_properties;
 
 		int		lines = 0;

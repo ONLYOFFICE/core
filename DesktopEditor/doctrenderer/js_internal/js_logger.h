@@ -5,8 +5,8 @@
 
 namespace NSJSBase
 {
-    void LOGGER_START_FUNC();
-    void LOGGER_LAP_FUNC(const char* details);
+	void LOGGER_START_FUNC();
+	void LOGGER_LAP_FUNC(const char* details);
 }
 
 #if 1

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,6 @@
  */
 
 #include "Readers.h"
-#include "ReaderClasses.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
@@ -40,27 +39,18 @@
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
-#include "../../../DocxFormat/Docx.h"
-#include "../../../DocxFormat/Document.h"
-#include "../../../DocxFormat/FontTable.h"
-#include "../../../DocxFormat/Numbering.h"
-#include "../../../DocxFormat/Comments.h"
-#include "../../../DocxFormat/Styles.h"
-#include "../../../DocxFormat/Footnote.h"
-#include "../../../DocxFormat/Endnote.h"
 #include "../../../DocxFormat/Settings/Settings.h"
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Math/oMathContent.h"
-
+#include "../../../DocxFormat/Logic/DocParts.h"
+#include "../../../DocxFormat/Logic/SectionProperty.h"
+#include "../../../DocxFormat/Logic/Sdt.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
-#include "../../../../DesktopEditor/common/ASCVariant.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \
@@ -5298,6 +5288,7 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Logic::CFldChar* pFldChar = static_cast<OOX::Logic::CFldChar*>(poResult);
+	
 	if ( c_oSer_FldSimpleType::CharType == type )
 	{
 		pFldChar->m_oFldCharType.Init();
@@ -5308,6 +5299,10 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 		pFldChar->m_oFFData.Init();
 		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		pFldChar->m_sPrivateData = m_oBufferedStream.GetString3(length);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5316,8 +5311,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 {
 	int res = c_oSerConstants::ReadOk;
 	CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
-	if ( c_oSer_FldSimpleType::Instr == type )
+	
+	if (c_oSer_FldSimpleType::Instr == type)
+	{
 		pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
+	}
 	else if ( c_oSer_FldSimpleType::Content == type )
 	{
 		NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
@@ -5330,6 +5328,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 		OOX::Logic::CFFData oFFData;
 		READ1_DEF(length, res, this->ReadFFData, &oFFData);
 		pFldSimple->writer.WriteString(oFFData.toXML());
+	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		std::wstring sVal = m_oBufferedStream.GetString3(length);
+		pFldSimple->writer.WriteString(L"<w:fldData xml:space=\"preserve\">" + sVal + L"</w:fldData>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,35 +41,39 @@ namespace DocFileFormat
 	  CubeType():
       ShapeType(msosptCube)
       {
-        this->ShapeConcentricFill = true;
+        ShapeConcentricFill = true;
+        Joins = miter;
 
-        this->Joins = miter;
+        Path = L"m@0,l0@0,,21600@1,21600,21600@2,21600,xem0@0nfl@1@0,21600,em@1@0nfl@1,21600e";
 
-        this->Path = L"m@0,l0@0,,21600@1,21600,21600@2,21600,xem0@0nfl@1@0,21600,em@1@0nfl@1,21600e";
+        Formulas.push_back( L"val #0");
+        Formulas.push_back( L"sum width 0 #0");
+        Formulas.push_back( L"sum height 0 #0");
+        Formulas.push_back( L"mid height #0");
+        Formulas.push_back( L"prod @1 1 2");
+        Formulas.push_back( L"prod @2 1 2");
+        Formulas.push_back( L"mid width #0");
 
-        this->Formulas.push_back( L"val #0");
-        this->Formulas.push_back( L"sum width 0 #0");
-        this->Formulas.push_back( L"sum height 0 #0");
-        this->Formulas.push_back( L"mid height #0");
-        this->Formulas.push_back( L"prod @1 1 2");
-        this->Formulas.push_back( L"prod @2 1 2");
-        this->Formulas.push_back( L"mid width #0");
+		Adjustments.push_back(5400);
 
-        this->AdjustmentValues = L"5400";
+        ConnectorLocations = L"@6,0;@4,@0;0,@3;@4,21600;@1,@3;21600,@5";
 
-        this->ConnectorLocations = L"@6,0;@4,@0;0,@3;@4,21600;@1,@3;21600,@5";
+		ConnectorAngles.push_back(270);
+		ConnectorAngles.push_back(270);
+		ConnectorAngles.push_back(180);
+		ConnectorAngles.push_back(90);
+		ConnectorAngles.push_back(0);
+		ConnectorAngles.push_back(0);
 
-        this->ConnectorAngles = L"270,270,180,90,0,0";
-
-        this->TextBoxRectangle = L"0,@0,@1,21600";
+        TextBoxRectangle = L"0,@0,@1,21600";
 
         Handle HandleOne;
         HandleOne.position = L"topLeft,#0";
         HandleOne.switchHandle = L"true";
         HandleOne.yrange = L"0,21600";
-        this->Handles.push_back( HandleOne );
+        Handles.push_back( HandleOne );
 
-        this->Limo = L"10800,10800";
+        Limo = L"10800,10800";
       }
 
 	  virtual ~CubeType()

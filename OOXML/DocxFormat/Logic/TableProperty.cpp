@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -956,21 +956,7 @@ namespace OOX
 		{
 			m_pTblPr = new CTableProperty(pMain);
 			m_pTblPr->m_bTblPrChange = true;
-		}
-		CTblPrChange::CTblPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
-		{
-			m_pTblPr.Init();
-			m_pTblPr->m_bTblPrChange = true;
-
-			fromXML( oNode );
-		}
-		CTblPrChange::CTblPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_pTblPr.Init();
-			m_pTblPr->m_bTblPrChange = true;
-
-			fromXML( oReader );
-		}
+		}		
 		CTblPrChange::~CTblPrChange()
 		{
 		}
@@ -1077,19 +1063,7 @@ namespace OOX
 		CTableProperty::CTableProperty(OOX::Document *pMain)
 		{
 			m_bTblPrChange = false;
-		}
-		CTableProperty::CTableProperty(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
-		{
-			m_bTblPrChange = false;
-
-			fromXML( oNode );
-		}
-		CTableProperty::CTableProperty(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_bTblPrChange = false;
-
-			fromXML( oReader );
-		}
+		}		
 		CTableProperty::~CTableProperty()
 		{
 		}
@@ -1242,21 +1216,7 @@ namespace OOX
 		{
 			m_pTrPr.Init();
 			m_pTrPr->m_bTrPrChange = true;
-		}
-		CTrPrChange::CTrPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
-		{
-			m_pTrPr.Init();
-			m_pTrPr->m_bTrPrChange = true;
-
-			fromXML( oNode );
-		}
-		CTrPrChange::CTrPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_pTrPr.Init();
-			m_pTrPr->m_bTrPrChange = true;
-
-			fromXML( oReader );
-		}
+		}		
 		CTrPrChange::~CTrPrChange()
 		{
 		}
@@ -1362,19 +1322,7 @@ namespace OOX
 		CTableRowProperties::CTableRowProperties(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_bTrPrChange = false;
-		}
-		CTableRowProperties::CTableRowProperties(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
-		{
-			m_bTrPrChange = false;
-
-			fromXML( (XmlUtils::CXmlNode &)oNode );
-		}
-		CTableRowProperties::CTableRowProperties(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_bTrPrChange = false;
-
-			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-		}
+		}		
 		CTableRowProperties::~CTableRowProperties()
 		{
 		}
@@ -1526,7 +1474,9 @@ namespace OOX
 				{
 					if ( oHeaders.GetAt( nIndex, oHeader ) )
 					{
-						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oHeader);
+						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
+						*oHead = oHeader;
+
 						if (oHead) m_arrHeaders.push_back( oHead );
 					}
 				}
@@ -1544,7 +1494,9 @@ namespace OOX
 
 				if ( L"w:header" == sName )
 				{
-					ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oReader);
+					ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
+					*oHead = oReader;
+
 					if (oHead) m_arrHeaders.push_back( oHead );
 				}
 			}
@@ -1741,21 +1693,7 @@ namespace OOX
 		{
 			m_pTcPr.Init();
 			m_pTcPr->m_bTcPrChange = true;
-		}
-		CTcPrChange::CTcPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
-		{
-			m_pTcPr.Init();
-			m_pTcPr->m_bTcPrChange = true;
-
-			fromXML( oNode );
-		}
-		CTcPrChange::CTcPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_pTcPr.Init();
-			m_pTcPr->m_bTcPrChange = true;
-
-			fromXML( oReader );
-		}
+		}		
 		CTcPrChange::~CTcPrChange()
 		{
 		}
@@ -1861,19 +1799,7 @@ namespace OOX
 		CTableCellProperties::CTableCellProperties(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_bTcPrChange = false;
-		}
-		CTableCellProperties::CTableCellProperties(XmlUtils::CXmlNode &oNode) : WritingElement(NULL)
-		{
-			m_bTcPrChange = false;
-
-			fromXML( oNode );
-		}
-		CTableCellProperties::CTableCellProperties(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
-		{
-			m_bTcPrChange = false;
-
-			fromXML( oReader );
-		}
+		}		
 		CTableCellProperties::~CTableCellProperties()
 		{
 		}

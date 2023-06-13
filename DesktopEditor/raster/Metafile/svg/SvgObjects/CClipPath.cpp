@@ -21,7 +21,7 @@ namespace SVG
 		pRenderer->PathCommandStart();
 
 		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
-			pGraphicsObject->Draw(pRenderer, pDefs, true);
+			pGraphicsObject->Draw(pRenderer, pDefs, CommandeModeClip);
 
 		pRenderer->EndCommand(c_nClipType);
 		pRenderer->PathCommandEnd();

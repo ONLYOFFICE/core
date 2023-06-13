@@ -125,9 +125,9 @@ namespace SVG
 			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
 	}
 
-	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || bIsClip)
+		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || CommandeModeClip == oMode)
 			return false;
 
 		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
@@ -152,7 +152,7 @@ namespace SVG
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
+			pTSpan->Draw(pRenderer, pDefs, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
@@ -429,15 +429,15 @@ namespace SVG
 		return new CText(oNode, pParent, pFontManager);
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || NULL == pRenderer)
 			return false;
 
-		CTSpan::Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
+		CTSpan::Draw(pRenderer, pDefs, oMode, pOtherStyles);
 
 		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
+			pTSpan->Draw(pRenderer, pDefs, oMode, pOtherStyles);
 
 		return true;
 	}
@@ -465,9 +465,9 @@ namespace SVG
 		}
 	}
 
-	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || bIsClip || NULL == m_pPath)
+		if (NULL == pRenderer || CommandeModeClip == oMode || NULL == m_pPath)
 			return false;
 
 		CMovingPath oMovingPath(m_pPath);
@@ -475,7 +475,7 @@ namespace SVG
 		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
 
 		for (CTSpan* pTSpan : Split())
-			DrawGlyph(pTSpan, oMovingPath, pRenderer, pDefs, bIsClip);
+			DrawGlyph(pTSpan, oMovingPath, pRenderer, pDefs, oMode);
 
 		for (const CTSpan* pTSpan : m_arObjects)
 		{
@@ -485,7 +485,7 @@ namespace SVG
 				oMovingPath.Move(pTSpan->m_oX.ToDouble(NSCSS::Pixel));
 			}
 			for (CTSpan* pGlyphs : pTSpan->Split())
-				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pDefs, bIsClip);
+				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pDefs, oMode);
 		}
 
 		return true;
@@ -502,7 +502,7 @@ namespace SVG
 		return new CTextPath(oNode, pTSpan, pFontManager, pFile);
 	}
 
-	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode) const
 	{
 		if (NULL == pTSpan)
 			return;
@@ -522,7 +522,7 @@ namespace SVG
 
 		pTSpan->SetPosition(oPoint);
 		pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
-		pTSpan->Draw(pRenderer, pDefs, bIsClip);
+		pTSpan->Draw(pRenderer, pDefs, oMode);
 
 		delete pTSpan;
 

@@ -497,17 +497,17 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
-		StartPath(pRenderer, pDefs, bIsClip);
+		StartPath(pRenderer, pDefs, oMode);
 
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
 
 		DrawMarkers(pRenderer, pDefs);
 

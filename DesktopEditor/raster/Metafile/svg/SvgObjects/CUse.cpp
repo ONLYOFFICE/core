@@ -26,7 +26,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles) const
+	bool CUse::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
 		double dM11, dM12, dM21, dM22, dRx, dRy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
@@ -41,10 +41,10 @@ namespace SVG
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pDefs, bIsClip, &oNewStyles);
+				pFoundObj->Draw(pRenderer, pDefs, oMode, &oNewStyles);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pDefs, bIsClip, &m_oStyles);
+				pFoundObj->Draw(pRenderer, pDefs, oMode, &m_oStyles);
 		}
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 

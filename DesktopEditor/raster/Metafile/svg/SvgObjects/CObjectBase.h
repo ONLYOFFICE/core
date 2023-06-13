@@ -126,13 +126,20 @@ namespace SVG
 		NSCSS::CNode  m_oXmlNode;
 	};
 
+	enum CommandeMode
+	{
+		CommandeModeDraw,
+		CommandeModeClip,
+		CommandeModeMask
+	};
+
 	class CSvgGraphicsObject : public CSvgObject<CSvgGraphicsObject>
 	{
 	public:
 		CSvgGraphicsObject(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		virtual ~CSvgGraphicsObject();
 
-		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false, const TSvgStyles* pStyles = NULL) const = 0;
+		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
 	private:
@@ -142,8 +149,8 @@ namespace SVG
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
-		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
-		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles = NULL) const;
+		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw) const;
+		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
 
 		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 

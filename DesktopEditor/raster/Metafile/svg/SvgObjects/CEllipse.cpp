@@ -23,7 +23,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -38,12 +38,12 @@ namespace SVG
 		double dRx = m_oRx.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dRy = m_oRy.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		StartPath(pRenderer, pDefs, bIsClip);
+		StartPath(pRenderer, pDefs, oMode);
 
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
 
 		return true;
 	}

@@ -19,7 +19,7 @@ namespace SVG
 		pRenderer->PathCommandStart();
 
 		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
-			pGraphicsObject->Draw(pRenderer, pDefs);
+			pGraphicsObject->Draw(pRenderer, pDefs, CommandeModeMask);
 
 		pRenderer->EndCommand(c_nMaskType);
 		pRenderer->PathCommandEnd();

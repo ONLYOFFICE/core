@@ -67,21 +67,21 @@ namespace SVG
 			m_oStyles.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
 	}
 
-	void CSvgGraphicsObject::StartPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	void CSvgGraphicsObject::StartPath(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode) const
 	{
 		Apply(pRenderer, &m_oStyles.m_oClip, pDefs);
 		ApplyMask(pRenderer, &m_oStyles.m_oMask, pDefs);
 
-		if (bIsClip)
+		if (CommandeModeClip == oMode)
 			return;
 
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
 	}
 
-	void CSvgGraphicsObject::EndPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles* pOtherStyles) const
+	void CSvgGraphicsObject::EndPath(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
-		if (bIsClip)
+		if (CommandeModeClip == oMode)
 			return;
 
 		int nPathType = 0;
@@ -99,6 +99,12 @@ namespace SVG
 		pRenderer->DrawPath(nPathType);
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
+
+		if (oMode != CommandeModeMask)
+		{
+			pRenderer->BeginCommand(c_nResetMaskType);
+			pRenderer->EndCommand(c_nResetMaskType);
+		}
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 	}

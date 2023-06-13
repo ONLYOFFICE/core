@@ -26,7 +26,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -41,7 +41,7 @@ namespace SVG
 		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		StartPath(pRenderer, pDefs, bIsClip);
+		StartPath(pRenderer, pDefs, oMode);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
@@ -73,7 +73,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pDefs, bIsClip);
+		EndPath(pRenderer, pDefs, oMode);
 
 		return true;
 	}

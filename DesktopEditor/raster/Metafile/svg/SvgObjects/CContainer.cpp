@@ -35,13 +35,13 @@ namespace SVG
 	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		for (const CSvgGraphicsObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pDefs, bIsClip, pOtherStyles);
+			pObject->Draw(pRenderer, pDefs, oMode, pOtherStyles);
 
 		return true;
 	}

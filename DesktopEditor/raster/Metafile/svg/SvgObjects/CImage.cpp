@@ -28,7 +28,7 @@ namespace SVG
 			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
-	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
@@ -78,7 +78,7 @@ namespace SVG
 		Aggplus::CImage oImage;
 		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
 
-		StartPath(pRenderer, pDefs, bIsClip);
+		StartPath(pRenderer, pDefs, oMode);
 
 		Aggplus::CMatrix oOldMatrix;
 		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
@@ -96,7 +96,7 @@ namespace SVG
 			dWidth = dImageW / dValue;
 		}
 
-		if (!bIsClip)
+		if (CommandeModeClip != oMode)
 			pRenderer->DrawImage(&oImage, dX, dY, dWidth, dHeight);
 		else
 		{
@@ -107,7 +107,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 

@@ -22,7 +22,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip, const TSvgStyles *pOtherStyles) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -33,12 +33,12 @@ namespace SVG
 		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 		double dR = m_oR .ToDouble(NSCSS::Pixel);
 
-		StartPath(pRenderer, pDefs, bIsClip);
+		StartPath(pRenderer, pDefs, oMode);
 
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, bIsClip, pOtherStyles);
+		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
 
 		return true;
 	}

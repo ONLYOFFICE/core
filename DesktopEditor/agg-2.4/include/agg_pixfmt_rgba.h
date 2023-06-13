@@ -205,8 +205,8 @@ namespace agg
 
 			p[Order::A] = (value_type)((alpha + a) - ((alpha * a + base_mask) >> base_shift));
 			p[Order::R] = (value_type)((alpha * cr + a * r - ((a * r * alpha + base_mask) >> base_shift)) / p[Order::A]);
-			p[Order::G] = (value_type)((alpha * cg + a * r - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);
-			p[Order::B] = (value_type)((alpha * cb + a * r - ((a * b * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			p[Order::G] = (value_type)((alpha * cg + a * g - ((a * g * alpha + base_mask) >> base_shift)) / p[Order::A]);
+			p[Order::B] = (value_type)((alpha * cb + a * b - ((a * b * alpha + base_mask) >> base_shift)) / p[Order::A]);
 		}
 
 		static AGG_INLINE void blend_pix_subpix(value_type* p,

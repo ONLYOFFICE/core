@@ -56,10 +56,10 @@ namespace NSJSBase {
 
 	void CJSContext::AddEmbedCreator(const std::string& name,
 									 EmbedObjectCreator creator,
-									 const IsolateAdditionalDataType& type)
+									 const bool& isAllowedInJS)
 	{
 		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
-		oRegistrator.Register(name, creator, type);
+		oRegistrator.Register(name, creator, isAllowedInJS);
 	}
 
 	CJSObject::CJSObject()
@@ -149,6 +149,12 @@ namespace NSJSBase {
 
 	JSSmart<CJSObject> CJSContext::createEmbedObject(const std::string& name)
 	{
+		// Allow creation for embedded class in JS while in current scope
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		JSSmart<CEmbedObjectRegistrator::CAllowedCreationScope> oCreationScope = oRegistrator.AllowCreationInScope(name);
+		if (!oCreationScope.IsInit())
+			return nullptr;
+		// Call CreateEmbedObject() from JS
 		JSSmart<CJSContext> context = CJSContext::GetCurrent();
 		JSSmart<CJSValue> args[1];
 		args[0] = CJSContext::createString(name);

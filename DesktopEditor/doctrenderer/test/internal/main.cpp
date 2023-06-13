@@ -214,19 +214,32 @@ int main(int argc, char *argv[])
 
 	// External CTestEmbed
 	CJSContextScope scope(oContext1);
-	CJSContext::Embed<CTestEmbed>();
+	CJSContext::Embed<CTestEmbed>(false);
 
 	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
-	std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
+	if (oResTestEmbed1->isNumber())
+		std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
 
-	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
-	std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+	JSSmart<CJSObject> oTestEmbed = CJSContext::createEmbedObject("CTestEmbed");
 
-	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
-	std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
+//	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
+	JSSmart<CJSValue> args2[1];
+	args2[0] = CJSContext::createInt(4);
+	JSSmart<CJSValue> oResTestEmbed2 = oTestEmbed->call_func("FunctionSquare", 1, args2);
+	if (oResTestEmbed2->isNumber())
+		std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+
+//	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
+	JSSmart<CJSValue> args3[2];
+	args3[0] = CJSContext::createInt(30);
+	args3[1] = CJSContext::createInt(3);
+	JSSmart<CJSValue> oResTestEmbed3 = oTestEmbed->call_func("FunctionDel", 2, args3);
+	if (oResTestEmbed3->isNumber())
+		std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
 
 	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionGet(); })();");
-	std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+	if (oResTestEmbed4->isNumber())
+		std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
 
 	// Internal CHashEmbed
 	CreateDefaults();

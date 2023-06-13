@@ -424,16 +424,6 @@ namespace NSJSBase
 	using EmbedObjectCreator = CJSEmbedObject* (*)();
 
 	/**
-	 * Used to specify creation mode for an embedded object.
-	 * By default the creation mode is iadtUndefined.
-	 */
-	enum IsolateAdditionalDataType {
-		iadtSingletonNative = 0,
-		iadtUndefined = 1,
-		iadtNone = 2
-	};
-
-	/**
 	 * The class for getting JS context instance for working with it.
 	 */
 	class CJSContextPrivate;
@@ -480,12 +470,13 @@ namespace NSJSBase
 		/**
 		 * Embeds specified class in JS contexts.
 		 * @tparam T Embedded class name.
-		 * @param type Specifies how an object of the embedded class will be created.
+		 * @param isAllowedInJS If true, user can create the embedded object instance from JS code using CreateEmbedObject().
+		 * If this parameter is false, then user can do so only using JSContext::createEmbedObject().
 		 */
 		template<typename T>
-		static void Embed(const IsolateAdditionalDataType& type = iadtUndefined)
+		static void Embed(const bool& isAllowedInJS = true)
 		{
-			AddEmbedCreator(T::getName(), T::getCreator, type);
+			AddEmbedCreator(T::getName(), T::getCreator, isAllowedInJS);
 		}
 
 		/**
@@ -515,9 +506,9 @@ namespace NSJSBase
 		 * Adds a creator object for corresponding embedded class name.
 		 * @param name The name of an embedded class.
 		 * @param creator The creator function for an embedded class.
-		 * @param type The type of an embedded object being created.
+		 * @param isAllowedInJS Specifies whether user can create the embedded object from JS code or not.
 		 */
-		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const IsolateAdditionalDataType& type = iadtUndefined);
+		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const bool& isAllowedInJS = true);
 
 	public:
 		/**

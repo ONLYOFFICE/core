@@ -11,18 +11,37 @@ public:
 	{
 	public:
 		NSJSBase::EmbedObjectCreator m_creator;
-		NSJSBase::IsolateAdditionalDataType m_type;
+		bool m_bIsCreationAllowed;
 
-		CEmdedClassInfo(NSJSBase::EmbedObjectCreator creator, const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
+		CEmdedClassInfo(NSJSBase::EmbedObjectCreator creator, const bool& bIsCreationAllowed = true)
 		{
 			m_creator = creator;
-			m_type = type;
+			m_bIsCreationAllowed = bIsCreationAllowed;
+		}
+	};
+
+	using store_t = std::map<std::string, CEmdedClassInfo>;
+
+	class CAllowedCreationScope
+	{
+	private:
+		store_t::iterator m_oIter;
+		bool m_bPrev;
+
+	public:
+		CAllowedCreationScope(const store_t::iterator& iter) : m_oIter(iter)
+		{
+			m_bPrev = m_oIter->second.m_bIsCreationAllowed;
+			m_oIter->second.m_bIsCreationAllowed = true;
+		}
+
+		~CAllowedCreationScope()
+		{
+			m_oIter->second.m_bIsCreationAllowed = m_bPrev;
 		}
 	};
 
 public:
-	using store_t = std::map<std::string, CEmdedClassInfo>;
-
 	store_t m_infos;
 
 private:
@@ -31,9 +50,17 @@ private:
 public:
 	void Register(const std::string& name,
 				  NSJSBase::EmbedObjectCreator creator,
-				  const NSJSBase::IsolateAdditionalDataType& type = NSJSBase::iadtUndefined)
+				  const bool& bIsCreationAllowed = true)
 	{
-		m_infos.insert(std::pair<std::string, CEmdedClassInfo>(name, CEmdedClassInfo(creator, type)));
+		m_infos.insert(std::pair<std::string, CEmdedClassInfo>(name, CEmdedClassInfo(creator, bIsCreationAllowed)));
+	}
+
+	CAllowedCreationScope* AllowCreationInScope(const std::string& name)
+	{
+		store_t::iterator iter = m_infos.find(name);
+		if (iter == m_infos.end())
+			return nullptr;
+		return new CAllowedCreationScope(iter);
 	}
 
 	static CEmbedObjectRegistrator& getInstance()

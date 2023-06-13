@@ -229,6 +229,9 @@ namespace NSJSBase
 		virtual void set(const char* name, CJSValue* value)     = 0;
 		virtual void set(const char* name, const int& value)    = 0;
 		virtual void set(const char* name, const double& value) = 0;
+		// Common funcs
+		void set(const char* name, JSSmart<CJSValue> value);
+		void set(const char* name, JSSmart<CJSObject> value);
 		/**
 		 * Returns a pointer to the native embedded object.
 		 */

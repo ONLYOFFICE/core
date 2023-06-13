@@ -50,7 +50,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 	m_context = new CJSContext();
 	CJSContextScope scope(m_context);
 
-	CJSContext::Embed<CNativeControlEmbed>();
+	CJSContext::Embed<CNativeControlEmbed>(false);
 	CJSContext::Embed<CGraphicsEmbed>();
 	NSJSBase::CreateDefaults();
 
@@ -58,10 +58,17 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
 	CJSContext::Embed<CBuilderEmbed>(false);
 	CJSContext::Embed<CBuilderDocumentEmbed>(false);
+
+	JSSmart<CJSObject> global = m_context->GetGlobal();
+
 	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
+	global->set("builderJS", oBuilderJS);
+
+	JSSmart<CJSObject> oNativeCtrl = CJSContext::createEmbedObject("CNativeControlEmbed");
+	global->set("native", oNativeCtrl);
+
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
 	pBuilderJSNative->m_pBuilder = pBuilder;
-	m_context->GetGlobal()->set("builderJS", oBuilderJS->toValue().GetPointer());
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {

@@ -70,6 +70,16 @@ namespace NSJSBase {
 	{
 	}
 
+	void CJSObject::set(const char* name, JSSmart<CJSValue> value)
+	{
+		this->set(name, value.GetPointer());
+	}
+	void CJSObject::set(const char* name, JSSmart<CJSObject> obj)
+	{
+		JSSmart<CJSValue> value = obj->toValue();
+		this->set(name, value.GetPointer());
+	}
+
 	CJSArray::CJSArray()
 	{
 	}

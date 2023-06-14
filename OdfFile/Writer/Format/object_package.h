@@ -122,7 +122,9 @@ namespace odf_writer
 		class meta_file : public element
 		{
 		public:
+			void set_content(content_simple_ptr & c) { content_ = c; }
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
+			content_simple_ptr content_;
 		};
 
 		class content_file : public element
@@ -211,8 +213,9 @@ namespace odf_writer
 			
 			void set_content	(content_content_ptr & _content, bool bRootNode = true);
 			
-			void set_styles		(content_simple_ptr & _styles);
-			void set_settings	(content_simple_ptr & _settings);
+			void set_styles		(content_simple_ptr & _content);
+			void set_settings	(content_simple_ptr & _content);
+			void set_meta		(content_simple_ptr & _content);
 			
 			void set_mediaitems	(_mediaitems & mediaitems);    
 
@@ -221,9 +224,8 @@ namespace odf_writer
 		private:
 			content_file	content;			
 			settings_file	settings;
-			styles_file		styles;
-			
-			element_ptr		meta;
+			styles_file		styles;			
+			meta_file		meta;
 
 			element_ptr		media;
 			element_ptr		pictures;

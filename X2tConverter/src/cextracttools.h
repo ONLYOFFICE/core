@@ -151,6 +151,8 @@ namespace NExtractTools
         TCD_DOCT2RTF,
         TCD_DOCX2RTF,
         TCD_DOCT_BIN2RTF,
+//xml 2
+		TCD_XML2XLSX,
 //txt 2
 		TCD_TXT2DOCX,
 		TCD_TXT2DOCT,
@@ -919,7 +921,9 @@ namespace NExtractTools
 
                 if(NULL != m_oMailMergeSend)
                     eRes = TCD_MAILMERGE;
-                else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
+				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
+					eRes = TCD_SPREADSHEET2;
+				else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
                     eRes = TCD_DOCUMENT2;
                 else if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
                     eRes = TCD_SPREADSHEET2;

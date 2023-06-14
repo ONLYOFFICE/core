@@ -51,7 +51,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum width 0 @3" ) ;
             Formulas.push_back(L"sum height 0 @3" );
 			
-            AdjustmentValues	=	L"5400";
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"10800,0;3163,3163;0,10800;3163,18437;10800,21600;18437,18437;21600,10800;18437,3163";
             TextBoxRectangle	=	L"3163,3163,18437,18437";
 

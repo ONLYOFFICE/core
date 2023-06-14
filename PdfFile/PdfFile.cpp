@@ -699,11 +699,12 @@ void CPdfFile::SetCMapFile(const std::wstring& sFile)
         return;
     m_pInternal->pReader->SetCMapFile(sFile);
 }
-std::wstring CPdfFile::ToXml(const std::wstring& wsXmlPath, bool isPrintStreams)
+void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 {
-    if (!m_pInternal->pReader)
-        return L"";
-    return m_pInternal->pReader->ToXml(wsXmlPath, isPrintStreams);
+	if (!m_pInternal->pReader)
+		return;
+	
+	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)

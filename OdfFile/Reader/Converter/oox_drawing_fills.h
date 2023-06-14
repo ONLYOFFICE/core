@@ -38,7 +38,6 @@
 namespace cpdoccore {
 namespace oox {
 
-
 	class oox_solid_fill;
 	typedef _CP_PTR(oox_solid_fill) oox_solid_fill_ptr;		
 	

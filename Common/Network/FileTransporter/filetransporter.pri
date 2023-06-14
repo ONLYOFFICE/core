@@ -24,6 +24,8 @@ core_linux {
     SOURCES += $$PWD/src/FileTransporter_curl.cpp
 }
 core_mac {
+    use_v8:DEFINES += OLD_MACOS_SYSTEM
+
     OBJECTIVE_SOURCES += $$PWD/src/FileTransporter_mac.mm
     LIBS += -framework AppKit
 }

@@ -150,7 +150,8 @@ SOURCES += \
 	../../DataTypes/timeperiod.cpp \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
-	\
+        ../../DataTypes/sparklines.cpp \
+        \
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \
 	../../Reader/Format/calcs_styles.cpp \
@@ -341,6 +342,7 @@ SOURCES += \
 	../../Writer/Format/office_elements_create.cpp \
 	../../Writer/Format/office_spreadsheet.cpp \
 	../../Writer/Format/office_text.cpp \
+        ../../Writer/Format/office_meta.cpp \
 	../../Writer/Format/oox_shape_defines.cpp \
 	../../Writer/Format/paragraph_elements.cpp \
 	../../Writer/Format/style_chart_properties.cpp \
@@ -732,6 +734,7 @@ HEADERS += \
 	../../Writer/Format/office_elements_type.h \
 	../../Writer/Format/office_spreadsheet.h \
 	../../Writer/Format/office_text.h \
+        ../../Writer/Format/office_meta.h \
 	../../Writer/Format/oox_shape_defines.h \
 	../../Writer/Format/paragraph_elements.h \
 	../../Writer/Format/style_chart_properties.h \

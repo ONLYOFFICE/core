@@ -249,7 +249,7 @@ int FontInfo::serialize(std::wostream & stream)
 			{
 				CP_XML_NODE(L"name")
 				{
-					CP_XML_ATTR(L"val", name);
+					CP_XML_ATTR(L"val", name.substr(0,31));
 				}
 			}
 

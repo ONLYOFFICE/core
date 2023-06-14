@@ -57,7 +57,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 @9");
             Formulas.push_back(L"val #1");
 
-            AdjustmentValues	=	L"1800";
+			Adjustments.push_back(1800);
+
             ConnectorLocations	=	L"0,0;21600,@11;0,21600";
             TextBoxRectangle	=	L"0,@4,7637,@5";
 
@@ -87,7 +88,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod #0 9598 32768");
             Formulas.push_back(L"sum 21600 0 @2");
 
-            AdjustmentValues	=	L"1800";
+			Adjustments.push_back(1800);
+
             ConnectorLocations	=	L"0,0;0,21600;21600,10800";
             TextBoxRectangle	=	L"0,@2,15274,@3";
 
@@ -120,7 +122,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 @9");
             Formulas.push_back(L"val #1");
 
-            AdjustmentValues	=	L"1800,10800";
+			Adjustments.push_back(1800);
+			Adjustments.push_back(10800);
             ConnectorLocations	=	L"21600,0;0,10800;21600,21600";
             TextBoxRectangle	=	L"13963,@4,21600,@5";
 
@@ -157,7 +160,9 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 @9");
             Formulas.push_back(L"val #1");
 
-            AdjustmentValues	=	L"1800,10800";
+			Adjustments.push_back(1800);
+			Adjustments.push_back(10800);
+
             ConnectorLocations	=	L"0,0;21600,@11;0,21600";
             TextBoxRectangle	=	L"0,@4,7637,@5";
 
@@ -197,7 +202,8 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @11 #0 0");
             Formulas.push_back(L"sum width 0 @13");
 
-            AdjustmentValues	=	L"1800";
+			Adjustments.push_back(1800);
+
             ConnectorLocations	=	L"@3,0;0,@4;@3,@2;@1,@4";
             TextBoxRectangle	=	L"@13,@11,@14,@12";
 
@@ -231,7 +237,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod width 1 2");
             Formulas.push_back(L"prod height 1 2");
 
-            AdjustmentValues	=	L"1800";
+			Adjustments.push_back(1800);
+
             ConnectorLocations	=	L"@8,0;0,@9;@8,@7;@6,@9";
             TextBoxRectangle	=	L"@3,@3,@4,@5";
 

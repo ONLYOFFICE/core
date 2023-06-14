@@ -58,6 +58,7 @@ public:
 	int serialize_format(std::wostream & _stream);
 	int serialize_protection(std::wostream & _stream);
 	
+	BaseObjectPtr					m_FileSharing;
 	BaseObjectPtr					m_THEME;
 	BaseObjectPtr					m_Formating;
 	BaseObjectPtr					m_Template;

@@ -67,7 +67,7 @@ CV8RealTimeWorker::~CV8RealTimeWorker()
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue)
 {
-	LOGGER_SPEED_START
+	LOGGER_SPEED_START();
 
 	if (retValue)
 		retValue->Clear();
@@ -78,7 +78,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-	LOGGER_SPEED_LAP("compile_command")
+	LOGGER_SPEED_LAP("compile_command");
 
 	JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
 	if(try_catch->Check())
@@ -91,7 +91,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 		privateRet->m_value = retNativeVal;
 	}
 
-	LOGGER_SPEED_LAP("run_command")
+	LOGGER_SPEED_LAP("run_command");
 
 	return true;
 }
@@ -130,10 +130,10 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 
 bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
-	LOGGER_SPEED_START
+	LOGGER_SPEED_START();
 
 	CJSContextScope scope(m_context);
-	JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
+	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile");
 
@@ -141,7 +141,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	if(try_catch->Check())
 		return false;
 
-	LOGGER_SPEED_LAP("run")
+	LOGGER_SPEED_LAP("run");
 
 	if (true)
 	{
@@ -239,8 +239,10 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_nativeInitBuilder();");
 	if (!bIsBreak)
 		bIsBreak = !this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+	if (!bIsBreak)
+		bIsBreak = !this->ExecuteCommand(L"Api.asc_showComments();");
 
-	LOGGER_SPEED_LAP("open")
+	LOGGER_SPEED_LAP("open");
 
 	return !bIsBreak;
 }
@@ -252,8 +254,10 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
 	else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
-	else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
+	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
+	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
+		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
 
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
@@ -278,7 +282,12 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	if (pNative == NULL)
 		return false;
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	bool bIsSilentMode = false;
+	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF ||
+		_formatDst == NSDoctRenderer::DoctRendererFormat::IMAGE)
+		bIsSilentMode = true;
+
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);");
 
 	std::wstring strError;
@@ -290,7 +299,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 													  strError,
 													  sJsonParams);
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
 
 	return bIsError;
@@ -1104,6 +1113,19 @@ namespace NSDoctRenderer
 
 		return m_pInternal->CreateFile(type);
 	}
+	bool CDocBuilder::CreateFile(const wchar_t* extension)
+	{
+		std::wstring sType = (NULL != extension) ? std::wstring(extension) : L"docx";
+		int type = AVS_OFFICESTUDIO_FILE_DOCUMENT;
+
+		if (L"pptx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
+		else if (L"xlsx" == sType)
+			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
+
+		return CreateFile(type);
+	}
+
 	void CDocBuilder::SetTmpFolder(const wchar_t* folder)
 	{
 		if (m_pInternal->m_bIsServerSafeVersion)

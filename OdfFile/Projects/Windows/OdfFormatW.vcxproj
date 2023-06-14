@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\Writer\Format\office_elements_create.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_event_listeners.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_forms.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_meta.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_presentation.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_scripts.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_settings.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="..\..\Writer\Format\office_elements_type.h" />
     <ClInclude Include="..\..\Writer\Format\office_event_listeners.h" />
     <ClInclude Include="..\..\Writer\Format\office_forms.h" />
+    <ClInclude Include="..\..\Writer\Format\office_meta.h" />
     <ClInclude Include="..\..\Writer\Format\office_presentation.h" />
     <ClInclude Include="..\..\Writer\Format\office_scripts.h" />
     <ClInclude Include="..\..\Writer\Format\office_settings.h" />

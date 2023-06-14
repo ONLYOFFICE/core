@@ -128,12 +128,12 @@ void note_body::docx_convert(oox::docx_conversion_context & Context)
     Context.set_process_headers_footers(true);
 	Context.reset_context_state();
 
-	Context.start_comment_content(); // чтоб ins/del не отрабатывало
+	//Context.start_comment_content(); // чтоб ins/del не отрабатывало 
  	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);            
     }    
-	Context.end_comment_content();
+	//Context.end_comment_content();
 
 	Context.set_process_headers_footers	(false);
 	

@@ -44,9 +44,11 @@ namespace odf_writer
 {
 
 class odf_conversion_context;
-class odf_style_context;
 class odf_text_context;
 class odf_drawing_context;
+
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 class odf_chart_context
 {
@@ -54,7 +56,7 @@ public:
 	odf_chart_context(odf_conversion_context *odf_context);
     ~odf_chart_context();
 
-	void set_styles_context(odf_style_context * style_context);
+	void set_styles_context(odf_style_context_ptr style_context);
 
 	odf_drawing_context *drawing_context();
 	odf_text_context	*text_context();
@@ -105,8 +107,14 @@ public:
 		void set_label_show_legend_key (bool val);
 		void set_label_show_percent (bool val);
 		void set_label_show_ser_name( bool val);
-		void set_label_show_values (bool val);		
-		
+		void set_label_show_values (bool val);	
+
+		void start_data_table();
+			void set_showHorzBorder(bool val);
+			void set_m_showVertBorder(bool val);
+			void set_showOutline(bool val);
+			void set_showKeys(bool val);
+
 		void start_axis();
 			void set_axis_id(unsigned int id);
 			void set_axis_dimension(int type);
@@ -155,6 +163,8 @@ public:
 		void set_layout_y(double val,int mode);
 		void set_layout_w(double val,int mode);
 		void set_layout_h(double val,int mode);
+
+		void set_local_table(office_element_ptr & table);
 
 		void set_local_table(bool Val, bool use_cash_only = false);
 		void set_cash(std::wstring format, std::vector<std::wstring> &data, bool categories, bool label);

@@ -38,7 +38,6 @@
 
 namespace XLSB
 {
-
     class IsoPasswordData : public XLS::BiffStructure
     {
         BASE_STRUCTURE_DEFINE_CLASS_NAME(LPByteBuf)

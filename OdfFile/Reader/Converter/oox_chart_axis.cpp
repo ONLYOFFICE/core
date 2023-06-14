@@ -36,6 +36,8 @@
 #include "oox_title.h"
 #include "oox_chart_shape.h"
 
+#include "../Format/style_chart_properties.h"
+
 namespace cpdoccore {
 namespace oox {
 

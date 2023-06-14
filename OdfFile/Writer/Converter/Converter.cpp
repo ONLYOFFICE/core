@@ -53,6 +53,9 @@
 #include "../../../OOXML/DocxFormat/DocxFlat.h"
 #include "../../../OOXML/PPTXFormat/Presentation.h"
 
+#include "../../../OOXML/DocxFormat/App.h"
+#include "../../../OOXML/DocxFormat/Core.h"
+
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramData.h"
@@ -77,7 +80,7 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
-    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate)
+    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate, const std::wstring & tempPath)
     { 
 		impl_ = NULL;
 		
@@ -85,8 +88,11 @@ namespace Oox2Odf
         if (type == _T("spreadsheet"))	impl_ = new XlsxConverter(path, bTemplate);
         if (type == _T("presentation"))	impl_ = new PptxConverter(path, bTemplate);
 
-        if (impl_)
-            impl_->set_fonts_directory(fontsPath);
+		if (impl_)
+		{
+			impl_->set_fonts_directory(fontsPath);
+			impl_->set_temp_directory(tempPath);
+		}
 	}
 
 	Converter::~Converter() 
@@ -320,14 +326,40 @@ bool OoxConverter::encrypt_file (const std::wstring &password, const std::wstrin
 	
 	return true;
 }
+void OoxConverter::set_temp_directory(const std::wstring & tempPath)
+{
+	if (odf_context() == NULL) return;
 
+	odf_context()->set_temp_directory(tempPath);
+}
 void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
 {
 	if (odf_context() == NULL) return;
 
     odf_context()->set_fonts_directory(fontsPath);
 }
+void OoxConverter::convert_meta(OOX::CApp *app, OOX::CCore *core)
+{
+	if (app)
+	{
 
+	}
+	if (core)
+	{
+		if (core->m_sCreator.IsInit())
+			odf_context()->add_meta(L"dc", L"creator", *core->m_sCreator);
+		if (core->m_sCreated.IsInit())
+			odf_context()->add_meta(L"meta", L"creation-date", *core->m_sCreated);
+		if (core->m_sKeywords.IsInit())
+			odf_context()->add_meta(L"meta", L"keyword", *core->m_sKeywords);
+		if (core->m_sTitle.IsInit())
+			odf_context()->add_meta(L"dc", L"title", *core->m_sTitle);
+		if (core->m_sDescription.IsInit())
+			odf_context()->add_meta(L"dc", L"description", *core->m_sDescription);
+		if (core->m_sLanguage.IsInit())
+			odf_context()->add_meta(L"dc", L"language", *core->m_sLanguage);
+	}
+}
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	try

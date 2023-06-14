@@ -126,11 +126,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		instances.push_back(styleInst);
 	}
-	graphic_format_properties properties = calc_graphic_properties_content(instances);
 
-////////////////////////////////////////////////////////////////////////////////////
-	properties.apply_to(Context.get_drawing_context().get_properties());
-	
  	for (size_t i = 0; i < additional_.size(); i++)
 	{
 		Context.get_drawing_context().set_property(additional_[i]);
@@ -139,8 +135,13 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_is_connector_shape(connector_);
 	
 	oox::_oox_fill fill;
-	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles(), fill);	
+	graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+	if (properties)
+	{
+		properties->apply_to(Context.get_drawing_context().get_properties());
+	
+		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);	
+	}
 	Context.get_drawing_context().set_fill(fill);
 
 //////////////////////////////////////////////////////////////////////////////////////	

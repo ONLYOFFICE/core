@@ -39,11 +39,13 @@ namespace cpdoccore {
 namespace odf_reader {
 
 	class graphic_format_properties;
+	typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
 	
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 }
 
 namespace oox {
@@ -57,20 +59,20 @@ public:
     xlsx_style_manager(xlsx_conversion_context *context);
     size_t size() const;
     
-	size_t xfId(const odf_reader::text_format_properties_content_ptr	textProp,
-				const odf_reader::paragraph_format_properties			* parProp,
-				const odf_reader::style_table_cell_properties_attlist	* cellProp,
+	size_t xfId(const odf_reader::text_format_properties_ptr &textProp,
+				const odf_reader::paragraph_format_properties			*parProp,
+				const odf_reader::style_table_cell_properties_attlist	*cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
 				const std::wstring &num_format, char num_format_type, bool  default_set, bool & is_visible);
 
-    size_t xfId(const odf_reader::text_format_properties_content_ptr	textProp,
-				const odf_reader::paragraph_format_properties			* parProp,
-				const odf_reader::style_table_cell_properties_attlist	* cellProp,
+    size_t xfId(const odf_reader::text_format_properties_ptr &textProp,
+				const odf_reader::paragraph_format_properties			*parProp,
+				const odf_reader::style_table_cell_properties_attlist	*cellProp,
 				const xlsx_cell_format * xlxsCellFormat,
 				const std::wstring &num_format, char num_format_type, bool  default_set);
 
-    size_t dxfId(const odf_reader::text_format_properties_content_ptr	textProp,
-				 const odf_reader::graphic_format_properties			* graphProp,
+    size_t dxfId(const odf_reader::text_format_properties_ptr &textProp,
+				 const odf_reader::graphic_format_properties_ptr &graphProp,
 				 const odf_reader::style_table_cell_properties_attlist	* cellProp);
 
     void xlsx_serialize(std::wostream & _Wostream);

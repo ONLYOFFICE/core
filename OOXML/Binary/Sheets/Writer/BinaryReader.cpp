@@ -2133,6 +2133,11 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	{
 		m_oWorkbook.m_oOleSize = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookTypes::FileSharing == type)
+	{
+		m_oWorkbook.m_oFileSharing.Init();
+		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_bMacroRead = true;
@@ -2608,6 +2613,45 @@ int BinaryWorkbookTableReader::ReadConnectionWebPr(BYTE type, long length, void*
 	else if(c_oSerWebPrTypes::HtmlTables == type)
 	{
 		pWebPr->m_oHtmlTables = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadFileSharing(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CFileSharing* pFileSharing = static_cast<OOX::Spreadsheet::CFileSharing*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerFileSharing::AlgorithmName == type)
+	{
+		pFileSharing->m_oAlgorithmName.Init();
+		pFileSharing->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerFileSharing::SpinCount == type)
+	{
+		pFileSharing->m_oSpinCount.Init();
+		pFileSharing->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerFileSharing::HashValue == type)
+	{
+		pFileSharing->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::SaltValue == type)
+	{
+		pFileSharing->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::Password == type)
+	{
+		pFileSharing->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::UserName == type)
+	{
+		pFileSharing->m_oUserName= m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::ReadOnly == type)
+	{
+		pFileSharing->m_oReadOnlyRecommended = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

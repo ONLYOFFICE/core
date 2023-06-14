@@ -79,6 +79,8 @@ public:
 	_CP_OPT(std::wstring)					draw_stroke_dash_;
 	_CP_OPT(odf_types::length_or_percent)	svg_stroke_width_;
 
+	_CP_OPT(std::wstring)					draw_stroke_gradient_name_;
+
 	_CP_OPT(odf_types::marker_style)		draw_marker_end_;
 	_CP_OPT(odf_types::marker_style)		draw_marker_start_;
 
@@ -127,11 +129,10 @@ public:
 
     _CP_OPT(std::wstring)					fo_clip_;
     _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
-
     
-    office_element_ptr		style_background_image_;
-        
+    office_element_ptr		style_background_image_;        
 };
+typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 
 class style_graphic_properties : public office_element_impl<style_graphic_properties>
 {

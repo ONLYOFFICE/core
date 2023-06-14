@@ -32,6 +32,8 @@
 
 #include "Converter.h"
 
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+
 #include "../../../OOXML/XlsxFormat/Chart/ChartSerializeEx.h"
 
 #include "../../Common/utils.h"
@@ -114,8 +116,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 {
 	if (!oox_chart)return;
 
-	convert(oox_chart->m_externalData);
-
 	convert(oox_chart->m_spPr.GetPointer());	
 	convert_chart_text(oox_chart->m_txPr.GetPointer(), true);
 
@@ -137,6 +137,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
 	}
 	odf_context()->chart_context()->end_plot_area();
+	
+	convert(oox_chart->m_externalData);
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_View3D *oox_view3D)
 {
@@ -305,10 +307,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 			case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)	ct_plotArea->m_Items[i]);break;			
 		}
 	}
-	if (ct_plotArea->m_dTable)
-	{
-	}
-	if (chart3D == false)
+	convert(ct_plotArea->m_dTable);
+
+	convert(ct_plotArea->m_spPr.GetPointer());
+	if (chart3D/* == false*/)
 	{
 		odf_context()->chart_context()->start_wall();
 		{
@@ -317,6 +319,26 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->end_element();
 	}
 }
+void OoxConverter::convert(OOX::Spreadsheet::CT_DTable *dTable)
+{
+	if (dTable == NULL)return;
+
+	odf_context()->chart_context()->start_data_table();
+	
+	if (dTable->m_showHorzBorder.IsInit())
+		odf_context()->chart_context()->set_showHorzBorder(*dTable->m_showHorzBorder);
+	if (dTable->m_showVertBorder.IsInit())
+		odf_context()->chart_context()->set_m_showVertBorder(*dTable->m_showVertBorder);
+	if (dTable->m_showOutline.IsInit())
+		odf_context()->chart_context()->set_showOutline(*dTable->m_showOutline);
+	if (dTable->m_showKeys.IsInit())
+		odf_context()->chart_context()->set_showKeys(*dTable->m_showKeys);
+
+	convert(dTable->m_spPr.GetPointer());
+	convert(dTable->m_txPr.GetPointer());
+	odf_context()->chart_context()->end_element();
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 {
 	if (axis == NULL)return;
@@ -944,67 +966,49 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_OfPieChart *chart)
 void OoxConverter::convert(OOX::Spreadsheet::CT_AreaSer* ser)
 {
 	odf_context()->chart_context()->start_series(odf_types::chart_class::area);
-		convert(ser->m_spPr.GetPointer());
 		convert(ser->m_dLbls);
 
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
 
-		convert(ser->m_tx);
 		if (ser->m_dPt.size() > 0)
 		{
 			convert(NULL, ser->m_dPt);
 		}
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
+}
+void OoxConverter::convert(OOX::Spreadsheet::CBaseSer* ser)
+{
+	if (ser == NULL) return;
+	
+	convert(ser->m_extLst.GetPointer()); // ref вперед cache
+	
+	convert(ser->m_tx); 
+	convert(ser->m_spPr.GetPointer());
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_BubbleSer* ser)
 {
 	if (ser == NULL)return;
 
 	odf_context()->chart_context()->start_series(odf_types::chart_class::bubble);
-		convert(ser->m_spPr.GetPointer());
-		convert(ser->m_dLbls);
-		convert(ser->m_xVal, 2);
-		convert(ser->m_tx);
-		if (ser->m_dPt.size() > 0)
-		{
-			convert(NULL, ser->m_dPt);
-		}
-	odf_context()->chart_context()->end_series();
-
-	odf_context()->chart_context()->start_series(odf_types::chart_class::bubble);
-		convert(ser->m_spPr.GetPointer());
 		convert(ser->m_dLbls);
 		convert(ser->m_yVal);
-		convert(ser->m_tx);
 		if (ser->m_dPt.size() > 0)
 		{
 			convert(NULL, ser->m_dPt);
 		}
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
-
-	odf_context()->chart_context()->start_series(odf_types::chart_class::bubble);
-		convert(ser->m_spPr.GetPointer());
-		convert(ser->m_dLbls);
-		convert(ser->m_bubbleSize);
-		convert(ser->m_tx);
-		if (ser->m_dPt.size() > 0)
-		{
-			convert(NULL, ser->m_dPt);
-		}
-	odf_context()->chart_context()->end_series();	
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_SurfaceSer* ser)
 {
 	if (ser == NULL)return;
 
 	odf_context()->chart_context()->start_series(odf_types::chart_class::surface);
-		convert(ser->m_spPr.GetPointer());
-
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
-
-		convert(ser->m_tx);
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_PieSer* ser)
@@ -1015,17 +1019,16 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PieSer* ser)
 		if (ser->m_explosion.IsInit())
 			odf_context()->chart_context()->set_series_pie_explosion(*ser->m_explosion);
 
-		convert(ser->m_spPr.GetPointer());			
 		convert(ser->m_dLbls);
 		
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
 		
-		convert(ser->m_tx);
-		if (ser->m_dPt.size() > 0)
+		if (!ser->m_dPt.empty()) //?? нужны ли дефолтовые?
 		{
 			convert(NULL, ser->m_dPt);
 		}
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_BarSer* ser)
@@ -1033,13 +1036,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarSer* ser)
 	if (ser == NULL)return;
 
 	odf_context()->chart_context()->start_series(odf_types::chart_class::bar);
-		convert(ser->m_spPr.GetPointer());
 		convert(ser->m_dLbls);
 		
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
 		
-		convert(ser->m_tx);
 		if (ser->m_dPt.size() > 0)
 		{
 			convert(NULL, ser->m_dPt);
@@ -1050,6 +1051,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarSer* ser)
 		odf_context()->chart_context()->set_chart_bar_type(-1);
 	//m_trendline;
 	//m_errBars
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterSer* ser)
@@ -1059,32 +1061,30 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ScatterSer* ser)
 	if (ser->m_yVal)
 	{
 		odf_context()->chart_context()->start_series(odf_types::chart_class::scatter);
-			convert(ser->m_spPr.GetPointer());
 			convert(ser->m_dLbls);
 			
 			convert(ser->m_xVal, 2);//domain			
 			convert(ser->m_yVal);
 			
-			convert(ser->m_tx);
 			if (ser->m_marker || ser->m_dPt.size() > 0)
 			{
 				convert(ser->m_marker, ser->m_dPt);
 			}
+			convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 		odf_context()->chart_context()->end_series();
 	}
 	else if (ser->m_xVal)
 	{
 		odf_context()->chart_context()->start_series(odf_types::chart_class::scatter);
-			convert(ser->m_spPr.GetPointer());
 			convert(ser->m_dLbls);
 			
 			convert(ser->m_xVal, 1);
 			
-			convert(ser->m_tx);
 			if (ser->m_marker || ser->m_dPt.size() > 0)
 			{
 				convert(ser->m_marker, ser->m_dPt);
 			}
+			convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 		odf_context()->chart_context()->end_series();
 	}
 }
@@ -1093,17 +1093,17 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_RadarSer* ser)
 	if (ser == NULL)return;
 
 	odf_context()->chart_context()->start_series(odf_types::chart_class::radar);
-		convert(ser->m_spPr.GetPointer());
 		convert(ser->m_dLbls);
 		
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
 		
-		convert(ser->m_tx);
 		if (ser->m_marker || ser->m_dPt.size() > 0)
 		{
 			convert(ser->m_marker, ser->m_dPt);
 		}
+		
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_LineSer* ser)
@@ -1111,26 +1111,34 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_LineSer* ser)
 	if (ser == NULL)return;
 
 	odf_context()->chart_context()->start_series(odf_types::chart_class::line);
-		convert(ser->m_spPr.GetPointer());
 		convert(ser->m_dLbls);
 		
 		convert(ser->m_cat, 1);
 		convert(ser->m_val);
 		
-		convert(ser->m_tx);
 		if (ser->m_marker || ser->m_dPt.size() > 0)
 		{
 			convert(ser->m_marker, ser->m_dPt);
 		}
+		convert(dynamic_cast<OOX::Spreadsheet::CBaseSer*>(ser));
 	odf_context()->chart_context()->end_series();
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX::Spreadsheet::CT_DPt*> & dPt)
 {	
-	if (dPt.size() <1) return convert(marker);
+	if (dPt.empty())
+	{
+		odf_context()->chart_context()->start_data_point_series(-1);
+			convert(marker, true);
+		odf_context()->chart_context()->end_element();
+		
+		convert(marker, false);
+		return;
+	}
 
 	long count_point = odf_context()->chart_context()->get_count_data_points_series();
 	long current_point = 0;
 	long set_point;
+
 	for (size_t i = 0; i < dPt.size(); i++)
 	{
 		if (dPt[i] == NULL)continue;
@@ -1140,12 +1148,12 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 		if (set_point - current_point > 0)
 		{
 			odf_context()->chart_context()->start_data_point_series(set_point - current_point);
-				convert(marker);
+				convert(marker, true); 
 			odf_context()->chart_context()->end_element();
 		}
 		odf_context()->chart_context()->start_data_point_series(1);
 			convert(dPt[i]->m_spPr.GetPointer());
-			convert(dPt[i]->m_marker);
+			convert(dPt[i]->m_marker, !dPt[i]->m_spPr.IsInit()); // брать цвета маркера, если нет цвета точки
 			
 			if (dPt[i]->m_explosion.IsInit())
 					odf_context()->chart_context()->set_series_pie_explosion(*dPt[i]->m_explosion);
@@ -1157,14 +1165,15 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 		
 		current_point = set_point+1;			
 	}
-	if (count_point - current_point >0)
+	if (count_point - current_point > 0)
 	{
 		odf_context()->chart_context()->start_data_point_series(count_point - current_point);
-			convert(marker);
+			convert(marker, true);
 		odf_context()->chart_context()->end_element();
 	}
+	convert(marker, false);
 }
-void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker)
+void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, bool bFill)
 {
 	if (marker == NULL) return;
 
@@ -1172,7 +1181,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker)
 			odf_context()->chart_context()->set_marker_type(marker->m_symbol->GetValue());
 	if (marker->m_size.IsInit())
 			odf_context()->chart_context()->set_marker_size(*marker->m_size);
-	convert(marker->m_spPr.GetPointer());
+	//в оо нету отдельного понятия цвета маркера и точки данных
+	if (bFill)
+	{
+		convert(marker->m_spPr.GetPointer());
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_DLbls* ser_lbls)
 {
@@ -1344,17 +1357,40 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 
 	if (false == external_data->m_id.IsInit()) return;
 
-	//CString pathEmbeddings = GetEmbeddings(*external_data->m_id);
-	//oO
-	//unpack
+	smart_ptr<OOX::File> file = find_file_by_id(*external_data->m_id);
+	smart_ptr<OOX::Media> media = file.smart_dynamic_cast<OOX::Media>();
 
-	//get/check Format - xlsx
-	//конверт sheets -> table:table
+	bool bConvertLocal = false;
+	if (media.IsInit() && NSFile::CFileBinary::Exists(media->filename().GetPath()))
+	{
+		std::wstring sTempUnpackedXLSX = odf_context()->temp_path_ + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
+		
+		COfficeUtils oCOfficeUtils(NULL);
+		if (S_OK == oCOfficeUtils.ExtractToDirectory(media->filename().GetPath(), sTempUnpackedXLSX, NULL, 0))
+		{
+			XlsxConverter converter(sTempUnpackedXLSX, false);
+			
+			converter.odf_context()->create_object();
+			converter.odf_context()->set_styles_context(odf_context()->styles_context());
 
-	//или
-	//convert xlsx -> ods & read tables???
+			converter.convert_styles();
 
-	odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+			odf_writer::office_element_ptr local_table = converter.convert_sheet(0, L"local-table");
+			if (local_table)
+			{
+				odf_context()->chart_context()->set_local_table(local_table);
+				bConvertLocal = true;
+			}
+			converter.odf_context()->end_object();
+		}
+		NSDirectory::DeleteDirectory(sTempUnpackedXLSX);
+	}
+	
+	if (!bConvertLocal)
+	{
+		odf_context()->chart_context()->set_local_table(true);//пока пользуем кэш ....
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_NumData	*num_data, bool categories, bool label)
 {

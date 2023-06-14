@@ -231,11 +231,11 @@ namespace NSStringExt
 	}
 	static inline void ToLower(std::string& wsString)
 	{
-			std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
+		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::tolower);
 	}
 	static inline void ToUpper(std::string& wsString)
 	{
-			std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towupper);
+		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::toupper);
 	}
 	static inline void ToLower(std::wstring& wsString)
 	{

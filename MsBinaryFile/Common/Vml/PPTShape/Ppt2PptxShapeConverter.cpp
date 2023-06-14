@@ -463,7 +463,7 @@ namespace NSGuidesVML
 									arAdj.push_back(0);
 							}
 
-							LONG lVal = (LONG)(dScale * arAdj[oHandle.gdRef.y]);
+							int lVal = (int)(dScale * arAdj[oHandle.gdRef.y]);
 							arAdj[oHandle.gdRef.y] =  lVal;
 						}
 
@@ -1213,8 +1213,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j+=4)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 4;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j];
 			pCurPointType	= oSlice.m_arPointsType[j];
 			pCurPoint1		= oSlice.m_arPoints[j+1];
@@ -1473,8 +1478,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 4)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 4;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j];
 			pCurPointType	= oSlice.m_arPointsType[j];
 			pCurPoint1		= oSlice.m_arPoints[j+1];
@@ -1856,8 +1866,13 @@ namespace NSGuidesVML
 		LONG nIndex1 = 0;
 		LONG nIndex2 = 0;
 
-		for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
+		size_t nSlicePointsCount = oSlice.m_arPoints.size();
+		size_t nSlicePointStep = 3;
+		for (size_t j = 0; j < nSlicePointsCount; j+=nSlicePointStep)
 		{
+			if ((j + nSlicePointStep) > nSlicePointsCount)
+				break;
+
 			pCurPoint		= oSlice.m_arPoints[j+1];
 			pCurPointType	= oSlice.m_arPointsType[j+1];
 			pCurPoint1		= oSlice.m_arPoints[j+2];

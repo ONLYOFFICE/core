@@ -617,6 +617,7 @@ enum ElementType
 	typeChartRegressionCurve,
 	typeChartEquation,
 	typeChartDateScale,
+	typeChartDataTable,
 
 	typeStyleChartProperties,
 
@@ -628,7 +629,11 @@ enum ElementType
 	typeCalcextDateIs,
 	typeCalcextCondition,
 	typeCalcextConditionalFormat,
-	typeCalcextConditionalFormats
+	typeCalcextConditionalFormats,
+	typeCalcextSparklineGroups,
+	typeCalcextSparklineGroup,
+	typeCalcextSparklines,
+	typeCalcextSparkline
 
 };
 

@@ -379,7 +379,7 @@ public:
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
-    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties, bool need_cache = true) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_ptr text_properties, bool need_cache = true) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
     office_element_ptr_array	elements_; 
@@ -687,9 +687,11 @@ public:
     office_element_ptr			table_table_source_;	
 
 	office_element_ptr			conditional_formats_;
+    office_element_ptr			sparkline_groups_;
 
     office_element_ptr			table_shapes_;
 	office_element_ptr_array	table_named_;
+
 	office_element_ptr			office_forms_;
     //office-dde-source
     //table-scenario

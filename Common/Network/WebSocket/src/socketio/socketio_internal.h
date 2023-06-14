@@ -63,6 +63,7 @@ namespace NSNetwork
             virtual void open(const std::map<std::string, std::string>& query) = 0;
             virtual void send(const std::string& message) = 0;
             virtual void close() = 0;
+            virtual void setReconnectInfo(const int& attemtCount, const int& delay, const int& delayMax) = 0;
         };
 
         class CIOWebSocket: public CWebWorkerBase
@@ -78,6 +79,7 @@ namespace NSNetwork
             virtual void open(const std::map<std::string, std::string>& query) override;
             virtual void send(const std::string& message) override;
             virtual void close() override;
+            virtual bool setReconnectInfo(const int& attemtCount, const int& delay, const int& delayMax);
 
             friend class CIOWebSocket_private;
             friend class CIOWebSocket_private_tls;

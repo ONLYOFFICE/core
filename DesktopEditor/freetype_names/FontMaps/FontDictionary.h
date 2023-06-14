@@ -495,9 +495,11 @@ static const int FD_Ascii_Names_Offsets[256] =
 	  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1
 };
 
-#define FONTS_DICT_UNICODE_NAMES_COUNT 91
-static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] = 
+#define FONTS_DICT_UNICODE_NAMES_COUNT 93
+static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] =
 {
+	{ L"@ËÎÌå", 579, -1, -1, -1 },
+	{ L"ËÎÌå", 579, -1, -1, -1 },
 	{ L"HGP創英角ｺﾞｼｯｸUB", 336, -1, -1, -1 },
 	{ L"HGP創英角ﾎﾟｯﾌﾟ体", 330, -1, -1, -1 },
 	{ L"HGP創英ﾌﾟﾚｾﾞﾝｽEB", 333, -1, -1, -1 },
@@ -588,7 +590,7 @@ static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] =
 	{ L"ＭＳ ゴシック", 452, -1, -1, -1 },
 	{ L"ＭＳ 明朝", 459, -1, -1, -1 },
 	{ L"ＭＳ Ｐゴシック", 454, -1, -1, -1 },
-	{ L"ＭＳ Ｐ明朝", 460, -1, -1, -1 },
+	{ L"ＭＳ Ｐ明朝", 460, -1, -1, -1 }
 };
 
 typedef struct FD_Font_Rec

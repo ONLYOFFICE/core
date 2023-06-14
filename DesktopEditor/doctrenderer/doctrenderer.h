@@ -34,7 +34,7 @@
 
 #include <string>
 #include <vector>
-#include "../common/base_export.h"
+#include "./common.h"
 
 namespace NSDoctRenderer
 {
@@ -48,6 +48,7 @@ namespace NSDoctRenderer
 			PDF		= 3,
 			HTML    = 4,
 			PPTX_THEME_THUMBNAIL = 5,
+			IMAGE   = 6,
 
 			INVALID = 255
 		};
@@ -57,7 +58,7 @@ namespace NSDoctRenderer
 namespace NSDoctRenderer
 {
 	class CDoctRenderer_Private;
-	class Q_DECL_EXPORT CDoctrenderer
+	class BUILDER_DECL CDoctrenderer
 	{
 	public:
 		CDoctrenderer(const std::wstring& sAllFontsPath = L"");

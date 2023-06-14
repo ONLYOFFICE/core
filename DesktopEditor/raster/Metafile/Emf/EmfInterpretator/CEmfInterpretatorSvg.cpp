@@ -1,9 +1,6 @@
 #include "CEmfInterpretatorSvg.h"
 
 #include "../../Common/MetaFileUtils.h"
-
-#include "../../../../graphics/Image.h"
-
 #include "../../../BgraFrame.h"
 
 #include <algorithm>
@@ -1130,6 +1127,11 @@ namespace MetaFile
 		if (NULL == pFont)
 			return;
 
+		const std::wstring wsText = StringNormalization(wsString);
+
+		if (wsText.empty())
+			return;
+
 		NodeAttributes arNodeAttributes;
 
 		TXForm oTransform;
@@ -1147,10 +1149,21 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFaceName = pFont->GetFaceName();
+		std::wstring wsFontName = pFont->GetFaceName();
 
-		if (!wsFaceName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFaceName});
+		if (!wsFontName.empty())
+		{
+			NSFonts::CFontSelectFormat oFormat;
+			oFormat.wsName = new std::wstring(pFont->GetFaceName());
+
+			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
+
+			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
+				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
+		}
+
+		if (!wsFontName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});
@@ -1165,15 +1178,24 @@ namespace MetaFile
 		else if (pFont->IsStrikeOut())
 			arNodeAttributes.push_back({L"text-decoration", L"line-through"});
 
-		std::wstring wsValue;
-
-		for (unsigned int unIndex = 0; unIndex < arGlyphPos.size(); ++unIndex)
-			wsValue += L"<tspan x=\"" + ConvertToWString(arGlyphPos[unIndex].x) + L"\" y=\"" + ConvertToWString(arGlyphPos[unIndex].y) + L"\">" + StringNormalization(std::wstring(1, wsString[unIndex])) + L"</tspan>";
-
 		AddTransform(arNodeAttributes);
 		AddClip();
 
-		WriteNode(L"text", arNodeAttributes, wsValue);
+		std::wstring wsX, wsY;
+
+		for (const TPointD& oPoint : arGlyphPos)
+		{
+			wsX += ConvertToWString(oPoint.x) + L' ';
+			wsY += ConvertToWString(oPoint.y) + L' ';
+		}
+
+		wsX.pop_back();
+		wsY.pop_back();
+
+		arNodeAttributes.push_back({L"x", wsX});
+		arNodeAttributes.push_back({L"y", wsY});
+
+		WriteNode(L"text", arNodeAttributes, wsText);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF &oRect)

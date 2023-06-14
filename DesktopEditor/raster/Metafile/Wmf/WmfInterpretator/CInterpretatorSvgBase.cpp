@@ -208,6 +208,11 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
 
+		const std::wstring wsNormalizedText = StringNormalization(wsText);
+
+		if (wsNormalizedText.empty())
+			return;
+
 		AddClip();
 
 		NodeAttributes arNodeAttributes;
@@ -215,7 +220,7 @@ namespace MetaFile
 		double dXCoord = oCoord.x;
 		double dYCoord = oCoord.y;
 
-		if (m_pParser->GetTextAlign() & TA_UPDATECP)
+		if (m_pParser->GetTextAlign() & TA_UPDATECP && (0. == oCoord.x && 0. == oCoord.y))
 		{
 			dXCoord = m_pParser->GetCurPos().x;
 			dYCoord = m_pParser->GetCurPos().y;
@@ -248,6 +253,9 @@ namespace MetaFile
 
 		IFont *pFont = m_pParser->GetFont();
 
+		if (NULL == pFont)
+			return;
+
 		double dFontHeight = std::fabs(pFont->GetHeight());
 
 		if (dFontHeight < 0.01)
@@ -255,12 +263,21 @@ namespace MetaFile
 
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-		std::wstring wsFaceName = pFont->GetFaceName();
-		std::transform(wsFaceName.begin(), wsFaceName.end(), wsFaceName.begin(), towlower);
-		EraseWords(wsFaceName, {L" bold", L" italic"});
+		std::wstring wsFontName = pFont->GetFaceName();
 
-		if (!wsFaceName.empty())
-			arNodeAttributes.push_back({L"font-family", wsFaceName});
+		if (!wsFontName.empty())
+		{
+			NSFonts::CFontSelectFormat oFormat;
+			oFormat.wsName = new std::wstring(pFont->GetFaceName());
+
+			NSFonts::CFontInfo *pFontInfo = m_pParser->GetFontManager()->GetFontInfoByParams(oFormat);
+
+			if (NULL != pFontInfo && !StringEquals(wsFontName, pFontInfo->m_wsFontName))
+				wsFontName = L"&apos;" + wsFontName + L"&apos;, &apos;" + pFontInfo->m_wsFontName + L"&apos;";
+		}
+
+		if (!wsFontName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFontName});
 
 		if (pFont->GetWeight() > 550)
 			arNodeAttributes.push_back({L"font-weight", L"bold"});
@@ -314,14 +331,14 @@ namespace MetaFile
 			if (arDx.empty())
 				arNodeAttributes.push_back({L"text-anchor", L"end"});
 			else
-				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0);
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0.0);
 		}
 		else if (ulTextAlign == TA_CENTER)
 		{
 			if (arDx.empty())
 				arNodeAttributes.push_back({L"text-anchor", L"middle"});
 			else
-				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0) / 2;
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0.0) / 2;
 		}
 		else  //if (ulTextAlign & TA_LEFT)
 		{
@@ -346,29 +363,34 @@ namespace MetaFile
 
 			double dSin = std::sin(dEscapement * M_PI / 180.);
 
-			dXCoord -= dFontHeight * dSin;
 			dYCoord -= dFontHeight * dSin;
 
+			if (oScale.y < -0.00001)
+				dXCoord -= dFontHeight * dSin;
+
 			arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
+
+			if (oScale.y > 0.00001)
+				dXCoord -= dFontHeight * dSin;
 		}
 
 		AddTransform(arNodeAttributes, &oTransform);
 
 		arNodeAttributes.push_back({L"xml:space", L"preserve"});
 
-		size_t unPosLineBreak = wsText.find(L"\n");
+		size_t unPosLineBreak = wsNormalizedText.find(L"\n");
 
 		std::wstring wsXCoord;
 
-		if (arDx.empty() || arDx.size() < wsText.length())
+		if (arDx.empty() || arDx.size() < wsNormalizedText.length())
 			wsXCoord = ConvertToWString(dXCoord);
 		else
 		{
-			std::vector<double> arXCoords(wsText.length());
+			std::vector<double> arXCoords(wsNormalizedText.length());
 
 			arXCoords[0] = dXCoord;
 
-			for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
+			for (unsigned int unIndex = 1; unIndex < wsNormalizedText.length(); ++unIndex)
 				arXCoords[unIndex] = arDx[unIndex - 1] + arXCoords[unIndex - 1];
 
 			wsXCoord = ConvertToWString(arXCoords);
@@ -379,7 +401,7 @@ namespace MetaFile
 			arNodeAttributes.push_back({L"x", wsXCoord});
 			arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
-			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
+			WriteNode(L"text", arNodeAttributes, wsNormalizedText);
 		}
 		else
 		{
@@ -390,14 +412,12 @@ namespace MetaFile
 
 			do
 			{
-				std::wstring wsTemp = StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart));
-
 				WriteNode(L"tspan", {{L"x", wsXCoord},
-				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
+									 {L"y", ConvertToWString(dYNewCoord)}}, wsNormalizedText.substr(unStart, unPosLineBreak - unStart));
 
 				dYNewCoord += dFontHeight * 1.6;
-				unStart = wsText.find_first_not_of(L"\n", unPosLineBreak);
-				unPosLineBreak = wsText.find(L"\n", unStart);
+				unStart = wsNormalizedText.find_first_not_of(L"\n", unPosLineBreak);
+				unPosLineBreak = wsNormalizedText.find(L"\n", unStart);
 			}
 			while(unStart != std::wstring::npos);
 
@@ -479,9 +499,39 @@ namespace MetaFile
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
 
+		arAttributes.push_back({L"stroke-miterlimit", ConvertToWString(pPen->GetMiterLimit())});
+
 		unsigned int unMetaPenStyle = pPen->GetStyle();
-		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+		unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+		unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
+		unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+
+		// svg не поддерживает разные стили для разных сторон линии
+		std::wstring wsLineCap;
+
+		if (PS_ENDCAP_ROUND == ulPenEndCap)
+			wsLineCap = L"round";
+		else if (PS_ENDCAP_SQUARE == ulPenEndCap)
+			wsLineCap = L"square";
+		else if (PS_ENDCAP_FLAT == ulPenEndCap)
+			wsLineCap = L"butt";
+
+		if (PS_STARTCAP_FLAT == ulPenStartCap)
+			wsLineCap = L"butt";
+		else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+			wsLineCap = L"square";
+		else if (PS_STARTCAP_ROUND == ulPenStartCap)
+			wsLineCap = L"round";
+
+		arAttributes.push_back({L"stroke-linecap", wsLineCap});
+
+		if (PS_JOIN_MITER == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"miter"});
+		else if (PS_JOIN_BEVEL == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+		else if (PS_JOIN_ROUND == ulPenJoin)
+			arAttributes.push_back({L"stroke-linejoin", L"round"});
 
 		double* arDatas = NULL;
 		unsigned int unDataSize = 0;
@@ -493,13 +543,15 @@ namespace MetaFile
 			std::wstring wsDashArray;
 
 			for (unsigned int unIndex = 0; unIndex < unDataSize; ++unIndex)
-				wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
-
+			{
+				if (PS_STARTCAP_ROUND == ulPenStartCap)
+					wsDashArray += ConvertToWString(dStrokeWidth * (arDatas[unIndex] - ((0 == unIndex % 2) ? 1 : -1))) + L' ';
+				else
+					wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
+			}
 			wsDashArray.pop_back();
 
 			arAttributes.push_back({L"stroke-dasharray", wsDashArray});
-
-			ulPenStyle = PS_USERSTYLE;
 		}
 		else if (PS_DASH == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
@@ -509,27 +561,6 @@ namespace MetaFile
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
 		else if (PS_DASHDOTDOT == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-		else
-		{
-			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
-			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
-			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-
-			// svg не поддерживает разные стили для сторон линии
-			if (PS_STARTCAP_FLAT == ulPenStartCap || PS_ENDCAP_FLAT == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"butt"});
-			else if (PS_STARTCAP_SQUARE == ulPenStartCap || PS_ENDCAP_SQUARE == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"square"});
-			else if (PS_STARTCAP_ROUND == ulPenStartCap || PS_ENDCAP_ROUND == ulPenEndCap)
-				arAttributes.push_back({L"stroke-linecap", L"round"});
-
-			if (PS_JOIN_MITER == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"miter"});
-			else if (PS_JOIN_BEVEL == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"bevel"});
-			else if (PS_JOIN_ROUND == ulPenJoin)
-				arAttributes.push_back({L"stroke-linejoin", L"round"});
-		}
 	}
 
 	void CInterpretatorSvgBase::AddFill(NodeAttributes &arAttributes, double dWidth, double dHeight)
@@ -635,11 +666,11 @@ namespace MetaFile
 		else
 			oOldTransform.Copy(m_pParser->GetTransform());
 
-		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
-		{
-			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
-			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
-		}
+//		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
+//		{
+//			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
+//			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
+//		}
 
 		bool bScale = false, bTranslate = false;
 
@@ -1544,6 +1575,7 @@ namespace MetaFile
 	}
 
 	CSvgClip::CSvgClip()
+        : m_bStartClip(false), m_bEndClip(false)
 	{}
 
 	void CSvgClip::Reset()

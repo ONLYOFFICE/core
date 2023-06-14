@@ -34,8 +34,8 @@
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-#include "../Biff12_structures/LPByteBuf.h"
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Boolean.h"
+#include "../Biff12_structures/IsoPasswordData.h"
 
 namespace XLSB
 {
@@ -52,11 +52,11 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            _UINT32                      dwSpinCount;
-            XLS::Boolean<unsigned short> fReadOnlyRec;
-            XLNullableWideString         stUserName;
-            LPByteBuf                    ipdPasswordData;
-    };
+            _UINT32							dwSpinCount;
+            XLS::Boolean<unsigned short>	fReadOnlyRec;
+            XLNullableWideString			stUserName;
+			IsoPasswordData					ipdPasswordData;
+	    };
 
 } // namespace XLSB
 

@@ -35,7 +35,7 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
-#include "../../PdfReader/PdfReader.h"
+#include "../../PdfFile/PdfFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../DocxRenderer.h"
@@ -55,136 +55,136 @@
 int main(int argc, char *argv[])
 {
 #ifdef TEST_XML_BOM
-    std::wstring sFileXmlSrc = L"PATH_TO_SRC_XML";
-    std::wstring sFileXmlDst = L"PATH_TO_DST_XML";
+	std::wstring sFileXmlSrc = L"PATH_TO_SRC_XML";
+	std::wstring sFileXmlDst = L"PATH_TO_DST_XML";
 
-    BYTE* pBufferXml = NULL;
-    DWORD lBufferXmlLen = 0;
-    NSFile::CFileBinary::ReadAllBytes(sFileXmlSrc, &pBufferXml, lBufferXmlLen);
+	BYTE* pBufferXml = NULL;
+	DWORD lBufferXmlLen = 0;
+	NSFile::CFileBinary::ReadAllBytes(sFileXmlSrc, &pBufferXml, lBufferXmlLen);
 
-    std::string sUtf8 = XmlUtils::GetUtf8FromFileContent(pBufferXml, lBufferXmlLen);
-    std::wstring sUnicode = UTF8_TO_U(sUtf8);
+	std::string sUtf8 = XmlUtils::GetUtf8FromFileContent(pBufferXml, lBufferXmlLen);
+	std::wstring sUnicode = UTF8_TO_U(sUtf8);
 
-    NSFile::CFileBinary::SaveToFile(sFileXmlDst, sUnicode, true);
+	NSFile::CFileBinary::SaveToFile(sFileXmlDst, sUnicode, true);
 
-    RELEASEARRAYOBJECTS(pBufferXml);
+	RELEASEARRAYOBJECTS(pBufferXml);
 #endif
 
-    CApplicationFontsWorker oWorker;
-    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
-    oWorker.m_bIsNeedThumbnails = false;
+	CApplicationFontsWorker oWorker;
+	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+	oWorker.m_bIsNeedThumbnails = false;
 
-    if (!NSDirectory::Exists(oWorker.m_sDirectory))
-        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+	if (!NSDirectory::Exists(oWorker.m_sDirectory))
+		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
-    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-    std::wstring sTempDir = NSFile::GetProcessDirectory() + L"/temp";
-    std::wstring sTempDirOut = NSFile::GetProcessDirectory() + L"/temp/output";
+	std::wstring sTempDir = NSFile::GetProcessDirectory() + L"/temp";
+	std::wstring sTempDirOut = NSFile::GetProcessDirectory() + L"/temp/output";
 
-    if (!NSDirectory::Exists(sTempDir))
-        NSDirectory::CreateDirectory(sTempDir);
-    if (!NSDirectory::Exists(sTempDirOut))
-        NSDirectory::CreateDirectory(sTempDirOut);
+	if (!NSDirectory::Exists(sTempDir))
+		NSDirectory::CreateDirectory(sTempDir);
+	if (!NSDirectory::Exists(sTempDirOut))
+		NSDirectory::CreateDirectory(sTempDirOut);
 
-    //Добавляем все файлы из определенного каталога
-    //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
-    std::vector<std::wstring> sSourceFiles;
-    //Или добавляем любой нужный файл
-    //sSourceFiles.push_back(L"C:\\File.pdf");
+	//Добавляем все файлы из определенного каталога
+	//std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
+	std::vector<std::wstring> sSourceFiles;
+	//Или добавляем любой нужный файл
+	sSourceFiles.push_back(L"");
 
-    std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
-    if (!NSDirectory::Exists(sTextDirOut))
-        NSDirectory::CreateDirectory(sTextDirOut);
+	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+	if (!NSDirectory::Exists(sTextDirOut))
+		NSDirectory::CreateDirectory(sTextDirOut);
 
-    IOfficeDrawingFile* pReader = NULL;
+	IOfficeDrawingFile* pReader = NULL;
 
-    COfficeFileFormatChecker oChecker;
-    int	                	 nFileType = 0;
+	COfficeFileFormatChecker oChecker;
+	int	                	 nFileType = 0;
 
-    CDocxRenderer oDocxRenderer(pFonts);
-    oDocxRenderer.SetTempFolder(sTempDirOut);
+	CDocxRenderer oDocxRenderer(pFonts);
+	oDocxRenderer.SetTempFolder(sTempDirOut);
 
-    for (size_t nIndex = 0; nIndex < sSourceFiles.size(); nIndex++)
-    {
-        if (oChecker.isOfficeFile(sSourceFiles[nIndex]))
-        {
-            nFileType = oChecker.nFileType;
-            switch (nFileType)
-            {
-            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-                pReader = new PdfReader::CPdfReader(pFonts);
-                break;
-            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
-                pReader = new CXpsFile(pFonts);
-                break;
-            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
-                pReader = new CDjVuFile(pFonts);
-                break;
-            default:
-                break;
-            }
-        }
+	for (size_t nIndex = 0; nIndex < sSourceFiles.size(); nIndex++)
+	{
+		if (oChecker.isOfficeFile(sSourceFiles[nIndex]))
+		{
+			nFileType = oChecker.nFileType;
+			switch (nFileType)
+			{
+			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
+				pReader = new CPdfFile(pFonts);
+				break;
+			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
+				pReader = new CXpsFile(pFonts);
+				break;
+			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
+				pReader = new CDjVuFile(pFonts);
+				break;
+			default:
+				break;
+			}
+		}
 
-        if (!pReader)
-        {
-            pFonts->Release();
-            return 0;
-        }
+		if (!pReader)
+		{
+			pFonts->Release();
+			return 0;
+		}
 
-        pReader->SetTempDirectory(sTempDir);
+		pReader->SetTempDirectory(sTempDir);
 
 #ifndef LOAD_FILE_AS_BINARY
-        pReader->LoadFromFile(sSourceFiles[nIndex]);
+		pReader->LoadFromFile(sSourceFiles[nIndex]);
 #else
-    BYTE* pFileBinary = NULL;
-    DWORD nFileBinaryLen = 0;
-    NSFile::CFileBinary::ReadAllBytes(sSourceFile, &pFileBinary, nFileBinaryLen);
+		BYTE* pFileBinary = NULL;
+		DWORD nFileBinaryLen = 0;
+		NSFile::CFileBinary::ReadAllBytes(sSourceFile, &pFileBinary, nFileBinaryLen);
 
-    pReader->LoadFromMemory(pFileBinary, nFileBinaryLen);
+		pReader->LoadFromMemory(pFileBinary, nFileBinaryLen);
 #endif
 
 #ifdef TEST_FOR_HTML_RENDERER_TEXT
-    if (true)
-    {
-        int nPagesCount = pReader->GetPagesCount();
+		if (true)
+		{
+			int nPagesCount = pReader->GetPagesCount();
 
-        NSHtmlRenderer::CHTMLRendererText oTextRenderer;
-        for (int i = 0; i < nPagesCount; i++)
-        {
-            oTextRenderer.Init(pReader, 8);
-            pReader->DrawPageOnRenderer(&oTextRenderer, i, NULL);
-        }
-    }
+			NSHtmlRenderer::CHTMLRendererText oTextRenderer;
+			for (int i = 0; i < nPagesCount; i++)
+			{
+				oTextRenderer.Init(pReader, 8);
+				pReader->DrawPageOnRenderer(&oTextRenderer, i, NULL);
+			}
+		}
 #else
 
-        std::wstring sExtention = NSFile::GetFileExtention(sSourceFiles[nIndex]);
-        std::wstring sFileNameWithExtention = NSFile::GetFileName(sSourceFiles[nIndex]);
-        std::wstring sFileName = sFileNameWithExtention.substr(0, sFileNameWithExtention.size() - 1 - sExtention.size());
-        std::wstring sDocx = L"/" + sFileName + L".docx";
-        std::wstring sZip = L"/" + sFileName + L".zip";
+		std::wstring sExtention = NSFile::GetFileExtention(sSourceFiles[nIndex]);
+		std::wstring sFileNameWithExtention = NSFile::GetFileName(sSourceFiles[nIndex]);
+		std::wstring sFileName = sFileNameWithExtention.substr(0, sFileNameWithExtention.size() - 1 - sExtention.size());
+		std::wstring sDocx = L"/" + sFileName + L".docx";
+		std::wstring sZip = L"/" + sFileName + L".zip";
 
-        // проверить все режимы
-        NSDocxRenderer::TextAssociationType taType;
-        //taType = NSDocxRenderer::tatBlockChar;
-        //taType = NSDocxRenderer::tatBlockLine;
-        //taType = NSDocxRenderer::tatPlainLine;
-        //taType = NSDocxRenderer::tatShapeLine;
-        taType = NSDocxRenderer::tatPlainParagraph;
+		// проверить все режимы
+		NSDocxRenderer::TextAssociationType taType;
+		//taType = NSDocxRenderer::tatBlockChar;
+		//taType = NSDocxRenderer::tatBlockLine;
+		//taType = NSDocxRenderer::tatPlainLine;
+		//taType = NSDocxRenderer::tatShapeLine;
+		taType = NSDocxRenderer::tatPlainParagraph;
 
-        oDocxRenderer.SetTextAssociationType(taType);
-        oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
-        //Если сразу нужен zip-архив
-        //oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
+		oDocxRenderer.SetTextAssociationType(taType);
+		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+		//Если сразу нужен zip-архив
+		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
-        delete pReader;
-    }
+		delete pReader;
+	}
 
-    pFonts->Release();
+	pFonts->Release();
 
 #ifdef LOAD_FILE_AS_BINARY
-    RELEASEARRAYOBJECTS(pFileBinary);
+	RELEASEARRAYOBJECTS(pFileBinary);
 #endif
 
-    return 0;
+	return 0;
 }

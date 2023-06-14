@@ -34,11 +34,7 @@
 
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>
-
-#include "office_elements_create.h"
-
 #include <xml/simple_xml_writer.h>
-
 
 namespace cpdoccore { 
 namespace odf_writer {

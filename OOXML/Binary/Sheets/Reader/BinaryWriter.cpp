@@ -2062,7 +2062,7 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteWorkbookPr(workbook.m_oWorkbookPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-//WorkbookPr
+//WorkbookProtection
 	if (workbook.m_oWorkbookProtection.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Protection);
@@ -2096,7 +2096,14 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteExternalReferences(workbook.m_oExternalReferences.get(), workbook);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	//Ext
+//FileSharing
+	if (workbook.m_oFileSharing.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::FileSharing);
+		WriteFileSharing(workbook.m_oFileSharing.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+//Ext
 	if (workbook.m_oExtLst.IsInit())
 	{
 		for(size_t i = 0; i < workbook.m_oExtLst->m_arrExt.size(); ++i)
@@ -2170,6 +2177,51 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::OleSize);
 		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oOleSize);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryWorkbookTableWriter::WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing)
+{
+	if (fileSharing.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(fileSharing.m_oAlgorithmName->GetValue());
+	}
+	if (fileSharing.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(fileSharing.m_oSpinCount->GetValue());
+	}
+	if (fileSharing.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oHashValue);
+	}
+	if (fileSharing.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oSaltValue);
+	}
+	if (fileSharing.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oPassword);
+	}
+	if (fileSharing.m_oUserName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::UserName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*fileSharing.m_oUserName);
+	}
+	if (fileSharing.m_oReadOnlyRecommended.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerFileSharing::ReadOnly);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*fileSharing.m_oReadOnlyRecommended);
 	}
 }
 void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection)

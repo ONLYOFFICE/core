@@ -206,10 +206,10 @@ void pptx_conversion_context::start_document()
     std::vector<const odf_reader::style_instance *> instances;
     
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Presentation));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::Presentation,false));
+	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::Presentation, false));
 
-    odf_reader::text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content(instances);
-    odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
+    odf_reader::text_format_properties_ptr textFormatProperties = calc_text_properties_content(instances);
+    odf_reader::paragraph_format_properties parFormatProperties = calc_paragraph_properties_content(instances);
 
 	process_masters_ = false;
 }

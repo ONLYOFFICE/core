@@ -52,16 +52,21 @@ namespace NSImageReSaver
         if (!oFile.OpenFile(wsFileName))
             return;
 
-        if (20 > oFile.GetFileSize())
-            return;
+        int nSize = oFile.GetFileSize();
+        if (nSize > 1000)
+            nSize = 1000;
 
-        BYTE data[20];
+        BYTE* data = new BYTE[nSize];
         DWORD dwRead = 0;
-        if (!oFile.ReadFile(data, 20, dwRead))
+        if (!oFile.ReadFile(data, nSize, dwRead))
+        {
+            RELEASEARRAYOBJECTS(data);
             return;
+        }
 
-        std::string sFind((char*)data, 20);
+        std::string sFind((char*)data, nSize);
         oFile.CloseFile();
+        RELEASEARRAYOBJECTS(data);
 
         if (std::string::npos == sFind.find("Photoshop") && std::string::npos == sFind.find("photoshop"))
             return;

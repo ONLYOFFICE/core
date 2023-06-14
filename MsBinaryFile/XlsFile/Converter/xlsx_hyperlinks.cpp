@@ -32,7 +32,6 @@
 #include "xlsx_hyperlinks.h"
 #include "oox_rels.h"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 

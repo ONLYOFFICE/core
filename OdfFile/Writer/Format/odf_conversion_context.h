@@ -87,7 +87,8 @@ class odf_conversion_context : boost::noncopyable
 		std::vector<office_element_ptr>		content_styles;
 		std::vector<office_element_ptr>		styles;	
 		office_element_ptr					settings;	
-	
+		std::vector<office_element_ptr>		meta;
+
 		odf_style_context_ptr				style_context;	
 		odf_settings_context_ptr			settings_context;
 		_mediaitems							mediaitems;
@@ -99,11 +100,14 @@ class odf_conversion_context : boost::noncopyable
 
 public:
 	const _office_type_document	type;
+	std::wstring temp_path_;
 
     odf_conversion_context(_office_type_document type, package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
-    void set_fonts_directory(std::wstring pathFonts);
+    void set_fonts_directory(const std::wstring & fontsPath);
+	void set_temp_directory(const std::wstring & tempPath);
+	
 	void add_font(const std::wstring & font_name);
 
     virtual void	start_document() = 0 ;
@@ -121,8 +125,11 @@ public:
     std::wstring add_oleobject	(const std::wstring & ole_file_name);
     std::wstring add_imageobject(const std::wstring & ole_file_name);
 	
-	virtual odf_style_context		* styles_context();
+	void add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content);
 	
+	virtual odf_style_context_ptr	styles_context();
+	virtual void					set_styles_context(odf_style_context_ptr styles_context);
+
 	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();
@@ -184,23 +191,6 @@ private:
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
-
-	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
-	//fonts_container		& fontContainer()		{ return fonts_container_; }
-	//list_style_container	& listStyleContainer()	{ return list_style_container_; }
-
-	//notes_configuration &	noteConfiguration()		{ return notes_configuration_; }
-
-	//styles_lite_container &	Templates()			{ return template_container_; }
-
-
-    //styles_container		major_style_container_;
-	//page_layout_container	page_layout_container_;
-	//fonts_container		fonts_container_;
-	//list_style_container	list_style_container_;
-	//notes_configuration	notes_configuration_;
-
-	//styles_lite_container	template_container_;
 };
 
 }

@@ -57,7 +57,7 @@ namespace odf_reader {
 static formulasconvert::odf2oox_converter formulas_converter;
 
 
-int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties, bool need_cache)
+int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_ptr text_properties, bool need_cache)
 {
 	if (elements_.empty()) return -1;
 
@@ -399,6 +399,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
 
+	if (sparkline_groups_)
+	{
+		sparkline_groups_->xlsx_convert(Context);
+	}
+
 	for (size_t i = 0 ; i < table_named_.size(); i++)
 	{
 		table_named_[i]->xlsx_convert(Context);
@@ -732,7 +737,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -1128,7 +1133,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 

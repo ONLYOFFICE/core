@@ -101,10 +101,14 @@ odf_conversion_context::~odf_conversion_context()
 	}
 	objects_.clear();
 }
-void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
+void odf_conversion_context::set_temp_directory(const std::wstring & tempPath)
+{
+	temp_path_ = tempPath;
+}
+void odf_conversion_context::set_fonts_directory(const std::wstring & fontsPath)
 {
     if (applicationFonts_)
-        applicationFonts_->InitializeFromFolder(pathFonts);
+        applicationFonts_->InitializeFromFolder(fontsPath);
 }
 void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
 {
@@ -134,11 +138,18 @@ double odf_conversion_context::convert_symbol_width(double val)
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
-
-odf_style_context* odf_conversion_context::styles_context()
+void odf_conversion_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	if (!objects_.empty())
-		return objects_[current_object_]->style_context.get();
+	{
+		objects_[current_object_]->style_context = styles_context;
+	}
+}
+
+odf_style_context_ptr odf_conversion_context::styles_context()
+{
+	if (!objects_.empty())
+		return objects_[current_object_]->style_context;
 	else
 		return NULL;
 }
@@ -179,7 +190,7 @@ _mediaitems* odf_conversion_context::mediaitems()
 
 void odf_conversion_context::end_document()
 {
-	rels	rels_;
+	rels rels_;
 	for (size_t i = 0; i < objects_.size(); i++)
 	{
 		_object & object = *objects_[i];
@@ -190,7 +201,8 @@ void odf_conversion_context::end_document()
 		process_styles	(object, isRoot);
 		process_settings(object, isRoot);
 
-		package::content_content_ptr content_root_ = package::content_content::create();		
+//------------------------
+		package::content_content_ptr content_root_ = package::content_content::create();
 
 		if (objects_.back()->scripts)
 			objects_.back()->scripts->serialize(content_root_->styles());	
@@ -201,14 +213,21 @@ void odf_conversion_context::end_document()
 		{
 			object.content_styles[i]->serialize(content_root_->styles());
 		}
+//------------------------
 		package::content_simple_ptr content_style_ = package::content_simple::create();
 		for (size_t i = 0; i < object.styles.size(); i++)
 		{// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
 			object.styles[i]->serialize(content_style_->content());
 		}
+//------------------------
 		package::content_simple_ptr content_settings_ = package::content_simple::create();
 		object.settings->serialize(content_settings_->content());
-////////////////////////////
+//------------------------
+		package::content_simple_ptr content_meta_ = package::content_simple::create();
+		
+		for (size_t i = 0; i < object.meta.size(); i++)
+			object.meta[i]->serialize(content_meta_->content());
+
 		package::object_files *object_files =  new package::object_files();
 		if (object_files)
 		{
@@ -216,7 +235,8 @@ void odf_conversion_context::end_document()
 			object_files->set_styles	(content_style_);
 			object_files->set_mediaitems(object.mediaitems);
 			object_files->set_settings	(content_settings_);
-			
+			object_files->set_meta		(content_meta_);
+
 			if (!isRoot)object_files->local_path = object.name + L"/";
 			
 			object.mediaitems.dump_rels(rels_, object_files->local_path);
@@ -296,9 +316,9 @@ void odf_conversion_context::create_object(bool bAddContentExt)
 		obj->style_context->set_odf_context(this);
 		obj->settings_context->set_odf_context(this);
 
-	objects_.push_back(obj);
+		objects_.push_back(obj);
 
-	current_object_ = objects_.size() - 1;
+		current_object_ = objects_.size() - 1;
 	}
 }
 void odf_conversion_context::end_chart()
@@ -372,14 +392,14 @@ void odf_conversion_context::end_math()
 	math_context_.end_math();
 	
 	end_object();
-	math_context_.set_styles_context(styles_context());
 
 	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
-	int count_symbol_height = 30; //сосчитать в math_context_ кол-во этажей
-	int count_symbol_width = 100; //длина символов
 
-	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.73); // либра рамка формулы(её параметры)
-	_CP_OPT(double)height = convert_symbol_width(1.73 * (math_context_.lvl_max - math_context_.lvl_min));
+	double h = math_context_.lvl_max - math_context_.lvl_min;
+	if (math_context_.lvl_min < 0) h += 1;
+	
+	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.2); // либра рамка формулы(её параметры)
+	_CP_OPT(double)height = convert_symbol_width(1.76 * h);
 
 	if (false == math_context_.in_text_box_)
 		drawing_context()->set_size(width, height); // раскомиттить по завершению
@@ -484,6 +504,19 @@ office_element_ptr odf_conversion_context::start_tabs()
 {
 	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
+}
+void odf_conversion_context::add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content)
+{
+	if (name.empty()) return;
+	
+	office_element_ptr elm;
+	create_element(ns, name, elm, this, true);
+
+	if (elm)
+	{
+		elm->add_text(content);
+		objects_[current_object_]->meta.push_back(elm);
+	}
 }
 std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name, bool bExternal)
 {

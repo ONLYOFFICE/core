@@ -583,15 +583,12 @@ namespace BinXlsxRW{
 				//SharedStrings
 				if(pCell->m_oValue.IsInit())
 				{
-					if (pCell->m_oType.IsInit())
+					if ((pCell->m_oType.IsInit()) && (pCell->m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeSharedString))
 					{
-						if (pCell->m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeSharedString)
-						{
-							aSharedStrings.push_back(pCell->m_oValue->m_sText);
-							pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
-						}
+						aSharedStrings.push_back(pCell->m_oValue->m_sText);
+						pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
 					}
-					else
+					else if (false == pCell->m_oStyle.IsInit())
 					{
 						pCell->m_oType.Init();
 						const std::wstring& val = pCell->m_oValue->m_sText;
@@ -681,7 +678,7 @@ namespace BinXlsxRW{
 		pNewCell->m_oValue.Init();
 		pNewCell->m_oValue->m_sText = val;
 
-        if(false != format.empty())
+        if (!format.empty())
 		{
 			unsigned int nXfsIndex = m_aXfs.size();
 

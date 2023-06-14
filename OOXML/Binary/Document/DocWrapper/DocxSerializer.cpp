@@ -157,11 +157,18 @@ namespace BinDocxRW
 			if (name.empty()) return;
 			
 			OOX::CPath path(m_sDestPath + name);
+
+			std::wstring fileName = path.GetPath();
+
+			if (std::wstring::npos == fileName.find(m_sDestPath))
+			{
+				return;
+			}
 			
 			NSDirectory::CreateDirectories(path.GetDirectory());
 			
 			NSFile::CFileBinary file;
-			if (file.CreateFileW(path.GetPath()))
+			if (file.CreateFileW(fileName))
 			{
 				BYTE* pDstBuffer = NULL;
 				int dstLen = Base64::Base64DecodeGetRequiredLength((int)data.size());

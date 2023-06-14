@@ -42,6 +42,7 @@
 #include "styles.h"
 
 #include "office_annotation.h"
+#include "office_meta.h"
 
 namespace cpdoccore 
 {
@@ -67,7 +68,7 @@ namespace odf_writer
 class odf_comment_context::Impl
 {
 public:
-	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
+	Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
     {	
 		//styles_context_ = odf_context_->styles_context();
 

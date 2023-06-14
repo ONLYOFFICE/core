@@ -1122,6 +1122,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
         PdfWriter::CSignatureField* pField = m_pDocument->CreateSignatureField();
         pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
 	}
+	else if (oInfo.IsDateTime())
+	{
+		PdfWriter::CDateTimeField* pField = m_pDocument->CreateDateTimeField();
+		pFieldBase = static_cast<PdfWriter::CFieldBase*>(pField);
+	}
 
 	if (!pFieldBase)
 		return S_FALSE;
@@ -1247,16 +1252,23 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 		{
 			unsigned short* pCodes2 = new unsigned short[unLen];
 			unsigned int* pWidths   = new unsigned int[unLen];
-
-			unsigned short ushSpaceCode = 0xFFFF;
+			
+			unsigned short ushSpaceCode   = 0xFFFF;
+			unsigned short ushNewLineCode = 0xFFFE;
 			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
 			{
-				pCodes2[unIndex] = (0x0020 == pUnicodes[unIndex] ? ushSpaceCode : 0);
+				unsigned short ushCode = 0;
+				if (0x0020 == pUnicodes[unIndex])
+					ushCode = ushSpaceCode;
+				else if (0x000D == pUnicodes[unIndex] || 0x000A == pUnicodes[unIndex])
+					ushCode = ushNewLineCode;
+				
+				pCodes2[unIndex] = ushCode;
 				pWidths[unIndex] = ppFonts[unIndex]->GetWidth(pCodes[unIndex]);
 			}
-
-			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
-
+			
+			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+			
 			// TODO: Разобраться более детально по какой именно высоте идет в Adobe расчет
 			//       пока временно оставим (H - 3 * margin)
 			if (pPr->IsAutoFit())
@@ -1547,6 +1559,79 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 
 		// TODO Реализовать, когда появится поддержка CSignatureField
 		pField->SetCert();
+	}
+	else if (oInfo.IsDateTime())
+	{
+		const CFormFieldInfo::CDateTimeFormPr* pPr = oInfo.GetDateTimePr();
+		
+		std::wstring wsValue = pPr->GetValue();
+		
+		unsigned int unLen;
+		unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+		
+		unsigned short* pCodes = new unsigned short[unLen];
+		if (!pCodes)
+		{
+			RELEASEARRAYOBJECTS(pUnicodes);
+			return S_FALSE;
+		}
+		
+		PdfWriter::CFontCidTrueType** ppFonts = new PdfWriter::CFontCidTrueType*[unLen];
+		if (!ppFonts)
+		{
+			RELEASEARRAYOBJECTS(pUnicodes);
+			RELEASEARRAYOBJECTS(pCodes);
+			return S_FALSE;
+		}
+		
+		for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+		{
+			unsigned int unUnicode = pUnicodes[unIndex];
+			
+			if (!m_pFont->HaveChar(unUnicode))
+			{
+				std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+				PdfWriter::CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+				if (pTempFont)
+				{
+					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
+					ppFonts[unIndex] = pTempFont;
+					continue;
+				}
+			}
+			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
+			ppFonts[unIndex] = m_pFont;
+		}
+		
+		PdfWriter::CDateTimeField* pField = dynamic_cast<PdfWriter::CDateTimeField*>(pFieldBase);
+		if (!pField)
+		{
+			RELEASEARRAYOBJECTS(pUnicodes);
+			RELEASEARRAYOBJECTS(pCodes);
+			RELEASEARRAYOBJECTS(ppFonts);
+			return S_FALSE;
+		}
+		
+		pFieldBase->AddPageRect(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		
+		TColor oColor = m_oBrush.GetTColor1();
+		
+		PdfWriter::TRgb oNormalColor(oColor.r, oColor.g, oColor.b);
+		PdfWriter::TRgb oPlaceHolderColor;
+		oPlaceHolderColor.r = oNormalColor.r + (1.0 - oNormalColor.r) / 2.0;
+		oPlaceHolderColor.g = oNormalColor.g + (1.0 - oNormalColor.g) / 2.0;
+		oPlaceHolderColor.b = oNormalColor.b + (1.0 - oNormalColor.b) / 2.0;
+		
+		pField->SetTextValue(wsValue);
+		pField->SetTextAppearance(wsValue, pCodes, unLen, m_pFont, oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor, 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), ppFonts);
+		
+		RELEASEARRAYOBJECTS(pUnicodes);
+		RELEASEARRAYOBJECTS(pCodes);
+		RELEASEARRAYOBJECTS(ppFonts);
+				
+		pField->SetFormat(pPr->GetFormat());
 	}
 
 

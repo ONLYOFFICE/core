@@ -201,6 +201,7 @@ namespace BinXlsxRW
 		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue);
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
+		void WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing);
 	};
 	class BinaryPersonTableWriter
 	{

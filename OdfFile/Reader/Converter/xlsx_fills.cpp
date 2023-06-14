@@ -91,17 +91,17 @@ size_t xlsx_fills::size() const
     return impl_->fills_.size();
 }
 
-size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content_ptr	textProp,
-							const odf_reader::paragraph_format_properties			* parProp,
-							const odf_reader::style_table_cell_properties_attlist	* cellProp, bool default_set)
+size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_ptr &textProp,
+							const odf_reader::paragraph_format_properties			*parProp,
+							const odf_reader::style_table_cell_properties_attlist	*cellProp, bool default_set)
 {
     bool is_default;
     return fillId(textProp, parProp, cellProp,default_set, is_default);
 }
 
-size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_content_ptr	textProp,
-							const odf_reader::paragraph_format_properties			* parProp,
-							const odf_reader::style_table_cell_properties_attlist	* cellProp, 
+size_t xlsx_fills::fillId(	const odf_reader::text_format_properties_ptr &textProp,
+							const odf_reader::paragraph_format_properties			*parProp,
+							const odf_reader::style_table_cell_properties_attlist	*cellProp, 
 							bool default_set, bool & is_default)
 {
 	is_default = true;

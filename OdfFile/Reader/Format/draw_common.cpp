@@ -169,28 +169,32 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	return false;
 }
 
-_CP_OPT(border_widths) GetBorderLineWidths(const graphic_format_properties & graphicProperties, BorderSide borderSide)
+_CP_OPT(border_widths) GetBorderLineWidths(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide)
 {
-    _CP_OPT(border_widths) widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_;
-    if (widths)
-        return widths;
-    
-    switch(borderSide)
-    {
-    case sideTop:       widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_top_; break;
-    case sideBottom:    widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_bottom_; break;
-    case sideLeft:      widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_left_; break;
-    case sideRight:     widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_right_; break;
-    default:    
-        widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_top_;
-        if (widths)
-            break;
-        else
-            widths = graphicProperties.common_border_line_width_attlist_.style_border_line_width_bottom_;
-    }
+	_CP_OPT(border_widths) widths;	
+	if (graphicProperties)
+	{
+		widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_;
+		if (widths)
+			return widths;
+
+		switch (borderSide)
+		{
+		case sideTop:       widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_top_; break;
+		case sideBottom:    widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_bottom_; break;
+		case sideLeft:      widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_left_; break;
+		case sideRight:     widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_right_; break;
+		default:
+			widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_top_;
+			if (widths)
+				break;
+			else
+				widths = graphicProperties->common_border_line_width_attlist_.style_border_line_width_bottom_;
+		}
+	}
     return widths;
 }
-_CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graphicProperties, const border_style & borderStyle, BorderSide borderSide)
+_CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties_ptr & graphicProperties, const border_style & borderStyle, BorderSide borderSide)
 {
     if ((borderStyle.get_style() ==  border_style::double_))
     {
@@ -210,17 +214,19 @@ _CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graph
     }
     return _CP_OPT(length)();
 }
-int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide)//emu
+int GetMargin(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide)//emu
 {
+	if (!graphicProperties) return 0;
+
 	int margin = 0;
     _CP_OPT(length_or_percent) marginVal;
 
     switch(borderSide)
     {
-		case sideTop:       marginVal = graphicProperties.common_vertical_margin_attlist_.fo_margin_top_; break;
-		case sideBottom:    marginVal = graphicProperties.common_vertical_margin_attlist_.fo_margin_bottom_; break;
-		case sideLeft:      marginVal = graphicProperties.common_horizontal_margin_attlist_.fo_margin_left_; break;
-		case sideRight:     marginVal = graphicProperties.common_horizontal_margin_attlist_.fo_margin_right_; break;
+		case sideTop:       marginVal = graphicProperties->common_vertical_margin_attlist_.fo_margin_top_; break;
+		case sideBottom:    marginVal = graphicProperties->common_vertical_margin_attlist_.fo_margin_bottom_; break;
+		case sideLeft:      marginVal = graphicProperties->common_horizontal_margin_attlist_.fo_margin_left_; break;
+		case sideRight:     marginVal = graphicProperties->common_horizontal_margin_attlist_.fo_margin_right_; break;
     }
 
     if (marginVal && marginVal->get_type() == length_or_percent::Length)
@@ -230,21 +236,24 @@ int GetMargin(const graphic_format_properties & graphicProperties, BorderSide bo
     
     return margin;
 }
-int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide)
+int Compute_BorderWidth(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide)
 {
+	if (!graphicProperties)
+		return 0;
+
     _CP_OPT(border_style)	borderValue;
     _CP_OPT(length)			lengthValue;
 
     switch(borderSide)
     {
-		case sideTop:       borderValue = graphicProperties.common_border_attlist_.fo_border_top_; break;
-		case sideBottom:    borderValue = graphicProperties.common_border_attlist_.fo_border_bottom_; break;
-		case sideLeft:      borderValue = graphicProperties.common_border_attlist_.fo_border_left_; break;
-		case sideRight:     borderValue = graphicProperties.common_border_attlist_.fo_border_right_; break;    
+		case sideTop:       borderValue = graphicProperties->common_border_attlist_.fo_border_top_; break;
+		case sideBottom:    borderValue = graphicProperties->common_border_attlist_.fo_border_bottom_; break;
+		case sideLeft:      borderValue = graphicProperties->common_border_attlist_.fo_border_left_; break;
+		case sideRight:     borderValue = graphicProperties->common_border_attlist_.fo_border_right_; break;
     }
 
     if (!borderValue)
-        borderValue = graphicProperties.common_border_attlist_.fo_border_;                
+        borderValue = graphicProperties->common_border_attlist_.fo_border_;
 
     if (borderValue)
         lengthValue = GetConsistentBorderValue(graphicProperties, *borderValue, borderSide);
@@ -286,7 +295,7 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 		break;
 	}
 }
-void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr fill)
+void Compute_GradientFill(draw_gradient *image_style, oox::oox_gradient_fill_ptr fill)
 {
 	int style =0;
 	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
@@ -375,8 +384,10 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 }
 
 
-void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx, bool reset_fill)
+void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, odf_document* document, oox::_oox_fill & fill, bool txbx, bool reset_fill)
 {
+	styles_lite_container& styles = document->odf_context().drawStyles();
+
 	if (fill.type < 1 && reset_fill) fill.type = 0; 
 
 	if (props.draw_opacity_) 
@@ -424,14 +435,27 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 			{			
 				fill.bitmap = oox::oox_bitmap_fill::create();
 				fill.bitmap->bTile = true;
-				fill.bitmap->xlink_href_ = fill_image->xlink_attlist_.href_.get_value_or(L"");
+				
+				std::wstring href = fill_image->xlink_attlist_.href_.get_value_or(L"");
+				if ( href.empty() )
+				{
+					office_binary_data* binary_data = dynamic_cast<office_binary_data*>(fill_image->office_binary_data_.get());
+					if (binary_data)
+					{
+						fill.bitmap->xlink_href_ = binary_data->write_to(document->get_folder());
+					}
+				}
+				else
+				{
+					fill.bitmap->xlink_href_ = href;
+				}
 			}
 		}
 	}
 
 	if (style_image)
 	{
-		if (style_background_image * image = dynamic_cast<style_background_image *>(style_image.get()))
+		if (style_background_image * image = dynamic_cast<style_background_image*>(style_image.get()))
 		{
 			if ((image) && (image->xlink_attlist_))
 			{

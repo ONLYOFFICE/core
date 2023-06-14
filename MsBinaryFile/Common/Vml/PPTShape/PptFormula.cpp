@@ -275,7 +275,7 @@ namespace NSGuidesVML
 		m_arFormulas.clear();
 		m_arResults.clear();
 	}
-	void CFormulasManager::Clear(std::vector<LONG>* pAdjusts)
+	void CFormulasManager::Clear(std::vector<long>* pAdjusts)
 	{
 		m_pAdjustments = pAdjusts;
 

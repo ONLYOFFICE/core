@@ -41,31 +41,32 @@ namespace DocFileFormat
 	  PlaqueType():
       ShapeType(msosptPlaque)
       {
-        this->ShapeConcentricFill = true;
-        this->Joins = miter;
-        this->Path = L"m@0,qy0@0l0@2qx@0,21600l@1,21600qy21600@2l21600@0qx@1,xe";
-        this->Formulas.push_back( L"val #0");
-        this->Formulas.push_back( L"sum width 0 #0");
-        this->Formulas.push_back( L"sum height 0 #0");
-        this->Formulas.push_back( L"prod @0 7071 10000");
-        this->Formulas.push_back( L"sum width 0 @3");
-        this->Formulas.push_back( L"sum height 0 @3");
-        this->Formulas.push_back( L"val width");
-        this->Formulas.push_back( L"val height");
-        this->Formulas.push_back( L"prod width 1 2");
-        this->Formulas.push_back( L"prod height 1 2");
+        ShapeConcentricFill = true;
+        Joins = miter;
+        Path = L"m@0,qy0@0l0@2qx@0,21600l@1,21600qy21600@2l21600@0qx@1,xe";
+        Formulas.push_back( L"val #0");
+        Formulas.push_back( L"sum width 0 #0");
+        Formulas.push_back( L"sum height 0 #0");
+        Formulas.push_back( L"prod @0 7071 10000");
+        Formulas.push_back( L"sum width 0 @3");
+        Formulas.push_back( L"sum height 0 @3");
+        Formulas.push_back( L"val width");
+        Formulas.push_back( L"val height");
+        Formulas.push_back( L"prod width 1 2");
+        Formulas.push_back( L"prod height 1 2");
 
-        this->AdjustmentValues = L"3600";
-        this->ConnectorLocations = L"@8,0;0,@9;@8,@7;@6,@9";
+		Adjustments.push_back(3600);
 
-        this->TextBoxRectangle = L"@3,@3,@4,@5";
+        ConnectorLocations = L"@8,0;0,@9;@8,@7;@6,@9";
+
+        TextBoxRectangle = L"@3,@3,@4,@5";
         Handle HandleOne;
         HandleOne.position = L"#0,topLeft";
         HandleOne.switchHandle = L"true";
         HandleOne.xrange = L"0,10800";
-        this->Handles.push_back( HandleOne );
+        Handles.push_back( HandleOne );
 
-        this->Limo = L"10800,10800";
+        Limo = L"10800,10800";
 	  }
 
 	  virtual ~PlaqueType()

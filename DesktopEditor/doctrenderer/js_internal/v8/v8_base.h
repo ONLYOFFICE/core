@@ -50,7 +50,7 @@
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len = -1);
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
-#ifdef __ANDROID__
+#ifdef ANDROID_LOGS
 #include <JniLogUtils.h>
 #endif
 
@@ -164,11 +164,9 @@ public:
 		v8::V8::InitializeICU();
 #endif
 
-		char* strEnv = std::getenv("V8_USE_INSPECTOR");
-		if (strEnv && std::strcmp(strEnv, "0"))
-		{
+		std::string sInspectorEnabled = NSSystemUtils::GetEnvVariableA(L"V8_USE_INSPECTOR");
+		if (!sInspectorEnabled.empty() && "0" != sInspectorEnabled)
 			m_bUseInspector = true;
-		}
 	}
 
 	void Dispose()
@@ -644,6 +642,17 @@ namespace NSJSBase
 		}
 	};
 
+#ifdef V8_VERSION_89_PLUS
+	#define V8_ARRAY_BUFFER_USE_BACKING_STORE
+#endif
+
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+	static void V8AllocatorDeleter(void* data, size_t length, void*)
+	{
+		NSAllocator::Free((unsigned char*)data, length);
+	}
+#endif
+
 	class CJSTypedArrayV8 : public CJSValueV8Template<v8::Uint8Array, CJSTypedArray>
 	{
 	public:
@@ -651,9 +660,18 @@ namespace NSJSBase
 		{
 			if (0 < count)
 			{
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+				std::shared_ptr<v8::BackingStore> backing_store =
+						v8::ArrayBuffer::NewBackingStore((void*)data, (size_t)count,
+														 isExternalize ? v8::BackingStore::EmptyDeleter : V8AllocatorDeleter,
+														 nullptr);
+				v8::Local<v8::ArrayBuffer> oArrayBuffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), backing_store);
+				value = v8::Uint8Array::New(oArrayBuffer, 0, (size_t)count);
+#else
 				v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), (void*)data, (size_t)count,
 																		  isExternalize ? v8::ArrayBufferCreationMode::kExternalized : v8::ArrayBufferCreationMode::kInternalized);
 				value = v8::Uint8Array::New(_buffer, 0, (size_t)count);
+#endif
 			}
 		}
 		virtual ~CJSTypedArrayV8()
@@ -668,10 +686,16 @@ namespace NSJSBase
 
 		virtual CJSDataBuffer getData()
 		{
-			v8::ArrayBuffer::Contents contents = value->Buffer()->GetContents();
 			CJSDataBuffer buffer;
+#ifdef V8_ARRAY_BUFFER_USE_BACKING_STORE
+			std::shared_ptr<v8::BackingStore> contents = value->Buffer()->GetBackingStore();
+			buffer.Data = (BYTE*)contents->Data();
+			buffer.Len = contents->ByteLength();
+#else
+			v8::ArrayBuffer::Contents contents = value->Buffer()->GetContents();
 			buffer.Data = (BYTE*)contents.Data();
 			buffer.Len = contents.ByteLength();
+#endif
 			buffer.IsExternalize = false;
 			return buffer;
 		}
@@ -798,9 +822,7 @@ namespace NSJSBase
 				}
 #endif
 
-#ifndef __ANDROID__
-				std::cerr << strException << std::endl;
-#else
+#ifdef ANDROID_LOGS
 				LOGE("NSJSBase::CV8TryCatch::Check() - error:");
 				LOGE(std::to_string(nLineNumber).c_str());
 				LOGE(strCode.c_str());
@@ -1030,5 +1052,39 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_value(args[12]));                                                                                                                                        \
 	js_return(args, ret);                                                                                                                                       \
 	}
+
+static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext>& context, v8::FunctionCallback creator)
+{
+	v8::Isolate* current = CV8Worker::GetCurrent();
+	v8::Local<v8::Context> localContext = context->m_internal->m_context;
+	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, creator);
+	v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(localContext);
+	v8::Maybe<bool> oResultMayBe = localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
+}
+
+using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
+static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
+									  const CIsolateAdditionalData::IsolateAdditionlDataType& type = CIsolateAdditionalData::iadtUndefined)
+{
+	v8::Isolate* isolate = args.GetIsolate();
+	v8::HandleScope scope(isolate);
+
+	if (CIsolateAdditionalData::iadtUndefined != type)
+	{
+		if (CIsolateAdditionalData::CheckSingletonType(isolate, type))
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+	}
+
+	v8::Handle<v8::ObjectTemplate> oCurTemplate = creator(isolate);
+	v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
+	v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
+	obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), native));
+
+	NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
+	args.GetReturnValue().Set(obj);
+}
 
 #endif // _BUILD_NATIVE_CONTROL_V8_BASE_H_

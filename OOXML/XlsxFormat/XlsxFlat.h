@@ -83,6 +83,7 @@ namespace OOX
 
 		private:
 			std::pair<double, double> m_maxDigitSize;
+			void ReadSettingAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
 	}

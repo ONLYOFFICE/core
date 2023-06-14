@@ -46,17 +46,17 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-odp_slide_context::odp_slide_context(odp_conversion_context & Context) : styles_context_(NULL), context_(Context), table_context_(&Context), comment_context_(&Context)
+odp_slide_context::odp_slide_context(odp_conversion_context & Context) : context_(Context), table_context_(&Context), comment_context_(&Context)
 {       
 	count_slides_	= 0;
 	styles_context_ = Context.styles_context();
 }
-void odp_slide_context::set_styles_context(odf_style_context*  styles_context)
+void odp_slide_context::set_styles_context(odf_style_context_ptr  styles_context)
 {
 	styles_context_ = styles_context;
 }
 
-odf_style_context* odp_slide_context::get_styles_context()
+odf_style_context_ptr odp_slide_context::get_styles_context()
 {
 	return styles_context_;
 }
@@ -228,10 +228,10 @@ void odp_slide_context::start_table_cell(int col, bool covered, bool styled)
 
 				if (gr && gr_def) gr->apply_from(*gr_def);
 
-				style_paragraph_properties *para = style_state->get_paragraph_properties();
-				style_paragraph_properties *para_def = style_state_def->get_paragraph_properties();
+				paragraph_format_properties *para = style_state->get_paragraph_properties();
+				paragraph_format_properties *para_def = style_state_def->get_paragraph_properties();
 				
-				if (para && para_def) para->apply_from(para_def);
+				if (para && para_def) para->apply_from(*para_def);
 			}
 		}
 	}

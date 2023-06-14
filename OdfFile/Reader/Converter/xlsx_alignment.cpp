@@ -88,7 +88,7 @@ bool is_default(const xlsx_alignment & rVal)
 }
 
 xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
-											const odf_reader::text_format_properties_content_ptr	textProp, 
+											const odf_reader::text_format_properties_ptr	textProp, 
 											const odf_reader::paragraph_format_properties			* parProp,
 											const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {

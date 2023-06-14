@@ -389,6 +389,7 @@ namespace NSDoctRenderer
 			}
 			case DoctRendererFormat::PDF:
 			case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
+			case DoctRendererFormat::IMAGE:
 			{
 				// CALCULATE
 				if (pParams->m_sJsonParams.empty())
@@ -421,14 +422,28 @@ namespace NSDoctRenderer
 				}
 
 				// RENDER
-				if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
+				if (!bIsBreak &&
+					(DoctRendererFormat::PDF == pParams->m_eDstFormat || DoctRendererFormat::IMAGE == pParams->m_eDstFormat))
 				{
 					if (pParams->m_sJsonParams.empty())
-						args[0] = CJSContext::createNull();
+					{
+						if (DoctRendererFormat::IMAGE == pParams->m_eDstFormat)
+						{
+							args[0] = context->JSON_Parse("{ \"saveFormat\" : \"image\" }");
+						}
+						else
+							args[0] = CJSContext::createNull();
+					}
 					else
 					{
 						std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
 						args[0] = context->JSON_Parse(sTmp.c_str());
+
+						if (DoctRendererFormat::IMAGE == pParams->m_eDstFormat)
+						{
+							JSSmart<CJSObject> argObj = args[0]->toObject();
+							argObj->set("saveFormat", CJSContext::createString("image"));
+						}
 					}
 
 					JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetPDF", 1, args);
@@ -533,9 +548,9 @@ namespace NSDoctRenderer
 
 		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
 		{
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					bool bIsBreak = false;
+			bool bIsBreak = false;
 			JSSmart<CJSContext> context = new CJSContext();
 
 			if (true)
@@ -548,19 +563,19 @@ namespace NSDoctRenderer
 
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
-				LOGGER_SPEED_LAP("compile")
+				LOGGER_SPEED_LAP("compile");
 
-						JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
+				JSSmart<CJSValue> res = context->runScript(strScript, try_catch, sCachePath);
 				if(try_catch->Check())
 				{
 					strError = L"code=\"run\"";
 					bIsBreak = true;
 				}
 
-				LOGGER_SPEED_LAP("run")
+				LOGGER_SPEED_LAP("run");
 
-						//---------------------------------------------------------------
-						JSSmart<CJSObject> global_js = context->GetGlobal();
+				//---------------------------------------------------------------
+				JSSmart<CJSObject> global_js = context->GetGlobal();
 				JSSmart<CJSValue> args[1];
 				args[0] = CJSContext::createInt(0);
 
@@ -646,10 +661,10 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("open")
+				LOGGER_SPEED_LAP("open");
 
-						// CHANGES
-						if (!bIsBreak)
+				// CHANGES
+				if (!bIsBreak)
 				{
 					if (m_oParams.m_arChanges.size() != 0)
 					{
@@ -697,9 +712,9 @@ namespace NSDoctRenderer
 					}
 				}
 
-				LOGGER_SPEED_LAP("changes")
+				LOGGER_SPEED_LAP("changes");
 
-						bool bIsMailMerge = false;
+				bool bIsMailMerge = false;
 				if (!m_oParams.m_strMailMergeDatabasePath.empty() &&
 						m_oParams.m_nMailMergeIndexEnd >= m_oParams.m_nMailMergeIndexStart &&
 						m_oParams.m_nMailMergeIndexEnd >= 0)
@@ -818,7 +833,7 @@ namespace NSDoctRenderer
 					bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
 				}
 
-				LOGGER_SPEED_LAP("save")
+				LOGGER_SPEED_LAP("save");
 			}
 
 			context->Dispose();
@@ -884,6 +899,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::DOCT:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::HTML:
 			{
 				arSdkFiles = &m_pInternal->m_arDoctSDK;
@@ -901,6 +917,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::PPTT:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
 			{
 				arSdkFiles = &m_pInternal->m_arPpttSDK;
@@ -918,6 +935,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::XLST:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			{
 				arSdkFiles = &m_pInternal->m_arXlstSDK;
 				m_pInternal->m_strEditorType = L"spreadsheet";

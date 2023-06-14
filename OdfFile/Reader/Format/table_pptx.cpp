@@ -202,8 +202,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 			
 			graphic_format_properties * graphic_props = inst->content()->get_graphic_properties();
 			if (graphic_props)
-				Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_, 
-																				Context.root()->odf_context().drawStyles(), fill);	
+				Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_, Context.root(), fill);	
 
 			if (fill.bitmap)
 			{

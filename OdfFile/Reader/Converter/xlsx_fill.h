@@ -68,8 +68,8 @@ namespace oox {
     struct xlsx_fill
     {
 		xlsx_fill() {}
-		xlsx_fill(	const odf_reader::graphic_format_properties				* graphProp,
-					const odf_reader::style_table_cell_properties_attlist	* cellProp);
+		xlsx_fill(	const odf_reader::graphic_format_properties *graphProp,
+					const odf_reader::style_table_cell_properties_attlist	*cellProp);
        
 		_CP_OPT(xlsx_patternFill)	patternFill;
         _CP_OPT(xlsx_gradientFill)	gradientFill;

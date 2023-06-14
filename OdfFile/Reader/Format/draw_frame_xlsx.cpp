@@ -193,8 +193,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (properties)
 		{
 			properties->apply_to(Context.get_drawing_context().get_properties());
-			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-				Context.root()->odf_context().drawStyles(), fill);
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 
 			if (properties->fo_clip_)
 			{
@@ -364,7 +363,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}		
 		object_odf_context objectBuild(href);
 		
-		process_build_object process_build_object_(objectBuild, odf_document_->odf_context() );
+		process_build_object process_build_object_(objectBuild, odf_document_.get());
 		contentSubDoc->accept(process_build_object_); 
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1) //диаграмма

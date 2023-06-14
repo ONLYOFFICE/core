@@ -611,14 +611,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 }
 
 //----------------------------------------------------------------------------------------
-process_build_object::process_build_object(object_odf_context & object_odf, odf_read_context & context) :	
+process_build_object::process_build_object(object_odf_context & object_odf, odf_document *document) :	
 						 stop_				(false)
+						,document_(document)
 						,object_odf_context_(object_odf)
-						,styles_			(context.styleContainer())
-						,settings_			(context.Settings())
-						,draw_styles_		(context.drawStyles())
-						,number_styles_		(context.numberStyles())
-						,num_format_context_(context)
+						,styles_			(document->odf_context().styleContainer())
+						,settings_			(document->odf_context().Settings())
+						,number_styles_		(document->odf_context().numberStyles())
+						,num_format_context_(document->odf_context())
 {
 	_CP_OPT(std::wstring) sFontHeight	= settings_.find_by_name(L"BaseFontHeight");
 	
@@ -722,7 +722,7 @@ void process_build_object::ApplyGraphicProperties(std::wstring style, graphic_fo
 
 		if (propertiesOut)
 		{
-			Compute_GraphicFill(propertiesOut->common_draw_fill_attlist_, propertiesOut->style_background_image_, draw_styles_, fill, false, false);			
+			Compute_GraphicFill(propertiesOut->common_draw_fill_attlist_, propertiesOut->style_background_image_, document_, fill, false, false);
 		}
 		if (fill.bitmap)
 		{

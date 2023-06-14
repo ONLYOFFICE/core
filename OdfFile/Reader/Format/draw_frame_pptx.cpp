@@ -166,8 +166,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		{
 			properties->apply_to(Context.get_slide_context().get_properties());
 
-			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-				Context.root()->odf_context().drawStyles(), fill);
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
@@ -350,7 +349,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		object_odf_context objectBuild(href);
 
-		process_build_object process_build_object_(objectBuild, odf_document_->odf_context() );
+		process_build_object process_build_object_(objectBuild, odf_document_.get());
 		contentSubDoc->accept(process_build_object_); 
 		
 		if (objectBuild.table_table_)

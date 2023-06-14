@@ -937,7 +937,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		graphicProperties->apply_to(drawing->additional);
 	
 		bool bTxbx = (drawing->sub_type == 1);
-		Compute_GraphicFill(graphicProperties->common_draw_fill_attlist_, graphicProperties->style_background_image_, Context.root()->odf_context().drawStyles(), drawing->fill, bTxbx);
+		Compute_GraphicFill(graphicProperties->common_draw_fill_attlist_, graphicProperties->style_background_image_, Context.root(), drawing->fill, bTxbx);
 	}
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
@@ -1663,7 +1663,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		object_odf_context	objectBuild (href);
 		if (contentSubDoc)
 		{
-			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
+			process_build_object process_build_object_(objectBuild, odf_document_.get());
 			contentSubDoc->accept(process_build_object_); 
 
 			if (objectBuild.table_table_)

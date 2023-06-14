@@ -477,7 +477,10 @@ void draw_fill_image::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void draw_fill_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	if CP_CHECK_NAME(L"office", L"binary-data")
+	{
+		CP_CREATE_ELEMENT(office_binary_data_);
+	}
 }
 //----------------------------------------------------------------------------------------
 const wchar_t * draw_marker::ns = L"draw";
@@ -1560,7 +1563,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 	{
 		oox::_oox_fill fill;
 			
-		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, style_background_image_, Context.root()->odf_context().drawStyles(), fill);
+		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, style_background_image_, Context.root(), fill);
 		if (fill.bitmap)
 		{
 			if ( fill.bitmap->rId.empty())
@@ -1781,8 +1784,7 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																			Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			}
 		}

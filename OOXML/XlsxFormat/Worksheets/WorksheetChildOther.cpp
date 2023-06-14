@@ -753,10 +753,13 @@ namespace OOX
 			auto ptr = static_cast<XLSB::WsFmtInfo*>(obj.get());
 			if (ptr != nullptr)
 			{
-				if (ptr->dxGCol != 0xFFFFFFFF)
-					m_oBaseColWidth = ptr->dxGCol / 256.;
-
 				m_oDefaultColWidth = ptr->cchDefColWidth;
+
+                if (ptr->dxGCol != 0xFFFFFFFF)
+                {
+                    m_oBaseColWidth = ptr->dxGCol / 256.;
+                    m_oDefaultColWidth = ptr->dxGCol / 256.;
+                }
 
 				if (ptr->fUnsynced)
 					m_oDefaultRowHeight = ptr->miyDefRwHeight;
@@ -2298,7 +2301,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
 			WritingElement_ReadAttributes_End(oReader)
-		}		
+		}
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);

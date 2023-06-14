@@ -3,6 +3,7 @@
 
 #include "./js_base.h"
 #include <map>
+#include <mutex>
 
 class CEmbedObjectRegistrator
 {
@@ -27,9 +28,10 @@ public:
 	private:
 		store_t::iterator m_oIter;
 		bool m_bPrev;
+		std::lock_guard<std::mutex> m_guard;
 
 	public:
-		CAllowedCreationScope(const store_t::iterator& iter) : m_oIter(iter)
+		CAllowedCreationScope(const store_t::iterator& iter) : m_oIter(iter), m_guard(getInstance().m_mutex)
 		{
 			m_bPrev = m_oIter->second.m_bIsCreationAllowed;
 			m_oIter->second.m_bIsCreationAllowed = true;
@@ -43,6 +45,7 @@ public:
 
 public:
 	store_t m_infos;
+	std::mutex m_mutex;
 
 private:
 	CEmbedObjectRegistrator() = default;

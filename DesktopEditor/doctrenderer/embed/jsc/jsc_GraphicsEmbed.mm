@@ -5,7 +5,7 @@
 #include "../../js_internal/jsc/jsc_base.h"
 
 @protocol IJSCGraphicsEmbed <JSExport>
--(JSValue*) init : (JSValue*)Native : (JSValue*)width_px : (JSValue*)height_px : (JSValue*)width_mm : (JSValue*)height_mm;
+-(JSValue*) create : (JSValue*)Native : (JSValue*)width_px : (JSValue*)height_px : (JSValue*)width_mm : (JSValue*)height_mm;
 -(JSValue*) Destroy;
 -(JSValue*) EndDraw;
 -(JSValue*) put_GlobalAlpha : (JSValue*)enable : (JSValue*)globalAlpha;
@@ -120,7 +120,7 @@
 @implementation CJSCGraphicsEmbed
 EMBED_OBJECT_WRAPPER_METHODS(CGraphicsEmbed);
 
-FUNCTION_WRAPPER_JS_5(init, init)
+FUNCTION_WRAPPER_JS_5(create, create)
 FUNCTION_WRAPPER_JS_0(Destroy, Destroy)
 FUNCTION_WRAPPER_JS_0(EndDraw, EndDraw)
 FUNCTION_WRAPPER_JS_2(put_GlobalAlpha, put_GlobalAlpha)

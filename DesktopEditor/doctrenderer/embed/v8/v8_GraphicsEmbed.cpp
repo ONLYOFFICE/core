@@ -8,7 +8,7 @@ namespace NSGraphicsEmbed
 {
 #define CURRENTWRAPPER CGraphicsEmbed
 
-	FUNCTION_WRAPPER_V8_5(_init, init)
+	FUNCTION_WRAPPER_V8_5(_create, create)
 	FUNCTION_WRAPPER_V8_0(_Destroy, Destroy)
 	FUNCTION_WRAPPER_V8_0(_EndDraw, EndDraw)
 	FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha, put_GlobalAlpha)
@@ -118,7 +118,7 @@ namespace NSGraphicsEmbed
 		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
 		result->SetInternalFieldCount(1);
 
-		NSV8Objects::Template_Set(result, "init",	_init);
+		NSV8Objects::Template_Set(result, "create",	_create);
 		NSV8Objects::Template_Set(result, "Destroy",	_Destroy);
 		NSV8Objects::Template_Set(result, "EndDraw",	_EndDraw);
 		NSV8Objects::Template_Set(result, "put_GlobalAlpha",	_put_GlobalAlpha);

@@ -20,11 +20,11 @@
 -(JSValue*) Save_End : (JSValue*)pos : (JSValue*)len;
 -(JSValue*) AddImageInChanges : (JSValue*)img;
 -(JSValue*) ConsoleLog : (JSValue*)message;
--(JSValue*) zipOpenFile : (JSValue*)name;
--(JSValue*) zipOpenFileBase64 : (JSValue*)name;
--(JSValue*) zipGetFileAsString : (JSValue*)name;
--(JSValue*) zipGetFileAsBinary : (JSValue*)name;
--(JSValue*) zipCloseFile;
+-(JSValue*) ZipOpen : (JSValue*)name;
+-(JSValue*) ZipOpenBase64 : (JSValue*)name;
+-(JSValue*) ZipFileAsString : (JSValue*)name;
+-(JSValue*) ZipFileAsBinary : (JSValue*)name;
+-(JSValue*) ZipClose;
 -(JSValue*) GetImageUrl : (JSValue*)sUrl;
 -(JSValue*) GetImagesPath;
 -(JSValue*) GetImageOriginalSize : (JSValue*)sUrl;
@@ -55,11 +55,11 @@ FUNCTION_WRAPPER_JS_1(GetChangesFile, GetChangesFile)
 FUNCTION_WRAPPER_JS_2(Save_End, Save_End)
 FUNCTION_WRAPPER_JS_1(AddImageInChanges, AddImageInChanges)
 FUNCTION_WRAPPER_JS_1(ConsoleLog, ConsoleLog)
-FUNCTION_WRAPPER_JS_1(zipOpenFile, zipOpenFile)
-FUNCTION_WRAPPER_JS_1(zipOpenFileBase64, zipOpenFileBase64)
-FUNCTION_WRAPPER_JS_1(zipGetFileAsString, zipGetFileAsString)
-FUNCTION_WRAPPER_JS_1(zipGetFileAsBinary, zipGetFileAsBinary)
-FUNCTION_WRAPPER_JS_0(zipCloseFile, zipCloseFile)
+FUNCTION_WRAPPER_JS_1(ZipOpen, ZipOpen)
+FUNCTION_WRAPPER_JS_1(ZipOpenBase64, ZipOpenBase64)
+FUNCTION_WRAPPER_JS_1(ZipFileAsString, ZipFileAsString)
+FUNCTION_WRAPPER_JS_1(ZipFileAsBinary, ZipFileAsBinary)
+FUNCTION_WRAPPER_JS_0(ZipClose, ZipClose)
 FUNCTION_WRAPPER_JS_1(GetImageUrl, GetImageUrl)
 FUNCTION_WRAPPER_JS_0(GetImagesPath, GetImagesPath)
 FUNCTION_WRAPPER_JS_1(GetImageOriginalSize, GetImageOriginalSize)

@@ -23,11 +23,11 @@ namespace NSNativeControlEmbed
 	FUNCTION_WRAPPER_V8_2(_Save_End, Save_End)
 	FUNCTION_WRAPPER_V8_1(_AddImageInChanges, AddImageInChanges)
 	FUNCTION_WRAPPER_V8_1(_ConsoleLog, ConsoleLog)
-	FUNCTION_WRAPPER_V8_1(_zipOpenFile, zipOpenFile)
-	FUNCTION_WRAPPER_V8_1(_zipOpenFileBase64, zipOpenFileBase64)
-	FUNCTION_WRAPPER_V8_1(_zipGetFileAsString, zipGetFileAsString)
-	FUNCTION_WRAPPER_V8_1(_zipGetFileAsBinary, zipGetFileAsBinary)
-	FUNCTION_WRAPPER_V8_0(_zipCloseFile, zipCloseFile)
+	FUNCTION_WRAPPER_V8_1(_ZipOpen, ZipOpen)
+	FUNCTION_WRAPPER_V8_1(_ZipOpenBase64, ZipOpenBase64)
+	FUNCTION_WRAPPER_V8_1(_ZipFileAsString, ZipFileAsString)
+	FUNCTION_WRAPPER_V8_1(_ZipFileAsBinary, ZipFileAsBinary)
+	FUNCTION_WRAPPER_V8_0(_ZipClose, ZipClose)
 	FUNCTION_WRAPPER_V8_1(_GetImageUrl, GetImageUrl)
 	FUNCTION_WRAPPER_V8_0(_GetImagesPath, GetImagesPath)
 	FUNCTION_WRAPPER_V8_1(_GetImageOriginalSize, GetImageOriginalSize)
@@ -53,11 +53,11 @@ namespace NSNativeControlEmbed
 		NSV8Objects::Template_Set(result, "Save_End",	_Save_End);
 		NSV8Objects::Template_Set(result, "AddImageInChanges",	_AddImageInChanges);
 		NSV8Objects::Template_Set(result, "ConsoleLog",	_ConsoleLog);
-		NSV8Objects::Template_Set(result, "zipOpenFile",	_zipOpenFile);
-		NSV8Objects::Template_Set(result, "zipOpenFileBase64",	_zipOpenFileBase64);
-		NSV8Objects::Template_Set(result, "zipGetFileAsString",	_zipGetFileAsString);
-		NSV8Objects::Template_Set(result, "zipGetFileAsBinary",	_zipGetFileAsBinary);
-		NSV8Objects::Template_Set(result, "zipCloseFile",	_zipCloseFile);
+		NSV8Objects::Template_Set(result, "ZipOpen",	_ZipOpen);
+		NSV8Objects::Template_Set(result, "ZipOpenBase64",	_ZipOpenBase64);
+		NSV8Objects::Template_Set(result, "ZipFileAsString",	_ZipFileAsString);
+		NSV8Objects::Template_Set(result, "ZipFileAsBinary",	_ZipFileAsBinary);
+		NSV8Objects::Template_Set(result, "ZipClose",	_ZipClose);
 		NSV8Objects::Template_Set(result, "GetImageUrl",	_GetImageUrl);
 		NSV8Objects::Template_Set(result, "GetImagesPath",	_GetImagesPath);
 		NSV8Objects::Template_Set(result, "GetImageOriginalSize",	_GetImageOriginalSize);

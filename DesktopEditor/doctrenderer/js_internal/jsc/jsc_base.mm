@@ -443,8 +443,6 @@ namespace NSJSBase
 {
 	id CreateEmbedNativeObject(NSString* name)
 	{
-		JSContext* context = [JSContext currentContext];
-
 		std::string sName = [name stdstring];
 		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
 		CEmbedObjectRegistrator::store_t::iterator itFound = oRegistrator.m_infos.find(sName);
@@ -452,6 +450,9 @@ namespace NSJSBase
 			return nil;
 
 		const CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
+
+		if (oInfo.m_bIsCreationAllowed == false)
+			return nil;
 
 		CJSEmbedObject* pNativeObj = oInfo.m_creator();
 		CJSEmbedObjectAdapterJSC* pAdapter = static_cast<CJSEmbedObjectAdapterJSC*>(pNativeObj->getAdapter());

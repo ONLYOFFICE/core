@@ -122,24 +122,19 @@ namespace NSJSBase
 		/**
 		 * Converts the value to an object.
 		 */
-		virtual CJSObject* toObject()       = 0;
+		virtual JSSmart<CJSObject> toObject()       = 0;
 		/**
 		 * Converts the value to an array.
 		 */
-		virtual CJSArray* toArray()         = 0;
+		virtual JSSmart<CJSArray> toArray()         = 0;
 		/**
 		 * Converts the value to a typed array.
 		 */
-		virtual CJSTypedArray* toTypedArray() = 0;
+		virtual JSSmart<CJSTypedArray> toTypedArray() = 0;
 		/**
 		 * Converts the value to a function.
 		 */
-		virtual CJSFunction* toFunction()   = 0;
-
-		/**
-		 * Converts the value to an object and returns a smart pointer to an object.
-		 */
-		virtual JSSmart<CJSObject> toObjectSmart();
+		virtual JSSmart<CJSFunction> toFunction()   = 0;
 	};
 
 	/**
@@ -220,7 +215,7 @@ namespace NSJSBase
 		 * Returns specified property of the object.
 		 * @param name The name of a property.
 		 */
-		virtual CJSValue* get(const char* name)                 = 0;
+		virtual JSSmart<CJSValue> get(const char* name)                 = 0;
 		/**
 		 * Sets a property of the object.
 		 * @param name The name of a property.
@@ -232,6 +227,7 @@ namespace NSJSBase
 		// Common funcs
 		void set(const char* name, JSSmart<CJSValue> value);
 		void set(const char* name, JSSmart<CJSObject> value);
+
 		/**
 		 * Returns a pointer to the native embedded object.
 		 */
@@ -330,13 +326,13 @@ namespace NSJSBase
 	namespace NSAllocator
 	{
 		/**
-		 * Engine-specific memory allocator
+		 * Engine-specific memory allocator.
 		 * @param size The size of allocated memory in bytes.
 		 * @return Pointer to the allocated memory. Returns nullptr if allocation was not successful.
 		 */
 		unsigned char* Alloc(const size_t& size);
 		/**
-		 * Engine-specific memory deallocator
+		 * Engine-specific memory deallocator.
 		 * @param data Pointer to the previously allocated with Alloc() memory.
 		 * @param size The size of allocated memory.
 		 */
@@ -406,7 +402,7 @@ namespace NSJSBase
 		 * @param argv The array of arguments.
 		 * @return The value returned by the function.
 		 */
-		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
+		virtual JSSmart<CJSValue> Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
 	};
 
 	/**
@@ -451,13 +447,13 @@ namespace NSJSBase
 		void Dispose();
 
 		/**
-		 * Returns an object for tracking exceptions during code execution in current JS context.
+		 * Creates and returns the pointer to an object for tracking exceptions during code execution in current JS context.
 		 */
-		CJSTryCatch* GetExceptions();
+		JSSmart<CJSTryCatch> GetExceptions();
 		/**
-		 * Returns a global object for this JS context.
+		 * Creates and returns the pointer to a global object for this JS context.
 		 */
-		CJSObject* GetGlobal();
+		JSSmart<CJSObject> GetGlobal();
 
 		/**
 		 * Enters the JS context and makes it the active context for further work.
@@ -494,9 +490,9 @@ namespace NSJSBase
 		/**
 		 * Parses the JSON string and convert it to corresponding JS value.
 		 * @param json_content The JSON string to be parsed.
-		 * @return The resulted JS value after parsing.
+		 * @return The pointer to resulted JS value after parsing.
 		 */
-		CJSValue* JSON_Parse(const char* json_content);
+		JSSmart<CJSValue> JSON_Parse(const char* json_content);
 		/**
 		 * Do not use this function. It is for internal needs.
 		 * Associates current context with the specifed thread id.
@@ -513,6 +509,7 @@ namespace NSJSBase
 		 */
 		static void AddEmbedCreator(const std::string& name, EmbedObjectCreator creator, const bool& isAllowedInJS = true);
 
+		// NOTE: All raw pointers obtained from the following functions, should be deleted by caller.
 	public:
 		/**
 		 * Creates and returns undefined JS value in current context.
@@ -601,6 +598,8 @@ namespace NSJSBase
 	public:
 		/**
 		 * Returns a copy of the last entered JS context.
+		 * Do not use Enter, Exit or any scope-changing operations on this object.
+		 * If you need so, use original CJSContext instance for this purposes.
 		 */
 		static JSSmart<CJSContext> GetCurrent();
 

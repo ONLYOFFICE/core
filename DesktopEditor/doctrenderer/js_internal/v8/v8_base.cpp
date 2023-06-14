@@ -187,7 +187,7 @@ namespace NSJSBase
 		RELEASEOBJECT(m_internal);
 	}
 
-	CJSTryCatch* CJSContext::GetExceptions()
+	JSSmart<CJSTryCatch> CJSContext::GetExceptions()
 	{
 		return new CV8TryCatch();
 	}
@@ -223,7 +223,7 @@ namespace NSJSBase
 		m_internal->m_isolate = NULL;
 	}
 
-	CJSObject* CJSContext::GetGlobal()
+	JSSmart<CJSObject> CJSContext::GetGlobal()
 	{
 		CJSObjectV8* ret = new CJSObjectV8();
 		ret->value = m_internal->m_context->Global();
@@ -403,7 +403,7 @@ namespace NSJSBase
 		return ret;
 	}
 
-	CJSValue* CJSContext::JSON_Parse(const char *sTmp)
+	JSSmart<CJSValue> CJSContext::JSON_Parse(const char *sTmp)
 	{
 		CJSValueV8* _value = new CJSValueV8();
 #ifndef V8_OS_XP

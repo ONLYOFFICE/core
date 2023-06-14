@@ -323,10 +323,10 @@ namespace NSJSBase
 			return L"";
 		}
 
-		virtual CJSObject* toObject();
-		virtual CJSArray* toArray();
-		virtual CJSTypedArray* toTypedArray();
-		virtual CJSFunction* toFunction();
+		virtual JSSmart<CJSObject> toObject();
+		virtual JSSmart<CJSArray> toArray();
+		virtual JSSmart<CJSTypedArray> toTypedArray();
+		virtual JSSmart<CJSFunction> toFunction();
 	};
 
 	class CJSValueV8TemplatePrimitive : public CJSValueV8Template<v8::Value, CJSValue>
@@ -417,7 +417,7 @@ namespace NSJSBase
 			value.Clear();
 		}
 
-		virtual CJSValue* get(const char* name)
+		virtual JSSmart<CJSValue> get(const char* name)
 		{
 			CJSValueV8* _value = new CJSValueV8();
 			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
@@ -657,7 +657,7 @@ namespace NSJSBase
 			value.Clear();
 		}
 
-		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
+		virtual JSSmart<CJSValue> Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
 		{
 			CJSValueV8* _value = static_cast<CJSValueV8*>(recv);
 			CJSValueV8* _return = new CJSValueV8();
@@ -681,7 +681,7 @@ namespace NSJSBase
 	};
 
 	template<typename V, typename B>
-	CJSObject* CJSValueV8Template<V, B>::toObject()
+	JSSmart<CJSObject> CJSValueV8Template<V, B>::toObject()
 	{
 		CJSObjectV8* _value = new CJSObjectV8();
 		_value->value = value->ToObject(V8ContextOneArg).ToLocalChecked();
@@ -689,7 +689,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSArray* CJSValueV8Template<V, B>::toArray()
+	JSSmart<CJSArray> CJSValueV8Template<V, B>::toArray()
 	{
 		CJSArrayV8* _value = new CJSArrayV8();
 		_value->value = v8::Local<v8::Array>::Cast(value);
@@ -697,7 +697,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSTypedArray* CJSValueV8Template<V, B>::toTypedArray()
+	JSSmart<CJSTypedArray> CJSValueV8Template<V, B>::toTypedArray()
 	{
 		CJSTypedArrayV8* _value = new CJSTypedArrayV8();
 		_value->value = v8::Local<v8::Uint8Array>::Cast(value);
@@ -705,7 +705,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSFunction* CJSValueV8Template<V, B>::toFunction()
+	JSSmart<CJSFunction> CJSValueV8Template<V, B>::toFunction()
 	{
 		CJSFunctionV8* _value = new CJSFunctionV8();
 		_value->value = v8::Local<v8::Function>::Cast(value);

@@ -11,11 +11,6 @@ namespace NSJSBase {
 	{
 	}
 
-	JSSmart<CJSObject> CJSValue::toObjectSmart()
-	{
-		return toObject();
-	}
-
 	CJSEmbedObjectPrivateBase::CJSEmbedObjectPrivateBase()
 	{
 	}

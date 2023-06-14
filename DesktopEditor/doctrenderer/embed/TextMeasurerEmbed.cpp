@@ -2,8 +2,8 @@
 #include "./PointerEmbed.h"
 #include "./../../fontengine/TextShaper.h"
 
-#define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObjectSmart()->getNative())->Data
-#define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObjectSmart()->getNative())
+#define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObject()->getNative())->Data
+#define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObject()->getNative())
 
 // в js не хотим следить, чтобы в каждом face была ссылка на library - т.е. чтобы
 // сначала удалились все face, а потом library - поэтому делаем свой счетчик ссылок
@@ -55,7 +55,7 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Malloc(JSSmart<CJSValue> typed_array_or
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Free(JSSmart<CJSValue> pointer)
 {
-	CPointerEmbedObject* pEmbed = (CPointerEmbedObject*)pointer->toObjectSmart()->getNative();
+	CPointerEmbedObject* pEmbed = (CPointerEmbedObject*)pointer->toObject()->getNative();
 	pEmbed->Free();
 	return CJSContext::createUndefined();
 }

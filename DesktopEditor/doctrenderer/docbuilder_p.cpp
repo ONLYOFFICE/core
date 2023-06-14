@@ -587,7 +587,7 @@ namespace NSDoctRenderer
 			return ret;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->get(name);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->get(name);
 
 		ret.m_internal->m_parent = new CDocBuilderValue_Private::CParentValueInfo();
 		ret.m_internal->m_parent->m_parent = m_internal->m_value;
@@ -645,7 +645,7 @@ namespace NSDoctRenderer
 		std::string sPropA = U_TO_UTF8(sProp);
 
 		value.m_internal->CheckNative();
-		m_internal->m_value->toObjectSmart()->set(sPropA.c_str(), value.m_internal->m_value.GetPointer());
+		m_internal->m_value->toObject()->set(sPropA.c_str(), value.m_internal->m_value.GetPointer());
 	}
 	void CDocBuilderValue::SetProperty(const wchar_t* name, CDocBuilderValue value)
 	{
@@ -714,7 +714,7 @@ namespace NSDoctRenderer
 			return ret;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1)
@@ -728,7 +728,7 @@ namespace NSDoctRenderer
 		argv[0] = p1.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 1, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 1, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2)
@@ -744,7 +744,7 @@ namespace NSDoctRenderer
 		argv[1] = p2.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 2, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 2, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3)
@@ -762,7 +762,7 @@ namespace NSDoctRenderer
 		argv[2] = p3.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 3, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 3, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4)
@@ -782,7 +782,7 @@ namespace NSDoctRenderer
 		argv[3] = p4.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 4, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 4, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5)
@@ -804,7 +804,7 @@ namespace NSDoctRenderer
 		argv[4] = p5.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 5, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 5, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6)
@@ -828,7 +828,7 @@ namespace NSDoctRenderer
 		argv[5] = p6.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(name, 6, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(name, 6, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name)
@@ -841,7 +841,7 @@ namespace NSDoctRenderer
 		std::string sPropA = U_TO_UTF8(sProp);
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str());
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str());
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1)
@@ -858,7 +858,7 @@ namespace NSDoctRenderer
 		argv[0] = p1.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 1, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 1, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2)
@@ -877,7 +877,7 @@ namespace NSDoctRenderer
 		argv[1] = p2.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 2, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 2, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3)
@@ -898,7 +898,7 @@ namespace NSDoctRenderer
 		argv[2] = p3.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 3, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 3, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4)
@@ -921,7 +921,7 @@ namespace NSDoctRenderer
 		argv[3] = p4.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 4, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 4, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5)
@@ -946,7 +946,7 @@ namespace NSDoctRenderer
 		argv[4] = p5.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 5, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 5, argv);
 		return ret;
 	}
 	CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6)
@@ -973,7 +973,7 @@ namespace NSDoctRenderer
 		argv[5] = p6.m_internal->m_value;
 
 		ret.m_internal->m_context = m_internal->m_context;
-		ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 6, argv);
+		ret.m_internal->m_value = m_internal->m_value->toObject()->call_func(sPropA.c_str(), 6, argv);
 		return ret;
 	}
 

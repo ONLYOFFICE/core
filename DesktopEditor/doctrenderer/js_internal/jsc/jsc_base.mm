@@ -209,7 +209,7 @@ namespace NSJSBase
         RELEASEOBJECT(m_internal);
     }
 
-    CJSTryCatch* CJSContext::GetExceptions()
+	JSSmart<CJSTryCatch> CJSContext::GetExceptions()
     {
         return new CJSCTryCatch();
     }
@@ -241,7 +241,7 @@ namespace NSJSBase
         m_internal->context = nil;
     }
 
-    CJSObject* CJSContext::GetGlobal()
+	JSSmart<CJSObject> CJSContext::GetGlobal()
     {
         CJSObjectJSC* ret = new CJSObjectJSC();
         ret->value = [m_internal->context globalObject];
@@ -372,7 +372,7 @@ namespace NSJSBase
         return (CJSContextPrivate::IsOldVersion() == false) ? true : false;
     }
 
-    CJSValue* CJSContext::JSON_Parse(const char *sTmp)
+	JSSmart<CJSValue> CJSContext::JSON_Parse(const char *sTmp)
     {
         if (!sTmp)
             return CJSContext::createUndefined();

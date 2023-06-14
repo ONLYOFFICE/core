@@ -80,10 +80,10 @@ namespace NSJSBase
         virtual std::string toStringA();
         virtual std::wstring toStringW();
 
-        virtual CJSObject* toObject();
-        virtual CJSArray* toArray();
-        virtual CJSTypedArray* toTypedArray();
-        virtual CJSFunction* toFunction();
+		virtual JSSmart<CJSObject> toObject();
+		virtual JSSmart<CJSArray> toArray();
+		virtual JSSmart<CJSTypedArray> toTypedArray();
+		virtual JSSmart<CJSFunction> toFunction();
 
         JSContext* getContext()
         {
@@ -110,7 +110,7 @@ namespace NSJSBase
             value = nil;
         }
 
-        virtual CJSValue* get(const char* name)
+		virtual JSSmart<CJSValue> get(const char* name)
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = [value valueForProperty:[[NSString alloc] initWithUTF8String:name]];
@@ -392,7 +392,7 @@ namespace NSJSBase
             value = nil;
         }
 
-        virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
+		virtual JSSmart<CJSValue> Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
         {
             NSMutableArray* arr = [[NSMutableArray alloc] init];
             for (int i = 0; i < argc; ++i)
@@ -409,7 +409,7 @@ namespace NSJSBase
     };
 
     template<typename T>
-    CJSObject* CJSValueJSCTemplate<T>::toObject()
+	JSSmart<CJSObject> CJSValueJSCTemplate<T>::toObject()
     {
         CJSObjectJSC* _value = new CJSObjectJSC();
         _value->value = value;
@@ -417,7 +417,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSArray* CJSValueJSCTemplate<T>::toArray()
+	JSSmart<CJSArray> CJSValueJSCTemplate<T>::toArray()
     {
         CJSArrayJSC* _value = new CJSArrayJSC();
         _value->value = value;
@@ -425,7 +425,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSTypedArray* CJSValueJSCTemplate<T>::toTypedArray()
+	JSSmart<CJSTypedArray> CJSValueJSCTemplate<T>::toTypedArray()
     {
         CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(getContext());
         _value->value = value;
@@ -433,7 +433,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSFunction* CJSValueJSCTemplate<T>::toFunction()
+	JSSmart<CJSFunction> CJSValueJSCTemplate<T>::toFunction()
     {
         CJSFunctionJSC* _value = new CJSFunctionJSC();
         _value->value = value;

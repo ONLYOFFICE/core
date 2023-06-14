@@ -4624,6 +4624,10 @@ namespace NExtractTools
 			   nRes = csv2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
 			   *params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		   }
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom)
+		   {
+			   nRes = xml2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+		   }
 		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
@@ -5308,7 +5312,9 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Initialize();
+#endif
 
 		_UINT32 result = 0;
 		switch(conversion)
@@ -5790,7 +5796,10 @@ namespace NExtractTools
 		}
 
 		//clean up v8
+#ifndef BUILD_X2T_AS_LIBRARY_DYLIB
 		NSDoctRenderer::CDocBuilder::Dispose();
+#endif
+
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

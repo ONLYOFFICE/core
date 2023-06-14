@@ -1065,6 +1065,20 @@ namespace PdfWriter
 				pParent->Add("Ff", pBase->GetFieldFlag());
 				pParent->Add("FT", pBase->GetFieldType());
 
+				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
+				int nMaxLen = 0;
+				if (pTextField)
+				{
+					CObjectBase* pT = pBase->Get("T");
+					if (pT && pT->GetType() == object_type_STRING)
+						pParent->Add("V", pT->Copy());
+
+					if (0 != (nMaxLen = pTextField->GetMaxLen()))
+					{
+						pBase->Remove("MaxLen");
+						pParent->Add("MaxLen", nMaxLen);
+					}
+				}
 
 				pBase->SetParent(pParent);
 				pBase->ClearKidRecords();
@@ -1078,14 +1092,6 @@ namespace PdfWriter
 				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
 				if (pChoice)
 					pChoice->UpdateSelectedIndexToParent();
-
-				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
-				int nMaxLen = 0;
-				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))
-				{
-					pBase->Remove("MaxLen");
-					pParent->Add("MaxLen", nMaxLen);
-				}
 
 				pParent->UpdateKidsPlaceHolder();
 			}

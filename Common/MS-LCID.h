@@ -524,6 +524,7 @@ public:
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x40E, 1250));
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x40F, 1252));
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x410, 1252));
+		m_mapLCID2DefCodePage.insert(std::make_pair(0x412, 949));
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x413, 1252));
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x414, 1252));
 		m_mapLCID2DefCodePage.insert(std::make_pair(0x415, 1250));

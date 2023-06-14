@@ -875,18 +875,6 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 
 	CP_XML_WRITER(_stream)    
 	{
-		CP_XML_NODE(L"workbookPr")
-		{
-			if (code_name)
-			{
-				CP_XML_ATTR(L"codeName", code_name->value);
-			}
-			if (book_ext)
-			{
-				CP_XML_ATTR(L"hidePivotFieldList",	book_ext->fHidePivotList);
-				CP_XML_ATTR(L"filterPrivacy",		book_ext->fFilterPrivacy);
-			}
-		}
 		if (file_sharing)
 		{
 			CP_XML_NODE(L"fileSharing")
@@ -895,8 +883,23 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 				{
 					CP_XML_ATTR(L"readOnlyRecommended", 0 != (*file_sharing->fReadOnlyRec.value()));
 				}
-				CP_XML_ATTR(L"userName", file_sharing->stUNUsername.value());
-				CP_XML_ATTR(L"password", file_sharing->wResPass);
+				if (false == file_sharing->stUNUsername.value().empty())
+				{
+					CP_XML_ATTR(L"userName", file_sharing->stUNUsername.value());
+					CP_XML_ATTR(L"password", file_sharing->wResPass);
+				}
+			}
+		}
+		CP_XML_NODE(L"workbookPr")
+		{
+			if (code_name)
+			{
+				CP_XML_ATTR(L"codeName", code_name->value);
+			}
+			if (book_ext)
+			{
+				CP_XML_ATTR(L"hidePivotFieldList", book_ext->fHidePivotList);
+				CP_XML_ATTR(L"filterPrivacy", book_ext->fFilterPrivacy);
 			}
 		}
 	}

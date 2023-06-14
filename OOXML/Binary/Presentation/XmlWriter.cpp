@@ -164,7 +164,7 @@ void CXmlWriter::WriteAttributeCSS_double1_pt(const std::wstring& strAttributeNa
 {
 	m_oWriter.WriteString(strAttributeName);
 	m_oWriter.AddSize(20);
-	std::wstring s = XmlUtils::DoubleToString(val, L"%.1lf");
+	std::wstring s = XmlUtils::DoubleToString(val, L"%.2lf");
 	m_oWriter.AddCharNoCheck(WCHAR(':'));
 	m_oWriter.WriteString(s);
 	m_oWriter.AddCharNoCheck(WCHAR('p'));
@@ -172,7 +172,7 @@ void CXmlWriter::WriteAttributeCSS_double1_pt(const std::wstring& strAttributeNa
 	m_oWriter.AddCharNoCheck(WCHAR(';'));
 }
 
-void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val)
+void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName,  const std::wstring& val)
 {
 	m_oWriter.WriteString(g_bstr_node_space);
 	m_oWriter.WriteString(strAttributeName);

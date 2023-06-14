@@ -3298,7 +3298,7 @@ void RtfFontTableReader::ExecuteTextInternal2( RtfDocument& oDocument, RtfReader
 		oDocument.m_oProperty.m_nAnsiCodePage = m_oFont.m_nCodePage;
 	}
 
-	if (m_oFont.m_nCharset != PROP_DEF && m_oFont.m_nCharset >= 0 && oDocument.m_oProperty.m_nAnsiCodePage == 0)
+	if (m_oFont.m_nCharset != PROP_DEF && m_oFont.m_nCharset > 2 && oDocument.m_oProperty.m_nAnsiCodePage == 0 && !m_oFont.m_sName.empty())
 	{
 		oDocument.m_oProperty.m_nAnsiCodePage = RtfUtility::CharsetToCodepage(m_oFont.m_nCharset);
 	}

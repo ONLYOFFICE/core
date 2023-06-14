@@ -886,7 +886,7 @@ private:
                         else
                         {
                             _bResult &= InstallPlugin(arrPlugins[i]);
-                            // TODO: push result after installation
+                            // Update installed
                             GetLocalPlugins(false, false);
                         }
                     }
@@ -1003,7 +1003,7 @@ private:
                 // Plugin folder can be without GUID
                 std::wstring sPluginDir = m_sPluginsDir + L"/" + pPlugin->m_sGuid;
                 if ( !NSDirectory::Exists(sPluginDir) )
-                    sPluginDir = pPlugin->m_sDir;
+                    sPluginDir = pPlugin->m_sDir;                
 
                 if (NSDirectory::Exists(sPluginDir))
                 {
@@ -1027,14 +1027,16 @@ private:
 
                     NSDirectory::DeleteDirectory(sPluginDir);
 
-                    // Remove from array
-                    for (size_t i = 0; i < m_arrInstalled.size(); i++)
+                    // Update installed
+                    GetLocalPlugins(false, false);
+
+                    // Check duplicate (bug #62807)
+                    CPluginInfo* pDuplicate = FindLocalPlugin(pPlugin->m_sGuid);
+                    if ( pDuplicate )
                     {
-                        if ( m_arrInstalled[i]->m_sGuid == pPlugin->m_sGuid )
-                        {
-                            m_arrInstalled.erase(m_arrInstalled.begin() + i);
-                            break;
-                        }
+                        bool bRes = RemovePlugin(pDuplicate->m_sName, false, false);
+                        if (bPrint)
+                            Message(L"Remove duplicate plugin: " + pDuplicate->m_sName, BoolToStr(bRes), true);
                     }
 
                     // Save to settings

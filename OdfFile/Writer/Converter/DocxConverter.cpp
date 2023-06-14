@@ -2818,7 +2818,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		else
 			text_properties->fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	}
-	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
+	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit() && !is_para_props)
 	{
 		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		current_font_size.push_back(font_size_pt);

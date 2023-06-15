@@ -540,6 +540,9 @@ enum ElementType
 	typeAnimAudio,
 	typeAnimCommand,
 	typeAnimIterate,
+	typeAnimSet,
+	typeAnimAnimateMotion,
+	typeAnimAnimateColor,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

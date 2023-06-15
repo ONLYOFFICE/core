@@ -336,5 +336,75 @@ void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 ////////////////////////////////////////////////////////////////
+void anim_set_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"smil:fill",				smil_fill_);
+	CP_APPLY_ATTR(L"smil:targetElement",	smil_target_element_);
+	CP_APPLY_ATTR(L"smil:attributeName",	smil_attribute_name_);
+	CP_APPLY_ATTR(L"smil:to",				smil_to_);
+}
+
+const wchar_t* anim_set::ns = L"anim";
+const wchar_t* anim_set::name = L"set";
+
+void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
+{
+
+}
+
+void anim_set::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	common_attlist_.add_attributes(Attributes);
+	set_attlist_.add_attributes(Attributes);
+}
+
+////////////////////////////////////////////////////////////////
+void anim_animate_motion_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"smil:fill",				smil_fill_);
+	CP_APPLY_ATTR(L"smil:targetElement",	smil_target_element_);
+	CP_APPLY_ATTR(L"svg:path",				svg_path_);
+}
+
+const wchar_t* anim_animate_motion::ns = L"anim";
+const wchar_t* anim_animate_motion::name = L"animateMotion";
+
+void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
+{
+
+}
+
+void anim_animate_motion::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	common_attlist_.add_attributes(Attributes);
+	animate_motion_attlist_.add_attributes(Attributes);
+}
+
+////////////////////////////////////////////////////////////////
+void anim_animate_color_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"smil:fill",								smil_fill_);
+	CP_APPLY_ATTR(L"smil:targetElement",					smil_target_element_);
+	CP_APPLY_ATTR(L"smil:attributeName",					smil_attribute_name_);
+	CP_APPLY_ATTR(L"smil:to",								smil_to_);
+	CP_APPLY_ATTR(L"presentation:master-elemen",			presentation_master_element_);
+	CP_APPLY_ATTR(L"anim:color-interpolation",				anim_color_interpolation_);
+	CP_APPLY_ATTR(L"anim:color-interpolation-direction",	anim_color_interpolation_direction);
+}
+
+const wchar_t* anim_animate_color::ns = L"anim";
+const wchar_t* anim_animate_color::name = L"animateColor";
+
+void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
+{
+
+}
+
+void anim_animate_color::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	common_attlist_.add_attributes(Attributes);
+	animate_color_attlist_.add_attributes(Attributes);
+}
+
 }
 }

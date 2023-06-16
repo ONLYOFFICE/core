@@ -2399,11 +2399,11 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 dict->lookup("BBox", &bboxObj);
                 if (bboxObj.isArray())
                 {
-                    for (i = 0; i < 4; ++i)
+                    for (int k = 0; k < 4; ++k)
                     {
                         Object obj1;
-                        bboxObj.arrayGet(i, &obj1);
-                        bbox[i] = obj1.getNum();
+                        bboxObj.arrayGet(k, &obj1);
+                        bbox[k] = obj1.getNum();
                         obj1.free();
                     }
                 }
@@ -2420,11 +2420,11 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 dict->lookup("Matrix", &matrixObj);
                 if (false && matrixObj.isArray())
                 {
-                    for (i = 0; i < 6; ++i)
+                    for (int k = 0; k < 6; ++k)
                     {
                         Object obj1;
-                        matrixObj.arrayGet(i, &obj1);
-                        m[i] = obj1.getNum();
+                        matrixObj.arrayGet(k, &obj1);
+                        m[k] = obj1.getNum();
                         obj1.free();
                     }
                 }
@@ -2450,7 +2450,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 unsigned int nColor = (unsigned int)nBackgroundColor;
                 unsigned int nSize = (unsigned int)(nWidth * nHeight);
                 unsigned int* pTemp = (unsigned int*)pBgraData;
-                for (unsigned int i = 0; i < nSize; ++i)
+                for (unsigned int k = 0; k < nSize; ++k)
                     *pTemp++ = nColor;
 
                 CBgraFrame* pFrame = new CBgraFrame();

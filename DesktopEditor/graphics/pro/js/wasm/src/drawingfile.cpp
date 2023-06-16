@@ -561,6 +561,54 @@ int main(int argc, char* argv[])
         if (nCOLength > 0)
             std::cout << std::endl;
 
+        DWORD nParentsLength = READ_INT(pWidgets + i);
+        i += 4;
+        if (nParentsLength > 0)
+            std::cout << "Parents" << std::endl;
+        for (int j = 0; j < nParentsLength; ++j)
+        {
+            DWORD nPathLength = READ_INT(pWidgets + i);
+            i += 4;
+            std::cout << "# " << nPathLength << ", ";
+
+            nPathLength = READ_INT(pWidgets + i);
+            i += 4;
+            std::cout << "Flags " << nPathLength << ", ";
+            int nFlags = nPathLength;
+
+            if (nFlags & (1 << 0))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "T " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                i += nPathLength;
+            }
+            if (nFlags & (1 << 1))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "V " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                i += nPathLength;
+            }
+            if (nFlags & (1 << 2))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                i += nPathLength;
+            }
+            if (nFlags & (1 << 3))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "Parent " << nPathLength;
+            }
+
+            std::cout << std::endl;
+        }
+        if (nParentsLength > 0)
+            std::cout << std::endl;
+
 		while (i < nLength)
 		{
 			DWORD nPathLength = READ_INT(pWidgets + i);
@@ -569,10 +617,7 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Flag " << nPathLength << ", ";
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Page " << nPathLength << ", ";
@@ -842,7 +887,20 @@ int main(int argc, char* argv[])
 				}
 				std::cout << ", ";
 			}
-			int nActLength = READ_INT(pWidgets + i);
+            if (nFlags & (1 << 17))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "Parent " << nPathLength << ", ";
+            }
+            if (nFlags & (1 << 18))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                i += nPathLength;
+            }
+            int nActLength = READ_INT(pWidgets + i);
 			i += 4;
 			for (int j = 0; j < nActLength; ++j)
 			{

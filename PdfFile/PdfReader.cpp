@@ -988,13 +988,106 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
 
     RELEASEOBJECT(oAct);
 };
+bool getValue(Object* oV, NSWasm::CData& oRes)
+{
+    bool bRes = false;
+    if (oV->isName())
+    {
+        std::string sStr(oV->getName());
+        bRes = true;
+        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+    }
+    else if (oV->isString() || oV->isDict())
+    {
+        TextString* s = NULL;
+        if (oV->isString())
+            s = new TextString(oV->getString());
+        else if (oV->isDict())
+        {
+            Object oContents;
+            if (oV->dictLookup("Contents", &oContents)->isString())
+            {
+                s = new TextString(oContents.getString());
+            }
+            oContents.free();
+        }
+        if (s)
+        {
+            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            bRes = true;
+            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+            delete s;
+        }
+    }
+    return bRes;
+}
+void getParents(PDFDoc* pdfDoc, Object* oFieldRef, NSWasm::CData& oRes, std::vector<int>& arrParents)
+{
+    if (!pdfDoc)
+        return;
+    XRef* xref = pdfDoc->getXRef();
+    if (!oFieldRef || !xref)
+        return;
+
+    Object oField;
+    if (!oFieldRef->isRef() || std::find(arrParents.begin(), arrParents.end(), oFieldRef->getRefNum()) != arrParents.end() || !oFieldRef->fetch(xref, &oField)->isDict())
+    {
+        oField.free();
+        return;
+    }
+    int nRefNum = oFieldRef->getRefNum();
+    arrParents.push_back(nRefNum);
+    oRes.AddInt(nRefNum);
+
+    int nFlags = 0;
+    int nFlagPos = oRes.GetSize();
+    oRes.AddInt(nFlags);
+
+    Object oT;
+    if (oField.dictLookup("T", &oT)->isString())
+    {
+        TextString* s = new TextString(oT.getString());
+        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        nFlags |= (1 << 0);
+        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+        delete s;
+    }
+    oT.free();
+
+    Object oV;
+    if (oField.dictLookup("V", &oV))
+    {
+        if (getValue(&oV, oRes))
+            nFlags |= (1 << 1);
+    }
+    oV.free();
+
+    Object oDV;
+    if (oField.dictLookup("DV", &oDV))
+    {
+        if (getValue(&oDV, oRes))
+            nFlags |= (1 << 2);
+    }
+    oDV.free();
+
+    Object oParentRefObj;
+    if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
+    {
+        oRes.AddInt(oParentRefObj.getRefNum());
+        nFlags |= (1 << 3);
+        getParents(pdfDoc, &oParentRefObj, oRes, arrParents);
+    }
+    oParentRefObj.free();
+    oRes.AddInt(nFlags, nFlagPos);
+}
 BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
 
     AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
-    if (!pAcroForms)
+    XRef* xref = m_pPDFDocument->getXRef();
+    if (!pAcroForms || !xref)
         return NULL;
 
     NSWasm::CData oRes;
@@ -1035,6 +1128,47 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddInt(0);
     oCO.free();
 
+    // Родительские Fields
+    int nParentsPos = oRes.GetSize();
+    int nParents = 0;
+    oRes.AddInt(nParents);
+    std::vector<int> arrParents;
+    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+    {
+        AcroFormField* pField = pAcroForms->getField(i);
+        Object oFieldRef, oField;
+        if (!pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
+        {
+            oFieldRef.free();
+            continue;
+        }
+        Object oParentRefObj;
+        if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
+        {
+            getParents(m_pPDFDocument, &oParentRefObj, oRes, arrParents);
+        }
+        oParentRefObj.free();
+
+        /*
+        XRef* xref = m_pPDFDocument->getXRef();
+        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
+        {
+            oFieldRef.free(); oField.free();
+            continue;
+        }
+
+        Object oParentRefObj;
+        if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
+        {
+            getParents(m_pPDFDocument, &oParentRefObj, oRes, arrParents);
+        }
+        oParentRefObj.free();
+        */
+    }
+    nParents = arrParents.size();
+    arrParents.clear();
+    oRes.AddInt(nParents, nParentsPos);
+
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
@@ -1058,13 +1192,6 @@ BYTE* CPdfReader::GetWidgets()
             nAnnotFlag = oObj.getInt();
         oObj.free();
         oRes.AddInt(nAnnotFlag);
-
-        // Полное имя поля - T (parent_full_name.child_name)
-        int nLengthName;
-        Unicode* uName = pField->getName(&nLengthName);
-        std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
-        oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
-        gfree(uName);
 
         // Номер страницы - P
         int nPage = pField->getPageNum();
@@ -1280,13 +1407,12 @@ oObj.free();\
         oMK.free();
 
         // 9 - Значение по-умолчанию
-        DICT_LOOKUP_STRING(pField->fieldLookup, "DV", 8);
-
-        // Значение поля - V
-        int nValueLength;
-        Unicode* pValue = pField->getValue(&nValueLength);
-        std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
-        gfree(pValue);
+        if (oField.dictLookup("DV", &oObj))
+        {
+            if (getValue(&oObj, oRes))
+                nFlags |= (1 << 8);
+        }
+        oObj.free();
 
         // Запись данных необходимых каждому типу
         switch (oType)
@@ -1295,6 +1421,12 @@ oObj.free();\
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
+            // Значение поля - V
+            int nValueLength;
+            Unicode* pValue = pField->getValue(&nValueLength);
+            std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
+            gfree(pValue);
+
             if (pField->fieldLookup("AS", &oObj)->isName())
                 sValue = oObj.getName();
             oObj.free();
@@ -1455,12 +1587,12 @@ oObj.free();\
             // 10 - Значение
             // 11 - Максимальное количество символов
             // 12 - Расширенный текст RV
-
-            if (!sValue.empty())
+            if (oField.dictLookup("V", &oObj))
             {
-                nFlags |= (1 << 9);
-                oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
+                if (getValue(&oObj, oRes))
+                    nFlags |= (1 << 9);
             }
+            oObj.free();
 
             // Максимальное количество символов в Tx - MaxLen
             int nMaxLen = pField->getMaxLen();
@@ -1482,11 +1614,12 @@ oObj.free();\
         case acroFormFieldListBox:
         {
             // 10 - Значение
-            if (!sValue.empty())
+            if (oField.dictLookup("V", &oObj))
             {
-                nFlags |= (1 << 9);
-                oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
+                if (getValue(&oObj, oRes))
+                    nFlags |= (1 << 9);
             }
+            oObj.free();
 
             Object oOpt;
             // 11 - Список значений
@@ -1854,6 +1987,17 @@ oObj.free();\
             }
         }
         oObj.free();
+
+        // 18 - Родитель - Parent
+        if (oField.dictLookupNF("Parent", &oObj)->isRef())
+        {
+            oRes.AddInt(oObj.getRefNum());
+            nFlags |= (1 << 17);
+        }
+        oObj.free();
+
+        // 19 - Частичное имя поля - T
+        DICT_LOOKUP_STRING(oField.dictLookup, "T", 18);
 
         int nActionPos = oRes.GetSize();
         unsigned int nActionLength = 0;

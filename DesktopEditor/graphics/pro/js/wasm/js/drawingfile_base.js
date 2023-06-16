@@ -494,6 +494,24 @@
 		for (let i = 0; i < n; ++i)
 			// В массиве используются имена аннотаций - rec["name"]
 			res["CO"].push(reader.readString());
+		
+		n = reader.readInt();
+		if (n > 0)
+			res["Parents"] = [];
+		for (let i = 0; i < n; ++i)
+		{
+			var rec = {};
+			rec["i"] = reader.readInt();
+			var flags = reader.readInt();
+			if (flags & (1 << 0))
+				rec["name"] = reader.readString();
+			if (flags & (1 << 1))
+				rec["value"] = reader.readString();
+			if (flags & (1 << 2))
+				rec["defaultValue"] = reader.readString();
+			if (flags & (1 << 3))
+				rec["Parent"] = reader.readInt();
+		}
 
 		res["Fields"] = [];
 		while (reader.isValid())
@@ -504,16 +522,14 @@
 			rec["AP"]["i"] = reader.readInt();
 			rec["annotflag"] = reader.readInt();
 			// 12.5.3
-			rec["hidden"]   = rec["annotflag"] & (1 << 1); // Hidden
-			rec["print"]    = rec["annotflag"] & (1 << 2); // Print
-			rec["noZoom"]   = rec["annotflag"] & (1 << 3); // NoZoom
-			rec["noRotate"] = rec["annotflag"] & (1 << 4); // NoRotate
-			rec["noView"]   = rec["annotflag"] & (1 << 5); // NoView
-			rec["readOnly"] = rec["annotflag"] & (1 << 6); // ReadOnly
-			rec["locked"]   = rec["annotflag"] & (1 << 7); // Locked
-			rec["lockedC"]  = rec["annotflag"] & (1 << 9); // LockedContents
-
-			rec["name"] = reader.readString();
+			rec["hidden"]   = (rec["annotflag"] >> 1) & 1; // Hidden
+			rec["print"]    = (rec["annotflag"] >> 2) & 1; // Print
+			rec["noZoom"]   = (rec["annotflag"] >> 3) & 1; // NoZoom
+			rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
+			rec["noView"]   = (rec["annotflag"] >> 5) & 1; // NoView
+			rec["readOnly"] = (rec["annotflag"] >> 6) & 1; // ReadOnly
+			rec["locked"]   = (rec["annotflag"] >> 7) & 1; // Locked
+			rec["lockedC"]  = (rec["annotflag"] >> 9) & 1; // LockedContents
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["rect"] = {};
@@ -611,7 +627,7 @@
 						rec["IF"]["A"].push(reader.readDouble());
 						rec["IF"]["A"].push(reader.readDouble());
 					}
-					rec["IF"]["FB"] = IFflags & (1 << 4);
+					rec["IF"]["FB"] = (IFflags >> 4) & 1;
 				}
 			    if (flags & (1 << 14))
 				{
@@ -620,8 +636,8 @@
 						rec["value"] = rec["NameOfYes"];
 				}
 				// 12.7.4.2.1
-				rec["NoToggleToOff"]  = rec["flag"] & (1 << 14); // NoToggleToOff
-				rec["radiosInUnison"] = rec["flag"] & (1 << 25); // RadiosInUnison
+				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
 			}
 			else if (rec["type"] == "text")
 			{
@@ -632,13 +648,13 @@
 				if (flags & (1 << 11))
 					rec["richValue"] = reader.readString();
 				// 12.7.4.3
-				rec["multiline"]       = rec["flag"] & (1 << 12); // Multiline
-				rec["password"]        = rec["flag"] & (1 << 13); // Password
-				rec["fileSelect"]      = rec["flag"] & (1 << 20); // FileSelect
-				rec["doNotSpellCheck"] = rec["flag"] & (1 << 22); // DoNotSpellCheck
-				rec["doNotScroll"]     = rec["flag"] & (1 << 23); // DoNotScroll
-				rec["comb"]            = rec["flag"] & (1 << 24); // Comb
-				rec["richText"]        = rec["flag"] & (1 << 25); // RichText
+				rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+				rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+				rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+				rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
 			}
 			else if (rec["type"] == "combobox" || rec["type"] == "listbox")
 			{
@@ -661,15 +677,15 @@
 				if (flags & (1 << 11))
 					rec["TI"] = reader.readInt();
 				// 12.7.4.4
-				rec["editable"]          = rec["flag"] & (1 << 18); // Edit
-				rec["multipleSelection"] = rec["flag"] & (1 << 21); // MultiSelect
-				rec["doNotSpellCheck"]   = rec["flag"] & (1 << 22); // DoNotSpellCheck
-				rec["commitOnSelChange"] = rec["flag"] & (1 << 26); // CommitOnSelChange
+				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 			}
 			// 12.7.3.1
-			rec["readonly"] = rec["flag"] & (1 << 0); // ReadOnly
-			rec["required"] = rec["flag"] & (1 << 1); // Required
-			rec["noexport"] = rec["flag"] & (1 << 2); // NoExport
+			rec["readonly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
 			// Альтернативный текст аннотации - Contents
 			if (flags & (1 << 15))
 				rec["Contents"] = reader.readString();
@@ -680,6 +696,14 @@
 				rec["C"] = [];
 				for (let i = 0; i < n; ++i)
 					rec["C"].push(reader.readDouble());
+			}
+			if (flags & (1 << 17))
+			{
+				rec["Parent"] = reader.readInt();
+			}
+			if (flags & (1 << 18))
+			{
+				rec["name"] = reader.readString();
 			}
 			let nAction = reader.readInt();
 			if (nAction > 0)

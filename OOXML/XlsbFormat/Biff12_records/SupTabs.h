@@ -53,8 +53,7 @@ namespace XLSB
 
             _UINT32 cTab;
             std::vector<XLWideString> sheetNames;
-
     };
-
+    typedef boost::shared_ptr<SupTabs> SupTabsPtr;    
 } // namespace XLSB
 

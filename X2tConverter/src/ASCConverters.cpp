@@ -1131,6 +1131,41 @@ namespace NExtractTools
 		}
 		return nRes;
 	}
+	_UINT32 xlsx2xlsb(const std::wstring& sFrom, const std::wstring& sTo, const std::wstring& sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + L"xlsx_unpacked";
+
+		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0))
+		{
+			return xlsx_dir2xlsb(sTempUnpackedXLSX, sTo, sTemp, params);
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 xlsx_dir2xlsb(const std::wstring& sFrom, const std::wstring& sTo, const std::wstring& sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedXLSB = sTemp + FILE_SEPARATOR_STR + L"xlsb_unpacked";
+		NSDirectory::CreateDirectory(sTempUnpackedXLSB);
+
+		_UINT32 nRes = 0;
+//---------------------------------------------------------------------
+		const OOX::CPath oox_path(sFrom);
+
+		OOX::Spreadsheet::CXlsx xlsx(oox_path);
+		OOX::Spreadsheet::CXlsb xlsb;
+
+		//XLS::BaseObjectPtr object = xlsx.toBin();
+		//xlsb.WriteBin(sTempUnpackedXLSB, object.get());
+//---------------------------------------------------------------------
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedXLSB, sTo, false, Z_DEFLATED)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
 	_UINT32 xltm2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
 	{
        COfficeUtils oCOfficeUtils(NULL);
@@ -5776,6 +5811,10 @@ namespace NExtractTools
 			case TCD_VBAPROJECT2XML:
 			{
 				result = msVbaProject2Xml(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSX2XLSB:
+			{
+				result = xlsx2xlsb(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,

@@ -118,6 +118,16 @@ namespace Spreadsheet
 		toXML(writer);
 		return writer.GetData().c_str();
 	}
+	XLS::BaseObjectPtr CExternalSheetNames::toBin()
+	{
+		XLSB::SupTabsPtr supTabs(new XLSB::SupTabs);
+		for (auto& item : m_arrItems)
+		{
+			XLSB::XLWideString str = *item->m_sVal;
+			supTabs->sheetNames.push_back(str);
+		}
+		return supTabs;
+	}
 	void CExternalSheetNames::fromBin(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::SupTabs*>(obj.get());
@@ -696,6 +706,21 @@ namespace Spreadsheet
 		NSStringUtils::CStringBuilder writer;
 		toXML(writer);
 		return writer.GetData().c_str();
+	}
+	XLS::BaseObjectPtr CExternalBook::toBin()
+	{
+		XLSB::EXTERNALLINKPtr externalLINK(new XLSB::EXTERNALLINK());
+
+		XLSB::ExternalReferenceType type;
+		XLSB::EXTERNALBOOKPtr externalBOOK(new XLSB::EXTERNALBOOK(type));
+
+		externalLINK->m_EXTERNALBOOK = externalBOOK;
+		if (externalBOOK != nullptr)
+		{
+			if (m_oSheetNames.IsInit())
+				externalBOOK->m_BrtSupTabs = m_oSheetNames->toBin();
+		}
+		return externalLINK;
 	}
 	void CExternalBook::fromBin(XLS::BaseObjectPtr& obj)
 	{
@@ -1480,6 +1505,21 @@ namespace Spreadsheet
 	}
 	CExternalLink::~CExternalLink()
 	{
+	}
+	XLS::BaseObjectPtr CExternalLink::writeBin()
+	{
+		XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
+
+		if (externalLinkStreamStream != nullptr)
+		{
+			if (m_oExternalBook.IsInit())
+				externalLinkStreamStream->m_EXTERNALLINK = m_oExternalBook->toBin();
+			//if (m_oDdeLink.IsInit())
+			//	externalLinkStreamStream->m_EXTERNALLINK = m_oDdeLink->toBin();
+			//if (m_oOleLink.IsInit())
+			//	externalLinkStreamStream->m_EXTERNALLINK = m_oOleLink->toBin();
+		}
+		return externalLinkStreamStream;
 	}
 	void CExternalLink::readBin(const CPath& oPath)
 	{

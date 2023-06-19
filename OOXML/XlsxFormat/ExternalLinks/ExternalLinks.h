@@ -78,6 +78,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);			
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const;
 		};
 		class CAlternateUrls : public WritingElement
@@ -251,6 +252,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 
 			void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType() const;
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -454,7 +456,9 @@ namespace OOX
 			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
 			virtual ~CExternalLink();
 
+			XLS::BaseObjectPtr writeBin();
 			void readBin(const CPath& oPath);
+
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;

@@ -90,7 +90,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
 	#endif
-		#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+		#pragma comment(lib, "../../../Common/3dParty/icu/win_32/build/icuuc.lib")
 #endif
 
 #include "../../src/main.cpp"

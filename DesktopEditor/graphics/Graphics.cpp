@@ -1210,7 +1210,7 @@ namespace Aggplus
 
 	Status CGraphics::ResetAlphaMask()
 	{
-		m_oAlphaMask.Destroy();
+		m_oAlphaMask.Clear();
 		return Ok;
 	}
 
@@ -1241,8 +1241,8 @@ namespace Aggplus
 
 	base_renderer_type &CGraphics::GetRendererBase()
 	{
-		if (GenerationAlphaMask == m_oAlphaMask.GetStatus())
-			return m_oAlphaMask.GetRendereBase();
+		if (GenerationAlphaMask == m_oAlphaMask.GetStatus() && FromImage == m_oAlphaMask.GetDataType())
+			return m_oAlphaMask.GetRendererBaseImage();
 
 		return m_frame_buffer.ren_base();
 	}
@@ -1253,8 +1253,12 @@ namespace Aggplus
 		if (!m_oClip.IsClip())
 		{
 			if (ApplyingAlphaMask == m_oAlphaMask.GetStatus())
-				return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.GetScanline(), ren);
-
+			{
+				if (FromImage == m_oAlphaMask.GetDataType())
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.GetScanlineImage(), ren);
+				else if (FromAlphaBuffer == m_oAlphaMask.GetDataType())
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.GetScanlineABuffer(), ren);
+			}
 			return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
 		}
 		else
@@ -1308,7 +1312,12 @@ namespace Aggplus
 		if (!m_oClip.IsClip())
 		{
 			if (ApplyingAlphaMask == m_oAlphaMask.GetStatus())
-				return agg::render_scanlines(ras, m_oAlphaMask.GetScanline(), ren);
+			{
+				if (FromImage == m_oAlphaMask.GetDataType())
+					return agg::render_scanlines(ras, m_oAlphaMask.GetScanlineImage(), ren);
+				else if (FromAlphaBuffer == m_oAlphaMask.GetDataType())
+					return agg::render_scanlines(ras, m_oAlphaMask.GetScanlineABuffer(), ren);
+			}
 
 			return agg::render_scanlines(ras, m_rasterizer.get_scanline(), ren);
 		}

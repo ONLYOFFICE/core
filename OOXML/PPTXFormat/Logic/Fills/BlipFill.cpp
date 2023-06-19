@@ -419,8 +419,12 @@ namespace PPTX
 									{
 										OOX::CPath pathUrl = strImagePath;
 										strImagePath = pathUrl.GetPath();
+										
+										if (std::wstring::npos == strImagePath.find(pReader->m_strFolder))
+										{
+											strImagePath.clear();
+										}				
 									}
-
 									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
 
 									// -------------------

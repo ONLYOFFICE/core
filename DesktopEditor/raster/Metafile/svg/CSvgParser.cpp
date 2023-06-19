@@ -12,6 +12,7 @@
 #include "SvgObjects/CClipPath.h"
 #include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
+#include "SvgObjects/CSymbol.h"
 #include "SvgObjects/CMarker.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CStyle.h"
@@ -183,6 +184,8 @@ namespace SVG
 			pDefObject = CreateAndReadChildrens<CMarker, CGraphicsContainer>(oElement, pFile);
 		else if (L"mask" == wsElementName)
 			pDefObject = CreateAndReadChildrens<CMask, CGraphicsContainer>(oElement, pFile);
+		else if (L"symbol" == wsElementName)
+			pDefObject = CreateAndReadChildrens<CSymbol, CGraphicsContainer>(oElement, pFile);
 
 		return AddObject(pDefObject, pDefs, pFile);
 	}
@@ -229,7 +232,7 @@ namespace SVG
 	bool CSvgParser::IsDefs(const std::wstring &wsNodeName) const
 	{
 		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"clipPath" == wsNodeName || L"linearGradient" == wsNodeName ||
-			   L"radialGradient" == wsNodeName || L"marker" == wsNodeName || L"mask" == wsNodeName;
+			   L"radialGradient" == wsNodeName || L"marker" == wsNodeName || L"mask" == wsNodeName || L"symbol" == wsNodeName;
 	}
 
 	template<typename TypeContainer>

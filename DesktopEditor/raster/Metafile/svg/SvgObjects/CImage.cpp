@@ -23,9 +23,6 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"opacity"))
-			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const

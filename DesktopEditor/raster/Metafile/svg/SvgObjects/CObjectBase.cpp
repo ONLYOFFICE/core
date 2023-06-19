@@ -45,6 +45,9 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"fill-opacity"))
 			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"fill-opacity"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"opacity"))
+			m_oStyles.m_oFill.SetOpacity(mAttributes.at(L"opacity"), ushLevel, bHardMode);
 	}
 
 	void CSvgGraphicsObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

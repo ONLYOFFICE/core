@@ -96,6 +96,7 @@ namespace SVG
 
 		friend class CPattern;
 		friend class CMarker;
+		friend class CSymbol;
 		friend class CMask;
 
 		TRect m_oWindow;

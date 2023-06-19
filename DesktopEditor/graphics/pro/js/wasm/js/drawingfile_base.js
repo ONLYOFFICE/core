@@ -511,6 +511,7 @@
 				rec["defaultValue"] = reader.readString();
 			if (flags & (1 << 3))
 				rec["Parent"] = reader.readInt();
+			res["Parents"].push(rec);
 		}
 
 		res["Fields"] = [];

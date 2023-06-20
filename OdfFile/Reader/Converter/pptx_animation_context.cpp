@@ -36,6 +36,8 @@
 #include <xml/simple_xml_writer.h>
 #include <CPOptional.h>
 
+#include "../../DataTypes/clockvalue.h"
+
 namespace cpdoccore {
 namespace oox {
 
@@ -49,23 +51,32 @@ namespace oox {
 		struct _par_animation
 		{
 			bool IsRoot;
-			_CP_OPT(std::wstring) Begin;
-			_CP_OPT(std::wstring) Fill;
-			_CP_OPT(std::wstring) Accelerate;
-			_CP_OPT(std::wstring) Decelerate;
-			_CP_OPT(std::wstring) NodeType;
-			_CP_OPT(std::wstring) PresetClass;
-			_CP_OPT(std::wstring) PresedID;
 
-			_CP_OPT(std::vector<_seq_animation>) Sequence;
-			_CP_OPT(std::vector<_seq_animation>) Actions;
+			_CP_OPT(std::wstring)					PresentationNodeType;
+			_CP_OPT(std::wstring)					SmilDirection;
+			_CP_OPT(std::wstring)					SmilRestart;
+			_CP_OPT(odf_types::clockvalue)			SmilDur;
+			_CP_OPT(std::wstring)					SmilBegin;
+			_CP_OPT(std::wstring)					SmilEnd;
+
+			_CP_OPT(std::vector<_seq_animation>)	Sequence;
+			_CP_OPT(std::vector<_animate_action>)	AnimateActions;
+
+			_CP_PTR(_par_animation)					AnimPar;
 		};
 
 		struct _seq_animation
 		{
 			bool IsMainSequence;
 
-			_CP_OPT(std::vector<_par_animation>) Parallels;
+			_CP_OPT(std::wstring)					PresentationNodeType;
+			_CP_OPT(std::wstring)					SmilDirection;
+			_CP_OPT(std::wstring)					SmilRestart;
+			_CP_OPT(odf_types::clockvalue)			SmilDur;
+			_CP_OPT(std::wstring)					SmilBegin;
+			_CP_OPT(std::wstring)					SmilEnd;
+
+			_CP_OPT(std::vector<_CP_PTR(_par_animation)>) Parallels;
 		};
 
 		struct _animation_action
@@ -83,13 +94,17 @@ namespace oox {
 			_CP_OPT(std::wstring) Path;
 		};
 
+
+
+		_CP_OPT(_par_animation) rootAnimation_;
+
 		Impl()
 		{
 			
 		}
 
 	private:
-		_CP_OPT(_par_animation) rootAnimation_;
+		std::vector<_CP_PTR(_par_animation)> levels_;
 	};
 
 	pptx_animation_context::pptx_animation_context()
@@ -113,10 +128,34 @@ namespace oox {
 							CP_XML_ATTR(L"id", 1);
 							CP_XML_ATTR(L"dur", L"indefinite");
 							CP_XML_ATTR(L"restart", L"never");
+
+							if (impl_->rootAnimation_)
+							{
+								serialize_par_animation(strm);
+							}
 						}
 					}
 				}
 			}
+		}
+	}
+
+	void pptx_animation_context::serialize_par_animation(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"<p:par>")
+			{
+				
+			}
+		}
+	}
+
+	void pptx_animation_context::serialize_seq_animation(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+
 		}
 	}
 

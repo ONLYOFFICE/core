@@ -194,7 +194,7 @@ public:
 
 	_CP_OPT(std::wstring)				smil_fill_;
 	_CP_OPT(std::wstring)				smil_target_element_;
-	_CP_OPT(std::wstring)				svg_path_; // TODO: convert this to array of points or something
+	_CP_OPT(std::wstring)				svg_path_;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class anim_animate_motion : public office_element_impl<anim_set>

@@ -39,6 +39,8 @@
 
 #include "draw_common.h"
 
+#include "../Converter/pptx_animation_context.h"
+
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 
@@ -61,12 +63,21 @@ void anim_par::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	oox::pptx_animation_context & animationContext = Context.get_slide_context().get_animation_context();
+
+	animationContext.start_par_animation();
+
+	// TODO: передать все значения в контекст
+#if 0
+	animationContext.set_presentation_node_type(attlist_.presentation_node_type_);
+	animationContext.set_smil_direction(attlist_.smil_direction_);
+#endif
+	animationContext.end_par_animation();
+
 	if (anim_par_)
 	{
 		Context.get_slide_context().start_slide_animation(); // WTF: Это че тут делает???
-		Context.get_slide_context().get_animation_context().start_par_animation();
 			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
-		Context.get_slide_context().get_animation_context().end_par_animation();
 		Context.get_slide_context().end_slide_animation();
 	}
 ///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)

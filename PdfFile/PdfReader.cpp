@@ -1216,6 +1216,15 @@ BYTE* CPdfReader::GetWidgets()
         oRes.WriteString((BYTE*)sX2.c_str(), (unsigned int)sX2.length());
         oRes.WriteString((BYTE*)sY2.c_str(), (unsigned int)sY2.length());
 
+        int nSpace;
+        GList *arrColors = pField->getColorSpace(&nSpace);
+        oRes.AddInt(nSpace);
+        for (int j = 0; j < nSpace; ++j)
+        {
+            oRes.AddDouble(*(double*)arrColors->get(j));
+        }
+        deleteGList(arrColors, double);
+
         // Выравнивание текста - Q
         int nQ = 0;
         if (pField->fieldLookup("Q", &oObj)->isInt())

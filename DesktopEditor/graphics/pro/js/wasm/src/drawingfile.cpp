@@ -637,6 +637,20 @@ int main(int argc, char* argv[])
 			i += 4;
 			std::cout << "Y2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
+
+            int nTCLength = READ_INT(pWidgets + i);
+            i += 4;
+            if (nTCLength)
+                std::cout << "Text Color: ";
+            for (int j = 0; j < nTCLength; ++j)
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << (double)nPathLength / 100.0 << " ";
+            }
+            if (nTCLength)
+                std::cout << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Q " << nPathLength << ", ";

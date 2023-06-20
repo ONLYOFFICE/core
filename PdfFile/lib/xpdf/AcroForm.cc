@@ -1179,6 +1179,48 @@ void AcroFormField::getColor(double *red, double *green, double *blue) {
   daObj.free();
 }
 
+GList* AcroFormField::getColorSpace(int *nElements)
+{
+    Object daObj;
+    GList *daToks, *arrRes;
+    int i;
+
+    arrRes = new GList();
+
+    if (fieldLookup("DA", &daObj)->isString()) {
+
+      // parse the default appearance string
+      daToks = tokenize(daObj.getString());
+      for (i = 1; i < daToks->getLength(); ++i) {
+
+        // handle the g operator
+        if (!((GString *)daToks->get(i))->cmp("g")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+
+        // handle the rg operator
+        } else if (i >= 3 && !((GString *)daToks->get(i))->cmp("rg")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+        } else if (i >= 4 && !((GString *)daToks->get(i))->cmp("k")) {
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 4))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 3))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 2))->getCString())));
+      arrRes->append(new double(atof(((GString *)daToks->get(i - 1))->getCString())));
+      break;
+        }
+      }
+
+      deleteGList(daToks, GString);
+    }
+
+    daObj.free();
+    *nElements = arrRes->getLength();
+    return arrRes;
+}
+
 int AcroFormField::getMaxLen() {
   Object obj;
   int len;

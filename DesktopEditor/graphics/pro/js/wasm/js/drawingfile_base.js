@@ -538,6 +538,15 @@
 			rec["rect"]["y1"] = parseFloat(reader.readString());
 			rec["rect"]["x2"] = parseFloat(reader.readString());
 			rec["rect"]["y2"] = parseFloat(reader.readString());
+			
+			let tc = reader.readInt();
+			if (tc)
+			{
+				rec["textColor"] = [];
+				for (let i = 0; i < tc; ++i)
+					rec["textColor"].push(reader.readDouble());
+			}
+			
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();

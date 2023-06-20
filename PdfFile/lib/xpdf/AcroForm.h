@@ -93,6 +93,7 @@ public:
   void getBBox(double *llx, double *lly, double *urx, double *ury);
   void getFont(Ref *fontID, double *fontSize);
   void getColor(double *red, double *green, double *blue);
+  GList* getColorSpace(int *nElements);
   int getMaxLen();
   Guint getFlags() { return flags; }
 

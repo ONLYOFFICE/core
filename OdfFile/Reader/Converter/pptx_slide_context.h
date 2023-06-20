@@ -32,6 +32,7 @@
 #pragma once
 
 #include "pptx_drawings.h"
+#include "pptx_animation_context.h"
 #include <string>
 
 namespace cpdoccore {
@@ -131,10 +132,14 @@ public:
 	
 	void set_page_number();
 	void set_date_time();
+
+	pptx_animation_context & get_animation_context() { return pptx_animation_context_; }
 private:
 	void default_set();
 
 	int hlinks_size_;
+
+	pptx_animation_context		pptx_animation_context_;
 	
     class Impl;
     _CP_PTR(Impl) impl_;

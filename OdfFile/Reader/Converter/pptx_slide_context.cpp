@@ -174,7 +174,8 @@ void pptx_slide_context::Impl::process_drawings()
 }
 
 pptx_slide_context::pptx_slide_context(pptx_conversion_context & Context)
-										: impl_(new pptx_slide_context::Impl(Context.root()->get_folder()))
+	: impl_(new pptx_slide_context::Impl(Context.root()->get_folder())),
+	pptx_animation_context_()
 {    
 	hlinks_size_	= 0;
 }
@@ -829,6 +830,8 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				//p:sndAc
 			}
 		}
+		
+		#if 0
 		CP_XML_NODE(L"p:timing")
 		{
 			CP_XML_NODE(L"p:tnLst")
@@ -845,7 +848,20 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				}
 			}
 		}
+		# else
+		pptx_animation_context_.serialize(strm);
+		#endif
 	}
+}
+
+void pptx_slide_context::serialize_par_animation(std::wostream & strm)
+{
+	
+}
+
+void pptx_slide_context::serialize_seq_animation(std::wostream & strm)
+{
+
 }
 
 void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)

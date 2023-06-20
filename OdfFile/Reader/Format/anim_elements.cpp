@@ -63,17 +63,19 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	if (anim_par_)
 	{
-		Context.get_slide_context().start_slide_animation();
+		Context.get_slide_context().start_slide_animation(); // WTF: Это че тут делает???
+		Context.get_slide_context().get_animation_context().start_par_animation();
 			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
+		Context.get_slide_context().get_animation_context().end_par_animation();
 		Context.get_slide_context().end_slide_animation();
 	}
 ///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)
-	//slide_context().animation_context().start_sequence();
+	Context.get_slide_context().get_animation_context().start_seq_animation();
 	for (size_t i = 0; i < anim_seq_array_.size(); i++)
     {
 		anim_seq_array_[i]->pptx_convert(Context);
 	}
-	//slide_context().animation_context().end_sequence();
+	Context.get_slide_context().get_animation_context().end_seq_animation();
 /////////////////////////////////////////////////////////////////
 //внутренние эффекты - те что внутри одной последовательности
 	for (size_t i = 0; i < content_.size(); i++)

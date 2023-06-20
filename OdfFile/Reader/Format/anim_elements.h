@@ -53,7 +53,8 @@ public:
 
 	odf_types::common_anim_smil_attlist		attlist_;
   	
-	office_element_ptr						anim_par_;
+	// NOTE: anim:par element can have more than one child anim:par's. Make this office_element_ptr_array ???
+	office_element_ptr						anim_par_; 
 	office_element_ptr_array				anim_seq_array_;
 	office_element_ptr_array				content_;
 

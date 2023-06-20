@@ -51,6 +51,8 @@ namespace oox {
 		void add_animate_action();
 
 		void serialize(std::wostream & strm);
+		void serialize_par_animation(std::wostream & strm);
+		void serialize_sqr_animation(std::wostream & strm);
 
 	private:
 		class Impl;

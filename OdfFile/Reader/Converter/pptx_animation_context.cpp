@@ -81,7 +81,6 @@ namespace oox {
 			_CP_OPT(float) Duration;
 			_CP_OPT(std::wstring) TargetId;
 			_CP_OPT(std::wstring) Path;
-
 		};
 
 		Impl()
@@ -90,7 +89,7 @@ namespace oox {
 		}
 
 	private:
-		_par_animation rootAnimation_;
+		_CP_OPT(_par_animation) rootAnimation_;
 	};
 
 	pptx_animation_context::pptx_animation_context()

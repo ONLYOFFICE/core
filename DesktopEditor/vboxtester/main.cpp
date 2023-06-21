@@ -966,7 +966,7 @@ private:
 
 		for (size_t i = 0; i < m_arrVms.size(); i++)
 		{
-			if ( m_arrVms[i]->IsDebian() || m_arrVms[i]->IsDebian() )
+			if ( m_arrVms[i]->IsDebian() )
 			{
 				arrVms.push_back(m_arrVms[i]);
 			}
@@ -1194,8 +1194,8 @@ int main(int argc, char** argv)
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		if ( sName != L"openSUSE" )
-			continue;
+		//if ( sName != L"openSUSE" )
+		//	continue;
 
 		oTester.SetVm(pVm);
 

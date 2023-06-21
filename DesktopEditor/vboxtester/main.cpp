@@ -107,7 +107,6 @@ bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimit
 enum SystemType
 {
 	Debian = 0,
-	OpenSuse,
 	RedHat,
 	Empty
 };
@@ -143,7 +142,7 @@ public:
 
 	bool IsRedHat()
 	{
-		return m_eType == RedHat || m_eType == OpenSuse;
+		return m_eType == RedHat;
 	}
 
 	std::wstring ToString()
@@ -306,13 +305,14 @@ public:
 					std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
 
 					if ( sOsLower.find(L"ubuntu") != std::wstring::npos ||
-						sOsLower.find(L"debian") != std::wstring::npos)
-						eType = Debian;
-					else if ( sOsLower.find(L"red hat") != std::wstring::npos ||
-							 sOsLower.find(L"fedora") != std::wstring::npos )
+						 sOsLower.find(L"debian") != std::wstring::npos)
+						 eType = Debian;
+					else
+					if ( sOsLower.find(L"red hat") != std::wstring::npos ||
+						 sOsLower.find(L"fedora") != std::wstring::npos ||
+						 sOsLower.find(L"opensuse") != std::wstring::npos ||
+						 sOsLower.find(L"mandriva") != std::wstring::npos)
 						eType = RedHat;
-					else if ( sOsLower.find(L"opensuse") != std::wstring::npos )
-						eType = OpenSuse;
 
 					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
 				}

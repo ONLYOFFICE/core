@@ -107,6 +107,7 @@ bool SplitStringAsVector(const std::wstring& sData, const std::wstring& sDelimit
 enum SystemType
 {
 	Debian = 0,
+	OpenSuse,
 	RedHat,
 	Empty
 };
@@ -142,7 +143,7 @@ public:
 
 	bool IsRedHat()
 	{
-		return m_eType == RedHat;
+		return m_eType == RedHat || m_eType == OpenSuse;
 	}
 
 	std::wstring ToString()
@@ -309,6 +310,8 @@ public:
 					else if ( sOsLower.find(L"red hat") != std::wstring::npos ||
 							 sOsLower.find(L"fedora") != std::wstring::npos )
 						eType = RedHat;
+					else if ( sOsLower.find(L"opensuse") != std::wstring::npos )
+						eType = OpenSuse;
 
 					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
 				}
@@ -623,10 +626,14 @@ public:
 			}
 			else if ( m_pVm->IsRedHat() )
 			{
+				std::wstring sPackageInstaller = L"yum";
+				if ( m_pVm->m_eType == OpenSuse )
+					sPackageInstaller = L"zypper";
+
 				sData = L"#!/bin/bash\n" \
 						L"echo \"Install DesktopEditors\"\n" \
-						L"yum remove onlyoffice-desktopeditors -y\n" \
-						L"yum install -y ./" + sDistribFile;
+						+ sPackageInstaller + L" remove onlyoffice-desktopeditors -y\n" \
+						+ sPackageInstaller + L" install -y ./" + sDistribFile;
 			}
 
 			NSFile::CFileBinary oFile;
@@ -959,7 +966,7 @@ private:
 
 		for (size_t i = 0; i < m_arrVms.size(); i++)
 		{
-			if ( m_arrVms[i]->IsDebian() )
+			if ( m_arrVms[i]->IsDebian() || m_arrVms[i]->IsDebian() )
 			{
 				arrVms.push_back(m_arrVms[i]);
 			}
@@ -1167,7 +1174,7 @@ int main(int argc, char** argv)
 			{
 				oTester.SetStartDebian();
 			}
-			else if (sKey == sCmdStartAll)
+			else if (sKey == sCmdStartRedHat)
 			{
 				oTester.SetStartRedHat();
 			}
@@ -1186,6 +1193,9 @@ int main(int argc, char** argv)
 		CVm* pVm = arrStartVms[i];
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
+
+		if ( sName != L"openSUSE" )
+			continue;
 
 		oTester.SetVm(pVm);
 

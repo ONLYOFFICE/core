@@ -305,7 +305,8 @@ public:
 					std::wstring sOsLower = sOs;
 					std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
 
-					if ( sOsLower.find(L"ubuntu") != std::wstring::npos )
+					if ( sOsLower.find(L"ubuntu") != std::wstring::npos ||
+						sOsLower.find(L"debian") != std::wstring::npos)
 						eType = Debian;
 					else if ( sOsLower.find(L"red hat") != std::wstring::npos ||
 							 sOsLower.find(L"fedora") != std::wstring::npos )
@@ -446,8 +447,7 @@ public:
 			}
 			else if ( m_pVm->IsRedHat() )
 			{
-				//arrProcess.push_back(L"rpm");
-				arrProcess.push_back(L"yum");
+				arrProcess.push_back(L"rpm");
 			}
 
 			while ( iCount > 0 )
@@ -626,14 +626,10 @@ public:
 			}
 			else if ( m_pVm->IsRedHat() )
 			{
-				std::wstring sPackageInstaller = L"yum";
-				if ( m_pVm->m_eType == OpenSuse )
-					sPackageInstaller = L"zypper";
-
 				sData = L"#!/bin/bash\n" \
 						L"echo \"Install DesktopEditors\"\n" \
-						+ sPackageInstaller + L" remove onlyoffice-desktopeditors -y\n" \
-						+ sPackageInstaller + L" install -y ./" + sDistribFile;
+						L"rpm -e onlyoffice-desktopeditors\n" \
+						L"rpm -i ./" + sDistribFile;
 			}
 
 			NSFile::CFileBinary oFile;
@@ -1194,7 +1190,7 @@ int main(int argc, char** argv)
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		//if ( sName != L"openSUSE" )
+		//if ( sName != L"Debian12" )
 		//	continue;
 
 		oTester.SetVm(pVm);

@@ -3,8 +3,8 @@
 
 namespace SVG
 {
-	CUse::CUse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, const CSvgFile* pFile)
-		: CSvgGraphicsObject(oNode, pParent), m_pFile(pFile)
+	CUse::CUse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, const CSvgFile* pFile)
+	: CRenderedObject(oNode, pParent), m_pFile(pFile)
 	{
 		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
 
@@ -26,14 +26,14 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CUse::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
 		double dM11, dM12, dM21, dM22, dRx, dRy;
 		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx + m_oX.ToDouble(NSCSS::Pixel) * dM11, dRy + m_oY.ToDouble(NSCSS::Pixel) * dM22);
 
-		const CSvgGraphicsObject *pFoundObj = m_pFile->GetMarkedObject(m_wsHref);
+		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(m_pFile->GetMarkedObject(m_wsHref));
 
 		if (NULL != pFoundObj)
 		{
@@ -41,17 +41,17 @@ namespace SVG
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pDefs, oMode, &oNewStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pDefs, oMode, &m_oStyles);
+				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles);
 		}
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 
 		return true;
 	}
 
-	void CUse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CUse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{}
 
 	TBounds CUse::GetBounds() const

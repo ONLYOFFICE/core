@@ -6,7 +6,6 @@
 #include "../../../xml/include/xmlutils.h"
 
 #include "SvgObjects/CContainer.h"
-#include "SvgObjects/CDefs.h"
 
 class CSvgFile;
 
@@ -20,27 +19,21 @@ namespace SVG
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
-		bool LoadFromString(const std::wstring& wsContente, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
-		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
+		bool LoadFromFile(const std::wstring& wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromString(const std::wstring& wsContente, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
 
-		template <typename TypeContainer>
-		bool ReadGraphicsObject(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent = NULL) const;
-
-		bool ReadDefs(XmlUtils::CXmlNode& oElement, CDefs* pDefs, CSvgFile* pFile) const;
+		template <class ObjectType>
+		bool ReadObject(XmlUtils::CXmlNode& oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
 	private:
-		template <typename TypeContainer>
-		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent = NULL) const;
+		template <class ObjectType>
+		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject* pParent = NULL) const;
 
-		bool ScanOther(XmlUtils::CXmlNode& oElement,  CSvgFile* pFile) const;
+		bool ScanStyles(XmlUtils::CXmlNode& oElement, CSvgFile* pFile) const;
 
-		bool IsDefs(const std::wstring& wsNodeName) const;
-
-		template <typename TypeObject>
-		bool AddObject(TypeObject* pObject, CContainer<TypeObject>* pContainer, CSvgFile* pFile) const;
-
-		template<typename ElementClass, typename ContainerClass>
-		CDefObject* CreateAndReadChildrens(XmlUtils::CXmlNode &oElement, CSvgFile* pFile) const;
+		bool MarkObject(CObject* pObject, CSvgFile* pFile) const;
+		template <class ObjectType>
+		bool AddObject(ObjectType* pObject, CContainer<ObjectType>* pContainer) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
 	};

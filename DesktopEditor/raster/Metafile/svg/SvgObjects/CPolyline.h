@@ -8,13 +8,13 @@ namespace SVG
 	class CPolyline : public CPath
 	{
 	public:
-		CPolyline(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CPolyline(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 	};
 
 	class CPolygon : public CPolyline
 	{
 	public:
-		CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CPolygon(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 	};
 }
 

@@ -2,24 +2,20 @@
 
 namespace SVG
 {
-	CMask::CMask(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
-		: CClipPath(oNode, pParent, pFontManager)
-	{
+	CMask::CMask(XmlUtils::CXmlNode &oNode)
+		: CClipPath(oNode)
+	{}
 
-	}
-
-	bool CMask::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
+	bool CMask::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		if (NULL == pRenderer || NULL == pDefs)
+		if (NULL == pRenderer || NULL == pFile)
 			return false;
-
-		CGraphicsContainer::ApplyMask(pRenderer, &m_oStyles.m_oMask, pDefs);
 
 		pRenderer->BeginCommand(c_nMaskType);
 		pRenderer->PathCommandStart();
 
-		for (const CSvgGraphicsObject* pGraphicsObject : m_arObjects)
-			pGraphicsObject->Draw(pRenderer, pDefs, CommandeModeMask);
+		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
+			pObject->Draw(pRenderer, pFile, CommandeModeMask);
 
 		pRenderer->EndCommand(c_nMaskType);
 		pRenderer->PathCommandEnd();

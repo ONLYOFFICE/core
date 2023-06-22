@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CLine::CLine(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	CLine::CLine(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
 		: CPath(oNode, pParent)
 	{	
 		SvgDigit oX1;
@@ -28,7 +28,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 

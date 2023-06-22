@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CRect::CRect(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CRect::CRect(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
@@ -17,6 +17,9 @@ namespace SVG
 		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
 	}
 
+	CRect::~CRect()
+	{}
+
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
@@ -26,7 +29,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CRect::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -41,7 +44,7 @@ namespace SVG
 		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		StartPath(pRenderer, pDefs, oMode);
+		StartPath(pRenderer, pFile, oMode);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
@@ -73,19 +76,19 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pDefs, oMode);
+		EndPath(pRenderer, pFile, oMode);
 
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 

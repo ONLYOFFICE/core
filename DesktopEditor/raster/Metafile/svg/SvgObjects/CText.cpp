@@ -18,8 +18,8 @@ namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
 
-	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
-	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager), pPrevElement(NULL)
+	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
+		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager), pPrevElement(NULL)
 	{
 		m_oFont.UpdateSize(16);
 
@@ -56,7 +56,7 @@ namespace SVG
 	CTSpan::~CTSpan()
 	{}
 
-	CTSpan *CTSpan::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	CTSpan *CTSpan::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
 	{
 		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
 
@@ -66,7 +66,7 @@ namespace SVG
 		return new CTSpan(oNode, pTSpanParent, pFontManager);
 	}
 
-	CTSpan *CTSpan::Create(const std::wstring &wsValue, const Point& oPosition, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
+	CTSpan *CTSpan::Create(const std::wstring &wsValue, const Point& oPosition, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
 	{
 		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
 
@@ -125,7 +125,7 @@ namespace SVG
 			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
 	}
 
-	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || CommandeModeClip == oMode)
 			return false;
@@ -142,17 +142,17 @@ namespace SVG
 		{
 			TSvgStyles oNewStyles(m_oStyles);
 			oNewStyles += *pOtherStyles;
-			ApplyStyle(pRenderer, &oNewStyles, pDefs, nPathType, oOldMatrix);
+			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType, oOldMatrix);
 		}
 		else
-			ApplyStyle(pRenderer, &m_oStyles, pDefs, nPathType, oOldMatrix);
+			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType, oOldMatrix);
 
 		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
-		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, oMode, pOtherStyles);
+		for (const CRenderedObject* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
@@ -180,15 +180,15 @@ namespace SVG
 		}
 	}
 
-	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
-		Apply(pRenderer, &pStyles->m_oClip, pDefs);
+		Apply(pRenderer, &pStyles->m_oClip, pFile);
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 
@@ -203,10 +203,7 @@ namespace SVG
 		{
 			wsFontFamily = m_oFont.GetFamily().ToWString();
 
-			std::vector<std::wstring> arCommonFonFamily({L"serif", L"sans-serif", L"monospace", L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
-
-			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsFontFamily))
-				wsFontFamily = DefaultFontFamily;
+			CorrectFontFamily(wsFontFamily);
 		}
 
 		pRenderer->put_FontName(wsFontFamily);
@@ -306,7 +303,7 @@ namespace SVG
 		if (!m_arObjects.empty())
 		{
 			TBounds oTempBounds;
-			for (const CSvgGraphicsObject* pObject : m_arObjects)
+			for (const CRenderedObject* pObject : m_arObjects)
 			{
 				oTempBounds = pObject->GetBounds();
 				oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
@@ -331,10 +328,7 @@ namespace SVG
 		{
 			wsName = m_oFont.GetFamily().ToWString();
 
-			std::vector<std::wstring> arCommonFonFamily({L"serif", L"sans-serif", L"monospace", L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
-
-			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsName))
-				wsName = DefaultFontFamily;
+			CorrectFontFamily(wsName);
 		}
 
 		int nStyle = 0;
@@ -350,12 +344,30 @@ namespace SVG
 
 		m_pFontManager->LoadString1(m_wsText, 0., 0.);
 		TBBox oBox = m_pFontManager->MeasureString2();
-		double dWidth = 25.4 / 72.0 * (oBox.fMaxX - oBox.fMinX);
+		double dWidth = oBox.fMaxX - oBox.fMinX;
 
 		for (const CTSpan* oTSpan : m_arObjects)
 			dWidth += oTSpan->GetWidth();
 
 		return dWidth;
+	}
+
+	void CTSpan::CorrectFontFamily(std::wstring &wsFontFamily) const
+	{
+		//TODO:: необходимо более подробно заняться подбором шрифтов
+		if (L"sans-serif" == wsFontFamily)
+			wsFontFamily = L"Arial";
+		else if (L"serif" == wsFontFamily)
+			wsFontFamily = L"Times New Roman";
+		else if (L"monospace" == wsFontFamily)
+			wsFontFamily = L"Consolas";
+		else
+		{
+			std::vector<std::wstring> arCommonFonFamily({L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
+
+			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsFontFamily))
+				wsFontFamily = DefaultFontFamily;
+		}
 	}
 
 	void CTSpan::Normalize(IRenderer *pRenderer, double &dX, double &dY, double &dFontHeight) const
@@ -415,11 +427,11 @@ namespace SVG
 		return arGlyphs;
 	}
 
-	CText::CText(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	CText::CText(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
 	    : CTSpan(oNode, pParent, pFontManager)
 	{}
 
-	CText *CText::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	CText *CText::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
 	{
 		CTSpan* pTSpan = dynamic_cast<CTSpan*>(pParent);
 
@@ -429,20 +441,20 @@ namespace SVG
 		return new CText(oNode, pParent, pFontManager);
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CText::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || NULL == pRenderer)
 			return false;
 
-		CTSpan::Draw(pRenderer, pDefs, oMode, pOtherStyles);
+		CTSpan::Draw(pRenderer, pFile, oMode, pOtherStyles);
 
-		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
-			pTSpan->Draw(pRenderer, pDefs, oMode, pOtherStyles);
+		for (const CRenderedObject* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}
 
-	CTextPath::CTextPath(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
+	CTextPath::CTextPath(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
 	    : CText(oNode, pParent, pFontManager), m_pPath(NULL)
 	{
 		if (NULL != pFile)
@@ -465,7 +477,7 @@ namespace SVG
 		}
 	}
 
-	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CTextPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || CommandeModeClip == oMode || NULL == m_pPath)
 			return false;
@@ -475,7 +487,7 @@ namespace SVG
 		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
 
 		for (CTSpan* pTSpan : Split())
-			DrawGlyph(pTSpan, oMovingPath, pRenderer, pDefs, oMode);
+			DrawGlyph(pTSpan, oMovingPath, pRenderer, pFile, oMode);
 
 		for (const CTSpan* pTSpan : m_arObjects)
 		{
@@ -485,14 +497,14 @@ namespace SVG
 				oMovingPath.Move(pTSpan->m_oX.ToDouble(NSCSS::Pixel));
 			}
 			for (CTSpan* pGlyphs : pTSpan->Split())
-				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pDefs, oMode);
+				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pFile, oMode);
 		}
 
 		return true;
 
 	}
 
-	CTextPath* CTextPath::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
+	CTextPath* CTextPath::Create(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
 	{
 		CTSpan *pTSpan = dynamic_cast<CText*>(pParent);
 
@@ -502,7 +514,7 @@ namespace SVG
 		return new CTextPath(oNode, pTSpan, pFontManager, pFile);
 	}
 
-	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode) const
+	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
 	{
 		if (NULL == pTSpan)
 			return;
@@ -522,7 +534,7 @@ namespace SVG
 
 		pTSpan->SetPosition(oPoint);
 		pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
-		pTSpan->Draw(pRenderer, pDefs, oMode);
+		pTSpan->Draw(pRenderer, pFile, oMode);
 
 		delete pTSpan;
 

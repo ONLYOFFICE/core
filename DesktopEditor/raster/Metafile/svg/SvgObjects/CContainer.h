@@ -27,10 +27,10 @@ namespace SVG
 				delete pObject;
 		}
 
-		 bool Empty() const
-		 {
-			return m_arObjects.empty();
-		 };
+		bool Empty() const
+		{
+		return m_arObjects.empty();
+		};
 
 		virtual bool AddObject(TypeObject* pObject)
 		{
@@ -64,7 +64,6 @@ namespace SVG
 	private:
 		std::vector<TypeObject*> m_arObjects;
 
-		friend class CDefs;
 		friend class CText;
 		friend class CMask;
 		friend class CTSpan;
@@ -76,21 +75,23 @@ namespace SVG
 		friend class CGraphicsContainer;
 	};
 
-	class CGraphicsContainer : public CContainer<CSvgGraphicsObject>, public CSvgGraphicsObject
+	class CGraphicsContainer : public CContainer<CRenderedObject>, public CRenderedObject
 	{
 	public:
-		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
-		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CGraphicsContainer(const std::wstring& wsName = L"GraphicsContainer");
+		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		CGraphicsContainer(const CGraphicsContainer& oGraphicsContainer);
 
+		void SetData(XmlUtils::CXmlNode& oNode);
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 

@@ -1,7 +1,7 @@
 #ifndef CMARKER_H
 #define CMARKER_H
 
-#include "CDefs.h"
+#include "CContainer.h"
 
 namespace SVG
 {
@@ -11,17 +11,15 @@ namespace SVG
 		Marker_UserSpaceOnUse
 	} MarkerUnits;
 
-	class CMarker : public CGraphicsContainer, public CDefObject
+	class CMarker : public CGraphicsContainer
 	{
 	public:
-		CMarker(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CMarker(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		virtual ~CMarker();
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		bool Apply(IRenderer* pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds) override;
-
-		void Update(const CDefs *pDefs);
+		void Update(const CSvgFile *pFile);
 
 		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints, double dStrokeWidth) const;
 	private:

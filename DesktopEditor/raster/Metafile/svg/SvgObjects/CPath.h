@@ -3,7 +3,6 @@
 
 #include "CObjectBase.h"
 #include "../SvgTypes.h"
-#include "../SvgUtils.h"
 
 namespace SVG
 {
@@ -149,20 +148,20 @@ namespace SVG
 		void Draw(IRenderer* pRenderer) const override;
 	};
 
-	class CPath : public CSvgGraphicsObject
+	class CPath : public CRenderedObject
 	{
 	public:
-		CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
 		virtual ~CPath();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		IPathElement* operator[](int nIndex) const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
-		bool DrawMarkers(IRenderer* pRenderer, const CDefs *pDefs) const;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile) const;
 
 		void SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode);
 

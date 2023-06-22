@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CMarker::CMarker(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
-		: CGraphicsContainer(oNode, pParent), CDefObject(oNode, pParent), m_pImage(NULL)
+CMarker::CMarker(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
+		: CGraphicsContainer(oNode, pParent), m_pImage(NULL)
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"refX"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"refY"));
@@ -55,12 +55,7 @@ namespace SVG
 	void CMarker::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
-	bool CMarker::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
-	{
-		return true;
-	}
-
-	void CMarker::Update(const CDefs *pDefs)
+	void CMarker::Update(const CSvgFile *pFile)
 	{
 		if (NULL != m_pImage || (!m_oWindow.m_oWidth.Empty() && m_oWindow.m_oWidth.Zero()) || (!m_oWindow.m_oHeight.Empty() && m_oWindow.m_oHeight.Zero()) ||
 			(!m_oViewBox.m_oWidth.Empty() && m_oViewBox.m_oWidth.Zero()) || (!m_oViewBox.m_oHeight.Empty() && m_oViewBox.m_oHeight.Zero()))
@@ -108,8 +103,8 @@ namespace SVG
 		pGrRenderer->SetSwapRGB(false);
 		pGrRenderer->BeginCommand(c_nImageType);
 
-		for (const CSvgGraphicsObject* pObject : m_arObjects)
-			pObject->Draw(pGrRenderer, pDefs);
+		for (const CRenderedObject* pObject : m_arObjects)
+			pObject->Draw(pGrRenderer, pFile);
 
 		pGrRenderer->EndCommand(c_nImageType);
 		RELEASEINTERFACE(pGrRenderer);

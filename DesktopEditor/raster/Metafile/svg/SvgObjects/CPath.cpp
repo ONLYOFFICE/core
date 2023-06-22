@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "CMarker.h"
+#include "../CSvgFile.h"
 
 namespace SVG
 {
@@ -474,8 +475,8 @@ namespace SVG
     #define ARCSTEP 0.5
     #define MINARCSTEP 0.01
 
-	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
+		: CRenderedObject(oNode, pParent)
 	{}
 
 	CPath::~CPath()
@@ -497,19 +498,19 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
-		StartPath(pRenderer, pDefs, oMode);
+		StartPath(pRenderer, pFile, oMode);
 
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oMode, pOtherStyles);
 
-		DrawMarkers(pRenderer, pDefs);
+		DrawMarkers(pRenderer, pFile);
 
 		return true;
 	}
@@ -522,20 +523,20 @@ namespace SVG
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 
-	bool CPath::DrawMarkers(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile) const
 	{
-		if (NULL == pRenderer || NULL == pDefs || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero())
+		if (NULL == pRenderer || NULL == pFile || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero())
 			return false;
 
 		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
@@ -547,33 +548,33 @@ namespace SVG
 
 		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
-			CMarker *pStartMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oStart.ToWString()));
+			CMarker *pStartMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oStart.ToWString()));
 
 			if (NULL != pStartMarker)
 			{
-				pStartMarker->Update(pDefs);
+				pStartMarker->Update(pFile);
 				pStartMarker->Draw(pRenderer, {*arPoints.begin()}, dStrokeWidth);
 			}
 		}
 
 		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
 		{
-			CMarker *pMidMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oMid.ToWString()));
+			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
 			if (NULL != pMidMarker)
 			{
-				pMidMarker->Update(pDefs);
+				pMidMarker->Update(pFile);
 				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1), dStrokeWidth);
 			}
 		}
 
 		if (!m_oMarkers.m_oEnd.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oEnd.GetType())
 		{
-			CMarker *pEndMarker = dynamic_cast<CMarker*>(pDefs->GetDef(m_oMarkers.m_oEnd.ToWString()));
+			CMarker *pEndMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oEnd.ToWString()));
 
 			if (NULL != pEndMarker)
 			{
-				pEndMarker->Update(pDefs);
+				pEndMarker->Update(pFile);
 				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)}, dStrokeWidth);
 			}
 		}

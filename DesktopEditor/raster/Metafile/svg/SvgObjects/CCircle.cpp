@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
 		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
@@ -22,7 +22,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -33,24 +33,24 @@ namespace SVG
 		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 		double dR = m_oR .ToDouble(NSCSS::Pixel);
 
-		StartPath(pRenderer, pDefs, oMode);
+		StartPath(pRenderer, pFile, oMode);
 
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 

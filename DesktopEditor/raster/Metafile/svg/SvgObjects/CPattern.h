@@ -1,7 +1,7 @@
 #ifndef CPATTERN_H
 #define CPATTERN_H
 
-#include "CDefs.h"
+#include "CContainer.h"
 
 namespace SVG
 {
@@ -11,17 +11,21 @@ namespace SVG
 		userSpaceOnUse
 	} PatternUnits;
 
-	class CPattern : public CGraphicsContainer, public CDefObject
+	class CPattern : public CAppliedObject
 	{
 	public:
-		CPattern(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager *pFontManager = NULL);
+		CPattern(XmlUtils::CXmlNode& oNode, NSFonts::IFontManager *pFontManager = NULL);
 		virtual ~CPattern();
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		bool Apply(IRenderer* pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds) override;
+		bool Apply(IRenderer* pRenderer, const CSvgFile* pFile, const TBounds &oObjectBounds) override;
+
+		CGraphicsContainer& GetContainer();
 	private:
-		void Update(const CDefs *pDefs, const TBounds &oObjectBounds);
+		void Update(const CSvgFile* pFile, const TBounds &oObjectBounds);
+
+		CGraphicsContainer m_oContainer;
 
 		NSFonts::IFontManager *m_pFontManager;
 

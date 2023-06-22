@@ -5,8 +5,11 @@
 
 namespace SVG
 {
-	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CGraphicsContainer::CGraphicsContainer(const std::wstring &wsName)
+		: CRenderedObject(NSCSS::CNode(wsName, L"", L""))
+	{}
+
+	void CGraphicsContainer::SetData(XmlUtils::CXmlNode &oNode)
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
@@ -28,20 +31,26 @@ namespace SVG
 		}
 	}
 
-	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-		: CSvgGraphicsObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
+	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent)
+	{
+		SetData(oNode);
+	}
+
+	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
 	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{}
 
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
-		for (const CSvgGraphicsObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pDefs, oMode, pOtherStyles);
+		for (const CRenderedObject* pObject : m_arObjects)
+			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}
@@ -56,7 +65,7 @@ namespace SVG
 		return m_oViewBox;
 	}
 
-	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{}
 
 	TBounds CGraphicsContainer::GetBounds() const
@@ -68,7 +77,7 @@ namespace SVG
 		oBounds.m_dRight  += m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
 		oBounds.m_dBottom += m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
-		for (const CSvgGraphicsObject* pObject : m_arObjects)
+		for (const CRenderedObject* pObject : m_arObjects)
 		{
 			oTempBounds = pObject->GetBounds();
 			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);

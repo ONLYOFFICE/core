@@ -7,10 +7,10 @@
 #include "../../IRenderer.h"
 #include "../SvgTypes.h"
 
+class CSvgFile;
+
 namespace SVG
 {
-	class CDefs;
-
 	struct TSvgStyles
 	{
 		SvgColor     m_oFill;
@@ -51,12 +51,20 @@ namespace SVG
 		}
 	};
 
-	template <typename TypeParent>
-	class CSvgObject
+	enum ObjectType
+	{
+		RendererObject,
+		AppliedObject
+	};
+
+	class CObject
 	{
 	public:
-		CSvgObject(XmlUtils::CXmlNode& oNode, TypeParent* pParent = NULL)
-		    : m_pParent(pParent)
+		CObject(const NSCSS::CNode& oData)
+			: m_oXmlNode(oData)
+		{}
+
+		CObject(XmlUtils::CXmlNode& oNode)
 		{
 			if (!oNode.IsValid())
 				return;
@@ -65,7 +73,7 @@ namespace SVG
 
 			oNode.GetAllAttributes(arProperties, arValues);
 
-			m_oXmlNode.m_sName  = oNode.GetName();
+			m_oXmlNode.m_sName = oNode.GetName();
 
 			for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
 			{
@@ -85,6 +93,11 @@ namespace SVG
 			}
 		};
 
+		virtual ~CObject()
+		{}
+
+		virtual ObjectType GetType() const = 0;
+
 		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false)
 		{
 			if (wsStyles.empty())
@@ -100,16 +113,14 @@ namespace SVG
 			return m_oXmlNode.m_sId;
 		};
 
-		std::vector<NSCSS::CNode> GetFullPath() const
+		virtual std::vector<NSCSS::CNode> GetFullPath() const
 		{
-			if (NULL == m_pParent)
-				return {m_oXmlNode};
-
-			std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
-			arObjects.push_back(m_oXmlNode);
-			return arObjects;
+			return {m_oXmlNode};
 		};
+
 	private:
+		friend class CRenderedObject;
+
 		friend class CUse;
 		friend class CLine;
 		friend class CRect;
@@ -122,7 +133,6 @@ namespace SVG
 		friend class CEllipse;
 		friend class CPolyline;
 
-		TypeParent   *m_pParent;
 		NSCSS::CNode  m_oXmlNode;
 	};
 
@@ -133,34 +143,41 @@ namespace SVG
 		CommandeModeMask
 	};
 
-	class CSvgGraphicsObject : public CSvgObject<CSvgGraphicsObject>
+	class CRenderedObject : public CObject
 	{
 	public:
-		CSvgGraphicsObject(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
-		virtual ~CSvgGraphicsObject();
+		CRenderedObject(const NSCSS::CNode& oData, CRenderedObject* pParent = NULL);
+		CRenderedObject(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		virtual ~CRenderedObject();
 
-		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const = 0;
+		ObjectType GetType() const override;
+
+		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
+
+		std::vector<NSCSS::CNode> GetFullPath() const override;
 	private:
+		void SetDefaultStyles();
+
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
-		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw) const;
-		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
+		void StartPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw) const;
+		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
 
-		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
 		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
-		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CDefs *pDefs, bool bUseDefault = false) const;
+		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
 		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
-		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CDefs *pDefs) const;
+		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile) const;
 
-		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CDefs *pDefs) const;
-		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
+		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile) const;
+		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl) const;
 
 		friend class CUse;
 		friend class CLine;
@@ -177,65 +194,20 @@ namespace SVG
 		friend class CClipPath;
 		friend class CGraphicsContainer;
 
-		TSvgStyles m_oStyles;
+		TSvgStyles       m_oStyles;
+		CRenderedObject *m_pParent;
 	};
 
-//	class CObjectBase
-//	{
-//	public:
-//		CObjectBase(CObjectBase* pParent = NULL);
-//		virtual ~CObjectBase();
+	class CAppliedObject : public CObject
+	{
+	public:
+		CAppliedObject(XmlUtils::CXmlNode& oNode);
+		virtual ~CAppliedObject();
 
-//		virtual bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) = 0;
-//		virtual bool Draw(IRenderer* pRenderer, CDefs *pDefs) const = 0;
+		ObjectType GetType() const override;
 
-//		std::vector<NSCSS::CNode> GetFullPath() const;
-
-//		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false);
-
-//		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
-
-//		std::wstring GetId() const;
-//	private:
-//		void SaveNodeData(XmlUtils::CXmlNode& oNode);
-
-//		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-//		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-//		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-
-//		virtual void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
-
-//		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath) const;
-//		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
-//		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const;
-//		void ApplyFill(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, bool bUseDedault = false) const;
-//		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
-
-//		bool ApplyDef(IRenderer* pRenderer, CDefs *pDefs, const std::wstring& wsUrl) const;
-
-//		virtual TBounds GetBounds() const = 0;
-
-//		friend class CLine;
-//		friend class CRect;
-//		friend class CPath;
-//		friend class CText;
-//		friend class CTspan;
-//		friend class CImage;
-//		friend class CCircle;
-//		friend class CPolygon;
-//		friend class CEllipse;
-//		friend class CPolyline;
-//		friend class CStopElement;
-//		friend class CGraphicsContainer;
-
-//		CObjectBase   *m_pParent;
-//		NSCSS::CNode   m_oXmlNode;
-
-//		//Styles
-//		SvgColor     m_oFill;
-//		TStroke      m_oStroke;
-//		SvgTransform m_oTransform;
-//	};
+		virtual bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) = 0;
+	};
 }
 
 

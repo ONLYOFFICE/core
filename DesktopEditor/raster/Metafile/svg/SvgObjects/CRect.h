@@ -5,17 +5,19 @@
 
 namespace SVG
 {
-	class CRect : public CSvgGraphicsObject
+	class CRect : public CRenderedObject
 	{
 	public:
-		CRect(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CRect(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+
+		virtual ~CRect();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
+		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
 
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 

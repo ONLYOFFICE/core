@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CEllipse::CEllipse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CEllipse::CEllipse(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
 		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
@@ -23,7 +23,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -38,24 +38,24 @@ namespace SVG
 		double dRx = m_oRx.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dRy = m_oRy.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		StartPath(pRenderer, pDefs, oMode);
+		StartPath(pRenderer, pFile, oMode);
 
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oMode, pOtherStyles);
 
 		return true;
 	}
 
-	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pDefs, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 

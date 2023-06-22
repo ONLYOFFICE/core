@@ -331,13 +331,13 @@ namespace NSCSS
             std::vector<std::wstring> arWords;
 
 			std::wstring::const_iterator oFirstNotSpace = std::find_if_not(sLine.begin(), sLine.end(), std::iswspace);
-			std::wstring::const_iterator oLastNotSapce;
+			std::wstring::const_iterator oLastNotSpace;
 
 			while (oFirstNotSpace != sLine.end())
             {
-				oLastNotSapce = std::find_first_of(oFirstNotSpace, sLine.end(), sSigns.begin(), sSigns.end());
-				arWords.push_back(std::wstring(oFirstNotSpace, oLastNotSapce));
-				oFirstNotSpace = std::find_if_not(oLastNotSapce, sLine.end(), std::iswspace);
+				oLastNotSpace = std::find_first_of(oFirstNotSpace + 1, sLine.end(), sSigns.begin(), sSigns.end());
+				arWords.push_back(std::wstring(oFirstNotSpace, oLastNotSpace));
+				oFirstNotSpace = std::find_if_not(oLastNotSpace + 1, sLine.end(), std::iswspace);
             }
             return arWords;
         }

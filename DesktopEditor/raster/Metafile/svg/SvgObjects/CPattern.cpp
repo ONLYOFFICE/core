@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CPattern::CPattern(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
-	    : CGraphicsContainer(oNode, pParent), CDefObject(oNode, pParent), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
+	CPattern::CPattern(XmlUtils::CXmlNode& oNode, NSFonts::IFontManager *pFontManager)
+		: CAppliedObject(oNode), m_oContainer(oNode), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
 	{}
 
 	CPattern::~CPattern()
@@ -17,8 +17,6 @@ namespace SVG
 
 	void CPattern::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		CGraphicsContainer::SetData(mAttributes, ushLevel, bHardMode);
-
 		if (mAttributes.end() != mAttributes.find(L"patternUnits"))
 		{
 			const std::wstring& wsValue = mAttributes.at(L"patternUnits");
@@ -30,7 +28,7 @@ namespace SVG
 		}
 	}
 
-	void CPattern::Update(const CDefs *pDefs, const TBounds &oObjectBounds)
+	void CPattern::Update(const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (NULL != m_pImage)
 			delete m_pImage;
@@ -41,8 +39,8 @@ namespace SVG
 
 		double dMMtoPx = 96. / 25.4;
 
-		double dKoefWidth  = m_oWindow.m_oWidth  .ToDouble(NSCSS::Pixel);
-		double dKoefHeight = m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel);
+		double dKoefWidth  = m_oContainer.m_oWindow.m_oWidth  .ToDouble(NSCSS::Pixel);
+		double dKoefHeight = m_oContainer.m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel);
 
 		if (objectBoundingBox == m_enPatternUnits)
 		{
@@ -83,7 +81,7 @@ namespace SVG
 		pGrRenderer->SetTransform(dMMtoPx, 0., 0., dMMtoPx, 0., 0.);
 
 		//Отрисовка
-		CGraphicsContainer::Draw(pGrRenderer, pDefs);
+		m_oContainer.Draw(pGrRenderer, pFile);
 
 		pGrRenderer->EndCommand(c_nImageType);
 		RELEASEINTERFACE(pGrRenderer);
@@ -94,9 +92,9 @@ namespace SVG
 		m_pImage->Create(pBgraData, oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
 	}
 
-	bool CPattern::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
+	bool CPattern::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		Update(pDefs, oObjectBounds);
+		Update(pFile, oObjectBounds);
 
 		if (NULL == pRenderer || NULL == m_pImage)
 			return false;
@@ -106,5 +104,10 @@ namespace SVG
 		pRenderer->put_BrushTextureImage(m_pImage);
 
 		return true;
+	}
+
+	CGraphicsContainer &CPattern::GetContainer()
+	{
+		return m_oContainer;
 	}
 }

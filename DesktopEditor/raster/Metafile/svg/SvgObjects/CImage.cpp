@@ -7,8 +7,8 @@
 
 namespace SVG
 {
-	CImage::CImage(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CSvgGraphicsObject(oNode, pParent)
+	CImage::CImage(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
+		: CRenderedObject(oNode, pParent)
 	{
 		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
 		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
@@ -25,7 +25,7 @@ namespace SVG
 		SetMask(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
@@ -75,7 +75,7 @@ namespace SVG
 		Aggplus::CImage oImage;
 		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
 
-		StartPath(pRenderer, pDefs, oMode);
+		StartPath(pRenderer, pFile, oMode);
 
 		Aggplus::CMatrix oOldMatrix;
 		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
@@ -104,7 +104,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pDefs, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
@@ -113,7 +113,7 @@ namespace SVG
 		return true;
 	}
 
-	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{}
 
 	TBounds CImage::GetBounds() const

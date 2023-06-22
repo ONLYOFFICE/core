@@ -1,7 +1,8 @@
 #ifndef CGRADIENT_H
 #define CGRADIENT_H
 
-#include "CDefs.h"
+#include "CContainer.h"
+#include "CObjectBase.h"
 
 namespace SVG
 {
@@ -18,10 +19,12 @@ namespace SVG
 		Repeat
 	}SpreadMethod;
 
-	class CStopElement : public CDefObject
+	class CStopElement : public CObject
 	{
 	public:
-		CStopElement(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CStopElement(XmlUtils::CXmlNode& oNode);
+
+		ObjectType GetType() const override;
 
 		SvgDigit GetOffset() const;
 		SvgColor GetColor()  const;
@@ -45,14 +48,14 @@ namespace SVG
 		SpreadMethod              m_enSpreadMethod;
 	};
 
-	class CLinearGradient : public CGradient, public CDefObject
+	class CLinearGradient : public CGradient, public CAppliedObject
 	{
 	public:
-		CLinearGradient(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CLinearGradient(XmlUtils::CXmlNode& oNode);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Apply(IRenderer* pRenderer, const CDefs* pDefs, const TBounds &oObjectBounds) override;
+		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
 		SvgDigit m_oX1;
 		SvgDigit m_oY1;
@@ -60,14 +63,14 @@ namespace SVG
 		SvgDigit m_oY2;
 	};
 
-	class CRadialGradient : public CGradient, public CDefObject
+	class CRadialGradient : public CGradient, public CAppliedObject
 	{
 	public:
-		CRadialGradient(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CRadialGradient(XmlUtils::CXmlNode& oNode);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Apply(IRenderer* pRenderer, const CDefs* pDefs, const TBounds &oObjectBounds) override;
+		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
 		SvgDigit m_oCx;
 		SvgDigit m_oCy;

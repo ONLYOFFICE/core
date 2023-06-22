@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CPolyline::CPolyline(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	CPolyline::CPolyline(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
 		: CPath(oNode, pParent)
 	{
 		std::vector<double> arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(oNode.GetAttribute(L"points"));
@@ -16,8 +16,8 @@ namespace SVG
 			AddElement(new CLineElement(Point{arValues[unIndex + 0], arValues[unIndex + 1]}));
 	}
 
-	CPolygon::CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
-	    : CPolyline(oNode, pParent)
+	CPolygon::CPolygon(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
+		: CPolyline(oNode, pParent)
 	{
 		AddElement(new CCloseElement());
 	}

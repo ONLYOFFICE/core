@@ -2,14 +2,12 @@
 #define CSVGFILE_H
 
 #include "../../../graphics/IRenderer.h"
-#include "../../../graphics/config.h"
 #include "../../../graphics/pro/Fonts.h"
 
 #include "CSvgParser.h"
 #include "SvgObjects/CStyle.h"
-#include "SvgObjects/CDefs.h"
 
-class GRAPHICS_DECL CSvgFile
+class CSvgFile
 {
 	public:
 		CSvgFile();
@@ -26,23 +24,21 @@ class GRAPHICS_DECL CSvgFile
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-		void AddMarkedObject(const SVG::CSvgGraphicsObject* pObject);
-		void AddStyles(const std::wstring& wsStyles);
-		void AddDefs(XmlUtils::CXmlNode& oNode);
+		bool MarkObject(SVG::CObject* pObject);
+		SVG::CObject* GetMarkedObject(const std::wstring& wsId) const;
 
-		const SVG::CSvgGraphicsObject* GetMarkedObject(const std::wstring& wsId) const;
+		void AddStyles(const std::wstring& wsStyles);
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
-
-		SVG::CDefs *GetDefs();
 	private:
+		void Clear();
 
 		SVG::CSvgParser          m_oParser;
-		SVG::CGraphicsContainer  *m_pContainer;
-		SVG::CDefs               m_oDefs;
+		SVG::CGraphicsContainer  m_oContainer;
 		SVG::CSvgCalculator      m_oSvgCalculator;
 
-		typedef std::map<std::wstring, const SVG::CSvgGraphicsObject*> MarkedMap;
+		typedef std::map<std::wstring, SVG::CObject*> MarkedMap;
+
 		MarkedMap m_mMarkedObjects;
 };
 

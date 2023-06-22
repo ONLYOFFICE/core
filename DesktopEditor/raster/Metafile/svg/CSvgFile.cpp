@@ -3,14 +3,11 @@
 #include "SvgObjects/CContainer.h"
 
 CSvgFile::CSvgFile()
-    : m_pContainer(NULL)
+	: m_oContainer(L"svg")
 {}
 
 CSvgFile::~CSvgFile()
-{
-	if (NULL != m_pContainer)
-		delete m_pContainer;
-}
+{}
 
 bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 {
@@ -19,12 +16,9 @@ bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 
 bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
-	if (NULL != m_pContainer)
-		m_pContainer->Clear();
+	Clear();
 
-	m_oDefs.Clear();
-	m_oSvgCalculator.Clear();
-	return m_oParser.LoadFromFile(wsFile, m_pContainer, this);
+	return m_oParser.LoadFromFile(wsFile, &m_oContainer, this);
 }
 
 bool CSvgFile::Load(const std::wstring &wsContent)
@@ -39,10 +33,10 @@ void CSvgFile::Close()
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	if (NULL == m_pContainer || m_pContainer->Empty())
+	if (m_oContainer.Empty())
 		return false;
 
-	SVG::TRect oWindow = m_pContainer->GetWindow();
+	SVG::TRect oWindow = m_oContainer.GetWindow();
 
 	dX      = oWindow.m_oX     .ToDouble(NSCSS::Pixel);
 	dY      = oWindow.m_oY     .ToDouble(NSCSS::Pixel);
@@ -50,9 +44,9 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 	dHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
 	if (0. == dWidth)
-		dWidth = (!m_pContainer->GetViewBox().m_oWidth.Empty()) ? m_pContainer->GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel) : 300;
+		dWidth = (!m_oContainer.GetViewBox().m_oWidth.Empty()) ? m_oContainer.GetViewBox().m_oWidth.ToDouble(NSCSS::Pixel) : 300;
 	if (0. == dHeight)
-		dHeight = (!m_pContainer->GetViewBox().m_oHeight.Empty()) ? m_pContainer->GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel) : 150;
+		dHeight = (!m_oContainer.GetViewBox().m_oHeight.Empty()) ? m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel) : 150;
 
 	return true;
 }
@@ -67,10 +61,34 @@ void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 	m_oParser.SetFontManager(pFontManager);
 }
 
-void CSvgFile::AddMarkedObject(const SVG::CSvgGraphicsObject *pObject)
+bool CSvgFile::MarkObject(SVG::CObject *pObject)
 {
-	if (NULL != pObject && !pObject->GetId().empty())
-		m_mMarkedObjects[pObject->GetId()] = pObject;
+	if (NULL == pObject || pObject->GetId().empty())
+		return false;
+
+	m_mMarkedObjects[pObject->GetId()] = pObject;
+
+	return true;
+}
+
+SVG::CObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
+{
+	if (wsId.empty() || m_mMarkedObjects.empty())
+		return NULL;
+
+	std::wstring wsNewId = wsId;
+
+	size_t unFound = wsNewId.find(L'#');
+
+	if (std::wstring::npos != unFound)
+		wsNewId.erase(0, unFound + 1);
+
+	MarkedMap::const_iterator oConstIter = m_mMarkedObjects.find(wsNewId);
+
+	if (m_mMarkedObjects.end() != oConstIter)
+		return oConstIter->second;
+
+	return NULL;
 }
 
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
@@ -78,38 +96,13 @@ void CSvgFile::AddStyles(const std::wstring &wsStyles)
 	m_oSvgCalculator.AddStyles(wsStyles);
 }
 
-void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
-{
-	m_oParser.ReadDefs(oNode, &m_oDefs, this);
-}
-
-const SVG::CSvgGraphicsObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
-{
-		if (wsId.empty() || m_mMarkedObjects.empty())
-			return NULL;
-
-		std::wstring wsNewId = wsId;
-
-		size_t unFound = wsNewId.find(L'#');
-
-		if (std::wstring::npos != unFound)
-			wsNewId.erase(0, unFound + 1);
-
-		MarkedMap::const_iterator oFound = std::find_if(m_mMarkedObjects.begin(), m_mMarkedObjects.end(), [&wsNewId](std::pair<std::wstring, const SVG::CSvgGraphicsObject*> oPair){ if (wsNewId == oPair.second->GetId()) return true; else return false;});
-
-		if (m_mMarkedObjects.end() != oFound)
-			return oFound->second;
-
-		return NULL;
-}
-
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
-	if (NULL == pRenderer || NULL == m_pContainer || m_pContainer->Empty())
+	if (NULL == pRenderer || m_oContainer.Empty())
 		return false;
 
-	SVG::TRect oWindow  = m_pContainer->GetWindow();
-	SVG::TRect oViewBox = m_pContainer->GetViewBox();
+	SVG::TRect oWindow  = m_oContainer.GetWindow();
+	SVG::TRect oViewBox = m_oContainer.GetViewBox();
 
 	if (oWindow.m_oWidth.Empty() || oWindow.m_oWidth.Zero())
 	{
@@ -163,19 +156,30 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (!oWindow.m_oHeight.Empty() && !oWindow.m_oHeight.Zero() && !oViewBox.m_oHeight.Empty() && !oViewBox.m_oHeight.Zero())
 		dScaleY = dWindowHeight / dViewBoxHeight;
 
+	double dMinScale = std::min(dScaleX, dScaleY);
+
 	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
 	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 
-	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dSkipX, dSkipY);
+	pRenderer->SetTransform(dM11 * dMinScale, 0, 0, dM22 * dMinScale, dSkipX, dSkipY);
 
-	bool bResult = m_pContainer->Draw(pRenderer, &m_oDefs);
+	bool bResult = m_oContainer.Draw(pRenderer, this);
 
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 
 	return bResult;
 }
 
-SVG::CDefs *CSvgFile::GetDefs()
+void CSvgFile::Clear()
 {
-	return &m_oDefs;
+	m_oContainer.Clear();
+	m_oSvgCalculator.Clear();
+
+	for (MarkedMap::iterator oIter = m_mMarkedObjects.begin(); oIter != m_mMarkedObjects.end(); ++oIter)
+	{
+		if (SVG::AppliedObject == oIter->second->GetType())
+			delete oIter->second;
+	}
+
+	m_mMarkedObjects.clear();
 }

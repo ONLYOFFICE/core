@@ -8,7 +8,6 @@
 
 #include <numeric>
 
-
 namespace SVG
 {
 	class CSvgCalculator
@@ -22,8 +21,7 @@ namespace SVG
 
 		void Clear();
 
-		template<typename TypeObject>
-		void SetData(CSvgObject<TypeObject>* pSvgObject) const
+		void SetData(CObject* pSvgObject) const
 		{
 			if (NULL == pSvgObject)
 				return;

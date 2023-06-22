@@ -1,18 +1,24 @@
 #ifndef CCLIPPATH_H
 #define CCLIPPATH_H
 
-#include "CDefs.h"
+#include "CContainer.h"
 
 namespace SVG
 {
-	class CClipPath : public CGraphicsContainer, public CDefObject
+	class CClipPath : public CAppliedObject
 	{
 	public:
-		CClipPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager *pFontManager = NULL);
+		CClipPath(XmlUtils::CXmlNode& oNode);
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		bool Apply(IRenderer* pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds) override;
+		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
+
+		CContainer<CRenderedObject>& GetContainer();
+	private:
+		friend class CMask;
+
+		CContainer<CRenderedObject> m_oContainer;
 	};
 }
 

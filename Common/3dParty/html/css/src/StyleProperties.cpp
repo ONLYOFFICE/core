@@ -1594,7 +1594,8 @@ namespace NSCSS
 				return false;
 		}
 
-		return true;	}
+		return true;
+	}
 
 	bool CText::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{

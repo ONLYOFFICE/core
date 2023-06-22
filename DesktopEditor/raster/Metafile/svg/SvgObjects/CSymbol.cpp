@@ -2,14 +2,11 @@
 
 namespace SVG
 {
-	CSymbol::CSymbol(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
-		: CGraphicsContainer(oNode, pParent), CDefObject(oNode, pParent)
+	CSymbol::CSymbol(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager)
+		: CGraphicsContainer(oNode)
 	{}
 
-	void CSymbol::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{}
-
-	bool CSymbol::Draw(IRenderer *pRenderer, const CDefs *pDefs, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CSymbol::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -34,15 +31,10 @@ namespace SVG
 
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 
-		CGraphicsContainer::Draw(pRenderer, pDefs, oMode, pOtherStyles);
+		CGraphicsContainer::Draw(pRenderer, pFile, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 
-		return true;
-	}
-
-	bool CSymbol::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
-	{
 		return true;
 	}
 }

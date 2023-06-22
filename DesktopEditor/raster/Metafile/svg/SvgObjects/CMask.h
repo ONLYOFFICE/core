@@ -8,9 +8,9 @@ namespace SVG
 	class CMask : public CClipPath
 	{
 	public:
-		CMask(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager *pFontManager = NULL);
+		CMask(XmlUtils::CXmlNode& oNode);
 
-		bool Apply(IRenderer* pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds) override;
+		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	};
 }
 

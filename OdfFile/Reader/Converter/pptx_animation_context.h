@@ -48,7 +48,12 @@ namespace oox {
 		void start_seq_animation();
 		void end_seq_animation();
 
-		void add_animate_action();
+		void set_par_animation_presentation_node_type(std::wstring & value);
+		void set_par_animation_smil_direction(std::wstring & value);
+		void set_par_animation_smil_restart(std::wstring & value);
+		void set_par_animation_smil_dur(int value);
+		void set_par_animation_smil_begin(std::wstring & value);
+		void set_par_animation_smil_end(std::wstring & value);
 
 		void serialize(std::wostream & strm);
 		void serialize_par_animation(std::wostream & strm);

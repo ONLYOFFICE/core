@@ -854,16 +854,6 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 	}
 }
 
-void pptx_slide_context::serialize_par_animation(std::wostream & strm)
-{
-	
-}
-
-void pptx_slide_context::serialize_seq_animation(std::wostream & strm)
-{
-
-}
-
 void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
 {
 	if (!impl_->header && !impl_->footer && !impl_->date_time && !impl_->slideNum)return;

@@ -67,6 +67,13 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	animationContext.start_par_animation();
 	
+	if (attlist_.presentation_node_type_)	animationContext.set_par_animation_presentation_node_type	(attlist_.presentation_node_type_.value());
+	if (attlist_.smil_direction_)			animationContext.set_par_animation_smil_direction			(attlist_.smil_direction_.value());
+	if (attlist_.smil_restart_)				animationContext.set_par_animation_smil_restart				(attlist_.smil_restart_.value());
+	if (attlist_.smil_dur_)					animationContext.set_par_animation_smil_dur					(attlist_.smil_dur_.value().get_value());
+	if (attlist_.smil_begin_)				animationContext.set_par_animation_smil_begin				(attlist_.smil_begin_.value());
+	if (attlist_.smil_end_)					animationContext.set_par_animation_smil_end					(attlist_.smil_end_.value());
+
 	if (anim_par_)
 	{
 		Context.get_slide_context().start_slide_animation();

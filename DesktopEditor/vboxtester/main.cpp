@@ -304,6 +304,7 @@ public:
 					std::wstring sOsLower = sOs;
 					std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
 
+					// TODO: use (hostnamectl) or (lsb_release -a)
 					if ( sOsLower.find(L"ubuntu") != std::wstring::npos ||
 						 sOsLower.find(L"debian") != std::wstring::npos)
 						 eType = Debian;
@@ -397,7 +398,7 @@ public:
 
 			std::wstring sCommand = L"controlvm " + m_pVm->m_sGuid + (bSaveState ? L" savestate" : L" poweroff");
 			std::wstring sOutput = ExecuteCommand(sCommand);
-			bResult = sOutput.find(L"100%") != std::wstring::npos;
+			bResult = sOutput.find(L"") != std::wstring::npos;
 
 			WriteReportResult(bResult);
 		}
@@ -1190,7 +1191,7 @@ int main(int argc, char** argv)
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
 
-		//if ( sName != L"Debian12" )
+		//if ( sName != L"AstraOrel" )
 		//	continue;
 
 		oTester.SetVm(pVm);

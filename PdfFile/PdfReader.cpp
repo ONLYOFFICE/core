@@ -734,6 +734,46 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
+TextString* getName(Object* oField)
+{
+    TextString* sResName = NULL;
+
+    if (!oField->isDict())
+        return sResName;
+
+    Object oName;
+    if (oField->dictLookup("T", &oName)->isString())
+        sResName = new TextString(oName.getString());
+    else
+    {
+        oName.free();
+        return sResName;
+    }
+    oName.free();
+
+    Object oParent, oParent2;
+    oField->dictLookup("Parent", &oParent);
+    int nDepth = 0;
+    while (oParent.isDict() && nDepth < 50)
+    {
+        if (oParent.dictLookup("T", &oName)->isString())
+        {
+            if (sResName->getLength())
+                sResName->insert(0, (Unicode)'.');
+            sResName->insert(0, oName.getString());
+        }
+        oName.free();
+
+        oParent.dictLookup("Parent", &oParent2);
+        oParent.free();
+        oParent = oParent2;
+
+        ++nDepth;
+    }
+    oParent.free();
+
+    return sResName;
+}
 void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
 {
     AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
@@ -889,37 +929,31 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
         int nFields = 0;
         oRes.AddInt(nFields);
 
-        Object oHide, oName;
+        Object oHide;
         oHideObj->copy(&oHide);
         do
         {
-            GString* sField = NULL;
+            TextString* s = NULL;
             if (oHideObj->isArray())
             {
                 oHide.free();
                 oHideObj->arrayGet(k, &oHide);
             }
             if (oHide.isString())
-                sField = oHide.getString();
-            else if (oHide.isDict() && oHide.dictLookup("T", &oName) && oName.isString())
-                sField = oName.getString();
+                s = new TextString(oHide.getString());
+            else if (oHide.isDict())
+                s = getName(&oHide);
 
-            if (sField)
+            if (s)
             {
-                GString* sFindName = pAcroForms->findFieldName(sField);
-                if (sFindName)
-                {
-                    nFields++;
-                    TextString* s = new TextString(sFindName);
-                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                    delete s;
-                }
-                RELEASEOBJECT(sFindName);
+                nFields++;
+                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                delete s;
             }
             k++;
         } while (k < nHide);
-        oHide.free(); oName.free();
+        oHide.free();
 
         oRes.AddInt(nFields, nFieldsPos);
         break;
@@ -944,28 +978,22 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
                 oRes.AddInt(nFields);
                 for (int j = 0; j < oObj.arrayGetLength(); ++j)
                 {
-                    Object oField, oName;
+                    Object oField;
                     oObj.arrayGet(j, &oField);
-                    GString* sField = NULL;
+                    TextString* s = NULL;
                     if (oField.isString())
-                        sField = oField.getString();
-                    else if (oField.isDict() && oField.dictLookup("T", &oName) && oName.isString())
-                        sField = oName.getString();
+                        s = new TextString(oField.getString());
+                    else if (oField.isDict())
+                        s = getName(&oField);
 
-                    if (sField)
+                    if (s)
                     {
-                        GString* sFindName = pAcroForms->findFieldName(sField);
-                        if (sFindName)
-                        {
-                            nFields++;
-                            TextString* s = new TextString(sFindName);
-                            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                            delete s;
-                        }
-                        RELEASEOBJECT(sFindName);
+                        nFields++;
+                        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                        delete s;
                     }
-                    oField.free(); oName.free();
+                    oField.free();
                 }
                 oRes.AddInt(nFields, nFieldsPos);
             }
@@ -1080,6 +1108,7 @@ void getParents(PDFDoc* pdfDoc, Object* oFieldRef, NSWasm::CData& oRes, std::vec
     oParentRefObj.free();
     oRes.AddInt(nFlags, nFlagPos);
 }
+
 BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -1105,22 +1134,17 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddInt(nFields);
         for (int j = 0; j < oCO.arrayGetLength(); ++j)
         {
-            Object oField, oName;
+            Object oField;
             oCO.arrayGet(j, &oField);
-            if (oField.isDict() && oField.dictLookup("T", &oName) && oName.isString())
+            TextString* s = getName(&oField);
+            if (s)
             {
-                GString* sFindName = pAcroForms->findFieldName(oName.getString());
-                if (sFindName)
-                {
-                    nFields++;
-                    TextString* s = new TextString(sFindName);
-                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                    delete s;
-                }
-                RELEASEOBJECT(sFindName);
+                nFields++;
+                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                delete s;
             }
-            oField.free(); oName.free();
+            oField.free();
         }
         oRes.AddInt(nFields, nFieldsPos);
     }
@@ -2235,7 +2259,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
         unsigned int nSize = (unsigned int)(nWidth * nHeight);
         unsigned int* pTemp = (unsigned int*)pBgraData;
         for (unsigned int i = 0; i < nSize; ++i)
-            *pTemp++ = /*0xFF000000 | */nColor;
+            *pTemp++ = nColor;
 
         CBgraFrame* pFrame = new CBgraFrame();
         pFrame->put_Data(pBgraData);

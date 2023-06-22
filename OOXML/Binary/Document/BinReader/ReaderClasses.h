@@ -35,6 +35,7 @@
 
 #include "../../../Base/Unit.h"
 #include "../../../DocxFormat/Logic/RunProperty.h"
+#include "../../../DocxFormat/Logic/ParagraphProperty.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
 
 #include <boost/algorithm/string.hpp>
@@ -42,51 +43,6 @@
 
 namespace BinDocxRW {
 
-class SectPr
-{
-public: 
-    std::wstring sHeaderFooterReference;
-	_INT32 W;
-	_INT32 H;
-	BYTE cOrientation;
-	_INT32 Left;
-	_INT32 Top;
-	_INT32 Right;
-	_INT32 Bottom;
-	_INT32 Header;
-	_INT32 Footer;
-	bool TitlePg;
-	bool EvenAndOddHeaders;
-	BYTE SectionType;
-	_INT32 PageNumStart;
-    std::wstring sectPrChange;
-    std::wstring cols;
-    std::wstring pgBorders;
-    std::wstring footnotePr;
-    std::wstring endnotePr;
-	std::wstring lineNum;
-	bool RtlGutter;
-	_INT32 Gutter;
-
-	bool bW;
-	bool bH;
-	bool bOrientation;
-	bool bLeft;
-	bool bTop;
-	bool bRight;
-	bool bBottom;
-	bool bHeader;
-	bool bFooter;
-	bool bTitlePg;
-	bool bEvenAndOddHeaders;
-	bool bSectionType;
-	bool bPageNumStart;
-	bool bRtlGutter;
-	bool bGutter;
-
-	SectPr();
-	std::wstring Write();
-};
 class docRGB
 {
 public:
@@ -121,27 +77,6 @@ public:
 												nullable<SimpleTypes::CUcharHexNumber>& oThemeTint,
 												nullable<SimpleTypes::CUcharHexNumber>& oThemeShade);
 };
-class Spacing
-{
-public:
-	bool bLineRule;
-	bool bLine;
-	bool bLineTwips;
-	bool bAfter;
-	bool bBefore;
-	bool bAfterAuto;
-	bool bBeforeAuto;
-
-	BYTE LineRule;
-	double Line;
-	_INT32 LineTwips;
-	_INT32 After;
-	_INT32 Before;
-	bool AfterAuto;
-	bool BeforeAuto;
-
-	Spacing();
-};
 class Background
 {
 public:
@@ -156,22 +91,6 @@ public:
 	Background();
 
 	std::wstring Write();
-};
-
-class Tab
-{
-public:
-	SimpleTypes::CTabJc Val;
-	long Pos;
-	BYTE Leader;
-	bool bLeader;
-
-	Tab();
-};
-class Tabs
-{
-public:
-	std::vector<Tab> m_aTabs;
 };
 
 class docStyle
@@ -304,51 +223,6 @@ public:
 	void Write(NSStringUtils::CStringBuilder& pCStringWriter, const std::wstring& sName);
 	std::wstring Write(const std::wstring& sName);
 };
-class docBorder
-{
-public:
-	docRGB Color;
-	long Space;
-	long Size;
-	BYTE Value;
-	CThemeColor ThemeColor;
-
-	bool bColor;
-	bool bSpace;
-	bool bSize;
-	bool bValue;
-	bool bThemeColor;
-
-	docBorder();
-
-	void Write(std::wstring sName, NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell);
-};
-class docBorders
-{
-public:
-	docBorder oLeft;
-	docBorder oTop;
-	docBorder oRight;
-	docBorder oBottom;
-	docBorder oInsideV;
-	docBorder oInsideH;
-	docBorder oBetween;
-
-	bool bLeft;
-	bool bTop;
-	bool bRight;
-	bool bBottom;
-	bool bInsideV;
-	bool bInsideH;
-	bool bBetween;
-
-public:
-	docBorders();
-
-	bool IsEmpty();
-	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell);
-};
-
 class rowPrAfterBefore
 {
 public:
@@ -590,45 +464,6 @@ public:
 	bool IsEmpty();
 	std::wstring Write();
 };
-class CFramePr
-{
-public:
-	bool bDropCap;
-	bool bH;
-	bool bHAnchor;
-	bool bHRule;
-	bool bHSpace;
-	bool bLines;
-	bool bVAnchor;
-	bool bVSpace;
-	bool bW;
-	bool bWrap;
-	bool bX;
-	bool bXAlign;
-	bool bY;
-	bool bYAlign;
-
-	BYTE DropCap;
-	_INT32 H;
-	BYTE HAnchor;
-	BYTE HRule;
-	_INT32 HSpace;
-	_INT32 Lines;
-	BYTE VAnchor;
-	_INT32 VSpace;
-	_INT32 W;
-	BYTE Wrap;
-	_INT32 X;
-	BYTE XAlign;
-	_INT32 Y;
-	BYTE YAlign;
-
-public:
-	CFramePr();
-
-	bool IsEmpty();
-	void Write(NSStringUtils::CStringBuilder& oStringWriter);
-};
 class CHyperlink{
 public:
     std::wstring    rId;
@@ -671,8 +506,6 @@ public:
 
 	OOX::Logic::CRunProperty* RPr;
 
-	NSStringUtils::CStringBuilder* PPr;
-	SectPr* sectPr;
 	CWiterTblPr* tblPr;
 	NSStringUtils::CStringBuilder* tblGridChange;
 	NSStringUtils::CStringBuilder* trPr;

@@ -66,33 +66,25 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	oox::pptx_animation_context & animationContext = Context.get_slide_context().get_animation_context();
 
 	animationContext.start_par_animation();
-
-	// TODO: передать все значения в контекст
-#if 0
-	animationContext.set_presentation_node_type(attlist_.presentation_node_type_);
-	animationContext.set_smil_direction(attlist_.smil_direction_);
-#endif
-	animationContext.end_par_animation();
-
+	
 	if (anim_par_)
 	{
-		Context.get_slide_context().start_slide_animation(); // WTF: Это че тут делает???
+		Context.get_slide_context().start_slide_animation();
 			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
 		Context.get_slide_context().end_slide_animation();
 	}
-///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)
-	Context.get_slide_context().get_animation_context().start_seq_animation();
 	for (size_t i = 0; i < anim_seq_array_.size(); i++)
     {
 		anim_seq_array_[i]->pptx_convert(Context);
 	}
-	Context.get_slide_context().get_animation_context().end_seq_animation();
 /////////////////////////////////////////////////////////////////
 //внутренние эффекты - те что внутри одной последовательности
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		content_[i]->pptx_convert(Context);
 	}
+
+	animationContext.end_par_animation();
 }
 void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -115,10 +107,14 @@ void anim_seq::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+
+	animationContext.start_seq_animation();
 	for (size_t i = 0; i < anim_par_array_.size(); i++)
     {
 		anim_par_array_[i]->pptx_convert(Context);
 	}
+	animationContext.end_seq_animation();
 }
 void anim_seq::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {

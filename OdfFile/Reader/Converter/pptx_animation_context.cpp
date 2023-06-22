@@ -44,59 +44,50 @@ namespace oox {
 	class pptx_animation_context::Impl
 	{
 	public:
-		struct _par_animation;
-		struct _seq_animation;
-		struct _animate_action;
 
-		struct _par_animation
+		struct _animation_element
+		{
+			virtual void serialize(std::wostream & strm) = 0;
+		};
+
+		typedef shared_ptr<_animation_element>::Type	_animation_element_ptr;
+		typedef std::vector<_animation_element_ptr>		_animation_element_array;
+
+		struct _par_animation : _animation_element
 		{
 			bool IsRoot;
 
-			_CP_OPT(std::wstring)					PresentationNodeType;
-			_CP_OPT(std::wstring)					SmilDirection;
-			_CP_OPT(std::wstring)					SmilRestart;
-			_CP_OPT(odf_types::clockvalue)			SmilDur;
-			_CP_OPT(std::wstring)					SmilBegin;
-			_CP_OPT(std::wstring)					SmilEnd;
+			_CP_OPT(std::wstring)						PresentationNodeType;
+			_CP_OPT(std::wstring)						SmilDirection;
+			_CP_OPT(std::wstring)						SmilRestart;
+			_CP_OPT(odf_types::clockvalue)				SmilDur;
+			_CP_OPT(std::wstring)						SmilBegin;
+			_CP_OPT(std::wstring)						SmilEnd;
 
-			_CP_OPT(std::vector<_seq_animation>)	Sequence;
-			_CP_OPT(std::vector<_animate_action>)	AnimateActions;
+			_CP_PTR(_animation_element)					AnimPar;
+			_CP_PTR(_animation_element_array)			AnimSeqArray;
+			_CP_PTR(_animation_element_array)			AnimationActions;
 
-			_CP_PTR(_par_animation)					AnimPar;
+			void serialize(std::wostream & strm) override;
 		};
 
-		struct _seq_animation
+		struct _seq_animation : _animation_element
 		{
 			bool IsMainSequence;
 
-			_CP_OPT(std::wstring)					PresentationNodeType;
-			_CP_OPT(std::wstring)					SmilDirection;
-			_CP_OPT(std::wstring)					SmilRestart;
-			_CP_OPT(odf_types::clockvalue)			SmilDur;
-			_CP_OPT(std::wstring)					SmilBegin;
-			_CP_OPT(std::wstring)					SmilEnd;
+			_CP_OPT(std::wstring)							PresentationNodeType;
+			_CP_OPT(std::wstring)							SmilDirection;
+			_CP_OPT(std::wstring)							SmilRestart;
+			_CP_OPT(odf_types::clockvalue)					SmilDur;
+			_CP_OPT(std::wstring)							SmilBegin;
+			_CP_OPT(std::wstring)							SmilEnd;
 
-			_CP_OPT(std::vector<_CP_PTR(_par_animation)>) Parallels;
+			_CP_OPT(_animation_element_array)				ParallelAnimationsArray;
+
+			void serialize(std::wostream& strm) override;
 		};
 
-		struct _animation_action
-		{
-			enum type
-			{
-				typeNone = 0,
-				typeAnimateMotion,
-				typeAnimateColor
-			};
-
-			type Type;
-			_CP_OPT(float) Duration;
-			_CP_OPT(std::wstring) TargetId;
-			_CP_OPT(std::wstring) Path;
-		};
-
-
-
-		_CP_OPT(_par_animation) rootAnimation_;
+		_CP_OPT(_animation_element) rootAnimationElement_;
 
 		Impl()
 		{
@@ -104,35 +95,49 @@ namespace oox {
 		}
 
 	private:
-		std::vector<_CP_PTR(_par_animation)> levels_;
+		std::vector<_CP_PTR(_animation_element)> levels_;
 	};
 
-	pptx_animation_context::pptx_animation_context()
-	{
-
-	}
-
-	void pptx_animation_context::serialize(std::wostream & strm)
+	void pptx_animation_context::Impl::_par_animation::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
 		{
-			CP_XML_NODE(L"p:timing")
+			CP_XML_NODE(L"p:par")
 			{
-				CP_XML_NODE(L"p:tnLst")
+				CP_XML_NODE(L"p:cTn")
 				{
-					CP_XML_NODE(L"p:par")
+					if (IsRoot)
 					{
-						CP_XML_NODE(L"p:cTn")
-						{
-							CP_XML_ATTR(L"nodeType", L"tmRoot");
-							CP_XML_ATTR(L"id", 1);
-							CP_XML_ATTR(L"dur", L"indefinite");
-							CP_XML_ATTR(L"restart", L"never");
+						CP_XML_ATTR(L"nodeType", L"tmRoot");
+						//CP_XML_ATTR(L"id", 1);
+						CP_XML_ATTR(L"dur", L"indefinite");
+						CP_XML_ATTR(L"restart", L"never");
+					}
+					else
+					{
+						// NODE: hardcode for now
+						// TODO: emplace correct attributes
+						CP_XML_ATTR(L"fill", L"hold"); 
+					}
 
-							if (impl_->rootAnimation_)
-							{
-								serialize_par_animation(strm);
-							}
+					if (AnimPar)
+					{
+						CP_XML_NODE(L"p:tnLst")
+						{
+							AnimPar->serialize(strm);
+						}
+					}
+
+					if (AnimSeqArray)
+					{
+						AnimSeqArray->serialize(strm);
+					}
+
+					if (AnimationActions)
+					{
+						for (int i = 0; i < AnimationActions->size(); i++)
+						{
+							(*AnimationActions)[i]->serialize(strm);
 						}
 					}
 				}
@@ -140,22 +145,31 @@ namespace oox {
 		}
 	}
 
-	void pptx_animation_context::serialize_par_animation(std::wostream& strm)
+	void pptx_animation_context::Impl::_seq_animation::serialize(std::wostream& strm)
 	{
-		CP_XML_WRITER(strm)
-		{
-			CP_XML_NODE(L"<p:par>")
-			{
-				
-			}
-		}
+
 	}
 
-	void pptx_animation_context::serialize_seq_animation(std::wostream& strm)
+	void pptx_animation_context::start_par_animation()
+	{
+		if (!impl_->rootAnimationElement_)
+			impl_->rootAnimationElement_;
+	}
+
+	void pptx_animation_context::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
 		{
-
+			CP_XML_NODE(L"p:timing")
+			{
+				if (impl_->rootAnimationElement_)
+				{
+					CP_XML_NODE(L"p:tnLst")
+					{
+						impl_->rootAnimationElement_->serialize(strm);
+					}
+				}
+			}
 		}
 	}
 

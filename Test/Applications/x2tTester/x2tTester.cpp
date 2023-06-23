@@ -37,7 +37,6 @@ CFormatsList& CFormatsList::operator=(const CFormatsList& list)
 		m_crossplatform.push_back(val);
 
 	m_pdf = list.m_pdf;
-
 	return *this;
 }
 
@@ -163,7 +162,6 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"txt");
 	list.m_documents.push_back(L"wps");
 	list.m_documents.push_back(L"wpt");
-	list.m_documents.push_back(L"xml");
 
 	list.m_presentations.push_back(L"pptt");
 	list.m_presentations.push_back(L"dps");
@@ -197,7 +195,6 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_spreadsheets.push_back(L"xlt");
 	list.m_spreadsheets.push_back(L"xltm");
 	list.m_spreadsheets.push_back(L"xltx");
-	list.m_spreadsheets.push_back(L"xml");
 
 	list.m_crossplatform.push_back(L"djvu");
 	list.m_crossplatform.push_back(L"xps");

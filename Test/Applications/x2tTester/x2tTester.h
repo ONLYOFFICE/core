@@ -25,36 +25,44 @@ class CFormatsList
 {
 public:
 	CFormatsList();
+	CFormatsList(const CFormatsList& list);
+	CFormatsList& operator=(const CFormatsList& list);
 
-	std::vector<int> GetDocuments() const;
-	std::vector<int> GetPresentations() const;
-	std::vector<int> GetSpreadsheets() const;
-	std::vector<int> GetCrossplatform() const;
-	std::vector<int> GetImages() const;
-	int GetPdf() const;
+	std::vector<std::wstring> GetDocuments() const;
+	std::vector<std::wstring> GetPresentations() const;
+	std::vector<std::wstring> GetSpreadsheets() const;
+	std::vector<std::wstring> GetCrossplatform() const;
+	std::vector<std::wstring> GetImages() const;
+	std::wstring GetPdf() const;
 
-	bool IsDocument(int format) const;
-	bool IsPresentation(int format) const;
-	bool IsSpreadsheet(int format) const;
-	bool IsCrossplatform(int format) const;
-	bool IsImage(int format) const;
-	bool IsPdf(int format) const;
+	bool IsDocument(const std::wstring& ext) const;
+	bool IsPresentation(const std::wstring& ext) const;
+	bool IsSpreadsheet(const std::wstring& ext) const;
+	bool IsCrossplatform(const std::wstring& ext) const;
+	bool IsImage(const std::wstring& ext) const;
+	bool IsPdf(const std::wstring& ext) const;
 
-	// all formats
-	void SetDefault();
+	void AddDocument(const std::wstring& ext);
+	void AddPresentation(const std::wstring& ext);
+	void AddSpreadsheet(const std::wstring& ext);
+	void AddCrossplatform(const std::wstring& ext);
+	void AddImage(const std::wstring& ext);
 
-	// all writable formats
-	void SetOutput();
+	std::vector<std::wstring> GetAllExts() const;
 
-	std::vector<int> AllFormats() const;
+	// all supported exts
+	static CFormatsList GetDefaultExts();
+
+	// all writable exts
+	static CFormatsList  GetOutputExts();
 
 private:
-	std::vector<int> m_documents;
-	std::vector<int> m_presentations;
-	std::vector<int> m_spreadsheets;
-	std::vector<int> m_crossplatform;
-	std::vector<int> m_images;
-	int m_pdf;
+	std::vector<std::wstring> m_documents;
+	std::vector<std::wstring> m_presentations;
+	std::vector<std::wstring> m_spreadsheets;
+	std::vector<std::wstring> m_crossplatform;
+	std::vector<std::wstring> m_images;
+	std::wstring m_pdf;
 };
 
 
@@ -96,8 +104,8 @@ public:
 	int m_maxProc;
 
 private:
-	// parse string like "docx txt" into vector of formats
-	std::vector<int> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
+	// parse string like "docx txt" into vector
+	std::vector<std::wstring> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -114,12 +122,12 @@ private:
 	NSFile::CFileBinary m_reportStream;
 
 	// takes from config or sets all
-	std::vector<int> m_inputFormats;
-	std::vector<int> m_outputFormats;
+	std::vector<std::wstring> m_inputExts;
+	std::vector<std::wstring> m_outputExts;
 
 	std::vector<std::wstring> m_inputFiles;
 
-	// list of formats
+	// lists
 	CFormatsList m_inputFormatsList;
 	CFormatsList m_outputFormatsList;
 
@@ -145,9 +153,9 @@ public:
 	virtual ~CConverter();
 
 	void SetInputFile(const std::wstring& inputFile);
-	void SetInputFormat(int inputFormat);
+	void SetInputExt(const std::wstring& inputExt);
 	void SetOutputFilesDirectory(const std::wstring& outputFilesDirectory);
-	void SetOutputFormats(const std::vector<int> outputFormats);
+	void SetOutputExts(const std::vector<std::wstring>& outputExts);
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
 	void SetErrorsOnly(bool bIsErrorsOnly);
@@ -163,12 +171,11 @@ public:
 
 private:
 	Cx2tTester* m_internal;
-
 	std::wstring m_inputFile;
-	int m_inputFormat;
 
 	std::wstring m_outputFilesDirectory;
-	std::vector<int> m_outputFormats;
+	std::vector<std::wstring> m_outputExts;
+	std::wstring m_inputExt;
 
 	std::wstring m_fontsDirectory;
 	COfficeFileFormatChecker checker;

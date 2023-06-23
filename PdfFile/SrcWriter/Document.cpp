@@ -44,6 +44,7 @@
 #include "Font14.h"
 #include "FontCidTT.h"
 #include "FontTT.h"
+#include "FontTTWriter.h"
 #include "Shading.h"
 #include "Pattern.h"
 #include "AcroForm.h"
@@ -610,7 +611,11 @@ namespace PdfWriter
 		if (pFont)
 			return pFont;
 
-		pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
+		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		if (!pFontTT)
+			return NULL;
+
+		pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex, pFontTT);
 		if (!pFont)
 			return NULL;
 

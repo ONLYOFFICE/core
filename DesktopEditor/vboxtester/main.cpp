@@ -117,6 +117,7 @@ public:
 	std::wstring	m_sName;
 	std::wstring	m_sGuid;
 	std::wstring	m_sGuestOS;
+	std::wstring	m_sOperationSystem;
 	SystemType		m_eType;
 
 	CVm()
@@ -124,6 +125,7 @@ public:
 		m_sName = L"";
 		m_sGuid = L"";
 		m_sGuestOS = L"";
+		m_sOperationSystem = L"";
 		m_eType = Empty;
 	}
 
@@ -164,12 +166,17 @@ private:
 	std::wstring m_sVmUser;
 	std::wstring m_sVmPassword;
 
+	std::wstring m_sBranch;
+	std::wstring m_sVersion;
+
 	std::wstring m_sDebianUrl;
-	std::wstring m_sRedHatUrl;
+	std::wstring m_sCentosUrl;
+	std::wstring m_sOpSuseUrl;
 
 	std::wstring m_sEditorsPath;
 	std::wstring m_sSuccessOutput;
 
+	std::wstring m_sConfigName;
 	std::wstring m_sReportName;
 	std::wstring m_sStdoutFile;
 
@@ -179,7 +186,6 @@ private:
 	std::vector<CVm*> m_arrVms;
 	CVm* m_pVm;
 
-	bool m_bStartAll;
 	bool m_bStartDebian;
 	bool m_bStartRedHat;
 
@@ -187,7 +193,7 @@ public:
 	CVirtualBox()
 	{
 		m_pVm =				NULL;
-		m_bStartAll =		false;
+
 		m_bStartDebian =	false;
 		m_bStartRedHat =	false;
 
@@ -197,14 +203,19 @@ public:
 		m_sRunScript =		L"run";
 		m_sSetupScript =	L"setup";
 
+		m_sConfigName =		L"config";
 		m_sReportName =		L"report.txt";
 		m_sStdoutFile =		L"stdout.txt";
 
 		m_sEditorsPath =	L"/opt/onlyoffice/desktopeditors/DesktopEditors";
 		m_sSuccessOutput =	L"[DesktopEditors]: start page loaded";
 
+		m_sBranch =			L"";
+		m_sVersion =		L"";
+
 		m_sDebianUrl =		L"";
-		m_sRedHatUrl =		L"";
+		m_sCentosUrl =		L"";
+		m_sOpSuseUrl =		L"";
 
 #ifdef WIN32
 		m_sVbmPath =		L"\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\"";
@@ -212,67 +223,6 @@ public:
 #ifdef LINUX
 		m_sVbmPath =		L"/usr/lib/virtualbox/VBoxManage";
 #endif
-	}
-
-	// Settings
-	void SetStartAll()
-	{
-		m_bStartAll = true;
-	}
-
-	void SetStartDebian()
-	{
-		m_bStartDebian = true;
-	}
-
-	void SetStartRedHat()
-	{
-		m_bStartRedHat = true;
-	}
-
-	bool SetUser(const std::wstring& sUser)
-	{
-		bool bResult = false;
-
-		if ( sUser.length() )
-			m_sVmUser = sUser;
-
-		return bResult;
-	}
-
-	bool SetPassword(const std::wstring& sPassword)
-	{
-		bool bResult = false;
-
-		if ( sPassword.length() )
-			m_sVmPassword = sPassword;
-
-		return bResult;
-	}
-
-	bool SetDebianUrl(const std::wstring& sUrl)
-	{
-		bool bResult = false;
-
-		if ( sUrl.length() )
-			m_sDebianUrl = sUrl;
-
-		return bResult;
-	}
-
-	bool SetRedHatUrl(const std::wstring& sUrl)
-	{
-		bool bResult = false;
-
-		if ( sUrl.length() )
-			m_sRedHatUrl = sUrl;
-
-		return bResult;
-	}
-
-	void PrintHelp()
-	{
-		WriteReport(sHelpText);
 	}
 
 	// VboxManage
@@ -304,15 +254,13 @@ public:
 					std::wstring sOsLower = sOs;
 					std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
 
-					// TODO: use (hostnamectl) or (lsb_release -a)
 					if ( sOsLower.find(L"ubuntu") != std::wstring::npos ||
 						 sOsLower.find(L"debian") != std::wstring::npos)
 						 eType = Debian;
 					else
 					if ( sOsLower.find(L"red hat") != std::wstring::npos ||
 						 sOsLower.find(L"fedora") != std::wstring::npos ||
-						 sOsLower.find(L"opensuse") != std::wstring::npos ||
-						 sOsLower.find(L"mandriva") != std::wstring::npos)
+						 sOsLower.find(L"opensuse") != std::wstring::npos)
 						eType = RedHat;
 
 					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
@@ -338,8 +286,6 @@ public:
 		std::vector<CVm*> arrAll = arrDebian;
 		arrAll.insert(arrAll.end(), arrRedHat.begin(), arrRedHat.end());
 
-		if ( m_bStartAll )
-			return arrAll;
 		if ( m_bStartDebian )
 			return m_bStartRedHat ? arrAll : arrDebian;
 		if ( m_bStartRedHat )
@@ -362,7 +308,7 @@ public:
 
 			std::wstring sCommand = L"startvm " + m_pVm->m_sGuid;
 			std::wstring sOutput = ExecuteCommand(sCommand);
-			bResult = sOutput.find(L"has been successfully started") != std::wstring::npos;
+			bResult = sOutput.find(L"started") != std::wstring::npos;
 
 			WriteReportResult(bResult);
 		}
@@ -563,23 +509,82 @@ public:
 		return bResult;
 	}
 
+	bool CheckOperationSystem()
+	{
+		bool bResult = false;
+
+		if ( m_pVm )
+		{
+			// Get real description
+			m_pVm->m_sOperationSystem = L"";
+			std::wstring sBin = L"/usr/bin/hostnamectl";
+
+			std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
+									L" run --exe " + sBin +
+									L" --username " + m_sVmUser +
+									L" --password " + m_sVmPassword +
+									L" --wait-stdout";
+
+			std::wstring sOutput = ExecuteCommand(sCommand);
+
+			std::vector<std::wstring> arrLines;
+			if ( SplitStringAsVector(sOutput, L"\n", arrLines) )
+			{
+				std::wstring sPrefix = L"Operating System:";
+
+				for (size_t i = 0; i < arrLines.size(); i++)
+				{
+					std::wstring sLine = arrLines[i];
+
+					std::wstring::size_type pos = sLine.find(sPrefix);
+					if ( pos != std::wstring::npos )
+					{
+						m_pVm->m_sOperationSystem = sLine;
+						pos = m_pVm->m_sOperationSystem.find(sPrefix + L" ");
+						while ( pos != std::wstring::npos )
+						{
+							NSStringUtils::string_replace(m_pVm->m_sOperationSystem, sPrefix + L" ", sPrefix);
+							pos = m_pVm->m_sOperationSystem.find(sPrefix + L" ");
+						}
+						NSStringUtils::string_replace(m_pVm->m_sOperationSystem, sPrefix, L"");
+
+						bResult = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return bResult;
+	}
+
 	bool DownloadDistrib()
 	{
 		bool bResult = false;
 
 		if ( m_pVm )
 		{
-			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
+			// Prepare url
+			std::wstring sUrl = L"";
+
+			CheckOperationSystem();
+
+			if ( m_pVm->IsDebian() )
+				sUrl = m_sDebianUrl;
+
+			else if ( m_pVm->IsRedHat() )
+			{
+				std::wstring sOsLower = m_pVm->m_sOperationSystem;
+				std::transform(sOsLower.begin(), sOsLower.end(), sOsLower.begin(), tolower);
+
+				if ( sOsLower.find(L"centos") != std::wstring::npos ||
+					 sOsLower.find(L"fedora") != std::wstring::npos)
+					sUrl = m_sCentosUrl;
+				else if ( sOsLower.find(L"opensuse") != std::wstring::npos )
+					sUrl = m_sOpSuseUrl;
+			}
 
 			WriteReport(L"Start downloading: " + sUrl);
-
-			// wget may not download the file to the end, use curl
-			/*std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
-									L" run --exe /usr/bin/wget" +
-									L" --username " + m_sVmUser +
-									L" --password " + m_sVmPassword +
-									L" --wait-stdout -- wget/arg0 " + sUrl +
-									L" -P " + GetWorkingDir();*/
 
 			std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
 									L" run --exe /usr/bin/curl" +
@@ -590,7 +595,7 @@ public:
 
 			std::wstring sOutput = ExecuteCommand(sCommand);
 
-			// Wait flush to disk. This problem with wget and curl. Wait min
+			// Wait flush to disk. Wait min
 			NSThreads::Sleep(60000);
 			bResult = true;
 
@@ -610,7 +615,7 @@ public:
 
 			// Setup
 			std::wstring sData = L"";
-			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
+			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sCentosUrl;
 			std::wstring sScriptPath = NSDirectory::GetTempPath() + L"/" + m_sSetupScript;
 			std::wstring sDistribFile = NSFile::GetFileName(sUrl);
 
@@ -746,7 +751,7 @@ public:
 		{
 			WriteReport(L"Ready restart");
 
-			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sRedHatUrl;
+			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sCentosUrl;
 			std::wstring sRunScript = GetWorkingDir() + L"/" + m_sSetupScript;
 			std::wstring sSetupScript = GetWorkingDir() + L"/" + m_sSetupScript;
 			std::wstring sDistribPath = GetWorkingDir() + L"/" + NSFile::GetFileName(sUrl);
@@ -819,6 +824,94 @@ public:
 	{
 		if ( NSDirectory::Exists(GetReportDir()) )
 			NSDirectory::DeleteDirectory(GetReportDir());
+	}
+
+	// Config
+	bool IsConfigExists()
+	{
+		return NSFile::CFileBinary::Exists(m_sConfigName);
+	}
+
+	bool CreateConfig()
+	{
+		std::wstring sData = sCfgUser + L"\n" +
+							 sCfgPassword + L"\n" +
+							 sCfgBranch + L"\n" +
+							 sCfgVersion + L"\n" +
+							 sCfgStartDebian + L"\n" +
+							 sCfgStartRedhat + L"\n";
+
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(m_sConfigName);
+		oFile.WriteStringUTF8(sData);
+		oFile.CloseFile();
+
+		return IsConfigExists();
+	}
+
+	bool ReadConfig()
+	{
+		bool bResult = false;
+
+		if ( IsConfigExists() )
+		{
+			std::wstring sData = L"";
+
+			NSFile::CFileBinary oFile;
+			if ( oFile.ReadAllTextUtf8(m_sConfigName, sData) )
+			{
+				std::vector<std::wstring> arrLines;
+				if ( SplitStringAsVector(sData, L"\n", arrLines) )
+				{
+					for (size_t i = 0; i < arrLines.size(); i++)
+					{
+						std::wstring sLine = arrLines[i];
+
+						if ( sLine.find(sCfgUser) != std::wstring::npos )
+							m_sVmUser = sLine.substr(sCfgUser.length());
+						else if ( sLine.find(sCfgPassword) != std::wstring::npos )
+							m_sVmPassword = sLine.substr(sCfgPassword.length());
+
+						else if ( sLine.find(sCfgBranch) != std::wstring::npos )
+							m_sBranch = sLine.substr(sCfgBranch.length());
+						else if ( sLine.find(sCfgVersion) != std::wstring::npos )
+							m_sVersion = sLine.substr(sCfgVersion.length());
+
+						else if ( sLine.find(sCfgStartDebian) != std::wstring::npos )
+							m_bStartDebian = sLine.substr(sCfgStartDebian.length()) == L"1";
+						else if ( sLine.find(sCfgStartRedhat) != std::wstring::npos )
+							m_bStartRedHat = sLine.substr(sCfgStartRedhat.length()) == L"1";
+					}
+
+					// Prepare urls
+					if ( m_sBranch.length() && m_sVersion.length() )
+					{
+						std::wstring sAmazonS3 = L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux";
+
+						if ( m_bStartDebian )
+						{
+							m_sDebianUrl = sAmazonS3 + L"/debian/onlyoffice-desktopeditors_{BRANCH}-{VERSION}_amd64.deb";
+							NSStringUtils::string_replace(m_sDebianUrl, L"{BRANCH}", m_sBranch);
+							NSStringUtils::string_replace(m_sDebianUrl, L"{VERSION}", m_sVersion);
+						}
+						if ( m_bStartRedHat )
+						{
+							m_sCentosUrl = sAmazonS3 + L"/rhel/onlyoffice-desktopeditors-{BRANCH}-{VERSION}.el7.x86_64.rpm";
+							NSStringUtils::string_replace(m_sCentosUrl, L"{BRANCH}", m_sBranch);
+							NSStringUtils::string_replace(m_sCentosUrl, L"{VERSION}", m_sVersion);
+
+							m_sOpSuseUrl = sAmazonS3 + L"/suse/onlyoffice-desktopeditors-{BRANCH}-{VERSION}.suse12.x86_64.rpm";
+							NSStringUtils::string_replace(m_sOpSuseUrl, L"{BRANCH}", m_sBranch);
+							NSStringUtils::string_replace(m_sOpSuseUrl, L"{VERSION}", m_sVersion);
+						}
+					}
+				}
+
+				oFile.CloseFile();
+			}
+		}
+
+		return bResult;
 	}
 
 private:
@@ -1079,110 +1172,18 @@ int main(int argc, char** argv)
 {
 	// Test
 	CVirtualBox oTester;
-
-	// Parse arguments
-	for (int i = 0; i < argc; ++i)
-	{
-#ifdef WIN32
-		std::wstring sParam(argv[i]);
-#else
-		std::string sParamA(argv[i]);
-		std::wstring sParam = UTF8_TO_U(sParamA);
-#endif
-
-		if (sParam.find(L"--") == 0)
-		{
-			std::wstring sKey = L"";
-			std::wstring sValue = L"";
-
-			// Parse key - value
-			std::wstring::size_type pos = sParam.find(L'=');
-			if ( pos == std::wstring::npos )
-			{
-				sKey = sParam;
-
-				if ( IsNeedSetValue(sKey))
-				{
-					if (i < argc - 1)
-					{
-						i++;
-#ifdef WIN32
-						sValue = std::wstring(argv[i]);
-#else
-						std::string sValueA(argv[i]);
-						sValue = UTF8_TO_U(sValueA);
-#endif
-					}
-
-					// Checks if value or next key exist
-					if ( !sValue.length() || (sValue.find(L"--") == 0) )
-					{
-						std::wcout << L"\nError. Check input parameters\n";
-						return 1;
-					}
-				}
-			}
-			else
-			{
-				sKey = sParam.substr(0, pos);
-				sValue = sParam.substr( pos + 1 );
-			}
-
-			// Check key
-			if ( !IsCommandExists(sKey) )
-			{
-				std::wcout << L"\nError. Unknown parameter " << sKey << L"\n" << L"Print usage information --help\n";
-				return 1;
-			}
-
-			// Usability
-			if (sKey == sCmdHelp || sKey == sCmdHelpFull)
-			{
-				oTester.PrintHelp();
-			}
-
-			// Settings
-			else if (sKey == sCmdUser)
-			{
-				sValue = CorrectValue(sValue);
-				oTester.SetUser(sValue);
-			}
-			else if (sKey == sCmdPassword)
-			{
-				sValue = CorrectValue(sValue);
-				oTester.SetPassword(sValue);
-			}
-			else if (sKey == sCmdDebianUrl)
-			{
-				sValue = CorrectValue(sValue);
-				oTester.SetDebianUrl(sValue);
-			}
-			else if (sKey == sCmdRedhatUrl)
-			{
-				sValue = CorrectValue(sValue);
-				oTester.SetRedHatUrl(sValue);
-			}
-			// Start
-			else if (sKey == sCmdStartAll)
-			{
-				oTester.SetStartAll();
-			}
-			else if (sKey == sCmdStartDebian)
-			{
-				oTester.SetStartDebian();
-			}
-			else if (sKey == sCmdStartRedHat)
-			{
-				oTester.SetStartRedHat();
-			}
-		}
-	}
-
-	// Work
 	oTester.RemoveReport();
 	oTester.CreateReport();
 
+	if ( !oTester.IsConfigExists() )
+	{
+		oTester.CreateConfig();
+		return 0;
+	}
+
+	oTester.ReadConfig();
 	oTester.InitVms();
+
 	std::vector<CVm*> arrStartVms = oTester.GetStartVms();
 
 	for (size_t i = 0; i < arrStartVms.size(); i++)
@@ -1190,9 +1191,6 @@ int main(int argc, char** argv)
 		CVm* pVm = arrStartVms[i];
 		std::wstring sGuid = pVm->m_sGuid;
 		std::wstring sName = pVm->m_sName;
-
-		//if ( sName != L"AstraOrel" )
-		//	continue;
 
 		oTester.SetVm(pVm);
 

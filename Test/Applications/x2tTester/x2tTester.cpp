@@ -36,6 +36,8 @@ CFormatsList& CFormatsList::operator=(const CFormatsList& list)
 	for(auto& val : list.m_crossplatform)
 		m_crossplatform.push_back(val);
 
+	m_pdf = list.m_pdf;
+
 	return *this;
 }
 
@@ -230,7 +232,7 @@ CFormatsList CFormatsList::GetOutputExts()
 	list.m_presentations.push_back(L"odp");
 	list.m_presentations.push_back(L"otp");
 	list.m_presentations.push_back(L"potm");
-	list.m_presentations.push_back(L"potx");;
+	list.m_presentations.push_back(L"potx");
 	list.m_presentations.push_back(L"ppsm");
 	list.m_presentations.push_back(L"ppsx");
 	list.m_presentations.push_back(L"pptm");
@@ -493,7 +495,7 @@ void Cx2tTester::Start()
 		// setup output_formats for file
 		std::vector<std::wstring> output_file_exts;
 
-		for(auto ext : m_outputExts)
+		for(auto& ext : m_outputExts)
 		{
 			// documents -> documents
 			if(((m_outputFormatsList.IsDocument(ext) && m_inputFormatsList.IsDocument(input_ext))
@@ -678,7 +680,7 @@ std::vector<std::wstring> Cx2tTester::ParseExtensionsString(std::wstring extensi
 		else if(ext == L"spreadsheets")
 			exts = fl.GetSpreadsheets();
 
-		else
+		else if (pos != 0)
 			exts.push_back(ext);
 
 		extensions.erase(0, pos + 1);
@@ -776,8 +778,8 @@ DWORD CConverter::ThreadProc()
 	// input_format in many output exts
 	for(int i = 0; i < m_outputExts.size(); i++)
 	{
-		std::wstring& output_ext = m_outputExts[i];
-		int output_format =  checker.GetFormatByExtension(L"." + output_ext);
+		std::wstring output_ext = L"."+ m_outputExts[i];
+		int output_format =  checker.GetFormatByExtension(output_ext);
 
 		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
 		std::wstring xml_params_file = m_outputFilesDirectory + FILE_SEPARATOR_STR + xml_params_filename;

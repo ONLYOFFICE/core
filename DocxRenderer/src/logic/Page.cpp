@@ -293,6 +293,9 @@ namespace NSDocxRenderer
 				}
 			}
 
+			double dDeterminant = sqrt(fabs(m_pTransform->Determinant()));
+			pShape->m_oPen.Size *= dDeterminant;
+
 			pShape->SetVector(std::move(m_oVector));
 			m_arShapes.push_back(pShape);
 		}

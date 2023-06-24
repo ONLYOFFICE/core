@@ -263,6 +263,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsDeleteOk = false;
 	m_bIsFilenameCsvTxtParams = true;
 	m_bIsFilenamePassword = true;
+	m_bTroughConversion = false;
 	m_defaultCsvDelimiter = L";";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList = CFormatsList::GetDefaultExts();
@@ -270,6 +271,8 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_timeout = 5 * 60; // 5 min
 	SetConfig(configPath);
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
+	m_troughConversionDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_t";
+	m_fontsDirectory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
 
 
 	// CorrectPathW works strange with directories starts with "./"
@@ -355,6 +358,7 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"timeout" && !node.GetText().empty()) m_timeout = std::stoi(node.GetText());
 			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty()) m_bIsFilenameCsvTxtParams = std::stoi(node.GetText());
 			else if(name == L"filenamePassword" && !node.GetText().empty()) m_bIsFilenamePassword = std::stoi(node.GetText());
+			else if(name == L"troughConversion" && !node.GetText().empty()) m_bTroughConversion = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
 			else if(name == L"inputFilesList" && !node.GetText().empty())
@@ -420,9 +424,8 @@ void Cx2tTester::Start()
 	m_timeStart = NSTimers::GetTickCount();
 
 	// check fonts
-	std::wstring fonts_directory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
 	CApplicationFontsWorker fonts_worker;
-	fonts_worker.m_sDirectory = fonts_directory;
+	fonts_worker.m_sDirectory = m_fontsDirectory;
 	if (!NSDirectory::Exists(fonts_worker.m_sDirectory))
 		NSDirectory::CreateDirectory(fonts_worker.m_sDirectory);
 
@@ -442,6 +445,7 @@ void Cx2tTester::Start()
 
 	m_outputDirectory = CorrectPathW(m_outputDirectory);
 	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
+	m_troughConversionDirectory = CorrectPathW(m_troughConversionDirectory);
 
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputDirectory))
@@ -476,9 +480,38 @@ void Cx2tTester::Start()
 	if(files.size() < m_maxProc)
 		m_maxProc = files.size();
 
+	// conversion in _t directory -> _t directory to output
+	if(m_bTroughConversion)
+	{
+		if(NSDirectory::Exists(m_troughConversionDirectory))
+			NSDirectory::DeleteDirectory(m_troughConversionDirectory);
+
+		NSDirectory::CreateDirectory(m_troughConversionDirectory);
+
+		auto copy_outputDirectory = m_outputDirectory;
+		auto copy_outputExts = m_outputExts;
+
+		m_outputDirectory = m_troughConversionDirectory;
+		m_outputExts = {L"doct", L"xlst", L"pptt"};
+
+		Convert(files, true);
+
+		m_outputDirectory = copy_outputDirectory;
+		m_outputExts = copy_outputExts;
+		m_inputDirectory = m_troughConversionDirectory;
+
+		files = NSDirectory::GetFiles(m_troughConversionDirectory, true);
+	}
+
+	Convert(files);
+	WriteTime();
+}
+
+void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory)
+{
 	for(int i = 0; i < files.size(); i++)
 	{
-		std::wstring& input_file = files[i];
+		const std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
@@ -487,7 +520,9 @@ void Cx2tTester::Start()
 		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
 																	input_file_directory.size() - m_inputDirectory.size());
 
-		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
+		std::wstring output_files_directory = m_outputDirectory + input_subfolders;
+		if(!bNoDirectory)
+			output_files_directory += FILE_SEPARATOR_STR + input_filename;
 
 		// setup output_formats for file
 		std::vector<std::wstring> output_file_exts;
@@ -578,7 +613,7 @@ void Cx2tTester::Start()
 		converter->SetInputExt(input_ext);
 		converter->SetOutputFilesDirectory(output_files_directory);
 		converter->SetOutputExts(output_file_exts);
-		converter->SetFontsDirectory(fonts_directory);
+		converter->SetFontsDirectory(m_fontsDirectory);
 		converter->SetX2tPath(m_x2tPath);
 		converter->SetErrorsOnly(m_bIsErrorsOnly);
 		converter->SetDeleteOk(m_bIsDeleteOk);
@@ -599,8 +634,6 @@ void Cx2tTester::Start()
 	// waiting all procs end
 	while(!IsAllFree())
 		NSThreads::Sleep(150);
-
-	WriteTime();
 }
 void Cx2tTester::WriteReportHeader()
 {

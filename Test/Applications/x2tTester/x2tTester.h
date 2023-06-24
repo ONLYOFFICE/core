@@ -106,6 +106,7 @@ public:
 private:
 	// parse string like "docx txt" into vector
 	std::vector<std::wstring> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
+	void Convert(const std::vector<std::wstring>& files, bool bNoDirectory = false);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -114,6 +115,8 @@ private:
 	std::wstring m_x2tPath;
 
 	std::wstring m_errorsXmlDirectory;
+	std::wstring m_troughConversionDirectory;
+	std::wstring m_fontsDirectory;
 
 	// fonts
 	bool m_bIsUseSystemFonts;
@@ -143,6 +146,9 @@ private:
 
 	unsigned long m_timeout;
 	unsigned long m_timeStart;
+
+	// format -> *t format -> all formats
+	bool m_bTroughConversion;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport

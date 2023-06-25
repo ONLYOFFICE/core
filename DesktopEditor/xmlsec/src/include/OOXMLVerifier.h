@@ -12,43 +12,43 @@ class COOXMLSignature_private;
 class OPENSSL_DECL COOXMLSignature
 {
 public:
-    COOXMLSignature();
-    ~COOXMLSignature();
+	COOXMLSignature();
+	~COOXMLSignature();
 
 public:
-    int GetValid();
-    std::string GetGuid();
-    std::string GetDate();
-    ICertificate* GetCertificate();
-    std::string GetImageValidBase64();
-    std::string GetImageInvalidBase64();
+	int GetValid();
+	std::string GetGuid();
+	std::string GetDate();
+	ICertificate* GetCertificate();
+	std::string GetImageValidBase64();
+	std::string GetImageInvalidBase64();
 
-    std::wstring GetFile();
+	std::wstring GetFile();
 
 public:
-    void Check();
+	void Check();
 
-    friend class COOXMLVerifier_private;
-    friend class COOXMLVerifier;
+	friend class COOXMLVerifier_private;
+	friend class COOXMLVerifier;
 private:
-    COOXMLSignature_private* m_internal;
+	COOXMLSignature_private* m_internal;
 };
 
 class COOXMLVerifier_private;
 class Q_DECL_EXPORT COOXMLVerifier
 {
 public:
-    COOXMLVerifier(const std::wstring& sFolder);
-    COOXMLVerifier(unsigned char* data, unsigned long length);
-    ~COOXMLVerifier();
+	COOXMLVerifier(const std::wstring& sFolder);
+	COOXMLVerifier(unsigned char* data, unsigned long length);
+	~COOXMLVerifier();
 
-    int GetSignatureCount();
-    COOXMLSignature* GetSignature(const int& index);
+	int GetSignatureCount();
+	COOXMLSignature* GetSignature(const int& index);
 
-    void RemoveSignature(const std::string& sGuid);
+	void RemoveSignature(const std::string& sGuid);
 
 private:
-    COOXMLVerifier_private* m_internal;
+	COOXMLVerifier_private* m_internal;
 };
 
 #endif //_XML_OOXMLVERIFIER_H_

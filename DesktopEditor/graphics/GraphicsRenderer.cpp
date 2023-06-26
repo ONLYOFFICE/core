@@ -1406,6 +1406,11 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
 }
 
+void CGraphicsRenderer::SetAlphaMask(const Aggplus::CAlphaMask &oAlphaMask)
+{
+	m_pRenderer->SetAlphaMask(oAlphaMask);
+}
+
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)
 {
 	m_bGlobalAlphaEnabled = bEnabled;

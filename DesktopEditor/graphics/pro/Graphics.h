@@ -39,6 +39,8 @@
 
 #include "./Image.h"
 
+#include "../../graphics/AlphaMask.h"
+
 #include "../IRenderer.h"
 #include "../structures.h"
 
@@ -115,6 +117,9 @@ namespace NSGraphics
         virtual void Stroke() = 0;
         virtual double GetPixW() = 0;
         virtual double GetPixH() = 0;
+
+		//alpha mask methods
+		virtual void SetAlphaMask(const Aggplus::CAlphaMask& oAlphaMask) = 0;
 
         // smart methods
         virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;

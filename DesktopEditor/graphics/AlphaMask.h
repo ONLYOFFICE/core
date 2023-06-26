@@ -27,6 +27,8 @@ namespace Aggplus
 		Status LoadFromImage(IGrObject* pGrObject, bool bCopy = true);
 
 		BYTE* GetMask();
+
+		CAlphaMask& operator=(const CAlphaMask& oAlphaMask);
 	public:
 		CAlphaMask_private *m_internal;
 	};

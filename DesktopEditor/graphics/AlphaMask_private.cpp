@@ -42,7 +42,7 @@ namespace Aggplus
 		if (0 == unWidth || 0 == unHeight)
 			return InvalidParameter;
 
-		agg::int8u* pAlphaBufffer = new agg::int8u[unWidth * unHeight * ((enDataType == ImageBuffer) ? 4 : 1)];
+		BYTE* pAlphaBufffer = new BYTE[unWidth * unHeight * ((enDataType == ImageBuffer) ? 4 : 1)];
 
 		if (NULL == pAlphaBufffer)
 			return OutOfMemory;
@@ -149,6 +149,28 @@ namespace Aggplus
 	void CAlphaMask_private::StartApplying()
 	{
 		m_enStatus = ApplyingAlphaMask;
+	}
+
+	CAlphaMask_private &CAlphaMask_private::operator=(const CAlphaMask_private &oAlphaMask)
+	{
+		Clear();
+
+		m_enDataType     = oAlphaMask.m_enDataType;
+		m_enStatus       = oAlphaMask.m_enStatus;
+		m_bExternalBuffer = false;
+
+		if (EmptyAlphaMask == m_enStatus)
+			return *this;
+
+		const UINT unSize = oAlphaMask.m_oRenderingBuffer.width() * oAlphaMask.m_oRenderingBuffer.height() * ((m_enDataType == ImageBuffer) ? 4 : 1);
+
+		BYTE* pBuffer = new BYTE[unSize];
+
+		memcpy(pBuffer, oAlphaMask.m_oRenderingBuffer.buf(), unSize);
+
+		Set(pBuffer, oAlphaMask.m_oRenderingBuffer.width(), oAlphaMask.m_oRenderingBuffer.height(), m_enDataType);
+
+		return *this;
 	}
 
 	void CAlphaMask_private::Set(BYTE *pBuffer, UINT unWidth, UINT unHeight, AMaskDataType enDataType)

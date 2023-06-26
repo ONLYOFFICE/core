@@ -1,6 +1,7 @@
 #include "../../pro/Graphics.h"
 #include "../../../raster/BgraFrame.h"
 #include "../../../common/Directory.h"
+#include "../../AlphaMask.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
 		GenerationMask,
 		LoadMaskFromBuffer,
 		LoadMaskFromFile
-	} enMode = GenerationMask;
+	} enMode = LoadMaskFromBuffer;
 
 	switch (enMode)
 	{
@@ -68,6 +69,25 @@ int main(int argc, char *argv[])
 		}
 		case LoadMaskFromBuffer:
 		{
+			Aggplus::CAlphaMask oAlphaMask;
+
+			BYTE* pAlphaBuffer = new BYTE[unWidth * unHeight];
+
+			BYTE uchAlphaValue = 0;
+
+			for (UINT unRow = 0; unRow < unHeight; ++unRow)
+			{
+				for (UINT unColumn = 0; unColumn < unWidth; ++unColumn)
+					pAlphaBuffer[unRow * unWidth + unColumn] = uchAlphaValue;
+
+				if (0 != unRow && 0 == unRow % 100)
+					uchAlphaValue += 25;
+			}
+
+			oAlphaMask.LoadFromAlphaBuffer(pAlphaBuffer, unWidth, unHeight, false);
+
+			pRasterRenderer->SetAlphaMask(oAlphaMask);
+
 			break;
 		}
 		case LoadMaskFromFile:

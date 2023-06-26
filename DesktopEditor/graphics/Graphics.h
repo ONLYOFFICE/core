@@ -396,6 +396,7 @@ public:
 	INT DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 
 	//Работа с альфа-маской
+	Status SetAlphaMask(const CAlphaMask& oAlphaMask);
 	Status CreateAlphaMask();
 	Status ResetAlphaMask();
 	Status StartApplyingAlphaMask();

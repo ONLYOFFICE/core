@@ -51,4 +51,10 @@ namespace Aggplus
 	{
 		return m_internal->GetMask();
 	}
+
+	CAlphaMask &CAlphaMask::operator=(const CAlphaMask &oAlphaMask)
+	{
+		*m_internal = *oAlphaMask.m_internal;
+		return *this;
+	}
 }

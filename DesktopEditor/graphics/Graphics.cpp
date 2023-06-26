@@ -1201,6 +1201,13 @@ namespace Aggplus
 		return TRUE;
 	}
 
+	Status CGraphics::SetAlphaMask(const CAlphaMask &oAlphaMask)
+	{
+		m_oAlphaMask = oAlphaMask;
+		m_oAlphaMask.m_internal->StartApplying();
+		return Ok;
+	}
+
 	Status CGraphics::CreateAlphaMask()
 	{
 		return m_oAlphaMask.CrateImageBuffer(m_frame_buffer.width(), m_frame_buffer.height());

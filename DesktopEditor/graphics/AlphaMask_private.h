@@ -69,6 +69,8 @@ namespace Aggplus
 		BYTE* GetMask();
 
 		void StartApplying();
+
+		CAlphaMask_private& operator=(const CAlphaMask_private& oAlphaMask);
 	private:
 		void Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, AMaskDataType enDataType);
 

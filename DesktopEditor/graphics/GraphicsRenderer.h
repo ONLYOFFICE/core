@@ -351,6 +351,9 @@ public:
 	inline double GetPixW() { return m_pRenderer->GetPixW(); }
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
 
+	// alpha mask methods
+	void SetAlphaMask(const Aggplus::CAlphaMask& oAlphaMask);
+
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)
     {

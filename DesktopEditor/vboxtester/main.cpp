@@ -116,8 +116,13 @@ class CVm
 public:
 	std::wstring	m_sName;
 	std::wstring	m_sGuid;
+
+	// from showvminfo command
 	std::wstring	m_sGuestOS;
+
+	// real OS
 	std::wstring	m_sOperationSystem;
+
 	SystemType		m_eType;
 
 	CVm()
@@ -134,6 +139,7 @@ public:
 		m_sName = sName;
 		m_sGuid = sGuid;
 		m_sGuestOS = sGuestOS;
+		m_sOperationSystem = L"";
 		m_eType = eType;
 	}
 
@@ -186,16 +192,22 @@ private:
 	std::vector<CVm*> m_arrVms;
 	CVm* m_pVm;
 
-	bool m_bStartDebian;
-	bool m_bStartRedHat;
+	std::wstring m_sDebianStart;
+	std::wstring m_sRedHatStart;
+
+	std::wstring m_sDebianScript;
+	std::wstring m_sRedHatScript;
 
 public:
 	CVirtualBox()
 	{
 		m_pVm =				NULL;
 
-		m_bStartDebian =	false;
-		m_bStartRedHat =	false;
+		m_sDebianStart =	L"";
+		m_sRedHatStart =	L"";
+
+		m_sDebianScript =	L"";
+		m_sRedHatScript =	L"";
 
 		m_sVmUser =			L"";
 		m_sVmPassword =		L"";
@@ -279,19 +291,51 @@ public:
 
 	std::vector<CVm*> GetStartVms()
 	{
-		std::vector<CVm*> arrEmpty;
-		std::vector<CVm*> arrDebian = GetDebianVms();
-		std::vector<CVm*> arrRedHat = GetRedHatVms();
+		std::vector<CVm*> arrResult;
 
-		std::vector<CVm*> arrAll = arrDebian;
-		arrAll.insert(arrAll.end(), arrRedHat.begin(), arrRedHat.end());
+		// Check Debian systems
+		if ( m_sDebianStart.length() )
+		{
+			std::vector<CVm*> arrDebian = GetDebianVms();
 
-		if ( m_bStartDebian )
-			return m_bStartRedHat ? arrAll : arrDebian;
-		if ( m_bStartRedHat )
-			return m_bStartDebian ? arrAll : arrRedHat;
+			std::wstring sDebian = m_sDebianStart;
+			std::vector<std::wstring> list;
+			NSStringUtils::string_replace(sDebian, L", ", L",");
 
-		return arrEmpty;
+			if ( SplitStringAsVector(sDebian, L",", list) )
+			{
+				for (size_t i = 0; i < arrDebian.size(); i++)
+				{
+					if ( std::find(list.begin(), list.end(), arrDebian[i]->m_sName) != list.end() )
+					{
+						arrResult.push_back(arrDebian[i]);
+					}
+				}
+			}
+		}
+
+		// Check RedHat systems
+		if ( m_sRedHatStart.length() )
+		{
+			std::vector<CVm*> arrRedHat = GetRedHatVms();
+
+			std::wstring sRedHat = m_sRedHatStart;
+			std::vector<std::wstring> list;
+			NSStringUtils::string_replace(sRedHat, L", ", L",");
+
+			if ( SplitStringAsVector(sRedHat, L",", list) )
+			{
+				for (size_t i = 0; i < arrRedHat.size(); i++)
+				{
+					if ( std::find(list.begin(), list.end(), arrRedHat[i]->m_sName) != list.end() )
+					{
+						arrResult.push_back(arrRedHat[i]);
+					}
+				}
+			}
+		}
+
+		return arrResult;
 	}
 
 	bool StartVm()
@@ -624,18 +668,35 @@ public:
 
 			if ( m_pVm->IsDebian() )
 			{
-				sData = L"#!/bin/bash\n" \
-						L"echo \"Install DesktopEditors\"\n" \
-						L"apt purge onlyoffice-desktopeditors -y\n" \
-						L"dpkg -i ./" + sDistribFile + "\n" \
-						L"apt install -f";
+				if ( m_sDebianScript.length() )
+				{
+					if ( NSFile::CFileBinary::Exists(m_sDebianScript) )
+					{
+						NSFile::CFileBinary::ReadAllTextUtf8(m_sDebianScript, sData);
+					}
+				}
+				else
+				{
+					sData = L"#!/bin/bash\n" \
+							L"echo \"Install DesktopEditors\"\n" \
+							L"apt purge onlyoffice-desktopeditors -y\n" \
+							L"dpkg -i ./" + sDistribFile + "\n" \
+							L"apt install -f";
+				}
 			}
 			else if ( m_pVm->IsRedHat() )
 			{
-				sData = L"#!/bin/bash\n" \
-						L"echo \"Install DesktopEditors\"\n" \
-						L"rpm -e onlyoffice-desktopeditors\n" \
-						L"rpm -i ./" + sDistribFile;
+				if ( m_sRedHatScript.length() )
+				{
+					NSFile::CFileBinary::ReadAllTextUtf8(m_sRedHatScript, sData);
+				}
+				else
+				{
+					sData = L"#!/bin/bash\n" \
+							L"echo \"Install DesktopEditors\"\n" \
+							L"rpm -e onlyoffice-desktopeditors\n" \
+							L"rpm -i ./" + sDistribFile;
+				}
 			}
 
 			NSFile::CFileBinary oFile;
@@ -792,18 +853,15 @@ public:
 		oFile.close();
 	}
 
-	void WriteReport(const std::wstring& sText, bool bOnlyStdout = false)
+	void WriteReport(const std::wstring& sText)
 	{
 		if ( sText.length() )
 		{
-			if ( !bOnlyStdout )
-			{
-				std::wofstream oFile;
-				std::wstring sReportPath = GetReportDir() + L"/" + m_sReportName;
-				oFile.open(U_TO_UTF8(sReportPath), std::ios_base::app);
-				oFile << sText << std::endl;
-				oFile.close();
-			}
+			std::wofstream oFile;
+			std::wstring sReportPath = GetReportDir() + L"/" + m_sReportName;
+			oFile.open(U_TO_UTF8(sReportPath), std::ios_base::app);
+			oFile << sText << std::endl;
+			oFile.close();
 
 			std::wcout << sText << std::endl;
 		}
@@ -834,12 +892,28 @@ public:
 
 	bool CreateConfig()
 	{
+		std::wstring sDebian = L"";
+		std::wstring sRedHat = L"";
+		std::vector<CVm*> arrDebian = GetDebianVms();
+		std::vector<CVm*> arrRedHat = GetRedHatVms();
+
+		for (size_t i = 0; i < arrDebian.size(); i++)
+		{
+			sDebian += arrDebian[i]->m_sName + (i < arrDebian.size() - 1 ? L", " : L"");
+		}
+		for (size_t i = 0; i < arrRedHat.size(); i++)
+		{
+			sRedHat += arrRedHat[i]->m_sName + (i < arrRedHat.size() - 1 ? L", " : L"");
+		}
+
 		std::wstring sData = sCfgUser + L"\n" +
-							 sCfgPassword + L"\n" +
-							 sCfgBranch + L"\n" +
-							 sCfgVersion + L"\n" +
-							 sCfgStartDebian + L"\n" +
-							 sCfgStartRedhat + L"\n";
+							 sCfgPassword + L"\n\n" +
+							 sCfgBranch + L"7.4.0\n" +
+							 sCfgVersion + L"173\n\n" +
+							 sCfgDebianStart + sDebian + L"\n" +
+							 sCfgRedhatStart + sRedHat + L"\n\n" +
+							 sCfgDebianScript + L"\n" +
+							 sCfgRedhatScript + L"\n\n";
 
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(m_sConfigName);
@@ -867,20 +941,29 @@ public:
 					{
 						std::wstring sLine = arrLines[i];
 
+						// Auth
 						if ( sLine.find(sCfgUser) != std::wstring::npos )
 							m_sVmUser = sLine.substr(sCfgUser.length());
 						else if ( sLine.find(sCfgPassword) != std::wstring::npos )
 							m_sVmPassword = sLine.substr(sCfgPassword.length());
 
+						// URL
 						else if ( sLine.find(sCfgBranch) != std::wstring::npos )
 							m_sBranch = sLine.substr(sCfgBranch.length());
 						else if ( sLine.find(sCfgVersion) != std::wstring::npos )
 							m_sVersion = sLine.substr(sCfgVersion.length());
 
-						else if ( sLine.find(sCfgStartDebian) != std::wstring::npos )
-							m_bStartDebian = sLine.substr(sCfgStartDebian.length()) == L"1";
-						else if ( sLine.find(sCfgStartRedhat) != std::wstring::npos )
-							m_bStartRedHat = sLine.substr(sCfgStartRedhat.length()) == L"1";
+						// Systems
+						else if ( sLine.find(sCfgDebianStart) != std::wstring::npos )
+							m_sDebianStart = sLine.substr(sCfgDebianStart.length());
+						else if ( sLine.find(sCfgRedhatStart) != std::wstring::npos )
+							m_sRedHatStart = sLine.substr(sCfgRedhatStart.length());
+
+						// Custom setup scripts
+						else if ( sLine.find(sCfgDebianScript) != std::wstring::npos )
+							m_sDebianScript = sLine.substr(sCfgDebianScript.length());
+						else if ( sLine.find(sCfgRedhatScript) != std::wstring::npos )
+							m_sRedHatScript = sLine.substr(sCfgRedhatScript.length());
 					}
 
 					// Prepare urls
@@ -888,13 +971,13 @@ public:
 					{
 						std::wstring sAmazonS3 = L"https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/desktop/linux";
 
-						if ( m_bStartDebian )
+						if ( m_sDebianStart.length() )
 						{
 							m_sDebianUrl = sAmazonS3 + L"/debian/onlyoffice-desktopeditors_{BRANCH}-{VERSION}_amd64.deb";
 							NSStringUtils::string_replace(m_sDebianUrl, L"{BRANCH}", m_sBranch);
 							NSStringUtils::string_replace(m_sDebianUrl, L"{VERSION}", m_sVersion);
 						}
-						if ( m_bStartRedHat )
+						if ( m_sRedHatStart.length() )
 						{
 							m_sCentosUrl = sAmazonS3 + L"/rhel/onlyoffice-desktopeditors-{BRANCH}-{VERSION}.el7.x86_64.rpm";
 							NSStringUtils::string_replace(m_sCentosUrl, L"{BRANCH}", m_sBranch);
@@ -1172,6 +1255,8 @@ int main(int argc, char** argv)
 {
 	// Test
 	CVirtualBox oTester;
+	oTester.InitVms();
+
 	oTester.RemoveReport();
 	oTester.CreateReport();
 
@@ -1180,9 +1265,7 @@ int main(int argc, char** argv)
 		oTester.CreateConfig();
 		return 0;
 	}
-
 	oTester.ReadConfig();
-	oTester.InitVms();
 
 	std::vector<CVm*> arrStartVms = oTester.GetStartVms();
 

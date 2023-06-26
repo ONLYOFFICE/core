@@ -41,5 +41,8 @@ std::wstring sCfgPassword =                     L"password=";
 std::wstring sCfgBranch =                       L"branch=";
 std::wstring sCfgVersion =                      L"version=";
 
-std::wstring sCfgStartDebian =                  L"start-debian=";
-std::wstring sCfgStartRedhat =                  L"start-redhat=";
+std::wstring sCfgDebianStart =                  L"debian-start=";
+std::wstring sCfgRedhatStart =                  L"redhat-start=";
+
+std::wstring sCfgDebianScript =                 L"debian-script=";
+std::wstring sCfgRedhatScript =                 L"redhat-script=";

@@ -854,15 +854,22 @@
 			{
 				var MKType = reader.readString();
 				MK[MKType] = {};
-				MK[MKType]["w"] = reader.readInt();
-				MK[MKType]["h"] = reader.readInt();
-				let np1 = reader.readInt();
-				let np2 = reader.readInt();
-				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-				MK[MKType]["retValue"] = np2 << 32 | np1;
+				MK[MKType]["j"] = reader.readInt();
+				let unique = reader.readByte();
+				if (unique)
+				{
+					MK[MKType]["w"] = reader.readInt();
+					MK[MKType]["h"] = reader.readInt();
+					let np1 = reader.readInt();
+					let np2 = reader.readInt();
+					// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+					MK[MKType]["retValue"] = np2 << 32 | np1;
+				}
 			}
 			res.push(MK);
 		}
+		
+		// TODO Заполнение других видов ссылками на ту же память? 
 
 		Module["_free"](ext);
 		return res;

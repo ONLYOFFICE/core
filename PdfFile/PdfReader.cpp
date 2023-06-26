@@ -2387,6 +2387,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
     NSWasm::CData oRes;
     oRes.SkipLen();
 
+    std::vector<int> arrUniqueImage;
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
@@ -2422,9 +2423,49 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                     bFirst = false;
                 }
 
-                oRes.WriteString((BYTE*)sMKName.c_str(), sMKName.size());
+                oRes.WriteString((BYTE*)sMKName.c_str(), (unsigned int)sMKName.size());
 
                 Dict *dict = oStr.streamGetDict();
+
+                // Resources
+                Object resObj;
+                dict->lookup("Resources", &resObj);
+                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
+
+                // Получение единственного XObject из Resources, если возможно
+                bool bImage = false;
+                Object oXObject, oIm;
+                if (resDict && resDict->lookup("XObject", &oXObject)->isDict() && oXObject.dictGetLength() == 1 && oXObject.dictGetVal(0, &oIm)->isStream())
+                {
+                    Dict *oImDict = oIm.streamGetDict();
+                    Object oType, oSubtype;
+                    if (oImDict->lookup("Type", &oType)->isName("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
+                    {
+                        bImage = true;
+                    }
+                    oType.free(); oSubtype.free();
+                }
+                oXObject.free(); oIm.free();
+
+                // else
+                if (bImage)
+                {
+                    oStr.free();
+                    continue;
+                }
+                Object oStrRef;
+                oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+                int nView = oStrRef.getRefNum();
+                oRes.AddInt(nView);
+                if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
+                {
+                    oStr.free(); oStrRef.free();
+                    oRes.WriteBYTE(0);
+                    nMKLength++;
+                    continue;
+                }
+                arrUniqueImage.push_back(nView);
+                oRes.WriteBYTE(1);
 
                 // BBox
                 Object bboxObj;
@@ -2469,11 +2510,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
                 }
                 matrixObj.free();
 
-                // Resources
-                Object resObj;
-                dict->lookup("Resources", &resObj);
-                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
-
                 int nWidth  = (bbox[2] > 0) ? (int)round(bbox[2] * (double)nRasterW / dWidth) : (int)((int)dWidth  * 96 / dPageDpiX);
                 int nHeight = (bbox[3] > 0) ? (int)round(bbox[3] * (double)nRasterH / dHeight): (int)((int)dHeight * 96 / dPageDpiY);
                 oRes.AddInt(nWidth);
@@ -2517,8 +2553,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 
                 Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
 
-                Object oStrRef;
-                oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
                 pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
                 gfx->drawForm(&oStrRef, resDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
                 oStr.free(); oStrRef.free(); resObj.free();

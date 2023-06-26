@@ -197,7 +197,7 @@ public:
 	_CP_OPT(std::wstring)				svg_path_;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class anim_animate_motion : public office_element_impl<anim_set>
+class anim_animate_motion : public office_element_impl<anim_animate_motion>
 {
 public:
 	static const wchar_t* ns;
@@ -232,7 +232,7 @@ public:
 	_CP_OPT(std::wstring)				anim_color_interpolation_direction;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class anim_animate_color : public office_element_impl<anim_set>
+class anim_animate_color : public office_element_impl<anim_animate_color>
 {
 public:
 	static const wchar_t* ns;

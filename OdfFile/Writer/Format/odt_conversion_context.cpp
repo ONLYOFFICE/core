@@ -1270,8 +1270,6 @@ void odt_conversion_context::flush_section()
 }
 void odt_conversion_context::start_run(bool styled)
 {
-	if (is_hyperlink_ && text_context_.size() > 0) return;
-	
 	if (!current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
 	{
 		current_fields.back().status = 2;

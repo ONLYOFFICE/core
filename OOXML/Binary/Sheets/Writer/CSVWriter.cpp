@@ -64,7 +64,7 @@ public:
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);
-	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
+	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast = false);
 	void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void End();
 	void Close();
@@ -164,7 +164,7 @@ void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &
 					{
 						impl_->WriteCell(pRow->m_arrItems[j]);
 					}
-					impl_->WriteRowEnd(pRow);
+					impl_->WriteRowEnd(pRow, (i == pWorksheet->m_oSheetData->m_arrItems.size() - 1));
 				}
 				impl_->WriteSheetEnd(pWorksheet);
 			}
@@ -192,10 +192,10 @@ void CSVWriter::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	if (impl_)
 		impl_->WriteCell(pCell);
 }
-void CSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
+void CSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast)
 {
 	if (impl_)
-		impl_->WriteRowEnd(pWorksheet);
+		impl_->WriteRowEnd(pWorksheet, bLast);
 }
 void CSVWriter::WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -760,7 +760,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 							int numFmt = xfs->m_oNumFmtId->GetValue();
 
 							GetDefaultFormatCode(numFmt, format_code, format_type);
-							auto formatTypeIsDateTime = (*format_type == SimpleTypes::Spreadsheet::celltypeDate ||
+							auto formatTypeIsDateTime = format_type && (*format_type == SimpleTypes::Spreadsheet::celltypeDate ||
 								*format_type == SimpleTypes::Spreadsheet::celltypeDateTime ||  SimpleTypes::Spreadsheet::celltypeTime);
 							if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
 							{
@@ -811,13 +811,13 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	m_bIsWriteCell = true;
 	m_bStartCell = false;
 }
-void CSVWriter::Impl::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
+void CSVWriter::Impl::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast)
 {
 	if (m_bJSON)
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage);
 	else
 	{
-		while (m_nColDimension > m_nColCurrent) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
+		while (m_nColDimension > m_nColCurrent && !bLast) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
 		{
 			// Write delimiter
 			++m_nColCurrent;

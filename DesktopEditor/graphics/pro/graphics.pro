@@ -53,6 +53,15 @@ HEADERS += \
 SOURCES += \
     ./../GraphicsPath.cpp
 
+# alpha mask
+HEADERS += \
+    ./../AlphaMask_private.h \
+	./../AlphaMask.h
+
+SOURCES += \
+    ./../AlphaMask_private.cpp \
+    ./../AlphaMask.cpp
+
 SOURCES += \
     $$GRAPHICS_AGG_PATH/src/agg_arc.cpp \
 	$$GRAPHICS_AGG_PATH/src/agg_bezier_arc.cpp \
@@ -92,7 +101,6 @@ HEADERS += \
     ./../ArrowHead.h \
 	./../Brush.h \
 	./../Clip.h \
-	./../CAlphaMask.h \
 	./../Color.h \
 	./../Defines.h \
 	./../Graphics.h \
@@ -112,7 +120,6 @@ SOURCES += \
     ./../ArrowHead.cpp \
 	./../Brush.cpp \
 	./../Clip.cpp \
-	./../CAlphaMask.cpp \
 	./../Graphics.cpp \
 	./../GraphicsRenderer.cpp \
 	./../MetafileToRenderer.cpp \

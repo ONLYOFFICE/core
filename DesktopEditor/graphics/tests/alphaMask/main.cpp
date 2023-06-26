@@ -1,180 +1,121 @@
-#include "../../../agg-2.4/include/agg_basics.h"
-#include "../../../agg-2.4/include/agg_ellipse.h"
-
-#include "../../../agg-2.4/include/agg_color_rgba.h"
-#include "../../../agg-2.4/include/agg_pixfmt_rgba.h"
-#include "../../../agg-2.4/include/agg_rasterizer_scanline_aa.h"
-#include "../../../agg-2.4/include/agg_renderer_scanline.h"
-#include "../../../agg-2.4/include/agg_scanline_u.h"
-
-#include "../../../agg-2.4/svg/agg_svg_rasterizer.h"
-
-#include "../../../agg-2.4/include/agg_renderer_base.h"
-#include "../../../agg-2.4/include/agg_alpha_mask_u8.h"
-
-#include "../../../agg-2.4/include/agg_scanline_p.h"
-
-#include "../../../agg-2.4/include/agg_pixfmt_gray.h"
-
+#include "../../pro/Graphics.h"
 #include "../../../raster/BgraFrame.h"
-
-typedef agg::rendering_buffer         rendering_buffer_type;
-typedef agg::rasterizer_scanline_aa<> rasterizer_type;
-typedef agg::scanline_u8              scanline_type;
-
-typedef unsigned char BYTE;
-
-void testAlphaMask(const std::wstring& wsResultPath, unsigned int unWidth, unsigned int unHeight)
-{
-	if (wsResultPath.empty() || 0 == unWidth || 0 == unHeight)
-		return;
-
-	typedef agg::pixfmt_bgra32                         pixfmt_type;
-	typedef agg::alpha_mask_bgra32gray			       alpha_mask_type;
-	typedef agg::renderer_base<agg::pixfmt_bgra32>     ren_base;
-	typedef agg::renderer_scanline_aa_solid<ren_base>  renderer;
-
-	rasterizer_type oRasterizer;
-
-	// Генерируем альфа-маску
-
-	agg::rendering_buffer   oAlphaMaskRbuf;
-	alpha_mask_type         oAlphaMask(oAlphaMaskRbuf);
-
-	agg::int8u* pAlpha_buf = new agg::int8u[unWidth * unHeight * agg::svg::frame_buffer_rgba::pix_size];
-
-	oAlphaMaskRbuf.attach(pAlpha_buf, unWidth,unHeight, -4 * unWidth);
-
-	pixfmt_type oPixfAlpha(oAlphaMaskRbuf);
-	ren_base oRenBaseAlpha(oPixfAlpha);
-
-	oRenBaseAlpha.clear(agg::rgba(0, 0, 0));
-
-	renderer oRendereAlpha(oRenBaseAlpha);
-
-	agg::ellipse ell;
-
-	ell.init(unWidth / 10, unWidth / 5, unWidth / 3, unWidth / 3, 100);
-
-	oRasterizer.add_path(ell);
-	oRendereAlpha.color(agg::rgba8(255, 0, 0));
-
-	agg::scanline_p8 oScanLineAlpha;
-
-	agg::render_scanlines(oRasterizer, oScanLineAlpha, oRendereAlpha);
-
-	//
-
-	ell.init(unWidth / 2, unHeight / 2, unWidth / 2, unHeight /2, 100);
-	oRasterizer.add_path(ell);
-
-	typedef agg::scanline_u8_am<alpha_mask_type> scanline_type;
-
-	scanline_type oScanLine(oAlphaMask);
-
-	agg::int8u* pFrameBuffer = new agg::int8u[unWidth * unHeight * agg::svg::frame_buffer_rgba::pix_size];
-
-	rendering_buffer_type oRBuf(pFrameBuffer, unWidth,unHeight, -4 * unWidth);
-
-	pixfmt_type pixf(oRBuf);
-	ren_base oRenBase(pixf);
-	renderer oRenderer(oRenBase);
-
-	oRenBase.clear(agg::rgba8(0, 0, 255));
-	oRenderer.color(agg::rgba8(0, 255, 0));
-
-	agg::render_scanlines(oRasterizer, oScanLine, oRenderer);
-
-	CBgraFrame oFrame;
-	oFrame.put_Data(pFrameBuffer);
-	oFrame.put_Width(unWidth);
-	oFrame.put_Height(unHeight);
-
-	oFrame.SaveFile(wsResultPath, 4);
-
-	delete [] pAlpha_buf;
-}
-
-void testAlphaChennel(const std::wstring& wsResultPath, unsigned int unWidth, unsigned int unHeight)
-{
-	if (wsResultPath.empty() || 0 == unWidth || 0 == unHeight)
-		return;
-
-	typedef agg::pixfmt_gray8                          apixfmt_type;
-	typedef agg::alpha_mask_gray8                      alpha_mask_type;
-	typedef agg::renderer_base<apixfmt_type>           aren_base;
-	typedef agg::renderer_scanline_aa_solid<aren_base> arenderer;
-
-	rasterizer_type oRasterizer;
-
-	// Генерируем альфа-маску
-	agg::rendering_buffer   oAlphaMaskRbuf;
-	alpha_mask_type         oAlphaMask(oAlphaMaskRbuf);
-
-	agg::int8u* pAlpha_buf = new agg::int8u[unWidth * unHeight];
-
-	oAlphaMaskRbuf.attach(pAlpha_buf, unWidth,unHeight, -unWidth);
-
-	apixfmt_type oPixfAlpha(oAlphaMaskRbuf);
-	aren_base oRenBaseAlpha(oPixfAlpha);
-
-	oRenBaseAlpha.clear(agg::gray8(150));
-
-	arenderer oRendereAlpha(oRenBaseAlpha);
-
-	agg::ellipse ell;
-
-	ell.init(unWidth / 10, unWidth / 5, unWidth / 3, unWidth / 3, 100);
-
-	oRasterizer.add_path(ell);
-	oRendereAlpha.color(agg::gray8(50));
-
-	agg::scanline_p8 oScanLineAlpha;
-
-	agg::render_scanlines(oRasterizer, oScanLineAlpha, oRendereAlpha);
-
-	//
-
-	typedef agg::pixfmt_bgra32                         pixfmt_type;
-	typedef agg::renderer_base<agg::pixfmt_bgra32>     ren_base;
-	typedef agg::renderer_scanline_aa_solid<ren_base>  renderer;
-	typedef agg::scanline_u8_am<alpha_mask_type>       scanline_type;
-
-	ell.init(unWidth / 2, unHeight / 2, unWidth / 2, unHeight /2, 100);
-	oRasterizer.add_path(ell);
-
-	scanline_type oScanLine(oAlphaMask);
-
-	agg::int8u* pFrameBuffer = new agg::int8u[unWidth * unHeight * agg::svg::frame_buffer_rgba::pix_size];
-
-	rendering_buffer_type oRBuf(pFrameBuffer, unWidth,unHeight, -4 * unWidth);
-
-	pixfmt_type pixf(oRBuf);
-	ren_base oRenBase(pixf);
-	renderer oRenderer(oRenBase);
-
-	oRenBase.clear(agg::rgba8(0, 0, 255));
-	oRenderer.color(agg::rgba8(0, 255, 0));
-
-	agg::render_scanlines(oRasterizer, oScanLine, oRenderer);
-
-	CBgraFrame oFrame;
-	oFrame.put_Data(pFrameBuffer);
-	oFrame.put_Width(unWidth);
-	oFrame.put_Height(unHeight);
-
-	oFrame.SaveFile(wsResultPath, 4);
-
-	delete [] pAlpha_buf;
-}
+#include "../../../common/Directory.h"
 
 int main(int argc, char *argv[])
 {
-	const std::wstring wsTest1 = L"alphaMask.png";
-	testAlphaMask(wsTest1, 1000, 1000);
+	NSGraphics::IGraphicsRenderer* pRasterRenderer = NSGraphics::Create();
 
-	const std::wstring wsTest2 = L"alphaChennelMask.png";
-	testAlphaChennel(wsTest2, 1000, 1000);
+	unsigned int unWidth  = 1000;
+	unsigned int unHeight = 1000;
+
+	// Создание основной картинки
+	BYTE* pData = new BYTE[4 * unWidth * unHeight];
+
+	for (unsigned long unIndex = 0; unIndex < unWidth * unHeight; ++unIndex)
+		((unsigned int*)pData)[unIndex] = 0xffffff;
+
+	CBgraFrame oFrame;
+	oFrame.put_Data(pData);
+	oFrame.put_Width(unWidth);
+	oFrame.put_Height(unHeight);
+	oFrame.put_Stride(4 * unWidth);
+
+	pRasterRenderer->CreateFromBgraFrame(&oFrame);
+	pRasterRenderer->SetSwapRGB(false);
+
+	double dW_MM = unWidth;
+	double dH_MM = unHeight;
+
+	pRasterRenderer->put_Width(dW_MM);
+	pRasterRenderer->put_Height(dH_MM);
+
+	enum
+	{
+		GenerationMask,
+		LoadMaskFromBuffer,
+		LoadMaskFromFile
+	} enMode = GenerationMask;
+
+	switch (enMode)
+	{
+		case GenerationMask:
+		{
+			// Генерируем маску
+			pRasterRenderer->BeginCommand(c_nMaskType);
+			pRasterRenderer->PathCommandStart();
+
+			pRasterRenderer->PathCommandMoveTo(0,    300);
+			pRasterRenderer->PathCommandLineTo(1000, 300);
+			pRasterRenderer->PathCommandLineTo(1000, 700);
+			pRasterRenderer->PathCommandLineTo(0,    700);
+			pRasterRenderer->PathCommandClose();
+
+			// Задаем значения для пера и кисти маски
+			pRasterRenderer->put_PenSize(100);
+			pRasterRenderer->put_PenColor(16777215); // белый 16777215
+
+			pRasterRenderer->put_BrushAlpha1(255);
+			pRasterRenderer->put_BrushColor1(8355711); // серый
+
+			pRasterRenderer->Stroke();
+			pRasterRenderer->Fill();
+
+			pRasterRenderer->EndCommand(c_nMaskType);
+			pRasterRenderer->PathCommandEnd();
+
+			break;
+		}
+		case LoadMaskFromBuffer:
+		{
+			break;
+		}
+		case LoadMaskFromFile:
+		{
+			break;
+		}
+	}
+
+	// Отрисовываем тестовый объект
+	pRasterRenderer->BeginCommand(c_nPathType);
+	pRasterRenderer->PathCommandStart();
+
+//	pRasterRenderer->PathCommandMoveTo(400, 0);
+//	pRasterRenderer->PathCommandLineTo(600, 0);
+//	pRasterRenderer->PathCommandLineTo(600, 1000);
+//	pRasterRenderer->PathCommandLineTo(400, 1000);
+//	pRasterRenderer->PathCommandClose();
+
+	pRasterRenderer->PathCommandMoveTo(300, 100);
+	pRasterRenderer->PathCommandLineTo(700, 100);
+	pRasterRenderer->PathCommandLineTo(900, 300);
+	pRasterRenderer->PathCommandLineTo(900, 700);
+	pRasterRenderer->PathCommandLineTo(700, 900);
+	pRasterRenderer->PathCommandLineTo(300, 900);
+	pRasterRenderer->PathCommandLineTo(100, 700);
+	pRasterRenderer->PathCommandLineTo(100, 300);
+	pRasterRenderer->PathCommandClose();
+
+	// Задаем значения для пера и кисти
+	pRasterRenderer->put_PenSize(100);
+	pRasterRenderer->put_PenColor(255); // красный
+
+	pRasterRenderer->put_BrushAlpha1(255);
+	pRasterRenderer->put_BrushColor1(65280); // зеленый
+
+	pRasterRenderer->Stroke();
+	pRasterRenderer->Fill();
+
+	//Сбрасываем маску
+	pRasterRenderer->BeginCommand(c_nResetMaskType);
+	pRasterRenderer->EndCommand(c_nResetMaskType);
+
+	pRasterRenderer->PathCommandEnd();
+	pRasterRenderer->EndCommand(c_nPathType);
+
+	oFrame.SaveFile(L"testAlphaMask.png", 4);
+
+	RELEASEINTERFACE(pRasterRenderer);
 
 	return 0;
 }

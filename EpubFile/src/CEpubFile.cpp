@@ -167,7 +167,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     NSDirectory::CreateDirectory(sOutputDir);
     HRESULT hRes = oFile.OpenBatchHtml(arFiles, sOutputDir, &oFileParams);
     if (bIsOutCompress && S_OK == hRes)
-        oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
+        hRes = oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
 
 #ifdef _DEBUG
     std::wcout << L"---" << (S_OK == hRes ? L"Successful" : L"Failed") << L" conversion of Epub to Docx---" << std::endl;

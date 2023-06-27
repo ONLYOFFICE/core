@@ -2391,185 +2391,329 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
-        AcroFormFieldType oType = pField->getAcroFormFieldType();
-        if (pField->getPageNum() != nPageIndex + 1 || oType != acroFormFieldPushbutton || (nButtonWidget >= 0 && i != nButtonWidget))
+        if (pField->getPageNum() != nPageIndex + 1 || pField->getAcroFormFieldType() != acroFormFieldPushbutton || (nButtonWidget >= 0 && i != nButtonWidget))
             continue;
 
         bool bFirst = true;
         int nMKPos  = -1;
         unsigned int nMKLength = 0;
         Object oMK;
-        if (pField->fieldLookup("MK", &oMK)->isDict())
+        if (!pField->fieldLookup("MK", &oMK)->isDict())
         {
-            std::vector<const char*> arrMKName { "I", "RI", "IX" };
-            for (unsigned int j = 0; j < arrMKName.size(); ++j)
+            oMK.free();
+            continue;
+        }
+
+        std::vector<const char*> arrMKName { "I", "RI", "IX" };
+        for (unsigned int j = 0; j < arrMKName.size(); ++j)
+        {
+            if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
+                continue;
+            std::string sMKName(arrMKName[j]);
+            Object oStr;
+            if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
             {
-                if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
-                    continue;
-                std::string sMKName(arrMKName[j]);
-                Object oStr;
-                if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
-                {
-                    oStr.free();
-                    continue;
-                }
-
-                if (bFirst)
-                {
-                    // Номер аннотации для сопоставления с AP
-                    oRes.AddInt(i);
-                    nMKPos = oRes.GetSize();
-                    oRes.AddInt(nMKLength);
-                    bFirst = false;
-                }
-
-                oRes.WriteString((BYTE*)sMKName.c_str(), (unsigned int)sMKName.size());
-
-                Dict *dict = oStr.streamGetDict();
-
-                // Resources
-                Object resObj;
-                dict->lookup("Resources", &resObj);
-                Dict *resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
-
-                // Получение единственного XObject из Resources, если возможно
-                bool bImage = false;
-                Object oXObject, oIm;
-                if (resDict && resDict->lookup("XObject", &oXObject)->isDict() && oXObject.dictGetLength() == 1 && oXObject.dictGetVal(0, &oIm)->isStream())
-                {
-                    Dict *oImDict = oIm.streamGetDict();
-                    Object oType, oSubtype;
-                    if (oImDict->lookup("Type", &oType)->isName("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
-                    {
-                        bImage = true;
-                    }
-                    oType.free(); oSubtype.free();
-                }
-                oXObject.free(); oIm.free();
-
-                // else
-                if (bImage)
-                {
-                    oStr.free();
-                    continue;
-                }
-                Object oStrRef;
-                oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
-                int nView = oStrRef.getRefNum();
-                oRes.AddInt(nView);
-                if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
-                {
-                    oStr.free(); oStrRef.free();
-                    oRes.WriteBYTE(0);
-                    nMKLength++;
-                    continue;
-                }
-                arrUniqueImage.push_back(nView);
-                oRes.WriteBYTE(1);
-
-                // BBox
-                Object bboxObj;
-                double bbox[4];
-                dict->lookup("BBox", &bboxObj);
-                if (bboxObj.isArray())
-                {
-                    for (int k = 0; k < 4; ++k)
-                    {
-                        Object obj1;
-                        bboxObj.arrayGet(k, &obj1);
-                        bbox[k] = obj1.getNum();
-                        obj1.free();
-                    }
-                }
-                else
-                {
-                    bbox[0] = 0; bbox[1] = 0;
-                    bbox[2] = 0; bbox[3] = 0;
-                }
-                bboxObj.free();
-
-                // Matrix
-                double m[6];
-                Object matrixObj;
-                dict->lookup("Matrix", &matrixObj);
-                if (false && matrixObj.isArray())
-                {
-                    for (int k = 0; k < 6; ++k)
-                    {
-                        Object obj1;
-                        matrixObj.arrayGet(k, &obj1);
-                        m[k] = obj1.getNum();
-                        obj1.free();
-                    }
-                }
-                else
-                {
-                    m[0] = 1; m[1] = 0;
-                    m[2] = 0; m[3] = 1;
-                    m[4] = 0; m[5] = 0;
-                }
-                matrixObj.free();
-
-                int nWidth  = (bbox[2] > 0) ? (int)round(bbox[2] * (double)nRasterW / dWidth) : (int)((int)dWidth  * 96 / dPageDpiX);
-                int nHeight = (bbox[3] > 0) ? (int)round(bbox[3] * (double)nRasterH / dHeight): (int)((int)dHeight * 96 / dPageDpiY);
-                oRes.AddInt(nWidth);
-                oRes.AddInt(nHeight);
-
-                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-                unsigned int nColor = (unsigned int)nBackgroundColor;
-                unsigned int nSize = (unsigned int)(nWidth * nHeight);
-                unsigned int* pTemp = (unsigned int*)pBgraData;
-                for (unsigned int k = 0; k < nSize; ++k)
-                    *pTemp++ = nColor;
-
-                CBgraFrame* pFrame = new CBgraFrame();
-                pFrame->put_Data(pBgraData);
-                pFrame->put_Width(nWidth);
-                pFrame->put_Height(nHeight);
-                pFrame->put_Stride(4 * nWidth);
-
-                NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-                pRenderer->SetFontManager(m_pFontManager);
-                pRenderer->CreateFromBgraFrame(pFrame);
-                pRenderer->SetSwapRGB(true);
-                pRenderer->put_Width(bbox[2] * 25.4 / dPageDpiX);
-                pRenderer->put_Height(bbox[3] * 25.4 / dPageDpiX);
-                if (nBackgroundColor != 0xFFFFFF)
-                    pRenderer->CommandLong(c_nDarkMode, 1);
-
-                PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-                oRendererOut.NewPDF(m_pPDFDocument->getXRef());
-
-                // Создание Gfx
-                GBool crop = gTrue;
-                PDFRectangle box;
-                int rotate = pPage->getRotate();
-                if (rotate >= 360)
-                    rotate -= 360;
-                else if (rotate < 0)
-                    rotate += 360;
-                pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
-                PDFRectangle* cropBox = pPage->getCropBox();
-
-                Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
-
-                pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
-                gfx->drawForm(&oStrRef, resDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
-                oStr.free(); oStrRef.free(); resObj.free();
-
-                nMKLength++;
-                unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-                unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-                oRes.AddInt(npSubMatrix1);
-                oRes.AddInt(npSubMatrix >> 32);
-
-                delete gfx;
-                pFrame->ClearNoAttack();
-                RELEASEOBJECT(pFrame);
-                RELEASEOBJECT(pRenderer);
+                oStr.free();
+                continue;
             }
+
+            if (bFirst)
+            {
+                // Номер аннотации для сопоставления с AP
+                oRes.AddInt(i);
+                nMKPos = oRes.GetSize();
+                // Количество иконок 1-3
+                oRes.AddInt(nMKLength);
+                bFirst = false;
+            }
+
+            oRes.WriteString((BYTE*)sMKName.c_str(), (unsigned int)sMKName.size());
+
+            // Resources
+            Dict* oStreamDict = oStr.streamGetDict();
+            Object oResources;
+            oStreamDict->lookup("Resources", &oResources);
+            Dict* oResourcesDict = oResources.isDict() ? oResources.getDict() : (Dict *)NULL;
+
+            // Получение единственного XObject из Resources, если возможно
+            bool bImage = false;
+            Object oXObject, oIm;
+            if (oResourcesDict && oResourcesDict->lookup("XObject", &oXObject)->isDict() && oXObject.dictGetLength() == 1 && oXObject.dictGetVal(0, &oIm)->isStream())
+            {
+                Dict *oImDict = oIm.streamGetDict();
+                Object oType, oSubtype;
+                if (oImDict->lookup("Type", &oType)->isName("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
+                {
+                    bImage = true;
+
+                    Object oStrRef;
+                    oXObject.dictGetValNF(0, &oStrRef);
+                    int nView = oStrRef.getRefNum();
+                    oRes.AddInt(nView);
+                    oStrRef.free();
+                    if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
+                    {
+                        oStr.free(); oResources.free();
+                        oType.free(); oSubtype.free();
+                        oXObject.free(); oIm.free();
+                        oRes.WriteBYTE(0);
+                        nMKLength++;
+                        continue;
+                    }
+                    arrUniqueImage.push_back(nView);
+                    oRes.WriteBYTE(1);
+
+                    // Width & Height
+                    Object oWidth, oHeight;
+                    int nWidth  = 0;
+                    int nHeight = 0;
+                    if (oImDict->lookup("Width", &oWidth)->isInt() && oImDict->lookup("Height", &oHeight)->isInt())
+                    {
+                        nWidth  = oWidth.getInt();
+                        nHeight = oHeight.getInt();
+                    }
+                    oRes.AddInt(nWidth);
+                    oRes.AddInt(nHeight);
+                    oWidth.free(); oHeight.free();
+
+                    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+                    unsigned int nColor = (unsigned int)nBackgroundColor;
+                    unsigned int nSize  = (unsigned int)(nWidth * nHeight);
+                    unsigned int* pTemp = (unsigned int*)pBgraData;
+                    for (unsigned int k = 0; k < nSize; ++k)
+                        *pTemp++ = nColor;
+
+                    int bits = 0;
+                    StreamColorSpaceMode csMode = streamCSNone;
+                    oIm.getStream()->getImageParams(&bits, &csMode);
+
+                    if (bits == 0)
+                    {
+                        Object oBits;
+                        if (oImDict->lookup("BitsPerComponent", &oBits)->isNull())
+                        {
+                            oBits.free();
+                            oImDict->lookup("BPC", &oBits);
+                        }
+                        bits = oBits.isInt() ? oBits.getInt() : 8;
+                        oBits.free();
+                    }
+
+                    GfxColorSpace* colorSpace = NULL;
+                    Object oColorSpace;
+                    if (oImDict->lookup("ColorSpace", &oColorSpace)->isNull())
+                    {
+                        oColorSpace.free();
+                        oImDict->lookup("CS", &oColorSpace);
+                    }
+                    if (oColorSpace.isName())
+                    {
+                        // TODO
+                    }
+                    if (!oColorSpace.isNull())
+                        colorSpace = GfxColorSpace::parse(&oColorSpace);
+                    else if (csMode == streamCSDeviceGray)
+                        colorSpace = GfxColorSpace::create(csDeviceGray);
+                    else if (csMode == streamCSDeviceRGB)
+                        colorSpace = GfxColorSpace::create(csDeviceRGB);
+                    else if (csMode == streamCSDeviceCMYK)
+                        colorSpace = GfxColorSpace::create(csDeviceCMYK);
+                    else
+                        colorSpace = NULL;
+                    oColorSpace.free();
+
+                    Object oDecode;
+                    if (oImDict->lookup("Decode", &oDecode)->isNull())
+                    {
+                        oDecode.free();
+                        oImDict->lookup("D", &oDecode);
+                    }
+
+                    GfxImageColorMap* pColorMap = new GfxImageColorMap(bits, &oDecode, colorSpace);
+                    oDecode.free();
+
+                    ImageStream *pImageStream = new ImageStream(oIm.getStream(), nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
+                    pImageStream->reset();
+
+                    int nComps = pImageStream->getComps();
+                    int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
+
+                    int nColorMapType = pColorMap->getFillType();
+                    GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+                    if (!pColorMapLookup)
+                        nColorMapType = 0;
+
+                    for (int nY = 0; nY < nHeight; ++nY)
+                    {
+                        unsigned char* pLine = pImageStream->getLine();
+                        unsigned char* pLineDst = pBgraData + 4 * nWidth * nY;
+
+                        if (!pLine)
+                        {
+                            memset(pLineDst, 0, 4 * nWidth);
+                            continue;
+                        }
+
+                        for (int nX = 0; nX < nCheckWidth; ++nX)
+                        {
+                            if (2 == nColorMapType)
+                            {
+                                pLineDst[0] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+                                pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+                                pLineDst[2] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+                            }
+                            else if (1 == nColorMapType)
+                            {
+                                pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+                            }
+                            else
+                            {
+                                GfxRGB oRGB;
+                                pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
+                                pLineDst[0] = colToByte(oRGB.r);
+                                pLineDst[1] = colToByte(oRGB.g);
+                                pLineDst[2] = colToByte(oRGB.b);
+                            }
+
+                            pLineDst[3] = 255;
+                            pLine += nComps;
+                            pLineDst += 4;
+                        }
+                    }
+                    delete pColorMap;
+
+                    nMKLength++;
+                    unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+                    unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+                    oRes.AddInt(npSubMatrix1);
+                    oRes.AddInt(npSubMatrix >> 32);
+                }
+                oType.free(); oSubtype.free();
+            }
+            oXObject.free(); oIm.free();
+
+            // else
+            if (bImage)
+            {
+                oStr.free(); oResources.free();
+                continue;
+            }
+
+            Object oStrRef;
+            oMK.dictLookupNF(sMKName.c_str(), &oStrRef);
+            int nView = oStrRef.getRefNum();
+            oRes.AddInt(nView);
+            if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
+            {
+                oStr.free(); oStrRef.free(); oResources.free();
+                oRes.WriteBYTE(0);
+                nMKLength++;
+                continue;
+            }
+            arrUniqueImage.push_back(nView);
+            oRes.WriteBYTE(1);
+
+            // BBox
+            Object bboxObj;
+            double bbox[4];
+            if (oStreamDict->lookup("BBox", &bboxObj)->isArray())
+            {
+                for (int k = 0; k < 4; ++k)
+                {
+                    Object obj1;
+                    bboxObj.arrayGet(k, &obj1);
+                    bbox[k] = obj1.getNum();
+                    obj1.free();
+                }
+            }
+            else
+            {
+                bbox[0] = 0; bbox[1] = 0;
+                bbox[2] = 0; bbox[3] = 0;
+            }
+            bboxObj.free();
+
+            // Matrix
+            double m[6];
+            Object matrixObj;
+            if (oStreamDict->lookup("Matrix", &matrixObj)->isArray())
+            {
+                for (int k = 0; k < 6; ++k)
+                {
+                    Object obj1;
+                    matrixObj.arrayGet(k, &obj1);
+                    m[k] = obj1.getNum();
+                    obj1.free();
+                }
+            }
+            else
+            {
+                m[0] = 1; m[1] = 0;
+                m[2] = 0; m[3] = 1;
+                m[4] = 0; m[5] = 0;
+            }
+            matrixObj.free();
+
+            int nWidth  = (bbox[2] > 0) ? (int)round(bbox[2] * (double)nRasterW / dWidth) : (int)((int)dWidth  * 96 / dPageDpiX);
+            int nHeight = (bbox[3] > 0) ? (int)round(bbox[3] * (double)nRasterH / dHeight): (int)((int)dHeight * 96 / dPageDpiY);
+            oRes.AddInt(nWidth);
+            oRes.AddInt(nHeight);
+
+            BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+            unsigned int nColor = (unsigned int)nBackgroundColor;
+            unsigned int nSize  = (unsigned int)(nWidth * nHeight);
+            unsigned int* pTemp = (unsigned int*)pBgraData;
+            for (unsigned int k = 0; k < nSize; ++k)
+                *pTemp++ = nColor;
+
+            CBgraFrame* pFrame = new CBgraFrame();
+            pFrame->put_Data(pBgraData);
+            pFrame->put_Width(nWidth);
+            pFrame->put_Height(nHeight);
+            pFrame->put_Stride(4 * nWidth);
+
+            NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+            pRenderer->SetFontManager(m_pFontManager);
+            pRenderer->CreateFromBgraFrame(pFrame);
+            pRenderer->SetSwapRGB(true);
+            pRenderer->put_Width (bbox[2] * 25.4 / dPageDpiX);
+            pRenderer->put_Height(bbox[3] * 25.4 / dPageDpiX);
+            if (nBackgroundColor != 0xFFFFFF)
+                pRenderer->CommandLong(c_nDarkMode, 1);
+
+            PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
+            oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+
+            // Создание Gfx
+            GBool crop = gTrue;
+            PDFRectangle box;
+            int rotate = pPage->getRotate();
+            if (rotate >= 360)
+                rotate -= 360;
+            else if (rotate < 0)
+                rotate += 360;
+            pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+            PDFRectangle* cropBox = pPage->getCropBox();
+
+            Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+
+            pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
+            gfx->drawForm(&oStrRef, oResourcesDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
+            oStr.free(); oStrRef.free(); oResources.free();
+
+            nMKLength++;
+            unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+            unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+            oRes.AddInt(npSubMatrix1);
+            oRes.AddInt(npSubMatrix >> 32);
+
+            delete gfx;
+            pFrame->ClearNoAttack();
+            RELEASEOBJECT(pFrame);
+            RELEASEOBJECT(pRenderer);
         }
         oMK.free();
+
         if (nMKPos > 0)
             oRes.AddInt(nMKLength, nMKPos);
     }

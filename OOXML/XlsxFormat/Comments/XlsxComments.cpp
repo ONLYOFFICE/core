@@ -451,6 +451,14 @@ mc:Ignorable=\"xr\">");
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CLegacyDrawingWorksheet::toBin()
+		{
+			auto castedPtr(new XLSB::LegacyDrawing);
+			XLS::BaseObjectPtr ptr(castedPtr);
+				if(m_oId.IsInit())
+					castedPtr->stRelId.value = m_oId->GetValue();
+            return ptr;
+		}
 		EElementType CLegacyDrawingWorksheet::getType () const
 		{
 			return et_x_LegacyDrawingWorksheet;

@@ -1645,6 +1645,14 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CLegacyDrawingHFWorksheet::toBin()
+		{
+			auto castedPtr(new XLSB::LegacyDrawingHF);
+			XLS::BaseObjectPtr ptr(castedPtr);
+			if (m_oId.IsInit())
+				castedPtr->stRelId.value = m_oId->GetValue();
+			return ptr;
+		}
 		EElementType CLegacyDrawingHFWorksheet::getType() const
 		{
 			return et_x_LegacyDrawingHFWorksheet;

@@ -1460,8 +1460,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 		odf_writer::style_paragraph_properties  parent_paragraph_properties;
 		odt_context->styles_context()->calc_paragraph_properties(style_name, odf_types::style_family::Paragraph, &parent_paragraph_properties.content_);
 		
-		//odf_writer::style_text_properties  parent_text_properties;
-		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Paragraph, text_properties/*&parent_text_properties.content_*/);
+		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Paragraph, text_properties);
 
 		odf_writer::odf_style_state_ptr style_state;
 		style_state = odt_context->styles_context()->last_state();
@@ -1484,9 +1483,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 			outline_level = *parent_paragraph_properties.content_.outline_level_;
 		}
 		//список тож явно ??? угу :( - выше + велосипед для хранения
-		if (/*parent_text_properties*/text_properties && text_properties->fo_font_size_)
+		if (text_properties && text_properties->fo_font_size_)
 		{
-			current_font_size.push_back(/*parent_text_properties*/text_properties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
+			current_font_size.push_back(text_properties->fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
 		}
 	}
 

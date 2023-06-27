@@ -305,7 +305,8 @@ namespace NSDocxRenderer
 								const double& fX, const double& fY, const double& fWidth, const double& fHeight,
 								const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
 	{
-		if (pUnicodes != nullptr && nCount == 1 && IsSpaceUtf32(*pUnicodes))
+		// 9 - \t
+		if (pUnicodes != nullptr && nCount == 1 && (IsSpaceUtf32(*pUnicodes) || *pUnicodes == 9))
 		{
 			//note пробелы не нужны, добавляются при анализе
 			return;
@@ -319,9 +320,8 @@ namespace NSDocxRenderer
 		m_pTransform->TransformPoint(dTextX, dTextY);
 		m_pTransform->TransformPoint(dTextR, dTextB);
 
-		// иногда ширина приходит сильно меньше, почему?
-		double dTextW = dTextR - dTextX;
-		double dTextH = dTextB - dTextY;
+		double dTextW; // = dTextR - dTextX;
+		double dTextH; // = dTextB - dTextY;
 
 		NSStringUtils::CStringUTF32 oText((uint32_t*)pUnicodes, nCount);
 
@@ -361,9 +361,9 @@ namespace NSDocxRenderer
 
 		dTextW = _w;
 		//}
-
-		double dBaseLinePos = dTextY + fBaseLineOffset;
 		dTextH = m_pFontManager->GetFontHeight();
+		double dBaseLinePos = dTextY + fBaseLineOffset;
+
 
 		auto pCont = new CContText(m_pFontManager);
 

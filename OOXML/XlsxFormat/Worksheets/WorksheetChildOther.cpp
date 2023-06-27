@@ -675,6 +675,14 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CDimension::toBin()
+		{
+			auto castedPtr(new XLSB::WsDim);
+			XLS::BaseObjectPtr ptr(castedPtr);
+			if (m_oRef.IsInit())
+				castedPtr->rfx = m_oRef.get();
+			return ptr;
+		}
 		EElementType CDimension::getType() const
 		{
 			return et_x_Dimension;
@@ -2298,7 +2306,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
 			WritingElement_ReadAttributes_End(oReader)
-		}		
+		}
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);

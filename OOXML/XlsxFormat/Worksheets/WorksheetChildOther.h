@@ -269,6 +269,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			XLS::BaseObjectPtr toBin();
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 

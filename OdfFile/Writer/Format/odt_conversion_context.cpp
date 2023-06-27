@@ -1302,8 +1302,6 @@ void odt_conversion_context::start_run(bool styled)
 }
 void odt_conversion_context::end_run()
 {
-	if (is_hyperlink_ && text_context_.size() > 0) return;
-
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)
 	{
 		end_field();

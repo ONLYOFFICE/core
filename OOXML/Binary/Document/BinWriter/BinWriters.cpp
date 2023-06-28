@@ -52,8 +52,9 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/FontTable.h"
-
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Diagram/DiagramData.h"
+
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"
 #include "../../../DocxFormat/Logic/SmartTag.h"

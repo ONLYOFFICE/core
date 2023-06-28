@@ -48,10 +48,10 @@ public:
     const std::vector<std::wstring>	readBigEndian();
     const std::vector<std::string>	readUtf8();
 
-    void writeAnsiOrCodePage	(const std::vector<std::string>& content);
-    void writeUnicode			(const std::vector<std::wstring>& content);
-    void writeBigEndian			(const std::vector<std::wstring>& content);
-    void writeUtf8				(const std::vector<std::string>& content);
+	bool writeAnsiOrCodePage	(const std::vector<std::string>& content);
+	bool writeUnicode			(const std::vector<std::wstring>& content);
+	bool writeBigEndian			(const std::vector<std::wstring>& content);
+	bool writeUtf8				(const std::vector<std::string>& content);
 
 	const bool	isUnicode();
 	const bool	isBigEndian();

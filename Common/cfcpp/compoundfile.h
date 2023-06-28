@@ -64,7 +64,7 @@ public:
 
     std::shared_ptr<CFStorage> RootStorage();
 
-    void Save(std::wstring wFileName);
+    bool Save(std::wstring wFileName);
     void Save(Stream stream);
 
     void Commit(bool releaseMemory = false);

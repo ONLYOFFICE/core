@@ -221,7 +221,7 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
         pBuFont->typeface = pPF->bulletFontProperties->Name;
 
         if ( CFontProperty::IsValidPitchFamily(pPF->bulletFontProperties->PitchFamily))
-            pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
+            pBuFont->pitchFamily = std::to_wstring((char)pPF->bulletFontProperties->PitchFamily);
         if ( CFontProperty::IsValidCharset(pPF->bulletFontProperties->Charset))
             pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
 

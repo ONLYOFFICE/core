@@ -60,7 +60,7 @@ public:
 	Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 	~Impl();
 
-	void Start(const std::wstring &sFileDst);
+	bool Start(const std::wstring &sFileDst);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);
@@ -172,10 +172,11 @@ void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &
 	}
 	impl_->End();
 }
-void CSVWriter::Start(const std::wstring &sFileDst)
+bool CSVWriter::Start(const std::wstring &sFileDst)
 {
 	if (impl_)
-		impl_->Start(sFileDst);
+		return impl_->Start(sFileDst);
+	return false;
 }
 void CSVWriter::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -631,9 +632,10 @@ CSVWriter::Impl::~Impl()
 {
 	Close();
 }
-void CSVWriter::Impl::Start(const std::wstring &sFileDst)
+bool CSVWriter::Impl::Start(const std::wstring &sFileDst)
 {
-	m_oFile.CreateFileW(sFileDst);
+	bool res = m_oFile.CreateFileW(sFileDst);
+	if (!res) return false;
 
 	// Нужно записать шапку
 	if (46 == m_nCodePage)//todo 46 временно CP_UTF8
@@ -651,6 +653,7 @@ void CSVWriter::Impl::Start(const std::wstring &sFileDst)
 		BYTE arBigEndian[2] = { 0xFE, 0xFF };
 		m_oFile.WriteFile(arBigEndian, 2);
 	}
+	return true;
 }
 void CSVWriter::Impl::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -1009,12 +1012,16 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 					format_string += L".";
 					format_string += std::to_wstring(numberFormat.count_float);
 				}
-				if (numberFormat.bPercent) format_string += L"%";
-
 				std::wstring strEnd = format_code.substr(pos_end + 1);
 				XmlUtils::replace_all(strEnd, L"\\", L"");
-
+				
 				format_string += numberFormat.bFloat ? L"f" : L"ld";
+				if (numberFormat.bPercent)
+				{
+					format_string += L"%%";
+					XmlUtils::replace_all(strEnd, L"%", L"");
+				}
+
 				format_string += strEnd;
 
 				numberFormat.format_string = format_string;

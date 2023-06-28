@@ -123,6 +123,14 @@ void StreamView::close()
     if (std::dynamic_pointer_cast<std::iostream>(stream) != nullptr)
         stream->close();
 }
+bool StreamView::isError()
+{
+	if (std::dynamic_pointer_cast<std::iostream>(stream) == nullptr) return true;
+	if ((std::dynamic_pointer_cast<std::iostream>(stream))->bad()) return true;
+	if ((std::dynamic_pointer_cast<std::iostream>(stream))->fail()) return true;
+
+	return false;
+}
 
 _INT64 StreamView::read(char *buffer, _INT64 len)
 {

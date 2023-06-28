@@ -7762,7 +7762,10 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
-				oCSVWriter.Start(sDstPathCSV);
+				
+				bResultOk = oCSVWriter.Start(sDstPathCSV);
+				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
+
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try

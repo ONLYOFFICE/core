@@ -738,6 +738,28 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CSheetFormatPr::toBin()
+		{
+			auto ptr(new XLSB::WsFmtInfo);
+			XLS::BaseObjectPtr Castedptr(ptr);
+			if(m_oBaseColWidth.IsInit())
+				ptr->dxGCol = m_oBaseColWidth.get() * 256.;
+			if(m_oDefaultColWidth.IsInit())
+				ptr->cchDefColWidth = m_oDefaultColWidth.get();
+
+				if (m_oDefaultRowHeight.IsInit())
+					ptr->miyDefRwHeight = m_oDefaultRowHeight.get();
+				else
+					ptr->miyDefRwHeight = 14.4;
+
+				if (m_oOutlineLevelCol.IsInit()) ptr->iOutLevelCol =  m_oOutlineLevelCol.get();
+				if (m_oOutlineLevelRow.IsInit()) ptr->iOutLevelRw = m_oOutlineLevelRow.get();
+
+				if (m_oThickBottom.IsInit()) ptr->fExDesc = m_oThickBottom.get();
+				if (m_oThickTop.IsInit()) ptr->fExAsc = m_oThickTop.get();
+				if (m_oZeroHeight.IsInit()) ptr->fDyZero = m_oZeroHeight.get();
+			return Castedptr;
+		}
 		EElementType CSheetFormatPr::getType() const
 		{
 			return et_x_SheetFormatPr;

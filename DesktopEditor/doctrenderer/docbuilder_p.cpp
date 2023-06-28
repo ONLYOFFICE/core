@@ -128,6 +128,69 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 	return L"jsValue(" + sParam + L")";
 }
 
+std::string GetCorrectArgument(const std::string& sInput)
+{
+	if (sInput.empty())
+		return "{}";
+
+	const char* input = sInput.c_str();
+	std::string::size_type len = sInput.length();
+
+	std::string sResult;
+	sResult.reserve(len);
+
+	bool bIsInsideString = false;
+	int nQouteMarkCounter = 0;
+	for (std::string::size_type pos = 0; pos < len; ++pos)
+	{
+		char cur = input[pos];
+		if (bIsInsideString)
+		{
+			if ('\\' == cur)
+				++nQouteMarkCounter;
+			else if ('\"' == cur)
+			{
+				if (nQouteMarkCounter & 1)
+				{
+					// внутренняя кавычка - ничего не делаем
+				}
+				else
+				{
+					bIsInsideString = false;
+					nQouteMarkCounter = 0;
+				}
+			}
+			else
+			{
+				nQouteMarkCounter = 0;
+			}
+			sResult += cur;
+		}
+		else
+		{
+			switch (cur)
+			{
+			case '\\':
+			{
+				while (pos < (len - 1) && isalpha(input[pos + 1]))
+					++pos;
+				break;
+			}
+			case '\n':
+			case '\r':
+			case '\t':
+				break;
+			case '\"':
+				bIsInsideString = true;
+			default:
+				sResult += cur;
+			}
+		}
+	}
+
+	return sResult;
+}
+
 bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
 	LOGGER_SPEED_START();
@@ -145,9 +208,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	if (true)
 	{
-		std::string sArg = m_sUtf8ArgumentJSON;
-		if (sArg.empty())
-			sArg = "{}";
+		std::string sArg = GetCorrectArgument(m_sUtf8ArgumentJSON);
+
 		NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
 		NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
 		std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";

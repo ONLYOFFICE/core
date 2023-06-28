@@ -24,10 +24,12 @@ namespace Aggplus
 
 	void CAlphaMask_private::Clear()
 	{
-		if (NULL != m_oRenderingBuffer.buf())
+		BYTE *pBuffer = m_oRenderingBuffer.buf();
+		if (NULL != pBuffer)
 		{
 			if (!m_bExternalBuffer)
-				delete [] m_oRenderingBuffer.buf();
+				RELEASEARRAYOBJECTS(pBuffer);
+
 			m_oRenderingBuffer.attach(NULL, 0, 0, 0);
 		}
 

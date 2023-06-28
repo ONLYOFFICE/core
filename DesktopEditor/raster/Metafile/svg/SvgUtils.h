@@ -38,12 +38,12 @@ namespace SVG
 
 			while (true)
 			{
-				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'-' == wChar; });
+				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'.' == wChar || L'+' == wChar || L'-' == wChar; });
 
 				if (wsValue.end() == oFirstPos)
 					break;
 
-				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return iswspace(wChar) || L',' == wChar; });
+				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return !iswdigit(wChar) && wChar != L',' && wChar != L'.'; });
 
 				arValues.push_back(std::stod(std::wstring(oFirstPos, oSecondPos)));
 			}

@@ -229,7 +229,7 @@ namespace SVG
 			EPathElement::CBezier == pPrevElement->GetType())
 			oFirstPoint += oFirstPoint - (*pPrevElement)[-2];
 
-		CSBezierElement *pSBezierElement = new CSBezierElement(oFirstPoint + oTranslatePoint,
+		CSBezierElement *pSBezierElement = new CSBezierElement(oFirstPoint,
 															   Point{arValues[0], arValues[1]} + oTranslatePoint,
 															   Point{arValues[2], arValues[3]} + oTranslatePoint);
 
@@ -304,7 +304,7 @@ namespace SVG
 
 		oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
 
-		CTBezierElement *pTBezierElement = new CTBezierElement(oFirstPoint + oTranslatePoint, oSecondPoint + oTranslatePoint, Point{arValues[0], arValues[1]} + oTranslatePoint);
+		CTBezierElement *pTBezierElement = new CTBezierElement(oFirstPoint, oSecondPoint, Point{arValues[0], arValues[1]} + oTranslatePoint);
 
 		arValues.erase(arValues.begin(), arValues.begin() + 2);
 
@@ -467,7 +467,7 @@ namespace SVG
 		pRenderer->PathCommandClose();
 	}
 
-    #define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
+	#define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
     #define RANGEALIGMENT(value, left, rigth) if (value < left) value = left; else if (value > rigth) value = rigth;
     #define EPSILON 0.05
     #define CURVESTEP 0.05
@@ -476,8 +476,10 @@ namespace SVG
     #define MINARCSTEP 0.01
 
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CRenderedObject(oNode, pParent)
-	{}
+		: CRenderedObject(oNode, pParent), m_bEvenOddRule(false)
+	{
+		ReadFromString(oNode.GetAttribute(L"d"));
+	}
 
 	CPath::~CPath()
 	{
@@ -487,15 +489,20 @@ namespace SVG
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (mAttributes.end() != mAttributes.find(L"d"))
-			ReadFromString(mAttributes.at(L"d"));
-
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+
+		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
+
+		if (mAttributes.end() != oIter)
+		{
+			if (L"evenodd" == oIter->second) m_bEvenOddRule = true;
+			else if (L"nonzero" == oIter->second) m_bEvenOddRule = false;
+		}
 	}
 
 	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
@@ -524,14 +531,14 @@ namespace SVG
 	}
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
-	{
+	{	
 		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
 
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
 		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
-			nTypePath += c_nWindingFillMode;
+			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
 	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile) const
@@ -616,7 +623,7 @@ namespace SVG
 		std::wstring::const_iterator oFirstPos = wsValue.begin();
 		std::wstring::const_iterator oSecondPos = oFirstPos;
 
-		IPathElement *pMoveElement = NULL;
+		CMoveElement *pMoveElement = NULL;
 
 		while (true)
 		{
@@ -634,7 +641,12 @@ namespace SVG
 				case L'M':
 				case L'm':
 				{
-					pMoveElement = CMoveElement::CreateFromArray(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					IPathElement *pLastElement =  LASTELEMENT(m_arElements);
+
+					if (NULL != pLastElement && Close == pLastElement->GetType())
+						pLastElement = pMoveElement;
+
+					pMoveElement = CMoveElement::CreateFromArray(arValues, iswlower(*oFirstPos), pLastElement);
 
 					if (AddElement(pMoveElement) && arValues.size() > 1)
 						AddElements<CLineElement>(arValues, iswlower(*oFirstPos));
@@ -720,7 +732,6 @@ namespace SVG
 						return;
 
 					AddElement(new CCloseElement);
-					pMoveElement = NULL;
 
 					break;
 				}

@@ -660,7 +660,7 @@ namespace NSCSS
 
 	std::vector<std::wstring> CMatrix::CutTransforms(const std::wstring &wsValue) const
 	{
-		if (wsValue.length() < 10)
+		if (wsValue.length() < 8)
 			return std::vector<std::wstring>();
 
 //		std::wregex oRegex(L"(matrix|translate|scale|rotate)[(](([0-9]*\\.?[0-9]*)(\\s|,)*)+[)]");
@@ -897,29 +897,25 @@ namespace NSCSS
 				{
 					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
 
-					oMatrix.Multiply(&oTempMatrix, Aggplus::MatrixOrderAppend);
+					oMatrix.Multiply(&oTempMatrix);
 					break;
 				}
 				case TransformTranslate:
 				{
-					double dX = oElement.first[0];
-					double dY = oElement.first[1];
-
-					oMatrix.TransformPoint(dX, dY);
-					oMatrix.Translate(dX - oMatrix.tx(), dY - oMatrix.ty(), Aggplus::MatrixOrderAppend);
+					oMatrix.Translate(oElement.first[0], oElement.first[1]);
 					break;
 				}
 				case TransformScale:
 				{
-					oMatrix.Scale(oElement.first[0], oElement.first[1], Aggplus::MatrixOrderAppend);
-					oMatrix.Translate(oMatrix.tx() * (1. / oElement.first[0] - 1), oMatrix.ty() * (1. / oElement.first[1] - 1), Aggplus::MatrixOrderAppend);
+					oMatrix.Scale(oElement.first[0], oElement.first[1]);
 					break;
 				}
 				case TransformRotate:
 				{
-					oMatrix.RotateAt(oElement.first[0], oMatrix.tx() + oElement.first[1] * oMatrix.sx(), oMatrix.ty() + oElement.first[2] * oMatrix.sy(), Aggplus::MatrixOrderAppend);
+					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2]);
 					break;
 				}
+				default: break;
 			}
 		}
 

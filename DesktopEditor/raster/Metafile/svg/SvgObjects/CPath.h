@@ -179,6 +179,7 @@ namespace SVG
 		std::vector<IPathElement*> m_arElements;
 
 		TMarkers m_oMarkers;
+		bool m_bEvenOddRule;
 	};
 
 	class CMovingPath

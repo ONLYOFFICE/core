@@ -31,6 +31,7 @@ namespace SVG
 
 		bool ScanStyles(XmlUtils::CXmlNode& oElement, CSvgFile* pFile) const;
 
+		void UpdateStyles(CObject* pObject, CSvgFile* pFile) const;
 		bool MarkObject(CObject* pObject, CSvgFile* pFile) const;
 		template <class ObjectType>
 		bool AddObject(ObjectType* pObject, CContainer<ObjectType>* pContainer) const;

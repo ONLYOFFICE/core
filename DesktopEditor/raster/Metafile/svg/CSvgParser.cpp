@@ -189,7 +189,19 @@ namespace SVG
 			ReadChildrens(oElement, (CRadialGradient*)pObject, pFile);
 		}
 		else if (L"stop" == wsElementName)
-			pObject = new CStopElement(oElement);
+		{
+			CStopElement *pStopElement = new CStopElement(oElement);
+			if (AddObject((ObjectType*)pStopElement, pContainer))
+			{
+				UpdateStyles(pStopElement, pFile);
+				return true;
+			}
+			else
+			{
+				RELEASEOBJECT(pStopElement);
+				return false;
+			}
+		}
 		else if (L"pattern" == wsElementName)
 		{
 			pObject = new CPattern(oElement, m_pFontManager);
@@ -221,33 +233,35 @@ namespace SVG
 
 		if (NULL != pObject)
 		{
-			if (MarkObject(pObject, pFile) && AppliedObject == pObject->GetType())
-					return true;
-			else if (RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer))
+			if ((MarkObject(pObject, pFile) && AppliedObject == pObject->GetType()) ||
+				(RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)))
+			{
+				UpdateStyles(pObject, pFile);
 				return true;
-
+			}
 			delete pObject;
 		}
 
 		return false;
 	}
 
-	bool CSvgParser::MarkObject(CObject *pObject, CSvgFile *pFile) const
+	void CSvgParser::UpdateStyles(CObject *pObject, CSvgFile *pFile) const
 	{
-		if (NULL == pObject)
-			return false;
-
-		bool bResult = pFile->MarkObject(pObject);
-
-		if (NULL == pFile)
-			return bResult;
+		if (NULL == pObject || NULL == pFile)
+			return;
 
 		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
 		if (NULL != pSvgCalculator)
 			pSvgCalculator->SetData(pObject);
+	}
 
-		return bResult;
+	bool CSvgParser::MarkObject(CObject *pObject, CSvgFile *pFile) const
+	{
+		if (NULL == pObject || NULL == pFile)
+			return false;
+
+		return pFile->MarkObject(pObject);
 	}
 
 	template <class ObjectType>

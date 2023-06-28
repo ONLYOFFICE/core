@@ -826,7 +826,7 @@
 				nView = 2;
 		}
 
-		var res = [];
+		var res = {};
 		var ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
 		if (ext == 0)
 			return res;
@@ -842,6 +842,9 @@
 
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
 		var reader = new CBinaryReader(buffer, 0, len);
+		
+		res["MK"] = [];
+		res["View"] = [];
 
 		while (reader.isValid())
 		{
@@ -853,23 +856,23 @@
 			for (let i = 0; i < n; ++i)
 			{
 				var MKType = reader.readString();
-				MK[MKType] = {};
-				MK[MKType]["j"] = reader.readInt();
+				MK[MKType] = reader.readInt();
 				let unique = reader.readByte();
 				if (unique)
 				{
-					MK[MKType]["w"] = reader.readInt();
-					MK[MKType]["h"] = reader.readInt();
+					var ViewMK = {};
+					ViewMK["j"] = MK[MKType];
+					ViewMK["w"] = reader.readInt();
+					ViewMK["h"] = reader.readInt();
 					let np1 = reader.readInt();
 					let np2 = reader.readInt();
 					// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-					MK[MKType]["retValue"] = np2 << 32 | np1;
+					ViewMK["retValue"] = np2 << 32 | np1;
+					res["View"].push(ViewMK);
 				}
 			}
-			res.push(MK);
+			res["MK"].push(MK);
 		}
-		
-		// TODO Заполнение других видов ссылками на ту же память? 
 
 		Module["_free"](ext);
 		return res;

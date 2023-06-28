@@ -1041,6 +1041,43 @@ namespace OOX
 				ReadAttributes(pCSVIEW->m_BrtBeginCsView);
 			}
 		}
+		XLS::BaseObjectPtr CSheetView::toBin()
+		{
+			if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
+			{
+				auto pWsView(new XLSB::BeginWsView);
+				XLS::BaseObjectPtr castedPtr(pWsView);
+				pWsView->icvHdr = m_oColorId->m_eValue;
+				pWsView->fDefaultHdr = m_oDefaultGridColor->m_eValue;
+				pWsView->fRightToLeft = m_oRightToLeft->m_eValue;
+				pWsView->fDspFmlaRt = m_oShowFormulas->m_eValue;
+				pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
+				pWsView->fDspGuts = m_oShowOutlineSymbols->m_eValue;
+				pWsView->fDspRwColRt = m_oShowRowColHeaders->m_eValue;
+				pWsView->fDspRuler = m_oShowRuler->m_eValue;
+				pWsView->fWhitespaceHidden = m_oShowWhiteSpace->m_eValue;
+				pWsView->fDspZerosRt = m_oShowZeros->m_eValue;
+				pWsView->fSelected = m_oTabSelected->m_eValue;
+				pWsView->topLeftCell = m_oTopLeftCell.get();
+				pWsView->xlView = m_oView->m_eValue;
+				pWsView->fWnProt = m_oWindowProtection->m_eValue;
+				pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
+				pWsView->wScale = m_oZoomScale->m_eValue;
+				pWsView->wScaleNormal = m_oZoomScaleNormal->m_eValue;
+				pWsView->wScalePLV = m_oZoomScalePageLayoutView->m_eValue;
+				pWsView->wScaleSLV = m_oZoomScaleSheetLayoutView->m_eValue;
+				return castedPtr;
+			}
+			else
+			{
+				auto pWsView(new XLSB::BeginCsView);
+				XLS::BaseObjectPtr castedPtr(pWsView);
+				pWsView->fSelected = m_oTabSelected->m_eValue;
+				pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
+				pWsView->wScale = m_oZoomScale->m_eValue;
+				return castedPtr;
+			}
+		}
 		EElementType CSheetView::getType() const
 		{
 			return et_x_SheetView;
@@ -1178,6 +1215,26 @@ namespace OOX
 					m_arrItems.push_back(pSheetView);
 
 				}
+			}
+		}
+		XLS::BaseObjectPtr CSheetViews::toBin()
+		{
+			auto view = m_arrItems.back();
+			if(view->m_oView.IsInit() || view->m_oTopLeftCell.IsInit() || view->m_oTopLeftCell.IsInit())
+			{
+				auto castedPtr(new XLSB::WSVIEWS2);
+				XLS::BaseObjectPtr ptr(castedPtr);
+				for(auto i:m_arrItems)
+					castedPtr->m_arWSVIEW2.push_back(i->toBin());
+				return ptr;
+			}
+			else
+			{
+				auto castedPtr(new XLSB::CSVIEWS);
+				XLS::BaseObjectPtr ptr(castedPtr);
+				for(auto i:m_arrItems)
+					castedPtr->m_arCSVIEW.push_back(i->toBin());
+				return ptr;
 			}
 		}
 		EElementType CSheetViews::getType() const

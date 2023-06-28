@@ -46,3 +46,5 @@ std::wstring sCfgRedhatStart =                  L"redhat-start=";
 
 std::wstring sCfgDebianScript =                 L"debian-script=";
 std::wstring sCfgRedhatScript =                 L"redhat-script=";
+
+std::wstring sCfgVerboseLog =                   L"verbose-log=";

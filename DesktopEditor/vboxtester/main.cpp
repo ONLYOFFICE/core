@@ -198,6 +198,8 @@ private:
 	std::wstring m_sDebianScript;
 	std::wstring m_sRedHatScript;
 
+	bool m_bVerboseLog;
+
 public:
 	CVirtualBox()
 	{
@@ -229,6 +231,8 @@ public:
 		m_sCentosUrl =		L"";
 		m_sOpSuseUrl =		L"";
 
+		m_bVerboseLog =		false;
+
 #ifdef WIN32
 		m_sVbmPath =		L"\"c:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe\"";
 #endif
@@ -240,8 +244,6 @@ public:
 	// VboxManage
 	bool InitVms()
 	{
-		WriteReport(L"Init VMs");
-
 		m_arrVms.clear();
 		std::wstring sOutput = ExecuteCommand(L"list vms");
 
@@ -278,7 +280,6 @@ public:
 					m_arrVms.push_back(new CVm(sName, sGuid, sOs, eType));
 				}
 			}
-			WriteReportResult(m_arrVms.size() > 0);
 		}
 
 		return m_arrVms.size() > 0;
@@ -344,17 +345,26 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Starting VM");
-			WriteReport(L"---------------------------------------");
+			if (m_bVerboseLog)
+			{
+				WriteReport(L"Starting VM");
+				WriteReport(L"---------------------------------------");
+			}
+
 			WriteReport(m_pVm->m_sName);
-			WriteReport(m_pVm->m_sGuestOS);
-			WriteReport(m_pVm->m_sGuid);
+
+			if (m_bVerboseLog)
+			{
+				WriteReport(m_pVm->m_sGuestOS);
+				WriteReport(m_pVm->m_sGuid);
+			}
 
 			std::wstring sCommand = L"startvm " + m_pVm->m_sGuid;
 			std::wstring sOutput = ExecuteCommand(sCommand);
 			bResult = sOutput.find(L"started") != std::wstring::npos;
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -366,13 +376,15 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Restart VM");
+			if (m_bVerboseLog)
+				WriteReport(L"Restart VM");
 
 			std::wstring sCommand = L"controlvm " + m_pVm->m_sGuid + L" reset";
 			std::wstring sOutput = ExecuteCommand(sCommand);
 			bResult = sOutput.find(L"") != std::wstring::npos;
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -384,13 +396,15 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Stop VM");
+			if (m_bVerboseLog)
+				WriteReport(L"Stop VM");
 
 			std::wstring sCommand = L"controlvm " + m_pVm->m_sGuid + (bSaveState ? L" savestate" : L" poweroff");
 			std::wstring sOutput = ExecuteCommand(sCommand);
 			bResult = sOutput.find(L"") != std::wstring::npos;
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -402,7 +416,8 @@ public:
 		int iSleep = 5000;
 		int iCount = 10 * 60 * 1000 / iSleep;
 
-		WriteReport(L"Waiting loading");
+		if (m_bVerboseLog)
+			WriteReport(L"Waiting loading");
 
 		if ( m_pVm )
 		{
@@ -413,10 +428,11 @@ public:
 			}
 
 			// Wait min
-			NSThreads::Sleep(60000);
+			NSThreads::Sleep(30000);
 		}
 
-		WriteReportResult(iCount > 0);
+		if (m_bVerboseLog)
+			WriteReportResult(iCount > 0);
 	}
 
 	bool WaitInstall()
@@ -425,7 +441,8 @@ public:
 		int iSleep = 5000;
 		int iCount = 10 * 60 * 1000 / iSleep;
 
-		WriteReport(L"Waiting installation");
+		if (m_bVerboseLog)
+			WriteReport(L"Waiting installation");
 
 		if ( m_pVm )
 		{
@@ -457,7 +474,8 @@ public:
 		}
 
 		// True - installation, False - timeout
-		WriteReportResult(iCount > 0);
+		if (m_bVerboseLog)
+			WriteReportResult(iCount > 0);
 
 		return iCount > 0;
 	}
@@ -469,7 +487,9 @@ public:
 		int iCount = 1 * 60 * 1000 / iSleep;
 
 		bool bStdout = false;
-		WriteReport(L"Waiting stdout");
+
+		if (m_bVerboseLog)
+			WriteReport(L"Waiting stdout");
 
 		if ( m_pVm )
 		{
@@ -497,7 +517,8 @@ public:
 			}
 		}
 
-		WriteReportResult(bStdout);
+		if (m_bVerboseLog)
+			WriteReportResult(bStdout);
 
 		// True - installation, False - timeout
 		return bStdout && ( iCount > 0 );
@@ -509,7 +530,8 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Saving screenshot");
+			if (m_bVerboseLog)
+				WriteReport(L"Saving screenshot");
 
 			std::wstring sFilePath = GetReportDir() + L"/" + m_pVm->m_sName + L".png";
 
@@ -520,7 +542,8 @@ public:
 			std::wstring sOutput = ExecuteCommand(sCommand);
 			bResult = NSFile::CFileBinary::Exists(sFilePath);
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -545,7 +568,7 @@ public:
 					   L" mkdir " + GetWorkingDir();
 
 			sOutput = ExecuteCommand(sCommand);
-			NSThreads::Sleep(10000);
+			//NSThreads::Sleep(10000);
 
 			bResult = true;
 		}
@@ -628,7 +651,8 @@ public:
 					sUrl = m_sOpSuseUrl;
 			}
 
-			WriteReport(L"Start downloading: " + sUrl);
+			if (m_bVerboseLog)
+				WriteReport(L"Start downloading: " + sUrl);
 
 			std::wstring sCommand = L"guestcontrol " + m_pVm->m_sGuid +
 									L" run --exe /usr/bin/curl" +
@@ -643,7 +667,8 @@ public:
 			NSThreads::Sleep(60000);
 			bResult = true;
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -655,7 +680,8 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Copiyng scripts");
+			if (m_bVerboseLog)
+				WriteReport(L"Copiyng scripts");
 
 			// Setup
 			std::wstring sData = L"";
@@ -712,7 +738,7 @@ public:
 			std::wstring sOutput = ExecuteCommand(sCommand);
 
 			NSFile::CFileBinary::Remove(sScriptPath);
-			NSThreads::Sleep(10000);
+			//NSThreads::Sleep(10000);
 
 			// Run
 			sScriptPath = NSDirectory::GetTempPath() + L"/" + m_sRunScript;
@@ -739,9 +765,10 @@ public:
 			sOutput = ExecuteCommand(sCommand);
 
 			NSFile::CFileBinary::Remove(sScriptPath);
-			NSThreads::Sleep(10000);
+			//NSThreads::Sleep(10000);
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -753,7 +780,8 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Removing scripts");
+			if (m_bVerboseLog)
+				WriteReport(L"Removing scripts");
 
 			std::vector<std::wstring> arrScipts;
 			arrScipts.push_back(m_sRunScript);
@@ -776,7 +804,8 @@ public:
 				}
 			}
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -788,7 +817,8 @@ public:
 
 		if ( m_pVm && IsLocationExists(m_sEditorsPath) )
 		{
-			WriteReport(L"Runing DesktopEditors");
+			if (m_bVerboseLog)
+				WriteReport(L"Runing DesktopEditors");
 
 			std::wstring sRunScript = GetWorkingDir() + L"/" + m_sRunScript;
 
@@ -810,7 +840,8 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"Ready restart");
+			if (m_bVerboseLog)
+				WriteReport(L"Ready restart");
 
 			std::wstring sUrl = m_pVm->IsDebian() ? m_sDebianUrl : m_sCentosUrl;
 			std::wstring sRunScript = GetWorkingDir() + L"/" + m_sSetupScript;
@@ -821,7 +852,8 @@ public:
 					  IsLocationExists(sSetupScript) &&
 					  IsLocationExists(sDistribPath);
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -833,12 +865,14 @@ public:
 
 		if ( m_pVm )
 		{
-			WriteReport(L"DesktopEditors runned");
+			if (m_bVerboseLog)
+				WriteReport(L"DesktopEditors runned");
 
 			std::wstring sEditorProc = NSFile::GetFileName(m_sEditorsPath);
 			bResult = IsProcessExists(sEditorProc);
 
-			WriteReportResult(bResult);
+			if (m_bVerboseLog)
+				WriteReportResult(bResult);
 		}
 
 		return bResult;
@@ -913,7 +947,8 @@ public:
 							 sCfgDebianStart + sDebian + L"\n" +
 							 sCfgRedhatStart + sRedHat + L"\n\n" +
 							 sCfgDebianScript + L"\n" +
-							 sCfgRedhatScript + L"\n\n";
+							 sCfgRedhatScript + L"\n\n" +
+							 sCfgVerboseLog + L"=0\n";
 
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(m_sConfigName);
@@ -964,6 +999,10 @@ public:
 							m_sDebianScript = sLine.substr(sCfgDebianScript.length());
 						else if ( sLine.find(sCfgRedhatScript) != std::wstring::npos )
 							m_sRedHatScript = sLine.substr(sCfgRedhatScript.length());
+
+						// Log
+						else if ( sLine.find(sCfgVerboseLog) != std::wstring::npos )
+							m_bVerboseLog = sLine.substr(sCfgVerboseLog.length()) == L"1";
 					}
 
 					// Prepare urls
@@ -1257,15 +1296,15 @@ int main(int argc, char** argv)
 	CVirtualBox oTester;
 	oTester.InitVms();
 
-	oTester.RemoveReport();
-	oTester.CreateReport();
-
 	if ( !oTester.IsConfigExists() )
 	{
 		oTester.CreateConfig();
 		return 0;
 	}
 	oTester.ReadConfig();
+
+	oTester.RemoveReport();
+	oTester.CreateReport();
 
 	std::vector<CVm*> arrStartVms = oTester.GetStartVms();
 
@@ -1284,6 +1323,7 @@ int main(int argc, char** argv)
 		oTester.CopyScripts();
 		oTester.DownloadDistrib();
 
+		bool bPassed = false;
 		if ( oTester.IsReadyReset() )
 		{
 			oTester.ResetVm();
@@ -1297,9 +1337,12 @@ int main(int argc, char** argv)
 				if ( oTester.IsEditorsRunned() )
 				{
 					oTester.SaveScreenshot();
+					bPassed = true;
 				}
 			}
 		}
+
+		oTester.WriteReport(bPassed ? L"PASSED\n" : L"FAILED\n");
 
 		oTester.RemoveScripts();
 		oTester.StopVm();

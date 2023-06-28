@@ -948,7 +948,7 @@ public:
 							 sCfgRedhatStart + sRedHat + L"\n\n" +
 							 sCfgDebianScript + L"\n" +
 							 sCfgRedhatScript + L"\n\n" +
-							 sCfgVerboseLog + L"=0\n";
+							 sCfgVerboseLog + L"0\n";
 
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(m_sConfigName);

@@ -720,6 +720,23 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CPrintOptions::toBin()
+		{
+			auto ptr(new XLSB::PrintOptions);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oGridLines.IsInit())
+				ptr->fPrintGrid = m_oGridLines->m_eValue;
+			if(m_oGridLinesSet.IsInit())
+				ptr->fPrintGrid = m_oGridLinesSet->m_eValue;
+			if(m_oHeadings.IsInit())
+				ptr->fPrintHeaders = m_oHeadings->m_eValue;
+			if(m_oHorizontalCentered.IsInit())
+				ptr->fHCenter = m_oHorizontalCentered->m_eValue;
+			if(m_oVerticalCentered.IsInit())
+				ptr->fVCenter = m_oVerticalCentered->m_eValue;
+
+			return objectPtr;
+		}
 		EElementType CPrintOptions::getType() const
 		{
 			return et_x_PrintOptions;

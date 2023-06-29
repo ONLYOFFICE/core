@@ -1764,6 +1764,34 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr CHeaderFooter::toBin()
+		{
+			auto ptr(new XLSB::HEADERFOOTER);
+
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			auto castedBegin(new XLSB::BeginHeaderFooter);
+			ptr->m_BrtBeginHeaderFooter = XLS::BaseObjectPtr{castedBegin};
+
+			castedBegin->fHFAlignMargins = m_oAlignWithMargins->m_eValue;
+			castedBegin->fHFDiffFirst = m_oDifferentFirst->m_eValue;
+			castedBegin->fHFDiffOddEven = m_oDifferentOddEven->m_eValue;
+			castedBegin->fHFScaleWithDoc = m_oScaleWithDoc->m_eValue;
+
+			if(m_oOddHeader.IsInit())
+				castedBegin->stHeader = m_oOddHeader->m_sText;
+			if(m_oOddFooter.IsInit())
+				ptr->stFooter = m_oOddFooter->m_sText;
+			if(m_oEvenHeader.IsInit())
+				ptr->stHeaderEven = m_oEvenHeader->m_sText;
+			if(m_oEvenFooter.IsInit())
+				ptr->stFooterEven = m_oEvenFooter->m_sText;
+			if(m_oFirstHeader.IsInit())
+				ptr->stHeaderFirst = m_oFirstHeader->m_sText;
+			if(m_oFirstFooter.IsInit())
+			 	ptr->stFooterFirst = m_oFirstFooter->m_sText;
+			return objectPtr;
+		}
 		EElementType CHeaderFooter::getType() const
 		{
 			return et_x_HeaderFooterWorksheet;
@@ -2162,6 +2190,64 @@ namespace OOX
 		void CSheetProtection::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CSheetProtection::toBin()
+		{
+			if(m_oPassword.IsInit())
+			{
+				auto ptr(new XLSB::SheetProtection);
+				XLS::BaseObjectPtr castedPtr(ptr);
+
+				ptr->protpwd = m_oPassword.get();
+				ptr->fAutoFilter = m_oAutoFilter->GetValue();
+
+				ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+				ptr->fDeleteRows = m_oDeleteRows->GetValue();
+				ptr->fFormatCells = m_oFormatCells->GetValue();
+				ptr->fFormatColumns = m_oFormatColumns->GetValue();
+				ptr->fFormatRows = m_oFormatRows->GetValue();
+				ptr->fInsertColumns = m_oInsertColumns->GetValue();
+				ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+				ptr->fInsertRows = m_oInsertRows->GetValue();
+				ptr->fObjects = m_oObjects->GetValue();
+				ptr->fPivotTables = m_oPivotTables->GetValue();
+				ptr->fScenarios = m_oScenarios->GetValue();
+				ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+				ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+				ptr->fLocked = m_oSheet->GetValue();
+				ptr->fSort = m_oSort->GetValue();
+
+				return castedPtr;
+			}
+			else
+			{
+				auto ptr(new XLSB::SheetProtectionIso);
+				XLS::BaseObjectPtr castedPtr(ptr);
+
+				ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+				ptr->dwSpinCount = m_oSpinCount->GetValue();
+				ptr->ipdPasswordData.rgbHash = m_oHashValue->GetValue();
+				ptr->ipdPasswordData.rgbSalt = m_oSaltValue->GetValue();
+
+				ptr->fAutoFilter = m_oAutoFilter->GetValue();
+
+				ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
+				ptr->fDeleteRows = m_oDeleteRows->GetValue();
+				ptr->fFormatCells = m_oFormatCells->GetValue();
+				ptr->fFormatColumns = m_oFormatColumns->GetValue();
+				ptr->fFormatRows = m_oFormatRows->GetValue();
+				ptr->fInsertColumns = m_oInsertColumns->GetValue();
+				ptr->fInsertHyperlinks = m_oInsertHyperlinks->GetValue();
+				ptr->fInsertRows = m_oInsertRows->GetValue();
+				ptr->fObjects = m_oObjects->GetValue();
+				ptr->fPivotTables = m_oPivotTables->GetValue();
+				ptr->fScenarios = m_oScenarios->GetValue();
+				ptr->fSelLockedCells = m_oSelectLockedCells->GetValue();
+				ptr->fSelUnlockedCells = m_oSelectUnlockedCells->GetValue();
+				ptr->fLocked = m_oSheet->GetValue();
+				ptr->fSort = m_oSort->GetValue();
+				return castedPtr;
+			}
 		}
 		EElementType CSheetProtection::getType() const
 		{

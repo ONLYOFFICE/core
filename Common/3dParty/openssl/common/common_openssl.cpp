@@ -694,17 +694,14 @@ namespace NSOpenSSL
 		return key;
 	}
 
-	bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset)
+	bool AES_Decrypt_desktop_GCM(const unsigned char* key, const unsigned char* input, const int& input_len, CMemoryData& buffer)
 	{
-		unsigned char* input_ptr = NULL;
-		int input_ptr_len = 0;
-		bool bBase64 = NSFile::CBase64Converter::Decode(input.c_str() + header_offset, (int)input.length() - header_offset, input_ptr, input_ptr_len);
-		if (!bBase64)
-			return false;
+		const unsigned char* input_ptr = input;
+		int input_ptr_len = input_len;
 
-		unsigned char* iv_ptr = input_ptr;
-		unsigned char* tag_ptr = input_ptr + GCM_IV_LENGTH;
-		unsigned char* ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
+		const unsigned char* iv_ptr = input_ptr;
+		const unsigned char* tag_ptr = input_ptr + GCM_IV_LENGTH;
+		const unsigned char* ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
 		int ciphertext_len = input_ptr_len - (GCM_IV_LENGTH + GCM_TAG_LENGHT);
 		unsigned char* output_ptr = NULL;
 		int output_len = 0;
@@ -729,7 +726,7 @@ namespace NSOpenSSL
 		if (!EVP_DecryptUpdate(ctx, output_ptr, &output_len, ciphertext_ptr, ciphertext_len))
 			goto end;
 
-		if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, GCM_TAG_LENGHT, tag_ptr))
+		if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, GCM_TAG_LENGHT, (void*)tag_ptr))
 			goto end;
 
 		if (EVP_DecryptFinal_ex(ctx, output_ptr + output_len, &final_len))
@@ -739,24 +736,44 @@ namespace NSOpenSSL
 		}
 
 end:
-		RELEASEARRAYOBJECTS(input_ptr);
 		if (ctx)
 			EVP_CIPHER_CTX_free(ctx);
 
 		if (bResult)
 		{
-			output = std::string((char*)output_ptr, output_len);
+			buffer.Data = output_ptr;
+			buffer.Size = output_len;
 		}
-
-		if (output_ptr)
+		else
 			openssl_free(output_ptr);
 
 		return bResult;
 	}
-	bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output)
+
+	bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset)
 	{
-		const unsigned char* input_ptr = (const unsigned char*)input.c_str();
-		int input_len = (int)input.length();
+		unsigned char* input_ptr = NULL;
+		int input_ptr_len = 0;
+		bool bBase64 = NSFile::CBase64Converter::Decode(input.c_str() + header_offset, (int)input.length() - header_offset, input_ptr, input_ptr_len);
+		if (!bBase64)
+			return false;
+
+		CMemoryData oBuffer;
+		bool bResult = AES_Decrypt_desktop_GCM(key, input_ptr, input_ptr_len, oBuffer);
+
+		RELEASEARRAYOBJECTS(input_ptr);
+
+		if (bResult)
+		{
+			output = std::string((char*)oBuffer.Data, oBuffer.Size);
+		}
+
+		return bResult;
+	}
+
+	bool AES_Encrypt_desktop_GCM(const unsigned char* key, const unsigned char* input, const int& input_len, CMemoryData& buffer)
+	{
+		const unsigned char* input_ptr = input;
 
 		int output_buffer_all_offset = GCM_IV_LENGTH + GCM_TAG_LENGHT;
 		int output_buffer_len = input_len + output_buffer_all_offset;
@@ -809,19 +826,33 @@ end:
 
 		if (bResult)
 		{
+			buffer.Data = output_ptr;
+			buffer.Size = (size_t)(ciphertext_len + output_buffer_all_offset);
+		}
+		else
+		{
+			openssl_free(output_ptr);
+		}
+
+		return bResult;
+	}
+	bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output)
+	{
+		CMemoryData buffer;
+		bool bResult = AES_Encrypt_desktop_GCM(key, (const unsigned char*)input.c_str(), (int)input.length(), buffer);
+
+		if (bResult)
+		{
 			// header + base64
 			char* pDataDst = NULL;
 			int nDataDst = 0;
-			NSFile::CBase64Converter::Encode(output_ptr, ciphertext_len + output_buffer_all_offset, pDataDst, nDataDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+			NSFile::CBase64Converter::Encode(buffer.Data, (int)buffer.Size, pDataDst, nDataDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 			output = "";
 			output.reserve(g_aes_header.length() + (size_t)nDataDst + 1);
 			output.append(g_aes_header);
 			output.append((char*)pDataDst, nDataDst);
 			RELEASEARRAYOBJECTS(pDataDst);
 		}
-
-		if (output_ptr)
-			openssl_free(output_ptr);
 
 		return bResult;
 	}

@@ -503,6 +503,80 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CPageSetup::toBin()
+		{
+			if(m_oErrors.IsInit() || m_oScale.IsInit())
+			{
+				auto ptr(new XLSB::PageSetup);
+				XLS::BaseObjectPtr objectPtr(ptr);
+				if(m_oBlackAndWhite.IsInit())
+					ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+				if (ptr->fNoColor)
+				{
+					if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+						ptr->fNotes = true;
+					else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
+						ptr->fNotes = false;
+				}
+
+				ptr->iCopies = m_oCopies->m_eValue;
+				ptr->fDraft = m_oDraft->m_eValue;
+				ptr->iErrors = m_oErrors->m_eValue;
+				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+				ptr->iFitHeight = m_oFitToHeight->m_eValue;
+				ptr->iFitWidth = m_oFitToWidth->m_eValue;
+				ptr->iRes = m_oHorizontalDpi->m_eValue;
+				ptr->szRelID = m_oRId->GetValue();
+
+				if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
+					ptr->fLandscape = true;
+				else
+					ptr->fLandscape = false;
+
+				if ( m_oPageOrder == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
+					ptr->fLeftToRight = true;
+				else
+					ptr->fLeftToRight = false;
+
+				ptr->iPaperSize = m_oPaperSize->m_eValue;
+				ptr->iScale = m_oScale->m_eValue;
+				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
+				ptr->iVRes = m_oVerticalDpi->m_eValue;
+
+				return objectPtr;
+			}
+			else
+			{
+				auto ptr(new XLSB::CsPageSetup);
+				XLS::BaseObjectPtr objectPtr(ptr);
+
+				if(m_oBlackAndWhite.IsInit())
+					ptr->fNoColor  = m_oBlackAndWhite->m_eValue;
+				if (ptr->fNoColor)
+				{
+					if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+						ptr->fNotes = true;
+					else if(m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed)
+						ptr->fNotes = false;
+				}
+
+				ptr->iCopies = m_oCopies->m_eValue;
+				ptr->fDraft = m_oDraft->m_eValue;
+				ptr->iPageStart = m_oFirstPageNumber->m_eValue;
+				ptr->iRes = m_oHorizontalDpi->m_eValue;
+				ptr->szRelID = m_oRId->GetValue();
+
+				if (m_oOrientation == SimpleTypes::EPageOrientation::pageorientLandscape)
+					ptr->fLandscape = true;
+				else
+					ptr->fLandscape = false;
+
+				ptr->iPaperSize = m_oPaperSize->m_eValue;
+				ptr->fUsePage = m_oUseFirstPageNumber->m_eValue;
+				ptr->iVRes = m_oVerticalDpi->m_eValue;
+				return objectPtr;
+			}
+		}
 		EElementType CPageSetup::getType() const
 		{
 			return et_x_PageSetup;

@@ -427,8 +427,7 @@ public:
 				iCount--;
 			}
 
-			// Wait min
-			//NSThreads::Sleep(30000);
+			NSThreads::Sleep(30000);
 		}
 
 		if (m_bVerboseLog)
@@ -1164,6 +1163,8 @@ private:
 
 			sOutput = ExecuteCommand(sCommand);
 			bool bUptime = sOutput.find(L"user") != std::wstring::npos;
+
+			// TODO check: ps -e | grep X
 
 			// connection
 			sCommand = L"guestcontrol " + m_pVm->m_sGuid +

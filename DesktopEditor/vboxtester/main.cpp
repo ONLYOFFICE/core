@@ -428,7 +428,7 @@ public:
 			}
 
 			// Wait min
-			NSThreads::Sleep(30000);
+			//NSThreads::Sleep(30000);
 		}
 
 		if (m_bVerboseLog)
@@ -1163,10 +1163,19 @@ private:
 					   L" --wait-stdout";
 
 			sOutput = ExecuteCommand(sCommand);
-
 			bool bUptime = sOutput.find(L"user") != std::wstring::npos;
 
-			bResult = bWhoami || bUptime;
+			// connection
+			sCommand = L"guestcontrol " + m_pVm->m_sGuid +
+					   L" run --exe /usr/bin/curl" +
+					   L" --username " + m_sVmUser +
+					   L" --password " + m_sVmPassword +
+					   L" --wait-stdout -- curl/arg0 -I http://www.google.com";
+
+			sOutput = ExecuteCommand(sCommand);
+			bool bConnection = sOutput.find(L"200 OK") != std::wstring::npos;
+
+			bResult = (bWhoami || bUptime) && bConnection;
 		}
 
 		return bResult;

@@ -4898,7 +4898,8 @@ namespace NExtractTools
               
 				IOfficeDrawingFile* pReader = NULL;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts, sPages);
-				pdfWriter.SaveToFile(sTo);
+				if (SUCCEEDED_X2T(nRes))
+					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				RELEASEOBJECT(pReader);
            }
        }

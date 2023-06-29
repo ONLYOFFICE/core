@@ -386,6 +386,31 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CPageMargins::toBin()
+		{
+			auto ptr(new XLSB::Margins);
+			XLS::BaseObjectPtr objPtr(ptr);
+
+			if(m_oLeft.IsInit())
+				ptr->xnumLeft.data.value = m_oLeft->GetValue();
+
+			if(m_oTop.IsInit())
+				ptr->xnumTop.data.value = m_oTop->GetValue();
+
+			if(m_oRight.IsInit())
+				ptr->xnumRight.data.value = m_oRight->GetValue();
+
+			if(m_oBottom.IsInit())
+				ptr->xnumBottom.data.value = m_oBottom->GetValue();
+
+			if(m_oHeader.IsInit())
+				ptr->xnumHeader.data.value = m_oHeader->GetValue();
+
+			if(m_oFooter.IsInit())
+				ptr->xnumFooter.data.value = m_oFooter->GetValue();
+
+			return objPtr;
+		}
 		EElementType CPageMargins::getType() const
 		{
 			return et_x_PageMargins;

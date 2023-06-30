@@ -375,7 +375,7 @@ namespace SVG
 		if (NULL == pRenderer)
 			return;
 
-		Aggplus::CMatrix oCurrentMatrix(m_oStyles.m_oTransform.GetMatrix().GetFinalValue(NULL, NSCSS::NSProperties::TransformRotate));
+		Aggplus::CMatrix oCurrentMatrix(m_oStyles.m_oTransform.GetMatrix().GetFinalValue(NSCSS::NSProperties::TransformRotate));
 
 		double dXScale = 1., dYScale = 1.;
 

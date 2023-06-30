@@ -11,11 +11,13 @@ namespace SVG
 		Marker_UserSpaceOnUse
 	} MarkerUnits;
 
-	class CMarker : public CGraphicsContainer
+	class CMarker : public CObject, public CContainer<CRenderedObject>
 	{
 	public:
-		CMarker(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CMarker(XmlUtils::CXmlNode& oNode);
 		virtual ~CMarker();
+
+		ObjectType GetType() const override;
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
@@ -23,9 +25,10 @@ namespace SVG
 
 		void Draw(IRenderer* pRenderer, const std::vector<Point>& arPoints, double dStrokeWidth) const;
 	private:
-		TBounds GetBounds() const override;
-
 		MarkerUnits m_enUnits;
+
+		TRect m_oWindow;
+		TRect m_oViewBox;
 
 		Aggplus::CImage *m_pImage;
 	};

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <regex>
 #include <map>
 
 namespace SVG
@@ -29,26 +30,24 @@ namespace SVG
 	class StrUtils
 	{
 	public:
-		static inline std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
+		static inline std::vector<double> ReadDoubleValues(std::wstring::const_iterator oBegin, std::wstring::const_iterator oEnd)
 		{
 			std::vector<double> arValues;
 
-			std::wstring::const_iterator oFirstPos = wsValue.begin();
-			std::wstring::const_iterator oSecondPos = oFirstPos;
+			std::wregex oPattern(LR"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)");
 
-			while (true)
-			{
-				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'.' == wChar || L'+' == wChar || L'-' == wChar; });
+			std::wsregex_iterator oIter(oBegin, oEnd, oPattern);
+			std::wsregex_iterator oEndIter;
 
-				if (wsValue.end() == oFirstPos)
-					break;
-
-				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return !iswdigit(wChar) && wChar != L',' && wChar != L'.'; });
-
-				arValues.push_back(std::stod(std::wstring(oFirstPos, oSecondPos)));
-			}
+			for (; oIter != oEndIter; ++oIter)
+				arValues.push_back(std::stod(oIter->str()));
 
 			return arValues;
+		}
+
+		static inline std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
+		{
+			return ReadDoubleValues(wsValue.begin(), wsValue.end());
 		}
 
 		static inline long LongValue(const std::wstring& value)

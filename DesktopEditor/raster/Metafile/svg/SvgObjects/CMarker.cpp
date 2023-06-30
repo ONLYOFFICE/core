@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-CMarker::CMarker(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
-		: CGraphicsContainer(oNode, pParent), m_pImage(NULL)
+CMarker::CMarker(XmlUtils::CXmlNode &oNode)
+		: CObject(oNode), m_pImage(NULL)
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"refX"));
 		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"refY"));
@@ -50,6 +50,11 @@ CMarker::CMarker(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
 	{
 		if (NULL != m_pImage)
 			delete m_pImage;
+	}
+
+	ObjectType CMarker::GetType() const
+	{
+		return AppliedObject;
 	}
 
 	void CMarker::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -141,20 +146,5 @@ CMarker::CMarker(XmlUtils::CXmlNode &oNode, CRenderedObject *pParent)
 
 			pRenderer->DrawImage((IGrObject*)m_pImage, oNewPoint.dX, oNewPoint.dY, dWidth, dHeight);
 		}
-	}
-
-	TBounds CMarker::GetBounds() const
-	{
-		TBounds oBounds;
-
-		oBounds.m_dLeft   = m_oViewBox.m_oX.ToDouble(NSCSS::Pixel);
-		oBounds.m_dTop    = m_oViewBox.m_oY.ToDouble(NSCSS::Pixel);
-
-		double dMaxValue = std::max(m_oViewBox.m_oWidth.ToDouble(NSCSS::Pixel), m_oViewBox.m_oHeight.ToDouble(NSCSS::Pixel));
-
-		oBounds.m_dRight  = oBounds.m_dLeft + dMaxValue;
-		oBounds.m_dBottom = oBounds.m_dTop  + dMaxValue;
-
-		return oBounds;
 	}
 }

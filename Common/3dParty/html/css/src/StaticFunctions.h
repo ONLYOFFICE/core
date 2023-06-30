@@ -4,12 +4,13 @@
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../../DesktopEditor/common/File.h"
 #include "CNode.h"
+#include <algorithm>
 #include <cwctype>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <regex>
 #include <list>
-#include <algorithm>
 
 namespace NSCSS
 {
@@ -156,20 +157,13 @@ namespace NSCSS
 		{
 			std::vector<double> arValues;
 
-			std::wstring::const_iterator oFirstPos = wsValue.begin();
-			std::wstring::const_iterator oSecondPos = oFirstPos;
+			std::wregex oPattern(LR"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)");
 
-			while (true)
-			{
-				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'.' == wChar || L'+' == wChar || L'-' == wChar; });
+			std::wsregex_iterator oIter(wsValue.begin(), wsValue.end(), oPattern);
+			std::wsregex_iterator oEndIter;
 
-				if (wsValue.end() == oFirstPos)
-					break;
-
-				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return !iswdigit(wChar) && wChar != L',' && wChar != L'.'; });
-
-				arValues.push_back(std::stod(std::wstring(oFirstPos, oSecondPos)));
-			}
+			for (; oIter != oEndIter; ++oIter)
+				arValues.push_back(std::stod(oIter->str()));
 
 			return arValues;
 		}

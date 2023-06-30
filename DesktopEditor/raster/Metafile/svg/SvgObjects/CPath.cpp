@@ -6,6 +6,7 @@
 
 namespace SVG
 {
+	#define ISPATHCOMMAND(wchar) L'M' == wchar || L'm' == wchar || L'Z' == wchar || L'z' == wchar || L'L' == wchar || L'l' == wchar || L'H' == wchar || L'h' == wchar || L'V' == wchar || L'v' == wchar || L'C' == wchar || L'c' == wchar || L'S' == wchar || L's' == wchar || L'Q' == wchar || L'q' == wchar || L'T' == wchar || L't' == wchar || L'A' == wchar || L'a' == wchar
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
 	{
@@ -122,10 +123,10 @@ namespace SVG
 
 		Point oTranslatePoint{0., 0.};
 
-		if (bRelativeCoordinate && NULL != pPrevElement)
+		if (NULL != pPrevElement)
 			oTranslatePoint = (*pPrevElement)[-1];
 
-		CVLineElement *pVLineElement = new CVLineElement(Point{0, arValues[0]} + oTranslatePoint);
+		CVLineElement *pVLineElement = new CVLineElement(Point{oTranslatePoint.dX, arValues[0] + ((bRelativeCoordinate) ? oTranslatePoint.dY : 0)});
 
 		arValues.erase(arValues.begin());
 
@@ -149,10 +150,10 @@ namespace SVG
 
 		Point oTranslatePoint{0., 0.};
 
-		if (bRelativeCoordinate && NULL != pPrevElement)
+		if (NULL != pPrevElement)
 			oTranslatePoint = (*pPrevElement)[-1];
 
-		CHLineElement *pHLineElement = new CHLineElement(Point{arValues[0], 0} + oTranslatePoint);
+		CHLineElement *pHLineElement = new CHLineElement(Point{arValues[0] + ((bRelativeCoordinate) ? oTranslatePoint.dX : 0), oTranslatePoint.dY});
 
 		arValues.erase(arValues.begin());
 
@@ -548,10 +549,9 @@ namespace SVG
 
 		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
-		std::vector<Point> arPoints(m_arElements.size());
+		Aggplus::CMatrix oOldMatrix;
 
-		for (unsigned int unIndex = 0; unIndex < m_arElements.size(); ++unIndex)
-			arPoints[unIndex] = (*m_arElements[unIndex])[0];
+		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
 
 		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
@@ -560,7 +560,7 @@ namespace SVG
 			if (NULL != pStartMarker)
 			{
 				pStartMarker->Update(pFile);
-				pStartMarker->Draw(pRenderer, {*arPoints.begin()}, dStrokeWidth);
+				pStartMarker->Draw(pRenderer, {(*m_arElements.front())[0]}, dStrokeWidth);
 			}
 		}
 
@@ -568,10 +568,15 @@ namespace SVG
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
+			std::vector<Point> arPoints(m_arElements.size() - 2);
+
+			for (unsigned int unIndex = 1; unIndex < m_arElements.size() - 1; ++unIndex)
+				arPoints[unIndex - 1] = (*m_arElements[unIndex])[-1];
+
 			if (NULL != pMidMarker)
 			{
 				pMidMarker->Update(pFile);
-				pMidMarker->Draw(pRenderer, std::vector<Point>(arPoints.begin() + 1, arPoints.end() - 1), dStrokeWidth);
+				pMidMarker->Draw(pRenderer, arPoints, dStrokeWidth);
 			}
 		}
 
@@ -582,9 +587,11 @@ namespace SVG
 			if (NULL != pEndMarker)
 			{
 				pEndMarker->Update(pFile);
-				pEndMarker->Draw(pRenderer, {*(arPoints.end() - 1)}, dStrokeWidth);
+				pEndMarker->Draw(pRenderer, {(*m_arElements.back())[-1]}, dStrokeWidth);
 			}
 		}
+
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		return true;
 	}
@@ -620,21 +627,26 @@ namespace SVG
 
 	void CPath::ReadFromString(const std::wstring &wsValue)
 	{
-		std::wstring::const_iterator oFirstPos = wsValue.begin();
-		std::wstring::const_iterator oSecondPos = oFirstPos;
-
 		CMoveElement *pMoveElement = NULL;
 
-		while (true)
+		std::wstring::const_iterator oFirstPos  = std::find_if(wsValue.begin(), wsValue.end(), [](wchar_t wChar){return ISPATHCOMMAND(wChar);});
+		std::wstring::const_iterator oSecondPos = oFirstPos;
+
+		while (oFirstPos != wsValue.end())
 		{
-			oFirstPos = std::find_if(oSecondPos, wsValue.end(), iswalpha );
+			if (L'z' == *oFirstPos || L'Z' == *oFirstPos)
+			{
+				if (NULL == pMoveElement)
+					return;
 
-			if (wsValue.end() == oFirstPos)
-				break;
+				AddElement(new CCloseElement);
+				oSecondPos = ++oFirstPos;
+				continue;
+			}
 
-			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), iswalpha );
+			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), [](wchar_t wChar){return ISPATHCOMMAND(wChar);});
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(std::wstring(oFirstPos + 1, oSecondPos));
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(oFirstPos, oSecondPos);
 
 			switch(*oFirstPos)
 			{
@@ -725,18 +737,7 @@ namespace SVG
 					AddElements<CArcElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
-				case L'Z':
-				case L'z':
-				{
-					if (NULL == pMoveElement)
-						return;
-
-					AddElement(new CCloseElement);
-
-					break;
-				}
 			}
-
 			oFirstPos = oSecondPos;
 		}
 	}

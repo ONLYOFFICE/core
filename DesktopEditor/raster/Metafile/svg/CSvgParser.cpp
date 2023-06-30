@@ -102,7 +102,7 @@ namespace SVG
 
 		if (L"svg" == wsElementName || L"g" == wsElementName || L"defs" == wsElementName)
 		{
-					XmlUtils::CXmlNodes arChilds;
+			XmlUtils::CXmlNodes arChilds;
 
 			oElement.GetChilds(arChilds);
 
@@ -233,7 +233,7 @@ namespace SVG
 
 		if (NULL != pObject)
 		{
-			if ((MarkObject(pObject, pFile) && AppliedObject == pObject->GetType()) ||
+			if ((MarkObject(pObject, pFile) && (AppliedObject == pObject->GetType() || NULL == pContainer)) ||
 				(RendererObject == pObject->GetType() && AddObject((ObjectType*)pObject, pContainer)))
 			{
 				UpdateStyles(pObject, pFile);

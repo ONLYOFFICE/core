@@ -482,7 +482,7 @@ namespace NSCSS
 
 		std::wstring wsCopyValue(wsValue);
 
-		std::transform(wsCopyValue.begin(), wsCopyValue.begin() + unBegin, wsCopyValue.begin(), std::tolower);
+		std::transform(wsCopyValue.begin(), wsCopyValue.begin() + unBegin, wsCopyValue.begin(), std::towlower);
 
 		if (std::wstring::npos == wsCopyValue.find(L"url(#"))
 			return std::wstring();
@@ -879,12 +879,9 @@ namespace NSCSS
 		return wsValue;
 	}
 
-	Aggplus::CMatrix CMatrix::GetFinalValue(const Aggplus::CMatrix* pPrevMatrix, TransformType oWithoutType) const
+	Aggplus::CMatrix CMatrix::GetFinalValue(TransformType oWithoutType) const
 	{
 		Aggplus::CMatrix oMatrix;
-
-		if(NULL != pPrevMatrix)
-			oMatrix = *pPrevMatrix;
 
 		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
 		{

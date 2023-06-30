@@ -214,7 +214,7 @@ namespace NSCSS
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
 
-		Aggplus::CMatrix GetFinalValue(const Aggplus::CMatrix* pPrevMatrix = NULL, TransformType oWithoutType = TransformNone) const;
+		Aggplus::CMatrix GetFinalValue(TransformType oWithoutType = TransformNone) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
 	};

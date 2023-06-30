@@ -104,6 +104,35 @@ namespace OOX
 			{
 				ReadAttributes(obj);
 			}
+			XLS::BaseObjectPtr CSortCondition::toBin()
+			{
+				auto ptr(new XLSB::BeginSortCond);
+				XLS::BaseObjectPtr objectPtr(ptr);
+
+				ptr->fSortDes = m_oDescending->GetValue();
+				ptr->rfx = m_oRef->GetValue();
+
+				if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
+				{
+					ptr->sortOn = 0;
+				}
+				else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
+				{
+					ptr->sortOn = 1;
+					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+				}
+				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
+				{
+					ptr->sortOn = 2;
+					ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+				}
+				else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
+				{
+					ptr->sortOn = 3;
+				}
+
+				return objectPtr;
+			}
 			EElementType CSortCondition::getType () const
 			{
 				return et_x_SortCondition;
@@ -254,8 +283,33 @@ namespace OOX
 						for(auto &pSORTCOND14 : ptrACSORTCONDS->m_arSORTCOND14)
 							m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND14*>(pSORTCOND14.get())->m_BrtBeginSortCond14));
 				}
+			}
+			XLS::BaseObjectPtr CSortState::toBin()
+			{
+				auto ptr(new XLSB::SORTSTATE);
+				XLS::BaseObjectPtr objectPtr(ptr);
 
+				auto beginSortState(new XLSB::BeginSortState);
+				ptr->m_BrtBeginSortState = XLS::BaseObjectPtr{beginSortState};
+				if(m_oRef.IsInit())
+					beginSortState->rfx = m_oRef->GetValue();
+				if(m_oCaseSensitive.IsInit())
+					beginSortState->fCaseSensitive = m_oCaseSensitive->GetValue();
+				if(m_oColumnSort.IsInit())
+					beginSortState->fCol = m_oColumnSort->GetValue();
+				if(m_oSortMethod == SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke)
+					beginSortState->fAltMethod = true;
+				else
+					beginSortState->fAltMethod = false;
 
+				auto sortConds(new XLSB::SORTCONDS);
+				ptr->m_source = XLS::BaseObjectPtr{sortConds};
+				for(auto i:m_arrItems)
+				{
+					sortConds->m_arSORTCOND.push_back(i->toBin());
+				}
+
+				return objectPtr;
 			}
 			EElementType CSortState::getType () const
 			{

@@ -88,6 +88,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))
@@ -127,7 +128,7 @@ namespace SVG
 
 	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || CommandeModeClip == oMode)
+		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || CommandeModeClip == oMode || !m_oStyles.m_bDisplay)
 			return false;
 
 		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};

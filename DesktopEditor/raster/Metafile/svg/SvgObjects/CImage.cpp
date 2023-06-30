@@ -23,11 +23,12 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || m_wsHref.empty())
+		if (NULL == pRenderer || m_wsHref.empty() || !m_oStyles.m_bDisplay)
 			return false;
 
 		size_t unStart = m_wsHref.find(L"data:image");

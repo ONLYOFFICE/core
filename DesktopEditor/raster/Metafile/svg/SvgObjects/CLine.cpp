@@ -26,6 +26,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
 	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const

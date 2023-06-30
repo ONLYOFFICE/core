@@ -1,7 +1,7 @@
 #include "CContainer.h"
 
 #include "../CSvgFile.h"
-#include "../CSvgParser.h"
+#include "../SvgUtils.h"
 
 namespace SVG
 {
@@ -42,11 +42,13 @@ namespace SVG
 	{}
 
 	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{}
+	{
+		SetDisplay(mAttributes, ushLevel, bHardMode);
+	}
 
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
 			return false;
 
 		for (const CRenderedObject* pObject : m_arObjects)

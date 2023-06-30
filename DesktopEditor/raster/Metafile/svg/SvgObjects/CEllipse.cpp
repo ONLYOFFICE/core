@@ -21,11 +21,12 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};

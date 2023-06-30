@@ -3,6 +3,60 @@
 
 namespace SVG
 {
+	CObject::CObject(const NSCSS::CNode &oData)
+		: m_oXmlNode(oData)
+	{}
+
+	CObject::CObject(XmlUtils::CXmlNode &oNode)
+	{
+		if (!oNode.IsValid())
+			return;
+
+		std::vector<std::wstring> arProperties, arValues;
+
+		oNode.GetAllAttributes(arProperties, arValues);
+
+		m_oXmlNode.m_sName = oNode.GetName();
+
+		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
+		{
+			if (L"class" == arProperties[unIndex])
+			{
+				m_oXmlNode.m_sClass = arValues[unIndex];
+				std::transform(m_oXmlNode.m_sClass.begin(), m_oXmlNode.m_sClass.end(), m_oXmlNode.m_sClass.begin(), std::towlower);
+			}
+			else if (L"id" == arProperties[unIndex])
+			{
+				m_oXmlNode.m_sId = arValues[unIndex];
+			}
+			else if (L"style" == arProperties[unIndex])
+				m_oXmlNode.m_sStyle = arValues[unIndex];
+			else
+				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
+		}
+	}
+
+	CObject::~CObject()
+	{}
+
+	void CObject::SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode)
+	{
+		if (wsStyles.empty())
+			return;
+
+		SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
+	}
+
+	std::wstring CObject::GetId() const
+	{
+		return m_oXmlNode.m_sId;
+	}
+
+	std::vector<NSCSS::CNode> CObject::GetFullPath() const
+	{
+		return {m_oXmlNode};
+	}
+
 	CRenderedObject::CRenderedObject(const NSCSS::CNode &oData, CRenderedObject *pParent)
 		: CObject(oData), m_pParent(pParent)
 	{
@@ -40,6 +94,8 @@ namespace SVG
 
 		m_oStyles.m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
+
+		m_oStyles.m_bDisplay = true;
 	}
 
 	void CRenderedObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -93,6 +149,16 @@ namespace SVG
 	{
 		if (mAttributes.end() != mAttributes.find(L"mask"))
 			m_oStyles.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
+	}
+
+	void CRenderedObject::SetDisplay(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"display"))
+		{
+			const std::wstring wsDisplay = mAttributes.at(L"display");
+
+			if (!wsDisplay.empty()) m_oStyles.m_bDisplay = (L"none" == wsDisplay) ? false : true;
+		}
 	}
 
 	void CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
@@ -284,5 +350,4 @@ namespace SVG
 	{
 		return AppliedObject;
 	}
-
 }

@@ -18,6 +18,7 @@ namespace SVG
 		SvgTransform m_oTransform;
 		TClip        m_oClip;
 		SvgColor     m_oMask;
+		bool         m_bDisplay;
 
 		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles)
 		{
@@ -60,63 +61,18 @@ namespace SVG
 	class CObject
 	{
 	public:
-		CObject(const NSCSS::CNode& oData)
-			: m_oXmlNode(oData)
-		{}
-
-		CObject(XmlUtils::CXmlNode& oNode)
-		{
-			if (!oNode.IsValid())
-				return;
-
-			std::vector<std::wstring> arProperties, arValues;
-
-			oNode.GetAllAttributes(arProperties, arValues);
-
-			m_oXmlNode.m_sName = oNode.GetName();
-
-			for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-			{
-				if (L"class" == arProperties[unIndex])
-				{
-					m_oXmlNode.m_sClass = arValues[unIndex];
-					std::transform(m_oXmlNode.m_sClass.begin(), m_oXmlNode.m_sClass.end(), m_oXmlNode.m_sClass.begin(), std::towlower);
-				}
-				else if (L"id" == arProperties[unIndex])
-				{
-					m_oXmlNode.m_sId = arValues[unIndex];
-				}
-				else if (L"style" == arProperties[unIndex])
-					m_oXmlNode.m_sStyle = arValues[unIndex];
-				else
-					m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
-			}
-		};
-
-		virtual ~CObject()
-		{}
+		CObject(const NSCSS::CNode& oData);
+		CObject(XmlUtils::CXmlNode& oNode);
+		virtual ~CObject();
 
 		virtual ObjectType GetType() const = 0;
 
-		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false)
-		{
-			if (wsStyles.empty())
-				return;
-
-			SetData(NSCSS::NS_STATIC_FUNCTIONS::GetRules(wsStyles), ushLevel, bHardMode);
-		};
+		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false);
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
 
-		std::wstring GetId() const
-		{
-			return m_oXmlNode.m_sId;
-		};
-
-		virtual std::vector<NSCSS::CNode> GetFullPath() const
-		{
-			return {m_oXmlNode};
-		};
+		std::wstring GetId() const;
+		virtual std::vector<NSCSS::CNode> GetFullPath() const;
 
 	private:
 		friend class CRenderedObject;
@@ -165,6 +121,7 @@ namespace SVG
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		void StartPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw) const;
 		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;

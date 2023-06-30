@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "CMarker.h"
 #include "../CSvgFile.h"
+#include "../SvgUtils.h"
 
 namespace SVG
 {
@@ -496,6 +497,7 @@ namespace SVG
 		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
 		SetMask(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
 
@@ -508,7 +510,7 @@ namespace SVG
 
 	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || m_arElements.empty())
+		if (NULL == pRenderer || m_arElements.empty() || !m_oStyles.m_bDisplay)
 			return false;
 
 		StartPath(pRenderer, pFile, oMode);

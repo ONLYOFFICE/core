@@ -248,10 +248,11 @@ namespace OSign
 
 	bool CStorageBuffer::FromBase64(const std::string& base64)
 	{
-		m_internal->Destroy();
-		m_internal->AddSize(base64.length());
+		int nLenDst = NSBase64::Base64DecodeGetRequiredLength((int)base64.length());
 
-		int nLenDst = 0;
+		m_internal->Destroy();
+		m_internal->AddSize((size_t)nLenDst);
+
 		if (FALSE == NSBase64::Base64Decode(base64.c_str(), (int)base64.length(), m_internal->m_data->m_data, &nLenDst))
 		{
 			m_internal->Destroy();
@@ -291,6 +292,11 @@ namespace OSign
 			return;
 
 		Add(buffer->m_internal->m_data->m_data, buffer->m_internal->m_data->m_size);
+	}
+
+	void CStorageBuffer::AddSkip(const size_t& size)
+	{
+		m_internal->m_data->m_size += size;
 	}
 
 	// READ

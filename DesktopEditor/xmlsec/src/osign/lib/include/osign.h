@@ -51,6 +51,7 @@ namespace OSign
 		void AddInt(const size_t& size);
 		void Add(const unsigned char* data, const size_t& size);
 		void Add(const CStorageBuffer* buffer);
+		void AddSkip(const size_t& size);
 
 		// read
 		void Seek(const size_t& pos);
@@ -71,6 +72,7 @@ namespace OSign
 		CCertificate();
 		CCertificate(const std::map<std::wstring, std::wstring>& props);
 		~CCertificate();
+		void Generate();
 
 	public:
 		std::map<std::wstring, std::wstring> GetProperties();

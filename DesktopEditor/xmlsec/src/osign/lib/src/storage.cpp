@@ -76,15 +76,13 @@ namespace OSign
 		for (unsigned int i = 0; i < nCount; ++i)
 		{
 			int nLen = buffer->ReadInt();
-			oCertBuffer.LoadExternal(buffer->GetCurrentData(), nLen);
+			oCertBuffer.LoadExternal(buffer->ReadData((size_t)nLen), nLen);
 
 			CCertificate* pCert = new CCertificate();
 			if (pCert->Load(&oCertBuffer))
 				m_internal->m_certs.push_back(pCert);
 			else
 				delete pCert;
-
-			buffer->Skip((size_t)nLen);
 		}
 		return true;
 	}

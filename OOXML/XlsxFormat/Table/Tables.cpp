@@ -169,11 +169,11 @@ namespace Spreadsheet
 		//есть такой баг: при сохранениии "sum" и названия таблицы "Table1" (русский excel), выдается ошибка в формулах
 		WritingStringNullableAttrString(L"totalsRowFunction", m_oTotalsRowFunction, m_oTotalsRowFunction->ToString());
 		WritingStringNullableAttrInt(L"queryTableFieldId", m_oQueryTableFieldId, m_oQueryTableFieldId->GetValue());
-		WritingStringNullableAttrString(L"dataCellStyle", m_oDataCellStyle, *m_oDataCellStyle);		
+		WritingStringNullableAttrString(L"dataCellStyle", m_oDataCellStyle, *m_oDataCellStyle);
 		WritingStringNullableAttrInt(L"dataDxfId", m_oDataDxfId, m_oDataDxfId->GetValue());
-		WritingStringNullableAttrString(L"headerRowCellStyle", m_oHeaderRowCellStyle, *m_oHeaderRowCellStyle);		
+		WritingStringNullableAttrString(L"headerRowCellStyle", m_oHeaderRowCellStyle, *m_oHeaderRowCellStyle);
 		WritingStringNullableAttrInt(L"headerRowDxfId", m_oHeaderRowDxfId, m_oHeaderRowDxfId->GetValue());
-		WritingStringNullableAttrString(L"totalsRowCellStyle", m_oTotalsRowCellStyle, *m_oTotalsRowCellStyle);		
+		WritingStringNullableAttrString(L"totalsRowCellStyle", m_oTotalsRowCellStyle, *m_oTotalsRowCellStyle);
 		WritingStringNullableAttrInt(L"totalsRowDxfId", m_oTotalsRowDxfId, m_oTotalsRowDxfId->GetValue());
 		if(m_oTotalsRowFormula.IsInit() || m_oCalculatedColumnFormula.IsInit())
 		{
@@ -326,7 +326,7 @@ namespace Spreadsheet
 		writer.WriteString(L"<tableColumns");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -334,7 +334,7 @@ namespace Spreadsheet
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</tableColumns>");
 	}
 	void CTableColumns::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -405,17 +405,17 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		WritingStringNullableAttrString(L"totalsRowCellStyle", m_oTotalsRowCellStyle, *m_oTotalsRowCellStyle);
 		WritingStringNullableAttrInt(L"totalsRowDxfId", m_oTotalsRowDxfId, m_oTotalsRowDxfId->GetValue());
 		WritingStringNullableAttrInt(L"totalsRowBorderDxfId", m_oTotalsRowBorderDxfId, m_oTotalsRowBorderDxfId->GetValue());
-		
+
 		//if (m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 		//	WritingStringAttrString(L"headerRowCount", L"1");
 		//if (m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
   //          WritingStringAttrString(L"totalsRowCount", L"1");
   //      else
-		//	WritingStringAttrString(L"totalsRowShown", L"0");//m_oTotalsRowShown		
+		//	WritingStringAttrString(L"totalsRowShown", L"0");//m_oTotalsRowShown
 		WritingStringNullableAttrInt(L"headerRowCount", m_oHeaderRowCount, m_oHeaderRowCount->GetValue());
 		WritingStringNullableAttrInt(L"totalsRowCount", m_oTotalsRowCount, m_oTotalsRowCount->GetValue());
 		WritingStringNullableAttrBool2(L"totalsRowShown", m_oTotalsRowShown);
-        
+
 		WritingStringNullableAttrBool2(L"insertRow", m_oInsertRow);
 		WritingStringNullableAttrBool2(L"insertRowShift", m_oInsertRowShift);
  		WritingStringNullableAttrBool2(L"published", m_oPublished);
@@ -439,7 +439,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	void CTable::toXML2(NSStringUtils::CStringBuilder& writer, int nIndex)
 	{
 		if(false == m_oRef.IsInit() || false == m_oDisplayName.IsInit()) return;
-		
+
         if(!m_oId.IsInit())
         {
             m_oId.Init();
@@ -508,7 +508,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"comment",				m_oComment )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"connectionId",			m_oConnectionId )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dataDxfId",			m_oDataDxfId )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dataCellStyle",		m_oDataCellStyle ) 
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"dataCellStyle",		m_oDataCellStyle )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowBorderDxfId",	m_oHeaderRowBorderDxfId )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowCellStyle",	m_oHeaderRowCellStyle )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"headerRowDxfId",		m_oHeaderRowDxfId )
@@ -624,6 +624,14 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
     {
         ReadAttributes(obj);
     }
+	XLS::BaseObjectPtr CTablePart::toBin()
+	{
+		auto ptr(new XLSB::ListPart);
+		XLS::BaseObjectPtr objectPtr(ptr);
+		if(m_oRId.IsInit())
+			ptr->stRelID.value = m_oRId->GetValue();
+		return objectPtr;
+	}
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -644,7 +652,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		writer.WriteString(L"<tableParts");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if ( m_arrItems[i] )
@@ -652,8 +660,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
-		writer.WriteString(L"</tableParts>");	
+
+		writer.WriteString(L"</tableParts>");
 	}
 	void CTableParts::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -689,6 +697,23 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             }
         }
     }
+	XLS::BaseObjectPtr CTableParts::toBin()
+	{
+		auto ptr(new XLSB::LISTPARTS);
+		XLS::BaseObjectPtr objectPtr(ptr);
+
+		if(m_oCount.IsInit())
+		{
+			auto beginlistParts(new XLSB::BeginListParts);
+			ptr->m_BrtBeginListParts = XLS::BaseObjectPtr{beginlistParts};
+			beginlistParts->cParts = m_oCount->m_eValue;
+		}
+		for(auto i:m_arrItems)
+		{
+			ptr->m_arBrtListPart.push_back(i->toBin());
+		}
+		return objectPtr;
+	}
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -837,7 +862,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		writer.WriteString(L"<queryTableFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -845,7 +870,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
                 m_arrItems[i]->toXML(writer);
             }
         }
-		
+
 		writer.WriteString(L"</queryTableFields>");
 	}
 	void CQueryTableFields::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -931,7 +956,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		writer.WriteString(L"<queryTableDeletedFields");
 		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-		
+
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -1071,7 +1096,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_else_if	( oReader, (L"unboundColumnsRight"),	m_UnboundColumnsRight )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-	
+
 	void CQueryTable::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		if(false == m_oName.IsInit()) return;
@@ -1107,7 +1132,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrBool2(L"refreshOnLoad",	m_oRefreshOnLoad);
 		WritingStringNullableAttrBool2(L"removeDataOnSave",	m_oRemoveDataOnSave);
 		WritingStringNullableAttrBool2(L"rowNumbers",		m_oRowNumbers);
-		
+
 		writer.WriteString(L">");
 
 		if(m_oQueryTableRefresh.IsInit())
@@ -1203,10 +1228,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"applyFontFormats",			m_oApplyFontFormats )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"applyNumberFormats",		m_oApplyNumberFormats )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"applyPatternFormats",		m_oApplyPatternFormats )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"applyWidthHeightFormats",	m_oApplyWidthHeightFormats )			
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"applyWidthHeightFormats",	m_oApplyWidthHeightFormats )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"autoFormatId",			m_oAutoFormatId )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"backgroundRefresh",	m_oBackgroundRefresh )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"connectionId",			m_oConnectionId )			
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"connectionId",			m_oConnectionId )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"disableEdit",			m_oDisableEdit )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"disableRefresh",		m_oDisableRefresh )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"fillFormulas",			m_oFillFormulas )

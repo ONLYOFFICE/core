@@ -300,6 +300,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_TablePart;
@@ -334,6 +335,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const
 			{

@@ -1781,15 +1781,15 @@ namespace OOX
 			if(m_oOddHeader.IsInit())
 				castedBegin->stHeader = m_oOddHeader->m_sText;
 			if(m_oOddFooter.IsInit())
-				ptr->stFooter = m_oOddFooter->m_sText;
+				castedBegin->stFooter = m_oOddFooter->m_sText;
 			if(m_oEvenHeader.IsInit())
-				ptr->stHeaderEven = m_oEvenHeader->m_sText;
+				castedBegin->stHeaderEven = m_oEvenHeader->m_sText;
 			if(m_oEvenFooter.IsInit())
-				ptr->stFooterEven = m_oEvenFooter->m_sText;
+				castedBegin->stFooterEven = m_oEvenFooter->m_sText;
 			if(m_oFirstHeader.IsInit())
-				ptr->stHeaderFirst = m_oFirstHeader->m_sText;
+				castedBegin->stHeaderFirst = m_oFirstHeader->m_sText;
 			if(m_oFirstFooter.IsInit())
-			 	ptr->stFooterFirst = m_oFirstFooter->m_sText;
+			 	castedBegin->stFooterFirst = m_oFirstFooter->m_sText;
 			return objectPtr;
 		}
 		EElementType CHeaderFooter::getType() const
@@ -2198,7 +2198,7 @@ namespace OOX
 				auto ptr(new XLSB::SheetProtection);
 				XLS::BaseObjectPtr castedPtr(ptr);
 
-				ptr->protpwd = m_oPassword.get();
+                ptr->protpwd = std::stoul(m_oPassword.get());
 				ptr->fAutoFilter = m_oAutoFilter->GetValue();
 
 				ptr->fDeleteColumns = m_oDeleteColumns->GetValue();
@@ -2226,8 +2226,17 @@ namespace OOX
 
 				ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
 				ptr->dwSpinCount = m_oSpinCount->GetValue();
-				ptr->ipdPasswordData.rgbHash = m_oHashValue->GetValue();
-				ptr->ipdPasswordData.rgbSalt = m_oSaltValue->GetValue();
+				byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				auto tempSize = 0;
+				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+
+				byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+				auto tempSize2 = 0;
+				NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
+				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
 
 				ptr->fAutoFilter = m_oAutoFilter->GetValue();
 

@@ -528,7 +528,7 @@ namespace NSDocxRenderer
 
 	void CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
+		if(m_oFont.Path == oFont.Path && m_oFont.FaceIndex == oFont.FaceIndex && m_oFont.Size == oFont.Size)
 			return;
 
 		m_oFont = oFont;
@@ -545,7 +545,7 @@ namespace NSDocxRenderer
 	}
 	void CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
+		if(m_oFont.Name == oFont.Name && m_oFont.Size == oFont.Size && m_oFont.GetStyle2() == oFont.GetStyle2())
 			return;
 
 		m_oFont = oFont;

@@ -53,13 +53,16 @@ namespace NSDocxRenderer
 					wsFontName == (*it)->wsFontName &&
 					(bItalic == (*it)->bItalic) && (bBold == (*it)->bBold))
 			{
+				auto val = *it;
+
 				// в начало списка
 				if(it != m_arFontStyles.begin())
 				{
-					m_arFontStyles.push_front(*it);
 					m_arFontStyles.erase(it);
+					m_arFontStyles.push_front(val);
+
 				}
-				return *it;
+				return val;
 			}
 		}
 		auto pFontStyle = std::make_shared<CFontStyle>();

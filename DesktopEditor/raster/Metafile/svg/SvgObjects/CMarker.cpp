@@ -5,7 +5,7 @@
 
 namespace SVG
 {
-CMarker::CMarker(XmlUtils::CXmlNode &oNode)
+	CMarker::CMarker(XmlUtils::CXmlNode &oNode)
 		: CObject(oNode), m_pImage(NULL)
 	{
 		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"refX"));

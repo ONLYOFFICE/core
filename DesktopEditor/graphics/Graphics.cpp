@@ -151,6 +151,8 @@ namespace Aggplus
 		RELEASEOBJECT(m_pGraphics);
 		RELEASEOBJECT(m_pBitmap);
 #endif
+
+		RELEASEINTERFACE(m_pAlphaMask);
 	}
 
 	INT CGraphics::IsDib()
@@ -1201,33 +1203,40 @@ namespace Aggplus
 		return TRUE;
 	}
 
-	Status CGraphics::SetAlphaMask(const CAlphaMask &oAlphaMask)
+	Status CGraphics::SetAlphaMask(CAlphaMask* pAlphaMask)
 	{
-		m_oAlphaMask = oAlphaMask;
-		m_oAlphaMask.m_internal->StartApplying();
+		RELEASEINTERFACE(m_pAlphaMask);
+		m_pAlphaMask = pAlphaMask;
+		if (m_pAlphaMask)
+		{
+			m_pAlphaMask->AddRef();
+			m_pAlphaMask->m_internal->StartApplying();
+		}
 		return Ok;
 	}
 
 	Status CGraphics::CreateAlphaMask()
 	{
-		return m_oAlphaMask.CrateImageBuffer(m_frame_buffer.width(), m_frame_buffer.height());
+		RELEASEINTERFACE(m_pAlphaMask);
+		m_pAlphaMask = new CAlphaMask();
+		return m_pAlphaMask->CreateImageBuffer(m_frame_buffer.width(), m_frame_buffer.height());
 	}
 
 	Status CGraphics::ResetAlphaMask()
 	{
-		m_oAlphaMask.Clear();
+		RELEASEINTERFACE(m_pAlphaMask);
 		return Ok;
 	}
 
 	Status CGraphics::StartApplyingAlphaMask()
 	{
-		m_oAlphaMask.m_internal->StartApplying();
+		m_pAlphaMask->m_internal->StartApplying();
 		return Ok;
 	}
 
 	void CGraphics::CalculateFullTransform()
 	{
-		m_oFullTransform	= m_oCoordTransform;
+		m_oFullTransform = m_oCoordTransform;
 		m_oFullTransform.Multiply(&m_oBaseTransform, MatrixOrderAppend);
 		m_oFullTransform.Multiply(&m_oTransform, MatrixOrderPrepend);
 	}
@@ -1236,18 +1245,18 @@ namespace Aggplus
 		return m_oClip.IsClip();
 	}
 
-	agg::rendering_buffer &CGraphics::GetRenderingBuffer()
+	agg::rendering_buffer& CGraphics::GetRenderingBuffer()
 	{
-		if (GenerationAlphaMask == m_oAlphaMask.m_internal->GetStatus())
-			return m_oAlphaMask.m_internal->GetRenderingBuffer();
+		if (m_pAlphaMask && GenerationAlphaMask == m_pAlphaMask->m_internal->GetStatus())
+			return m_pAlphaMask->m_internal->GetRenderingBuffer();
 
 		return m_frame_buffer.ren_buf();
 	}
 
-	base_renderer_type &CGraphics::GetRendererBase()
+	base_renderer_type& CGraphics::GetRendererBase()
 	{
-		if (GenerationAlphaMask == m_oAlphaMask.m_internal->GetStatus() && ImageBuffer == m_oAlphaMask.m_internal->GetDataType())
-			return m_oAlphaMask.m_internal->GetRendererBaseImage();
+		if (GenerationAlphaMask == m_pAlphaMask->GetStatus() && ImageBuffer == m_pAlphaMask->GetDataType())
+			return m_pAlphaMask->m_internal->GetRendererBaseImage();
 
 		return m_frame_buffer.ren_base();
 	}
@@ -1257,12 +1266,12 @@ namespace Aggplus
     {
 		if (!m_oClip.IsClip())
 		{
-			if (ApplyingAlphaMask == m_oAlphaMask.m_internal->GetStatus())
+			if (m_pAlphaMask && ApplyingAlphaMask == m_pAlphaMask->GetStatus())
 			{
-				if (ImageBuffer == m_oAlphaMask.m_internal->GetDataType())
-					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.m_internal->GetScanlineImage(), ren);
-				else if (AlphaBuffer == m_oAlphaMask.m_internal->GetDataType())
-					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_oAlphaMask.m_internal->GetScanlineABuffer(), ren);
+				if (ImageBuffer == m_pAlphaMask->GetDataType())
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pAlphaMask->m_internal->GetScanlineImage(), ren);
+				else if (AlphaBuffer == m_pAlphaMask->GetDataType())
+					return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_pAlphaMask->m_internal->GetScanlineABuffer(), ren);
 			}
 
 			return agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ren);
@@ -1317,12 +1326,12 @@ namespace Aggplus
     {
 		if (!m_oClip.IsClip())
 		{
-			if (ApplyingAlphaMask == m_oAlphaMask.m_internal->GetStatus())
+			if (m_pAlphaMask && ApplyingAlphaMask == m_pAlphaMask->GetStatus())
 			{
-				if (ImageBuffer == m_oAlphaMask.m_internal->GetDataType())
-					return agg::render_scanlines(ras, m_oAlphaMask.m_internal->GetScanlineImage(), ren);
-				else if (AlphaBuffer == m_oAlphaMask.m_internal->GetDataType())
-					return agg::render_scanlines(ras, m_oAlphaMask.m_internal->GetScanlineABuffer(), ren);
+				if (ImageBuffer == m_pAlphaMask->GetDataType())
+					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineImage(), ren);
+				else if (AlphaBuffer == m_pAlphaMask->GetDataType())
+					return agg::render_scanlines(ras, m_pAlphaMask->m_internal->GetScanlineABuffer(), ren);
 			}
 
 			return agg::render_scanlines(ras, m_rasterizer.get_scanline(), ren);

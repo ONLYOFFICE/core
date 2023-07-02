@@ -73,7 +73,7 @@ namespace SVG
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
 
-			static CTextPath* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
+		static CTextPath* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 	private:
 		void DrawGlyph(CTSpan* pTSpan, CMovingPath& oMovingPath, IRenderer* pRenderer, const CSvgFile* pFile, CommandeMode oMode) const;
 

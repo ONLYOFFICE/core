@@ -16,7 +16,7 @@
 
 namespace SVG
 {
-#define DefaultFontFamily L"Times New Roman"
+	#define DefaultFontFamily L"Times New Roman"
 
 	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
 		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager), pPrevElement(NULL)

@@ -556,9 +556,9 @@ HRESULT CGraphicsRenderer::put_BrushTexturePath(const std::wstring& bsPath)
 	m_oBrush.TexturePath = bsPath;
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::get_BrushTextureImage(Aggplus::CImage *pImage)
+HRESULT CGraphicsRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
 {
-	pImage = m_oBrush.Image;
+	*pImage = m_oBrush.Image;
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::put_BrushTextureImage(Aggplus::CImage *pImage)
@@ -1406,9 +1406,9 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer->SetPageUnit(Aggplus::UnitMillimeter);
 }
 
-void CGraphicsRenderer::SetAlphaMask(const Aggplus::CAlphaMask &oAlphaMask)
+void CGraphicsRenderer::SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask)
 {
-	m_pRenderer->SetAlphaMask(oAlphaMask);
+	m_pRenderer->SetAlphaMask(pAlphaMask);
 }
 
 void CGraphicsRenderer::put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal)

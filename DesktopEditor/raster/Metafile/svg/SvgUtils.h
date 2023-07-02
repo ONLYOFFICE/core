@@ -9,7 +9,7 @@
 
 namespace SVG
 {
-    #define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 0 ) | ( G << 8 ) | ( B << 16 ) ))
+	#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 0 ) | ( G << 8 ) | ( B << 16 ) ))
 
 	enum Metrics
 	{
@@ -219,18 +219,18 @@ namespace SVG
 		{
 			switch (eMetrics)
 			{
-				case EM: break;
-				case EX: break;
-				case PX: dValue *= 96 / 25.4;
-				case PT: break;
-				case PC: break;
-				case CM: break;
-				case MM: break;
-				case INCH: break;
+			case EM: break;
+			case EX: break;
+			case PX: dValue *= 96 / 25.4;
+			case PT: break;
+			case PC: break;
+			case CM: break;
+			case MM: break;
+			case INCH: break;
 
-				case PCT: break;
+			case PCT: break;
 
-				case UNDEFINED: break;
+			case UNDEFINED: break;
 			}
 		}
 

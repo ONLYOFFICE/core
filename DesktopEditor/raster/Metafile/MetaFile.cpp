@@ -303,7 +303,6 @@ namespace MetaFile
 
 	#ifdef METAFILE_SUPPORT_SVG
 		m_oSvgFile.SetFontManager(m_pFontManager);
-		m_oSvgFile2.SetFontManager(m_pFontManager);
 	#endif
 
 		//------------------------------------------------------
@@ -351,7 +350,7 @@ namespace MetaFile
 	#endif
 		// Это не svm
 	#ifdef METAFILE_SUPPORT_SVG
-		if (m_oSvgFile2.OpenFromFile(wsFilePath) == true)
+		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_lType = c_lMetaSvg;
 			return true;
@@ -486,7 +485,7 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-				m_oSvgFile2.Draw(pRenderer, dX, dY, dWidth, dHeight);
+				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
 				break;
 			}
 		#endif
@@ -565,7 +564,7 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-				m_oSvgFile2.GetBounds(*pdX, *pdY, *pdW, *pdH);
+				m_oSvgFile.GetBounds(*pdX, *pdY, *pdW, *pdH);
 				break;
 			}
 		#endif

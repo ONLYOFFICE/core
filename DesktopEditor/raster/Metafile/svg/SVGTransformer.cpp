@@ -99,3 +99,13 @@ int CSVGTransformer::get_Metrics()
 {
 	return m_internal->m_oXmlParser.GetMetrics();
 }
+
+bool CSVGTransformer::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight)
+{
+	dX = 0;
+	dY = 0;
+	dWidth = get_Width();
+	dHeight = get_Height();
+
+	return true;
+}

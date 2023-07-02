@@ -32,16 +32,12 @@
 #ifndef _BUILD_GRAPHICS_STRUCTURES_H_
 #define _BUILD_GRAPHICS_STRUCTURES_H_
 
-#include "../common/Array.h"
-#include "../graphics/aggplustypes.h"
-#include "../agg-2.4/include/agg_color_rgba.h"
-#include "shading_info.h"
 #include <cmath>
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include <iostream>
 
+#include "shading_info.h"
 #include "Matrix.h"
 
 // pen -----------------------------------------------------------

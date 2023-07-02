@@ -46,95 +46,95 @@
 
 namespace Aggplus
 {
-    class CDIB : public IGrObject
-    {
-    public:
-        BYTE* m_pBits;
-        LONG m_lWidth;
-        LONG m_lHeight;
+	class CDIB : public IGrObject
+	{
+	public:
+		BYTE* m_pBits;
+		LONG m_lWidth;
+		LONG m_lHeight;
 
-    public:
-        CDIB() : IGrObject()
-        {
-            m_pBits = NULL;
-            m_lWidth = 0;
-            m_lHeight = 0;
-        }
-        virtual ~CDIB()
-        {
-            // delete all in system wrapper
-        }
+	public:
+		CDIB() : IGrObject()
+		{
+			m_pBits = NULL;
+			m_lWidth = 0;
+			m_lHeight = 0;
+		}
+		virtual ~CDIB()
+		{
+			// delete all in system wrapper
+		}
 
-        virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
-    };
+		virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
+	};
 }
 namespace NSGraphics
 {
-    class GRAPHICS_DECL IGraphicsRenderer : public IRenderer
-    {
-    public:
-        IGraphicsRenderer() {}
-        virtual ~IGraphicsRenderer() {}
+	class GRAPHICS_DECL IGraphicsRenderer : public IRenderer
+	{
+	public:
+		IGraphicsRenderer() {}
+		virtual ~IGraphicsRenderer() {}
 
-    public:
-        virtual void SetImageCache(NSImages::IImageFilesCache* pCache) = 0;
-        virtual void SetFontManager(NSFonts::IFontManager* pManager = NULL) = 0;
-        virtual void CheckFontManager() = 0;
+	public:
+		virtual void SetImageCache(NSImages::IImageFilesCache* pCache) = 0;
+		virtual void SetFontManager(NSFonts::IFontManager* pManager = NULL) = 0;
+		virtual void CheckFontManager() = 0;
 
-        virtual NSFonts::IFontManager* GetFontManager() = 0;
+		virtual NSFonts::IFontManager* GetFontManager() = 0;
 
-        virtual void CloseFont() = 0;
-        virtual void ClearInstallFont() = 0;
-        
-        virtual void SetSwapRGB(bool bValue) = 0;
-        virtual void SetTileImageDpi(const double& dDpi) = 0;
+		virtual void CloseFont() = 0;
+		virtual void ClearInstallFont() = 0;
 
-    public:
-        virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;
-        virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY) = 0;
+		virtual void SetSwapRGB(bool bValue) = 0;
+		virtual void SetTileImageDpi(const double& dDpi) = 0;
+
+	public:
+		virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;
+		virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY) = 0;
 
 
-        virtual void SavePen(NSStructures::CPen& oPen) = 0;
-        virtual void RestorePen(const NSStructures::CPen& oPen) = 0;
+		virtual void SavePen(NSStructures::CPen& oPen) = 0;
+		virtual void RestorePen(const NSStructures::CPen& oPen) = 0;
 
-        virtual void SaveBrush(NSStructures::CBrush& oBrush) = 0;
-        virtual void RestoreBrush(const NSStructures::CBrush& oBrush) = 0;
-        virtual void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal) = 0;
-        virtual void put_IntegerGrid(const bool& bEnabled) = 0;
-        virtual bool get_IntegerGrid() = 0;
-        virtual void AddRect(const double& x, const double& y, const double& w, const double& h) = 0;
-        virtual void SetFontAttack() = 0;
+		virtual void SaveBrush(NSStructures::CBrush& oBrush) = 0;
+		virtual void RestoreBrush(const NSStructures::CBrush& oBrush) = 0;
+		virtual void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal) = 0;
+		virtual void put_IntegerGrid(const bool& bEnabled) = 0;
+		virtual bool get_IntegerGrid() = 0;
+		virtual void AddRect(const double& x, const double& y, const double& w, const double& h) = 0;
+		virtual void SetFontAttack() = 0;
 
-        virtual void Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
-        virtual void CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
+		virtual void Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
+		virtual void CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oRect, LONG lWidthControl, LONG lHeightControl, Aggplus::CDIB* pDib = NULL) = 0;
 
-        virtual Aggplus::CMatrix* GetFullTransform() = 0;
-        virtual Aggplus::CMatrix* GetTransformMatrix() = 0;
-        virtual void CalculateFullTransform() = 0;
-        virtual void PathCommandRect(double x, double y, double w, double h) = 0;
-        virtual Aggplus::CMatrix* GetCoordTransform() = 0;
-        virtual void Fill() = 0;
-        virtual void Stroke() = 0;
-        virtual double GetPixW() = 0;
-        virtual double GetPixH() = 0;
+		virtual Aggplus::CMatrix* GetFullTransform() = 0;
+		virtual Aggplus::CMatrix* GetTransformMatrix() = 0;
+		virtual void CalculateFullTransform() = 0;
+		virtual void PathCommandRect(double x, double y, double w, double h) = 0;
+		virtual Aggplus::CMatrix* GetCoordTransform() = 0;
+		virtual void Fill() = 0;
+		virtual void Stroke() = 0;
+		virtual double GetPixW() = 0;
+		virtual double GetPixH() = 0;
 
 		//alpha mask methods
-		virtual void SetAlphaMask(const Aggplus::CAlphaMask& oAlphaMask) = 0;
+		virtual void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask) = 0;
 
-        // smart methods
-        virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;
-        virtual void drawHorLine2(BYTE align, double y, double x, double r, double penW) = 0;
+		// smart methods
+		virtual void drawHorLine(BYTE align, double y, double x, double r, double penW) = 0;
+		virtual void drawHorLine2(BYTE align, double y, double x, double r, double penW) = 0;
 
-        virtual void drawVerLine(BYTE align, double x, double y, double b, double penW) = 0;
-        virtual void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW) = 0;
+		virtual void drawVerLine(BYTE align, double x, double y, double b, double penW) = 0;
+		virtual void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW) = 0;
 
-        // test
+		// test
 
-        virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
-        virtual void put_BlendMode(const unsigned int nBlendMode) = 0;
-    };
+		virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
+		virtual void put_BlendMode(const unsigned int nBlendMode) = 0;
+	};
 
-    GRAPHICS_DECL IGraphicsRenderer* Create();
+	GRAPHICS_DECL IGraphicsRenderer* Create();
 
 	GRAPHICS_DECL std::string GetHatchBase64(const std::wstring& name,
 											 unsigned char r1, unsigned char g1, unsigned char b1, unsigned char a1,

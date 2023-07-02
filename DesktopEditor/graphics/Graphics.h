@@ -279,7 +279,7 @@ protected:
 
 	CClipMulti  m_oClip;
 
-	CAlphaMask m_oAlphaMask;
+	CAlphaMask* m_pAlphaMask;
 
 	agg::svg::frame_buffer_rgba       m_frame_buffer;
 	agg::svg::rasterizer              m_rasterizer;
@@ -396,7 +396,7 @@ public:
 	INT DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 
 	//Работа с альфа-маской
-	Status SetAlphaMask(const CAlphaMask& oAlphaMask);
+	Status SetAlphaMask(CAlphaMask* pAlphaMask);
 	Status CreateAlphaMask();
 	Status ResetAlphaMask();
 	Status StartApplyingAlphaMask();

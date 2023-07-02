@@ -6,7 +6,7 @@
 
 namespace SVG
 {
-class CUse : public CRenderedObject
+	class CUse : public CRenderedObject
 	{
 	public:
 		CUse(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, const CSvgFile* pFile = NULL);

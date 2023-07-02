@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 		}
 		case LoadMaskFromBuffer:
 		{
-			Aggplus::CAlphaMask oAlphaMask;
+			Aggplus::CAlphaMask* pAlphaMask = new Aggplus::CAlphaMask();
 
 			BYTE* pAlphaBuffer = new BYTE[unWidth * unHeight];
 
@@ -84,10 +84,11 @@ int main(int argc, char *argv[])
 					uchAlphaValue += 25;
 			}
 
-			oAlphaMask.LoadFromAlphaBuffer(pAlphaBuffer, unWidth, unHeight, false);
+			pAlphaMask->LoadFromAlphaBuffer(pAlphaBuffer, unWidth, unHeight, false);
 
-			pRasterRenderer->SetAlphaMask(oAlphaMask);
+			pRasterRenderer->SetAlphaMask(pAlphaMask);
 
+			pAlphaMask->Release();
 			break;
 		}
 		case LoadMaskFromFile:

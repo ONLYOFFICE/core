@@ -46,8 +46,12 @@
 #endif
 
 #ifdef METAFILE_SUPPORT_SVG
+#ifdef SVG_OLD_ENGINE
 #include "svg/SVGTransformer.h"
+typedef CSVGTransformer CSvgFile;
+#else
 #include "svg/CSvgFile.h"
+#endif
 #endif
 
 namespace MetaFile
@@ -95,8 +99,7 @@ namespace MetaFile
 	#endif
 
 	#ifdef METAFILE_SUPPORT_SVG
-		CSVGTransformer    m_oSvgFile;
-		CSvgFile           m_oSvgFile2;
+		CSvgFile           m_oSvgFile;
 	#endif
 
 		int                m_lType;

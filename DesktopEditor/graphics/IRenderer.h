@@ -199,7 +199,7 @@ public:
 	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha)					= 0;
 	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath)			= 0;
 	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath)	= 0;
-	virtual HRESULT get_BrushTextureImage(Aggplus::CImage* pImage)		= 0;
+	virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage)		= 0;
 	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage)		= 0;
 	virtual HRESULT get_BrushTextureMode(LONG* lMode)					= 0;
 	virtual HRESULT put_BrushTextureMode(const LONG& lMode)				= 0;

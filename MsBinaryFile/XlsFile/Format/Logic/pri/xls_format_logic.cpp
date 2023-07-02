@@ -369,7 +369,6 @@
 #include "../Biff_structures/ArrayParsedFormula.cpp"
 #include "../Biff_structures/Bes.cpp"
 #include "../Biff_structures/BiffString.cpp"
-#include "../Biff_structures/BiffStructure.cpp"
 #include "../Biff_structures/BookExt_Conditional11.cpp"
 #include "../Biff_structures/BookExt_Conditional12.cpp"
 #include "../Biff_structures/BorderFillInfo.cpp"

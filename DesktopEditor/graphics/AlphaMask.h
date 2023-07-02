@@ -8,17 +8,33 @@
 
 namespace Aggplus
 {
+	enum StatusAlphaMask
+	{
+		EmptyAlphaMask,
+		GenerationAlphaMask,
+		ApplyingAlphaMask
+	};
+
+	enum AMaskDataType
+	{
+		ImageBuffer,
+		AlphaBuffer
+	};
+
 	class CAlphaMask_private;
 	class GRAPHICS_DECL CAlphaMask : public IGrObject
 	{
 	public:
 		CAlphaMask();
-		~CAlphaMask();
+		virtual ~CAlphaMask();
+
+		StatusAlphaMask GetStatus()   const;
+		AMaskDataType   GetDataType() const;
 
 		void Clear();
 
-		Status CrateImageBuffer(UINT unWidth, UINT unHeight);
-		Status CrateAlphaBuffer(UINT unWidth, UINT unHeight);
+		Status CreateImageBuffer(UINT unWidth, UINT unHeight);
+		Status CreateAlphaBuffer(UINT unWidth, UINT unHeight);
 
 		Status LoadFromAlphaBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);
 		Status LoadFromImageBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, bool bExternalBuffer = true);

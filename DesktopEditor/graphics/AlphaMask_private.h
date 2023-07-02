@@ -3,7 +3,7 @@
 
 #include <string>
 #include "aggplustypes.h"
-#include "../common/IGrObject.h"
+#include "./AlphaMask.h"
 
 #include "../agg-2.4/include/agg_alpha_mask_u8.h"
 #include "../agg-2.4/include/agg_renderer_base.h"
@@ -13,19 +13,6 @@
 
 namespace Aggplus
 {
-	enum StatusAlphaMask
-	{
-		EmptyAlphaMask,
-		GenerationAlphaMask,
-		ApplyingAlphaMask
-	};
-
-	enum AMaskDataType
-	{
-		ImageBuffer,
-		AlphaBuffer
-	} ;
-
 	template <class PixelFormat, class AlphaMask>
 	struct TAlphaMaskData
 	{

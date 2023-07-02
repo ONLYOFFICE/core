@@ -17,12 +17,21 @@ namespace Aggplus
 		m_internal->Clear();
 	}
 
-	Status CAlphaMask::CrateImageBuffer(UINT unWidth, UINT unHeight)
+	StatusAlphaMask CAlphaMask::GetStatus() const
+	{
+		return m_internal->GetStatus();
+	}
+	AMaskDataType CAlphaMask::GetDataType() const
+	{
+		return m_internal->GetDataType();
+	}
+
+	Status CAlphaMask::CreateImageBuffer(UINT unWidth, UINT unHeight)
 	{
 		return m_internal->Create(unWidth, unHeight, ImageBuffer);
 	}
 
-	Status CAlphaMask::CrateAlphaBuffer(UINT unWidth, UINT unHeight)
+	Status CAlphaMask::CreateAlphaBuffer(UINT unWidth, UINT unHeight)
 	{
 		return m_internal->Create(unWidth, unHeight, AlphaBuffer);
 	}

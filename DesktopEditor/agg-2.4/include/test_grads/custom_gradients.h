@@ -1,9 +1,11 @@
 #include <algorithm>
 #include <time.h>
-#include <math.h>
 #include "../../../graphics/AggPlusEnums.h"
 #include "../../../graphics/structures.h"
-#include <cmath>
+#include "agg_math.h"
+#include "agg_array.h"
+#include "agg_trans_affine.h"
+
 #ifndef M_1_PI
 #define M_1_PI 0.318309886183790671538
 #endif

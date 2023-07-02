@@ -43,49 +43,49 @@ class IGrObject
 protected:
 
 #ifdef __APPLE__
-    volatile int32_t m_lRef;
+	volatile int32_t m_lRef;
 #else
-    ULONG m_lRef;
+	ULONG m_lRef;
 #endif
 
 public:
-    IGrObject()
-    {
-        m_lRef = 1;
-    }
+	IGrObject()
+	{
+		m_lRef = 1;
+	}
 
-    virtual ~IGrObject()
-    {
-    }
+	virtual ~IGrObject()
+	{
+	}
 
 #ifdef __APPLE__
-    virtual ULONG AddRef()
-    {
-        OSAtomicIncrement32(&m_lRef);
-        return (ULONG)m_lRef;
-    }
-    virtual ULONG Release()
-    {
-        int32_t ret = OSAtomicDecrement32(&m_lRef);
-        if (0 == m_lRef)
-            delete this;
+	virtual ULONG AddRef()
+	{
+		OSAtomicIncrement32(&m_lRef);
+		return (ULONG)m_lRef;
+	}
+	virtual ULONG Release()
+	{
+		int32_t ret = OSAtomicDecrement32(&m_lRef);
+		if (0 == m_lRef)
+			delete this;
 
-        return (ULONG)ret;
-    }
+		return (ULONG)ret;
+	}
 #else
-    virtual ULONG AddRef()
-    {
-        ++m_lRef;
-        return m_lRef;
-    }
+	virtual ULONG AddRef()
+	{
+		++m_lRef;
+		return m_lRef;
+	}
 
-    virtual ULONG Release()
-    {
-        ULONG ret = --m_lRef;
-        if (0 == m_lRef)
-            delete this;
-        return ret;
-    }
+	virtual ULONG Release()
+	{
+		ULONG ret = --m_lRef;
+		if (0 == m_lRef)
+			delete this;
+		return ret;
+	}
 #endif
 };
 

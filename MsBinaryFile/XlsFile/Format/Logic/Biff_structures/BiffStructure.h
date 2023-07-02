@@ -44,83 +44,62 @@
 namespace XLS
 {
 
-class BiffStructure_NoVtbl
-{
-public:
-	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
-	void load(IBinaryReader* reader);
-    void save(CFRecord& record);
-};
+	class BiffStructure;
+	typedef boost::shared_ptr<BiffStructure>	BiffStructurePtr;
+	typedef std::vector<BiffStructurePtr>		BiffStructurePtrVector;
 
-class BiffStructure;
-typedef boost::shared_ptr<BiffStructure>	BiffStructurePtr;
-typedef std::vector<BiffStructurePtr>		BiffStructurePtrVector;
-
-class BiffStructure : protected BiffStructure_NoVtbl
-{
-public:
-
-	virtual BiffStructurePtr clone() = 0;
-
-	virtual void load(CFRecord& record) = 0;
-	virtual void load(IBinaryReader* reader)
+	class BiffStructure
 	{
-	}
-	virtual void save(CFRecord& record) {}//= 0;
+	public:
+		virtual ~BiffStructure() {}
+		virtual BiffStructurePtr clone() = 0;
 
-	virtual ElementType get_type() = 0;
+		virtual void load(CFRecord& record) = 0;
+		virtual void load(IBinaryReader* reader) {}
 
-	virtual int serialize(std::wostream & _stream)
-	{
-        std::stringstream s;
-        s << std::string("This element - ") << getClassName() << std::string("- not serialize");
-		Log::warning(s.str());
-		return 0;
-	}
+		virtual void save(CFRecord& record) {}//= 0;
 
-    virtual const std::string & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
+		virtual ElementType get_type() = 0;
 
-};
+		virtual int serialize(std::wostream & _stream)
+		{
+			std::stringstream s;
+			s << std::string("This element - ") << getClassName() << std::string("- not serialize");
+			Log::warning(s.str());
+			return 0;
+		}
+
+		virtual const std::string & getClassName() const = 0;   // The return value must be a reference to a static variable inside the getter
+	};
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
 	public: \
-        const std::string & getClassName() const { static std::string  str(#class_name); return str;}\
-		virtual XLS::ElementType get_type() { return type; }
-	
+	const std::string & getClassName() const { static std::string str(#class_name); return str; }\
+	virtual XLS::ElementType get_type() { return type; }
 
-
-bool DiffBiff(BiffStructure_NoVtbl & val);
-bool DiffBiff(BiffStructure & val);
-
-
-template<class T>
-CFRecord& operator>>(CFRecord& record, T& val)
-{
-	if(DiffBiff(val))
+	template<typename T, typename = typename std::enable_if<!std::is_base_of<BiffStructure, T>::value, T>::type>
+	CFRecord& operator>>(CFRecord& record, T& val)
 	{
 		record.loadAnyData(val);
+		return record;
 	}
-	else
-	{
-		val.load(record);
-	}
-	return record;
-}
-
-template<class T>
-CFRecord& operator << (CFRecord& record, T& val)
-{
-	if (DiffBiff(val))
+	template<typename T, typename = typename std::enable_if<!std::is_base_of<BiffStructure, T>::value, T>::type>
+	CFRecord& operator<<(CFRecord& record, T& val)
 	{
 		record.storeAnyData(val);
+		return record;
 	}
-	else
+
+	CFRecord& operator>>(CFRecord& record, BiffStructure& val)
+	{
+		val.load(record);
+		return record;
+	}
+	CFRecord& operator<<(CFRecord& record, BiffStructure& val)
 	{
 		val.save(record);
+		return record;
 	}
-	return record;
-}
-
 
 } // namespace XLS
 

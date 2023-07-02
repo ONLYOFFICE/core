@@ -332,8 +332,11 @@ namespace NSDocxRenderer
 				m_bIsSelectedItalic = it->bIsSelectedItalic;
 				m_wsSelectedName = it->wsSelectedName;
 
-				m_arParamsCache.push_front(*it);
-				m_arParamsCache.erase(it);
+				if(it != m_arParamsCache.begin())
+				{
+					m_arParamsCache.push_front(*it);
+					m_arParamsCache.erase(it);
+				}
 				return;
 			}
 		}

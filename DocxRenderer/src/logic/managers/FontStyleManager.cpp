@@ -41,19 +41,26 @@ namespace NSDocxRenderer
 								   bool bItalic,
 								   bool bBold)
 	{
-		for(auto& val : m_arFontStyles)
+		for(auto it = m_arFontStyles.begin(); it != m_arFontStyles.end(); ++it)
 		{
-			if(oBrush.Type == val->oBrush.Type &&
-					oBrush.Color1 == val->oBrush.Color1 &&
-					oBrush.Color2 == val->oBrush.Color2 &&
-					oBrush.Alpha1 == val->oBrush.Alpha1 &&
-					oBrush.Alpha2 == val->oBrush.Alpha2 &&
-					oBrush.LinearAngle == val->oBrush.LinearAngle &&
-					dFontSize == val->dFontSize &&
-					wsFontName == val->wsFontName &&
-					(bItalic == val->bItalic) && (bBold == val->bBold))
-
-				return val;
+			if(oBrush.Type == (*it)->oBrush.Type &&
+					oBrush.Color1 == (*it)->oBrush.Color1 &&
+					oBrush.Color2 == (*it)->oBrush.Color2 &&
+					oBrush.Alpha1 == (*it)->oBrush.Alpha1 &&
+					oBrush.Alpha2 == (*it)->oBrush.Alpha2 &&
+					oBrush.LinearAngle == (*it)->oBrush.LinearAngle &&
+					dFontSize == (*it)->dFontSize &&
+					wsFontName == (*it)->wsFontName &&
+					(bItalic == (*it)->bItalic) && (bBold == (*it)->bBold))
+			{
+				// в начало списка
+				if(it != m_arFontStyles.begin())
+				{
+					m_arFontStyles.push_front(*it);
+					m_arFontStyles.erase(it);
+				}
+				return *it;
+			}
 		}
 		auto pFontStyle = std::make_shared<CFontStyle>();
 		pFontStyle->oBrush = oBrush;

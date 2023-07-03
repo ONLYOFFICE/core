@@ -57,7 +57,7 @@ public:
 
 //-----------------------------
 	Ref8U ref8;
-	ForwardOnlyParam<std::wstring > hlinkClsid;
+	BiffAttributeSimple<std::wstring > hlinkClsid;
 	OSHARED::HyperlinkObject		hyperlink;
 
 

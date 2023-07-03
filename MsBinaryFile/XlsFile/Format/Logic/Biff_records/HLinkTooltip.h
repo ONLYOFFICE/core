@@ -51,7 +51,7 @@ public:
 	static const ElementType type = typeHLinkTooltip;
 
 	std::wstring						wzTooltip;
-	BackwardOnlyParam<std::wstring >	ref_;
+	BiffAttributeSimple<std::wstring >	ref_;
 };
 
 } // namespace XLS

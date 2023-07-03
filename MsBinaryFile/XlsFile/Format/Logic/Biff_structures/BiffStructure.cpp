@@ -29,65 +29,22 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffRecord.h"
-#include "../Biff_structures/Cell.h"
-#include "../Biff_structures/CellParsedFormula.h"
-#include "../Biff_structures/FormulaValue.h"
+#include "BiffStructure.h"
 
 namespace XLS
 {
-class Formula: public BiffRecord
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(Formula)
-	BASE_OBJECT_DEFINE_CLASS_NAME(Formula)
-public:
-	Formula();
-	~Formula();
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+	CFRecord& operator>>(CFRecord& record, BiffStructure& val)
+	{
+		val.load(record);
+		return record;
+	}
+	CFRecord& operator<<(CFRecord& record, BiffStructure& val)
+	{
+		val.save(record);
+		return record;
+	}
 
-	static const ElementType type = typeFormula;
 
-	const CellRef getLocation() const;
-
-//-----------------------------
-	bool			bBiff_3_4 = false;
-	Cell			cell;
-	FormulaValue	val;
-	bool			fAlwaysCalc;
-	bool			fShrFmla;
-	
-	BiffAttributeSimple<bool> fFill;
-	BiffAttributeSimple<bool> fClearErrors;
-
-	CellParsedFormula		formula;
-};
-typedef boost::shared_ptr<Formula> FormulaPtr;
-//--------------------------------------------------------------------
-class Formula_BIFF3 : public Formula
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(Formula_BIFF3)
-	BASE_OBJECT_DEFINE_CLASS_NAME(Formula_BIFF3)
-public:
-	Formula_BIFF3();
-	~Formula_BIFF3();
-
-	BaseObjectPtr clone();
-};
-//--------------------------------------------------------------------
-class Formula_BIFF4 : public Formula
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(Formula_BIFF4)
-	BASE_OBJECT_DEFINE_CLASS_NAME(Formula_BIFF4)
-public:
-	Formula_BIFF4();
-	~Formula_BIFF4();
-
-	BaseObjectPtr clone();
-};
-} // namespace XLS
-
+}// namespace XLS

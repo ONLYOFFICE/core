@@ -90,8 +90,8 @@ public:
 	Xnum			operNumX;
 	Xnum			operNumY;
 	
-	ForwardOnlyParam<unsigned short> colRPane;
-	ForwardOnlyParam<unsigned short> rwBPane;
+	BiffAttributeSimple<unsigned short> colRPane;
+	BiffAttributeSimple<unsigned short> rwBPane;
 
 	std::wstring	pane_top_left_cell;
 

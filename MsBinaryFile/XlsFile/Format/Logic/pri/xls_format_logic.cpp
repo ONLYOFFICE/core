@@ -46,6 +46,7 @@
 #include "../Biff_records/Backup.cpp"
 #include "../Biff_records/Bar.cpp"
 #include "../Biff_records/Begin.cpp"
+#include "../Biff_structures/BiffStructure.cpp"
 #include "../Biff_records/BiffRecord.cpp"
 #include "../Biff_records/BiffRecordContinued.cpp"
 #include "../Biff_records/BiffRecordSplit.cpp"

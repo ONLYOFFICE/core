@@ -52,10 +52,10 @@ public:
 	static const ElementType type = typeIndex;
 
 //-----------------------------
-	BackwardOnlyParam<_UINT32>	rwMic;
-	BackwardOnlyParam<_UINT32>	rwMac;
-	ForwardOnlyParam<_UINT32>	ibXF;
-	BackwardOnlyParam<_UINT32>	num_pointers;
+	BiffAttributeSimple<_UINT32>	rwMic;
+	BiffAttributeSimple<_UINT32>	rwMac;
+	BiffAttributeSimple<_UINT32>	ibXF;
+	BiffAttributeSimple<_UINT32>	num_pointers;
 
 	BiffStructurePtrVector rgibRw;
 

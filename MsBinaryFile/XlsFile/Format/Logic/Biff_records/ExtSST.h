@@ -57,7 +57,7 @@ public:
 //-----------------------------
 	_UINT16 dsst;
 	BiffStructurePtrVector rgISSTInf;
-	BackwardOnlyParam<_UINT32> num_sets;
+	BiffAttributeSimple<_UINT32> num_sets;
 
 };
 

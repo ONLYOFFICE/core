@@ -38,9 +38,13 @@ namespace OSHARED
 
 class CFRecord;
 
-class FixedPoint : public XLS::BiffAttribute
+class FixedPoint : public XLS::BiffStructure
 {
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FixedPoint)
 public:
+	
+	static const XLS::ElementType type = XLS::typeFixedPoint;
+
 	FixedPoint(unsigned short cbElement_); //fixed always!!
 	FixedPoint();
     FixedPoint(const int raw_data);

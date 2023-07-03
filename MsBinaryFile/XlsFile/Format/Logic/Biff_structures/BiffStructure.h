@@ -90,16 +90,8 @@ namespace XLS
 		return record;
 	}
 
-	CFRecord& operator>>(CFRecord& record, BiffStructure& val)
-	{
-		val.load(record);
-		return record;
-	}
-	CFRecord& operator<<(CFRecord& record, BiffStructure& val)
-	{
-		val.save(record);
-		return record;
-	}
+	CFRecord& operator>>(CFRecord& record, BiffStructure& val);
+	CFRecord& operator<<(CFRecord& record, BiffStructure& val);
 
 } // namespace XLS
 

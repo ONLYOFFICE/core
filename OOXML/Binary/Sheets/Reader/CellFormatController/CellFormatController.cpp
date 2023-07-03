@@ -40,6 +40,7 @@
 #include <regex>
 #include <chrono>
 #include <iomanip>
+#include <cctype>
 
 const std::wstring DefaultDateFormat = L"dd.mm.yyyy";
 const std::wstring DefaultPercentFormat = L"0.0%";

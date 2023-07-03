@@ -1104,31 +1104,19 @@ private:
 				std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
 					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				}
 
 				GetSubClass(oXml, sSelectors);
-				oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
-				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-				oXml->WriteString(L"</w:tcBorders>");
-				if(nRowspan != 1)
-				{
-					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
-					std::wstring sColspan = std::to_wstring(nColspan);
-					if(nRowspan == 0)
-						mTable.push_back({0, j, sColspan});
-					else
-						for(int k = i + 1; k < i + nRowspan; k++)
-							mTable.push_back({k, j, sColspan});
-				}
+				oXml->WriteString(L"<w:tc><w:tcPr>");
 
 				NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, true);
 				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, false);
@@ -1138,7 +1126,7 @@ private:
 				int nWidth = oStyle.m_pDisplay.GetWidth();
 				std::wstring wsType = L"dxa";
 
-				//Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
+				//Если ширина указана в %, то используем тип dxa, если же в других единицах измерения, то в pct
 #if 1
 				// проблема с regex в старом gcc (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52719)
 				boost::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
@@ -1173,12 +1161,26 @@ private:
 					j += nColspan - 1;
 				}
 
+				oXml->WriteString(L"<w:tcBorders>");
+				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
+				oXml->WriteString(L"</w:tcBorders>");
+				if(nRowspan != 1)
+				{
+					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
+					std::wstring sColspan = std::to_wstring(nColspan);
+					if(nRowspan == 0)
+						mTable.push_back({0, j, sColspan});
+					else
+						for(int k = i + 1; k < i + nRowspan; k++)
+							mTable.push_back({k, j, sColspan});
+				}
+
 				std::wstring wsVerticalAlign = oStyle.m_pDisplay.GetVerticalAlign();
 
 				if (!wsVerticalAlign.empty())
 					oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
 
-				oXml->WriteString(L"<w:hideMark/></w:tcPr>");
+				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
 				size_t nEmpty = oXml->GetCurSize();
 				m_bWasPStyle = false;
 
@@ -1213,12 +1215,12 @@ private:
 				it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
 					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
@@ -1240,8 +1242,9 @@ private:
 
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
-		//if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-		//    oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+		if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
+			oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+		m_bWasSpace = false;
 
 		// Начало таблицы
 		std::wstring wsTable = L"<w:tbl><w:tblPr>";

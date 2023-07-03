@@ -57,7 +57,7 @@ public:
 
 //-----------------------------
 	RefU						ref_;
-    BackwardOnlyParam<BYTE>		cUse;
+    BiffAttributeSimple<BYTE>		cUse;
     SharedParsedFormula			formula;
 
     XLSB::UncheckedRfX          rfx; //in biff12

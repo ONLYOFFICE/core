@@ -54,7 +54,7 @@ public:
 
 	static const ElementType	type = typeBoundSheet8;
 
-	ForwardOnlyParam<_UINT32>	lbPlyPos;
+	BiffAttributeSimple<_UINT32>	lbPlyPos;
 	std::wstring				hsState;
 	unsigned char				dt;
 //-----------------------------

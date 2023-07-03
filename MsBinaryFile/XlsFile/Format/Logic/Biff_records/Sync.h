@@ -54,8 +54,8 @@ public:
 	static const ElementType	type = typeSync;
 
 //-----------------------------
-	ForwardOnlyParam<unsigned short> rw;
-	ForwardOnlyParam<unsigned short> col;
+	BiffAttributeSimple<unsigned short> rw;
+	BiffAttributeSimple<unsigned short> col;
 	
 	std::wstring ref_;
 

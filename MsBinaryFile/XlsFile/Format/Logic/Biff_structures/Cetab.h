@@ -39,7 +39,7 @@ namespace XLS
 class CFRecord;
 
 #pragma pack(1)
-class Cetab : public BiffStructure_NoVtbl
+class Cetab
 {
 public:
 	unsigned short getHighBit() const;

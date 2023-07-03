@@ -38,7 +38,7 @@ namespace XLS
 
 #pragma pack(1)
 
-struct CFExFilterParams : public BiffStructure_NoVtbl
+struct CFExFilterParams
 {
 private:
 	bool fTop : 1;
@@ -53,7 +53,7 @@ private:
 };
 
 
-struct CFExTextTemplateParams : public BiffStructure_NoVtbl
+struct CFExTextTemplateParams
 {
 private:
 	unsigned short ctp;
@@ -66,7 +66,7 @@ private:
 };
 
 
-struct CFExDateTemplateParams : public BiffStructure_NoVtbl
+struct CFExDateTemplateParams
 {
 private:
 	unsigned short dateOp;
@@ -79,7 +79,7 @@ private:
 };
 
 
-struct CFExAveragesTemplateParams : public BiffStructure_NoVtbl
+struct CFExAveragesTemplateParams
 {
 private:
 	unsigned short iParam;
@@ -92,7 +92,7 @@ private:
 };
 
 
-struct CFExDefaultTemplateParams : public BiffStructure_NoVtbl
+struct CFExDefaultTemplateParams
 {
 private:
 	_UINT32 unused1;

@@ -43,17 +43,34 @@ namespace oox {
 		pptx_animation_context();
 
 		void start_par_animation();
+			void set_par_animation_presentation_node_type(const std::wstring& value);
+			void set_par_animation_smil_direction(const std::wstring& value);
+			void set_par_animation_smil_restart(const std::wstring& value);
+			void set_par_animation_smil_dur(int value);
+			void set_par_animation_smil_begin(const std::wstring& value);
+			void set_par_animation_smil_end(const std::wstring& value);
 		void end_par_animation();
 
 		void start_seq_animation();
+			void set_seq_animation_presentation_node_type(const std::wstring& value);
+			void set_seq_animation_smil_direction(const std::wstring& value);
+			void set_seq_animation_smil_restart(const std::wstring& value);
+			void set_seq_animation_smil_dur(int value);
+			void set_seq_animation_smil_begin(const std::wstring& value);
+			void set_seq_animation_smil_end(const std::wstring& value);
 		void end_seq_animation();
 
-		void set_par_animation_presentation_node_type(std::wstring & value);
-		void set_par_animation_smil_direction(std::wstring & value);
-		void set_par_animation_smil_restart(std::wstring & value);
-		void set_par_animation_smil_dur(int value);
-		void set_par_animation_smil_begin(std::wstring & value);
-		void set_par_animation_smil_end(std::wstring & value);
+		void start_animate_motion();
+			void set_animate_motion_presentation_node_type(const std::wstring& value);
+			void set_animate_motion_smil_direction(const std::wstring& value);
+			void set_animate_motion_smil_restart(const std::wstring& value);
+			void set_animate_motion_smil_dur(int value);
+			void set_animate_motion_smil_begin(const std::wstring& value);
+			void set_animate_motion_smil_end(const std::wstring& value);
+			void set_animate_motion_smil_fill(const std::wstring& value);
+			void set_animate_motion_smil_target_element(const std::wstring& value);
+			void set_animate_motion_svg_path(const std::wstring& value);
+		void end_animate_motion();
 
 		void serialize(std::wostream & strm);
 		void serialize_par_animation(std::wostream & strm);

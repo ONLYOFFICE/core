@@ -117,6 +117,14 @@ void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
 	animationContext.start_seq_animation();
+
+	if (attlist_.presentation_node_type_)	animationContext.set_seq_animation_presentation_node_type(attlist_.presentation_node_type_.value());
+	if (attlist_.smil_direction_)			animationContext.set_seq_animation_smil_direction(attlist_.smil_direction_.value());
+	if (attlist_.smil_restart_)				animationContext.set_seq_animation_smil_restart(attlist_.smil_restart_.value());
+	if (attlist_.smil_dur_)					animationContext.set_seq_animation_smil_dur(attlist_.smil_dur_.value().get_value());
+	if (attlist_.smil_begin_)				animationContext.set_seq_animation_smil_begin(attlist_.smil_begin_.value());
+	if (attlist_.smil_end_)					animationContext.set_seq_animation_smil_end(attlist_.smil_end_.value());
+
 	for (size_t i = 0; i < anim_par_array_.size(); i++)
     {
 		anim_par_array_[i]->pptx_convert(Context);
@@ -387,7 +395,22 @@ const wchar_t* anim_animate_motion::name = L"animateMotion";
 
 void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 {
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
+	animationContext.start_animate_motion();
+
+	if (common_attlist_.presentation_node_type_)			animationContext.set_animate_motion_presentation_node_type(common_attlist_.presentation_node_type_.value());
+	if (common_attlist_.smil_direction_)					animationContext.set_animate_motion_smil_direction(common_attlist_.smil_direction_.value());
+	if (common_attlist_.smil_restart_)						animationContext.set_animate_motion_smil_restart(common_attlist_.smil_restart_.value());
+	if (common_attlist_.smil_dur_)							animationContext.set_animate_motion_smil_dur(common_attlist_.smil_dur_.value().get_value());
+	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_smil_begin(common_attlist_.smil_begin_.value());
+	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_smil_end(common_attlist_.smil_end_.value());
+
+	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_smil_fill(animate_motion_attlist_.smil_fill_.value());
+	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_smil_target_element(animate_motion_attlist_.smil_target_element_.value());
+	if (animate_motion_attlist_.svg_path_)					animationContext.set_animate_motion_svg_path(animate_motion_attlist_.svg_path_.value());
+
+	animationContext.end_animate_motion();
 }
 
 void anim_animate_motion::add_attributes(const xml::attributes_wc_ptr& Attributes)
@@ -413,7 +436,7 @@ const wchar_t* anim_animate_color::name = L"animateColor";
 
 void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 {
-
+	
 }
 
 void anim_animate_color::add_attributes(const xml::attributes_wc_ptr& Attributes)

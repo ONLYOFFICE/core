@@ -3,7 +3,8 @@
 
 #include <map>
 #include <vector>
-#include "CCssCalculator.h"
+#include <string>
+#include "CNode.h"
 
 namespace NSCSS
 {
@@ -45,8 +46,6 @@ namespace NSCSS
 
         std::vector<unsigned short int> GetWeight();
         void IncreasedWeight();
-
-        void Print() const;
     };
 }
 

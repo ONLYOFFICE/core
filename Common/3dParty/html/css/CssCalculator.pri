@@ -3,7 +3,22 @@ DEPENDPATH += $$PWD
 
 CORE_ROOT_DIR = $$PWD/../../../..
 
-HEADERS += $$files($$PWD/src/*.h, true)
-SOURCES += $$files($$PWD/src/*.cpp, true)
+css_calculator_without_xhtml {
+    HEADERS += $$PWD/src/CCssCalculator_Private.h \
+	           $$PWD/src/CElement.h \
+			   $$PWD/src/CNode.h \
+			   $$PWD/src/ConstValues.h \
+			   $$PWD/src/StyleProperties.h \
+			   $$PWD/src/CUnitMeasureConverter.h
 
+    SOURCES += $$PWD/src/CCssCalculator_Private.cpp \
+	           $$PWD/src/CElement.cpp \
+			   $$PWD/src/StyleProperties.cpp \
+			   $$PWD/src/CUnitMeasureConverter.cpp
+
+    DEFINES += CSS_CALCULATOR_WITHOUT_XHTML
+} else {
+    HEADERS += $$files($$PWD/src/*.h, true)
+	SOURCES += $$files($$PWD/src/*.cpp, true)
+}
 include($$CORE_ROOT_DIR/Common/3dParty/html/katana.pri)

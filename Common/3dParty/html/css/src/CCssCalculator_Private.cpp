@@ -52,10 +52,12 @@ namespace NSCSS
 
 		m_mData.clear();
 
+		#ifndef CSS_CALCULATOR_WITHOUT_XHTML
 		for (std::map<std::vector<CNode>, CCompiledStyle*>::iterator iter  = m_mUsedStyles.begin(); iter != m_mUsedStyles.end(); ++iter)
 			delete iter->second;
 
 		m_mUsedStyles.clear();
+		#endif
 
 		if (NULL != m_mStatictics)
 			delete m_mStatictics;
@@ -304,6 +306,7 @@ namespace NSCSS
 		return StringifyValueList(oValues);
 	}
 
+	#ifndef CSS_CALCULATOR_WITHOUT_XHTML
 	CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors, const bool& bIsSettings, const UnitMeasure& unitMeasure)
 	{
 		if (arSelectors.empty())
@@ -769,7 +772,7 @@ namespace NSCSS
 
 		return true;
 	}
-
+	#endif
 	void CCssCalculator_Private::AddStyles(const std::string &sStyle)
 	{
 		if (sStyle.empty())

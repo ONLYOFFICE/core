@@ -130,6 +130,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
 
+        CONFIG += css_calculator_without_xhtml
+
         include($$METAFILE_PATH/../../../Common/3dParty/html/css/CssCalculator.pri)
 
     }

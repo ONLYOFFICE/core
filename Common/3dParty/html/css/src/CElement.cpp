@@ -182,8 +182,6 @@ namespace NSCSS
 
 		for (std::vector<std::wstring>::reverse_iterator iWord = arNodesRBegin; iWord != arNodesREnd; ++iWord)
 		{
-			if ((*arNodesRBegin) == L".module_title")
-				std::wcout << *iWord << std::endl;
 			if ((*iWord)[0] == L'.' && ((*iWord).find(L" ") != std::wstring::npos))
 			{
 				std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(*iWord, L" ");
@@ -248,29 +246,5 @@ namespace NSCSS
 			++m_arWeight[3];
 		}
 	}
-
-	void CElement::Print() const
-	{
-		std::wcout << L"Selector: " << m_sSelector << std::endl;
-		std::wcout << L"Full Selector: " << m_sFullSelector << std::endl;
-		std::wcout << L"===========STYLE(" << m_mStyle.size() << ")===========" << std::endl;
-		for (const std::pair<std::wstring, std::wstring> oPropertie : m_mStyle)
-			std::wcout << oPropertie.first << L" - " << oPropertie.second << std::endl;
-		std::wcout << L"===========================" << std::endl;
-
-		std::wcout << m_arKinElements.size() << L" --- " << m_arPrevElements.size() << std::endl;
-
-		if (!m_arKinElements.empty())
-		{
-			std::wcout << L"\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/" << std::endl;
-			for (CElement* oElement : m_arKinElements)
-				oElement->Print();
-			std::wcout << L"/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\" << std::endl;
-		}
-		for (CElement* oElement : m_arPrevElements)
-			oElement->Print();
-
-	}
-
 }
 

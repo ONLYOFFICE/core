@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-#include "../../graphics/Matrix.h"
+#include "../../DesktopEditor/graphics/Matrix.h"
 
 namespace NSCSS
 {

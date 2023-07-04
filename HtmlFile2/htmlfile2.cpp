@@ -107,7 +107,7 @@ public:
     {
         //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
         //Это нужно для масштабирования некоторых значений
-		m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 * (25.4 / m_oStylesCalculator.GetDpi())), 0));
+        m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 * (25.4 / m_oStylesCalculator.GetDpi())), 0));
         m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(4940, 0));
     }
 
@@ -788,7 +788,7 @@ private:
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-            if(oStyle.m_pText.GetAlign() == L"both")
+            if(oStyle.m_oText.GetAlign() == L"both")
                 oXml->WriteString(L"<w:tab/>");
             oXml->WriteString(L"<w:br/></w:r>");
         }
@@ -1095,7 +1095,7 @@ private:
 
                 NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
-                int nWidth = oStyle.m_pDisplay.GetWidth();
+                int nWidth = oStyle.m_oDisplay.GetWidth().ToInt();
                 std::wstring wsType = L"dxa";
 
                 //Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
@@ -1128,7 +1128,7 @@ private:
                         j += nColspan - 1;
                 }
 
-                std::wstring wsVerticalAlign = oStyle.m_pDisplay.GetVerticalAlign();
+                std::wstring wsVerticalAlign = oStyle.m_oDisplay.GetVAlign().ToWString();
 
                 if (!wsVerticalAlign.empty())
                         oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
@@ -1200,8 +1200,8 @@ private:
         // Начало таблицы
         std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
-        int nWidth = oStyle.m_pDisplay.GetWidth();
-        std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
+        int nWidth = oStyle.m_oDisplay.GetWidth().ToInt();
+        std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 
         if (0 < nWidth)
                 wsTable += L"<w:tblW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>";
@@ -1217,30 +1217,30 @@ private:
 
                 NSCSS::CCompiledStyle oTempSettingsStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
 
-                wsAlign = oTempSettingsStyle.m_pText.GetAlign();
+                wsAlign = oTempSettingsStyle.m_oText.GetAlign().ToWString();
 
                 if (wsAlign.empty())
                 {
                         NSCSS::CCompiledStyle oTempStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
-                        wsAlign = oTempStyle.m_pText.GetAlign();
+                        wsAlign = oTempStyle.m_oText.GetAlign().ToWString();
                 }
 
                 sSelectors.push_back(oLastNode);
         }
 
-        if (!oStyle.m_pMargin.Empty() && (0 < oStyle.m_pMargin.GetTopSide() || 0 < oStyle.m_pMargin.GetBottomSide()))
+        if (!oStyle.m_oMargin.Empty() && (0 < oStyle.m_oMargin.GetTop().ToInt() || 0 < oStyle.m_oMargin.GetBottom().ToInt()))
         {
                 wsTable += L"<w:tblCellMar>";
 
-                if (0 < oStyle.m_pMargin.GetTopSide())
-                        wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetTopSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+                if (0 < oStyle.m_oMargin.GetTop().ToInt())
+                        wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oMargin.GetTop().ToInt() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
 //                if (0 < oStyle.m_pMargin.GetLeftSide())
 //                        wsTable += L"<w:left w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetLeftSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
-                if (0 < oStyle.m_pMargin.GetBottomSide())
-                        wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetBottomSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+                if (0 < oStyle.m_oMargin.GetBottom().ToInt())
+                        wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oMargin.GetBottom().ToInt() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
 //                if (0 < oStyle.m_pMargin.GetRightSide())
 //                        wsTable += L"<w:right w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetRightSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
@@ -1256,18 +1256,18 @@ private:
 
         // borders
         std::wstring sBorders;
-        oStyle.m_pBorder.Unlock();
-        if (oStyle.m_pBorder.Empty())
+        oStyle.m_oBorder.Unblock();
+        if (oStyle.m_oBorder.Empty())
         {
             sBorders = L"<w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/>";
         }
         else
         {
-            if (oStyle.m_pBorder.EqualSides())
+            if (oStyle.m_oBorder.EqualSides())
             {
-                std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
-                std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
-                std::wstring sStyle = oStyle.m_pBorder.GetStyleBottomSide();
+                std::wstring sColor = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
+                std::wstring sSz    = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
+                std::wstring sStyle = oStyle.m_oBorder.GetBottomBorder().GetStyle().ToWString();
 
                 sBorders =  L"<w:top w:val=\""      + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
                             L"<w:left w:val=\""     + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
@@ -1280,18 +1280,18 @@ private:
             {
                     wsTable.insert(35, oStyle.GetId());
 
-                    std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
-                    std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
-                    std::wstring sStyleLeftSide     = oStyle.m_pBorder.GetStyleLeftSide();
-                    std::wstring sColorTopSide      = oStyle.m_pBorder.GetColorTopSide();
-                    std::wstring sSzTopSide         = oStyle.m_pBorder.GetWidthTopSideW();
-                    std::wstring sStyleTopSide      = oStyle.m_pBorder.GetStyleLeftSide();
-                    std::wstring sColorRightSide    = oStyle.m_pBorder.GetColorRightSide();
-                    std::wstring sSzRightSide       = oStyle.m_pBorder.GetWidthRightSideW();
-                    std::wstring sStyleRightSide    = oStyle.m_pBorder.GetStyleLeftSide();
-                    std::wstring sColorBottomSide   = oStyle.m_pBorder.GetColorBottomSide();
-                    std::wstring sSzBottomSide      = oStyle.m_pBorder.GetWidthBottomSideW();
-                    std::wstring sStyleBottomSide   = oStyle.m_pBorder.GetStyleLeftSide();
+                    std::wstring sColorLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
+                    std::wstring sSzLeftSide        = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
+                    std::wstring sStyleLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
+                    std::wstring sColorTopSide      = oStyle.m_oBorder.GetTopBorder().GetColor().ToWString();
+                    std::wstring sSzTopSide         = oStyle.m_oBorder.GetTopBorder().GetWidth().ToWString();
+                    std::wstring sStyleTopSide      = oStyle.m_oBorder.GetTopBorder().GetStyle().ToWString();
+                    std::wstring sColorRightSide    = oStyle.m_oBorder.GetRightBorder().GetColor().ToWString();
+                    std::wstring sSzRightSide       = oStyle.m_oBorder.GetRightBorder().GetWidth().ToWString();
+                    std::wstring sStyleRightSide    = oStyle.m_oBorder.GetRightBorder().GetStyle().ToWString();
+                    std::wstring sColorBottomSide   = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
+                    std::wstring sSzBottomSide      = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
+                    std::wstring sStyleBottomSide   = oStyle.m_oBorder.GetBottomBorder().GetColor().ToWString();
 
                     sBorders =  L"<w:left w:val=\""     + sStyleLeftSide    + L"\" w:color=\"" + sColorLeftSide    + L"\" w:sz=\"" + sSzLeftSide   + L"\" w:space=\"0\"/>" +
                                 L"<w:top w:val=\""      + sStyleTopSide     + L"\" w:color=\"" + sColorTopSide     + L"\" w:sz=\"" + sSzTopSide    + L"\" w:space=\"0\"/>" +

@@ -346,7 +346,8 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/ArrayParsedFormula.cpp \
 	$$LOGIC_DIR/Biff_structures/Bes.cpp \
 	$$LOGIC_DIR/Biff_structures/BiffString.cpp \
-	$$LOGIC_DIR/Biff_structures/BookExt_Conditional11.cpp \
+        $$LOGIC_DIR/Biff_structures/BiffStructure.cpp \
+        $$LOGIC_DIR/Biff_structures/BookExt_Conditional11.cpp \
 	$$LOGIC_DIR/Biff_structures/BookExt_Conditional12.cpp \
 	$$LOGIC_DIR/Biff_structures/BorderFillInfo.cpp \
 	$$LOGIC_DIR/Biff_structures/BuiltInStyle.cpp \

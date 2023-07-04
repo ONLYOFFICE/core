@@ -68,6 +68,8 @@ namespace Aggplus
 
         m_dDpiTile = -1;
 
+		m_pAlphaMask = NULL;
+
         m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
         m_nBlendMode = agg::comp_op_src_over;
 	}
@@ -1255,7 +1257,7 @@ namespace Aggplus
 
 	base_renderer_type& CGraphics::GetRendererBase()
 	{
-		if (GenerationAlphaMask == m_pAlphaMask->GetStatus() && ImageBuffer == m_pAlphaMask->GetDataType())
+		if (m_pAlphaMask && GenerationAlphaMask == m_pAlphaMask->GetStatus() && ImageBuffer == m_pAlphaMask->GetDataType())
 			return m_pAlphaMask->m_internal->GetRendererBaseImage();
 
 		return m_frame_buffer.ren_base();

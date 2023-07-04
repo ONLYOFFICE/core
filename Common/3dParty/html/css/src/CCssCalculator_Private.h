@@ -10,7 +10,7 @@
 #include "CUnitMeasureConverter.h"
 #include "../../katana-parser/src/katana.h"
 
-#ifndef CSS_CALCULATOR_LITE
+#ifndef CSS_CALCULATOR_WITHOUT_XHTML
 #include "CCompiledStyle.h"
 #endif
 

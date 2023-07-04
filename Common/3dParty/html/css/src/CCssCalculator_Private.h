@@ -10,7 +10,7 @@
 #include "CUnitMeasureConverter.h"
 #include "../../katana-parser/src/katana.h"
 
-#ifndef CSS_CALCULATOR_WITHOUT_XHTML
+#ifdef CSS_CALCULATOR_WITH_XHTML
 #include "CCompiledStyle.h"
 #endif
 
@@ -28,7 +28,7 @@ namespace NSCSS
 
 		std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
 
-		#ifndef CSS_CALCULATOR_WITHOUT_XHTML
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::map<std::vector<CNode>, CCompiledStyle*> m_mUsedStyles;
 		#endif
 
@@ -56,7 +56,7 @@ namespace NSCSS
 		CCssCalculator_Private();
 		~CCssCalculator_Private();
 
-		#ifndef CSS_CALCULATOR_WITHOUT_XHTML
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
 		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
 		#endif

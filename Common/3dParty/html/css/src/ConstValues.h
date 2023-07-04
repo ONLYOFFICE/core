@@ -180,6 +180,7 @@ namespace NSCSS
                 L"inherit", L"initial", L"unset"
         };
 
+        #ifdef CSS_CALCULATOR_WITH_XHTML
         namespace NSProperties {
 
             typedef enum
@@ -785,47 +786,47 @@ namespace NSCSS
 
                     if (sStretch == L"ultra-condensed")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::ultraCondensed;
+                        enStretch = FontStretch::ultraCondensed;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"extra-condensed")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::extraCondensed;
+                        enStretch = FontStretch::extraCondensed;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"condensed")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::condensed;
+                        enStretch = FontStretch::condensed;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"semi-condensed")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::semiCondensed;
+                        enStretch = FontStretch::semiCondensed;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"normal")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::normal;
+                        enStretch = FontStretch::normal;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"semi-expanded")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::semiExpanded;
+                        enStretch = FontStretch::semiExpanded;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"expanded")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::expanded;
+                        enStretch = FontStretch::expanded;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"extra-expanded")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::extraExpanded;
+                        enStretch = FontStretch::extraExpanded;
                         arLevels[1] = unLevel;
                     }
                     else if (sStretch == L"ultra-expanded")
                     {
-                        enStretch = NSConstValues::NSCssProperties::FontStretch::ultraExpanded;
+                        enStretch = FontStretch::ultraExpanded;
                         arLevels[1] = unLevel;
                     }
                 }
@@ -838,17 +839,17 @@ namespace NSCSS
                     if (sStyle == L"italic")
                     {
                         arLevels[2] = unLevel;
-                        enStyle = NSConstValues::NSCssProperties::FontStyle::italic;
+                        enStyle = FontStyle::italic;
                     }
                     else if (sStyle == L"oblique")
                     {
                         arLevels[2] = unLevel;
-                        enStyle = NSConstValues::NSCssProperties::FontStyle::oblique;
+                        enStyle = FontStyle::oblique;
                     }
                     else if (sStyle == L"normal")
                     {
                         arLevels[2] = unLevel;
-                        enStyle = NSConstValues::NSCssProperties::FontStyle::normal;
+                        enStyle = FontStyle::normal;
                     }
                 }
 
@@ -860,12 +861,12 @@ namespace NSCSS
                     if (sVariant == L"small-caps")
                     {
                         arLevels[3] = unLevel;
-                        enVariant = NSConstValues::NSCssProperties::FontVariant::smallCaps;
+                        enVariant = FontVariant::smallCaps;
                     }
                     else if (sVariant == L"normal")
                     {
                         arLevels[3] = unLevel;
-                        enVariant = NSConstValues::NSCssProperties::FontVariant::normal;
+                        enVariant = FontVariant::normal;
                     }
                 }
 
@@ -879,13 +880,13 @@ namespace NSCSS
                         sWeight[0] == L'8' || sWeight[0] == L'9')
                     {
                         arLevels[4] = unLevel;
-                        enWeight = NSConstValues::NSCssProperties::FontWeight::bold;
+                        enWeight = FontWeight::bold;
                     }
                     else if (sWeight == L"normal" || sWeight[0] == L'3' ||
                              sWeight[0] == L'4'   || sWeight[0] == L'5')
                     {
                         arLevels[4] = unLevel;
-                        enWeight = NSConstValues::NSCssProperties::FontWeight::normal;
+                        enWeight = FontWeight::normal;
                     }
                 }
 
@@ -3382,7 +3383,8 @@ namespace NSCSS
 			                                            L"target",
 			                                            L"valid",
 			                                            L"visited"};
-}
+	#endif
+	}
 }
 
 #endif // CONSTVALUES_H

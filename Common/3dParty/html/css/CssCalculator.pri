@@ -15,10 +15,10 @@ css_calculator_without_xhtml {
 	           $$PWD/src/CElement.cpp \
 			   $$PWD/src/StyleProperties.cpp \
 			   $$PWD/src/CUnitMeasureConverter.cpp
-
-    DEFINES += CSS_CALCULATOR_WITHOUT_XHTML
 } else {
     HEADERS += $$files($$PWD/src/*.h, true)
 	SOURCES += $$files($$PWD/src/*.cpp, true)
+
+	DEFINES += CSS_CALCULATOR_WITH_XHTML
 }
 include($$CORE_ROOT_DIR/Common/3dParty/html/katana.pri)

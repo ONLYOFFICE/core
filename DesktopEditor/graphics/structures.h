@@ -39,6 +39,7 @@
 
 #include "shading_info.h"
 #include "Matrix.h"
+#include "../common/IGrObject.h"
 
 // pen -----------------------------------------------------------
 const long c_ag_LineCapFlat = 0;
@@ -119,8 +120,6 @@ namespace Aggplus { class CImage; }
 
 namespace NSStructures
 {
-
-
 	class CPen
 	{
 	public:
@@ -222,7 +221,6 @@ namespace NSStructures
 		}
 		CPen(const CPen &other)
 		{
-			SetDefaultParams();
 			*this = other;
 		}
 		CPen &operator=(const CPen &other)
@@ -379,16 +377,16 @@ namespace NSStructures
 			TextureAlpha = dNewAlpha;
 		}
 
-        INT IsEqual(const CBrush *pBrush)
+		INT IsEqual(const CBrush *pBrush)
 		{
 			if (NULL == pBrush)
 				return FALSE;
 
 			return ((Type == pBrush->Type) && (Image == pBrush->Image) && Aggplus::CMatrix::IsEqual(&Transform, &pBrush->Transform) &&
-			        (Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
-			        (Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
-			        (TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
-			        (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
+					(Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
+					(Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
+					(TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
+					(Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
 		}
 
 		void SetDefaultParams()
@@ -432,28 +430,7 @@ namespace NSStructures
 		}
 		CBrush(const CBrush &other)
 		{
-			Type = other.Type;
-
-			Color1 = other.Color1;
-			Alpha1 = other.Alpha1;
-			Color2 = other.Color2;
-			Alpha2 = other.Alpha2;
-
-			Image     = other.Image;
-			Transform = other.Transform;
-
-			TexturePath = other.TexturePath;
-			TextureAlpha = other.TextureAlpha;
-			TextureMode = other.TextureMode;
-
-			Rectable = other.Rectable;
-			Rect = other.Rect;
-
-			Bounds = other.Bounds;
-
-			LinearAngle = other.LinearAngle;
-			m_arrSubColors = other.m_arrSubColors;
-            m_oGradientInfo = other.m_oGradientInfo;
+			*this = other;
 		}
 		CBrush &operator=(const CBrush &other)
 		{
@@ -477,12 +454,17 @@ namespace NSStructures
 
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;
-            m_oGradientInfo = other.m_oGradientInfo;
+			m_oGradientInfo = other.m_oGradientInfo;
 
 			return *this;
 		}
 		virtual ~CBrush()
 		{
+			if (NULL != Image)
+			{
+				((IGrObject*)Image)->Release();
+				Image = NULL;
+			}
 		}
 
 		int IsTexture()

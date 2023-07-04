@@ -213,9 +213,6 @@ public:
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
-
-	virtual HRESULT put_BrushCenterPoint(double dX, double dY) = 0;
-	virtual HRESULT put_BrushRadius(double dRadius) = 0;
 	//virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) {};
 
 	// font -------------------------------------------------------------------------------------

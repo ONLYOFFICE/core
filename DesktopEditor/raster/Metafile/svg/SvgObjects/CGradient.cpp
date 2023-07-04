@@ -126,12 +126,12 @@ namespace SVG
 
 		pRenderer->put_BrushType(c_BrushTypePathGradient2);
 
-		double dCx = m_oCx.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
-		double dCy = m_oCy.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dBottom - oObjectBounds.m_dTop);
-		double dR  = m_oR .ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
+//		double dCx = m_oCx.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
+//		double dCy = m_oCy.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dBottom - oObjectBounds.m_dTop);
+//		double dR  = m_oR .ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
 
-		pRenderer->put_BrushCenterPoint(dCx, dCy);
-		pRenderer->put_BrushRadius(dR);
+//		pRenderer->put_BrushCenterPoint(dCx, dCy);
+//		pRenderer->put_BrushRadius(dR);
 
 		pRenderer->BrushBounds(oObjectBounds.m_dLeft, oObjectBounds.m_dTop, oObjectBounds.m_dRight - oObjectBounds.m_dLeft, oObjectBounds.m_dBottom - oObjectBounds.m_dTop);
 

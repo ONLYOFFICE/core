@@ -128,7 +128,11 @@ public:
  	office_spreadsheet			*office_spreadsheet_;
 	table_table					*table_table_;
 
-	int							baseFontHeight_;
+	bool						baseFontItalic_ = false;
+	bool						baseFontBold_ = false;
+	int							baseFontHeight_ = 12;
+	int							baseAlignment_ = 1;
+	std::wstring				baseFontName_;
 	std::wstring				baseRef_; 
 //---------------------------------------------------------------
 	odf_types::chart_class::type class_;

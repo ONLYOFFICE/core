@@ -402,10 +402,8 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			{
 				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
 				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
-				text_content += L"<m:oMathParaPr/>";
-				text_content += L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 				text_content += math_content;
-				text_content += L"</m:oMath></m:oMathPara></a14:m></a:p>";
+				text_content += L"</m:oMathPara></a14:m></a:p>";
 
 				if (bNewObject)
 				{

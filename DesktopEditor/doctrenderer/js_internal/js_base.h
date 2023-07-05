@@ -330,13 +330,13 @@ namespace NSJSBase
 		 * @param size The size of allocated memory in bytes.
 		 * @return Pointer to the allocated memory. Returns nullptr if allocation was not successful.
 		 */
-		unsigned char* Alloc(const size_t& size);
+		JS_DECL unsigned char* Alloc(const size_t& size);
 		/**
 		 * Engine-specific memory deallocator.
 		 * @param data Pointer to the previously allocated with Alloc() memory.
 		 * @param size The size of allocated memory.
 		 */
-		void Free(unsigned char* data, const size_t& size);
+		JS_DECL void Free(unsigned char* data, const size_t& size);
 	}
 
 	/**

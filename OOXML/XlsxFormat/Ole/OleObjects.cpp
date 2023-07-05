@@ -293,6 +293,40 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr COleObject::toBin()
+		{
+			auto ptr(new XLSB::OleObject);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oDvAspect.IsInit())
+			{
+				if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Content)
+					ptr->dwAspect = 0x00000001;
+				else if(m_oDvAspect == SimpleTypes::Spreadsheet::EDvAspect::Icon)
+					ptr->dwAspect = 0x00000004;
+			}
+			if(m_oOleUpdate.IsInit())
+			{
+				if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::Always)
+					ptr->dwOleUpdate = 0x00000001;
+				else if(m_oOleUpdate == SimpleTypes::Spreadsheet::EOleUpdate::OnCall)
+					ptr->dwOleUpdate = 0x00000003;
+			}
+
+			if(m_oShapeId.IsInit())
+				ptr->shapeId = m_oShapeId->GetValue();
+
+			ptr->fAutoLoad =  m_oAutoLoad->GetValue();
+
+			if(m_oProgId.IsInit())
+				ptr->strProgID.value() =  m_oProgId.get();
+
+			if(m_oLink.IsInit())
+				ptr->link =  m_oLink.get();
+			if(m_oRid.IsInit())
+				ptr->strRelID.value =  m_oRid->GetValue();
+
+			return objectPtr;
+		}
 		EElementType COleObject::getType () const
 		{
 			return et_x_OleObject;
@@ -454,6 +488,16 @@ namespace OOX
 					}
 				}
 			}
+		}
+		XLS::BaseObjectPtr COleObjects::toBin()
+		{
+			auto ptr(new XLSB::OLEOBJECTS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_mapOleObjects)
+			{
+				ptr->m_arBrtOleObject.push_back(i.second->toBin());
+			}
+			return objectPtr;
 		}
 		EElementType COleObjects::getType () const
 		{

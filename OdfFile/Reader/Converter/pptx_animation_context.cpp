@@ -63,16 +63,18 @@ namespace oox {
 
 		struct _par_animation : _animation_element
 		{
-			_CP_OPT(std::wstring)						PresentationNodeType;
-			_CP_OPT(std::wstring)						SmilDirection;
-			_CP_OPT(std::wstring)						SmilRestart;
-			_CP_OPT(int)								SmilDurMs;
-			_CP_OPT(std::wstring)						SmilBegin;
-			_CP_OPT(std::wstring)						SmilEnd;
+			_CP_OPT(std::wstring)						NodeType;
+			_CP_OPT(std::wstring)						Direction;
+			_CP_OPT(std::wstring)						Restart;
+			_CP_OPT(int)								Duration; // in ms
+			_CP_OPT(std::wstring)						Delay;
+			_CP_OPT(std::wstring)						End;
+			_CP_OPT(std::wstring)						PresetClass;
+			_CP_OPT(std::wstring)						PresetID;
 
-			_par_animation_ptr							AnimPar;
+			_par_animation_array						AnimParArray;
 			_seq_animation_ptr							AnimSeq;
-			_animation_element_array					AnimationActions;
+			_animation_element_array					AnimationActionArray;
 
 			void serialize(std::wostream & strm) override;
 		};
@@ -186,7 +188,7 @@ namespace oox {
 			if (back->AnimSeq)
 				back->AnimSeq->AnimParArray.push_back(end);
 			else
-				back->AnimPar = end;
+				back->AnimParArray.push_back(end);
 		}
 	}
 
@@ -330,7 +332,7 @@ namespace oox {
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->AnimationActions.push_back(impl_->animate_motion_description_);
+			back->AnimationActionArray.push_back(impl_->animate_motion_description_);
 		}
 		impl_->animate_motion_description_ = nullptr;
 	}
@@ -340,52 +342,70 @@ namespace oox {
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->PresentationNodeType = value;
+			back->NodeType = value;
 		}
 	}
 
-	void pptx_animation_context::set_par_animation_smil_direction(const std::wstring& value)
+	void pptx_animation_context::set_par_animation_direction(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->SmilDirection = value;
+			back->Direction = value;
 		}
 	}
 
-	void pptx_animation_context::set_par_animation_smil_restart(const std::wstring& value)
+	void pptx_animation_context::set_par_animation_restart(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->SmilRestart = value;
+			back->Restart = value;
 		}
 	}
 
-	void pptx_animation_context::set_par_animation_smil_dur(int value)
+	void pptx_animation_context::set_par_animation_duration(int value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->SmilDurMs = value;
+			back->Duration = value;
 		}
 	}
 
-	void pptx_animation_context::set_par_animation_smil_begin(const std::wstring& value)
+	void pptx_animation_context::set_par_animation_delay(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->SmilBegin = value;
+			back->Delay = value;
 		}
 	}
 
-	void pptx_animation_context::set_par_animation_smil_end(const std::wstring& value)
+	void pptx_animation_context::set_par_animation_end(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->SmilEnd = value;
+			back->End = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_preset_class(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->PresetClass = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_preset_id(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->PresetID = value;
 		}
 	}
 
@@ -443,36 +463,50 @@ namespace oox {
 			{
 				CP_XML_NODE(L"p:cTn")
 				{
-					if (PresentationNodeType && PresentationNodeType.value() == L"timing-root")
+					if (PresetClass)
+						CP_XML_ATTR(L"presetClass", PresetClass.value());
+					if (PresetID)
+						CP_XML_ATTR(L"presetID", PresetID.value());
+
+					if (NodeType)
 					{
-						CP_XML_ATTR(L"nodeType", L"tmRoot");
-						//CP_XML_ATTR(L"id", 1);
-						CP_XML_ATTR(L"dur", L"indefinite");
-						CP_XML_ATTR(L"restart", L"never");
-					}
-					else
-					{
-						// NODE: hardcode for now
-						// TODO: emplace correct attributes
-						CP_XML_ATTR(L"fill", L"hold");
+						if (NodeType && NodeType.value() == L"tmRoot")
+						{
+							CP_XML_ATTR(L"nodeType", L"tmRoot");
+							CP_XML_ATTR(L"dur", L"indefinite");
+							CP_XML_ATTR(L"restart", L"never");
+						}
+						else
+						{
+							CP_XML_ATTR(L"fill", L"hold");
+							CP_XML_ATTR(L"nodeType", NodeType.value());
+						}
 					}
 
+					if (Delay)
+					{
+						CP_XML_NODE(L"p:stCondLst")
+						{
+							CP_XML_NODE(L"p:cond")
+							{
+								CP_XML_ATTR(L"delay", Delay.value());
+							}
+						}
+					}
+					
 					CP_XML_NODE(L"p:childTnLst")
 					{
-						if (AnimPar)
-							AnimPar->serialize(CP_XML_STREAM());
-
+						for(size_t i = 0; i < AnimParArray.size(); i++)
+							AnimParArray[i]->serialize(CP_XML_STREAM());
+						
 						if (AnimSeq)
 						{
 							AnimSeq->serialize(CP_XML_STREAM());
 						}
 						
-						if (AnimationActions.size())
+						for (size_t i = 0; i < AnimationActionArray.size(); i++)
 						{
-							for (int i = 0; i < AnimationActions.size(); i++)
-							{
-								AnimationActions[i]->serialize(CP_XML_STREAM());
-							}
+							AnimationActionArray[i]->serialize(CP_XML_STREAM());
 						}
 					}
 				}

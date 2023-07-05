@@ -40,6 +40,17 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
+class anim_par_attlist
+{
+public:
+	void add_attributes(const xml::attributes_wc_ptr& Attributes);
+
+	_CP_OPT(std::wstring)						presentation_preset_class_;
+	_CP_OPT(std::wstring)						presentation_preset_id_;
+	_CP_OPT(std::wstring)						presentation_preset_sub_type_;
+	_CP_OPT(std::wstring)						smil_accelerate_;
+	_CP_OPT(std::wstring)						smil_decelerate_;
+};
 
 //anim:par
 class anim_par : public office_element_impl<anim_par>//Параллельные анимации
@@ -51,10 +62,11 @@ public:
     static const ElementType type = typeAnimPar;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	odf_types::common_anim_smil_attlist		attlist_;
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	anim_par_attlist						par_attlist_;
+
   	
-	// NOTE: anim:par element can have more than one child anim:par's. Make this office_element_ptr_array ???
-	office_element_ptr						anim_par_; 
+	office_element_ptr_array				anim_par_array_; 
 	office_element_ptr_array				anim_seq_array_;
 	office_element_ptr_array				content_;
 

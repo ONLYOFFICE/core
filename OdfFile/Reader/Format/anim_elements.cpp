@@ -53,31 +53,118 @@ namespace odf_reader {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * anim_par::ns = L"anim";
-const wchar_t * anim_par::name = L"par";
+const wchar_t* anim_par::ns = L"anim";
+const wchar_t* anim_par::name = L"par";
+
+void anim_par_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"presentation:preset-class",		presentation_preset_class_);
+	CP_APPLY_ATTR(L"presentation:preset-id",		presentation_preset_id_);
+	CP_APPLY_ATTR(L"presentation:preset-sub-type",	presentation_preset_sub_type_);
+	CP_APPLY_ATTR(L"smil:accelerate",				smil_accelerate_);
+	CP_APPLY_ATTR(L"smil:decelerate",				smil_decelerate_);
+}
 
 void anim_par::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	attlist_.add_attributes(Attributes);
+	common_attlist_.add_attributes(Attributes);
+	par_attlist_.add_attributes(Attributes);
 }
 
 void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	oox::pptx_animation_context & animationContext = Context.get_slide_context().get_animation_context();
 
-	animationContext.start_par_animation();
-	
-	if (attlist_.presentation_node_type_)	animationContext.set_par_animation_presentation_node_type	(attlist_.presentation_node_type_.value());
-	if (attlist_.smil_direction_)			animationContext.set_par_animation_smil_direction			(attlist_.smil_direction_.value());
-	if (attlist_.smil_restart_)				animationContext.set_par_animation_smil_restart				(attlist_.smil_restart_.value());
-	if (attlist_.smil_dur_)					animationContext.set_par_animation_smil_dur					(attlist_.smil_dur_.value().get_value());
-	if (attlist_.smil_begin_)				animationContext.set_par_animation_smil_begin				(attlist_.smil_begin_.value());
-	if (attlist_.smil_end_)					animationContext.set_par_animation_smil_end					(attlist_.smil_end_.value());
+	_CP_OPT(std::wstring)	presentationNodeType;
+	_CP_OPT(std::wstring)	direction;
+	_CP_OPT(std::wstring)	restart;
+	_CP_OPT(int)			duration;
+	_CP_OPT(std::wstring)	delay;		// NOTE: Comes from smil:begin
+	_CP_OPT(std::wstring)	end;
 
-	if (anim_par_)
+	_CP_OPT(std::wstring)	presentationPresetClass;
+	_CP_OPT(std::wstring)	presentationPresetId;
+	_CP_OPT(std::wstring)	presentationPresetPresetSubType;
+
+	// NOTE: в pptx нет атрибутов accelerate/decelerate. Там надо менять svg path ???
+	//_CP_OPT(std::wstring)	accelerate; 
+	//_CP_OPT(std::wstring)	decelerate;
+	
+	if (common_attlist_.presentation_node_type_)
+	{
+			 if (common_attlist_.presentation_node_type_.value() == L"timing-root")			presentationNodeType = L"tmRoot";
+		else if (common_attlist_.presentation_node_type_.value() == L"on-click")				presentationNodeType = L"clickEffect";
+		else if (common_attlist_.presentation_node_type_.value() == L"after-previous")			presentationNodeType = L"afterEffect";
+		else if (common_attlist_.presentation_node_type_.value() == L"with-previous")			presentationNodeType = L"withEffect";
+	}
+
+	if (common_attlist_.smil_direction_)
+	{
+		if (common_attlist_.smil_direction_.value() == L"reverse")
+			direction = L"reverse";
+	}
+	
+	if (common_attlist_.smil_restart_)
+	{
+		// smil:restart = "never", "always", "whenNotActive" or "default".
+		// NOTE: Hardcode for now
+		// TODO: Figure out correct value
+		restart = boost::none;
+	}
+	
+	if (common_attlist_.smil_dur_)
+	{
+		duration = common_attlist_.smil_dur_->get_value();
+	}
+
+	if (common_attlist_.smil_begin_)
+	{
+		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
+		if (delayClockvalue.get_value() != -1)
+			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
+		else if (common_attlist_.smil_begin_.get() == L"next")
+			delay = L"indefinite";
+	}
+	
+	// NOTE: Юзлес штука
+	// TODO: Figure out correct value
+	end = boost::none;
+
+	if (par_attlist_.presentation_preset_class_)
+	{
+		if		(par_attlist_.presentation_preset_class_.value() == L"entrance")	presentationPresetClass = L"entr";
+		else if (par_attlist_.presentation_preset_class_.value() == L"exit")		presentationPresetClass = L"exit";
+		else if (par_attlist_.presentation_preset_class_.value() == L"emphasis")	presentationPresetClass = L"emph";
+		else if (par_attlist_.presentation_preset_class_.value() == L"motion-path") presentationPresetClass = L"path";
+		else if (par_attlist_.presentation_preset_class_.value() == L"ole-action")	presentationPresetClass = L"verb";
+		else if (par_attlist_.presentation_preset_class_.value() == L"media-call")	presentationPresetClass = L"mediacall";
+		else
+			presentationPresetClass = L"custom";
+	}
+
+	if (par_attlist_.presentation_preset_id_)
+	{
+		// TODO: Figure out correct value
+		presentationPresetId = boost::none;
+	}
+	
+	animationContext.start_par_animation();
+
+	if (presentationNodeType)		animationContext.set_par_animation_presentation_node_type	(presentationNodeType.value());
+	if (direction)					animationContext.set_par_animation_direction				(direction.value());
+	if (restart)					animationContext.set_par_animation_restart					(restart.value());
+	if (duration)					animationContext.set_par_animation_duration					(duration.value());
+	if (delay)						animationContext.set_par_animation_delay					(delay.value());
+	if (end)						animationContext.set_par_animation_end						(end.value());
+	if (presentationPresetClass)	animationContext.set_par_animation_preset_class				(presentationPresetClass.value());
+	if (presentationPresetId)		animationContext.set_par_animation_preset_id				(presentationPresetId.value());
+
+
+	if (anim_par_array_.size())
 	{
 		Context.get_slide_context().start_slide_animation();
-			anim_par_->pptx_convert(Context); // это для самого слайда (то что и нужно)
+		for(size_t i = 0; i < anim_par_array_.size(); i++)
+			anim_par_array_[i]->pptx_convert(Context); // это для самого слайда (то что и нужно)
 		Context.get_slide_context().end_slide_animation();
 	}
 	for (size_t i = 0; i < anim_seq_array_.size(); i++)
@@ -96,7 +183,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"anim", L"par") 
-		CP_CREATE_ELEMENT(anim_par_);
+		CP_CREATE_ELEMENT(anim_par_array_);
 	else if	CP_CHECK_NAME(L"anim", L"seq") 
 		CP_CREATE_ELEMENT(anim_seq_array_);//более 1 элемента- взаимосвязанная анимация (между фигурами)
 	else

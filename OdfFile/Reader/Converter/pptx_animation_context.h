@@ -44,11 +44,13 @@ namespace oox {
 
 		void start_par_animation();
 			void set_par_animation_presentation_node_type(const std::wstring& value);
-			void set_par_animation_smil_direction(const std::wstring& value);
-			void set_par_animation_smil_restart(const std::wstring& value);
-			void set_par_animation_smil_dur(int value);
-			void set_par_animation_smil_begin(const std::wstring& value);
-			void set_par_animation_smil_end(const std::wstring& value);
+			void set_par_animation_direction(const std::wstring& value);
+			void set_par_animation_restart(const std::wstring& value);
+			void set_par_animation_duration(int value);
+			void set_par_animation_delay(const std::wstring& value);
+			void set_par_animation_end(const std::wstring& value);
+			void set_par_animation_preset_class(const std::wstring& value);
+			void set_par_animation_preset_id(const std::wstring& value);
 		void end_par_animation();
 
 		void start_seq_animation();
@@ -73,8 +75,6 @@ namespace oox {
 		void end_animate_motion();
 
 		void serialize(std::wostream & strm);
-		void serialize_par_animation(std::wostream & strm);
-		void serialize_seq_animation(std::wostream & strm);
 
 	private:
 		class Impl;

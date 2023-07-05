@@ -5,7 +5,7 @@
 #include "../js_internal/js_base.h"
 
 using namespace NSJSBase;
-class CMemoryStreamEmbed : public CJSEmbedObject
+class JS_DECL CMemoryStreamEmbed : public CJSEmbedObject
 {
 public:
 	NSMemoryStream::CMemoryStream* m_pInternal;

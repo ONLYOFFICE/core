@@ -14,7 +14,7 @@ namespace NSPointerObjectDeleters
 #define POINTER_DELETER(CLASS_NAME, NAME) void NAME(void* data) { CLASS_NAME* p = (CLASS_NAME*)data; delete data; }
 
 using namespace NSJSBase;
-class CPointerEmbedObject : public CJSEmbedObject
+class JS_DECL CPointerEmbedObject : public CJSEmbedObject
 {
 public:
 	void* Data;

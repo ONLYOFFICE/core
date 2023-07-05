@@ -8,7 +8,7 @@
 #endif
 
 using namespace NSJSBase;
-class CTextMeasurerEmbed : public CJSEmbedObject
+class JS_DECL CTextMeasurerEmbed : public CJSEmbedObject
 {
 public:
 	CTextMeasurerEmbed()

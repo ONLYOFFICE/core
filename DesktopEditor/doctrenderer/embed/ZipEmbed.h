@@ -5,7 +5,7 @@
 #include "../js_internal/js_base.h"
 
 using namespace NSJSBase;
-class CZipEmbed : public CJSEmbedObject
+class JS_DECL CZipEmbed : public CJSEmbedObject
 {
 public:
 	IFolder* m_pFolder;

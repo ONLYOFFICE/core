@@ -5,7 +5,7 @@
 #include "../hash.h"
 
 using namespace NSJSBase;
-class CHashEmbed : public CJSEmbedObject
+class JS_DECL CHashEmbed : public CJSEmbedObject
 {
 public:
 	CHash* m_pHash;

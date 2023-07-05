@@ -161,6 +161,7 @@ public:
     // SDocumentInfo m_oDocumentInfo;         // Информация об fb2-документе
     // std::wstring m_sTmpFolder;             // Рабочая папка
     std::map<std::wstring, std::vector<std::wstring>> m_mImages; // Картинки
+    std::map<std::wstring, std::wstring> m_mFootnotes;           // Сноски
 
 private:
     int m_nContentsId;       // ID содержания
@@ -168,8 +169,6 @@ private:
 
     // STitleInfo* m_pSrcTitleInfo;  // Данные об исходнике книги
     // SPublishInfo* m_pPublishInfo; // Сведения об издании книги
-
-    std::map<std::wstring, std::wstring> m_mFootnotes;           // Сноски
     // std::map<std::wstring, std::wstring> m_mCustomInfo;       // Произвольная информация
 
 public:
@@ -1312,9 +1311,9 @@ public:
 
                 m_oTitleInfo.m_sAuthors +=
                         ((m_oTitleInfo.m_sAuthors.empty() ? L"" : L";") +
-                        (sMiddleName.empty() ? L"" : (sMiddleName + L' ')) +
+                        (sLastName.empty() ? L"" : (sLastName + L' ')) +
                         (sFirstName.empty()  ? L"" : (sFirstName  + L' ')) +
-                        (sLastName.empty()   ? L"" : (sLastName   + L' ')) +
+                        (sMiddleName.empty()   ? L"" : (sMiddleName   + L' ')) +
                          sNickname);
             }
             else if (sName == L"book-title")
@@ -1424,16 +1423,31 @@ public:
                     bWasP = false;
                 }
             }
-            else if (sName == L"p")
+            else if (sName == L"div")
             {
+                bool bFootnote = false;
+                std::wstring sFootnoteName;
+                NSStringUtils::CStringBuilder oFootnote;
                 while (m_oLightReader.MoveToNextAttribute())
                 {
-                    std::wstring sName = m_oLightReader.GetName();
-                    if (m_oLightReader.GetName() == L"class" &&
-                        m_oLightReader.GetText() == L"MsoFootnoteText")
-                        readFootnotes(oXml);
+                    std::wstring sAtrName = m_oLightReader.GetName();
+                    std::wstring sAtrText = m_oLightReader.GetText();
+                    if (sAtrName == L"style" && sAtrText == L"mso-element:footnote")
+                        bFootnote = true;
+                    else if (sAtrName == L"id")
+                        sFootnoteName = sAtrText;
                 }
                 m_oLightReader.MoveToElement();
+                if (bFootnote && !sFootnoteName.empty())
+                {
+                    readStream(oFootnote, false, false);
+                    m_mFootnotes.insert(std::make_pair(sFootnoteName, oFootnote.GetData()));
+                }
+                else
+                    readStream(oXml, bWasP, bWasTable);
+            }
+            else if (sName == L"p")
+            {
                 if (!bWasP)
                     oXml.WriteString(L"<p>");
                 readStream(oXml, true, bWasTable);
@@ -1705,11 +1719,6 @@ public:
                     oXml.WriteString(L"</p>");
             }
         } while (m_oLightReader.ReadNextSiblingNode2(nDeath));
-    }
-
-    void readFootnotes(NSStringUtils::CStringBuilder& oXml)
-    {
-
     }
 
     void readTitleInfo(NSStringUtils::CStringBuilder& oTitleInfo)
@@ -2054,6 +2063,18 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
     oRes.WriteString(L"<body><section>");
     oRes.WriteString(oDocument.GetData());
     oRes.WriteString(L"</section></body>");
+    // notes
+    if (!m_internal->m_mFootnotes.empty())
+    {
+        oRes.WriteString(L"<body name=\"notes\">");
+        for (std::map<std::wstring, std::wstring>::iterator i = m_internal->m_mFootnotes.begin(); i != m_internal->m_mFootnotes.end(); i++)
+        {
+            oRes.WriteString(L"<section id=\"" + i->first + L"\">");
+            oRes.WriteString(i->second);
+            oRes.WriteString(L"</section>");
+        }
+        oRes.WriteString(L"</body>");
+    }
     // binary
     for (std::map<std::wstring, std::vector<std::wstring>>::iterator i = m_internal->m_mImages.begin(); i != m_internal->m_mImages.end(); i++)
     {

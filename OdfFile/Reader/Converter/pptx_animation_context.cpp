@@ -122,36 +122,12 @@ namespace oox {
 		{
 			par_animation_levels_.clear();
 			root_animation_element_ = nullptr;
+			animate_motion_description_ = nullptr;
 		}
 
 		Impl()
 		{
 			clear();
-			/*root_animation_element_ = boost::make_shared<_par_animation>();
-			root_animation_element_->PresentationNodeType = L"timing-root";
-			_seq_animation_ptr main_sequence = boost::make_shared<_seq_animation>();
-			main_sequence->PresentationNodeType = L"main-sequence";
-			_par_animation_ptr par1 = boost::make_shared<_par_animation>();
-			par1->SmilBegin = L"next";
-			_par_animation_ptr par2 = boost::make_shared<_par_animation>();
-			par2->SmilBegin = L"0s";
-			_par_animation_ptr par3 = boost::make_shared<_par_animation>();
-			par3->SmilBegin = L"0s";
-			par3->PresentationNodeType = L"on-click";
-
-			_animate_motion_ptr motion = boost::make_shared<_animate_motion>();
-			motion->SmilDurMs = 2000;
-			motion->SmilTargetElement = L"id1";
-			motion->AnimSubItem = L"text";
-			motion->SvgPath = L"M0.00178571428571429-0.00831746031746032h0.714285714285714";
-
-			par3->AnimationActions.push_back(motion);
-			par2->AnimPar = par3;
-			par1->AnimPar = par2;
-			main_sequence->AnimParArray = _animation_element_array();
-			main_sequence->AnimParArray->push_back(par1);
-			root_animation_element_->AnimSeq->push_back(main_sequence);*/
-
 		}
 	};
 
@@ -424,6 +400,11 @@ namespace oox {
 				}
 			}
 		}
+	}
+
+	void pptx_animation_context::clear()
+	{
+		impl_->clear();
 	}
 
 	void pptx_animation_context::Impl::_animate_motion::serialize(std::wostream& strm)

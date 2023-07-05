@@ -184,6 +184,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 	//animation_context на slide_context завести
 	if (animation_)
 	{
+		Context.get_slide_context().get_animation_context().clear();
 		animation_->pptx_convert(Context);
 	}
 /////////////////////////

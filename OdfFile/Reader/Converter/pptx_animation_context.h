@@ -75,6 +75,7 @@ namespace oox {
 		void end_animate_motion();
 
 		void serialize(std::wostream & strm);
+		void clear();
 
 	private:
 		class Impl;

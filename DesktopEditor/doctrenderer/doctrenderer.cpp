@@ -563,6 +563,7 @@ namespace NSDoctRenderer
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
 
 				JSSmart<CJSObject> global_js = context->GetGlobal();
+				global_js->set("window", global_js);
 
 				JSSmart<CJSObject> oNativeCtrl = CJSContext::createEmbedObject("CNativeControlEmbed");
 				global_js->set("native", oNativeCtrl);
@@ -1085,6 +1086,7 @@ namespace NSDoctRenderer
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSObject> global = context->GetGlobal();
+				global->set("window", global);
 				global->set("native", CJSContext::createEmbedObject("CNativeControlEmbed"));
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();

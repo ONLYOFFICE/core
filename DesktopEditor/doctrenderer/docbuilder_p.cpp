@@ -60,6 +60,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 	CJSContext::Embed<CBuilderDocumentEmbed>(false);
 
 	JSSmart<CJSObject> global = m_context->GetGlobal();
+	global->set("window", global);
 
 	JSSmart<CJSObject> oBuilderJS = CJSContext::createEmbedObject("CBuilderEmbed");
 	global->set("builderJS", oBuilderJS);
@@ -193,10 +194,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	// GET_NATIVE_ENGINE
 	if (!bIsBreak)
 	{
-		JSSmart<CJSValue> js_result2 = global_js->call_func("GetNativeEngine", 1, args);
-		if (try_catch->Check())
-			bIsBreak = true;
-		else
+		JSSmart<CJSValue> js_result2 = global_js->get("native");
+		if (js_result2.is_init())
 		{
 			JSSmart<CJSObject> objNative = js_result2->toObject();
 			pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();
@@ -282,8 +281,8 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	// GET_NATIVE_ENGINE
 	if (true)
 	{
-		JSSmart<CJSValue> js_result2 = global_js->call_func("GetNativeEngine", 1, args);
-		if (!try_catch->Check())
+		JSSmart<CJSValue> js_result2 = global_js->get("native");
+		if (js_result2.is_init())
 		{
 			JSSmart<CJSObject> objNative = js_result2->toObject();
 			pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();

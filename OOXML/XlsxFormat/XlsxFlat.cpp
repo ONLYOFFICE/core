@@ -159,6 +159,10 @@ namespace Spreadsheet
 			{
 				m_pWorkbook->fromXML(oReader);
 			}
+			else if (L"OfficeDocumentSettings" == sName)
+			{
+				ReadSettingAttributes(oReader);
+			}
 			else if ( L"Worksheet" == sName )
 			{
 				CWorksheet *pWorksheet = new CWorksheet(dynamic_cast<OOX::Document*>(this));
@@ -267,6 +271,19 @@ namespace Spreadsheet
 		return m_maxDigitSize;
 	}
 
+	void CXlsxFlat::ReadSettingAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		nullable_bool bReadOnly;
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, L"ReadOnlyRecommended", bReadOnly)
+		WritingElement_ReadAttributes_End(oReader)
+
+		if (bReadOnly.IsInit())
+		{
+			m_pWorkbook->m_oFileSharing.Init();
+			m_pWorkbook->m_oFileSharing->m_oReadOnlyRecommended = true;
+		}
+	}
 }
 
 }

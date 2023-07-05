@@ -160,9 +160,9 @@ void odp_conversion_context::end_layout_slide()
 	slide_context_.set_styles_context(NULL); //возврат на базовый
 }
 
-odf_style_context* odp_conversion_context::styles_context()	
+odf_style_context_ptr odp_conversion_context::styles_context()	
 {
-	odf_style_context* result = slide_context_.get_styles_context();
+	odf_style_context_ptr result = slide_context_.get_styles_context();
 
 	if (!result) result = odf_conversion_context::styles_context();
 	

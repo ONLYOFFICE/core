@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,11 +56,13 @@ namespace XLSB
     //EXTCONNECTIONS = BrtBeginExtConnections 1*EXTCONNECTION BrtEndExtConnectionss
     const bool EXTCONNECTIONS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginExtConnections>())
-        {
-            m_BrtBeginExtConnections = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<BeginExtConnections>())
+		{
+			m_bBrtBeginExtConnections = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtBeginExtConnections = false;
 
         int countEXTCONNECTION = proc.repeated<EXTCONNECTION>(0, 0);
 
@@ -73,12 +75,28 @@ namespace XLSB
 
         if (proc.optional<EndExtConnections>())
         {
-            m_BrtEndExtConnections = elements_.back();
+            m_bBrtEndExtConnections = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndExtConnections = false;
 
-        return m_BrtBeginExtConnections && m_BrtEndExtConnections;
+        return m_bBrtBeginExtConnections && m_bBrtEndExtConnections;
     }
+
+	const bool EXTCONNECTIONS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginExtConnections>();
+
+		for (auto &item : m_arEXTCONNECTION)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndExtConnections>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

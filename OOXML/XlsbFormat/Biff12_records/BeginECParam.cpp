@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,6 +83,40 @@ namespace XLSB
         if(pbt == 0x2)
             record >> fmla;
     }
+
+	void BeginECParam::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBITS(flags, 0, 2, pbt)
+		SETBIT(flags, 3, fAutoRefresh)
+
+		record << flags;
+		record << wTypeSql;
+
+		if (pbt != 0x0)
+			record << dataType;
+
+		if (pbt == 0x0)
+			record << fLoadPrompt;
+
+		record << stName;
+
+		if (pbt == 0x0 && fLoadPrompt.operator const bool())
+			record << stPrompt;
+
+		if (pbt == 0x1 && dataType == 0x00000002)
+			record << stVal;
+
+		if (pbt == 0x1 && (dataType == 0x00000001 || dataType == 0x00008000))
+			record << xnumVal;
+
+		if (pbt == 0x1 && dataType == 0x00000004)
+			record << boolVal;
+
+		if (pbt == 0x2)
+			record << fmla;
+	}
 
 } // namespace XLSB
 

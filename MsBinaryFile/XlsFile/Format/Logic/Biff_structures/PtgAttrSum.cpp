@@ -46,6 +46,11 @@ void PtgAttrSum::loadFields(CFRecord& record)
 	record.skipNunBytes(2); // unused
 }
 
+void PtgAttrSum::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2); // unused
+}
+
 
 void PtgAttrSum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

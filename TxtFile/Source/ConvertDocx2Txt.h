@@ -44,13 +44,13 @@ namespace Docx2Txt
 
 		void convert();
 
-		void read	(const std::wstring& path);
-		void write	(const std::wstring& path);
+		bool read	(const std::wstring& path);
+		bool write	(const std::wstring& path);
 
-		void writeUtf8		(const std::wstring& path) const;
-		void writeUnicode	(const std::wstring& path) const;
-		void writeBigEndian	(const std::wstring& path) const;
-		void writeAnsi		(const std::wstring& path) const;
+		bool writeUtf8		(const std::wstring& path) const;
+		bool writeUnicode	(const std::wstring& path) const;
+		bool writeBigEndian	(const std::wstring& path) const;
+		bool writeAnsi		(const std::wstring& path) const;
 
 	private:
 		Converter_Impl * converter_;

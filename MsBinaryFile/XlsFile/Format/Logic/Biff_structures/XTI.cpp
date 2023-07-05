@@ -62,8 +62,20 @@ void XTI::load(CFRecord& record)
     }
     else
         record >> iSupBook >> itabFirst >> itabLast;
-
 }
 
+void XTI::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 iSupBook_2b = iSupBook;
+		_INT16 itabFirst_2b = itabFirst;
+		_INT16 itabLast_2b = itabLast;
+
+		record << iSupBook_2b << itabFirst_2b << itabLast_2b;
+	}
+	else
+		record << iSupBook << itabFirst << itabLast;
+}
 
 } // namespace XLS

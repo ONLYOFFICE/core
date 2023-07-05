@@ -46,7 +46,8 @@ public:
 
 	static const ElementType	type = typeXTI;
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
     _UINT32 iSupBook; //externalLink in biff12
     _INT32 itabFirst; //firstSheet in biff12

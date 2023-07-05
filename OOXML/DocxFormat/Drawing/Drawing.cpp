@@ -103,14 +103,13 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode & oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -214,14 +213,13 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -324,14 +322,13 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -401,14 +398,13 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase(node, L"relativeFrom",	m_oRelativeFrom );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -507,14 +503,13 @@ namespace OOX
 			XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
 			XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -591,17 +586,15 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase(node, L"edited",	m_oEdited );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 
 			bool bStart = false;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
-
+					XmlUtils::CXmlNode &oNode = oNodes[i];
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if ( _T("start") == sName )
@@ -690,14 +683,13 @@ namespace OOX
 			XmlMacroReadAttributeBase(node, L"distR",		m_oDistR );
 			XmlMacroReadAttributeBase(node, L"wrapText",	m_oWrapText );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode & oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -763,14 +755,13 @@ namespace OOX
 		}
 		void CWrapTight::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -839,14 +830,13 @@ namespace OOX
 			XmlMacroReadAttributeBase(node, L"distB",	m_oDistB );
 			XmlMacroReadAttributeBase(node, L"distT",	m_oDistT );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -965,14 +955,13 @@ namespace OOX
 			ReadAttributes(node);
 			m_eWrapType = anchorwrapUnknown;
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -1155,14 +1144,13 @@ namespace OOX
 		{
 			ReadAttributes( node );
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -1267,14 +1255,13 @@ namespace OOX
 		}
 		void CDrawing::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 				for (int i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 

@@ -380,10 +380,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
 	chart_context.set_legend	(legend_);
-	
-	chart_context.set_plot_area_properties		(plot_area_.properties_, plot_area_.fill_);
-	chart_context.set_chart_graphic_properties	(graphic_properties_, chart_fill_);
-	
+	chart_context.set_data_table(data_table_);
+
+	chart_context.set_plot_area_properties (plot_area_.properties_, plot_area_.fill_);
+	chart_context.set_chart_graphic_properties (graphic_properties_, chart_fill_);
+
 	//chart_context.set_footer(footer_);
 	//chart_context.set_chart_properties(chart_graphic_properties_);
 
@@ -610,14 +611,14 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 }
 
 //----------------------------------------------------------------------------------------
-process_build_object::process_build_object(object_odf_context & object_odf, odf_read_context & context) :	
+process_build_object::process_build_object(object_odf_context & object_odf, odf_document *document) :	
 						 stop_				(false)
+						,document_(document)
 						,object_odf_context_(object_odf)
-						,styles_			(context.styleContainer())
-						,settings_			(context.Settings())
-						,draw_styles_		(context.drawStyles())
-						,number_styles_		(context.numberStyles())
-						,num_format_context_(context)
+						,styles_			(document->odf_context().styleContainer())
+						,settings_			(document->odf_context().Settings())
+						,number_styles_		(document->odf_context().numberStyles())
+						,num_format_context_(document->odf_context())
 {
 	_CP_OPT(std::wstring) sFontHeight	= settings_.find_by_name(L"BaseFontHeight");
 	
@@ -721,7 +722,7 @@ void process_build_object::ApplyGraphicProperties(std::wstring style, graphic_fo
 
 		if (propertiesOut)
 		{
-			Compute_GraphicFill(propertiesOut->common_draw_fill_attlist_, propertiesOut->style_background_image_, draw_styles_, fill, false, false);			
+			Compute_GraphicFill(propertiesOut->common_draw_fill_attlist_, propertiesOut->style_background_image_, document_, fill, false, false);
 		}
 		if (fill.bitmap)
 		{
@@ -1012,11 +1013,21 @@ void process_build_object::visit(chart_data_point & val)
 		object_odf_context_.series_.back().points_.back().bEnabled = true;
 		std::wstring style_name = val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
 		
-		ApplyGraphicProperties	(style_name,	object_odf_context_.series_.back().points_.back().graphic_properties_, 
+		ApplyChartProperties(style_name, object_odf_context_.series_.back().points_.back().properties_);
+		ApplyGraphicProperties	(style_name,	object_odf_context_.series_.back().points_.back().graphic_properties_,
 												object_odf_context_.series_.back().points_.back().fill_);
 		ApplyTextProperties		(style_name,	object_odf_context_.series_.back().points_.back().text_properties_);
 	}
+}
+void process_build_object::visit(chart_data_table & val)
+{
+	std::wstring style_name = val.common_attlist_.chart_style_name_.get_value_or(L"");
 
+	object_odf_context_.data_table_.bEnabled = true;
+	
+	ApplyChartProperties(style_name, object_odf_context_.data_table_.properties_);
+	ApplyGraphicProperties(style_name, object_odf_context_.data_table_.graphic_properties_, object_odf_context_.data_table_.fill_);
+	ApplyTextProperties(style_name, object_odf_context_.data_table_.text_properties_);
 }
 void process_build_object::visit(chart_mean_value & val)
 {
@@ -1025,6 +1036,10 @@ void process_build_object::visit(chart_mean_value & val)
 	ApplyGraphicProperties	(val.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().mean_value_.graphic_properties_, object_odf_context_.series_.back().mean_value_.fill_);
 }
 void process_build_object::visit(chart_date_scale & val)
+{
+	object_odf_context_.axises_.back().type_ = 4;
+}
+void process_build_object::visit(chartooo_date_scale & val)
 {
 	object_odf_context_.axises_.back().type_ = 4;
 }

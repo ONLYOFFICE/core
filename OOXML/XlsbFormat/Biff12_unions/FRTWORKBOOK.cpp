@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -78,6 +78,20 @@ namespace XLSB
 
         return m_SLICERCACHESPIVOTCACHEIDS || m_SLICERCACHEIDS || m_TABLESLICERCACHEIDS;
     }
+
+	const bool FRTWORKBOOK::saveContent(BinProcessor& proc)
+	{
+		if (m_SLICERCACHESPIVOTCACHEIDS != nullptr)
+			proc.mandatory(*m_SLICERCACHESPIVOTCACHEIDS);
+
+		if (m_SLICERCACHEIDS != nullptr)
+			proc.mandatory(*m_SLICERCACHEIDS);
+
+		if (m_TABLESLICERCACHEIDS != nullptr)
+			proc.mandatory(*m_TABLESLICERCACHEIDS);
+
+		return true;
+	}
 
 } // namespace XLSB
 

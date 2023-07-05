@@ -343,24 +343,24 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 
         NSWasm::CData oRes;
         oRes.SkipLen();
-        XmlUtils::CXmlNodes oParagraphsNodes;
+        std::vector<XmlUtils::CXmlNode> oParagraphsNodes;
         region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
-        for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
+        for (size_t nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.size(); nParagraphIndex++)
         {
-            XmlUtils::CXmlNode oParagraphNode;
-            oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
-            XmlUtils::CXmlNodes oLinesNodes;
+            XmlUtils::CXmlNode & oParagraphNode = oParagraphsNodes[nParagraphIndex];
+
+            std::vector<XmlUtils::CXmlNode> oLinesNodes;
             oParagraphNode.GetNodes(L"LINE", oLinesNodes);
-            for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
+            for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); nLineIndex++)
             {
-                XmlUtils::CXmlNode oLineNode;
-                oLinesNodes.GetAt(nLineIndex, oLineNode);
-                XmlUtils::CXmlNodes oWordsNodes;
+                XmlUtils::CXmlNode & oLineNode = oLinesNodes[nLineIndex];
+
+                std::vector<XmlUtils::CXmlNode> oWordsNodes;
                 oLineNode.GetNodes(L"WORD", oWordsNodes);
-                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); nWordIndex++)
+                for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); nWordIndex++)
                 {
-                    XmlUtils::CXmlNode oWordNode;
-                    oWordsNodes.GetAt(nWordIndex, oWordNode);
+                    XmlUtils::CXmlNode & oWordNode = oWordsNodes[nWordIndex];
+
                     std::wstring csWord   = oWordNode.GetText();
                     std::wstring csCoords = oWordNode.GetAttribute(L"coords");
                     double arrCoords[4];
@@ -904,18 +904,18 @@ void CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXm
 	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
 	pRenderer->put_FontName(L"DjvuEmptyFont");
     //std::wstring csText = oTextNode.GetXml();
-	XmlUtils::CXmlNodes oLinesNodes;
+    std::vector<XmlUtils::CXmlNode> oLinesNodes;
 	oTextNode.GetNodes(L"LINE", oLinesNodes);
-	for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); ++nLineIndex)
+    for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
 	{
-		XmlUtils::CXmlNode oLineNode;
-		oLinesNodes.GetAt(nLineIndex, oLineNode);
-		XmlUtils::CXmlNodes oWordsNodes;
+        XmlUtils::CXmlNode & oLineNode = oLinesNodes[nLineIndex];
+
+        std::vector<XmlUtils::CXmlNode> oWordsNodes;
 		oLineNode.GetNodes(L"WORD", oWordsNodes);
-		for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
+        for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); ++nWordIndex)
 		{
-			XmlUtils::CXmlNode oWordNode;
-			oWordsNodes.GetAt(nWordIndex, oWordNode);
+            XmlUtils::CXmlNode & oWordNode = oWordsNodes[nWordIndex];
+
             std::wstring csWord   = oWordNode.GetText();
             std::wstring csCoords = oWordNode.GetAttribute(L"coords");
 			double arrCoords[4];

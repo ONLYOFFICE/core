@@ -10,7 +10,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, graphics, PdfReader, DjVuFile, XpsFile, PdfWriter, DocxRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel, graphics, PdfFile, DjVuFile, XpsFile, DocxRenderer)
 
 core_linux:include($$PWD/../../Common/3dParty/icu/icu.pri)
 core_windows:LIBS += -lgdi32 -ladvapi32 -luser32 -lshell32
@@ -22,7 +22,7 @@ SOURCES += main.cpp
 SOURCES += \
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp \
     $$CORE_ROOT_DIR/Common/3dParty/pole/pole.cpp \
-    $$CORE_ROOT_DIR/Common/DocxFormat/Source/Base/unicode_util.cpp
+	$$CORE_ROOT_DIR/OOXML/Base/unicode_util.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build
 

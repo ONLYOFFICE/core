@@ -3380,7 +3380,7 @@ namespace SimpleTypes
 		else if ( (L"thinReverseDiagStripe") == sValue ) this->m_eValue = shdThinReverseDiagStripe;
 		else if ( (L"thinVertStripe")        == sValue ) this->m_eValue = shdThinVertStripe;
 		else if ( (L"vertStripe")            == sValue ) this->m_eValue = shdVertStripe;
-		else                                              this->m_eValue = shdSolid;
+		else                                             this->m_eValue = shdClear;
 
 		return this->m_eValue;
 	}

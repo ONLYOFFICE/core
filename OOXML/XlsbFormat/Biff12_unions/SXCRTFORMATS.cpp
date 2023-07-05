@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXCrtFormats>())
         {
-            m_BrtEndSXCrtFormats = elements_.back();
+            m_bBrtEndSXCrtFormats = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXCrtFormats = false;
 
-        return m_BrtBeginSXCrtFormats && !m_arSXCRTFORMAT.empty() && m_BrtEndSXCrtFormats;
+        return m_BrtBeginSXCrtFormats && !m_arSXCRTFORMAT.empty() && m_bBrtEndSXCrtFormats;
     }
+
+	const bool SXCRTFORMATS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXCrtFormats == nullptr)
+			m_BrtBeginSXCrtFormats = XLS::BaseObjectPtr(new XLSB::BeginSXCrtFormats());
+
+		if (m_BrtBeginSXCrtFormats != nullptr)
+		{
+			auto ptrBrtBeginSXCrtFormats = static_cast<XLSB::BeginSXCrtFormats*>(m_BrtBeginSXCrtFormats.get());
+
+			if (ptrBrtBeginSXCrtFormats != nullptr)
+				ptrBrtBeginSXCrtFormats->csxcrtformats = m_arSXCRTFORMAT.size();
+
+			proc.mandatory(*m_BrtBeginSXCrtFormats);
+		}
+
+		for (auto &item : m_arSXCRTFORMAT)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXCrtFormats>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

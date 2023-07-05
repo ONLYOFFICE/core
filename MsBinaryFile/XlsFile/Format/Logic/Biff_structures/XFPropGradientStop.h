@@ -47,10 +47,11 @@ public:
 
 	static const ElementType	type = typeXFPropGradientStop;
 
-	virtual void load(CFRecord& record);
-
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	int serialize(std::wostream & stream);
+	int deserialize(XmlUtils::CXmlLiteReader& oReader);
 
 	double		numPosition;
 	XFPropColor color;

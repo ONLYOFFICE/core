@@ -60,7 +60,7 @@ void BRAI::readFields(CFRecord& record)
 	fUnlinkedIfmt = static_cast<unsigned char>(GETBIT(flags, 0));
 	record >> ifmt;
 	
-	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 
 	formula.load(record);
 

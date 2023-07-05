@@ -2440,6 +2440,7 @@ namespace Settings
 		}
 
 		m_arrSmartTagType.clear();
+		m_oMathPr.reset();
 	}
 	void CSettings::read(const CPath& oFilePath)
 	{

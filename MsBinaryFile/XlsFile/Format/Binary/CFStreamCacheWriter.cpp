@@ -36,22 +36,42 @@
 #include "../Logic/Biff_records/BOF.h"
 
 
-
 namespace XLS
 {
 
-
-CFStreamCacheWriter::CFStreamCacheWriter(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
-:	stream_(stream),
-	global_info_(global_info)
+StreamCacheWriter::StreamCacheWriter(const GlobalWorkbookInfoPtr global_info)
+	: global_info_(global_info)
 {
 }
 
+StreamCacheWriter::~StreamCacheWriter()
+{
+}
+
+// Reads the next CFRecord from the CFStream and if its type is not the desired one, caches it for the next call
+CFRecordPtr StreamCacheWriter::getNextRecord(const CFRecordType::TypeId desirable_type)
+{	
+	return CFRecordPtr(new CFRecord(desirable_type, global_info_));
+}
+
+// Saves the next CFRecord to the stream or caches for later saving.
+// Returns whether the record was saved to file or stored for later saving
+bool StreamCacheWriter::storeNextRecord(CFRecordPtr record)
+{
+	records_cache.push_back(record);
+	writeToStream(1);
+	return true;
+}
+
+//---------------------------------------------------------------------------------------------------------
+CFStreamCacheWriter::CFStreamCacheWriter(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
+	: StreamCacheWriter(global_info),	stream_(stream)	
+{
+}
 
 CFStreamCacheWriter::~CFStreamCacheWriter()
 {
 }
-
 
 // Saves the next CFRecord to the CFStream or caches for later saving.
 // Returns whether the record was saved to file or stored for later saving
@@ -61,11 +81,36 @@ bool CFStreamCacheWriter::storeNextRecord(CFRecordPtr record)
 	return true;
 }
 
-
 // Actual transporting record to the CFStream and then to IStream
 const size_t CFStreamCacheWriter::writeToStream(const size_t num_of_records_min_necessary)
 {
 	return 0;
+}
+
+//---------------------------------------------------------------------------------------------------------
+BinaryStreamCacheWriter::BinaryStreamCacheWriter(boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream, GlobalWorkbookInfoPtr global_info)
+	: StreamCacheWriter(global_info), binaryStream_(binaryStream)
+{
+
+}
+
+BinaryStreamCacheWriter::~BinaryStreamCacheWriter()
+{
+
+}
+
+const size_t BinaryStreamCacheWriter::writeToStream(const size_t num_of_records_min_necessary)
+{
+	if(records_cache.size() >= num_of_records_min_necessary)
+	{
+		for (int i = 0; i < num_of_records_min_necessary; ++i)
+		{
+			records_cache.front()->save(*binaryStream_);
+			records_cache.pop_front();
+		}
+	}
+
+	return records_cache.size();
 }
 
 

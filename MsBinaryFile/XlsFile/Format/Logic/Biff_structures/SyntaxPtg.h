@@ -35,7 +35,7 @@
 
 namespace XLS
 {
-
+class PtgList;
 class SyntaxPtg
 {
 public:
@@ -71,6 +71,7 @@ public:
 	static const bool extract_PtgBool(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgStr(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num);
+	static const bool extract_PtgList(std::wstring::const_iterator& first, std::wstring::const_iterator last, PtgList& ptgList, unsigned short ixti = 0);
 	static const bool extract_PtgRefErr(std::wstring::const_iterator& first, std::wstring::const_iterator last);
 	static const bool extract_PtgErr(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_UndefinedName(std::wstring::const_iterator& first, std::wstring::const_iterator last);

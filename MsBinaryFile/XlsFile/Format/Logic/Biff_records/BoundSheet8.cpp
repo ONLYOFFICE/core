@@ -31,8 +31,6 @@
  */
 
 #include "BoundSheet8.h"
-#include <boost/lexical_cast.hpp>
-
 
 namespace XLS
 {
@@ -89,7 +87,7 @@ void BoundSheet8::readFields(CFRecord& record)
 	}
 	if (name_.empty())
 	{//file(6).xls
-		name_ = L"Sheet_" + boost::lexical_cast<std::wstring>(record.getGlobalWorkbookInfo()->current_sheet + 1);
+		name_ = L"Sheet_" + std::to_wstring(record.getGlobalWorkbookInfo()->current_sheet + 1);
 	}
 
 	GlobalWorkbookInfo::_sheet_info sheet_info;

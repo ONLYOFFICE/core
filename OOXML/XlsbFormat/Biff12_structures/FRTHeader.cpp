@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,7 @@ namespace XLSB
 
     void FRTHeader::load(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT32 flags;
         record >> flags;
 
         fRef        = GETBIT(flags, 0);
@@ -77,6 +77,30 @@ namespace XLSB
         if(fRelID)
             record >> relID;
     }
+
+	void FRTHeader::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fRef)
+		SETBIT(flags, 1, fSqref)
+		SETBIT(flags, 2, fFormula)
+		SETBIT(flags, 3, fRelID)
+
+		record << flags;
+
+		if (fRef)
+			record << rgRefs;
+
+		if (fSqref)
+			record << rgSqrefs;
+
+		if (fFormula)
+			record << rgFormulas;
+
+		if (fRelID)
+			record << relID;
+	}
 
 } // namespace XLSB
 

@@ -99,13 +99,13 @@ namespace OOX
 			XmlMacroReadAttributeBase( oNode, L"w:rsidR",   m_oRsidR );
 			XmlMacroReadAttributeBase( oNode, L"w:rsidRPr", m_oRsidRPr );
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -282,6 +282,10 @@ namespace OOX
 						docx_flat->m_pSettings->m_oEndnotePr.Init();
 				}
 				pItem = pEndRef;
+			}
+			else if (L"r" == sName)
+			{
+				fromXMLElems(oReader);
 			}
 			else if (L"tbl" == sName)
 			{//ERP

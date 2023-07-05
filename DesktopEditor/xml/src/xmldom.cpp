@@ -155,33 +155,7 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-	CXmlNodes::CXmlNodes() : m_nodes()
-	{
-	}
-    CXmlNodes::~CXmlNodes()
-    {
-    }
-	bool CXmlNodes::IsValid()
-	{
-		return true;
-	}
-	int CXmlNodes::GetCount()
-	{
-		return (int)m_nodes.size();
-	}
-	bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
-	{
-		if (nIndex < 0 || nIndex >= GetCount())
-			return false;
-
-		oXmlNode = m_nodes[nIndex];
-		return true;
-	}
-}
-
-namespace XmlUtils
-{
-	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
+ 	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
 	{
 	public:
 		CXmlNodeBase* m_pNode;
@@ -758,10 +732,11 @@ namespace XmlUtils
 		}
 		return node;
 	}
-	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::ReadNodesNoNS(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
-		if (IsValid())
+		std::vector<CXmlNode> oNodes;
+
+        if (IsValid())
 		{
 			bool bGetAll = false;
 			if (L"*" == sName)
@@ -774,7 +749,8 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -788,9 +764,9 @@ namespace XmlUtils
 		GetNode(sName, oNode);
 		return oNode;
 	}
-	CXmlNodes CXmlNode::GetNodes(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::GetNodes(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
+		std::vector<CXmlNode> oNodes;
 		if (IsValid())
 		{
 			bool bGetAll = false;
@@ -804,14 +780,14 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
 
 		return oNodes;
 	}
-	bool CXmlNode::GetChilds(CXmlNodes& oXmlNodes)
+	bool CXmlNode::GetChilds(std::vector<CXmlNode>& oXmlNodes)
 	{
 		bool bRes = false;
 		if (IsValid())
@@ -825,7 +801,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oXmlNodes.m_nodes.insert(oXmlNodes.m_nodes.end(), oNode);
+                    oXmlNodes.push_back(oNode);
 				}
 			}
 		}
@@ -851,10 +827,10 @@ namespace XmlUtils
 		}
 		return bRes;
 	}
-	bool CXmlNode::GetNodes(const std::wstring& sName, CXmlNodes& oNodes)
+    bool CXmlNode::GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes)
 	{
 		oNodes = GetNodes(sName);
-		return (0 != oNodes.GetCount());
+        return (0 != oNodes.size());
 	}
 
 	CXmlNode& CXmlNode::operator=(const CXmlNode& oSrc)

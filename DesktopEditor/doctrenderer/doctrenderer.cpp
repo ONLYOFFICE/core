@@ -152,15 +152,13 @@ namespace NSDoctRenderer
 			{
 				m_nCountChangesItems = oNodeChanges.ReadAttributeInt(L"TopItem", -1);
 
-				XmlUtils::CXmlNodes oNodes;
+                std::vector<XmlUtils::CXmlNode> oNodes;
 				oNodeChanges.GetNodes(L"Change", oNodes);
 
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+                size_t nCount = oNodes.size();
+                for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode _node;
-					oNodes.GetAt(i, _node);
-
+                    XmlUtils::CXmlNode & _node = oNodes[i];
 					m_arChanges.push_back(_node.GetText());
 				}
 			}
@@ -391,6 +389,7 @@ namespace NSDoctRenderer
 			}
 			case DoctRendererFormat::PDF:
 			case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
+			case DoctRendererFormat::IMAGE:
 			{
 				// CALCULATE
 				if (pParams->m_sJsonParams.empty())
@@ -423,14 +422,28 @@ namespace NSDoctRenderer
 				}
 
 				// RENDER
-				if (!bIsBreak && DoctRendererFormat::PDF == pParams->m_eDstFormat)
+				if (!bIsBreak &&
+					(DoctRendererFormat::PDF == pParams->m_eDstFormat || DoctRendererFormat::IMAGE == pParams->m_eDstFormat))
 				{
 					if (pParams->m_sJsonParams.empty())
-						args[0] = CJSContext::createNull();
+					{
+						if (DoctRendererFormat::IMAGE == pParams->m_eDstFormat)
+						{
+							args[0] = context->JSON_Parse("{ \"saveFormat\" : \"image\" }");
+						}
+						else
+							args[0] = CJSContext::createNull();
+					}
 					else
 					{
 						std::string sTmp = U_TO_UTF8((pParams->m_sJsonParams));
 						args[0] = context->JSON_Parse(sTmp.c_str());
+
+						if (DoctRendererFormat::IMAGE == pParams->m_eDstFormat)
+						{
+							JSSmart<CJSObject> argObj = args[0]->toObject();
+							argObj->set("saveFormat", CJSContext::createString("image"));
+						}
 					}
 
 					JSSmart<CJSValue> js_result2 = js_objectApi->call_func("asc_nativeGetPDF", 1, args);
@@ -874,6 +887,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::DOCT:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::HTML:
 			{
 				arSdkFiles = &m_pInternal->m_arDoctSDK;
@@ -891,6 +905,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::PPTT:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			case DoctRendererFormat::PPTX_THEME_THUMBNAIL:
 			{
 				arSdkFiles = &m_pInternal->m_arPpttSDK;
@@ -908,6 +923,7 @@ namespace NSDoctRenderer
 			{
 			case DoctRendererFormat::XLST:
 			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
 			{
 				arSdkFiles = &m_pInternal->m_arXlstSDK;
 				m_pInternal->m_strEditorType = L"spreadsheet";

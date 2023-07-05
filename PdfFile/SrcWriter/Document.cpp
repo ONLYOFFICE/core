@@ -44,6 +44,7 @@
 #include "Font14.h"
 #include "FontCidTT.h"
 #include "FontTT.h"
+#include "FontTTWriter.h"
 #include "Shading.h"
 #include "Pattern.h"
 #include "AcroForm.h"
@@ -610,7 +611,11 @@ namespace PdfWriter
 		if (pFont)
 			return pFont;
 
-		pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
+		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		if (!pFontTT)
+			return NULL;
+
+		pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex, pFontTT);
 		if (!pFont)
 			return NULL;
 
@@ -1065,6 +1070,20 @@ namespace PdfWriter
 				pParent->Add("Ff", pBase->GetFieldFlag());
 				pParent->Add("FT", pBase->GetFieldType());
 
+				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
+				int nMaxLen = 0;
+				if (pTextField)
+				{
+					CObjectBase* pT = pBase->Get("T");
+					if (pT && pT->GetType() == object_type_STRING)
+						pParent->Add("V", pT->Copy());
+
+					if (0 != (nMaxLen = pTextField->GetMaxLen()))
+					{
+						pBase->Remove("MaxLen");
+						pParent->Add("MaxLen", nMaxLen);
+					}
+				}
 
 				pBase->SetParent(pParent);
 				pBase->ClearKidRecords();
@@ -1078,14 +1097,6 @@ namespace PdfWriter
 				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
 				if (pChoice)
 					pChoice->UpdateSelectedIndexToParent();
-
-				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
-				int nMaxLen = 0;
-				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))
-				{
-					pBase->Remove("MaxLen");
-					pParent->Add("MaxLen", nMaxLen);
-				}
 
 				pParent->UpdateKidsPlaceHolder();
 			}

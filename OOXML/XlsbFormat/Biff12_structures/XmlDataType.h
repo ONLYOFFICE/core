@@ -36,7 +36,7 @@
 namespace XLSB
 {
 
-class XmlDataType : public XLS::BiffAttributeSimple<unsigned int>
+class XmlDataType : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();

@@ -35,7 +35,6 @@
 #include "../../../DocFile/OfficeDrawing/PresetShapeTypes.h"
 
 #include <boost/lexical_cast.hpp>
-
 //-------------------------------------------------------------------------------
 //#define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)							\
 //	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
@@ -341,17 +340,16 @@ bool CPPTShape::LoadGuidesList(const std::wstring& xml)
 
 	if (L"v:formulas" == oNodeGuides.GetName())
 	{
-		int lCount = 0;
+		size_t lCount = 0;
 		m_oManager.Clear();
 
-		XmlUtils::CXmlNodes oList;
+		std::vector<XmlUtils::CXmlNode> oList;
 		if (oNodeGuides.GetNodes(L"v:f", oList))
 		{
-			lCount = oList.GetCount();
-			for (int nIndex = 0; nIndex < lCount; ++nIndex)
+			lCount = oList.size();
+			for (size_t nIndex = 0; nIndex < lCount; ++nIndex)
 			{
-				XmlUtils::CXmlNode oNodeFormula;
-				oList.GetAt(nIndex, oNodeFormula);
+				XmlUtils::CXmlNode & oNodeFormula = oList[nIndex];
 
 				m_oManager.AddFormula(oNodeFormula.GetAttributeOrValue(L"eqn"));
 			}
@@ -375,14 +373,13 @@ void CPPTShape::LoadAHList(XmlUtils::CXmlNode& oNode)
 {
 	m_arHandles.clear();
 
-	XmlUtils::CXmlNodes oNodes;
+	std::vector<XmlUtils::CXmlNode> oNodes;
 	if (oNode.GetNodes(_T("v:h"), oNodes))
 	{
-		int nCount = oNodes.GetCount();
+		size_t nCount = oNodes.size();
 		for (int i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oNodeH;
-			oNodes.GetAt(i, oNodeH);
+			XmlUtils::CXmlNode & oNodeH = oNodes[i];
 
 			CHandle_ oH;
 			oH.polar = oNodeH.GetAttribute(_T("polar"));
@@ -631,68 +628,50 @@ CPPTShape* CPPTShape::CreateByShapeType(DocFileFormat::ShapeType* pShapeType)
 		}
 
 		// Connectors
-		if (pShapeType->ConnectorLocations.length())
+		if (false == pShapeType->ConnectorLocations.empty())
 		{
 			pShape->LoadConnectorsList(pShapeType->ConnectorLocations);
 		}
 
 		// TextRect
-		if (pShapeType->TextBoxRectangle.length())
+		if (false == pShapeType->TextBoxRectangle.empty())
 		{
 			pShape->LoadTextRect(pShapeType->TextBoxRectangle);
 		}
 
-		// Handles
-		for (std::list<DocFileFormat::Handle>::iterator iter = pShapeType->Handles.begin(); iter != pShapeType->Handles.end(); ++iter)
+		// Handles  // todooo - убрать лишнее определение Handle !!!
+		for (size_t i = 0; i < pShapeType->Handles.size(); ++i)
 		{
 			CHandle_ oHandle;
-			oHandle.position = iter->position;
-			oHandle.xrange = iter->xrange;
-			oHandle.yrange = iter->yrange;
-			oHandle.switchHandle = iter->switchHandle;
-			oHandle.polar = iter->polar;
-			oHandle.radiusrange = iter->radiusrange;
+			oHandle.position = pShapeType->Handles[i].position;
+			oHandle.xrange = pShapeType->Handles[i].xrange;
+			oHandle.yrange = pShapeType->Handles[i].yrange;
+			oHandle.switchHandle = pShapeType->Handles[i].switchHandle;
+			oHandle.polar = pShapeType->Handles[i].polar;
+			oHandle.radiusrange = pShapeType->Handles[i].radiusrange;
 
 			pShape->m_arHandles.push_back(oHandle);
 		}
 
 		// Formulas / Guides
-		for (std::list<std::wstring>::iterator iter = pShapeType->Formulas.begin(); iter != pShapeType->Formulas.end(); ++iter)
+		for (size_t i = 0; i < pShapeType->Formulas.size(); ++i)
 		{
-			pShape->AddGuide(iter->c_str());
+			pShape->AddGuide(pShapeType->Formulas[i]);
 		}
 
-		// Adjustments
-		if (pShapeType->AdjustmentValues.length())
-		{
-			std::vector<std::wstring> adjArray;
-			boost::algorithm::split(adjArray, pShapeType->AdjustmentValues, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-			for (size_t i = 0; i < adjArray.size(); ++i)
-			{
-				pShape->m_arAdjustments.push_back(boost::lexical_cast<double>(adjArray[i].c_str()));
-			}
-		}
+		pShape->m_arAdjustments = pShapeType->Adjustments;
 
-		// ConnectorAngles
-		if (pShapeType->ConnectorAngles.length())
-		{
-			std::vector<std::wstring> anglesArray;
-			boost::algorithm::split(anglesArray, pShapeType->ConnectorAngles, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-			for (size_t i = 0; i < anglesArray.size(); ++i)
-			{
-				pShape->m_arConnectorAngles.push_back(boost::lexical_cast<LONG>(anglesArray[i].c_str()));
-			}
-		}
+		pShape->m_arConnectorAngles = pShapeType->ConnectorAngles;
 
 		// Limo
-		if (pShapeType->Limo.length())
+		if (false == pShapeType->Limo.empty())
 		{
 			std::vector<std::wstring> limoArray;
 			boost::algorithm::split(limoArray, pShapeType->Limo, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 			if (limoArray.size() == 2)
 			{
-				pShape->m_lLimoX = boost::lexical_cast<long>(limoArray[0].c_str());
-				pShape->m_lLimoY = boost::lexical_cast<long>(limoArray[1].c_str());
+				pShape->m_lLimoX = boost::lexical_cast<int>(limoArray[0].c_str());
+				pShape->m_lLimoY = boost::lexical_cast<int>(limoArray[1].c_str());
 			}
 		}
 	}

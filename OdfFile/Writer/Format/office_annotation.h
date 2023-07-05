@@ -44,8 +44,7 @@
 
 namespace cpdoccore { 
 namespace odf_writer {
-
-
+	
 class office_annotation_attr
 {
 public:
@@ -65,48 +64,6 @@ public:
 	_CP_OPT(std::wstring)		draw_text_style_name_;
 	_CP_OPT(std::wstring)		draw_style_name_;
 };
-
-class dc_date : public office_element_impl<dc_date>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-
-    static const ElementType type		= typeDcDate;
-    
-	
-	virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name){}
-	virtual void add_child_element		( const office_element_ptr & child_element){}
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    virtual void add_text(const std::wstring & Text);
-
-	std::wstring content_;
-
-};
-CP_REGISTER_OFFICE_ELEMENT2(dc_date);
-
-class dc_creator : public office_element_impl<dc_creator>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-
-    static const ElementType type		= typeDcCreator;
-    
-
-	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
-	virtual void add_child_element( const office_element_ptr & child_element){}
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    virtual void add_text(const std::wstring & Text);
-
-	std::wstring content_;
-
-};
-CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
 
 class office_annotation : public office_element_impl<office_annotation>
 {
@@ -181,8 +138,6 @@ private:
 
     office_element_ptr			dc_date_;
     office_element_ptr			dc_creator_;
-
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(officeooo_annotation);
 }

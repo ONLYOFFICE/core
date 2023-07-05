@@ -166,21 +166,20 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		{
 			properties->apply_to(Context.get_slide_context().get_properties());
 
-			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-				Context.root()->odf_context().drawStyles(), fill);
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
 				Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
 			}
+			
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
+			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
 		}
 
 		Context.get_slide_context().set_fill(fill);
-
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
-		Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
 
 		if (common_presentation_attlist_.presentation_class_)
 		{
@@ -236,7 +235,12 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (true == href.empty())
 	{
+		office_binary_data* binary_data = dynamic_cast<office_binary_data*>(office_binary_data_.get());
 
+		if (binary_data)
+		{
+			href = binary_data->write_to(Context.root()->get_folder());
+		}
 	}
 	else
 	{
@@ -345,7 +349,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		object_odf_context objectBuild(href);
 
-		process_build_object process_build_object_(objectBuild, odf_document_->odf_context() );
+		process_build_object process_build_object_(objectBuild, odf_document_.get());
 		contentSubDoc->accept(process_build_object_); 
 		
 		if (objectBuild.table_table_)

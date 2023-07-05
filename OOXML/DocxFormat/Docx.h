@@ -87,6 +87,7 @@ namespace OOX
 
 		CDocx();
 		CDocx(const CPath& oFilePath);
+		virtual ~CDocx();
 
         bool Read(const CPath& oFilePath);
 		void FixAfterRead();

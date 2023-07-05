@@ -356,6 +356,9 @@
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="..\..\Common\writedocelement.h" />
     <ClInclude Include="..\..\Common\errors.h" />
+    <ClInclude Include="..\..\DataTypes\sparklines.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
@@ -690,5 +693,8 @@
     <ClCompile Include="..\..\Common\readdocelement.cpp" />
     <ClCompile Include="..\..\Common\utils.cpp" />
     <ClCompile Include="..\..\Common\logging.cpp" />
+    <ClCompile Include="..\..\DataTypes\sparklines.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

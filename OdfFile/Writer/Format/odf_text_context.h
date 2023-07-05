@@ -66,19 +66,21 @@ namespace odf_writer
 		fieldToc
 	};	
 class odf_conversion_context;
-class odf_style_context;
 class paragraph;
 class paragraph_format_properties;
 class text_format_properties;
 
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
+
 class odf_text_context: boost::noncopyable
 {
 public:
-	odf_text_context	(odf_conversion_context *odf_context, odf_style_context *styles_context);
+	odf_text_context	(odf_conversion_context *odf_context, odf_style_context_ptr styles_context);
     ~odf_text_context	();
 public:
- 	odf_style_context*		get_styles_context();//для embedded
-	void					set_styles_context(odf_style_context*  styles_context);//для embedded
+ 	odf_style_context_ptr	get_styles_context();//для embedded
+	void					set_styles_context(odf_style_context_ptr styles_context);//для embedded
 		
 	void clear_params();
    
@@ -161,7 +163,7 @@ private:
 	paragraph_format_properties	*paragraph_properties_;	//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
 	text_format_properties		*text_properties_;		//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
 
-	odf_style_context		*styles_context_;
+	odf_style_context_ptr styles_context_;
 	odf_conversion_context	*odf_context_;
 
 	std::wstring			parent_span_style_;

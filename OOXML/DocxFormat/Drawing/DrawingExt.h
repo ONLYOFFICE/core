@@ -163,6 +163,7 @@ namespace OOX
 
 			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
 
+			nullable_bool m_oExternalLinksAutoRefresh;
 		};
 
 		//--------------------------------------------------------------------------------

@@ -54,7 +54,7 @@ namespace cpdoccore {
 namespace odf_writer
 {
 
-odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_style_context *styles_context)
+odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_style_context_ptr styles_context)
 {
 	odf_context_				= odf_context;
 	styles_context_				= styles_context;
@@ -87,11 +87,11 @@ void odf_text_context::clear_params()
 	list_state_.started_list	= false;
 	list_state_.style_name		= L"";
 }
-void odf_text_context::set_styles_context(odf_style_context*  styles_context)
+void odf_text_context::set_styles_context(odf_style_context_ptr  styles_context)
 {
 	styles_context_ = styles_context;
 }
-odf_style_context* odf_text_context::get_styles_context()
+odf_style_context_ptr odf_text_context::get_styles_context()
 {
 	return styles_context_;
 }

@@ -133,9 +133,9 @@ namespace NSGuidesVML
 	{
 		LONG lVal = 0;
 
-		std::map<std::wstring, LONG>::iterator NumFmla	= m_arMapFormula.find(strParam);
-		std::map<std::wstring, LONG>::iterator NumAdj	= m_arMapAdj.find(strParam);
-		std::map<std::wstring, LONG>::iterator NumGuides = mapGuides.find(strParam);
+		std::map<std::wstring, long>::iterator NumFmla	= m_arMapFormula.find(strParam);
+		std::map<std::wstring, long>::iterator NumAdj	= m_arMapAdj.find(strParam);
+		std::map<std::wstring, long>::iterator NumGuides = mapGuides.find(strParam);
 
 		if (NumAdj != m_arMapAdj.end())
 		{
@@ -338,27 +338,27 @@ namespace NSGuidesVML
 		XmlUtils::CXmlNode pathLst;
 		if(pathLst.FromXmlString(xml))
 		{
-			XmlUtils::CXmlNodes list;
+			std::vector<XmlUtils::CXmlNode> list;
 			if (pathLst.GetNodes(_T("path"), list))
 			{
-				int nPathCount = list.GetCount();
-				for (int i=0; i<nPathCount; i++)
+				size_t nPathCount = list.size();
+				for (size_t i=0; i<nPathCount; i++)
 				{
-					XmlUtils::CXmlNode PathNode;
-					if(list.GetAt(i, PathNode))
+					XmlUtils::CXmlNode & PathNode = list[i];
+					if(PathNode.IsValid())
 					{
-						XmlUtils::CXmlNodes listNode;
+						std::vector<XmlUtils::CXmlNode> listNode;
 						PathNode.GetNodes(_T("*"), listNode);
 
 						bool bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
 						std::wstring stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
 						bool bStroke = (stroke == _T("true")) || (stroke == _T("1"));
 
-						int nNodeCount = listNode.GetCount();
-						for (int j=0; j<nNodeCount; j++)
+						size_t nNodeCount = listNode.size();
+						for (size_t j=0; j<nNodeCount; j++)
 						{
-							XmlUtils::CXmlNode node;
-							if(listNode.GetAt(j, node))
+							XmlUtils::CXmlNode & node = listNode[i];
+							if(node.IsValid())
 							{
 								bool bNum = false; //управляем запятыми
 
@@ -467,18 +467,18 @@ namespace NSGuidesVML
 								}
 								else
 								{
-									XmlUtils::CXmlNodes ptList;
+									std::vector<XmlUtils::CXmlNode> ptList;
 									node.GetNodes(_T("pt"), ptList);
-									int nPtCount = ptList.GetCount();
+									size_t nPtCount = ptList.size();
 
-									for (int k=0; k<nPtCount; k++)
+									for (size_t k=0; k<nPtCount; k++)
 									{
 										bool bLastPount = false;
 										if ( k == nPtCount-1)
 											bLastPount = true;
 
-										XmlUtils::CXmlNode ptNode;
-										if(ptList.GetAt(k, ptNode))
+										XmlUtils::CXmlNode & ptNode = ptList[i];
+										if(ptNode.IsValid())
 										{
 											std::wstring ptX = ptNode.GetAttribute(_T("x"));
 											std::wstring ptY = ptNode.GetAttribute(_T("y"));

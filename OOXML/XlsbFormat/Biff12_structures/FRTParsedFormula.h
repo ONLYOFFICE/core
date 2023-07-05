@@ -41,8 +41,10 @@ class FRTParsedFormula : public XLS::ParsedFormula
     BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTParsedFormula)
 public:
     FRTParsedFormula();
+	FRTParsedFormula& operator=(const std::wstring& value);
     XLS::BiffStructurePtr clone();
-	virtual void load(XLS::CFRecord& record);
+	void load(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
 };
 

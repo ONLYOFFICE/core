@@ -59,7 +59,6 @@ namespace OOX
 		//<customWorkbookViews>
 		//<extLst>
 		//<fileRecoveryPr>
-		//<fileSharing>
 		//<fileVersion>
 		//<functionGroups>
 		//<smartTagPr>
@@ -154,6 +153,7 @@ namespace OOX
 			nullable_string									m_oOleSize;
 			nullable<OOX::Spreadsheet::CWorkbookPivotCaches>m_oPivotCaches;
 			nullable<std::wstring>							m_oPivotCachesXml;
+			nullable<OOX::Spreadsheet::CFileSharing>		m_oFileSharing;
 			
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;

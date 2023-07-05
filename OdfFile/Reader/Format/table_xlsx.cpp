@@ -399,6 +399,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
 
+	if (sparkline_groups_)
+	{
+		sparkline_groups_->xlsx_convert(Context);
+	}
+
 	for (size_t i = 0 ; i < table_named_.size(); i++)
 	{
 		table_named_[i]->xlsx_convert(Context);

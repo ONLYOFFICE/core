@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheID>())
         {
-            m_BrtEndSlicerCacheID = elements_.back();
+            m_bBrtEndSlicerCacheID = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheID = false;
 
-        return m_BrtBeginSlicerCacheID && m_BrtEndSlicerCacheID;
+        return m_BrtBeginSlicerCacheID && m_bBrtEndSlicerCacheID;
     }
+
+	const bool SLICERCACHEID::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheID != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerCacheID);
+
+		proc.mandatory<EndSlicerCacheID>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

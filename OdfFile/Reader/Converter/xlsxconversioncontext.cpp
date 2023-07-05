@@ -237,7 +237,40 @@ void xlsx_conversion_context::end_document()
             {
                 CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+				CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+				CP_XML_ATTR(L"mc:Ignorable", L"x15 xr xr6 xr10 xr2");
+				CP_XML_ATTR(L"xmlns:x15", L"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main");
+				CP_XML_ATTR(L"xmlns:xr", L"http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
+				CP_XML_ATTR(L"xmlns:xr6", L"http://schemas.microsoft.com/office/spreadsheetml/2016/revision6");
+				CP_XML_ATTR(L"xmlns:xr10", L"http://schemas.microsoft.com/office/spreadsheetml/2016/revision10");
+				CP_XML_ATTR(L"xmlns:xr2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2");
+				
+				_CP_OPT(std::wstring) str = root()->odf_context().Settings().find_by_name(L"IsDocumentShared");
+				if (str)
+				{
+					CP_XML_NODE(L"fileSharing")
+					{
+						str = root()->odf_context().Settings().find_by_name(L"LoadReadonly");
+						if (str) CP_XML_ATTR(L"readOnlyRecommended", *str);
 
+						if (false == root()->odf_context().DocProps().dc_creator_.empty())
+						{
+							CP_XML_ATTR(L"userName", root()->odf_context().DocProps().dc_creator_);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:algorithm-name");
+							if (str) CP_XML_ATTR(L"algorithmName", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:hash");
+							if (str) CP_XML_ATTR(L"hashValue", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:salt");
+							if (str) CP_XML_ATTR(L"saltValue", *str);
+
+							str = root()->odf_context().Settings().find_by_name(L"modify:iteration-count");
+							if (str) CP_XML_ATTR(L"spinCount", *str);
+						}
+					}
+				}
 				if (table_structure_protected_)
 				{
 					CP_XML_NODE(L"workbookProtection")

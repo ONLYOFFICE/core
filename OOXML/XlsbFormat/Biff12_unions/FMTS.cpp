@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,13 +67,13 @@ namespace XLSB
         {
             if (proc.optional<Fmt>())
             {
-                m_arFmt.push_back(elements_.back());
+				m_arBrtFmt.push_back(elements_.back());
                 elements_.pop_back();
             }
 
             else if (proc.optional<ACFMT>())
             {
-                m_arFmt.push_back(elements_.back());
+				m_arBrtFmt.push_back(elements_.back());
                 elements_.pop_back();
             }
 
@@ -82,12 +82,39 @@ namespace XLSB
 
         if (proc.optional<EndFmts>())
         {
-            m_BrtEndFmts = elements_.back();
+			m_bBrtEndFmts = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndFmts = false;
 
-        return m_BrtBeginFmts && !m_arFmt.empty() && m_BrtEndFmts;
+        return m_BrtBeginFmts && !m_arBrtFmt.empty() && m_bBrtEndFmts;
     }
+
+	const bool FMTS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginFmts == nullptr)
+			m_BrtBeginFmts = XLS::BaseObjectPtr(new XLSB::BeginFmts());
+
+		if (m_BrtBeginFmts != nullptr)
+		{
+			auto ptrBrtBeginFmts = static_cast<XLSB::BeginFmts*>(m_BrtBeginFmts.get());
+
+			if (ptrBrtBeginFmts != nullptr)
+				ptrBrtBeginFmts->cfmts = m_arBrtFmt.size();
+
+			proc.mandatory(*m_BrtBeginFmts);
+		}
+
+		for (auto &item : m_arBrtFmt)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndFmts>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,8 @@
  */
 
 #include "COLORSCALE.h"
+
+#include "ACFILTERS.h"
 #include "../Biff12_records/BeginColorScale.h"
 #include "../Biff12_unions/uCFVO.h"
 #include "../Biff12_records/Color.h"
@@ -59,7 +61,7 @@ namespace XLSB
     {
         if (proc.optional<BeginColorScale>())
         {
-            m_BrtBeginColorScale = elements_.back();
+            m_bBrtBeginColorScale = true;
             elements_.pop_back();
         }        
         else
@@ -85,12 +87,33 @@ namespace XLSB
 
         if (proc.optional<EndColorScale>())
         {
-            m_BrtEndColorScale = elements_.back();
+            m_bBrtEndColorScale = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColorScale = false;
 
-        return m_BrtBeginColorScale && !m_arCFVO.empty() && !m_arBrtColor.empty() && m_BrtEndColorScale;
+        return m_bBrtBeginColorScale && !m_arCFVO.empty() && !m_arBrtColor.empty() && m_bBrtEndColorScale;
     }
+
+	const bool COLORSCALE::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginColorScale>();
+
+		for (auto &item : m_arCFVO)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtColor)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndColorScale>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

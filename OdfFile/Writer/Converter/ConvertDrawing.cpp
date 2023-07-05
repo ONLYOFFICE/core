@@ -37,6 +37,7 @@
 
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Diagram/DiagramData.h"
 #include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
@@ -503,12 +504,35 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);
 
-		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
-
 		odf_context()->drawing_context()->start_group();
 
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
+
+		odf_context()->drawing_context()->start_drawing();
+		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
+		
+		odf_context()->drawing_context()->set_size( width, height);
+		odf_context()->drawing_context()->set_position(x, y);
+
+		if (oox_smart_art->m_oDataBg.IsInit())
+		{
+			oox_current_child_document = oox_smart_art->m_pDataContainer.GetPointer();
+			
+			if ((oox_smart_art->m_oDataBg->m_oFill.Fill.IsInit()) &&
+				(oox_smart_art->m_oDataBg->m_oFill.m_type != PPTX::Logic::UniFill::noFill))
+			{
+				odf_context()->drawing_context()->start_area_properties();
+				{
+					convert(&oox_smart_art->m_oDataBg->m_oFill);
+				}
+				odf_context()->drawing_context()->end_area_properties();
+			}
+		}
+		odf_context()->drawing_context()->end_shape();
+		odf_context()->drawing_context()->end_drawing();
+
+		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 
 		for (size_t i = 0; i < oox_smart_art->m_oDrawing->SpTreeElems.size(); i++)
 		{

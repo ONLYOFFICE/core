@@ -153,7 +153,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 	is_delete_text_				(false),
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
-        current_process_comment_	(false),
+	current_process_comment_	(false),
 	odf_document_				(_odf_document),
 	math_context_				(_odf_document->odf_context().fontContainer(), false)
 {
@@ -227,7 +227,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
         state_.in_run_ = true;
 		output_stream() << L"<w:r>";
 
-		start_changes();
+		start_changes(true);
 
 		if (!state_.text_properties_stack_.empty() || parenStyleId.length() > 0)
 		{
@@ -252,20 +252,20 @@ void docx_conversion_context::start_paragraph(bool is_header)
 	if (state_.in_paragraph_)
 		finish_paragraph();
 
+	start_changes(false);
 	output_stream() << L"<w:p>";
 
 	in_header_		= is_header;
     is_rtl_			= false; 
 	
 	state_.in_paragraph_ = true;
-	start_changes();
 }
 
 void docx_conversion_context::finish_paragraph()
 {
 	if (state_.in_paragraph_)
 	{
-		end_changes();
+		end_changes(true);
 
 		if (false == current_process_comment_ && false == get_comments_context().ref_end_.empty())
 		{
@@ -282,6 +282,7 @@ void docx_conversion_context::finish_paragraph()
 				get_comments_context().ref_end_.clear();	
 		}	
 		output_stream() << L"</w:p>";
+		end_changes(false);
 	}
 	
 	in_header_					= false;
@@ -662,12 +663,13 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 }
 _rels_type_place docx_conversion_context::get_type_place()
 {
-	if (current_process_comment_)					return oox::comment_place;
 	if (current_process_note_ == footNote || 
 		current_process_note_ == footNoteRefSet)	return oox::footnote_place;
 	if (current_process_note_ == endNote ||
 		current_process_note_ == endNoteRefSet )	return oox::endnote_place;
 	
+	if (current_process_comment_)					return oox::comment_place;
+
 	if (process_headers_footers_)					return oox::header_footer_place;
 
 	return oox::document_place;
@@ -931,35 +933,35 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"dc:creator")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_creator_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_creator_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_title_.empty())
 			{
 				CP_XML_NODE(L"dc:title")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_title_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_title_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_subject_.empty())
 			{
 				CP_XML_NODE(L"dc:subject")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_subject_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_subject_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_description_.empty())
 			{
 				CP_XML_NODE(L"dc:description")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_description_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_description_);
 				}
 			}
 			if (!odf_document_->odf_context().DocProps().dc_language_.empty())
 			{
 				CP_XML_NODE(L"dc:language")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().dc_language_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().dc_language_);
 				}
 			}
 			CP_XML_NODE(L"cp:lastModifiedBy")
@@ -977,7 +979,7 @@ std::wstring  docx_conversion_context::dump_settings_core()
 			{
 				CP_XML_NODE(L"cp:keywords")
 				{
-					CP_XML_STREAM() << odf_document_->odf_context().DocProps().keyword_;
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(odf_document_->odf_context().DocProps().keyword_);
 				}
 			}
 			if (odf_document_->odf_context().DocProps().revision_)
@@ -2389,6 +2391,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 			{
 				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
 				state.active = true;
+				state.in_para = true;
 			}
 
 			if (state.type == 2)
@@ -2412,10 +2415,11 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 	}
 }
 
-void docx_conversion_context::start_changes()
+void docx_conversion_context::start_changes(bool in_para)
 {
 	if (map_current_changes_.empty()) return;
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
@@ -2429,6 +2433,8 @@ void docx_conversion_context::start_changes()
 
 		if (state.type == 0)	continue; //unknown change ... todooo
 		if (state.active)		continue;
+
+		state.in_para = in_para;
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
@@ -2541,18 +2547,20 @@ void docx_conversion_context::start_changes()
 	}
 }
 
-void docx_conversion_context::end_changes()
+void docx_conversion_context::end_changes(bool in_para)
 {
 	if (current_process_comment_) return;
+	if (current_process_note_) return;
 
 	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{
 		text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 0)	continue; //unknown change ... libra format change skip
-		if (state.type	== 3)	continue;
-		if (!state.active)		continue;
-		
+		if (state.type	== 0)			continue; //unknown change ... libra format change skip
+		if (state.type	== 3)			continue;
+		if (!state.active)				continue;
+		if (state.in_para != in_para)	continue;
+
 		if (state.in_drawing != get_drawing_state_content())
 			continue;
 

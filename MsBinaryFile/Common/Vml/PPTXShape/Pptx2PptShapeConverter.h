@@ -41,8 +41,8 @@ namespace NSGuidesVML
     private:
         std::vector<CSlice> m_arSlices;
         CPPTShape* pPPTShape;
-        std::map<std::wstring, LONG> m_arMapFormula;
-        std::map<std::wstring, LONG> m_arMapAdj;
+        std::map<std::wstring, long> m_arMapFormula;
+        std::map<std::wstring, long> m_arMapAdj;
         std::vector<CSlicePath> m_arSlicesPath;
         LONG m_lIndexDst;
         LONG m_lIndexAdj;

@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class PivotItemType : public XLS::BiffAttributeSimple<unsigned char>
+class PivotItemType : public XLS::BiffAttributeSimple<BYTE>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	PivotItemType& operator= (const BYTE& other_val);
 	enum
 	{
             PITDATA          = 0x00,

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -79,12 +79,39 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheRecords>())
         {
-            m_BrtEndPivotCacheRecords = elements_.back();
+            m_bBrtEndPivotCacheRecords = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheRecords = false;
 
-        return m_BrtBeginPivotCacheRecords && !m_arPIVOTCACHERECORD.empty() && m_BrtEndPivotCacheRecords;
+        return m_BrtBeginPivotCacheRecords && !m_arPIVOTCACHERECORD.empty() && m_bBrtEndPivotCacheRecords;
     }
+
+	const bool PIVOTCACHERECORDS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPivotCacheRecords == nullptr)
+			m_BrtBeginPivotCacheRecords = XLS::BaseObjectPtr(new XLSB::BeginPivotCacheRecords());
+
+		if (m_BrtBeginPivotCacheRecords != nullptr)
+		{
+			auto ptrBrtBeginPivotCacheRecords = static_cast<XLSB::BeginPivotCacheRecords*>(m_BrtBeginPivotCacheRecords.get());
+
+			if (ptrBrtBeginPivotCacheRecords != nullptr)
+				ptrBrtBeginPivotCacheRecords->crecords = m_arPIVOTCACHERECORD.size();
+
+			proc.mandatory(*m_BrtBeginPivotCacheRecords);
+		}
+
+		for (auto &item : m_arPIVOTCACHERECORD)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPivotCacheRecords>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

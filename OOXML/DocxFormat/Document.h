@@ -45,6 +45,10 @@
 
 namespace OOX
 {
+	namespace Vml
+	{
+		class CBackground;
+	}
 	namespace Logic
 	{
 		//--------------------------------------------------------------------------------
@@ -68,13 +72,13 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHexColor          >	m_oColor;
-			nullable<SimpleTypes::CThemeColor        >	m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeTint;
+			nullable<SimpleTypes::CHexColor> m_oColor;
+			nullable<SimpleTypes::CThemeColor> m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeTint;
 
-			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
-			nullable<OOX::Vml::CBackground>				m_oBackground;
+			nullable<OOX::Logic::CDrawing> m_oDrawing;
+			nullable<OOX::Vml::CBackground> m_oBackground;
 		};
 
 		//Word 2003 XML Reference

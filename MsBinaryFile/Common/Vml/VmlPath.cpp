@@ -326,13 +326,13 @@ namespace ODRAW
 		{
 			if(m_eRuler != rtOOXMLArcTo)
 			{
-				XmlUtils::CXmlNodes list;
+				std::vector<XmlUtils::CXmlNode> list;
 				Node.GetNodes(_T("pt"), list);
 				for(long i = 0; i < GetCountPoints(m_eRuler); i++)
 				{
 					Aggplus::POINT lpoint;
-					XmlUtils::CXmlNode pt;
-					list.GetAt(i, pt);
+					XmlUtils::CXmlNode & pt = list[i];
+
 					lpoint.x = (long)(pManager.GetValue(pt.GetAttribute(_T("x")))*WidthKoef);
 					lpoint.y = (long)(pManager.GetValue(pt.GetAttribute(_T("y")))*HeightKoef);
 					m_arPoints.push_back(lpoint);
@@ -789,14 +789,13 @@ namespace ODRAW
 		if(width == 0) width = (long)pManager.GetWidth();
 		if(height == 0) height = (long)pManager.GetHeight();
 
-		XmlUtils::CXmlNodes list;
+		std::vector<XmlUtils::CXmlNode> list;
 		PathNode.GetNodes(_T("*"), list);
 
-		for(int i = 0; i < list.GetCount(); i++)
+		for(size_t i = 0; i < list.size(); i++)
 		{
 			CSlice slice;
-			XmlUtils::CXmlNode node;
-			list.GetAt(i, node);
+			XmlUtils::CXmlNode & node = list[i];
 
 			slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
 
@@ -874,13 +873,12 @@ namespace ODRAW
 
 		return (*this);
 	}
-	void CPath::FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
+	void CPath::FromXML(std::vector<XmlUtils::CXmlNode>& list, NSGuidesOOXML::CFormulaManager& pManager)
 	{
 		m_arParts.clear();
-		for(long i = 0; i < list.GetCount(); i++)
+		for(size_t i = 0; i < list.size(); i++)
 		{
-			XmlUtils::CXmlNode path;
-			list.GetAt(i, path);
+			XmlUtils::CXmlNode & path = list[i];
 
 			CPartPath part;
 

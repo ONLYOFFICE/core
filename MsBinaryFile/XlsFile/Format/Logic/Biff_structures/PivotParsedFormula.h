@@ -41,9 +41,10 @@ class PivotParsedFormula: public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PivotParsedFormula)
 public:
 	PivotParsedFormula();
-
+	PivotParsedFormula& operator=(const std::wstring& value);
 	BiffStructurePtr clone();
-	void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	unsigned short	cSxName;
 };

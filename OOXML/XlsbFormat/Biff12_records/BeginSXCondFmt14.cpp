@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,6 +61,19 @@ namespace XLSB
 
         guid = STR::guid2bstr(clsid);
     }
+
+	void BeginSXCondFmt14::writeFields(XLS::CFRecord& record)
+	{
+		_GUID_ clsid;
+		STR::bstr2guid(guid, clsid);
+
+		record << FRTheader << clsid << sxcondfmtScope;
+
+		record.reserveNunBytes(4);
+
+		record << ipriority;
+
+	}
 
 } // namespace XLSB
 

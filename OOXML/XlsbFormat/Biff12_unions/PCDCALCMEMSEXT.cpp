@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndPCDCalcMemsExt>())
         {
-            m_BrtEndPCDCalcMemsExt = elements_.back();
+            m_bBrtEndPCDCalcMemsExt = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDCalcMemsExt = false;
 
-        return m_BrtBeginPCDCalcMemsExt && !m_arPCDCALCMEMEXT.empty() && m_BrtEndPCDCalcMemsExt;
+        return m_BrtBeginPCDCalcMemsExt && !m_arPCDCALCMEMEXT.empty() && m_bBrtEndPCDCalcMemsExt;
     }
+
+	const bool PCDCALCMEMSEXT::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDCalcMemsExt == nullptr)
+			m_BrtBeginPCDCalcMemsExt = XLS::BaseObjectPtr(new XLSB::BeginPCDCalcMemsExt());
+
+		if (m_BrtBeginPCDCalcMemsExt != nullptr)
+		{
+			auto ptrBrtBeginPCDCalcMemsExt = static_cast<XLSB::BeginPCDCalcMemsExt*>(m_BrtBeginPCDCalcMemsExt.get());
+
+			if (ptrBrtBeginPCDCalcMemsExt != nullptr)
+				ptrBrtBeginPCDCalcMemsExt->cCalcMems = m_arPCDCALCMEMEXT.size();
+
+			proc.mandatory(*m_BrtBeginPCDCalcMemsExt);
+		}
+
+		for (auto &item : m_arPCDCALCMEMEXT)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDCalcMemsExt>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

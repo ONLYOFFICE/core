@@ -265,8 +265,10 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
 	else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
-	else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
+	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
+	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
+		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
 
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
@@ -291,7 +293,12 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	if (pNative == NULL)
 		return false;
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	bool bIsSilentMode = false;
+	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF ||
+		_formatDst == NSDoctRenderer::DoctRendererFormat::IMAGE)
+		bIsSilentMode = true;
+
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);");
 
 	std::wstring strError;
@@ -303,7 +310,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 													  strError,
 													  sJsonParams);
 
-	if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
+	if (bIsSilentMode)
 		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
 
 	return bIsError;

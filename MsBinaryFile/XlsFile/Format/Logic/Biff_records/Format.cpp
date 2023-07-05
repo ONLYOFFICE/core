@@ -66,7 +66,10 @@ void Format::readFields(CFRecord& record)
 			record >> notUsed;
 		}
 		else
+		{
 			record >> ifmt;
+			ifmt_used = ifmt;
+		}
 	}
 
 	if (global_info->Version < 0x0600)
@@ -90,7 +93,7 @@ int Format::serialize(std::wostream & stream)
 
 	stream << L"<numFmt";
 	{
-		stream << L" numFmtId=\"" << ifmt << L"\"";
+		stream << L" numFmtId=\"" << ifmt_used << L"\"";
 		stream << L" formatCode=\"" << stFormat << L"\"";
 	}
 	stream << L"/>";

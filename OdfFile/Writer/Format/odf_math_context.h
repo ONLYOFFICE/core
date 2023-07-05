@@ -88,9 +88,11 @@ namespace cpdoccore {
 	namespace odf_writer
 	{
 		class odf_conversion_context;
-		class odf_style_context;
 		class odf_text_context;
 		class odf_drawing_context;
+
+		class odf_style_context;
+		typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 		class odf_math_context
 		{
@@ -98,7 +100,7 @@ namespace cpdoccore {
 			odf_math_context(odf_conversion_context* odf_context);
 			~odf_math_context();
 
-			void set_styles_context(odf_style_context* style_context);
+			void set_styles_context(odf_style_context_ptr style_context);
 
 			odf_drawing_context* drawing_context();
 			odf_text_context* text_context();

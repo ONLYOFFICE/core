@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,9 +66,11 @@ namespace XLSB
     {
         if (proc.optional<BeginSlicerCache>())
         {
-            m_BrtBeginSlicerCache = elements_.back();
+            m_bBrtBeginSlicerCache = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicerCache = false;
 
         if (proc.optional<ACUID>())
         {
@@ -108,18 +110,45 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheDef>())
         {
-            m_BrtEndSlicerCacheDef = elements_.back();
+            m_bBrtEndSlicerCacheDef = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheDef = false;
 
         if (proc.optional<EndSlicerCache>())
         {
-            m_BrtEndSlicerCache = elements_.back();
+            m_bBrtEndSlicerCache = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCache = false;
 
-        return m_BrtBeginSlicerCache && m_BrtBeginSlicerCacheDef && m_BrtEndSlicerCacheDef && m_BrtEndSlicerCache;
+        return m_bBrtBeginSlicerCache && m_BrtBeginSlicerCacheDef && m_bBrtEndSlicerCacheDef && m_bBrtEndSlicerCache;
     }
+
+	const bool SLICERCACHE::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginSlicerCache>();
+
+		if (m_BrtBeginSlicerCacheDef != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerCacheDef);
+
+		if (m_BrtSlicerCachePivotTables != nullptr)
+			proc.mandatory(*m_BrtSlicerCachePivotTables);
+
+		if (m_slicerCacheData != nullptr)
+			proc.mandatory(*m_slicerCacheData);
+
+		if (m_FRTSLICERCACHE != nullptr)
+			proc.mandatory(*m_FRTSLICERCACHE);
+
+		proc.mandatory<EndSlicerCacheDef>();
+
+		proc.mandatory<EndSlicerCache>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

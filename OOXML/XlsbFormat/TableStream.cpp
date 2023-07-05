@@ -31,6 +31,7 @@
  */
 #include "TableStream.h"
 
+#include "StylesStream.h"
 #include "Biff12_records/CommonRecords.h"
 #include "Biff12_unions/TABLE.h"
 
@@ -79,6 +80,14 @@ const bool TableStream::loadContent(BinProcessor& proc)
                 }break;
             }
 	}
+
+	return true;
+}
+
+const bool TableStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_TABLE != nullptr)
+		proc.mandatory(*m_TABLE);
 
 	return true;
 }

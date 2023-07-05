@@ -37,6 +37,7 @@
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
 
+#include "../Format/odfcontext.h"
 #include "../Format/style_text_properties.h"
 #include "../Format/style_chart_properties.h"
 
@@ -112,6 +113,10 @@ namespace cpdoccore {
 		void oox_plot_area::set_no_local_table(bool val)
 		{
 			no_used_local_tables_ = val;
+		}
+		void oox_plot_area::set_data_table(odf_reader::chart::simple & content)
+		{
+			data_table_content_ = content;
 		}
 		void oox_plot_area::reset_cross_axis()//обязательно после всех добавлений
 		{
@@ -261,6 +266,72 @@ namespace cpdoccore {
 						for (size_t i = 0; i < axis_.size(); i++)
 						{
 							axis_[i]->oox_serialize(CP_XML_STREAM());
+						}
+					}
+					if (data_table_content_.bEnabled)
+					{
+						_CP_OPT(bool) boolVal;
+
+						CP_XML_NODE(L"c:dTable")
+						{
+							odf_reader::GetProperty(data_table_content_.properties_, L"show-horizontal-border", boolVal);
+							if (boolVal)
+							{
+								CP_XML_NODE(L"c:showHorzBorder")
+								{
+									CP_XML_ATTR(L"val", *boolVal);
+								}
+							}
+							odf_reader::GetProperty(data_table_content_.properties_, L"show-vertical-border", boolVal);
+							if (boolVal)
+							{
+								CP_XML_NODE(L"c:showVertBorder")
+								{
+									CP_XML_ATTR(L"val", *boolVal);
+								}
+							}
+							odf_reader::GetProperty(data_table_content_.properties_, L"show-outline", boolVal);
+							if (boolVal)
+							{
+								CP_XML_NODE(L"c:showOutline")
+								{
+									CP_XML_ATTR(L"val", *boolVal);
+								}
+							}
+							odf_reader::GetProperty(data_table_content_.properties_, L"show-keys", boolVal);
+							if (boolVal)
+							{
+								CP_XML_NODE(L"c:showKeys")
+								{
+									CP_XML_ATTR(L"val", *boolVal);
+								}
+							}
+							
+							oox_chart_shape shape_table;
+							shape_table.set(data_table_content_.graphic_properties_, data_table_content_.fill_);
+							shape_table.oox_serialize(CP_XML_STREAM());
+							
+							if (data_table_content_.text_properties_)
+							{
+								CP_XML_NODE(L"c:txPr")
+								{
+									CP_XML_NODE(L"a:bodyPr") {}
+									CP_XML_NODE(L"a:lstStyle") {}
+
+									CP_XML_NODE(L"a:p")
+									{
+										CP_XML_NODE(L"a:pPr")
+										{
+											CP_XML_NODE(L"a:defRPr")
+											{
+												//odf_reader::fonts_container & fonts = context.fontContainer();
+												odf_reader::fonts_container fonts;
+												data_table_content_.text_properties_->oox_serialize(CP_XML_STREAM(), true, fonts);
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 					shape.oox_serialize(CP_XML_STREAM());

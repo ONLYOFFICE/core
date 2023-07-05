@@ -74,16 +74,38 @@ void PtgExtraArray::load(CFRecord& record)
     }
 	for(int i = 0; i < (cols + 1) * (rows + 1); ++i)
 	{
-		if (record.getRdPtr() >= record.getDataSize()) 
+		if (record.getRdPtr() >= record.getDataSize())
 			break;
 		unsigned char rec_type;
 		record >> rec_type;
 		SerArPtr ser(SerAr::createSerAr(rec_type));
-		record >> *ser;
-		array_.push_back(ser);
+        if(ser.get())
+        {
+            record >> *ser;
+            array_.push_back(ser);
+        }
 	}
 }
 
+void PtgExtraArray::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		DColunByteU cols_xls;
+		DRw rows_xls;
+		cols_xls = cols;
+		rows_xls = rows;
+		record << cols_xls << rows_xls;
+	}
+	else
+	{
+		record << cols << rows;
+	}
+	for (auto& item : array_)
+	{
+		record << *item;
+	}
+}
 
 const std::wstring PtgExtraArray::toString() const
 {

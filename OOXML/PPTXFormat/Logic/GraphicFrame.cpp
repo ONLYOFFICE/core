@@ -289,14 +289,13 @@ namespace PPTX
 		{
 			bool result = false;
 			
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes((L"*"), oNodes))
 			{
-				int count = oNodes.GetCount();
-				for (int i = 0; i < count; ++i)
+				size_t count = oNodes.size();
+				for (size_t i = 0; i < count; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -395,14 +394,14 @@ namespace PPTX
 
 			XmlMacroReadAttributeBase(node, L"macro",macro);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
-				int count = oNodes.GetCount();
-				for (int i = 0; i < count; ++i)
+				size_t count = oNodes.size();
+				for (size_t i = 0; i < count; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
 					std::wstring strName		= XmlUtils::GetNameNoNS(oNode.GetName());
 					std::wstring strNamespace	= XmlUtils::GetNamespace(oNode.GetName());
 

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,6 +65,17 @@ namespace XLSB
             array.push_back(frtref);
         }
     }
+
+	void FRTRefs::save(XLS::CFRecord& record)
+	{
+		cref = array.size();
+		record << cref;
+
+		for (auto& item : array)
+		{
+			record << item;
+		}
+	}
 
 } // namespace XLSB
 

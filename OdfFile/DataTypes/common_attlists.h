@@ -335,7 +335,6 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(unsigned int) style_rotation_angle_;
-
 };
 
 // common-num-format-attlist

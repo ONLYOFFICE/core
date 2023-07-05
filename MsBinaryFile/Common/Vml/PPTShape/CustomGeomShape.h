@@ -93,7 +93,7 @@ namespace NSCustomVML
         std::vector<Aggplus::POINT>		m_arVertices;
         std::vector<CSegment>			m_arSegments;
         std::vector<CGuide>				m_arGuides;
-        std::vector<LONG>*				m_pAdjustValues;
+        std::vector<long>*				m_pAdjustValues;
         std::vector<Aggplus::POINT>		m_arConnectionSites;
 		std::vector<Aggplus::RECT>		m_arInscribe;
         std::vector<double>				m_arConnectionSitesDir;
@@ -128,7 +128,7 @@ namespace NSCustomVML
 		void addGuide(CGuide & oInfo);
 		void addAdjust(int lIndex, int lValue);
 
-		void SetAdjusts(std::vector<LONG>* pList);
+		void SetAdjusts(std::vector<long>* pList);
 		void ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager);
 	};
 }

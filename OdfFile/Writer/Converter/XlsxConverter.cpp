@@ -52,6 +52,7 @@
 #include "../../../OOXML/XlsxFormat/Pivot/PivotTable.h"
 #include "../../../OOXML/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../../OOXML/XlsxFormat/Pivot/PivotCacheRecords.h"
+#include "../../../OOXML/XlsxFormat/Worksheets/Sparkline.h"
 
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Media/ActiveX.h"
@@ -168,6 +169,7 @@ bool XlsxConverter::convertDocument()
 
 	ods_context->start_document();
 
+	convert_meta(xlsx_document->m_pApp, xlsx_document->m_pCore);
 	convert_styles();
 
 	convert_sheets();
@@ -184,14 +186,12 @@ odf_writer::office_element_ptr XlsxConverter::convert_sheet(int id, const std::w
 	if (!xlsx_document) return odf_writer::office_element_ptr();
 	if (id < 0 && id > (int)xlsx_document->m_arWorksheets.size()) return odf_writer::office_element_ptr();
 
-	ods_context->create_object();
 	ods_context->start_sheet();
 	ods_context->current_table()->set_table_name(table_name);
 	ods_context->set_repeat_at_lasts(false);
 	
 	convert(xlsx_document->m_arWorksheets[id]);
 	ods_context->end_sheet();
-	ods_context->end_object();
 
 	return ods_context->get_current_object_element();
 }
@@ -210,6 +210,8 @@ void XlsxConverter::convert_sheets()
 		{
 			ods_context->set_tables_structure_lock(pWorkbook->m_oWorkbookProtection->m_oLockStructure->ToBool());
 		}
+
+		convert(pWorkbook->m_oFileSharing.GetPointer());
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 		
 		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(pWorkbook);
@@ -236,14 +238,14 @@ void XlsxConverter::convert_sheets()
 				}
 			}
 		}
-		if(pWorkbook->m_oBookViews.IsInit())
+		if (pWorkbook->m_oBookViews.IsInit())
 		{	
 			for (size_t i = 0; i < pWorkbook->m_oBookViews->m_arrItems.size(); i++)
 			{
 				convert(pWorkbook->m_oBookViews->m_arrItems[i]);
 			}
 		}
-		if(pWorkbook->m_oSheets.IsInit())
+		if (pWorkbook->m_oSheets.IsInit())
 		{				
 			for(size_t i = 0, length = pWorkbook->m_oSheets->m_arrItems.size(); i < length; ++i)
 			{
@@ -352,7 +354,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 	//todooo для оптимизации - перенести мержи в начало
 
-	//выносные части таблицы
 	if (oox_sheet->m_oTableParts.IsInit())
 	{
 		for (size_t i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
@@ -377,30 +378,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 	convert(oox_sheet->m_oDataValidations.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	//колонки
-		if (oox_sheet->m_oColBreaks.IsInit())
+	if (oox_sheet->m_oColBreaks.IsInit())
+	{
+		for (size_t i = 0; i < oox_sheet->m_oColBreaks->m_arrItems.size(); i++)
 		{
-			for (size_t i = 0; i < oox_sheet->m_oColBreaks->m_arrItems.size(); i++)
-			{
-				OOX::Spreadsheet::CBreak *break_ = dynamic_cast<OOX::Spreadsheet::CBreak*>(oox_sheet->m_oColBreaks->m_arrItems[i]);
-				if (break_->m_oId.IsInit())
-					ods_context->current_table()->add_column_break(break_->m_oId->GetValue());
-			}
-		}		
-		ods_context->start_columns();
-		for (size_t col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.size(); col++)
-		{
-			convert(oox_sheet->m_oCols->m_arrItems[col]);
+			OOX::Spreadsheet::CBreak* break_ = dynamic_cast<OOX::Spreadsheet::CBreak*>(oox_sheet->m_oColBreaks->m_arrItems[i]);
+			if (break_->m_oId.IsInit())
+				ods_context->current_table()->add_column_break(break_->m_oId->GetValue());
 		}
-		ods_context->end_columns();
+	}
+	ods_context->start_columns();
+	for (size_t col = 0; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.size(); col++)
+	{
+		convert(oox_sheet->m_oCols->m_arrItems[col]);
+	}
+	ods_context->end_columns();
 
-	//мержи
 	for (size_t mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.size(); mrg++)
 	{
 		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
 			ods_context->add_merge_cells(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get());
 	}
-	//строки
 	if (oox_sheet->m_oSheetData.IsInit() )
 	{
 		if (oox_sheet->m_oRowBreaks.IsInit())
@@ -441,13 +439,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oOleObjects.GetPointer(), oox_sheet);
 	convert(oox_sheet->m_oControls.GetPointer(), oox_sheet);
 
-	//сортировки
 	//convert(oox_sheet->m_oSortState.GetPointer());
 	
-	//автофильтры
 	convert(oox_sheet->m_oAutofilter.GetPointer());
 
-	//условное форматирование
 	if (!oox_sheet->m_arrConditionalFormatting.empty() || oox_sheet->m_oExtLst.IsInit())
 	{
 		std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*> mapSorted;
@@ -503,19 +498,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 			}
 		}
 //--------------------------------------------------------------------------
-		ods_context->start_conditional_formats();
-		
-		for (size_t fmt =0; fmt < arUnsorted.size(); fmt++)
+
+		if (arUnsorted.size() + mapSorted.size() > 0)
 		{
-			convert(arUnsorted[fmt]);
+			ods_context->start_conditional_formats();
+
+			for (size_t fmt = 0; fmt < arUnsorted.size(); fmt++)
+			{
+				convert(arUnsorted[fmt]);
+			}
+
+			for (std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*>::iterator it = mapSorted.begin(); it != mapSorted.end(); ++it)
+			{
+				convert(it->second);
+			}
+			ods_context->end_conditional_formats();
 		}
-		
-		for (std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*>::iterator it = mapSorted.begin(); 
-			it != mapSorted.end(); ++it)
-		{
-			convert(it->second);
-		}
-		ods_context->end_conditional_formats();
 	}
 	OoxConverter::convert(oox_sheet->m_oExtLst.GetPointer());
 
@@ -1694,9 +1692,25 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 		ods_context->current_table()->set_table_tab_color(odf_color);
 	}
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CFileSharing *oox_file_sharing)
+{
+	if (!oox_file_sharing) return;
+
+	ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
+
+	if (oox_file_sharing->m_oReadOnlyRecommended.get_value_or(false))
+	{
+		ods_context->settings_context()->add_config_content_item(L"LoadReadonly", L"boolean", L"true");
+	}
+	if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() && 
+		oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
+	{
+		ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+	}
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 {
-	if (!oox_book_views)return;
+	if (!oox_book_views) return;
 	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
@@ -2542,7 +2556,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CBorderProp *borderProp, std::wstr
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::color) & odf_color)//стоит ли сюда тащить odf_writer type???
 {
-	if (!color)return;
+	odf_color = boost::none;
+
+	if (!color) return;
 
 	unsigned char ucA = 0, ucR =0, ucG =0, ucB = 0;
 	bool result = false;
@@ -3309,13 +3325,72 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_po
 	if (oox_from_to->m_oColOff.IsInit()) pos->col_off = oox_from_to->m_oColOff->GetValue();//pt
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CSparklineGroups *sparkline)
+void XlsxConverter::convert(OOX::Spreadsheet::CSparklineGroups *sparklineGroups)
 {
-	if (!sparkline)return;
+	if (!sparklineGroups) return;
+
+	ods_context->current_table()->start_sparkline_groups();
+		for (size_t i = 0; i < sparklineGroups->m_arrItems.size(); ++i)
+		{
+			ods_context->current_table()->start_sparkline_group();
+				convert(sparklineGroups->m_arrItems[i]);
+			ods_context->current_table()->end_sparkline_group();
+		}
+	ods_context->current_table()->end_sparkline_groups();
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CSparklineGroup* sparklineGroup)
+{
+	if (!sparklineGroup) return;
+
+	if (sparklineGroup->m_oUId.IsInit()) ods_context->current_table()->set_sparkline_id(*sparklineGroup->m_oUId);
+	if (sparklineGroup->m_oManualMax.IsInit()) ods_context->current_table()->set_sparkline_manual_max(sparklineGroup->m_oManualMax->GetValue());
+	if (sparklineGroup->m_oManualMin.IsInit()) ods_context->current_table()->set_sparkline_manual_min(sparklineGroup->m_oManualMin->GetValue());
+	if (sparklineGroup->m_oLineWeight.IsInit()) ods_context->current_table()->set_sparkline_line_weight(sparklineGroup->m_oLineWeight->GetValue());
+	if (sparklineGroup->m_oType.IsInit()) ods_context->current_table()->set_sparkline_type(sparklineGroup->m_oType->GetValue());
+
+	if (sparklineGroup->m_oDateAxis.IsInit()) ods_context->current_table()->set_sparkline_date_axis(sparklineGroup->m_oDateAxis->ToBool());
+	if (sparklineGroup->m_oDisplayEmptyCellsAs.IsInit()) ods_context->current_table()->set_sparkline_emptyCellsAs(*sparklineGroup->m_oDisplayEmptyCellsAs);
+	if (sparklineGroup->m_oMarkers.IsInit()) ods_context->current_table()->set_sparkline_markers(sparklineGroup->m_oMarkers->ToBool());
+	if (sparklineGroup->m_oHigh.IsInit()) ods_context->current_table()->set_sparkline_high(sparklineGroup->m_oHigh->ToBool());
+	if (sparklineGroup->m_oLow.IsInit()) ods_context->current_table()->set_sparkline_low(sparklineGroup->m_oLow->ToBool());
+	if (sparklineGroup->m_oFirst.IsInit()) ods_context->current_table()->set_sparkline_first(sparklineGroup->m_oFirst->ToBool());
+	if (sparklineGroup->m_oLast.IsInit()) ods_context->current_table()->set_sparkline_last(sparklineGroup->m_oLast->ToBool());
+	if (sparklineGroup->m_oNegative.IsInit()) ods_context->current_table()->set_sparkline_negative(sparklineGroup->m_oNegative->ToBool());
+	if (sparklineGroup->m_oDisplayXAxis.IsInit()) ods_context->current_table()->set_sparkline_display_xAxis(sparklineGroup->m_oDisplayXAxis->ToBool());
+	if (sparklineGroup->m_oDisplayHidden.IsInit()) ods_context->current_table()->set_sparkline_display_hidden(sparklineGroup->m_oDisplayHidden->ToBool());
+	if (sparklineGroup->m_oRightToLeft.IsInit()) ods_context->current_table()->set_sparkline_rtl(sparklineGroup->m_oRightToLeft->ToBool());
+	if (sparklineGroup->m_oMinAxisType.IsInit()) ods_context->current_table()->set_sparkline_minAxisType(sparklineGroup->m_oMinAxisType->GetValue());
+	if (sparklineGroup->m_oMaxAxisType.IsInit()) ods_context->current_table()->set_sparkline_maxAxisType(sparklineGroup->m_oMaxAxisType->GetValue());
+
+	_CP_OPT(odf_types::color) color;
+	convert(sparklineGroup->m_oColorSeries.GetPointer(), color); ods_context->current_table()->set_sparkline_color_series(color);
+	convert(sparklineGroup->m_oColorNegative.GetPointer(), color); ods_context->current_table()->set_sparkline_color_negative(color);
+	convert(sparklineGroup->m_oColorAxis.GetPointer(), color); ods_context->current_table()->set_sparkline_color_axis(color);
+	convert(sparklineGroup->m_oColorMarkers.GetPointer(), color); ods_context->current_table()->set_sparkline_color_markers(color);
+	convert(sparklineGroup->m_oColorFirst.GetPointer(), color); ods_context->current_table()->set_sparkline_color_first(color);
+	convert(sparklineGroup->m_oColorLast.GetPointer(), color); ods_context->current_table()->set_sparkline_color_last(color);
+	convert(sparklineGroup->m_oColorHigh.GetPointer(), color); ods_context->current_table()->set_sparkline_color_high(color);
+	convert(sparklineGroup->m_oColorLow.GetPointer(), color); ods_context->current_table()->set_sparkline_color_low(color);
+
+	convert(sparklineGroup->m_oSparklines.GetPointer());
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CSparklines *sparklines)
+{
+	if (!sparklines) return;
+
+	ods_context->current_table()->start_sparklines();
+		for (size_t i = 0; i < sparklines->m_arrItems.size(); ++i)
+		{
+			ods_context->current_table()->start_sparkline();
+				ods_context->current_table()->set_sparkline_range(*sparklines->m_arrItems[i]->m_oRef);
+				ods_context->current_table()->set_sparkline_cell(*sparklines->m_arrItems[i]->m_oSqRef);
+			ods_context->current_table()->end_sparkline();
+		}
+	ods_context->current_table()->end_sparklines();
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CAltTextTable *alt_text)
 {
-	if (!alt_text)return;
+	if (!alt_text) return;
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_fmt)
@@ -3326,9 +3401,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 	{
 		ods_context->current_table()->start_conditional_format(oox_cond_fmt->m_oSqRef.get());
 
-		for (size_t i=0; i< oox_cond_fmt->m_arrItems.size(); i++)
+		for (size_t i = 0; i < oox_cond_fmt->m_arrItems.size(); i++)
+		{
 			convert(oox_cond_fmt->m_arrItems[i]);//rule
-		
+		}
 		ods_context->current_table()->end_conditional_format();
 	}
 }

@@ -60,12 +60,17 @@ public:
 	void start_view	();
 	void end_view	();
 	void set_current_view(int id);
+	void add_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
 
 	void start_table(std::wstring name);
 	void end_table	();
 
-	void add_property(std::wstring name, std::wstring type, std::wstring value);
-	void add_config_content_item(std::wstring name, std::wstring type, std::wstring value);
+	office_element_ptr create_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+	
+	void add_config_content_item(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+	void add_common_views_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+
+	void set_modify_info(const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count);
 private:
 	struct _table
 	{
@@ -80,6 +85,7 @@ private:
 
 	std::vector<_view>				views_;
 
+	std::vector<office_element_ptr>	common_views_content_;
 	std::vector<office_element_ptr>	config_content_;
 	odf_conversion_context*			odf_context_;
 

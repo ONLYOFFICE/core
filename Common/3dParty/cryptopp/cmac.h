@@ -10,6 +10,13 @@
 #include "seckey.h"
 #include "secblock.h"
 
+/// \brief Enable CMAC and wide block ciphers
+/// \details CMAC is only defined for AES. The library can support wide
+///  block ciphers like Kaylna and Threefish since we know the polynomials.
+#ifndef CRYPTOPP_CMAC_WIDE_BLOCK_CIPHERS
+# define CRYPTOPP_CMAC_WIDE_BLOCK_CIPHERS 1
+#endif  // CRYPTOPP_CMAC_WIDE_BLOCK_CIPHERS
+
 NAMESPACE_BEGIN(CryptoPP)
 
 /// \brief CMAC base implementation
@@ -17,6 +24,8 @@ NAMESPACE_BEGIN(CryptoPP)
 class CRYPTOPP_DLL CRYPTOPP_NO_VTABLE CMAC_Base : public MessageAuthenticationCode
 {
 public:
+
+	virtual ~CMAC_Base() {}
 	CMAC_Base() : m_counter(0) {}
 
 	void UncheckedSetKey(const byte *key, unsigned int length, const NameValuePairs &params);
@@ -25,6 +34,7 @@ public:
 	unsigned int DigestSize() const {return GetCipher().BlockSize();}
 	unsigned int OptimalBlockSize() const {return GetCipher().BlockSize();}
 	unsigned int OptimalDataAlignment() const {return GetCipher().OptimalDataAlignment();}
+	std::string AlgorithmProvider() const {return GetCipher().AlgorithmProvider();}
 
 protected:
 	friend class EAX_Base;

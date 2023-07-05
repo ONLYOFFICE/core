@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndTableStyles>())
         {
-            m_BrtEndTableStyles = elements_.back();
+			m_bBrtEndTableStyles = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTableStyles = false;
 
-        return m_BrtBeginTableStyles && !m_arTABLESTYLE.empty() && m_BrtEndTableStyles;
+        return m_BrtBeginTableStyles && !m_arTABLESTYLE.empty() && m_bBrtEndTableStyles;
     }
+
+	const bool TABLESTYLES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginTableStyles != nullptr)
+			proc.mandatory(*m_BrtBeginTableStyles);
+
+		for (auto &item : m_arTABLESTYLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndTableStyles>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

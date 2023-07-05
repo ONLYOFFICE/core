@@ -47,20 +47,17 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeOfficeScripts;
-    
+    static const ElementType type = typeOfficeScripts;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array	content_;
+    office_element_ptr_array content_;
 
-    // office-event-listeners ?
-    
+    // office-event-listeners ?    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_scripts);
 
 class office_script : public office_element_impl<office_script>

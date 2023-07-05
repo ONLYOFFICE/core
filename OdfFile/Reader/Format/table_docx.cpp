@@ -202,7 +202,7 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
 	_Wostream << L"<w:tbl>";    
 
-	Context.start_changes(); //TblPrChange
+	Context.start_changes(false); //TblPrChange
 	
 	Context.get_table_context().start_table(tableStyleName);
 

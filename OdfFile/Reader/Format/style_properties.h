@@ -46,7 +46,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-	// style:properties
+// style:properties
 class style_properties : public office_element_impl<style_properties>
 {
 public:
@@ -61,12 +61,14 @@ public:
 	paragraph_format_properties paragraph_properties_;
 	graphic_format_properties graphic_properties_;
 	chart_format_properties chart_properties_;
-	
+	drawing_page_properties drawing_page_properties_;
+
 	table_format_properties table_properties_;
 	style_table_row_properties_attlist table_row_properties_;
 	style_table_column_properties_attlist table_column_properties_;
 	style_table_cell_properties_attlist	table_cell_properties_;
-
+	
+	office_element_ptr text_list_style_;
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

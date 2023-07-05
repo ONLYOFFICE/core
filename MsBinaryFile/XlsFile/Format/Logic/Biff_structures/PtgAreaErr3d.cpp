@@ -58,6 +58,18 @@ void PtgAreaErr3d::loadFields(CFRecord& record)
 
 }
 
+void PtgAreaErr3d::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+
+	record << ixti;
+
+	if (global_info->Version < 0x0800)
+		record.reserveNunBytes(8); // unused
+	else
+		record.reserveNunBytes(12); // unused
+
+}
 
 void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,12 +57,23 @@ namespace XLSB
 
     void Cell::load(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT32 flags;
         record >> column >> flags;
 
         iStyleRef   = GETBITS(flags, 0, 23);
         fPhShow     = GETBIT(flags, 24);
     }
+
+	void Cell::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+		record << column;
+
+		SETBITS(flags, 0, 23, iStyleRef);
+		SETBIT(flags, 24, fPhShow);
+
+		record << flags;
+	}
 
 } // namespace XLSB
 

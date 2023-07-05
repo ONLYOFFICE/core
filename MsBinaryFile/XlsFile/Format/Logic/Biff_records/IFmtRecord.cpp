@@ -57,7 +57,7 @@ void IFmtRecord::readFields(CFRecord& record)
 
 	record >> ifmt;
 	
-	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 }
 
 } // namespace XLS

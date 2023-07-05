@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,12 +70,27 @@ namespace XLSB
 
         if (proc.optional<EndPName>())
         {
-            m_BrtEndPName = elements_.back();
+			m_bBrtEndPName = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPName = false;
 
-        return m_BrtBeginPName && m_BrtEndPName;
+        return m_BrtBeginPName && m_bBrtEndPName;
     }
+
+	const bool PNAME::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPName != nullptr)
+			proc.mandatory(*m_BrtBeginPName);
+
+		if (m_PNPAIRS != nullptr)
+			proc.mandatory(*m_PNPAIRS);
+
+		proc.mandatory<EndPName>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

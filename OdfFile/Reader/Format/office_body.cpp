@@ -137,8 +137,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 			oox::_oox_fill fill;
 			
 			Compute_GraphicFill(layout_properties->attlist_.common_draw_fill_attlist_, 
-								layout_properties->style_background_image_, 
-								Context.root()->odf_context().drawStyles(), fill);
+								layout_properties->style_background_image_, Context.root(), fill);
 
 			if (layout_properties->attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
 			{

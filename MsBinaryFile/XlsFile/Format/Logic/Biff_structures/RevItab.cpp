@@ -65,6 +65,19 @@ void RevItab::load(CFRecord& record)
 			break;
 	}
 }
+void RevItab::save(CFRecord& record)
+{
+	record << type1;
+	switch (type)
+	{
+	case 0x00:
+		record << tabid;
+		break;
+	case 0x01:
+		record << sheet;
+		break;
+	}
+}
 
 
 } // namespace XLS

@@ -37,7 +37,7 @@
 
 namespace CRYPTO
 {
-struct Version : public XLS::BiffStructure_NoVtbl
+struct Version
 {
 	unsigned short vMajor;
 	unsigned short vMinor;

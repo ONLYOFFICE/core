@@ -62,9 +62,15 @@ namespace DocFileFormat
             Formulas.push_back((L"sum 10800 0 @14"));
             Formulas.push_back((L"sum @14 10800 0"));
 
-            AdjustmentValues	=	(L"10800");
+			Adjustments.push_back(10800);
+
             ConnectorLocations	=	(L"21600,0;0,10800;21600,21600;@0,10800");
-            ConnectorAngles		=	(L"270,180,90,0");
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	(L"@12,@15,@0,@16");
 
 			Handle one;

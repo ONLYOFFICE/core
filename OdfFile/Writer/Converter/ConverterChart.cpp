@@ -307,9 +307,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 			case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)	ct_plotArea->m_Items[i]);break;			
 		}
 	}
-	if (ct_plotArea->m_dTable)
-	{
-	}
+	convert(ct_plotArea->m_dTable);
+
 	convert(ct_plotArea->m_spPr.GetPointer());
 	if (chart3D/* == false*/)
 	{
@@ -320,6 +319,26 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 		odf_context()->chart_context()->end_element();
 	}
 }
+void OoxConverter::convert(OOX::Spreadsheet::CT_DTable *dTable)
+{
+	if (dTable == NULL)return;
+
+	odf_context()->chart_context()->start_data_table();
+	
+	if (dTable->m_showHorzBorder.IsInit())
+		odf_context()->chart_context()->set_showHorzBorder(*dTable->m_showHorzBorder);
+	if (dTable->m_showVertBorder.IsInit())
+		odf_context()->chart_context()->set_m_showVertBorder(*dTable->m_showVertBorder);
+	if (dTable->m_showOutline.IsInit())
+		odf_context()->chart_context()->set_showOutline(*dTable->m_showOutline);
+	if (dTable->m_showKeys.IsInit())
+		odf_context()->chart_context()->set_showKeys(*dTable->m_showKeys);
+
+	convert(dTable->m_spPr.GetPointer());
+	convert(dTable->m_txPr.GetPointer());
+	odf_context()->chart_context()->end_element();
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 {
 	if (axis == NULL)return;
@@ -1109,9 +1128,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 	if (dPt.empty())
 	{
 		odf_context()->chart_context()->start_data_point_series(-1);
-			convert(marker);
+			convert(marker, true);
 		odf_context()->chart_context()->end_element();
-
+		
+		convert(marker, false);
 		return;
 	}
 
@@ -1128,12 +1148,12 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 		if (set_point - current_point > 0)
 		{
 			odf_context()->chart_context()->start_data_point_series(set_point - current_point);
-				convert(marker);
+				convert(marker, true); 
 			odf_context()->chart_context()->end_element();
 		}
 		odf_context()->chart_context()->start_data_point_series(1);
 			convert(dPt[i]->m_spPr.GetPointer());
-			convert(dPt[i]->m_marker);
+			convert(dPt[i]->m_marker, !dPt[i]->m_spPr.IsInit()); // брать цвета маркера, если нет цвета точки
 			
 			if (dPt[i]->m_explosion.IsInit())
 					odf_context()->chart_context()->set_series_pie_explosion(*dPt[i]->m_explosion);
@@ -1148,11 +1168,12 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 	if (count_point - current_point > 0)
 	{
 		odf_context()->chart_context()->start_data_point_series(count_point - current_point);
-			convert(marker);
+			convert(marker, true);
 		odf_context()->chart_context()->end_element();
 	}
+	convert(marker, false);
 }
-void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker)
+void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, bool bFill)
 {
 	if (marker == NULL) return;
 
@@ -1160,7 +1181,11 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker)
 			odf_context()->chart_context()->set_marker_type(marker->m_symbol->GetValue());
 	if (marker->m_size.IsInit())
 			odf_context()->chart_context()->set_marker_size(*marker->m_size);
-	convert(marker->m_spPr.GetPointer());
+	//в оо нету отдельного понятия цвета маркера и точки данных
+	if (bFill)
+	{
+		convert(marker->m_spPr.GetPointer());
+	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_DLbls* ser_lbls)
 {
@@ -1345,12 +1370,19 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ExternalData *external_data)
 		if (S_OK == oCOfficeUtils.ExtractToDirectory(media->filename().GetPath(), sTempUnpackedXLSX, NULL, 0))
 		{
 			XlsxConverter converter(sTempUnpackedXLSX, false);
+			
+			converter.odf_context()->create_object();
+			converter.odf_context()->set_styles_context(odf_context()->styles_context());
+
+			converter.convert_styles();
+
 			odf_writer::office_element_ptr local_table = converter.convert_sheet(0, L"local-table");
 			if (local_table)
 			{
 				odf_context()->chart_context()->set_local_table(local_table);
 				bConvertLocal = true;
 			}
+			converter.odf_context()->end_object();
 		}
 		NSDirectory::DeleteDirectory(sTempUnpackedXLSX);
 	}

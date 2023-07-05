@@ -53,6 +53,7 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
+	_UINT16			ifmt_used;
 	_UINT16			ifmt;
 	std::wstring	stFormat;
 };

@@ -43,14 +43,13 @@ public:
 
     virtual void LoadFromXml(XmlUtils::CXmlNode& node)
     {
-        XmlUtils::CXmlNodes oNodesIds;
+        std::vector<XmlUtils::CXmlNode> oNodesIds;
         node.GetChilds(oNodesIds);
 
-        int nCount = oNodesIds.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oNodesIds.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode _node;
-            oNodesIds.GetAt(i, _node);
+            XmlUtils::CXmlNode& _node = oNodesIds[i];
 
             std::wstring sType = _node.GetAttribute("SourceId");
             if (!sType.empty())
@@ -138,12 +137,11 @@ public:
     {
         m_valid = true;
 
-        XmlUtils::CXmlNodes oNodes = node.GetNodes(L"Transform");
-        int nCount = oNodes.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        std::vector<XmlUtils::CXmlNode> oNodes = node.GetNodes(L"Transform");
+        size_t nCount = oNodes.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode nodeTransform;
-            oNodes.GetAt(i, nodeTransform);
+            XmlUtils::CXmlNode &nodeTransform = oNodes[i];
 
             IXmlTransform* pTransform = IXmlTransform::GetFromType(nodeTransform.GetAttributeA("Algorithm"));
             if (NULL == pTransform)

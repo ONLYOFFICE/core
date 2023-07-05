@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,6 +72,14 @@ namespace XLSB
 
         return m_BrtCFVO14 != nullptr;
     }
+
+	const bool uCFVO14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtCFVO14 != nullptr)
+			proc.mandatory(*m_BrtCFVO14);
+
+		return true;
+	}
 
 } // namespace XLSB
 

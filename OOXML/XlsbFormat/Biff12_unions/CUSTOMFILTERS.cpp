@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndCustomFilters>())
         {
-            m_BrtEndCustomFilters = elements_.back();
+            m_bBrtEndCustomFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCustomFilters = false;
 
-        return m_BrtBeginCustomFilters && m_BrtEndCustomFilters;
+        return m_BrtBeginCustomFilters && m_bBrtEndCustomFilters;
     }
+
+	const bool CUSTOMFILTERS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginCustomFilters != nullptr)		
+			proc.mandatory(*m_BrtBeginCustomFilters);
+
+		for (auto &item : m_arBrtCustomFilter)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndCustomFilters>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -208,7 +208,7 @@ namespace SVG
 
 		const wchar_t* buf = Rgb.c_str();
 		size_t len = Rgb.length();
-		for ( size_t i = 0; i < len; ++i )
+		for ( size_t i = 0; i < len && IndCol < 4; ++i )
 		{
 			if ( isdigit ( buf [ i ] ) )
 			{
@@ -247,7 +247,7 @@ namespace SVG
 		if (0 == Color[3])
 			return -2;
 
-		return ( ( (int) (Color [ 2 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 1 ]) );
+		return ( ( (int) (Color [ 2 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 0 ]) );
 	}
 	long ColorParser::ColorFromHexString(const std::wstring& Hex)
 	{

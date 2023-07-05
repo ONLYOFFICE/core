@@ -2133,6 +2133,23 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	{
 		m_oWorkbook.m_oOleSize = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookTypes::FileSharing == type)
+	{
+		m_oWorkbook.m_oFileSharing.Init();
+		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+	}
+	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
+	{	
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oExternalLinksAutoRefresh = m_oBufferedStream.GetBool();
+
+		pOfficeArtExtension->m_sUri = L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:xxlnp=\"http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_bMacroRead = true;
@@ -2613,6 +2630,45 @@ int BinaryWorkbookTableReader::ReadConnectionWebPr(BYTE type, long length, void*
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadFileSharing(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CFileSharing* pFileSharing = static_cast<OOX::Spreadsheet::CFileSharing*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerFileSharing::AlgorithmName == type)
+	{
+		pFileSharing->m_oAlgorithmName.Init();
+		pFileSharing->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerFileSharing::SpinCount == type)
+	{
+		pFileSharing->m_oSpinCount.Init();
+		pFileSharing->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerFileSharing::HashValue == type)
+	{
+		pFileSharing->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::SaltValue == type)
+	{
+		pFileSharing->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::Password == type)
+	{
+		pFileSharing->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::UserName == type)
+	{
+		pFileSharing->m_oUserName= m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::ReadOnly == type)
+	{
+		pFileSharing->m_oReadOnlyRecommended = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -2674,6 +2730,11 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else if (c_oSerWorkbookPrTypes::UpdateLinks == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2873,13 +2934,59 @@ int BinaryWorkbookTableReader::ReadCalcPr(BYTE type, long length, void* poResult
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadExternalAlternateUrls(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+	if (!extLink) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+	if (!pExternalBook) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CAlternateUrls* altUrls = pExternalBook->m_oAlternateUrls.GetPointer();
+	if (!altUrls) return c_oSerConstants::ReadUnknown;
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_ExternalLinkTypes::AbsoluteUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+		
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oAbsoluteUrlRid.Init();
+		altUrls->m_oAbsoluteUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::RelativeUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oRelativeUrlRid.Init();
+		altUrls->m_oRelativeUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsDriveId == type)
+	{
+		altUrls->m_oDriveId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsItemId == type)
+	{
+		altUrls->m_oItemId = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
 	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::Id == type)
+	if (c_oSer_ExternalLinkTypes::Id == type)
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
@@ -2904,6 +3011,11 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 	{
 		pExternalBook->m_oSheetDataSet.Init();
 		READ1_DEF(length, res, this->ReadExternalSheetDataSet, pExternalBook->m_oSheetDataSet.GetPointer());
+	}
+	else if (c_oSer_ExternalLinkTypes::AlternateUrls == type)
+	{
+		pExternalBook->m_oAlternateUrls.Init();
+		READ1_DEF(length, res, this->ReadExternalAlternateUrls, extLink);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7650,7 +7762,10 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
-				oCSVWriter.Start(sDstPathCSV);
+				
+				bResultOk = oCSVWriter.Start(sDstPathCSV);
+				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
+
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try

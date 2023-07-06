@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../XlsbFormat/Biff12_records/Color.h"
 
 namespace NSBinPptxRW
 {
@@ -55,7 +56,7 @@ namespace SimpleTypes
 		class CFontCharset;
 		class CFontFamily;
 		class CFontScheme;
-		class CUnderline;		
+		class CUnderline;
 	}
 }
 
@@ -65,7 +66,7 @@ namespace ComplexTypes
 	{
 		class COnOff2;
 		class String;
-		class CDouble;		
+		class CDouble;
 	}
 }
 
@@ -98,7 +99,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHexColor> m_oRgb;
 		};
-		
+
 		class CIndexedColors : public WritingElementWithChilds<CRgbColor>
 		{
 		public:
@@ -144,6 +145,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObject* obj);
+			XLSB::Color toColor();
 
 			virtual EElementType getType () const;
 

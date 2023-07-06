@@ -1530,6 +1530,33 @@ namespace OOX
 					m_oOutlinePr = oReader;
 			}
 		}
+		XLS::BaseObjectPtr CSheetPr::toBin()
+		{
+			XLS::BaseObjectPtr objectPtr;
+
+			if(m_oEnableFormatConditionsCalculation.IsInit() || m_oSyncHorizontal.IsInit() || m_oSyncHorizontal.IsInit() || m_oTransitionEvaluation.IsInit())
+			{
+				auto ptr(new XLSB::WsProp);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+
+				ptr->strName.value = m_oCodeName.get();
+
+				ptr->fCondFmtCalc = m_oEnableFormatConditionsCalculation->GetValue();
+				ptr->fFilterMode = m_oFilterMode->GetValue();
+				ptr->fPublish = m_oPublished->GetValue();
+				ptr->fSyncHoriz = m_oSyncHorizontal->GetValue();
+				ptr->fSyncVert = m_oSyncVertical->GetValue();
+				ptr->fAltFormulaEntry = m_oTransitionEntry->GetValue();
+				ptr->fAltExprEval = m_oTransitionEvaluation->GetValue();
+
+				if (m_oSyncRef.IsInit())
+					ptr->syncRef = m_oSyncRef.get();
+
+				ptr->brtcolorTab = m_oTabColor->toColor();
+			}
+
+			return objectPtr;
+		}
 		void CSheetPr::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			if (obj->get_type() == XLS::typeWsProp)

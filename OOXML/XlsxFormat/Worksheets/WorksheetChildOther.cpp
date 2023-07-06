@@ -2493,6 +2493,25 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CDataRef::toBin()
+		{
+			auto ptr(new XLSB::DRef);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if (m_oId.IsInit())
+				ptr->relId.value = m_oId->GetValue();
+
+			if (m_oName.IsInit())
+				ptr->xstrName = m_oName.get();
+
+			if (m_oRef.IsInit())
+				ptr->rfx = m_oRef.get();
+
+			if (m_oSheet.IsInit())
+				ptr->xstrSheet = m_oSheet.get();
+
+			return objectPtr;
+		}
 		EElementType CDataRef::getType() const
 		{
 			return et_x_DataRef;
@@ -2584,6 +2603,16 @@ namespace OOX
 					m_arrItems.push_back(new CDataRef(dref));
 			}
 		}
+		XLS::BaseObjectPtr CDataRefs::toBin()
+		{
+			auto ptr(new XLSB::DREFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtDRef.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
 		EElementType CDataRefs::getType() const
 		{
 			return et_x_DataRefs;
@@ -2634,6 +2663,28 @@ namespace OOX
 				if (L"dataRefs" == sName)
 					m_oDataRefs = oReader;
 			}
+		}
+		XLS::BaseObjectPtr CDataConsolidate::toBin()
+		{
+			auto ptr(new XLSB::DCON);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto beginPtr(new XLSB::BeginDCon);
+			ptr->m_BrtBeginDCon = XLS::BaseObjectPtr{beginPtr};
+
+			if(m_oFunction.IsInit())
+				beginPtr->iiftab = m_oFunction->GetValue();
+			if(m_oFunction.IsInit())
+				beginPtr->fLinkConsol = m_oLink->GetValue();
+			if(m_oFunction.IsInit())
+				beginPtr->fLeftCat = m_oStartLabels->GetValue();
+			if(m_oFunction.IsInit())
+				beginPtr->fTopCat = m_oTopLabels->GetValue();
+
+			if(m_oDataRefs.IsInit())
+			{
+				ptr->m_DREFS = m_oDataRefs->toBin();
+			}
+			return objectPtr;
 		}
 		void CDataConsolidate::fromBin(XLS::BaseObjectPtr& obj)
 		{

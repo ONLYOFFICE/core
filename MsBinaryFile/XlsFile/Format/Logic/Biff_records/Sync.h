@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Sync record in BIFF8
 class Sync: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Sync)
@@ -46,19 +44,16 @@ public:
 	Sync();
 	~Sync();
 
-	BaseObjectPtr clone();
-
-	
+	BaseObjectPtr clone();	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSync;
+	static const ElementType type = typeSync;
 
 //-----------------------------
-	BiffAttributeSimple<unsigned short> rw;
-	BiffAttributeSimple<unsigned short> col;
+	unsigned short rw;
+	unsigned short col;
 	
 	std::wstring ref_;
-
 };
 
 } // namespace XLS

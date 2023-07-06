@@ -53,9 +53,8 @@ public:
 
 	static const ElementType	type = typeDBCell;
 //-----------------------------
-	BiffAttributeSimple<_UINT32>	dbRtrw;
-	BiffStructurePtrVector		rgdb;
-	BiffAttributeSimple<_UINT32>	num_pointers;
+	_UINT32	dbRtrw;
+	BiffStructurePtrVector rgdb;
 };	
 
 } // namespace XLS

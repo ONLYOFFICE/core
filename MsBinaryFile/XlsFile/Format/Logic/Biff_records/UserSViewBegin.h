@@ -90,8 +90,8 @@ public:
 	Xnum			operNumX;
 	Xnum			operNumY;
 	
-	BiffAttributeSimple<unsigned short> colRPane;
-	BiffAttributeSimple<unsigned short> rwBPane;
+	unsigned short colRPane;
+	unsigned short rwBPane;
 
 	std::wstring	pane_top_left_cell;
 

@@ -52,13 +52,11 @@ public:
 	static const ElementType type = typeIndex;
 
 //-----------------------------
-	BiffAttributeSimple<_UINT32>	rwMic;
-	BiffAttributeSimple<_UINT32>	rwMac;
-	BiffAttributeSimple<_UINT32>	ibXF;
-	BiffAttributeSimple<_UINT32>	num_pointers;
+	_UINT32	rwMic;
+	_UINT32	rwMac;
+	_UINT32	ibXF;
 
 	BiffStructurePtrVector rgibRw;
-
 };
 //000BH biff2
 } // namespace XLS

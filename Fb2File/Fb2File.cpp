@@ -166,6 +166,7 @@ public:
 private:
     int m_nContentsId;       // ID содержания
     int m_nCrossReferenceId; // ID перекрестной ссылки
+    bool m_bFootnote;        // Чтение Footnote из html
 
     // STitleInfo* m_pSrcTitleInfo;  // Данные об исходнике книги
     // SPublishInfo* m_pPublishInfo; // Сведения об издании книги
@@ -178,6 +179,7 @@ public:
         // m_pPublishInfo  = NULL;
         m_nContentsId       = 1;
         m_nCrossReferenceId = 1;
+        m_bFootnote = false;
     }
 
     ~CFb2File_Private()
@@ -1425,7 +1427,6 @@ public:
             }
             else if (sName == L"div")
             {
-                bool bFootnote = false;
                 std::wstring sFootnoteName;
                 NSStringUtils::CStringBuilder oFootnote;
                 while (m_oLightReader.MoveToNextAttribute())
@@ -1433,15 +1434,16 @@ public:
                     std::wstring sAtrName = m_oLightReader.GetName();
                     std::wstring sAtrText = m_oLightReader.GetText();
                     if (sAtrName == L"style" && sAtrText == L"mso-element:footnote")
-                        bFootnote = true;
+                        m_bFootnote = true;
                     else if (sAtrName == L"id")
                         sFootnoteName = sAtrText;
                 }
                 m_oLightReader.MoveToElement();
-                if (bFootnote && !sFootnoteName.empty())
+                if (m_bFootnote && !sFootnoteName.empty())
                 {
                     readStream(oFootnote, false, false);
                     m_mFootnotes.insert(std::make_pair(sFootnoteName, oFootnote.GetData()));
+                    m_bFootnote = false;
                 }
                 else
                     readStream(oXml, bWasP, bWasTable);
@@ -1619,15 +1621,33 @@ public:
             }
             else if (sName == L"a")
             {
+                bool bFootnote = false;
                 oXml.WriteString(L"<a ");
                 while (m_oLightReader.MoveToNextAttribute())
                 {
-                    std::wstring sName = m_oLightReader.GetName();
-                    if (sName == L"name")
-                        sName = L"id";
-                    oXml.WriteString(sName + L"=\"");
-                    oXml.WriteString(m_oLightReader.GetText());
-                    oXml.WriteString(L"\" ");
+                    std::wstring sAtrName = m_oLightReader.GetName();
+                    std::wstring sAtrText = m_oLightReader.GetText();
+                    if (!sAtrName.empty() && !sAtrText.empty())
+                    {
+                        if (!m_bFootnote && sAtrName == L"style" && sAtrText.find(L"mso-footnote-id") != std::wstring::npos)
+                        {
+                            sAtrText = sAtrText.substr(sAtrText.rfind(L':') + 1);
+                            oXml.WriteString(L"href=\"#");
+                            oXml.WriteString(sAtrText);
+                            oXml.WriteString(L"\" type=\"note\" ");
+                            bFootnote = true;
+                        }
+                        else
+                        {
+                            if (bFootnote && (sAtrName == L"href" || sAtrName == L"type"))
+                                continue;
+                            if (sAtrName == L"name")
+                                sAtrName = L"id";
+                            oXml.WriteString(sAtrName + L"=\"");
+                            oXml.WriteString(sAtrText);
+                            oXml.WriteString(L"\" ");
+                        }
+                    }
                 }
                 m_oLightReader.MoveToElement();
                 oXml.WriteString(L">");

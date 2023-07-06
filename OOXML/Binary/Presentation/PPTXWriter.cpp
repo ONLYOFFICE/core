@@ -154,8 +154,8 @@ namespace NSBinPptxRW
 				m_oReader.Init(pDstBuffer, 0, dstLen);
 				m_oReader.Seek(start_pos);
 			}
-
-			m_oReader.m_strFolder = srcFolder;
+			OOX::CPath path(srcFolder);
+			m_oReader.m_strFolder = path.GetPath();
 			m_oReader.m_strFolderExternalThemes = strThemesFolder;
 
 			for (LONG i = 0; i < 30/*main tables max*/; ++i)

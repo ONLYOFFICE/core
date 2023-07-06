@@ -14,6 +14,7 @@ namespace SVG
 	{
 	public:
 		CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
+		CTSpan(const std::wstring& wsText, const Point& oPosition, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 		virtual ~CTSpan();
 
 		static CTSpan* Create(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
@@ -27,7 +28,7 @@ namespace SVG
 
 		void InheritStyles(const CTSpan* pTSpan);
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile* pFile, int& nTypePath) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
 		TBounds GetBounds() const override;
@@ -49,8 +50,6 @@ namespace SVG
 
 		SvgFont m_oFont;
 		SvgText m_oText;
-
-		CTSpan *pPrevElement;
 
 		friend class CText;
 		friend class CTextPath;

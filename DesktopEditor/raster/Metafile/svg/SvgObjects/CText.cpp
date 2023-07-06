@@ -19,7 +19,7 @@ namespace SVG
 	#define DefaultFontFamily L"Times New Roman"
 
 	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
-		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager), pPrevElement(NULL)
+		: CRenderedObject(oNode, pParent), m_pFontManager(pFontManager)
 	{
 		m_oFont.UpdateSize(16);
 
@@ -53,6 +53,18 @@ namespace SVG
 		}
 	}
 
+	CTSpan::CTSpan(const std::wstring &wsText, const Point &oPosition, CRenderedObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
+		: CRenderedObject(NSCSS::CNode(L"tspan", L"", L""), pParent), m_pFontManager(pFontManager), m_wsText(wsText)
+	{
+		m_oFont.UpdateSize(16);
+
+		if (bCheckText)
+			m_wsText = StrUtils::TrimExtraEnding(m_wsText);
+
+		m_oX = oPosition.dX;
+		m_oY = oPosition.dY;
+	}
+
 	CTSpan::~CTSpan()
 	{}
 
@@ -73,22 +85,15 @@ namespace SVG
 		if (NULL == pTSpanParent || wsValue.empty())
 			return NULL;
 
-		const std::wstring wsXmlNode = L"<tspan x=\"" + std::to_wstring(oPosition.dX) + L"\" y=\"" + std::to_wstring(oPosition.dY) + L"\">" + wsValue + L"</tspan>";
-
-		XmlUtils::CXmlNode oNode;
-		oNode.FromXmlString(wsXmlNode);
-
-		return new CTSpan(oNode, pTSpanParent, pFontManager, bCheckText);
+		return new CTSpan(wsValue, oPosition, pParent, pFontManager, bCheckText);
 	}
 
 	void CTSpan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))
@@ -128,25 +133,18 @@ namespace SVG
 
 	bool CTSpan::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || CommandeModeClip == oMode || !m_oStyles.m_bDisplay)
+		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()))
+			return false;
+
+		Aggplus::CMatrix oOldMatrix;
+
+		if (!StartPath(pRenderer, pFile, oOldMatrix, oMode))
 			return false;
 
 		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
 
 		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
-
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		if (NULL != pOtherStyles)
-		{
-			TSvgStyles oNewStyles(m_oStyles);
-			oNewStyles += *pOtherStyles;
-			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType, oOldMatrix);
-		}
-		else
-			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType, oOldMatrix);
 
 		ApplyFont(pRenderer, dX, dY);
 
@@ -155,7 +153,7 @@ namespace SVG
 		for (const CRenderedObject* pTSpan : m_arObjects)
 			pTSpan->Draw(pRenderer, pFile, oMode, pOtherStyles);
 
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pFile, oOldMatrix, oMode, pOtherStyles);
 
 		return true;
 	}
@@ -181,11 +179,8 @@ namespace SVG
 		}
 	}
 
-	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		Apply(pRenderer, &pStyles->m_oClip, pFile);
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-
 		if (Apply(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 

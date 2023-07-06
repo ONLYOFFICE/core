@@ -3,7 +3,7 @@
 namespace SVG
 {
 	CPolyline::CPolyline(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CPath(oNode, pParent)
+		: CPath(oNode, pParent, false)
 	{
 		std::vector<double> arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(oNode.GetAttribute(L"points"));
 

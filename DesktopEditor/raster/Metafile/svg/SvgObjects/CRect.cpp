@@ -22,17 +22,17 @@ namespace SVG
 
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CRect::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -44,8 +44,6 @@ namespace SVG
 		double dY      = m_oRect.m_oY     .ToDouble(NSCSS::Pixel, dParentHeight);
 		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
-
-		StartPath(pRenderer, pFile, oMode);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
@@ -77,15 +75,13 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oMode);
+		EndPath(pRenderer, pFile, oOldTransform, oMode);
 
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CRect::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 

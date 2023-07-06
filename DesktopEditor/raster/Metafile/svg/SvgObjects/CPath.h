@@ -151,7 +151,7 @@ namespace SVG
 	class CPath : public CRenderedObject
 	{
 	public:
-		CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL);
+		CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent = NULL, bool bChechCommands = true);
 		virtual ~CPath();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
@@ -160,8 +160,8 @@ namespace SVG
 
 		IPathElement* operator[](int nIndex) const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
-		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile) const;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const override;
+		bool DrawMarkers(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw) const;
 
 		void SetMarker(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode);
 

@@ -77,6 +77,14 @@ namespace SVG
 		return RendererObject;
 	}
 
+	void CRenderedObject::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
+		SetDisplay(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
+		SetMask(mAttributes, ushLevel, bHardMode);
+	}
+
 	std::vector<NSCSS::CNode> CRenderedObject::GetFullPath() const
 	{
 		if (NULL == m_pParent)
@@ -135,12 +143,17 @@ namespace SVG
 	{
 		if (mAttributes.end() != mAttributes.find(L"transform"))
 			m_oStyles.m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
+		else
+			m_oStyles.m_oTransform.SetMatrix(L"", ushLevel, bHardMode);
 	}
 
 	void CRenderedObject::SetClip(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"clip-path"))
 			m_oStyles.m_oClip.m_oHref.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
+		else
+			m_oStyles.m_oClip.m_oHref.SetValue(L"", ushLevel, bHardMode);
+
 		if (mAttributes.end() != mAttributes.find(L"clip-rule"))
 			m_oStyles.m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
 	}
@@ -149,6 +162,8 @@ namespace SVG
 	{
 		if (mAttributes.end() != mAttributes.find(L"mask"))
 			m_oStyles.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
+		else
+			m_oStyles.m_oMask.SetValue(L"", ushLevel, bHardMode);
 	}
 
 	void CRenderedObject::SetDisplay(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -159,40 +174,56 @@ namespace SVG
 
 			if (!wsDisplay.empty()) m_oStyles.m_bDisplay = (L"none" == wsDisplay) ? false : true;
 		}
+		else
+			m_oStyles.m_bDisplay = true;
 	}
 
-	void CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
+	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
 	{
+		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
+			return false;
+
+		Apply(pRenderer, &m_oStyles.m_oTransform, oOldTransform);
 		Apply(pRenderer, &m_oStyles.m_oClip, pFile);
 		ApplyMask(pRenderer, &m_oStyles.m_oMask, pFile);
 
 		if (CommandeModeClip == oMode)
-			return;
+			return true;
 
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
+
+		return true;
 	}
 
-	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
+	void CRenderedObject::EndPath(IRenderer *pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix &oOldTransform, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
 		if (CommandeModeClip == oMode)
+		{
+			pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 			return;
+		}
 
 		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
 		if (NULL == pOtherStyles)
-			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType, oOldMatrix);
+			ApplyStyle(pRenderer, &m_oStyles, pFile, nPathType);
 		else
 		{
 			TSvgStyles oNewStyles(m_oStyles);
 			oNewStyles += *pOtherStyles;
-			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType, oOldMatrix);
+			ApplyStyle(pRenderer, &oNewStyles, pFile, nPathType);
 		}
 
 		pRenderer->DrawPath(nPathType);
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
+
+		if (!m_oStyles.m_oClip.m_oHref.Empty())
+		{
+			pRenderer->BeginCommand(c_nResetClipType);
+			pRenderer->EndCommand(c_nResetClipType);
+		}
 
 		if (oMode != CommandeModeMask)
 		{
@@ -200,7 +231,7 @@ namespace SVG
 			pRenderer->EndCommand(c_nResetMaskType);
 		}
 
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 	}
 
 	bool CRenderedObject::Apply(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
@@ -236,8 +267,8 @@ namespace SVG
 			pRenderer->put_PenLineEndCap(pStroke->m_oLineCap.ToInt());
 		}
 
-		if (!pStroke->m_oLineJoin.Empty())
-			pRenderer->put_PenLineJoin(pStroke->m_oLineJoin.ToInt());
+		pRenderer->put_PenMiterLimit(4);
+		pRenderer->put_PenLineJoin(pStroke->m_oLineJoin.ToInt());
 
 		return true;
 	}
@@ -290,9 +321,9 @@ namespace SVG
 
 		oOldMatrix.SetElements(dM11, dM12, dM21, dM22, dRx, dRy);
 
-		Aggplus::CMatrix oMatrix = pTransform->GetMatrix().GetFinalValue();
+		Aggplus::CMatrix oMatrix(oOldMatrix);
 
-		oMatrix.Multiply(&oOldMatrix, Aggplus::MatrixOrderAppend);
+		pTransform->GetMatrix().ApplyTranform(oMatrix);
 
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 
@@ -303,9 +334,6 @@ namespace SVG
 	{
 		if (NULL == pRenderer || NULL == pClip || NULL == pFile)
 			return false;
-
-		pRenderer->BeginCommand(c_nResetClipType);
-		pRenderer->EndCommand(c_nResetClipType);
 
 		if (pClip->m_oRule == L"evenodd")
 			pRenderer->put_ClipMode(c_nClipRegionTypeEvenOdd);

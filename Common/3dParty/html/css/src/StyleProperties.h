@@ -215,6 +215,7 @@ namespace NSCSS
 		std::wstring ToWString() const override;
 
 		Aggplus::CMatrix GetFinalValue(TransformType oWithoutType = TransformNone) const;
+		void ApplyTranform(Aggplus::CMatrix& oMatrix, Aggplus::MatrixOrder order = Aggplus::MatrixOrderPrepend) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
 	};
@@ -338,6 +339,8 @@ namespace NSCSS
 	{
 	public:
 		CTransform();
+
+		void Clear();
 
 		static void Equation(CTransform &oFirstTransform, CTransform &oSecondTransform);
 

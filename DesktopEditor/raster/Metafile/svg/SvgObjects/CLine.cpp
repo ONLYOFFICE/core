@@ -3,7 +3,7 @@
 namespace SVG
 {
 	CLine::CLine(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
-		: CPath(oNode, pParent)
+		: CPath(oNode, pParent, false)
 	{	
 		SvgDigit oX1;
 		SvgDigit oY1;
@@ -21,18 +21,14 @@ namespace SVG
 
 	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
 		SetStroke(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-
 		if (Apply(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 	}

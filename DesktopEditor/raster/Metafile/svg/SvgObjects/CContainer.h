@@ -84,14 +84,13 @@ namespace SVG
 		CGraphicsContainer(const CGraphicsContainer& oGraphicsContainer);
 
 		void SetData(XmlUtils::CXmlNode& oNode);
-		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const override;
 
 		TBounds GetBounds() const override;
 

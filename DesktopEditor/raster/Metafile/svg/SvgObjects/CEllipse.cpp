@@ -16,17 +16,17 @@ namespace SVG
 
 	void CEllipse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -39,20 +39,16 @@ namespace SVG
 		double dRx = m_oRx.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dRy = m_oRy.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		StartPath(pRenderer, pFile, oMode);
-
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pFile, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		return true;
 	}
 
-	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-
 		if (Apply(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 

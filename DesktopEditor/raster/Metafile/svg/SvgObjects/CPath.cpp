@@ -477,10 +477,11 @@ namespace SVG
     #define ARCSTEP 0.5
     #define MINARCSTEP 0.01
 
-	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent)
+	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, bool bChechCommands)
 		: CRenderedObject(oNode, pParent), m_bEvenOddRule(false)
 	{
-		ReadFromString(oNode.GetAttribute(L"d"));
+		if (bChechCommands)
+			ReadFromString(oNode.GetAttribute(L"d"));
 	}
 
 	CPath::~CPath()
@@ -491,13 +492,11 @@ namespace SVG
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
+		CRenderedObject::SetData(mAttributes, ushLevel, bHardMode);
+
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
 		SetMarker(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
 
 		std::map<std::wstring, std::wstring>::const_iterator oIter = mAttributes.find(L"fill-rule");
 
@@ -510,17 +509,17 @@ namespace SVG
 
 	bool CPath::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || m_arElements.empty() || !m_oStyles.m_bDisplay)
-			return false;
+		Aggplus::CMatrix oOldTransform;
 
-		StartPath(pRenderer, pFile, oMode);
+		if (m_arElements.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode))
+			return false;
 
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pFile, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
-		DrawMarkers(pRenderer, pFile);
+		DrawMarkers(pRenderer, pFile, oMode);
 
 		return true;
 	}
@@ -533,10 +532,8 @@ namespace SVG
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{	
-		Apply(pRenderer, &pStyles->m_oTransform, oOldMatrix);
-
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
@@ -544,16 +541,18 @@ namespace SVG
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
-	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile) const
+	bool CPath::DrawMarkers(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode) const
 	{
-		if (NULL == pRenderer || NULL == pFile || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero())
+		if (NULL == pRenderer || NULL == pFile || m_arElements.empty() || m_oStyles.m_oStroke.m_oWidth.Zero() ||
+			(m_oMarkers.m_oStart.Empty() && m_oMarkers.m_oMid.Empty() && m_oMarkers.m_oEnd.Empty()))
 			return false;
-
-		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
 		Aggplus::CMatrix oOldMatrix;
 
-		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
+		if (!StartPath(pRenderer, pFile, oOldMatrix, oMode))
+			return false;
+
+		double dStrokeWidth = (m_oStyles.m_oStroke.m_oWidth.Empty()) ? 1. : m_oStyles.m_oStroke.m_oWidth.ToDouble(NSCSS::Pixel);
 
 		if (!m_oMarkers.m_oStart.Empty() && NSCSS::NSProperties::ColorType::ColorUrl == m_oMarkers.m_oStart.GetType())
 		{
@@ -593,7 +592,7 @@ namespace SVG
 			}
 		}
 
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pFile, oOldMatrix, oMode);
 
 		return true;
 	}

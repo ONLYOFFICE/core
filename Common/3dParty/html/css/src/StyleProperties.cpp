@@ -496,8 +496,17 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (2 > wsValue.length() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
+
+		if (wsValue.empty())
+		{
+			m_oValue.Clear();
+			m_oValue.m_enType = ColorEmpty;
+			m_unLevel    = unLevel;
+			m_bImportant = false;
+			return true;
+		}
 
 		std::wstring wsNewValue(wsValue);
 
@@ -691,7 +700,7 @@ namespace NSCSS
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -703,10 +712,10 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		if (unLevel == m_unLevel)
-			m_oValue.clear();
-
 		std::vector<std::wstring> arTransforms = CutTransforms(wsNewValue);
+
+		Clear();
+
 		TransformType enType;
 
 		for (const std::wstring& wsTransform : arTransforms)
@@ -736,9 +745,6 @@ namespace NSCSS
 				return false;
 			}
 		}
-
-		if (Empty())
-			return false;
 
 		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
@@ -917,6 +923,40 @@ namespace NSCSS
 		}
 
 		return oMatrix;
+	}
+
+	void CMatrix::ApplyTranform(Aggplus::CMatrix &oMatrix, Aggplus::MatrixOrder order) const
+	{
+		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
+		{
+			switch(oElement.second)
+			{
+				case TransformMatrix:
+				{
+					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
+
+					oMatrix.Multiply(&oTempMatrix, order);
+					break;
+				}
+				case TransformTranslate:
+				{
+					oMatrix.Translate(oElement.first[0], oElement.first[1], order);
+					break;
+				}
+				case TransformScale:
+				{
+					oMatrix.Scale(oElement.first[0], oElement.first[1], order);
+					break;
+				}
+				case TransformRotate:
+				{
+					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2], order);
+					break;
+				}
+				default: break;
+			}
+		}
+
 	}
 
 	bool CMatrix::operator==(const CMatrix &oMatrix) const
@@ -1204,6 +1244,11 @@ namespace NSCSS
 	// TRANSFORM
 	CTransform::CTransform()
 	{}
+
+	void CTransform::Clear()
+	{
+		m_oMatrix.Clear();
+	}
 
 	void CTransform::Equation(CTransform &oFirstTransform, CTransform &oSecondTransform)
 	{

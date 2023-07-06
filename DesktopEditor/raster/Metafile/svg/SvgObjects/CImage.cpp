@@ -18,17 +18,11 @@ namespace SVG
 		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href")); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
 	}
 
-	void CImage::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{
-		SetTransform(mAttributes, ushLevel, bHardMode);
-		SetClip(mAttributes, ushLevel, bHardMode);
-		SetMask(mAttributes, ushLevel, bHardMode);
-		SetDisplay(mAttributes, ushLevel, bHardMode);
-	}
-
 	bool CImage::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || m_wsHref.empty() || !m_oStyles.m_bDisplay)
+		Aggplus::CMatrix oOldTransform;
+
+		if (m_wsHref.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
 		size_t unStart = m_wsHref.find(L"data:image");
@@ -76,8 +70,6 @@ namespace SVG
 		Aggplus::CImage oImage;
 		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
 
-		StartPath(pRenderer, pFile, oMode);
-
 		Aggplus::CMatrix oOldMatrix;
 		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
 
@@ -105,7 +97,7 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 
-		EndPath(pRenderer, pFile, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
@@ -114,7 +106,7 @@ namespace SVG
 		return true;
 	}
 
-	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{}
 
 	TBounds CImage::GetBounds() const

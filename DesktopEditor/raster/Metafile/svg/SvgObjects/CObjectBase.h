@@ -24,10 +24,14 @@ namespace SVG
 		{
 			m_oTransform.SetMatrix(oSvgStyles.m_oTransform.GetMatrix().ToWString(), 0, false);
 
-			m_oFill.SetValue(L'#' + oSvgStyles.m_oFill.ToWString(), 0, false);
+			if (!oSvgStyles.m_oFill.Empty())
+				m_oFill.SetValue(L'#' + oSvgStyles.m_oFill.ToWString(), 0, false);
+
 			m_oFill.SetOpacity(std::to_wstring(oSvgStyles.m_oFill.GetOpacity()), 0, false);
 
-			m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
+			if (!oSvgStyles.m_oStroke.m_oColor.Empty())
+				m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
+
 			m_oStroke.m_oWidth.SetValue(oSvgStyles.m_oStroke.m_oWidth.ToWString(), 0, false);
 
 			if (m_oStroke.m_arDash.empty() && !oSvgStyles.m_oStroke.m_arDash.empty())
@@ -108,6 +112,8 @@ namespace SVG
 
 		ObjectType GetType() const override;
 
+		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
 		virtual bool Draw(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pStyles = NULL) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
@@ -123,10 +129,10 @@ namespace SVG
 		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
-		void StartPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw) const;
-		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
+		bool StartPath(IRenderer* pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw) const;
+		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
 
-		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const = 0;
 
 		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;

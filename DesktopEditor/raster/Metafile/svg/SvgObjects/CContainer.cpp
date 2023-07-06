@@ -41,18 +41,17 @@ namespace SVG
 		: CRenderedObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
-	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{
-		SetDisplay(mAttributes, ushLevel, bHardMode);
-	}
-
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
+		Aggplus::CMatrix oOldTransform;
+
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
 			return false;
 
 		for (const CRenderedObject* pObject : m_arObjects)
 			pObject->Draw(pRenderer, pFile, oMode, pOtherStyles);
+
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
 
 		return true;
 	}
@@ -67,7 +66,7 @@ namespace SVG
 		return m_oViewBox;
 	}
 
-	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{}
 
 	TBounds CGraphicsContainer::GetBounds() const

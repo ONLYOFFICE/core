@@ -35,25 +35,26 @@ namespace SVG
 		SvgColor m_oColor;
 	};
 
-	class CGradient : public CContainer<CStopElement>
+	class CGradient : public CContainer<CStopElement>, public CAppliedObject
 	{
 	public:
-		CGradient();
+		CGradient(XmlUtils::CXmlNode& oNode);
 
-		bool Apply(IRenderer* pRenderer) const;
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
 
-		std::wstring              m_wsXlinkHref;
-		GradientUnits             m_enGradientUnits;
-		SpreadMethod              m_enSpreadMethod;
+		std::wstring  m_wsXlinkHref;
+		GradientUnits m_enGradientUnits;
+		SpreadMethod  m_enSpreadMethod;
+		SvgTransform  m_oTransform;
 	};
 
-	class CLinearGradient : public CGradient, public CAppliedObject
+	class CLinearGradient : public CGradient
 	{
 	public:
 		CLinearGradient(XmlUtils::CXmlNode& oNode);
-
-		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
@@ -63,12 +64,10 @@ namespace SVG
 		SvgDigit m_oY2;
 	};
 
-	class CRadialGradient : public CGradient, public CAppliedObject
+	class CRadialGradient : public CGradient
 	{
 	public:
 		CRadialGradient(XmlUtils::CXmlNode& oNode);
-
-		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:

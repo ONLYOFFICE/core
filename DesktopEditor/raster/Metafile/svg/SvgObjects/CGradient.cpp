@@ -1,4 +1,5 @@
 #include "CGradient.h"
+#include "../CSvgFile.h"
 
 namespace SVG
 {
@@ -33,13 +34,32 @@ namespace SVG
 			m_oColor.SetOpacity(mAttributes.at(L"stop-opacity"));
 	}
 
-	CGradient::CGradient()
-	{}
-
-	bool CGradient::Apply(IRenderer *pRenderer) const
+	CGradient::CGradient(XmlUtils::CXmlNode &oNode)
+		: CAppliedObject(oNode)
 	{
-		if (NULL == pRenderer || m_arObjects.empty())
+		m_wsXlinkHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
+	}
+
+	void CGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"transform"))
+			m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
+	}
+
+	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
+	{
+		if (NULL == pRenderer)
 			return false;
+
+		if (m_arObjects.empty())
+		{
+			if (m_wsXlinkHref.empty() || NULL == pFile)
+				return false;
+
+			CGradient *pGradiend = dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
+
+			return (NULL == pGradiend) ? false : pGradiend->Apply(pRenderer, pFile, oObjectBounds);
+		}
 
 		std::vector<LONG> arColors;
 		std::vector<double> arPositions;
@@ -56,7 +76,7 @@ namespace SVG
 	}
 
 	CLinearGradient::CLinearGradient(XmlUtils::CXmlNode& oNode)
-		: CAppliedObject(oNode)
+		: CGradient(oNode)
 	{
 		m_oX1.SetValue(oNode.GetAttribute(L"x1"));
 		m_oY1.SetValue(oNode.GetAttribute(L"y1"));
@@ -64,13 +84,10 @@ namespace SVG
 		m_oY2.SetValue(oNode.GetAttribute(L"y2"));
 	}
 
-	void CLinearGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{}
-
 	bool CLinearGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		if (!CGradient::Apply(pRenderer))
-			return false;
+		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
+			return false;		
 
 		pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
@@ -100,40 +117,32 @@ namespace SVG
 		pRenderer->put_BrushLinearAngle(dAngle);
 		pRenderer->BrushBounds(oObjectBounds.m_dLeft, oObjectBounds.m_dTop, (oObjectBounds.m_dRight - oObjectBounds.m_dLeft) * dWidthKoef, (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * dHeightKoef);
 
+		Aggplus::CMatrix oMatrix(1, 0, 0, 1, 100, 0);
+		pRenderer->put_BrushTransform(oMatrix);
+
 		return true;
 	}
 
 	CRadialGradient::CRadialGradient(XmlUtils::CXmlNode& oNode)
-		: CAppliedObject(oNode)
-	{}
-
-	void CRadialGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+		: CGradient(oNode)
 	{
-		if (mAttributes.end() != mAttributes.find(L"cx"))
-			m_oCx.SetValue(mAttributes.at(L"cx"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"cy"))
-			m_oCy.SetValue(mAttributes.at(L"cy"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"r"))
-			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
+		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
+		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
+		m_oR.SetValue(oNode.GetAttribute(L"r"));
 	}
 
 	bool CRadialGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		if (!CGradient::Apply(pRenderer))
+		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
 			return false;
 
 		pRenderer->put_BrushType(c_BrushTypePathGradient2);
 
-//		double dCx = m_oCx.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
-//		double dCy = m_oCy.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dBottom - oObjectBounds.m_dTop);
-//		double dR  = m_oR .ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
+		double dCx = m_oCx.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft) + oObjectBounds.m_dLeft;
+		double dCy = m_oCy.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) + oObjectBounds.m_dTop;
+		double dR  = m_oR .ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
 
-//		pRenderer->put_BrushCenterPoint(dCx, dCy);
-//		pRenderer->put_BrushRadius(dR);
-
-		pRenderer->BrushBounds(oObjectBounds.m_dLeft, oObjectBounds.m_dTop, oObjectBounds.m_dRight - oObjectBounds.m_dLeft, oObjectBounds.m_dBottom - oObjectBounds.m_dTop);
+		pRenderer->BrushBounds(dCx - dR, dCy - dR, (dR != 0) ? dR * 2 : (oObjectBounds.m_dRight - oObjectBounds.m_dLeft), (dR != 0) ? dR * 2 : (oObjectBounds.m_dBottom - oObjectBounds.m_dTop));
 
 		return true;
 	}

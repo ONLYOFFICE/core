@@ -1969,6 +1969,16 @@ namespace OOX
 			if (!oReader.IsEmptyNode())
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CPictureWorksheet::toBin()
+		{
+			auto ptr(new XLSB::BkHim);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oId.IsInit())
+				ptr->rgb.value = m_oId->GetValue();
+
+			return objectPtr;
+		}
 		void CPictureWorksheet::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);

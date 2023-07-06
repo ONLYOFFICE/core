@@ -2033,6 +2033,24 @@ namespace OOX
 			if (!oReader.IsEmptyNode())
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CBreak::toBin()
+		{
+			auto ptr(new XLSB::Brk);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oId.IsInit())
+				ptr->unRwCol = m_oId->GetValue();
+			if(m_oMan.IsInit())
+				ptr->fMan = m_oMan->GetValue();
+			if(m_oMax.IsInit())
+				ptr->unColRwStrt = m_oMax->GetValue();
+			if(m_oMin.IsInit())
+				ptr->unColRwEnd = m_oMin->GetValue();
+			if(m_oPt.IsInit())
+				ptr->fPivot = m_oPt->GetValue();
+
+			return objectPtr;
+		}
 		void CBreak::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -2119,6 +2137,40 @@ namespace OOX
 				}
 			}
 		}
+		XLS::BaseObjectPtr CRowColBreaks::toBinRow()
+		{
+			auto ptr(new XLSB::RWBRK);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto rowPtr(new XLSB::BeginRwBrk);
+			ptr->m_BrtBeginRwBrk = XLS::BaseObjectPtr{rowPtr};
+			if(m_oCount.IsInit())
+				rowPtr->ibrkMac = m_oCount->GetValue();
+			if(m_oManualBreakCount.IsInit())
+				rowPtr->ibrkManMac = m_oManualBreakCount->GetValue();
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtBrk.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
+
+		XLS::BaseObjectPtr CRowColBreaks::toBinColumn()
+		{
+			auto ptr(new XLSB::COLBRK);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto colPtr(new XLSB::BeginColBrk);
+			ptr->m_BrtBeginColBrk = XLS::BaseObjectPtr{colPtr};
+			if(m_oCount.IsInit())
+				colPtr->ibrkMac = m_oCount->GetValue();
+			if(m_oManualBreakCount.IsInit())
+				colPtr->ibrkManMac = m_oManualBreakCount->GetValue();
+			for(auto i:m_arrItems)
+			{
+				ptr->m_arBrtBrk.push_back(i->toBin());
+			}
+			return objectPtr;
+		}
+
 		void CRowColBreaks::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			if (obj->get_type() == XLS::typeRWBRK)

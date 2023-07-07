@@ -134,6 +134,49 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CProtectedRange::toBin()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_oSpinCount.IsInit() || m_oSpinCount.IsInit() || m_oSpinCount.IsInit() || m_oSaltValue.IsInit())
+			{
+				auto ptr(new XLSB::RangeProtectionIso);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+				if(m_oSpinCount.IsInit())
+					ptr->dwSpinCount = m_oSpinCount->GetValue();
+				if(m_oSqref.IsInit())
+					ptr->sqRfX.strValue = m_oSqref.get();
+
+				if (m_oAlgorithmName.IsInit())
+					ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+
+				if (m_oName.IsInit())
+					ptr->rangeProtectionTitleSDRel.rgchTitle = m_oName.get();
+
+				byte * temp = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				auto tempSize = 0;
+				NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+					m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+				ptr->ipdPasswordData.rgbHash.cbLength = tempSize;
+
+				byte * temp2 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+				auto tempSize2 = 0;
+				NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
+					m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp2, tempSize2);
+				ptr->ipdPasswordData.rgbSalt.cbLength = tempSize2;
+			}
+			else
+			{
+				auto ptr(new XLSB::RangeProtection);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+				if(m_oSqref.IsInit())
+					ptr->sqRfX.strValue = m_oSqref.get();
+
+				if (m_oName.IsInit())
+					ptr->rangeProtectionTitleSDRel.rgchTitle = m_oName.get();
+
+			}
+			return objectPtr;
+		}
 		void CProtectedRange::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -238,6 +281,15 @@ namespace OOX
 					m_arrItems.push_back(pProtectedRange);
 				}
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CProtectedRanges::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> result;
+			for(auto i:m_arrItems)
+			{
+				result.push_back(i->toBin());
+			}
+			return result;
 		}
 		void CProtectedRanges::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{

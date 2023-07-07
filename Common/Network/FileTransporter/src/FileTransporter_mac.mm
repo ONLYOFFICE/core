@@ -88,7 +88,7 @@ namespace NSNetwork
 						configuration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
 				}
 
-				m_session = [NSURLSession sessionWithConfiguration:configuration
+				m_session = [NSURLSession sessionWithConfiguration:configuration];
 			}
 		};
 
@@ -152,12 +152,12 @@ namespace NSNetwork
 
 				if (m_pSession)
 				{
-					NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[escapedURL]]];
+					NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedURL]];
 
 					__block NSData* result = nil;
 					dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
-					[[m_pSession->m_session dataTaskWithRequest:urlRequest
+					[[((CSessionMAC*)m_pSession)->m_session dataTaskWithRequest:urlRequest
 											completionHandler:^(NSData *data, NSURLResponse* response, NSError *error) {
 						if (error == nil)
 							result = data;
@@ -170,7 +170,7 @@ namespace NSNetwork
 					if (result)
 					{
 						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
-						[urlData writeToFile:filePath atomically:YES];
+						[result writeToFile:filePath atomically:YES];
 
 						nResult = 0;
 					}

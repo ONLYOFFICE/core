@@ -23,6 +23,7 @@ namespace NSDocxRenderer
 			delete val.second;
 
 		m_mapXmlString.clear();
+		m_oFontSelector.ClearCache();
 	}
 
 	CDocument::~CDocument() {

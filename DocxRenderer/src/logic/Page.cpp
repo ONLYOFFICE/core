@@ -69,7 +69,6 @@ namespace NSDocxRenderer
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
 		m_oVector.Clear();
-		m_pFontSelector->ClearCache();
 	}
 
 	void CPage::ClearTables()
@@ -458,9 +457,7 @@ namespace NSDocxRenderer
 				bIsMerged = nextVal->TryMergeShape(val);
 
 			if(bIsMerged)
-			{
 				val->m_bIsNotNecessaryToUse = true;
-			}
 		}
 	}
 

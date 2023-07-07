@@ -40,7 +40,11 @@ namespace NSNetwork
 	namespace NSFileTransport
 	{
 #ifdef _MAC
+#ifdef _IOS
+		bool m_bIsARCEnabled = true;
+#else
 		bool m_bIsARCEnabled = false;
+#endif
 
 		void SetARCEnabled(const bool& enabled)
 		{

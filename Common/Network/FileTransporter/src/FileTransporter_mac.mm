@@ -146,41 +146,76 @@ namespace NSNetwork
 #endif
 
 				NSString* stringURL = StringWToNSString(m_sDownloadFileUrl);
-				NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-				NSURL  *url = [NSURL URLWithString:escapedURL];
-				NSData *urlData = [NSData dataWithContentsOfURL:url];
-				if ( urlData )
-				{
-					NSString  *filePath = StringWToNSString ( m_sDownloadFilePath );
-					[urlData writeToFile:filePath atomically:YES];
+				NSString* escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
-#if defined(_IOS)
-					return 0;
-#else
-#ifndef _ASC_USE_ARC_
+				int nResult = 1;
+
+				if (m_pSession)
+				{
+					NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[escapedURL]]];
+
+					__block NSData* result = nil;
+					dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+
+					[[m_pSession->m_session dataTaskWithRequest:urlRequest
+											completionHandler:^(NSData *data, NSURLResponse* response, NSError *error) {
+						if (error == nil)
+							result = data;
+
+						dispatch_semaphore_signal(sem);
+					}] resume];
+
+					dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+
+					if (result)
+					{
+						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
+						[urlData writeToFile:filePath atomically:YES];
+
+						nResult = 0;
+					}
+
+					nResult = 1;
+
+					return nResult;
+				}
+				else
+				{
+					NSURL* url = [NSURL URLWithString:escapedURL];
+					NSData* urlData = [NSData dataWithContentsOfURL:url];
+					if ( urlData )
+					{
+						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
+						[urlData writeToFile:filePath atomically:YES];
+
+	#if defined(_IOS)
+						return 0;
+	#else
+	#ifndef _ASC_USE_ARC_
+						if (!GetARCEnabled())
+						{
+							[stringURL release];
+							//[url release];
+							[urlData release];
+						}
+	#endif
+	#endif
+						return 0;
+					}
+
+	#if defined(_IOS)
+					return 1;
+	#else
+	#ifndef _ASC_USE_ARC_
 					if (!GetARCEnabled())
 					{
 						[stringURL release];
 						//[url release];
-						[urlData release];
 					}
-#endif
-#endif
-					return 0;
+	#endif
+	#endif
+					return 1;
 				}
-
-#if defined(_IOS)
-				return 1;
-#else
-#ifndef _ASC_USE_ARC_
-				if (!GetARCEnabled())
-				{
-					[stringURL release];
-					//[url release];
-				}
-#endif
-#endif
-				return 1;
 			}
 
 			virtual int UploadData() override

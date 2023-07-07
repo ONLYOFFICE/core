@@ -163,10 +163,15 @@ public:
     std::map<std::wstring, std::vector<std::wstring>> m_mImages; // Картинки
     std::map<std::wstring, std::wstring> m_mFootnotes;           // Сноски
 
+    NSStringUtils::CStringBuilder m_oDocXmlRels; // document.xml.rels
+
 private:
     int m_nContentsId;       // ID содержания
     int m_nCrossReferenceId; // ID перекрестной ссылки
+    int m_nHyperlinkId;      // ID внешней ссылки
     bool m_bFootnote;        // Чтение Footnote из html
+    bool m_bInP;
+    bool m_bInTable;
 
     // STitleInfo* m_pSrcTitleInfo;  // Данные об исходнике книги
     // SPublishInfo* m_pPublishInfo; // Сведения об издании книги
@@ -179,7 +184,10 @@ public:
         // m_pPublishInfo  = NULL;
         m_nContentsId       = 1;
         m_nCrossReferenceId = 1;
+        m_nHyperlinkId      = 1;
         m_bFootnote = false;
+        m_bInP      = false;
+        m_bInTable  = false;
     }
 
     ~CFb2File_Private()
@@ -384,8 +392,9 @@ public:
             // Читаем ссылку
             else if (sName == L"a")
             {
+                bool bCross = true;
                 // Читаем href
-                std::wstring sFootnoteName;
+                std::wstring sRef;
                 while (m_oLightReader.MoveToNextAttribute())
                 {
                     std::wstring sTName = m_oLightReader.GetName();
@@ -393,33 +402,62 @@ public:
                     if (sTName.substr(nLen) == L"href")
                     {
                         std::wstring sText = m_oLightReader.GetText();
-                        if (sText.length() > 1)
-                            sFootnoteName = sText.substr(1);
+                        size_t nRef = sText.find('#');
+                        if (nRef != 0)
+                        {
+                            bCross = false;
+                            sRef = sText;
+                        }
+                        else if (sText.length() > 1)
+                            sRef = sText.substr(1);
                         break;
                     }
                 }
                 m_oLightReader.MoveToElement();
 
-                std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sFootnoteName);
-                if (it != m_mFootnotes.end())
+                if (bCross)
                 {
-                    // Пробел перед текстом внутри сноски
-                    oBuilder += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
-                    // Читаем текст внутри сноски
-                    readP(sRStyle, oBuilder);
-                    // Стиль сноски
-                    oBuilder += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
-                    oBuilder += it->second;
-                    oBuilder += L"\"/></w:r>";
+                    std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sRef);
+                    if (it != m_mFootnotes.end())
+                    {
+                        // Пробел перед текстом внутри сноски
+                        oBuilder += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
+                        // Читаем текст внутри сноски
+                        readP(sRStyle, oBuilder);
+                        // Стиль сноски
+                        oBuilder += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
+                        oBuilder += it->second;
+                        oBuilder += L"\"/></w:r>";
+                    }
+                    // Перекрестная ссылка
+                    else
+                    {
+                        oBuilder += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"";
+                        oBuilder += sRef;
+                        oBuilder += L"\">";
+                        // Читаем текст внутри ссылки
+                        readP(sRStyle + L"<w:rStyle w:val=\"cross\"/>", oBuilder);
+                        oBuilder += L"</w:hyperlink>";
+                    }
                 }
-                // Перекрестная ссылка
                 else
                 {
-                    oBuilder += L"<w:hyperlink w:tooltip=\"Current Document\" w:anchor=\"";
-                    oBuilder += sFootnoteName;
-                    oBuilder += L"\">";
+                    // Пишем рельсы
+                    m_oDocXmlRels.WriteString(L"<Relationship Id=\"rHyp");
+                    m_oDocXmlRels.WriteString(std::to_wstring(m_nHyperlinkId));
+                    m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
+                    m_oDocXmlRels.WriteEncodeXmlString(sRef);
+                    m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
+
+                    // Пишем в document.xml
+                    oBuilder.WriteString(L"<w:hyperlink w:tooltip=\"");
+                    oBuilder.WriteEncodeXmlString(sRef);
+                    oBuilder.WriteString(L"\" r:id=\"rHyp");
+                    oBuilder.WriteString(std::to_wstring(m_nHyperlinkId++));
+                    oBuilder.WriteString(L"\">");
+
                     // Читаем текст внутри ссылки
-                    readP(sRStyle + L"<w:rStyle w:val=\"cross\"/>", oBuilder);
+                    readP(sRStyle, oBuilder);
                     oBuilder += L"</w:hyperlink>";
                 }
             }
@@ -807,7 +845,7 @@ public:
     }
 
     // Читает содержание, binary, body, сноски, description
-    bool readText(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oContents, NSStringUtils::CStringBuilder& oRels, NSStringUtils::CStringBuilder& oFootnotes)
+    bool readText(const std::wstring& sPath, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oContents, NSStringUtils::CStringBuilder& oFootnotes)
     {
         if (!m_oLightReader.IsValid())
         {
@@ -852,7 +890,7 @@ public:
             }
             // Читаем картинки
             else if (sName == L"binary")
-                getImage(std::to_wstring(nImageId++), sMediaDirectory, oRels);
+                getImage(std::to_wstring(nImageId++), sMediaDirectory);
         }
         oContents += L"</w:sdtContent></w:sdt>";
         return true;
@@ -1009,7 +1047,7 @@ public:
     }
 
     // Читает binary
-    void getImage(const std::wstring& sImageId, const std::wstring& sMediaDirectory, NSStringUtils::CStringBuilder& oRels)
+    void getImage(const std::wstring& sImageId, const std::wstring& sMediaDirectory)
     {
         std::wstring sId, sType = L".png";
         while (m_oLightReader.MoveToNextAttribute())
@@ -1072,11 +1110,11 @@ public:
 
             m_mImages.insert(std::make_pair(sId, vImage));
             // Запись картинок в рельсы
-            oRels += L"<Relationship Id=\"rPic";
-            oRels += sImageId;
-            oRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
-            oRels += (L"image" + sImageId + sType);
-            oRels += L"\"/>";
+            m_oDocXmlRels += L"<Relationship Id=\"rPic";
+            m_oDocXmlRels += sImageId;
+            m_oDocXmlRels += L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/";
+            m_oDocXmlRels += (L"image" + sImageId + sType);
+            m_oDocXmlRels += L"\"/>";
         }
     }
 
@@ -1405,7 +1443,7 @@ public:
 
     // html -> fb2
 
-    void readStream(NSStringUtils::CStringBuilder& oXml, bool bWasP, bool bWasTable)
+    void readStream(NSStringUtils::CStringBuilder& oXml)
     {
         int nDepth = m_oLightReader.GetDepth();
         if (m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDepth))
@@ -1415,15 +1453,12 @@ public:
             std::wstring sName = m_oLightReader.GetName();
             if (sName == L"#text")
                 oXml.WriteEncodeXmlString(m_oLightReader.GetText());
-            else if (sName == L"br")
+            else if (sName == L"br" && !m_bInTable)
             {
-                if (!bWasP)
-                    oXml.WriteString(L"<p></p>");
+                if (m_bInP)
+                    oXml.WriteString(L"</p><p>");
                 else
-                {
-                    oXml.WriteString(L"</p>");
-                    bWasP = false;
-                }
+                    oXml.WriteString(L"<p></p>");
             }
             else if (sName == L"div")
             {
@@ -1441,20 +1476,26 @@ public:
                 m_oLightReader.MoveToElement();
                 if (m_bFootnote && !sFootnoteName.empty())
                 {
-                    readStream(oFootnote, false, false);
+                    readStream(oFootnote);
                     m_mFootnotes.insert(std::make_pair(sFootnoteName, oFootnote.GetData()));
                     m_bFootnote = false;
                 }
                 else
-                    readStream(oXml, bWasP, bWasTable);
+                    readStream(oXml);
             }
             else if (sName == L"p")
             {
-                if (!bWasP)
+                if (!m_bInTable && !m_bInP)
+                {
                     oXml.WriteString(L"<p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                    m_bInP = true;
+                }
+                readStream(oXml);
+                if (!m_bInTable && m_bInP)
+                {
                     oXml.WriteString(L"</p>");
+                    m_bInP = false;
+                }
             }
             else if (sName == L"title")
             {
@@ -1487,50 +1528,62 @@ public:
             }
             else if (sName == L"h1")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section>");
             }
             else if (sName == L"h2")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section></section>");
             }
             else if (sName == L"h3")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><section><section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section></section></section>");
             }
             else if (sName == L"h4")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><section><section><section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section></section></section></section>");
             }
             else if (sName == L"h5")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><section><section><section><section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section></section></section></section></section>");
             }
             else if (sName == L"h6")
             {
-                if (!bWasP)
+                if (!m_bInTable)
                     oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                m_bInP = true;
+                readStream(oXml);
+                m_bInP = false;
+                if (!m_bInTable)
                     oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
             }
             else if (sName == L"span")
@@ -1551,73 +1604,67 @@ public:
                     if (sAlign == L"super")
                     {
                         oXml.WriteString(L"<sup>");
-                        readStream(oXml, bWasP, bWasTable);
+                        readStream(oXml);
                         oXml.WriteString(L"</sup>");
                     }
                     else if (sAlign == L"sub")
                     {
                         oXml.WriteString(L"<sub>");
-                        readStream(oXml, bWasP, bWasTable);
+                        readStream(oXml);
                         oXml.WriteString(L"</sub>");
                     }
                     else
-                        readStream(oXml, bWasP, bWasTable);
+                        readStream(oXml);
                 }
                 else
-                    readStream(oXml, bWasP, bWasTable);
+                    readStream(oXml);
             }
             else if (sName == L"s")
             {
                 oXml.WriteString(L"<strikethrough>");
-                readStream(oXml, bWasP, bWasTable);
+                readStream(oXml);
                 oXml.WriteString(L"</strikethrough>");
             }
             else if (sName == L"i")
             {
                 oXml.WriteString(L"<emphasis>");
-                readStream(oXml, bWasP, bWasTable);
+                readStream(oXml);
                 oXml.WriteString(L"</emphasis>");
             }
             else if (sName == L"b")
             {
                 oXml.WriteString(L"<strong>");
-                readStream(oXml, bWasP, bWasTable);
+                readStream(oXml);
                 oXml.WriteString(L"</strong>");
             }
             else if (sName == L"table")
             {
-                if (!bWasTable)
-                    oXml.WriteString(L"<table>");
-                readStream(oXml, bWasP, bWasTable);
-                if (!bWasTable)
-                    oXml.WriteString(L"</table>");
+                oXml.WriteString(L"<table>");
+                m_bInTable = true;
+                readStream(oXml);
+                oXml.WriteString(L"</table>");
+                m_bInTable = false;
             }
             else if (sName == L"tr")
             {
-                if (!bWasTable)
-                    oXml.WriteString(L"<tr>");
-                readStream(oXml, bWasP, bWasTable);
-                if (!bWasTable)
-                    oXml.WriteString(L"</tr>");
+                oXml.WriteString(L"<tr>");
+                readStream(oXml);
+                oXml.WriteString(L"</tr>");
             }
             else if (sName == L"td" || sName == L"th")
             {
-                if (!bWasTable)
+                oXml.WriteString(L"<td");
+                while (m_oLightReader.MoveToNextAttribute())
                 {
-                    oXml.WriteString(L"<td");
-                    while (m_oLightReader.MoveToNextAttribute())
-                    {
-                        if (m_oLightReader.GetName() == L"colspan")
-                            oXml.WriteString(L" colspan=\"" + m_oLightReader.GetText() + L"\"");
-                        else if (m_oLightReader.GetName() == L"rowspan")
-                            oXml.WriteString(L" rowspan=\"" + m_oLightReader.GetText() + L"\"");
-                    }
-                    m_oLightReader.MoveToElement();
-                    oXml.WriteString(L">");
+                    if (m_oLightReader.GetName() == L"colspan")
+                        oXml.WriteString(L" colspan=\"" + m_oLightReader.GetText() + L"\"");
+                    else if (m_oLightReader.GetName() == L"rowspan")
+                        oXml.WriteString(L" rowspan=\"" + m_oLightReader.GetText() + L"\"");
                 }
-                readStream(oXml, true, true);
-                if (!bWasTable)
-                    oXml.WriteString(L"</td>");
+                m_oLightReader.MoveToElement();
+                oXml.WriteString(L">");
+                readStream(oXml);
+                oXml.WriteString(L"</td>");
             }
             else if (sName == L"a")
             {
@@ -1644,7 +1691,7 @@ public:
                             if (sAtrName == L"name")
                                 sAtrName = L"id";
                             oXml.WriteString(sAtrName + L"=\"");
-                            oXml.WriteString(sAtrText);
+                            oXml.WriteEncodeXmlString(sAtrText);
                             oXml.WriteString(L"\" ");
                         }
                     }
@@ -1652,13 +1699,13 @@ public:
                 m_oLightReader.MoveToElement();
                 oXml.WriteString(L">");
 
-                readStream(oXml, bWasP, bWasTable);
+                readStream(oXml);
                 oXml.WriteString(L"</a>");
             }
             else if (sName == L"ul")
-                readLi(oXml, true, bWasP, bWasTable);
+                readLi(oXml, true);
             else if (sName == L"ol")
-                readLi(oXml, false, bWasP, bWasTable);
+                readLi(oXml, false);
             else if (sName == L"img")
             {
                 std::wstring sId, sBinary;
@@ -1678,11 +1725,11 @@ public:
                 oXml.WriteString(L"<image l:href=\"#img" + sId + L".png\"/>");
             }
             else
-                readStream(oXml, bWasP, bWasTable);
+                readStream(oXml);
         } while (m_oLightReader.ReadNextSiblingNode2(nDepth));
     }
 
-    void readLi(NSStringUtils::CStringBuilder& oXml, bool bUl, bool bWasP, bool bWasTable)
+    void readLi(NSStringUtils::CStringBuilder& oXml, bool bUl)
     {
         int nNum = 1;
         while (m_oLightReader.MoveToNextAttribute())
@@ -1696,8 +1743,9 @@ public:
         {
             if (m_oLightReader.GetName() == L"li")
             {
-                if (!bWasP)
+                if (!m_bInP)
                     oXml.WriteString(L"<p>");
+                m_bInP = true;
                 if (bUl)
                     oXml.AddCharSafe(183);
                 else
@@ -1734,9 +1782,10 @@ public:
                     oXml.WriteString(sPoint);
                 }
                 oXml.WriteString(L" ");
-                readStream(oXml, true, bWasTable);
-                if (!bWasP)
+                readStream(oXml);
+                if (m_bInP)
                     oXml.WriteString(L"</p>");
+                m_bInP = false;
             }
         } while (m_oLightReader.ReadNextSiblingNode2(nDeath));
     }
@@ -1859,14 +1908,14 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oFootnotes += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
 
     // Создаем рельсы
-    NSStringUtils::CStringBuilder oRels;
-    oRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-    oRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
-    oRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
-    oRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
-    oRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
-    oRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
-    oRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
+    //NSStringUtils::CStringBuilder oRels;
+    m_internal->m_oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
+    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
 
     // Директория картинок
     std::wstring sMediaDirectory = sDirectory + L"/word/media";
@@ -1880,7 +1929,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     bool bNeedContents = false;
     if (oParams)
         bNeedContents = oParams->bNeedContents;
-    if (!m_internal->readText(sPath, sMediaDirectory, oContents, oRels, oFootnotes))
+    if (!m_internal->readText(sPath, sMediaDirectory, oContents, oFootnotes))
         return S_FALSE;
 
     // Переходим в начало
@@ -1934,16 +1983,6 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     {
         oDocumentXmlWriter.WriteStringUTF8(oDocument.GetData());
         oDocumentXmlWriter.CloseFile();
-    }
-
-    // Конец рельсов
-    oRels += L"</Relationships>";
-    // Пишем рельсы в файл
-    NSFile::CFileBinary oRelsWriter;
-    if (oRelsWriter.CreateFileW(sDirectory + L"/word/_rels/document.xml.rels"))
-    {
-        oRelsWriter.WriteStringUTF8(oRels.GetData());
-        oRelsWriter.CloseFile();
     }
 
     // Директория app и core
@@ -2015,6 +2054,16 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
         oAppWriter.CloseFile();
     }
 
+    // Конец рельсов
+    m_internal->m_oDocXmlRels += L"</Relationships>";
+    // Пишем рельсы в файл
+    NSFile::CFileBinary oRelsWriter;
+    if (oRelsWriter.CreateFileW(sDirectory + L"/word/_rels/document.xml.rels"))
+    {
+        oRelsWriter.WriteStringUTF8(m_internal->m_oDocXmlRels.GetData());
+        oRelsWriter.CloseFile();
+    }
+
     // Архивим в docx
     bool bNeedDocx = false;
     if (oParams)
@@ -2067,7 +2116,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
 
     //std::vector<std::wstring> arrBinary;
     NSStringUtils::CStringBuilder oDocument;
-    m_internal->readStream(oDocument, false, false);
+    m_internal->readStream(oDocument);
 
     NSStringUtils::CStringBuilder oRes;
     oRes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");

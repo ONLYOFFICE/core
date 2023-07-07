@@ -103,6 +103,8 @@ namespace SVG
 		m_oStyles.m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
 		m_oStyles.m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
 
+		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
+
 		m_oStyles.m_bDisplay = true;
 	}
 
@@ -125,6 +127,9 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-opacity"))
 			m_oStyles.m_oStroke.m_oColor.SetOpacity(mAttributes.at(L"stroke-opacity"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-miterlimit"))
+			m_oStyles.m_oStroke.m_oMiterlimit.SetValue(mAttributes.at(L"stroke-miterlimit"), ushLevel, bHardMode);
 	}
 
 	void CRenderedObject::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -267,7 +272,7 @@ namespace SVG
 			pRenderer->put_PenLineEndCap(pStroke->m_oLineCap.ToInt());
 		}
 
-		pRenderer->put_PenMiterLimit(4);
+		pRenderer->put_PenMiterLimit(pStroke->m_oMiterlimit.ToDouble());
 		pRenderer->put_PenLineJoin(pStroke->m_oLineJoin.ToInt());
 
 		return true;

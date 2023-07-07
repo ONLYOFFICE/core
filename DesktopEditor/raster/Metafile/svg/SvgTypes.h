@@ -24,8 +24,9 @@ namespace SVG
 		SvgColor m_oColor;
 		SvgDigit m_oWidth;
 		std::vector<double> m_arDash;
-		SvgEnum m_oLineCap;
-		SvgEnum m_oLineJoin;
+		SvgEnum  m_oLineCap;
+		SvgEnum  m_oLineJoin;
+		SvgDigit m_oMiterlimit;
 	};
 
 	struct TClip

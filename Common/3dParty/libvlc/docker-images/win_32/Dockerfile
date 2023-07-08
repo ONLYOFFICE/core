@@ -5,4 +5,4 @@ CMD cd /vlc && \
     cd build && \
     ../extras/package/win32/build.sh -a i686 -z && \
     cd win32 && \
-    make package-win-common
+    make package-win-strip

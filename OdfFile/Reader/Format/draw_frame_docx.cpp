@@ -1750,10 +1750,10 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			
 			if (in_frame)
 			{
-				drawing->type	= oox::typeShape;		
+				drawing->type = oox::typeShape;		
 				
 				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara><m:oMathParaPr/>") + 
+				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara>") + 
 																	content + std::wstring(L"</m:oMathPara></w:p>")));
 			}
 			else
@@ -1761,17 +1761,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				drawing->type = oox::typeUnknown;	 //not drawing	
 				
 				if (runState) Context.finish_run();
-				//if (pState == false)
-				{
-					Context.output_stream() << L"<m:oMathPara>";
-					Context.output_stream() << L"<m:oMathParaPr/>";
-				}
-				Context.output_stream() << content;
 
-				//if (pState == false)
-				{
-					Context.output_stream() << L"</m:oMathPara>";
-				}
+				Context.output_stream() << L"<m:oMathPara>";
+				Context.output_stream() << content;
+				Context.output_stream() << L"</m:oMathPara>";
+
 				if (runState) Context.add_new_run(_T(""));
 			}
 			Context.get_drawing_context().clear_stream_frame();						

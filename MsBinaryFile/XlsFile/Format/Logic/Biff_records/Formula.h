@@ -61,8 +61,8 @@ public:
 	bool			fAlwaysCalc;
 	bool			fShrFmla;
 	
-	BiffAttributeSimple<bool> fFill;
-	BiffAttributeSimple<bool> fClearErrors;
+	bool			fFill;
+	bool			fClearErrors;
 
 	CellParsedFormula		formula;
 };

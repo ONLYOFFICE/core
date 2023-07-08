@@ -94,7 +94,8 @@ void math_mrow::oox_convert(oox::math_context & Context)
 		bDPr = true;
 	}
 
-	bool need_e_old = Context.is_need_e_, need_e = false;
+	bool need_e = false;
+	
 	if (bDPr)
 	{
 		Context.output_stream() << L"<m:d>";
@@ -117,19 +118,21 @@ void math_mrow::oox_convert(oox::math_context & Context)
 		
 		need_e = true;		
 	}
-	else need_e = Context.is_need_e_;
-
-	Context.is_need_e_ = false;
+	else
+		need_e = Context.levels.back().is_need_e_;
 
 	if (need_e)
 	{
 		Context.output_stream() << L"<m:e>";
 	}
-	for (int i = i_start; i < i_end ; i++)
-	{
-		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-		math_element->oox_convert(Context);		
-	}
+	Context.start_level();
+		for (int i = i_start; i < i_end ; i++)
+		{
+			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+			math_element->oox_convert(Context);		
+		}
+	Context.end_level();
+
 	if (need_e)
 	{
 		Context.output_stream() << L"</m:e>";
@@ -138,7 +141,6 @@ void math_mrow::oox_convert(oox::math_context & Context)
 	{
 		Context.output_stream() << L"</m:d>";
 	}
-	Context.is_need_e_ = need_e_old;
 }
 //---------------------------------------------------------------
 const wchar_t * math_mfrac::ns = L"math";
@@ -160,36 +162,38 @@ void math_mfrac::oox_convert(oox::math_context & Context)
 	{
 		return;
 	}
-	bool need_e = Context.is_need_e_;
-	if (need_e)
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"<m:e>";
 	}
-	Context.is_need_e_ = false;
-
 	office_math_element* math_element = NULL;
 
 	Context.output_stream() << L"<m:f>";
 		Context.output_stream() << L"<m:num>";
 		
+			Context.start_level();
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);
+
+			Context.end_level();
 		Context.output_stream() << L"</m:num>";
 	
-		Context.is_need_e_ = false;
 
 		Context.output_stream() << L"<m:den>";
+			
+			Context.start_level();
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);
+			
+			Context.end_level();
 		Context.output_stream() << L"</m:den>";
 
 	Context.output_stream() << L"</m:f>";
 
-	if (need_e)
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"</m:e>";
 	}
-	Context.is_need_e_ = need_e;
 }
 //---------------------------------------------------------------
 const wchar_t * math_msqrt::ns = L"math";
@@ -219,12 +223,13 @@ void math_msqrt::oox_convert(oox::math_context & Context)
 		
 		strm << L"<m:e>";		
 		
-		Context.is_need_e_ = false;
+		Context.start_level();
 			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 				math_element->oox_convert(Context);
 			}
+		Context.end_level();
 		strm << L"</m:e>";
 	strm << L"</m:rad>";
 }
@@ -257,14 +262,14 @@ void math_mroot::oox_convert(oox::math_context & Context)
 		strm << L"<m:deg>";
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
-		strm << L"</m:deg>";
-			
-		Context.is_need_e_ = false;
+		strm << L"</m:deg>";			
 
-		strm << L"<m:e>";		
+		strm << L"<m:e>";	
+		Context.start_level();
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
-		strm << L"</m:e>";		
+		Context.end_level();
+		strm << L"</m:e>";
 
 	strm << L"</m:rad>";
 }
@@ -295,7 +300,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 {
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	Context.text_properties_->content_.style_font_name_ = L"Cambria Math";
+	Context.text_properties_->content_.fo_font_family_ = Context.base_font_name_.empty() ? L"Cambria Math" : Context.base_font_name_;
 	Context.text_properties_->content_.fo_font_size_ = odf_types::length(Context.base_font_size_, odf_types::length::pt);
 	
 	if (mathsize_)
@@ -326,8 +331,10 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 			}
 		}
 	}
-	bool need_e_old = Context.is_need_e_;
-	Context.is_need_e_ = content_.size() > 1 ? true : need_e_old;
+	bool need_e_old = Context.levels.back().is_need_e_;
+	Context.start_level();
+	
+	Context.levels.back().is_need_e_ = content_.size() > 1 ? true : need_e_old;
 
 	for (size_t i = 0; i < content_.size(); i++)
 	{
@@ -350,10 +357,10 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 //reset to default math text props
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	Context.text_properties_->content_.style_font_name_	= L"Cambria Math";
-	Context.text_properties_->content_.fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
+	Context.text_properties_->content_.fo_font_family_ = Context.base_font_name_.empty() ? L"Cambria Math" : Context.base_font_name_;
+	Context.text_properties_->content_.fo_font_size_ = odf_types::length(Context.base_font_size_, odf_types::length::pt);
 
-	Context.is_need_e_ = need_e_old;
+	Context.end_level();
 	{
 		std::wstringstream & strm = Context.math_style_stream();
 		strm.str( std::wstring() );

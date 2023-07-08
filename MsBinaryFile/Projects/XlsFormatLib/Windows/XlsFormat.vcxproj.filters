@@ -2212,9 +2212,6 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB_bu.cpp">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
@@ -4597,9 +4594,6 @@
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.h">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.h">
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.h">

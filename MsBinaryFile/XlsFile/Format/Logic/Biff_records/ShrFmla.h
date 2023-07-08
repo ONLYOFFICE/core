@@ -53,14 +53,14 @@ public:
 	void readFields(CFRecord& record) override;
 	void writeFields(CFRecord& record) override;
 		
-	static const ElementType	type = typeShrFmla;
+	static const ElementType type = typeShrFmla;
 
 //-----------------------------
-	RefU						ref_;
-    BiffAttributeSimple<BYTE>		cUse;
-    SharedParsedFormula			formula;
+	RefU ref_;
+	BYTE cUse;
+    SharedParsedFormula formula;
 
-    XLSB::UncheckedRfX          rfx; //in biff12
+    XLSB::UncheckedRfX rfx; //in biff12
 
 };
 

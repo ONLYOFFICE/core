@@ -50,7 +50,10 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array    content_;
+    office_element_ptr_array content_;
+	office_element_ptr_array rows_;
+
+	bool bMatrix = false;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtable);
@@ -151,11 +154,11 @@ public:
 
 	virtual void oox_convert(oox::math_context & Context);
 
+	office_element_ptr_array content_;
+	office_element_ptr_array cells_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-    office_element_ptr_array    content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtr);

@@ -57,8 +57,8 @@ public:
 
 //-----------------------------
 	Ref8U ref8;
-	BiffAttributeSimple<std::wstring > hlinkClsid;
-	OSHARED::HyperlinkObject		hyperlink;
+	std::wstring hlinkClsid;
+	OSHARED::HyperlinkObject hyperlink;
 
 
 };

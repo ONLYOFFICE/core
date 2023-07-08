@@ -318,7 +318,7 @@ void docx_conversion_context::end_math_formula()
 
 	if (!math_content.empty())
 	{
-		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
+		output_stream() << math_content;
 	}
 }
 void docx_conversion_context::start_sdt(int type)

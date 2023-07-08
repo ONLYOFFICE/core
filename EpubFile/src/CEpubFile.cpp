@@ -544,6 +544,17 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         }
         // spine & guide
         std::wstring sItemRef;
+        if (!nFile)
+        {
+            nFile = 1;
+            // write index.html
+            NSFile::CFileBinary oIndexHtml;
+            if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
+            {
+                oIndexHtml.WriteStringUTF8(sIndexHtml);
+                oIndexHtml.CloseFile();
+            }
+        }
         for (int i = 0; i < nFile; ++i)
         {
             std::wstring sI = std::to_wstring(i);
@@ -566,17 +577,6 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oTocNcx.WriteStringUTF8(sTitle);
         oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index0.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
-    }
-
-    // write index.html
-    if (!nFile)
-    {
-        NSFile::CFileBinary oIndexHtml;
-        if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
-        {
-            oIndexHtml.WriteStringUTF8(sIndexHtml);
-            oIndexHtml.CloseFile();
-        }
     }
 
     // compress

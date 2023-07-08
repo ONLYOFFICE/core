@@ -792,7 +792,10 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
     {
-		if (impl_->transition_.Enabled)
+		// WTF: К слайду применяется анимация из последнего тэга "anim:transitionFilter" (неважно где он). 
+		// Анимации которые нельзя применить к слайду ломают всю презентацию.
+		// TODO: Implement slide animation
+		if (false && impl_->transition_.Enabled)
 		{
 			CP_XML_NODE(L"p:transition")
 			{

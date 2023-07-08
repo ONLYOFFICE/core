@@ -135,9 +135,12 @@ public:
 
 	odf_types::common_anim_smil_attlist		common_attlist_;
 	anim_transition_filter_attlist			filter_attlist_;
+
 private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+	std::wstring convert_filter();
 
 
 };

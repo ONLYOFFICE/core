@@ -55,22 +55,41 @@ namespace oox {
 
 		void start_seq_animation();
 			void set_seq_animation_presentation_node_type(const std::wstring& value);
-			void set_seq_animation_smil_direction(const std::wstring& value);
-			void set_seq_animation_smil_restart(const std::wstring& value);
-			void set_seq_animation_smil_dur(int value);
-			void set_seq_animation_smil_begin(const std::wstring& value);
-			void set_seq_animation_smil_end(const std::wstring& value);
+			void set_seq_animation_direction(const std::wstring& value);
+			void set_seq_animation_restart(const std::wstring& value);
+			void set_seq_animation_dur(int value);
+			void set_seq_animation_delay(const std::wstring& value);
+			void set_seq_animation_end(const std::wstring& value);
 		void end_seq_animation();
+
+		void start_set();
+			void set_set_direction(const std::wstring& value);
+			void set_set_restart(const std::wstring& value);
+			void set_set_duration(int value);
+			void set_set_delay(const std::wstring& value);
+			void set_set_end(const std::wstring& value);
+			void set_set_fill(const std::wstring& value);
+			void set_set_target_element(const std::wstring& value);
+			void set_set_attribute_name(const std::wstring& value);
+			void set_set_to_value(const std::wstring& value);
+		void end_set();
+
+		void start_anim_effect();
+			void set_anim_effect_filter(const std::wstring& value);
+			void set_anim_effect_transition(const std::wstring& value);
+			void set_anim_effect_duration(int value);
+			void set_anim_effect_shape_id(const std::wstring& value);
+		void end_anim_effect();
 
 		void start_animate_motion();
 			void set_animate_motion_presentation_node_type(const std::wstring& value);
-			void set_animate_motion_smil_direction(const std::wstring& value);
-			void set_animate_motion_smil_restart(const std::wstring& value);
-			void set_animate_motion_smil_dur(int value);
-			void set_animate_motion_smil_begin(const std::wstring& value);
-			void set_animate_motion_smil_end(const std::wstring& value);
-			void set_animate_motion_smil_fill(const std::wstring& value);
-			void set_animate_motion_smil_target_element(const std::wstring& value);
+			void set_animate_motion_direction(const std::wstring& value);
+			void set_animate_motion_restart(const std::wstring& value);
+			void set_animate_motion_dur(int value);
+			void set_animate_motion_delay(const std::wstring& value);
+			void set_animate_motion_end(const std::wstring& value);
+			void set_animate_motion_fill(const std::wstring& value);
+			void set_animate_motion_target_element(const std::wstring& value);
 			void set_animate_motion_svg_path(const std::wstring& value);
 		void end_animate_motion();
 

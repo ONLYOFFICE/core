@@ -206,11 +206,11 @@ void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 	animationContext.start_seq_animation();
 
 	if (attlist_.presentation_node_type_)	animationContext.set_seq_animation_presentation_node_type(attlist_.presentation_node_type_.value());
-	if (attlist_.smil_direction_)			animationContext.set_seq_animation_smil_direction(attlist_.smil_direction_.value());
-	if (attlist_.smil_restart_)				animationContext.set_seq_animation_smil_restart(attlist_.smil_restart_.value());
-	if (attlist_.smil_dur_)					animationContext.set_seq_animation_smil_dur(attlist_.smil_dur_.value().get_value());
-	if (attlist_.smil_begin_)				animationContext.set_seq_animation_smil_begin(attlist_.smil_begin_.value());
-	if (attlist_.smil_end_)					animationContext.set_seq_animation_smil_end(attlist_.smil_end_.value());
+	if (attlist_.smil_direction_)			animationContext.set_seq_animation_direction(attlist_.smil_direction_.value());
+	if (attlist_.smil_restart_)				animationContext.set_seq_animation_restart(attlist_.smil_restart_.value());
+	if (attlist_.smil_dur_)					animationContext.set_seq_animation_dur(attlist_.smil_dur_.value().get_value());
+	if (attlist_.smil_begin_)				animationContext.set_seq_animation_delay(attlist_.smil_begin_.value());
+	if (attlist_.smil_end_)					animationContext.set_seq_animation_end(attlist_.smil_end_.value());
 
 	for (size_t i = 0; i < anim_par_array_.size(); i++)
     {
@@ -244,6 +244,202 @@ void anim_transitionFilter::add_attributes( const xml::attributes_wc_ptr & Attri
 {
 	common_attlist_.add_attributes(Attributes);
 	filter_attlist_.add_attributes(Attributes);
+}
+
+std::wstring anim_transitionFilter::convert_filter()
+{
+	std::wstring filter;
+	const _CP_OPT(std::wstring)& subtype = filter_attlist_.smil_subtype_;
+	_CP_OPT(std::wstring) pptx_subtype;
+
+	if (filter_attlist_.smil_type_)
+	{
+		switch (filter_attlist_.smil_type_.value().get_type())
+		{
+		case smil_transition_type::barWipe:
+			filter = L"wipe";
+			if (subtype)
+			{
+				if (subtype.value() == L"topToBottom")	pptx_subtype = L"down";
+				else									pptx_subtype = L"up";
+			}
+			else
+				pptx_subtype = L"up";
+			break;
+		case smil_transition_type::boxWipe:
+			filter = L"slide";
+			if (subtype)
+			{
+					 if (subtype.value() == L"topRight")		pptx_subtype = L"fromTop";
+				else if (subtype.value() == L"bottomRight")		pptx_subtype = L"fromBottom";
+				else if (subtype.value() == L"bottomLeft")		pptx_subtype = L"fromBottom";
+				else if (subtype.value() == L"topCenter")		pptx_subtype = L"fromTop";
+				else if (subtype.value() == L"rightCenter")		pptx_subtype = L"fromRight";
+				else if (subtype.value() == L"bottomCenter")	pptx_subtype = L"fromBottom";
+				else if (subtype.value() == L"leftCenter")		pptx_subtype = L"fromLeft";
+				else											pptx_subtype = L"fromTop";
+			}
+			else 
+				pptx_subtype = L"fromTop";
+			break;
+		case smil_transition_type::fourBoxWipe:
+			filter = L"plus";
+			if (subtype)
+			{
+				if (subtype.value() == L"cornersOut")		pptx_subtype = L"out";
+				else										pptx_subtype = L"in";
+			}
+			else
+				pptx_subtype = L"in";
+			break;
+		case smil_transition_type::barnDoorWipe:
+			filter = L"barn";
+			if (subtype)
+			{
+				if (subtype.value() == L"horizontal")		pptx_subtype = L"inHorizontal";
+				else										pptx_subtype = L"inVertical";
+			}
+			else
+				pptx_subtype = L"inHorizontal";
+			break;
+		case smil_transition_type::irisWipe:              
+			if (subtype)
+			{
+				if (subtype.value() == L"rectangle")
+				{
+					filter = L"box";
+					pptx_subtype = L"in";
+				}
+				else if (subtype.value() == L"diamond")
+				{
+					filter = L"diamond";
+					pptx_subtype = L"in";
+				}
+				else
+				{
+					filter = L"box";
+					pptx_subtype = L"in";
+				}
+			}
+			else
+			{
+				filter = L"box";
+				pptx_subtype = L"in";
+			}
+			break;
+		case smil_transition_type::ellipseWipe:
+			filter = L"circle";
+			pptx_subtype = L"in";
+			break;
+		case smil_transition_type::pinWheelWipe:
+			filter = L"wheel";
+			if (subtype)
+			{
+				if (subtype.value() == L"oneBlade")					pptx_subtype = L"1";
+				else if (subtype.value() == L"twoBladeVertical")	pptx_subtype = L"2";
+				else if (subtype.value() == L"fourBlade")			pptx_subtype = L"4";
+				else												pptx_subtype = L"2";
+			}
+			else
+				pptx_subtype = L"TODO";
+			break;
+		case smil_transition_type::fanWipe:
+			filter = L"wedge";
+			break;
+		case smil_transition_type::waterfallWipe:
+			filter = L"strips";
+			if (subtype)
+			{
+					 if (subtype.value() == L"horizontalLeft")		pptx_subtype = L"downRight";
+				else if (subtype.value() == L"horizontalRight")		pptx_subtype = L"downLeft";
+				else if (subtype.value() == L"verticalLeft")		pptx_subtype = L"upRight";
+				else if (subtype.value() == L"verticalRight")		pptx_subtype = L"upLeft";
+				else												pptx_subtype = L"upRight";
+			}
+			else
+				pptx_subtype = L"upRight";
+			break;
+		case smil_transition_type::slideWipe:
+			filter = L"slide";
+			if (subtype)
+			{
+				if (subtype.value() == L"fromRight")			pptx_subtype = L"fromRight";
+				else											pptx_subtype = L"fromLeft";
+			}
+			break;
+		case smil_transition_type::fade:
+			filter = L"fade";
+			break;
+		case smil_transition_type::checkerBoardWipe:
+			filter = L"checkerboard";
+			if (subtype)
+			{
+				if (subtype.value() == L"across")		pptx_subtype = L"across";
+				else									pptx_subtype = L"across";
+			}
+			else 
+				pptx_subtype = L"across";
+			break;
+		case smil_transition_type::blindsWipe:            
+			filter = L"blinds";
+			if (subtype)
+			{
+				if (subtype.value() == L"horizontal")		pptx_subtype = L"horizontal";
+				else										pptx_subtype = L"vertical";
+			}
+			else
+				pptx_subtype = L"vertical";
+			break;
+		case smil_transition_type::dissolve:
+			filter = L"dissolve";
+			break;
+		case smil_transition_type::randomBarWipe:
+			filter = L"randombar";
+			if (subtype)
+			{
+				if (subtype.value() == L"horizontal")		pptx_subtype = L"horizontal";
+				else										pptx_subtype = L"vertical";
+			}
+			break;
+		case smil_transition_type::pushWipe:            
+		case smil_transition_type::doubleFanWipe:       
+		case smil_transition_type::doubleSweepWipe:     
+		case smil_transition_type::saloonDoorWipe:      
+		case smil_transition_type::windshieldWipe:      
+		case smil_transition_type::snakeWipe:           
+		case smil_transition_type::spiralWipe:          
+		case smil_transition_type::parallelSnakesWipe:  
+		case smil_transition_type::boxSnakesWipe:       
+		case smil_transition_type::singleSweepWipe:     
+		case smil_transition_type::eyeWipe:             
+		case smil_transition_type::roundRectWipe:       
+		case smil_transition_type::starWipe:            
+		case smil_transition_type::miscShapeWipe:       
+		case smil_transition_type::clockWipe:           
+		case smil_transition_type::triangleWipe:        
+		case smil_transition_type::arrowHeadWipe:       
+		case smil_transition_type::pentagonWipe:        
+		case smil_transition_type::hexagonWipe:         
+		case smil_transition_type::diagonalWipe:        
+		case smil_transition_type::bowTieWipe:          
+		case smil_transition_type::miscDiagonalWipe:    
+		case smil_transition_type::veeWipe:             
+		case smil_transition_type::barnVeeWipe:         
+		case smil_transition_type::zigZagWipe:          
+		case smil_transition_type::barnZigZagWipe:       
+			// NOTE: Not implemented yet. Set "fade" as default animation 
+			filter = L"fade"; 
+			break;
+		default:
+
+			break;
+		}
+	}
+
+	if (pptx_subtype)
+		filter += L"(" + pptx_subtype.value() + L")";
+
+	return filter;
 }
 
 void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
@@ -431,6 +627,25 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 
 	Context.get_slide_context().set_transitionFilter(type , dir, param , time);
+
+	std::wstring filter = convert_filter();
+	std::wstring transition = L"in";
+	std::wstring shapeId = L"2";
+
+	if (filter_attlist_.smil_mode_)
+	{
+		if (filter_attlist_.smil_mode_.value() == L"out")
+			transition = L"out";
+	}
+
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+
+	animationContext.start_anim_effect();
+	animationContext.set_anim_effect_filter(filter);
+	animationContext.set_anim_effect_transition(transition);
+	if (time) animationContext.set_anim_effect_duration(time.value());
+	animationContext.set_anim_effect_shape_id(shapeId);
+	animationContext.end_anim_effect();
 }
 
 const wchar_t * anim_audio::ns = L"anim";
@@ -460,7 +675,80 @@ const wchar_t* anim_set::name = L"set";
 
 void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 {
+	_CP_OPT(std::wstring)		direction;
+	_CP_OPT(std::wstring)		restart;
+	_CP_OPT(int)				duration;
+	_CP_OPT(std::wstring)		delay;
+	_CP_OPT(std::wstring)		end;
+	_CP_OPT(std::wstring)		fill;
+	_CP_OPT(std::wstring)		target_element;
+	_CP_OPT(std::wstring)		attribute_name;
+	_CP_OPT(std::wstring)		to_value;
 
+	if (common_attlist_.smil_direction_)
+	{	
+	}
+
+	if (common_attlist_.smil_restart_)
+	{
+	}
+
+	if (common_attlist_.smil_dur_)
+	{
+		duration = common_attlist_.smil_dur_->get_value();
+	}
+
+	if (common_attlist_.smil_begin_)
+	{
+		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
+		if (delayClockvalue.get_value() != -1)
+			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
+		else
+			delay = boost::none;
+	}
+
+	if (common_attlist_.smil_end_)
+	{
+	}
+
+	if (set_attlist_.smil_fill_)
+	{
+		fill = set_attlist_.smil_fill_.value();
+	}
+
+	if (set_attlist_.smil_target_element_)
+	{
+		// TODO: Figure out correct value
+		target_element = L"2";
+	}
+
+	if (set_attlist_.smil_attribute_name_)
+	{
+		if (set_attlist_.smil_attribute_name_.value() == L"visibility")
+			attribute_name = L"style.visibility";
+	}
+
+	if (set_attlist_.smil_to_)
+	{
+		if (set_attlist_.smil_to_.value() == L"visible")
+			to_value = L"visible";
+		else if(set_attlist_.smil_to_.value() == L"hidden")
+			to_value = L"hidden";
+	}
+
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+
+	animationContext.start_set();
+	if (direction)			animationContext.set_set_direction(direction.value());
+	if (restart)			animationContext.set_set_restart(restart.value());
+	if (duration)			animationContext.set_set_duration(duration.value());
+	if (delay)				animationContext.set_set_delay(delay.value());
+	if (end)				animationContext.set_set_end(end.value());
+	if (fill)				animationContext.set_set_fill(fill.value());
+	if (target_element)		animationContext.set_set_target_element(target_element.value());
+	if (attribute_name)		animationContext.set_set_attribute_name(attribute_name.value());
+	if (to_value)			animationContext.set_set_to_value(to_value.value());
+	animationContext.end_set();
 }
 
 void anim_set::add_attributes(const xml::attributes_wc_ptr& Attributes)
@@ -487,16 +775,16 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 	animationContext.start_animate_motion();
 
 	if (common_attlist_.presentation_node_type_)			animationContext.set_animate_motion_presentation_node_type(common_attlist_.presentation_node_type_.value());
-	if (common_attlist_.smil_direction_)					animationContext.set_animate_motion_smil_direction(common_attlist_.smil_direction_.value());
-	if (common_attlist_.smil_restart_)						animationContext.set_animate_motion_smil_restart(common_attlist_.smil_restart_.value());
-	if (common_attlist_.smil_dur_)							animationContext.set_animate_motion_smil_dur(common_attlist_.smil_dur_.value().get_value());
-	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_smil_begin(common_attlist_.smil_begin_.value());
-	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_smil_end(common_attlist_.smil_end_.value());
+	if (common_attlist_.smil_direction_)					animationContext.set_animate_motion_direction(common_attlist_.smil_direction_.value());
+	if (common_attlist_.smil_restart_)						animationContext.set_animate_motion_restart(common_attlist_.smil_restart_.value());
+	if (common_attlist_.smil_dur_)							animationContext.set_animate_motion_dur(common_attlist_.smil_dur_.value().get_value());
+	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_delay(common_attlist_.smil_begin_.value());
+	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
 
-	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_smil_fill(animate_motion_attlist_.smil_fill_.value());
-	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_smil_target_element(animate_motion_attlist_.smil_target_element_.value());
+	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(animate_motion_attlist_.smil_fill_.value());
+	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_target_element(animate_motion_attlist_.smil_target_element_.value());
 	if (animate_motion_attlist_.svg_path_)					animationContext.set_animate_motion_svg_path(animate_motion_attlist_.svg_path_.value());
-
+	
 	animationContext.end_animate_motion();
 }
 

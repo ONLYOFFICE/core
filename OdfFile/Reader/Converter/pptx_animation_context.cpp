@@ -82,15 +82,44 @@ namespace oox {
 		struct _seq_animation : _animation_element
 		{
 			_CP_OPT(std::wstring)							PresentationNodeType;
-			_CP_OPT(std::wstring)							SmilDirection;
-			_CP_OPT(std::wstring)							SmilRestart;
-			_CP_OPT(int)									SmilDurMs;
-			_CP_OPT(std::wstring)							SmilBegin;
-			_CP_OPT(std::wstring)							SmilEnd;
+			_CP_OPT(std::wstring)							Direction;
+			_CP_OPT(std::wstring)							Restart;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							Delay;
+			_CP_OPT(std::wstring)							End;
 
 			_par_animation_array							AnimParArray;
 
 			void serialize(std::wostream& strm) override;
+		};
+
+		struct _set;
+		typedef shared_ptr<_set>::Type						_set_ptr;
+		struct _set : _animation_element
+		{
+			_CP_OPT(std::wstring)							Direction;
+			_CP_OPT(std::wstring)							Restart;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							Delay;
+			_CP_OPT(std::wstring)							End;
+			_CP_OPT(std::wstring)							Fill;
+			_CP_OPT(std::wstring)							TargetElement;
+			_CP_OPT(std::wstring)							AttributeName;
+			_CP_OPT(std::wstring)							ToValue;
+
+			void serialize(std::wostream& strm) override;
+		};
+
+		struct _anim_effect;
+		typedef shared_ptr<_anim_effect>::Type				_anim_effect_ptr;
+		struct _anim_effect : _animation_element
+		{
+			_CP_OPT(std::wstring)							Filter;
+			_CP_OPT(std::wstring)							Transition;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							ShapeID;
+
+			void serialize(std::wostream & strm) override;
 		};
 
 		struct _animate_motion;
@@ -117,12 +146,16 @@ namespace oox {
 		_par_animation_array						par_animation_levels_;
 
 		_animate_motion_ptr							animate_motion_description_;
+		_set_ptr									set_description_;
+		_anim_effect_ptr							anim_effect_description_;
 
 		void clear()
 		{
 			par_animation_levels_.clear();
-			root_animation_element_ = nullptr;
-			animate_motion_description_ = nullptr;
+			root_animation_element_			= nullptr;
+			animate_motion_description_		= nullptr;
+			set_description_				= nullptr;
+			anim_effect_description_		= nullptr;
 		}
 
 		Impl()
@@ -188,71 +221,172 @@ namespace oox {
 		}
 	}
 
-	void pptx_animation_context::set_seq_animation_smil_direction(const std::wstring& value)
+	void pptx_animation_context::set_seq_animation_direction(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
 			if (back->AnimSeq)
 			{
-				back->AnimSeq->SmilDirection = value;
+				back->AnimSeq->Direction = value;
 			}
 		}
 	}
 
-	void pptx_animation_context::set_seq_animation_smil_restart(const std::wstring& value)
+	void pptx_animation_context::set_seq_animation_restart(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
 			if (back->AnimSeq)
 			{
-				back->AnimSeq->SmilRestart = value;
+				back->AnimSeq->Restart = value;
 			}
 		}
 	}
 
-	void pptx_animation_context::set_seq_animation_smil_dur(int value)
+	void pptx_animation_context::set_seq_animation_dur(int value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
 			if (back->AnimSeq)
 			{
-				back->AnimSeq->SmilDurMs = value;
+				back->AnimSeq->Duration = value;
 			}
 		}
 	}
 
-	void pptx_animation_context::set_seq_animation_smil_begin(const std::wstring& value)
+	void pptx_animation_context::set_seq_animation_delay(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
 			if (back->AnimSeq)
 			{
-				back->AnimSeq->SmilBegin = value;
+				back->AnimSeq->Delay = value;
 			}
 		}
 	}
 
-	void pptx_animation_context::set_seq_animation_smil_end(const std::wstring& value)
+	void pptx_animation_context::set_seq_animation_end(const std::wstring& value)
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
 			if (back->AnimSeq)
 			{
-				back->AnimSeq->SmilEnd = value;
+				back->AnimSeq->End = value;
 			}
 		}
 	}
 
 	void pptx_animation_context::end_seq_animation()
 	{
-		
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// p:set
+	void pptx_animation_context::start_set()
+	{
+		impl_->set_description_ = boost::make_shared<Impl::_set>();
+	}
+
+	void pptx_animation_context::set_set_direction(const std::wstring& value)
+	{
+		impl_->set_description_->Direction = value;
+	}
+
+
+	void pptx_animation_context::set_set_restart(const std::wstring& value)
+	{
+		impl_->set_description_->Restart = value;
+	}
+
+	void pptx_animation_context::set_set_duration(int value)
+	{
+		impl_->set_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_set_delay(const std::wstring& value)
+	{
+		impl_->set_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_set_end(const std::wstring& value)
+	{
+		impl_->set_description_->End = value;
+	}
+
+	void pptx_animation_context::set_set_fill(const std::wstring& value)
+	{
+		impl_->set_description_->Fill = value;
+	}
+
+	void pptx_animation_context::set_set_target_element(const std::wstring& value)
+	{
+		impl_->set_description_->TargetElement = value;
+	}
+
+	void pptx_animation_context::set_set_attribute_name(const std::wstring& value)
+	{
+		impl_->set_description_->AttributeName = value;
+	}
+
+	void pptx_animation_context::set_set_to_value(const std::wstring& value)
+	{
+		impl_->set_description_->ToValue = value;
+	}
+
+	void pptx_animation_context::end_set()
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->AnimationActionArray.push_back(impl_->set_description_);
+		}
+		impl_->set_description_ = nullptr;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// p:animEffect
+	void pptx_animation_context::start_anim_effect()
+	{
+		impl_->anim_effect_description_ = boost::make_shared<Impl::_anim_effect>();
+	}
+
+	void pptx_animation_context::set_anim_effect_filter(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->Filter = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_transition(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->Transition = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_duration(int value)
+	{
+		impl_->anim_effect_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_anim_effect_shape_id(const std::wstring& value)
+	{
+		impl_->anim_effect_description_->ShapeID = value;
+	}
+
+	void pptx_animation_context::end_anim_effect()
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->AnimationActionArray.push_back(impl_->anim_effect_description_);
+		}
+		impl_->anim_effect_description_ = nullptr;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// p:animMotion
 	void pptx_animation_context::start_animate_motion()
 	{
 		impl_->animate_motion_description_ = boost::make_shared<Impl::_animate_motion>();
@@ -263,37 +397,37 @@ namespace oox {
 		impl_->animate_motion_description_->PresentationNodeType = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_direction(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_direction(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilDirection = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_restart(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_restart(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilRestart = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_dur(int value)
+	void pptx_animation_context::set_animate_motion_dur(int value)
 	{
 		impl_->animate_motion_description_->SmilDurMs = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_begin(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_delay(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilBegin = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_end(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_end(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilEnd = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_fill(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_fill(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilFill = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_smil_target_element(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_target_element(const std::wstring& value)
 	{
 		impl_->animate_motion_description_->SmilTargetElement = value;
 	}
@@ -407,35 +541,6 @@ namespace oox {
 		impl_->clear();
 	}
 
-	void pptx_animation_context::Impl::_animate_motion::serialize(std::wostream& strm)
-	{
-		CP_XML_WRITER(strm)
-		{
-			CP_XML_NODE(L"p:animMotion")
-			{
-				CP_XML_ATTR(L"origin", L"layout");
-				CP_XML_ATTR(L"path", SvgPath);
-
-				CP_XML_NODE(L"p:cBhvr")
-				{
-					CP_XML_NODE(L"p:cTn")
-					{
-						if (SmilDurMs)
-							CP_XML_ATTR(L"dur", SmilDurMs);
-						CP_XML_ATTR(L"fill", L"hold");
-					}
-					CP_XML_NODE(L"p:tgtEl")
-					{
-						CP_XML_NODE(L"p:spTgt")
-						{
-							CP_XML_ATTR(L"spid", SmilTargetElement);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	void pptx_animation_context::Impl::_par_animation::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
@@ -451,7 +556,7 @@ namespace oox {
 
 					if (NodeType)
 					{
-						if (NodeType && NodeType.value() == L"tmRoot")
+						if (NodeType.value() == L"tmRoot")
 						{
 							CP_XML_ATTR(L"nodeType", L"tmRoot");
 							CP_XML_ATTR(L"dur", L"indefinite");
@@ -481,14 +586,10 @@ namespace oox {
 							AnimParArray[i]->serialize(CP_XML_STREAM());
 						
 						if (AnimSeq)
-						{
 							AnimSeq->serialize(CP_XML_STREAM());
-						}
 						
 						for (size_t i = 0; i < AnimationActionArray.size(); i++)
-						{
 							AnimationActionArray[i]->serialize(CP_XML_STREAM());
-						}
 					}
 				}
 			}
@@ -517,6 +618,129 @@ namespace oox {
 							{
 								AnimParArray[i]->serialize(CP_XML_STREAM());
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	void pptx_animation_context::Impl::_set::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:set")
+			{
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						if (Duration)	CP_XML_ATTR(L"dur", Duration.value());
+						if (Fill)		CP_XML_ATTR(L"fill", Fill.value());
+						
+						if (Delay)
+						{
+							CP_XML_NODE(L"p:stCondLst")
+							{
+								CP_XML_NODE(L"p:cond")
+								{
+									CP_XML_ATTR(L"delay", Delay.value());
+								}
+							}
+						}
+					}
+
+					CP_XML_NODE(L"p:tgtEl")
+					{
+						CP_XML_NODE(L"p:spTgt")
+						{
+							std::wstring shapeId = TargetElement ? TargetElement.value() : L"-1";
+							CP_XML_ATTR(L"spid", shapeId);
+						}
+					}
+
+					CP_XML_NODE(L"p:attrNameLst")
+					{
+						if (AttributeName)
+						{
+							CP_XML_NODE(L"p:attrName")
+							{
+								CP_XML_STREAM() << AttributeName.value();
+							}
+						}
+					}
+				}
+				CP_XML_NODE(L"p:to")
+				{
+					if (ToValue)
+					{
+						CP_XML_NODE(L"p:strVal")
+						{
+							CP_XML_ATTR(L"val", ToValue.value());
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	void pptx_animation_context::Impl::_anim_effect::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:animEffect")
+			{
+				if (Filter)			CP_XML_ATTR(L"filter", Filter.value());
+				if (Transition)		CP_XML_ATTR(L"transition", Transition.value());
+
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					if (Duration)
+					{
+						CP_XML_NODE(L"p:cTn")
+						{
+							CP_XML_ATTR(L"dur", Duration.value());
+						}
+					}
+					if (ShapeID)
+					{
+						CP_XML_NODE(L"p:tgtEl")
+						{
+							CP_XML_NODE(L"p:spTgt")
+							{
+								CP_XML_ATTR(L"spid", ShapeID.value());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void pptx_animation_context::Impl::_animate_motion::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:animMotion")
+			{
+				CP_XML_ATTR(L"origin", L"layout");
+				CP_XML_ATTR(L"path", SvgPath);
+
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						if (SmilDurMs)
+							CP_XML_ATTR(L"dur", SmilDurMs);
+						CP_XML_ATTR(L"fill", L"hold");
+					}
+					CP_XML_NODE(L"p:tgtEl")
+					{
+						CP_XML_NODE(L"p:spTgt")
+						{
+							CP_XML_ATTR(L"spid", SmilTargetElement);
 						}
 					}
 				}

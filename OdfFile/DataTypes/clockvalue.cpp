@@ -126,7 +126,7 @@ bool parseTime(std::wstring Time, double & Hours, double & Minutes, double & Sec
 		boost::wregex r3 (L"([\\d+(\\.\\d{0,})?]+)([A-Za-z]+)");
         if (boost::regex_split(std::back_inserter(values), Time, r3, boost::match_default | boost::format_all))
         {	
-			int val = -1;
+			double val = -1;
 			for (size_t i = 0; i < values.size() ; i++ )
 			{
 				if (values[i].empty()) continue;

@@ -132,7 +132,7 @@ namespace NSNetwork
 					res = curl_easy_perform(curl);
 					/* always cleanup */
 					curl_easy_cleanup(curl);
-					fclose(fp);
+					close(fp);
 				}
 
 				m_bComplete = (CURLE_OK == res);

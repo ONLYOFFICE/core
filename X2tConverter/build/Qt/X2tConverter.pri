@@ -88,10 +88,13 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lBinDocument
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
+
+core_android:LIBS += -Wl,--start-group
 #xlsbformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 #Xls file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
+core_android:LIBS += -Wl,--end-group
 #cf
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
 

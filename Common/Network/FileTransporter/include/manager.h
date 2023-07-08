@@ -57,7 +57,7 @@ namespace ASC
 	};
 
 	class CDownloadManager_private;
-	class CDownloadManager
+	class KERNEL_DECL CDownloadManager
 	{
 	public:
 		CDownloadManager();

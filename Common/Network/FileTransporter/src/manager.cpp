@@ -253,7 +253,7 @@ namespace ASC
 		m_internal->Clear();
 	}
 
-	bool DownloadExternal(const std::wstring& url, const std::wstring& path)
+	bool CDownloadManager::DownloadExternal(const std::wstring& url, const std::wstring& path)
 	{
 		NSNetwork::NSFileTransport::CFileDownloader oDownloader(url, false);
 		NSNetwork::NSFileTransport::CSession oSession;

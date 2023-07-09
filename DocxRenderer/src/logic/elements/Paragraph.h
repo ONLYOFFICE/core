@@ -1,19 +1,10 @@
 ﻿#pragma once
 #include "BaseItem.h"
 #include "TextLine.h"
+#include "../../../convert_params.h"
 
 namespace NSDocxRenderer
 {
-	enum class eTextAssociationType
-	{
-		tatBlockChar        = 0, // Каждый символ во фрейме
-		tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
-		tatPlainLine        = 2, // Каждая линия - параграф обычный
-		tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
-		tatPlainParagraph   = 4, // Все линии объединяются в параграфы
-		tatParagraphToShape = 5  // Параграфы записываем в шейпы
-	};
-
 	class CParagraph : public CBaseItem
 	{
 	public:

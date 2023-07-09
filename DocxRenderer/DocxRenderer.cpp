@@ -79,7 +79,7 @@ HRESULT CDocxRenderer::Close()
 	return hr;
 }
 
-HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::eTextAssociationType& eType)
+HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType)
 {
 	m_pInternal->m_oDocument.m_oCurrentPage.m_eTextAssociationType = eType;
 	return S_OK;

@@ -34,14 +34,14 @@
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
-#include "src/logic/elements/Paragraph.h"
-
 #ifndef DOCXRENDERER_USE_DYNAMIC_LIBRARY
 #define DOCXRENDERER_DECL_EXPORT
 #else
 #include "../DesktopEditor/common/base_export.h"
 #define DOCXRENDERER_DECL_EXPORT Q_DECL_EXPORT
 #endif
+
+#include "convert_params.h"
 
 class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
@@ -187,7 +187,7 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
 	// методы, которыми будет пользоваться конвертер
-	HRESULT SetTextAssociationType(const NSDocxRenderer::eTextAssociationType& eType);
+	HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
 	int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
 
 private:

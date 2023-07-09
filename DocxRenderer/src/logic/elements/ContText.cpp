@@ -157,7 +157,7 @@ namespace NSDocxRenderer
 		if (m_bIsUnderlinePresent)
 		{
 			oWriter.WriteString(L"<w:u w:val=");
-			oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
+			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
 
 			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{
@@ -260,7 +260,7 @@ namespace NSDocxRenderer
 		if (m_bIsUnderlinePresent && bIsNeedSaveFormat)
 		{
 			oWriter.WriteString(L"<w:u w:val=");
-			oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
+			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(m_eUnderlineType));
 
 			if (m_lUnderlineColor != m_pFontStyle->oBrush.Color1)
 			{

@@ -78,7 +78,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CConverter::BuildParagraphes(double dPageWidth, eTextAssociationType eType, CBaseItem::ElemType eBaseType,
+	void CConverter::BuildParagraphes(double dPageWidth, TextAssociationType eType, CBaseItem::ElemType eBaseType,
 									  std::vector<CTextLine*>& rTextLines,
 									  std::vector<CBaseItem*>& rOutputObjects,
 									  CParagraphStyleManager* pParagraphStyleManager)
@@ -88,8 +88,8 @@ namespace NSDocxRenderer
 	}
 
 	// eBaseType == etCell или etParagraph
-	// eType == 2 - 5 из eTextAssociationType
-	void CConverter::BuildParagraphes(double dPageWidth, eTextAssociationType eType,
+	// eType == 2 - 5 из TextAssociationType
+	void CConverter::BuildParagraphes(double dPageWidth, TextAssociationType eType,
 									  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
 									  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects,
 									  CParagraphStyleManager* pParagraphStyleManager)
@@ -103,7 +103,7 @@ namespace NSDocxRenderer
 		eVerticalCrossingType eCrossingType;
 
 		bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
-		bool bIsNeedParagraphToShape = eType == eTextAssociationType::tatParagraphToShape && eBaseType == CBaseItem::ElemType::etParagraph;
+		bool bIsNeedParagraphToShape = eType == TextAssociationType::tatParagraphToShape && eBaseType == CBaseItem::ElemType::etParagraph;
 
 		CTable* pCurrTable = nullptr;
 		size_t nTableIndex = 0;
@@ -143,7 +143,7 @@ namespace NSDocxRenderer
 				continue;
 			}
 
-			if (eType == eTextAssociationType::tatShapeLine)
+			if (eType == TextAssociationType::tatShapeLine)
 			{
 				CreateSingleLineShape(pCurrLine, rOutputObjects);
 				continue;
@@ -167,7 +167,7 @@ namespace NSDocxRenderer
 					}
 					dCurrBeforeSpacing = pCurrTable->CalculateBeforeSpacing(dPreviousStringBaseline);
 					pCurrTable->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
-					if (eType != eTextAssociationType::tatParagraphToShape || eBaseType != CBaseItem::ElemType::etParagraph)
+					if (eType != TextAssociationType::tatParagraphToShape || eBaseType != CBaseItem::ElemType::etParagraph)
 					{
 						pCurrTable->m_bIsNeedSpacing = true;
 					}
@@ -211,7 +211,7 @@ namespace NSDocxRenderer
 				continue;
 			}
 
-			if (eType == eTextAssociationType::tatPlainLine)
+			if (eType == TextAssociationType::tatPlainLine)
 			{
 				CreateSingleLineParagraph(pCurrLine, dPageWidth, &dCurrBeforeSpacing, rOutputObjects);
 				continue;

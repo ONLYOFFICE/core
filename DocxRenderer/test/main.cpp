@@ -127,10 +127,7 @@ int main(int argc, char *argv[])
 		}
 
 		if (!pReader)
-		{
-			pFonts->Release();
-			return 0;
-		}
+			continue;
 
 		pReader->SetTempDirectory(sTempDir);
 
@@ -165,18 +162,18 @@ int main(int argc, char *argv[])
 		std::wstring sZip = L"/" + sFileName + L".zip";
 
 		// проверить все режимы
-		NSDocxRenderer::eTextAssociationType taType;
-		//taType = NSDocxRenderer::eTextAssociationType::tatPlainLine;
-		//taType = NSDocxRenderer::eTextAssociationType::tatShapeLine;
-		taType = NSDocxRenderer::eTextAssociationType::tatPlainParagraph;
-		//taType = NSDocxRenderer::eTextAssociationType::tatParagraphToShape;
+		NSDocxRenderer::TextAssociationType taType;
+		//taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
+		//taType = NSDocxRenderer::TextAssociationType::tatShapeLine;
+		taType = NSDocxRenderer::TextAssociationType::tatPlainParagraph;
+		//taType = NSDocxRenderer::TextAssociationType::tatParagraphToShape;
 
 		oDocxRenderer.SetTextAssociationType(taType);
 		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
 		//Если сразу нужен zip-архив
 		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
-		delete pReader;
+		RELEASEOBJECT(pReader);
 	}
 
 	pFonts->Release();

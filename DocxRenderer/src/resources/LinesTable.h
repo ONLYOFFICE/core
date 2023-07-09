@@ -47,7 +47,7 @@ public:
 		InitLinesTable ();
 	}
 
-	inline std::wstring ConverLineToString(const eLineType& sKey)
+	inline std::wstring ConvertLineToString(const eLineType& sKey)
 	{
 		auto iter = m_Table.find(sKey);
 		return iter == m_Table.end() ? L"\"none\"" : iter->second;

@@ -49,7 +49,7 @@ namespace NSDocxRenderer
 		CRow*                    m_pCurrentRow {nullptr};
 
 
-		eTextAssociationType     m_eTextAssociationType {eTextAssociationType::tatPlainParagraph};
+		TextAssociationType      m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};

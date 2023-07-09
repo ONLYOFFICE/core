@@ -10,10 +10,10 @@ namespace NSDocxRenderer
 		void BuildLines(std::vector<CTextLine*>& rTextLines);
 		void DetermineDominantGraphics(std::vector<CTextLine*>& rTextLines);
 
-		void BuildParagraphes(double dPageWidth, eTextAssociationType eType,
+		void BuildParagraphes(double dPageWidth, TextAssociationType eType,
 							  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
 							  std::vector<CBaseItem*> &rOutputObjects, CParagraphStyleManager* pParagraphStyleManager);
-		void BuildParagraphes(double dPageWidth, eTextAssociationType eType,
+		void BuildParagraphes(double dPageWidth, TextAssociationType eType,
 							  CBaseItem::ElemType eBaseType, std::vector<CTextLine*>& rTextLines,
 							  std::vector<CTable*>& rTables, std::vector<CBaseItem*> &rOutputObjects, CParagraphStyleManager* pParagraphStyleManager);
 

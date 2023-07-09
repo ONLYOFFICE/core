@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,11 +48,6 @@ namespace XLSB
     BaseObjectPtr EndPCDFGRange::clone()
     {
         return BaseObjectPtr(new EndPCDFGRange(*this));
-    }
-
-    void EndPCDFGRange::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
     }
 
 } // namespace XLSB

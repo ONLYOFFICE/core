@@ -44,7 +44,7 @@ PtgRef::PtgRef(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 
 PtgRef::PtgRef(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
-	loc(word)
+	loc(word), loc_xlsb(word)
 {
 }
 
@@ -77,6 +77,32 @@ void PtgRef::loadFields(CFRecord& record)
     {
        record >> loc_xlsb;
     }
+}
+
+void PtgRef::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+	if (global_info->Version < 0x0600)
+	{
+		unsigned char	col = 0;
+		_UINT16			rw = 0;
+
+		SETBIT(rw, 15, loc.rowRelative)
+		SETBIT(rw, 14, loc.colRelative)
+		SETBITS(rw, 0, 13, loc.row);
+
+		col = loc.column;
+
+		record << rw << col;
+	}
+	else if (global_info->Version < 0x0800)
+	{
+		record << loc;
+	}
+	else
+	{
+		record << loc_xlsb;
+	}
 }
 
 void PtgRef::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)

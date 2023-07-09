@@ -260,9 +260,11 @@ struct odf_drawing_state
 };
 struct odf_level_state
 {
-	style_text_properties		*text_properties = NULL;
+	bool bDrawElement = false;
+
+	text_format_properties		*text_properties = NULL;
 	graphic_format_properties	*graphic_properties = NULL;
-	style_paragraph_properties	*paragraph_properties = NULL;
+	paragraph_format_properties	*paragraph_properties = NULL;
 
 	office_element_ptr elm;
 
@@ -295,8 +297,8 @@ public:
 	
 	std::vector<odf_level_state>	current_level_;		//постоянно меняющийся список уровней наследования
 
-	odf_style_context				*styles_context_;
-	odf_conversion_context			*odf_context_;
+	odf_style_context_ptr styles_context_;
+	odf_conversion_context *odf_context_;
 
 	bool			is_footer_;
 	bool			is_header_;
@@ -307,8 +309,8 @@ public:
 	office_element_ptr	create_draw_element(eOdfDrawElements type);
 
 	graphic_format_properties		*current_graphic_properties;
-	style_paragraph_properties		*current_paragraph_properties;
-	style_text_properties			*current_text_properties;
+	paragraph_format_properties		*current_paragraph_properties;
+	text_format_properties			*current_text_properties;
 
 	anchor_settings						anchor_settings_;
 
@@ -346,7 +348,7 @@ office_element_ptr & odf_drawing_context::get_current_element()
 	return impl_->current_level_.back().elm;
 }
 
-void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
+void odf_drawing_context::set_styles_context(odf_style_context_ptr styles_context)
 {
 	impl_->styles_context_ = styles_context;
 }
@@ -412,11 +414,8 @@ void odf_drawing_context::start_group()
 	
 	if (false == impl_->current_level_.empty())
 		impl_->current_level_.back().elm->add_child_element(group_elm);
-
-	odf_level_state	level_state(group_elm);
-	impl_->current_level_.push_back(level_state);
 	
-	if (group== NULL)return;
+	if (group == NULL)return;
 
 	//если группа топовая - то данные если не записать - сотруться
 	if (!impl_->current_drawing_state_.name_.empty())
@@ -432,8 +431,7 @@ void odf_drawing_context::start_group()
 	
 	impl_->current_drawing_state_.z_order_	= -1;
 
-////////////////////////////////////////////////////////////////////////////////////////
-//////////	
+//----------------------------------------------------------------------------------------------------	
 	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
 	
 	office_element_ptr & style_group_elm = impl_->styles_context_->last_state()->get_office_element();
@@ -443,9 +441,14 @@ void odf_drawing_context::start_group()
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 	group_state->graphic_properties = impl_->current_graphic_properties;
+
+//----------------------------------------------------------------------------------------------------	
+	odf_level_state	level_state(impl_->current_graphic_properties, group_elm);
+	level_state.bDrawElement = true;
+	impl_->current_level_.push_back(level_state);
 
 	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 
@@ -487,15 +490,7 @@ void odf_drawing_context::end_group()
 	impl_->current_group_ = impl_->group_list_.back()->prev_group;
 	impl_->group_list_.pop_back();
 
-	if (!impl_->current_level_.empty())
-		impl_->current_level_.pop_back();
-
-	if (!impl_->current_level_.empty())
-	{
-		impl_->current_text_properties = impl_->current_level_.back().text_properties;
-		impl_->current_graphic_properties = impl_->current_level_.back().graphic_properties;
-		impl_->current_paragraph_properties = impl_->current_level_.back().paragraph_properties;
-	}
+	end_element();
 }
 
 
@@ -548,6 +543,40 @@ void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_att
 	
 	impl_->current_graphic_properties	= NULL;
 	impl_->current_drawing_state_.clear();
+}
+void odf_drawing_context::set_anchor_drawing()
+{
+	if (impl_->current_level_.empty()) return;
+	if (!impl_->current_level_.back().bDrawElement) return;
+	if (!impl_->current_level_.back().graphic_properties) return;
+
+	impl_->current_level_.back().graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_ = impl_->anchor_settings_.style_vertical_pos_;
+	impl_->current_level_.back().graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_ = impl_->anchor_settings_.style_horizontal_pos_;
+
+	impl_->current_level_.back().graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_ = impl_->anchor_settings_.style_vertical_rel_;
+	impl_->current_level_.back().graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_ = impl_->anchor_settings_.style_horizontal_rel_;
+
+	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_ = impl_->anchor_settings_.fo_margin_left_;
+	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_top_ = impl_->anchor_settings_.fo_margin_top_;
+	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_ = impl_->anchor_settings_.fo_margin_right_;
+	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_ = impl_->anchor_settings_.fo_margin_bottom_;
+	
+	impl_->current_level_.back().graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
+
+	int index = impl_->current_drawing_state_.index_base < 0 ? 0 : impl_->current_drawing_state_.index_base;
+	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
+	
+	if (draw && !impl_->current_drawing_state_.in_group_)
+	{
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
+	}
+	else // libra падает
+	{
+		impl_->current_level_.back().graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
+		impl_->current_level_.back().graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;
+		impl_->current_level_.back().graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;
+		impl_->current_level_.back().graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;
+	}
 }
 void odf_drawing_context::end_drawing()
 {
@@ -679,28 +708,8 @@ void odf_drawing_context::end_drawing()
 		//не поддерживается :( - нужно считать искажения на простейшие фигуры - линии, ректы, эллипсы 
 	}
 
-	if (impl_->current_graphic_properties)
-	{
-		impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
-		impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+	//set_anchor_drawing();
 
-		impl_->current_graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
-		impl_->current_graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
-
-		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
-		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
-		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
-		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
-
-		if (draw && !impl_->current_drawing_state_.in_group_)
-			draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
-
-		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
-		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;	
-		impl_->current_graphic_properties->style_wrap_contour_	= impl_->anchor_settings_.style_wrap_contour_;	
-		impl_->current_graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;	
-		impl_->current_graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;	
-	}
 	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
 	//{
 	//	draw->common_draw_attlists_.position_.svg_x_ = boost::none;
@@ -793,7 +802,7 @@ void odf_drawing_context::Impl::create_draw_base(eOdfDrawElements type)
 	if (style_)
 	{
         style_name = style_->style_name_;
-		current_graphic_properties = style_->content_.get_graphic_properties();
+		current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 
 	if (is_presentation_ && current_drawing_state_.presentation_class_)
@@ -808,6 +817,7 @@ void odf_drawing_context::Impl::create_draw_base(eOdfDrawElements type)
 		current_level_.back().elm->add_child_element(draw_elm);
 
 	odf_level_state	level_state(current_graphic_properties, draw_elm);
+	level_state.bDrawElement = true;
 	current_level_.push_back(level_state);
 
 	odf_element_state state(draw_elm, style_name, style_shape_elm, level);
@@ -910,6 +920,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
 		
 		odf_level_state	level_state(draw_elm);
+		level_state.bDrawElement = true;
 		impl_->current_level_.push_back(level_state);
 
 		impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 2, impl_->current_drawing_state_.elements_.end());
@@ -954,6 +965,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_level_.erase (impl_->current_level_.end() - 1, impl_->current_level_.end());
 
 		odf_level_state	level_state( draw_elm );
+		level_state.bDrawElement = true;
 		impl_->current_level_.push_back(level_state);
 		
 		impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 1, impl_->current_drawing_state_.elements_.end());
@@ -1300,7 +1312,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 
 		if (impl_->current_drawing_state_.name_.empty())
 		{
@@ -1316,6 +1328,8 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 }
 void odf_drawing_context::end_element()
 {
+	set_anchor_drawing();
+
 	impl_->current_level_.pop_back();
 	
 	if (!impl_->current_level_.empty())
@@ -2419,7 +2433,7 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
-					impl_->current_text_properties = style_->content_.get_style_text_properties();
+					impl_->current_text_properties = style_->content_.add_get_style_text_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
 					
 					if (!impl_->current_level_.empty())
@@ -2433,9 +2447,9 @@ void odf_drawing_context::set_text_properties(style_text_properties *text_proper
 		}
 	}
 	if (impl_->current_text_properties)
-		impl_->current_text_properties ->apply_from(text_properties);
+		impl_->current_text_properties->apply_from(text_properties->content_);
 }
-void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
+void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *paragraph_properties)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
@@ -2452,7 +2466,7 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 				if (style_)
 				{
-					impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+					impl_->current_paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
 
 					if (!impl_->current_level_.empty())
@@ -2465,8 +2479,8 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 			}
 		}
 	}
-	if (impl_->current_paragraph_properties)
-		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+	if (impl_->current_paragraph_properties && paragraph_properties)
+		impl_->current_paragraph_properties ->apply_from(*paragraph_properties);
 }
 void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
 {
@@ -2522,7 +2536,7 @@ void odf_drawing_context::set_textarea_rotation(double val)
 
 	if (!impl_->current_text_properties) return;
 
-	impl_->current_text_properties->content_.style_text_rotation_angle_ = (int)val;
+	impl_->current_text_properties->style_text_rotation_angle_ = (int)val;
 }
 
 void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
@@ -2537,9 +2551,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
-	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
+	if (!ea.empty())	impl_->current_text_properties->fo_font_family_ = latin;
+	if (!cs.empty())	impl_->current_text_properties->style_font_family_complex_ = cs;
+	if (!latin.empty())	impl_->current_text_properties->style_font_family_asian_ = ea;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
@@ -2558,7 +2572,7 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 	if (std::wstring::npos == hexColor.find(L"#")) 
 		hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_text_properties->content_.fo_color_ = hexColor;
+	impl_->current_text_properties->fo_color_ = hexColor;
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
@@ -2597,14 +2611,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
 		if (style_)
 		{
-			impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+			impl_->current_paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 			
 			if (!impl_->current_level_.empty())
 				impl_->current_level_.back().paragraph_properties = impl_->current_paragraph_properties;
 		}
 	}
 	
-	style_paragraph_properties	* paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
+	paragraph_format_properties	*paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
@@ -2625,7 +2639,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		}
 		if (style_ && !paragraph_properties)
 		{
-			paragraph_properties = style_->content_.get_style_paragraph_properties();
+			paragraph_properties = style_->content_.add_get_style_paragraph_properties();
 		}
 	}
 	
@@ -2639,14 +2653,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
 				
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 1://SimpleTypes::textverticaltypeHorz: 
 			default:
-				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 				break;
 		}
 	}
@@ -2659,14 +2673,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 			case 3://SimpleTypes::textverticaltypeVert: 
 			case 2://SimpleTypes::textverticaltypeMongolianVert:
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 0://SimpleTypes::textverticaltypeEaVert: 
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 				break;
 			case 1://SimpleTypes::textverticaltypeHorz: 
 			default:
-				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				impl_->current_paragraph_properties->style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 				break;
 		}
 	}
@@ -2727,9 +2741,18 @@ void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 		start_frame();
 	else
 	{
-		//remove text_box - он лишний (оставляя фейковый, который не запишется)
-		impl_->current_level_.back().elm = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
-		
+		office_element_ptr elm = office_element_ptr();
+		if (impl_->current_level_.empty())
+		{
+			odf_level_state	level_state(elm);
+			level_state.bDrawElement = true;
+			impl_->current_level_.push_back(level_state);
+		}
+		else
+		{
+			//remove text_box - он лишний (оставляя фейковый, который не запишется)
+			impl_->current_level_.back().elm = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
+		}
 		if (impl_->current_level_.size() > 1)
 		{
 			draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_[impl_->current_level_.size() - 2].elm.get());
@@ -2776,11 +2799,12 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	if (style_)
 	{
         style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.add_get_style_graphic_properties();
 	}
 	control->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 //--------------------	
 	start_element(control_elm);
+	impl_->current_level_.back().bDrawElement = true;
 }
 void odf_drawing_context::end_control()
 {
@@ -2804,6 +2828,7 @@ void odf_drawing_context::start_media(std::wstring name)
 	plugin->draw_mime_type_ = L"application/vnd.sun.star.media";
 	
 	start_element(plugin_elm);
+	impl_->current_level_.back().bDrawElement = true;
 }
 void odf_drawing_context::add_image_replacement()
 {
@@ -3229,14 +3254,14 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
 	{
 		//настройки цвета - перетащить в линии и заливки - так уж нужно wordart-у оо
-		style_text_properties *text_properties_ = text_context->get_text_properties();
+		text_format_properties *text_properties_ = text_context->get_text_properties();
 		
 		if (text_properties_)
 		{
-			color color_ = text_properties_->content_.fo_color_.get_value_or(color(L"#000000"));
+			color color_ = text_properties_->fo_color_.get_value_or(color(L"#000000"));
 			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = color_;			
 			
-			if (text_properties_->content_.style_text_outline_)
+			if (text_properties_->style_text_outline_)
 			{
 				//line
 				impl_->current_graphic_properties->svg_stroke_color_	= color_;

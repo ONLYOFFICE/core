@@ -577,7 +577,8 @@ namespace DocFileFormat
 					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					switch (val)
 					{
-					case 0x0000:	break; //inline
+					case 0x0000:	
+									appendValueAttribute( _framePr, L"w:yAlign", L"inline");	break;
 					case 0xfffc:	appendValueAttribute( _framePr, L"w:yAlign", L"top");		break;
 					case 0xfff8:	appendValueAttribute( _framePr, L"w:yAlign", L"center");	break;
 					case 0xfff4:	appendValueAttribute( _framePr, L"w:yAlign", L"bottom");	break;

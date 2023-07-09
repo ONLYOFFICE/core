@@ -12,6 +12,8 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_x2t
+CONFIG += core_boost_date_time
+
 include(../../../Common/base.pri)
 include(../../../Common/3dParty/icu/icu.pri)
 
@@ -70,8 +72,6 @@ HEADERS +=  ../../src/cextracttools.h \
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
-#Xls file
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 # odf format
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFormatLib
 #doc file
@@ -88,8 +88,13 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lBinDocument
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
+
+core_android:LIBS += -Wl,--start-group
 #xlsbformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
+#Xls file
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
+core_android:LIBS += -Wl,--end-group
 #cf
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
 

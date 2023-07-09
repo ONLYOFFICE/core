@@ -54,20 +54,51 @@ void math_mtable::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void math_mtable::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if (L"mtr" == Name)
+	{
+		CP_CREATE_ELEMENT(rows_);
+
+		math_mtr* mtr = rows_.empty() ? NULL : dynamic_cast<math_mtr*>(rows_.back().get());
+		if (mtr)
+		{
+			if (mtr->cells_.size() > 1)
+				bMatrix = true;
+		}
+	}
+	else
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
 }
 
 void math_mtable::oox_convert(oox::math_context & Context)
 {//0* elements
 	std::wostream & strm = Context.output_stream();
 	
-	strm << L"<m:m>";		
+	if (bMatrix) strm << L"<m:m>";
+	else strm << L"<m:eqArr>";	
+
+	Context.start_level();
+	
+	Context.levels.back().bMatrix = bMatrix; 
+	Context.levels.back().is_need_e_ = !bMatrix;
+
 		for (size_t i = 0; i < content_.size(); i++)
 		{
-			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());			
+
 			math_element->oox_convert(Context);
 		}
-	strm << L"</m:m>";
+		for (size_t i = 0; i < rows_.size(); i++)
+		{
+			office_math_element* math_element = dynamic_cast<office_math_element*>(rows_[i].get());
+
+			math_element->oox_convert(Context);
+		}
+	if (bMatrix) strm << L"</m:m>";
+	else strm << L"</m:eqArr>";
+
+	Context.end_level();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -82,38 +113,47 @@ void math_mtr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void math_mtr::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if (L"mtd" == Name)
+	{
+		CP_CREATE_ELEMENT(cells_);
+	}
+	else
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
 }
 
 void math_mtr::oox_convert(oox::math_context & Context)
 {//0* elements
 	std::wostream & strm = Context.output_stream();
+	
+	if (Context.levels.back().is_need_e_)
+		strm << L"<m:e>";
 
-	strm << L"<m:mr>";		
+	if (Context.levels.back().bMatrix) strm << L"<m:mr>";
 
-	bool need_e_old = Context.is_need_e_;
+	bool bMatrix = Context.levels.back().bMatrix;
+	
+	Context.start_level();
+	Context.levels.back().is_need_e_ = bMatrix;
+	Context.levels.back().bMatrix = bMatrix;
 
 	for (size_t i = 0; i < content_.size(); i++)
 	{
-		//Context.is_need_e_ = content_.size() > 1 ? true : false;
-		Context.is_need_e_ = true;
-
-		//math_mrow*		row_test	= dynamic_cast<math_mrow*>(content_[i].get());
-		//math_munder*	munder_test	= dynamic_cast<math_munder*>(content_[i].get());
-		//math_mfrac*		frac_test	= dynamic_cast<math_mfrac*>(content_[i].get());
-		//
-		//if (row_test || munder_test || frac_test)
-		//	Context.output_stream() << L"<m:e>";// EqArray записался в числитель вместо знаменателя.docx - дублирование
-
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 		math_element->oox_convert(Context);
-		
-		//if (row_test || munder_test || frac_test)
-		//	strm << L"</m:e>";
 	}
-	strm << L"</m:mr>";
+	for (size_t i = 0; i < cells_.size(); i++)
+	{
+		office_math_element* math_element = dynamic_cast<office_math_element*>(cells_[i].get());
+		math_element->oox_convert(Context);
+	}
+	Context.end_level();
 
-	Context.is_need_e_ = need_e_old;
+	if (Context.levels.back().bMatrix) strm << L"</m:mr>";
+
+	if (Context.levels.back().is_need_e_)
+		strm << L"</m:e>";
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -155,14 +195,20 @@ void math_mtd::oox_convert(oox::math_context & Context)
 {
 	std::wostream & strm = Context.output_stream();
 
-	strm << L"<m:e>";		
-	Context.is_need_e_ = false;
-		for (size_t i = 0; i < content_.size(); i++)
-		{
-			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-			math_element->oox_convert(Context);
-		}
-	strm << L"</m:e>";
+	if (Context.levels.back().is_need_e_)
+		strm << L"<m:e>";
+	
+	Context.start_level();
+	
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());			
+		math_element->oox_convert(Context);
+	}
+	Context.end_level();
+	
+	if (Context.levels.back().is_need_e_)
+		strm << L"</m:e>";
 }
 
 //----------------------------------------------------------------------------------------------------

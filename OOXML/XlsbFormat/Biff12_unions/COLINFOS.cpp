@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginColInfos>())
         {
-            m_BrtBeginColInfos = elements_.back();
+            m_bBrtBeginColInfos = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginColInfos = false;
 
         while (proc.optional<ColInfo>())
         {
@@ -68,15 +70,30 @@ namespace XLSB
             elements_.pop_back();
         }
 
-
         if (proc.optional<EndColInfos>())
         {
-            m_BrtEndColInfos = elements_.back();
+            m_bBrtEndColInfos = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColInfos = false;
 
-        return m_BrtBeginColInfos && !m_arBrtColInfo.empty() && m_BrtEndColInfos;
+        return m_bBrtBeginColInfos && !m_arBrtColInfo.empty() && m_bBrtEndColInfos;
     }
+
+	const bool COLINFOS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginColInfos>();
+
+		for (auto &item : m_arBrtColInfo)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndColInfos>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

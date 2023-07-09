@@ -219,9 +219,8 @@ namespace Txt2Docx
 						if (!s.empty())
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
-							rPr_->m_oRFonts		= font;
-							std::wstring s_ = XmlUtils::EncodeXmlString(s);
-                            AddText(paragraph, s_, rPr_);
+							rPr_->m_oRFonts	= font;
+                            AddText(paragraph, s, rPr_);
 						}
 					}
                     AddTab(paragraph);
@@ -230,8 +229,7 @@ namespace Txt2Docx
 
 				if (!line.empty())
 				{
-					std::wstring s_ = XmlUtils::EncodeXmlString(line);
-                    AddText(paragraph, s_, rPr);
+                    AddText(paragraph, line, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);
 			}

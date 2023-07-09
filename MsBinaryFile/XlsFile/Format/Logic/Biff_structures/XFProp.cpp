@@ -38,6 +38,8 @@
 #include "BitMarkedStructs.h"
 
 #include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
+
 
 namespace XLS
 {
@@ -56,7 +58,7 @@ void XFProp::load(CFRecord& record)
 	switch(xfPropType)
 	{
 		case 0x0000:
-			xfPropDataBlob.reset(new BIFF_BYTE(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(0));
 			break;
 		case 0x0001:
 		case 0x0002:
@@ -83,6 +85,7 @@ void XFProp::load(CFRecord& record)
 		case 0x000F:
 		case 0x0010:
 		case 0x0011: // XFPropTextRotation
+		case 0x0012: // indent
 		case 0x0013: // ReadingOrder
 		case 0x0014:
 		case 0x0015:
@@ -99,12 +102,12 @@ void XFProp::load(CFRecord& record)
 		case 0x0025:
 		case 0x002B:
 		case 0x002C:
-			xfPropDataBlob.reset(new BIFF_BYTE(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(0));
 			break;
 		case 0x0018:
 			{
 				boost::shared_ptr<LPWideString> str(new LPWideString);
-				str->setName(L"value");
+				//str->setName(L"value");
 				record >> *str;
 				xfPropDataBlob = str;
 				return;
@@ -114,15 +117,15 @@ void XFProp::load(CFRecord& record)
 		case 0x001B:
 		case 0x0029:
 		case 0x002A:
-			xfPropDataBlob.reset(new BIFF_WORD(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_WORD(0));
 			break;
 		case 0x0024:
-			xfPropDataBlob.reset(new BIFF_DWORD(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_DWORD(0));
 			break;
 		case 0x0026:
 			{
 				boost::shared_ptr<LPWideString> str(new LPWideString);
-				str->setName(L"value");
+				//str->setName(L"value");
 				record >> *str;
 				xfPropDataBlob = str;
 				return;
@@ -134,6 +137,24 @@ void XFProp::load(CFRecord& record)
 	if (xfPropDataBlob)
 	{
 		record >> *xfPropDataBlob;
+	}
+}
+void XFProp::save(CFRecord& record)
+{
+	if (xfPropDataBlob)
+	{
+		cb = sizeof(cb) + sizeof(xfPropType) + sizeof(*xfPropDataBlob.get());
+
+		record << xfPropType << cb;
+
+		if (xfPropType == 0x0026 || xfPropType == 0x0018)
+		{
+			LPWideString* string = dynamic_cast<LPWideString*>(xfPropDataBlob.get());
+			if (string)
+				record << *string;
+		}
+		else
+			 record << *xfPropDataBlob;
 	}
 }
 static void serialize_color_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
@@ -178,6 +199,105 @@ static void serialize_val_prop(std::wostream & stream, const std::wstring & name
 			LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
 			if (str_)	CP_XML_ATTR(L"val", XmlUtils::EncodeXmlString(str_->value()));
 		}
+	}
+}
+static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::wstring & typeName, BiffStructurePtr & val)
+{
+	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+	{
+		std::wstring wsPropName = oReader.GetName();
+
+		if (!wsPropName.empty() && wsPropName == L"val")
+		{
+			auto value = oReader.GetText();
+
+			if (typeName == L"BIFF_BYTE")
+			{
+				BYTE byte = 0;
+
+				if (L"true" == value) byte = 1;
+				else if (L"True" == value) byte = 1;
+				else if (L"1" == value) byte = 1;
+				else if (L"t" == value) byte = 1;
+				else if (L"on" == value) byte = 1;
+				else if (L"f" == value) byte = 0;
+				else if (L"0" == value) byte = 0;
+				else if (L"false" == value) byte = 0;
+				else if (L"False" == value) byte = 0;
+				else if (L"off" == value) byte = 0;
+
+				else if (L"none" == value) byte = 0;
+				else if (L"major" == value) byte = 1;
+				else if (L"minor" == value) byte = 2;
+
+				else byte = XmlUtils::GetInteger(value);
+
+				val.reset(new BIFF_BYTE(byte));
+			}
+			else if (typeName == L"BIFF_WORD")
+			{
+				unsigned short word = 0;
+
+				if (L"baseline" == value) word = 0;
+				else if (L"superscript" == value) word = 1;
+				else if (L"subscript" == value) word = 2;
+				else if (L"none" == value) word = 0;
+				else if (L"single" == value) word = 1;
+				else if (L"double" == value) word = 2;
+				else if (L"singleAccounting" == value) word = 33;
+				else if (L"doubleAccounting" == value) word = 34;
+
+				else if (L"true" == value) word = 0x02BC;
+				else if (L"True" == value) word = 0x02BC;
+				else if (L"1" == value) word = 0x02BC;
+				else if (L"t" == value) word = 0x02BC;
+				else if (L"on" == value) word = 0x02BC;
+				else if (L"f" == value) word = 0x0190;
+				else if (L"0" == value) word = 0x0190;
+				else if (L"false" == value) word = 0x0190;
+				else if (L"False" == value) word = 0x0190;
+				else if (L"off" == value) word = 0x0190;
+
+				else word = XmlUtils::GetInteger(value);
+
+				val.reset(new BIFF_WORD(word));
+			}
+			else if (typeName == L"BIFF_DWORD")
+			{
+				val.reset(new BIFF_DWORD(XmlUtils::GetInteger(value) * 20.));
+			}
+			else if (typeName == L"LPWideString")
+			{
+				val.reset(new LPWideString(value));
+			}
+		}
+
+		oReader.MoveToElement();
+	}
+
+}
+static void deserialize_prop(XmlUtils::CXmlLiteReader& oReader, const std::wstring & typeName, BiffStructurePtr & val)
+{
+	auto value = oReader.GetText();
+
+	if (typeName == L"BIFF_BYTE")
+	{
+		BYTE byte = 0;
+
+		if (L"true" == value) byte = 1;
+		else if (L"True" == value) byte = 1;
+		else if (L"1" == value) byte = 1;
+		else if (L"t" == value) byte = 1;
+		else if (L"on" == value) byte = 1;
+		else if (L"f" == value) byte = 0;
+		else if (L"0" == value) byte = 0;
+		else if (L"false" == value) byte = 0;
+		else if (L"False" == value) byte = 0;
+		else if (L"off" == value) byte = 0;
+
+		else byte = XmlUtils::GetInteger(value);
+
+		val.reset(new BIFF_BYTE(byte));
 	}
 }
 static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStructurePtr & val)
@@ -232,6 +352,57 @@ static void serialize_border_prop(std::wostream & stream, const std::wstring & n
 	}
 }
 
+static XFPropBorder* deserialize_border_prop(XmlUtils::CXmlLiteReader& oReader)
+{
+	XFPropBorder * border = new XFPropBorder;
+	if (!border)	return nullptr;
+
+	border->dgBorder = 0;
+
+	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+	{
+		std::wstring wsPropName = oReader.GetName();
+
+		if (!wsPropName.empty() && wsPropName == L"style")
+		{
+			auto value = oReader.GetTextA();
+
+			if (value == "none") border->dgBorder = 0;
+			else if (value == "thin") border->dgBorder = 1;
+			else if (value == "medium") border->dgBorder = 2;
+			else if (value == "dashed") border->dgBorder = 3;
+			else if (value == "dotted") border->dgBorder = 4;
+			else if (value == "thick") border->dgBorder = 5;
+			else if (value == "double") border->dgBorder = 6;
+			else if (value == "hair") border->dgBorder = 7;
+			else if (value == "mediumDashed") border->dgBorder = 8;
+			else if (value == "dashDot") border->dgBorder = 9;
+			else if (value == "mediumDashDot") border->dgBorder = 10;
+			else if (value == "dashDotDot") border->dgBorder = 11;
+			else if (value == "mediumDashDotDot") border->dgBorder = 12;
+			else if (value == "slantDashDot") border->dgBorder = 13;
+
+			//oReader.MoveToNextAttribute();
+		}
+
+		oReader.MoveToElement();
+	}
+
+	if (!oReader.IsEmptyNode())
+	{
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring wsPropName = oReader.GetName();
+
+			if (wsPropName == L"color")			
+				border->color.deserialize(oReader);			
+		}
+	}
+
+	return border;
+}
+	
 void XFProp::serialize_attr(CP_ATTR_NODE)
 {
 	switch(xfPropType)
@@ -260,7 +431,7 @@ void XFProp::serialize_attr(CP_ATTR_NODE)
 				case 16:	CP_XML_ATTR(L"patternType", L"thinDiagCross");			break; //Thin diagonal crosshatch
 				case 17:	CP_XML_ATTR(L"patternType", L"gray125");				break; //12.5% gray
 				case 18:	CP_XML_ATTR(L"patternType", L"gray0625");				break; //6.25% gray
-							CP_XML_ATTR(L"patternType", L"solid");		
+							//CP_XML_ATTR(L"patternType", L"solid");		
 			}
 		}break;
 		case 0x0003:
@@ -268,14 +439,131 @@ void XFProp::serialize_attr(CP_ATTR_NODE)
 			XFPropGradient * grad_ = dynamic_cast<XFPropGradient*>(xfPropDataBlob.get());
 			if (grad_) grad_->serialize_attr(CP_GET_XML_NODE());
  		}break;
-		case 0x0026:
+		case 0x000D:	serialize_val_attr(CP_GET_XML_NODE(), L"diagonalDown", xfPropDataBlob);		break;
+		case 0x000E:	serialize_val_attr(CP_GET_XML_NODE(), L"diagonalUp", xfPropDataBlob);		break;
+		case 0x000F:	serialize_val_attr(CP_GET_XML_NODE(), L"horizontal", xfPropDataBlob);		break;
+		case 0x0010:	serialize_val_attr(CP_GET_XML_NODE(), L"vertical", xfPropDataBlob);		break;
+		case 0x0011:	serialize_val_attr(CP_GET_XML_NODE(), L"textRotation", xfPropDataBlob);		break;
+		case 0x0012:	serialize_val_attr(CP_GET_XML_NODE(), L"indent", xfPropDataBlob);		break;
+		case 0x0013: 	serialize_val_attr(CP_GET_XML_NODE(), L"readingOrder", xfPropDataBlob);		break;
+		case 0x0014:	serialize_val_attr(CP_GET_XML_NODE(), L"wrapText", xfPropDataBlob);		break;
+		case 0x0015:	serialize_val_attr(CP_GET_XML_NODE(), L"justifyLastLine", xfPropDataBlob);		break;
+		case 0x0016:	serialize_val_attr(CP_GET_XML_NODE(), L"shrinkToFit", xfPropDataBlob);		break;
+		case 0x0026:	serialize_val_attr(CP_GET_XML_NODE(), L"formatCode",	xfPropDataBlob);		break;
+		case 0x0029:	serialize_val_attr(CP_GET_XML_NODE(), L"numFmtId",	xfPropDataBlob);		break;	
+	}
+}
+void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
+{
+	switch (xfPropType)
+	{
+		case 0x0000:
 		{
-			serialize_val_attr(CP_GET_XML_NODE(), L"formatCode",	xfPropDataBlob);		
+			BIFF_BYTE* byte_ = new BIFF_BYTE;
+			if (!byte_)	return;
+
+			auto value = oReader.GetText();
+
+			if (value == L"none") *byte_ = 0;
+			else if (value == L"solid") *byte_ = 1;
+			else if (value == L"pct50") *byte_ = 2;
+			else if (value == L"pct75") *byte_ = 3;
+			else if (value == L"pct25") *byte_ = 4;
+			else if (value == L"horzStripe") *byte_ = 5;
+			else if (value == L"vertStripe") *byte_ = 6;
+			else if (value == L"reverseDiagStripe") *byte_ = 7;
+			else if (value == L"diagStripe") *byte_ = 8;
+			else if (value == L"diagCross") *byte_ = 9;
+			else if (value == L"trellis") *byte_ = 10;
+			else if (value == L"thinHorzStripe") *byte_ = 11;
+			else if (value == L"thinVertStripe") *byte_ = 12;
+			else if (value == L"thinReverseDiagStripe") *byte_ = 13;
+			else if (value == L"thinDiagStripe") *byte_ = 14;
+			else if (value == L"thinHorzCross") *byte_ = 15;
+			else if (value == L"thinDiagCross") *byte_ = 16;
+			else if (value == L"gray125") *byte_ = 17;
+			else if (value == L"gray0625") *byte_ = 18;
+				
+			xfPropDataBlob.reset(byte_);
 		}break;
-		case 0x0029:
+
+		case 0x0001:
+		case 0x0002:
+		case 0x0005:
 		{
-			serialize_val_attr(CP_GET_XML_NODE(), L"numFmtId",	xfPropDataBlob);	
-		}break;	
+			auto pColor = new XFPropColor;
+			pColor->deserialize(oReader);
+			xfPropDataBlob.reset(pColor);
+		}break;
+		case 0x0003:
+		{
+			auto pGradient = new XFPropGradient;
+			pGradient->deserialize(oReader);
+			xfPropDataBlob.reset(pGradient);
+		}break;
+		case 0x0004:
+		{
+			auto pGradientStop = new XFPropGradientStop;
+			pGradientStop->deserialize(oReader);
+			xfPropDataBlob.reset(pGradientStop);
+		}break;
+		case 0x0006:
+		case 0x0007:
+		case 0x0008:
+		case 0x0009:
+		case 0x000A:
+		case 0x000B:
+		case 0x000C:
+			xfPropDataBlob.reset(deserialize_border_prop(oReader));
+			break;
+		case 0x000D:
+		case 0x000E:
+		case 0x000F:
+		case 0x0010:
+		case 0x0011: // XFPropTextRotation
+		case 0x0012: // indent
+		case 0x0013: // ReadingOrder
+		case 0x0014:
+		case 0x0015:
+		case 0x0016:
+		//case 0x0017:
+			xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText())));
+			break;
+		case 0x001C: 
+		case 0x001D: 
+		case 0x001E: 
+		case 0x001F: 
+		case 0x0020: 
+		case 0x0021:
+		case 0x0022:
+		case 0x0023:
+			xfPropDataBlob.reset(new BIFF_BYTE(1));
+		case 0x0025:
+			deserialize_val_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
+			break;
+		case 0x002B:
+		case 0x002C:
+			deserialize_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
+			break;
+		case 0x0018:
+			deserialize_val_prop(oReader, L"LPWideString", xfPropDataBlob);
+			break;		
+		case 0x0029:
+			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
+			break;
+		case 0x0019:
+		case 0x001A:
+			xfPropDataBlob.reset(new BIFF_WORD(1));
+		case 0x001B:
+		case 0x002A:
+			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
+			break;
+		case 0x0024:
+			xfPropDataBlob.reset(new BIFF_DWORD(XmlUtils::GetInteger(oReader.GetText())));
+			break;
+		case 0x0026:
+			xfPropDataBlob.reset(new LPWideString(oReader.GetText()));
+			break;		
 	}
 }
 int XFProp::serialize(std::wostream & stream)
@@ -299,6 +587,7 @@ int XFProp::serialize(std::wostream & stream)
 			case 0x000F:	serialize_val_prop	(stream, L"horizontal",		xfPropDataBlob);		break;
 			case 0x0010:	serialize_val_prop	(stream, L"vertical",		xfPropDataBlob);		break;
 			case 0x0011:	serialize_val_prop	(stream, L"textRotation",	xfPropDataBlob);		break;
+			case 0x0012:	serialize_val_prop	(stream, L"indent",		xfPropDataBlob);		break;
 			case 0x0013: 	serialize_val_prop	(stream, L"readingOrder",	xfPropDataBlob);		break;
 			case 0x0014:	serialize_val_prop	(stream, L"wrapText",		xfPropDataBlob);		break;
 			case 0x0015:	serialize_val_prop	(stream, L"justifyLastLine", xfPropDataBlob);		break;
@@ -331,7 +620,22 @@ int XFProp::serialize(std::wostream & stream)
 			case 0x0022:	serialize_val_prop	(stream, L"charset",		xfPropDataBlob);		break;
 			case 0x0023:	serialize_val_prop	(stream, L"family",			xfPropDataBlob);		break;
 			case 0x0024:	serialize_val_prop	(stream, L"sz",				xfPropDataBlob);		break;
-			//case 0x0025:	serialize_val_prop	(stream, L"scheme",			xfPropDataBlob);		break;
+			case 0x0025:	
+			{
+				int v = get_val_prop(xfPropDataBlob);
+				if (v >= 0)
+				{
+					CP_XML_NODE(L"scheme")
+					{
+						switch (v)
+						{
+						case 0:	CP_XML_ATTR(L"val", L"none");	break;
+						case 1:	CP_XML_ATTR(L"val", L"major"); break;
+						case 2:	CP_XML_ATTR(L"val", L"minor");	break;
+						}
+					}
+				}
+			}break;
 			case 0x0026:	serialize_val_prop	(stream, L"formatCode",		xfPropDataBlob);		break;
 			case 0x0029:	serialize_val_prop	(stream, L"numFmtId",		xfPropDataBlob);		break;
 			case 0x002A:	serialize_val_prop	(stream, L"relativeIndent", xfPropDataBlob);		break;
@@ -339,6 +643,121 @@ int XFProp::serialize(std::wostream & stream)
 			case 0x002C:	serialize_val_prop	(stream, L"hidden",			xfPropDataBlob);		break;
 		}
 	}
+	return 0;
+}
+
+int XFProp::deserialize(std::wstring& nodeName, std::wstring& attrName, XmlUtils::CXmlLiteReader& oReader)
+{
+	if (nodeName == L"alignment")
+	{
+		if (attrName == L"horizontal")
+			xfPropType = 0x000F;			
+		else if (attrName == L"vertical")		
+			xfPropType = 0x0010;
+		else if (attrName == L"textRotation")		
+			xfPropType = 0x0011;
+		else if (attrName == L"indent")
+			xfPropType = 0x0012;
+		else if (attrName == L"readingOrder")
+			xfPropType = 0x0013;
+		else if (attrName == L"wrapText")
+			xfPropType = 0x0014;
+		else if (attrName == L"justifyLastLine")
+			xfPropType = 0x0015;
+		else if (attrName == L"shrinkToFit")
+			xfPropType = 0x0016;
+		else if (attrName == L"relativeIndent")
+			xfPropType = 0x002A;
+	}
+
+	else if (nodeName == L"border")
+	{
+		if (attrName == L"diagonalDown")
+			xfPropType = 0x000D;
+		else if (attrName == L"diagonalUp")
+			xfPropType = 0x000E;
+		else if (attrName == L"top")
+			xfPropType = 0x0006;
+		else if (attrName == L"bottom")
+			xfPropType = 0x0007;
+		else if (attrName == L"left" || attrName == L"start")
+			xfPropType = 0x0008;
+		else if (attrName == L"right" || attrName == L"end")
+			xfPropType = 0x0009;
+		else if (attrName == L"diagonal")
+			xfPropType = 0x000A;
+		else if (attrName == L"vertical")
+			xfPropType = 0x000B;
+		else if (attrName == L"horizontal")
+			xfPropType = 0x000C;
+	}
+
+	else if (nodeName == L"fill")
+	{
+		if (attrName == L"patternType")
+			xfPropType = 0x0000;
+		else if (attrName == L"fgColor")		
+			xfPropType = 0x0001;
+		else if (attrName == L"bgColor")
+			xfPropType = 0x0002;
+		else if (attrName == L"gradientFill")
+			xfPropType = 0x0003;
+		else if (attrName == L"stop")
+			xfPropType = 0x0004;
+	}
+
+	else if (nodeName == L"font")
+	{		
+		if (attrName == L"color")
+			xfPropType = 0x0005;
+		else if (attrName == L"name")
+			xfPropType = 0x0018;
+		else if (attrName == L"b")
+			xfPropType = 0x0019;
+		else if (attrName == L"u")
+			xfPropType = 0x001A;
+		else if (attrName == L"vertAlign")
+			xfPropType = 0x001B;
+		else if (attrName == L"i")
+			xfPropType = 0x001C;
+		else if (attrName == L"strike")
+			xfPropType = 0x001D;
+		else if (attrName == L"outline")
+			xfPropType = 0x001E;
+		else if (attrName == L"shadow")
+			xfPropType = 0x001F;
+		else if (attrName == L"condense")
+			xfPropType = 0x0020;
+		else if (attrName == L"extend")
+			xfPropType = 0x0021;
+		else if (attrName == L"charset")
+			xfPropType = 0x0022;
+		else if (attrName == L"family")
+			xfPropType = 0x0023;
+		else if (attrName == L"sz")
+			xfPropType = 0x0024;
+		else if (attrName == L"scheme")
+			xfPropType = 0x0025;
+	}
+
+	else if (nodeName == L"numFmt")
+	{
+		if (attrName == L"formatCode")
+			xfPropType = 0x0026;
+		else if (attrName == L"numFmtId")
+			xfPropType = 0x0029;
+	}
+
+	else if (nodeName == L"protection")
+	{
+		if (attrName == L"locked")
+			xfPropType = 0x002B;
+		else if (attrName == L"hidden")
+			xfPropType = 0x002C;
+	}
+	
+	deserialize_attr(oReader);		
+
 	return 0;
 }
 

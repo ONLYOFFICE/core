@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -86,12 +86,42 @@ namespace XLSB
 
         if (proc.optional<EndFonts>())
         {
-            m_BrtEndFonts = elements_.back();
+            m_bBrtEndFonts = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndFonts = false;
 
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
+        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_bBrtEndFonts;
     }
+
+	const bool FONTS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginFonts == nullptr)
+			m_BrtBeginFonts = XLS::BaseObjectPtr(new XLSB::BeginFonts());
+
+		if (m_BrtBeginFonts != nullptr)
+		{
+			auto ptrBrtBeginFonts = static_cast<XLSB::BeginFonts*>(m_BrtBeginFonts.get());
+
+			if (ptrBrtBeginFonts != nullptr)
+				ptrBrtBeginFonts->cfonts = m_arBrtFont.size();
+
+			proc.mandatory(*m_BrtBeginFonts);
+		}
+
+		for (auto &item : m_arBrtFont)
+		{
+			proc.mandatory(*item);
+		}
+
+		if (m_ACFONTS != nullptr)
+			proc.mandatory(*m_ACFONTS);
+
+		proc.mandatory<EndFonts>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

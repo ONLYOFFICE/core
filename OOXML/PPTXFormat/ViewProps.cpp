@@ -60,14 +60,13 @@ namespace PPTX
 		XmlMacroReadAttributeBase(oNode, L"lastView", attrLastView);
 		XmlMacroReadAttributeBase(oNode, L"showComments", attrShowComments);
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		if (oNode.GetNodes(_T("*"), oNodes))
 		{
-			int nCount = oNodes.GetCount();
-			for (int i = 0; i < nCount; ++i)
+			size_t nCount = oNodes.size();
+			for (size_t i = 0; i < nCount; ++i)
 			{
-				XmlUtils::CXmlNode oNodeChild;
-				oNodes.GetAt(i, oNodeChild);
+				XmlUtils::CXmlNode & oNodeChild = oNodes[i];
 
 				std::wstring strName = XmlUtils::GetNameNoNS(oNodeChild.GetName());
 				if (L"gridSpacing" == strName)

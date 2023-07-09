@@ -183,9 +183,9 @@ void odf_page_layout_context::set_current_master_page_base()
 	master_state_list_.pop_back();
 }
 
-void odf_page_layout_context::set_styles_context(odf_style_context * Context)
+void odf_page_layout_context::set_styles_context(odf_style_context_ptr styles_context)
 {
-	style_context_	= Context;       
+	style_context_	= styles_context;
 }
 void odf_page_layout_context::create_layout_page()
 {
@@ -260,7 +260,7 @@ void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_, _CP_OPT(o
 {
 	if (layout_state_list_.size() < 1) return;
 
-	layout_state_list_.back().footer_size_ = length_;
+	//layout_state_list_.back().footer_size_ = length_;
 	layout_state_list_.back().footer_min_size_ = length_min;
 	//собственно в layout встроим позднее - по факту наличия хоть одного колонтитула
 	return;

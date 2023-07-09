@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,7 @@
  */
 
 #include "UncheckedSqRfX.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace XLS;
 
@@ -66,6 +67,22 @@ namespace XLSB
             strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
         }
     }
+
+	void UncheckedSqRfX::save(XLS::CFRecord& record)
+	{
+		std::vector<std::wstring> results;
+
+		boost::algorithm::split(results, strValue, boost::is_any_of(L" "));
+		crfx = results.size();
+
+		record << crfx;
+
+		for (auto& item : results)
+		{
+			UncheckedRfX rfx(item);
+			record << rfx;
+		}
+	}
 
     const CellRef UncheckedSqRfX::getLocationFirstCell() const
     {

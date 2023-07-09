@@ -33,6 +33,7 @@
 
 #include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "../DesktopEditor/xml/include/xmlutils.h"
 
 //#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 //	#include "../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
@@ -68,6 +69,18 @@ bool COfficeFileFormatChecker::isMultiPartsHtmlFormatFile(unsigned char* pBuffer
 	}
 	return false;
 }
+
+bool COfficeFileFormatChecker::iXmlFile(const std::wstring & fileName)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(fileName))
+		return false;
+	if (!oReader.ReadNextNode())
+		return false;
+	
+	return true;
+}
+
 bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag)
 {
 	if (pBuffer == NULL || dwBytes < 4) return false;
@@ -585,6 +598,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 	}
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 //------------------------------------------------------------------------------------------------
+	if (iXmlFile(fileName))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_XML;
+		return true;
+	}
 //// by Extension
 
     std::wstring::size_type nExtPos = fileName.rfind(L'.');
@@ -623,6 +641,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
     else if (0 == sExt.compare(L".doct"))//случай архива с html viewer
 		nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
+	else if (0 == sExt.compare(L".xlsb"))
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB;
     else //if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml")) //volsciv.rtf -или любой другой
         nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 

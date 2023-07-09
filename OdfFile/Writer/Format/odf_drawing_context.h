@@ -48,14 +48,18 @@ namespace OOX {namespace Vml { class CShapeType; }}
 namespace cpdoccore {
 namespace odf_writer
 {
-
 class odf_conversion_context;
-class odf_style_context;
 class odf_text_context;
-class style_paragraph_properties;
+
+class graphic_format_properties;
+class paragraph_format_properties;
+
 class style_text_properties;
 class style_graphic_properties;
-class graphic_format_properties;
+class style_paragraph_properties;
+
+class odf_style_context;
+typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 class odf_drawing_context
 {
@@ -68,7 +72,7 @@ public:
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();
-	void set_styles_context	(odf_style_context*  styles_context);//для embedded 
+	void set_styles_context	(odf_style_context_ptr styles_context);//для embedded 
 
 	void set_parent_style	(std::wstring style_name);
 
@@ -111,7 +115,9 @@ public:
 	void end_drawing();
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
-	size_t	get_group_level();	
+	void set_anchor_drawing();
+
+	size_t	get_group_level();
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
 		void set_group_flip_V	(bool bVal);
@@ -144,7 +150,7 @@ public:
 	graphic_format_properties* get_graphic_properties();
 
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
-	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
+	void set_paragraph_properties	(paragraph_format_properties *paragraph_properties);
 	void set_text_properties		(style_text_properties *text_properties);
 	
 	void start_text_box					();
@@ -304,7 +310,6 @@ public:
 	void end_action();
 
 private:
-	
     class Impl;
     _CP_PTR(Impl) impl_;
 };

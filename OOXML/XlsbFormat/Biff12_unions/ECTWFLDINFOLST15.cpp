@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,12 +73,39 @@ namespace XLSB
 
         if (proc.optional<EndECTWFldInfoLst15>())
         {
-            m_BrtEndECTWFldInfoLst15 = elements_.back();
+			m_bBrtEndECTWFldInfoLst15 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndECTWFldInfoLst15 = false;
 
-        return m_BrtBeginECTWFldInfoLst15 && m_BrtEndECTWFldInfoLst15;
+        return m_BrtBeginECTWFldInfoLst15 && m_bBrtEndECTWFldInfoLst15;
     }
+
+	const bool ECTWFLDINFOLST15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginECTWFldInfoLst15 == nullptr)
+			m_BrtBeginECTWFldInfoLst15 = XLS::BaseObjectPtr(new XLSB::BeginECTWFldInfoLst15());
+
+		if (m_BrtBeginECTWFldInfoLst15 != nullptr)
+		{
+			auto ptrBrtBeginECTWFldInfoLst15 = static_cast<XLSB::BeginECTWFldInfoLst15*>(m_BrtBeginECTWFldInfoLst15.get());
+
+			if (ptrBrtBeginECTWFldInfoLst15 != nullptr)
+				ptrBrtBeginECTWFldInfoLst15->cFields = m_arBrtBeginECTwFldInfo15.size();
+
+			proc.mandatory(*m_BrtBeginECTWFldInfoLst15);
+		}
+
+		for (auto &item : m_arBrtBeginECTwFldInfo15)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndECTWFldInfoLst15>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

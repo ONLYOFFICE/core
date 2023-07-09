@@ -34,6 +34,11 @@
 #include "BiffStructure.h"
 #include "LongRGB.h"
 
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
+
 namespace XLS
 {
 
@@ -45,11 +50,13 @@ class XFPropColor : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	static const ElementType	type = typeXFPropColor;
 
 	int serialize(std::wostream & stream, const std::wstring &sNode);
+	int deserialize(XmlUtils::CXmlLiteReader& oReader);
 
 	bool			fValidRGBA;
 	

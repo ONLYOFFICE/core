@@ -687,9 +687,11 @@ public:
     office_element_ptr			table_table_source_;	
 
 	office_element_ptr			conditional_formats_;
+    office_element_ptr			sparkline_groups_;
 
     office_element_ptr			table_shapes_;
 	office_element_ptr_array	table_named_;
+
 	office_element_ptr			office_forms_;
     //office-dde-source
     //table-scenario

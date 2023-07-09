@@ -45,7 +45,8 @@ public:
 
 	static const ElementType type = typeXnum;
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	union
 	{

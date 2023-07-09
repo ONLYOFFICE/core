@@ -1329,6 +1329,14 @@ namespace BinXlsxRW
 
 		return c_oSerConstants::ReadOk;
 	}
+	int BinaryChartReader::ReadCT_SignedByte(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		int* poVal = static_cast<int*>(poResult);
+
+		*poVal = m_oBufferedStream.GetChar();
+		return res;
+	}
 	int BinaryChartReader::ReadCT_UnsignedByte(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -5702,8 +5710,8 @@ namespace BinXlsxRW
 		CT_View3D* poVal = static_cast<CT_View3D*>(poResult);
 		if (c_oserct_view3dROTX == type)
 		{
-			char val;
-			READ1_DEF(length, res, this->ReadCT_UnsignedByte, &val);
+			int val;
+			READ1_DEF(length, res, this->ReadCT_SignedByte, &val);
 			poVal->m_rotX = val;
 		}
 		else if (c_oserct_view3dHPERCENT == type)
@@ -7797,10 +7805,16 @@ namespace BinXlsxRW
 		m_oBcw.m_oStream.WriteLONG(oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	void BinaryChartWriter::WriteCT_UnsignedByte(unsigned int oVal)
+	void BinaryChartWriter::WriteCT_UnsignedByte(unsigned char oVal)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oserct_byteVAL);
-		m_oBcw.m_oStream.WriteBYTE((BYTE)oVal);
+		m_oBcw.m_oStream.WriteBYTE(oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	void BinaryChartWriter::WriteCT_SignedByte(char oVal)
+	{
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_byteVAL);
+		m_oBcw.m_oStream.WriteSBYTE(oVal);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::WriteCT_Double(double oVal)
@@ -11266,8 +11280,8 @@ namespace BinXlsxRW
 	{
 		if (oVal.m_rotX.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_view3dROTX);
-			WriteCT_UnsignedByte(*oVal.m_rotX);
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_view3dROTX); 
+			WriteCT_SignedByte(*oVal.m_rotX);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		if (oVal.m_hPercent.IsInit())

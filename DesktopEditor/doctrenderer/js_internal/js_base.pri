@@ -1,14 +1,12 @@
-core_mac {
-    !use_v8:CONFIG += use_javascript_core
-}
-core_ios {
-    CONFIG += use_javascript_core
-}
+include($$PWD/js_base_embed.pri)
 
-INCLUDEPATH += $$PWD
+HEADERS += \
+    $$PWD/js_base.h \
+    $$PWD/js_embed.h
 
-HEADERS += $$PWD/js_base.h
 SOURCES += $$PWD/js_base.cpp
+
+HEADERS += $$PWD/js_base_p.h
 
 HEADERS += $$PWD/js_logger.h
 SOURCES += $$PWD/js_logger.cpp
@@ -22,8 +20,6 @@ SOURCES += $$PWD/js_logger.cpp
     core_android:CONFIG += disable_v8_use_inspector
     linux_arm64:CONFIG += disable_v8_use_inspector
     build_xp::CONFIG += disable_v8_use_inspector
-
-    core_android:CONFIG += v8_version_60
 
     !disable_v8_use_inspector:CONFIG += v8_use_inspector
 
@@ -80,13 +76,6 @@ SOURCES += $$PWD/js_logger.cpp
 }
 
 use_javascript_core {
-
     HEADERS += $$PWD/jsc/jsc_base.h
     OBJECTIVE_SOURCES += $$PWD/jsc/jsc_base.mm
-    QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
-
-    LIBS += -framework JavaScriptCore
-
-    DEFINES += JS_ENGINE_JAVASCRIPTCORE
-
 }

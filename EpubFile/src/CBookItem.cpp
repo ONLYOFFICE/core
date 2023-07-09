@@ -65,8 +65,7 @@ bool CBookItem::ReadItem(XmlUtils::CXmlLiteReader& oXmlLiteReader, int depth)
         if (sAttributeName == L"href")
         {
             sAttributeValue = URLDecode(sAttributeValue);
-            size_t posLastSlash = sAttributeValue.rfind(L'/');
-            m_sRef = posLastSlash == std::wstring::npos ? sAttributeValue : sAttributeValue.substr(posLastSlash + 1);
+            m_sRef = NSFile::GetFileName(sAttributeValue);
         }
         else if (sAttributeName == L"id")
             m_sID = sAttributeValue;

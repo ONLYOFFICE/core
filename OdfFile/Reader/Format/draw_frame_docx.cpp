@@ -937,7 +937,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		graphicProperties->apply_to(drawing->additional);
 	
 		bool bTxbx = (drawing->sub_type == 1);
-		Compute_GraphicFill(graphicProperties->common_draw_fill_attlist_, graphicProperties->style_background_image_, Context.root()->odf_context().drawStyles(), drawing->fill, bTxbx);
+		Compute_GraphicFill(graphicProperties->common_draw_fill_attlist_, graphicProperties->style_background_image_, Context.root(), drawing->fill, bTxbx);
 	}
 	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
@@ -1191,10 +1191,21 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (!frame)
 		return;
 
-	if (!xlink_attlist_.href_)
-		return;
-
 	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+	
+	if (true == href.empty())
+	{
+		office_binary_data* binary_data = dynamic_cast<office_binary_data*>(office_binary_data_.get());
+
+		if (binary_data)
+		{
+			href = binary_data->write_to(Context.root()->get_folder());
+		}
+	}
+	else
+	{
+		if (href[0] == L'#') href = href.substr(1);
+	}
 
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) 
@@ -1652,7 +1663,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		object_odf_context	objectBuild (href);
 		if (contentSubDoc)
 		{
-			process_build_object process_build_object_(objectBuild, odf_document_->odf_context());
+			process_build_object process_build_object_(objectBuild, odf_document_.get());
 			contentSubDoc->accept(process_build_object_); 
 
 			if (objectBuild.table_table_)
@@ -1739,10 +1750,10 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			
 			if (in_frame)
 			{
-				drawing->type	= oox::typeShape;		
+				drawing->type = oox::typeShape;		
 				
 				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara><m:oMathParaPr/>") + 
+				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p><m:oMathPara>") + 
 																	content + std::wstring(L"</m:oMathPara></w:p>")));
 			}
 			else
@@ -1750,17 +1761,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				drawing->type = oox::typeUnknown;	 //not drawing	
 				
 				if (runState) Context.finish_run();
-				//if (pState == false)
-				{
-					Context.output_stream() << L"<m:oMathPara>";
-					Context.output_stream() << L"<m:oMathParaPr/>";
-				}
-				Context.output_stream() << content;
 
-				//if (pState == false)
-				{
-					Context.output_stream() << L"</m:oMathPara>";
-				}
+				Context.output_stream() << L"<m:oMathPara>";
+				Context.output_stream() << content;
+				Context.output_stream() << L"</m:oMathPara>";
+
 				if (runState) Context.add_new_run(_T(""));
 			}
 			Context.get_drawing_context().clear_stream_frame();						

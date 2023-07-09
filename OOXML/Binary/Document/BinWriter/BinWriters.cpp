@@ -52,8 +52,9 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/FontTable.h"
-
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Diagram/DiagramData.h"
+
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"
 #include "../../../DocxFormat/Logic/SmartTag.h"
@@ -1257,7 +1258,7 @@ void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Lo
 {
 	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : -1;
 	
-	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum >= 0)
+	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum > 0)
 	{
 		std::map<int, int>::iterator pFind = m_oParamsWriter.m_pNumbering->m_mapEmbeddedNames.back().find(listNum);
 
@@ -2906,38 +2907,33 @@ void BinaryNumberingTableWriter::WriteAbstractNums(const OOX::CNumbering& number
 void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstractNum& num, int nIndex, const std::vector<OOX::Numbering::CNum*>& aNums)
 {
 	int nCurPos = 0;
-	//Id
+
 	if(num.m_oAbstractNumId.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Id);
 		m_oBcw.m_oStream.WriteLONG(*num.m_oAbstractNumId);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-
-	//Type
-	if(false != num.m_oMultiLevelType.IsInit())
+	
+	if ((num.m_oMultiLevelType.IsInit()) && (num.m_oMultiLevelType->m_oVal.IsInit()))
 	{
-		//todo
-		//nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
-		//m_oBcw.m_oStream.WriteBYTE(num.Type);
-		//m_oBcw.WriteItemEnd(nCurPos);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
+		m_oBcw.m_oStream.WriteBYTE(num.m_oMultiLevelType->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 
-	//NumStyleLink
-	if(false != num.m_oNumStyleLink.IsInit())
+	if (false != num.m_oNumStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::NumStyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oNumStyleLink.get().ToString2());
 	}
 
-	//StyleLink
-	if(false != num.m_oStyleLink.IsInit())
+	if (false != num.m_oStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
 
-	//Lvl
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);

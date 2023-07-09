@@ -43,13 +43,22 @@ BiffStructurePtr PtgAttrChoose::clone()
 
 
 void PtgAttrChoose::loadFields(CFRecord& record)
-{
+{	
 	record >> cOffset;
 	for(int i = 0; i < cOffset + 1; ++i)
 	{
 		unsigned short val;
 		record >> val;
 		rgOffset.push_back(val);
+	}
+}
+
+void PtgAttrChoose::writeFields(CFRecord& record)
+{
+	record << cOffset;
+	for (auto& item : rgOffset)
+	{
+		record << item;
 	}
 }
 

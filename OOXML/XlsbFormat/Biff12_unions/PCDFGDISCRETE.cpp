@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndPCDFGDiscrete>())
         {
-            m_BrtEndPCDFGDiscrete = elements_.back();
+            m_bBrtEndPCDFGDiscrete = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDFGDiscrete = false;
 
-        return m_BrtBeginPCDFGDiscrete && m_BrtEndPCDFGDiscrete;
+        return m_BrtBeginPCDFGDiscrete && m_bBrtEndPCDFGDiscrete;
     }
+
+	const bool PCDFGDISCRETE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDFGDiscrete == nullptr)
+			m_BrtBeginPCDFGDiscrete = XLS::BaseObjectPtr(new XLSB::BeginPCDFGDiscrete());
+
+		if (m_BrtBeginPCDFGDiscrete != nullptr)
+		{
+			auto ptrBrtBeginPCDFGDiscrete = static_cast<XLSB::BeginPCDFGDiscrete*>(m_BrtBeginPCDFGDiscrete.get());
+
+			if (ptrBrtBeginPCDFGDiscrete != nullptr)
+				ptrBrtBeginPCDFGDiscrete->cItems = m_arBrtPCDIIndex.size();
+
+			proc.mandatory(*m_BrtBeginPCDFGDiscrete);
+		}
+
+		for (auto &item : m_arBrtPCDIIndex)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDFGDiscrete>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -138,7 +138,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 	
-	const drawing_page_properties & content() const { return drawing_page_properties_; }
+	drawing_page_properties & content() { return drawing_page_properties_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

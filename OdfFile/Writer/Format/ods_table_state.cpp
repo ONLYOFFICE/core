@@ -83,7 +83,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		}
 		catch (...)
 		{
-			date_str = date;
+			date_str = std::to_wstring(date);
 		}
 		return date_str;
 	}
@@ -289,7 +289,7 @@ void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.table_display_ = !Val;
@@ -299,7 +299,7 @@ void ods_table_state::set_table_rtl(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
@@ -316,7 +316,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->content_.tableooo_tab_color_ = _color;
@@ -413,7 +413,7 @@ void ods_table_state::set_column_width(double width)//pt
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	columns_.back().size = width; //pt
@@ -425,7 +425,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -514,7 +514,7 @@ void ods_table_state::set_row_optimal_height(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = val;
@@ -525,7 +525,7 @@ void ods_table_state::set_row_height(double height)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.add_get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	rows_.back().size = height;//pt
@@ -1297,7 +1297,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
 	if (!style_)return;	
 	
-	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.get_style_table_cell_properties();
+	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.add_get_style_table_cell_properties();
 
 	//if (table_cell_properties && cash_value == false)
 	//{
@@ -1331,14 +1331,20 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = utils::convert_date(value);
-			break;
+		{
+			std::wstring date = utils::convert_date(value);
+			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = date;
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = date;
+		}break;
 		case office_value_type::Time:
+		{
 			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
-			break;
+		}break;
 		case office_value_type::DateTime:
 		{
 			std::wstring sVal = utils::convert_date_time(value, type);
+			
+			//cell->attlist_.common_value_and_type_attlist_->office_value_ = sVal;
 			
 			if (type == office_value_type::Date)
 				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;
@@ -1637,7 +1643,7 @@ void ods_table_state::add_default_cell( int repeated)
 	}
 	end_cell();
 }
-///////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------
 void ods_table_state::start_pilot_table(office_element_ptr & elm)
 {
 	pilot_table_state_.elm = elm;
@@ -1645,6 +1651,256 @@ void ods_table_state::start_pilot_table(office_element_ptr & elm)
 void ods_table_state::end_pilot_table()
 {
 }
+//--------------------------------------------------------------------------------------------
+void ods_table_state::start_sparkline_groups()
+{
+	office_element_ptr elm;
+	create_element(L"calcext", L"sparkline-groups", elm, context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+void ods_table_state::end_sparkline_groups()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_sparkline_group()
+{
+	office_element_ptr elm;
+	create_element(L"calcext", L"sparkline-group", elm, context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+void ods_table_state::end_sparkline_group()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_sparklines()
+{
+	office_element_ptr elm;
+	create_element(L"calcext", L"sparklines", elm, context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+void ods_table_state::end_sparklines()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_sparkline()
+{
+	office_element_ptr elm;
+	create_element(L"calcext", L"sparkline", elm, context_);
+
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+void ods_table_state::end_sparkline() 
+{
+	current_level_.pop_back();
+}
+void ods_table_state::set_sparkline_range(const std::wstring& ref)
+{
+	calcext_sparkline* sparkline = dynamic_cast<calcext_sparkline*>	 (current_level_.back().get());
+	if (!sparkline) return;
+
+	std::wstring f = formulas_converter_table.convert_named_ref(ref);
+
+	sparkline->data_range_ = f;
+}
+void ods_table_state::set_sparkline_cell(const std::wstring& ref)
+{
+	calcext_sparkline* sparkline = dynamic_cast<calcext_sparkline*>	 (current_level_.back().get());
+	if (!sparkline) return;
+
+	std::wstring f = formulas_converter_table.convert_named_ref(ref);
+
+	sparkline->cell_address_ = f;
+}
+void ods_table_state::set_sparkline_id(const std::wstring& val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.id_ = val;
+}
+void ods_table_state::set_sparkline_type(int type)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.type_ = (odf_types::sparkline_type::type)type;
+}
+void ods_table_state::set_sparkline_manual_max(double val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.manual_max_ = val;
+}
+void ods_table_state::set_sparkline_manual_min(double val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.manual_min_ = val;
+}
+void ods_table_state::set_sparkline_line_weight(double val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.line_width_ = odf_types::length(val, odf_types::length::pt);
+}
+void ods_table_state::set_sparkline_minAxisType(int val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.min_axis_type_ = (odf_types::sparkline_axis_type::type)val;
+}
+void ods_table_state::set_sparkline_maxAxisType(int val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+	
+	sparkline_group->attr_.max_axis_type_ = (odf_types::sparkline_axis_type::type)val;
+}
+void ods_table_state:: set_sparkline_markers(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.markers_ = val;
+}
+void ods_table_state::set_sparkline_date_axis(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.date_axis_ = val;
+}
+void ods_table_state::set_sparkline_emptyCellsAs(int val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.display_empty_cells_as_ = (odf_types::sparkline_empty::type)val;
+}
+void ods_table_state::set_sparkline_high(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.high_ = val;
+}
+void ods_table_state::set_sparkline_low(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.low_ = val;
+}
+void ods_table_state::set_sparkline_first(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.first_ = val;
+}
+void ods_table_state::set_sparkline_last(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.last_ = val;
+}
+void ods_table_state::set_sparkline_negative(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.display_hidden_ = val;
+}
+void ods_table_state::set_sparkline_display_xAxis(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.display_hidden_ = val;
+}
+void ods_table_state::set_sparkline_display_hidden(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.display_hidden_ = val;
+}
+void ods_table_state::set_sparkline_rtl(bool val)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.right_to_left_ = val;
+}
+void ods_table_state::set_sparkline_color_series(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_series_ = color;
+}
+void ods_table_state::set_sparkline_color_negative(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_negative_ = color;
+}
+void ods_table_state::set_sparkline_color_axis(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_axis_ = color;
+}
+void ods_table_state::set_sparkline_color_markers(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_markers_ = color;
+}
+void ods_table_state::set_sparkline_color_first(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_first_ = color;
+}
+void ods_table_state::set_sparkline_color_last(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_last_ = color;
+}
+void ods_table_state::set_sparkline_color_high(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_high_ = color;
+}
+void ods_table_state::set_sparkline_color_low(_CP_OPT(odf_types::color)& color)
+{
+	calcext_sparkline_group* sparkline_group = dynamic_cast<calcext_sparkline_group*>	 (current_level_.back().get());
+	if (!sparkline_group) return;
+
+	sparkline_group->attr_.color_low_ = color;
+}
+//--------------------------------------------------------------------------------------------
 void ods_table_state::start_conditional_formats()
 {
 	office_element_ptr elm;
@@ -1652,7 +1908,6 @@ void ods_table_state::start_conditional_formats()
 
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
-
 }
 void ods_table_state::end_conditional_formats()
 {

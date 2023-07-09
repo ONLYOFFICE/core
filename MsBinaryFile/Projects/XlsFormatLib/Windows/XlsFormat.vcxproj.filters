@@ -1105,12 +1105,6 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\Bes.cpp">
       <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.cpp">
-      <Filter>Logic\Biff_structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.cpp">
-      <Filter>Logic\Biff_structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BookExt_Conditional11.cpp">
       <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
@@ -2218,9 +2212,6 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.cpp">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
@@ -2391,6 +2382,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\WorksheetSubstream.cpp">
       <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.cpp">
+      <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4597,9 +4594,6 @@
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.h">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.h">
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.h">

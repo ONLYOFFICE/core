@@ -1953,6 +1953,8 @@ bool CPdfWriter::UpdateFont()
 			if (m_oFont.IsBold() && !m_pFont->IsBold())
 				m_oFont.SetNeedDoBold(true);
 		}
+		else
+			return false;
 	}
     return true;
 }

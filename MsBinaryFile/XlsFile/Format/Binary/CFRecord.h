@@ -68,25 +68,39 @@ public:
 	const size_t getMaxRecordSize() const;
 	void appendRawData(CFRecordPtr where_from);
 	void appendRawData(const char* raw_data, const size_t size);
+    void appendRawDataToStatic(const unsigned char* raw_data, const size_t size);
+    void appendRawDataToStatic(const wchar_t* raw_data, const size_t size);
 	void insertDataFromRecordToBeginning(CFRecordPtr where_from);
 
 	const bool isEOF() const; // whether all the data have bean read
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Doesn't generate an exception
 	const bool checkFitReadSafe(const size_t size) const;
+    const bool checkFitWriteSafe(const size_t size) const;
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Generates an exception
 	bool checkFitRead(const size_t size) const;
+    bool checkFitWrite(const size_t size) const;
 	// Checks whether the specified number of unsigned chars fits in max size of the buffer
 	// Generates an exception
 	void skipNunBytes(const size_t n); // Skip the specified number of unsigned chars without reading
+	void reserveNunBytes(const size_t n); // Reserve the specified number of unsigned chars
 	void RollRdPtrBack(const size_t n); // Move read pointer back to reread some data
 	void resetPointerToBegin();
+
+	//save record to stream
+	void save(NSBinPptxRW::CXlsbBinaryWriter& writer);
 
 	template<class T>
 	const T* getCurData() const
 	{
 		return reinterpret_cast<T*>(&data_[rdPtr]);
+	}
+
+	template<class T>
+    const T* getCurStaticData() const
+	{
+		return reinterpret_cast<T*>(&intData[rdPtr]);
 	}
 	// Obtain the current rdPtr
 	const size_t getRdPtr() const;
@@ -108,19 +122,43 @@ public:
 		return false;
     }
 
+	template<class T>
+    bool storeAnyData(const T& val)
+	{
+		if (rdPtr + sizeof(T) < MAX_RECORD_SIZE)
+		{
+			memcpy(&intData[rdPtr], &val, sizeof(T));
+			rdPtr += sizeof(T);
+			return true;
+		}
+		return false;
+	}
+
     bool loadAnyData(wchar_t & val);
+    bool storeAnyData(const wchar_t & val);
 
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 
-    CFRecord& operator>>(unsigned char& val)	{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(unsigned short& val)	{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(unsigned int& val)		{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(int& val)				{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(double& val)			{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(_GUID_& val)			{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(short& val)			{ loadAnyData(val);	return *this; }
-    CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; }
-	CFRecord& operator>>(bool& val);
+    CFRecord& operator >> (unsigned char& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (unsigned short& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (unsigned int& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (int& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (double& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (_GUID_& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (short& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator >> (char& val)			{ loadAnyData(val);	return *this; }
+	CFRecord& operator >> (bool& val);
+
+
+	CFRecord& operator << (unsigned char& val)  { storeAnyData(val);	return *this; }
+	CFRecord& operator << (unsigned short& val) { storeAnyData(val);	return *this; }
+	CFRecord& operator << (unsigned int& val)	{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (int& val)			{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (double& val)			{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (_GUID_& val)			{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (short& val)			{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (char& val)			{ storeAnyData(val);	return *this; }
+	CFRecord& operator << (bool& val);
 
 private:
 	static const size_t MAX_RECORD_SIZE = 8224;
@@ -199,12 +237,12 @@ CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)
 
 // moved out of the class to be higher in priority than the universal operator
 template<class T>
-CFRecord& operator<<(CFRecord & record,		_CP_OPT(T)& val)
+CFRecord& operator<<(CFRecord & record,	_CP_OPT(T)& val)
 {
 	if (!val) return record;
 
-//	T temp_val(*val);
-//	record.storeAnyData(temp_val);
+	T temp_val(*val);
+	record.storeAnyData(temp_val);
 	return record; 
 }
 

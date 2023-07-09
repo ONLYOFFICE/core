@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,12 +75,39 @@ namespace XLSB
 
         if (proc.optional<EndListParts>())
         {
-            m_BrtEndListParts = elements_.back();
+			m_bBrtEndListParts = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndListParts = false;
 
-        return m_BrtBeginListParts && !m_arBrtListPart.empty() && m_BrtEndListParts;
+        return m_BrtBeginListParts && !m_arBrtListPart.empty() && m_bBrtEndListParts;
     }
+
+	const bool LISTPARTS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginListParts == nullptr)
+			m_BrtBeginListParts = XLS::BaseObjectPtr(new XLSB::BeginListParts());
+
+		if (m_BrtBeginListParts != nullptr)
+		{
+			auto ptrBrtBeginListParts = static_cast<XLSB::BeginListParts*>(m_BrtBeginListParts.get());
+
+			if (ptrBrtBeginListParts != nullptr)
+				ptrBrtBeginListParts->cParts = m_arBrtListPart.size();
+
+			proc.mandatory(*m_BrtBeginListParts);
+		}
+
+		for (auto &item : m_arBrtListPart)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndListParts>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

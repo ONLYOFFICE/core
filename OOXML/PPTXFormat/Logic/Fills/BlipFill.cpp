@@ -119,14 +119,13 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"dpi", dpi);
 			XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 					if (_T("blip") == strName)
@@ -419,8 +418,12 @@ namespace PPTX
 									{
 										OOX::CPath pathUrl = strImagePath;
 										strImagePath = pathUrl.GetPath();
+										
+										if (std::wstring::npos == strImagePath.find(pReader->m_strFolder))
+										{
+											strImagePath.clear();
+										}				
 									}
-
 									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
 
 									// -------------------

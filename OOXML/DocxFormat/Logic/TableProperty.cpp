@@ -778,48 +778,42 @@ namespace OOX
 		{
 			std::wstring sResult = L"<w:tblBorders>";
 
+			if (m_oTop.IsInit())
+			{
+				sResult += L"<w:top ";
+				sResult += m_oTop->ToString();
+				sResult += L"/>";
+			}
+			if (m_oStart.IsInit())
+			{
+				sResult += L"<w:start ";
+				sResult += m_oStart->ToString();
+				sResult += L"/>";
+			}
 			if ( m_oBottom.IsInit() )
 			{
 				sResult += L"<w:bottom ";
 				sResult += m_oBottom->ToString();
 				sResult += L"/>";
 			}
-
 			if ( m_oEnd.IsInit() )
 			{
 				sResult += L"<w:end ";
 				sResult += m_oEnd->ToString();
 				sResult += L"/>";
 			}
-
 			if ( m_oInsideH.IsInit() )
 			{
 				sResult += L"<w:insideH ";
 				sResult += m_oInsideH->ToString();
 				sResult += L"/>";
 			}
-
 			if ( m_oInsideV.IsInit() )
 			{
 				sResult += L"<w:insideV ";
 				sResult += m_oInsideV->ToString();
 				sResult += L"/>";
 			}
-
-			if ( m_oStart.IsInit() )
-			{
-				sResult += L"<w:start ";
-				sResult += m_oStart->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oTop.IsInit() )
-			{
-				sResult += L"<w:top ";
-				sResult += m_oTop->ToString();
-				sResult += L"/>";
-			}
-
 			sResult += L"</w:tblBorders>";
 
 			return sResult;
@@ -1465,14 +1459,14 @@ namespace OOX
 			if ( L"w:headers" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNodes oHeaders;
+			std::vector<XmlUtils::CXmlNode> oHeaders;
 
 			if ( oNode.GetNodes( L"w:header", oHeaders ) )
 			{
-				XmlUtils::CXmlNode oHeader;
-				for ( int nIndex = 0; nIndex < oHeaders.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oHeaders.size(); nIndex++ )
 				{
-					if ( oHeaders.GetAt( nIndex, oHeader ) )
+					XmlUtils::CXmlNode& oHeader = oHeaders[nIndex];
+					if ( oHeader.IsValid() )
 					{
 						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
 						*oHead = oHeader;
@@ -1580,13 +1574,13 @@ namespace OOX
 		{
 			std::wstring sResult = L"<w:tcBorders>";
 
+			WritingElement_WriteNode_1( L"<w:top ",     m_oTop );
+			WritingElement_WriteNode_1( L"<w:start ",   m_oStart );
 			WritingElement_WriteNode_1( L"<w:bottom ",  m_oBottom );
 			WritingElement_WriteNode_1( L"<w:end ",     m_oEnd );
 			WritingElement_WriteNode_1( L"<w:insideH ", m_oInsideH );
 			WritingElement_WriteNode_1( L"<w:insideV ", m_oInsideV );
-			WritingElement_WriteNode_1( L"<w:start ",   m_oStart );
 			WritingElement_WriteNode_1( L"<w:tl2br ",   m_oTL2BR );
-			WritingElement_WriteNode_1( L"<w:top ",     m_oTop );
 			WritingElement_WriteNode_1( L"<w:tr2bl ",   m_oTR2BL );
 
 			sResult += L"</w:tcBorders>";

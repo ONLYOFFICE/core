@@ -55,6 +55,7 @@ void style_properties::add_attributes( const xml::attributes_wc_ptr & Attributes
 	text_properties_.add_attributes(Attributes);
 	paragraph_properties_.add_attributes(Attributes);
 	graphic_properties_.add_attributes(Attributes);
+	drawing_page_properties_.add_attributes(Attributes);
 
 	table_properties_.add_attributes(Attributes);
 	table_row_properties_.add_attributes(Attributes);
@@ -78,6 +79,10 @@ void style_properties::add_child_element( xml::sax * Reader, const std::wstring 
 		{
 			CP_CREATE_ELEMENT(paragraph_properties_.style_background_image_);
 		}
+	}
+	else if CP_CHECK_NAME(L"text", L"list-style")
+	{
+		CP_CREATE_ELEMENT(text_list_style_);
 	}
 }
 

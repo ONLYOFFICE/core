@@ -58,6 +58,11 @@ void SecurityDescriptor::load(CFRecord& record)
 	record.loadAnyData(sd);
 }
 
+void SecurityDescriptor::save(CFRecord& record)
+{
+	record.storeAnyData(sd);
+}
+
 
 } // namespace XLS
 

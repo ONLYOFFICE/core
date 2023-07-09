@@ -87,7 +87,8 @@ class odf_conversion_context : boost::noncopyable
 		std::vector<office_element_ptr>		content_styles;
 		std::vector<office_element_ptr>		styles;	
 		office_element_ptr					settings;	
-	
+		std::vector<office_element_ptr>		meta;
+
 		odf_style_context_ptr				style_context;	
 		odf_settings_context_ptr			settings_context;
 		_mediaitems							mediaitems;
@@ -124,8 +125,11 @@ public:
     std::wstring add_oleobject	(const std::wstring & ole_file_name);
     std::wstring add_imageobject(const std::wstring & ole_file_name);
 	
-	virtual odf_style_context		* styles_context();
+	void add_meta(const std::wstring & ns, const std::wstring & name, const std::wstring & content);
 	
+	virtual odf_style_context_ptr	styles_context();
+	virtual void					set_styles_context(odf_style_context_ptr styles_context);
+
 	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();

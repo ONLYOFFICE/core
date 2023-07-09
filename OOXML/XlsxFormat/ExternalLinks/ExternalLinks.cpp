@@ -64,6 +64,8 @@
 #include "../../XlsbFormat/Biff12_records/SupNameValueStart.h"
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -641,7 +643,7 @@ namespace Spreadsheet
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = oReader.GetNameNoNS();
 
 			if (L"sheetNames" == sName)
 			{
@@ -655,6 +657,10 @@ namespace Spreadsheet
 			{
 				m_oSheetDataSet = oReader;
 			}
+			else if (L"alternateUrls" == sName)
+			{
+				m_oAlternateUrls = oReader;
+			}
 		}
 	}
 	void CExternalBook::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -667,6 +673,10 @@ namespace Spreadsheet
 			writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
 		}
 		writer.WriteString(L">");
+		if (m_oAlternateUrls.IsInit())
+		{
+			m_oAlternateUrls ->toXML(writer);
+		}
 		if (m_oSheetNames.IsInit())
 		{
 			m_oSheetNames->toXML(writer);
@@ -1384,9 +1394,80 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if(oReader, (L"r:id"), m_oRid)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"relationships:id"), m_oRid)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"progId"), m_oProgId)
-			WritingElement_ReadAttributes_End(oReader)
+		WritingElement_ReadAttributes_End(oReader)
 	}
+	CAlternateUrls::CAlternateUrls()
+	{
+	}
+	CAlternateUrls::~CAlternateUrls()
+	{
+	}
+	void CAlternateUrls::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CAlternateUrls::getType() const
+	{
+		return et_x_ExternalDefinedName;
+	}
+	void CAlternateUrls::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
 
+		if (oReader.IsEmptyNode())
+			return;
+		
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = oReader.GetNameNoNS();
+
+			if (L"absoluteUrl" == sName)
+			{
+				ReadAttributes(oReader, m_oAbsoluteUrlRid);
+			}
+			else if (L"relativeUrl" == sName)
+			{
+				ReadAttributes(oReader, m_oRelativeUrlRid);
+			}
+		}
+	}
+	void CAlternateUrls::ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CRelationshipId>& rid)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_ReadSingle(oReader, (L"r:id"), rid)
+		WritingElement_ReadAttributes_End(oReader)
+	}
+	void CAlternateUrls::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, (L"driveId"), m_oDriveId)
+			WritingElement_ReadAttributes_Read_else_if(oReader, (L"itemId"), m_oItemId)
+		WritingElement_ReadAttributes_End(oReader)
+	}
+	void CAlternateUrls::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<xxl21:alternateUrls");
+		WritingStringNullableAttrEncodeXmlString2(L"driveId", m_oDriveId);
+		WritingStringNullableAttrEncodeXmlString2(L"itemId", m_oItemId);
+		writer.WriteString(L">");
+
+		if (m_oAbsoluteUrlRid.IsInit())
+		{
+			writer.WriteString(L"<xxl21:absoluteUrl r:id=\"" + m_oAbsoluteUrlRid->ToString() + L"\"/>");
+		}
+		else if (m_oRelativeUrlRid.IsInit())
+		{
+			writer.WriteString(L"<xxl21:relativeUrl r:id=\"" + m_oRelativeUrlRid->ToString() + L"\"/>");
+		}
+		writer.WriteString(L"</xxl21:alternateUrls>");
+	}
+	std::wstring CAlternateUrls::toXML() const
+	{
+		NSStringUtils::CStringBuilder writer;
+		toXML(writer);
+		return writer.GetData().c_str();
+	}
+//---------------------------------------------------------------------------------------------------------------------------------
 	CExternalLink::CExternalLink(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
 		m_bSpreadsheets = true;
@@ -1509,13 +1590,17 @@ namespace Spreadsheet
 				}
 			}
 		}
-
 	}
 	void CExternalLink::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		NSStringUtils::CStringBuilder sXml;
 		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-		sXml.WriteString(L"<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
+		sXml.WriteString(L"<externalLink \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"x14 xxl21\" \
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks2021\">");
 
 		if (m_oExternalBook.IsInit())
 		{

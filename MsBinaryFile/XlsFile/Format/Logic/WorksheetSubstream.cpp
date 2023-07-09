@@ -687,12 +687,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 						std::map<std::wstring, int>::iterator pFind = global_info_->mapDefaultFormatCode.find(fmt->stFormat);
 						if (pFind != global_info_->mapDefaultFormatCode.end())
 						{
-							fmt->ifmt = pFind->second;
+							fmt->ifmt_used = fmt->ifmt = pFind->second;
 						}
 						else
 						{
-							fmt->ifmt = 168 + global_info_->m_arNumFormats.size();
+							fmt->ifmt_used = fmt->ifmt = global_info_->last_User_NumFmt++;
 						}
+					}
+					else
+					{
+						fmt->ifmt_used = global_info_->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
 					}
 					global_info_->m_arNumFormats.push_back(elements_.front());
 					elements_.pop_front();

@@ -616,8 +616,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeChartDateScale;
-    
+    static const ElementType type = typeChartDateScale;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -633,5 +632,22 @@ public:
  	_CP_OPT(odf_types::chart_time_unit)	minor_interval_unit_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(chart_date_scale);
+
+class chart_data_table : public office_element_impl<chart_data_table>
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+
+	static const ElementType type = typeChartDataTable;
+	
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name) {}
+	virtual void add_child_element(const office_element_ptr & child_element) {}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	common_chart_attlist common_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(chart_data_table);
 }
 }

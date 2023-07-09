@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,9 +67,11 @@ namespace XLSB
 
         if (proc.optional<BeginSlicerStyleElements>())
         {
-            m_BrtBeginSlicerStyleElements = elements_.back();
+            m_bBrtBeginSlicerStyleElements = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicerStyleElements = false;
 
         int count = proc.repeated<SlicerStyleElement>(0, 8);
 
@@ -82,18 +84,41 @@ namespace XLSB
 
         if (proc.optional<EndSlicerStyleElements>())
         {
-            m_BrtEndSlicerStyleElements = elements_.back();
+            m_bBrtEndSlicerStyleElements = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerStyleElements = false;
 
         if (proc.optional<EndSlicerStyle>())
         {
-            m_BrtEndSlicerStyle = elements_.back();
+            m_bBrtEndSlicerStyle = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerStyle = false;
 
-        return m_BrtBeginSlicerStyle && m_BrtBeginSlicerStyleElements && m_BrtEndSlicerStyleElements && m_BrtEndSlicerStyle;
+        return m_BrtBeginSlicerStyle && m_bBrtBeginSlicerStyleElements && m_bBrtEndSlicerStyleElements && m_bBrtEndSlicerStyle;
     }
+
+	const bool SLICERSTYLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSlicerStyle != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerStyle);
+
+		proc.mandatory<BeginSlicerStyleElements>();
+
+		for (auto &item : m_arBrtSlicerStyleElement)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerStyleElements>();
+
+		proc.mandatory<EndSlicerStyle>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace XLSB
 
     void WbProp::readFields(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT32 flags;
         record >> flags;
 
         f1904                    = GETBIT(flags, 0);
@@ -75,6 +75,31 @@ namespace XLSB
         record >> dwThemeVersion;
         record >> strName;
     }
+
+	void WbProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, f1904)
+		SETBIT(flags, 2, fHideBorderUnselLists)
+		SETBIT(flags, 3, fFilterPrivacy)
+		SETBIT(flags, 4, fBuggedUserAboutSolution)
+		SETBIT(flags, 5, fShowInkAnnotation)
+		SETBIT(flags, 6, fBackup)
+		SETBIT(flags, 7, fNoSaveSup)
+		SETBITS(flags, 8, 9, grbitUpdateLinks)
+		SETBIT(flags, 10, fHidePivotTableFList)
+		SETBIT(flags, 11, fPublishedBookItems)
+		SETBIT(flags, 12, fCheckCompat)
+		SETBITS(flags, 13, 14, mdDspObj);
+		SETBIT(flags, 15, fShowPivotChartFilter)
+		SETBIT(flags, 16, fAutoCompressPictures)
+		SETBIT(flags, 17, fRefreshAll)
+
+		record << flags;
+		record << dwThemeVersion;
+		record << strName;
+	}
 
 } // namespace XLSB
 

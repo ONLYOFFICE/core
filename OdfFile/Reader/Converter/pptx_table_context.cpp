@@ -385,8 +385,8 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				
 				if (graphic_props)
 				{
-					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_,
-						Context.root()->odf_context().drawStyles(), fill);
+					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, 
+													graphic_props->style_background_image_, Context.root(), fill);
 				}
 				if (fill.bitmap)
 				{

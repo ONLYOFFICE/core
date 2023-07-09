@@ -58,6 +58,8 @@ const bool PIVOTVD::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+
 	m_Sxvd = elements_.back();
 	elements_.pop_back();
 	
@@ -71,6 +73,12 @@ const bool PIVOTVD::loadContent(BinProcessor& proc)
 	{
 		m_SXVDEx = elements_.back();
 		elements_.pop_back();
+		
+		SXVDEx* vd_ex = dynamic_cast<SXVDEx*>(m_SXVDEx.get());
+		if (vd_ex)
+		{
+			vd_ex->ifmt = global_info->RegisterNumFormat(vd_ex->ifmt, L""); // return update
+		}
 	}
 
 	return true;
@@ -99,7 +107,7 @@ int PIVOTVD::serialize(std::wostream & strm)
 			
 			if (vd_ex->ifmt > 0)	
 			{
-				CP_XML_ATTR(L"numFmtId", vd_ex->ifmt != 44 ? vd_ex->ifmt : 0);
+				CP_XML_ATTR(L"numFmtId", vd_ex->ifmt);
 			}
 
 			if (vd->stName.value().empty() == false)

@@ -2756,7 +2756,7 @@ namespace OOX
 				}
                 else if (XLSB::rt_EndSheetData == nType)
 				{
-					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
+					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter, true);
 					RELEASEOBJECT(pRow);
 					oStream.XlsbSkipRecord();
 					break;
@@ -2790,7 +2790,7 @@ namespace OOX
 				pCSVWriter->WriteRowStart(pRow);
 			}
 		}
-		void CSheetData::fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		void CSheetData::fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter, bool bLastRow)
 		{
 			if(pRow)
 			{
@@ -2800,7 +2800,7 @@ namespace OOX
 				}
 				else
 				{
-					pCSVWriter->WriteRowEnd(pRow);
+					pCSVWriter->WriteRowEnd(pRow, bLastRow);
 				}
 			}
 		}

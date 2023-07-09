@@ -126,6 +126,7 @@ namespace BinXlsxRW
 		int ReadCT_UnsignedInt			(BYTE type, long length, void* poResult);
 		int ReadCT_String				(BYTE type, long length, void* poResult);
 		int ReadCT_UnsignedByte			(BYTE type, long length, void* poResult);
+		int ReadCT_SignedByte			(BYTE type, long length, void* poResult);
 
 		int ReadCT_ChartColors			(BYTE type, long length, void* poResult);
 		int ReadCT_ColorsVariation		(BYTE type, long length, void* poResult);
@@ -348,7 +349,8 @@ namespace BinXlsxRW
 		void WriteCT_RadarStyle(OOX::Spreadsheet::CRadarStyle& oVal);
 		void WriteCT_Grouping(OOX::Spreadsheet::CGrouping& oVal);
 
-		void WriteCT_UnsignedByte(unsigned int oVal);
+		void WriteCT_SignedByte(char oVal);
+		void WriteCT_UnsignedByte(unsigned char oVal);
 		void WriteCT_UnsignedInt(unsigned int oVal);
 		void WriteCT_Boolean(bool oVal);
 		void WriteCT_Double(double oVal);

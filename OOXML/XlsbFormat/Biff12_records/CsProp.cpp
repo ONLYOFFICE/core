@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,6 +60,18 @@ namespace XLSB
         brtcolorTab.readFields(record);
         record >> strName;
     }
+
+	void CsProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fPublish)
+
+		record << flags;
+
+		brtcolorTab.writeFields(record);
+		record << strName;
+	}
 
 } // namespace XLSB
 

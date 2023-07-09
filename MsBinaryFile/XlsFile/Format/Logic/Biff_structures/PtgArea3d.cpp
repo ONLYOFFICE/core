@@ -68,7 +68,7 @@ void PtgArea3d::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 	
 	if (global_info->Version < 0x0600)
-	{//biff5/7
+	{
 		unsigned short	rwFirst, rwLast;
 		unsigned char	colFirst, colLast;
 
@@ -77,7 +77,7 @@ void PtgArea3d::loadFields(CFRecord& record)
 		record >> itabFirst >> itabLast >> rwFirst >> rwLast >> colFirst >> colLast;
 
 		area.rowFirstRelative	= rwFirst & 0x8000;
-		area.columnLastRelative	= rwFirst & 0x4000;
+		area.columnFirstRelative= rwFirst & 0x4000;
 		
 		area.columnFirst		= colFirst;
 		area.rowFirst			= rwFirst & 0x3FFF;
@@ -90,19 +90,54 @@ void PtgArea3d::loadFields(CFRecord& record)
 
 	}
     else if (global_info->Version < 0x0800)
-    {//biff8
+    {
         record >> ixti;
         record >> area;
         area_rel = area;
     }
+
     else
-    {//biff12
+    {
         record >> ixti;
         record >> areaXlsb;
     }
 
 }
+void PtgArea3d::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
 
+	if (global_info->Version < 0x0600)
+	{
+		unsigned short	rwFirst, rwLast;
+		unsigned char	colFirst, colLast;
+
+		record << ixals;
+		record.reserveNunBytes(8);
+		record << itabFirst << itabLast;
+
+		rwFirst = (area.rowFirstRelative << 17) & (area.columnFirstRelative << 16) & (area.rowFirst & 0x3FFF);
+		colFirst = area.columnFirst;
+
+		rwLast = (area.rowLastRelative << 17) & (area.columnLastRelative << 16) & (area.rowLast & 0x3FFF);
+		colLast = area.columnLast;
+
+		record << rwFirst << rwLast << colFirst << colLast;
+
+	}
+	else if (global_info->Version < 0x0800)
+	{
+		record << ixti;
+		record << area;		
+	}
+
+	else
+	{
+		record << ixti;
+		record << areaXlsb;
+	}
+
+}
 
 void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
@@ -123,10 +158,10 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 	if (global_info->Version < 0x0600)
 	{
 		ixti = ixals;
-		if (((short)ixals) < 0)
+		if (ixals == 0xffff)
 		{
 			std::wstring strRange;
-			if (-1 == itabFirst)
+			if(-1 == itabFirst)
 			{
 				strRange = L"#REF";
 			}

@@ -49,8 +49,8 @@ public:
 
 	static const ElementType	type = typeRevItab;
 
-	virtual void load(CFRecord& record);
-
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	unsigned char type1;
 	unsigned short tabid;

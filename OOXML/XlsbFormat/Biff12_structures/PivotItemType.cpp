@@ -42,5 +42,11 @@ BiffStructurePtr PivotItemType::clone()
     return BiffStructurePtr(new PivotItemType(*this));
 }
 
+PivotItemType& PivotItemType::operator= (const BYTE& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

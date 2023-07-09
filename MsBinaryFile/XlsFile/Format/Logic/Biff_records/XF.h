@@ -54,14 +54,17 @@ namespace XLS
 
 		BaseObjectPtr clone();
 		
-		virtual void readFields(CFRecord& record);
+		void readFields(CFRecord& record) override;
+		void writeFields(CFRecord& record) override;
 
 		int serialize(std::wostream & stream);
 
 		static const ElementType type = typeXF;
 
 		_UINT16		font_index;
-		_UINT16		ifmt;
+		
+		_UINT16		ifmt; //used
+		std::wstring format_code;
 		
 		_UINT16		ixfParent;
 

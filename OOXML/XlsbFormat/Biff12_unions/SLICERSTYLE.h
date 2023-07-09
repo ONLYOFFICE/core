@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 
 
@@ -47,13 +47,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginSlicerStyle;
-        XLS::BaseObjectPtr               m_BrtBeginSlicerStyleElements;
+		bool			                 m_bBrtBeginSlicerStyleElements;
         std::vector<XLS::BaseObjectPtr>  m_arBrtSlicerStyleElement;
-        XLS::BaseObjectPtr               m_BrtEndSlicerStyleElements;
-        XLS::BaseObjectPtr               m_BrtEndSlicerStyle;
+		bool			                 m_bBrtEndSlicerStyleElements;
+		bool			                 m_bBrtEndSlicerStyle;
 
     };
 

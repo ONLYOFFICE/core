@@ -49,14 +49,13 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeBoundSheet8;
 
-	ForwardOnlyParam<_UINT32>	lbPlyPos;
-	std::wstring				hsState;
-	unsigned char				dt;
+	_UINT32	lbPlyPos;
+	std::wstring hsState;
+	unsigned char dt;
 //-----------------------------
 	std::wstring				name_;
 };

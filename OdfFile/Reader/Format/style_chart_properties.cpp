@@ -31,6 +31,7 @@
  */
 
 #include "style_chart_properties.h"
+#include "../../DataTypes/linestyle.h"
 
 #include <iostream>
 
@@ -92,7 +93,18 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	
 	_CP_OPT(std::wstring) strVal;
 	
-	CP_APPLY_ATTR(L"chartooo:axis-type", strVal); if (strVal) push_back(_property(L"axis-type", strVal.get()));
+	CP_APPLY_ATTR(L"chartooo:axis-type", strVal); 
+	if (strVal) push_back(_property(L"axis-type", strVal.get()));
+	else
+	{
+		CP_APPLY_ATTR(L"chart:axis-type", strVal);
+		if (strVal) push_back(_property(L"axis-type", strVal.get()));
+		else
+		{
+			CP_APPLY_ATTR(L"loext:axis-type", strVal);
+			if (strVal) push_back(_property(L"axis-type", strVal.get()));
+		}
+	}
 
 	CP_APPLY_ATTR(L"chart:symbol-type",		strVal);	
 	if (strVal) push_back(_property(L"symbol-type",chart_symbol_type(chart_symbol_type::parse(strVal.get())).get_type()));
@@ -127,104 +139,68 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"chart:tick-mark-position",	strVal);	
  	if (strVal) push_back(_property(L"tick-mark-position",	*strVal));
  
-    CP_APPLY_ATTR(L"chart:interpolation",	strVal);	
+    CP_APPLY_ATTR(L"chart:interpolation", strVal);	
 	if (strVal) push_back(_property(L"interpolation",	chart_interpolation(chart_interpolation::parse(strVal.get())).get_type()));
   
-	CP_APPLY_ATTR(L"chart:solid-type",		strVal);	
+	CP_APPLY_ATTR(L"chart:solid-type", strVal);	
 	if (strVal) push_back(_property(L"solid-type",	chart_solid_type(chart_solid_type::parse(strVal.get())).get_type()));
     
-	CP_APPLY_ATTR(L"chart:label-arrangement",		strVal); 
+	CP_APPLY_ATTR(L"chart:label-arrangement", strVal); 
 	if (strVal) push_back(_property(L"label-arrangement",chart_label_arrangement(chart_label_arrangement::parse(strVal.get())).get_type()));
 
-	CP_APPLY_ATTR(L"style:direction",		strVal); 
+	CP_APPLY_ATTR(L"style:direction", strVal); 
 	if (strVal) push_back(_property(L"direction",	direction(direction::parse(strVal.get())).get_type() ));
 
-	CP_APPLY_ATTR(L"chart:series-source",		strVal); 
+	CP_APPLY_ATTR(L"chart:series-source", strVal); 
 	if (strVal) push_back(_property(L"series-source",	chart_series_source(chart_series_source::parse(strVal.get())).get_type() ));
 
-	CP_APPLY_ATTR(L"chart:symbol-width",		strVal); 
+	CP_APPLY_ATTR(L"chart:symbol-width", strVal); 
 	if (strVal)
 	{
 		push_back(_property(L"symbol-width-value",	length(length::parse(strVal.get())).get_value() ));
 		push_back(_property(L"symbol-width-unit",	length(length::parse(strVal.get())).get_unit() ));
 	}
 
-	CP_APPLY_ATTR(L"chart:symbol-height",		strVal); 
+	CP_APPLY_ATTR(L"chart:symbol-height", strVal); 
 	if (strVal)
 	{
 		push_back(_property(L"symbol-height-value",	length(length::parse(strVal.get())).get_value() ));
-		push_back(_property(L"symbol-height-unit",		length(length::parse(strVal.get())).get_unit() ));
+		push_back(_property(L"symbol-height-unit", length(length::parse(strVal.get())).get_unit() ));
 	}
 
-	CP_APPLY_ATTR(L"chart:regression-type",		strVal); 
+	CP_APPLY_ATTR(L"chart:regression-type", strVal); 
 	if (strVal) push_back(_property(L"regression-type",	chart_regression_type(chart_regression_type::parse(strVal.get())).get_type() ));
 	
-	CP_APPLY_ATTR(L"chart:data-label-number",		strVal); 
+	CP_APPLY_ATTR(L"chart:data-label-number", strVal); 
 	if (strVal) push_back(_property(L"data-label-number",	chart_data_label_number(chart_data_label_number::parse(strVal.get())).get_type() ));
 
-	CP_APPLY_ATTR(L"chart:error-category",		strVal); 
+	CP_APPLY_ATTR(L"chart:error-category", strVal); 
 	if (strVal) push_back(_property(L"error-category",	chart_error_category(chart_error_category::parse(strVal.get())).get_type() ));
 
-	CP_APPLY_ATTR(L"chart:label-position",		strVal); 
+	CP_APPLY_ATTR(L"chart:label-position", strVal); 
 	if (strVal) push_back(_property(L"label-position",	chart_label_position(chart_label_position::parse(strVal.get())).get_type() ));
 
 	common_rotation_angle_attlist_.add_attributes(Attributes);
+	
+	CP_APPLY_ATTR(L"loext:show-horizontal-border", bVal); if (bVal) push_back(_property(L"show-horizontal-border", bVal.get()));
+	CP_APPLY_ATTR(L"loext:show-vertical-border", bVal); if (bVal) push_back(_property(L"show-vertical-border", bVal.get()));
+	CP_APPLY_ATTR(L"loext:show-outline", bVal); if (bVal) push_back(_property(L"show-outline", bVal.get()));
+	CP_APPLY_ATTR(L"loext:show-keys", bVal); if (bVal) push_back(_property(L"show-keys", bVal.get()));
 
-	//CP_APPLY_ATTR(L"chart:scale-text",			chart_scale_text_ );	
- //   CP_APPLY_ATTR(L"chart:three-dimensional",	chart_three_dimensional_ );
-	//CP_APPLY_ATTR(L"chart:vertical",			chart_vertical_ );
-	//CP_APPLY_ATTR(L"chart:stacked",				chart_stacked_ );
-	//CP_APPLY_ATTR(L"chart:visible",				chart_visible_ );
-	//CP_APPLY_ATTR(L"chart:logarithmic",			chart_logarithmic_ );	
-	//CP_APPLY_ATTR(L"chart:percentage",			chart_percentage_ );		
-	//CP_APPLY_ATTR(L"chart:connect-bars",		chart_connect_bars_ );		
-	//CP_APPLY_ATTR(L"chart:deep",				chart_deep_ );		
-	//CP_APPLY_ATTR(L"chart:tick-marks-major-outer",chart_tick_marks_major_outer_ );	
-	//CP_APPLY_ATTR(L"chart:tick-marks-minor-inner",chart_tick_marks_minor_inner_ );	
-	//CP_APPLY_ATTR(L"chart:tick-marks-minor-outer",chart_marks_minor_outer_ );	
-	//CP_APPLY_ATTR(L"chart:lines",				chart_lines_ );		
-	//CP_APPLY_ATTR(L"chart:display-label",		chart_display_label_ );		
-	//CP_APPLY_ATTR(L"chart:reverse-direction",	chart_reverse_direction_ );		
-	//CP_APPLY_ATTR(L"text:line-break",			chart_line_break_ );		
-	//CP_APPLY_ATTR(L"chart:text-overlap",		chart_text_overlap_ );		
-	//CP_APPLY_ATTR(L"chart:link-data-style-to-source",chart_link-data-style-to-source_ );
-	//CP_APPLY_ATTR(L"chart:data-label-symbol",	chart_data-label-symbol_ );	
-	//CP_APPLY_ATTR(L"chart:data-label-text",		chart_data-label-text_ );	
-	//CP_APPLY_ATTR(L"chart:mean-value",			chart_mean-value_ );	
-	//CP_APPLY_ATTR(L"chart:error-upper-indicator",chart_error_upper_indicator_ );	
-	//CP_APPLY_ATTR(L"chart:error-lower-indicator",chart_error_lower_indicator_ );
+	_CP_OPT(odf_types::color) color_;;
+	CP_APPLY_ATTR(L"loext:label-stroke-color", color_);
+	if (color_) push_back(_property(L"label-stroke-color", color_->get_hex_value()));
 
-	//CP_APPLY_ATTR(L"chart:symbol-type",			chart_symbol_type_);	
-	//CP_APPLY_ATTR(L"chart:symbol-name",			chart_symbol_name_);	
-	//
-	//CP_APPLY_ATTR(L"chart:gap-width",			chart_gap_width_);
-	//CP_APPLY_ATTR(L"chart:overlap",				chart_overlap_);
-	//CP_APPLY_ATTR(L"chart:spline-order",		chart_spline_order_);
-	//CP_APPLY_ATTR(L"chart:spline-resolution",	chart_spline_resolution_); 
-	//CP_APPLY_ATTR(L"chart:pie-offset",			chart_pie_offset_);	
-	//CP_APPLY_ATTR(L"chart:interval-minor-divisor",chart_interval_minor_divisor_); 
-	//
-	//CP_APPLY_ATTR(L"chart:maximum",				chart_maximum_);
-	//CP_APPLY_ATTR(L"chart:minimum",				chart_minimum_); 
-	//CP_APPLY_ATTR(L"chart:origin",				chart_origin_); 
-	//CP_APPLY_ATTR(L"chart:interval-major",		chart_interval_major_); 
-	//CP_APPLY_ATTR(L"chart:error-percentage",	chart_error_percentage_); 
-	//CP_APPLY_ATTR(L"chart:error-margin",		chart_error_margin_); 
-	//CP_APPLY_ATTR(L"chart:error-upper-limit",	chart_error_upper_limit_);   
+	_CP_OPT(odf_types::line_style) line_;
+	CP_APPLY_ATTR(L"loext:label-stroke", line_);
+	if (line_) push_back(_property(L"label-stroke", (int)line_->get_type()));
 
-	//CP_APPLY_ATTR(L"chart:symbol-width",		chart_symbol_width_);
-	//CP_APPLY_ATTR(L"chart:symbol-height",		chart_symbol_height_); 
-
- //   CP_APPLY_ATTR(L"chart:interpolation",		chart_interpolation_);  
-	//CP_APPLY_ATTR(L"chart:solid-type",			chart_solid_type_);	    
-	//CP_APPLY_ATTR(L"chart:label-arrangement",	chart_label_arrangement_); 
-	//CP_APPLY_ATTR(L"style:direction",			style_direction_); 
-	//CP_APPLY_ATTR(L"chart:series-source",		chart_series_source_); 
-	//CP_APPLY_ATTR(L"chart:regression-type",		chart_regression_type_); 	
-	//CP_APPLY_ATTR(L"chart:data-label-number",	chart_data_label_number_); 
-	//CP_APPLY_ATTR(L"chart:error-category",		chart_error_category_); 
-
-	//common_rotation_angle_attlist_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"loext:label-fill-color", color_);
+	if (color_) push_back(_property(L"label-fill-color", color_->get_hex_value()));
+	
+	_CP_OPT(draw_fill) fill_;
+	CP_APPLY_ATTR(L"loext:label-fill", fill_);
+	if (fill_) push_back(_property(L"label-fill", fill_->get_type()));
 }
 
 void style_chart_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

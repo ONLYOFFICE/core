@@ -54,6 +54,7 @@ public:
 	virtual void end_document();
 
 	void set_tables_structure_lock(bool val);
+	void set_repeat_at_lasts(bool val);
 
 	void start_sheet();
         void set_sheet_dimension(const std::wstring & ref);
@@ -135,8 +136,10 @@ public:
 
 	std::vector<ods_external_state>	externals_;
 private:
-	ods_table_context			table_context_;	
-	office_spreadsheet*			root_spreadsheet_;
+	ods_table_context table_context_;	
+	office_spreadsheet* root_spreadsheet_;
+	bool repeat_at_lasts_ = true;
+	bool header_row_ = false;
 };
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,7 +59,7 @@ namespace XLSB
             return BaseObjectPtr(new Parenthesis_BOOKVIEWS(*this));
         }
 
-        const bool loadContent(XLS::BinProcessor& proc)
+        const bool loadContent(XLS::BinProcessor& proc) override
         {
             if (proc.optional<ACUID>())
             {
@@ -83,9 +83,9 @@ namespace XLSB
             //}
 
             return true;
-        };
+        }
 
-        BaseObjectPtr               m_ACUID;
+        //BaseObjectPtr               m_ACUID;
         BaseObjectPtr               m_BrtBookView;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
     };
@@ -100,9 +100,11 @@ namespace XLSB
     {
         if (proc.optional<BeginBookViews>())
         {
-            m_BrtBeginBookViews = elements_.back();
+            m_bBrtBeginBookViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginBookViews = false;
 
         int count = proc.repeated<Parenthesis_BOOKVIEWS>(0, 0);
 
@@ -113,15 +115,29 @@ namespace XLSB
             count--;
         }
 
-
         if (proc.optional<EndBookViews>())
         {
-            m_BrtEndBookViews = elements_.back();
+            m_bBrtEndBookViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndBookViews = false;
 
-        return m_BrtBeginBookViews && !m_arBrtBookView.empty() && m_BrtEndBookViews;
+        return m_bBrtBeginBookViews && !m_arBrtBookView.empty() && m_bBrtEndBookViews;
     }
+
+	const bool BOOKVIEWS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginBookViews>();
+
+		for (auto &item : m_arBrtBookView)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndBookViews>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

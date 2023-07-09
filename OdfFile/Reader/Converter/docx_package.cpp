@@ -366,25 +366,25 @@ namespace
 	        
 			// внимание! L"s - это не ошибка
 			content << L"<w:" << Node <<    L"s \
-								xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-								xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-								xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-								xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-								xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-								xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-								xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-								xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-								xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-								xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-								xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-								xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-								xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-								xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-								xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-								xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
 
-							//mc:Ignorable=\"w14 wp14\" 
-							//xmlns:v=\"urn:schemas-microsoft-com:vml\" 
+//mc:Ignorable=\"w14 wp14\" 
+//xmlns:v=\"urn:schemas-microsoft-com:vml\" 
 
 			BOOST_FOREACH(const notes_context::instances_map::value_type & elm, Instances)
 			{
@@ -401,7 +401,7 @@ namespace
 				doc->get_content_types_file().content()->add_override(std::wstring(L"/word/") + Name, ContentType);
 			}
 
-			if (Rels.relationships().size() > 0)
+			if (false == Rels.relationships().empty())
 			{
 				rels_files relFiles;
 				rels_file_ptr rels_elem = rels_file::create( Node + L"s.xml.rels");

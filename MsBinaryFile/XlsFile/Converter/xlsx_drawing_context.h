@@ -253,7 +253,7 @@ public:
 		bool			is = false;
 		_color			color;
 		_color			highlight;
-		double			opacity;
+		double			opacity = 0;
 		double			offsetX = 0x00006338;
 		double			offsetY = 0x00006338;
 		double			scaleX2X = 1.;

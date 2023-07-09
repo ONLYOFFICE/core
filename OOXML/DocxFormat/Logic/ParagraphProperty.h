@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
-#define OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 #include "./../WritingElement.h"
@@ -89,9 +87,9 @@ namespace OOX
 			virtual EElementType getType() const;
 
 		public:
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oIlvl;
-			nullable<ComplexTypes::Word::CTrackChange   > m_oIns;
-			nullable<ComplexTypes::Word::CDecimalNumber > m_oNumID;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oIlvl;
+			nullable<ComplexTypes::Word::CTrackChange> m_oIns;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oNumID;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -105,14 +103,9 @@ namespace OOX
 			CPBdr();
 			virtual ~CPBdr();
 
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
-
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
 			virtual std::wstring toXML() const;
-
 
 			virtual EElementType getType() const;
 
@@ -131,7 +124,6 @@ namespace OOX
 				return oResult;
 			}
 
-		public:
 			nullable<ComplexTypes::Word::CBorder > m_oBar;
 			nullable<ComplexTypes::Word::CBorder > m_oBetween;
 			nullable<ComplexTypes::Word::CBorder > m_oBottom;
@@ -155,7 +147,6 @@ namespace OOX
 			const CPPrChange& operator =(const XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CPPrChange();
 
-		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring      toXML() const;
@@ -193,7 +184,6 @@ namespace OOX
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
-		public:
 			std::vector<ComplexTypes::Word::CTabStop*> m_arrTabs;
 		};
 
@@ -207,6 +197,9 @@ namespace OOX
 			CParagraphProperty(XmlUtils::CXmlNode& oNode);
 			CParagraphProperty(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CParagraphProperty();
+
+			bool IsNoEmpty();
+			void Clear();
 
 			const CParagraphProperty& operator =(const XmlUtils::CXmlNode &oNode);
 			const CParagraphProperty& operator =(const XmlUtils::CXmlLiteReader &oReader);
@@ -231,49 +224,45 @@ namespace OOX
 
 				return oResult;
 			}
-
-			//--------------------------------------------------------------------------------------------------------
-
-			bool                                                           m_bPPrChange;
+//--------------------------------------------------------------------------------------------------------
+			bool m_bPPrChange = false;
 
             nullable<ComplexTypes::Word::COnOff2>	m_oAdjustRightInd;
             nullable<ComplexTypes::Word::COnOff2>	m_oAutoSpaceDE;
             nullable<ComplexTypes::Word::COnOff2>	m_oAutoSpaceDN;
             nullable<ComplexTypes::Word::COnOff2>	m_oBidi;
-			nullable<ComplexTypes::Word::CCnf>								m_oCnfStyle;
+			nullable<ComplexTypes::Word::CCnf>		m_oCnfStyle;
             nullable<ComplexTypes::Word::COnOff2>	m_oContextualSpacing;
-			nullable<ComplexTypes::Word::CDecimalNumber>					m_oDivID;
-			nullable<ComplexTypes::Word::CFramePr>							m_oFramePr;
-			nullable<ComplexTypes::Word::CInd>								m_oInd;
-			nullable<ComplexTypes::Word::CJc>								m_oJc;
+			nullable<ComplexTypes::Word::CDecimalNumber>	m_oDivID;
+			nullable<ComplexTypes::Word::CFramePr>	m_oFramePr;
+			nullable<ComplexTypes::Word::CInd>		m_oInd;
+			nullable<ComplexTypes::Word::CJc>		m_oJc;
             nullable<ComplexTypes::Word::COnOff2>	m_oKeepLines;
             nullable<ComplexTypes::Word::COnOff2>	m_oKeepNext;
             nullable<ComplexTypes::Word::COnOff2>	m_oKinsoku;
             nullable<ComplexTypes::Word::COnOff2>	m_oMirrorIndents;
-			nullable<OOX::Logic::CNumPr>									m_oNumPr;
-			nullable<ComplexTypes::Word::CDecimalNumber>					m_oOutlineLvl;
+			nullable<OOX::Logic::CNumPr>			m_oNumPr;
+			nullable<ComplexTypes::Word::CDecimalNumber>	m_oOutlineLvl;
             nullable<ComplexTypes::Word::COnOff2>	m_oOverflowPunct;
             nullable<ComplexTypes::Word::COnOff2>	m_oPageBreakBefore;
-			nullable<OOX::Logic::CPBdr>										m_oPBdr;
-			nullable<OOX::Logic::CPPrChange>								m_oPPrChange;
-			nullable<ComplexTypes::Word::String>							m_oPStyle;
-			nullable<OOX::Logic::CRunProperty>								m_oRPr;
-			nullable<OOX::Logic::CSectionProperty>							m_oSectPr;
-			nullable<ComplexTypes::Word::CShading>							m_oShd;
+			nullable<OOX::Logic::CPBdr>				m_oPBdr;
+			nullable<OOX::Logic::CPPrChange>		m_oPPrChange;
+			nullable<ComplexTypes::Word::String>	m_oPStyle;
+			nullable<OOX::Logic::CRunProperty>		m_oRPr;
+			nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
+			nullable<ComplexTypes::Word::CShading>	m_oShd;
             nullable<ComplexTypes::Word::COnOff2>	m_oSnapToGrid;
-			nullable<ComplexTypes::Word::CSpacing>							m_oSpacing;
+			nullable<ComplexTypes::Word::CSpacing>	m_oSpacing;
             nullable<ComplexTypes::Word::COnOff2>	m_oSuppressAutoHyphens;
             nullable<ComplexTypes::Word::COnOff2>	m_oSuppressLineNumbers;
             nullable<ComplexTypes::Word::COnOff2>	m_oSuppressOverlap;
-			nullable<OOX::Logic::CTabs>										m_oTabs;
-			nullable<ComplexTypes::Word::CTextAlignment>					m_oTextAlignment;
-			nullable<ComplexTypes::Word::CTextboxTightWrap>					m_oTextboxTightWrap;
-			nullable<ComplexTypes::Word::CTextDirection>					m_oTextDirection;
+			nullable<OOX::Logic::CTabs>				m_oTabs;
+			nullable<ComplexTypes::Word::CTextAlignment>	m_oTextAlignment;
+			nullable<ComplexTypes::Word::CTextboxTightWrap>	m_oTextboxTightWrap;
+			nullable<ComplexTypes::Word::CTextDirection>	m_oTextDirection;
             nullable<ComplexTypes::Word::COnOff2>	m_oTopLinePunct;
             nullable<ComplexTypes::Word::COnOff2>	m_oWidowControl;
             nullable<ComplexTypes::Word::COnOff2>	m_oWordWrap;
 		};
-
 	} // namespace Logic
 } // namespace OOX
-#endif // OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_

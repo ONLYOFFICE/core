@@ -45,9 +45,12 @@ public:
 	CompositeObject();
 	~CompositeObject();
 
-	virtual const bool read				(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory); // Read self and children
-	virtual const bool loadContent		(BinProcessor& proc) = 0;
-	virtual const bool loadContentRead	(BinReaderProcessor& proc);
+	const bool read							(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory) override; // Read self and children
+	const bool write						(StreamCacheWriterPtr writer, BaseObject* parent) override;						  // Write self and children
+	virtual const bool loadContent			(BinProcessor& proc) = 0;
+	virtual const bool saveContent			(BinProcessor& proc) { return false; }// = 0;
+	virtual const bool loadContentRead		(BinReaderProcessor& proc);
+	virtual const bool saveContentWrite		(BinWriterProcessor& proc);
 
 	static const ElementType type = typeCompositeObject;
 	

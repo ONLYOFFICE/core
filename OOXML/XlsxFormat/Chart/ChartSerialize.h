@@ -463,7 +463,7 @@ namespace OOX
 			{
 				if (this->m_pPointer)
 				{
-					writer.WriteString(L"<" + sNodeName + L" val=\"" + /*boost::lexical_cast<double>*/std::to_wstring(*this->m_pPointer) + L"\"/>");
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + std::to_wstring(*this->m_pPointer) + L"\"/>");
 				}
 			}
 		};

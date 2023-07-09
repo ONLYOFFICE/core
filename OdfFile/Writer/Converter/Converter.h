@@ -54,17 +54,18 @@ namespace cpdoccore
 	{
 		class odf_conversion_context;
 
-		class style_paragraph_properties;
-		class style_text_properties;
+		class text_format_properties;
+		class paragraph_format_properties;
+		class chart_format_properties;
+		class graphic_format_properties;
+
 		class style_graphic_properties;
 		class style_section_properties;
 		class style_table_properties;
 		class style_table_cell_properties;
 		class style_table_row_properties;
 		class style_table_column_properties;
-		class style_chart_properties;
 		class style_drawing_page_properties;
-		class graphic_format_properties;
 		namespace package
 		{
 			class odf_document;
@@ -497,7 +498,8 @@ public:
 		
 		OOX::IFileContainer							*oox_current_child_document;
 		
-		void convert (OOX::JsaProject *jsaProject);	
+		void convert_meta(OOX::CApp *app, OOX::CCore *core);
+		void convert (OOX::JsaProject *jsaProject);
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
 		bool convert (std::wstring sSchemeColor, DWORD & argb);
 		void convert_font(PPTX::Theme *theme, std::wstring & font);
@@ -543,11 +545,11 @@ public:
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
 
-		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties,
-																							cpdoccore::odf_writer::style_text_properties		*text_properties);
-		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props,			cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties, 
-																							cpdoccore::odf_writer::style_text_properties		*text_properties);
-		void convert(PPTX::Logic::RunProperties					*oox_run_props,				cpdoccore::odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::paragraph_format_properties	*paragraph_properties,
+																							cpdoccore::odf_writer::text_format_properties		*text_properties);
+		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props,			cpdoccore::odf_writer::paragraph_format_properties	*paragraph_properties,
+																							cpdoccore::odf_writer::text_format_properties		*text_properties);
+		void convert(PPTX::Logic::RunProperties					*oox_run_props,				cpdoccore::odf_writer::text_format_properties		*text_properties);
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);
@@ -633,11 +635,12 @@ public:
 		void convert(OOX::Spreadsheet::CT_ChartLines			*grid, int type);
 		void convert(OOX::Spreadsheet::CT_SerTx					*ser_tx);
 		void convert(OOX::Spreadsheet::CT_DLbls					*ser_lbls);
-		void convert(OOX::Spreadsheet::CT_Marker				*marker);
+		void convert(OOX::Spreadsheet::CT_Marker				*marker, bool bFill);
 		void convert(OOX::Spreadsheet::CT_Marker				*marker, std::vector<OOX::Spreadsheet::CT_DPt*> & dPt);
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
+		void convert(OOX::Spreadsheet::CT_DTable				*dTable);
 		
 		void convert(OOX::CSizeAnchor *sz_anchor, double x0, double y0, double width, double height);
 //.chart.ex...........................................................................................................................

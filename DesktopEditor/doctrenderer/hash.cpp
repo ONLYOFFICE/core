@@ -13,6 +13,7 @@
 
 #include <cstring>
 #include <memory>
+#include <stdlib.h>
 
 int CHash::getDigestLength(HashAlgs alg)
 {

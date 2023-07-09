@@ -11,9 +11,17 @@ BUILD_NUMBER = $$(BUILD_NUMBER)
 
 DEFINES += INTVER=$$VERSION
 
+WIN_VERSION = $$replace(VERSION, \., ",")
+DEFINES += WIN_INTVER=$$WIN_VERSION
+
 PUBLISHER_NAME = $$(PUBLISHER_NAME)
 isEmpty(PUBLISHER_NAME){
     PUBLISHER_NAME = $$cat(copyright.txt)
+}
+
+APPLICATION_NAME_DEFAULT = $$(APPLICATION_NAME_DEFAULT)
+!isEmpty(APPLICATION_NAME_DEFAULT){
+    DEFINES += "APPLICATION_NAME_DEFAULT=$${APPLICATION_NAME_DEFAULT}"
 }
 
 OO_BUILD_BRANDING = $$(OO_BRANDING)
@@ -30,6 +38,8 @@ win32 {
 !win32 {
     CURRENT_YEAR = $$system(date +%Y)
 }
+
+DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
@@ -388,17 +398,7 @@ core_static_link_libstd {
     message(core_static_link_libstd)
 }
 plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
-
     TARGET_EXT = .so
-}
-}
-
-core_mac {
-plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
 }
 }
 
@@ -408,8 +408,24 @@ plugin {
 }
 }
 
-core_disable_all_warnings {
-    CONFIG += warn_off
+!core_windows {
+    plugin:CONFIG += config_hidden_symbols
+    staticlib:CONFIG += config_hidden_symbols
+}
+
+config_hidden_symbols {
+    QMAKE_CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+    QMAKE_CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+
+    core_mac:CONFIG += clang_no_exclude_libs
+    core_ios:CONFIG += clang_no_exclude_libs
+
+    !clang_no_exclude_libs {
+        plugin:QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        equals(TEMPLATE, app) {
+            QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        }
+    }
 }
 
 # BUILD_PATHS
@@ -546,3 +562,15 @@ defineTest(ADD_DEPENDENCY) {
 
 ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 !isEmpty(ADD_INC_PATH):INCLUDEPATH += $$ADD_INC_PATH
+
+!core_enable_all_warnings {
+    core_disable_all_warnings {
+	    QMAKE_CXXFLAGS_WARN_OFF = -w
+		QMAKE_CFLAGS_WARN_OFF = -w
+		CONFIG += warn_off
+	}
+}
+
+!disable_precompiled_header {
+    CONFIG += precompile_header
+}

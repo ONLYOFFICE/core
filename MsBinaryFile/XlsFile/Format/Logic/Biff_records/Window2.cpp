@@ -77,7 +77,7 @@ void Window2::readFields(CFRecord& record)
 
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
 
         fSelected		= GETBIT(flags, 9);
@@ -135,7 +135,7 @@ void Window2::readFields(CFRecord& record)
         }
         else
         {
-            unsigned short flags;
+            _UINT16 flags;
             record >> flags;
 
             fWnProt             = GETBIT(flags, 0);
@@ -164,6 +164,94 @@ void Window2::readFields(CFRecord& record)
         }
 
     }
+}
+
+void Window2::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 9, fSelected);
+
+		if (is_contained_in_chart_substream)
+		{
+			record.reserveNunBytes(8); // must be ignored
+			return;
+		}
+		SETBIT(flags, 0, fDspFmlaRt)
+		SETBIT(flags, 1, fDspGridRt)
+		SETBIT(flags, 2, fDspRwColRt)
+		SETBIT(flags, 3, fFrozenRt)
+		SETBIT(flags, 4, fDspZerosRt)
+		SETBIT(flags, 5, fDefaultHdr)
+		SETBIT(flags, 6, fRightToLeft)
+		SETBIT(flags, 7, fDspGuts)
+		SETBIT(flags, 8, fFrozenNoSplit)
+		SETBIT(flags, 10, fPaged)
+		SETBIT(flags, 11, fSLV)
+
+		CellRef ref(topLeftCell);
+
+		_UINT16		rwTop_2b = ref.row == -1 ? 0: ref.row;
+		_UINT16		colLeft_2b = ref.column == -1 ? 0 : ref.column;
+		
+		record << flags;
+		record << rwTop_2b << colLeft_2b << icvHdr;
+		
+		record.reserveNunBytes(2); // reserved
+
+		record << wScaleSLV << wScaleNormal;
+	}
+
+	else
+	{
+		if (_isChart)
+		{
+			_UINT16 flags = 0;
+			_UINT32 wScale_4b = 0;
+
+			SETBIT(flags, 0, fSelected)
+			wScale_4b = wScale;
+
+			record << flags;
+
+			record << wScale_4b << iWbkView;
+		}
+		else
+		{
+			_UINT16 flags = 0;
+
+			SETBIT(flags, 0, fWnProt)
+			SETBIT(flags, 1, fDspFmlaRt)
+			SETBIT(flags, 2, fDspGridRt)
+			SETBIT(flags, 3, fDspRwColRt)
+			SETBIT(flags, 4, fDspZerosRt)
+			SETBIT(flags, 5, fRightToLeft)
+			SETBIT(flags, 6, fSelected)
+			SETBIT(flags, 7, fDspRuler)
+			SETBIT(flags, 8, fDspGuts)
+			SETBIT(flags, 9, fDefaultHdr)
+			SETBIT(flags, 10, fWhitespaceHidden)
+
+			record << flags;
+
+			CellRef ref(topLeftCell);
+
+			rwTop = ref.row == -1 ? 0 : ref.row;
+			colLeft = ref.column == -1 ? 0 : ref.column;
+
+			record << xlView << rwTop << colLeft;
+
+			BYTE	icvHdr_1b = icvHdr;
+			record << icvHdr_1b;
+
+			record.reserveNunBytes(3); // reserved
+
+			record << wScale << wScaleNormal << wScaleSLV << wScalePLV << iWbkView;
+		}
+
+	}
 }
 
 

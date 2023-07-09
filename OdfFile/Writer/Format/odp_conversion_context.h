@@ -79,7 +79,7 @@ public:
 			odp_slide_context		* slide_context();
 			odf_comment_context		* comment_context();
 
-	virtual odf_style_context		* styles_context();
+	virtual odf_style_context_ptr	styles_context();
 
 	void start_comment			(int oox_comment_id);
 	void end_comment			();

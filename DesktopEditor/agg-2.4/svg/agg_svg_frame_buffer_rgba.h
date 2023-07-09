@@ -11,10 +11,11 @@ namespace agg
 namespace svg
 {
     //---------------------------------------------------------------------------
+	template<class Blender=agg::blender_rgba<color_type, component_order>>
     class frame_buffer_rgba
     {
     public:
-        typedef agg::blender_rgba<color_type, component_order>                                blender_type;
+		typedef Blender                                                                       blender_type;
         typedef agg::pixfmt_alpha_blend_rgba<blender_type, agg::rendering_buffer, pixel_type> pixfmt_type;
         typedef agg::renderer_base<pixfmt_type>                                               renderer_base_type;
         typedef agg::renderer_scanline_aa_solid<renderer_base_type>                           renderer_solid_type;

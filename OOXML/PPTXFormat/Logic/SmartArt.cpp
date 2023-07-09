@@ -113,6 +113,11 @@ namespace PPTX
 
 			if (!pDiagramData) return false;
 
+			if (pDiagramData->m_oDataModel.IsInit())
+				m_oDataBg = pDiagramData->m_oDataModel->m_oBg;
+
+			m_pDataContainer = oFileData.smart_dynamic_cast<OOX::IFileContainer>();
+
 			// это smart art ..есть у него drawing или нет - неважно
 			smart_ptr<OOX::File> oFileDrawing;
 			OOX::CDiagramDrawing* pDiagramDrawing = NULL;
@@ -145,10 +150,10 @@ namespace PPTX
 				if (!m_oDrawing->grpSpPr.xfrm.IsInit())
 					m_oDrawing->grpSpPr.xfrm = new PPTX::Logic::Xfrm;
 			}
-			else
-			{
-				//parse pDiagramData !!
-			}
+			//else
+			//{
+			//	//parse pDiagramData !!
+			//}
 			return true;
 		}
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)

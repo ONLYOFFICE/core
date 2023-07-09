@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,23 +30,18 @@
  *
  */
 
-#ifndef CHARTSHEETSTREAM_H
-#define CHARTSHEETSTREAM_H
-
+#pragma once
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include <memory.h>
-#include <iostream>
 #include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+
 typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
-
     class ChartSheetStream;
     typedef boost::shared_ptr<ChartSheetStream>		ChartSheetStreamPtr;
 
@@ -59,7 +54,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
@@ -83,5 +79,4 @@ namespace XLSB
 
 }
 
-#endif // CHARTSHEETSTREAM_H
 

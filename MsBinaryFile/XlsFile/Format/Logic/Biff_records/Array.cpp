@@ -54,7 +54,7 @@ void Array::readFields(CFRecord& record)
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
         record >> ref_;
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
         fAlwaysCalc = GETBIT(flags, 0);
         record.skipNunBytes(4); // unused
@@ -63,12 +63,34 @@ void Array::readFields(CFRecord& record)
     else
     {
         record >> rfx;
-        unsigned char flags;
+        BYTE flags;
         record >> flags;
         fAlwaysCalc = GETBIT(flags, 0);
         formula.load(record);
     }
 }
+
+void Array::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << ref_;
+		_UINT16 flags = 0;
+		SETBIT(flags, 0, fAlwaysCalc);
+		record << flags;
+		record.reserveNunBytes(4); // unused
+		formula.save(record);
+	}
+	else
+	{
+		record << rfx;
+		BYTE flags = 0;
+		SETBIT(flags, 0, fAlwaysCalc);
+		record << flags;
+		formula.save(record);
+	}
+}
+
 
 } // namespace XLS
 

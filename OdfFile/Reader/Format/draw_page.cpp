@@ -140,13 +140,12 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																	Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			
 				//часть свойств переходов между слайдами тута
@@ -322,13 +321,12 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																	Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			
 	////////////////////////////////////////////////

@@ -501,7 +501,7 @@ namespace NSCustomVML
 			if (NULL == m_pAdjustValues)
 				return;
 
-			int lCount = m_pAdjustValues->size();
+			size_t lCount = m_pAdjustValues->size();
 
 			while (lCount <= lIndex)
 			{
@@ -511,9 +511,9 @@ namespace NSCustomVML
 
 			(*m_pAdjustValues)[lIndex] = lValue;
 		}
-		void CCustomVML::SetAdjusts(std::vector<LONG>* pList)
+		void CCustomVML::SetAdjusts(std::vector<long>* pValues)
 		{
-			m_pAdjustValues = pList;
+			m_pAdjustValues = pValues;
 		}
 		void CCustomVML::ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
 		{

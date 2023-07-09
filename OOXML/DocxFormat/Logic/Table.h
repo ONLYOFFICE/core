@@ -142,13 +142,13 @@ namespace OOX
 				if ( !m_bTblGridChange && oNode.GetNode( L"w:tblGridChange", oChild ) )
 					m_oTblGridChange = oChild;
 
-				XmlUtils::CXmlNodes oGridColNodes;
+				std::vector<XmlUtils::CXmlNode> oGridColNodes;
 				if ( oNode.GetNodes( L"w:gridCol", oGridColNodes ) )
 				{
-					XmlUtils::CXmlNode oGridColNode;
-					for ( int nIndex = 0; nIndex < oGridColNodes.GetCount(); nIndex++ )
+					for ( size_t nIndex = 0; nIndex < oGridColNodes.size(); nIndex++ )
 					{
-						if ( oGridColNodes.GetAt( nIndex, oGridColNode ) )
+						XmlUtils::CXmlNode & oGridColNode = oGridColNodes[nIndex];
+						if ( oGridColNode.IsValid() )
 						{
 							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
 							*oGridCol = oGridColNode;

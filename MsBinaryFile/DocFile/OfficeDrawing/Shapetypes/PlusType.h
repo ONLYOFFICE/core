@@ -58,7 +58,7 @@ namespace DocFileFormat
         this->Formulas.push_back( L"prod width 1 2" );
         this->Formulas.push_back( L"prod height 1 2" );
 
-        this->AdjustmentValues = L"5400";
+		Adjustments.push_back(5400);
 
         this->ConnectorLocations = L"@8,0;0,@9;@8,@7;@6,@9";
 

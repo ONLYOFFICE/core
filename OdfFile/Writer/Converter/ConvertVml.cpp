@@ -298,7 +298,7 @@ namespace Oox2Odf
 			odf_context()->drawing_context()->set_position(x, y);
 
 			if (bTextRelativeX && bTextRelativeY)
-				odf_context()->drawing_context()->set_anchor(3);
+				odf_context()->drawing_context()->set_anchor(4);
 			else if ((anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
 				odf_context()->drawing_context()->set_anchor(*anchor_type_x);
 			else if (x && y)
@@ -877,8 +877,8 @@ namespace Oox2Odf
 		{
 			odf_context()->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);
 
-			odf_writer::style_paragraph_properties	*paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
-			odf_writer::style_text_properties		*text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
+			odf_writer::paragraph_format_properties	*paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
+			odf_writer::text_format_properties		*text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
 
 			for (size_t i = 0; i < vml_textpath->m_oStyle->m_arrProperties.size(); i++)
 			{
@@ -891,7 +891,7 @@ namespace Oox2Odf
 					break;
 				case SimpleTypes::Vml::cssptFontSize:
 					//todooo проверять на размерность
-					text_properties->content_.fo_font_size_ = odf_types::length(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue, odf_types::length::pt);
+					text_properties->fo_font_size_ = odf_types::length(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue, odf_types::length::pt);
 					break;
 				case SimpleTypes::Vml::cssptFontStyle:
 					//width = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
@@ -903,23 +903,23 @@ namespace Oox2Odf
 				{
 					std::wstring font_family = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().wsValue;
 					XmlUtils::replace_all(font_family, L"\"", L"");
-					text_properties->content_.fo_font_family_ = font_family;
+					text_properties->fo_font_family_ = font_family;
 				}break;
 				case SimpleTypes::Vml::cssptHTextAlign:
 					switch (vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().eVTextAlign)
 					{
 					case SimpleTypes::Vml::cssvtextalignLeft:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
 					case SimpleTypes::Vml::cssvtextalignRight:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Right); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Right); break;
 					case SimpleTypes::Vml::cssvtextalignCenter:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
 					case SimpleTypes::Vml::cssvtextalignJustify:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Left); break;
 					case SimpleTypes::Vml::cssvtextalignLetterJustify:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
 					case SimpleTypes::Vml::cssvtextalignStretchJustify:
-						paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
+						paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
 					}break;
 				}
 			}

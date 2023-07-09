@@ -509,33 +509,33 @@ namespace OOX
 		public:
 			bool m_bSectPrChange;
 
-			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidRPr;
-			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidSect;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidSect;
 
-			nullable<ComplexTypes::Word::COnOff2>								m_oBidi;
-			nullable<OOX::Logic::CColumns>										m_oCols;
-			nullable<ComplexTypes::Word::CDocGrid>								m_oDocGrid;
-			nullable<OOX::Logic::CEdnProps>										m_oEndnotePr;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrFooterReference;
-			nullable<OOX::Logic::CFtnProps>										m_oFootnotePr;
-			nullable<ComplexTypes::Word::COnOff2>								m_oFormProt;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrHeaderReference;
-			nullable<ComplexTypes::Word::CLineNumber>							m_oLnNumType;
-			nullable<ComplexTypes::Word::COnOff2>								m_oNoEndnote;
-			nullable<ComplexTypes::Word::CPaperSource>							m_oPaperSrc;
-			nullable<OOX::Logic::CPageBorders>									m_oPgBorders;
-			nullable<ComplexTypes::Word::CPageMar>								m_oPgMar;
-			nullable<ComplexTypes::Word::CPageNumber>							m_oPgNumType;
-			nullable<ComplexTypes::Word::CPageSz>								m_oPgSz;
-			nullable<ComplexTypes::Word::CRel>									m_oPrinterSettings;
-			nullable<ComplexTypes::Word::COnOff2>								m_oRtlGutter;
-			nullable<OOX::Logic::CSectPrChange>									m_oSectPrChange;
-			nullable<ComplexTypes::Word::CTextDirection>						m_oTextDirection;
-			nullable<ComplexTypes::Word::COnOff2 >								m_oTitlePg;
-			nullable<ComplexTypes::Word::CSectType>								m_oType;
-			nullable<ComplexTypes::Word::CVerticalJc>							m_oVAlign;
+			nullable<ComplexTypes::Word::COnOff2>		m_oBidi;
+			nullable<OOX::Logic::CColumns>				m_oCols;
+			nullable<ComplexTypes::Word::CDocGrid>		m_oDocGrid;
+			nullable<OOX::Logic::CEdnProps>				m_oEndnotePr;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*>	m_arrFooterReference;
+			nullable<OOX::Logic::CFtnProps>				m_oFootnotePr;
+			nullable<ComplexTypes::Word::COnOff2>		m_oFormProt;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*>	m_arrHeaderReference;
+			nullable<ComplexTypes::Word::CLineNumber>	m_oLnNumType;
+			nullable<ComplexTypes::Word::COnOff2>		m_oNoEndnote;
+			nullable<ComplexTypes::Word::CPaperSource>	m_oPaperSrc;
+			nullable<OOX::Logic::CPageBorders>			m_oPgBorders;
+			nullable<ComplexTypes::Word::CPageMar>		m_oPgMar;
+			nullable<ComplexTypes::Word::CPageNumber>	m_oPgNumType;
+			nullable<ComplexTypes::Word::CPageSz>		m_oPgSz;
+			nullable<ComplexTypes::Word::CRel>			m_oPrinterSettings;
+			nullable<ComplexTypes::Word::COnOff2>		m_oRtlGutter;
+			nullable<OOX::Logic::CSectPrChange>			m_oSectPrChange;
+			nullable<ComplexTypes::Word::CTextDirection>	m_oTextDirection;
+			nullable<ComplexTypes::Word::COnOff2 >		m_oTitlePg;
+			nullable<ComplexTypes::Word::CSectType>		m_oType;
+			nullable<ComplexTypes::Word::CVerticalJc>	m_oVAlign;
 		};
 
 	} // namespace Logic

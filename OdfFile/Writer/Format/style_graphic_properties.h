@@ -82,7 +82,6 @@ public:
 
 	_CP_OPT(std::wstring)							draw_stroke_gradient_name_;
 
-
 	_CP_OPT(odf_types::marker_style)				draw_marker_end_;
 	_CP_OPT(odf_types::marker_style)				draw_marker_start_;
 
@@ -144,6 +143,7 @@ public:
 //-------------------------------------------------------------------------------------
 	office_element_ptr						style_background_image_;        
 };
+typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
 
 
 class style_graphic_properties : public office_element_impl<style_graphic_properties>
@@ -164,7 +164,6 @@ public:
     graphic_format_properties content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_graphic_properties);
 
 class loext_graphic_properties : public office_element_impl<loext_graphic_properties>
@@ -185,7 +184,6 @@ public:
     graphic_format_properties content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(loext_graphic_properties);
 }
 }

@@ -53,7 +53,7 @@ BaseObjectPtr TableStyle::clone()
 
 void TableStyle::readFields(CFRecord& record)
 {
-	unsigned short flags;	
+	_UINT16 flags;	
 
     if(record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
@@ -62,7 +62,7 @@ void TableStyle::readFields(CFRecord& record)
         fIsPivot = GETBIT(flags, 1);
         fIsTable = GETBIT(flags, 2);
 
-        unsigned short cchName;
+        _UINT16 cchName;
         record >> ctse >> cchName;
         LPWideStringNoCch	rgchName_;
         rgchName_.setSize(cchName);
@@ -82,6 +82,38 @@ void TableStyle::readFields(CFRecord& record)
 
         rgchName = strName.value();
     }
+}
+
+void TableStyle::writeFields(CFRecord& record)
+{
+	_UINT16 flags = 0;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		SETBIT(flags, 1, fIsPivot)
+		SETBIT(flags, 2, fIsTable)
+
+		record << frtHeader << flags;
+
+		_UINT16 cchName;
+
+		record << ctse;
+
+		LPWideStringNoCch	rgchName_(rgchName);
+		cchName = rgchName_.getSize();
+
+		record << cchName << rgchName_;
+	}
+	else
+	{
+		SETBIT(flags, 1, fIsPivot)
+		SETBIT(flags, 2, fIsTable)
+
+		record << flags << ctse;
+
+		XLSB::XLNullableWideString    strName(rgchName);
+		record << strName;
+	}
 }
 
 } // namespace XLS

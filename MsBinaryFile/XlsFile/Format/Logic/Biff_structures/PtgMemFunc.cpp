@@ -49,6 +49,11 @@ void PtgMemFunc::loadFields(CFRecord& record)
 	record >> cce;
 }
 
+void PtgMemFunc::writeFields(CFRecord& record)
+{
+	record << cce;
+}
+
 void PtgMemFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	// no textual form

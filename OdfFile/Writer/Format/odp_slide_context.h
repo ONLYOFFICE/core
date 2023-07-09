@@ -85,8 +85,9 @@ public:
 
 	void remove_page();
 
-	void				set_styles_context(odf_style_context*  styles_context);
-	odf_style_context*	get_styles_context();
+	void set_styles_context(odf_style_context_ptr  styles_context);
+	odf_style_context_ptr get_styles_context();
+
 	odf_table_context*	table_context();
 
 	void start_table				();
@@ -107,7 +108,7 @@ public:
 private:
 
     odp_conversion_context&		context_;
-	odf_style_context*			styles_context_;
+	odf_style_context_ptr		styles_context_;
 	
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;

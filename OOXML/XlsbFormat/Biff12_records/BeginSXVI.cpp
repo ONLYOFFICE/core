@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,8 +68,27 @@ namespace XLSB
 
         if(fDisplayName)
             record >> displayName;
-
     }
+
+	void BeginSXVI::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		 SETBIT(flags, 0, fHidden)
+		 SETBIT(flags, 1, fHideDetail)
+		 SETBIT(flags, 2, fFormula)
+		 SETBIT(flags, 3, fMissing)
+		 SETBIT(flags, 4, fDisplayName)
+		 SETBIT(flags, 5, fDrilledMember)
+		 SETBIT(flags, 6, fHasChildrenEst)
+		 SETBIT(flags, 7, fCollapsedMember)
+		 SETBIT(flags, 8, fOlapFilterSelected)
+
+		record << itmtype << flags << iCache;
+
+		if (fDisplayName)
+			record << displayName;
+	}
 
 } // namespace XLSB
 

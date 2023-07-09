@@ -58,6 +58,7 @@ void DXFNum::load(CFRecord& record)
 	{
 		record >> fmt_id;
 	}
+	fmt_id.ifmt = global_info->RegisterNumFormat(fmt_id.ifmt, user_defined.fmt.value()); // return update
 }
 
 
@@ -71,7 +72,7 @@ int DXFNum::serialize(std::wostream & stream)
 		CP_XML_NODE(L"numFmt")
 		{	
 			if (!parent->ifmtNinch)
-				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
+				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt); 
  			
 			if (parent->fIfmtUser)
  				CP_XML_ATTR(L"formatCode", /*XmlUtils::EncodeXmlString*/(user_defined.fmt.value()));

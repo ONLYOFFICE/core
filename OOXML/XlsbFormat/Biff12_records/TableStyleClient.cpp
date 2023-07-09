@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace XLSB
 
     void TableStyleClient::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags >> stStyleName;
 
         fFirstColumn            = GETBIT(flags, 0);
@@ -62,6 +62,20 @@ namespace XLSB
         fRowHeaders             = GETBIT(flags, 4);
         fColumnHeaders          = GETBIT(flags, 5);
     }
+
+	void TableStyleClient::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fFirstColumn)
+		SETBIT(flags, 1, fLastColumn)
+		SETBIT(flags, 2, fRowStripes)
+		SETBIT(flags, 3, fColumnStripes)
+		SETBIT(flags, 4, fRowHeaders)
+		SETBIT(flags, 5, fColumnHeaders)
+
+		record << flags << stStyleName;
+	}
 
 } // namespace XLSB
 

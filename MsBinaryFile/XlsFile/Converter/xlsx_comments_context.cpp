@@ -33,7 +33,6 @@
 #include "xlsx_comments_context.h"
 
 #include <iostream>
-#include <boost/lexical_cast.hpp>
 
 namespace oox {
 

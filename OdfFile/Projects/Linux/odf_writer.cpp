@@ -67,6 +67,7 @@
 #include "../../Writer/Format/office_elements_create.cpp"
 #include "../../Writer/Format/office_spreadsheet.cpp"
 #include "../../Writer/Format/office_text.cpp"
+#include "../../Writer/Format/office_meta.cpp"
 #include "../../Writer/Format/oox_shape_defines.cpp"
 #include "../../Writer/Format/paragraph_elements.cpp"
 #include "../../Writer/Format/style_chart_properties.cpp"

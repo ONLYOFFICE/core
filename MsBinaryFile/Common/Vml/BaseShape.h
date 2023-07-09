@@ -62,11 +62,11 @@ namespace ODRAW
 		std::vector<long>					m_arAbsMaxAdjustments;
 		std::vector<long>					m_arAdjustments;
         std::vector<double>					m_arGuides;
-        LONG								m_eJoin;
+		long								m_eJoin;
         bool								m_bConcentricFill;
         bool								m_bCustomShape;
         std::vector<SimpleTypes::CPoint>	m_arConnectors;
-        std::vector<LONG>					m_arConnectorAngles;
+        std::vector<long>					m_arConnectorAngles;
 
         std::vector<Aggplus::RECT>			m_arTextRects;
 
@@ -77,8 +77,8 @@ namespace ODRAW
         std::wstring						m_strPath;
         std::wstring						m_strRect;
 
-        LONG								m_lLimoX;
-        LONG								m_lLimoY;
+        int									m_lLimoX;
+        int									m_lLimoY;
 
         CPath								m_oPath;
 

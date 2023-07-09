@@ -185,6 +185,9 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 	
 	global_info->arPivotCacheSxNames.push_back(fdb->stFieldName.value());
 
+	if (false == bSql)
+		fdb_type->wTypeSql = global_info->RegisterNumFormat(fdb_type->wTypeSql, L""); // return update
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"cacheField")
@@ -199,7 +202,7 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 			}
 			else
 			{
-				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	 // todooo ->used
 			}
 			if (m_SXVDTEx)
 			{

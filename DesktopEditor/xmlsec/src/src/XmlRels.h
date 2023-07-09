@@ -107,15 +107,14 @@ public:
 
     void FromXmlNode(XmlUtils::CXmlNode& oNode, std::map<std::wstring, bool>* check_need = NULL)
     {
-        XmlUtils::CXmlNodes oNodes;
+        std::vector<XmlUtils::CXmlNode> oNodes;
         if (!oNode.GetNodes(L"Relationship", oNodes))
             return;
 
-        int nCount = oNodes.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oNodes.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode oRel;
-            oNodes.GetAt(i, oRel);
+            XmlUtils::CXmlNode &oRel = oNodes[i];
 
             if (NULL == check_need)
             {

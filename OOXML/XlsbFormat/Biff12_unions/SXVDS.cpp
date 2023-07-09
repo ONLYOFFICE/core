@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXVDs>())
         {
-            m_BrtEndSXVDs = elements_.back();
+            m_bBrtEndSXVDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXVDs = false;
 
-        return m_BrtBeginSXVDs && !m_arSXVD.empty() && m_BrtEndSXVDs;
+        return m_BrtBeginSXVDs && !m_arSXVD.empty() && m_bBrtEndSXVDs;
     }
+
+	const bool SXVDS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXVDs == nullptr)
+			m_BrtBeginSXVDs = XLS::BaseObjectPtr(new XLSB::BeginSXVDs());
+
+		if (m_BrtBeginSXVDs != nullptr)
+		{
+			auto ptrBrtBeginSXVDs = static_cast<XLSB::BeginSXVDs*>(m_BrtBeginSXVDs.get());
+
+			if (ptrBrtBeginSXVDs != nullptr)
+				ptrBrtBeginSXVDs->csxvds = m_arSXVD.size();
+
+			proc.mandatory(*m_BrtBeginSXVDs);
+		}
+
+		for (auto &item : m_arSXVD)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXVDs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

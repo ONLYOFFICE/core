@@ -36,6 +36,11 @@
 
 #include "../../../../Common/Utils/simple_xml_writer.h"
 
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
+
 namespace XLS
 {
 
@@ -49,10 +54,13 @@ public:
 
 	static const ElementType	type = typeXFProp;
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	int		serialize		(std::wostream & stream);
 	void	serialize_attr	(CP_ATTR_NODE);
+	int		deserialize		(std::wstring& nodeName, std::wstring& attrName, XmlUtils::CXmlLiteReader& oReader);
+	void	deserialize_attr(XmlUtils::CXmlLiteReader& oReader);
 
 	unsigned short		xfPropType;
 	unsigned short		cb;

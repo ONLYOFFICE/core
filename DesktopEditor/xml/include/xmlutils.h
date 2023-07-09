@@ -146,24 +146,7 @@ namespace XmlUtils
 		static void EnableOutput();
 	};
 
-	class CXmlNodeBase;
-	class CXmlNode;
-	class KERNEL_DECL CXmlNodes
-	{
-	private:
-		std::vector<CXmlNode> m_nodes;
-
-	public:
-		CXmlNodes();
-		~CXmlNodes();
-		bool IsValid();
-		int GetCount();
-		bool GetAt(int nIndex, CXmlNode& oXmlNode);
-
-		friend class CXmlNode;
-	};
-
-
+    class CXmlNodeBase;
 	class KERNEL_DECL CXmlNode
 	{
         private:
@@ -210,14 +193,26 @@ namespace XmlUtils
                 std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
                 std::wstring GetAttribute(const wchar_t* sName, const std::wstring& _default = L"");
 
+		CXmlNode ReadNode(const wchar_t* strNodeName);
+		CXmlNode ReadNode(const std::wstring& strNodeName);
+		CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
+		std::vector<CXmlNode> ReadNodesNoNS(const std::wstring& strNodeName);
+
+		CXmlNode GetNode(const std::wstring& sName);
+		std::vector<CXmlNode> GetNodes(const std::wstring& sName);
+		bool GetChilds(std::vector<CXmlNode>& oXmlNodes);
+
+		bool GetNode(const std::wstring& sName, CXmlNode& oNode);
+		bool GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes);
+
                 std::wstring GetAttributeBase(const wchar_t* strAttributeName, const std::wstring& strDefaultValue = L"");
                 bool GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput);
 
                 int GetAttributeInt(const std::string& sName, const int& _default = 0);
                 int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
-
+		
                 bool SetAttributeInt(const std::wstring& sName, const int& value);
-
+		
                 int ReadAttributeInt(const std::wstring& str, const int& nDef = 0);
                 double ReadAttributeDouble(const std::wstring& str, const double& nDef = 0);
 
@@ -231,18 +226,6 @@ namespace XmlUtils
                 int ReadValueInt(const std::wstring& str, const int& nDef = 0);
 
                 std::wstring GetAttributeOrValue(const std::wstring& strAttributeName, const std::wstring& strDefaultValue = L"");
-
-                CXmlNode ReadNode(const wchar_t* strNodeName);
-                CXmlNode ReadNode(const std::wstring& strNodeName);
-                CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
-                CXmlNodes ReadNodesNoNS(const std::wstring& strNodeName);
-
-                CXmlNode GetNode(const std::wstring& sName);
-                CXmlNodes GetNodes(const std::wstring& sName);
-                bool GetChilds(CXmlNodes& oXmlNodes);
-
-                bool GetNode(const std::wstring& sName, CXmlNode& oNode);
-                bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
 
                 CXmlNode& operator=(const CXmlNode& oSrc);
 
@@ -263,15 +246,14 @@ namespace XmlUtils
 
     #define XmlMacroLoadArray(node, name, list, type)   \
     {                                                   \
-        XmlUtils::CXmlNodes oNodes;                     \
+        std::vector<XmlUtils::CXmlNode> oNodes;			\
         if (node.GetNodes(name, oNodes))                \
         {                                               \
-            int nCount = oNodes.GetCount();             \
-            for (int i = 0; i < nCount; ++i)            \
+            int nCount = oNodes.size();					\
+            for (size_t i = 0; i < nCount; ++i)			\
             {                                           \
-                XmlUtils::CXmlNode oItem;               \
-                oNodes.GetAt(i, oItem);                 \
-                list.push_back(type());                 \
+                XmlUtils::CXmlNode & oItem = oNodes[i]; \
+                 list.push_back(type());				\
                 list[i].fromXML(oItem);                 \
             }                                           \
         }                                               \

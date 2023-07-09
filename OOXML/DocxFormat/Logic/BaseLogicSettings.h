@@ -49,7 +49,6 @@ namespace OOX
     namespace Logic
     {
         using XmlUtils::CXmlNode;
-        using XmlUtils::CXmlNodes;
         using XmlUtils::CAttribute;
     }
 }

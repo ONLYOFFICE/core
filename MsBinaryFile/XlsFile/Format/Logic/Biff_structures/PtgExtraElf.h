@@ -46,9 +46,9 @@ public:
 	PtgExtraElf();
 	PtgExtraElf(CFRecord& record);
 	BiffStructurePtr clone();
-
-	
-	virtual void load(CFRecord& record); // No type info
+		
+	void load(CFRecord& record) override; // No type info
+	void save(CFRecord& record) override;
  // No type info
 
 	const std::wstring toString() const;

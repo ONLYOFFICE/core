@@ -57,6 +57,11 @@ void PtgFunc::loadFields(CFRecord& record)
 	record >> iftab;
 }
 
+void PtgFunc::writeFields(CFRecord& record)
+{
+	record << iftab;
+}
+
 void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
     int num_params = iftab.getParamsNum();

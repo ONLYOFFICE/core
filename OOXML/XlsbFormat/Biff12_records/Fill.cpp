@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,6 +66,23 @@ namespace XLSB
             xfillGradientStop.push_back(gradStop);
         }
     }
+
+	void Fill::writeFields(XLS::CFRecord& record)
+	{
+		record << fls;
+		brtColorFore.writeFields(record);
+		brtColorBack.writeFields(record);
+		record << iGradientType;
+		record << xnumDegree << xnumFillToLeft << xnumFillToRight << xnumFillToTop << xnumFillToBottom;
+
+		cNumStop = xfillGradientStop.size();
+		record << cNumStop;
+
+		for (auto& item : xfillGradientStop)
+		{
+			record << item;
+		}
+	}
 
 } // namespace XLSB
 

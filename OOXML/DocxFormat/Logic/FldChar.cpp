@@ -370,13 +370,13 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:default", m_oDefault );
 			WritingElement_ReadNode( oNode, oChild, L"w:result",  m_oResult );
 
-			XmlUtils::CXmlNodes oListEntryNodes;
+			std::vector<XmlUtils::CXmlNode> oListEntryNodes;
 			if ( oNode.GetNodes( L"w:listEntry", oListEntryNodes ) )
 			{
-				XmlUtils::CXmlNode oListEntryNode;
-				for ( int nIndex = 0; nIndex < oListEntryNodes.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oListEntryNodes.size(); nIndex++ )
 				{
-					if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
+					XmlUtils::CXmlNode & oListEntryNode = oListEntryNodes[nIndex];
+					if ( oListEntryNode.IsValid() )
 					{
 						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
 						*oListEntry = oListEntryNode;

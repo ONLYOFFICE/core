@@ -17,7 +17,7 @@ public:
 	virtual void* getObject() override { return (void*)m_pInternal; }
 
 public:
-	JSSmart<CJSValue> init(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
+	JSSmart<CJSValue> create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);
 	JSSmart<CJSValue> Destroy();
 	JSSmart<CJSValue> EndDraw();
 	JSSmart<CJSValue> put_GlobalAlpha(JSSmart<CJSValue> enable, JSSmart<CJSValue> globalAlpha);
@@ -132,7 +132,7 @@ public:
 	JSSmart<CJSValue> CoordTransformOffset(JSSmart<CJSValue> tx, JSSmart<CJSValue> ty);
 	JSSmart<CJSValue> GetTransform();
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_GRAPHICS_EMBED_H_

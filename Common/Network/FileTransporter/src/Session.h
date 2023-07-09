@@ -29,39 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef BUILDER_WRAPPER_BUILDER
-#define BUILDER_WRAPPER_BUILDER
+#pragma once
 
-#include "../docbuilder.h"
-#include "../nativecontrol.h"
+#include "../include/FileTransporter.h"
+#include <map>
 
-class CBuilderObject
+namespace NSNetwork
 {
-public:
-    NSDoctRenderer::CDocBuilder* m_pBuilder;
+	namespace NSFileTransport
+	{
+		class CSession_private
+		{
+		public:
+			std::map<std::string, std::string> m_props;
 
-public:
-    CBuilderObject()
-    {
-        m_pBuilder = NULL;
-    }
-    ~CBuilderObject()
-    {        
-    }
-};
+		public:
+			CSession_private()
+			{
+			}
+			~CSession_private()
+			{
+			}
 
-// wrap_methods -------------
-CBuilderObject* unwrap_builder(v8::Handle<v8::Object> obj);
+			virtual void Create() {}
+		};
 
-void _b_openfile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _b_createfile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _b_settmpfolder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _b_savefile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _b_closefile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _b_writefile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-v8::Handle<v8::ObjectTemplate> CreateBuilderTemplate(v8::Isolate* isolate);
-void CreateBuilderObject(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-#endif // BUILDER_WRAPPER_BUILDER
-
+		CSession_private* CreateSession();
+	}
+}

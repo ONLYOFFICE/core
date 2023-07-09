@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+/*
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,58 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef NATIVECONTROL_H
-#define NATIVECONTROL_H
 
-#include <QWidget>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QKeyEvent>
-#include <QPaintEvent>
-#include <QGLWidget>
+#ifndef APPLICATION_DOWNLOAD_MANAGER_H
+#define APPLICATION_DOWNLOAD_MANAGER_H
 
-class CEditorCtrlWrapper;
-class CNativeCtrl : public QGLWidget
+#include <string>
+#include <functional>
+#include "./FileTransporter.h"
+
+namespace ASC
 {
-    Q_OBJECT
+	enum DownloadStatus
+	{
+		Error   = 0,
+		Success = 1
+	};
 
-signals:
-    void signal_threadRepaint();
+	class IDownloadTask
+	{
+	public:
+		IDownloadTask();
+		virtual ~IDownloadTask();
 
-protected slots:
-    void slot_threadRepaint();
+	public:
+		virtual std::wstring GetPath()     = 0;
+		virtual DownloadStatus GetStatus() = 0;
+	};
 
-public:
-    CNativeCtrl(QWidget *parent = 0, const char *name = NULL);
-    virtual ~CNativeCtrl();
+	class CDownloadManager_private;
+	class KERNEL_DECL CDownloadManager
+	{
+	public:
+		CDownloadManager();
+		~CDownloadManager();
 
-public:
-    virtual void initializeGL();
+	public:
+		NSNetwork::NSFileTransport::CSession* GetSession();
+		void SetMaxConcurrentDownloadCount(const int& count);
 
-    virtual void paintGL();
-    virtual void resizeGL(int width, int height);
+		void AddTask(const std::wstring& url,
+					 const std::wstring& directory,
+					 const std::wstring& filename,
+					 void* observer,
+					 std::function<void(IDownloadTask*)> handler);
 
-    virtual void closeEvent(QCloseEvent* e);
+		void OnDestroyObserver(void* observer);
+		void Clear();
 
-    virtual void mousePressEvent(QMouseEvent* e);
-    virtual void mouseMoveEvent(QMouseEvent* e);
-    virtual void mouseReleaseEvent(QMouseEvent* e);
-    virtual void wheelEvent(QWheelEvent* event);
+		static bool DownloadExternal(const std::wstring& url, const std::wstring& path);
 
-    virtual void keyPressEvent(QKeyEvent* e);
-    virtual void keyReleaseEvent(QKeyEvent* e);
+	private:
+		CDownloadManager_private* m_internal;
+	};
+}
 
-    virtual void InvalidateRectNative(int x, int y, int w, int h);
-
-public:
-    void InitSDK(const std::wstring& sFontsPath, const std::wstring& sSdkPath);
-    void OpenFile(const std::wstring& sFilePath);
-
-    void SetZoom(double dZoom);
-    void ChangeCountPagesInBlock();
-
-private:
-    CEditorCtrlWrapper* m_pWrapper;
-};
-
-#endif // NATIVECONTROL_H
+#endif // APPLICATION_DOWNLOAD_MANAGER_H

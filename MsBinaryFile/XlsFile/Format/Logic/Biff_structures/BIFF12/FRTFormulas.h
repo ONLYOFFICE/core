@@ -32,20 +32,19 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "FRTSqref.h"
-
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "FRTFormula.h"
 
 namespace XLSB
 {
-    class FRTSqrefs : public XLS::BiffStructure
+    class FRTFormulas : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTSqrefs)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTFormulas)
     public:
-        FRTSqrefs();
-        FRTSqrefs(XLS::CFRecord& record);
-        ~FRTSqrefs();
+        FRTFormulas();
+        FRTFormulas(XLS::CFRecord& record);
+        ~FRTFormulas();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
@@ -53,8 +52,8 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        _UINT32                 csqref;
-        std::vector<FRTSqref>   array;
+        _UINT32                 cformula;
+        std::vector<FRTFormula> array;
 
     };
 

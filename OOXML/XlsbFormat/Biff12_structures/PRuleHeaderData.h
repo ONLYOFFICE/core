@@ -34,7 +34,7 @@
 
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "CellRangeRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRangeRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/SxAxis.h"
 
 namespace XLSB

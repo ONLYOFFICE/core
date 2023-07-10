@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,24 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/ParsedFormula.h"
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "FRTParsedFormula.h"
+
 
 namespace XLSB
 {
+    class FRTFormula : public XLS::BiffStructure
+    {
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTFormula)
+    public:
+        FRTFormula();
+        FRTFormula(XLS::CFRecord& record);
+        ~FRTFormula();
+        XLS::BiffStructurePtr clone();
 
-class FRTParsedFormula : public XLS::ParsedFormula
-{
-    BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTParsedFormula)
-public:
-    FRTParsedFormula();
-	FRTParsedFormula& operator=(const std::wstring& value);
-    XLS::BiffStructurePtr clone();
-	void load(XLS::CFRecord& record) override;
-	void save(XLS::CFRecord& record) override;
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-};
+		void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
-} // namespace XLSB
+        FRTParsedFormula    formula;
+    };
 
+}   // namespace XLSB

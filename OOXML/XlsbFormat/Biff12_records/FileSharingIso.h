@@ -32,10 +32,9 @@
 #pragma once
 
 #include "../../XlsxFormat/WritingElement.h"
-
-#include "../Biff12_structures/XLWideString.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Boolean.h"
 #include "../Biff12_structures/IsoPasswordData.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Boolean.h"
 
 namespace XLSB
 {

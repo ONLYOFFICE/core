@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,17 +32,31 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "XLWideString.h"
 
 
 namespace XLSB
 {
-    DEFINE_NAME_CLASS(RgceLoc)
-    DEFINE_NAME_CLASS(RgceLocRel)
+    class DValStrings : public XLS::BiffStructure
+    {
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(DValStrings)
+    public:
+        DValStrings();
+        DValStrings(XLS::CFRecord& record);
+        ~DValStrings();
+        XLS::BiffStructurePtr clone();
 
-    typedef XLS::CellRef_T<XLS::RgceLoc_name, int, unsigned short, XLS::rel_Present>			RgceLoc;
-    typedef XLS::CellRef_T<XLS::RgceLocRel_name, int, unsigned short, XLS::rel_Present>        RgceLocRel;
-    //typedef CellRef_T<RgceElfLocExtra_name, unsigned short, unsigned short, rel_Present>	RgceElfLocExtra;
-    //typedef CellRef_T<RgceElfLoc_name, unsigned short, unsigned short, rel_PresentQuoted>	RgceElfLoc;
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
+
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
+
+        XLNullableWideString     strErrorTitle;
+        XLNullableWideString     strError;
+        XLNullableWideString     strPromptTitle;
+        XLNullableWideString     strPrompt;
+    };
 
 }   // namespace XLSB

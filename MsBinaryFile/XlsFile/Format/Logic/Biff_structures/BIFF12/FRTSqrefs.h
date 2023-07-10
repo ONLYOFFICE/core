@@ -32,33 +32,29 @@
 
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "CellRangeRef.h"
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "FRTSqref.h"
 
 
 namespace XLSB
 {
-    class FRTRef : public XLS::BiffStructure
+    class FRTSqrefs : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTRef)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTSqrefs)
     public:
-        FRTRef();
-        FRTRef(XLS::CFRecord& record);
-        ~FRTRef();
-        XLS::BiffStructurePtr clone();
+        FRTSqrefs();
+        FRTSqrefs(XLS::CFRecord& record);
+        ~FRTSqrefs();
+       XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        bool            fAdjDelete;
-        bool            fDoAdjust;
-        bool            fAdjChange;
-        bool            fEdit;
-
-        UncheckedRfX    rfx;
+        _UINT32                 csqref;
+        std::vector<FRTSqref>   array;
 
     };
 

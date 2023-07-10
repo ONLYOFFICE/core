@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,27 +32,16 @@
 
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../CellRangeRef.h"
 
 namespace XLSB
 {
-    class ColSpan : public XLS::BiffStructure
-    {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(ColSpan)
-    public:
-        ColSpan();
-        ColSpan(XLS::CFRecord& record);
-        ~ColSpan();
-		XLS::BiffStructurePtr clone();
+    DEFINE_NAME_CLASS(UncheckedRfX)
+    DEFINE_NAME_CLASS(RgceArea)
+    DEFINE_NAME_CLASS(RgceAreaRel)
 
-        static const XLS::ElementType type = XLS::typeBiffStructure;
-
-        void load(XLS::CFRecord& record) override;
-		void save(XLS::CFRecord& record) override;
-
-        XLS::UncheckedCol     colMic;
-        XLS::UncheckedCol     colLast;
-    };
+    typedef XLS::CellRangeRef_T<UncheckedRfX_name, int, int, XLS::rel_Absent> UncheckedRfX;
+    typedef XLS::CellRangeRef_T<RgceArea_name, int, unsigned short, XLS::rel_Present> RgceArea;
+    typedef XLS::CellRangeRef_T<RgceAreaRel_name, int, unsigned short, XLS::rel_Present> RgceAreaRel;
 
 }   // namespace XLSB

@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,38 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-
-
+#include "../BiffString.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtColor record in BIFF12
-    class Color: public XLS::BiffRecord
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(Color)
-            BASE_OBJECT_DEFINE_CLASS_NAME(Color)
-        public:
-            Color();
-            ~Color();
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NAME_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNameWideString;
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NULLABLE_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNullableWideString;
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_WIDE,		XLS::cch_READ_FROM_RECORD>	XLWideString;
 
-            XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
-
-            bool        fValidRGB;
-            BYTE        xColorType;
-            BYTE        index;
-            _INT16      nTintAndShade;
-            BYTE        bRed;
-            BYTE        bGreen;
-            BYTE        bBlue;
-            BYTE        bAlpha;
-    };
-
-} // namespace XLSB
-
+}   // namespace XLSB

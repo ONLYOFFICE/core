@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,19 +29,24 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
+#include  "../ParsedFormula.h"
 
 namespace XLSB
 {
-    DEFINE_NAME_CLASS(UncheckedRfX)
-    DEFINE_NAME_CLASS(RgceArea)
-    DEFINE_NAME_CLASS(RgceAreaRel)
 
-    typedef XLS::CellRangeRef_T<UncheckedRfX_name, int, int, XLS::rel_Absent> UncheckedRfX;
-    typedef XLS::CellRangeRef_T<RgceArea_name, int, unsigned short, XLS::rel_Present> RgceArea;
-    typedef XLS::CellRangeRef_T<RgceAreaRel_name, int, unsigned short, XLS::rel_Present> RgceAreaRel;
+class FRTParsedFormula : public XLS::ParsedFormula
+{
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTParsedFormula)
+public:
+    FRTParsedFormula();
+	FRTParsedFormula& operator=(const std::wstring& value);
+    XLS::BiffStructurePtr clone();
+	void load(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
-}   // namespace XLSB
+};
+
+} // namespace XLSB
+

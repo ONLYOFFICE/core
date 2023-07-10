@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,32 +32,17 @@
 
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "CellRangeRef.h"
+#include  "../CellRef.h"
+
 
 namespace XLSB
 {
-    class UncheckedSqRfX : public XLS::BiffStructure
-    {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(UncheckedSqRfX)
-    public:
-        UncheckedSqRfX();
-        UncheckedSqRfX(XLS::CFRecord& record);
-        ~UncheckedSqRfX();
-        XLS::BiffStructurePtr clone();
+    DEFINE_NAME_CLASS(RgceLoc)
+    DEFINE_NAME_CLASS(RgceLocRel)
 
-        static const XLS::ElementType type = XLS::typeBiffStructure;
-
-        void load(XLS::CFRecord& record) override;
-		void save(XLS::CFRecord& record) override;
-
-        _INT32                      crfx;
-        std::vector<UncheckedRfX>   rgrfx;
-
-        const XLS::CellRef getLocationFirstCell() const;
-
-        std::wstring  strValue;
-    };
+    typedef XLS::CellRef_T<XLS::RgceLoc_name, int, unsigned short, XLS::rel_Present>			RgceLoc;
+    typedef XLS::CellRef_T<XLS::RgceLocRel_name, int, unsigned short, XLS::rel_Present>        RgceLocRel;
+    //typedef CellRef_T<RgceElfLocExtra_name, unsigned short, unsigned short, rel_Present>	RgceElfLocExtra;
+    //typedef CellRef_T<RgceElfLoc_name, unsigned short, unsigned short, rel_PresentQuoted>	RgceElfLoc;
 
 }   // namespace XLSB

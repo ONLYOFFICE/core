@@ -32,34 +32,40 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "UncheckedSqRfX.h"
-
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "FRTRefs.h"
+#include "FRTSqrefs.h"
+#include "FRTFormulas.h"
+#include "FRTRelID.h"
 
 namespace XLSB
 {
-    class FRTSqref : public XLS::BiffStructure
+    class FRTHeader : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTSqref)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
     public:
-        FRTSqref();
-        FRTSqref(XLS::CFRecord& record);
-        ~FRTSqref();
-        XLS::BiffStructurePtr clone();
+        FRTHeader();
+        FRTHeader(XLS::CFRecord& record);
+        ~FRTHeader();
+		XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        bool            fAdjDelete;
-        bool            fDoAdjust;
-        bool            fAdjChange;
-        bool            fEdit;
+        bool        fRef;
+        bool        fSqref;
+        bool        fFormula;
+        bool        fRelID;
 
-        UncheckedSqRfX  sqrfx;
-
+        FRTRefs     rgRefs;
+        FRTSqrefs   rgSqrefs;
+        FRTFormulas rgFormulas;
+        FRTRelID    relID;
     };
+
+typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
 
 }   // namespace XLSB

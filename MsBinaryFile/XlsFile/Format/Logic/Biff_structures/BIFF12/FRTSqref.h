@@ -32,20 +32,20 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "XLWideString.h"
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "UncheckedSqRfX.h"
 
 
 namespace XLSB
 {
-    class DValStrings : public XLS::BiffStructure
+    class FRTSqref : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(DValStrings)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTSqref)
     public:
-        DValStrings();
-        DValStrings(XLS::CFRecord& record);
-        ~DValStrings();
+        FRTSqref();
+        FRTSqref(XLS::CFRecord& record);
+        ~FRTSqref();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
@@ -53,10 +53,13 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        XLNullableWideString     strErrorTitle;
-        XLNullableWideString     strError;
-        XLNullableWideString     strPromptTitle;
-        XLNullableWideString     strPrompt;
+        bool            fAdjDelete;
+        bool            fDoAdjust;
+        bool            fAdjChange;
+        bool            fEdit;
+
+        UncheckedSqRfX  sqrfx;
+
     };
 
 }   // namespace XLSB

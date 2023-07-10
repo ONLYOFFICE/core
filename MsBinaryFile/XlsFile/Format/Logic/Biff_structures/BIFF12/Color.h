@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "FRTParsedFormula.h"
-
+#include "../../Biff_records/BiffRecord.h"
+#include "../../../../../../OOXML/XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-    class FRTFormula : public XLS::BiffStructure
+    // Logical representation of BrtColor record in BIFF12
+    class Color: public XLS::BiffRecord
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTFormula)
-    public:
-        FRTFormula();
-        FRTFormula(XLS::CFRecord& record);
-        ~FRTFormula();
-        XLS::BiffStructurePtr clone();
+            BIFF_RECORD_DEFINE_TYPE_INFO(Color)
+            BASE_OBJECT_DEFINE_CLASS_NAME(Color)
+        public:
+            Color();
+            ~Color();
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+            XLS::BaseObjectPtr clone();
 
-		void load(XLS::CFRecord& record) override;
-		void save(XLS::CFRecord& record) override;
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
-        FRTParsedFormula    formula;
+            bool        fValidRGB;
+            BYTE        xColorType;
+            BYTE        index;
+            _INT16      nTintAndShade;
+            BYTE        bRed;
+            BYTE        bGreen;
+            BYTE        bBlue;
+            BYTE        bAlpha;
     };
 
-}   // namespace XLSB
+} // namespace XLSB
+

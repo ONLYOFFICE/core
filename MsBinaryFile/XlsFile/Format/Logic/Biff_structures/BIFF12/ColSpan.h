@@ -32,27 +32,27 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "XLWideString.h"
+#include "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
 
 namespace XLSB
 {
-    class FRTRelID : public XLS::BiffStructure
+    class ColSpan : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTRelID)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(ColSpan)
     public:
-        FRTRelID();
-        FRTRelID(XLS::CFRecord& record);
-        ~FRTRelID();
-        XLS::BiffStructurePtr clone();
+        ColSpan();
+        ColSpan(XLS::CFRecord& record);
+        ~ColSpan();
+		XLS::BiffStructurePtr clone();
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+        static const XLS::ElementType type = XLS::typeBiffStructure;
 
-		void load(XLS::CFRecord& record) override;
+        void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-		XLS::LPWideString     relId;
+        XLS::UncheckedCol     colMic;
+        XLS::UncheckedCol     colLast;
     };
 
 }   // namespace XLSB

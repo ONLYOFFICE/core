@@ -32,29 +32,32 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "FRTRef.h"
+#include "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "CellRangeRef.h"
 
 namespace XLSB
 {
-    class FRTRefs : public XLS::BiffStructure
+    class UncheckedSqRfX : public XLS::BiffStructure
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTRefs)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(UncheckedSqRfX)
     public:
-        FRTRefs();
-        FRTRefs(XLS::CFRecord& record);
-        ~FRTRefs();
+        UncheckedSqRfX();
+        UncheckedSqRfX(XLS::CFRecord& record);
+        ~UncheckedSqRfX();
         XLS::BiffStructurePtr clone();
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+        static const XLS::ElementType type = XLS::typeBiffStructure;
 
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        _UINT32             cref;
-        std::vector<FRTRef> array;
+        _INT32                      crfx;
+        std::vector<UncheckedRfX>   rgrfx;
 
+        const XLS::CellRef getLocationFirstCell() const;
+
+        std::wstring  strValue;
     };
 
 }   // namespace XLSB

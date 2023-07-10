@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,12 +32,29 @@
 
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffString.h"
+#include  "../BiffStructure.h"
+#include "../../Biff_records/BiffRecord.h"
+#include "XLWideString.h"
+
 
 namespace XLSB
 {
-   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NAME_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNameWideString;
-   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NULLABLE_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNullableWideString;
-   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_WIDE,		XLS::cch_READ_FROM_RECORD>	XLWideString;
+    class RelID : public XLS::BiffStructure
+    {
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(RelID)
+    public:
+        RelID();
+        RelID(XLS::CFRecord& record);
+		RelID(const std::wstring & str);
+        ~RelID();
+        XLS::BiffStructurePtr clone();
+
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
+
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
+
+        XLNullableWideString     value;
+    };
 
 }   // namespace XLSB

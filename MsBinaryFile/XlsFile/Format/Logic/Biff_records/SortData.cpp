@@ -31,7 +31,7 @@
  */
 
 #include "SortData.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "../Biff_structures/BIFF12/CellRangeRef.h"
 
 namespace XLS
 {

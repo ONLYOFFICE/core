@@ -61,7 +61,7 @@
 #include "../../XlsbFormat/Biff12_records/ValueMeta.h"
 #include "../../XlsbFormat/Biff12_records/Cell.h"
 #include "../../XlsbFormat/Biff12_records/Fmla.h"
-#include "../../XlsbFormat/Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 
 #include <boost/regex.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>

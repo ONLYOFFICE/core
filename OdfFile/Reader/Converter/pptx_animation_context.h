@@ -50,7 +50,7 @@ namespace oox {
 			void set_par_animation_delay(const std::wstring& value);
 			void set_par_animation_end(const std::wstring& value);
 			void set_par_animation_preset_class(const std::wstring& value);
-			void set_par_animation_preset_id(const std::wstring& value);
+			void set_par_animation_preset_id(int value);
 		void end_par_animation();
 
 		void start_seq_animation();
@@ -102,6 +102,13 @@ namespace oox {
 			void add_animate_keypoint(int time, const std::wstring& value);
 		void end_animate();
 		
+		void start_animate_color();
+			void set_animate_color_color_space(const std::wstring& value);
+			void set_animate_color_duration(int value);
+			void set_animate_color_delay(const std::wstring& value);
+			void set_animate_color_attribute_name(const std::wstring& value);
+			void set_animate_color_to_value(const std::wstring& value);
+		void end_animate_color();
 
 		void serialize(std::wostream & strm);
 		void clear();

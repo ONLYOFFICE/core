@@ -84,7 +84,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	_CP_OPT(std::wstring)	end;
 
 	_CP_OPT(std::wstring)	presentationPresetClass;
-	_CP_OPT(std::wstring)	presentationPresetId;
+	_CP_OPT(int)			presentationPresetId;
 	_CP_OPT(std::wstring)	presentationPresetPresetSubType;
 
 	// NOTE: в pptx нет атрибутов accelerate/decelerate. Там надо менять svg path ???
@@ -133,19 +133,38 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (par_attlist_.presentation_preset_class_)
 	{
-		if		(par_attlist_.presentation_preset_class_.value() == L"entrance")	presentationPresetClass = L"entr";
-		else if (par_attlist_.presentation_preset_class_.value() == L"exit")		presentationPresetClass = L"exit";
-		else if (par_attlist_.presentation_preset_class_.value() == L"emphasis")	presentationPresetClass = L"emph";
-		else if (par_attlist_.presentation_preset_class_.value() == L"motion-path") presentationPresetClass = L"path";
-		else if (par_attlist_.presentation_preset_class_.value() == L"ole-action")	presentationPresetClass = L"verb";
-		else if (par_attlist_.presentation_preset_class_.value() == L"media-call")	presentationPresetClass = L"mediacall";
+		if (par_attlist_.presentation_preset_class_.value() == L"entrance")
+		{
+			presentationPresetClass = L"entr";
+			presentationPresetId = convert_entrance_preset_id();
+		}
+		else if (par_attlist_.presentation_preset_class_.value() == L"exit")
+		{
+			presentationPresetClass = L"exit";
+			presentationPresetId = convert_exit_preset_id();
+		}
+		else if (par_attlist_.presentation_preset_class_.value() == L"emphasis")
+		{
+			presentationPresetClass = L"emph";
+			presentationPresetId = convert_emphasis_preset_id();
+		}
+		else if (par_attlist_.presentation_preset_class_.value() == L"motion-path")
+		{
+			presentationPresetClass = L"path";
+			presentationPresetId = convert_motion_path_preset_id();
+		}
+		else if (par_attlist_.presentation_preset_class_.value() == L"ole-action")	
+			presentationPresetClass = L"verb";
+		else if (par_attlist_.presentation_preset_class_.value() == L"media-call")	
+			presentationPresetClass = L"mediacall";
 		else
 			presentationPresetClass = L"custom";
 	}
 
-	if (par_attlist_.presentation_preset_id_)
+	if (par_attlist_.presentation_preset_class_)
 	{
-		// TODO: Figure out correct value
+		std::wstring presetClass = par_attlist_.presentation_preset_class_.value();
+		if(presetClass == L"ent")
 		presentationPresetId = boost::none;
 	}
 	
@@ -189,6 +208,249 @@ void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, co
 		CP_CREATE_ELEMENT(anim_seq_array_);//более 1 элемента- взаимосвязанная анимация (между фигурами)
 	else
 		CP_CREATE_ELEMENT(content_);
+}
+
+_CP_OPT(int) anim_par::convert_entrance_preset_id()
+{
+	if (par_attlist_.presentation_preset_id_)
+	{
+		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
+
+			 if (presetId == L"ooo-entrance-appear")					return 1;
+		else if (presetId == L"ooo-entrance-fly-in") 					return 2;
+		else if (presetId == L"ooo-entrance-venetian-blinds")			return 3;
+		else if (presetId == L"ooo-entrance-box") 						return 4;
+		else if (presetId == L"ooo-entrance-checkerboard") 				return 5;
+		else if (presetId == L"ooo-entrance-circle") 					return 6;
+		else if (presetId == L"ooo-entrance-fly-in-slow") 				return 7;
+		else if (presetId == L"ooo-entrance-diamond") 					return 8;
+		else if (presetId == L"ooo-entrance-dissolve-in")				return 9;
+		else if (presetId == L"ooo-entrance-fade-in") 					return 10;
+		else if (presetId == L"ooo-entrance-flash-once")				return 11;
+		else if (presetId == L"ooo-entrance-peek-in") 					return 12;
+		else if (presetId == L"ooo-entrance-plus") 						return 13;
+		else if (presetId == L"ooo-entrance-random-bars")				return 14;
+		else if (presetId == L"ooo-entrance-spiral-in")					return 15;
+		else if (presetId == L"ooo-entrance-split") 					return 16;
+		else if (presetId == L"ooo-entrance-stretchy") 					return 17;
+		else if (presetId == L"ooo-entrance-diagonal-squares") 			return 18;
+		else if (presetId == L"ooo-entrance-swivel") 					return 19;
+		else if (presetId == L"ooo-entrance-wedge") 					return 20;
+		else if (presetId == L"ooo-entrance-wheel") 					return 21;
+		else if (presetId == L"ooo-entrance-wipe") 						return 22;
+		else if (presetId == L"ooo-entrance-zoom") 						return 23;
+		else if (presetId == L"ooo-entrance-random") 					return 24;
+		else if (presetId == L"ooo-entrance-boomerang") 				return 25;
+		else if (presetId == L"ooo-entrance-bounce") 					return 26;
+		else if (presetId == L"ooo-entrance-colored-lettering") 		return 27;
+		else if (presetId == L"ooo-entrance-movie-credits") 			return 28;
+		else if (presetId == L"ooo-entrance-ease-in") 					return 29;
+		else if (presetId == L"ooo-entrance-float") 					return 30;
+		else if (presetId == L"ooo-entrance-turn-and-grow") 			return 31;
+		else if (presetId == L"ooo-entrance-breaks") 					return 34;
+		else if (presetId == L"ooo-entrance-pinwheel") 					return 35;
+		else if (presetId == L"ooo-entrance-rise-up") 					return 37;
+		else if (presetId == L"ooo-entrance-falling-in") 				return 38;
+		else if (presetId == L"ooo-entrance-thread") 					return 39;
+		else if (presetId == L"ooo-entrance-unfold") 					return 40;
+		else if (presetId == L"ooo-entrance-whip") 						return 41;
+		else if (presetId == L"ooo-entrance-ascend") 					return 42;
+		else if (presetId == L"ooo-entrance-center-revolve") 			return 43;
+		else if (presetId == L"ooo-entrance-fade-in-and-swivel") 		return 45;
+		else if (presetId == L"ooo-entrance-descend") 					return 47;
+		else if (presetId == L"ooo-entrance-sling") 					return 48;
+		else if (presetId == L"ooo-entrance-spin-in") 					return 49;
+		else if (presetId == L"ooo-entrance-compress") 					return 50;
+		else if (presetId == L"ooo-entrance-magnify") 					return 51;
+		else if (presetId == L"ooo-entrance-curve-up") 					return 52;
+		else if (presetId == L"ooo-entrance-fade-in-and-zoom") 			return 53;
+		else if (presetId == L"ooo-entrance-glide") 					return 54;
+		else if (presetId == L"ooo-entrance-expand") 					return 55;
+		else if (presetId == L"ooo-entrance-flip") 						return 56;
+		else if (presetId == L"ooo-entrance-fold") 						return 58;
+	}
+
+	return boost::none;
+}
+
+_CP_OPT(int) anim_par::convert_emphasis_preset_id()
+{
+	if (par_attlist_.presentation_preset_id_)
+	{
+		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
+
+			 if (presetId == L"ooo-emphasis-fill-color") 					return 1;
+		else if (presetId == L"ooo-emphasis-font") 							return 2;
+		else if (presetId == L"ooo-emphasis-font-color") 					return 3;
+		else if (presetId == L"ooo-emphasis-font-size") 					return 4;
+		else if (presetId == L"ooo-emphasis-font-style") 					return 5;
+		else if (presetId == L"ooo-emphasis-grow-and-shrink") 				return 6;
+		else if (presetId == L"ooo-emphasis-line-color") 					return 7;
+		else if (presetId == L"ooo-emphasis-spin") 							return 8;
+		else if (presetId == L"ooo-emphasis-transparency") 					return 9;
+		else if (presetId == L"ooo-emphasis-bold-flash") 					return 10;
+		else if (presetId == L"ooo-emphasis-blast") 						return 14;
+		else if (presetId == L"ooo-emphasis-bold-reveal") 					return 15;
+		else if (presetId == L"ooo-emphasis-color-over-by-word") 			return 16;
+		else if (presetId == L"ooo-emphasis-reveal-underline") 				return 18;
+		else if (presetId == L"ooo-emphasis-color-blend") 					return 19;
+		else if (presetId == L"ooo-emphasis-color-over-by-letter") 			return 20;
+		else if (presetId == L"ooo-emphasis-complementary-color") 			return 21;
+		else if (presetId == L"ooo-emphasis-complementary-color-2") 		return 22;
+		else if (presetId == L"ooo-emphasis-contrasting-color") 			return 23;
+		else if (presetId == L"ooo-emphasis-darken") 						return 24;
+		else if (presetId == L"ooo-emphasis-desaturate") 					return 25;
+		else if (presetId == L"ooo-emphasis-flash-bulb") 					return 26;
+		else if (presetId == L"ooo-emphasis-flicker") 						return 27;
+		else if (presetId == L"ooo-emphasis-grow-with-color") 				return 28;
+		else if (presetId == L"ooo-emphasis-lighten") 						return 30;
+		else if (presetId == L"ooo-emphasis-style-emphasis") 				return 31;
+		else if (presetId == L"ooo-emphasis-teeter") 						return 32;
+		else if (presetId == L"ooo-emphasis-vertical-highlight") 			return 33;
+		else if (presetId == L"ooo-emphasis-wave") 							return 34;
+		else if (presetId == L"ooo-emphasis-blink") 						return 35;
+		else if (presetId == L"ooo-emphasis-shimmer") 						return 36;
+	}
+
+	return boost::none;
+}
+
+_CP_OPT(int) anim_par::convert_exit_preset_id()
+{
+	if (par_attlist_.presentation_preset_id_)
+	{
+		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
+
+		if (presetId == L"ooo-exit-disappear")					return 1;
+		else if (presetId == L"ooo-exit-fly-out")				return 2;
+		else if (presetId == L"ooo-exit-venetian-blinds")		return 3;
+		else if (presetId == L"ooo-exit-box")					return 4;
+		else if (presetId == L"ooo-exit-checkerboard")			return 5;
+		else if (presetId == L"ooo-exit-circle")				return 6;
+		else if (presetId == L"ooo-exit-crawl-out")				return 7;
+		else if (presetId == L"ooo-exit-diamond")				return 8;
+		else if (presetId == L"ooo-exit-dissolve")				return 9;
+		else if (presetId == L"ooo-exit-fade-out")				return 10;
+		else if (presetId == L"ooo-exit-flash-once")			return 11;
+		else if (presetId == L"ooo-exit-peek-out")				return 12;
+		else if (presetId == L"ooo-exit-plus")					return 13;
+		else if (presetId == L"ooo-exit-random-bars")			return 14;
+		else if (presetId == L"ooo-exit-spiral-out")			return 15;
+		else if (presetId == L"ooo-exit-split")					return 16;
+		else if (presetId == L"ooo-exit-collapse")				return 17;
+		else if (presetId == L"ooo-exit-diagonal-squares")		return 18;
+		else if (presetId == L"ooo-exit-swivel")				return 19;
+		else if (presetId == L"ooo-exit-wedge")					return 20;
+		else if (presetId == L"ooo-exit-wheel")					return 21;
+		else if (presetId == L"ooo-exit-wipe")					return 22;
+		else if (presetId == L"ooo-exit-zoom")					return 23;
+		else if (presetId == L"ooo-exit-random")				return 24;
+		else if (presetId == L"ooo-exit-boomerang")				return 25;
+		else if (presetId == L"ooo-exit-bounce")				return 26;
+		else if (presetId == L"ooo-exit-colored-lettering")		return 27;
+		else if (presetId == L"ooo-exit-movie-credits")			return 28;
+		else if (presetId == L"ooo-exit-ease-out")				return 29;
+		else if (presetId == L"ooo-exit-float")					return 30;
+		else if (presetId == L"ooo-exit-turn-and-grow")			return 31;
+		else if (presetId == L"ooo-exit-breaks")				return 34;
+		else if (presetId == L"ooo-exit-pinwheel")				return 35;
+		else if (presetId == L"ooo-exit-sink-down")				return 37;
+		else if (presetId == L"ooo-exit-swish")					return 38;
+		else if (presetId == L"ooo-exit-thread")				return 39;
+		else if (presetId == L"ooo-exit-unfold")				return 40;
+		else if (presetId == L"ooo-exit-whip")					return 41;
+		else if (presetId == L"ooo-exit-descend")				return 42;
+		else if (presetId == L"ooo-exit-center-revolve")		return 43;
+		else if (presetId == L"ooo-exit-fade-out-and-swivel")	return 45;
+		else if (presetId == L"ooo-exit-ascend")				return 47;
+		else if (presetId == L"ooo-exit-sling")					return 48;
+		else if (presetId == L"ooo-exit-fade-out-and-zoom")		return 53;
+		else if (presetId == L"ooo-exit-contract")				return 55;
+		else if (presetId == L"ooo-exit-spin-out")				return 49;
+		else if (presetId == L"ooo-exit-stretchy")				return 50;
+		else if (presetId == L"ooo-exit-magnify")				return 51;
+		else if (presetId == L"ooo-exit-curve-down")			return 52;
+		else if (presetId == L"ooo-exit-glide")					return 54;
+		else if (presetId == L"ooo-exit-flip")					return 56;
+		else if (presetId == L"ooo-exit-fold")					return 58;
+	}
+
+	return boost::none;
+}
+
+_CP_OPT(int) anim_par::convert_motion_path_preset_id()
+{
+	if (par_attlist_.presentation_preset_id_)
+	{
+		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
+
+			 if (presetId == L"ooo-motionpath-4-point-star")			return 16;
+		else if (presetId == L"ooo-motionpath-5-point-star")			return 5;
+		else if (presetId == L"ooo-motionpath-6-point-star")			return 11;
+		else if (presetId == L"ooo-motionpath-8-point-star")			return 17;
+		else if (presetId == L"ooo-motionpath-circle")					return 1;
+		else if (presetId == L"ooo-motionpath-crescent-moon")			return 6;
+		else if (presetId == L"ooo-motionpath-diamond")					return 3;
+		else if (presetId == L"ooo-motionpath-equal-triangle")			return 13;
+		else if (presetId == L"ooo-motionpath-oval")					return 12;
+		else if (presetId == L"ooo-motionpath-heart")					return 9;
+		else if (presetId == L"ooo-motionpath-hexagon")					return 4;
+		else if (presetId == L"ooo-motionpath-octagon")					return 10;
+		else if (presetId == L"ooo-motionpath-parallelogram")			return 14;
+		else if (presetId == L"ooo-motionpath-pentagon")				return 15;
+		else if (presetId == L"ooo-motionpath-right-triangle")			return 2;
+		else if (presetId == L"ooo-motionpath-square")					return 7;
+		else if (presetId == L"ooo-motionpath-teardrop")				return 18;
+		else if (presetId == L"ooo-motionpath-trapezoid")				return 8;
+		else if (presetId == L"ooo-motionpath-arc-down")				return 37;
+		else if (presetId == L"ooo-motionpath-arc-left")				return 51;
+		else if (presetId == L"ooo-motionpath-arc-right")				return 58;
+		else if (presetId == L"ooo-motionpath-arc-up")					return 44;
+		else if (presetId == L"ooo-motionpath-bounce-left")				return 41;
+		else if (presetId == L"ooo-motionpath-bounce-right")			return 54;
+		else if (presetId == L"ooo-motionpath-curvy-left")				return 48;
+		else if (presetId == L"ooo-motionpath-curvy-right")				return 61;
+		else if (presetId == L"ooo-motionpath-decaying-wave")			return 60;
+		else if (presetId == L"ooo-motionpath-diagonal-down-right")		return 49;
+		else if (presetId == L"ooo-motionpath-diagonal-up-right")		return 56;
+		else if (presetId == L"ooo-motionpath-down")					return 42;
+		else if (presetId == L"ooo-motionpath-funnel")					return 52;
+		else if (presetId == L"ooo-motionpath-spring")					return 53;
+		else if (presetId == L"ooo-motionpath-stairs-down")				return 62;
+		else if (presetId == L"ooo-motionpath-turn-down")				return 50;
+		else if (presetId == L"ooo-motionpath-turn-down-right")			return 36;
+		else if (presetId == L"ooo-motionpath-turn-up")					return 43;
+		else if (presetId == L"ooo-motionpath-turn-up-right")			return 57;
+		else if (presetId == L"ooo-motionpath-up")						return 64;
+		else if (presetId == L"ooo-motionpath-wave")					return 47;
+		else if (presetId == L"ooo-motionpath-zigzag")					return 38;
+		else if (presetId == L"ooo-motionpath-bean")					return 31;
+		else if (presetId == L"ooo-motionpath-buzz-saw")				return 25;
+		else if (presetId == L"ooo-motionpath-curved-square")			return 20;
+		else if (presetId == L"ooo-motionpath-curved-x")				return 21;
+		else if (presetId == L"ooo-motionpath-curvy-star")				return 23;
+		else if (presetId == L"ooo-motionpath-figure-8-four")			return 28;
+		else if (presetId == L"ooo-motionpath-horizontal-figure-8")		return 26;
+		else if (presetId == L"ooo-motionpath-inverted-square")			return 34;
+		else if (presetId == L"ooo-motionpath-inverted-triangle")		return 33;
+		else if (presetId == L"ooo-motionpath-loop-de-loop")			return 24;
+		else if (presetId == L"ooo-motionpath-neutron")					return 29;
+		else if (presetId == L"ooo-motionpath-peanut")					return 27;
+		else if (presetId == L"ooo-motionpath-clover")					return 32;
+		else if (presetId == L"ooo-motionpath-pointy-star")				return 19;
+		else if (presetId == L"ooo-motionpath-swoosh")					return 30;
+		else if (presetId == L"ooo-motionpath-vertical-figure-8")		return 22;
+		else if (presetId == L"ooo-motionpath-left")					return 35;
+		else if (presetId == L"ooo-motionpath-right")					return 63;
+		else if (presetId == L"ooo-motionpath-spiral-left")				return 55;
+		else if (presetId == L"ooo-motionpath-spiral-right")			return 46;
+		else if (presetId == L"ooo-motionpath-sine-wave")				return 40;
+		else if (presetId == L"ooo-motionpath-s-curve-1")				return 59;
+		else if (presetId == L"ooo-motionpath-s-curve-2")				return 39;
+		else if (presetId == L"ooo-motionpath-heartbeat")				return 45;
+	}
+
+	return boost::none;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -783,7 +1045,7 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
 
 	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(animate_motion_attlist_.smil_fill_.value());
-	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_target_element(animate_motion_attlist_.smil_target_element_.value());
+	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_target_element(L"-1");
 	if (animate_motion_attlist_.svg_path_)					animationContext.set_animate_motion_svg_path(animate_motion_attlist_.svg_path_.value());
 	
 	animationContext.end_animate_motion();
@@ -812,7 +1074,45 @@ const wchar_t* anim_animate_color::name = L"animateColor";
 
 void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 {
+	_CP_OPT(std::wstring) colorSpace;
+	_CP_OPT(int) duration;
+	_CP_OPT(std::wstring) delay;
+	_CP_OPT(std::wstring) attributeName;
+	_CP_OPT(std::wstring) toValue;
+
+	colorSpace = L"rgb";
 	
+	if (common_attlist_.smil_dur_)
+		duration = common_attlist_.smil_dur_->get_value();
+	else
+		duration = 1;
+
+	if (common_attlist_.smil_begin_)
+	{
+		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
+		if (delayClockvalue.get_value() != -1)
+			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
+		else
+			delay = L"0";
+	}
+
+	attributeName = L"ppt_c";
+
+	if (animate_color_attlist_.smil_to_)
+	{
+		toValue = animate_color_attlist_.smil_to_.value();
+		boost::algorithm::erase_all(toValue.value(), L"#");
+	}
+
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+
+	animationContext.start_animate_color();
+	if (colorSpace)			animationContext.set_animate_color_color_space(colorSpace.value());
+	if (duration)			animationContext.set_animate_color_duration(duration.value());
+	if (delay)				animationContext.set_animate_color_delay(delay.value());
+	if (attributeName)		animationContext.set_animate_color_attribute_name(attributeName.value());
+	if (toValue)			animationContext.set_animate_color_to_value(toValue.value());
+	animationContext.end_animate_color();
 }
 
 void anim_animate_color::add_attributes(const xml::attributes_wc_ptr& Attributes)

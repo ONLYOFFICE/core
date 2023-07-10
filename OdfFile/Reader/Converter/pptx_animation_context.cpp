@@ -70,7 +70,7 @@ namespace oox {
 			_CP_OPT(std::wstring)						Delay;
 			_CP_OPT(std::wstring)						End;
 			_CP_OPT(std::wstring)						PresetClass;
-			_CP_OPT(std::wstring)						PresetID;
+			_CP_OPT(int)								PresetID;
 
 			_par_animation_array						AnimParArray;
 			_seq_animation_ptr							AnimSeq;
@@ -142,6 +142,27 @@ namespace oox {
 			void serialize(std::wostream & strm) override;
 		};
 
+		struct _anim_clr;
+		typedef shared_ptr<_anim_clr>::Type					_anim_clr_ptr;
+		struct _anim_clr : _animation_element
+		{
+			_CP_OPT(std::wstring)							PresentationNodeType;
+			_CP_OPT(std::wstring)							Direction;
+			_CP_OPT(std::wstring)							Restart;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							Begin;
+			_CP_OPT(std::wstring)							End;
+
+			_CP_OPT(std::wstring)							Fill;
+			_CP_OPT(std::wstring)							ShapeID;
+			_CP_OPT(std::wstring)							AttributeName;
+			_CP_OPT(std::wstring)							Delay;
+			_CP_OPT(std::wstring)							ToValue;
+			_CP_OPT(std::wstring)							ColorSpace;
+
+			void serialize(std::wostream& strm) override;
+		};
+
 		struct _anim;
 		typedef shared_ptr<_anim>::Type						_anim_ptr;
 		struct _anim : _animation_element
@@ -173,6 +194,7 @@ namespace oox {
 		_set_ptr									set_description_;
 		_anim_effect_ptr							anim_effect_description_;
 		_anim_ptr									anim_description_;
+		_anim_clr_ptr								anim_clr_description_;
 
 		void clear()
 		{
@@ -181,7 +203,8 @@ namespace oox {
 			animate_motion_description_		= nullptr;
 			set_description_				= nullptr;
 			anim_effect_description_		= nullptr;
-			anim_description_ = nullptr;
+			anim_description_				= nullptr;
+			anim_clr_description_			= nullptr;
 		}
 
 		Impl()
@@ -209,6 +232,78 @@ namespace oox {
 		}
 	}
 
+	void pptx_animation_context::set_par_animation_presentation_node_type(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->NodeType = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_direction(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Direction = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_restart(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Restart = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_duration(int value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Duration = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_delay(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Delay = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_end(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->End = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_preset_class(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->PresetClass = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_preset_id(int value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->PresetID = value;
+		}
+	}
+
 	void pptx_animation_context::end_par_animation()
 	{
 		if (impl_->par_animation_levels_.size())
@@ -227,6 +322,8 @@ namespace oox {
 		}
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// p:seq
 	void pptx_animation_context::start_seq_animation()
 	{
 		if (impl_->par_animation_levels_.size())
@@ -521,76 +618,46 @@ namespace oox {
 		impl_->anim_description_ = nullptr;
 	}
 
-	void pptx_animation_context::set_par_animation_presentation_node_type(const std::wstring& value)
+	//////////////////////////////////////////////////////////////////////////
+	// p:animClr
+	void pptx_animation_context::start_animate_color()
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->NodeType = value;
-		}
+		impl_->anim_clr_description_ = boost::make_shared<Impl::_anim_clr>();
 	}
 
-	void pptx_animation_context::set_par_animation_direction(const std::wstring& value)
+	void pptx_animation_context::set_animate_color_color_space(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Direction = value;
-		}
+		impl_->anim_clr_description_->ColorSpace = value;
 	}
 
-	void pptx_animation_context::set_par_animation_restart(const std::wstring& value)
+	void pptx_animation_context::set_animate_color_duration(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Restart = value;
-		}
+		impl_->anim_clr_description_->Duration = value;
 	}
 
-	void pptx_animation_context::set_par_animation_duration(int value)
+	void pptx_animation_context::set_animate_color_delay(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Duration = value;
-		}
+		impl_->anim_clr_description_->Delay = value;
 	}
 
-	void pptx_animation_context::set_par_animation_delay(const std::wstring& value)
+	void pptx_animation_context::set_animate_color_attribute_name(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Delay = value;
-		}
+		impl_->anim_clr_description_->AttributeName = value;
 	}
 
-	void pptx_animation_context::set_par_animation_end(const std::wstring& value)
+	void pptx_animation_context::set_animate_color_to_value(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->End = value;
-		}
+		impl_->anim_clr_description_->ToValue = value;
 	}
 
-	void pptx_animation_context::set_par_animation_preset_class(const std::wstring& value)
+	void pptx_animation_context::end_animate_color()
 	{
 		if (impl_->par_animation_levels_.size())
 		{
 			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->PresetClass = value;
+			back->AnimationActionArray.push_back(impl_->anim_clr_description_);
 		}
-	}
-
-	void pptx_animation_context::set_par_animation_preset_id(const std::wstring& value)
-	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->PresetID = value;
-		}
+		impl_->anim_clr_description_ = nullptr;
 	}
 
 	void pptx_animation_context::serialize(std::wostream& strm)
@@ -881,6 +948,66 @@ namespace oox {
 									}
 								}
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void pptx_animation_context::Impl::_anim_clr::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:animClr")
+			{
+				if (ColorSpace)		CP_XML_ATTR(L"clrSpc", ColorSpace.value());
+
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						int duration = Duration ? Duration.value() : 1;
+						CP_XML_ATTR(L"dur", duration);
+						CP_XML_ATTR(L"fill", L"hold");
+
+						CP_XML_NODE(L"p:stCondLst")
+						{
+							if (Delay)
+							{
+								CP_XML_NODE(L"p:cond")
+								{
+									CP_XML_ATTR(L"delay", Delay.value());
+								}
+							}
+						}
+					}
+					CP_XML_NODE(L"p:tgtEl")
+					{
+						std::wstring shapeID = ShapeID ? ShapeID.value() : L"-1";
+						CP_XML_NODE(L"p:spTgt")
+						{
+							CP_XML_ATTR(L"spid", shapeID);
+						}
+					}
+					CP_XML_NODE(L"p:attrNameLst")
+					{
+						if (AttributeName)
+						{
+							CP_XML_NODE(L"p:attrName")
+							{
+								CP_XML_STREAM() << AttributeName.value();
+							}
+						}
+					}
+				}
+				CP_XML_NODE(L"p:to")
+				{
+					if (ToValue)
+					{
+						CP_XML_NODE(L"a:srgbClr")
+						{
+							CP_XML_ATTR(L"val", ToValue.value());
 						}
 					}
 				}

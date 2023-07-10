@@ -76,6 +76,11 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+	boost::optional<int> convert_entrance_preset_id();
+	boost::optional<int> convert_emphasis_preset_id();
+	boost::optional<int> convert_exit_preset_id();
+	boost::optional<int> convert_motion_path_preset_id();
+
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_par);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

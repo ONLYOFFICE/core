@@ -70,9 +70,6 @@ namespace SVG
 		Aggplus::CImage oImage;
 		oImage.Create(oBgraFrame.get_Data(), dImageW, dImageH, -4 * dImageW, true);
 
-		Aggplus::CMatrix oOldMatrix;
-		Apply(pRenderer, &m_oStyles.m_oTransform, oOldMatrix);
-
 		if (dImageW / dWidth > dImageH / dHeight)
 		{
 			double dValue = dImageW / dWidth;
@@ -98,8 +95,6 @@ namespace SVG
 		}
 
 		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		delete[] pBuffer;
 

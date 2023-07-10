@@ -496,7 +496,7 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
 		if (wsValue.empty())
@@ -700,7 +700,7 @@ namespace NSCSS
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
 		std::wstring wsNewValue = wsValue;

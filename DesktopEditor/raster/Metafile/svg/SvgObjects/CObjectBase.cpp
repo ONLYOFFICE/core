@@ -149,7 +149,7 @@ namespace SVG
 		if (mAttributes.end() != mAttributes.find(L"transform"))
 			m_oStyles.m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
 		else
-			m_oStyles.m_oTransform.SetMatrix(L"", ushLevel, bHardMode);
+			m_oStyles.m_oTransform.SetMatrix(L"", ushLevel, false);
 	}
 
 	void CRenderedObject::SetClip(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -157,7 +157,7 @@ namespace SVG
 		if (mAttributes.end() != mAttributes.find(L"clip-path"))
 			m_oStyles.m_oClip.m_oHref.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
 		else
-			m_oStyles.m_oClip.m_oHref.SetValue(L"", ushLevel, bHardMode);
+			m_oStyles.m_oClip.m_oHref.SetValue(L"", ushLevel, false);
 
 		if (mAttributes.end() != mAttributes.find(L"clip-rule"))
 			m_oStyles.m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
@@ -168,7 +168,7 @@ namespace SVG
 		if (mAttributes.end() != mAttributes.find(L"mask"))
 			m_oStyles.m_oMask.SetValue(mAttributes.at(L"mask"), ushLevel, bHardMode);
 		else
-			m_oStyles.m_oMask.SetValue(L"", ushLevel, bHardMode);
+			m_oStyles.m_oMask.SetValue(L"", ushLevel, false);
 	}
 
 	void CRenderedObject::SetDisplay(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)

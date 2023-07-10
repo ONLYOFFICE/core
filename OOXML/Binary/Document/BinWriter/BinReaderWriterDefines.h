@@ -535,7 +535,8 @@ extern int g_nCurFormatVersion;
 		AltChunk = 26,
 		DocParts = 27,
 		PermStart = 28,
-		PermEnd = 29
+		PermEnd = 29,
+		JsaProjectExternal = 30
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary

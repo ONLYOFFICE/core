@@ -3450,14 +3450,23 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 //Write JsaProject
 	if (NULL != pJsaProject)
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+		if (pJsaProject->IsExist() && !pJsaProject->IsExternal())
 		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
-			m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+			BYTE* pData = NULL;
+			DWORD nBytesCount;
+			if (NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
+				m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+				m_oBcw.WriteItemEnd(nCurPos);
+				RELEASEARRAYOBJECTS(pData);
+			}
+		}
+		if (pJsaProject->IsExternal())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProjectExternal);
+			m_oBcw.m_oStream.WriteStringW3(pJsaProject->filename().GetPath());
 			m_oBcw.WriteItemEnd(nCurPos);
-			RELEASEARRAYOBJECTS(pData);
 		}
 	}
 }

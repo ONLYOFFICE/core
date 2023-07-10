@@ -192,7 +192,7 @@ namespace OOX
 		else if ( oRelation.Type() == OOX::FileTypes::VbaData)
 			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == FileTypes::JsaProject)
-			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, oFileName, oRelation.IsExternal()));
 		else if ( oRelation.Type() == FileTypes::CustomXml)
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == FileTypes::CustomXmlProps)
@@ -343,7 +343,7 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::VbaData)
 			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::JsaProject)
-			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, oFileName, pRelation->IsExternal()));
 		else if ( pRelation->Type() == FileTypes::CustomXml)
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::CustomXmlProps)

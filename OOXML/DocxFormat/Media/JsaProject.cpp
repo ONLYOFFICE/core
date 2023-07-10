@@ -60,8 +60,9 @@ namespace OOX
 			}
 		}
 	}
-	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
+	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename, bool bExternal) : Media(pMain)
 	{
+		m_bExternal = bExternal;
 		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
 		if (docx)
 		{

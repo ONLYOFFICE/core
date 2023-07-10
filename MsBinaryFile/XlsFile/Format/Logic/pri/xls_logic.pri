@@ -633,7 +633,7 @@ SOURCES +=  \
         $$LOGIC_DIR/Biff_structures/BIFF12/DValStrings.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormula.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormulas.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader12.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTParsedFormula.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTRef.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTRefs.cpp \

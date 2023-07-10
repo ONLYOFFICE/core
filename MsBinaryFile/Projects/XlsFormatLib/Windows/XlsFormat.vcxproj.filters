@@ -2401,7 +2401,7 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.cpp">
       <Filter>Logic\Biff_structures\BIFF12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader.cpp">
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader12.cpp">
       <Filter>Logic\Biff_structures\BIFF12</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\RelID.cpp">

@@ -654,7 +654,7 @@
 #include "../Biff_structures/BIFF12/DValStrings.cpp"
 #include "../Biff_structures/BIFF12/FRTFormula.cpp"
 #include "../Biff_structures/BIFF12/FRTFormulas.cpp"
-#include "../Biff_structures/BIFF12/FRTHeader.cpp"
+#include "../Biff_structures/BIFF12/FRTHeader12.cpp"
 #include "../Biff_structures/BIFF12/FRTParsedFormula.cpp"
 #include "../Biff_structures/BIFF12/FRTRef.cpp"
 #include "../Biff_structures/BIFF12/FRTRefs.cpp"

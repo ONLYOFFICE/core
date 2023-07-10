@@ -386,7 +386,7 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormula.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormulas.cpp" />
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader12.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTParsedFormula.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRef.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRefs.cpp" />

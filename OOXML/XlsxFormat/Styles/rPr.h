@@ -145,6 +145,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObject* obj);
+			XLS::BaseObjectPtr toBin();
 			XLSB::Color toColor();
 
 			virtual EElementType getType () const;

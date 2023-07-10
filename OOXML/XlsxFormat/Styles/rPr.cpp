@@ -462,6 +462,41 @@ namespace OOX
 			}
 			return ptr;
 		}
+		XLS::BaseObjectPtr CColor::toBin()
+		{
+			auto ptr(new XLSB::Color);
+
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oAuto.IsInit())
+			{
+				if(m_oAuto->GetValue())
+					ptr->xColorType = 0;
+			}
+			else if(m_oIndexed.IsInit())
+			{
+					ptr->index = m_oIndexed->GetValue();
+					ptr->xColorType = 1;
+			}
+			else if(m_oThemeColor.IsInit())
+			{
+					ptr->index = m_oThemeColor->GetValue();
+					ptr->xColorType = 3;
+			}
+			else
+			{
+				ptr->bAlpha = m_oRgb->Get_A();
+				ptr->bBlue = m_oRgb->Get_B();
+				ptr->bGreen = m_oRgb->Get_G();
+				ptr->bRed = m_oRgb->Get_R();
+			}
+
+			if ( m_oTint.IsInit())
+			{
+				ptr->nTintAndShade = m_oTint->GetValue() * 32767.0;
+			}
+			return objectPtr;
+		}
 		EElementType CColor::getType () const
 		{
 			return et_x_Color;

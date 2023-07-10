@@ -265,5 +265,38 @@ private:
 	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_animate_color);
+
+//////////////////////////////////////////////////////////////////////////
+// anim:animate
+class anim_animate_attlist
+{
+public:
+	void add_attributes(const xml::attributes_wc_ptr& Attributes);
+
+	_CP_OPT(odf_types::clockvalue)		smil_dur_;
+	_CP_OPT(std::wstring)				smil_target_element_;
+	_CP_OPT(std::wstring)				smil_attribute_name_;
+	_CP_OPT(std::wstring)				smil_values_;
+	_CP_OPT(std::wstring)				smil_key_times_;
+	_CP_OPT(std::wstring)				smil_calc_mode_;
+};
+class anim_animate : public office_element_impl<anim_animate>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeAnimAnimate;
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
+
+	anim_animate_attlist				animate_attlist_;
+
+private:
+	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate);
 }
 }

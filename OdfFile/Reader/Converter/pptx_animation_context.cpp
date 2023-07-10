@@ -142,12 +142,37 @@ namespace oox {
 			void serialize(std::wostream & strm) override;
 		};
 
+		struct _anim;
+		typedef shared_ptr<_anim>::Type						_anim_ptr;
+		struct _anim : _animation_element
+		{
+			struct _keypoint
+			{
+				int				Time;
+				std::wstring	Value;
+
+				_keypoint(int time, const std::wstring& value)
+					: Time(time), Value(value)
+				{}
+			};
+
+			_CP_OPT(std::wstring)							CalcMode;
+			_CP_OPT(std::wstring)							ValueType;
+			_CP_OPT(std::wstring)							ShapeID;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							AttributeName;
+			_CP_OPT(std::vector<_keypoint>)					KeypointArray;
+
+			void serialize(std::wostream& strm) override;
+		};
+
 		_par_animation_ptr							root_animation_element_;
 		_par_animation_array						par_animation_levels_;
 
 		_animate_motion_ptr							animate_motion_description_;
 		_set_ptr									set_description_;
 		_anim_effect_ptr							anim_effect_description_;
+		_anim_ptr									anim_description_;
 
 		void clear()
 		{
@@ -156,6 +181,7 @@ namespace oox {
 			animate_motion_description_		= nullptr;
 			set_description_				= nullptr;
 			anim_effect_description_		= nullptr;
+			anim_description_ = nullptr;
 		}
 
 		Impl()
@@ -445,6 +471,54 @@ namespace oox {
 			back->AnimationActionArray.push_back(impl_->animate_motion_description_);
 		}
 		impl_->animate_motion_description_ = nullptr;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// p:anim
+	void pptx_animation_context::start_animate()
+	{
+		impl_->anim_description_ = boost::make_shared<Impl::_anim>();
+		impl_->anim_description_->KeypointArray = std::vector<Impl::_anim::_keypoint>();
+	}
+
+	void pptx_animation_context::set_animate_calc_mode(const std::wstring& value)
+	{
+		impl_->anim_description_->CalcMode = value;
+	}
+
+	void pptx_animation_context::set_animate_value_type(const std::wstring& value)
+	{
+		impl_->anim_description_->ValueType = value;
+	}
+
+	void pptx_animation_context::set_animate_shape_id(const std::wstring& value)
+	{
+		impl_->anim_description_->ShapeID = value;
+	}
+
+	void pptx_animation_context::set_animate_duration(int value)
+	{
+		impl_->anim_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_animate_attribute_name(const std::wstring& value)
+	{
+		impl_->anim_description_->AttributeName = value;
+	}
+
+	void pptx_animation_context::add_animate_keypoint(int time, const std::wstring& value)
+	{
+		impl_->anim_description_->KeypointArray->push_back(Impl::_anim::_keypoint(time, value));
+	}
+
+	void pptx_animation_context::end_animate()
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->AnimationActionArray.push_back(impl_->anim_description_);
+		}
+		impl_->anim_description_ = nullptr;
 	}
 
 	void pptx_animation_context::set_par_animation_presentation_node_type(const std::wstring& value)
@@ -741,6 +815,72 @@ namespace oox {
 						CP_XML_NODE(L"p:spTgt")
 						{
 							CP_XML_ATTR(L"spid", SmilTargetElement);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void pptx_animation_context::Impl::_anim::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:anim")
+			{
+				if (CalcMode)		CP_XML_ATTR(L"calcmode", CalcMode.value());
+				if (ValueType)		CP_XML_ATTR(L"valueType", ValueType.value());
+
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					CP_XML_ATTR(L"additive", L"repl");
+					
+					CP_XML_NODE(L"p:cTn")
+					{
+						int duration = Duration ? Duration.value() : 1;
+						CP_XML_ATTR(L"dur", duration);
+					}
+					CP_XML_NODE(L"p:tgtEl")
+					{
+						CP_XML_NODE(L"p:spTgt")
+						{
+							std::wstring shapeID = ShapeID ? ShapeID.value() : L"-1";
+							CP_XML_ATTR(L"spid", shapeID);
+						}
+					}
+
+					if (AttributeName)
+					{
+						CP_XML_NODE(L"p:attrNameLst")
+						{
+							CP_XML_NODE(L"p:attrName")
+							{
+								CP_XML_STREAM() << AttributeName;
+							}
+						}
+					}
+				}
+				CP_XML_NODE(L"p:tavLst")
+				{
+					if (KeypointArray)
+					{
+						for (size_t i = 0; i < KeypointArray->size(); i++)
+						{
+							const int& time = (*KeypointArray)[i].Time;
+							const std::wstring& value = (*KeypointArray)[i].Value;
+
+							CP_XML_NODE(L"p:tav")
+							{
+								CP_XML_ATTR(L"tm", time);
+								
+								CP_XML_NODE(L"p:val")
+								{
+									CP_XML_NODE(L"p:strVal")
+									{
+										CP_XML_ATTR(L"val", value);
+									}
+								}
+							}
 						}
 					}
 				}

@@ -93,6 +93,16 @@ namespace oox {
 			void set_animate_motion_svg_path(const std::wstring& value);
 		void end_animate_motion();
 
+		void start_animate();
+			void set_animate_calc_mode(const std::wstring& value);
+			void set_animate_value_type(const std::wstring& value);
+			void set_animate_shape_id(const std::wstring& value);
+			void set_animate_duration(int value);
+			void set_animate_attribute_name(const std::wstring& value);
+			void add_animate_keypoint(int time, const std::wstring& value);
+		void end_animate();
+		
+
 		void serialize(std::wostream & strm);
 		void clear();
 

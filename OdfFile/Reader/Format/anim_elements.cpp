@@ -43,6 +43,7 @@
 
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { 
 
@@ -818,6 +819,113 @@ void anim_animate_color::add_attributes(const xml::attributes_wc_ptr& Attributes
 {
 	common_attlist_.add_attributes(Attributes);
 	animate_color_attlist_.add_attributes(Attributes);
+}
+
+void anim_animate_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"smil:dur",					smil_dur_);
+	CP_APPLY_ATTR(L"smil:targetElement",		smil_target_element_);
+	CP_APPLY_ATTR(L"smil:attributeName",		smil_attribute_name_);
+	CP_APPLY_ATTR(L"smil:values",				smil_values_);
+	CP_APPLY_ATTR(L"smil:keyTimes",				smil_key_times_);
+	CP_APPLY_ATTR(L"smil:calcMode",				smil_calc_mode_);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// anim:animate
+
+const wchar_t* anim_animate::ns = L"anim";
+const wchar_t* anim_animate::name = L"animate";
+
+void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	_CP_OPT(std::wstring)						calcmode;
+	_CP_OPT(std::wstring)						valueType;
+	_CP_OPT(std::wstring)						shapeID;
+	_CP_OPT(int)								duration;
+	_CP_OPT(std::wstring)						attributeName;
+
+	if (animate_attlist_.smil_calc_mode_)
+	{
+		if (animate_attlist_.smil_calc_mode_.value() == L"discrete")	calcmode = L"discrete";
+		else															calcmode = L"lin";
+	}
+	else
+		calcmode = L"lin";
+
+	valueType = L"num";
+	shapeID = L"-1";
+	duration = animate_attlist_.smil_dur_ ? animate_attlist_.smil_dur_->get_value() : 1;
+
+	if (animate_attlist_.smil_attribute_name_)
+	{
+			 if (animate_attlist_.smil_attribute_name_.value() == L"visibility")		attributeName = L"style.visibility";
+		else if (animate_attlist_.smil_attribute_name_.value() == L"width")				attributeName = L"ppt_w";
+		else if (animate_attlist_.smil_attribute_name_.value() == L"height")			attributeName = L"ppt_h";
+		else if (animate_attlist_.smil_attribute_name_.value() == L"x")					attributeName = L"ppt_x";
+		else if (animate_attlist_.smil_attribute_name_.value() == L"y")					attributeName = L"ppt_y";
+	}
+	
+	std::vector<std::wstring>	timesOdp;
+	std::vector<int>			timesPptx;
+	std::vector<std::wstring>	valuesOdp;
+	std::vector<std::wstring>	valuesPptx;
+
+	if (animate_attlist_.smil_key_times_)
+		boost::split(timesOdp, animate_attlist_.smil_key_times_.value(), boost::is_any_of(";"));
+	if (animate_attlist_.smil_values_)
+		boost::split(valuesOdp, animate_attlist_.smil_values_.value(), boost::is_any_of(";"));
+
+	for (size_t i = 0; i < timesOdp.size(); i++)
+	{
+		int keyTime = 0;
+		const int pptx_time_mulipier = 100000;
+		try
+		{
+			keyTime = boost::lexical_cast<double>(timesOdp[i]) * pptx_time_mulipier;
+		}
+		catch (...)
+		{
+			continue;
+		}
+		timesPptx.push_back(keyTime);
+	}
+
+	for (size_t i = 0; i < valuesOdp.size(); i++)
+	{
+		std::wstring value = valuesOdp[i];
+		boost::replace_all(value, L"x", L"#ppt_x");
+		boost::replace_all(value, L"y", L"#ppt_y");
+		boost::replace_all(value, L"width", L"#ppt_w");
+		boost::replace_all(value, L"height", L"#ppt_h");
+
+		valuesPptx.push_back(value);
+	}
+
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+	animationContext.start_animate();
+	if (calcmode)			animationContext.set_animate_calc_mode(calcmode.value());
+	if (valueType)			animationContext.set_animate_value_type(valueType.value());
+	if (shapeID)			animationContext.set_animate_shape_id(shapeID.value());
+	if (duration)			animationContext.set_animate_duration(duration.value());
+	if (attributeName)		animationContext.set_animate_attribute_name(attributeName.value());
+
+	if (timesPptx.size() == valuesPptx.size())
+	{
+		size_t size = timesPptx.size();
+
+		for (size_t i = 0; i < size; i++)
+		{
+			animationContext.add_animate_keypoint(timesPptx[i], valuesPptx[i]);
+		}
+	}
+
+	animationContext.end_animate();
+}
+
+void anim_animate::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	animate_attlist_.add_attributes(Attributes);
 }
 
 }

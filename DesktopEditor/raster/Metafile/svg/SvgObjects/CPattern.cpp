@@ -103,6 +103,8 @@ namespace SVG
 		pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		pRenderer->put_BrushTextureImage(m_pImage);
 
+		m_pImage->Release();
+
 		return true;
 	}
 

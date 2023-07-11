@@ -49,7 +49,7 @@ namespace SVG
 
 	void CEllipse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
 		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))

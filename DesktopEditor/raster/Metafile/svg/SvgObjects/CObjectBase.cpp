@@ -193,7 +193,10 @@ namespace SVG
 		ApplyMask(pRenderer, &m_oStyles.m_oMask, pFile);
 
 		if (CommandeModeClip == oMode)
+		{
+			pRenderer->BeginCommand(c_nClipType);
 			return true;
+		}
 
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
@@ -205,6 +208,7 @@ namespace SVG
 	{
 		if (CommandeModeClip == oMode)
 		{
+			pRenderer->EndCommand(c_nClipType);
 			pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 			return;
 		}
@@ -230,7 +234,7 @@ namespace SVG
 			pRenderer->EndCommand(c_nResetClipType);
 		}
 
-		if (oMode != CommandeModeMask)
+		if (!m_oStyles.m_oMask.Empty())
 		{
 			pRenderer->BeginCommand(c_nResetMaskType);
 			pRenderer->EndCommand(c_nResetMaskType);

@@ -17,13 +17,13 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pFile)
 			return false;
 
-		pRenderer->BeginCommand(c_nClipType);
+		pRenderer->put_ClipMode(c_nClipRegionUnion);
+
 		pRenderer->PathCommandStart();
 
 		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
 			pObject->Draw(pRenderer, pFile, CommandeModeClip);
 
-		pRenderer->EndCommand(c_nClipType);
 		pRenderer->PathCommandEnd();
 
 		return true;

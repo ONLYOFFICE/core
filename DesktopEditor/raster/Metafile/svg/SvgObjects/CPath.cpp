@@ -537,7 +537,7 @@ namespace SVG
 		if (Apply(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (Apply(pRenderer, &pStyles->m_oFill, pFile))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 

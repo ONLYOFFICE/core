@@ -405,22 +405,27 @@ public:
 		ERR_load_crypto_strings();
 		OpenSSL_add_all_algorithms();
 
-		BIO* outputbio = BIO_new(BIO_s_mem());
-		BIO_write(outputbio, pPKCS7Data, nPKCS7Size);
+		BIO* outputbio = BIO_new_mem_buf(pPKCS7Data, nPKCS7Size);
+
 		PKCS7* pkcs7 = d2i_PKCS7_bio(outputbio, NULL);
 
 		if (pkcs7 == NULL || !PKCS7_type_is_signed(pkcs7))
 			return nRes;
 
-		BIO* inputbio = BIO_new(BIO_s_mem());
-		BIO_write(inputbio, pData, nSize);
+		int type = OBJ_obj2nid(pkcs7->type);
+		std::string sType = OBJ_nid2ln(type);
+
+		BIO* inputbio = BIO_new_mem_buf(pData, nSize);
 
 		BIO* out_verify = BIO_new(BIO_s_mem());
+
+		int nTRes = VerifySelf();
+
 
 		X509_STORE* x509_store = X509_STORE_new();
 		X509_STORE_add_cert(x509_store, m_cert);
 		// Нужно ли доверять сертификату, если нет доступа к локальному хранилищу сертификатов?
-		X509_STORE_set_flags(x509_store, X509_V_FLAG_PARTIAL_CHAIN);
+		// X509_STORE_set_flags(x509_store, X509_V_FLAG_PARTIAL_CHAIN);
 
 		// Получала X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY
 		if (PKCS7_verify(pkcs7, NULL, x509_store, inputbio, out_verify, PKCS7_NOCHAIN | PKCS7_NOSIGS) == 1)

@@ -100,7 +100,7 @@ int main()
         pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
     }
 
-    if (true)
+    if (false)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
@@ -123,8 +123,8 @@ int main()
     if (true)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        int i = 8;
-        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
+        int i = 0;
+        for (i = 0; i < pdfFile.GetPagesCount(); i++)
         {
             pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
             pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());

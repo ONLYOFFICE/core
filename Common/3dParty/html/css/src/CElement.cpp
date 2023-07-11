@@ -98,8 +98,8 @@ namespace NSCSS
 			for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
 			{
 				std::map<std::wstring, std::wstring> mTempStyle;
-				if (oElement->GetSelector() == L'.' + oNode->m_sClass ||
-				    oElement->GetSelector() == oNode->m_sName)
+                                if (oElement->GetSelector() == L'.' + oNode->m_wsClass ||
+					oElement->GetSelector() == oNode->m_wsName)
 				{
 					for (const std::pair<std::wstring, std::wstring> pPropertie : oElement->GetFullStyle(arSelectors))
 						mStyle[pPropertie.first] = pPropertie.second;

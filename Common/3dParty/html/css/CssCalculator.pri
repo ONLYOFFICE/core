@@ -13,6 +13,8 @@ css_calculator_without_xhtml {
 
     SOURCES += $$PWD/src/CCssCalculator_Private.cpp \
 	           $$PWD/src/CElement.cpp \
+			   $$PWD/src/CNode.cpp \
+			   $$PWD/src/ConstValues.cpp \
 			   $$PWD/src/StyleProperties.cpp \
 			   $$PWD/src/CUnitMeasureConverter.cpp
 } else {

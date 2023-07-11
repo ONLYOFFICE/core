@@ -574,8 +574,8 @@ namespace NSCSS
 			}
 		}
 
-		const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(wsNewValue);
-		if (oHEX != NSConstValues::NSMaps::mColors.end())
+		const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::COLORS.find(wsNewValue);
+		if (oHEX != NSConstValues::COLORS.end())
 		{
 			m_oValue.SetHEX(oHEX->second);
 			m_unLevel    = unLevel;
@@ -1053,7 +1053,7 @@ namespace NSCSS
 
 	bool CDisplay::SetDisplay(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oHAlign.SetValue(wsValue, NSConstValues::arDisplayValues, unLevel, bHardMode);
+		return m_oHAlign.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
 	}
 
 	const CDigit& CDisplay::GetX() const
@@ -1323,7 +1323,22 @@ namespace NSCSS
 
 	bool CBorderSide::SetWidth(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oWidth.SetValue(wsValue, unLevel, bHardMode);
+		const std::map<std::wstring, std::wstring> arAbsoluteBorderValues =
+			{{L"thin",    L"2px"},
+			 {L"medium",  L"4px"},
+			 {L"thick",   L"6px"}};
+
+		size_t unFoundPos = std::wstring::npos;
+		std::wstring wsNewValue(wsValue);
+
+		for (const std::pair<std::wstring, std::wstring> oAbsValue : arAbsoluteBorderValues)
+		{
+			unFoundPos = wsNewValue.find(oAbsValue.first);
+			if (std::wstring::npos != unFoundPos)
+				wsNewValue.replace(unFoundPos, oAbsValue.first.length(), oAbsValue.second);
+		}
+
+		return m_oWidth.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
 	bool CBorderSide::SetStyle(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2002,7 +2017,23 @@ namespace NSCSS
 
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oSize.SetValue(wsValue, unLevel, bHardMode);
+		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
+			{{L"xx-small", L"9px"},  {L"x-small", L"10px"},
+			 {L"small",    L"13px"}, {L"medium",  L"16px"},
+			 {L"large",    L"18px"}, {L"x-large", L"24px"},
+			 {L"xx-large", L"32px"}};
+
+		size_t unFoundPos = std::wstring::npos;
+		std::wstring wsNewValue(wsValue);
+
+		for (const std::pair<std::wstring, std::wstring> oAbsValue : arAbsoluteFontValues)
+		{
+			unFoundPos = wsNewValue.find(oAbsValue.first);
+			if (std::wstring::npos != unFoundPos)
+				wsNewValue.replace(unFoundPos, oAbsValue.first.length(), oAbsValue.second);
+		}
+
+		return m_oSize.SetValue(wsNewValue, unLevel, bHardMode);
 	}
 
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)

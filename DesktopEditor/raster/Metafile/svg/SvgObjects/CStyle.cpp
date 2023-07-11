@@ -44,13 +44,13 @@ namespace SVG
 
 		for (std::vector<NSCSS::CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
 		{
-			arWords.push_back(oNode->m_sName);
+			arWords.push_back(oNode->m_wsName);
 
-			if (!oNode->m_sClass.empty())
+                        if (!oNode->m_wsClass.empty())
 			{
-				if (oNode->m_sClass.find(L' ') != std::wstring::npos)
+                            if (oNode->m_wsClass.find(L' ') != std::wstring::npos)
 				{
-					std::vector<std::wstring> arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_sClass, L" ");
+                                std::vector<std::wstring> arClasses = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, L" ");
 
 					if (arClasses.size() > 1)
 						arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
@@ -81,10 +81,10 @@ namespace SVG
 					}
 				}
 				else
-					arWords.push_back(L'.' + oNode->m_sClass);
+                                arWords.push_back(L'.' + oNode->m_wsClass);
 			}
-			if (!oNode->m_sId.empty())
-				arWords.push_back(L'#' + oNode->m_sId);
+			if (!oNode->m_wsId.empty())
+				arWords.push_back(L'#' + oNode->m_wsId);
 		}
 
 		std::vector<NSCSS::CElement*> arElements;
@@ -179,12 +179,12 @@ namespace SVG
 						  });
 			}
 
-			pSvgObject->SetData(arSelectors[i].m_mAttrs, i + 1);
+                        pSvgObject->SetData(arSelectors[i].m_mAttributes, i + 1);
 
 			for (const NSCSS::CElement* oElement : arFindElements)
 				pSvgObject->SetData(oElement->GetStyle(), i + 1);
 
-			pSvgObject->SetData(arSelectors[i].m_sStyle, i + 1, true);
+                        pSvgObject->SetData(arSelectors[i].m_wsStyle, i + 1, true);
 		}
 	}
 }

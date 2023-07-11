@@ -16,23 +16,23 @@ namespace SVG
 
 		oNode.GetAllAttributes(arProperties, arValues);
 
-		m_oXmlNode.m_sName = oNode.GetName();
+		m_oXmlNode.m_wsName = oNode.GetName();
 
 		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
 		{
 			if (L"class" == arProperties[unIndex])
 			{
-				m_oXmlNode.m_sClass = arValues[unIndex];
-				std::transform(m_oXmlNode.m_sClass.begin(), m_oXmlNode.m_sClass.end(), m_oXmlNode.m_sClass.begin(), std::towlower);
+                            m_oXmlNode.m_wsClass = arValues[unIndex];
+                            std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
 			}
 			else if (L"id" == arProperties[unIndex])
 			{
-				m_oXmlNode.m_sId = arValues[unIndex];
+				m_oXmlNode.m_wsId = arValues[unIndex];
 			}
 			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_sStyle = arValues[unIndex];
+                            m_oXmlNode.m_wsStyle = arValues[unIndex];
 			else
-				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
+                            m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
 		}
 	}
 
@@ -49,7 +49,7 @@ namespace SVG
 
 	std::wstring CObject::GetId() const
 	{
-		return m_oXmlNode.m_sId;
+		return m_oXmlNode.m_wsId;
 	}
 
 	std::vector<NSCSS::CNode> CObject::GetFullPath() const

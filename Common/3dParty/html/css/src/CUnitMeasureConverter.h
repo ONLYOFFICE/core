@@ -28,8 +28,6 @@ namespace NSCSS
 		static double ConvertPt(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);
 		static double ConvertPc(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);
 
-		static std::wstring ConvertUnitMeasure(const std::wstring& wsValue, double dPreviousValue, UnitMeasure enUnitMeasure, unsigned short ushDPI = 96);
-
 		static bool GetValue(const std::wstring& wsValue, double& dValue, UnitMeasure& enUnitMeasure);
 	};
 }

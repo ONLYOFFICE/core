@@ -118,58 +118,58 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if ( m_oColor.IsInit() )
 		{
 			sResult += L"w:color=\"";
 			sResult += m_oColor->ToStringNoAlpha();
 			sResult += L"\" ";
 		}
-		if ( m_oFrame.IsInit() )
-		{
-			sResult += L"w:frame=\"";
-			sResult += m_oFrame->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oShadow.IsInit() )
-		{
-			sResult += L"w:shadow=\"";
-			sResult += m_oShadow->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSpace.IsInit() )
-		{
-			sResult += L"w:space=\"";
-			sResult += m_oSpace->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSz.IsInit() )
-		{
-			sResult += L"w:sz=\"";
-			sResult += m_oSz->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeColor.IsInit() )
+		if (m_oThemeColor.IsInit())
 		{
 			sResult += L"w:themeColor=\"";
 			sResult += m_oThemeColor->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oThemeShade.IsInit() )
-		{
-			sResult += L"w:themeShade=\"";
-			sResult += m_oThemeShade->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeTint.IsInit() )
+		if (m_oThemeTint.IsInit())
 		{
 			sResult += L"w:themeTint=\"";
 			sResult += m_oThemeTint->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oVal.IsInit() )
+		if (m_oThemeShade.IsInit())
 		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
+			sResult += L"w:themeShade=\"";
+			sResult += m_oThemeShade->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSz.IsInit())
+		{
+			sResult += L"w:sz=\"";
+			sResult += m_oSz->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSpace.IsInit())
+		{
+			sResult += L"w:space=\"";
+			sResult += m_oSpace->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oShadow.IsInit())
+		{
+			sResult += L"w:shadow=\"";
+			sResult += m_oShadow->ToString();
+			sResult += L"\" ";
+		}
+		if ( m_oFrame.IsInit() )
+		{
+			sResult += L"w:frame=\"";
+			sResult += m_oFrame->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;
@@ -2666,6 +2666,12 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if (m_oLeader.IsInit())
 		{
 			sResult += L"w:leader=\"";
@@ -2676,12 +2682,6 @@ namespace Word
 		{
 			sResult += L"w:pos=\"";
 			sResult += m_oPos->ToString();
-			sResult += L"\" ";
-		}
-		if (m_oVal.IsInit())
-		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;

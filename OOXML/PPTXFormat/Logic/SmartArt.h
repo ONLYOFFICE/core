@@ -36,6 +36,11 @@
 namespace OOX
 {
 	class CDiagramData;
+	
+	namespace Diagram
+	{
+		class CBg;
+	}
 }
 
 namespace PPTX
@@ -69,8 +74,11 @@ namespace PPTX
 			nullable<OOX::RId> id_layout;
 			nullable<OOX::RId> id_style;
 
+			nullable<OOX::Diagram::CBg> m_oDataBg;
 			nullable<PPTX::Logic::SpTree> m_oDrawing;
+			
 			smart_ptr<OOX::IFileContainer> m_pDrawingContainer;
+			smart_ptr<OOX::IFileContainer> m_pDataContainer;
 
 		protected:
 			virtual void FillParentPointersForChilds();

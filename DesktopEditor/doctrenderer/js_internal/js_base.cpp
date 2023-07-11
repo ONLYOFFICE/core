@@ -1,4 +1,5 @@
 #include "js_base.h"
+#include "js_base_p.h"
 
 namespace NSJSBase {
 
@@ -10,11 +11,6 @@ namespace NSJSBase {
 	{
 	}
 
-	JSSmart<CJSObject> CJSValue::toObjectSmart()
-	{
-		return toObject();
-	}
-
 	CJSEmbedObjectPrivateBase::CJSEmbedObjectPrivateBase()
 	{
 	}
@@ -23,19 +19,42 @@ namespace NSJSBase {
 	{
 	}
 
+	CJSEmbedObjectAdapterBase::CJSEmbedObjectAdapterBase()
+	{
+	}
+
+	CJSEmbedObjectAdapterBase::~CJSEmbedObjectAdapterBase()
+	{
+	}
+
 	CJSEmbedObject::CJSEmbedObject()
 	{
-		embed_native_internal = NULL;
+		embed_native_internal = nullptr;
+		m_pAdapter = nullptr;
 	}
 
 	CJSEmbedObject::~CJSEmbedObject()
 	{
 		RELEASEOBJECT(embed_native_internal);
+		RELEASEOBJECT(m_pAdapter);
 	}
 
 	void* CJSEmbedObject::getObject()
 	{
-		return NULL;
+		return nullptr;
+	}
+
+	CJSEmbedObjectAdapterBase* CJSEmbedObject::getAdapter()
+	{
+		return nullptr;
+	}
+
+	void CJSContext::AddEmbedCreator(const std::string& name,
+									 EmbedObjectCreator creator,
+									 const bool& isAllowedInJS)
+	{
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		oRegistrator.Register(name, creator, isAllowedInJS);
 	}
 
 	CJSObject::CJSObject()
@@ -44,6 +63,16 @@ namespace NSJSBase {
 
 	CJSObject::~CJSObject()
 	{
+	}
+
+	void CJSObject::set(const char* name, JSSmart<CJSValue> value)
+	{
+		this->set(name, value.GetPointer());
+	}
+	void CJSObject::set(const char* name, JSSmart<CJSObject> obj)
+	{
+		JSSmart<CJSValue> value = obj->toValue();
+		this->set(name, value.GetPointer());
 	}
 
 	CJSArray::CJSArray()
@@ -121,6 +150,23 @@ namespace NSJSBase {
 			NSAllocator::Free(pData, (size_t)nFileSize);
 		}
 		return CJSContext::createNull();
+	}
+
+	JSSmart<CJSObject> CJSContext::createEmbedObject(const std::string& name)
+	{
+		// Allow creation for embedded class in JS while in current scope
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		JSSmart<CEmbedObjectRegistrator::CAllowedCreationScope> oCreationScope = oRegistrator.AllowCreationInScope(name);
+		if (!oCreationScope.IsInit())
+			return nullptr;
+		// Call CreateEmbedObject() from JS
+		JSSmart<CJSContext> context = CJSContext::GetCurrent();
+		JSSmart<CJSValue> args[1];
+		args[0] = CJSContext::createString(name);
+		JSSmart<CJSValue> res = context->GetGlobal()->call_func("CreateEmbedObject", 1 , args);
+		if (!res->isObject())
+			return nullptr;
+		return res->toObject();
 	}
 
 	CJSContextScope::CJSContextScope(JSSmart<CJSContext> context) : m_context(context)

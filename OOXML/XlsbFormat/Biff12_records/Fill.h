@@ -32,9 +32,9 @@
 #pragma once
 
 #include "../../XlsxFormat/WritingElement.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
-#include "Color.h"
 #include "../Biff12_structures/GradientStop.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 
 

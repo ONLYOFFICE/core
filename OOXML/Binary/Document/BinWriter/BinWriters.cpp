@@ -52,8 +52,9 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/FontTable.h"
-
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Diagram/DiagramData.h"
+
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"
 #include "../../../DocxFormat/Logic/SmartTag.h"
@@ -1257,7 +1258,7 @@ void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Lo
 {
 	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : -1;
 	
-	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum >= 0)
+	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum > 0)
 	{
 		std::map<int, int>::iterator pFind = m_oParamsWriter.m_pNumbering->m_mapEmbeddedNames.back().find(listNum);
 

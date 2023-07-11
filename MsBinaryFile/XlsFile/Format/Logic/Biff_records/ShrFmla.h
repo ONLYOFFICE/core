@@ -34,7 +34,7 @@
 #include "BiffRecord.h"
 #include "../Biff_structures/CellRangeRef.h"
 #include "../Biff_structures/SharedParsedFormula.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "../Biff_structures/BIFF12/CellRangeRef.h"
 
 namespace XLS
 {
@@ -53,14 +53,14 @@ public:
 	void readFields(CFRecord& record) override;
 	void writeFields(CFRecord& record) override;
 		
-	static const ElementType	type = typeShrFmla;
+	static const ElementType type = typeShrFmla;
 
 //-----------------------------
-	RefU						ref_;
-    BackwardOnlyParam<BYTE>		cUse;
-    SharedParsedFormula			formula;
+	RefU ref_;
+	BYTE cUse;
+    SharedParsedFormula formula;
 
-    XLSB::UncheckedRfX          rfx; //in biff12
+    XLSB::UncheckedRfX rfx; //in biff12
 
 };
 

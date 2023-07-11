@@ -58,7 +58,7 @@ void XFProp::load(CFRecord& record)
 	switch(xfPropType)
 	{
 		case 0x0000:
-			xfPropDataBlob.reset(new BIFF_BYTE(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(0));
 			break;
 		case 0x0001:
 		case 0x0002:
@@ -102,12 +102,12 @@ void XFProp::load(CFRecord& record)
 		case 0x0025:
 		case 0x002B:
 		case 0x002C:
-			xfPropDataBlob.reset(new BIFF_BYTE(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(0));
 			break;
 		case 0x0018:
 			{
 				boost::shared_ptr<LPWideString> str(new LPWideString);
-				str->setName(L"value");
+				//str->setName(L"value");
 				record >> *str;
 				xfPropDataBlob = str;
 				return;
@@ -117,15 +117,15 @@ void XFProp::load(CFRecord& record)
 		case 0x001B:
 		case 0x0029:
 		case 0x002A:
-			xfPropDataBlob.reset(new BIFF_WORD(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_WORD(0));
 			break;
 		case 0x0024:
-			xfPropDataBlob.reset(new BIFF_DWORD(0, L"value"));
+			xfPropDataBlob.reset(new BIFF_DWORD(0));
 			break;
 		case 0x0026:
 			{
 				boost::shared_ptr<LPWideString> str(new LPWideString);
-				str->setName(L"value");
+				//str->setName(L"value");
 				record >> *str;
 				xfPropDataBlob = str;
 				return;
@@ -232,7 +232,7 @@ static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::w
 
 				else byte = XmlUtils::GetInteger(value);
 
-				val.reset(new BIFF_BYTE(byte, L"value"));
+				val.reset(new BIFF_BYTE(byte));
 			}
 			else if (typeName == L"BIFF_WORD")
 			{
@@ -260,11 +260,11 @@ static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::w
 
 				else word = XmlUtils::GetInteger(value);
 
-				val.reset(new BIFF_WORD(word, L"value"));
+				val.reset(new BIFF_WORD(word));
 			}
 			else if (typeName == L"BIFF_DWORD")
 			{
-				val.reset(new BIFF_DWORD(XmlUtils::GetInteger(value) * 20., L"value"));
+				val.reset(new BIFF_DWORD(XmlUtils::GetInteger(value) * 20.));
 			}
 			else if (typeName == L"LPWideString")
 			{
@@ -297,7 +297,7 @@ static void deserialize_prop(XmlUtils::CXmlLiteReader& oReader, const std::wstri
 
 		else byte = XmlUtils::GetInteger(value);
 
-		val.reset(new BIFF_BYTE(byte, L"value"));
+		val.reset(new BIFF_BYTE(byte));
 	}
 }
 static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStructurePtr & val)
@@ -527,7 +527,7 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		case 0x0015:
 		case 0x0016:
 		//case 0x0017:
-			xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText()), L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x001C: 
 		case 0x001D: 
@@ -537,7 +537,7 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		case 0x0021:
 		case 0x0022:
 		case 0x0023:
-			xfPropDataBlob.reset(new BIFF_BYTE(1, L"value"));
+			xfPropDataBlob.reset(new BIFF_BYTE(1));
 		case 0x0025:
 			deserialize_val_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
 			break;
@@ -549,17 +549,17 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 			deserialize_val_prop(oReader, L"LPWideString", xfPropDataBlob);
 			break;		
 		case 0x0029:
-			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText()), L"value"));
+			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x0019:
 		case 0x001A:
-			xfPropDataBlob.reset(new BIFF_WORD(1, L"value"));
+			xfPropDataBlob.reset(new BIFF_WORD(1));
 		case 0x001B:
 		case 0x002A:
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
 			break;
 		case 0x0024:
-			xfPropDataBlob.reset(new BIFF_DWORD(XmlUtils::GetInteger(oReader.GetText()), L"value"));
+			xfPropDataBlob.reset(new BIFF_DWORD(XmlUtils::GetInteger(oReader.GetText())));
 			break;
 		case 0x0026:
 			xfPropDataBlob.reset(new LPWideString(oReader.GetText()));

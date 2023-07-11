@@ -37,218 +37,231 @@
 
 namespace NSNetwork
 {
-    namespace NSFileTransport
-    {
-        class CFileTransporterBase
-        {
-        public :
-            CFileTransporterBase(const std::wstring &sDownloadFileUrl, bool bDelete)
-            {
-                m_sDownloadFilePath = L"";
-                m_sDownloadFileUrl = sDownloadFileUrl;
-                m_sUploadFilePath = L"";
-                m_sUploadUrl = L"";
+	namespace NSFileTransport
+	{
+		class CFileTransporterBase
+		{
+		public :
+			CFileTransporterBase(const std::wstring &sDownloadFileUrl, bool bDelete)
+			{
+				m_sDownloadFilePath = L"";
+				m_sDownloadFileUrl = sDownloadFileUrl;
+				m_sUploadFilePath = L"";
+				m_sUploadUrl = L"";
 
-                m_bComplete = false;
-                m_bDelete   = bDelete;
-                m_eLoadType = DOWNLOADFILE;
+				m_bComplete = false;
+				m_bDelete   = bDelete;
+				m_eLoadType = DOWNLOADFILE;
 
-                m_cData = NULL;
-                m_nSize = 0;
+				m_cData = NULL;
+				m_nSize = 0;
 
-//                m_bIsExit = nullptr;
-            }
+				m_pSession = NULL;
 
-            CFileTransporterBase(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
-            {
-                m_sDownloadFilePath = L"";
-                m_sDownloadFileUrl = L"";
-                m_sUploadFilePath = L"";
-                m_sUploadUrl = sUploadUrl;
+				//                m_bIsExit = nullptr;
+			}
 
-                m_bComplete = false;
-                m_bDelete   = true;
-                m_eLoadType = UPLOADDATA;
+			CFileTransporterBase(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+			{
+				m_sDownloadFilePath = L"";
+				m_sDownloadFileUrl = L"";
+				m_sUploadFilePath = L"";
+				m_sUploadUrl = sUploadUrl;
 
-                m_cData = cData;
-                m_nSize = nSize;
+				m_bComplete = false;
+				m_bDelete   = true;
+				m_eLoadType = UPLOADDATA;
 
-//                m_bIsExit = nullptr;
-            }
+				m_cData = cData;
+				m_nSize = nSize;
 
-            CFileTransporterBase(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
-            {
-                m_sDownloadFilePath = L"";
-                m_sDownloadFileUrl = L"";
-                m_sUploadFilePath = sUploadFilePath;
-                m_sUploadUrl = sUploadUrl;
+				m_pSession = NULL;
 
-                m_bComplete = false;
-                m_bDelete   = true;
-                m_eLoadType = UPLOADFILE;
+				//                m_bIsExit = nullptr;
+			}
 
-                m_cData = NULL;
-                m_nSize = 0;
+			CFileTransporterBase(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+			{
+				m_sDownloadFilePath = L"";
+				m_sDownloadFileUrl = L"";
+				m_sUploadFilePath = sUploadFilePath;
+				m_sUploadUrl = sUploadUrl;
 
-//                m_bIsExit = nullptr;
-            }
+				m_bComplete = false;
+				m_bDelete   = true;
+				m_eLoadType = UPLOADFILE;
 
-            virtual ~CFileTransporterBase ()
-            {
-                if ( m_sDownloadFilePath.length() > 0 && m_bDelete )
-                {
-                    NSFile::CFileBinary::Remove(m_sDownloadFilePath);
-                    m_sDownloadFilePath = L"";
-                }
-//                m_bIsExit = nullptr;
-            }
+				m_cData = NULL;
+				m_nSize = 0;
 
-            virtual int DownloadFile() = 0;
-            virtual int UploadFile() = 0;
-            virtual int UploadData() = 0;
+				m_pSession = NULL;
 
-        public:
-            std::wstring    m_sDownloadFilePath; // Путь к сохраненному файлу на диске
-            std::wstring    m_sDownloadFileUrl;// Ссылка на скачивание файла
-            std::wstring    m_sUploadFilePath; // Путь к файлу для выгрузки на сервер
-            std::wstring    m_sUploadUrl;      // URL для выгрузки данных
+				//                m_bIsExit = nullptr;
+			}
 
-            bool            m_bComplete;       // Закачался файл или нет
-            bool            m_bDelete;         // Удалять ли файл в деструкторе
+			virtual ~CFileTransporterBase ()
+			{
+				if ( m_sDownloadFilePath.length() > 0 && m_bDelete )
+				{
+					NSFile::CFileBinary::Remove(m_sDownloadFilePath);
+					m_sDownloadFilePath = L"";
+				}
+				//                m_bIsExit = nullptr;
+			}
 
-            typedef enum LoadType
-            {
-                DOWNLOADFILE,
-                UPLOADFILE,
-                UPLOADDATA
-            } LoadType;
+			virtual int DownloadFile() = 0;
+			virtual int UploadFile() = 0;
+			virtual int UploadData() = 0;
 
-            LoadType m_eLoadType;              // Тип загрузки/выгрузки данных/файла
+		public:
+			std::wstring    m_sDownloadFilePath; // Путь к сохраненному файлу на диске
+			std::wstring    m_sDownloadFileUrl;// Ссылка на скачивание файла
+			std::wstring    m_sUploadFilePath; // Путь к файлу для выгрузки на сервер
+			std::wstring    m_sUploadUrl;      // URL для выгрузки данных
 
-            const unsigned char*  m_cData;     // Данные в сыром виде для выгрузки
-            int             m_nSize;           // Размер данных
+			bool            m_bComplete;       // Закачался файл или нет
+			bool            m_bDelete;         // Удалять ли файл в деструкторе
 
-            std::wstring    m_sResponse = L"";       // Ответ сервера
+			typedef enum LoadType
+			{
+				DOWNLOADFILE,
+				UPLOADFILE,
+				UPLOADDATA
+			} LoadType;
 
-            std::function<void(int)> m_func_onComplete = nullptr;
-            std::function<void(int)> m_func_onProgress = nullptr;
-            std::function<bool(void)> m_check_aborted = nullptr;
+			LoadType m_eLoadType;              // Тип загрузки/выгрузки данных/файла
 
-//            std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
-        };
+			const unsigned char*  m_cData;     // Данные в сыром виде для выгрузки
+			int             m_nSize;           // Размер данных
 
-        class CFileTransporter_private : public NSThreads::CBaseThread
-        {
-        protected:
-            // создаем в зависимости от платформы
-            CFileTransporterBase* m_pInternal;
+			std::wstring    m_sResponse = L"";       // Ответ сервера
 
-        public:
-            CFileTransporterBase* GetInternal()
-            {
-                return m_pInternal;
-            }
+			std::function<void(int)> m_func_onComplete = nullptr;
+			std::function<void(int)> m_func_onProgress = nullptr;
+			std::function<bool(void)> m_check_aborted = nullptr;
 
-        public:
-            CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete = true);
-            CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize);
-            CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath);
+			CSession* m_pSession;
 
-            virtual ~CFileTransporter_private()
-            {
-                Stop();
-                if (NULL != m_pInternal)
-                    delete m_pInternal;
-            }
+			//            std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
+		};
 
-            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true)
-            {
-                m_pInternal->m_sDownloadFileUrl = sDownloadFileUrl;
-                m_pInternal->m_bDelete = bDelete;
-                m_pInternal->m_eLoadType = m_pInternal->DOWNLOADFILE;
-            }
+		class CFileTransporter_private : public NSThreads::CBaseThread
+		{
+		protected:
+			// создаем в зависимости от платформы
+			CFileTransporterBase* m_pInternal;
 
-            void SetDownloadFilePath(const std::wstring& sDownloadFilePat)
-            {
-                m_pInternal->m_sDownloadFilePath = sDownloadFilePat;
-            }
+		public:
+			CFileTransporterBase* GetInternal()
+			{
+				return m_pInternal;
+			}
 
-            std::wstring GetDownloadFilePath()
-            {
-                return m_pInternal->m_sDownloadFilePath;
-            }
+		public:
+			CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete = true);
+			CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize);
+			CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath);
 
-            bool IsFileDownloaded()
-            {
-                return m_pInternal->m_bComplete;
-            }
+			virtual ~CFileTransporter_private()
+			{
+				Stop();
+				if (NULL != m_pInternal)
+					delete m_pInternal;
+			}
 
-            void SetUploadUrl(const std::wstring &sUploadUrl)
-            {
-                m_pInternal->m_sUploadUrl = sUploadUrl;
-            }
+			void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true)
+			{
+				m_pInternal->m_sDownloadFileUrl = sDownloadFileUrl;
+				m_pInternal->m_bDelete = bDelete;
+				m_pInternal->m_eLoadType = m_pInternal->DOWNLOADFILE;
+			}
 
-            void SetUploadBinaryDara(const unsigned char* cData, const int nSize)
-            {
-                m_pInternal->m_cData = cData;
-                m_pInternal->m_nSize = nSize;
-                m_pInternal->m_eLoadType = m_pInternal->UPLOADDATA;
-            }
+			void SetDownloadFilePath(const std::wstring& sDownloadFilePat)
+			{
+				m_pInternal->m_sDownloadFilePath = sDownloadFilePat;
+			}
 
-            void SetUploadFilePath(const std::wstring &sUploadFilePath)
-            {
-                m_pInternal->m_sUploadFilePath = sUploadFilePath;
-                m_pInternal->m_eLoadType = m_pInternal->UPLOADFILE;
-            }
+			std::wstring GetDownloadFilePath()
+			{
+				return m_pInternal->m_sDownloadFilePath;
+			}
 
-            std::wstring& GetResponse()
-            {
-                return m_pInternal->m_sResponse;
-            }
+			bool IsFileDownloaded()
+			{
+				return m_pInternal->m_bComplete;
+			}
 
-            bool TransferSync()
-            {
-                this->Start( 1 );
-                while ( this->IsRunned() )
-                {
-                    NSThreads::Sleep( 10 );
-                }
-                return IsFileDownloaded();
-            }
+			void SetUploadUrl(const std::wstring &sUploadUrl)
+			{
+				m_pInternal->m_sUploadUrl = sUploadUrl;
+			}
 
-            void TransferAsync()
-            {
-                this->Start( 1 );
-            }
+			void SetUploadBinaryDara(const unsigned char* cData, const int nSize)
+			{
+				m_pInternal->m_cData = cData;
+				m_pInternal->m_nSize = nSize;
+				m_pInternal->m_eLoadType = m_pInternal->UPLOADDATA;
+			}
 
-        protected :
+			void SetUploadFilePath(const std::wstring &sUploadFilePath)
+			{
+				m_pInternal->m_sUploadFilePath = sUploadFilePath;
+				m_pInternal->m_eLoadType = m_pInternal->UPLOADFILE;
+			}
 
-            virtual DWORD ThreadProc ()
-            {
-                m_pInternal->m_bComplete = false;
+			std::wstring& GetResponse()
+			{
+				return m_pInternal->m_sResponse;
+			}
 
-                int hrResultAll = 0;
-                if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
-                    hrResultAll = m_pInternal->DownloadFile();
-                else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADFILE)
-                    hrResultAll = m_pInternal->UploadFile();
-                else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADDATA)
-                    hrResultAll = m_pInternal->UploadData();
+			bool TransferSync()
+			{
+				this->Start( 1 );
+				while ( this->IsRunned() )
+				{
+					NSThreads::Sleep( 10 );
+				}
+				return IsFileDownloaded();
+			}
 
-                if (0 == hrResultAll)
-                    m_pInternal->m_bComplete = true;
-                else
-                {
-                    if (NSFile::CFileBinary::Exists(m_pInternal->m_sDownloadFilePath))
-                        NSFile::CFileBinary::Remove(m_pInternal->m_sDownloadFilePath);
-                }
+			void TransferAsync()
+			{
+				this->Start( 1 );
+			}
 
-                if (m_pInternal->m_func_onComplete)
-                    m_pInternal->m_func_onComplete(hrResultAll);
+			void SetSession(CSession* session)
+			{
+				m_pInternal->m_pSession = session;
+			}
 
-                m_bRunThread = FALSE;
-                return 0;
-            }
-        };
-    }
+		protected :
+
+			virtual DWORD ThreadProc ()
+			{
+				m_pInternal->m_bComplete = false;
+
+				int hrResultAll = 0;
+				if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
+					hrResultAll = m_pInternal->DownloadFile();
+				else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADFILE)
+					hrResultAll = m_pInternal->UploadFile();
+				else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADDATA)
+					hrResultAll = m_pInternal->UploadData();
+
+				if (0 == hrResultAll)
+					m_pInternal->m_bComplete = true;
+				else
+				{
+					if (NSFile::CFileBinary::Exists(m_pInternal->m_sDownloadFilePath))
+						NSFile::CFileBinary::Remove(m_pInternal->m_sDownloadFilePath);
+				}
+
+				if (m_pInternal->m_func_onComplete)
+					m_pInternal->m_func_onComplete(hrResultAll);
+
+				m_bRunThread = FALSE;
+				return 0;
+			}
+		};
+	}
 }

@@ -130,6 +130,8 @@ private:
 	bool m_bInP;       // <w:p> открыт?
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
+
+	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 public:
 
 	CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
@@ -999,17 +1001,63 @@ private:
 				oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
 				readStream(oXml, sSelectors, oTSP);
 			}
+			// aside возможно использовать для сносок в epub
+			else if (sName == L"aside" || sName == L"div")
+			{
+				int bMsoFootnote = 0;
+				std::wstring sFootnoteID;
+				while (m_oLightReader.MoveToNextAttribute())
+				{
+					std::wstring sAName = m_oLightReader.GetName();
+					std::wstring sAText = m_oLightReader.GetText();
+					if (sAName == L"epub:type" && sAText == L"footnote")
+						bMsoFootnote++;
+					else if (sAName == L"style" && sAText == L"mso-element:footnote")
+						bMsoFootnote++;
+					else if (sAName == L"id")
+					{
+						std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sAText);
+						if (it != m_mFootnotes.end())
+						{
+							bMsoFootnote++;
+							sFootnoteID = it->second;
+						}
+					}
+				}
+				m_oLightReader.MoveToElement();
+				if (bMsoFootnote >= 2)
+				{
+					m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+					m_oNoteXml.WriteString(sFootnoteID);
+					m_oNoteXml.WriteString(L"\">");
+					readStream(&m_oNoteXml, sSelectors, oTS);
+					m_oNoteXml.WriteString(L"</w:footnote>");
+				}
+				else
+					readStream(oXml, sSelectors, oTS);
+			}
 			// С нового абзаца
-			else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
+			else if(sName == L"article" || sName == L"header" || sName == L"blockquote" || sName == L"main" || sName == L"dir" ||
 					sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
-					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"aside"      || sName == L"p"    ||
+					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
-					sName == L"dir" ||
 					sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
 				readStream(oXml, sSelectors, oTS);
 			// Горизонтальная линия
 			else if(sName == L"hr")
-				oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
+			{
+				bool bPrint = true;
+				for (const NSCSS::CNode& item : sSelectors)
+				{
+					if (item.m_sName == L"div" && item.m_sStyle == L"mso-element:footnote-list")
+					{
+						bPrint = false;
+						break;
+					}
+				}
+				if (bPrint)
+					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
+			}
 			// Меню
 			// Маркированный список
 			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist")
@@ -1571,12 +1619,14 @@ private:
 		std::wstring sRef;
 		std::wstring sAlt;
 		bool bCross = false;
+		std::wstring sFootnote;
 		while(m_oLightReader.MoveToNextAttribute())
 		{
 			std::wstring sName = m_oLightReader.GetName();
+			std::wstring sText = m_oLightReader.GetText();
 			if(sName == L"href")
 			{
-				sRef = m_oLightReader.GetText();
+				sRef = sText;
 				if(sRef.find('#') != std::wstring::npos)
 					bCross = true;
 			}
@@ -1586,17 +1636,24 @@ private:
 				oXml->WriteString(L"<w:bookmarkStart w:id=\"");
 				oXml->WriteString(sCrossId);
 				oXml->WriteString(L"\" w:name=\"");
-				oXml->WriteString(m_oLightReader.GetText());
+				oXml->WriteString(sText);
 				oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
 				oXml->WriteString(sCrossId);
 				oXml->WriteString(L"\"/>");
 			}
 			else if(sName == L"alt")
-				sAlt = m_oLightReader.GetText();
+				sAlt = sText;
+			else if (sName == L"style" && sText.find(L"mso-footnote-id") != std::wstring::npos)
+				sFootnote = sText.substr(sText.rfind(L':') + 1);
+			else if (sName == L"epub:type" && sText.find(L"noteref"))
+				sFootnote = L"href";
 		}
 		m_oLightReader.MoveToElement();
 		if(sNote.empty())
 			sNote = sRef;
+
+		if (bCross && sFootnote == L"href")
+			sFootnote = sRef.substr(sRef.find('#') + 1);
 
 		if (!m_bInP)
 		{
@@ -1645,7 +1702,21 @@ private:
 			oXml->WriteString(L"</w:t></w:r>");
 		}
 		if (m_bInP)
+		{
 			oXml->WriteString(L"</w:hyperlink>");
+
+			// Сноска
+			if (bCross && !sFootnote.empty())
+			{
+				std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+				oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+				oXml->WriteString(sFootnoteID);
+				oXml->WriteString(L"\"/></w:r>");
+
+				m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+			}
+		}
+
 		sNote = L"";
 	}
 

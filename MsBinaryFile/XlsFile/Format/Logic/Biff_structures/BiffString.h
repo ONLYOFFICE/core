@@ -55,9 +55,14 @@ typedef enum
 } CCH_SOURCE;
 
 
-class BiffString : public BiffAttribute
+class BiffString : public BiffStructure
 {
 public:
+	const std::string& getClassName() const { static std::string str("BiffString"); return str; }
+	virtual XLS::ElementType get_type() { return type; }
+
+	static const ElementType type = typeBiffString;
+
 	BiffString();
 	BiffString(const size_t size);
 	BiffString(const std::wstring & str);

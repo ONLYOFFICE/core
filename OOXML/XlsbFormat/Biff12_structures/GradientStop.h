@@ -32,10 +32,10 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "../Biff12_records/Color.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 
 
 namespace XLSB

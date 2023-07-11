@@ -60,7 +60,7 @@ void HLinkTooltip::readFields(CFRecord& record)
 	record >> frtRefHeaderNoGrbit;
 	
 	std::wstring wzTooltip_prep;	
-	record >> wzTooltip_prep;
+	record >> wzTooltip_prep; // ???
 	
 	wzTooltip = std::wstring (wzTooltip_prep.c_str());
 }

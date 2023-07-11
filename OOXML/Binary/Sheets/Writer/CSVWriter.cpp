@@ -60,11 +60,11 @@ public:
 	Impl(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 	~Impl();
 
-	void Start(const std::wstring &sFileDst);
+	bool Start(const std::wstring &sFileDst);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);
-	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
+	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast = false);
 	void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void End();
 	void Close();
@@ -164,7 +164,7 @@ void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &
 					{
 						impl_->WriteCell(pRow->m_arrItems[j]);
 					}
-					impl_->WriteRowEnd(pRow);
+					impl_->WriteRowEnd(pRow, (i == pWorksheet->m_oSheetData->m_arrItems.size() - 1));
 				}
 				impl_->WriteSheetEnd(pWorksheet);
 			}
@@ -172,10 +172,11 @@ void CSVWriter::Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &
 	}
 	impl_->End();
 }
-void CSVWriter::Start(const std::wstring &sFileDst)
+bool CSVWriter::Start(const std::wstring &sFileDst)
 {
 	if (impl_)
-		impl_->Start(sFileDst);
+		return impl_->Start(sFileDst);
+	return false;
 }
 void CSVWriter::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -192,10 +193,10 @@ void CSVWriter::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	if (impl_)
 		impl_->WriteCell(pCell);
 }
-void CSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
+void CSVWriter::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast)
 {
 	if (impl_)
-		impl_->WriteRowEnd(pWorksheet);
+		impl_->WriteRowEnd(pWorksheet, bLast);
 }
 void CSVWriter::WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -631,9 +632,10 @@ CSVWriter::Impl::~Impl()
 {
 	Close();
 }
-void CSVWriter::Impl::Start(const std::wstring &sFileDst)
+bool CSVWriter::Impl::Start(const std::wstring &sFileDst)
 {
-	m_oFile.CreateFileW(sFileDst);
+	bool res = m_oFile.CreateFileW(sFileDst);
+	if (!res) return false;
 
 	// Нужно записать шапку
 	if (46 == m_nCodePage)//todo 46 временно CP_UTF8
@@ -651,6 +653,7 @@ void CSVWriter::Impl::Start(const std::wstring &sFileDst)
 		BYTE arBigEndian[2] = { 0xFE, 0xFF };
 		m_oFile.WriteFile(arBigEndian, 2);
 	}
+	return true;
 }
 void CSVWriter::Impl::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -760,7 +763,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 							int numFmt = xfs->m_oNumFmtId->GetValue();
 
 							GetDefaultFormatCode(numFmt, format_code, format_type);
-							auto formatTypeIsDateTime = (*format_type == SimpleTypes::Spreadsheet::celltypeDate ||
+							auto formatTypeIsDateTime = format_type && (*format_type == SimpleTypes::Spreadsheet::celltypeDate ||
 								*format_type == SimpleTypes::Spreadsheet::celltypeDateTime ||  SimpleTypes::Spreadsheet::celltypeTime);
 							if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
 							{
@@ -811,13 +814,13 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	m_bIsWriteCell = true;
 	m_bStartCell = false;
 }
-void CSVWriter::Impl::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet)
+void CSVWriter::Impl::WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast)
 {
 	if (m_bJSON)
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage);
 	else
 	{
-		while (m_nColDimension > m_nColCurrent) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
+		while (m_nColDimension > m_nColCurrent && !bLast) // todooo - прописывать в бинарнике dimension - и данные брать оттуда
 		{
 			// Write delimiter
 			++m_nColCurrent;
@@ -1009,12 +1012,16 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 					format_string += L".";
 					format_string += std::to_wstring(numberFormat.count_float);
 				}
-				if (numberFormat.bPercent) format_string += L"%";
-
 				std::wstring strEnd = format_code.substr(pos_end + 1);
 				XmlUtils::replace_all(strEnd, L"\\", L"");
-
+				
 				format_string += numberFormat.bFloat ? L"f" : L"ld";
+				if (numberFormat.bPercent)
+				{
+					format_string += L"%%";
+					XmlUtils::replace_all(strEnd, L"%", L"");
+				}
+
 				format_string += strEnd;
 
 				numberFormat.format_string = format_string;

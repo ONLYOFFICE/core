@@ -2121,6 +2121,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 				WriteSlicerCaches(workbook, pExt->m_oSlicerCachesExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			else if (pExt->m_oExternalLinksAutoRefresh.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalLinksAutoRefresh);
+				m_oBcw.m_oStream.WriteBOOL(*pExt->m_oExternalLinksAutoRefresh);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 	}
 //Write VbaProject
@@ -2296,6 +2302,12 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::ShowPivotChartFilter);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oShowPivotChartFilter->ToBool());
+	}
+	if (workbookPr.m_oUpdateLinks.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::UpdateLinks);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oUpdateLinks->GetValue());
 	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)

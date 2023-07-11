@@ -570,3 +570,7 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 		CONFIG += warn_off
 	}
 }
+
+!disable_precompiled_header {
+    CONFIG += precompile_header
+}

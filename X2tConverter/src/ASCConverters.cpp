@@ -3078,11 +3078,12 @@ namespace NExtractTools
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
        _UINT32 nRes = odf_flat2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
-       if(SUCCEEDED_X2T(nRes))
-       {
-           COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOox, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-       }
+	  
+	   if (SUCCEEDED_X2T(nRes))
+	   {
+		   nRes = dir2zipMscrypt(sTempUnpackedOox, sTo, sTemp, params);
+	   }
+
        return nRes;
 	}
 	_UINT32 odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
@@ -4930,7 +4931,8 @@ namespace NExtractTools
 
 				IOfficeDrawingFile* pReader = NULL;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts, sPages);
-				pdfWriter.SaveToFile(sTo);
+				if (SUCCEEDED_X2T(nRes))
+					nRes = S_OK == pdfWriter.SaveToFile(sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 				RELEASEOBJECT(pReader);
            }
        }

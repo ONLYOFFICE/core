@@ -53,9 +53,8 @@ public:
 
 	static const ElementType	type = typeDBCell;
 //-----------------------------
-	ForwardOnlyParam<_UINT32>	dbRtrw;
-	BiffStructurePtrVector		rgdb;
-	BackwardOnlyParam<_UINT32>	num_pointers;
+	_UINT32	dbRtrw;
+	BiffStructurePtrVector rgdb;
 };	
 
 } // namespace XLS

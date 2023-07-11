@@ -555,13 +555,21 @@ namespace NSDoctRenderer
 
 			if (true)
 			{
-				context->CreateContext();
 				CJSContextScope scope(context);
-				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
-				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
-				NSJSBase::CreateDefaults(context);
+				CJSContext::Embed<CNativeControlEmbed>(false);
+				CJSContext::Embed<CGraphicsEmbed>();
+				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSTryCatch>         try_catch = context->GetExceptions();
+
+				JSSmart<CJSObject> global_js = context->GetGlobal();
+				global_js->set("window", global_js);
+
+				JSSmart<CJSObject> oNativeCtrl = CJSContext::createEmbedObject("CNativeControlEmbed");
+				global_js->set("native", oNativeCtrl);
+
+				NSNativeControl::CNativeControl* pNative = static_cast<NSNativeControl::CNativeControl*>(oNativeCtrl->getNative()->getObject());
+				pNative->m_sConsoleLogFile = m_sConsoleLogFile;
 
 				LOGGER_SPEED_LAP("compile");
 
@@ -575,29 +583,10 @@ namespace NSDoctRenderer
 				LOGGER_SPEED_LAP("run");
 
 				//---------------------------------------------------------------
-				JSSmart<CJSObject> global_js = context->GetGlobal();
 				JSSmart<CJSValue> args[1];
 				args[0] = CJSContext::createInt(0);
 
-				NSNativeControl::CNativeControl* pNative = NULL;
-
 				// GET_NATIVE_ENGINE
-				if (!bIsBreak)
-				{
-					JSSmart<CJSValue> js_result2 = global_js->call_func("GetNativeEngine", 1, args);
-					if (try_catch->Check())
-					{
-						strError = L"code=\"run\"";
-						bIsBreak = true;
-					}
-					else
-					{
-						JSSmart<CJSObject> objNative = js_result2->toObject();
-						pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();
-						pNative->m_sConsoleLogFile = m_sConsoleLogFile;
-					}
-				}
-
 				if (pNative != NULL)
 				{
 					pNative->m_pChanges = &m_oParams.m_arChanges;
@@ -1091,11 +1080,14 @@ namespace NSDoctRenderer
 
 			if (true)
 			{
-				context->CreateContext();
 				CJSContextScope scope(context);
-				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
-				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
-				NSJSBase::CreateDefaults(context);
+				CJSContext::Embed<CNativeControlEmbed>();
+				CJSContext::Embed<CGraphicsEmbed>();
+				NSJSBase::CreateDefaults();
+
+				JSSmart<CJSObject> global = context->GetGlobal();
+				global->set("window", global);
+				global->set("native", CJSContext::createEmbedObject("CNativeControlEmbed"));
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
 

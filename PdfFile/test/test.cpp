@@ -100,6 +100,16 @@ int main()
         pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
     }
 
+    if (true)
+    {
+        pdfFile.CreatePdf();
+        pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
+
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
     if (false)
     {
         pdfFile.CreatePdf();
@@ -151,7 +161,7 @@ int main()
 
         if (pCertificate)
             pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-        pdfFile.SaveToFile(wsDstFile);
+        int nRes = pdfFile.SaveToFile(wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);

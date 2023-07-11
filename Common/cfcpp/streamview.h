@@ -46,14 +46,13 @@ public:
     StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, _INT64 length,
                SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
-
     _INT64 tell() override;
     _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override;
     _INT64 read(char *buffer, _INT64 count) override;
     void write(const char *buffer, _INT64 count) override;
     void flush() override {}
     void close() override;
-
+	bool isError() override;
 
     _INT64 getPosition() const;
     void SetLength(_INT64 value);

@@ -33,7 +33,7 @@
 
 #include "OperandPtg.h"
 #include "CellRangeRef.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "BIFF12/CellRangeRef.h"
 
 namespace XLS
 {

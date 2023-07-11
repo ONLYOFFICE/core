@@ -33,8 +33,8 @@
 #include "DATABAR.h"
 #include "../Biff12_records/BeginDatabar.h"
 #include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
 #include "../Biff12_records/EndDatabar.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 using namespace XLS;
 

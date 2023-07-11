@@ -853,7 +853,7 @@ void CPdfFile::CreatePdf(bool isPDFA)
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
     if (!m_pInternal->pWriter)
-        return 0;
+        return 1;
     return m_pInternal->pWriter->SaveToFile(wsPath);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)

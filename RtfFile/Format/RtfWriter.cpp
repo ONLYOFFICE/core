@@ -183,6 +183,7 @@ bool RtfWriter::SaveByItem()
 }
 bool RtfWriter::SaveByItemEnd()
 {
+	bool result = true;
 	//окончательно дописываем темповый файл
 	RELEASEOBJECT( m_oCurTempFileWriter );
 
@@ -272,7 +273,9 @@ bool RtfWriter::SaveByItemEnd()
 		oTargetFileWriter.Write( &nEndFile, 1);
 	}
 	catch(...)
-	{}
+	{
+		result = false;
+	}
 
 	for (size_t i = 0; i < m_aTempFiles.size(); i++ )
 		Utils::RemoveDirOrFile( m_aTempFiles[i] );
@@ -283,7 +286,8 @@ bool RtfWriter::SaveByItemEnd()
 		Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
 
 	m_aTempFilesSectPr.clear();
-	return true;
+	
+	return result;
 }
 int RtfWriter::GetCount()
 {

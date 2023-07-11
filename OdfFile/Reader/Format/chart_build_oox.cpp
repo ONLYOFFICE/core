@@ -202,7 +202,12 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
-		Context.get_math_context().base_font_size_ = baseFontHeight_;	
+		Context.get_math_context().base_font_name_ = baseFontName_;
+		Context.get_math_context().base_font_size_ = baseFontHeight_;
+		Context.get_math_context().base_alignment_ = baseAlignment_;
+		Context.get_math_context().base_font_italic_ = baseFontItalic_;
+		Context.get_math_context().base_font_bold_ = baseFontBold_;
+		
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
 	}
@@ -250,7 +255,11 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.reset_context_state();
 
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
-		
+		Context.get_math_context().base_font_name_ = baseFontName_;
+		Context.get_math_context().base_alignment_ = baseAlignment_;
+		Context.get_math_context().base_font_italic_ = baseFontItalic_;
+		Context.get_math_context().base_font_bold_ = baseFontBold_;
+
 		Context.start_math_formula();
 			office_math_->oox_convert(Context.get_math_context());
 		Context.end_math_formula();
@@ -291,7 +300,12 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
-		Context.get_math_context().base_font_size_ = baseFontHeight_;	
+		Context.get_math_context().base_font_size_ = baseFontHeight_;
+		Context.get_math_context().base_font_name_ = baseFontName_;
+		Context.get_math_context().base_alignment_ = baseAlignment_;
+		Context.get_math_context().base_font_italic_ = baseFontItalic_;
+		Context.get_math_context().base_font_bold_ = baseFontBold_;
+
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
 	}
@@ -620,17 +634,41 @@ process_build_object::process_build_object(object_odf_context & object_odf, odf_
 						,number_styles_		(document->odf_context().numberStyles())
 						,num_format_context_(document->odf_context())
 {
-	_CP_OPT(std::wstring) sFontHeight	= settings_.find_by_name(L"BaseFontHeight");
+	_CP_OPT(std::wstring) sAlignment = settings_.find_by_name(L"Alignment");
+	_CP_OPT(std::wstring) sFontHeight = settings_.find_by_name(L"BaseFontHeight");
+	_CP_OPT(std::wstring) sFontName = settings_.find_by_name(L"FontNameText");
 	
-	if (sFontHeight)
+	_CP_OPT(std::wstring) sFontBold, sFontItalic;
+	if (!sFontName)
 	{
-		try
-		{
-			object_odf_context_.baseFontHeight_ =  boost::lexical_cast<int>(*sFontHeight);
-		}
-		catch(...)
-		{
-		}
+		sFontName = settings_.find_by_name(L"FontNameVariables");
+		if (!sFontName)
+			sFontName = settings_.find_by_name(L"FontNameFunctions");
+		if (!sFontName)
+			sFontName = settings_.find_by_name(L"FontNameNumbers");
+	}
+	else
+	{
+		sFontBold = settings_.find_by_name(L"FontTextIsBold");
+		sFontItalic = settings_.find_by_name(L"FontTextIsItalic");
+	}
+	try
+	{
+		if (sFontHeight)
+			object_odf_context_.baseFontHeight_ = boost::lexical_cast<int>(*sFontHeight);
+		if (sAlignment)
+			object_odf_context_.baseAlignment_ = boost::lexical_cast<int>(*sAlignment);
+		if ((sFontBold) && (*sFontBold == L"true"))
+			object_odf_context_.baseFontBold_ = true;
+		if ((sFontItalic) && (*sFontItalic == L"true"))
+			object_odf_context_.baseFontItalic_ = true;
+	}
+	catch (...)
+	{
+	}
+	if (sFontName)
+	{
+		object_odf_context_.baseFontName_ = *sFontName;
 	}
 }
 void process_build_object::ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut)

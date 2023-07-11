@@ -17,6 +17,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocFormatLib", "..\..\..\MsBinaryFile\Projects\DocFormatLib\Windows\DocFormatLib.vcxproj", "{C5371405-338F-4B70-83BD-2A5CDF64F383}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsbFormatLib", "..\..\..\OOXML\Projects\Windows\XlsbFormatLib\XlsbFormatLib.vcxproj", "{13E13907-49DA-482E-AD58-026D06A5CD11}"
+	ProjectSection(ProjectDependencies) = postProject
+		{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D} = {77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormatLib", "..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsFormat.vcxproj", "{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}"
 EndProject

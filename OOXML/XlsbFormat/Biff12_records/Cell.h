@@ -35,7 +35,7 @@
 
 #include "../Biff12_structures/Cell.h"
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLSB
 {

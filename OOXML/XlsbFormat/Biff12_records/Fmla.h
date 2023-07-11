@@ -31,14 +31,13 @@
  */
 #pragma once
 
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-
 #include "../Biff12_structures/Cell.h"
-#include "../Biff12_structures/XLWideString.h"
 #include "../Biff12_structures/GrbitFmla.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellParsedFormula.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellParsedFormula.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 
 
 namespace XLSB

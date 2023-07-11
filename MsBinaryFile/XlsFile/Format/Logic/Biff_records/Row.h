@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/ColSpan.h"
+#include "../Biff_structures/BIFF12/ColSpan.h"
 
 namespace XLS
 {

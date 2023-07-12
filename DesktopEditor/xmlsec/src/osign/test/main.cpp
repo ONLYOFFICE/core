@@ -144,14 +144,6 @@ TEST_F(COSignTest, serialize_storage_by_property)
 	OSign::CCertificate* pCert = new OSign::CCertificate();
 	pCert->Generate(properties);
 
-	if (true)
-	{
-		OSign::CStorageBuffer oCertBuffer;
-		pCert->SaveCert(&oCertBuffer);
-
-		oCertBuffer.Save(WorkiDirectory + L"/test_cert.crt");
-	}
-
 	// создаем сторадж и добавлем сертификат (сторадж сам следит за удалением сертификата)
 	OSign::CStorage oStorage;
 	oStorage.Add(pCert);

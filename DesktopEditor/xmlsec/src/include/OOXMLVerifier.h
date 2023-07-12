@@ -7,6 +7,7 @@
 #define OOXML_SIGNATURE_INVALID         1
 #define OOXML_SIGNATURE_NOTSUPPORTED    2
 #define OOXML_SIGNATURE_BAD             3
+#define OOXML_SIGNATURE_PARTIALLY       4
 
 class COOXMLSignature_private;
 class OPENSSL_DECL COOXMLSignature

@@ -28,7 +28,7 @@ class CXmlTransformRelationship : public IXmlTransform
 {
 protected:
 	CManifestFileInfo* m_pManifestFileInfo;
-	std::map<std::wstring, bool> m_arIds;
+	std::set<std::wstring> m_arIds;
 
 public:
 	CXmlTransformRelationship(CManifestFileInfo* pManifestFileInfo) : IXmlTransform()
@@ -39,23 +39,7 @@ public:
 
 	virtual std::string Transform(const std::string& xml)
 	{
-		std::map<std::wstring, bool>* checker = &m_arIds;
-
-		// для некоторых путей не считаем валидными добавления в rels после подписи
-		if (m_pManifestFileInfo)
-		{
-			std::wstring& sFile = m_pManifestFileInfo->GetFilePath();
-			if (0 == sFile.find(L"/word/") ||
-				0 == sFile.find(L"/ppt/") ||
-				0 == sFile.find(L"/xl/"))
-			{
-				// https://bugzilla.onlyoffice.com/show_bug.cgi?id=59649
-				checker = NULL;
-			}
-		}
-
-
-		COOXMLRelationships _rels(xml, m_pManifestFileInfo, checker);
+		COOXMLRelationships _rels(xml, m_pManifestFileInfo, &m_arIds);
 		return U_TO_UTF8(_rels.GetXml());
 	}
 
@@ -72,7 +56,7 @@ public:
 
 			std::wstring sType = _node.GetAttribute("SourceId");
 			if (!sType.empty())
-				m_arIds.insert(std::pair<std::wstring, bool>(sType, true));
+				m_arIds.insert(sType);
 		}
 	}
 };

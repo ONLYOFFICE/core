@@ -1,7 +1,5 @@
-#include "./XmlTransform.h"
 #include "./../include/OOXMLVerifier.h"
-#include "../../../../OfficeUtils/src/ZipFolder.h"
-#include "./../include/CertificateCommon.h"
+#include "common.h"
 
 class COOXMLSignature_private
 {
@@ -19,6 +17,8 @@ public:
 	std::string     m_sDate;
 
 	XmlUtils::CXmlNode   m_node; // signature file
+
+	std::set<std::wstring> m_arFilesInManifest;
 
 	class CXmlStackNamespaces
 	{
@@ -139,6 +139,38 @@ public:
 		RELEASEOBJECT(m_cert);
 	}
 
+public:
+	void AddInvalidType(const int type)
+	{
+		switch (type)
+		{
+		case OOXML_SIGNATURE_INVALID:
+		case OOXML_SIGNATURE_BAD:
+		case OOXML_SIGNATURE_NOTSUPPORTED:
+		{
+			// critical
+			m_valid = type;
+			break;
+		}
+		default:
+		{
+			switch (m_valid)
+			{
+			case OOXML_SIGNATURE_INVALID:
+			case OOXML_SIGNATURE_BAD:
+			case OOXML_SIGNATURE_NOTSUPPORTED:
+			{
+				break;
+			}
+			default:
+			{
+				m_valid = type;
+				break;
+			}
+			}
+		}
+		}
+	}
 public:
 	int GetValid()
 	{
@@ -290,6 +322,64 @@ public:
 			if (OPEN_SSL_WARNING_NOVERIFY == nCertVerify)
 				m_valid = OOXML_SIGNATURE_INVALID;
 		}
+
+		// 7) Test on partically
+		if (m_valid == OOXML_SIGNATURE_VALID)
+		{
+			CSignFolderFiles oFiles;
+			oFiles.Folder_Parse(m_pFolder, true);
+
+			// 1) Все рельсы должны быть подписаны - иначе подпись не валидна
+			for (std::vector<std::wstring>::const_iterator i = oFiles.m_rels.begin(); i != oFiles.m_rels.end(); i++)
+			{
+				if (m_arFilesInManifest.find(*i) == m_arFilesInManifest.end())
+				{
+					m_valid = OOXML_SIGNATURE_INVALID;
+					break;
+				}
+			}
+
+			if (m_valid == OOXML_SIGNATURE_VALID)
+			{
+				// 2) Парсим все рельсы
+				for (std::vector<std::wstring>::const_iterator i = oFiles.m_rels.begin(); i != oFiles.m_rels.end(); i++)
+				{
+					std::wstring sFile = *i;
+
+					CManifestFileInfo oInfo;
+					oInfo.m_pFolder = m_pFolder;
+					oInfo.SetFilePath(sFile);
+
+					std::string sXml = m_pFolder->readXml(sFile);
+					COOXMLRelationships _rels(sXml, &oInfo);
+
+					for (std::vector<COOXMLRelationship>::const_iterator relsIter = _rels.rels.begin(); relsIter != _rels.rels.end(); relsIter++)
+					{
+						const COOXMLRelationship& curRel = *relsIter;
+
+						if (curRel.target_mode == L"Internal" && !CSignFolderFiles::CheckNeedSign(curRel.target))
+							continue;
+
+						std::wstring sFullPath = oInfo.GetHeadPath(curRel.target);
+
+						// если внутренний файл отсутствует - не валидная подпись
+						if (curRel.target_mode == L"Internal")
+						{
+							if (!m_pFolder->exists(sFullPath))
+								m_valid = OOXML_SIGNATURE_INVALID;
+							else
+							{
+								// если файл в списке, но не подписан - то подпись частичная.
+								if (m_arFilesInManifest.find(sFullPath) == m_arFilesInManifest.end())
+								{
+									AddInvalidType(OOXML_SIGNATURE_PARTIALLY);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	XmlUtils::CXmlNode GetObjectById(std::string sId)
@@ -399,6 +489,7 @@ public:
 			return OOXML_SIGNATURE_INVALID;
 
 		sFile = sFile.substr(0, nPos);
+		m_arFilesInManifest.insert(sFile);
 
 		if (!m_pFolder->exists(sFile))
 			return OOXML_SIGNATURE_INVALID;

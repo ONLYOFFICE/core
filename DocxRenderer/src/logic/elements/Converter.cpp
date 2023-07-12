@@ -11,25 +11,17 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < rTextLines.size(); ++i)
 		{
 			auto pCurrLine = rTextLines[i];
-
 			if (pCurrLine->m_bIsNotNecessaryToUse)
-			{
 				continue;
-			}
 
 			for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
 			{
 				auto pCurrCont = pCurrLine->m_arConts[j];
-
 				if (pCurrCont->m_bIsNotNecessaryToUse)
-				{
 					continue;
-				}
 
 				if (pCurrCont->m_iNumDuplicates > 0)
-				{
 					pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
-				}
 			}
 
 			pCurrLine->MergeConts();

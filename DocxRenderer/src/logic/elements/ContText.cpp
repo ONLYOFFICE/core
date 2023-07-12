@@ -57,6 +57,9 @@ namespace NSDocxRenderer
 		m_dSpaceWidthMM = rCont.m_dSpaceWidthMM;
 		m_bSpaceIsNotNeeded = rCont.m_bSpaceIsNotNeeded;
 
+		m_dSpaceWidthSelected = rCont.m_dSpaceWidthSelected;
+		m_dWidthSelected = rCont.m_dWidthSelected;
+
 		m_eVertAlignType = rCont.m_eVertAlignType;
 
 		m_pManager = rCont.m_pManager;
@@ -67,6 +70,36 @@ namespace NSDocxRenderer
 		m_iNumDuplicates = rCont.m_iNumDuplicates;
 
 		return *this;
+	}
+
+	void CContText::CalcSelectedWidth()
+	{
+		if(m_bIsNotNecessaryToUse)
+			return;
+
+		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
+		{
+			if (m_eVertAlignType != eVertAlignType::vatSubscript &&
+					m_eVertAlignType != eVertAlignType::vatSuperscript)
+			{
+				// нужно перемерять...
+				NSStructures::CFont oFont;
+				oFont.Name = m_pFontStyle->wsFontName;
+				oFont.Bold = m_pFontStyle->bBold;
+				oFont.Italic = m_pFontStyle->bItalic;
+				oFont.Size = m_pFontStyle->dFontSize;
+				m_pManager->LoadFontByName(oFont);
+
+				double dBoxX;
+				double dBoxY;
+				double dBoxWidth;
+				double dBoxHeight;
+
+				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+				m_dWidthSelected = dBoxWidth;
+				m_dSpaceWidthSelected = m_pManager->GetSpaceWidthMM();
+			}
+		}
 	}
 
 	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
@@ -90,21 +123,7 @@ namespace NSDocxRenderer
 			if (m_eVertAlignType != eVertAlignType::vatSubscript &&
 					m_eVertAlignType != eVertAlignType::vatSuperscript)
 			{
-				// нужно перемерять...
-				NSStructures::CFont oFont;
-				oFont.Name = m_pFontStyle->wsFontName;
-				oFont.Bold = m_pFontStyle->bBold;
-				oFont.Italic = m_pFontStyle->bItalic;
-				oFont.Size = m_pFontStyle->dFontSize;
-				m_pManager->LoadFontByName(oFont);
-
-				double dBoxX;
-				double dBoxY;
-				double dBoxWidth;
-				double dBoxHeight;
-				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
-
-				double dSpacing = (m_dWidth - dBoxWidth) / (m_oText.length());
+				double dSpacing = (m_dWidth - m_dWidthSelected) / (m_oText.length());
 				dSpacing *= c_dMMToDx;
 
 				//mm to points * 20

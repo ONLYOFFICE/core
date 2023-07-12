@@ -43,6 +43,9 @@ namespace NSDocxRenderer
 		double m_dSpaceWidthMM {0};
 		bool   m_bSpaceIsNotNeeded {false};
 
+		double m_dWidthSelected {0};
+		double m_dSpaceWidthSelected {0};
+
 		eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
 		CFontManager* m_pManager {nullptr};
@@ -70,6 +73,7 @@ namespace NSDocxRenderer
 		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
 		bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
 		bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+		void CalcSelectedWidth();
 
 		double CalculateWideSpace();
 		double CalculateThinSpace();

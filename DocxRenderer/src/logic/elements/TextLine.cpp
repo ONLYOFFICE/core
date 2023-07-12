@@ -175,13 +175,17 @@ namespace NSDocxRenderer
 			}
 
 			dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
+			pPrev->CalcSelectedWidth();
 			pPrev->ToXml(oWriter);
+
 			if (!(dDelta < pPrev->CalculateWideSpace() || pPrev->m_bSpaceIsNotNeeded))
 				pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
 
 			pPrev = pCurrent;
 		}
 
+		pPrev->CalcSelectedWidth();
 		pPrev->ToXml(oWriter);
+
 	}
 }

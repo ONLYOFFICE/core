@@ -572,8 +572,8 @@ namespace NSDocxRenderer
 	double CFontManager::GetSpaceWidthMM() const
 	{
 		double dSpaceWidthMM = 0.0;
-		int bIsGID = m_pManager->GetStringGID();
-		m_pManager->SetStringGID(FALSE);
+		// int bIsGID = m_pManager->GetStringGID();
+		// m_pManager->SetStringGID(FALSE);
 
 		m_pManager->LoadString2(L" ", 0, 0);
 		TBBox bbox = m_pManager->MeasureString2();
@@ -582,7 +582,7 @@ namespace NSDocxRenderer
 		if (0 >= dSpaceWidthMM)
 			dSpaceWidthMM = 1.0;
 
-		m_pManager->SetStringGID(bIsGID);
+		// m_pManager->SetStringGID(bIsGID);
 		return dSpaceWidthMM;
 	}
 

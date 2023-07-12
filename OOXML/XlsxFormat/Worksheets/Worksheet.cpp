@@ -66,11 +66,11 @@ namespace OOX
 			if (xlsx)
 			{
 				m_bPrepareForBinaryWriter = true; // подготовка для бинарника при чтении
-				
+
 				xlsx->m_arWorksheets.push_back( this );
 				//xlsx->m_mapWorksheets.insert( std::make_pair(rId, this) );
 			}
-			else 
+			else
 				m_bPrepareForBinaryWriter = false;
 		}
         CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId, bool isChartSheet) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
@@ -86,11 +86,11 @@ namespace OOX
 			if (xlsx)
 			{
 				m_bPrepareForBinaryWriter = true;
-				
+
 				xlsx->m_arWorksheets.push_back( this );
 				xlsx->m_mapWorksheets.insert( std::make_pair(rId, this) );
 			}
-			else 
+			else
 				m_bPrepareForBinaryWriter = false;
 
 			read( oRootPath, oPath );
@@ -229,6 +229,96 @@ namespace OOX
 
             }
         }
+		XLS::BaseObjectPtr CWorksheet::writeBin()
+		{
+			if(m_bIsChartSheet)
+			{
+				XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);
+				return chartSheetStream;
+			}
+			else
+			{
+				XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
+
+				if (m_oCols.IsInit())
+					workSheetStream->m_arCOLINFOS = m_oCols->toBin();
+				if (m_oDimension.IsInit())
+					workSheetStream->m_BrtWsDim = m_oDimension->toBin();
+				if (m_oDrawing.IsInit())
+					workSheetStream->m_BrtDrawing = m_oDrawing->toBin();
+				if (m_oLegacyDrawing.IsInit())
+					workSheetStream->m_BrtLegacyDrawing = m_oLegacyDrawing->toBin();
+				if (m_oLegacyDrawingHF.IsInit())
+					workSheetStream->m_BrtLegacyDrawingHF = m_oLegacyDrawingHF->toBin();
+				if (m_oHyperlinks.IsInit())
+					workSheetStream->m_HLINKS = m_oHyperlinks->toBin();
+				if (m_oMergeCells.IsInit())
+					workSheetStream->m_MERGECELLS = m_oMergeCells->toBin();
+
+				if (m_oSheetFormatPr.IsInit())
+					workSheetStream->m_BrtWsFmtInfo = m_oSheetFormatPr->toBin();
+				if (m_oSheetViews.IsInit())
+					workSheetStream->m_WSVIEWS2 = m_oSheetViews->toBin();
+				if (m_oPageMargins.IsInit())
+					workSheetStream->m_BrtMargins = m_oPageMargins->toBin();
+				if (m_oPageSetup.IsInit())
+					workSheetStream->m_BrtPageSetup = m_oPageSetup->toBin();
+				if (m_oPrintOptions.IsInit())
+					workSheetStream->m_BrtPrintOptions = m_oPrintOptions->toBin();
+				if (m_oHeaderFooter.IsInit())
+					workSheetStream->m_HEADERFOOTER = m_oHeaderFooter->toBin();
+				if(m_oSheetProtection.IsInit())
+				{
+					if (m_oSheetProtection->m_oAlgorithmName.IsInit())
+						workSheetStream->m_BrtSheetProtectionIso = m_oSheetProtection->toBin();
+					else if(m_oSheetProtection->m_oPassword.IsInit())
+						workSheetStream->m_BrtSheetProtection = m_oSheetProtection->toBin();
+				}
+				if (m_oTableParts.IsInit())
+					workSheetStream->m_LISTPARTS = m_oTableParts->toBin();
+				if (m_oSortState.IsInit())
+					workSheetStream->m_SORTSTATE = m_oSortState->toBin();
+				if (!m_arrConditionalFormatting.empty())
+						for(auto &item : m_arrConditionalFormatting)
+							workSheetStream->m_arCONDITIONALFORMATTING.push_back(item->toBin());
+
+				if (m_oAutofilter.IsInit())
+					workSheetStream->m_AUTOFILTER = m_oAutofilter->toBin();
+				if (m_oDataValidations.IsInit())
+					workSheetStream->m_DVALS = m_oDataValidations->toBin();
+				if (m_oOleObjects.IsInit())
+					workSheetStream->m_OLEOBJECTS = m_oOleObjects->toBin();
+				if (m_oControls.IsInit())
+					workSheetStream->m_ACTIVEXCONTROLS = m_oControls->toBin();
+				if (m_oSheetPr.IsInit())
+					workSheetStream->m_BrtWsProp = m_oSheetPr->toBin();
+				if (m_oPicture.IsInit())
+					workSheetStream->m_BrtBkHim = m_oPicture->toBin();
+				if (m_oRowBreaks.IsInit())
+					workSheetStream->m_RWBRK = m_oRowBreaks->toBinRow();
+				if (m_oColBreaks.IsInit())
+					workSheetStream->m_COLBRK = m_oColBreaks->toBinColumn();
+				if (m_oDataConsolidate.IsInit())
+					workSheetStream->m_DCON = m_oDataConsolidate->toBin();
+
+				if (m_oProtectedRanges.IsInit())
+				{
+					if(m_oProtectedRanges->m_arrItems.empty())
+					{
+						auto arrayPtr = m_oProtectedRanges->m_arrItems.back();
+						if(arrayPtr->m_oSpinCount.IsInit() || arrayPtr->m_oSpinCount.IsInit() || arrayPtr->m_oSpinCount.IsInit() || arrayPtr->m_oSaltValue.IsInit())
+							workSheetStream->m_arBrtRangeProtectionIso = m_oProtectedRanges->toBin();
+						else
+							workSheetStream->m_arBrtRangeProtection = m_oProtectedRanges->toBin();
+					}
+				}
+				if (m_oExtLst.IsInit())
+					workSheetStream->m_FRTWORKSHEET = m_oExtLst->toBinWorksheet();
+
+				return workSheetStream;
+			}
+
+		}
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -265,7 +355,7 @@ namespace OOX
 
 			if ( oReader.IsEmptyNode() )
 				return;
-			
+
 			int nDocumentDepth = oReader.GetDepth();
 			std::wstring sName;
 
@@ -417,7 +507,7 @@ namespace OOX
 		void CWorksheet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			nullable_string sName;
-			
+
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if	( oReader, L"ss:Name", sName )
 			WritingElement_ReadAttributes_End( oReader )
@@ -501,10 +591,10 @@ namespace OOX
 			}
 			if(false == m_oSheetViews.IsInit())
 				m_oSheetViews.Init();
-			
+
 			if(m_oSheetViews->m_arrItems.empty())
 				m_oSheetViews->m_arrItems.push_back(new CSheetView());
-			
+
 			CSheetView* pSheetView = m_oSheetViews->m_arrItems.front();
 
 			if(false == pSheetView->m_oWorkbookViewId.IsInit())
@@ -587,7 +677,7 @@ namespace OOX
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
-				
+
 				toXMLStart(sXml);
 					toXML(sXml);
 				toXMLEnd(sXml);
@@ -695,14 +785,14 @@ mc:Ignorable=\"x14ac\">");
 
 			if (!m_oLegacyDrawing.IsInit()) return oElement;
 			if (!m_oLegacyDrawing->m_oId.IsInit()) return oElement;
-            
+
 			smart_ptr<OOX::File>		oFile		= this->Find(m_oLegacyDrawing->m_oId->GetValue());
 			smart_ptr<OOX::CVmlDrawing> oVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
 
 			OOX::WritingElement* pShapeElem	= NULL;
 			if (oVmlDrawing.IsInit())
 			{
-				oElement = oVmlDrawing->FindVmlObject(spid);	
+				oElement = oVmlDrawing->FindVmlObject(spid);
 			}
 			return oElement;
 		}

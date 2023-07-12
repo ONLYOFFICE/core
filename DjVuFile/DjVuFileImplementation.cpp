@@ -910,33 +910,21 @@ void CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXm
 {
 	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
 	pRenderer->put_FontName(L"DjvuEmptyFont");
-<<<<<<< HEAD
-    //std::wstring csText = oTextNode.GetXml();
-    std::vector<XmlUtils::CXmlNode> oLinesNodes;
-=======
 	//std::wstring csText = oTextNode.GetXml();
-	XmlUtils::CXmlNodes oLinesNodes;
->>>>>>> hotfix/v7.4.1
+	std::vector<XmlUtils::CXmlNode> oLinesNodes = oTextNode.GetNodes(L"LINE");
 	oTextNode.GetNodes(L"LINE", oLinesNodes);
-    for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
+	for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
 	{
-        XmlUtils::CXmlNode & oLineNode = oLinesNodes[nLineIndex];
+		XmlUtils::CXmlNode& oLineNode = oLinesNodes[nLineIndex];
 
-        std::vector<XmlUtils::CXmlNode> oWordsNodes;
-		oLineNode.GetNodes(L"WORD", oWordsNodes);
-        for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); ++nWordIndex)
+		std::vector<XmlUtils::CXmlNode> oWordsNodes = oLineNode.GetNodes(L"WORD");
+		for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); ++nWordIndex)
 		{
-<<<<<<< HEAD
-            XmlUtils::CXmlNode & oWordNode = oWordsNodes[nWordIndex];
+			XmlUtils::CXmlNode& oWordNode = oWordsNodes[nWordIndex];
 
-            std::wstring csWord   = oWordNode.GetText();
-            std::wstring csCoords = oWordNode.GetAttribute(L"coords");
-=======
-			XmlUtils::CXmlNode oWordNode;
-			oWordsNodes.GetAt(nWordIndex, oWordNode);
 			std::wstring csWord   = oWordNode.GetText();
 			std::wstring csCoords = oWordNode.GetAttribute(L"coords");
->>>>>>> hotfix/v7.4.1
+
 			double arrCoords[4];
 			ParseCoords(csCoords, arrCoords, dKoef);
 			DrawPageText(pRenderer, arrCoords, csWord);

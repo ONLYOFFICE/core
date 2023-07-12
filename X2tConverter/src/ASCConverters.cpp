@@ -134,18 +134,20 @@ namespace NExtractTools
 		return res;
 	}
 
-	void CopyOOXOrigin(const std::wstring& sToDir, const std::wstring& sOOXDir, const std::wstring& sToFile, const std::wstring& sOOXFile)
+	_UINT32 CopyOOXOrigin(const std::wstring& sToDir, const std::wstring& sOOXDir, const std::wstring& sToFile, const std::wstring& sOOXFile)
 	{
+		_UINT32 nRes = 0;
 		//save Editor.xlsx for pivot
 		std::wstring sEditorOOX = sToDir + FILE_SEPARATOR_STR + sToFile;
 		if(sOOXFile.empty())
 		{
-			dir2zip(sOOXDir, sEditorOOX);
+			nRes = dir2zip(sOOXDir, sEditorOOX);
 		}
 		else
 		{
-			NSFile::CFileBinary::Copy(sOOXFile, sEditorOOX);
+			nRes = NSFile::CFileBinary::Copy(sOOXFile, sEditorOOX) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+		return nRes;
 	}
 	_UINT32 addContentType(const std::wstring &sDir, const std::wstring &sCT)
 	{
@@ -328,7 +330,7 @@ namespace NExtractTools
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
 		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX) && !sDocxFile.empty())
 		{
-			CopyOOXOrigin(sToDir, sFrom, L"origin.docx", sDocxFile);
+			nRes = CopyOOXOrigin(sToDir, sFrom, L"origin.docx", sDocxFile);
 		}
 		else
 		{
@@ -803,7 +805,7 @@ namespace NExtractTools
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
 		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX) && !sXlsxFile.empty())
 		{
-			CopyOOXOrigin(sToDir, sXlsxDir, L"origin.xlsx", sXlsxFile);
+			nRes = CopyOOXOrigin(sToDir, sXlsxDir, L"origin.xlsx", sXlsxFile);
 		}
 		else
 		{
@@ -811,7 +813,7 @@ namespace NExtractTools
 			if (oCXlsxSerializer.hasPivot(sXlsxDir))
 			{
 				//save Editor.xlsx for pivot
-				CopyOOXOrigin(sToDir, sXlsxDir, L"Editor.xlsx", sXlsxFile);
+				nRes = CopyOOXOrigin(sToDir, sXlsxDir, L"Editor.xlsx", sXlsxFile);
 			}
 
 			// Save to file (from temp dir)
@@ -1264,7 +1266,7 @@ namespace NExtractTools
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
 		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX) && !sPptxFile.empty())
 		{
-			CopyOOXOrigin(sToDir, sFrom, L"origin.pptx", sPptxFile);
+			nRes = CopyOOXOrigin(sToDir, sFrom, L"origin.pptx", sPptxFile);
 		}
 		else
 		{
@@ -1614,7 +1616,7 @@ namespace NExtractTools
        {
            //todo сделать отдельный метод для сохранения в csv
            // Save to file (from temp dir)
-           BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
+          BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
 
 		   oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
            oCXlsxSerializer.setFontDir(params.getFontPath());
@@ -1631,7 +1633,7 @@ namespace NExtractTools
            //пишем в Temp и копируем, чтобы не возникало лишних файлов рядом с sTo, а лучше перейти на отдельный метод
            if(SUCCEEDED_X2T(nRes))
            {
-               NSFile::CFileBinary::Copy(sToTemp, sTo);
+			   nRes = NSFile::CFileBinary::Copy(sToTemp, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
            }
        }
        return nRes;
@@ -3606,8 +3608,7 @@ namespace NExtractTools
                            else if (NSDoctRenderer::DoctRendererFormat::FormatFile::HTML == eTypeTo)
                            {
                                sFilePathOut += _T(".html");
-                               bool bCopy = NSFile::CFileBinary::Copy(sFilePathIn,sFilePathOut);
-                               nRes = bCopy ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+                               nRes = NSFile::CFileBinary::Copy(sFilePathIn,sFilePathOut) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                            }
                            if(0 != nRes)
                                break;
@@ -4912,8 +4913,8 @@ namespace NExtractTools
 
 		   if(nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
            {
-                NSFile::CFileBinary::Copy(sFrom, sTo);
-           }
+				nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		   }
            else
            {
 				CPdfFile pdfWriter(pApplicationFonts);

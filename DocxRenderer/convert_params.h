@@ -31,28 +31,14 @@
  */
 #pragma once
 
-#include "Media.h"
-#include "../../Binary/Presentation/BinaryFileReaderWriter.h"
-#include "../../Binary/Presentation/imagemanager.h"
-
-#include "../../XlsxFormat/FileTypes_Spreadsheet.h"
-
-namespace OOX
+namespace NSDocxRenderer
 {
-	class JsaProject : public Media
-	{
-	public:
-		JsaProject( OOX::Document *pMain );
-		JsaProject(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
-		virtual ~JsaProject();
-
-		virtual const FileType type() const;
-
-		virtual const CPath DefaultDirectory() const;
-		virtual const CPath DefaultFileName() const;
-
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-	};
-} // namespace OOX
-
+    enum TextAssociationType
+    {
+        tatBlockChar        = 0, // Каждый символ во фрейме
+        tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
+        tatPlainLine        = 2, // Каждая линия - параграф обычный
+        tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
+        tatPlainParagraph   = 4  // Линии объединяются в параграфы
+    };
+}

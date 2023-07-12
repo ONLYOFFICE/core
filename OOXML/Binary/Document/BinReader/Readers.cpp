@@ -4729,7 +4729,13 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		READ1_DEF(length, res, this->ReadDocParts, &oDocParts);
 		m_oDocumentWriter.m_oContent.WriteString(L"</w:docParts>");
 	}
-	else if (c_oSerParType::JsaProject == type)
+	else if (c_oSerParType::JsaProjectExternal == type)
+	{
+		std::wstring filePath = m_oBufferedStream.GetString3(length);
+		unsigned int lId = 0;
+		m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), filePath, L"External", &lId);
+	}
+	else if(c_oSerParType::JsaProject == type)
 	{
 		BYTE* pData = m_oBufferedStream.GetPointer(length);
 		OOX::CPath sJsaProject = OOX::FileTypes::JsaProject.DefaultFileName();
@@ -5579,7 +5585,7 @@ int Binary_DocumentTableReader::ReadHyperlink(BYTE type, long length, void* poRe
 		{
 			unsigned int rId;
 			std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
-			m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
+			m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(L"External"), &rId);
 			pHyperlink->rId = L"rId" + std::to_wstring(rId);
 		}
 		m_pCurWriter = pPrevWriter;

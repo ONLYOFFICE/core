@@ -214,11 +214,13 @@ unsigned int READ_INT(BYTE* x)
 
 void ReadAction(BYTE* pWidgets, int& i)
 {
-	unsigned int nPathLength = READ_INT(pWidgets + i);
-	i += 4;
-	std::string sType((char*)(pWidgets + i), nPathLength);
+	unsigned int nPathLength = READ_BYTE(pWidgets + i);
+	i += 1;
+	std::string arrAction[] = {"Unknown", "GoTo", "GoToR", "GoToE", "Launch", "Thread", "URI", "Sound", "Movie", "Hide",
+							  "Named", "SubmitForm", "ResetForm", "ImportData", "JavaScript", "SetOCGState", "Rendition",
+							  "Trans", "GoTo3DView"};
+	std::string sType = arrAction[nPathLength];
 	std::cout << "Type " << sType << ", ";
-	i += nPathLength;
 
 	if (sType == "JavaScript")
 	{
@@ -688,10 +690,10 @@ int main(int argc, char* argv[])
 			}
 			if (nFlags & (1 << 3))
 			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "H " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-				i += nPathLength;
+				std::string arrHighlighting[] = {"N", "I", "O", "P"};
+				nPathLength = READ_BYTE(pWidgets + i);
+				i += 1;
+				std::cout << "H " << arrHighlighting[nPathLength] << ", ";
 			}
 			if (nFlags & (1 << 4))
 			{

@@ -386,13 +386,18 @@
 
 	function readAction(reader, rec)
 	{
-		var SType = reader.readString();
+		var SType = reader.readByte();
+		// 0 - Unknown, 1 - GoTo, 2 - GoToR, 3 - GoToE, 4 - Launch
+		// 5 - Thread, 6 - URI, 7 - Sound, 8 - Movie, 9 - Hide
+		// 10 - Named, 11 - SubmitForm, 12 - ResetForm, 13 - ImportData
+		// 14 - JavaScript, 15 - SetOCGState, 16 - Rendition
+		// 17 - Trans, 18 - GoTo3DView
 		rec["S"] = SType;
-		if (SType == "JavaScript")
+		if (SType == 14)
 		{
 			rec["JS"] = reader.readString();
 		}
-		else if (SType == "GoTo")
+		else if (SType == 1)
 		{
 			rec["page"] = reader.readInt();
 			rec["kind"] = reader.readByte();
@@ -435,15 +440,15 @@
 					break;
 			}
 		}
-		else if (SType == "Named")
+		else if (SType == 10)
 		{
 			rec["N"] = reader.readString();
 		}
-		else if (SType == "URI")
+		else if (SType == 6)
 		{
 			rec["URI"] = reader.readString();
 		}
-		else if (SType == "Hide")
+		else if (SType == 9)
 		{
 			rec["H"] = reader.readInt();
 			let m = reader.readInt();
@@ -452,7 +457,7 @@
 		    for (let j = 0; j < m; ++j)
 				rec["T"].push(reader.readString());
 		}
-		else if (SType == "ResetForm")
+		else if (SType == 12)
 		{
 			rec["Flags"] = reader.readInt();
 			let m = reader.readInt();
@@ -562,8 +567,9 @@
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
 			// Режим выделения - H
+			// 0 - N, 1 - I, 2 - O, 3 - P/T
 			if (flags & (1 << 3))
-				rec["highlight"] = reader.readString();
+				rec["highlight"] = reader.readByte();
 			// Границы - Border/BS
 			if (flags & (1 << 4))
 			{

@@ -783,10 +783,49 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
     if (oAction->dictLookup("S", &oActType)->isName())
     {
         sSName = oActType.getName();
-        oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
+        BYTE nA = 0; // Default: Unknown
+        {
+        if (sSName == "GoTo")
+            nA = 1;
+        else if (sSName == "GoToR")
+            nA = 2;
+        else if (sSName == "GoToE")
+            nA = 3;
+        else if (sSName == "Launch")
+            nA = 4;
+        else if (sSName == "Thread")
+            nA = 5;
+        else if (sSName == "URI")
+            nA = 6;
+        else if (sSName == "Sound")
+            nA = 7;
+        else if (sSName == "Movie")
+            nA = 8;
+        else if (sSName == "Hide")
+            nA = 9;
+        else if (sSName == "Named")
+            nA = 10;
+        else if (sSName == "SubmitForm")
+            nA = 11;
+        else if (sSName == "ResetForm")
+            nA = 12;
+        else if (sSName == "ImportData")
+            nA = 13;
+        else if (sSName == "JavaScript")
+            nA = 14;
+        else if (sSName == "SetOCGState")
+            nA = 15;
+        else if (sSName == "Rendition")
+            nA = 16;
+        else if (sSName == "Trans")
+            nA = 17;
+        else if (sSName == "GoTo3DView")
+            nA = 18;
+        }
+        oRes.WriteBYTE(nA);
     }
     else
-        oRes.WriteString(NULL, 0);
+        oRes.WriteBYTE(0);
     oActType.free();
 
     LinkAction* oAct = LinkAction::parseAction(oAction);
@@ -1315,7 +1354,16 @@ oObj.free();\
         {
             nFlags |= (1 << 3);
             std::string sName(oObj.getName());
-            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+            BYTE nH = 1; // Default: I
+            if (sName == "N")
+                nH = 0;
+            else if (sName == "I")
+                nH = 1;
+            else if (sName == "O")
+                nH = 2;
+            else if (sName == "P" || sName == "T")
+                nH = 3;
+            oRes.WriteBYTE(nH);
         }
         oObj.free();
 

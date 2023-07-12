@@ -1,5 +1,5 @@
-#include "../lib/include/osign.h"
 #include "gtest/gtest.h"
+#include "../lib/include/osign.h"
 #include "../../../../common/File.h"
 
 class COSignTest : public testing::Test
@@ -9,7 +9,7 @@ public:
 public:
 	virtual void SetUp() override
 	{
-		WorkiDirectory = NSFile::GetProcessDirectory() + L"/build";
+		WorkiDirectory = NSFile::GetProcessDirectory();
 	}
 
 	virtual void TearDown() override
@@ -128,4 +128,48 @@ TEST_F(COSignTest, serialize_storage_by_sign)
 	bool bIsValid = pCert2->Verify(oBuffer, oBufferSign);
 
 	EXPECT_EQ(bIsValid, true);
+}
+
+// тест сериализации стораджа через подпись/верификацию
+TEST_F(COSignTest, serialize_storage_by_property)
+{
+	// генерируем новый сертификат с настройками
+	std::map<std::wstring, std::wstring> properties;
+	properties.insert(std::make_pair(OSign::Properties::Email, L"sign@onlyoffice.com"));
+	properties.insert(std::make_pair(OSign::Properties::Phone, L"+00000000000"));
+	std::wstring sNameTest = L"NameTest";
+	std::wstring sValueTest = L"ValueTest";
+	properties.insert(std::make_pair(sNameTest, sValueTest));
+
+	OSign::CCertificate* pCert = new OSign::CCertificate();
+	pCert->Generate(properties);
+
+	if (true)
+	{
+		OSign::CStorageBuffer oCertBuffer;
+		pCert->SaveCert(&oCertBuffer);
+
+		oCertBuffer.Save(WorkiDirectory + L"/test_cert.crt");
+	}
+
+	// создаем сторадж и добавлем сертификат (сторадж сам следит за удалением сертификата)
+	OSign::CStorage oStorage;
+	oStorage.Add(pCert);
+
+	// сохраняем сторадж
+	OSign::CStorageBuffer oStorageBuffer;
+	oStorage.Save(&oStorageBuffer);
+
+	OSign::CStorage oStorageLoad;
+	oStorageLoad.Load(&oStorageBuffer);
+
+	std::wstring sValue = L"";
+	OSign::CCertificate* pCert2 = oStorage.Get(0);
+
+	std::map<std::wstring, std::wstring> mapProps = pCert2->GetProperties();
+	std::map<std::wstring, std::wstring>::const_iterator iterFind = mapProps.find(sNameTest);
+	if (iterFind != mapProps.end())
+		sValue = iterFind->second;
+
+	EXPECT_EQ(sValueTest, sValue);
 }

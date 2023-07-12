@@ -20,6 +20,19 @@
 
 namespace OSign
 {
+	namespace Properties
+	{
+		static const wchar_t* Email              = L"email";
+		static const wchar_t* Phone              = L"phone";
+		static const wchar_t* Name               = L"name";
+		static const wchar_t* Signature          = L"signature";
+		static const wchar_t* DateFrom           = L"date-from";
+		static const wchar_t* DateTo             = L"date-to";
+		static const wchar_t* CommonName         = L"common-name";
+		static const wchar_t* OrganizationName   = L"organization";
+		static const wchar_t* Country            = L"country";
+	}
+
 	class CStorageBuffer_private;
 	class OSIGN_DECL CStorageBuffer
 	{
@@ -70,15 +83,20 @@ namespace OSign
 	{
 	public:
 		CCertificate();
-		CCertificate(const std::map<std::wstring, std::wstring>& props);
 		~CCertificate();
-		void Generate();
+		void Generate(const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>());
 
 	public:
 		std::map<std::wstring, std::wstring> GetProperties();
 
 		bool Load(CStorageBuffer* buffer);
 		bool Save(CStorageBuffer* buffer);
+
+		bool LoadKey(CStorageBuffer* buffer);
+		bool SaveKey(CStorageBuffer* buffer);
+
+		bool LoadCert(CStorageBuffer* buffer);
+		bool SaveCert(CStorageBuffer* buffer);
 
 		CStorageBuffer Sign(const CStorageBuffer& data);
 		bool Verify(const CStorageBuffer& data, const CStorageBuffer& signature);
@@ -116,6 +134,8 @@ namespace OSign
 		OSIGN_DECL CStorageBuffer Decrypt(CStorageBuffer& buffer, CStorageBuffer& password);
 	}
 
+	OSIGN_DECL std::string GetLastError();
+	OSIGN_DECL void LogLastError();
 }
 
 #endif // _XMLSIGNER_OFORM_H_

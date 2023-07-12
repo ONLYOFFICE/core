@@ -311,7 +311,7 @@ namespace BinDocxRW
 		Binary_tblPrWriter				btblPrs;
 		OOX::Logic::CSectionProperty*	pSectPr;
 		OOX::WritingElement*			pBackground;
-		OOX::CDocument*					poDocument;
+		OOX::CDocument*					pDocument;
 		OOX::JsaProject*				pJsaProject;
 
 		bool							m_bWriteSectPr;//Записывать ли свойства верхнего уровня в данном экземпляре BinaryOtherTableWriter

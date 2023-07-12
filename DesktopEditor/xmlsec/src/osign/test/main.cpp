@@ -1,70 +1,131 @@
 #include "../lib/include/osign.h"
+#include "gtest/gtest.h"
+#include "../../../../common/File.h"
 
-int main()
+class COSignTest : public testing::Test
 {
-	if (false)
+public:
+	std::wstring WorkiDirectory;
+public:
+	virtual void SetUp() override
 	{
-		// test crypt/decrypt
-		OSign::CStorageBuffer oPassword = OSign::Crypt::GeneratePassword(100);
-
-		std::string sDataCrypt = "Hello, world!";
-		OSign::CStorageBuffer oBuffer;
-		oBuffer.Add((const unsigned char*)sDataCrypt.c_str(), sDataCrypt.length());
-
-		OSign::CStorageBuffer oCryptBuffer = OSign::Crypt::Encrypt(oBuffer, oPassword);
-		OSign::CStorageBuffer oDecryptBuffer = OSign::Crypt::Decrypt(oCryptBuffer, oPassword);
-
-		std::string sDecryptData((char*)oDecryptBuffer.GetData(), oDecryptBuffer.GetLength());
-
-		return 0;
+		WorkiDirectory = NSFile::GetProcessDirectory() + L"/build";
 	}
 
-	if (false)
+	virtual void TearDown() override
 	{
-		// test serialize buffer
-		std::string sDataBuffer = "Hello, world!";
-		OSign::CStorageBuffer oBuffer;
-		oBuffer.Add((const unsigned char*)sDataBuffer.c_str(), sDataBuffer.length());
-
-		std::string sBase64 = oBuffer.ToBase64();
-		OSign::CStorageBuffer oDecodeBuffer;
-		oDecodeBuffer.FromBase64(sBase64);
-
-		std::string sDecryptData((char*)oDecodeBuffer.GetData(), oDecodeBuffer.GetLength());
-
-		return 0;
 	}
+};
 
-	if (true)
-	{
-		OSign::CCertificate* pCert = new OSign::CCertificate();
-		pCert->Generate();
+// aes шифрование
+TEST_F(COSignTest, crypt_storage_aes_gcm_random_password)
+{
+	// создаем случайный пароль длиной 100 символов
+	OSign::CStorageBuffer oPassword = OSign::Crypt::GeneratePassword(100);
 
-		std::string sDataBuffer = "Hello, world!";
-		OSign::CStorageBuffer oBuffer;
-		oBuffer.Add((const unsigned char*)sDataBuffer.c_str(), sDataBuffer.length());
+	// буфер для шифрования
+	std::string sDataCrypt = "Hello, world!";
+	OSign::CStorageBuffer oBuffer;
+	oBuffer.Add((const unsigned char*)sDataCrypt.c_str(), sDataCrypt.length());
 
-		OSign::CStorageBuffer oBufferSign = pCert->Sign(oBuffer);
-		bool bIsValid = pCert->Verify(oBuffer, oBufferSign);
-		if (!bIsValid)
-			return 1;
+	// шифруем буфер, соль генерируется случайным образом и дописывается в результат
+	OSign::CStorageBuffer oCryptBuffer = OSign::Crypt::Encrypt(oBuffer, oPassword);
 
-		OSign::CStorage oStorage;
-		oStorage.Add(pCert);
+	// дешифруем буфер
+	OSign::CStorageBuffer oDecryptBuffer = OSign::Crypt::Decrypt(oCryptBuffer, oPassword);
 
-		OSign::CStorageBuffer oStorageBuffer;
-		oStorage.Save(&oStorageBuffer);
+	// сравниваем с исходником
+	std::string sDecryptData((char*)oDecryptBuffer.GetData(), oDecryptBuffer.GetLength());
+	EXPECT_EQ(sDecryptData, sDataCrypt);
+}
 
-		OSign::CStorage oStorageLoad;
-		oStorageLoad.Load(&oStorageBuffer);
+TEST_F(COSignTest, crypt_storage_aes_gcm_string_password)
+{
+	// создаем случайный пароль из строки
+	std::string sPassword = "password";
+	OSign::CStorageBuffer oPassword;
+	oPassword.Add((unsigned char*)sPassword.c_str(), sPassword.length());
 
-		OSign::CCertificate* pCert2 = oStorage.Get(0);
-		bool bIsValid2 = pCert2->Verify(oBuffer, oBufferSign);
-		if (!bIsValid2)
-			return 1;
+	// буфер для шифрования
+	std::string sDataCrypt = "Hello, world!";
+	OSign::CStorageBuffer oBuffer;
+	oBuffer.Add((const unsigned char*)sDataCrypt.c_str(), sDataCrypt.length());
 
-		return 0;
-	}
+	// шифруем буфер, соль генерируется случайным образом и дописывается в результат
+	OSign::CStorageBuffer oCryptBuffer = OSign::Crypt::Encrypt(oBuffer, oPassword);
 
-	return 0;
+	// дешифруем буфер
+	OSign::CStorageBuffer oDecryptBuffer = OSign::Crypt::Decrypt(oCryptBuffer, oPassword);
+
+	// сравниваем с исходником
+	std::string sDecryptData((char*)oDecryptBuffer.GetData(), oDecryptBuffer.GetLength());
+	EXPECT_EQ(sDecryptData, sDataCrypt);
+}
+
+// сериализация буфера
+TEST_F(COSignTest, serialize_buffer_string)
+{
+	std::string sBuffer = "Hello, world";
+	OSign::CStorageBuffer oBuffer;
+	oBuffer.Add((unsigned char*)sBuffer.c_str(), sBuffer.length());
+
+	std::string sBase64 = oBuffer.ToBase64();
+	OSign::CStorageBuffer oDecodeBuffer;
+	oDecodeBuffer.FromBase64(sBase64);
+
+	std::string sDecodeBuffer((char*)oDecodeBuffer.GetData(), oDecodeBuffer.GetLength());
+
+	EXPECT_EQ(sBuffer, sDecodeBuffer);
+}
+
+// подпись
+TEST_F(COSignTest, sign_buffer_string)
+{
+	// генерируем новый сертификат
+	OSign::CCertificate* pCert = new OSign::CCertificate();
+	pCert->Generate();
+
+	// буфер для подписи
+	std::string sDataBuffer = "Hello, world!";
+	OSign::CStorageBuffer oBuffer;
+	oBuffer.Add((const unsigned char*)sDataBuffer.c_str(), sDataBuffer.length());
+
+	// подписываем
+	OSign::CStorageBuffer oBufferSign = pCert->Sign(oBuffer);
+	// проверяем
+	bool bIsValid = pCert->Verify(oBuffer, oBufferSign);
+	delete pCert;
+
+	EXPECT_EQ(bIsValid, true);
+}
+
+// тест сериализации стораджа через подпись/верификацию
+TEST_F(COSignTest, serialize_storage_by_sign)
+{
+	// генерируем новый сертификат
+	OSign::CCertificate* pCert = new OSign::CCertificate();
+	pCert->Generate();
+
+	// создаем сторадж и добавлем сертификат (сторадж сам следит за удалением сертификата)
+	OSign::CStorage oStorage;
+	oStorage.Add(pCert);
+
+	// сохраняем сторадж
+	OSign::CStorageBuffer oStorageBuffer;
+	oStorage.Save(&oStorageBuffer);
+
+	OSign::CStorage oStorageLoad;
+	oStorageLoad.Load(&oStorageBuffer);
+
+	// буфер для подписи
+	std::string sDataBuffer = "Hello, world!";
+	OSign::CStorageBuffer oBuffer;
+	oBuffer.Add((const unsigned char*)sDataBuffer.c_str(), sDataBuffer.length());
+	// подписываем
+	OSign::CStorageBuffer oBufferSign = pCert->Sign(oBuffer);
+
+	OSign::CCertificate* pCert2 = oStorage.Get(0);
+	bool bIsValid = pCert2->Verify(oBuffer, oBufferSign);
+
+	EXPECT_EQ(bIsValid, true);
 }

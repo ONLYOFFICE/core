@@ -45,7 +45,7 @@ CONFIG += open_ssl_common
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
 
 # KERNEL ---
-DEFINES += KERNEL_NO_USE_DYNAMIC_LIBRARY
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
 # BASE64
 HEADERS += $$CORE_ROOT_DIR/DesktopEditor/common/Base64.h
 SOURCES += $$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp

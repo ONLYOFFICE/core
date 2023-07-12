@@ -105,7 +105,7 @@ namespace OOX
 
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
-		//--------------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------------
 
 		class COfficeArtExtension : public WritingElement
 		{
@@ -150,7 +150,7 @@ namespace OOX
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
             nullable<OOX::Spreadsheet::CTableSlicerCache>           m_oTableSlicerCache;
             nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>      m_oSlicerCacheHideItemsWithNoData;
-			
+
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
@@ -167,7 +167,7 @@ namespace OOX
 
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
-		//--------------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------------
 
 		class COfficeArtExtensionList : public WritingElement
 		{
@@ -185,6 +185,7 @@ namespace OOX
 			virtual std::wstring toXML() const;
 			std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBinWorksheet();
 			virtual EElementType getType() const;
 
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;

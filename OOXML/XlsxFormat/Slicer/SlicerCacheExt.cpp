@@ -540,6 +540,15 @@ void CSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
 	pReader->SkipRecord();
 }
+XLS::BaseObjectPtr CSlicerRef::toBin()
+{
+	    auto ptr(new XLSB::SLICEREX);
+		XLS::BaseObjectPtr objectPtr(ptr);
+		auto ptr1(new XLSB::BeginSlicerEx);
+		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+
+		return objectPtr;
+}
 void CSlicerRef::fromBin(XLS::BaseObjectPtr &obj)
 {
     ReadAttributes(obj);
@@ -557,7 +566,6 @@ void CSlicerRef::ReadAttributes(XLS::BaseObjectPtr &obj)
                 if(!ptr1->FRTheader.relID.relId.value().empty())
                     m_oRId = ptr1->FRTheader.relID.relId.value();
             }
-
         }
     }
     else if(obj->get_type() == XLS::typeTABLESLICEREX)
@@ -777,6 +785,17 @@ void CSlicerCaches::toXML(NSStringUtils::CStringBuilder& writer, const std::wstr
 		}
 	}
 	writer.EndNode(sPrefix + sName);
+}
+XLS::BaseObjectPtr CSlicerRefs::toBin()
+{
+	auto ptr(new XLSB::SLICERSEX);
+	XLS::BaseObjectPtr objectPtr(ptr);
+
+	for(auto i:m_oSlicer)
+	{
+		ptr->m_arSLICEREX.push_back(i.toBin());
+	}
+	return objectPtr;
 }
 void CSlicerRefs::fromBin(XLS::BaseObjectPtr &obj)
 {

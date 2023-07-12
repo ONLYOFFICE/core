@@ -129,7 +129,7 @@ namespace OOX
 				sResult += L" relId=\"" + m_oRelId->ToString() + L"\"";
 			}
 			sResult += L" minVer=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\"/>";
-			
+
 			return sResult;
 		}
 		EElementType CDataModelExt::getType() const
@@ -214,9 +214,9 @@ namespace OOX
 										*m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}" ||
 										*m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}" ||
 										*m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}" ||
-										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||	
+										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||
 										*m_sUri == L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}" ||
-										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
+										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -491,7 +491,7 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				writer.StartNode(L"externalReference");
 				writer.StartAttributes();
-				
+
 				if (m_oFileKey.IsInit()) writer.WriteAttribute(L"fileKey", *m_oFileKey);
 				if (m_oInstanceId.IsInit()) writer.WriteAttribute(L"instanceId", *m_oInstanceId);
 
@@ -585,7 +585,7 @@ namespace OOX
 			}
 
 			pWriter->WriteNodeEnd(ns + L"extLst");
-		}	
+		}
 		std::wstring COfficeArtExtensionList::toXML() const
 		{
 			return toXMLWithNS(L"a:");
@@ -605,6 +605,38 @@ namespace OOX
 			sResult += L"</" + sNamespace + L"extLst>";
 
 			return sResult;
+		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinWorksheet()
+		{
+			auto ptr(new XLSB::FRTWORKSHEET);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_arrExt.empty())
+				return objectPtr;
+			for(auto i:m_arrExt)
+			{
+				if(i->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}")
+				{
+					auto formatPtr(new XLSB::CONDITIONALFORMATTINGS);
+					ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr{formatPtr};
+					for(auto j:i->m_arrConditionalFormatting)
+					{
+						formatPtr->m_arCONDITIONALFORMATTING14.push_back(j->toBin());
+					}
+				}
+				else if(i->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}")
+				{
+					ptr->m_DVALS14 = i->m_oDataValidations->toBin();
+				}
+				else if(i->m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}")
+				{
+					ptr->m_SPARKLINEGROUPS =  i->m_oSparklineGroups->toBin();
+				}
+				else if(i->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}")
+				{
+					ptr->m_SLICERSEX = i->m_oSlicerList->toBin();
+				}
+			}
+            return objectPtr;
 		}
 		void COfficeArtExtensionList::fromBin(XLS::BaseObjectPtr& obj)
         {

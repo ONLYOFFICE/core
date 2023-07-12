@@ -206,6 +206,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
@@ -280,6 +281,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual EElementType getType() const
 			{

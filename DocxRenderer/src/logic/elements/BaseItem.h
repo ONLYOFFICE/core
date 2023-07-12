@@ -87,7 +87,7 @@ namespace NSDocxRenderer
 		static void SortByLeft(std::vector<T*>& oArray)
 		{
 			std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
-				return a->IsCurrentLeftOfNext(a);
+				return a->IsCurrentLeftOfNext(b);
 			});
 		}
 

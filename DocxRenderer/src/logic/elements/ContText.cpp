@@ -107,13 +107,13 @@ namespace NSDocxRenderer
 				double dSpacing = (m_dWidth - dBoxWidth) / (m_oText.length());
 				dSpacing *= c_dMMToDx;
 
+				//mm to points * 20
 				lCalculatedSpacing = static_cast<LONG>(dSpacing);
 			}
 		}
 
 		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-		//note 1 -> 0.5pt
-		lCalculatedSpacing -= 1;
+		lCalculatedSpacing -= 6;
 
 		if (lCalculatedSpacing != 0)
 		{
@@ -505,12 +505,12 @@ namespace NSDocxRenderer
 	double CContText::CalculateWideSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 4;
+		return m_dSpaceWidthMM * 2.5;
 	}
 
 	double CContText::CalculateThinSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 0.4;
+		return m_dSpaceWidthMM * 0.25;
 	}
 }

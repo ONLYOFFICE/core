@@ -54,14 +54,13 @@ namespace PPTX
 		Styles.clear();
 		Logic::TableStyle Style;
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oNode.GetNodes(_T("*"), oNodes);
 
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oMem;
-			oNodes.GetAt(i, oMem);
+			XmlUtils::CXmlNode & oMem = oNodes[i];
 
 			Style = oMem;
 			Styles.insert(std::pair<std::wstring, Logic::TableStyle>(Style.styleId, Style));

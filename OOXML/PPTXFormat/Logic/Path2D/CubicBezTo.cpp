@@ -52,22 +52,22 @@ namespace PPTX
 		}
 		void CubicBezTo::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 
 			if (node.GetNodes(_T("a:pt"), oNodes))
 			{
-				int count = oNodes.GetCount();
+				size_t count = oNodes.size();
 				if(count >= 3)
 				{
 					XmlUtils::CXmlNode oNode;
 
-					oNodes.GetAt(0, oNode);
+					oNode = oNodes[0];
 					x[0] = oNode.GetAttribute(_T("x"));
 					y[0] = oNode.GetAttribute(_T("y"));
-					oNodes.GetAt(1, oNode);
+					oNode = oNodes[1];
 					x[1] = oNode.GetAttribute(_T("x"));
 					y[1] = oNode.GetAttribute(_T("y"));
-					oNodes.GetAt(2, oNode);
+					oNode = oNodes[2];
 					x[2] = oNode.GetAttribute(_T("x"));
 					y[2] = oNode.GetAttribute(_T("y"));
 				}

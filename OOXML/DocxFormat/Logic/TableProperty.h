@@ -215,8 +215,6 @@ namespace OOX
 
 				return oResult;
 			}
-
-		public:
 			nullable<ComplexTypes::Word::CBorder > m_oBottom;
 			nullable<ComplexTypes::Word::CBorder > m_oEnd;
 			nullable<ComplexTypes::Word::CBorder > m_oInsideH;
@@ -333,26 +331,26 @@ namespace OOX
 			}
 
 		public:
-			bool                                                           m_bTblPrChange;
+			bool m_bTblPrChange = false;
 
-			nullable<ComplexTypes::Word::COnOff2 > m_oBidiVisual;
-			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
-			nullable<ComplexTypes::Word::CShading                        > m_oShade;
-			nullable<OOX::Logic::CTblBorders                             > m_oTblBorders;
-			nullable<ComplexTypes::Word::String                        > m_oTblCaption;
-			nullable<OOX::Logic::CTblCellMar                             > m_oTblCellMar;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::String                        > m_oTblDescription;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblInd;
-			nullable<ComplexTypes::Word::CTblLayoutType                  > m_oTblLayout;
-			nullable<ComplexTypes::Word::CTblLook                        > m_oTblLook;
-			nullable<ComplexTypes::Word::CTblOverlap                     > m_oTblOverlap;
-			nullable<ComplexTypes::Word::CTblPPr                         > m_oTblpPr;
-			nullable<OOX::Logic::CTblPrChange                            > m_oTblPrChange;
-			nullable<ComplexTypes::Word::String                        > m_oTblStyle;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleColBandSize;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleRowBandSize;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblW;
+			nullable<ComplexTypes::Word::COnOff2> m_oBidiVisual;
+			nullable<ComplexTypes::Word::CJcTable> m_oJc;
+			nullable<ComplexTypes::Word::CShading> m_oShade;
+			nullable<OOX::Logic::CTblBorders> m_oTblBorders;
+			nullable<ComplexTypes::Word::String> m_oTblCaption;
+			nullable<OOX::Logic::CTblCellMar> m_oTblCellMar;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblCellSpacing;
+			nullable<ComplexTypes::Word::String> m_oTblDescription;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblInd;
+			nullable<ComplexTypes::Word::CTblLayoutType> m_oTblLayout;
+			nullable<ComplexTypes::Word::CTblLook> m_oTblLook;
+			nullable<ComplexTypes::Word::CTblOverlap> m_oTblOverlap;
+			nullable<ComplexTypes::Word::CTblPPr> m_oTblpPr;
+			nullable<OOX::Logic::CTblPrChange> m_oTblPrChange;
+			nullable<ComplexTypes::Word::String> m_oTblStyle;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oTblStyleColBandSize;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oTblStyleRowBandSize;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblW;
 		};
 
 	} // namespace Logic

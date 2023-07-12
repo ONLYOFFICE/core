@@ -28,7 +28,7 @@ class CXmlTransformRelationship : public IXmlTransform
 {
 protected:
 	CManifestFileInfo* m_pManifestFileInfo;
-	std::map<std::wstring, bool> m_arIds;
+	std::set<std::wstring> m_arIds;
 
 public:
 	CXmlTransformRelationship(CManifestFileInfo* pManifestFileInfo) : IXmlTransform()
@@ -39,40 +39,22 @@ public:
 
 	virtual std::string Transform(const std::string& xml)
 	{
-		std::map<std::wstring, bool>* checker = &m_arIds;
-
-		// для некоторых путей не считаем валидными добавления в rels после подписи
-		if (m_pManifestFileInfo)
-		{
-			std::wstring& sFile = m_pManifestFileInfo->GetFilePath();
-			if (0 == sFile.find(L"/word/") ||
-				0 == sFile.find(L"/ppt/") ||
-				0 == sFile.find(L"/xl/"))
-			{
-				// https://bugzilla.onlyoffice.com/show_bug.cgi?id=59649
-				checker = NULL;
-			}
-		}
-
-
-		COOXMLRelationships _rels(xml, m_pManifestFileInfo, checker);
+		COOXMLRelationships _rels(xml, m_pManifestFileInfo, &m_arIds);
 		return U_TO_UTF8(_rels.GetXml());
 	}
 
 	virtual void LoadFromXml(XmlUtils::CXmlNode& node)
 	{
-		XmlUtils::CXmlNodes oNodesIds;
+		std::vector<XmlUtils::CXmlNode> oNodesIds;
 		node.GetChilds(oNodesIds);
-
-		int nCount = oNodesIds.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodesIds.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode _node;
-			oNodesIds.GetAt(i, _node);
+			XmlUtils::CXmlNode _node = oNodesIds[i];
 
 			std::wstring sType = _node.GetAttribute("SourceId");
 			if (!sType.empty())
-				m_arIds.insert(std::pair<std::wstring, bool>(sType, true));
+				m_arIds.insert(sType);
 		}
 	}
 };
@@ -156,12 +138,11 @@ public:
 	{
 		m_valid = true;
 
-		XmlUtils::CXmlNodes oNodes = node.GetNodes(L"Transform");
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		std::vector<XmlUtils::CXmlNode> oNodes = node.GetNodes(L"Transform");
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode nodeTransform;
-			oNodes.GetAt(i, nodeTransform);
+			XmlUtils::CXmlNode nodeTransform = oNodes[i];
 
 			IXmlTransform* pTransform = IXmlTransform::GetFromType(nodeTransform.GetAttributeA("Algorithm"), pManifestInfo);
 			if (NULL == pTransform)

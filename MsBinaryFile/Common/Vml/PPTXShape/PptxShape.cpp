@@ -92,13 +92,12 @@ bool CPPTXShape::LoadAdjustValuesList(const std::wstring& xml)
 	XmlUtils::CXmlNode avLst;
 	if(avLst.FromXmlString(xml))
 	{
-		XmlUtils::CXmlNodes list;
+		std::vector<XmlUtils::CXmlNode> list;
 		if(avLst.GetNodes(_T("gd"), list))
 		{
-			for(long i = 0; i < list.GetCount(); i++)
+			for(size_t i = 0; i < list.size(); i++)
 			{
-				XmlUtils::CXmlNode gd;
-				list.GetAt(i, gd);
+				XmlUtils::CXmlNode & gd = list[i];
 				FManager.AddAdjustment(gd.GetAttribute(_T("name")), gd.GetAttribute(_T("fmla")));
 			}
 		}
@@ -111,13 +110,12 @@ bool CPPTXShape::LoadGuidesList(const std::wstring& xml)
 	XmlUtils::CXmlNode gdLst;
 	if(gdLst.FromXmlString(xml))
 	{
-		XmlUtils::CXmlNodes list;
+		std::vector<XmlUtils::CXmlNode> list;
 		if(gdLst.GetNodes(_T("gd"), list))
 		{
-			for(long i = 0; i < list.GetCount(); i++)
+			for(size_t i = 0; i < list.size(); i++)
 			{
-				XmlUtils::CXmlNode gd;
-				list.GetAt(i, gd);
+				XmlUtils::CXmlNode & gd = list[i];
 				FManager.AddGuide(gd.GetAttribute(_T("name")), gd.GetAttribute(_T("fmla")));
 			}
 		}
@@ -130,10 +128,10 @@ bool CPPTXShape::LoadAdjustHandlesList(const std::wstring& xml)
 	/*XmlUtils::CXmlNode ahLst;
 			if(ahLst.FromXmlString(xml))
 			{
-					XmlUtils::CXmlNodes oNodes;
+					std::vector<XmlUtils::CXmlNode> oNodes;
 					if (ahLst.GetNodes(_T("ahXY"), oNodes))
 					{
-							int nCount = oNodes.GetCount();
+							size_t nCount = oNodes.size();
 							for (int i = 0; i < nCount; ++i)
 							{
 									XmlUtils::CXmlNode oNodeH;
@@ -144,7 +142,7 @@ bool CPPTXShape::LoadAdjustHandlesList(const std::wstring& xml)
 									oH.xrange = oNodeH.GetAttribute(_T("minX")) + _T(" ") + oNodeH.GetAttribute(_T("maxX"));
 									oH.yrange = oNodeH.GetAttribute(_T("minY")) + _T(" ") + oNodeH.GetAttribute(_T("maxY"));
 
-									XmlUtils::CXmlNodes oPosNodes;
+									std::vector<XmlUtils::CXmlNode> oPosNodes;
 									if (oNodeH.GetNodes(_T("pos"), oPosNodes))
 									{
 											int nCountPos = oPosNodes.GetCount();
@@ -208,7 +206,7 @@ bool CPPTXShape::LoadPathList(const std::wstring& xml)
 	XmlUtils::CXmlNode pathLst;
 	if(pathLst.FromXmlString(xml))
 	{
-		XmlUtils::CXmlNodes list;
+		std::vector<XmlUtils::CXmlNode> list;
 		if(pathLst.GetNodes(_T("path"), list))
 		{
 			m_oPath.FromXML(list, FManager);

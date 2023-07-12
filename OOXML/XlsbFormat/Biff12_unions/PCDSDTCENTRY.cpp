@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,6 +75,17 @@ namespace XLSB
 
         return m_source || m_PCDSDTCEMEMBERS;
     }
+
+	const bool PCDSDTCENTRY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		if (m_PCDSDTCEMEMBERS != nullptr)
+			proc.mandatory(*m_PCDSDTCEMEMBERS);
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -79,6 +79,36 @@ namespace XLSB
         if(fLoadEditWebPage)
             record >> stEditWebPage;
     }
+
+	void BeginECWebProps::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fSrcIsXML)
+		SETBIT(flags, 1, fImportSourceData)
+		SETBIT(flags, 2, fParsePreFormatted)
+		SETBIT(flags, 3, fConsecDelim)
+		SETBIT(flags, 4, fSameSettings)
+		SETBIT(flags, 5, fXL97Format)
+		SETBIT(flags, 6, fNoDateRecog)
+		SETBIT(flags, 7, fRefreshedInXL9)
+		SETBIT(flags, 8, fTablesOnlyHTML)
+
+		SETBIT(flags, 24, fLoadWebPost)
+		SETBIT(flags, 25, fLoadEditWebPage)
+		SETBIT(flags, 26, fLoadURL)
+
+		record << wHTMLFmt << flags;
+		
+		if (fLoadURL)
+			record << stURL;
+
+		if (fLoadWebPost)
+			record << stWebPost;
+
+		if (fLoadEditWebPage)
+			record << stEditWebPage;
+	}
 
 } // namespace XLSB
 

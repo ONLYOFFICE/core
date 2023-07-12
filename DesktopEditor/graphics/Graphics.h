@@ -127,10 +127,10 @@ namespace Aggplus
 typedef agg::rendering_buffer rendering_buffer_type;
 typedef agg::pixfmt_bgra32 pixformat_type;
 
-typedef agg::blender_rgba< agg::svg::color_type, agg::svg::component_order >						blender_type;
-typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >				blender_type_comp;
-typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >	pixfmt_type;
-typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>					pixfmt_type_comp;
+typedef agg::blender_rgba_unpre< agg::svg::color_type, agg::svg::component_order >                 blender_type;
+typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >               blender_type_comp;
+typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >  pixfmt_type;
+typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>                   pixfmt_type_comp;
 
 typedef agg::renderer_base<pixfmt_type> base_renderer_type;
 typedef agg::renderer_base<pixfmt_type_comp> comp_renderer_type;
@@ -278,8 +278,8 @@ protected:
 
 	CClipMulti  m_oClip;
 
-	agg::svg::frame_buffer_rgba       m_frame_buffer;
-	agg::svg::rasterizer              m_rasterizer;
+	agg::svg::frame_buffer_rgba<blender_type>       m_frame_buffer;
+	agg::svg::rasterizer                            m_rasterizer;
 	
 #ifdef _WINDOW_GRAPHIS_USE_
 	// для отрисовки картинок - используем Gdiplus
@@ -292,8 +292,6 @@ protected:
     CDIB*					m_pDib;
 
 public:
-	agg::svg::frame_buffer_rgba&   get_frame_buffer();
-	agg::svg::rasterizer&          get_rasterizer();
 
 	bool	m_bIntegerGrid;
 	double	m_dGlobalAlpha;

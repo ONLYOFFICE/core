@@ -22,7 +22,6 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
-!disable_precompiled_header:CONFIG += precompile_header
 precompile_header {
     PRECOMPILED_HEADER = precompiled.h
     HEADERS += precompiled.h

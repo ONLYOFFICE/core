@@ -232,7 +232,8 @@ namespace BinXlsxRW
 		OleSize = 22,
 		ExternalFileKey = 23,
 		ExternalInstanceId = 24,
-		FileSharing = 25
+		FileSharing = 25,
+		ExternalLinksAutoRefresh = 26
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -354,7 +355,8 @@ namespace BinXlsxRW
 		Date1904 = 0,
 		DateCompatibility = 1,
 		HidePivotFieldList = 2,
-		ShowPivotChartFilter = 3
+		ShowPivotChartFilter = 3,
+		UpdateLinks = 4
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
@@ -1332,7 +1334,12 @@ namespace BinXlsxRW
 		SheetDataRowCell = 14,
 		SheetDataRowCellRef = 15,
 		SheetDataRowCellType = 16,
-		SheetDataRowCellValue = 17
+		SheetDataRowCellValue = 17,
+		AlternateUrls = 18,
+		AbsoluteUrl = 19,
+		RelativeUrl = 20,
+		ExternalAlternateUrlsDriveId = 21,
+		ExternalAlternateUrlsItemId = 22
 	};}
 	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
 	{

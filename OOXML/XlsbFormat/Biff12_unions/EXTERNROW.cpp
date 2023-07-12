@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,6 +75,19 @@ namespace XLSB
 
         return m_BrtExternRowHdr != nullptr;
     }
+
+	const bool EXTERNROW::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtExternRowHdr != nullptr)
+			proc.mandatory(*m_BrtExternRowHdr);
+
+		for (auto &item : m_arEXTERNVALUE)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -143,6 +143,7 @@ public:
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
+	static std::vector<std::wstring>					arDefineNames_static;
 	std::map<std::wstring, int>							mapDefineNamesSerialized;
 	
 	std::vector<std::pair<boost::shared_array<unsigned char>, size_t> >	bin_data;
@@ -159,6 +160,7 @@ public:
 	};
 	std::vector<_xti>				arXti;
 	std::vector<_xti>				arXti_External;
+	static std::vector<_xti>		arXti_External_static;
 	
 	_UINT32							startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;
@@ -211,7 +213,10 @@ public:
 
     std::unordered_map<int, std::wstring> mapTableNames;
     std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-    std::unordered_map<std::wstring, int> mapTableGuidsIndex;
+
+	static std::unordered_map<int, std::wstring>		mapTableNames_static;
+	static std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames_static;
+    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
     std::unordered_map<int, std::vector<XLS::ElementType>> pivotCacheRecordType;
     int currentPivotCacheRecord;

@@ -38,13 +38,15 @@ namespace XLS
 
 class CFRecord;
 
-class FormulaValue : public BiffAttribute
+class FormulaValue : public BiffStructure
 {
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FormulaValue)
 public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
 
+	static const ElementType type = typeFormulaValue;
 
 	unsigned char getType();
 

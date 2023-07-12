@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -86,6 +86,44 @@ namespace XLSB
         if(fLoadPropName)
             record >> stMemPropName;
     }
+
+	void BeginPCDField::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fServerBased)
+		SETBIT(flags, 1, fCantGetUniqueItems)
+		SETBIT(flags, 2, fSrcField)
+		SETBIT(flags, 3, fCaption)
+		SETBIT(flags, 4, fOlapMemPropField)
+		SETBIT(flags, 8, fLoadFmla)
+		SETBIT(flags, 9, fLoadPropName)
+
+		record << flags;
+
+		cIsxtmps = rgisxtmp.size();
+
+		record << ifmt << wTypeSql << ihdb << isxtl << cIsxtmps;
+
+		record << stFldName;
+
+		if (fCaption)
+			record << stFldCaption;
+
+		if (fLoadFmla)
+			record << fldFmla;
+
+		if (cIsxtmps > 0)
+			record << cbRgisxtmp;
+
+		for (auto& item : rgisxtmp)
+		{
+			record << item;
+		}
+
+		if (fLoadPropName)
+			record << stMemPropName;
+	}
 
 } // namespace XLSB
 

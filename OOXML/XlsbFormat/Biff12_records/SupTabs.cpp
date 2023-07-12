@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,6 +63,19 @@ namespace XLSB
         }
 
     }
+
+	void SupTabs::writeFields(XLS::CFRecord& record)
+	{
+		cTab = sheetNames.size();
+		record << cTab;
+
+		for (size_t i = 0; i < cTab; ++i)
+		{
+			record << sheetNames[i];
+			record.getGlobalWorkbookInfo()->external_sheets_info.push_back(sheetNames[i].value());
+		}
+
+	}
 
 } // namespace XLSB
 

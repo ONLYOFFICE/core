@@ -1,22 +1,13 @@
 #include "./../include/OOXMLSigner.h"
-#include "../../../../OfficeUtils/src/ZipFolder.h"
-#include "./XmlTransform.h"
-#include <cstdio>
-#include <ctime>
-#include <time.h>
-#include "./../include/CertificateCommon.h"
+#include "./common.h"
 
-class COOXMLSigner_private
+class COOXMLSigner_private : public CSignFolderFiles
 {
 public:
 	ICertificate*                           m_certificate;
 	IFolder*                                m_pFolder;
 
 	std::wstring                            m_date;
-
-	std::map<std::wstring, std::wstring>    m_content_types;
-	std::vector<std::wstring>               m_rels;
-	std::vector<std::wstring>               m_files;
 
 	NSStringUtils::CStringBuilderA          m_signed_info;
 
@@ -192,12 +183,11 @@ public:
 			XmlUtils::CXmlNode oNodeRels = m_pFolder->getNodeFromFile(*iter);
 			if (!oNodeRels.IsValid())
 				continue;
-			XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
-			int nCount = oNodesRels.GetCount();
-			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			std::vector<XmlUtils::CXmlNode> oNodesRels = oNodeRels.GetNodes(L"Relationship");
+			size_t nCount = oNodesRels.size();
+			for (size_t nIndex = 0; nIndex < nCount; nIndex++)
 			{
-				XmlUtils::CXmlNode oNodeRel;
-				oNodesRels.GetAt(nIndex, oNodeRel);
+				XmlUtils::CXmlNode oNodeRel = oNodesRels[nIndex];
 
 				std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
 				if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pFolder->exists(folder + L"/" + sTarget))
@@ -263,31 +253,7 @@ public:
 
 	void ParseContentTypes()
 	{
-		XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(L"/[Content_Types].xml");
-
-		XmlUtils::CXmlNodes nodesDefaults;
-		oNode.GetNodes(L"Default", nodesDefaults);
-
-		XmlUtils::CXmlNodes nodesOverrides;
-		oNode.GetNodes(L"Override", nodesOverrides);
-
-		int nCount = nodesDefaults.GetCount();
-		for (int i = 0; i < nCount; ++i)
-		{
-			XmlUtils::CXmlNode node;
-			nodesDefaults.GetAt(i, node);
-
-			m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("Extension"), node.GetAttribute("ContentType")));
-		}
-
-		nCount = nodesOverrides.GetCount();
-		for (int i = 0; i < nCount; ++i)
-		{
-			XmlUtils::CXmlNode node;
-			nodesOverrides.GetAt(i, node);
-
-			m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("PartName"), node.GetAttribute("ContentType")));
-		}
+		Folder_ParseContentTypes(m_pFolder);
 	}
 
 	void Parse()
@@ -295,39 +261,8 @@ public:
 		// 1) Parse Content_Types.xml
 		ParseContentTypes();
 
-		// 2) Parse files in directory
-		std::vector<std::wstring> files = m_pFolder->getFiles(L"", true);
-
-		// 3) Check each file
-		std::wstring sFolder = L"";
-		for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
-		{
-			std::wstring sCheckFile = *i;
-
-			// make cool filename
-			sCheckFile = m_pFolder->getLocalFilePath(sCheckFile);
-
-			// check needed file
-			if (0 == sCheckFile.find(L"_xmlsignatures") ||
-					0 == sCheckFile.find(L"docProps") ||
-					0 == sCheckFile.find(L"[Content_Types].xml") ||
-					0 == sCheckFile.find(L"[trash]"))
-				continue;
-
-			// check rels and add to needed array
-			std::wstring::size_type posExt = sCheckFile.rfind(L".");
-			if (std::wstring::npos == posExt)
-				continue;
-
-			std::wstring sExt = sCheckFile.substr(posExt + 1);
-			if (sExt == L"rels")
-				m_rels.push_back(sCheckFile);
-			else
-				m_files.push_back(sCheckFile);
-		}
-
-		std::sort(m_rels.begin(), m_rels.end());
-		std::sort(m_files.begin(), m_files.end());
+		// 2) Parse files & check each file in directory
+		Folder_Parse(m_pFolder);
 	}
 
 	void WriteRelsReferences(NSStringUtils::CStringBuilder& builder)
@@ -397,13 +332,12 @@ public:
 
 		oBuilder.WriteNodeEnd(oNode.GetName(), true, false);
 
-		XmlUtils::CXmlNodes oNodes = oNode.GetNodes(L"*");
+		std::vector<XmlUtils::CXmlNode> oNodes = oNode.GetNodes(L"*");
 
-		int nCountNodes = oNodes.GetCount();
-		for (int nIndex = 0; nIndex < nCountNodes; ++nIndex)
+		size_t nCountNodes = oNodes.size();
+		for (size_t nIndex = 0; nIndex < nCountNodes; ++nIndex)
 		{
-			XmlUtils::CXmlNode oCurrentRecord;
-			oNodes.GetAt(nIndex, oCurrentRecord);
+			XmlUtils::CXmlNode oCurrentRecord = oNodes[nIndex];
 
 			if (L"Default" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("Extension") == "sigs")
 				continue;

@@ -69,8 +69,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<std::wstring>										m_oRef;
-			nullable<std::wstring>										m_oSqRef;
+			nullable<std::wstring> m_oRef;
+			nullable<std::wstring> m_oSqRef;
 		};
 
 		class CSparklines  : public WritingElementWithChilds<CSparkline>
@@ -144,6 +144,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CColor>					m_oColorLow;
 			nullable<std::wstring>								m_oRef;
 			nullable<CSparklines>								m_oSparklines;
+
+			nullable_string										m_oUId;
 		};
 
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>

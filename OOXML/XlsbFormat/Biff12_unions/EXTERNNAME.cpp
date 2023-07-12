@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -78,12 +78,30 @@ namespace XLSB
 
         if (proc.optional<SupNameEnd>())
         {
-            m_BrtSupNameEnd = elements_.back();
+            m_bBrtSupNameEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtSupNameEnd = false;
 
-        return m_BrtSupNameStart && m_BrtSupNameFmla && m_BrtSupNameBits && m_BrtSupNameEnd;
+        return m_BrtSupNameStart && m_BrtSupNameFmla && m_BrtSupNameBits && m_bBrtSupNameEnd;
     }
+
+	const bool EXTERNNAME::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtSupNameStart != nullptr)
+			proc.mandatory(*m_BrtSupNameStart);
+
+		if (m_BrtSupNameFmla != nullptr)
+			proc.mandatory(*m_BrtSupNameFmla);
+
+		if (m_BrtSupNameBits != nullptr)
+			proc.mandatory(*m_BrtSupNameBits);
+
+		proc.mandatory<SupNameEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class CFVOtype : public XLS::BiffAttributeSimple<unsigned int>
+class CFVOtype : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	CFVOtype& operator= (const _UINT32& other_val);
 	enum
 	{
             CFVONUM         = 0x00000001,

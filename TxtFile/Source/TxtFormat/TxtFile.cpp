@@ -56,9 +56,9 @@ const std::vector<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8witho
 
 	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
-	long start_pos = 0;
+	DWORD start_pos = 0;
 
-	for (long end_pos = 0; end_pos < file_size; end_pos++)
+	for (DWORD end_pos = 0; end_pos < file_size; end_pos++)
 	{
 		BYTE cCurChar = file_data[end_pos];
 		if (0x0a == cCurChar || 0x0d == cCurChar)
@@ -142,7 +142,7 @@ const std::vector<std::wstring> TxtFile::readBigEndian()
 
     //swap bytes
 	DWORD file_size_round = (file_size / 2) * 2;
-    for (long i = 0; i < file_size_round; i+=2)
+    for (DWORD i = 0; i < file_size_round; i+=2)
     {
         char v			= file_data[i];
         file_data[i]	= file_data[i+1];
@@ -166,9 +166,9 @@ const std::vector<std::string> TxtFile::readUtf8()
 
 	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
-	long start_pos = 3; //skip header
+	DWORD start_pos = 3; //skip header
 
-    for (long end_pos = start_pos; end_pos < file_size; end_pos++)
+    for (DWORD end_pos = start_pos; end_pos < file_size; end_pos++)
 	{
 		BYTE cCurChar = file_data[end_pos];
 		if (0x0a == cCurChar || 0x0d == cCurChar)

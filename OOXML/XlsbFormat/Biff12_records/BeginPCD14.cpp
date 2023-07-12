@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,8 +60,19 @@ namespace XLSB
         fSrvSupportSubQueryCalcMem   = GETBIT(flags, 1);
         fSrvSupportSubQueryNonVisual = GETBIT(flags, 2);
         fSrvSupportAddCalcMems       = GETBIT(flags, 3);
-
     }
+
+	void BeginPCD14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fSlicerData)
+		SETBIT(flags, 1, fSrvSupportSubQueryCalcMem)
+		SETBIT(flags, 2, fSrvSupportSubQueryNonVisual)
+		SETBIT(flags, 3, fSrvSupportAddCalcMems)
+
+		record << FRTheader << flags << icacheId;
+	}
 
 } // namespace XLSB
 

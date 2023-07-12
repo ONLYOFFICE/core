@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,14 +71,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndBorders>())
-        {
-            m_BrtEndBorders = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndBorders>())
+		{
+			m_bBrtEndBorders = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndBorders = false;
 
-        return m_BrtBeginBorders && !m_arBrtBorder.empty() && m_BrtEndBorders;
+        return m_BrtBeginBorders && !m_arBrtBorder.empty() && m_bBrtEndBorders;
     }
+
+	const bool BORDERS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginBorders == nullptr)
+			m_BrtBeginBorders = XLS::BaseObjectPtr(new XLSB::BeginBorders());
+
+		if (m_BrtBeginBorders != nullptr)
+		{
+			auto ptrBrtBeginBorders = static_cast<XLSB::BeginBorders*>(m_BrtBeginBorders.get());
+
+			if (ptrBrtBeginBorders != nullptr)
+				ptrBrtBeginBorders->cborders = m_arBrtBorder.size();
+
+			proc.mandatory(*m_BrtBeginBorders);
+		}
+
+		for (auto &item : m_arBrtBorder)
+		{
+			proc.mandatory(*item);
+		}
+		
+		proc.mandatory<EndBorders>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

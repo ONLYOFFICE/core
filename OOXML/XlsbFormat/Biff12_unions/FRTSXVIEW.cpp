@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,6 +59,8 @@ namespace XLSB
     // FRTSXVIEW = [BrtFRTBegin SXVIEW14 BrtFRTEnd] [FRTSXVIEW15] [BrtFRTBegin SXVIEW16 BrtFRTEnd] *FRT
     const bool FRTSXVIEW::loadContent(BinProcessor& proc)
     {
+		m_bBrtFRTEnd = false;
+
         if (proc.optional<FRTBegin>())
         {
             m_BrtFRTBegin = elements_.back();
@@ -71,11 +73,11 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<FRTEnd>())
+		{
+			m_bBrtFRTEnd = true;
+			elements_.pop_back();
+		}
 
         if (proc.optional<FRTSXVIEW15>())
         {
@@ -95,11 +97,11 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<FRTEnd>())
+		{
+			m_bBrtFRTEnd = true;
+			elements_.pop_back();
+		}
 
         int count = proc.repeated<FRT>(0, 0);
 
@@ -110,8 +112,42 @@ namespace XLSB
             count--;
         }        
 
-        return (m_BrtFRTBegin && (m_SXVIEW14 || m_SXVIEW16) && m_BrtFRTEnd) || m_FRTSXVIEW15;
+        return (m_BrtFRTBegin && (m_SXVIEW14 || m_SXVIEW16) && m_bBrtFRTEnd) || m_FRTSXVIEW15;
     }
+
+	const bool FRTSXVIEW::saveContent(BinProcessor& proc)
+	{
+		if (m_SXVIEW14 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_SXVIEW14 != nullptr)
+				proc.mandatory(*m_SXVIEW14);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		if(m_FRTSXVIEW15 != nullptr)
+			proc.mandatory(*m_FRTSXVIEW15);
+
+		if (m_SXVIEW16 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_SXVIEW16 != nullptr)
+				proc.mandatory(*m_SXVIEW16);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

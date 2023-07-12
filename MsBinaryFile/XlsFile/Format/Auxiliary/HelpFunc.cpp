@@ -34,6 +34,7 @@
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 #include "../Logic/Biff_structures/CellRangeRef.h"
+#include "../Logic/GlobalWorkbookInfo.h"
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -295,6 +296,31 @@ const std::wstring guidFromStr(const std::wstring & guid_str)
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
+	std::wstring  guid_str_copy = guid_str;
+
+	if(*guid_str_copy.begin() == L'{')
+		guid_str_copy.erase(guid_str_copy.begin());
+
+	if (*(guid_str_copy.end() - 1) == L'}')
+		guid_str_copy.erase(guid_str_copy.end() - 1);
+
+	guid.Data1 = hex_str2int(guid_str_copy.substr(0, 8));
+
+	guid.Data2 = hex_str2int(guid_str_copy.substr(9, 4));
+
+	guid.Data3 = hex_str2int(guid_str_copy.substr(14, 4));
+
+	BYTE data4[8];
+	data4[0] = hex_str2int(guid_str_copy.substr(19, 2));
+	data4[1] = hex_str2int(guid_str_copy.substr(21, 2));
+
+	data4[2] = hex_str2int(guid_str_copy.substr(24, 2));
+	data4[3] = hex_str2int(guid_str_copy.substr(26, 2));
+	data4[4] = hex_str2int(guid_str_copy.substr(28, 2));
+	data4[5] = hex_str2int(guid_str_copy.substr(30, 2));
+	data4[6] = hex_str2int(guid_str_copy.substr(32, 2));
+	data4[7] = hex_str2int(guid_str_copy.substr(34, 2));
+	memcpy(&guid.Data4, data4, 8);
 	return false;
 }
 
@@ -514,28 +540,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 //}
 std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 {
-//#if defined (_WIN32) || defined (_WIN64)
-//	std::wstring sResult;
-//
-//	int outsize_with_0 = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), -1, NULL, NULL);
-//	
-//	sResult.resize(outsize_with_0);
-//	if (MultiByteToWideChar(code_page, 0, ansi_string.c_str(), -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
-//	{
-//		sResult.erase(outsize_with_0 - 1);
-//	}
-//	else
-//	{
-//		std::locale loc("");
-//		std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
-//
-//		sResult.resize(ansi_string.size());
-//
-//		facet.widen(ansi_string.c_str(), ansi_string.c_str() + ansi_string.size(), &sResult[0]);
-//	}
-//	return sResult;
-//#else
-	std::string sCodePage;
+    std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
 	if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
 	{
@@ -564,7 +569,6 @@ std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 
 		return result;
 	}
-//#endif
 }
 std::wstring	toStdWString(char* ansi, int size, const _UINT32 code_page)
 {
@@ -675,6 +679,63 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	return sheet_first + sheet_last;
 }
 
+unsigned short sheetsnames2ixti(std::wstring name)
+{
+	auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+			[&](XLS::GlobalWorkbookInfo::_xti i) {
+		return boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(i.link, L"'"), L"'") == name;
+	});
+
+	if (pos != XLS::GlobalWorkbookInfo::arXti_External_static.cend())
+		return pos->iSup;
+
+	return 0xFFFF;
+}
+
+unsigned int definenames2index(std::wstring name)
+{
+	unsigned int index;
+
+	auto pos = std::find(XLS::GlobalWorkbookInfo::arDefineNames_static.cbegin(), XLS::GlobalWorkbookInfo::arDefineNames_static.cend(), name);
+
+	if (pos != XLS::GlobalWorkbookInfo::arDefineNames_static.cend())
+	{
+		index = pos - XLS::GlobalWorkbookInfo::arDefineNames_static.cbegin() + 1;
+		return index;
+	}
+
+	return 0xFFFFFFFF;
+}
+
+bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex)
+{
+	for(const auto& item : XLS::GlobalWorkbookInfo::mapTableNames_static)
+	{
+		if (tableName == item.second)
+		{
+			listIndex = item.first;
+			return true;
+		}
+	}
+	return false;
+}
+bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn)
+{
+	const auto& arrColumn = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(listIndex);
+	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+	{
+		indexColumn = -1;
+		for (const auto& itemColumn : arrColumn->second)
+		{
+			++indexColumn;
+			if (columnName == itemColumn)
+			{
+				return true;
+			}
+		}		
+	}
+	return false;
+}
 
 } //namespace XMLSTUFF
 

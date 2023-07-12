@@ -52,8 +52,9 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/FontTable.h"
-
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Diagram/DiagramData.h"
+
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"
 #include "../../../DocxFormat/Logic/SmartTag.h"
@@ -1257,7 +1258,7 @@ void Binary_pPrWriter::WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Lo
 {
 	int nCurPos = 0, listNum = numPr.m_oNumID.IsInit() ? numPr.m_oNumID->m_oVal.get_value_or(0) : -1;
 	
-	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum >= 0)
+	if (m_oParamsWriter.m_pEmbeddedNumbering && listNum > 0)
 	{
 		std::map<int, int>::iterator pFind = m_oParamsWriter.m_pNumbering->m_mapEmbeddedNames.back().find(listNum);
 
@@ -2906,38 +2907,33 @@ void BinaryNumberingTableWriter::WriteAbstractNums(const OOX::CNumbering& number
 void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstractNum& num, int nIndex, const std::vector<OOX::Numbering::CNum*>& aNums)
 {
 	int nCurPos = 0;
-	//Id
+
 	if(num.m_oAbstractNumId.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Id);
 		m_oBcw.m_oStream.WriteLONG(*num.m_oAbstractNumId);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-
-	//Type
-	if(false != num.m_oMultiLevelType.IsInit())
+	
+	if ((num.m_oMultiLevelType.IsInit()) && (num.m_oMultiLevelType->m_oVal.IsInit()))
 	{
-		//todo
-		//nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
-		//m_oBcw.m_oStream.WriteBYTE(num.Type);
-		//m_oBcw.WriteItemEnd(nCurPos);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Type);
+		m_oBcw.m_oStream.WriteBYTE(num.m_oMultiLevelType->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 
-	//NumStyleLink
-	if(false != num.m_oNumStyleLink.IsInit())
+	if (false != num.m_oNumStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::NumStyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oNumStyleLink.get().ToString2());
 	}
 
-	//StyleLink
-	if(false != num.m_oStyleLink.IsInit())
+	if (false != num.m_oStyleLink.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
 
-	//Lvl
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);
@@ -3182,7 +3178,7 @@ BinaryDocumentTableWriter::BinaryDocumentTableWriter(ParamsWriter& oParamsWriter
 {
 	pBackground		= NULL;
 	pSectPr			= NULL;
-	poDocument		= NULL;
+	pDocument		= NULL;
 	pJsaProject		= NULL;
 	m_bWriteSectPr	= false;
 }
@@ -3450,14 +3446,28 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 //Write JsaProject
 	if (NULL != pJsaProject)
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+		if (pJsaProject->IsExist() && !pJsaProject->IsExternal())
 		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
-			m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+			std::wstring pathMain = (dynamic_cast<OOX::File*>(pDocument))->m_pMainDocument->m_sDocumentPath;
+			std::wstring pathJsa = pJsaProject->filename().GetPath();
+			if (std::wstring::npos != pathJsa.find(pathMain))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemEnd(nCurPos);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
+		if (pJsaProject->IsExternal())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProjectExternal);
+			m_oBcw.m_oStream.WriteStringW3(pJsaProject->filename().GetPath());
 			m_oBcw.WriteItemEnd(nCurPos);
-			RELEASEARRAYOBJECTS(pData);
 		}
 	}
 }
@@ -9465,7 +9475,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 		m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
 		m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
-		oBinaryDocumentTableWriter.poDocument = pDocument;
+		oBinaryDocumentTableWriter.pDocument = pDocument;
 		oBinaryDocumentTableWriter.pSectPr = pDocument->m_oSectPr.GetPointer();;
 		oBinaryDocumentTableWriter.pJsaProject = pDocx ? pDocx->m_pJsaProject : NULL;
 		oBinaryDocumentTableWriter.m_bWriteSectPr = true;
@@ -9597,7 +9607,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 				m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
 				m_oParamsWriter.m_pOfficeDrawingConverter->Clear();
 
-				oBinaryDocumentTableWriter.poDocument = pDocx->m_oGlossary.document;
+				oBinaryDocumentTableWriter.pDocument = pDocx->m_oGlossary.document;
 				oBinaryDocumentTableWriter.pSectPr = pDocx->m_oGlossary.document->m_oSectPr.GetPointer();;
 				oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocx->m_oGlossary.document->m_oBackground.GetPointer());
 				oBinaryDocumentTableWriter.m_bWriteSectPr = true;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,14 +73,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndListCols>())
-        {
-            m_BrtEndListCols = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndListCols>())
+		{
+			m_bBrtEndListCols = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndListCols = false;
 
-        return m_BrtBeginListCols && !m_arLISTCOL.empty() && m_BrtEndListCols;
+        return m_BrtBeginListCols && !m_arLISTCOL.empty() && m_bBrtEndListCols;
     }
+
+	const bool LISTCOLS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginListCols == nullptr)
+			m_BrtBeginListCols = XLS::BaseObjectPtr(new XLSB::BeginListCols());
+
+		if (m_BrtBeginListCols != nullptr)
+		{
+			auto ptrBeginListCols = static_cast<XLSB::BeginListCols*>(m_BrtBeginListCols.get());
+
+			if (ptrBeginListCols != nullptr)
+				ptrBeginListCols->nCols = m_arLISTCOL.size();
+
+			proc.mandatory(*m_BrtBeginListCols);
+		}
+
+		for (auto &item : m_arLISTCOL)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndListCols>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

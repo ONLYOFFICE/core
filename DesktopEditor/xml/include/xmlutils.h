@@ -96,8 +96,8 @@ namespace XmlUtils
 		
 		std::wstring	GetName();
 		std::string     GetNameA();
-        std::wstring	GetNameNoNS();
-        std::string     GetNameNoNSA();
+		std::wstring	GetNameNoNS();
+		std::string     GetNameNoNSA();
 
 		const char*     GetNameChar();
 		int             GetDepth();
@@ -147,160 +147,142 @@ namespace XmlUtils
 	};
 
 	class CXmlNodeBase;
-	class CXmlNode;
-	class KERNEL_DECL CXmlNodes
-	{
-	private:
-		std::vector<CXmlNode> m_nodes;
-
-	public:
-		CXmlNodes();
-		~CXmlNodes();
-		bool IsValid();
-		int GetCount();
-		bool GetAt(int nIndex, CXmlNode& oXmlNode);
-
-		friend class CXmlNode;
-	};
-
-
 	class KERNEL_DECL CXmlNode
 	{
-        private:
-                CXmlNodeBase* m_pBase;
+	private:
+		CXmlNodeBase* m_pBase;
 
-        public:
-                CXmlNode();
-                CXmlNode(const CXmlNode& oSrc);
-                ~CXmlNode();
+	public:
+		CXmlNode();
+		CXmlNode(const CXmlNode& oSrc);
+		~CXmlNode();
 
-                bool FromXmlFile(const wchar_t* sFile, bool bRemoveRootNode = false);
-                bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
+		bool FromXmlFile(const wchar_t* sFile, bool bRemoveRootNode = false);
+		bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
 
-                bool FromXmlStringA(const std::string& sString);
-                bool FromXmlString(const wchar_t* sString);
-                bool FromXmlString(const std::wstring& sString);
+		bool FromXmlStringA(const std::string& sString);
+		bool FromXmlString(const wchar_t* sString);
+		bool FromXmlString(const std::wstring& sString);
 
-                bool IsValid() const;
-                void Clear();
+		bool IsValid() const;
+		void Clear();
 
-                std::wstring GetName();
-                std::wstring GetText();
-                std::string GetTextA();
+		std::wstring GetName();
+		std::wstring GetText();
+		std::string GetTextA();
 
-                bool GetTextIfExist(std::wstring& sOutput);
-                std::wstring GetTextExt(const std::wstring& strDefaultValue = L"");
-                std::wstring GetXml(const std::wstring& strDefaultValue = L"");
+		bool GetTextIfExist(std::wstring& sOutput);
+		std::wstring GetTextExt(const std::wstring& strDefaultValue = L"");
+		std::wstring GetXml(const std::wstring& strDefaultValue = L"");
 
-                std::wstring ReadAttributeBase(const wchar_t* bstrName);
-                std::wstring ReadAttribute(const std::wstring& strAttibuteName);
-                void ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues);
-                void ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues);
+		std::wstring ReadAttributeBase(const wchar_t* bstrName);
+		std::wstring ReadAttribute(const std::wstring& strAttibuteName);
+		void ReadAllAttributesA(std::vector<std::string>& strNames, std::vector<std::string>& strValues);
+		void ReadAllAttributes(std::vector<std::wstring>& strNames, std::vector<std::wstring>& strValues);
 
-                int GetAttributesCount();
-                void GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values);
-                void GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values);
-                void GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values);
-                void GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values);
+		int GetAttributesCount();
+		void GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values);
+		void GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values);
+		void GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values);
+		void GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values);
 
-                std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
-                std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
+		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
+		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
 
-                std::wstring GetAttribute(const std::string& sName, const std::wstring& _default = L"");
-                std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
-                std::wstring GetAttribute(const wchar_t* sName, const std::wstring& _default = L"");
+		std::wstring GetAttribute(const std::string& sName, const std::wstring& _default = L"");
+		std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
+		std::wstring GetAttribute(const wchar_t* sName, const std::wstring& _default = L"");
 
-                std::wstring GetAttributeBase(const wchar_t* strAttributeName, const std::wstring& strDefaultValue = L"");
-                bool GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput);
+		CXmlNode ReadNode(const wchar_t* strNodeName);
+		CXmlNode ReadNode(const std::wstring& strNodeName);
+		CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
+		std::vector<CXmlNode> ReadNodesNoNS(const std::wstring& strNodeName);
 
-                int GetAttributeInt(const std::string& sName, const int& _default = 0);
-                int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
+		CXmlNode GetNode(const std::wstring& sName);
+		std::vector<CXmlNode> GetNodes(const std::wstring& sName);
+		bool GetChilds(std::vector<CXmlNode>& oXmlNodes);
 
-                bool SetAttributeInt(const std::wstring& sName, const int& value);
+		bool GetNode(const std::wstring& sName, CXmlNode& oNode);
+		bool GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes);
 
-                int ReadAttributeInt(const std::wstring& str, const int& nDef = 0);
-                double ReadAttributeDouble(const std::wstring& str, const double& nDef = 0);
+		std::wstring GetAttributeBase(const wchar_t* strAttributeName, const std::wstring& strDefaultValue = L"");
+		bool GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput);
 
-                double GetAttributeDouble(const std::string& sName, const double& _default = 0);
-                double GetAttributeDouble(const std::wstring& sName, const double& _default = 0);
+		int GetAttributeInt(const std::string& sName, const int& _default = 0);
+		int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
+		
+		bool SetAttributeInt(const std::wstring& sName, const int& value);
+		
+		int ReadAttributeInt(const std::wstring& str, const int& nDef = 0);
+		double ReadAttributeDouble(const std::wstring& str, const double& nDef = 0);
 
-                std::wstring ReadNodeTextBase(const wchar_t* bsName);
+		double GetAttributeDouble(const std::string& sName, const double& _default = 0);
+		double GetAttributeDouble(const std::wstring& sName, const double& _default = 0);
 
-                std::wstring ReadNodeText(const std::wstring& strName);
-                std::wstring ReadValueString(const std::wstring& sName, const std::wstring& nDef = L"");
-                int ReadValueInt(const std::wstring& str, const int& nDef = 0);
+		std::wstring ReadNodeTextBase(const wchar_t* bsName);
 
-                std::wstring GetAttributeOrValue(const std::wstring& strAttributeName, const std::wstring& strDefaultValue = L"");
+		std::wstring ReadNodeText(const std::wstring& strName);
+		std::wstring ReadValueString(const std::wstring& sName, const std::wstring& nDef = L"");
+		int ReadValueInt(const std::wstring& str, const int& nDef = 0);
 
-                CXmlNode ReadNode(const wchar_t* strNodeName);
-                CXmlNode ReadNode(const std::wstring& strNodeName);
-                CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
-                CXmlNodes ReadNodesNoNS(const std::wstring& strNodeName);
+		std::wstring GetAttributeOrValue(const std::wstring& strAttributeName, const std::wstring& strDefaultValue = L"");
 
-                CXmlNode GetNode(const std::wstring& sName);
-                CXmlNodes GetNodes(const std::wstring& sName);
-                bool GetChilds(CXmlNodes& oXmlNodes);
+		CXmlNode& operator=(const CXmlNode& oSrc);
 
-                bool GetNode(const std::wstring& sName, CXmlNode& oNode);
-                bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
+		std::wstring private_GetXml();
+		std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
+		std::wstring private_GetXmlFast();
+		std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
 
-                CXmlNode& operator=(const CXmlNode& oSrc);
-
-                std::wstring private_GetXml();
-                std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
-                std::wstring private_GetXmlFast();
-                std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
-
-        private:
-                void SetBase(CXmlNodeBase* pBase);
-                std::wstring GetNamespace(const std::wstring& strNodeName);
-                std::wstring GetNameNoNS(const std::wstring& strNodeName);
-        };
+	private:
+		void SetBase(CXmlNodeBase* pBase);
+		std::wstring GetNamespace(const std::wstring& strNodeName);
+		std::wstring GetNameNoNS(const std::wstring& strNodeName);
+	};
 
 	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);
 	KERNEL_DECL const char* GetNameNoNS(const char* strNodeName);
 	std::wstring KERNEL_DECL GetNamespace(const std::wstring& strNodeName);
 
-    #define XmlMacroLoadArray(node, name, list, type)   \
-    {                                                   \
-        XmlUtils::CXmlNodes oNodes;                     \
-        if (node.GetNodes(name, oNodes))                \
-        {                                               \
-            int nCount = oNodes.GetCount();             \
-            for (int i = 0; i < nCount; ++i)            \
-            {                                           \
-                XmlUtils::CXmlNode oItem;               \
-                oNodes.GetAt(i, oItem);                 \
-                list.push_back(type());                 \
-                list[i].fromXML(oItem);                 \
-            }                                           \
-        }                                               \
-    }
-    #define XmlMacroLoadArrayS(node, name, subname, list, type)     \
-    {                                                               \
-        XmlUtils::CXmlNode oNode;                                   \
-        if (node.GetNode(sName, oNode))                             \
-            LoadArrayMacro(oNode, subname, list, type);             \
-    }
-    #define XmlMacroReadAttributeBase(node, name, value)    \
-    {                                                       \
-        std::wstring sAttr;                                 \
-        if (node.GetAttributeIfExist(name, sAttr))          \
-            value = sAttr;                                  \
-    }
-    #define XmlMacroReadNodeValueBase(node, name, value)    \
-    {                                                       \
-        value = node.ReadNodeTextBase(name);                \
-    }
+#define XmlMacroLoadArray(node, name, list, type)   \
+{                                                   \
+	std::vector<XmlUtils::CXmlNode> oNodes;         \
+	if (node.GetNodes(name, oNodes))                \
+	{                                               \
+		int nCount = oNodes.size();                 \
+		for (size_t i = 0; i < nCount; ++i)         \
+		{                                           \
+			XmlUtils::CXmlNode & oItem = oNodes[i]; \
+			list.push_back(type());                 \
+			list[i].fromXML(oItem);                 \
+		}                                           \
+	}                                               \
+}
+#define XmlMacroLoadArrayS(node, name, subname, list, type)     \
+{                                                               \
+	XmlUtils::CXmlNode oNode;                                   \
+	if (node.GetNode(sName, oNode))                             \
+		LoadArrayMacro(oNode, subname, list, type);             \
+}
+#define XmlMacroReadAttributeBase(node, name, value)    \
+{                                                       \
+	std::wstring sAttr;                                 \
+	if (node.GetAttributeIfExist(name, sAttr))          \
+		value = sAttr;                                  \
+}
+#define XmlMacroReadNodeValueBase(node, name, value)    \
+{                                                       \
+	value = node.ReadNodeTextBase(name);                \
+}
 
-    namespace NSXmlCanonicalizator
-    {
-        std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
-        std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
-    }
+	namespace NSXmlCanonicalizator
+	{
+		std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
+		std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
+	}
 
-    // UTF-8 BOM, UTF-16BE BOM, UTF-16LE BOM, UTF-32BE BOM, UTF-32LE BOM
-    std::string KERNEL_DECL GetUtf8FromFileContent(unsigned char* pData, unsigned int len);
+	// UTF-8 BOM, UTF-16BE BOM, UTF-16LE BOM, UTF-32BE BOM, UTF-32LE BOM
+	std::string KERNEL_DECL GetUtf8FromFileContent(unsigned char* pData, unsigned int len);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

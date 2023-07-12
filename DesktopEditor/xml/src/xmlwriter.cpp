@@ -34,67 +34,92 @@
 
 namespace XmlUtils
 {
-    CXmlWriter::CXmlWriter()
+    class CXmlWriter::Impl
     {
+    public:
+        std::wstring m_str;
+    };
+
+    CXmlWriter::CXmlWriter() : impl_(NULL)
+    {
+        impl_ = new CXmlWriter::Impl();
+    }
+    CXmlWriter::~CXmlWriter()
+    {
+        if (impl_)
+            delete impl_;
+        impl_ = NULL;
     }
 
     std::wstring CXmlWriter::GetXmlString()
     {
-        return m_str;
+        if (impl_) return impl_->m_str;
+        else return L"";
     }
     void CXmlWriter::SetXmlString(const std::wstring& strValue)
     {
-        m_str = strValue;
+        if (impl_) impl_->m_str = strValue;
     }
 
     bool CXmlWriter::SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
     {
-        return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
+        if (impl_)
+            return NSFile::CFileBinary::SaveToFile(strFilePath, impl_->m_str);
+        else
+            return false;
     }
     void CXmlWriter::WriteString(const std::wstring& strValue)
     {
-        m_str += strValue;
+        if (impl_) impl_->m_str += strValue;
     }
     void CXmlWriter::WriteInteger(int Value)
     {
-        m_str += std::to_wstring(Value);
+        if (impl_) impl_->m_str += std::to_wstring(Value);
     }
     void CXmlWriter::WriteDouble(double Value)
     {
-        m_str += std::to_wstring(Value);
+        if (impl_) impl_->m_str += std::to_wstring(Value);
     }
     void CXmlWriter::WriteBoolean(bool Value)
     {
+        if (!impl_) return;
+
         if (Value)
-            m_str += (L"true");
+            impl_->m_str += (L"true");
         else
-            m_str += (L"false");
+            impl_->m_str += (L"false");
     }
     void CXmlWriter::WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed)
     {
-        m_str += (L"<") + strNodeName;
+        if (!impl_) return;
+
+        impl_->m_str += (L"<") + strNodeName;
 
         if (!bAttributed)
-            m_str += (L">");
+            impl_->m_str += (L">");
     }
     void CXmlWriter::WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode, bool bEndNode)
     {
+        if (!impl_) return;
+
         if (bEmptyNode)
         {
             if (bEndNode)
-                m_str += (L" />");
+                impl_->m_str += (L" />");
             else
-                m_str += (L">");
+                impl_->m_str += (L">");
         }
         else
-            m_str += (L"</") + strNodeName + (L">");
+            impl_->m_str += (L"</") + strNodeName + (L">");
     }
     void CXmlWriter::WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
     {
+        if (!impl_) return;
+
         if (strNodeValue.empty())
-            m_str += L"<" + strNodeName + L"/>";
+            impl_->m_str += L"<" + strNodeName + L"/>";
         else
-            m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
+            impl_->m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
     }
     void CXmlWriter::WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
     {
@@ -112,7 +137,7 @@ namespace XmlUtils
     }
     void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
     {
-        m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
+        if (impl_) impl_->m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
     }
     void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
     {

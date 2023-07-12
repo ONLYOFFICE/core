@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,7 @@
 
 #include "EXTERNVALUEDATA.h"
 #include "../Biff12_records/ExternCell.h"
-#include "../Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 
 using namespace XLS;
 
@@ -92,5 +92,15 @@ namespace XLSB
         elements_.pop_back();
         return true;
     }
+
+	const bool EXTERNVALUEDATA::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+		else
+			return false;
+
+		return true;
+	}
 
 } // namespace XLSB

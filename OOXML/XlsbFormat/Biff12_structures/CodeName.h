@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,8 +33,8 @@
 #pragma once
 
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include "XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 
 namespace XLSB
@@ -45,12 +45,14 @@ namespace XLSB
     public:
         CodeName();
         CodeName(XLS::CFRecord& record);
+		CodeName(const std::wstring & str);
         ~CodeName();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(XLS::CFRecord& record);
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
         XLWideString     value;
     };

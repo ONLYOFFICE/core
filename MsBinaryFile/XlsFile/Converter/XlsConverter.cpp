@@ -223,6 +223,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 //--------------------------------------------------------------------------------------------------------------------
 			XLS::StreamCacheReaderPtr workbook_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
 			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));		
+			
 			XLS::BinReaderProcessor proc(workbook_stream, xls_document.get() , true);
 			proc.mandatory(*xls_document.get());
 
@@ -250,7 +251,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 					XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 					
-					XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
+					XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get(), true);
 					proc.mandatory(*pivot_cache.get());
 
 					int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,6 +72,30 @@ namespace XLSB
         if(fLoadCap)
             record >> irstCaption;
     }
+
+	void BeginSXTH::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags1 = 0;
+		_UINT16 flags2 = 0;
+
+		 SETBIT(flags1, 0, fOutlineMode)
+		 SETBIT(flags1, 1, fEnableMultiplePageItems)
+		 SETBIT(flags1, 2, fSubtotalAtTop)
+		 SETBIT(flags1, 3, fDontShowFList)
+		 SETBIT(flags1, 4, fDragToRow)
+		 SETBIT(flags1, 5, fDragToColumn)
+		 SETBIT(flags1, 6, fDragToPage)
+		 SETBIT(flags1, 7, fDragToHide)
+		 SETBIT(flags1, 8, fDragToData)
+		 SETBIT(flags1, 9, fFilterInclusive)
+
+		 SETBIT(flags2, 0, fLoadCap)
+
+		record << flags1 << flags2;
+
+		if (fLoadCap)
+			record << irstCaption;
+	}
 
 } // namespace XLSB
 

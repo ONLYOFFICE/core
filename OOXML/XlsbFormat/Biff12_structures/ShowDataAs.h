@@ -40,7 +40,7 @@ class ShowDataAs : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
         XLS::BiffStructurePtr clone();
-
+		ShowDataAs& operator= (const _UINT32& other_val);
 	enum
 	{
             NORMAL              = 0x00000000,

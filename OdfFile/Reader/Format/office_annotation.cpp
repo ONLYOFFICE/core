@@ -222,8 +222,7 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 		{
 			properties->apply_to(Context.get_drawing_context().get_properties());
 
-			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-				Context.root()->odf_context().drawStyles(), fill);
+			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 		}
 		Context.get_drawing_context().set_fill(fill);
 	}

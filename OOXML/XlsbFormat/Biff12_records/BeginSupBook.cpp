@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 
 #include "BeginSupBook.h"
-#include "../Biff12_structures/RelID.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/RelID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 
@@ -86,6 +86,41 @@ namespace XLSB
             }
         }
     }
+
+	void BeginSupBook::writeFields(XLS::CFRecord& record)
+	{
+		record << sbt;
+		switch (sbt.value().get())
+		{
+			case ExternalReferenceType::WORKBOOK:
+			{
+				RelID relID;
+				XLNullableWideString str;
+				relID.value = string1;
+				str = string2;
+				record << relID << str;
+				break;
+			}
+			case ExternalReferenceType::DDE:
+			{
+				XLWideString str1;
+				XLWideString str2;
+				str1 = string1;
+				str2 = string2;
+				record << str1 << str2;
+				break;
+			}
+			case ExternalReferenceType::OLE:
+			{
+				RelID relID;
+				XLWideString str;
+				relID.value = string1;
+				str = string2;
+				record << relID << str;
+				break;
+			}
+		}
+	}
 
 } // namespace XLSB
 

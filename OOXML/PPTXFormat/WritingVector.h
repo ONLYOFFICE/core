@@ -60,15 +60,14 @@ namespace PPTX
 	public:
 		virtual void fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 
-				for (int i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode nodeTemp;
-					oNodes.GetAt(i, nodeTemp);
+					XmlUtils::CXmlNode & nodeTemp = oNodes[i];
 
 					m_items.push_back(T(nodeTemp));
 				}			

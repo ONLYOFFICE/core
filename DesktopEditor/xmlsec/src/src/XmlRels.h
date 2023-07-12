@@ -5,6 +5,7 @@
 #include "../../../common/File.h"
 #include "../../../common/Directory.h"
 #include "../../../../OfficeUtils/src/ZipFolder.h"
+#include <set>
 
 class CManifestFileInfo
 {
@@ -38,13 +39,18 @@ public:
 
 	void CheckAliasExist(const std::wstring& sFile)
 	{
-		if (!m_pFolder->exists(m_sAliasDirectory + L"/" + sFile))
+		if (!m_pFolder->exists(GetHeadPath(sFile)))
 			++m_nCountUnexistedFile;
 	}
 
 	bool IsExitRemovedFile()
 	{
 		return (0 != m_nCountUnexistedFile) ? true : false;
+	}
+
+	std::wstring GetHeadPath(const std::wstring& sFile)
+	{
+		return m_sAliasDirectory + L"/" + sFile;
 	}
 };
 
@@ -117,7 +123,7 @@ public:
 	{
 	}
 
-	COOXMLRelationships(const std::string& xml, CManifestFileInfo* pFileInfo, std::map<std::wstring, bool>* check_need = NULL)
+	COOXMLRelationships(const std::string& xml, CManifestFileInfo* pFileInfo, std::set<std::wstring>* check_need = NULL)
 	{
 		m_pFileInfo = pFileInfo;
 		XmlUtils::CXmlNode oNode;
@@ -127,11 +133,11 @@ public:
 		FromXmlNode(oNode, check_need);
 	}
 
-	COOXMLRelationships(CManifestFileInfo* pFileInfo, std::map<std::wstring, bool>* check_need = NULL)
+	COOXMLRelationships(CManifestFileInfo* pFileInfo, std::set<std::wstring>* check_need = NULL)
 	{
 		m_pFileInfo = pFileInfo;
 
-		if (!m_pFileInfo || NULL != m_pFileInfo->m_pFolder)
+		if (!m_pFileInfo || NULL == m_pFileInfo->m_pFolder)
 			return;
 
 		XmlUtils::CXmlNode oNode = m_pFileInfo->m_pFolder->getNodeFromFile(m_pFileInfo->GetFilePath());
@@ -141,17 +147,13 @@ public:
 		FromXmlNode(oNode, check_need);
 	}
 
-	void FromXmlNode(XmlUtils::CXmlNode& oNode, std::map<std::wstring, bool>* check_need = NULL)
+	void FromXmlNode(XmlUtils::CXmlNode& oNode, std::set<std::wstring>* check_need = NULL)
 	{
-		XmlUtils::CXmlNodes oNodes;
-		if (!oNode.GetNodes(L"Relationship", oNodes))
-			return;
-
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		std::vector<XmlUtils::CXmlNode> oNodes = oNode.GetNodes(L"Relationship");
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oRel;
-			oNodes.GetAt(i, oRel);
+			XmlUtils::CXmlNode oRel = oNodes[i];
 
 			COOXMLRelationship oCurrentRel(oRel);
 			if (NULL == check_need)

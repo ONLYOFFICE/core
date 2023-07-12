@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,6 +76,33 @@ namespace XLSB
         if(fLoadVal2)
             record >> stVal2;
     }
+
+	void BeginSXFilter::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+		record << isxvd << isxvdMProp << sxft;
+
+		record.reserveNunBytes(4);
+
+		SETBIT(flags, 0, fLoadName)
+		SETBIT(flags, 1, fLoadDescription)
+		SETBIT(flags, 2, fLoadVal1)
+		SETBIT(flags, 3, fLoadVal2)
+
+		record << dwId << isxdiMeasure << isxthMeasure << flags;
+
+		if (fLoadName)
+			record << stName;
+
+		if (fLoadDescription)
+			record << stDescription;
+
+		if (fLoadVal1)
+			record << stVal1;
+
+		if (fLoadVal2)
+			record << stVal2;
+	}
 
 } // namespace XLSB
 

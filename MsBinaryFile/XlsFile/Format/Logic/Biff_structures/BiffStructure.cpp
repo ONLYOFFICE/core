@@ -35,25 +35,16 @@
 namespace XLS
 {
 
-void BiffStructure_NoVtbl::load(CFRecord& record)
-{
-}
-void BiffStructure_NoVtbl::load(IBinaryReader* reader)
-{
-}
-
-
-bool DiffBiff(BiffStructure_NoVtbl& val)
-{
-	return true;
-}
-
-
-bool DiffBiff(BiffStructure& val)
-{
-	return false;
-}
-
+	CFRecord& operator>>(CFRecord& record, BiffStructure& val)
+	{
+		val.load(record);
+		return record;
+	}
+	CFRecord& operator<<(CFRecord& record, BiffStructure& val)
+	{
+		val.save(record);
+		return record;
+	}
 
 
 }// namespace XLS

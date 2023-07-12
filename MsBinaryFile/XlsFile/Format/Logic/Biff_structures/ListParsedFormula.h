@@ -41,16 +41,20 @@ class ListParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ListParsedFormula)
 public:
 	ListParsedFormula();
+	ListParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 };
 class ListParsedArrayFormula : public ArrayParsedFormula
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ListParsedFormula)
 public:
 	ListParsedArrayFormula();
+	ListParsedArrayFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 };
 } // namespace XLS
 

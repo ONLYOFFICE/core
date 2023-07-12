@@ -41,9 +41,10 @@ class CFVOParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFVOParsedFormula)
 public:
 	CFVOParsedFormula();
+	CFVOParsedFormula& operator=(const std::wstring& value);
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
-
+	void save(CFRecord& record);
 
 };
 

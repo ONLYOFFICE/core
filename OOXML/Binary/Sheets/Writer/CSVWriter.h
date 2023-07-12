@@ -61,7 +61,7 @@ public:
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);
-	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
+	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet, bool bLast = false);
 	void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void End();
 	void Close();

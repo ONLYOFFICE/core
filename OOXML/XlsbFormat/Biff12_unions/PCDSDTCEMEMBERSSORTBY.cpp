@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,14 +70,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndPCDSDTCEMembers>())
-        {
-            m_BrtEndPCDSDTCEMembers = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndPCDSDTCEMembers>())
+		{
+			m_bBrtEndPCDSDTCEMembers = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndPCDSDTCEMembers = false;
 
-        return m_BrtBeginPCDSDTCEMembersSortBy && m_BrtEndPCDSDTCEMembers;
+        return m_BrtBeginPCDSDTCEMembersSortBy && m_bBrtEndPCDSDTCEMembers;
     }
+
+	const bool PCDSDTCEMEMBERSSORTBY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDSDTCEMembersSortBy == nullptr)
+			m_BrtBeginPCDSDTCEMembersSortBy = XLS::BaseObjectPtr(new XLSB::BeginPCDSDTCEMembersSortBy());
+
+		if (m_BrtBeginPCDSDTCEMembersSortBy != nullptr)
+		{
+			auto ptrBrtBeginPCDSDTCEMembersSortBy = static_cast<XLSB::BeginPCDSDTCEMembersSortBy*>(m_BrtBeginPCDSDTCEMembersSortBy.get());
+
+			if (ptrBrtBeginPCDSDTCEMembersSortBy != nullptr)
+				ptrBrtBeginPCDSDTCEMembersSortBy->cMembers = m_arPCDSDTCEMEMBER.size();
+
+			proc.mandatory(*m_BrtBeginPCDSDTCEMembersSortBy);
+		}
+
+		for (auto &item : m_arPCDSDTCEMEMBER)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDSDTCEMembers>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

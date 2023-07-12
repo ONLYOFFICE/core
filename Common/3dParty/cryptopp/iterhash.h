@@ -1,5 +1,8 @@
 // iterhash.h - originally written and placed in the public domain by Wei Dai
 
+/// \file iterhash.h
+/// \brief Base classes for iterated hashes
+
 #ifndef CRYPTOPP_ITERHASH_H
 #define CRYPTOPP_ITERHASH_H
 
@@ -15,10 +18,6 @@
 #  pragma warning(disable: 6011 6386 28193)
 # endif
 #endif
-
-// GCC cast warning
-#define HashWordPtr(x) ((HashWordType*)(void*)(x))
-#define ConstHashWordPtr(x) ((const HashWordType*)(const void*)(x))
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -40,6 +39,8 @@ class CRYPTOPP_NO_VTABLE IteratedHashBase : public BASE
 {
 public:
 	typedef T HashWordType;
+
+	virtual ~IteratedHashBase() {}
 
 	/// \brief Construct an IteratedHashBase
 	IteratedHashBase() : m_countLo(0), m_countHi(0) {}
@@ -78,13 +79,25 @@ public:
 	/// \brief Computes the hash of the current message
 	/// \param digest a pointer to the buffer to receive the hash
 	/// \param digestSize the size of the truncated digest, in bytes
-	/// \details TruncatedFinal() call Final() and then copies digestSize bytes to digest.
+	/// \details TruncatedFinal() calls Final() and then copies digestSize bytes to digest.
 	///   The hash is restarted the hash for the next message.
 	void TruncatedFinal(byte *digest, size_t digestSize);
 
+	/// \brief Retrieve the provider of this algorithm
+	/// \return the algorithm provider
+	/// \details The algorithm provider can be a name like "C++", "SSE", "NEON", "AESNI",
+	///    "ARMv8" and "Power8". C++ is standard C++ code. Other labels, like SSE,
+	///    usually indicate a specialized implementation using instructions from a higher
+	///    instruction set architecture (ISA). Future labels may include external hardware
+	///    like a hardware security module (HSM).
+	/// \note  Provider is not universally implemented yet.
+	virtual std::string AlgorithmProvider() const { return "C++"; }
+
 protected:
-	inline T GetBitCountHi() const {return (m_countLo >> (8*sizeof(T)-3)) + (m_countHi << 3);}
-	inline T GetBitCountLo() const {return m_countLo << 3;}
+	inline T GetBitCountHi() const
+		{return (m_countLo >> (8*sizeof(T)-3)) + (m_countHi << 3);}
+	inline T GetBitCountLo() const
+		{return m_countLo << 3;}
 
 	void PadLastBlock(unsigned int lastBlockSize, byte padFirst=0x80);
 	virtual void Init() =0;
@@ -92,7 +105,8 @@ protected:
 	virtual ByteOrder GetByteOrder() const =0;
 	virtual void HashEndianCorrectedBlock(const HashWordType *data) =0;
 	virtual size_t HashMultipleBlocks(const T *input, size_t length);
-	void HashBlock(const HashWordType *input) {HashMultipleBlocks(input, this->BlockSize());}
+	void HashBlock(const HashWordType *input)
+		{HashMultipleBlocks(input, this->BlockSize());}
 
 	virtual T* DataBuf() =0;
 	virtual T* StateBuf() =0;
@@ -115,7 +129,7 @@ public:
 	typedef T_Endianness ByteOrderClass;
 	typedef T_HashWordType HashWordType;
 
-	CRYPTOPP_CONSTANT(BLOCKSIZE = T_BlockSize)
+	CRYPTOPP_CONSTANT(BLOCKSIZE = T_BlockSize);
 	// BCB2006 workaround: can't use BLOCKSIZE here
 	CRYPTOPP_COMPILE_ASSERT((T_BlockSize & (T_BlockSize - 1)) == 0);	// blockSize is a power of 2
 
@@ -127,7 +141,7 @@ public:
 	unsigned int BlockSize() const {return T_BlockSize;}
 
 	/// \brief Provides the byte order of the hash
-	/// \returns the byte order of the hash as an enumeration
+	/// \return the byte order of the hash as an enumeration
 	/// \details GetByteOrder() returns <tt>T_Endianness::ToEnum()</tt>.
 	/// \sa ByteOrder()
 	ByteOrder GetByteOrder() const {return T_Endianness::ToEnum();}
@@ -139,12 +153,18 @@ public:
 	/// \details CorrectEndianess() calls ConditionalByteReverse() using <tt>T_Endianness</tt>.
 	inline void CorrectEndianess(HashWordType *out, const HashWordType *in, size_t byteCount)
 	{
+		CRYPTOPP_ASSERT(in != NULLPTR);
+		CRYPTOPP_ASSERT(out != NULLPTR);
+		CRYPTOPP_ASSERT(IsAligned<T_HashWordType>(in));
+		CRYPTOPP_ASSERT(IsAligned<T_HashWordType>(out));
+
 		ConditionalByteReverse(T_Endianness::ToEnum(), out, in, byteCount);
 	}
 
 protected:
+	enum { Blocks = T_BlockSize/sizeof(T_HashWordType) };
 	T_HashWordType* DataBuf() {return this->m_data;}
-	FixedSizeSecBlock<T_HashWordType, T_BlockSize/sizeof(T_HashWordType)> m_data;
+	FixedSizeSecBlock<T_HashWordType, Blocks> m_data;
 };
 
 /// \brief Iterated hash with a static transformation function
@@ -161,22 +181,24 @@ class CRYPTOPP_NO_VTABLE IteratedHashWithStaticTransform
 	: public ClonableImpl<T_Transform, AlgorithmImpl<IteratedHash<T_HashWordType, T_Endianness, T_BlockSize>, T_Transform> >
 {
 public:
-	CRYPTOPP_CONSTANT(DIGESTSIZE = T_DigestSize ? T_DigestSize : T_StateSize)
+	CRYPTOPP_CONSTANT(DIGESTSIZE = T_DigestSize ? T_DigestSize : T_StateSize);
 
 	virtual ~IteratedHashWithStaticTransform() {}
 
 	/// \brief Provides the digest size of the hash
 	/// \return the digest size of the hash, in bytes
 	/// \details DigestSize() returns <tt>DIGESTSIZE</tt>.
-	unsigned int DigestSize() const {return DIGESTSIZE;};
+	unsigned int DigestSize() const {return DIGESTSIZE;}
 
 protected:
-	IteratedHashWithStaticTransform() {this->Init();}
+	// https://github.com/weidai11/cryptopp/issues/147#issuecomment-766231864
+	IteratedHashWithStaticTransform() {IteratedHashWithStaticTransform::Init();}
 	void HashEndianCorrectedBlock(const T_HashWordType *data) {T_Transform::Transform(this->m_state, data);}
 	void Init() {T_Transform::InitState(this->m_state);}
 
+	enum { Blocks = T_BlockSize/sizeof(T_HashWordType) };
 	T_HashWordType* StateBuf() {return this->m_state;}
-	FixedSizeAlignedSecBlock<T_HashWordType, T_BlockSize/sizeof(T_HashWordType), T_StateAligned> m_state;
+	FixedSizeAlignedSecBlock<T_HashWordType, Blocks, T_StateAligned> m_state;
 };
 
 #if !defined(__GNUC__) && !defined(__clang__)

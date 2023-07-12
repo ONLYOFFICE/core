@@ -40,6 +40,7 @@ namespace OOX
 {
 	class CSettingsCustom;
 	class CSettings;
+	class CNumbering;
 }
 
 namespace BinDocxRW
@@ -111,15 +112,17 @@ public:
 	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read(long stLen, void* poResult);
 	int ReadContent( BYTE type, long length, void* poResult);
+
 	int ReadPPrChange(BYTE type, long length, void* poResult);
 	int ReadInd(BYTE type, long length, void* poResult);
 	int ReadSpacing(BYTE type, long length, void* poResult);
 	int ReadTabs(BYTE type, long length, void* poResult);
 	int ReadTabItem(BYTE type, long length, void* poResult);
 	int ReadNumPr(BYTE type, long length, void* poResult);
+	int ReadTableCellBorders(BYTE type, long length, void* poResult);
+	int ReadTableBorders(BYTE type, long length, void* poResult);
 	int ReadBorders(BYTE type, long length, void* poResult);
 	int ReadBorder(BYTE type, long length, void* poResult);
-	int ReadBorder2(BYTE type, long length, void* poResult);
 	int ReadFramePr(BYTE type, long length, void* poResult);
     int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);
@@ -168,13 +171,10 @@ class Binary_NumberingTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
-	Writers::NumberingWriter& oNumberingWriters;
-	Writers::FontTableWriter& m_oFontTableWriter;
-	std::vector<docNum*> m_aDocNums;
-	std::vector<docANum*> m_aDocANums;
-	std::map<int, int> m_mapANumToNum;
+	
+	OOX::CNumbering *m_pNumbering;
 public:
-	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CNumbering *numbering);
 	int Read();
 	int ReadNumberingContent(BYTE type, long length, void* poResult);
 	int ReadNums(BYTE type, long length, void* poResult);
@@ -286,10 +286,12 @@ private:
     Binary_rPrReader                oBinary_rPrReader;
     Binary_tblPrReader              oBinary_tblPrReader;
 	NSStringUtils::CStringBuilder*	m_pCurWriter;
-    OOX::Logic::CRunProperty		m_oCur_rPr;
+   
+	OOX::Logic::CRunProperty		m_oCur_rPr;
 	OOX::Logic::CRunProperty		m_oMath_rPr;
-	NSStringUtils::CStringBuilder	m_oCur_pPr;
-    BYTE                            m_byteLastElemType;
+	OOX::Logic::CParagraphProperty	m_oCur_pPr;
+    
+	BYTE                            m_byteLastElemType;
 public:
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;

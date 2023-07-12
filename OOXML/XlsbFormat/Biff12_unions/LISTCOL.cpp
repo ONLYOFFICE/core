@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -103,12 +103,33 @@ namespace XLSB
 
         if (proc.optional<EndListCol>())
         {
-            m_BrtEndListCol = elements_.back();
+            m_bBrtEndListCol = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndListCol = false;
 
-        return m_BrtBeginListCol && m_BrtEndListCol;
+        return m_BrtBeginListCol && m_bBrtEndListCol;
     }
+
+	const bool LISTCOL::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginListCol != nullptr)
+			proc.mandatory(*m_BrtBeginListCol);
+
+		if (m_BrtListCCFmla != nullptr)
+			proc.mandatory(*m_BrtListCCFmla);
+
+		if (m_BrtListTrFmla != nullptr)
+			proc.mandatory(*m_BrtListTrFmla);
+
+		if (m_LISTXMLCPR != nullptr)
+			proc.mandatory(*m_LISTXMLCPR);
+
+		proc.mandatory<EndListCol>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -72,6 +72,29 @@ namespace OOX
 		init();
 		Read( oFilePath );
 	}
+	CDocx::~CDocx()
+	{
+		m_oMain.init();
+		m_oGlossary.init();
+
+		m_pApp = NULL;
+		m_pCore = NULL;
+		m_pTheme = NULL;
+
+		m_pCommentsExt = NULL;
+		m_pCommentsExtensible = NULL;
+		m_pCommentsIds = NULL;
+		m_pPeople = NULL;
+		m_pDocumentComments = NULL;
+		m_pDocumentCommentsExt = NULL;
+		m_pDocumentCommentsExtensible = NULL;
+		m_pDocumentPeople = NULL;
+		m_pDocumentCommentsIds = NULL;
+		m_pCommentsUserData = NULL;
+
+		m_pVbaProject = NULL;
+		m_pJsaProject = NULL;
+	}
 	bool CDocx::Write(const CPath& oFilePath)
 	{
 		// Создаем папку

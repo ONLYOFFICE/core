@@ -41,7 +41,7 @@ BiffStructurePtr SXAxis::clone()
 }
 void SXAxis::load(CFRecord& record)
 {
-    unsigned short flags;
+	_UINT16 flags;
     if(record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
         record >> flags;
@@ -57,6 +57,25 @@ void SXAxis::load(CFRecord& record)
 	bCol	= GETBIT(flags, 1);
 	bPage	= GETBIT(flags, 2);
 	bData	= GETBIT(flags, 3);
-}	
+}
+void SXAxis::save(CFRecord& record)
+{
+	_UINT16 flags = 0;
+	SETBIT(flags, 0, bRw)
+	SETBIT(flags, 1, bCol)
+	SETBIT(flags, 2, bPage)
+	SETBIT(flags, 3, bData)
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << flags;
+	}
+	else
+	{
+		BYTE   flags_1b = flags;
+		record << flags_1b;
+	}
+
+}
 } // namespace XLS
 

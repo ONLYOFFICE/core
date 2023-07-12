@@ -130,6 +130,8 @@ private:
 	bool m_bInP;       // <w:p> открыт?
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
+
+	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 public:
 
 	CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
@@ -999,17 +1001,63 @@ private:
 				oTSP.sPStyle += L"<w:ind w:left=\"567\"/>";
 				readStream(oXml, sSelectors, oTSP);
 			}
+			// aside возможно использовать для сносок в epub
+			else if (sName == L"aside" || sName == L"div")
+			{
+				int bMsoFootnote = 0;
+				std::wstring sFootnoteID;
+				while (m_oLightReader.MoveToNextAttribute())
+				{
+					std::wstring sAName = m_oLightReader.GetName();
+					std::wstring sAText = m_oLightReader.GetText();
+					if (sAName == L"epub:type" && sAText == L"footnote")
+						bMsoFootnote++;
+					else if (sAName == L"style" && sAText == L"mso-element:footnote")
+						bMsoFootnote++;
+					else if (sAName == L"id")
+					{
+						std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sAText);
+						if (it != m_mFootnotes.end())
+						{
+							bMsoFootnote++;
+							sFootnoteID = it->second;
+						}
+					}
+				}
+				m_oLightReader.MoveToElement();
+				if (bMsoFootnote >= 2)
+				{
+					m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+					m_oNoteXml.WriteString(sFootnoteID);
+					m_oNoteXml.WriteString(L"\">");
+					readStream(&m_oNoteXml, sSelectors, oTS);
+					m_oNoteXml.WriteString(L"</w:footnote>");
+				}
+				else
+					readStream(oXml, sSelectors, oTS);
+			}
 			// С нового абзаца
-			else if(sName == L"article" || sName == L"header" || sName == L"div" || sName == L"blockquote" || sName == L"main" ||
+			else if(sName == L"article" || sName == L"header" || sName == L"blockquote" || sName == L"main" || sName == L"dir" ||
 					sName == L"summary" || sName == L"footer" || sName == L"nav" || sName == L"figcaption" || sName == L"form" ||
-					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"aside"      || sName == L"p"    ||
+					sName == L"details" || sName == L"option" || sName == L"dt"  || sName == L"p"    ||
 					sName == L"section" || sName == L"figure" || sName == L"dl"  || sName == L"legend"     || sName == L"map"  ||
-					sName == L"dir" ||
 					sName == L"h1" || sName == L"h2" || sName == L"h3" || sName == L"h4" || sName == L"h5" || sName == L"h6")
 				readStream(oXml, sSelectors, oTS);
 			// Горизонтальная линия
 			else if(sName == L"hr")
-				oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
+			{
+				bool bPrint = true;
+				for (const NSCSS::CNode& item : sSelectors)
+				{
+					if (item.m_sName == L"div" && item.m_sStyle == L"mso-element:footnote-list")
+					{
+						bPrint = false;
+						break;
+					}
+				}
+				if (bPrint)
+					oXml->WriteString(L"<w:p><w:pPr><w:pBdr><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"8\" w:space=\"0\"/></w:pBdr></w:pPr></w:p>");
+			}
 			// Меню
 			// Маркированный список
 			else if(sName == L"menu" || sName == L"ul" || sName == L"select" || sName == L"datalist")
@@ -1104,31 +1152,19 @@ private:
 				std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
 					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				}
 
 				GetSubClass(oXml, sSelectors);
-				oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
-				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
-				oXml->WriteString(L"</w:tcBorders>");
-				if(nRowspan != 1)
-				{
-					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
-					std::wstring sColspan = std::to_wstring(nColspan);
-					if(nRowspan == 0)
-						mTable.push_back({0, j, sColspan});
-					else
-						for(int k = i + 1; k < i + nRowspan; k++)
-							mTable.push_back({k, j, sColspan});
-				}
+				oXml->WriteString(L"<w:tc><w:tcPr>");
 
 				NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, true);
 				NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, false);
@@ -1138,7 +1174,7 @@ private:
 				int nWidth = oStyle.m_pDisplay.GetWidth();
 				std::wstring wsType = L"dxa";
 
-				//Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
+				//Если ширина указана в %, то используем тип dxa, если же в других единицах измерения, то в pct
 #if 1
 				// проблема с regex в старом gcc (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52719)
 				boost::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
@@ -1173,12 +1209,26 @@ private:
 					j += nColspan - 1;
 				}
 
+				oXml->WriteString(L"<w:tcBorders>");
+				oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
+				oXml->WriteString(L"</w:tcBorders>");
+				if(nRowspan != 1)
+				{
+					oXml->WriteString(L"<w:vMerge w:val=\"restart\"/>");
+					std::wstring sColspan = std::to_wstring(nColspan);
+					if(nRowspan == 0)
+						mTable.push_back({0, j, sColspan});
+					else
+						for(int k = i + 1; k < i + nRowspan; k++)
+							mTable.push_back({k, j, sColspan});
+				}
+
 				std::wstring wsVerticalAlign = oStyle.m_pDisplay.GetVerticalAlign();
 
 				if (!wsVerticalAlign.empty())
 					oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
 
-				oXml->WriteString(L"<w:hideMark/></w:tcPr>");
+				oXml->WriteString(L"<w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/><w:hideMark/></w:tcPr>");
 				size_t nEmpty = oXml->GetCurSize();
 				m_bWasPStyle = false;
 
@@ -1213,12 +1263,12 @@ private:
 				it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
 				while(it1 != mTable.end() || it2 != mTable.end())
 				{
-					oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
+					oXml->WriteString(L"<w:tc><w:tcPr><w:tcBorders>");
 					oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
 					oXml->WriteString(L"</w:tcBorders><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
 					std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
 					oXml->WriteString(sCol);
-					oXml->WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+					oXml->WriteString(L"\"/><w:noWrap w:val=\"false\"/><w:textDirection w:val=\"lrTb\"/></w:tcPr><w:p></w:p></w:tc>");
 					j += stoi(sCol);
 					it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
 					it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
@@ -1240,8 +1290,9 @@ private:
 
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
-		//if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-		//    oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+		if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
+			oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
+		m_bWasSpace = false;
 
 		// Начало таблицы
 		std::wstring wsTable = L"<w:tbl><w:tblPr>";
@@ -1571,12 +1622,14 @@ private:
 		std::wstring sRef;
 		std::wstring sAlt;
 		bool bCross = false;
+		std::wstring sFootnote;
 		while(m_oLightReader.MoveToNextAttribute())
 		{
 			std::wstring sName = m_oLightReader.GetName();
+			std::wstring sText = m_oLightReader.GetText();
 			if(sName == L"href")
 			{
-				sRef = m_oLightReader.GetText();
+				sRef = sText;
 				if(sRef.find('#') != std::wstring::npos)
 					bCross = true;
 			}
@@ -1586,17 +1639,24 @@ private:
 				oXml->WriteString(L"<w:bookmarkStart w:id=\"");
 				oXml->WriteString(sCrossId);
 				oXml->WriteString(L"\" w:name=\"");
-				oXml->WriteString(m_oLightReader.GetText());
+				oXml->WriteString(sText);
 				oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
 				oXml->WriteString(sCrossId);
 				oXml->WriteString(L"\"/>");
 			}
 			else if(sName == L"alt")
-				sAlt = m_oLightReader.GetText();
+				sAlt = sText;
+			else if (sName == L"style" && sText.find(L"mso-footnote-id") != std::wstring::npos)
+				sFootnote = sText.substr(sText.rfind(L':') + 1);
+			else if (sName == L"epub:type" && sText.find(L"noteref"))
+				sFootnote = L"href";
 		}
 		m_oLightReader.MoveToElement();
 		if(sNote.empty())
 			sNote = sRef;
+
+		if (bCross && sFootnote == L"href")
+			sFootnote = sRef.substr(sRef.find('#') + 1);
 
 		if (!m_bInP)
 		{
@@ -1645,7 +1705,21 @@ private:
 			oXml->WriteString(L"</w:t></w:r>");
 		}
 		if (m_bInP)
+		{
 			oXml->WriteString(L"</w:hyperlink>");
+
+			// Сноска
+			if (bCross && !sFootnote.empty())
+			{
+				std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+				oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+				oXml->WriteString(sFootnoteID);
+				oXml->WriteString(L"\"/></w:r>");
+
+				m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+			}
+		}
+
 		sNote = L"";
 	}
 

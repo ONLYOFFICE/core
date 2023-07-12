@@ -33,6 +33,9 @@
 #include "XFPropGradientStop.h"
 #include "Xnum.h"
 
+#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
+
 namespace XLS
 {
 
@@ -61,6 +64,24 @@ void XFPropGradientStop::load(CFRecord& record)
     record >> color;
 }
 
+void XFPropGradientStop::save(CFRecord& record)
+{
+	record.reserveNunBytes(2); // unused
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << numPosition;
+	}
+	else
+	{
+		Xnum numPosition_;
+
+		numPosition_.data.value = numPosition;
+		record << numPosition_;
+	}
+	record << color;
+}
+
 
 int XFPropGradientStop::serialize(std::wostream & stream)
 {
@@ -75,6 +96,33 @@ int XFPropGradientStop::serialize(std::wostream & stream)
 	return 0;
 }
 
+int XFPropGradientStop::deserialize(XmlUtils::CXmlLiteReader& oReader)
+{
+	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+	{
+		std::wstring wsPropName = oReader.GetName();
+
+		if (!wsPropName.empty() && wsPropName == L"position")
+		{
+			numPosition = XmlUtils::GetDouble(oReader.GetText());
+		}
+		oReader.MoveToElement();
+	}
+
+	if (!oReader.IsEmptyNode())
+	{
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring wsPropName = oReader.GetName();
+
+			if (wsPropName == L"color")
+				color.deserialize(oReader);
+		}
+	}
+
+	return 0;
+}
 
 
 } // namespace XLS

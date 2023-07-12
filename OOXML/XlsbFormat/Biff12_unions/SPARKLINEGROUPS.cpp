@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,7 @@ namespace XLSB
 
     // SPARKLINEGROUPS = BrtFRTBegin BrtBeginSparklineGroups 1*2147483647SPARKLINEGROUP
     //          BrtEndSparklineGroups BrtFRTEnd
-    const bool SPARKLINEGROUPS::loadContent(BinProcessor& proc)
+    const bool SPARKLINEGROUPS:: loadContent(BinProcessor& proc)
     {
         if (proc.optional<FRTBegin>())
         {
@@ -67,9 +67,11 @@ namespace XLSB
 
         if (proc.optional<BeginSparklineGroups>())
         {
-            m_BrtBeginSparklineGroups = elements_.back();
+            m_bBrtBeginSparklineGroups = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSparklineGroups = false;
 
         int count = proc.repeated<SPARKLINEGROUP>(0, 2147483647);
 
@@ -82,19 +84,44 @@ namespace XLSB
 
         if (proc.optional<EndSparklineGroups>())
         {
-            m_BrtEndSparklineGroups = elements_.back();
+            m_bBrtEndSparklineGroups = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklineGroups = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
 
-        return m_BrtBeginSparklineGroups && !m_arSPARKLINEGROUP.empty() && m_BrtEndSparklineGroups && m_BrtFRTEnd;
+        return m_bBrtBeginSparklineGroups && !m_arSPARKLINEGROUP.empty() && m_bBrtEndSparklineGroups && m_bBrtFRTEnd;
     }
+
+	const bool SPARKLINEGROUPS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginSparklineGroups>();
+
+		for (auto& item : m_arSPARKLINEGROUP)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSparklineGroups>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

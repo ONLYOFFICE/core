@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,7 +76,7 @@ namespace XLSB
 
         record.skipNunBytes(8);
 
-        unsigned short flags;
+		_UINT16 flags;
         record >> flags;
         fStopTrue   = GETBIT(flags, 1);
         fAbove      = GETBIT(flags, 2);
@@ -94,6 +94,33 @@ namespace XLSB
         if(cbFmla3)
             rgce1.load(record);
     }
+
+	void BeginCFRule::writeFields(XLS::CFRecord& record)
+	{
+		record << iType << iTemplate << dxfId << iPri << iParam;
+
+		record.reserveNunBytes(8);
+
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 1, fStopTrue)
+		SETBIT(flags, 2, fAbove)
+		SETBIT(flags, 3, fBottom)
+		SETBIT(flags, 4, fPercent)
+
+		record << flags;
+
+		record << cbFmla1 << cbFmla2 << cbFmla3 << strParam;
+
+		if (cbFmla1)
+			rgce1.save(record);
+
+		if (cbFmla2)
+			rgce1.save(record);
+
+		if (cbFmla3)
+			rgce1.save(record);
+	}
 
 } // namespace XLSB
 

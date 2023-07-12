@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,9 +30,7 @@
  *
  */
 
-#ifndef SHAREDSTRINGSSTREAM_H
-#define SHAREDSTRINGSSTREAM_H
-
+#pragma once
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../Base/Base.h"
@@ -42,13 +40,11 @@
 #include <iostream>
 #include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
-
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class SharedStringsStream;
-    typedef boost::shared_ptr<SharedStringsStream>		SharedStringsStreamPtr;
+    typedef boost::shared_ptr<SharedStringsStream> SharedStringsStreamPtr;
 
     class SharedStringsStream: public XLS::CompositeObject
     {
@@ -59,13 +55,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-		XLS::BaseObjectPtr               m_SHAREDSTRINGS;
+		XLS::BaseObjectPtr m_SHAREDSTRINGS;
 
     };
 
 }
 
-#endif // SHAREDSTRINGSSTREAM_H
 

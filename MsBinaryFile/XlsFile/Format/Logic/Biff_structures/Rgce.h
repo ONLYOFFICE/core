@@ -51,7 +51,9 @@ public:
 	static const ElementType	type = typeRgce;
 	
 	void			load(CFRecord& record, const size_t cce_val);
-	virtual void	load(CFRecord& record);
+
+    void            load(CFRecord& record) override;
+    void            save(CFRecord& record) override;
 
 	const size_t	getCCE() const;
 	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"

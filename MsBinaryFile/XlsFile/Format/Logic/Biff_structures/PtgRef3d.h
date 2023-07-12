@@ -33,7 +33,7 @@
 
 #include "OperandPtg.h"
 #include "../GlobalWorkbookInfo.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRef.h"
+#include "BIFF12/CellRef.h"
 
 namespace XLS
 {
@@ -53,9 +53,11 @@ public:
 
 	void fromString(const std::wstring& str);
 
-	virtual void loadFields(CFRecord& record);
+	void loadFields(CFRecord& record) override;
+
+	void writeFields(CFRecord& record) override;
 	
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
 
 	static const unsigned short fixed_id = 0x1A;
 private:

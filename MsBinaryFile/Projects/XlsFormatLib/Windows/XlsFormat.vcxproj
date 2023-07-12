@@ -381,6 +381,20 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AntiMoniker.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ArrayParsedFormula.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\Bes.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\Color.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\ColSpan.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormula.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormulas.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader12.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTParsedFormula.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRef.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRefs.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRelID.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqref.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqrefs.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\RelID.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\UncheckedSqRfX.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BookExt_Conditional11.cpp" />
@@ -780,7 +794,6 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXMG.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXMGS.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.cpp" />
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFORMULA_bu.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXOPER.cpp" />
@@ -1174,6 +1187,23 @@
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\AntiMoniker.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ArrayParsedFormula.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\Bes.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\CellRangeRef.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\CellRef.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\Color.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\ColSpan.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormula.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormulas.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTParsedFormula.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRef.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRefs.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRelID.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqref.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqrefs.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\RelID.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\UncheckedSqRfX.h" />
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\XLWideString.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffAttribute.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.h" />
@@ -1580,7 +1610,6 @@
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXMG.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXMGS.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.h" />
-    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFORMULA_bu.h" />
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXOPER.h" />
@@ -1611,29 +1640,29 @@
     <RootNamespace>XlsFormat</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>XlsFormatLib</ProjectName>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -1662,8 +1691,10 @@
     <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_64\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -1680,7 +1711,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -1697,7 +1727,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>

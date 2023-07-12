@@ -468,14 +468,13 @@ namespace OOX
 		}
 		void CSparklineGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// ������ ��������
 			WritingElement_ReadAttributes_Start( oReader )
-
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("manualMax"),      m_oManualMax )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("manualMin"),      m_oManualMin )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("lineWeight"),      m_oLineWeight )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("type"),      m_oType )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("dateAxis"),      m_oDateAxis )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("manualMax"),	m_oManualMax )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("manualMin"),	m_oManualMin )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lineWeight"),m_oLineWeight )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),		m_oType )
+				WritingElement_ReadAttributes_Read_else_if  (oReader,  _T("xr2:uid"),	m_oUId )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dateAxis"),	m_oDateAxis )
 					else if(_T("displayEmptyCellsAs") == wsName)
 					{
 						ST_DispBlanksAs eVal;
@@ -486,19 +485,19 @@ namespace OOX
 							m_oDisplayEmptyCellsAs.get2() = eVal;
 						}
 					}
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("markers"),      m_oMarkers )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("high"),      m_oHigh )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("low"),      m_oLow )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("first"),      m_oFirst )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("last"),      m_oLast )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("negative"),      m_oNegative )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("displayXAxis"),      m_oDisplayXAxis )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("displayHidden"),      m_oDisplayHidden )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("minAxisType"),      m_oMinAxisType )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("maxAxisType"),      m_oMaxAxisType )
-				WritingElement_ReadAttributes_Read_else_if     ( oReader, _T("rightToLeft"),      m_oRightToLeft )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("markers"),	m_oMarkers )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("high"),		m_oHigh )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("low"),		m_oLow )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("first"),		m_oFirst )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("last"),		m_oLast )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("negative"),	m_oNegative )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("displayXAxis"),	m_oDisplayXAxis )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("displayHidden"),	m_oDisplayHidden )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minAxisType"),	m_oMinAxisType )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxAxisType"),	m_oMaxAxisType )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rightToLeft"),	m_oRightToLeft )
 
-				WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 		CSparklineGroups::CSparklineGroups()

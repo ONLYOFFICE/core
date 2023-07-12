@@ -62,14 +62,13 @@ namespace PPTX
 		}
 		void Stretch::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int count = oNodes.GetCount();
-				for (int i = 0; i < count; ++i)
+				size_t count = oNodes.size();
+				for (size_t i = 0; i < count; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					if (_T("fillRect") == XmlUtils::GetNameNoNS(oNode.GetName()))
 						fillRect = oNode;

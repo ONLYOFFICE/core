@@ -65,6 +65,16 @@ void PtgFuncVar::loadFields(CFRecord& record)
 	fCeFunc = tab.isMacro();
 }
 
+void PtgFuncVar::writeFields(CFRecord& record)
+{
+	global_info_ = record.getGlobalWorkbookInfo();
+
+	global_info_->bMacrosExist = true;
+
+	record << cparams;
+	record.storeAnyData(tab);
+}
+
 
 void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

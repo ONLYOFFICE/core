@@ -38,15 +38,14 @@ namespace PPTX
 	{		
 		void TcBdr::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int count = oNodes.GetCount();
+				size_t count = oNodes.size();
 
-				for (int i = 0; i < count; ++i)
+				for (size_t i = 0; i < count; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 

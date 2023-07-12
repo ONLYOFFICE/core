@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -78,6 +78,17 @@ namespace XLSB
 
         return m_FRTPCDFIELD14 || m_FRTPCDFIELD15;
     }
+
+	const bool FRTPCDFIELD::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_FRTPCDFIELD14 != nullptr)
+			proc.mandatory(*m_FRTPCDFIELD14);
+
+		if (m_FRTPCDFIELD15 != nullptr)
+			proc.mandatory(*m_FRTPCDFIELD15);
+
+		return true;
+	}
 
 } // namespace XLSB
 

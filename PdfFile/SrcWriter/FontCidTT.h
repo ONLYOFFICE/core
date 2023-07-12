@@ -99,7 +99,7 @@ namespace PdfWriter
 	{
 	public:
 
-		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
+		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex, CFontFileTrueType* pFontTT);
 		~CFontCidTrueType();
 		unsigned short EncodeUnicode(const unsigned int& unUnicode);
 		unsigned short EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount);

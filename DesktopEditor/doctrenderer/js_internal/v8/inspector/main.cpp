@@ -19,11 +19,7 @@ using namespace NSJSBase;
 int main()
 {
 	JSSmart<CJSContext> pContext1 = new CJSContext();
-	pContext1->CreateContext();
-
-
 	JSSmart<CJSContext> pContext2 = new CJSContext();
-	pContext2->CreateContext();
 
 	{
 		CJSContextScope oScope(pContext1);

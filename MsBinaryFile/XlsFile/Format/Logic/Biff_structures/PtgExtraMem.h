@@ -33,7 +33,7 @@
 
 #include "Ptg.h"
 #include "CellRangeRef.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "BIFF12/CellRangeRef.h"
 namespace XLS
 {
 
@@ -47,7 +47,8 @@ public:
 	PtgExtraMem(CFRecord& record);
 	BiffStructurePtr clone();
 	
-	virtual void load(CFRecord& record); // No type info
+	void load(CFRecord& record) override; // No type info
+	void save(CFRecord& record) override;
  // No type info
     GlobalWorkbookInfoPtr	global_info;
 

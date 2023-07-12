@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,11 +55,13 @@ namespace XLSB
     // SUPSAME = BrtSupSame *BrtPlaceholderName
     const bool SUPSAME::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<SupSame>())
-        {
-            m_BrtSupSame = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<SupSame>())
+		{
+			m_bBrtSupSame = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtSupSame = false;
 
         while (proc.optional<PlaceholderName>())
         {
@@ -67,8 +69,20 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSupSame || !m_arBrtPlaceholderName.empty();
+        return m_bBrtSupSame || !m_arBrtPlaceholderName.empty();
     }
+
+	const bool SUPSAME::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<SupSame>();
+
+		for (auto &item : m_arBrtPlaceholderName)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

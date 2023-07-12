@@ -36,10 +36,11 @@
 namespace XLSB
 {
 
-class IIFtab : public XLS::BiffAttributeSimple<unsigned char>
+class IIFtab : public XLS::BiffAttributeSimple<BYTE>
 {
 public:
     XLS::BiffStructurePtr clone();
+	IIFtab& operator= (const BYTE& other_val);
 
 	enum
 	{

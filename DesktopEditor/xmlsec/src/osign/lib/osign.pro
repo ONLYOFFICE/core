@@ -53,6 +53,11 @@ SOURCES += $$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp
 # FILE
 HEADERS += $$CORE_ROOT_DIR/DesktopEditor/common/File.h
 SOURCES += $$CORE_ROOT_DIR/DesktopEditor/common/File.cpp
+
+core_ios {
+    OBJECTIVE_SOURCES += $$CORE_ROOT_DIR/DesktopEditor/common/File_ios.mm
+    LIBS += -framework Foundation
+}
 # ----------
 
 build_xp:DESTDIR=$$DESTDIR/xp

@@ -202,6 +202,64 @@ namespace OOX
 			if (!oReader.IsEmptyNode())
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CWorkbookProtection::toBin()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_oWorkbookAlgorithmName.IsInit() || m_oWorkbookSpinCount.IsInit() || m_oRevisionsAlgorithmName.IsInit() ||
+				m_oRevisionsSpinCount.IsInit())
+			{
+				auto ptr(new XLSB::BookProtectionIso);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+
+				ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+				ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+				ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
+
+				ptr->ipdBookPasswordData.szAlgName = m_oWorkbookAlgorithmName->GetValue();
+				ptr->dwBookSpinCount = m_oWorkbookSpinCount->GetValue();
+
+				auto len = 0;
+				auto bytes = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
+				std::string strData = {m_oWorkbookHashValue.get().begin(), m_oWorkbookHashValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
+					bytes, len);
+				ptr->ipdBookPasswordData.rgbHash.cbLength = len;
+
+
+				auto len1 = 0;
+				auto bytes1 = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
+				std::string strData1 = {m_oWorkbookSaltValue.get().begin(), m_oWorkbookSaltValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
+					bytes1, len1);
+				ptr->ipdBookPasswordData.rgbSalt.cbLength = len1;
+
+				ptr->ipdRevPasswordData.szAlgName = m_oRevisionsAlgorithmName->GetValue();
+				ptr->dwRevSpinCount = m_oRevisionsSpinCount->GetValue();
+
+				auto len2 = 0;
+				auto bytes2 = ptr->ipdRevPasswordData.rgbHash.rgbData.data();
+				std::string strData2 = {m_oRevisionsHashValue.get().begin(), m_oRevisionsHashValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData2.c_str(), strData2.size(),
+					bytes2, len2);
+				ptr->ipdRevPasswordData.rgbHash.cbLength = len2;
+
+				auto len3 = 0;
+				auto bytes3 = ptr->ipdRevPasswordData.rgbSalt.rgbData.data();
+				std::string strData3 = {m_oRevisionsSaltValue.get().begin(), m_oRevisionsSaltValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData3.c_str(), strData3.size(),
+					bytes3, len3);
+				ptr->ipdRevPasswordData.rgbSalt.cbLength = len3;
+			}
+			else
+			{
+				auto ptr(new XLSB::BookProtection);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+				ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+				ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+				ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
+			}
+			return objectPtr;
+		}
 		void CWorkbookProtection::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);

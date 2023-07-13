@@ -69,6 +69,24 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CSheet::toBin()
+		{
+			auto ptr(new XLSB::BundleSh);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->strRelID.value = m_oRid->GetValue();
+			ptr->strName = m_oName.get();
+			ptr->iTabID = m_oSheetId->GetValue();
+
+			if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVisible)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::VISIBLE;
+			else if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleHidden)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::HIDDEN;
+			else if(m_oState == SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden)
+				ptr->hsState = XLSB::BundleSh::ST_SheetState::VERYHIDDEN;
+
+			return objectPtr;
+		}
 		void CSheet::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -170,6 +188,13 @@ namespace OOX
 			{
 				m_arrItems.push_back(new CSheet(sheet));
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CSheets::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i: m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
 		}
 		EElementType CSheets::getType () const
 		{

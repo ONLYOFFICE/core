@@ -77,6 +77,10 @@
 	{
 		return this.readInt() / 100;
 	};
+	CBinaryReader.prototype.readDouble2 = function()
+	{
+		return this.readInt() / 10000;
+	};
 	CBinaryReader.prototype.readString = function()
 	{
 		var len = this.readInt();
@@ -539,10 +543,10 @@
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["rect"] = {};
-			rec["rect"]["x1"] = parseFloat(reader.readString());
-			rec["rect"]["y1"] = parseFloat(reader.readString());
-			rec["rect"]["x2"] = parseFloat(reader.readString());
-			rec["rect"]["y2"] = parseFloat(reader.readString());
+			rec["rect"]["x1"] = reader.readDouble2();
+			rec["rect"]["y1"] = reader.readDouble2();
+			rec["rect"]["x2"] = reader.readDouble2();
+			rec["rect"]["y2"] = reader.readDouble2();
 			
 			let tc = reader.readInt();
 			if (tc)
@@ -553,7 +557,10 @@
 			}
 			
 			rec["alignment"] = reader.readInt();
-			rec["type"] = reader.readString();
+			// Тип аннотации виджета - FT
+			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
+			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
+			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
 			var flags = reader.readInt();
 
@@ -607,12 +614,12 @@
 			if (flags & (1 << 8))
 				rec["defaultValue"] = reader.readString();
 
-			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
+			if (rec["type"] == 3 || rec["type"] == 2 || rec["type"] == 1)
 			{
 				rec["value"] = flags & (1 << 9) ? "Yes" : "Off";
 				let IFflags = reader.readInt();
 				// Характеристики внешнего вида - MK
-				if (rec["type"] == "button")
+				if (rec["type"] == 1)
 				{
 					// Заголовок - СА
 					if (flags & (1 << 10))
@@ -633,10 +640,14 @@
 				if (IFflags & (1 << 0))
 				{
 					rec["IF"] = {};
+					// Обстоятельства масштабирования IF.SW
+					// 0 - A, 1 - B, 2 - S, 3 - N
 					if (IFflags & (1 << 1))
-						rec["IF"]["SW"] = reader.readString();
+						rec["IF"]["SW"] = reader.readByte();
+					// Тип масштабирования - IF.S
+					// 0 - A, 1 - P
 					if (IFflags & (1 << 2))
-						rec["IF"]["S"] = reader.readString();
+						rec["IF"]["S"] = reader.readByte();
 					if (IFflags & (1 << 3))
 					{
 						rec["IF"]["A"] = [];
@@ -655,7 +666,7 @@
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
 			}
-			else if (rec["type"] == "text")
+			else if (rec["type"] == 4)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
@@ -672,7 +683,7 @@
 				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
 				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
 			}
-			else if (rec["type"] == "combobox" || rec["type"] == "listbox")
+			else if (rec["type"] == 5 || rec["type"] == 6)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();

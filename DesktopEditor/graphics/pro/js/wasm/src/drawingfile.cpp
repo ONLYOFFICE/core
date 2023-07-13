@@ -625,20 +625,16 @@ int main(int argc, char* argv[])
 			std::cout << "Page " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "X1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Y1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "X2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Y2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
 
 			int nTCLength = READ_INT(pWidgets + i);
 			i += 4;
@@ -656,11 +652,13 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Q " << nPathLength << ", ";
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::string sType = std::string((char*)(pWidgets + i), nPathLength);
+
+			std::string arrType[] = {"", "button", "radiobutton", "checkbox", "text", "combobox", "listbox", "signature"};
+			nPathLength = READ_BYTE(pWidgets + i);
+			i += 1;
+			std::string sType = arrType[nPathLength];
 			std::cout << "Type " << sType << ", ";
-			i += nPathLength;
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Field Flag " << nPathLength << ", ";
@@ -797,17 +795,17 @@ int main(int argc, char* argv[])
 				{
 					if (nIFFlag & (1 << 1))
 					{
-						nPathLength = READ_INT(pWidgets + i);
-						i += 4;
-						std::cout << "SW " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-						i += nPathLength;
+						std::string arrSW[] = {"A", "B", "S", "N"};
+						nPathLength = READ_BYTE(pWidgets + i);
+						i += 1;
+						std::cout << "SW " << arrSW[nPathLength] << ", ";
 					}
 					if (nIFFlag & (1 << 2))
 					{
-						nPathLength = READ_INT(pWidgets + i);
-						i += 4;
-						std::cout << "S " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-						i += nPathLength;
+						std::string arrS[] = {"A", "P"};
+						nPathLength = READ_BYTE(pWidgets + i);
+						i += 1;
+						std::cout << "S " << arrS[nPathLength] << ", ";
 					}
 					if (nIFFlag & (1 << 3))
 					{

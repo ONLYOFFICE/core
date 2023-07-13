@@ -776,8 +776,6 @@ TextString* getName(Object* oField)
 }
 void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
 {
-    AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
-
     Object oActType;
     std::string sSName;
     if (oAction->dictLookup("S", &oActType)->isName())
@@ -1270,14 +1268,10 @@ BYTE* CPdfReader::GetWidgets()
         double dTemp = dy1;
         dy1 = dHeight - dy2;
         dy2 = dHeight - dTemp;
-        std::string sX1 = std::to_string(dx1);
-        std::string sY1 = std::to_string(dy1);
-        std::string sX2 = std::to_string(dx2);
-        std::string sY2 = std::to_string(dy2);
-        oRes.WriteString((BYTE*)sX1.c_str(), (unsigned int)sX1.length());
-        oRes.WriteString((BYTE*)sY1.c_str(), (unsigned int)sY1.length());
-        oRes.WriteString((BYTE*)sX2.c_str(), (unsigned int)sX2.length());
-        oRes.WriteString((BYTE*)sY2.c_str(), (unsigned int)sY2.length());
+        oRes.WriteDouble(dx1);
+        oRes.WriteDouble(dy1);
+        oRes.WriteDouble(dx2);
+        oRes.WriteDouble(dy2);
 
         int nSpace;
         GList *arrColors = pField->getColorSpace(&nSpace);
@@ -1297,22 +1291,22 @@ BYTE* CPdfReader::GetWidgets()
 
         // Тип - FT + флаги
         AcroFormFieldType oType = pField->getAcroFormFieldType();
-        std::string sType;
+        int nType = 0; // Unknown
         switch (oType)
         {
-        case acroFormFieldPushbutton:    sType = "button";        break;
-        case acroFormFieldRadioButton:   sType = "radiobutton";   break;
-        case acroFormFieldCheckbox:      sType = "checkbox";      break;
-        case acroFormFieldFileSelect:    sType = "text"/*"fileselect"*/;    break;
-        case acroFormFieldMultilineText: sType = "text"/*"multilinetext"*/; break;
-        case acroFormFieldText:          sType = "text";          break;
-        case acroFormFieldBarcode:       sType = "text"/*"barcode"*/;       break;
-        case acroFormFieldComboBox:      sType = "combobox";      break;
-        case acroFormFieldListBox:       sType = "listbox";       break;
-        case acroFormFieldSignature:     sType = "signature";     break;
-        default:                         sType = "";              break;
+        case acroFormFieldPushbutton:    nType = 1;/*sType = "button";*/             break;
+        case acroFormFieldRadioButton:   nType = 2;/*sType = "radiobutton";*/        break;
+        case acroFormFieldCheckbox:      nType = 3;/*sType = "checkbox";*/           break;
+        case acroFormFieldFileSelect:    nType = 4;/*sType = "text""fileselect"*/    break;
+        case acroFormFieldMultilineText: nType = 4;/*sType = "text""multilinetext"*/ break;
+        case acroFormFieldText:          nType = 4;/*sType = "text";*/               break;
+        case acroFormFieldBarcode:       nType = 4;/*sType = "text""barcode"*/       break;
+        case acroFormFieldComboBox:      nType = 5;/*sType = "combobox";*/           break;
+        case acroFormFieldListBox:       nType = 6;/*sType = "listbox";*/            break;
+        case acroFormFieldSignature:     nType = 7;/*sType = "signature";*/          break;
+        default:                         nType = 0;/*sType = "";*/                   break;
         }
-        oRes.WriteString((BYTE*)sType.c_str(), (unsigned int)sType.length());
+        oRes.WriteBYTE(nType);
 
         // Флаг - Ff
         unsigned int nFieldFlag = pField->getFlags();
@@ -1357,8 +1351,6 @@ oObj.free();\
             BYTE nH = 1; // Default: I
             if (sName == "N")
                 nH = 0;
-            else if (sName == "I")
-                nH = 1;
             else if (sName == "O")
                 nH = 2;
             else if (sName == "P" || sName == "T")
@@ -1609,7 +1601,14 @@ oObj.free();\
                     {
                         nIFFlag |= (1 << 1);
                         std::string sName(oObj.getName());
-                        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        BYTE nSW = 0; // Default: A
+                        if (sName == "B")
+                            nSW = 1;
+                        else if (sName == "S")
+                            nSW = 2;
+                        else if (sName == "N")
+                            nSW = 3;
+                        oRes.WriteBYTE(nSW);
                     }
                     oObj.free();
                     // 3 - Тип масштабирования - S
@@ -1617,7 +1616,10 @@ oObj.free();\
                     {
                         nIFFlag |= (1 << 2);
                         std::string sName(oObj.getName());
-                        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+                        BYTE nS = 1; // Default: P
+                        if (sName == "A")
+                            nS = 0;
+                        oRes.WriteBYTE(nS);
                     }
                     oObj.free();
                     // 4 - Смещение - A
@@ -2109,7 +2111,7 @@ oObj.free();\
 
                 if (!oAA.dictGetVal(j, &oAction)->isDict())
                 {
-                    oRes.WriteString(NULL, 0);
+                    oRes.WriteBYTE(0);
                     oAction.free();
                     continue;
                 }

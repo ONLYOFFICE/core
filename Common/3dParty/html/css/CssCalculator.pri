@@ -8,6 +8,7 @@ css_calculator_without_xhtml {
 	           $$PWD/src/CElement.h \
 			   $$PWD/src/CNode.h \
 			   $$PWD/src/ConstValues.h \
+			   $$PWD/src/StaticFunctions.h \
 			   $$PWD/src/StyleProperties.h \
 			   $$PWD/src/CUnitMeasureConverter.h
 
@@ -15,6 +16,7 @@ css_calculator_without_xhtml {
 	           $$PWD/src/CElement.cpp \
 			   $$PWD/src/CNode.cpp \
 			   $$PWD/src/ConstValues.cpp \
+			   $$PWD/src/StaticFunctions.cpp \
 			   $$PWD/src/StyleProperties.cpp \
 			   $$PWD/src/CUnitMeasureConverter.cpp
 } else {

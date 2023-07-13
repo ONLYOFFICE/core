@@ -128,7 +128,7 @@ namespace NSCSS
 				//FONT
 				CASE(L"font"):
 				{
-					m_oFont.SetValue(pPropertie.second.c_str(), unLevel, bHardMode);
+					m_oFont.SetValue(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"font-size"):
@@ -380,6 +380,7 @@ namespace NSCSS
 					break;
 				}
 				CASE(L"background"):
+				CASE(L"bgcolor"):
 				{
 					m_oBackground.SetBackground(pPropertie.second, unLevel, bHardMode);
 

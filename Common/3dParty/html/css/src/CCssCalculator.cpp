@@ -29,14 +29,14 @@ namespace NSCSS
 		m_pInternal->AddStyles(sStyle);
 	}
 
-	void CCssCalculator::AddStyles(const std::wstring &sStyle)
+	void CCssCalculator::AddStyles(const std::wstring &wsStyle)
 	{
-		m_pInternal->AddStyles(sStyle);
+		m_pInternal->AddStyles(wsStyle);
 	}
 
-	void CCssCalculator::AddStylesFromFile(const std::wstring &sFileName)
+	void CCssCalculator::AddStylesFromFile(const std::wstring &wsFileName)
 	{
-		m_pInternal->AddStylesFromFile(sFileName);
+		m_pInternal->AddStylesFromFile(wsFileName);
 	}
 
 	void CCssCalculator::SetUnitMeasure(const UnitMeasure& nType)
@@ -51,27 +51,27 @@ namespace NSCSS
 
 	void CCssCalculator::SetBodyTree(const CTree &oTree)
 	{
-		    m_pInternal->SetBodyTree(oTree);
+		m_pInternal->SetBodyTree(oTree);
 	}
 
 	void CCssCalculator::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
 	{
-		    m_pInternal->SetSizeSourceWindow(oSizeWindow);
+		m_pInternal->SetSizeSourceWindow(oSizeWindow);
 	}
 
 	void CCssCalculator::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
 	{
-		    m_pInternal->SetSizeDeviceWindow(oSizeWindow);
+		m_pInternal->SetSizeDeviceWindow(oSizeWindow);
 	}
 
 	CSizeWindow CCssCalculator::GetSizeSourceWindow() const
 	{
-		    return m_pInternal->GetSizeSourceWindow();
+		return m_pInternal->GetSizeSourceWindow();
 	}
 
 	CSizeWindow CCssCalculator::GetSizeDeviceWindow() const
 	{
-		    return m_pInternal->GetSizeDeviceWindow();
+		return m_pInternal->GetSizeDeviceWindow();
 	}
 
 	UnitMeasure CCssCalculator::GetUnitMeasure() const

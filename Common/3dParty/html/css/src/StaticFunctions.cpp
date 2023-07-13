@@ -80,25 +80,28 @@ namespace NS_STATIC_FUNCTIONS
 		return arValues;
 	}
 
-	std::vector<std::wstring> GetWordsW(const std::wstring& wsLine, bool bWithSigns, const std::wstring& wsSigns)
+	std::vector<std::wstring> GetWordsW(const std::wstring& wsLine, bool bWithSigns, const std::wstring& wsDelimiters)
 	{
 		if (wsLine.empty())
 			return {};
 
-		if (wsLine.find_first_of(wsSigns) == std::wstring::npos)
-			return std::vector<std::wstring>({wsLine});
+		size_t unEnd = wsLine.find_first_of(wsDelimiters);
 
+		if (std::wstring::npos == unEnd)
+			return {wsLine};
+
+		size_t unStart = 0;
 		std::vector<std::wstring> arWords;
 
-		std::wstring::const_iterator oFirstNotSpace = std::find_if_not(wsLine.begin(), wsLine.end(), std::iswspace);
-		std::wstring::const_iterator oLastNotSpace;
-
-		while (oFirstNotSpace != wsLine.end())
+		while (std::wstring::npos != unEnd)
 		{
-			oLastNotSpace = std::find_first_of(oFirstNotSpace + ((bWithSigns) ? 1 : 0), wsLine.end(), wsSigns.begin(), wsSigns.end());
-			arWords.push_back(std::wstring(oFirstNotSpace, oLastNotSpace));
-			oFirstNotSpace = std::find_if_not(oLastNotSpace + ((bWithSigns) ? 1 : 0), wsLine.end(), std::iswspace);
+			arWords.emplace_back(wsLine.data() + unStart, unEnd - unStart + ((bWithSigns) ? 1 : 0));
+			unStart = wsLine.find_first_not_of(wsDelimiters, unEnd);
+			unEnd = wsLine.find_first_of(wsDelimiters, unStart);
 		}
+
+		arWords.emplace_back(wsLine.data() + unStart);
+
 		return arWords;
 	}
 
@@ -164,6 +167,13 @@ namespace NS_STATIC_FUNCTIONS
 		}
 
 		return mRules;
+	}
+
+	std::wstring RemoveSpaces(std::wstring &wsString)
+	{
+		std::wstring::const_iterator ciStart = std::find_if_not(wsString.begin(), wsString.end(), std::iswspace);
+		std::wstring::const_reverse_iterator criEnd = std::find_if_not(wsString.rbegin(),wsString.rend(), std::iswspace);
+		return std::wstring(ciStart, criEnd.base());
 	}
 }
 }

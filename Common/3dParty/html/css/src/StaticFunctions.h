@@ -20,9 +20,11 @@ namespace NSCSS
 		double ReadDouble(const std::wstring& wsValue);
 		std::vector<double> ReadDoubleValues(const std::wstring& wsValue);
 
-		std::vector<std::wstring> GetWordsW(const std::wstring& wsLine, bool bWithSigns = false, const std::wstring& wsSigns = L" \n\r\t\f\v:;,!");
+		std::vector<std::wstring> GetWordsW(const std::wstring& wsLine, bool bWithSigns = false, const std::wstring& wsDelimiters = L" \n\r\t\f\v:;,!");
 		std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector);
 		std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles);
+
+		std::wstring RemoveSpaces(std::wstring& wsString);
 	}
 
 	#define SWITCH(str)  switch(SWITCH_CASE::str_hash_for_switch(str))

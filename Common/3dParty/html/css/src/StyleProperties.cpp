@@ -545,7 +545,7 @@ namespace NSCSS
 			if (std::wstring::npos == unEnd)
 				return false;
 
-			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), L" (),");
+			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), false, L" (),");
 
 			if (3 > arValues.size())
 				return false;
@@ -651,9 +651,8 @@ namespace NSCSS
 		{
 			case ColorRGB: return ConvertRGBtoHEX(*static_cast<TRGB*>(m_oValue.m_pColor));
 			case ColorHEX: case ColorUrl: return *static_cast<std::wstring*>(m_oValue.m_pColor);
+			default: return std::wstring();
 		}
-
-		return std::wstring();
 	}
 
 	TRGB CColor::ToRGB() const
@@ -662,9 +661,8 @@ namespace NSCSS
 		{
 			case ColorRGB: return *static_cast<TRGB*>(m_oValue.m_pColor);
 			case ColorHEX: return ConvertHEXtoRGB(*static_cast<std::wstring*>(m_oValue.m_pColor));
+			default: return TRGB();
 		}
-
-		return TRGB();
 	}
 
 	std::vector<std::wstring> CMatrix::CutTransforms(const std::wstring &wsValue) const
@@ -1186,7 +1184,7 @@ namespace NSCSS
 
 	bool CBackground::SetBackground(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, L" ");
+		const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 
 		for (const std::wstring& wsValue : arValues)
 		{
@@ -1305,7 +1303,7 @@ namespace NSCSS
 		if (wsValue.empty())
 			return false;
 
-		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, L" ");
+		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)
 		{
 			if (SetColor(sValue, unLevel, bHardMode))
@@ -1393,7 +1391,7 @@ namespace NSCSS
 
 	bool CBorderSide::Empty() const
 	{
-		return m_oWidth.Empty() && m_oStyle.Empty() && m_oColor.Empty();
+		return (m_oWidth.Empty() || m_oWidth == 0) && m_oStyle.Empty() && m_oColor.Empty();
 	}
 
 	CBorderSide &CBorderSide::operator+=(const CBorderSide &oBorderSide)
@@ -1734,7 +1732,7 @@ namespace NSCSS
 
 	bool CIndent::AddValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, L" ");
+		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		switch (arValues.size())
 		{
 			case 1:
@@ -1955,7 +1953,7 @@ namespace NSCSS
 	bool CFont::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		//TODO:: скорее всего стоит переделать парсинг строки со шрифтом
-		const std::vector<std::wstring> arValues = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, L" ,/");
+		const std::vector<std::wstring> arValues = NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ,/");
 
 		unsigned short ushPosition = 0;
 
@@ -2055,14 +2053,14 @@ namespace NSCSS
 //		    wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'"'),  wsNewFamily.end()))
 //			return false;
 
-		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsNewFamily, L",");
+		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsNewFamily, false, L"\"\',");
 
 		for (std::vector<std::wstring>::iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
 		{
 			if ((*iWord).empty())
 				continue;
 
-			return m_oFamily.SetValue(*iWord, unLevel, bHardMode);
+			return m_oFamily.SetValue(NSCSS::NS_STATIC_FUNCTIONS::RemoveSpaces(*iWord), unLevel, bHardMode);
 		}
 
 		return false;

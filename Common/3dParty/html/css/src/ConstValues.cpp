@@ -140,7 +140,8 @@ namespace NSCSS
 				L"inherit", L"initial", L"unset"
 		};
 
-		const std::wstring arPseudoClasses[33]
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		const std::wstring PSEUDO_CLASSES[33]
 		{
 			L"invalid",
 			L"read-only",
@@ -176,5 +177,6 @@ namespace NSCSS
 			L"valid",
 			L"visited"
 		};
+		#endif
 	}
 }

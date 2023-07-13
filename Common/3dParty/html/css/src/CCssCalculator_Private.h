@@ -62,8 +62,8 @@ namespace NSCSS
 		#endif
 
 		void AddStyles(const std::string& sStyle);
-		void AddStyles(const std::wstring& sStyle);
-		void AddStylesFromFile(const std::wstring& sFileName);
+		void AddStyles(const std::wstring& wsStyle);
+		void AddStylesFromFile(const std::wstring& wsFileName);
 
 		void SetUnitMeasure(const UnitMeasure& nType);
 		void SetDpi(unsigned short int nValue);

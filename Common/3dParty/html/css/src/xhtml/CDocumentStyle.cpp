@@ -8,6 +8,25 @@
 
 namespace NSCSS
 {
+	CStyleUsed::CStyleUsed(const CCompiledStyle &oStyle, bool bIsPStyle)
+		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
+	{}
+
+	bool CStyleUsed::operator==(const CStyleUsed &oUsedStyle) const
+	{
+		return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
+	}
+
+	std::wstring CStyleUsed::getId()
+	{
+		return m_sId;
+	}
+
+	void CStyleUsed::setId(const std::wstring &sId)
+	{
+		m_sId = sId;
+	}
+
 	CDocumentStyle::CDocumentStyle() : m_arStandardStyles({L"a", L"li", L"h1", L"h2", L"h3", L"h4", L"h5", L"h6", L"h1-c",
 	    L"h2-c", L"h3-c", L"h4-c", L"h5-c", L"h6-c", L"p-c", L"p", L"div-c", L"div", L"a-c"}) {}
 
@@ -291,7 +310,7 @@ namespace NSCSS
 		}
 		else if (!oStyle.m_oBorder.Empty())
 		{
-			    sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
+				sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
 		}
 		else if (!oStyle.m_oBorder.Empty())
 			    sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";

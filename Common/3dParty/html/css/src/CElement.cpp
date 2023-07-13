@@ -125,7 +125,7 @@ namespace NSCSS
 			{
 				if ((*sNode)[0] == L'.')
 				{
-					for (const std::wstring& sClass : NS_STATIC_FUNCTIONS::GetWordsW(*sNode, L" "))
+					for (const std::wstring& sClass : NS_STATIC_FUNCTIONS::GetWordsW(*sNode, false,  L" "))
 					{
 						if (oElement->GetSelector() == sClass)
 						{
@@ -184,7 +184,7 @@ namespace NSCSS
 		{
 			if ((*iWord)[0] == L'.' && ((*iWord).find(L" ") != std::wstring::npos))
 			{
-				std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(*iWord, L" ");
+				std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(*iWord, false, L" ");
 				for (std::wstring sClass : arClasses)
 				{
 					for (CElement* oPrevElement : m_arPrevElements)

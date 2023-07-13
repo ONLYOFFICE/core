@@ -4,8 +4,8 @@
 #include "../CssCalculator_global.h"
 #include "../CCompiledStyle.h"
 #include "CXmlElement.h"
+#include <list>
 
-#include <iostream>
 namespace NSCSS
 {
 	class CStyleUsed
@@ -15,23 +15,12 @@ namespace NSCSS
 		std::wstring m_sId;
 
 	public:
-		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle) : m_oStyle(oStyle), m_bIsPStyle(bIsPStyle) {}
+		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);
 
-		bool operator==(const CStyleUsed& oUsedStyle) const
-		{
-			return (m_bIsPStyle == oUsedStyle.m_bIsPStyle) && (m_oStyle == oUsedStyle.m_oStyle);
-		}
+		bool operator==(const CStyleUsed& oUsedStyle) const;
 
-		std::wstring getId()
-		{
-			return m_sId;
-		}
-
-		void setId(const std::wstring& sId)
-		{
-			m_sId = sId;
-		}
-
+		std::wstring getId();
+		void setId(const std::wstring& sId);
 	};
 
 	class CSSCALCULATOR_EXPORT CDocumentStyle

@@ -574,19 +574,19 @@ public:
         else if(sName == L"style")
             m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
 
-        oTree.m_oNode.m_sName = sName;
+		oTree.m_oNode.m_wsName = sName;
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sNameA  = m_oLightReader.GetName();
             if(sNameA == L"class")
-                oTree.m_oNode.m_sClass  = m_oLightReader.GetText();
+				oTree.m_oNode.m_wsClass  = m_oLightReader.GetText();
             else if(sNameA == L"id")
-                oTree.m_oNode.m_sId = m_oLightReader.GetText();
+				oTree.m_oNode.m_wsId = m_oLightReader.GetText();
             else if(sNameA == L"style")
-                oTree.m_oNode.m_sStyle += m_oLightReader.GetText();
+				oTree.m_oNode.m_wsStyle += m_oLightReader.GetText();
             else
-                oTree.m_oNode.m_mAttrs[sNameA] = m_oLightReader.GetText();
+				oTree.m_oNode.m_mAttributes[sNameA] = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
 
@@ -613,31 +613,31 @@ private:
     {
         NSCSS::CNode oNode;
         std::wstring sNote;
-        oNode.m_sName = m_oLightReader.GetName();
+		oNode.m_wsName = m_oLightReader.GetName();
         // Стиль по атрибуту
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName  = m_oLightReader.GetName();
             if(sName == L"class")
-                oNode.m_sClass  = m_oLightReader.GetText();
+				oNode.m_wsClass  = m_oLightReader.GetText();
             else if(sName == L"id")
             {
-                oNode.m_sId = m_oLightReader.GetText();
+				oNode.m_wsId = m_oLightReader.GetText();
                 std::wstring sCrossId = std::to_wstring(m_nCrossId++);
                 oXml->WriteString(L"<w:bookmarkStart w:id=\"");
                 oXml->WriteString(sCrossId);
                 oXml->WriteString(L"\" w:name=\"");
-                oXml->WriteEncodeXmlString(oNode.m_sId);
+				oXml->WriteEncodeXmlString(oNode.m_wsId);
                 oXml->WriteString(L"\"/><w:bookmarkEnd w:id=\"");
                 oXml->WriteString(sCrossId);
                 oXml->WriteString(L"\"/>");
             }
             else if(sName == L"style")
-                oNode.m_sStyle += m_oLightReader.GetText();
+				oNode.m_wsStyle += m_oLightReader.GetText();
             else if(sName == L"title")
                 sNote           = m_oLightReader.GetText();
             else
-                oNode.m_mAttrs[sName] = m_oLightReader.GetText();
+				oNode.m_mAttributes[sName] = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
         sSelectors.push_back(oNode);
@@ -648,7 +648,7 @@ private:
     {
 //        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         bP ? m_oXmlStyle.WritePStyle(oStyle) : m_oXmlStyle.WriteRStyle(oStyle);
-        m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
+		m_oStylesXml.WriteString(m_oXmlStyle.GetStyle());
         return m_oXmlStyle.GetIdAndClear();
     }
 
@@ -831,9 +831,9 @@ private:
             {
                 std::wstring sAName = m_oLightReader.GetName();
                 if(sAName == L"color")
-                    sSelectors.back().m_sStyle += L"; color: " + m_oLightReader.GetText();
+					sSelectors.back().m_wsStyle += L"; color: " + m_oLightReader.GetText();
                 else if(sAName == L"face")
-                    sSelectors.back().m_sStyle += L"; font-family: " + m_oLightReader.GetText();
+					sSelectors.back().m_wsStyle += L"; font-family: " + m_oLightReader.GetText();
                 else if(sAName == L"size")
                 {
                     int nSize = 3;
@@ -848,7 +848,7 @@ private:
                             nSize = std::stoi(sSize);
                     }
                     sSize = nSize >= 1 && nSize <= 7 ? std::to_wstring(10 + nSize * 5) : L"22";
-                    sSelectors.back().m_sStyle += L"; font-size: " + sSize;
+					sSelectors.back().m_wsStyle += L"; font-size: " + sSize;
                 }
             }
             m_oLightReader.MoveToElement();
@@ -940,7 +940,7 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                    if (item.m_sName == L"a")
+					if (item.m_wsName == L"a")
                         oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
@@ -1006,7 +1006,7 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                    if (item.m_sName == L"a")
+					if (item.m_wsName == L"a")
                         oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
@@ -1095,14 +1095,14 @@ private:
 
                 NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
-                int nWidth = oStyle.m_oDisplay.GetWidth().ToInt();
+				int nWidth = oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Point, m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth);
                 std::wstring wsType = L"dxa";
 
                 //Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
             #if 1
                 // проблема с regex в старом gcc (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52719)
                 boost::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
-                bool bIsWidthPct = boost::regex_search(sSelectors.back().m_sStyle, oWidthRegex);
+				bool bIsWidthPct = boost::regex_search(sSelectors.back().m_wsStyle, oWidthRegex);
             #else
                 std::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
                 bool bIsWidthPct = std::regex_search(sSelectors.back().m_sStyle.data(), oWidthRegex);
@@ -1152,7 +1152,7 @@ private:
                 {
                     wrP(oXml, sSelectors, oTS);
                     for (const NSCSS::CNode& item : sSelectors)
-                        if (item.m_sName == L"a")
+						if (item.m_wsName == L"a")
                             oXml->WriteString(L"</w:hyperlink>");
                     oXml->WriteString(L"<w:r></w:r></w:p>");
                     m_bInP = false;
@@ -1200,7 +1200,7 @@ private:
         // Начало таблицы
         std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
-        int nWidth = oStyle.m_oDisplay.GetWidth().ToInt();
+		int nWidth = oStyle.m_oDisplay.GetWidth().ToInt(NSCSS::UnitMeasure::Point, m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth);
         std::wstring wsAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 
         if (0 < nWidth)
@@ -1257,7 +1257,7 @@ private:
         // borders
         std::wstring sBorders;
         oStyle.m_oBorder.Unblock();
-        if (oStyle.m_oBorder.Empty())
+		if (oStyle.m_oBorder.Empty())
         {
             sBorders = L"<w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/>";
         }
@@ -1344,7 +1344,7 @@ private:
                     oXml->WriteString(L"<w:p>");
                     for (const NSCSS::CNode& item : sSelectors)
                     {
-                        if (item.m_sName == L"a")
+						if (item.m_wsName == L"a")
                         {
                             oXml->WriteString(L"<w:hyperlink>");
                             nHyp++;
@@ -1438,7 +1438,7 @@ private:
                     if (m_bInP)
                     {
                         for (const NSCSS::CNode& item : sSelectors)
-                            if (item.m_sName == L"a")
+							if (item.m_wsName == L"a")
                                 oXml->WriteString(L"</w:hyperlink>");
                         oXml->WriteString(L"</w:p>");
                         m_bInP = false;
@@ -1469,7 +1469,7 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                    if (item.m_sName == L"a")
+					if (item.m_wsName == L"a")
                         oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
@@ -1482,7 +1482,7 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                    if (item.m_sName == L"a")
+					if (item.m_wsName == L"a")
                         oXml->WriteString(L"</w:hyperlink>");
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
@@ -1552,7 +1552,7 @@ private:
         {
             oXml->WriteString(L"<w:p>");
             for (size_t i = 0; i < sSelectors.size() - 1; i++)
-                if (sSelectors[i].m_sName == L"a")
+				if (sSelectors[i].m_wsName == L"a")
                     oXml->WriteString(L"<w:hyperlink>");
             m_bInP = true;
             m_bWasPStyle = false;
@@ -1710,7 +1710,7 @@ private:
         {
             oXml->WriteString(L"<w:p>");
             for (const NSCSS::CNode& item : sSelectors)
-                if (item.m_sName == L"a")
+				if (item.m_wsName == L"a")
                     oXml->WriteString(L"<w:hyperlink>");
             m_bInP = true;
             m_bWasPStyle = false;
@@ -1723,9 +1723,7 @@ private:
         size_t i = 0;
         while(i != sSelectors.size())
         {
-            if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos &&
-               sSelectors[i].m_sClass.empty() && sSelectors[i].m_sId.empty() &&
-               sSelectors[i].m_sStyle.empty() && sSelectors[i].m_mAttrs.empty())
+			if(rStyle.find(L' ' + sSelectors[i].m_wsName + L' ') != std::wstring::npos && sSelectors[i].Empty())
             {
                 temporary.push_back(std::make_pair(i, sSelectors[i]));
                 sSelectors.erase(sSelectors.begin() + i);
@@ -1750,7 +1748,7 @@ private:
         // Если в таблице, то игнориуются Paragraph Borders
         bool bInTable = false;
         for (const NSCSS::CNode& item : sSelectors)
-            if (item.m_sName == L"table")
+			if (item.m_wsName == L"table")
                 bInTable = true;
         if (bInTable)
         {
@@ -1862,7 +1860,7 @@ private:
         {
             oXml->WriteString(L"<w:p>");
             for (const NSCSS::CNode& item : sSelectors)
-                if (item.m_sName == L"a")
+				if (item.m_wsName == L"a")
                     oXml->WriteString(L"<w:hyperlink>");
             m_bInP = true;
             m_bWasPStyle = false;

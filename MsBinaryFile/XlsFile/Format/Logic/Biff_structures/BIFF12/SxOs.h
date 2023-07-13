@@ -32,9 +32,9 @@
 
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffString.h"
+#include  "../BiffStructure.h"
+#include  "../../Biff_records/BiffRecord.h"
+#include  "../BiffString.h"
 
 
 namespace XLSB

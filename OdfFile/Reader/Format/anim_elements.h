@@ -36,6 +36,8 @@
 
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/smil_transitiontype.h"
+#include "../../DataTypes/presetclass.h"
+#include "../../DataTypes/presetid.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -45,8 +47,8 @@ class anim_par_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)						presentation_preset_class_;
-	_CP_OPT(std::wstring)						presentation_preset_id_;
+	_CP_OPT(odf_types::preset_class)			presentation_preset_class_;
+	_CP_OPT(odf_types::preset_id)				presentation_preset_id_;
 	_CP_OPT(std::wstring)						presentation_preset_sub_type_;
 	_CP_OPT(std::wstring)						smil_accelerate_;
 	_CP_OPT(std::wstring)						smil_decelerate_;
@@ -76,11 +78,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	boost::optional<int> convert_entrance_preset_id();
-	boost::optional<int> convert_emphasis_preset_id();
-	boost::optional<int> convert_exit_preset_id();
-	boost::optional<int> convert_motion_path_preset_id();
-
+	boost::optional<int> pptx_convert_preset_id();
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_par);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

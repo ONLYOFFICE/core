@@ -478,6 +478,9 @@
       <Filter>oox\xlsx\styles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Reader\Converter\ConvertOO2OOX.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\pptx_animation_context.cpp">
+      <Filter>oox\pptx</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Format\abstract_xml.h">
@@ -928,5 +931,8 @@
       <Filter>oox\xlsx\styles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\convertoo2oox.h" />
+    <ClInclude Include="..\..\Reader\Converter\pptx_animation_context.h">
+      <Filter>oox\pptx</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -72,6 +72,33 @@ namespace OOX
 
 			m_oRef = oReader.GetText3();
 		}
+		XLS::BaseObjectPtr CDefinedName::toBin()
+		{
+			auto ptr(new XLSB::Name);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->comment = m_oComment.get();
+
+			ptr->description = m_oDescription.get();
+			ptr->fFunc = m_oFunction->GetValue();
+			ptr->fGrp = m_oFunctionGroupId->GetValue();
+			ptr->helpTopic = m_oHelp.get();
+			ptr->fHidden = m_oHidden->GetValue();
+
+			if (m_oLocalSheetId.IsInit())
+				ptr->itab = m_oLocalSheetId->GetValue();
+
+			ptr->name = m_oName.get();
+			ptr->fPublished = m_oPublishToServer->GetValue();
+			ptr->chKey = std::stoi(m_oShortcutKey.get());
+
+			ptr->fOB = m_oVbProcedure->GetValue();
+			ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
+			ptr->fFutureFunction = m_oXlm->GetValue();
+			ptr->rgce = m_oRef.get();
+
+			return objectPtr;
+		}
 		void CDefinedName::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -156,6 +183,15 @@ namespace OOX
 					pDefinedName->fromXML(oReader);
 				}
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CDefinedNames::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+
+			for(auto i:m_arrItems)
+				objectVector.push_back(i->toBin());
+
+			return objectVector;
 		}
 		void CDefinedNames::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
 		{

@@ -82,6 +82,27 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CCalcPr::toBin()
+		{
+			auto ptr(new XLSB::CalcProp);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->recalcID = m_oCalcId->GetValue();
+			ptr->fAutoRecalc = m_oCalcMode->GetValue();
+			ptr->fFullCalcOnLoad = m_oFullCalcOnLoad->GetValue();
+			ptr->fRefA1 = !m_oRefMode->GetValue();
+			ptr->fIter = m_oIterate->GetValue();
+			ptr->cCalcCount = m_oIterateCount->GetValue();
+			ptr->xnumDelta.data.value = m_oIterateDelta->GetValue();
+			ptr->fFullPrec = m_oFullPrecision->GetValue();
+			ptr->fSomeUncalced = m_oCalcCompleted->GetValue();
+			ptr->fSaveRecalc = m_oCalcOnSave->GetValue();
+			ptr->fMTREnabled = m_oConcurrentCalc->GetValue();
+			ptr->cUserThreadCount = m_oConcurrentManualCount->GetValue();
+			ptr->fNoDeps = m_oForceFullCalc->GetValue();
+
+			return objectPtr;
+		}
 		EElementType CCalcPr::getType () const
 		{
 			return et_x_CalcPr;

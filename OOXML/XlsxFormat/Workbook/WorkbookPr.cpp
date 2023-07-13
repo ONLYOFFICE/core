@@ -89,6 +89,32 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CWorkbookPr::toBin()
+		{
+			auto ptr(new XLSB::WbProp);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->fNoSaveSup = m_oAllowRefreshQuery->GetValue();
+			ptr->fAutoCompressPictures = m_oAutoCompressPictures->GetValue();
+			ptr->fBackup = m_oBackupFile->GetValue();
+			ptr->fCheckCompat = m_oCheckCompatibility->GetValue();
+			ptr->strName.value= m_oCodeName->GetValue();
+			ptr->f1904 = m_oDate1904->GetValue();
+			ptr->fNoSaveSup = m_oDateCompatibility->GetValue();
+			ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
+			ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
+			ptr->fHidePivotTableFList = m_oHidePivotFieldList->GetValue();
+			ptr->fBuggedUserAboutSolution = m_oPromptedSolutions->GetValue();
+			ptr->fPublishedBookItems = m_oPublishItems->GetValue();
+			ptr->fRefreshAll = m_oRefreshAllConnections->GetValue();
+			ptr->fHideBorderUnselLists = m_oShowBorderUnselectedTables->GetValue();
+			ptr->fShowInkAnnotation = m_oShowInkAnnotation->GetValue();
+			ptr->mdDspObj = m_oShowObjects->GetValue() ? 1 : 2;
+			ptr->fShowPivotChartFilter = m_oShowPivotChartFilter->GetValue();
+			ptr->grbitUpdateLinks = m_oUpdateLinks->GetValue();
+
+			return objectPtr;
+		}
 		void CWorkbookPr::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -247,7 +273,7 @@ namespace OOX
 		{
 			writer.WriteString(L"<fileSharing");
 			WritingStringNullableAttrEncodeXmlString2(L"userName", m_oUserName);
-			WritingStringNullableAttrBool2(L"readOnlyRecommended", m_oReadOnlyRecommended);			
+			WritingStringNullableAttrBool2(L"readOnlyRecommended", m_oReadOnlyRecommended);
 			WritingStringNullableAttrString(L"algorithmName", m_oAlgorithmName, m_oAlgorithmName->ToString());
 			WritingStringNullableAttrString(L"hashValue", m_oHashValue, m_oHashValue.get());
 			WritingStringNullableAttrString(L"saltValue", m_oSaltValue, m_oSaltValue.get());

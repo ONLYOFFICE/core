@@ -334,6 +334,17 @@ public:
 			{
 				if (m_arFilesInManifest.find(*i) == m_arFilesInManifest.end())
 				{
+					// пустые файлы нет смысла добавлять
+					std::wstring sFile = *i;
+					CManifestFileInfo oInfo;
+					oInfo.m_pFolder = m_pFolder;
+					oInfo.SetFilePath(sFile);
+
+					std::string sXmlRels = m_pFolder->readXml(sFile);
+					COOXMLRelationships _rels(sXmlRels, &oInfo);
+					if (0 == _rels.rels.size())
+						continue;
+
 					m_valid = OOXML_SIGNATURE_INVALID;
 					break;
 				}
@@ -350,8 +361,8 @@ public:
 					oInfo.m_pFolder = m_pFolder;
 					oInfo.SetFilePath(sFile);
 
-					std::string sXml = m_pFolder->readXml(sFile);
-					COOXMLRelationships _rels(sXml, &oInfo);
+					std::string sXmlRels = m_pFolder->readXml(sFile);
+					COOXMLRelationships _rels(sXmlRels, &oInfo);
 
 					for (std::vector<COOXMLRelationship>::const_iterator relsIter = _rels.rels.begin(); relsIter != _rels.rels.end(); relsIter++)
 					{
@@ -536,12 +547,6 @@ public:
 			sCalcValue = m_cert->GetHash(sXml, nAlg);
 			sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
 			MakeBase64_NOCRLF(sValue);
-
-			// нельзя иметь ссылки на несуществующие файлы, так как это может быть использовано как взлом
-			// добавили стили, удалили файл - подписали - и можно подкидывать ЛЮБОЙ styles.xml и подпись будет валидной.
-			// так же можно подменять картинки и любой другой контент внешний.
-			if (oInfo.IsExitRemovedFile())
-				sCalcValue = "";
 		}
 
 		if (sCalcValue != sValue)

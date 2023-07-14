@@ -40,7 +40,11 @@ public:
 	std::wstring GetHeadPath(const std::wstring& sFile)
 	{
 		std::wstring sFullPath = m_sAliasDirectory + L"/" + sFile;
-		sFullPath = L"/" + NSSystemPath::NormalizePath(sFullPath);
+		NSSystemPath::NormalizePath(sFullPath);
+
+		if (!sFullPath.empty() && '/' != sFullPath[0])
+			sFullPath = L"/" + sFullPath;
+
 		return sFullPath;
 	}
 };

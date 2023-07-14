@@ -1521,8 +1521,9 @@ namespace PPTX
 					oStylesWriter.WriteAttributeCSS(L"flip", L"y");
 				}
 			}
+			oStylesWriter.WriteAttributeCSS(L"z-index", L"1");
 
-            std::wstring strPath;
+			std::wstring strPath;
             std::wstring strTextRect;
 
 			LONG lW = 43200;
@@ -1537,13 +1538,22 @@ namespace PPTX
 
 			pWriter->StartNode(L"v:shapetype");
 			pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"type", L"#_x0000_t75");
-				pWriter->WriteAttribute(L"o:spt", L"75");
+				pWriter->WriteAttribute(L"id", L"_x0000_t75");
 				pWriter->WriteAttribute(L"coordsize", L"21600,21600");
+				pWriter->WriteAttribute(L"o:spt", L"75");
 				pWriter->WriteAttribute(L"o:preferrelative", L"t");
 				pWriter->WriteAttribute(L"path", L"m@4@5l@4@11@9@11@9@5xe");
-			pWriter->EndAttributes();
-			pWriter->StartNode(L"v:formulas");
+				pWriter->WriteAttribute(L"filled", L"f");
+				pWriter->WriteAttribute(L"stroked", L"f");
+				pWriter->EndAttributes();
+				
+				pWriter->StartNode(L"v:stroke");
+					pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"joinstyle", L"miter");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"v:stroke");
+
+				pWriter->StartNode(L"v:formulas");
 				pWriter->EndAttributes();
 				pWriter->WriteString(L"<v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
 <v:f eqn=\"sum @0 1 0\"/>\
@@ -1558,6 +1568,21 @@ namespace PPTX
 <v:f eqn=\"prod @7 21600 pixelHeight\"/>\
 <v:f eqn=\"sum @10 21600 0\"/>");
 				pWriter->EndNode(L"v:formulas");
+
+				pWriter->StartNode(L"v:path"); 
+					pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"o:extrusionok", L"f");
+					pWriter->WriteAttribute(L"gradientshapeok", L"t");
+					pWriter->WriteAttribute(L"o:connecttype", L"rect");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"v:path");
+
+				pWriter->StartNode(L"o:lock");
+					pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"v:ext", L"edit");
+						pWriter->WriteAttribute(L"aspectratio", L"t");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"o:lock");
 			pWriter->EndNode(L"v:shapetype");
 			
 			pWriter->StartNode(L"v:shape");
@@ -1610,12 +1635,6 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			pWriter->StartNode(L"v:path");
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"textboxrect", strTextRect);
-			pWriter->EndAttributes();
-			pWriter->EndNode(L"v:path");
-
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes.clear();
 			
@@ -1635,7 +1654,12 @@ namespace PPTX
 				pWriter->EndAttributes();
 				pWriter->EndNode(L"v:imagedata");
 			}
-
+			pWriter->StartNode(L"o:lock");
+			pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"v:ext", L"edit");
+				pWriter->WriteAttribute(L"rotation", L"t");
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"o:lock");
 			if (m_sClientDataXml.IsInit())
 				pWriter->WriteString(*m_sClientDataXml);
 

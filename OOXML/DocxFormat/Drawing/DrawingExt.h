@@ -186,6 +186,7 @@ namespace OOX
 			std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBinWorksheet();
+			XLS::BaseObjectPtr toBinWorkBook();
 			virtual EElementType getType() const;
 
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;

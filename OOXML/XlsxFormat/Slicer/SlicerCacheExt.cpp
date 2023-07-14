@@ -493,6 +493,18 @@ void CSlicerStyleElement::ReadAttributes(XLS::BaseObjectPtr &obj)
 
     }
 }
+XLS::BaseObjectPtr CSlicerCache::toBin()
+{
+	auto ptr(new XLSB::SLICERCACHEID);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	if(m_oRId.IsInit())
+	{
+		auto ptr1(new XLSB::BeginSlicerCacheID);
+		ptr->m_BrtBeginSlicerCacheID = XLS::BaseObjectPtr{ptr1};
+		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	}
+	return objectPtr;
+}
 void CSlicerCache::fromBin(XLS::BaseObjectPtr &obj)
 {
     ReadAttributes(obj);
@@ -546,6 +558,7 @@ XLS::BaseObjectPtr CSlicerRef::toBin()
 		XLS::BaseObjectPtr objectPtr(ptr);
 		auto ptr1(new XLSB::BeginSlicerEx);
 		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+
 
 		return objectPtr;
 }
@@ -731,6 +744,17 @@ void CSlicerStyle::ReadAttributes(XLS::BaseObjectPtr &obj)
     auto ptr = static_cast<XLSB::BeginSlicerStyle*>(obj.get());
     if(ptr != nullptr)
         m_oName = ptr->stName.value();
+}
+
+XLS::BaseObjectPtr CSlicerCaches::toBin()
+{
+	auto ptr(new XLSB::SLICERCACHEIDS);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	for(auto i:m_oSlicerCache)
+	{
+		ptr->m_arSLICERCACHEID.push_back(i.toBin());
+	}
+	return objectPtr;
 }
 
 void CSlicerCaches::fromBin(XLS::BaseObjectPtr &obj)

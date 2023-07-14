@@ -125,7 +125,7 @@ namespace ASC
 			pTask->Handler = handler;
 			pTask->ID = m_nTaskID++;
 
-			if (m_nMaxConcurrentDownloadCount < (int)m_arTasks.size())
+			if (m_nMaxConcurrentDownloadCount > (int)m_arTasks.size())
 			{
 				m_arTasks.push_back(pTask);
 				pTask->DestroyOnFinish();
@@ -141,7 +141,7 @@ namespace ASC
 
 		void OnDownloadTask(CDownloadTask* task)
 		{
-			CTemporaryCS oCS(&m_oCS);
+			m_oCS.Enter();
 
 			for (std::list<CDownloadTask*>::iterator iter = m_arTasks.begin(); iter != m_arTasks.end(); iter++)
 			{
@@ -151,6 +151,19 @@ namespace ASC
 					break;
 				}
 			}
+
+			if (!m_arWaitTasks.empty())
+			{
+				std::list<CDownloadTask*>::iterator iter = m_arWaitTasks.begin();
+				CDownloadTask* pNewTask = *iter;
+				m_arWaitTasks.erase(iter);
+
+				m_arTasks.push_back(pNewTask);
+				pNewTask->DestroyOnFinish();
+				pNewTask->Start(m_nPriority);
+			}
+
+			m_oCS.Leave();
 
 			if (task->Handler)
 				task->Handler(task);
@@ -179,18 +192,18 @@ namespace ASC
 		void Clear()
 		{
 			CTemporaryCS oCS(&m_oCS);
-
-			for (std::list<CDownloadTask*>::iterator iter = m_arTasks.begin(); iter != m_arTasks.end(); iter++)
-			{
-				(*iter)->Handler = nullptr;
-			}
-
+			
 			for (std::list<CDownloadTask*>::iterator iter = m_arWaitTasks.begin(); iter != m_arWaitTasks.end();)
 			{
 				CDownloadTask* pTask = *iter;
 				delete pTask;
 			}
-			m_arWaitTasks.clear();
+
+			for (std::list<CDownloadTask*>::iterator iter = m_arTasks.begin(); iter != m_arTasks.end(); iter++)
+			{
+				(*iter)->Handler = nullptr;
+				(*iter)->Stop();
+			}
 		}
 	};
 
@@ -256,9 +269,6 @@ namespace ASC
 	bool CDownloadManager::DownloadExternal(const std::wstring& url, const std::wstring& path)
 	{
 		NSNetwork::NSFileTransport::CFileDownloader oDownloader(url, false);
-		NSNetwork::NSFileTransport::CSession oSession;
-		oDownloader.SetSession(&oSession);
-
 		oDownloader.SetFilePath(path);
 
 		oDownloader.Start( 0 );

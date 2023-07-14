@@ -346,6 +346,46 @@ namespace OOX
 			if (!oReader.IsEmptyNode())
 				oReader.ReadTillEnd();
 		}
+		XLS::BaseObjectPtr CFileSharing::toBin()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			if(m_oSpinCount.IsInit() || m_oAlgorithmName.IsInit() || m_oHashValue.IsInit())
+			{
+				auto ptr(new XLSB::FileSharingIso);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+
+				if (m_oReadOnlyRecommended.IsInit())
+					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
+				ptr->stUserName = m_oUserName.get();
+				ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->GetValue();
+				ptr->dwSpinCount = m_oSpinCount->GetValue();
+
+				auto len = 0;
+				auto bytes = ptr->ipdPasswordData.rgbHash.rgbData.data();
+				std::string strData = {m_oHashValue.get().begin(), m_oHashValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
+					bytes, len);
+				ptr->ipdPasswordData.rgbHash.cbLength = len;
+
+				auto len1 = 0;
+				auto bytes1 = ptr->ipdPasswordData.rgbSalt.rgbData.data();
+				std::string strData1 = {m_oSaltValue.get().begin(), m_oSaltValue.get().end()};
+				NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
+					bytes1, len1);
+				ptr->ipdPasswordData.rgbSalt.cbLength = len1;
+
+			}
+			else
+			{
+				auto ptr(new XLSB::FileSharing);
+				objectPtr = XLS::BaseObjectPtr{ptr};
+				if (m_oReadOnlyRecommended.IsInit())
+					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
+				ptr->stUserName = m_oUserName.get();
+				ptr->wResPass = m_oPassword.get();
+			}
+			return objectPtr;
+		}
 		void CFileSharing::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);

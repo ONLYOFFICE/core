@@ -37,20 +37,11 @@ public:
 		m_sAliasDirectory = NSFile::GetDirectoryName(m_sAliasDirectory); // ../ from _rels/
 	}
 
-	void CheckAliasExist(const std::wstring& sFile)
-	{
-		if (!m_pFolder->exists(GetHeadPath(sFile)))
-			++m_nCountUnexistedFile;
-	}
-
-	bool IsExitRemovedFile()
-	{
-		return (0 != m_nCountUnexistedFile) ? true : false;
-	}
-
 	std::wstring GetHeadPath(const std::wstring& sFile)
 	{
-		return m_sAliasDirectory + L"/" + sFile;
+		std::wstring sFullPath = m_sAliasDirectory + L"/" + sFile;
+		sFullPath = L"/" + NSSystemPath::NormalizePath(sFullPath);
+		return sFullPath;
 	}
 };
 
@@ -165,11 +156,6 @@ public:
 				std::wstring sRid = oRel.GetAttribute("Id");
 				if (check_need->find(sRid) != check_need->end())
 					rels.push_back(oCurrentRel);
-			}
-
-			if (oCurrentRel.target_mode == L"Internal")
-			{
-				m_pFileInfo->CheckAliasExist(oCurrentRel.target);
 			}
 		}
 	}

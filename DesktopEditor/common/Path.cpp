@@ -33,9 +33,9 @@
 #include "File.h"
 
 #if defined(_WIN32) || defined (_WIN64)
-    #include <tchar.h>
+#include <tchar.h>
 #elif __linux__ || MAC
-    #include <libgen.h>
+#include <libgen.h>
 #endif
 
 namespace NSSystemPath
@@ -61,7 +61,7 @@ namespace NSSystemPath
 		sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pDirName, strlen(pDirName));
 		delete [] pUtf8;
 #endif
-        return sRes;
+		return sRes;
 	}
 	std::wstring GetFileName(const std::wstring& strFileName)
 	{
@@ -103,17 +103,19 @@ namespace NSSystemPath
 			sRes = strLeft + strRight.substr(1);
 		}
 		else if(!bLeftSlash && !bRightSlash)
-            sRes = strLeft + L"/" + strRight;
+			sRes = strLeft + L"/" + strRight;
 		else
 			sRes = strLeft + strRight;
 		return sRes;
 	}
-	std::string NormalizePath(const std::string& strFileName)
-	{
-		const char*   pData   = strFileName.c_str();
-		int           nLen    = (int) strFileName.length();
 
-		char* pDataNorm       = new char[nLen + 1];
+	template<class CHAR, class STRING = std::basic_string<CHAR, std::char_traits<CHAR>, std::allocator<CHAR>>>
+	STRING NormalizePathTemplate(const STRING& strFileName)
+	{
+		const CHAR* pData = strFileName.c_str();
+		int nLen          = (int) strFileName.length();
+
+		CHAR* pDataNorm       = new CHAR[nLen + 1];
 		int*  pSlashPoints    = new int[nLen + 1];
 
 		int nStart          = 0;
@@ -122,10 +124,10 @@ namespace NSSystemPath
 		int nCurrentW       = 0;
 		bool bIsUp          = false;
 
-	#if !defined(_WIN32) && !defined (_WIN64)
+#if !defined(_WIN32) && !defined (_WIN64)
 		if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
 			pDataNorm[nCurrentW++] = pData[nCurrent];
-	#endif
+#endif
 		while (nCurrent < nLen)
 		{
 			if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
@@ -135,7 +137,7 @@ namespace NSSystemPath
 					bIsUp = false;
 					if ((nCurrent - nStart) == 2)
 					{
-						if (pData[nStart] == (char)'.' && pData[nStart + 1] == (char)'.')
+						if (pData[nStart] == (CHAR)'.' && pData[nStart + 1] == (CHAR)'.')
 						{
 							if (nCurrentSlash > 0)
 							{
@@ -147,7 +149,7 @@ namespace NSSystemPath
 					}
 					if (!bIsUp)
 					{
-						pDataNorm[nCurrentW++] = (char)'/';
+						pDataNorm[nCurrentW++] = (CHAR)'/';
 						++nCurrentSlash;
 						pSlashPoints[nCurrentSlash] = nCurrentW;
 					}
@@ -160,13 +162,22 @@ namespace NSSystemPath
 			++nCurrent;
 		}
 
-		pDataNorm[nCurrentW] = (char)'\0';
+		pDataNorm[nCurrentW] = (CHAR)'\0';
 
-		std::string result = std::string(pDataNorm, nCurrentW);
+		STRING result = STRING(pDataNorm, nCurrentW);
 
 		delete[] pDataNorm;
 		delete[] pSlashPoints;
 
 		return result;
+	}
+
+	std::string NormalizePath(const std::string& strFileName)
+	{
+		return NormalizePathTemplate<char>(strFileName);
+	}
+	std::wstring NormalizePath(const std::wstring& strFileName)
+	{
+		return NormalizePathTemplate<wchar_t>(strFileName);
 	}
 }

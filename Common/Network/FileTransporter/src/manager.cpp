@@ -195,19 +195,24 @@ namespace ASC
 		}
 		void Clear()
 		{
-			CTemporaryCS oCS(&m_oCS);
+			m_oCS.Enter();
 			
 			for (std::list<CDownloadTask*>::iterator iter = m_arWaitTasks.begin(); iter != m_arWaitTasks.end();)
 			{
 				CDownloadTask* pTask = *iter;
 				delete pTask;
 			}
+			m_arWaitTasks.clear();
 
 			for (std::list<CDownloadTask*>::iterator iter = m_arTasks.begin(); iter != m_arTasks.end(); iter++)
 			{
 				(*iter)->Handler = nullptr;
-				(*iter)->Stop();
 			}
+
+			m_oCS.Leave();
+
+			while (!m_arTasks.empty())
+				NSThreads::Sleep(100);
 		}
 	};
 

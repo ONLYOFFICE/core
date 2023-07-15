@@ -53,6 +53,7 @@ namespace ASC
 
 	public:
 		virtual std::wstring GetPath()     = 0;
+		virtual std::wstring GetUrl()      = 0;
 		virtual DownloadStatus GetStatus() = 0;
 	};
 

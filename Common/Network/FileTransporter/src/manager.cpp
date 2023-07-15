@@ -77,6 +77,10 @@ namespace ASC
 		{
 			return Status;
 		}
+		std::wstring GetUrl()
+		{
+			return Url;
+		}
 	};
 
 	class CDownloadManager_private

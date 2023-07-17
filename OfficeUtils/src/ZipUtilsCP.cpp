@@ -181,7 +181,12 @@ namespace ZLibZipUtils
 		if (err!=UNZ_OK)
 			return err;
 
-		std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzipA);
+		std::wstring filenameW;
+		if (file_info.flag & 2048 /*11 bit*/)
+			filenameW = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)filename_inzipA, strlen(filename_inzipA));
+		else
+			filenameW = codepage_issue_fixFromOEM(filename_inzipA);
+
 #ifdef _WIN32
 		for(std::wstring::size_type i = 0, len = filenameW.length(); i < len; ++i)
 			if(filenameW[i] == L'/')

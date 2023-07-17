@@ -688,20 +688,21 @@ int main(int argc, char* argv[])
 			}
 			if (nFlags & (1 << 3))
 			{
-				std::string arrHighlighting[] = {"N", "I", "O", "P"};
+				std::string arrHighlighting[] = {"none", "invert", "push", "outline"};
 				nPathLength = READ_BYTE(pWidgets + i);
 				i += 1;
-				std::cout << "H " << arrHighlighting[nPathLength] << ", ";
+				std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
 			}
 			if (nFlags & (1 << 4))
 			{
-				int nBorderType = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "Border type " << nBorderType << " ";
+				std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
+				BYTE nBorderType = READ_BYTE(pWidgets + i);
+				i += 1;
+				std::cout << "Border type " << arrBorder[nBorderType] << " ";
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "width " << (double)nPathLength / 100.0 << ", ";
-				if (nBorderType == 1)
+				if (nBorderType == 2)
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
@@ -781,28 +782,30 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "Style " << nPathLength << ", ";
+					std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
+					nPathLength = READ_BYTE(pWidgets + i);
+					i += 1;
+					std::cout << "Style " << arrStyle[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 13))
 				{
-					nPathLength = READ_INT(pWidgets + i);
-					i += 4;
-					std::cout << "TP " << nPathLength << ", ";
+					std::string arrTP[] = {"textOnly", "iconOnly", "iconTextV", "textIconV", "iconTextH", "textIconH", "overlay"};
+					nPathLength = READ_BYTE(pWidgets + i);
+					i += 1;
+					std::cout << "TP " << arrTP[nPathLength] << ", ";
 				}
 				if (nIFFlag & (1 << 0))
 				{
 					if (nIFFlag & (1 << 1))
 					{
-						std::string arrSW[] = {"A", "B", "S", "N"};
+						std::string arrSW[] = {"A", "N", "B", "S"};
 						nPathLength = READ_BYTE(pWidgets + i);
 						i += 1;
 						std::cout << "SW " << arrSW[nPathLength] << ", ";
 					}
 					if (nIFFlag & (1 << 2))
 					{
-						std::string arrS[] = {"A", "P"};
+						std::string arrS[] = {"P", "A"};
 						nPathLength = READ_BYTE(pWidgets + i);
 						i += 1;
 						std::cout << "S " << arrS[nPathLength] << ", ";

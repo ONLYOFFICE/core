@@ -537,9 +537,32 @@
 			rec["noZoom"]   = (rec["annotflag"] >> 3) & 1; // NoZoom
 			rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
 			rec["noView"]   = (rec["annotflag"] >> 5) & 1; // NoView
-			rec["readOnly"] = (rec["annotflag"] >> 6) & 1; // ReadOnly
+			// rec["readOnly"] = (rec["annotflag"] >> 6) & 1; // ReadOnly
 			rec["locked"]   = (rec["annotflag"] >> 7) & 1; // Locked
 			rec["lockedC"]  = (rec["annotflag"] >> 9) & 1; // LockedContents
+
+			// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
+			rec["display"] = 0;
+			if (rec["hidden"])
+				rec["display"] = 1;
+			else
+			{
+				if (rec["print"])
+				{
+					if (rec["noView"])
+						rec["display"] = 3;
+					else
+						rec["display"] = 0;
+				}
+				else
+				{
+					if (rec["noView"])
+						rec["display"] = 0; // ??? no hidden, but noView and no print
+					else
+						rec["display"] = 2;
+				}
+			}
+
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["rect"] = {};
@@ -574,13 +597,14 @@
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
 			// Режим выделения - H
-			// 0 - N, 1 - I, 2 - O, 3 - P/T
+			// 0 - none, 1 - invert, 2 - push, 3 - outline
 			if (flags & (1 << 3))
 				rec["highlight"] = reader.readByte();
 			// Границы - Border/BS
 			if (flags & (1 << 4))
 			{
-				rec["borderStyle"] = reader.readInt();
+				// 0 - solid, 1 - beveled, 2 - dashed, 3 - inset, 4 - underline
+				rec["border"] = reader.readByte();
 				rec["borderWidth"] = reader.readDouble();
 				// Dash Pattern границы
 				if (rec["borderStyle"] == 1)
@@ -632,20 +656,22 @@
 						rec["alternateCaption"] = reader.readString();
 				}
 				else
-					rec["style"] = reader.readInt();
+					// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
+					rec["style"] = reader.readByte();
 				// Расположение заголовка - TP
 				if (flags & (1 << 13))
-					rec["positionCaption"] = reader.readInt();
+					// 0 - textOnly, 1 - iconOnly, 2 - iconTextV, 3 - textIconV, 4 - iconTextH, 5 - textIconH, 6 - overlay
+					rec["position"] = reader.readByte();
 				// Справочный словарь иконок - IF
 				if (IFflags & (1 << 0))
 				{
 					rec["IF"] = {};
 					// Обстоятельства масштабирования IF.SW
-					// 0 - A, 1 - B, 2 - S, 3 - N
+					// 0 - Always, 1 - Never, 2 - too big, 3 - too small
 					if (IFflags & (1 << 1))
 						rec["IF"]["SW"] = reader.readByte();
 					// Тип масштабирования - IF.S
-					// 0 - A, 1 - P
+					// 0 - Proportional, 1 - Anamorphic
 					if (IFflags & (1 << 2))
 						rec["IF"]["S"] = reader.readByte();
 					if (IFflags & (1 << 3))
@@ -710,7 +736,7 @@
 				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 			}
 			// 12.7.3.1
-			rec["readonly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
 			rec["required"] = (rec["flag"] >> 1) & 1; // Required
 			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
 			// Альтернативный текст аннотации - Contents

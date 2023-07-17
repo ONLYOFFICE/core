@@ -1352,9 +1352,9 @@ oObj.free();\
             if (sName == "N")
                 nH = 0;
             else if (sName == "O")
-                nH = 2;
-            else if (sName == "P" || sName == "T")
                 nH = 3;
+            else if (sName == "P" || sName == "T")
+                nH = 2;
             oRes.WriteBYTE(nH);
         }
         oObj.free();
@@ -1427,7 +1427,13 @@ oObj.free();\
         if (nBorderType != 5)
         {
             nFlags |= (1 << 4);
-            oRes.AddInt(nBorderType);
+            BYTE nBP = nBorderType;
+            if (nBP == 1)
+                nBP = 2;
+            else if (nBP == 2)
+                nBP = 1;
+
+            oRes.WriteBYTE(nBP);
             oRes.AddDouble(dBorderWidth);
             if (nBorderType == annotBorderDashed)
             {
@@ -1562,23 +1568,23 @@ oObj.free();\
                 }
                 else
                 {
-                    unsigned int nStyle = (oType == acroFormFieldRadioButton ? 0 : 1);
+                    unsigned int nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
                     if (oMK.dictLookup("CA", &oObj)->isString())
                     {
                         std::string sCA(oObj.getString()->getCString());
 
-                        if (sCA == "l")
-                            nStyle = 0;
-                        else if (sCA == "4")
-                            nStyle = 1;
-                        else if (sCA == "8")
-                            nStyle = 2;
-                        else if (sCA == "u")
+                        if (sCA == "l") // кружок
                             nStyle = 3;
-                        else if (sCA == "n")
-                            nStyle = 4;
-                        else if (sCA == "H")
+                        else if (sCA == "4") // галка
+                            nStyle = 0;
+                        else if (sCA == "8") // крест
+                            nStyle = 1;
+                        else if (sCA == "u") // ромб
+                            nStyle = 2;
+                        else if (sCA == "n") // квадрат
                             nStyle = 5;
+                        else if (sCA == "H") // звезда
+                            nStyle = 4;
                     }
                     oObj.free();
                     oRes.AddInt(nStyle);
@@ -1587,8 +1593,9 @@ oObj.free();\
                 // 14 - Положение заголовка - TP
                 if (oMK.dictLookup("TP", &oObj)->isInt())
                 {
+                    BYTE nTP = oObj.getInt();
                     nFlags |= (1 << 13);
-                    oRes.AddInt(oObj.getInt());
+                    oRes.WriteBYTE(nTP);
                 }
                 oObj.free();
 
@@ -1603,11 +1610,11 @@ oObj.free();\
                         std::string sName(oObj.getName());
                         BYTE nSW = 0; // Default: A
                         if (sName == "B")
-                            nSW = 1;
-                        else if (sName == "S")
                             nSW = 2;
-                        else if (sName == "N")
+                        else if (sName == "S")
                             nSW = 3;
+                        else if (sName == "N")
+                            nSW = 1;
                         oRes.WriteBYTE(nSW);
                     }
                     oObj.free();
@@ -1616,9 +1623,9 @@ oObj.free();\
                     {
                         nIFFlag |= (1 << 2);
                         std::string sName(oObj.getName());
-                        BYTE nS = 1; // Default: P
+                        BYTE nS = 0; // Default: P
                         if (sName == "A")
-                            nS = 0;
+                            nS = 1;
                         oRes.WriteBYTE(nS);
                     }
                     oObj.free();

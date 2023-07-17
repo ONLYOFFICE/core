@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,8 +33,15 @@
 #ifndef OOX_CALCCHAIN_FILE_INCLUDE_H_
 #define OOX_CALCCHAIN_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 #include "../Xlsx.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -43,7 +50,7 @@ namespace OOX
 		class CCalcCell : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCalcCell)
+			WritingElement_AdditionMethods(CCalcCell)
 			CCalcCell();
 			virtual ~CCalcCell();
 
@@ -93,7 +100,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            std::vector<CCalcCell *>  m_arrItems;
+			std::vector<CCalcCell*>  m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

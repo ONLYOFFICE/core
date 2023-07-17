@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,6 +46,7 @@
 #include "../Resources/Fontn021023l.h"
 #include "../Resources/Fontn021003l.h"
 #include "../Resources/Fontd050000l.h"
+#include "CMapMemory/cmap_memory.h"
 
 #include <map>
 
@@ -87,24 +88,7 @@ bool PdfReader::GetBaseFont(const std::wstring& sName, const unsigned char*& pDa
     return false;
 }
 
-#ifdef CMAP_USE_MEMORY
-#include "./CMapMemory/cmap_memory.h"
-#endif
-
 bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pData, unsigned int& nSize)
 {
-#ifdef CMAP_USE_MEMORY
 	return GetCidToUnicodeMemoryMap(sName, pData, nSize);
-#else
-	return false;
-#endif
-}
-
-bool PdfReader::GetBaseCMap(const char* sName, const char*& pData, unsigned int& nSize)
-{
-#ifdef CMAP_USE_MEMORY
-    return GetMemoryCMap(sName, pData, nSize);
-#else
-    return false;
-#endif
 }

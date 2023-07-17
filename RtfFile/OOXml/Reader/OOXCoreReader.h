@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,43 +31,16 @@
  */
 #pragma once
 
-#include "../../Format/RtfDocument.h"
 #include "OOXReader.h"
+#include "OOXReaderBasic.h"
 
 class OOXCoreReader
 {
 private: 
 	OOX::CCore * m_ooxCore;
+
 public: 
-	OOXCoreReader(OOX::CCore * ooxCore)
-	{
-		m_ooxCore = ooxCore;
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxCore == NULL) return false;
+	OOXCoreReader(OOX::CCore * ooxCore);
 
-		if (m_ooxCore->m_sTitle.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sTitle = m_ooxCore->m_sTitle.get();
-		}
-		if (m_ooxCore->m_sSubject.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sSubject = m_ooxCore->m_sSubject.get();
-		}
-		if (m_ooxCore->m_sCreator.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sAuthor = m_ooxCore->m_sCreator.get();
-		}
-		if (m_ooxCore->m_sDescription.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sComment = m_ooxCore->m_sDescription.get();
-		}
-		if (m_ooxCore->m_sKeywords.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sKeywords = m_ooxCore->m_sKeywords.get();
-		}
-		return true;
-	}
-
+	bool Parse( ReaderParameter oParam );
 };

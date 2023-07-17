@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,25 +38,25 @@ namespace PPTX
 	{		
 		TLMasterRelation::TLMasterRelation()
 		{
-			m_strValue = _T("sameClick");
+			m_strValue = L"sameClick";
 		}
 		void TLMasterRelation::set(const std::wstring& strValue)
 		{
-			if ((_T("lastClick") == strValue) ||
-				(_T("nextClick") == strValue) ||
-				(_T("sameClick") == strValue))
+			if ((L"lastClick" == strValue) ||
+				(L"nextClick" == strValue) ||
+				(L"sameClick" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLMasterRelation::GetBYTECode() const
+		unsigned char TLMasterRelation::GetBYTECode() const
 		{
 			if (L"lastClick" == m_strValue)	return 0;
 			if (L"nextClick" == m_strValue)	return 1;
 			if (L"sameClick" == m_strValue)	return 2;
 			return 0;
 		}
-		void TLMasterRelation::SetBYTECode(const BYTE& src)
+		void TLMasterRelation::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

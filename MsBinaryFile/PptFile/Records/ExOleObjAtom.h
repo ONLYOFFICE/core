@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,104 +32,30 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordExOleObjAtom : public CUnknownRecord
-	{
-		UINT m_nDrawAspect;
-		UINT m_nType;
-		UINT m_nExObjID;
-		UINT m_nSubType;
-		UINT m_nPersistID;
+class CRecordExOleObjAtom : public CUnknownRecord
+{
+public:
+	UINT m_nDrawAspect;
+	UINT m_nType;
+	UINT m_nExObjID;
+	UINT m_nSubType;
+	UINT m_nPersistID;
 
-	public:
 
-		CRecordExOleObjAtom()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 
-		~CRecordExOleObjAtom()
-		{
-		}
+class CRecordExOleObjStg : public CUnknownRecord
+{
+public:
+	std::wstring m_sFileName;
+	std::wstring m_strTmpDirectory;
+	
+    CRecordExOleObjStg(std::wstring strTemp);
+    ~CRecordExOleObjStg();
 
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_nDrawAspect = StreamUtils::ReadDWORD(pStream);
-			m_nType = StreamUtils::ReadDWORD(pStream);
-			m_nExObjID = StreamUtils::ReadDWORD(pStream);
-			m_nSubType = StreamUtils::ReadDWORD(pStream);
-			m_nPersistID = StreamUtils::ReadDWORD(pStream);
-
-			StreamUtils::StreamSkip(4, pStream); //unused
-		}
-	};
-	class CRecordExOleObjStg : public CUnknownRecord
-	{
-	public:
-		std::wstring m_sFileName;
-		std::wstring m_strTmpDirectory;
-
-		CRecordExOleObjStg(std::wstring strTemp) : m_strTmpDirectory(strTemp)
-		{
-		}
-
-		~CRecordExOleObjStg()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			ULONG decompressedSize = m_oHeader.RecLen, compressedSize = m_oHeader.RecLen;
-
-			if (m_oHeader.RecInstance == 0x01)
-			{
-				compressedSize = m_oHeader.RecLen - 4;
-				decompressedSize = StreamUtils::ReadDWORD(pStream);
-			}
-
-			BYTE* pData = (compressedSize > 0 && compressedSize < 0xffffff) ? new BYTE[compressedSize] : NULL;
-
-			if (!pData) return;
-
-			compressedSize = pStream->read(pData, compressedSize);
-
-			if (m_oHeader.RecInstance == 0x01)
-			{
-				BYTE* pDataUncompress = (compressedSize > 0 && compressedSize < 0xffffff) ? new BYTE[decompressedSize + 64] : NULL;
-				if ((pDataUncompress) && (NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize)))
-				{
-					delete[]pData;
-					pData = pDataUncompress;
-				}
-				else
-				{
-					delete[]pData;
-					pData = NULL;
-				}
-			}
-			//if (pDecryptor)
-			//{
-			//	pDecryptor->Decrypt((char*)pData, oHeader.RecLen - lOffset, 0);
-			//}
-			if (pData)
-			{
-				m_sFileName = m_strTmpDirectory + FILE_SEPARATOR_STR + L"oleObject_xxx.bin";
-
-				NSFile::CFileBinary file;
-				if (file.CreateFileW(m_sFileName))
-				{
-					file.WriteFile(pData, decompressedSize);
-					file.CloseFile();
-				}
-				delete[] pData;
-				pData = NULL;
-			}
-
-		}
-
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

@@ -35,6 +35,9 @@
     <Filter Include="Logic\Biff_structures\ODRAW">
       <UniqueIdentifier>{73faf489-4c86-4f5b-b26b-0d51a50612ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Logic\Biff_structures\BIFF12">
+      <UniqueIdentifier>{5654e677-b95e-42da-bac5-20d259c046e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\XlsFile\Format\Logging\Log.cpp">
@@ -1103,12 +1106,6 @@
       <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\Bes.cpp">
-      <Filter>Logic\Biff_structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.cpp">
-      <Filter>Logic\Biff_structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.cpp">
       <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BookExt_Conditional11.cpp">
@@ -2218,9 +2215,6 @@
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.cpp">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
@@ -2391,6 +2385,54 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\WorksheetSubstream.cpp">
       <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffString.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BiffStructure.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\Color.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\ColSpan.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader12.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\RelID.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\UncheckedSqRfX.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormulas.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRefs.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRelID.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqrefs.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormula.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRef.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqref.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTParsedFormula.cpp">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4599,9 +4641,6 @@
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXADDLSXRULE.h">
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXDB.h">
-      <Filter>Logic\Biff_unions</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_unions\SXFMLA_bu.h">
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
@@ -4790,6 +4829,57 @@
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\XlsElementsType.h">
       <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\Color.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\ColSpan.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\DValStrings.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTHeader.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\RelID.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\UncheckedSqRfX.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\XLWideString.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\CellRangeRef.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormulas.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRefs.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRelID.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqrefs.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTFormula.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTRef.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTSqref.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\FRTParsedFormula.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\BIFF12\CellRef.h">
+      <Filter>Logic\Biff_structures\BIFF12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

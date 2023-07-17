@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,9 +52,16 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @4 @3 10800");
             Formulas.push_back(L"sum width 0 @5");
 
-            AdjustmentValues	=	L"16200,5400";
+			Adjustments.push_back(16200);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@0,0;0,10800;@0,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,@1,@6,@2";
 
 			Handle one;
@@ -82,9 +89,16 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @4 @3 10800");
             Formulas.push_back(L"sum width 0 @5");
 
-            AdjustmentValues	=	L"16200,5400";
+			Adjustments.push_back(16200);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"10800,0;0,@0;10800,21600;21600,@0";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@1,0,@2,@6";
 
 			Handle one;
@@ -110,9 +124,15 @@ namespace DocFileFormat
             Formulas.push_back(L"prod #0 #1 10800");
             Formulas.push_back(L"sum #0 0 @3");
 
-            AdjustmentValues	=	L"5400,5400";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(5400);
             ConnectorLocations	=	L"10800,0;0,@0;10800,21600;21600,@0";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@1,@4,@2,21600";
 
 			Handle one;
@@ -138,9 +158,16 @@ namespace DocFileFormat
             Formulas.push_back(L"prod #0 #1 10800");
             Formulas.push_back(L"sum #0 0 @3");
 
-            AdjustmentValues	=	L"5400,5400";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@0,0;0,10800;@0,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@4,@1,21600,@2";
 
 			Handle one;
@@ -160,10 +187,21 @@ namespace DocFileFormat
 			Joins				=	miter;
             Path				=	L"m,10800l@0,21600@0@3@2@3@2,21600,21600,10800@2,0@2@1@0@1@0,xe";
 
-            AdjustmentValues	=	L"4320,5400";
+			Adjustments.push_back(4320);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@2,0;10800,@1;@0,0;0,10800;@0,21600;10800,@3;@2,21600;21600,10800";
-            ConnectorAngles		=	L"270,270,270,180,90,90,90,0";
-            TextBoxRectangle	=	L"@5,@1,@6,@3";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
+            TextBoxRectangle = L"@5,@1,@6,@3";
 
             Formulas.push_back(L"val #0");
             Formulas.push_back(L"val #1");
@@ -198,9 +236,20 @@ namespace DocFileFormat
             Formulas.push_back(L"sum #1 0 @4");
             Formulas.push_back(L"sum 21600 0 @5");
 
-            AdjustmentValues	=	L"5400,4320";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(4320);
+
             ConnectorLocations	=	L"10800,0;0,@0;@1,10800;0,@2;10800,21600;21600,@2;@3,10800;21600,@0";
-            ConnectorAngles		=	L"270,180,180,180,90,0,0,0";
+            
+			ConnectorAngles.push_back(270); 
+			ConnectorAngles.push_back(180); 
+			ConnectorAngles.push_back(180); 
+			ConnectorAngles.push_back(180); 
+			ConnectorAngles.push_back(90); 
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@1,@5,@3,@6";
 
 			Handle one;
@@ -231,7 +280,10 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @7 #2 @6");
             Formulas.push_back(L"sum 21600 0 @8");
 
-            AdjustmentValues	=	L"6480,8640,4320";
+			Adjustments.push_back(6480);
+			Adjustments.push_back(8640);
+			Adjustments.push_back(4320);
+
             ConnectorLocations	=	L"Rectangle";
             TextBoxRectangle	=	L"@8,@1,@9,@4;@1,@8,@4,@9";
 
@@ -276,9 +328,17 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @1 0 10800");
             Formulas.push_back(L"prod @2 @16 @15");
 
-            AdjustmentValues	=	L"6480,8640,6171";
+			Adjustments.push_back(6480);
+			Adjustments.push_back(8640);
+			Adjustments.push_back(6171);
+
             ConnectorLocations	=	L"10800,0;0,@8;10800,@9;21600,@8";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@13,@6,@14,@9;@1,@17,@4,@9";
 
 			Handle one;
@@ -304,7 +364,12 @@ namespace DocFileFormat
             Path				=	L"m21600,6079l15126,r,2912l12427,2912c5564,2912,,7052,,12158r,9442l6474,21600r,-9442c6474,10550,9139,9246,12427,9246r2699,l15126,12158,21600,6079xe";
 
             ConnectorLocations	=	L"2830950,0;2830950,2722432;605830,4836695;4042610,1361216";
-            ConnectorAngles		=	L"270,90,90,0";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"12427,2912,18227,9246";
 		}
 	};
@@ -319,7 +384,13 @@ namespace DocFileFormat
             Path				=	L"m15662,14285l21600,8310r-2970,qy9250,,,8485l,21600r6110,l6110,8310qy8907,5842l9725,5842qx12520,8310l9725,8310xe";
 
             ConnectorLocations	=	L"9250,0;3055,21600;9725,8310;15662,14285;21600,8310";
-            ConnectorAngles		=	L"270,90,90,90,0";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,8310,6110,21600";
 		}
 	};
@@ -347,10 +418,22 @@ namespace DocFileFormat
             Formulas.push_back(L"sum #0 0 @4");
             Formulas.push_back(L"prod @2 @10 @11");
 
-            AdjustmentValues	=	L"9257,18514,6171";
+			Adjustments.push_back(9257);
+			Adjustments.push_back(18514);
+			Adjustments.push_back(6171);
+
             ConnectorLocations	=	L"@4,0;@0,@2;@2,@0;0,@4;@2,21600;@7,@1;@1,@7;21600,@2";
-            ConnectorAngles		=	L"270,180,270,180,90,90,0,0";
-            TextBoxRectangle	=	L"@12,@5,@1,@1;@5,@12,@1,@1";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
+			TextBoxRectangle	=	L"@12,@5,@1,@1;@5,@12,@1,@1";
 
 			Handle one;
             one.position		=	L"#0,topLeft";
@@ -394,9 +477,19 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @0 0 @4");
             Formulas.push_back(L"prod @2 @15 @16");
 
-            AdjustmentValues	=	L"9257,18514,7200";
+			Adjustments.push_back(9257);
+			Adjustments.push_back(18514);
+			Adjustments.push_back(7200);
+
             ConnectorLocations	=	L"@4,0;@0,@2;0,@11;@14,21600;@1,@13;21600,@2";
-            ConnectorAngles		=	L"270,180,180,90,0,0";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,@12,@1,21600;@5,@17,@1,21600";
 
 
@@ -472,9 +565,18 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-            AdjustmentValues	=	L"12960,19440,14400";
+			Adjustments.push_back(12960);
+			Adjustments.push_back(19440);
+			Adjustments.push_back(14400);
+
             ConnectorLocations	=	L"0,@17;@2,@14;@22,@8;@2,@12;@22,@16";
-            ConnectorAngles		=	L"180,90,0,0,0";
+
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@47,@45,@48,@46";
 
 			Handle one;
@@ -549,10 +651,19 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-            AdjustmentValues	=	L"12960,19440,14400";
-            ConnectorLocations	=	L"0,@17;@2,@14;@22,@8;@2,@12;@22,@16";
-            ConnectorAngles		=	L"180,90,0,0,0";
-            TextBoxRectangle	=	L"@47,@45,@48,@46";
+			Adjustments.push_back(12960);
+			Adjustments.push_back(19440);
+			Adjustments.push_back(7200);
+
+			ConnectorLocations	=	L"0,@15;@2,@11;0,@8;@2,@13;@21,@16";
+
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
+			TextBoxRectangle	=	L"@43,@41,@44,@42";
 
 			Handle one;
             one.position		=	L"topLeft,#0";
@@ -626,9 +737,18 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-            AdjustmentValues	=	L"12960,19440,7200";
+			Adjustments.push_back(12960);
+			Adjustments.push_back(19440);
+			Adjustments.push_back(7200);
+
             ConnectorLocations	=	L"@8,0;@11,@2;@15,0;@16,@21;@13,@2";
-            ConnectorAngles		=	L"270,270,270,90,0";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@41,@43,@42,@44";
 
 			Handle one;
@@ -707,9 +827,18 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-            AdjustmentValues	=	L"12960,19440,14400";
+			Adjustments.push_back(12960);
+			Adjustments.push_back(19440);
+			Adjustments.push_back(14400);
+
             ConnectorLocations	=	L"@17,0;@16,@22;@12,@2;@8,@22;@14,@2";
-            ConnectorAngles		=	L"270,90,90,90,0";
+            
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@45,@47,@46,@48";
 
 			Handle one;
@@ -746,9 +875,16 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @4 @3 10800");
             Formulas.push_back(L"sum width 0 @5");
 
-            AdjustmentValues	=	L"16200,5400";
+			Adjustments.push_back(16200);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@0,0;0,10800;@0,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"3375,@1,@6,@2";
 
 			Handle one;
@@ -776,9 +912,16 @@ namespace DocFileFormat
             Formulas.push_back(L"prod @4 @3 10800");
             Formulas.push_back(L"sum width 0 @5");
 
-            AdjustmentValues	=	L"16200,5400";
+			Adjustments.push_back(16200);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@0,0;@5,10800;@0,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@5,@1,@6,@2";
 
 			Handle one;
@@ -801,9 +944,15 @@ namespace DocFileFormat
             Formulas.push_back(L"val #0");
             Formulas.push_back(L"prod #0 1 2");
 
-            AdjustmentValues	=	L"16200";
+			Adjustments.push_back(16200);
+
             ConnectorLocations	=	L"@1,0;0,10800;@1,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,0,10800,21600;0,0,16200,21600;0,0,21600,21600";
 
 			Handle one;
@@ -826,9 +975,15 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 @0");
             Formulas.push_back(L"prod #0 1 2");
 
-            AdjustmentValues	=	L"16200";
+			Adjustments.push_back(16200);
+
             ConnectorLocations	=	L"@2,0;@1,10800;@2,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,0,10800,21600;0,0,16200,21600;0,0,21600,21600";
 
 			Handle one;
@@ -854,10 +1009,19 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #1");
             Formulas.push_back(L"sum 21600 0 #3");
             Formulas.push_back(L"prod #0 1 2");
+			
+			Adjustments.push_back(14400);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(18000);
+			Adjustments.push_back(8100);
 
-            AdjustmentValues	=	L"14400,5400,18000,8100";
             ConnectorLocations	=	L"@6,0;0,10800;@6,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,0,@0,21600";
 
 			Handle one;
@@ -895,9 +1059,18 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #3");
             Formulas.push_back(L"sum #0 21600 0");
 
-            AdjustmentValues	=	L"7200,5400,3600,8100";
+			Adjustments.push_back(7200);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(3600);
+			Adjustments.push_back(8100);
+
             ConnectorLocations	=	L"@7,0;0,10800;@7,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@0,0,21600,21600";
 
 			Handle one;
@@ -936,9 +1109,18 @@ namespace DocFileFormat
             Formulas.push_back(L"sum #0 21600 0");
             Formulas.push_back(L"prod @6 1 2");
 
-            AdjustmentValues	=	L"7200,5400,3600,8100";
+			Adjustments.push_back(7200);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(3600);
+			Adjustments.push_back(8100);
+
             ConnectorLocations	=	L"10800,0;0,@7;10800,21600;21600,@7";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,@0,21600,21600";
 
 			Handle one;
@@ -976,9 +1158,18 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #3");
             Formulas.push_back(L"prod #0 1 2");
 
-            AdjustmentValues	=	L"14400,5400,18000,8100";
+			Adjustments.push_back(14400);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(18000);
+			Adjustments.push_back(8100);
+
             ConnectorLocations	=	L"10800,0;0,@6;10800,21600;21600,@6";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,0,21600,@0";
 
 			Handle one;
@@ -1019,9 +1210,18 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #0");
             Formulas.push_back(L"sum 21600 0 #2");
 
-            AdjustmentValues	=	L"5400,5400,2700,8100";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(2700);
+			Adjustments.push_back(8100);
+
             ConnectorLocations	=	L"10800,0;0,10800;10800,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"@0,0,@8,21600";
 
 			Handle one;
@@ -1062,9 +1262,18 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #0");
             Formulas.push_back(L"sum 21600 0 #2");
 
-            AdjustmentValues	=	L"5400,5400,2700,8100";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(5400);
+			Adjustments.push_back(2700);
+			Adjustments.push_back(8100);
+
             ConnectorLocations	=	L"10800,0;0,10800;10800,21600;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,@0,21600,@8";
 
 			Handle one;
@@ -1105,7 +1314,11 @@ namespace DocFileFormat
             Formulas.push_back(L"sum 21600 0 #0");
             Formulas.push_back(L"sum 21600 0 #2");
 
-            AdjustmentValues	=	L"5400,8100,2700,9450";
+			Adjustments.push_back(5400);
+			Adjustments.push_back(8100);
+			Adjustments.push_back(2700);
+			Adjustments.push_back(9450);
+
             ConnectorLocations	=	L"Rectangle";
             TextBoxRectangle	=	L"@0,@0,@8,@8";
 
@@ -1134,8 +1347,6 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill	=	false;
 			Joins				=	miter;
-
-            AdjustmentValues	=	L"-11796480,,5400";
 
             Path				=	L"al10800,10800@8@8@4@6,10800,10800,10800,10800@9@7l@30@31@17@18@24@25@15@16@32@33xe";
 
@@ -1190,7 +1401,10 @@ namespace DocFileFormat
             Formulas.push_back(L"sum @35 10800 0");
             Formulas.push_back(L"sum @36 10800 0");
 
-            AdjustmentValues	=	L"-11796480,,5400";
+			Adjustments.push_back(-11796480);
+			Adjustments.push_back(0);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	L"@44,@45;@48,@49;@46,@47;@17,@18;@24,@25;@15,@16";
             TextBoxRectangle	=	L"3163,3163,18437,18437";
 

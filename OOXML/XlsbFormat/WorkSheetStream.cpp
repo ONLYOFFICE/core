@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -87,360 +87,474 @@ BaseObjectPtr WorkSheetStream::clone()
 const bool WorkSheetStream::loadContent(BinProcessor& proc)
 {
 	int	count = 0;
-    std::vector<CellRangeRef>	shared_formulas_locations;
+	std::vector<CellRangeRef>	shared_formulas_locations;
 	while (true)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
-		
+
 		if (type == rt_NONE) break;
 
-		switch(type)
+		switch (type)
 		{
-            case rt_BeginSheet:
-            {
-                if (proc.optional<BeginSheet>())
-                {
-                    m_BrtBeginSheet = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;           
-
-            case rt_BeginColInfos:
-            {
-                count = proc.repeated<COLINFOS>(0, 0);
-                while(count > 0)
-                {
-                    m_arCOLINFOS.insert(m_arCOLINFOS.begin(), elements_.back());
-                    elements_.pop_back();
-                    count--;
-                }
-            }break;
-
-            case rt_WsDim:
-            {
-                if (proc.optional<WsDim>())
-                {
-                    m_BrtWsDim = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_Drawing:
-            {
-                if (proc.optional<Drawing>())
-                {
-                    m_BrtDrawing = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_LegacyDrawing:
-            {
-                if (proc.optional<LegacyDrawing>())
-                {
-                    m_BrtLegacyDrawing = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_LegacyDrawingHF:
-            {
-                if (proc.optional<LegacyDrawingHF>())
-                {
-                    m_BrtLegacyDrawingHF = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_HLink:
-            {
-                if (proc.optional<HLINKS>())
-                {
-                    m_HLINKS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginMergeCells:
-            {
-                if (proc.optional<MERGECELLS>())
-                {
-                    m_MERGECELLS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginSheetData:
-            {
-                /*CELLTABLE cell_table_temlate(shared_formulas_locations);
-                if (proc.optional(cell_table_temlate))
-                {
-                    m_CELLTABLE = elements_.back();
-                    elements_.pop_back();
-                }*/
-                m_SheetaDataPosition = proc.GetRecordPosition();
-                while(proc.getNextRecordType() != rt_EndSheetData)
-                    proc.SkipRecord(false);
-            }break;
-
-            case rt_BeginUserShViews:
-            {
-                while(proc.getNextRecordType() != rt_EndUserShViews)
-                    proc.SkipRecord();
-            }break;
-
-            case rt_WsFmtInfo:
-            {
-                if (proc.optional<WsFmtInfo>())
-                {
-                    m_BrtWsFmtInfo = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginWsViews:
-            {
-                if (proc.optional<WSVIEWS2>())
-                {
-                    m_WSVIEWS2 = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_Margins:
-            {
-                if (proc.optional<Margins>())
-                {
-                    m_BrtMargins = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_PageSetup:
-            {
-                if (proc.optional<PageSetup>())
-                {
-                    m_BrtPageSetup = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_PrintOptions:
-            {
-                if (proc.optional<PrintOptions>())
-                {
-                    m_BrtPrintOptions = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginHeaderFooter:
-            {
-                if (proc.optional<HEADERFOOTER>())
-                {
-                    m_HEADERFOOTER = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_SheetProtectionIso:
-            {
-                if (proc.optional<SheetProtectionIso>())
-                {
-                    m_BrtSheetProtectionIso = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_SheetProtection:
-            {
-                if (proc.optional<SheetProtection>())
-                {
-                    m_BrtSheetProtection = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginListParts:
-            {
-                if (proc.optional<LISTPARTS>())
-                {
-                    m_LISTPARTS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginAFilter:
-            case rt_ACBegin:
-            {
-                if (proc.optional<AUTOFILTER>())
-                {
-                    m_AUTOFILTER = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginSortState:
-            {
-                if (proc.optional<SORTSTATE>())
-                {
-                    m_SORTSTATE = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginConditionalFormatting:
-            {
-                count = proc.repeated<CONDITIONALFORMATTING>(0, 0);
-                while(count > 0)
-                {
-                    m_arCONDITIONALFORMATTING.insert(m_arCONDITIONALFORMATTING.begin(), elements_.back());
-                    elements_.pop_back();
-                    count--;
-                }
-            }break;
-
-            case rt_BeginDVals:
-            {
-                if (proc.optional<DVALS>())
-                {
-                    m_DVALS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginOleObjects:
-            {
-                if (proc.optional<OLEOBJECTS>())
-                {
-                    m_OLEOBJECTS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginActiveXControls:
-            {
-                if (proc.optional<ACTIVEXCONTROLS>())
-                {
-                    m_ACTIVEXCONTROLS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_WsProp:
-            {
-                if (proc.optional<WsProp>())
-                {
-                    m_BrtWsProp = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BkHim:
-            {
-                if (proc.optional<BkHim>())
-                {
-                    m_BrtBkHim = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginRwBrk:
-            {
-                if (proc.optional<RWBRK>())
-                {
-                    m_RWBRK = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_BeginColBrk:
-            {
-                if (proc.optional<COLBRK>())
-                {
-                    m_COLBRK = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_RangeProtectionIso:
-            {
-                count = proc.repeated<RangeProtectionIso>(0, 0);
-                while(count > 0)
-                {
-                    m_arBrtRangeProtectionIso.insert(m_arBrtRangeProtectionIso.begin(), elements_.back());
-                    elements_.pop_back();
-                    count--;
-                }
-            }break;
-
-            case rt_RangeProtection:
-            {
-                count = proc.repeated<RangeProtection>(0, 0);
-                while(count > 0)
-                {
-                    m_arBrtRangeProtection.insert(m_arBrtRangeProtection.begin(), elements_.back());
-                    elements_.pop_back();
-                    count--;
-                }
-            }break;
-
-            case rt_BeginDCon:
-            {
-                if (proc.optional<DCON>())
-                {
-                    m_DCON = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-            case rt_FRTBegin:
-            {
-                FRTWORKSHEET oFRTWORKSHEET;
-                if (proc.optional(oFRTWORKSHEET))
-                {
-                    if(m_FRTWORKSHEET != nullptr)
-                    {
-                        if(oFRTWORKSHEET.m_CONDITIONALFORMATTINGS != nullptr)
-                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_CONDITIONALFORMATTINGS = oFRTWORKSHEET.m_CONDITIONALFORMATTINGS;
-
-                        if(oFRTWORKSHEET.m_DVALS14 != nullptr)
-                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_DVALS14 = oFRTWORKSHEET.m_DVALS14;
-
-                        if(oFRTWORKSHEET.m_SPARKLINEGROUPS != nullptr)
-                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SPARKLINEGROUPS = oFRTWORKSHEET.m_SPARKLINEGROUPS;
-
-                        if(oFRTWORKSHEET.m_SLICERSEX != nullptr)
-                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SLICERSEX = oFRTWORKSHEET.m_SLICERSEX;
-
-                        if(oFRTWORKSHEET.m_TABLESLICERSEX != nullptr)
-                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_TABLESLICERSEX = oFRTWORKSHEET.m_TABLESLICERSEX;
-
-                        elements_.pop_back();
-                    }
-                    else
-                    {
-                        m_FRTWORKSHEET = elements_.back();
-                        elements_.pop_back();
-                    }
-                }
-            }break;
-
-            case rt_EndSheet:
-            {
-                if (proc.optional<EndSheet>())
-                {
-                    m_BrtEndSheet = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-			default://skip					
+		case rt_BeginSheet:
+		{
+			if (proc.optional<BeginSheet>())
 			{
-				proc.SkipRecord();	
-			}break;
+				m_bBrtBeginSheet = true;
+				elements_.pop_back();
+			}
+			else
+				m_bBrtBeginSheet = false;
+		}break;
+
+		case rt_BeginColInfos:
+		{
+			count = proc.repeated<COLINFOS>(0, 0);
+			while (count > 0)
+			{
+				m_arCOLINFOS.insert(m_arCOLINFOS.begin(), elements_.back());
+				elements_.pop_back();
+				count--;
+			}
+		}break;
+
+		case rt_WsDim:
+		{
+			if (proc.optional<WsDim>())
+			{
+				m_BrtWsDim = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_Drawing:
+		{
+			if (proc.optional<Drawing>())
+			{
+				m_BrtDrawing = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_LegacyDrawing:
+		{
+			if (proc.optional<LegacyDrawing>())
+			{
+				m_BrtLegacyDrawing = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_LegacyDrawingHF:
+		{
+			if (proc.optional<LegacyDrawingHF>())
+			{
+				m_BrtLegacyDrawingHF = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_HLink:
+		{
+			if (proc.optional<HLINKS>())
+			{
+				m_HLINKS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginMergeCells:
+		{
+			if (proc.optional<MERGECELLS>())
+			{
+				m_MERGECELLS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginSheetData:
+		{
+			/*CELLTABLE cell_table_temlate(shared_formulas_locations);
+			if (proc.optional(cell_table_temlate))
+			{
+				m_CELLTABLE = elements_.back();
+				elements_.pop_back();
+			}*/
+			m_SheetaDataPosition = proc.GetRecordPosition();
+			while (proc.getNextRecordType() != rt_EndSheetData)
+				proc.SkipRecord();
+		}break;
+
+		case rt_BeginUserShViews:
+		{
+			while (proc.getNextRecordType() != rt_EndUserShViews)
+				proc.SkipRecord();
+		}break;
+
+		case rt_WsFmtInfo:
+		{
+			if (proc.optional<WsFmtInfo>())
+			{
+				m_BrtWsFmtInfo = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginWsViews:
+		{
+			if (proc.optional<WSVIEWS2>())
+			{
+				m_WSVIEWS2 = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_Margins:
+		{
+			if (proc.optional<Margins>())
+			{
+				m_BrtMargins = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_PageSetup:
+		{
+			if (proc.optional<PageSetup>())
+			{
+				m_BrtPageSetup = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_PrintOptions:
+		{
+			if (proc.optional<PrintOptions>())
+			{
+				m_BrtPrintOptions = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginHeaderFooter:
+		{
+			if (proc.optional<HEADERFOOTER>())
+			{
+				m_HEADERFOOTER = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_SheetProtectionIso:
+		{
+			if (proc.optional<SheetProtectionIso>())
+			{
+				m_BrtSheetProtectionIso = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_SheetProtection:
+		{
+			if (proc.optional<SheetProtection>())
+			{
+				m_BrtSheetProtection = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginListParts:
+		{
+			if (proc.optional<LISTPARTS>())
+			{
+				m_LISTPARTS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginAFilter:
+		case rt_ACBegin:
+		{
+			if (proc.optional<AUTOFILTER>())
+			{
+				m_AUTOFILTER = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginSortState:
+		{
+			if (proc.optional<SORTSTATE>())
+			{
+				m_SORTSTATE = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginConditionalFormatting:
+		{
+			count = proc.repeated<CONDITIONALFORMATTING>(0, 0);
+			while (count > 0)
+			{
+				m_arCONDITIONALFORMATTING.insert(m_arCONDITIONALFORMATTING.begin(), elements_.back());
+				elements_.pop_back();
+				count--;
+			}
+		}break;
+
+		case rt_BeginDVals:
+		{
+			if (proc.optional<DVALS>())
+			{
+				m_DVALS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginOleObjects:
+		{
+			if (proc.optional<OLEOBJECTS>())
+			{
+				m_OLEOBJECTS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginActiveXControls:
+		{
+			if (proc.optional<ACTIVEXCONTROLS>())
+			{
+				m_ACTIVEXCONTROLS = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_WsProp:
+		{
+			if (proc.optional<WsProp>())
+			{
+				m_BrtWsProp = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BkHim:
+		{
+			if (proc.optional<BkHim>())
+			{
+				m_BrtBkHim = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginRwBrk:
+		{
+			if (proc.optional<RWBRK>())
+			{
+				m_RWBRK = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_BeginColBrk:
+		{
+			if (proc.optional<COLBRK>())
+			{
+				m_COLBRK = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_RangeProtectionIso:
+		{
+			count = proc.repeated<RangeProtectionIso>(0, 0);
+			while (count > 0)
+			{
+				m_arBrtRangeProtectionIso.insert(m_arBrtRangeProtectionIso.begin(), elements_.back());
+				elements_.pop_back();
+				count--;
+			}
+		}break;
+
+		case rt_RangeProtection:
+		{
+			count = proc.repeated<RangeProtection>(0, 0);
+			while (count > 0)
+			{
+				m_arBrtRangeProtection.insert(m_arBrtRangeProtection.begin(), elements_.back());
+				elements_.pop_back();
+				count--;
+			}
+		}break;
+
+		case rt_BeginDCon:
+		{
+			if (proc.optional<DCON>())
+			{
+				m_DCON = elements_.back();
+				elements_.pop_back();
+			}
+		}break;
+
+		case rt_FRTBegin:
+		{
+			FRTWORKSHEET oFRTWORKSHEET;
+			if (proc.optional(oFRTWORKSHEET))
+			{
+				if (m_FRTWORKSHEET != nullptr)
+				{
+					if (oFRTWORKSHEET.m_CONDITIONALFORMATTINGS != nullptr)
+						boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_CONDITIONALFORMATTINGS = oFRTWORKSHEET.m_CONDITIONALFORMATTINGS;
+
+					if (oFRTWORKSHEET.m_DVALS14 != nullptr)
+						boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_DVALS14 = oFRTWORKSHEET.m_DVALS14;
+
+					if (oFRTWORKSHEET.m_SPARKLINEGROUPS != nullptr)
+						boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SPARKLINEGROUPS = oFRTWORKSHEET.m_SPARKLINEGROUPS;
+
+					if (oFRTWORKSHEET.m_SLICERSEX != nullptr)
+						boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SLICERSEX = oFRTWORKSHEET.m_SLICERSEX;
+
+					if (oFRTWORKSHEET.m_TABLESLICERSEX != nullptr)
+						boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_TABLESLICERSEX = oFRTWORKSHEET.m_TABLESLICERSEX;
+
+					elements_.pop_back();
+				}
+				else
+				{
+					m_FRTWORKSHEET = elements_.back();
+					elements_.pop_back();
+				}
+			}
+		}break;
+
+		case rt_EndSheet:
+		{
+			if (proc.optional<EndSheet>())
+			{
+				m_bBrtEndSheet = true;
+				elements_.pop_back();
+			}
+			else
+				m_bBrtEndSheet = false;
+		}break;
+
+		default://skip					
+		{
+			proc.SkipRecord();
+		}break;
 		}
 	}
+
+	return true;
+}
+
+const bool WorkSheetStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginSheet>();		 
+
+	for (auto &item : m_arCOLINFOS)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_BrtWsDim != nullptr)
+		proc.mandatory(*m_BrtWsDim);
+
+	if (m_BrtDrawing != nullptr)
+		proc.mandatory(*m_BrtDrawing);
+
+	if (m_BrtLegacyDrawing != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawing);
+
+	if (m_BrtLegacyDrawingHF != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawingHF);
+
+	if (m_HLINKS != nullptr)
+		proc.mandatory(*m_HLINKS);
+
+	if (m_MERGECELLS != nullptr)
+		proc.mandatory(*m_MERGECELLS);
+
+	if (m_CELLTABLE != nullptr)
+		proc.mandatory(*m_CELLTABLE);
+
+	if (m_BrtWsFmtInfo != nullptr)
+		proc.mandatory(*m_BrtWsFmtInfo);
+
+	if (m_WSVIEWS2 != nullptr)
+		proc.mandatory(*m_WSVIEWS2);
+
+	if (m_BrtMargins != nullptr)
+		proc.mandatory(*m_BrtMargins);
+
+	if (m_BrtPageSetup != nullptr)
+		proc.mandatory(*m_BrtPageSetup);
+
+	if (m_BrtPrintOptions != nullptr)
+		proc.mandatory(*m_BrtPrintOptions);
+
+	if (m_HEADERFOOTER != nullptr)
+		proc.mandatory(*m_HEADERFOOTER);
+	
+	if (m_BrtSheetProtectionIso != nullptr)
+		proc.mandatory(*m_BrtSheetProtectionIso);
+
+	if (m_BrtSheetProtection != nullptr)
+		proc.mandatory(*m_BrtSheetProtection);
+
+	if (m_LISTPARTS != nullptr)
+		proc.mandatory(*m_LISTPARTS);
+
+	if (m_AUTOFILTER != nullptr)
+		proc.mandatory(*m_AUTOFILTER);
+
+	if (m_SORTSTATE != nullptr)
+		proc.mandatory(*m_SORTSTATE);
+
+	for (auto &item : m_arCONDITIONALFORMATTING)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_DVALS != nullptr)
+		proc.mandatory(*m_DVALS);
+
+	if (m_OLEOBJECTS != nullptr)
+		proc.mandatory(*m_OLEOBJECTS);
+
+	if (m_ACTIVEXCONTROLS != nullptr)
+		proc.mandatory(*m_ACTIVEXCONTROLS);
+
+	if (m_BrtWsProp != nullptr)
+		proc.mandatory(*m_BrtWsProp);
+
+	if (m_BrtBkHim != nullptr)
+		proc.mandatory(*m_BrtBkHim);
+
+	if (m_RWBRK != nullptr)
+		proc.mandatory(*m_RWBRK);
+
+	if (m_COLBRK != nullptr)
+		proc.mandatory(*m_COLBRK);
+
+	for (auto &item : m_arBrtRangeProtectionIso)
+	{
+		proc.mandatory(*item);
+	}
+
+	for (auto &item : m_arBrtRangeProtection)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_DCON != nullptr)
+		proc.mandatory(*m_DCON);
+
+	if (m_FRTWORKSHEET != nullptr)
+		proc.mandatory(*m_FRTWORKSHEET);
+
+	proc.mandatory<EndSheet>();
 
 	return true;
 }

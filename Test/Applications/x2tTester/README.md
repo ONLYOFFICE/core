@@ -27,8 +27,45 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) is delete successful conversions files (default - 0)
 	<deleteOk> </deleteOk>
 
+	# (non-required) trough conversion (format) -> (*t format) -> (output formats) (default - 0). Directory with *t files - outputDirectory/_t.
+	<troughConversion> </troughConversion>
+
 	# (non-required) timestamp in report file name (default - 1)
 	<timestamp> </timestamp>
+
+	# (non-required) is take params for csv/txt conversions from filename (default - 1).
+	<filenameCsvTxtParams> </filenameCsvTxtParams>
+
+		# params in any order, in any place, delimiter is unicode code in hex
+		# encoding is case sensitive
+		# usage csv:
+		filename[cp(codepage)][del%(unicode code)]
+		# example:
+		some_csv_file[cpUTF-8][del%3b].csv
+
+		# usage txt:
+		filename[cp(codepage)]
+		# example
+		some_txt_file[cpUTF-8].txt
+
+	# (non-required) is take password from filename (default - 1).
+	<filenamePassword> </filenamePassword>
+
+		# in any order, in any place
+		# usage:
+		filename[pass(password)]
+
+		# example:
+		some_file[pass123].txt
+
+	# (non-required) default encoding for csv/txt files, if filenameCsvTxtParams is 0, or no param in filename (default - UTF-8)
+	<defaultCsvTxtEncoding> </defaultCsvTxtEncoding>
+
+	# (non-required) default unicode code delimiter for csv files, if filenameCsvTxtParams is 0, or no param in filename (default - 3b)
+	<defaultCsvDelimiter> </defaultCsvDelimiter>
+
+	# (non-required) timeout in seconds (default - 300). Set to 0 to disable timeouts
+	<timeout> </timeout>
 
 	# (non-required) path to xml file with a list of input files
 	<inputFilesList> </inputFilesList>
@@ -70,6 +107,7 @@ You can use the following templates:
 		<errorsOnly> </errorsOnly>
 		<deleteOk> </deleteOk>
 		<timestamp> </timestamp>
+		<timeout> </timeout>
 		<fonts system="">
 			<directory> </directory>
 		</fonts>

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,88 +30,28 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordColorSchemeAtom : public CUnknownRecord
-	{
-		ODRAW::SColorAtom m_oBackgroundColor;
-		ODRAW::SColorAtom m_oTextAndLinesColor;
-		ODRAW::SColorAtom m_oShadowsColor;
-		ODRAW::SColorAtom m_oTitleTextColor;
-		ODRAW::SColorAtom m_oFillsColor;
-		ODRAW::SColorAtom m_oAccentColor;
-		ODRAW::SColorAtom m_oAccentAndHyperlinkColor;
-		ODRAW::SColorAtom m_oAccentAndFollowingHyperlinkColor;
+class CRecordColorSchemeAtom : public CUnknownRecord
+{
+public:
+    ODRAW::SColorAtom m_oBackgroundColor;
+    ODRAW::SColorAtom m_oTextAndLinesColor;
+    ODRAW::SColorAtom m_oShadowsColor;
+    ODRAW::SColorAtom m_oTitleTextColor;
+    ODRAW::SColorAtom m_oFillsColor;
+    ODRAW::SColorAtom m_oAccentColor;
+    ODRAW::SColorAtom m_oAccentAndHyperlinkColor;
+    ODRAW::SColorAtom m_oAccentAndFollowingHyperlinkColor;
 
-	public:
 
-		CRecordColorSchemeAtom()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-		~CRecordColorSchemeAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			NSStreamReader::Read(pStream, m_oBackgroundColor);
-			NSStreamReader::Read(pStream, m_oTextAndLinesColor);
-			NSStreamReader::Read(pStream, m_oShadowsColor);
-			NSStreamReader::Read(pStream, m_oTitleTextColor);
-			NSStreamReader::Read(pStream, m_oFillsColor);
-			NSStreamReader::Read(pStream, m_oAccentColor);
-			NSStreamReader::Read(pStream, m_oAccentAndHyperlinkColor);
-			NSStreamReader::Read(pStream, m_oAccentAndFollowingHyperlinkColor);
-		}
-
-		void ToArray(std::vector<ODRAW::SColorAtom>* pArray)
-		{
-			if (NULL != pArray)
-			{
-				pArray->push_back(m_oBackgroundColor);
-				pArray->push_back(m_oTextAndLinesColor);
-				pArray->push_back(m_oShadowsColor);
-				pArray->push_back(m_oTitleTextColor);
-				pArray->push_back(m_oFillsColor);
-				pArray->push_back(m_oAccentColor);
-				pArray->push_back(m_oAccentAndHyperlinkColor);
-				pArray->push_back(m_oAccentAndFollowingHyperlinkColor);
-			}
-		}
-		void ToArray(std::vector<ODRAW::CColor>* pArray)
-		{
-			ODRAW::CColor oColor;
-			if (NULL != pArray)
-			{
-				m_oBackgroundColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oTextAndLinesColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oShadowsColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oTitleTextColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oFillsColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oAccentColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oAccentAndHyperlinkColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-
-				m_oAccentAndFollowingHyperlinkColor.ToColor(&oColor);
-				pArray->push_back(oColor);
-			}
-		}
-	};
+    void ToArray(std::vector<ODRAW::SColorAtom>* pArray);
+    void ToArray(std::vector<ODRAW::CColor>* pArray);
+};
 }

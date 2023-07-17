@@ -11,8 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = x2t_test
 TEMPLATE = app
 
-CONFIG += c++11
-
 CORE_ROOT_DIR = $$PWD/../../../../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)

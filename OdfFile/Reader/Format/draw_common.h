@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -64,12 +64,12 @@ enum BorderSide { sideTop, sideBottom, sideLeft, sideRight, sideMiddle };
 int get_value_emu(const _CP_OPT(odf_types::length) & len);
 int get_value_emu(double pt);
 
-int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
+int Compute_BorderWidth(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide);//emu
 
-int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
+int GetMargin(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide);//emu
 
 void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, 
-						 const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);
+						 const office_element_ptr & style_image, odf_document *document, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);
 
 typedef double double_4[4];
 bool parse_clipping(std::wstring strClipping, std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts *appFonts);

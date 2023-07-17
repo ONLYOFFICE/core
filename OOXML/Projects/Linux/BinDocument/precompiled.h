@@ -13,11 +13,14 @@
 #include <stdio.h>
 #include <stack>
 #include <list>
-#include <windows.h>
 #include <boost/shared_ptr.hpp>
 
-#include "../../../Binary/Document/BinWriter/BinReaderWriterDefines.h"
-#include "../../../Binary/Sheets/Common/BinReaderWriterDefines.h"
-#include "../../../Binary/Sheets/Common/Common.h"
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+
+//#include "../../../Binary/Document/BinWriter/BinReaderWriterDefines.h"
+//#include "../../../Binary/Sheets/Common/BinReaderWriterDefines.h"
+//#include "../../../Binary/Sheets/Common/Common.h"
 
 #endif

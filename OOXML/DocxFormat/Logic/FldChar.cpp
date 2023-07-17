@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -274,15 +274,7 @@ namespace OOX
 
 		CFFCheckBox::CFFCheckBox()
 		{
-		}
-		CFFCheckBox::CFFCheckBox(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFCheckBox::CFFCheckBox(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFCheckBox::~CFFCheckBox()
 		{
 		}
@@ -347,15 +339,7 @@ namespace OOX
 
 		CFFDDList::CFFDDList()
 		{
-		}
-		CFFDDList::CFFDDList(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFDDList::CFFDDList(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFDDList::~CFFDDList()
 		{
 			ClearItems();
@@ -386,15 +370,17 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:default", m_oDefault );
 			WritingElement_ReadNode( oNode, oChild, L"w:result",  m_oResult );
 
-			XmlUtils::CXmlNodes oListEntryNodes;
+			std::vector<XmlUtils::CXmlNode> oListEntryNodes;
 			if ( oNode.GetNodes( L"w:listEntry", oListEntryNodes ) )
 			{
-				XmlUtils::CXmlNode oListEntryNode;
-				for ( int nIndex = 0; nIndex < oListEntryNodes.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oListEntryNodes.size(); nIndex++ )
 				{
-					if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
+					XmlUtils::CXmlNode & oListEntryNode = oListEntryNodes[nIndex];
+					if ( oListEntryNode.IsValid() )
 					{
-						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oListEntryNode);
+						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
+						*oListEntry = oListEntryNode;
+
 						if (oListEntry) m_arrListEntry.push_back( oListEntry );
 					}
 				}
@@ -415,7 +401,9 @@ namespace OOX
 					m_oResult = oReader;
 				else if ( L"w:listEntry" == sName )
 				{
-					ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oReader);
+					ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
+					*oListEntry = oReader;
+
 					if (oListEntry) m_arrListEntry.push_back( oListEntry );
 				}
 			}
@@ -450,15 +438,7 @@ namespace OOX
 
 		CFFTextInput::CFFTextInput()
 		{
-		}
-		CFFTextInput::CFFTextInput(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFTextInput::CFFTextInput(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFTextInput::~CFFTextInput()
 		{
 		}
@@ -523,15 +503,7 @@ namespace OOX
 
 		CFFData::CFFData()
 		{
-		}
-		CFFData::CFFData(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFData::CFFData(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}	
 		CFFData::~CFFData()
 		{
 		}
@@ -615,16 +587,7 @@ namespace OOX
 		// CFldChar 17.16.18 (Part 1)
 		//--------------------------------------------------------------------------------
 
-		CFldChar::CFldChar(OOX::Document *pMain) : WritingElement(pMain) {}
-
-		CFldChar::CFldChar(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFldChar::CFldChar(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		CFldChar::CFldChar(OOX::Document *pMain) : WritingElement(pMain) {}		
 		CFldChar::~CFldChar()
 		{
 		}
@@ -662,6 +625,8 @@ namespace OOX
 
 				if ( L"w:ffData" == sName )
 					m_oFFData = oReader;
+				else if (L"w:fldData" == sName)
+					m_sPrivateData = oReader.GetText2();
 			}
 		}
 		std::wstring CFldChar::toXML() const
@@ -672,10 +637,17 @@ namespace OOX
 			ComplexTypes_WriteAttribute( L" w:fldCharType=\"", m_oFldCharType );
 			ComplexTypes_WriteAttribute( L" w:fldLock=\"",     m_oFldLock );
 
-			if ( m_oFFData.IsInit() )
+			if ( m_oFFData.IsInit() || m_sPrivateData.IsInit())
 			{
 				sResult += L">";
-				sResult += m_oFFData->toXML();
+				if (m_oFFData.IsInit())
+				{
+					sResult += m_oFFData->toXML();
+				}
+				if (m_sPrivateData.IsInit())
+				{
+					sResult += L"<w:fldData xml:space=\"preserve\">" + *m_sPrivateData + L"</w:fldData>";
+				}
 				sResult += L"</w:fldChar>";
 			}
 			else

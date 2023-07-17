@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,32 +56,10 @@ namespace DocFileFormat
 
 
     public:
-	  ListFormatOverrideLevel():
-	  iStartAt(0), ilvl(0), fStartAt(false), fFormatting(false), grfhic(0), lvl(NULL)
-	  {
-	  }
-
-      virtual ~ListFormatOverrideLevel()
-	  {
-	    RELEASEOBJECT( this->lvl );
-	  }
+	  ListFormatOverrideLevel();
+	  virtual ~ListFormatOverrideLevel();
  
       /// Parses the bytes to retrieve a ListFormatOverrideLevel
-      ListFormatOverrideLevel( VirtualStreamReader* reader, int length ):
-	  iStartAt(0), ilvl(0), fStartAt(false), fFormatting(false), grfhic(0), lvl(NULL)
-      {
-	    this->iStartAt = reader->ReadInt32();
-		unsigned int flag = (int)reader->ReadUInt32();
-        this->ilvl = (unsigned char)( flag & 0x000F );
-		this->fStartAt = FormatUtils::BitmaskToBool( flag, 0x0010 );
-		this->fFormatting = FormatUtils::BitmaskToBool( flag, 0x0020 );
-		this->grfhic = FormatUtils::GetIntFromBits( flag, 6, 8 );
-		
-        //it's a complete override, so the fix part is followed by LVL struct
-        if ( this->fFormatting )
-        {
-		  this->lvl = new ListLevel( reader, length );
-        }
-      }
+	  ListFormatOverrideLevel( VirtualStreamReader* reader, int length );
   };
 }

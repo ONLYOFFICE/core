@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,62 +39,11 @@ class RtfTableCell :  public ITextItemContainer
 public: 
 	RtfCellProperty m_oProperty;
 	
-	int GetType( )
-	{
-		return TYPE_RTF_TABLE_CELL;
-	}
+	RtfTableCell();
+	int GetType( );
 
-	RtfTableCell()
-	{
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring result;
-
-		for (size_t i =0 ; i < m_aArray.size(); i++)
-		{
-			if( m_aArray[i]->GetType() == TYPE_RTF_PARAGRAPH )
-			{
-				result += m_aArray[i]->RenderToRtf( oRenderParameter );
-				
-				if( i != m_aArray.size() - 1 )
-					result += L"\\par";
-			}
-			else
-			{
-				RenderParameter oNewParameter = oRenderParameter;
-				oNewParameter.nType = RENDER_TO_RTF_PARAM_NESTED;
-				
-				result += m_aArray[i]->RenderToRtf( oNewParameter );
-			}
-
-
-		}
-		if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-			result += L"\\cell";
-		else
-			result += L"\\nestcell{\\nonesttables  }"; //todo как бы вернуть
-		return result;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult = L"<w:tc>";
-
-        std::wstring sProp = m_oProperty.RenderToOOX( oRenderParameter );
-		if( !sProp.empty() )
-		{
-			sResult += L"<w:tcPr>";
-				sResult += sProp;
-			sResult += L"</w:tcPr>";
-		}
-
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			sResult += m_aArray[i]->RenderToOOX( oRenderParameter);
-		}
-		sResult += L"</w:tc>";
-		return sResult;
-	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 typedef boost::shared_ptr<RtfTableCell> RtfTableCellPtr;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -61,13 +61,17 @@ namespace OOX
             }
             ~CXlsb();
 
-            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
+            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
+			bool WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream);
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
-            void ReadSheetData(bool isWriteSheetToXlsx = false);
+            void ReadSheetData();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
             void WriteSheet(CWorksheet* worksheet);
+
+			bool IsWriteToXlsx();
+			void WriteToXlsx(bool isXlsx);
 
             std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
         private:
@@ -75,10 +79,13 @@ namespace OOX
             void init();
             XLS::GlobalWorkbookInfoPtr xls_global_info;
             boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
+			boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> m_binaryWriter;
 
             unsigned short workbook_code_page;
             std::wstring m_sPath;
             OOX::CContentTypes m_oContentTypes;
+
+			bool				m_bWriteToXlsx;
 
         };
 

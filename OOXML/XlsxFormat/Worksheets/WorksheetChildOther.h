@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,17 +31,43 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Styles/rPr.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CInch;
+	class COnOff;
+	class CDouble;
+	class CCryptAlgoritmName;
+	class CUnsignedDecimalNumber;
+	class CRelationshipId;
+	class CPageOrientation;
+
+	namespace Spreadsheet
+	{
+		class CCellComments;
+		class CPrintError;
+		class CPageOrder;
+		class CPageSize;
+		class CPageUnits;
+		class CActivePane;
+		class CPaneState;
+		class CSheetViewType;
+		class CDataConsolidateFunction;
+	}
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CColor;
+
 		class CProtectedRange : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProtectedRange)
+			WritingElement_AdditionMethods(CProtectedRange)
             WritingElement_XlsbConstructors(CProtectedRange)
 			CProtectedRange();
 			virtual ~CProtectedRange();
@@ -66,10 +92,11 @@ namespace OOX
 			nullable_string				m_oSqref;
 			std::vector<std::wstring>	m_arSecurityDescriptors;
 		};
+
 		class CProtectedRanges : public WritingElementWithChilds<CProtectedRange>
 		{
 		public:
-			WritingElement_AdditionConstructors(CProtectedRanges)
+			WritingElement_AdditionMethods(CProtectedRanges)
             WritingElement_XlsbVectorConstructors(CProtectedRanges)
 			CProtectedRanges();
 			virtual ~CProtectedRanges();
@@ -83,10 +110,11 @@ namespace OOX
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			virtual EElementType getType() const;
 		};
+
 		class CCellWatch : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellWatch)
+			WritingElement_AdditionMethods(CCellWatch)
 			WritingElement_XlsbConstructors(CCellWatch)
 			CCellWatch();
 			virtual ~CCellWatch();
@@ -105,10 +133,11 @@ namespace OOX
 
 			nullable_string m_oR;
 		};
+
 		class CCellWatches : public WritingElementWithChilds<CCellWatch>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellWatches)
+			WritingElement_AdditionMethods(CCellWatches)
 			WritingElement_XlsbVectorConstructors(CCellWatches)
 			CCellWatches();
 			virtual ~CCellWatches();
@@ -124,10 +153,11 @@ namespace OOX
 			virtual EElementType getType() const;
 
 		};
+
 		class CPageMargins : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageMargins)
+			WritingElement_AdditionMethods(CPageMargins)
             WritingElement_XlsbConstructors(CPageMargins)
 			CPageMargins();
 			virtual ~CPageMargins();
@@ -153,10 +183,11 @@ namespace OOX
 			nullable<SimpleTypes::CInch>	m_oHeader;
 			nullable<SimpleTypes::CInch>	m_oFooter;
 		};
+
 		class CPageSetup : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageSetup)
+			WritingElement_AdditionMethods(CPageSetup)
             WritingElement_XlsbConstructors(CPageSetup)
 			CPageSetup();
 			virtual ~CPageSetup();
@@ -194,10 +225,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>							m_oUsePrinterDefaults;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oVerticalDpi;
 		};
+
 		class CPrintOptions : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPrintOptions)
+			WritingElement_AdditionMethods(CPrintOptions)
             WritingElement_XlsbConstructors(CPrintOptions)
 			CPrintOptions();
 			virtual ~CPrintOptions();
@@ -222,10 +254,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>	m_oHorizontalCentered;
 			nullable<SimpleTypes::COnOff>	m_oVerticalCentered;
 		};
+
 		class CDimension : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDimension)
+			WritingElement_AdditionMethods(CDimension)
             WritingElement_XlsbConstructors(CDimension)
 			CDimension();
 			virtual ~CDimension();
@@ -246,10 +279,11 @@ namespace OOX
 		public:
 			nullable_string	m_oRef;
 		};
+
 		class CSheetFormatPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetFormatPr)
+			WritingElement_AdditionMethods(CSheetFormatPr)
             WritingElement_XlsbConstructors(CSheetFormatPr)
 			CSheetFormatPr();
 			virtual ~CSheetFormatPr();
@@ -278,10 +312,11 @@ namespace OOX
 				nullable_bool		m_oThickTop;
 				nullable_bool		m_oZeroHeight;
 		};
+
 		class CPane : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPane)
+			WritingElement_AdditionMethods(CPane)
             WritingElement_XlsbConstructors(CPane)
 			CPane();
 			virtual ~CPane();
@@ -306,10 +341,11 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>						m_oXSplit;
 			nullable<SimpleTypes::CDouble>						m_oYSplit;
 		};
+
 		class CSelection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSelection)
+			WritingElement_AdditionMethods(CSelection)
             WritingElement_XlsbConstructors(CSelection)
 			CSelection();
 			virtual ~CSelection();
@@ -340,7 +376,7 @@ namespace OOX
 		class CSheetView : public WritingElementWithChilds<CSelection>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetView)
+			WritingElement_AdditionMethods(CSheetView)
             WritingElement_XlsbConstructors(CSheetView)
 			CSheetView();
 			virtual ~CSheetView();
@@ -381,10 +417,11 @@ namespace OOX
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScalePageLayoutView;
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScaleSheetLayoutView;
 		};
+
 		class CSheetViews : public WritingElementWithChilds<CSheetView>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetViews)
+			WritingElement_AdditionMethods(CSheetViews)
             WritingElement_XlsbConstructors(CSheetViews)
 			CSheetViews();
 			virtual ~CSheetViews();
@@ -402,7 +439,7 @@ namespace OOX
 		class CPageSetUpPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageSetUpPr)
+			WritingElement_AdditionMethods(CPageSetUpPr)
             WritingElement_XlsbConstructors(CPageSetUpPr)
 			CPageSetUpPr();
 			virtual ~CPageSetUpPr();
@@ -424,10 +461,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oAutoPageBreaks;
 			nullable<SimpleTypes::COnOff>		m_oFitToPage;
 		};
+
 		class COutlinePr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COutlinePr)
+			WritingElement_AdditionMethods(COutlinePr)
             WritingElement_XlsbConstructors(COutlinePr)
 			COutlinePr();
 			virtual ~COutlinePr();
@@ -451,10 +489,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oSummaryBelow;
 			nullable<SimpleTypes::COnOff>		m_oSummaryRight;
 		};
+
 		class CSheetPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetPr)
+			WritingElement_AdditionMethods(CSheetPr)
             WritingElement_XlsbConstructors(CSheetPr)
 			CSheetPr();
 			virtual ~CSheetPr();
@@ -487,10 +526,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff>		m_oTransitionEvaluation;
 		};
+
 		class CHeaderFooterElement : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHeaderFooterElement)
+			WritingElement_AdditionMethods(CHeaderFooterElement)
 			CHeaderFooterElement();
 			virtual ~CHeaderFooterElement();
 
@@ -513,7 +553,7 @@ namespace OOX
 		class CHeaderFooter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHeaderFooter)
+			WritingElement_AdditionMethods(CHeaderFooter)
             WritingElement_XlsbConstructors(CHeaderFooter)
 			CHeaderFooter();
 			virtual ~CHeaderFooter();
@@ -549,7 +589,7 @@ namespace OOX
 		class CLegacyDrawingHFWorksheet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLegacyDrawingHFWorksheet)
+			WritingElement_AdditionMethods(CLegacyDrawingHFWorksheet)
             WritingElement_XlsbConstructors(CLegacyDrawingHFWorksheet)
 			CLegacyDrawingHFWorksheet();
 			virtual ~CLegacyDrawingHFWorksheet();
@@ -592,7 +632,7 @@ namespace OOX
 		class CPictureWorksheet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPictureWorksheet)
+			WritingElement_AdditionMethods(CPictureWorksheet)
             WritingElement_XlsbConstructors(CPictureWorksheet)
 			CPictureWorksheet();
 			virtual ~CPictureWorksheet();
@@ -617,7 +657,7 @@ namespace OOX
 		class CBreak : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBreak)
+			WritingElement_AdditionMethods(CBreak)
             WritingElement_XlsbConstructors(CBreak)
 			CBreak();
 			virtual ~CBreak();
@@ -646,7 +686,7 @@ namespace OOX
 		class CRowColBreaks : public WritingElementWithChilds<CBreak>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRowColBreaks)
+			WritingElement_AdditionMethods(CRowColBreaks)
             WritingElement_XlsbConstructors(CRowColBreaks)
 			CRowColBreaks();
 			virtual ~CRowColBreaks();
@@ -670,10 +710,11 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oManualBreakCount;
 		};
+
 		class CSheetProtection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetProtection)
+			WritingElement_AdditionMethods(CSheetProtection)
             WritingElement_XlsbConstructors(CSheetProtection)
 			CSheetProtection();
 			virtual ~CSheetProtection();
@@ -714,10 +755,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oSheet;
 			nullable<SimpleTypes::COnOff>		m_oSort;
 		};
+
 		class CDataRef : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataRef)
+			WritingElement_AdditionMethods(CDataRef)
             WritingElement_XlsbConstructors(CDataRef)
 			CDataRef();
 			virtual ~CDataRef();
@@ -739,10 +781,11 @@ namespace OOX
 			nullable_string							m_oRef;
 			nullable_string							m_oSheet;
 		};
+
 		class CDataRefs : public WritingElementWithChilds<CDataRef>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataRefs)
+			WritingElement_AdditionMethods(CDataRefs)
             WritingElement_XlsbConstructors(CDataRefs)
 			CDataRefs();
 			virtual ~CDataRefs();
@@ -762,10 +805,11 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};
+
 		class CDataConsolidate : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataConsolidate)
+			WritingElement_AdditionMethods(CDataConsolidate)
             WritingElement_XlsbConstructors(CDataConsolidate)
 			CDataConsolidate();
 			virtual ~CDataConsolidate();
@@ -790,5 +834,52 @@ namespace OOX
 			nullable<CDataRefs>	m_oDataRefs;
 
 		};
+		class CUserProtectedRange : public WritingElement
+		{
+		public:
+			struct _UsersGroupsDesc
+			{
+				nullable_string id;
+				nullable_string name;
+			};
+
+			WritingElement_AdditionMethods(CUserProtectedRange)
+			CUserProtectedRange();
+			virtual ~CUserProtectedRange();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			nullable_string m_oName;
+			nullable_string m_oSqref;
+			nullable_string m_oText;
+
+			std::vector<_UsersGroupsDesc> m_arUsers;
+			std::vector<_UsersGroupsDesc> m_arUsersGroups;
+		};
+
+		class CUserProtectedRanges : public WritingElementWithChilds<CUserProtectedRange>
+		{
+		public:
+			WritingElement_AdditionMethods(CUserProtectedRanges)
+			CUserProtectedRanges();
+			virtual ~CUserProtectedRanges();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+		};
+
 	} //Spreadsheet
 } // namespace OOX

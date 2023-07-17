@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,6 +37,7 @@
 #include "../Biff12_unions/CELL.h"
 #include "../Biff12_records/EndSheetData.h"
 #include "../Biff12_records/CommonRecords.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
@@ -61,9 +62,12 @@ namespace XLSB
     {
         if (proc.optional<BeginSheetData>())
         {
-            m_BrtBeginSheetData = elements_.back();
+            m_bBrtBeginSheetData = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSheetData = false;
+
         Parenthesis_CELLTABLE cell_group(shared_formulas_locations_ref_);
         /*while(proc.optional(cell_group))
         {
@@ -85,12 +89,28 @@ namespace XLSB
 
         if (proc.optional<EndSheetData>())
         {
-            m_BrtEndSheetData = elements_.back();
+            m_bBrtEndSheetData = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSheetData = false;
 
-        return m_BrtBeginSheetData && countParenthesis_CELLTABLE > 0 && m_BrtEndSheetData;
+        return m_bBrtBeginSheetData && countParenthesis_CELLTABLE > 0 && m_bBrtEndSheetData;
     }
+
+	const bool CELLTABLE::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginSheetData>();
+
+		for (auto &item : m_arParenthesis_CELLTABLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSheetData>();
+
+		return true;
+	}
 
     Parenthesis_CELLTABLE::Parenthesis_CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
                                 shared_formulas_locations_ref_(shared_formulas_locations_ref)
@@ -150,6 +170,22 @@ namespace XLSB
 
         return true;
     }
+
+	const bool Parenthesis_CELLTABLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_ACCELLTABLE != nullptr)
+			proc.mandatory(*m_ACCELLTABLE);
+
+		if(m_BrtRowHdr != nullptr)
+			proc.mandatory(*m_BrtRowHdr);
+
+		for (auto &item : m_arCELL)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

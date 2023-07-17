@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_TABLE_INCLUDE_H_
-#define OOX_LOGIC_TABLE_INCLUDE_H_
 
-#include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "TableProperty.h"
 
 namespace ComplexTypes
@@ -69,7 +65,7 @@ namespace ComplexTypes
 namespace OOX
 {
 	namespace Logic
-	{
+    {
 		//--------------------------------------------------------------------------------
 		// CTblGridChange 17.13.5.33 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -78,10 +74,9 @@ namespace OOX
 		class CTblGridChange : public WritingElement
 		{
 		public:
-			CTblGridChange(OOX::Document *pMain = NULL);
-			CTblGridChange(XmlUtils::CXmlNode &oNode);
-			CTblGridChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblGridChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblGridChange();
+
 			const CTblGridChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblGridChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -147,15 +142,16 @@ namespace OOX
 				if ( !m_bTblGridChange && oNode.GetNode( L"w:tblGridChange", oChild ) )
 					m_oTblGridChange = oChild;
 
-				XmlUtils::CXmlNodes oGridColNodes;
+				std::vector<XmlUtils::CXmlNode> oGridColNodes;
 				if ( oNode.GetNodes( L"w:gridCol", oGridColNodes ) )
 				{
-					XmlUtils::CXmlNode oGridColNode;
-					for ( int nIndex = 0; nIndex < oGridColNodes.GetCount(); nIndex++ )
+					for ( size_t nIndex = 0; nIndex < oGridColNodes.size(); nIndex++ )
 					{
-						if ( oGridColNodes.GetAt( nIndex, oGridColNode ) )
+						XmlUtils::CXmlNode & oGridColNode = oGridColNodes[nIndex];
+						if ( oGridColNode.IsValid() )
 						{
-							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oGridColNode);
+							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+							*oGridCol = oGridColNode;
 							if (oGridCol) m_arrGridCol.push_back( oGridCol );
 						}
 					}
@@ -174,7 +170,9 @@ namespace OOX
 						m_oTblGridChange = oReader;
 					else if ( L"w:gridCol" == sName )
 					{
-						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oReader);
+						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+						*oGridCol = oReader;
+
 						if (oGridCol) m_arrGridCol.push_back( oGridCol );
 					}
 				}
@@ -217,10 +215,9 @@ namespace OOX
 		class CTblPrExChange : public WritingElement
 		{
 		public:
-			CTblPrExChange(OOX::Document *pMain = NULL);
-			CTblPrExChange(XmlUtils::CXmlNode &oNode);
-			CTblPrExChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblPrExChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblPrExChange();
+
 			const CTblPrExChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrExChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -367,9 +364,7 @@ namespace OOX
 		class CTbl : public WritingElementWithChilds<>
 		{
 		public:
-			CTbl(OOX::Document *pMain = NULL);
-			CTbl(XmlUtils::CXmlNode &oNode);
-			CTbl(XmlUtils::CXmlLiteReader& oReader);
+			CTbl(OOX::Document *pMain = NULL);			
 			virtual ~CTbl();
 
 			const CTbl &operator =(const XmlUtils::CXmlNode& oNode);
@@ -397,8 +392,6 @@ namespace OOX
 		{
 		public:
 			CTr(OOX::Document *pMain = NULL);
-			CTr(XmlUtils::CXmlNode &oNode);
-			CTr(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTr();
 
 			const CTr &operator =(const XmlUtils::CXmlNode& oNode);
@@ -433,9 +426,7 @@ namespace OOX
 		class CTc : public WritingElementWithChilds<>
 		{
 		public:
-			CTc(OOX::Document *pMain = NULL);
-			CTc(XmlUtils::CXmlNode &oNode);
-			CTc(XmlUtils::CXmlLiteReader& oReader);
+			CTc(OOX::Document *pMain = NULL);			
 			virtual ~CTc();
 
 			const CTc &operator =(const XmlUtils::CXmlNode& oNode);
@@ -461,4 +452,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_TABLE_INCLUDE_H_

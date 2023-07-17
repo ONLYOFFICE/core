@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,13 +38,13 @@ namespace oox {
 
 struct _rect
 {
-	_rect() : x(0), y(0), cx(0), cy(0) {}
+	_rect(){}
 	_rect(double cx_, double cy_, double x_, double y_) : x(x_), y(y_), cx(cx_), cy(cy_) {}
 
-    double cx;
-    double cy;
-    double x;
-    double y;
+    double cx = 0;
+    double cy = 0;
+    double x = 0;
+    double y = 0;
 };
 enum _anchor_rel
 {
@@ -57,6 +57,7 @@ struct drawing_object_description
 	bool									bNotes_;
 
 	oox::_rels_type							type_;
+	bool									bInner_;
 
 	std::wstring							name_;	
 	std::wstring							descriptor_;	

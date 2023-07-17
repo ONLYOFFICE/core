@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,14 +40,20 @@ namespace DocFileFormat
 	public:
 		HeartType () : ShapeType(msosptHeart)
 		{
-			ShapeConcentricFill	=	true;
-			Joins				=	miter;
-            Path				=	(L"m10860,2187c10451,1746,9529,1018,9015,730,7865,152,6685,,5415,,4175,152,2995,575,1967,1305,1150,2187,575,3222,242,4220,,5410,242,6560,575,7597l10860,21600,20995,7597v485,-1037,605,-2187,485,-3377c21115,3222,20420,2187,19632,1305,18575,575,17425,152,16275,,15005,,13735,152,12705,730v-529,288,-1451,1016,-1845,1457xe" );
+			ShapeConcentricFill	= true;
+			Joins				= miter;
+            Path				= L"m10860,2187c10451,1746,9529,1018,9015,730,7865,152,6685,,5415,,4175,152,2995,575,1967,1305,1150,2187,575,3222,242,4220,,5410,242,6560,575,7597l10860,21600,20995,7597v485,-1037,605,-2187,485,-3377c21115,3222,20420,2187,19632,1305,18575,575,17425,152,16275,,15005,,13735,152,12705,730v-529,288,-1451,1016,-1845,1457xe";
 
-            AdjustmentValues	=	(L"21600" );
-            ConnectorLocations	=	(L"10860,2187;2928,10800;10860,21600;18672,10800" );
-            ConnectorAngles		=	(L"270,180,90,0" );
-            TextBoxRectangle	=	(L"5037,2277,16557,13677" );
+			Adjustments.push_back(21600);
+
+            ConnectorLocations	= L"10860,2187;2928,10800;10860,21600;18672,10800";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
+            TextBoxRectangle	= L"5037,2277,16557,13677";
 		}
 	};
 }

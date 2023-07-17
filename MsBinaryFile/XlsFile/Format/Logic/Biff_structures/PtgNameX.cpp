@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,6 +41,12 @@ PtgNameX::PtgNameX(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 
+PtgNameX::PtgNameX(const unsigned short ixti, const unsigned int index, const PtgDataType data_type)
+: OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))
+{
+	this->ixti = ixti;
+	this->nameindex = index;
+}
 
 PtgNameX::PtgNameX(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))
@@ -70,6 +76,26 @@ void PtgNameX::loadFields(CFRecord& record)
 	}
 	else
 		record >> nameindex;
+
+	global_info = record.getGlobalWorkbookInfo();
+}
+
+void PtgNameX::writeFields(CFRecord& record)
+{
+	record << ixti;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		record.reserveNunBytes(8);
+
+		_UINT16 val;
+		val = nameindex;
+		record << val;
+
+		record.reserveNunBytes(12);
+	}
+	else
+		record << nameindex;
 
 	global_info = record.getGlobalWorkbookInfo();
 }

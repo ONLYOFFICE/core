@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,32 +35,12 @@
 #include "../../Reader/Records.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeScaleBehaviorAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        _UINT32 src						=	StreamUtils::ReadDWORD ( pStream );
-
-        m_fByPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)src) ) );
-        m_fFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)src) ) );
-        m_fToPropertyUsed				=	( 0x04 == ( 0x04 & ((BYTE)src) ) );
-        m_fZoomContentsUsed				=	( 0x08 == ( 0x08 & ((BYTE)src) ) );
-
-        m_XBy							=	StreamUtils::ReadFLOAT ( pStream );
-        m_YBy							=	StreamUtils::ReadFLOAT ( pStream );
-        m_XFrom							=	StreamUtils::ReadFLOAT ( pStream );
-        m_YFrom							=	StreamUtils::ReadFLOAT ( pStream );
-        m_XTo							=	StreamUtils::ReadFLOAT ( pStream );
-        m_YTo							=	StreamUtils::ReadFLOAT ( pStream );
-
-        src								=	StreamUtils::ReadDWORD ( pStream );
-        m_fZoomContents					=	( 0x01 == ( 0x01 & ((BYTE)src) ) );
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
 public:
 

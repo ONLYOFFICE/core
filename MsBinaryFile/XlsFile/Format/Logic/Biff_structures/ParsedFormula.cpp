@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,8 +32,7 @@
 
 #include "NameParsedFormula.h"
 #include "StringPtgParser.h"
-
-
+#include <boost/algorithm/string/trim.hpp>
 namespace XLS
 {
 
@@ -43,7 +42,11 @@ ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 	rgce(cell_base_ref)
 {
 }
-
+ParsedFormula& ParsedFormula::operator=(const std::wstring& value)
+{
+    parseStringFormula(value, L"");
+	return *this;
+}
 void ParsedFormula::set_base_ref(const CellRef& cell_base_ref)
 {
 	rgce.set_base_ref(cell_base_ref);
@@ -114,15 +117,15 @@ const std::wstring ParsedFormula::getAssembledFormula(bool full_ref) const
 }
 
 
-//const bool ParsedFormula::parseStringFormula(const std::wstring formula, const std::wstring & tag_name)
-//{
-//	StringPtgParser parser;
-//	if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, tag_name))
-//	{
-//		return true;
-//	}
-//	return false;
-//}
+const bool ParsedFormula::parseStringFormula(const std::wstring formula, const std::wstring & tag_name)
+{
+    StringPtgParser parser;
+    if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, tag_name))
+    {
+        return true;
+    }
+    return false;
+}
 
 
 } // namespace XLS

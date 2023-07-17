@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,43 +42,10 @@ namespace DocFileFormat
 
 		int Index;
 
-		GroupContainer() : RegularContainer(), Index(0)
-		{
-		}
+		GroupContainer();
+		GroupContainer(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~GroupContainer();
 
-		GroupContainer(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : RegularContainer(_reader, size, typeCode, version, instance), Index(0)
-		{
-			for ( unsigned int i = 0; i < this->Children.size(); i++ )
-			{
-				Record* groupChild = this->Children[i];
-
-				if ( groupChild != NULL )
-				{
-					if ( groupChild->TypeCode == 0xF003 )
-					{
-						// the child is a subgroup
-						GroupContainer* group = static_cast<GroupContainer*>(groupChild);
-						group->Index = i;
-						this->Children[i] = group;
-					}
-					else if ( groupChild->TypeCode == 0xF004 )
-					{
-						// the child is a shape
-						ShapeContainer* shape = static_cast<ShapeContainer*>(groupChild);
-						shape->m_nIndex = i;
-						this->Children[i] = shape;
-					}
-				}
-			}
-		}
-
-		virtual ~GroupContainer() 
-		{
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new GroupContainer( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
 	}; 
 }

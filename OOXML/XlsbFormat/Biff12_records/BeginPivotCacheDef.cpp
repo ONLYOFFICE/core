@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -84,6 +84,44 @@ namespace XLSB
             record.skipNunBytes(4);
 
     }
+
+	void BeginPivotCacheDef::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags1 = 0, flags2 = 0;
+
+		record << bVerCacheLastRefresh << bVerCacheRefreshableMin << bVerCacheCreated;
+
+		SETBIT(flags1, 0, fSaveData)
+		SETBIT(flags1, 1, fInvalid)
+		SETBIT(flags1, 2, fRefreshOnLoad)
+		SETBIT(flags1, 3, fOptimizeCache)
+		SETBIT(flags1, 4, fEnableRefresh)
+		SETBIT(flags1, 5, fBackgroundQuery)
+		SETBIT(flags1, 6, fUpgradeOnRefresh)
+		SETBIT(flags1, 7, fSheetData)
+
+		record << flags1;
+
+		record << citmGhostMax << xnumRefreshedDate;
+
+		SETBIT(flags2, 0, fLoadRefreshedWho)
+		SETBIT(flags2, 1, fLoadRelIDRecords)
+		SETBIT(flags2, 2, fSupportSubquery)
+		SETBIT(flags2, 3, fSupportAttribDrill)
+
+		record << flags2;
+		record << cRecords;
+
+		if (fLoadRefreshedWho)
+			record << stRefreshedWho;
+
+		if (fLoadRelIDRecords)
+			record << stRelIDRecords;
+
+		if (!fLoadRefreshedWho)
+			record.reserveNunBytes(4);
+
+	}
 
 } // namespace XLSB
 

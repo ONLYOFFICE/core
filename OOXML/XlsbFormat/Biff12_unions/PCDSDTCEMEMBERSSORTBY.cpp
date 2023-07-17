@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,14 +70,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndPCDSDTCEMembers>())
-        {
-            m_BrtEndPCDSDTCEMembers = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndPCDSDTCEMembers>())
+		{
+			m_bBrtEndPCDSDTCEMembers = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndPCDSDTCEMembers = false;
 
-        return m_BrtBeginPCDSDTCEMembersSortBy && m_BrtEndPCDSDTCEMembers;
+        return m_BrtBeginPCDSDTCEMembersSortBy && m_bBrtEndPCDSDTCEMembers;
     }
+
+	const bool PCDSDTCEMEMBERSSORTBY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDSDTCEMembersSortBy == nullptr)
+			m_BrtBeginPCDSDTCEMembersSortBy = XLS::BaseObjectPtr(new XLSB::BeginPCDSDTCEMembersSortBy());
+
+		if (m_BrtBeginPCDSDTCEMembersSortBy != nullptr)
+		{
+			auto ptrBrtBeginPCDSDTCEMembersSortBy = static_cast<XLSB::BeginPCDSDTCEMembersSortBy*>(m_BrtBeginPCDSDTCEMembersSortBy.get());
+
+			if (ptrBrtBeginPCDSDTCEMembersSortBy != nullptr)
+				ptrBrtBeginPCDSDTCEMembersSortBy->cMembers = m_arPCDSDTCEMEMBER.size();
+
+			proc.mandatory(*m_BrtBeginPCDSDTCEMembersSortBy);
+		}
+
+		for (auto &item : m_arPCDSDTCEMEMBER)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDSDTCEMembers>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

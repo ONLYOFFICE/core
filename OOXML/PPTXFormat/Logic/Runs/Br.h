@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,69 +43,25 @@ namespace PPTX
 		class Br : public RunBase
 		{
 		public:
-			WritingElement_AdditionConstructors(Br)
+			WritingElement_AdditionMethods(Br)
 			PPTX_LOGIC_BASE2(Br)
 
-			Br& operator=(const Br& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Br& operator=(const Br& oSrc);
 
-				rPr = oSrc.rPr;
-				return *this;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_br;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				rPr = node.ReadNode(_T("a:rPr"));
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual OOX::EElementType getType () const;
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					
-					if ( _T("a:rPr") == sName )
-						rPr = oReader;
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:br"));
-				pWriter->EndAttributes();
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				pWriter->Write(rPr);
-				
-				pWriter->EndNode(_T("a:br"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(PARRUN_TYPE_BR);
-
-				pWriter->WriteRecord2(0, rPr);
-
-				pWriter->EndRecord();
-			}
-
-			virtual std::wstring GetText()const{return _T("\n");};
+			virtual std::wstring GetText() const;
 
 			nullable<RunProperties> rPr;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(rPr.IsInit())
-					rPr->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

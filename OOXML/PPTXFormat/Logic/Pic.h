@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,137 +45,12 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class OLEDrawAspectType : public BaseLimit
-		{
-		public:
-			OLEDrawAspectType()
-			{
-				m_strValue = _T("Content");
-			}
+		DEFINE_LIMIT_BASE(OLEDrawAspectType)
 
-			_USE_STRING_OPERATOR
+		DEFINE_LIMIT_BASE(OLEType)
 
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("Content") == strValue) ||
-					(_T("Icon") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+		DEFINE_LIMIT_BASE(OLEUpdateMode)
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("Content") == m_strValue)
-					return 0;
-				if (_T("Icon") == m_strValue)
-					return 1;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("Content");
-					break;
-				case 1:
-					m_strValue = _T("Icon");
-					break;
-				default:
-					break;
-				}
-			}
-		};
-
-		class OLEType : public BaseLimit
-		{
-		public:
-			OLEType()
-			{
-				m_strValue = _T("Embed");
-			}
-
-			_USE_STRING_OPERATOR
-
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("Embed") == strValue) ||
-					(_T("Link") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("Embed") == m_strValue)
-					return 0;
-				if (_T("Link") == m_strValue)
-					return 1;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("Embed");
-					break;
-				case 1:
-					m_strValue = _T("Link");
-					break;
-				default:
-					break;
-				}
-			}
-		};
-
-		class OLEUpdateMode : public BaseLimit
-		{
-		public:
-			OLEUpdateMode()
-			{
-				m_strValue = _T("Always");
-			}
-
-			_USE_STRING_OPERATOR
-
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("Always") == strValue) ||
-					(_T("OnCall") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("Always") == m_strValue)
-					return 0;
-				if (_T("OnCall") == m_strValue)
-					return 1;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("Always");
-					break;
-				case 1:
-					m_strValue = _T("OnCall");
-					break;
-				default:
-					break;
-				}
-			}
-		};
 	} // namespace Limit
 } // namespace PPTX
 
@@ -187,10 +62,7 @@ namespace PPTX
 		class COLEObject : public WrapperWritingElement
 		{
 		public:
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_pic;
-			}
+			virtual OOX::EElementType getType () const;
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			
@@ -235,10 +107,7 @@ namespace PPTX
 			Pic(std::wstring ns = L"p");
 			virtual ~Pic();
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_pic;
-			}
+			virtual OOX::EElementType getType () const;
 
 			explicit Pic(XmlUtils::CXmlNode& node);
 			const Pic& operator =(XmlUtils::CXmlNode& node);
@@ -272,14 +141,9 @@ namespace PPTX
 			
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL, bool in_group = false);
+			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 			
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"), macro)
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 //----------------------------------------------------------------------
 			Shape*					m_pLevelUp;
 			NvPicPr					nvPicPr;
@@ -292,6 +156,7 @@ namespace PPTX
 
 			std::wstring			m_namespace;
 			nullable_string			m_sClientDataXml;
+
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -91,22 +91,45 @@ void odf_settings_context::end_table()
 {
 	current_table_ = -1;
 }
+void odf_settings_context::set_modify_info(const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count)
+{
+	office_element_ptr elm_item_set;
+	create_element(L"config", L"config-item-set", elm_item_set, odf_context_);
+	config_content_.push_back(elm_item_set);
+	
+	settings_config_item_set *item_set = dynamic_cast<settings_config_item_set*>(elm_item_set.get());
+	if (item_set)
+	{
+		item_set->config_name_ = L"ModifyPasswordInfo";
 
-void odf_settings_context::add_property(std::wstring name, std::wstring type, std::wstring value)
+		office_element_ptr prop;
+		prop = create_property(L"algorithm-name", L"string", algorithm);						elm_item_set->add_child_element(prop);
+		prop = create_property(L"salt", L"base64Binary", solt);									elm_item_set->add_child_element(prop);
+		prop = create_property(L"iteration-count", L"int", std::to_wstring(iteration_count));	elm_item_set->add_child_element(prop);
+		prop = create_property(L"hash", L"base64Binary", hash);									elm_item_set->add_child_element(prop);
+	}
+}
+office_element_ptr odf_settings_context::create_property(const std::wstring &name, const std::wstring &type, const std::wstring &value)
+{
+	office_element_ptr prop;
+	create_element(L"config", L"config-item", prop, odf_context_);
+
+	settings_config_item *item = NULL;
+	item = dynamic_cast<settings_config_item*>(prop.get());
+	if (!item) return prop;
+
+	item->config_name_ = name;
+	item->config_type_ = type;
+	item->content_ = value;
+
+	return prop;
+}
+void odf_settings_context::add_property(const std::wstring &name, const std::wstring &type, const std::wstring &value)
 {
 	if (current_view_ < 0) return;
 	if (name.empty() || type.empty()) return;
 
-	office_element_ptr prop;
-	create_element (L"config", L"config-item", prop, odf_context_);
-
-	settings_config_item *item = NULL;
-	item = dynamic_cast<settings_config_item*>(prop.get());
-	if (!item) return;
-
-	item->config_name_	= name;
-	item->config_type_	= type;
-	item->content_		= value;
+	office_element_ptr prop = create_property(name, type, value);
 
 	if (current_table_ < 0)
 	{
@@ -116,6 +139,20 @@ void odf_settings_context::add_property(std::wstring name, std::wstring type, st
 	{
 		views_[current_view_].tables.back().content.push_back(prop);
 	}
+}
+void odf_settings_context::add_common_views_property(const std::wstring &name, const std::wstring &type, const std::wstring &value)
+{
+	if (name.empty() || type.empty()) return;
+
+	office_element_ptr prop = create_property(name, type, value);
+	common_views_content_.push_back(prop);
+}
+void odf_settings_context::add_config_content_item(const std::wstring &name, const std::wstring &type, const std::wstring &value)
+{
+	if (name.empty() || type.empty()) return;
+
+	office_element_ptr prop = create_property(name, type, value);
+	config_content_.push_back(prop);	
 }
 
 void odf_settings_context::process_office_settings(office_element_ptr root )
@@ -178,6 +215,10 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 			for (size_t i = 0; i < views_[v].content.size(); i++)
 			{
 				views_entry_elm->add_child_element(views_[v].content[i]);
+			}
+			for (size_t i = 0; i < common_views_content_.size(); i++)
+			{
+				views_entry_elm->add_child_element(common_views_content_[i]);
 			}
 		}
 	}

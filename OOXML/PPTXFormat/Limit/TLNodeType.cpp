@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,24 +38,24 @@ namespace PPTX
 	{
 		TLNodeType::TLNodeType()
 		{
-			m_strValue = _T("tmRoot");
+			m_strValue = L"tmRoot";
 		}
 		void TLNodeType::set(const std::wstring& strValue)
 		{
-			if ((_T("afterEffect") == strValue) ||
-				(_T("afterGroup") == strValue) ||
-				(_T("clickEffect") == strValue) ||
-				(_T("clickPar") == strValue) ||
-				(_T("interactiveSeq") == strValue) ||
-				(_T("mainSeq") == strValue) ||
-				(_T("tmRoot") == strValue) ||
-				(_T("withEffect") == strValue) ||
-				(_T("withGroup") == strValue))
+			if ((L"afterEffect" == strValue) ||
+				(L"afterGroup" == strValue) ||
+				(L"clickEffect" == strValue) ||
+				(L"clickPar" == strValue) ||
+				(L"interactiveSeq" == strValue) ||
+				(L"mainSeq" == strValue) ||
+				(L"tmRoot" == strValue) ||
+				(L"withEffect" == strValue) ||
+				(L"withGroup" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLNodeType::GetBYTECode() const
+		unsigned char TLNodeType::GetBYTECode() const
 		{
 			if (L"afterEffect" == m_strValue)	return 0;
 			if (L"afterGroup" == m_strValue)	return 1;
@@ -68,7 +68,7 @@ namespace PPTX
 			if (L"withGroup" == m_strValue)		return 8;
 			return 0;
 		}
-		void TLNodeType::SetBYTECode(const BYTE& src)
+		void TLNodeType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

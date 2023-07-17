@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -282,7 +282,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_FileSharing:		proc.optional<FileSharing>();	break;
+			case rt_FileSharing:
+			{
+				if (proc.optional<FileSharing>())
+				{
+					m_FileSharing = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CodePage:
 			{
 				if (proc.optional<CodePage>())
@@ -311,10 +318,24 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_Backup:			proc.optional<Backup>();		break;
 			case rt_HideObj:		proc.optional<HideObj>();		break;
 			case rt_ExternSheet:	proc.optional<ExternSheet>();	break;
-			case rt_Date1904:		proc.optional<Date1904>();		break;
-			case rt_CalcPrecision:	proc.optional<CalcPrecision>();	break;
+			case rt_CalcPrecision:
+			{
+				if (proc.optional<CalcPrecision>())
+				{
+					m_CalcPrecision = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_RefreshAll:		proc.optional<RefreshAll>();	break;
 			case rt_BookBool:		proc.optional<BookBool>();		break;
+			case rt_Date1904:
+			{
+				if (proc.optional<Date1904>())
+				{
+					m_Date1904 = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_Country:	
 			{
 				if (proc.optional<Country>())
@@ -463,6 +484,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}			
 			}break;
+			case rt_Lbl_BIFF34:
 			case rt_Lbl:
 			{
 				count = proc.repeated<LBL>(0, 0);
@@ -849,9 +871,25 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 {
 	BookExt *book_ext = dynamic_cast<BookExt*>(m_BookExt.get());
 	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
+	FileSharing *file_sharing = dynamic_cast<FileSharing*>(m_FileSharing.get());
 
 	CP_XML_WRITER(_stream)    
 	{
+		if (file_sharing)
+		{
+			CP_XML_NODE(L"fileSharing")
+			{
+				if (file_sharing->fReadOnlyRec.value())
+				{
+					CP_XML_ATTR(L"readOnlyRecommended", 0 != (*file_sharing->fReadOnlyRec.value()));
+				}
+				if (false == file_sharing->stUNUsername.value().empty())
+				{
+					CP_XML_ATTR(L"userName", file_sharing->stUNUsername.value());
+					CP_XML_ATTR(L"password", file_sharing->wResPass);
+				}
+			}
+		}
 		CP_XML_NODE(L"workbookPr")
 		{
 			if (code_name)
@@ -860,8 +898,8 @@ int GlobalsSubstream::serialize_format(std::wostream & _stream)
 			}
 			if (book_ext)
 			{
-				CP_XML_ATTR(L"hidePivotFieldList",	book_ext->fHidePivotList);
-				CP_XML_ATTR(L"filterPrivacy",		book_ext->fFilterPrivacy);
+				CP_XML_ATTR(L"hidePivotFieldList", book_ext->fHidePivotList);
+				CP_XML_ATTR(L"filterPrivacy", book_ext->fFilterPrivacy);
 			}
 		}
 	}

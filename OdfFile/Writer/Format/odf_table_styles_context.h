@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,9 +40,10 @@ namespace cpdoccore {
 namespace odf_writer {
 
 class style_table_cell_properties;
-class style_text_properties;
-class style_paragraph_properties;
 class style_table_properties;
+
+class text_format_properties;
+class paragraph_format_properties;
 
 //typedef shared_ptr<style_text_properties>::Type			style_text_properties_ptr;
 //typedef shared_ptr<style_paragraph_properties>::Type	style_paragraph_properties_ptr;
@@ -116,9 +117,10 @@ public:
 	void add_wholeTable(); 
 
 	style_table_cell_properties *get_table_cell_properties();
-	style_paragraph_properties	*get_paragraph_properties();
-	style_text_properties		*get_text_properties();
 	style_table_properties		*get_table_properties();
+	
+	paragraph_format_properties	*get_paragraph_properties();
+	text_format_properties		*get_text_properties();
 
 	void set_table_insideV(std::wstring border);
 	void set_table_insideH(std::wstring border);
@@ -135,12 +137,14 @@ public:
 
 		void get_table_properties		(style_table_properties		*props);
 		void get_table_cell_properties	(style_table_cell_properties *props);
-		void get_paragraph_properties	(style_paragraph_properties	*props);
-		void get_text_properties		(style_text_properties		*props);
+		void get_paragraph_properties	(paragraph_format_properties	*props);
+		void get_text_properties		(text_format_properties		*props);
 		
 		void get_table_cell_properties	(int col, int row,	style_table_cell_properties *props);
-		void get_text_properties		(int col, int row,	style_text_properties		*props);
-		void get_paragraph_properties	(int col, int row,	style_paragraph_properties	*props);
+		void get_text_properties		(int col, int row,	text_format_properties		*props);
+		void get_paragraph_properties	(int col, int row,	paragraph_format_properties	*props);
+
+		bool is_styled(int col, int row);
 		
 		_CP_OPT(std::wstring)  get_table_insideV();
 		_CP_OPT(std::wstring)  get_table_insideH();

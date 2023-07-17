@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		TextStrike::TextStrike()
 		{
-			m_strValue = _T("noStrike");
+			m_strValue = L"noStrike";
 		}
 		void TextStrike::set(const std::wstring& strValue)
 		{
-			if ((_T("dblStrike") == strValue) ||
-				(_T("noStrike") == strValue) ||
-				(_T("sngStrike") == strValue))
+			if ((L"dblStrike" == strValue) ||
+				(L"noStrike" == strValue) ||
+				(L"sngStrike" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextStrike::GetBYTECode() const
+		unsigned char TextStrike::GetBYTECode() const
 		{
-			if (_T("dblStrike") == m_strValue)
+			if (L"dblStrike" == m_strValue)
 				return 0;
-			if (_T("noStrike") == m_strValue)
+			if (L"noStrike" == m_strValue)
 				return 1;
-			if (_T("sngStrike") == m_strValue)
+			if (L"sngStrike" == m_strValue)
 				return 2;
 			return 1;
 		}
-		void TextStrike::SetBYTECode(const BYTE& src)
+		void TextStrike::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("dblStrike");
+				m_strValue = L"dblStrike";
 				break;
 			case 2:
-				m_strValue = _T("sngStrike");
+				m_strValue = L"sngStrike";
 				break;
 			default:
-				m_strValue = _T("noStrike");
+				m_strValue = L"noStrike";
 				break;
 			}
 		}

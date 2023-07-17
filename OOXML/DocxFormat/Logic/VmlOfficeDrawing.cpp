@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -529,7 +529,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"o:rel" == sName )
 				{
-					OOX::VmlOffice::CRelation *oRel = new OOX::VmlOffice::CRelation(oReader);
+					OOX::VmlOffice::CRelation *oRel = new OOX::VmlOffice::CRelation();
+					*oRel = oReader;
 					if (oRel) m_arrRel.push_back( oRel );
 				}
 			}
@@ -1411,7 +1412,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"o:proxy" == sName )
 				{
-					OOX::VmlOffice::CProxy *oProxy = new OOX::VmlOffice::CProxy(oReader);
+					OOX::VmlOffice::CProxy *oProxy = new OOX::VmlOffice::CProxy();
+					*oProxy = oReader;
 					if (oProxy )m_arrProxy.push_back( oProxy );
 				}
 			}
@@ -1484,7 +1486,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"o:entry" == sName )
 				{
-					OOX::VmlOffice::CEntry *oEntry = new OOX::VmlOffice::CEntry (oReader);
+					OOX::VmlOffice::CEntry *oEntry = new OOX::VmlOffice::CEntry();
+					*oEntry = oReader;
 					if (oEntry) m_arrEntry.push_back( oEntry );
 				}
 			}
@@ -1552,7 +1555,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"o:r" == sName )
 				{
-					OOX::VmlOffice::CR  *oR = new OOX::VmlOffice::CR (oReader);
+					OOX::VmlOffice::CR  *oR = new OOX::VmlOffice::CR ();
+					*oR = oReader;
 					if ( oR) m_arrR.push_back( oR );
 				}
 			}

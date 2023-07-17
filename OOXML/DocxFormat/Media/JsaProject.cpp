@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -60,8 +60,9 @@ namespace OOX
 			}
 		}
 	}
-	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
+	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename, bool bExternal) : Media(pMain)
 	{
+		m_bExternal = bExternal;
 		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
 		if (docx)
 		{
@@ -96,11 +97,23 @@ namespace OOX
 
 	void JsaProject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+		if (m_bExist && !m_bExternal)
 		{
-			pWriter->WriteBYTEArray(pData, nBytesCount);
+			std::wstring pathMain = m_pMainDocument ? m_pMainDocument->m_sDocumentPath : L"";
+			std::wstring pathJsa = m_filename.GetPath();
+			if (pathMain.empty() || std::wstring::npos != pathJsa.find(pathMain))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+				{
+					pWriter->WriteBYTEArray(pData, nBytesCount);
+				}
+			}
+		}
+		if (m_bExternal)
+		{
+
 		}
 	}
 	void JsaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

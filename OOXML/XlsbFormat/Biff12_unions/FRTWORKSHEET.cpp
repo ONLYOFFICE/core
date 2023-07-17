@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,8 +58,7 @@ namespace XLSB
     // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
     //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
     const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
-
+    {
         if (proc.optional<CONDITIONALFORMATTINGS>())
         {
             m_CONDITIONALFORMATTINGS = elements_.back();
@@ -92,6 +91,26 @@ namespace XLSB
 
         return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS || m_SLICERSEX || m_TABLESLICERSEX;
     }
+
+	const bool FRTWORKSHEET::saveContent(BinProcessor& proc)
+	{
+		if (m_CONDITIONALFORMATTINGS != nullptr)
+			proc.mandatory(*m_CONDITIONALFORMATTINGS);
+
+		if (m_DVALS14 != nullptr)
+			proc.mandatory(*m_DVALS14);
+
+		if (m_SPARKLINEGROUPS != nullptr)
+			proc.mandatory(*m_SPARKLINEGROUPS);
+
+		if (m_SLICERSEX != nullptr)
+			proc.mandatory(*m_SLICERSEX);
+
+		if (m_TABLESLICERSEX != nullptr)
+			proc.mandatory(*m_TABLESLICERSEX);
+
+		return true;
+	}
 
 } // namespace XLSB
 

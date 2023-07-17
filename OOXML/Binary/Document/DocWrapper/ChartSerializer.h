@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CHART_WRITER
-#define CHART_WRITER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -80,8 +79,9 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);
 		void toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings);
 		
-		void parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format, bool bAlwaysSharedString = false);
-		OOX::Spreadsheet::CCell* parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format);
+		void parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring format, bool bAlwaysSharedString = false);
+		OOX::Spreadsheet::CCell* parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring format);
+
 		void parseStrRef(const OOX::Spreadsheet::CT_StrRef* pStrRef, bool bUpdateRange, const wchar_t* cRangeName);
 		void parseNumRef(const OOX::Spreadsheet::CT_NumRef* pNumRef, bool bUpdateRange, const wchar_t* cRangeName);
 		void parseMultiLvlStrRef(const OOX::Spreadsheet::CT_MultiLvlStrRef* pMultiLvlStrRef, bool bUpdateRange, const wchar_t* cRangeName);
@@ -89,4 +89,3 @@ namespace BinXlsxRW {
 		void parseNumDataSource(const OOX::Spreadsheet::CT_NumDataSource* pNumDataSource, bool bUpdateRange, const wchar_t* cRangeName);
 	};
 }
-#endif	// #ifndef CHART_WRITER

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -118,7 +118,6 @@
 	#include "../../../XlsbFormat/Biff12_records/EndIconSet.cpp"
 	#include "../../../XlsbFormat/Biff12_records/BeginDatabar.cpp"
 	#include "../../../XlsbFormat/Biff12_records/EndDatabar.cpp"
-	#include "../../../XlsbFormat/Biff12_records/Color.cpp"
 	#include "../../../XlsbFormat/Biff12_records/BeginColorScale.cpp"
 	#include "../../../XlsbFormat/Biff12_records/EndColorScale.cpp"
 	#include "../../../XlsbFormat/Biff12_records/CFRuleExt.cpp"
@@ -685,14 +684,11 @@
 	#include "../../../XlsbFormat/Biff12_structures/CodeName.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/ACProductVersion.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/FRTProductVersion.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/RelID.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/BookProtectionFlags.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/ColSpan.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/Cell.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/GrbitFmla.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/SxOs.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/SxSu.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/UncheckedSqRfX.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFTemp.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFOper.cpp"
@@ -706,19 +702,9 @@
 	#include "../../../XlsbFormat/Biff12_structures/PhRun.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/GradientStop.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/Blxf.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTHeader.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTRefs.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTRef.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTSqrefs.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTSqref.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTFormulas.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTFormula.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTParsedFormula.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/FRTRelID.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/ListType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/XmlDataType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/ListTotalRowFunction.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/DValStrings.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/DBType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CmdType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/PCDISrvFmt.cpp"

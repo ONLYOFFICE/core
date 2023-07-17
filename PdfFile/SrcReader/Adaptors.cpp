@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "Adaptors.h"
 #include "../lib/xpdf/NameToCharCode.h"
 #include "../lib/xpdf/TextString.h"
@@ -9,7 +40,7 @@ void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
 }
 void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 {
-	m_wsCMapFolder = wsFolder;
+    m_wsCMapFolder = wsFolder;
 
 	GString* sFolder = NSStrings::CreateString(wsFolder);
 	if (!sFolder)
@@ -31,33 +62,15 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 	unicodeMaps->add(new GString("ISO-8859-9"),   sFolder->copy()->append("/ISO-8859-9.unicodeMap"));
 	unicodeMaps->add(new GString("Latin2"),       sFolder->copy()->append("/Latin2.unicodeMap"));
 
-	cidToUnicodes->add(new GString("Adobe-GB1"), sFolder->copy()->append("/Adobe-GB1.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder->copy()->append("/Adobe-Korea1.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-KR"), sFolder->copy()->append("/Adobe-KR.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-Japan1"), sFolder->copy()->append("/Adobe-Japan1.cidToUnicode"));
-
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Bulgarian.nameToUnicode")->getCString());
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Greek.nameToUnicode")->getCString());
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Thai.nameToUnicode")->getCString());
 
-	AddCMapFolder("Adobe-GB1", sFolder);
-	AddCMapFolder("Adobe-Japan1", sFolder);
-	AddCMapFolder("Adobe-Korea1", sFolder);
-	AddCMapFolder("Adobe-KR", sFolder);
+    AddAllCMap(sFolder);
 
-	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
-}
-void GlobalParamsAdaptor::SetCMapMemory()
-{
-	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
-	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
-	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
-	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
+    toUnicodeDirs->append(sFolder->copy());
 
-	cMapDirs->add(new GString("Adobe-GB1"), new GList());
-	cMapDirs->add(new GString("Adobe-Korea1"), new GList());
-	cMapDirs->add(new GString("Adobe-KR"), new GList());
-	cMapDirs->add(new GString("Adobe-Japan1"), new GList());
+    delete sFolder;
 }
 void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 {
@@ -82,14 +95,95 @@ void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 
 	fclose(f);
 }
+void GlobalParamsAdaptor::AddAllCMap(GString* sFolder)
+{
+    if (cidToUnicodes->lookup("Adobe-GB1"))
+        return;
+
+    cidToUnicodes->add(new GString("Adobe-GB1"), sFolder ? sFolder->copy()->append("/Adobe-GB1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-CNS1"), sFolder ? sFolder->copy()->append("/Adobe-CNS1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder ? sFolder->copy()->append("/Adobe-Korea1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-KR"), sFolder ? sFolder->copy()->append("/Adobe-KR.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-Japan1"), sFolder ? sFolder->copy()->append("/Adobe-Japan1.cidToUnicode") : new GString());
+
+    if (sFolder)
+        sFolder->append("/CMap");
+
+    AddCMapFolder("Adobe-GB1", sFolder);
+    AddCMapFolder("Adobe-CNS1", sFolder);
+    AddCMapFolder("Adobe-Japan1", sFolder);
+    AddCMapFolder("Adobe-Korea1", sFolder);
+    AddCMapFolder("Adobe-KR", sFolder);
+}
 void GlobalParamsAdaptor::AddCMapFolder(const char* sCollection, GString* sFolder)
 {
 	GList *pList = new GList();
 	if (!pList)
 		return;
 
-	pList->append(sFolder->copy()->append("/CMap"));
+    if (sFolder)
+    {
+        pList->append(sFolder->copy());
+    }
+
 	cMapDirs->add(new GString(sCollection), pList);
+}
+void GlobalParamsAdaptor::SetCMapFile(const std::wstring &wsFile)
+{
+    AddAllCMap(NULL);
+
+#ifndef BUILDING_WASM_MODULE
+	NSFile::CFileBinary::ReadAllBytes(wsFile, &m_bCMapData, m_nCMapDataLength);
+#endif
+}
+void GlobalParamsAdaptor::SetCMapMemory(BYTE* pData, DWORD nSizeData)
+{
+    AddAllCMap(NULL);
+
+    if (pData)
+    {
+        m_bCMapData = pData;
+        m_nCMapDataLength = nSizeData;
+    }
+}
+
+DWORD GetLength(BYTE* x)
+{
+    return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
+}
+bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int& nSize)
+{
+    if (!m_bCMapData)
+    {
+        if (m_wsCMapFolder.empty())
+            SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+        if (!m_bCMapData)
+            return false;
+    }
+
+    DWORD i = 0;
+    while (i < m_nCMapDataLength)
+    {
+        DWORD nPathLength = GetLength(m_bCMapData + i);
+        i += 4;
+        std::string sName1 = std::string((char*)(m_bCMapData + i), nPathLength);
+        i += nPathLength;
+
+        nPathLength = GetLength(m_bCMapData + i);
+        i += 4;
+        if (sName1 == std::string(sName))
+        {
+            pData = (char*)(m_bCMapData + i);
+            nSize = nPathLength;
+            return true;
+        }
+        else
+        {
+            i += nPathLength;
+        }
+    }
+
+    return false;
 }
 
 bool operator==(const Ref &a, const Ref &b)

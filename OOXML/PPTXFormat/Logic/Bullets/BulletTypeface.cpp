@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,9 +55,9 @@ namespace PPTX
 		{
 			std::wstring strName = oReader.GetName();
 			if (strName == _T("a:buFontTx"))
-				m_Typeface.reset(new Logic::BuFontTx(oReader));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(oReader));
 			else if (strName == _T("a:buFont"))
-				m_Typeface.reset(new Logic::TextFont(oReader));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(oReader));
 			else
 				m_Typeface.reset();
 		}
@@ -66,9 +66,9 @@ namespace PPTX
 			std::wstring strName = node.GetName();
 
 			if (strName == _T("a:buFontTx"))
-				m_Typeface.reset(new Logic::BuFontTx(node));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(node));
 			else if (strName == _T("a:buFont"))
-				m_Typeface.reset(new Logic::TextFont(node));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(node));
 			else
 				m_Typeface.reset();
 		}
@@ -76,9 +76,9 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:buFontTx"), oNode))
-				m_Typeface.reset(new Logic::BuFontTx(oNode));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(oNode));
 			else if(element.GetNode(_T("a:buFont"), oNode))
-				m_Typeface.reset(new Logic::TextFont(oNode));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(oNode));
 			else m_Typeface.reset();
 		}
 		bool BulletTypeface::is_init()const{return (m_Typeface.IsInit());};

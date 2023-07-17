@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "PIVOTVALUECELL15.h"
-#include "../Biff12_records/BeginSxRow.h"
+#include "../Biff12_records/SxvcellNum.h"
 #include "../Biff12_records/SxvcellStr.h"
 #include "../Biff12_records/SxvcellErr.h"
 #include "../Biff12_records/SxvcellBool.h"
@@ -56,10 +56,10 @@ namespace XLSB
         return BaseObjectPtr(new PIVOTVALUECELL15(*this));
     }
 
-    // PIVOTVALUECELL15 = BrtBeginSxRow / BrtSxvcellStr / BrtSxvcellErr / BrtSxvcellBool / BrtSxvcellDate / BrtSxvcellNil
+    // PIVOTVALUECELL15 = BrtSxvcellNum / BrtSxvcellStr / BrtSxvcellErr / BrtSxvcellBool / BrtSxvcellDate / BrtSxvcellNil
     const bool PIVOTVALUECELL15::loadContent(BinProcessor& proc)
     {
-        if (!proc.optional<BeginSxRow>())
+        if (!proc.optional<SxvcellNum>())
             if (!proc.optional<SxvcellStr>())
                 if (!proc.optional<SxvcellErr>())
                     if (!proc.optional<SxvcellBool>())
@@ -72,6 +72,14 @@ namespace XLSB
 
         return m_source != nullptr;
     }
+
+	const bool PIVOTVALUECELL15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

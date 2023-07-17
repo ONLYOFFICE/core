@@ -136,6 +136,7 @@
     <ClInclude Include="..\..\Writer\Format\table_named_expressions.h" />
     <ClInclude Include="..\..\Writer\Format\text_elements.h" />
     <ClInclude Include="..\..\Writer\Format\visitor.h" />
+    <ClInclude Include="..\..\Writer\Format\office_meta.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Writer\Format\abstract_xml.cpp" />
@@ -215,5 +216,6 @@
     <ClCompile Include="..\..\Writer\Format\table_data_pilot_tables.cpp" />
     <ClCompile Include="..\..\Writer\Format\table_named_expressions.cpp" />
     <ClCompile Include="..\..\Writer\Format\text_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_meta.cpp" />
   </ItemGroup>
 </Project>

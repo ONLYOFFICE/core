@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,20 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef ASC_OFFICE_DRAWING_CONVERTER
-#define ASC_OFFICE_DRAWING_CONVERTER
+#pragma once
 
-#include "../../../DesktopEditor/common/ASCVariant.h"
-
-#include "../../Base/Base.h"
 #include "../../Base/Nullable.h"
 
-#include "../../../MsBinaryFile/Common/Vml/PPTShape/PptShapeEnum.h"
+#include "../../../DesktopEditor/graphics/config.h"
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
 #include <map>
-
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 class IRenderer;
 class COfficeFontPicker;
@@ -51,6 +46,11 @@ class CShape;
 typedef boost::shared_ptr<CShape> CShapePtr;
 
 class CPPTShape;
+
+namespace NSFonts
+{
+	class GRAPHICS_DECL IFontManager;
+}
 
 namespace XmlUtils
 {
@@ -68,6 +68,10 @@ namespace OOX
 {
 	class CContentTypes;
 	class IFileContainer;
+	namespace Logic
+	{
+		class CBinData;
+	}
 }
 namespace NSBinPptxRW
 {
@@ -116,7 +120,7 @@ namespace PPTX
 	public:
 		CCSS();
 		~CCSS();
-		AVSINLINE void Clear();
+		void Clear();
 
 	public:
 		void LoadFromString(std::wstring& strParams);
@@ -131,7 +135,7 @@ namespace PPTX
 	public:
 		CStylesCSS();
 		~CStylesCSS();
-		AVSINLINE void Clear();
+		void Clear();
 
 	public:
 		void LoadStyles(std::wstring& strParams);
@@ -191,7 +195,8 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShapePtr>					m_mapShapeTypes;
+        std::map<std::wstring, CShapePtr> m_mapShapeTypes;
+		std::map<std::wstring, nullable<OOX::Logic::CBinData>> m_mapBinDatas;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -229,16 +234,17 @@ namespace NSBinPptxRW
         void SetMediaDstPath    (const std::wstring& sMediaPath);
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
-		void ClearShapeTypes	();
-		HRESULT AddShapeType	(const std::wstring& sXml);
-		void AddShapeType		(XmlUtils::CXmlNode& oNodeST);
+		void Clear();
+		HRESULT AddShapeType(const std::wstring& sXml);
+		void AddShapeType(XmlUtils::CXmlNode& oNode);
+		void AddBinData(XmlUtils::CXmlNode& oNode);
 
-        HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
+        HRESULT AddObject(const std::wstring& sXml, std::wstring** pMainProps);
 
 		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements);
 
-        HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
-        HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
+        HRESULT SaveObject(long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
+        HRESULT SaveObjectEx(long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
 
         void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, int lDocType);
         void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
@@ -270,6 +276,7 @@ namespace NSBinPptxRW
         void SetFontManager         (NSFonts::IFontManager* pFontManager);
 
         OOX::CContentTypes* GetContentTypes();
+
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 
@@ -301,8 +308,6 @@ namespace NSBinPptxRW
 
         void ConvertTextVML         (XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
 
-        void    Clear();
 		HRESULT SetCurrentRelsPath();
 	};
 }
-#endif //OOX_IFILE_CONTAINER_INCLUDE_H_

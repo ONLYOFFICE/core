@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,6 @@
 
 #include "oox_types_chart.h"
 #include "oox_chart_axis.h"
-
             
 namespace cpdoccore {
 namespace oox {
@@ -50,10 +49,10 @@ public:
 	oox_chart_ptr						current_chart_;   
 	std::vector<oox_axis_content_ptr>	axis_;
 	
-	std::vector<odf_reader::_property>	graphic_properties_;
-	std::vector<odf_reader::_property>	properties_;
-	std::vector<odf_reader::_property>	properties_3d_;
-	_oox_fill							fill_; 
+	odf_reader::graphic_format_properties_ptr graphic_properties_;
+
+	odf_reader::chart_format_properties_ptr properties_;
+	_oox_fill fill_; 
 	
 	//std::vector<odf_reader::_property> wall_graphic_properties_;
 	
@@ -65,13 +64,12 @@ public:
 
 	void set_no_local_table (bool val); //whithout embedded tables
 	//void set_content_series	(odf_reader::chart::series & content);
-
+	void set_data_table(odf_reader::chart::simple & content);
 private:
+	odf_reader::chart::simple data_table_content_;
 	void reset_cross_axis(); //обязательно после всех добавлений
  	bool no_used_local_tables_;
-
 	unsigned int axis_id_ = 0xf2905;
-
 };
 
 }

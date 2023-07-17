@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -88,7 +88,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable< SimpleTypes::COnOff>	m_oNull;
+			nullable<SimpleTypes::COnOff>	m_oNull;
             nullable_string						m_sVal;
 		};
 
@@ -149,7 +149,7 @@ namespace OOX
 		class CLvl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLvl)
+			WritingElement_AdditionMethods(CLvl)
 			CLvl();
 			virtual ~CLvl();
 
@@ -188,7 +188,7 @@ namespace OOX
 		class CAbstractNum : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAbstractNum)
+			WritingElement_AdditionMethods(CAbstractNum)
 			CAbstractNum();
 			virtual ~CAbstractNum();
 
@@ -222,7 +222,7 @@ namespace OOX
 		class CNumLvl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumLvl)
+			WritingElement_AdditionMethods(CNumLvl)
 			CNumLvl();
 			virtual ~CNumLvl();
 
@@ -247,7 +247,7 @@ namespace OOX
 		class CNum : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNum)
+			WritingElement_AdditionMethods(CNum)
 			CNum();
 			virtual ~CNum();
 
@@ -274,7 +274,7 @@ namespace OOX
 		class CNumPicBullet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumPicBullet)
+			WritingElement_AdditionMethods(CNumPicBullet)
 			CNumPicBullet();
 			virtual ~CNumPicBullet();
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -128,7 +128,11 @@ public:
  	office_spreadsheet			*office_spreadsheet_;
 	table_table					*table_table_;
 
-	int							baseFontHeight_;
+	bool						baseFontItalic_ = false;
+	bool						baseFontBold_ = false;
+	int							baseFontHeight_ = 12;
+	int							baseAlignment_ = 1;
+	std::wstring				baseFontName_;
 	std::wstring				baseRef_; 
 //---------------------------------------------------------------
 	odf_types::chart_class::type class_;
@@ -152,6 +156,7 @@ public:
 	chart::legend				legend_;
 	chart::plot_area			plot_area_;
 
+	chart::simple				data_table_;
 	chart::simple				wall_;
 	chart::simple				floor_;
 	
@@ -161,8 +166,8 @@ public:
 	chart::simple				stock_loss_marker_;
 	chart::simple				stock_range_line_;
 
-	std::vector<_property>		chart_properties_;
-	std::vector<_property>		chart_graphic_properties_;
+	chart_format_properties_ptr properties_;
+	graphic_format_properties_ptr graphic_properties_;
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
@@ -213,7 +218,10 @@ class process_build_object
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
 		public visitor<chart_date_scale>,
+		public visitor<chartooo_date_scale>,
 		public visitor<chart_grid>,
+
+		public visitor<chart_data_table>,
 
 		public visitor<chart_series>,
 		public visitor<chart_domain>,
@@ -247,14 +255,13 @@ class process_build_object
 {
 public:
 
-	process_build_object(object_odf_context & object_context, odf_read_context & context);
+	process_build_object(object_odf_context & object_context, odf_document *document);
 
 private:
-	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
-	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
+	void ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill);
+	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
+	void ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut);
 
-	void ApplyTextProperties(std::wstring style, text_format_properties_content_ptr & propertiesOut);
-	
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);
@@ -294,8 +301,10 @@ public:
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
 	virtual void visit(chart_date_scale		& val);
-	
-	virtual void visit(table_table			& val);
+	virtual void visit(chartooo_date_scale	& val);
+	virtual void visit(chart_data_table		& val);
+
+	virtual void visit(table_table				& val);
 
 	virtual void visit(table_table_rows			& val);
 	virtual void visit(table_table_row			& val);
@@ -313,13 +322,13 @@ public:
 
 private:
     bool stop_;
-    
+	odf_document* document_;
+
 	object_odf_context		& object_odf_context_;
 
 	styles_container		& styles_;
 	
 	settings_container		& settings_;
-	styles_lite_container	& draw_styles_;
 	styles_lite_container	& number_styles_;
 
 	oox::num_format_context num_format_context_;

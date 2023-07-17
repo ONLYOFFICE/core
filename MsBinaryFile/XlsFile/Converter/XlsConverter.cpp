@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -78,6 +78,7 @@
 #include "../Format/Logic/Biff_records/WsBool.h"
 #include "../Format/Logic/Biff_records/Theme.h"
 #include "../Format/Logic/Biff_records/Format.h"
+#include "../Format/Logic/Biff_records/CalcMode.h"
 
 #include "../Format/Logic/Biff_structures/URLMoniker.h"
 #include "../Format/Logic/Biff_structures/FileMoniker.h"
@@ -222,6 +223,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 //--------------------------------------------------------------------------------------------------------------------
 			XLS::StreamCacheReaderPtr workbook_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
 			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));		
+			
 			XLS::BinReaderProcessor proc(workbook_stream, xls_document.get() , true);
 			proc.mandatory(*xls_document.get());
 
@@ -249,7 +251,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 					XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 					
-					XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
+					XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get(), true);
 					proc.mandatory(*pivot_cache.get());
 
 					int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying
@@ -512,7 +514,10 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	
 	if (globals)
 	{
-		globals->serialize(xlsx_context->current_sheet().sheetFormat());
+		globals->serialize_formatPr(xlsx_context->current_sheet().sheetFormat());
+		
+		if (xlsx_context->workbook_calcpr().rdbuf()->in_avail() == 0)
+			globals->serialize_calcPr(xlsx_context->workbook_calcpr());
 	}
 	
 	if (!sheet->m_arWINDOW.empty())
@@ -552,6 +557,17 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 		{
 			globals->m_VerticalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
 		}
+		//if (globals->m_CalcMode)
+		//{
+		//	CP_XML_WRITER(xlsx_context->current_sheet().sheetCalcPr())
+		//	{
+		//		CP_XML_NODE(L"sheetCalcPr")
+		//		{
+		//			XLS::CalcMode *calcMode = dynamic_cast<XLS::CalcMode *>(globals->m_CalcMode.get());
+		//			CP_XML_ATTR(L"fullCalcOnLoad", calcMode->nAutoRecalc > 0 ? 1 : 0);					
+		//		}
+		//	}
+		//}
 	}
 
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
@@ -825,13 +841,13 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
 
-					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
+					std::map<_UINT16, _UINT16>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
 
 					if (pFind != xls_global_info->mapUsedFormatCode.end())
 					{
 						CP_XML_STREAM() << L"<numFmt";
 						{
-							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt_used << L"\"";
 							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
 						}
 						CP_XML_STREAM() << L"/>";
@@ -1214,6 +1230,10 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 		if (type_object == 0) 
 			continue;
 
+		if (obj->cmo.fUIObj)
+		{
+			continue; // automatically inserted by the application
+		}
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
 			convert(obj->old_version.anchor.get());

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,11 +52,20 @@ namespace XLSB
 
     void DynamicFilter::readFields(XLS::CFRecord& record)
     {
-        unsigned char flags;
+        BYTE flags;
         record >> cft >> flags >> xNumValue >> xNumValueMax;
 
         fApplied = GETBIT(flags, 0);
     }
+
+	void DynamicFilter::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fApplied);
+		record << cft << flags << xNumValue << xNumValueMax;
+
+	}
 
 } // namespace XLSB
 

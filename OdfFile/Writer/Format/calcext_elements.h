@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,6 +43,9 @@
 #include "../DataTypes/iconset_type.h"
 #include "../DataTypes/calcext_type.h"
 #include "../DataTypes/timeperiod.h"
+#include "../DataTypes/sparklines.h"
+#include "../DataTypes/length.h"
+#include "../DataTypes/bool.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -85,6 +88,41 @@ public:
 	_CP_OPT(std::wstring)	calcext_style_;
 	_CP_OPT(odf_types::time_period)	calcext_date_;
 
+};
+class calcext_sparkline_group_attr
+{
+public:
+    void serialize(CP_ATTR_NODE);
+
+    _CP_OPT(std::wstring) id_;
+    _CP_OPT(std::wstring) ref_;
+    _CP_OPT(odf_types::sparkline_type) type_;
+    _CP_OPT(odf_types::length) line_width_;
+    _CP_OPT(odf_types::Bool) first_;
+    _CP_OPT(odf_types::Bool) last_;
+    _CP_OPT(odf_types::Bool) high_;
+    _CP_OPT(odf_types::Bool) low_;
+    _CP_OPT(odf_types::Bool) display_hidden_;
+    _CP_OPT(odf_types::Bool) right_to_left_;
+    _CP_OPT(odf_types::Bool) display_x_axis_;
+    _CP_OPT(odf_types::Bool) date_axis_;
+    _CP_OPT(odf_types::Bool) negative_;
+    _CP_OPT(odf_types::Bool) markers_;
+
+    _CP_OPT(odf_types::sparkline_empty) display_empty_cells_as_;
+    _CP_OPT(odf_types::sparkline_axis_type) min_axis_type_;
+    _CP_OPT(odf_types::sparkline_axis_type) max_axis_type_;
+    _CP_OPT(double) manual_min_;
+    _CP_OPT(double) manual_max_;
+
+    _CP_OPT(odf_types::color) color_series_;
+    _CP_OPT(odf_types::color) color_negative_;
+    _CP_OPT(odf_types::color) color_axis_;
+    _CP_OPT(odf_types::color) color_markers_;
+    _CP_OPT(odf_types::color) color_first_;
+    _CP_OPT(odf_types::color) color_last_;
+    _CP_OPT(odf_types::color) color_high_;
+    _CP_OPT(odf_types::color) color_low_;
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -236,8 +274,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeCalcextConditionalFormat;
-    
+    static const ElementType type = typeCalcextConditionalFormat;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -273,5 +310,80 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_formats)
+
+//  calcext:sparkline-groups
+class calcext_sparkline_groups : public office_element_impl<calcext_sparkline_groups>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklineGroups;
+  
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name);
+    virtual void add_child_element(const office_element_ptr& child_element);
+
+    virtual void serialize(std::wostream& _Wostream);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline_groups)
+
+//  calcext:sparkline-group
+class calcext_sparkline_group : public office_element_impl<calcext_sparkline_group>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklineGroup;
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name);
+    virtual void add_child_element(const office_element_ptr& child_element);
+
+    virtual void serialize(std::wostream& _Wostream);
+
+    calcext_sparkline_group_attr attr_;
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline_group)
+
+//  calcext:sparklines
+class calcext_sparklines : public office_element_impl<calcext_sparklines>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklines;
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name);
+    virtual void add_child_element(const office_element_ptr& child_element);
+
+    virtual void serialize(std::wostream& _Wostream);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparklines)
+
+//  calcext:sparkline
+class calcext_sparkline : public office_element_impl<calcext_sparkline>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklines;
+
+    virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_child_element(const office_element_ptr& child_element) {}
+
+    virtual void serialize(std::wostream& _Wostream);
+
+    _CP_OPT(std::wstring) data_range_;
+    _CP_OPT(std::wstring) cell_address_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline)
+
 }
 }

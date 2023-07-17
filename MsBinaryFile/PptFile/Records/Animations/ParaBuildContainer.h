@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,51 +36,19 @@
 #include "ParaBuildLevel.h"
 #include "ParaBuildAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordParaBuildContainer : public CRecordBuildListSubContainer
 {
 public:
 
-    CRecordParaBuildContainer()
-    {
+    CRecordParaBuildContainer();
+    virtual ~CRecordParaBuildContainer();
 
-    }
-
-    virtual ~CRecordParaBuildContainer()
-    {
-    }
-
-    virtual void ReadFromStream ( SRecordHeader & header, POLE::Stream* pStream ) override
-    {
-        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-        CRecordBuildListSubContainer::ReadFromStream(header, pStream);
-
-        UINT lCurLen = buildAtom.m_oHeader.RecLen + 8 + 24; // BuildAtom - 24
-
-
-        SRecordHeader paraBuildAtomHeader;
-        if (paraBuildAtomHeader.ReadFromStream(pStream))
-        {
-            m_oParaBuildAtom.ReadFromStream ( paraBuildAtomHeader, pStream );
-            lCurLen += paraBuildAtomHeader.RecLen + 8;
-        }
-
-        while (lCurLen < m_oHeader.RecLen )
-        {
-            CRecordParaBuildLevel buildLevel;
-            buildLevel.ReadFromStream(pStream);
-
-            rgParaBuildLevel.push_back(buildLevel);
-
-            lCurLen += buildLevel.getRecordLen();
-        }
-
-        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
-    }
+    virtual void ReadFromStream ( SRecordHeader & header, POLE::Stream* pStream ) override;
 
 public:
     CRecordParaBuildAtom	m_oParaBuildAtom;
-    std::vector <CRecordParaBuildLevel>	rgParaBuildLevel;
+    std::vector <CRecordParaBuildLevel*>	rgParaBuildLevel;
 };
 }

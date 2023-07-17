@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -54,7 +54,7 @@ namespace XLSB
     {
         record >> FRTheader >> bLenMin >> bLenMax >> fShowValue >> bDirection >> bAxisPosType;
 
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
 
         fBorder                     = GETBIT(flags, 0);
@@ -62,6 +62,20 @@ namespace XLSB
         fCustomNegativeFillColor    = GETBIT(flags, 2);
         fCustomNegativeBorderColor  = GETBIT(flags, 3);
     }
+
+	void BeginDatabar14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << bLenMin << bLenMax << fShowValue << bDirection << bAxisPosType;
+
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fBorder)
+		SETBIT(flags, 1, fGradient)
+		SETBIT(flags, 2, fCustomNegativeFillColor)
+		SETBIT(flags, 3, fCustomNegativeBorderColor)
+
+		record << flags;
+	}
 
 } // namespace XLSB
 

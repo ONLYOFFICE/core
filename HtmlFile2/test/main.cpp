@@ -97,7 +97,7 @@ int main()
         oParams.SetDescription(L"Description");
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.html";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/test.html";
         CHtmlFile2 oFile;
         oFile.SetTmpDirectory(sOutputDirectory);
         nResConvert = (bMhtMode ? oFile.OpenMht(sFile, sOutputDirectory, &oParams) : oFile.OpenHtml(sFile, sOutputDirectory, &oParams));

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,93 +45,24 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldOleChart)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				spid		= node.GetAttribute(_T("spid"));
-				grpId		= node.ReadAttributeInt(L"grpId");
-                XmlMacroReadAttributeBase(node, L"uiExpand", uiExpand);
-                XmlMacroReadAttributeBase(node, L"bld", bld);
-                XmlMacroReadAttributeBase(node, L"animBg", animBg);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				Normalize();
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual OOX::EElementType getType() const;
 
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("spid"), spid);
-				oAttr.Write(_T("grpId"), grpId);
-				oAttr.Write(_T("uiExpand"), uiExpand);
-				oAttr.WriteLimitNullable(_T("bld"), bld);
-				oAttr.Write(_T("animBg"), animBg);
-
-				return XmlUtils::CreateNode(_T("p:bldOleChart"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_bldOleChart;
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteLimit2(0, bld);
-					pWriter->WriteBool2(1, uiExpand);
-					pWriter->WriteString1(2, spid);
-					pWriter->WriteInt1(3, grpId);
-					pWriter->WriteBool2(4, animBg);
-					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	bld = pReader->GetUChar();
-					else if (1 == _at)	uiExpand = pReader->GetBool();
-					else if (2 == _at)	spid = pReader->GetString2();
-					else if (3 == _at)	grpId = pReader->GetLong();
-					else if (4 == _at)	animBg = pReader->GetBool();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			std::wstring							spid;
 			int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ChartBuildType>	bld;
 			nullable_bool							animBg;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				if (grpId < 0)
-					grpId = 0;
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

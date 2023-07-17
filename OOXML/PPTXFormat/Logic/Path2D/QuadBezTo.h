@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,121 +42,28 @@ namespace PPTX
 		class QuadBezTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(QuadBezTo)
+			WritingElement_AdditionMethods(QuadBezTo)
 			PPTX_LOGIC_BASE2(QuadBezTo)
 
-			QuadBezTo& operator=(const QuadBezTo& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			QuadBezTo& operator=(const QuadBezTo& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				x[0] = oSrc.x[0];
-				y[0] = oSrc.y[0];
-				x[1] = oSrc.x[1];
-				y[1] = oSrc.y[1];
-				return (*this);
-			}
-			
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_quadBezTo;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int count = 0;
-				
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, std::wstring & x, std::wstring & y);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-					if (sName == L"a:pt")
-					{
-						ReadAttributes2(oReader, x[count], y[count]);
-						count++;
-					}
-				}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			}
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, std::wstring & x, std::wstring & y)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNodes oNodes;
-
-				if (node.GetNodes(_T("a:pt"), oNodes))
-				{
-					int count = oNodes.GetCount();
-					if(count >= 2)
-					{
-						XmlUtils::CXmlNode oNode;
-
-						oNodes.GetAt(0, oNode);
-						x[0] = oNode.GetAttribute(_T("x"));
-						y[0] = oNode.GetAttribute(_T("y"));
-						oNodes.GetAt(1, oNode);
-						x[1] = oNode.GetAttribute(_T("x"));
-						y[1] = oNode.GetAttribute(_T("y"));
-					}
-				}
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:quadBezTo"));
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(_T("a:pt"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x[0]);
-				pWriter->WriteAttribute(_T("y"), y[0]);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:pt"));
-
-				pWriter->StartNode(_T("a:pt"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x[1]);
-				pWriter->WriteAttribute(_T("y"), y[1]);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:pt"));
-				
-				pWriter->EndNode(_T("a:quadBezTo"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(GEOMETRY_TYPE_PATH_QUADBEZTO);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, x[0]);
-				pWriter->WriteString1(1, y[0]);
-				pWriter->WriteString1(2, x[1]);
-				pWriter->WriteString1(3, y[1]);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
 		public:
 			std::wstring x[2];
 			std::wstring y[2];
-		protected:
-			virtual void FillParentPointersForChilds(){};
-		public:
-			
-			virtual std::wstring GetODString()const
-			{
-                std::wstring str1 = L"<pt x=\"" + x[0] + L"\" y=\"" + y[0] + L"\" />";
-                std::wstring str2 = L"<pt x=\"" + x[1] + L"\" y=\"" + y[1] + L"\" />";
 
-				return _T("<quadBezTo>") + str1 + str2 + _T("</quadBezTo>");
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+
+		public:			
+			virtual std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

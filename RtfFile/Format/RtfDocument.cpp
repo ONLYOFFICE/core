@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,4 +75,50 @@ std::wstring RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
 std::wstring RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return L"";
+}
+
+int RtfDocument::GetZIndex()
+{
+	return m_nZIndexLast++;
+}
+void RtfDocument::SetZIndex(int val)
+{
+	if (m_nZIndexLast < val)
+		m_nZIndexLast = val;
+}
+void RtfDocument::SetShapeId( int nShapeId )//todoo -> map
+{
+	for (size_t i = 0; i < m_aShapeId.size(); i++ )
+	{
+		if( nShapeId == m_aShapeId[i] )
+			return;
+	}
+	m_aShapeId.push_back( nShapeId );
+}
+int RtfDocument::GetShapeId(  int& nShapeId  )
+{
+	if( PROP_DEF != nShapeId )
+		return nShapeId;
+	int nNewShapeId;
+	while( true )
+	{
+		bool bUnique = true;
+		nNewShapeId = m_oIdGenerator.Generate_ShapeId();
+
+		for (size_t i = 0; i < m_aShapeId.size(); i++ )
+		{
+			if( nNewShapeId == m_aShapeId[i] )
+			{
+				bUnique = false;
+				break;
+			}
+		}
+		if( true == bUnique )
+		{
+			nShapeId = nNewShapeId;
+			m_aShapeId.push_back( nNewShapeId );
+			break;
+		}
+	}
+	return nShapeId;
 }

@@ -6,6 +6,14 @@ core_android {
     CORE_BOOST_LIBS = $$PWD/build/android/lib/$$CORE_BUILDS_PLATFORM_PREFIX
 }
 
+bundle_xcframeworks {
+    xcframework_platform_ios_simulator {
+        CORE_BOOST_LIBS = $$PWD/build/ios_xcframework/ios_simulator/lib/$$CORE_BUILDS_PLATFORM_PREFIX
+    } else {
+        CORE_BOOST_LIBS = $$PWD/build/ios_xcframework/ios/lib/$$CORE_BUILDS_PLATFORM_PREFIX
+    }
+}
+
 core_windows {
     VS_VERSION=140
     VS_DEBUG=

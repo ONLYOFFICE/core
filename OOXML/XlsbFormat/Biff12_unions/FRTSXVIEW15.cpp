@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -69,6 +69,17 @@ namespace XLSB
 
         return m_PIVOTVALUECELLS15 || m_PIVOTTABLEUISETTINGS;
     }
+
+	const bool FRTSXVIEW15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_PIVOTVALUECELLS15 != nullptr)
+			proc.mandatory(*m_PIVOTVALUECELLS15);
+
+		if (m_PIVOTTABLEUISETTINGS != nullptr)
+			proc.mandatory(*m_PIVOTTABLEUISETTINGS);
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -118,58 +118,58 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if ( m_oColor.IsInit() )
 		{
 			sResult += L"w:color=\"";
 			sResult += m_oColor->ToStringNoAlpha();
 			sResult += L"\" ";
 		}
-		if ( m_oFrame.IsInit() )
-		{
-			sResult += L"w:frame=\"";
-			sResult += m_oFrame->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oShadow.IsInit() )
-		{
-			sResult += L"w:shadow=\"";
-			sResult += m_oShadow->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSpace.IsInit() )
-		{
-			sResult += L"w:space=\"";
-			sResult += m_oSpace->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSz.IsInit() )
-		{
-			sResult += L"w:sz=\"";
-			sResult += m_oSz->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeColor.IsInit() )
+		if (m_oThemeColor.IsInit())
 		{
 			sResult += L"w:themeColor=\"";
 			sResult += m_oThemeColor->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oThemeShade.IsInit() )
-		{
-			sResult += L"w:themeShade=\"";
-			sResult += m_oThemeShade->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeTint.IsInit() )
+		if (m_oThemeTint.IsInit())
 		{
 			sResult += L"w:themeTint=\"";
 			sResult += m_oThemeTint->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oVal.IsInit() )
+		if (m_oThemeShade.IsInit())
 		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
+			sResult += L"w:themeShade=\"";
+			sResult += m_oThemeShade->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSz.IsInit())
+		{
+			sResult += L"w:sz=\"";
+			sResult += m_oSz->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSpace.IsInit())
+		{
+			sResult += L"w:space=\"";
+			sResult += m_oSpace->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oShadow.IsInit())
+		{
+			sResult += L"w:shadow=\"";
+			sResult += m_oShadow->ToString();
+			sResult += L"\" ";
+		}
+		if ( m_oFrame.IsInit() )
+		{
+			sResult += L"w:frame=\"";
+			sResult += m_oFrame->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;
@@ -301,7 +301,7 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hAnsiTheme", m_oHAnsiTheme)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hint", m_oHint)
 		//2003
-		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_oHint)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_sHAnsi)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:fareast", m_sEastAsia)
 		WritingElement_ReadAttributes_End(oReader)
 	}
@@ -2666,6 +2666,12 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if (m_oLeader.IsInit())
 		{
 			sResult += L"w:leader=\"";
@@ -2676,12 +2682,6 @@ namespace Word
 		{
 			sResult += L"w:pos=\"";
 			sResult += m_oPos->ToString();
-			sResult += L"\" ";
-		}
-		if (m_oVal.IsInit())
-		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;

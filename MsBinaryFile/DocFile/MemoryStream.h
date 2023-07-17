@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,192 +37,29 @@
 class MemoryStream: public IBinaryReader
 {
 public:
+	MemoryStream (unsigned char* data, unsigned long size, bool bMemCopy = true);
 
-	MemoryStream (unsigned char* data, unsigned long size, bool bMemCopy = true) : m_Data(NULL), m_Size(0), m_Position(0), bMemoryCopy(bMemCopy)
-	{
-		if ( ( data != NULL ) && ( size != 0 ) )
-		{
-			m_Size = size;
+	virtual ~MemoryStream();
+	virtual _UINT64 ReadUInt64();
+	virtual unsigned short ReadUInt16();
+	void WriteUInt16(unsigned short val);
+	virtual short ReadInt16();
 
-			if (bMemoryCopy)
-			{
-				m_Data	=	new unsigned char[m_Size];
-				if (m_Data)
-				{
-                    memcpy (m_Data, data, m_Size);
-				}
-			}
-			else
-			{
-				m_Data	=	data;
-			}
-		}
-	}
+	virtual int ReadInt32();
+	void WriteInt32(_INT32 val);
+	void Align(_UINT32 val);
 
-	virtual ~MemoryStream()
-	{
-		if (bMemoryCopy)
-			RELEASEARRAYOBJECTS (m_Data);
-	}
-	virtual _UINT64 ReadUInt64()
-	{
-		_UINT64 rdU64 = 0;
+	virtual unsigned int ReadUInt32();
+	void WriteByte(unsigned char val);
+	void WriteUInt32(_UINT32 val);
+	virtual unsigned char ReadByte();
 
-		if (m_Data)
-		{
-			rdU64 = DocFileFormat::FormatUtils::BytesToUInt64(m_Data, m_Position, m_Size);
-			m_Position += 8;
-		}
+	virtual unsigned char* ReadBytes (unsigned int count, bool isResultNeeded);
+	void WriteBytes(unsigned char* pData, int size);
 
-		return rdU64;
-	}
-	virtual unsigned short ReadUInt16()
-	{
-		unsigned short rdUShort = 0;
-
-		if (m_Data)
-		{
-            rdUShort = DocFileFormat::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
-			m_Position += 2;
-		}
-
-		return rdUShort;
-	}
-	void WriteUInt16(unsigned short val)
-	{
-		if (m_Data && (m_Position + sizeof(unsigned short) <= m_Size))
-		{
-			((unsigned short *)(m_Data + m_Position))[0] = val;
-			m_Position	+=	2;
-		}
-	}
-	virtual short ReadInt16()
-	{
-		short rdShort = 0;
-
-		if (m_Data)
-		{
-            rdShort		=	DocFileFormat::FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
-			m_Position	+=	2;
-		}
-
-		return rdShort;
-	}
-
-	virtual int ReadInt32()
-	{
-		int rdInt = 0;
-
-		if (m_Data)
-		{
-            rdInt		=	DocFileFormat::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
-			m_Position	+=	4;
-		}
-
-		return rdInt;
-	}
-	void WriteInt32(_INT32 val)
-	{
-		if (m_Data && (m_Position + sizeof(_INT32) <= m_Size))
-		{
-			((_INT32 *)(m_Data + m_Position))[0] = val;
-			m_Position	+=	4;
-		}
-	}
-	void Align(_UINT32 val)
-	{
-		_UINT32 padding = val - (m_Position % val);
-		
-		if (padding > 0 && padding < 4)
-			m_Position += padding;
-	}
-
-	virtual unsigned int ReadUInt32()
-	{
-		int rdUInt = 0;
-
-		if (m_Data )
-		{
-            rdUInt		=	DocFileFormat::FormatUtils::BytesToUInt32 (m_Data, m_Position, m_Size);
-			m_Position	+=	4;
-		}
-
-		return rdUInt;
-	}
-	void WriteByte(unsigned char val)
-	{
-		if (m_Data && (m_Position + 1 <= m_Size))
-		{
-			m_Data[m_Position] = val;
-			m_Position	+= 1;
-		}
-	}
-	void WriteUInt32(_UINT32 val)
-	{
-		if (m_Data && (m_Position + sizeof(_UINT32) <= m_Size))
-		{
-			((_UINT32 *)(m_Data + m_Position))[0] = val;
-			m_Position	+=	sizeof(_UINT32);
-		}
-	}
-	virtual unsigned char ReadByte()
-	{
-		unsigned char rdByte = 0;
-
-		if (m_Data)
-		{
-			rdByte		=	(m_Position < m_Size) ? m_Data[m_Position] : 0;
-			m_Position	+=	sizeof(rdByte);
-		}
-
-		return rdByte;
-	}
-
-	virtual unsigned char* ReadBytes (unsigned int count, bool isResultNeeded)
-	{
-		if (!m_Data) return NULL;
-
-		unsigned int size = ( count <= (m_Size - m_Position) ) ? (count) : (m_Size - m_Position);
-
-		unsigned char* pBytes = (isResultNeeded && count > 0) ? new unsigned char[count] : NULL;
-
-		if (pBytes)
-		{
-			memcpy(pBytes, (m_Data + m_Position), size);
-		}
-		m_Position += size;
-
-		return pBytes;
-	}
-	void WriteBytes(unsigned char* pData, int size)
-	{
-		if (m_Data && (m_Position + size <= m_Size))
-		{
-			memcpy(m_Data + m_Position, pData, size);
-			m_Position += size;
-		}
-	}
-
-	virtual unsigned long GetPosition() const
-	{
-		return m_Position;
-	}
-
-	virtual unsigned long GetSize() const
-	{
-		return m_Size;
-	}
-
-    virtual int Seek (int offset, int origin = 0/*STREAM_SEEK_SET*/)
-	{
-		if (origin == 2) offset = m_Position + offset;
-		if (origin == 1) offset = m_Size - offset;
-
-		if ( (m_Data != NULL) && (offset >= 0) && ((unsigned int)offset < m_Size) )
-			return m_Position = offset;
-
-		return 0;
-	}
+	virtual unsigned long GetPosition() const;
+	virtual unsigned long GetSize() const;
+	virtual int Seek (int offset, int origin = 0/*STREAM_SEEK_SET*/);
 
 private:
 

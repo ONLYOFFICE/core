@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		FillPath::FillPath()
 		{
-			m_strValue = _T("circle");
+			m_strValue = L"circle";
 		}
 		void FillPath::set(const std::wstring& strValue)
 		{
-			if ((_T("circle") == strValue) ||
-				(_T("rect") == strValue) ||
-				(_T("shape") == strValue))
+			if ((L"circle" == strValue) ||
+				(L"rect" == strValue) ||
+				(L"shape" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE FillPath::GetBYTECode() const
+		unsigned char FillPath::GetBYTECode() const
 		{
-			if (_T("circle") == m_strValue)
+			if (L"circle" == m_strValue)
 				return 0;
-			if (_T("rect") == m_strValue)
+			if (L"rect" == m_strValue)
 				return 1;
-			if (_T("shape") == m_strValue)
+			if (L"shape" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void FillPath::SetBYTECode(const BYTE& src)
+		void FillPath::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("circle");
+				m_strValue = L"circle";
 				break;
 			case 1:
-				m_strValue = _T("rect");
+				m_strValue = L"rect";
 				break;
 			case 2:
-				m_strValue = _T("shape");
+				m_strValue = L"shape";
 				break;
 			default:
 				break;

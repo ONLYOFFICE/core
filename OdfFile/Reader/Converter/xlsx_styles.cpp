@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,6 +41,10 @@
 
 #include "../Format/style_text_properties.h"
 #include "../Format/style_paragraph_properties.h"
+#include "../Format/style_graphic_properties.h"
+
+#include "../Format/odf_document.h"
+#include "../Format/odfcontext.h"
 
 #include <boost/unordered_set.hpp>
 #include <boost/functional.hpp>
@@ -53,19 +57,19 @@ class xlsx_style_manager::Impl
 public:
     typedef boost::unordered_set<xlsx_xf, boost::hash<xlsx_xf> > xlsx_xf_array;
 
-    Impl(xlsx_conversion_context * context);
+    Impl(xlsx_conversion_context *context);
    
 	size_t size() const;
    
-	size_t xfId(	const odf_reader::text_format_properties_content_ptr	textProp,
+	size_t xfId(	const odf_reader::text_format_properties_ptr &textProp,
 					const odf_reader::paragraph_format_properties			* parProp,
 					const odf_reader::style_table_cell_properties_attlist	* cellProp,
 					const xlsx_cell_format * xlxsCellFormat,
 					const std::wstring &num_format, odf_types::office_value_type::type num_format_type, bool  default_set, bool & is_visible);
 	
-	size_t dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-					const odf_reader::graphic_format_properties				* graphProp,
-					const odf_reader::style_table_cell_properties_attlist	* cellProp);
+	size_t dxfId(	const odf_reader::text_format_properties_ptr &textProp,
+					const odf_reader::graphic_format_properties_ptr &graphProp,
+					const odf_reader::style_table_cell_properties_attlist	*cellProp);
 
     void serialize		(std::wostream & _Wostream);
     void serialize_xf	(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName);
@@ -95,7 +99,8 @@ private:
 };
 
 
-xlsx_style_manager::Impl::Impl(xlsx_conversion_context *context_) : next_index_(0), context(context_)
+xlsx_style_manager::Impl::Impl(xlsx_conversion_context *context_) : next_index_(0), context(context_), 
+	fonts_(context_->root()->odf_context().fontContainer()), dxfs_(context_->root()->odf_context().fontContainer())
 {
     xlsx_xf xfRecord;
     xfRecord.applyNumberForm = true;
@@ -109,14 +114,14 @@ size_t xlsx_style_manager::Impl::size() const
     return cellXfs_.size();
 }
 
-size_t xlsx_style_manager::Impl::dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-										const odf_reader::graphic_format_properties				* graphProp,
+size_t xlsx_style_manager::Impl::dxfId(	const odf_reader::text_format_properties_ptr &textProp,
+										const odf_reader::graphic_format_properties_ptr &graphProp,
 										const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {
 	return dxfs_.dxfId(textProp, graphProp, cellProp);
 }
 
-size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_content_ptr	textProp,
+size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_ptr &textProp,
                                       const odf_reader::paragraph_format_properties			* parProp,
                                       const odf_reader::style_table_cell_properties_attlist * cellProp,
                                       const xlsx_cell_format								* xlxsCellFormat,
@@ -126,7 +131,7 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
 									  bool  default_set, bool & is_visible )
 {
 	bool is_visible_set = is_visible;
-    const size_t fontId = fonts_.fontId(textProp, parProp, cellProp);
+    const size_t fontId = fonts_.fontId(textProp, parProp, cellProp, default_set);
     is_visible = false;
     
 	bool default_border = false;
@@ -252,9 +257,9 @@ size_t xlsx_style_manager::size() const
     return impl_->size();
 }
 
-size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content_ptr	textProp,
-                                const odf_reader::paragraph_format_properties			* parProp,
-                                const odf_reader::style_table_cell_properties_attlist	* cellProp,
+size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_ptr &textProp,
+                                const odf_reader::paragraph_format_properties			*parProp,
+                                const odf_reader::style_table_cell_properties_attlist	*cellProp,
                                 const xlsx_cell_format * xlxsCellFormat,
                                 const std::wstring &num_format, char num_format_type, bool  default_set)
 {
@@ -262,17 +267,17 @@ size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content
     return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format, (odf_types::office_value_type::type) num_format_type, default_set, is_visible);
 }
 
-size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content_ptr	textProp,
-                                const odf_reader::paragraph_format_properties			* parProp,
-                                const odf_reader::style_table_cell_properties_attlist	* cellProp,
+size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_ptr &textProp,
+                                const odf_reader::paragraph_format_properties			*parProp,
+                                const odf_reader::style_table_cell_properties_attlist	*cellProp,
                                 const xlsx_cell_format * xlxsCellFormat,
                                 const std::wstring &num_format, char num_format_type, bool  default_set, bool & is_visible)
 {
     return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format, (odf_types::office_value_type::type)num_format_type, default_set,is_visible);
 }
-size_t xlsx_style_manager::dxfId(const odf_reader::text_format_properties_content_ptr	textProp,
-								 const odf_reader::graphic_format_properties			* graphProp,
-								 const odf_reader::style_table_cell_properties_attlist	* cellProp)
+size_t xlsx_style_manager::dxfId(const odf_reader::text_format_properties_ptr &textProp,
+								 const odf_reader::graphic_format_properties_ptr &graphProp,
+								 const odf_reader::style_table_cell_properties_attlist	*cellProp)
 {
 	return impl_->dxfId(textProp, graphProp, cellProp);
 }

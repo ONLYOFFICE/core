@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,10 +31,12 @@
  */
 
 #include "COLORSCALE.h"
+
+#include "ACFILTERS.h"
 #include "../Biff12_records/BeginColorScale.h"
 #include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
 #include "../Biff12_records/EndColorScale.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 using namespace XLS;
 
@@ -59,7 +61,7 @@ namespace XLSB
     {
         if (proc.optional<BeginColorScale>())
         {
-            m_BrtBeginColorScale = elements_.back();
+            m_bBrtBeginColorScale = true;
             elements_.pop_back();
         }        
         else
@@ -85,12 +87,33 @@ namespace XLSB
 
         if (proc.optional<EndColorScale>())
         {
-            m_BrtEndColorScale = elements_.back();
+            m_bBrtEndColorScale = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColorScale = false;
 
-        return m_BrtBeginColorScale && !m_arCFVO.empty() && !m_arBrtColor.empty() && m_BrtEndColorScale;
+        return m_bBrtBeginColorScale && !m_arCFVO.empty() && !m_arBrtColor.empty() && m_bBrtEndColorScale;
     }
+
+	const bool COLORSCALE::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginColorScale>();
+
+		for (auto &item : m_arCFVO)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtColor)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndColorScale>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

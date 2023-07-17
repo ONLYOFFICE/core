@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,86 @@
 
 #include "../../Common/MS-LCID.h"
 
+RtfAbsPosTab::RtfAbsPosTab()
+{
+}
+bool RtfAbsPosTab::IsValid()
+{
+	return a_none != m_eAlignment && r_none != m_eRelative;
+}
+std::wstring RtfAbsPosTab::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	switch( m_eLeader )
+	{
+		case l_ptablnone:	sResult += L"\\ptablnone";	break;
+		case l_ptabldot:	sResult += L"\\ptabldot";	break;
+		case l_ptablminus:	sResult += L"\\ptablminus";	break;
+		case l_ptabluscore: sResult += L"\\ptabluscore";	break;
+		case l_ptablmdot:	sResult += L"\\ptablmdo";	break;
+	}
+	switch( m_eRelative )
+	{
+		case r_margin: sResult += L"\\pmartabq";	break;
+		case r_indent: sResult += L"\\pindtabq";	break;
+	}
+	switch( m_eAlignment )
+	{
+		case a_left:	sResult += L"l";	break;
+		case a_center:	sResult += L"c";	break;
+		case a_right:	sResult += L"r";	break;
+	}
+	if( false == sResult.empty() )
+		sResult = L"{" + sResult + L"}";
+	return sResult;
+}
+std::wstring RtfAbsPosTab::RenderToOOX(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	switch( m_eLeader )
+	{
+		case l_ptablnone:	sResult += L" w:leader=\"none\"";		break;
+		case l_ptabldot:	sResult += L" w:leader=\"dot\"";			break;
+		case l_ptablminus:	sResult += L" w:leader=\"hyphen\"";		break;
+		case l_ptabluscore: sResult += L" w:leader=\"underscore\"";	break;
+		case l_ptablmdot:	sResult += L" w:leader=\"middleDot\"";	break;
+	}
+	switch( m_eRelative )
+	{
+		case r_margin: sResult += L" w:relativeTo=\"margin\"";	break;
+		case r_indent: sResult += L" w:relativeTo=\"indent\"";	break;
+	}
+	switch( m_eAlignment )
+	{
+		case a_left:	sResult += L" w:alignment=\"left\"";		break;
+		case a_center:	sResult += L" w:alignment=\"center\"";	break;
+		case a_right:	sResult += L" w:alignment=\"right\"";	break;
+	}
+	if( !sResult.empty() )
+		sResult = L"<w:ptab" + sResult + L"/>";
+	return sResult;
+}
+
+RtfChar::RtfChar()
+{
+	m_bRtfEncode = true;
+}
+int RtfChar::GetType()
+{
+	return TYPE_RTF_CHAR;
+}
+void RtfChar::AddText(std::wstring text)
+{
+	m_sChars += text;
+}
+void RtfChar::setText(std::wstring text)
+{
+	m_sChars = text;
+}
+std::wstring RtfChar::GetText()
+{
+	return m_sChars;
+}
 std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
@@ -119,7 +199,6 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
         sResult = m_sChars;
     return sResult;
 }
-
 std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
 {
     std::wstring sResult;
@@ -146,7 +225,6 @@ std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
     }
 	return sResult;
 }
-
 std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty, bool bMarker)
 {
     RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
@@ -169,7 +247,6 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfC
 	return renderRtfText(sText, pDocument, nCodePage, bMarker);
 
 }
-
 std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker)
 {
 	RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
@@ -317,6 +394,12 @@ std::wstring RtfChar::RenderToRtf(RenderParameter oRenderParameter)
     return result;
 }
 
+RtfCharSpecial::RtfCharSpecial()
+{
+	m_eType				= rsc_none;
+	m_nTextWrapBreak	= PROP_DEF;
+	m_nSoftHeight		= PROP_DEF;
+}
 std::wstring RtfCharSpecial::_RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -409,7 +492,6 @@ std::wstring RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-	
 std::wstring RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -460,3 +542,24 @@ std::wstring RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 	}
+
+std::wstring RtfCharNative::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring result;
+	if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
+	{
+		result = m_sChars;
+	}
+	else
+	{
+		std::wstring sText = m_sChars;
+		if( L"" != sText )
+		{
+			result += L"{";
+			result += m_oProperty.RenderToRtf( oRenderParameter );
+			result += L" " + sText;
+			result += L"}";
+		}
+	}
+	return result;
+}

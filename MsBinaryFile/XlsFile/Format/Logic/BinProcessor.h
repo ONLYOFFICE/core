@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,7 @@
 
 #include "BaseObject.h"
 #include "Biff_structures/BiffAttribute.h"
+#include "Biff_structures/BiffStructure.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS
@@ -109,7 +110,7 @@ public:
 	const bool					getNextSubstreamType(_UINT16& type);
 	
 	void SeekToEOF();
-	void SkipRecord(bool log_debug = true);
+	virtual void SkipRecord(bool log_debug = true);
     const int GetRecordPosition();
     void SetRecordPosition(const int position);
 
@@ -119,6 +120,29 @@ private:
 	StreamCacheReaderPtr	reader_;
 	BaseObjectPtrList		wanted_objects;
 	bool			is_mandatory_;
+};
+
+class BinWriterProcessor : public BinProcessor
+{
+public:
+	BinWriterProcessor(StreamCacheWriterPtr writer, BaseObject* parent);
+
+	const bool	optional(BaseObject& object) override;
+	const bool	mandatory(BaseObject& object) override;
+
+	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) override { return false; }
+	virtual const CFRecordType::TypeId getNextRecordType() override { return CFRecordType::ANY_TYPE; }
+
+	virtual const bool getNextSubstreamType(_UINT16& type) override { return false; }
+	virtual void SeekToEOF() override {}
+	virtual void SkipRecord(bool log_debug = true) override {}
+	virtual const int GetRecordPosition() override { return 0; }
+	virtual void SetRecordPosition(const int position) override {}
+
+private:
+	const bool writeChild(BaseObject& object, const bool is_mandatory);
+
+	StreamCacheWriterPtr	writer_;
 };
 
 

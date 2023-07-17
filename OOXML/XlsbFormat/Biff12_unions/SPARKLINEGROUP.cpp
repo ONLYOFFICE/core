@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -74,9 +74,11 @@ namespace XLSB
 
         if (proc.optional<BeginSparklines>())
         {
-            m_BrtBeginSparklines = elements_.back();
+            m_bBrtBeginSparklines = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSparklines = false;
 
         int count = proc.repeated<Sparkline>(0, 2147483647);
 
@@ -89,18 +91,41 @@ namespace XLSB
 
         if (proc.optional<EndSparklines>())
         {
-            m_BrtEndSparklines = elements_.back();
+            m_bBrtEndSparklines = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklines = false;
 
         if (proc.optional<EndSparklineGroup>())
         {
-            m_BrtEndSparklineGroup = elements_.back();
+            m_bBrtEndSparklineGroup = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklineGroup = false;
 
-        return m_BrtBeginSparklineGroup && m_BrtBeginSparklines && !m_arBrtSparkline.empty() && m_BrtEndSparklines && m_BrtEndSparklineGroup;
+        return m_BrtBeginSparklineGroup && m_bBrtBeginSparklines && !m_arBrtSparkline.empty() && m_bBrtEndSparklines && m_bBrtEndSparklineGroup;
     }
+
+	const bool SPARKLINEGROUP::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSparklineGroup != nullptr)
+			proc.mandatory(*m_BrtBeginSparklineGroup);
+
+		proc.mandatory<BeginSparklines>();
+
+		for (auto& item : m_arBrtSparkline)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSparklines>();
+
+		proc.mandatory<EndSparklineGroup>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

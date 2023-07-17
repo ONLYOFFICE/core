@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,32 +31,16 @@
  */
 #pragma once
 
-
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
 class CRecordTimeIterateDataAtom: public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-        m_nIterateInterval						=	StreamUtils::ReadDWORD ( pStream );
-        m_nIterateType							=	StreamUtils::ReadDWORD ( pStream );
-        m_nIterateDirection                     =	StreamUtils::ReadDWORD ( pStream );
-        m_nIterateIntervalType					=	StreamUtils::ReadDWORD ( pStream );
-
-        _UINT32 Value							=	StreamUtils::ReadDWORD ( pStream );
-
-        m_fIterateDirectionPropertyUsed		=	( 0x01 == ( 0x01 & ((BYTE)Value) ) );
-        m_fIterateTypePropertyUsed			=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
-        m_fIterateIntervalPropertyUsed		=	( 0x04 == ( 0x04 & ((BYTE)Value) ) );
-        m_fIterateIntervalTypePropertyUsed	=	( 0x08 == ( 0x08 & ((BYTE)Value) ) );
-    }
-
-public:
 
     _UINT32 m_nIterateInterval;
     _UINT32 m_nIterateType;

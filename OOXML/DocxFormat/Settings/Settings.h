@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,13 +32,16 @@
 #pragma once
 #include "../../Base/Nullable.h"
 
-#include "../File.h"
 #include "../../Common/ComplexTypes.h"
 #include "../Logic/VmlOfficeDrawing.h"
 #include "../FtnEdn.h"
 
 namespace OOX
 {
+    namespace Logic
+    {
+        class CMathPr;
+    }
 	namespace Settings
 	{
 		//--------------------------------------------------------------------------------
@@ -47,7 +50,7 @@ namespace OOX
 		class CWritingStyle : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWritingStyle)
+			WritingElement_AdditionMethods(CWritingStyle)
 			CWritingStyle();
 			virtual ~CWritingStyle();
 
@@ -75,7 +78,7 @@ namespace OOX
 		class CAutoCaption : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAutoCaption)
+			WritingElement_AdditionMethods(CAutoCaption)
 			CAutoCaption();
 			virtual ~CAutoCaption();
 
@@ -99,7 +102,7 @@ namespace OOX
 		class CAutoCaptions : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAutoCaptions)
+			WritingElement_AdditionMethods(CAutoCaptions)
 			CAutoCaptions();
 			virtual ~CAutoCaptions();
 
@@ -118,7 +121,7 @@ namespace OOX
 		class CCaption : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCaption)
+			WritingElement_AdditionMethods(CCaption)
 			CCaption();
 			virtual ~CCaption();
 
@@ -147,7 +150,7 @@ namespace OOX
 		class CCaptions : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCaptions)
+			WritingElement_AdditionMethods(CCaptions)
 			CCaptions();
 			virtual ~CCaptions();
 
@@ -167,7 +170,7 @@ namespace OOX
 		class CCharacterSpacing : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCharacterSpacing)
+			WritingElement_AdditionMethods(CCharacterSpacing)
 			CCharacterSpacing();
 			virtual ~CCharacterSpacing();
 
@@ -190,7 +193,7 @@ namespace OOX
 		class CCompatSetting : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCompatSetting)
+			WritingElement_AdditionMethods(CCompatSetting)
 			CCompatSetting();
 			virtual ~CCompatSetting();
 
@@ -215,7 +218,7 @@ namespace OOX
 		class CCompat : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCompat)
+			WritingElement_AdditionMethods(CCompat)
 			CCompat();
 			virtual ~CCompat();
 
@@ -302,7 +305,7 @@ namespace OOX
 		class CDocProtect : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocProtect)
+			WritingElement_AdditionMethods(CDocProtect)
 			CDocProtect();
 			virtual ~CDocProtect();
 
@@ -341,7 +344,7 @@ namespace OOX
 		class CDocType : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocType)
+			WritingElement_AdditionMethods(CDocType)
 			CDocType();
 			virtual ~CDocType();
 
@@ -365,7 +368,7 @@ namespace OOX
 		class CDocVar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocVar)
+			WritingElement_AdditionMethods(CDocVar)
 			CDocVar();
 			virtual ~CDocVar();
 
@@ -389,7 +392,7 @@ namespace OOX
 		class CDocVars : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocVars)
+			WritingElement_AdditionMethods(CDocVars)
 			CDocVars();
 			virtual ~CDocVars();
 
@@ -408,7 +411,7 @@ namespace OOX
 		class CKinsoku : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CKinsoku)
+			WritingElement_AdditionMethods(CKinsoku)
 			CKinsoku();
 			virtual ~CKinsoku();
 
@@ -434,7 +437,7 @@ namespace OOX
 		class CProof : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProof)
+			WritingElement_AdditionMethods(CProof)
 			CProof();
 			virtual ~CProof();
 
@@ -458,7 +461,7 @@ namespace OOX
 		class CReadingModeInkLockDown : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CReadingModeInkLockDown)
+			WritingElement_AdditionMethods(CReadingModeInkLockDown)
 			CReadingModeInkLockDown();
 			virtual ~CReadingModeInkLockDown();
 
@@ -485,7 +488,7 @@ namespace OOX
 		class CTrackChangesView : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTrackChangesView)
+			WritingElement_AdditionMethods(CTrackChangesView)
 			CTrackChangesView();
 			virtual ~CTrackChangesView();
 
@@ -512,7 +515,7 @@ namespace OOX
 		class CDocRsids : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocRsids)
+			WritingElement_AdditionMethods(CDocRsids)
 			CDocRsids();
 			virtual ~CDocRsids();
 
@@ -532,7 +535,7 @@ namespace OOX
 		class CSaveThroughXslt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSaveThroughXslt)
+			WritingElement_AdditionMethods(CSaveThroughXslt)
 			CSaveThroughXslt();
 			virtual ~CSaveThroughXslt();
 
@@ -556,7 +559,7 @@ namespace OOX
 		class CSmartTagType : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSmartTagType)
+			WritingElement_AdditionMethods(CSmartTagType)
 			CSmartTagType();
 			virtual ~CSmartTagType();
 
@@ -581,7 +584,7 @@ namespace OOX
 		class CStylePaneFilter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStylePaneFilter)
+			WritingElement_AdditionMethods(CStylePaneFilter)
 			CStylePaneFilter();
 			virtual ~CStylePaneFilter();
 
@@ -620,7 +623,7 @@ namespace OOX
 		class CStyleSort : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStyleSort)
+			WritingElement_AdditionMethods(CStyleSort)
 			CStyleSort()
 			{
 			}
@@ -679,7 +682,7 @@ namespace OOX
 		class CView : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CView)
+			WritingElement_AdditionMethods(CView)
 			CView()
 			{
 			}
@@ -738,7 +741,7 @@ namespace OOX
 		class CWriteProtection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWriteProtection)
+			WritingElement_AdditionMethods(CWriteProtection)
 			CWriteProtection();
 			virtual ~CWriteProtection();
 
@@ -775,7 +778,7 @@ namespace OOX
 		class CZoom : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CZoom)
+			WritingElement_AdditionMethods(CZoom)
 			CZoom();
 			virtual ~CZoom();
 
@@ -799,7 +802,7 @@ namespace OOX
 		class CEdnDocProps : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CEdnDocProps)
+			WritingElement_AdditionMethods(CEdnDocProps)
 			CEdnDocProps(OOX::Document *pMain = NULL);
 			virtual ~CEdnDocProps();
 
@@ -823,7 +826,7 @@ namespace OOX
 		class CFtnDocProps : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFtnDocProps)
+			WritingElement_AdditionMethods(CFtnDocProps)
 			CFtnDocProps(OOX::Document *pMain = NULL);
 			virtual ~CFtnDocProps();
 
@@ -846,7 +849,7 @@ namespace OOX
 		class CSchema : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSchema)
+			WritingElement_AdditionMethods(CSchema)
 			CSchema();
 			virtual ~CSchema();
 
@@ -873,7 +876,7 @@ namespace OOX
 		class CSchemaLibrary : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSchemaLibrary)
+			WritingElement_AdditionMethods(CSchemaLibrary)
 			CSchemaLibrary();
 			virtual ~CSchemaLibrary();
 
@@ -892,7 +895,8 @@ namespace OOX
 		class CShapeDefaults : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CShapeDefaults)
+			WritingElement_AdditionMethods(CShapeDefaults)
+			CShapeDefaults();
 			CShapeDefaults(EElementType type);
 			virtual ~CShapeDefaults();
 

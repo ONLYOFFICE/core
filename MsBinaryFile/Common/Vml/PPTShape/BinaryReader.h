@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,7 +30,8 @@
  *
  */
 #pragma once
-#include "../../../../../../DesktopEditor/common/Types.h"
+
+#include "../../../../DesktopEditor/common/Types.h"
 
 namespace ODRAW
 {
@@ -50,63 +51,13 @@ namespace ODRAW
 		DWORD m_lOrigin;
 
 	public:
-		CBinaryReader(BYTE* pBuffer, DWORD lCount)
-		{
-			m_pBuffer = pBuffer;
-			m_lCount = lCount;
+		CBinaryReader(BYTE* pBuffer, DWORD lCount);
+		~CBinaryReader();
 
-			m_lOrigin = 0;
-		}
-		~CBinaryReader()
-		{
-			m_pBuffer = NULL;
-			m_lCount = 0;
-		}
-
-		LONG ReadLONG() // int32 подразумевается
-		{
-			DWORD lOldOrigin = m_lOrigin;
-			m_lOrigin += 4;
-
-			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
-
-			return *(_INT32*)(m_pBuffer + lOldOrigin);
-		}
-		DWORD ReadDWORD()
-		{
-			DWORD lOldOrigin = m_lOrigin;
-			m_lOrigin += 4;
-
-			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
-
-			return *(DWORD*)(m_pBuffer + lOldOrigin);
-		}
-		WORD ReadWORD()
-		{
-			DWORD lOldOrigin = m_lOrigin;
-			m_lOrigin += 2;
-
-			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
-
-			return *(WORD*)(m_pBuffer + lOldOrigin);
-		}
-		SHORT ReadSHORT()
-		{
-			DWORD lOldOrigin = m_lOrigin;
-			m_lOrigin += 2;
-
-			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
-
-			return *(short*)(m_pBuffer + lOldOrigin);
-		}
-		double ReadDOUBLE()
-		{
-			DWORD lOldOrigin = m_lOrigin;
-			m_lOrigin += sizeof(double);
-
-			BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
-
-			return *(SHORT*)(m_pBuffer + lOldOrigin);
-		}
+		LONG ReadLONG(); // int32 подразумевается
+		DWORD ReadDWORD();
+		WORD ReadWORD();
+		SHORT ReadSHORT();
+		double ReadDOUBLE();
 	};
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,6 +45,17 @@
 #include "Pivot/PivotCacheDefinition.h"
 #include "Pivot/PivotCacheRecords.h"
 
+#include "Styles/Borders.h"
+#include "Styles/CellStyles.h"
+#include "Styles/Xfs.h"
+#include "Styles/Colors.h"
+#include "Styles/dxf.h"
+#include "Styles/Fills.h"
+#include "Styles/Fonts.h"
+#include "Styles/NumFmts.h"
+#include "Styles/TableStyles.h"
+
+#include "ComplexTypes_Spreadsheet.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
@@ -140,6 +151,7 @@ bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTy
 	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
 
 	oContentTypes.Write(oDirPath);
+	return true;
 }
 bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {

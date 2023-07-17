@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,6 +44,7 @@
 
 #include "js_internal/js_base.h"
 #include "embed/NativeBuilderEmbed.h"
+#include "embed/NativeBuilderDocumentEmbed.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/GraphicsEmbed.h"
 #include "embed/Default.h"
@@ -58,6 +59,7 @@
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -93,11 +95,11 @@ namespace NSDoctRenderer
 		else if (L"pdf" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 		else if (L"image" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
 		else if (L"jpg" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
 		return nFormat;
 	}
 }
@@ -391,8 +393,6 @@ public:
 class CV8RealTimeWorker
 {
 public:
-	JSSmart<CJSIsolateScope> m_isolate_scope;
-	JSSmart<CJSLocalScope> m_handle_scope;
 	JSSmart<CJSContext> m_context;
 
 	int m_nFileType;
@@ -453,6 +453,7 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+		bool m_bJavascriptBeforeEditor;
 
 		std::wstring m_sX2tPath;
 
@@ -477,7 +478,7 @@ namespace NSDoctRenderer
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
-			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
+			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
 		{
 		}
 
@@ -624,6 +625,9 @@ namespace NSDoctRenderer
 				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
 				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 			}
+
+			if (m_bJavascriptBeforeEditor)
+				CheckWorkerAfterOpen();
 
 			return bRet;
 #else
@@ -888,9 +892,9 @@ namespace NSDoctRenderer
 		{
 			Init();
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					CheckFileDir();
+			CheckFileDir();
 			NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
 			std::wstring sExtCopy = GetFileCopyExt(path);
@@ -910,10 +914,14 @@ namespace NSDoctRenderer
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
-			LOGGER_SPEED_LAP("open_convert")
+			LOGGER_SPEED_LAP("open_convert");
 
-					if (0 == nReturnCode)
-					return 0;
+			if (0 == nReturnCode)
+			{
+				if (m_bJavascriptBeforeEditor)
+					CheckWorkerAfterOpen();
+				return 0;
+			}
 
 			NSDirectory::DeleteDirectory(m_sFileDir);
 			m_sFileDir = L"";
@@ -924,7 +932,7 @@ namespace NSDoctRenderer
 			return nReturnCode;
 		}
 
-		void CloseFile()
+		void CloseFile(bool bIsDestroyJS = true)
 		{
 			Init();
 
@@ -936,7 +944,9 @@ namespace NSDoctRenderer
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
-			RELEASEOBJECT(m_pWorker);
+
+			if (bIsDestroyJS)
+				RELEASEOBJECT(m_pWorker);
 		}
 
 		std::wstring GetSaveFilePath(const std::wstring& path)
@@ -968,9 +978,9 @@ namespace NSDoctRenderer
 				return 1;
 			}
 
-			LOGGER_SPEED_START
+			LOGGER_SPEED_START();
 
-					std::wstring sConvertionParams = L"";
+			std::wstring sConvertionParams = L"";
 			if (NULL != params)
 			{
 				sConvertionParams = std::wstring(params);
@@ -990,6 +1000,9 @@ namespace NSDoctRenderer
 					{
 						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
 						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+
+						if (0 != sJsonParams.find(L"{"))
+							sJsonParams = L"";
 					}
 					else
 					{
@@ -1161,13 +1174,34 @@ namespace NSDoctRenderer
 			}
 #endif
 
+			// html correct (TODO: move to x2t)
+			if (0 == nReturnCode && type == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER)
+			{
+				COfficeUtils oUtils;
+				if (S_OK == oUtils.IsArchive(_path))
+				{
+					std::wstring sTmpFile = sDstTmpDir + L"/tmp_html";
+					NSDirectory::CreateDirectory(sTmpFile);
+					if (S_OK == oUtils.ExtractToDirectory(_path, sTmpFile, NULL, 0))
+					{
+						std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sTmpFile);
+						if (arFiles.size() == 1)
+						{
+							NSFile::CFileBinary::Remove(_path);
+							NSFile::CFileBinary::Move(arFiles[0], _path);
+						}
+					}
+				}
+			}
+
+
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
 
-			LOGGER_SPEED_LAP("save_convert")
+			LOGGER_SPEED_LAP("save_convert");
 
-					if (0 == nReturnCode)
-					return 0;
+			if (0 == nReturnCode)
+				return 0;
 
 			std::wstring sErrorLog = L"save file error (" + std::to_wstring(nReturnCode) + L")";
 			CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
@@ -1176,32 +1210,78 @@ namespace NSDoctRenderer
 
 		bool CheckWorker()
 		{
-			if (-1 == m_nFileType)
-			{
-				CV8RealTimeWorker::_LOGGING_ERROR_(L"error (command)", L"file not opened!");
-				return false;
-			}
-
 			if (NULL == m_pWorker)
 			{
 				m_pWorker = new CV8RealTimeWorker(m_pParent);
-				m_pWorker->m_nFileType = m_nFileType;
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 
-				std::wstring sCachePath = L"";
-				if (m_bIsCacheScript)
-					sCachePath = GetScriptCache();
-
-				CV8Params oParams;
-				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
-				oParams.DocumentDirectory = m_sFileDir;
-
-				bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
-				if (!bOpen)
-					return false;
+				return CheckWorkerAfterOpen();
 			}
 			return true;
+		}
+
+		bool CheckWorkerAfterOpen()
+		{
+			if (!m_pWorker)
+				return false;
+
+			m_pWorker->m_nFileType = m_nFileType;
+			if (-1 == m_nFileType)
+			{
+				m_bJavascriptBeforeEditor = true;
+				return false;
+			}
+
+			m_bJavascriptBeforeEditor = false;
+			std::wstring sCachePath = L"";
+			if (m_bIsCacheScript)
+				sCachePath = GetScriptCache();
+
+			CV8Params oParams;
+			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+			oParams.DocumentDirectory = m_sFileDir;
+
+			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
+		}
+
+		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
+		{
+			int nType = -1;
+			if (L"docx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+			else if (L"doc" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+			else if (L"odt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+			else if (L"rtf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+			else if (L"txt" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+			else if (L"pptx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+			else if (L"odp" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+			else if (L"xlsx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+			else if (L"xls" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+			else if (L"ods" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+			else if (L"csv" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+			else if (L"pdf" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+			else if (L"image" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"jpg" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"png" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
+			else if (L"html" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+
+			return SaveFile(nType, path, params);
 		}
 
 		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
@@ -1211,9 +1291,7 @@ namespace NSDoctRenderer
 
 			Init();
 
-			if (!CheckWorker())
-				return false;
-
+			CheckWorker();
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
@@ -1221,8 +1299,7 @@ namespace NSDoctRenderer
 		{
 			CDocBuilderContext ctx;
 
-			if (!CheckWorker())
-				return ctx;
+			CheckWorker();
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;

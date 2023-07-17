@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,7 +32,6 @@
 #pragma once 
 
 #include <map>
-
 #include <boost/lexical_cast.hpp>
 
 class IdGenerator
@@ -53,89 +52,23 @@ private:
 	int m_nBookmarkNumber;
 
 public: 
-	IdGenerator()
-	{
-		m_nrIdCount = 1;
-		m_nFitTextIdCount = 1;
-		m_nImageIndex = 1;
-		m_nOleIndex = 1;
-		m_nHeaderNumber = 1;
-		m_nFooterNumber = 1;
-		m_nBookmarkNumber = 1;
-		m_nFootnoteNumber = 2;
-		m_nEndnoteNumber = 2;
-		m_nImageProp = 1;
-		m_nShapeId = 1;
-		m_nOleId = 1;
-		m_nPnListId = 1;
+	IdGenerator();
 
-	}
+	std::wstring Generate_rId();
 
-    std::wstring Generate_rId()
-	{
-        return L"rId" + std::to_wstring(m_nrIdCount++);
-	}
+	std::wstring Generate_FitTextId();
 
-    std::wstring Generate_FitTextId()
-	{
-        return std::to_wstring(m_nFitTextIdCount++);
-	}
-
-	int Generate_ImageIndex()
-	{
-		return m_nImageIndex++;
-	}
-	int Generate_OleIndex()
-	{
-		return m_nOleIndex++;
-	}
-	int Generate_HeaderNumber()
-	{
-		return m_nHeaderNumber++;
-	}
-	int Generate_FooterNumber()
-	{
-		return m_nFooterNumber++;
-	}
-
-	int Generate_BookmarkNumber()
-	{
-		return m_nBookmarkNumber++;
-	}
-	int Generate_FootnoteNumber()
-	{
-		return m_nFootnoteNumber++;
-	}
-
-	int Generate_EndnoteNumber()
-	{
-		return m_nEndnoteNumber++;
-	}
-
-	int Generate_ImagePropId()
-	{
-		return m_nImageProp++;
-	}
-
-	int Generate_ShapeId()
-	{
-		return m_nShapeId++;
-	}
-	
-    std::wstring Generate_OleId()
-	{
-        std::wstring sId = std::to_wstring(m_nOleId++);
-        std::wstring sResult = L"_1330071130";
-
-        sResult = sResult.substr(0, sResult.length() - sId.length() );
-		sResult += sId;
-		return sResult;
-	}
-
-	int Generate_PnId()
-	{
-		return m_nPnListId++;
-	}	
+	int Generate_ImageIndex();
+	int Generate_OleIndex();
+	int Generate_HeaderNumber();
+	int Generate_FooterNumber();
+	int Generate_BookmarkNumber();
+	int Generate_FootnoteNumber();
+	int Generate_EndnoteNumber();
+	int Generate_ImagePropId();
+	int Generate_ShapeId();
+	std::wstring Generate_OleId();
+	int Generate_PnId();
 };
 
 class OOXIdGenerator
@@ -146,23 +79,7 @@ private:
 	int m_nCounter;
 
 public: 
+	OOXIdGenerator();
 
-	OOXIdGenerator()
-	{
-		m_nCounter = 1;
-	}
-    int GetId( std::wstring sKey )
-	{
-        std::map<std::wstring, long>::iterator pPair = m_mapId.find( sKey );
-		
-		if( m_mapId.end() == pPair )
-		{
-			int nResult = m_nCounter;
-			m_mapId[sKey] = nResult;
-			m_nCounter++;
-			return nResult;
-		}
-		else
-			return pPair->second;
-	}
+	int GetId( std::wstring sKey );
 };

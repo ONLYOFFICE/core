@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -123,7 +123,11 @@ namespace NSCommon
 		nullable(const XmlUtils::CXmlNode& oNode)   // const modifier is important for gcc compiler in our case
 		{
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(const_cast<XmlUtils::CXmlNode&> (oNode));
+			{
+				Type* pType = new Type();
+				*pType = const_cast<XmlUtils::CXmlNode&> (oNode);
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -131,7 +135,11 @@ namespace NSCommon
 		nullable(XmlUtils::CXmlNode& oNode)
 		{
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(oNode);
+			{
+				Type* pType = new Type();
+				*pType = oNode;
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -139,7 +147,11 @@ namespace NSCommon
 		nullable(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsValid())
-				this->m_pPointer = new Type(oReader);
+			{
+				Type* pType = new Type();
+				*pType = oReader;
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -180,14 +192,22 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(oNode);
+			{
+				Type* pType = new Type();
+				*pType = oNode;
+				this->m_pPointer = pType;
+			}
 			return *this;
 		}
 		nullable<Type>& operator=(XmlUtils::CXmlLiteReader& oReader)
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			if (oReader.IsValid())
-				this->m_pPointer = new Type(oReader);
+			{
+				Type* pType = new Type();
+				*pType = oReader;
+				this->m_pPointer = pType;
+			}
 			return *this;
 		}
 		nullable<Type>& operator=(const wchar_t* cwsValue)
@@ -304,7 +324,7 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			this->m_pPointer = new Type();
-			this->m_pPointer->_set(value);
+			this->m_pPointer->set(value);
 		}
 		void operator=(Type* pType)
 		{
@@ -503,7 +523,12 @@ namespace NSCommon
 				m_pPointer = new unsigned int(*oSrc);
 			return *this;
 		}
-
+		unsigned int* GetPointerEmptyNullable()
+		{
+			unsigned int* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		unsigned int get_value_or(const unsigned int& value) const
 		{
 			if (NULL == m_pPointer)
@@ -717,6 +742,12 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
+		double* GetPointerEmptyNullable()
+		{
+			double* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		double& operator*()  { return *m_pPointer; }
 		double* operator->() { return  m_pPointer; }
 
@@ -789,7 +820,12 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-
+		bool* GetPointerEmptyNullable()
+		{
+			bool* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		bool& operator*()  { return *m_pPointer; }
 		bool* operator->() { return  m_pPointer; }
 
@@ -816,7 +852,13 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new std::wstring(value);
-
+		}
+		void operator+=(const std::wstring& value)
+		{
+			if (NULL == m_pPointer)
+				m_pPointer = new std::wstring(value);
+			else
+				*m_pPointer += value;
 		}
 		void operator=(std::wstring* value)
 		{
@@ -861,6 +903,12 @@ namespace NSCommon
 				return name + L"=\"" + (*m_pPointer) + L"\" ";
 			}
 			return L"";
+		}
+		std::wstring* GetPointerEmptyNullable()
+		{
+			std::wstring* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
 		}
 		std::wstring& operator*()  { return *m_pPointer; }
 		std::wstring* operator->() { return  m_pPointer; }

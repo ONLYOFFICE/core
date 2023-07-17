@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,38 +34,22 @@
 
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordTimeRotationBehaviorAtom : public CUnknownRecord
-	{
-	public:
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
+class CRecordTimeRotationBehaviorAtom : public CUnknownRecord
+{
+public:
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream );
 
-			_UINT32 src = StreamUtils::ReadDWORD(pStream);
+public:
 
-			m_fByPropertyUsed = (0x01 == (0x01 & ((BYTE)src)));
-			m_fFromPropertyUsed = (0x02 == (0x02 & ((BYTE)src)));
-			m_fToPropertyUsed = (0x04 == (0x04 & ((BYTE)src)));
-			m_fDirectionPropertyUsed = (0x08 == (0x08 & ((BYTE)src)));
-
-			m_By = StreamUtils::ReadFLOAT(pStream);
-			m_From = StreamUtils::ReadFLOAT(pStream);
-			m_To = StreamUtils::ReadFLOAT(pStream);
-
-			m_nRotationDirection = StreamUtils::ReadDWORD(pStream);
-		}
-
-	public:
-
-		bool	m_fByPropertyUsed;
-		bool	m_fFromPropertyUsed;
-		bool	m_fToPropertyUsed;
-		bool	m_fDirectionPropertyUsed;
-		float	m_By;
-		float	m_From;
-		float	m_To;
-		_UINT32	m_nRotationDirection;		//	0	-	rotate clockwise,	1	-	rotate counter clockwise
-	};
+    bool	m_fByPropertyUsed;
+    bool	m_fFromPropertyUsed;
+    bool	m_fToPropertyUsed;
+    bool	m_fDirectionPropertyUsed;
+    float	m_By;
+    float	m_From;
+    float	m_To;
+    _UINT32	m_nRotationDirection;		//	0	-	rotate clockwise,	1	-	rotate counter clockwise
+};
 }

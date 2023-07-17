@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,14 @@
  */
 
 #include "HeaderFooter.h"
+
+#include "Logic/Annotations.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Hyperlink.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
 
 namespace OOX
 {
@@ -153,7 +161,7 @@ namespace OOX
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new Logic::COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new Logic::CParagraph( document );
+					pItem = new Logic::CParagraph( document, this );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new Logic::CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
@@ -167,9 +175,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
-
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}
@@ -252,7 +259,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		else if ( et_w_ftr == m_eType )
 			return FileTypes::Footer;
 
-		return FileTypes::Unknow;
+		return FileTypes::Unknown;
 	}
 	const CPath CHdrFtr::DefaultDirectory() const
 	{
@@ -269,10 +276,6 @@ mc:Ignorable=\"w14 w15 wp14\">");
 	EElementType CHdrFtr::getType() const
 	{
 		return m_eType;
-	}
-	void CHdrFtr::AddParagraph(Logic::CParagraph *pPara)
-	{
-		m_arrItems.push_back( (WritingElement*)pPara );
 	}
 	void CHdrFtr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

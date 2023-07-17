@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,10 +30,22 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "rPr.h"
 
+namespace XLS
+{
+	class BiffStructure;
+}
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CPatternType;
+		class CGradientType;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +54,7 @@ namespace OOX
 		class CPatternFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPatternFill)
+			WritingElement_AdditionMethods(CPatternFill)
             WritingElement_XlsbConstructors(CPatternFill)
 			CPatternFill();
 			virtual ~CPatternFill();
@@ -71,7 +83,7 @@ namespace OOX
 		class CGradientStop : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CGradientStop)
+			WritingElement_AdditionMethods(CGradientStop)
 			CGradientStop();
 			virtual ~CGradientStop();
 
@@ -97,7 +109,7 @@ namespace OOX
 		class CGradientFill : public WritingElementWithChilds<CGradientStop>
 		{
 		public:
-			WritingElement_AdditionConstructors(CGradientFill)
+			WritingElement_AdditionMethods(CGradientFill)
             WritingElement_XlsbConstructors(CGradientFill)
 			CGradientFill();
 			virtual ~CGradientFill();
@@ -129,7 +141,7 @@ namespace OOX
 		class CFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFill)
+			WritingElement_AdditionMethods(CFill)
             WritingElement_XlsbConstructors(CFill)
 			CFill();
 			virtual ~CFill();
@@ -156,7 +168,7 @@ namespace OOX
 		class CFills : public WritingElementWithChilds<CFill>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFills)
+			WritingElement_AdditionMethods(CFills)
             WritingElement_XlsbVectorConstructors(CFills)
 			CFills();
 			virtual ~CFills();

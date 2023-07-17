@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -87,6 +87,7 @@ public:
 	std::wstringstream	controls_;
 	std::wstringstream	protection_;
 	std::wstringstream	breaks_;
+	std::wstringstream	sparklines_;
 
 	rels sheet_rels_;
 
@@ -199,6 +200,10 @@ std::wostream & xlsx_xml_worksheet::breaks()
 {
     return impl_->breaks_;
 }
+std::wostream& xlsx_xml_worksheet::sparklines()
+{
+	return impl_->sparklines_;
+}
 //---------------------------------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -215,6 +220,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns:xdr",	L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
 			CP_XML_ATTR(L"xmlns:x14",	L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+			CP_XML_ATTR(L"xmlns:xr2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/revision2");
             CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
             CP_XML_ATTR(L"mc:Ignorable",L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
@@ -305,16 +311,31 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			std::wstring dataValidations14 = impl_->dataValidationsX14_.str();
-			if (false == dataValidations14.empty())
+			std::wstring sparklines = impl_->sparklines_.str();
+			
+			if (false == dataValidations14.empty() || false == sparklines.empty())
 			{
 				CP_XML_NODE(L"extLst")
 				{
-					CP_XML_NODE(L"ext")
+					if (false == dataValidations14.empty())
 					{
-						CP_XML_ATTR(L"uri", L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}");
-						CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+						CP_XML_NODE(L"ext")
+						{
+							CP_XML_ATTR(L"uri", L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}");
+							CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-						CP_XML_STREAM() << dataValidations14;
+							CP_XML_STREAM() << dataValidations14;
+						}
+					}
+					if (false == sparklines.empty())
+					{
+						CP_XML_NODE(L"ext")
+						{
+							CP_XML_ATTR(L"uri", L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}");
+							CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+
+							CP_XML_STREAM() << sparklines;
+						}
 					}
 				}
 			}

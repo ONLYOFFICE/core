@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,8 +47,8 @@ namespace odf_reader
 	class styles_container;
 	typedef boost::shared_ptr<styles_container> styles_container_ptr;
 	
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 };
 namespace oox {
 	
@@ -61,7 +61,7 @@ public:
     ~xlsx_text_context	();
 
 	void set_local_styles_container	(odf_reader::styles_container *local_styles_);
-	void set_cell_text_properties	(odf_reader::text_format_properties_content_ptr text_properties);    
+	void set_cell_text_properties	(odf_reader::text_format_properties_ptr text_properties);    
     
     void			start_paragraph(const std::wstring & styleName);
     void			end_paragraph();
@@ -71,7 +71,7 @@ public:
     std::wstring	end_span2();
 
     void			start_cell_content();
-    int				end_cell_content();
+    int				end_cell_content(bool need_cache);
 
 	void			start_only_text();
 	std::wstring	end_only_text();
@@ -86,6 +86,7 @@ public:
 	void			end_hyperlink(std::wstring hId);
 
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
 
     void serialize_shared_strings(std::wostream & strm);
 

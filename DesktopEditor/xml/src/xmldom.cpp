@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,7 +72,7 @@ namespace XmlUtils
 
         std::map<std::string, std::string> m_attributes;
         std::vector<CXmlNodeBase*> m_nodes;
-        std::wstring m_sText;
+        std::string m_sText;
         std::wstring m_sName;
 
     public:
@@ -89,7 +89,7 @@ namespace XmlUtils
 	CXmlNodeBase::CXmlNodeBase()
 	{
 		m_pDocument = NULL;
-		m_sText = L"";
+        m_sText = "";
 		m_sName = L"";
 	}
 	CXmlNodeBase::~CXmlNodeBase()
@@ -145,8 +145,7 @@ namespace XmlUtils
 		{
 			m_nodes[i]->GetXml(oWriter);
 		}
-
-		oWriter.WriteEncodeXmlString(m_sText.c_str());
+        oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_sText.c_str(), (LONG)m_sText.length()).c_str());
 
 		oWriter.WriteString(L"</", 2);
 		oWriter.WriteEncodeXmlString(m_sName.c_str());
@@ -156,33 +155,7 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-	CXmlNodes::CXmlNodes() : m_nodes()
-	{
-	}
-    CXmlNodes::~CXmlNodes()
-    {
-    }
-	bool CXmlNodes::IsValid()
-	{
-		return true;
-	}
-	int CXmlNodes::GetCount()
-	{
-		return (int)m_nodes.size();
-	}
-	bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
-	{
-		if (nIndex < 0 || nIndex >= GetCount())
-			return false;
-
-		oXmlNode = m_nodes[nIndex];
-		return true;
-	}
-}
-
-namespace XmlUtils
-{
-	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
+ 	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
 	{
 	public:
 		CXmlNodeBase* m_pNode;
@@ -283,11 +256,11 @@ namespace XmlUtils
 					nCurDepth = GetDepth();
 					if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
 					{
-						m_pCurrentNode->m_sText += GetText();
+                        m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_CDATA)
 					{
-						m_pCurrentNode->m_sText += GetText();
+                        m_pCurrentNode->m_sText += GetTextA();
 					}
 					else if (eNodeType == XmlNodeType_Element)
 					{
@@ -413,16 +386,30 @@ namespace XmlUtils
 	{
 		return (IsValid() ? m_pBase->m_sName : L"");
 	}
-	std::wstring CXmlNode::GetText()
+    std::string CXmlNode::GetTextA()
+    {
+        if (IsValid())
+        {
+            return m_pBase->m_sText;
+        }
+        else
+            return "";
+    }
+    std::wstring CXmlNode::GetText()
 	{
-		return (IsValid() ? m_pBase->m_sText : L"");
+        if (IsValid())
+        {
+            return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
+        }
+        else
+            return L"";
 	}
 	bool CXmlNode::GetTextIfExist(std::wstring& sOutput)
 	{
 		bool bRes = false;
 		if (IsValid() && !m_pBase->m_sText.empty())
 		{
-			sOutput = m_pBase->m_sText;
+            sOutput = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_pBase->m_sText.c_str(), (LONG)m_pBase->m_sText.length());
 			bRes = true;
 		}
 		return bRes;
@@ -745,10 +732,11 @@ namespace XmlUtils
 		}
 		return node;
 	}
-	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::ReadNodesNoNS(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
-		if (IsValid())
+		std::vector<CXmlNode> oNodes;
+
+        if (IsValid())
 		{
 			bool bGetAll = false;
 			if (L"*" == sName)
@@ -761,7 +749,8 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -775,9 +764,9 @@ namespace XmlUtils
 		GetNode(sName, oNode);
 		return oNode;
 	}
-	CXmlNodes CXmlNode::GetNodes(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::GetNodes(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
+		std::vector<CXmlNode> oNodes;
 		if (IsValid())
 		{
 			bool bGetAll = false;
@@ -791,14 +780,14 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
 
 		return oNodes;
 	}
-	bool CXmlNode::GetChilds(CXmlNodes& oXmlNodes)
+	bool CXmlNode::GetChilds(std::vector<CXmlNode>& oXmlNodes)
 	{
 		bool bRes = false;
 		if (IsValid())
@@ -812,7 +801,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oXmlNodes.m_nodes.insert(oXmlNodes.m_nodes.end(), oNode);
+                    oXmlNodes.push_back(oNode);
 				}
 			}
 		}
@@ -838,10 +827,10 @@ namespace XmlUtils
 		}
 		return bRes;
 	}
-	bool CXmlNode::GetNodes(const std::wstring& sName, CXmlNodes& oNodes)
+    bool CXmlNode::GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes)
 	{
 		oNodes = GetNodes(sName);
-		return (0 != oNodes.GetCount());
+        return (0 != oNodes.size());
 	}
 
 	CXmlNode& CXmlNode::operator=(const CXmlNode& oSrc)

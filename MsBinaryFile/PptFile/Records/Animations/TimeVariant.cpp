@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,9 +31,9 @@
  */
 #include "TimeVariant.h"
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
-CRecordTimeVariant* PPT_FORMAT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
+CRecordTimeVariant* PPT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
     LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
 
@@ -72,4 +72,91 @@ CRecordTimeVariant* PPT_FORMAT::TimeVariantFactoryMethod(SRecordHeader & oHeader
     StreamUtils::StreamSeek(lPos + oHeader.RecLen, pStream);
 
     return pTimeVariant;
+}
+
+void CRecordTimeVariant::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    m_oHeader			=	oHeader;
+
+    m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
+}
+
+CRecordTimeVariant::~CRecordTimeVariant()
+{
+
+}
+
+CRecordTimeVariant &CRecordTimeVariant::operator=(const CRecordTimeVariant &src)
+{
+    CUnknownRecord::operator=(src);
+    m_Type = src.m_Type;
+
+    return *this;
+}
+
+void CRecordTimeVariantBool::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+    m_Value	= ( 0x1 == StreamUtils::ReadBYTE ( pStream ) );
+}
+
+CRecordTimeVariant &CRecordTimeVariantBool::operator=(const CRecordTimeVariant &src)
+{
+    CRecordTimeVariant::operator=(src);
+    m_Value = dynamic_cast<const CRecordTimeVariantBool&>(src).m_Value;
+
+    return *this;
+}
+
+void CRecordTimeVariantInt::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+    m_Value	= StreamUtils::ReadDWORD ( pStream );
+}
+
+CRecordTimeVariant &CRecordTimeVariantInt::operator=(const CRecordTimeVariant &src)
+{
+    CRecordTimeVariant::operator=(src);
+    m_Value = dynamic_cast<const CRecordTimeVariantInt&>(src).m_Value;
+
+    return *this;
+}
+
+void CRecordTimeVariantFloat::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+    m_Value	= StreamUtils::ReadFLOAT ( pStream );
+}
+
+CRecordTimeVariant &CRecordTimeVariantFloat::operator=(const CRecordTimeVariant &src)
+{
+    CRecordTimeVariant::operator=(src);
+    m_Value = dynamic_cast<const CRecordTimeVariantFloat&>(src).m_Value;
+
+    return *this;
+}
+
+void CRecordTimeVariantString::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    if (oHeader.RecLen == 0)
+        return;
+
+    LONG lPos; StreamUtils::StreamPosition(lPos, pStream);
+    lPos += oHeader.RecLen;
+
+    CRecordTimeVariant::ReadFromStream(oHeader, pStream);
+    int strLen = m_oHeader.RecLen / 2 - 1;
+    if (strLen > 0)
+    {
+        m_Value = StreamUtils::ReadStringW(pStream, strLen);
+    }
+    StreamUtils::StreamSeek(lPos, pStream);
+}
+
+CRecordTimeVariant &CRecordTimeVariantString::operator=(const CRecordTimeVariant &src)
+{
+    CRecordTimeVariant::operator=(src);
+    m_Value = dynamic_cast<const CRecordTimeVariantString&>(src).m_Value;
+
+    return *this;
 }

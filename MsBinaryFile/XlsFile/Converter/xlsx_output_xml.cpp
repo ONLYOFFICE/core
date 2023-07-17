@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -88,6 +88,7 @@ public:
 	std::wstringstream  dataValidations_;
 	std::wstringstream  protection_;
 	std::wstringstream  tableParts_;
+	std::wstringstream  sheetCalcPr_;
 
 	rels rels_;
 
@@ -199,6 +200,11 @@ std::wostream & xlsx_xml_worksheet::tableParts()
 {
     return impl_->tableParts_;
 }
+std::wostream & xlsx_xml_worksheet::sheetCalcPr()
+{
+	return impl_->sheetCalcPr_;
+}
+
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -247,6 +253,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					impl_->sheetData_.clear();
 				}
             }
+			CP_XML_STREAM() << impl_->sheetCalcPr_.str();
 
 			CP_XML_STREAM() << impl_->protection_.str();
 

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,6 +70,27 @@ namespace XLSB
         if(fHasStyle)
             record >> stStyle;
     }
+
+	void BeginSlicer::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fCaptionVisible)
+		SETBIT(flags, 1, fHasCaption)
+		SETBIT(flags, 2, fHasStyle)
+		SETBIT(flags, 3, fLockedPosition)
+
+		record << flags;
+
+		record << dwStartSlicerItem << dwColumnCount << dwLevel << dxRowHeight;
+		record << stName << stSlicerCacheName;
+
+		if (fHasCaption)
+			record << stCaption;
+
+		if (fHasStyle)
+			record << stStyle;
+	}
 
 } // namespace XLSB
 

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,11 +55,13 @@ namespace XLSB
     // SUPSAME = BrtSupSame *BrtPlaceholderName
     const bool SUPSAME::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<SupSame>())
-        {
-            m_BrtSupSame = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<SupSame>())
+		{
+			m_bBrtSupSame = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtSupSame = false;
 
         while (proc.optional<PlaceholderName>())
         {
@@ -67,8 +69,20 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSupSame || !m_arBrtPlaceholderName.empty();
+        return m_bBrtSupSame || !m_arBrtPlaceholderName.empty();
     }
+
+	const bool SUPSAME::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<SupSame>();
+
+		for (auto &item : m_arBrtPlaceholderName)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

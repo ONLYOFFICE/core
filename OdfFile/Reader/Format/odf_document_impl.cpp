@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -600,13 +600,30 @@ void odf_document::Impl::parse_settings(office_element *element)
 
 		if (item_set->config_name_ == L"ooo:configuration-settings")
 		{
-			for (size_t j = 0; j < item_set->content_.size(); j++)
-			{	
-				office_element_ptr & elm_sett = item_set->content_[j];
-				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
-				if (!sett)continue;
+			for (auto conf = item_set->content_.begin(); conf != item_set->content_.end(); ++conf)
+			{
+				settings_config_item *item = dynamic_cast<settings_config_item *>(conf->get());
+				if (item)
+				{
+					context_->Settings().add(item->config_name_, item->content_);
+					continue;
+				}
+				settings_config_item_set *conf_item_set = dynamic_cast<settings_config_item_set *>(conf->get());
+				if (conf_item_set)
+				{
+					if (conf_item_set->config_name_ == L"ModifyPasswordInfo")
+					{
+						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
+						{
+							settings_config_item *info = dynamic_cast<settings_config_item *>(info_elm->get());
+							if (info)
+							{
+								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
+							}
+						}
+					}
+				}
 
-				context_->Settings().add(sett->config_name_, sett->content_);
 			}
 		}
 		else if (item_set->config_name_ == L"ooo:view-settings")

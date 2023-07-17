@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,8 @@
 #include "Numbering.h"
 #include "Docx.h"
 #include "../../DesktopEditor/common/File.h"
+
+#include "Logic/SectionProperty.h"
 
 namespace ComplexTypes
 {
@@ -390,15 +392,17 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, _T("w:styleLink"),      m_oStyleLink );
 			WritingElement_ReadNode( oNode, oChild, _T("w:tmpl"),           m_oTmpl );
 
-			XmlUtils::CXmlNodes oLvlList;
+			std::vector<XmlUtils::CXmlNode> oLvlList;
 			if ( oNode.GetNodes( _T("w:lvl"), oLvlList ) )
 			{
-				XmlUtils::CXmlNode oLvlNode;
-				for ( int nIndex = 0; nIndex < oLvlList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oLvlList.size(); nIndex++ )
 				{
-					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+					XmlUtils::CXmlNode & oLvlNode = oLvlList[nIndex];
+					if ( oLvlNode.IsValid() )
 					{
-						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oLvlNode);
+						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl();
+						*pLvl = oLvlNode;
+
 						if (pLvl)
 						{
 							if (pLvl->m_oIlvl.IsInit())
@@ -423,7 +427,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("w:lvl") == sName )
 				{
-					OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oReader);
+					OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl();
+					*pLvl = oReader;
 
 					if (pLvl)
 					{
@@ -592,15 +597,17 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:abstractNumId", m_oAbstractNumId );
 			WritingElement_ReadNode( oNode, oChild, L"w:ilst", m_oAbstractNumId );
 
-			XmlUtils::CXmlNodes oLvlList;
+			std::vector<XmlUtils::CXmlNode> oLvlList;
 			if ( oNode.GetNodes( L"w:lvlOverride", oLvlList ) )
 			{
-				XmlUtils::CXmlNode oLvlNode;
-				for ( int nIndex = 0; nIndex < oLvlList.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oLvlList.size(); nIndex++ )
 				{
-					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
+					XmlUtils::CXmlNode & oLvlNode = oLvlList[nIndex];
+					if (oLvlNode.IsValid())
 					{
-						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oLvlNode);
+						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl();
+						*pNumLvl = oLvlNode;
+
 						if (pNumLvl)
 						{
 							if (pNumLvl->m_oIlvl.IsInit())
@@ -626,7 +633,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("w:lvlOverride") == sName )
 				{
-					OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oReader);
+					OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl();
+					*pNumLvl = oReader;
+
 					if (pNumLvl)
 					{
 						if (pNumLvl->m_oIlvl.IsInit())
@@ -847,7 +856,9 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 			if ( L"w:abstractNum" == sName || L"w:listDef" == sName)
 			{
-				OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+				OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum();
+				*pAbstractNum = oReader;
+
 				if ((pAbstractNum) && (pAbstractNum->m_oAbstractNumId.IsInit()))
 				{
 					m_mapAbstractNum.insert(std::make_pair(*pAbstractNum->m_oAbstractNumId, m_arrAbstractNum.size()));
@@ -856,7 +867,9 @@ namespace OOX
 			}
 			else if ( L"w:num" == sName || L"w:list" == sName)
 			{
-				OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
+				OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum();
+				*oNum = oReader;
+
 				if (oNum)
 				{
 					if (oNum->m_oNumId.IsInit() && (oNum->m_oAbstractNumId.IsInit()) && (oNum->m_oAbstractNumId->m_oVal.IsInit()))
@@ -870,7 +883,9 @@ namespace OOX
 				m_oNumIdMacAtCleanup = oReader;
 			else if ( L"w:numPicBullet" == sName || L"w:listPicBullet" == sName)
 			{
-				OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
+				OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet();
+				*oNumPic = oReader;
+
 				if (oNumPic) m_arrNumPicBullet.push_back( oNumPic );
 			}
 		}

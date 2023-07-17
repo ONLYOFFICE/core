@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXIFILE_CONTAINER_INCLUDE_H_
-#define OOX_XLSXIFILE_CONTAINER_INCLUDE_H_
 
 #include "RId.h"
 #include "UnknowTypeFile.h"
@@ -47,11 +45,6 @@ namespace OOX
 	class HyperLink;
 }
 
-//namespace PPTX
-//{
-//	class LegacyDiagramText;
-//}
-
 namespace OOX
 {
 	class IFileContainer
@@ -64,23 +57,7 @@ namespace OOX
 		static boost::unordered_map<std::wstring, size_t>	m_mapEnumeratedGlobal;
 		OOX::Document*										m_pMainDocument;
         smart_ptr<OOX::CRels>								m_pCurRels;
-	protected:
-		static UnknowTypeFile										m_oUnknown;
-		std::vector<smart_ptr<OOX::File>>							m_arContainer;
-		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
 
-        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
-        unsigned int												m_lMaxRid;
-
-		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
-		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
-		void Write (OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
-
-		void Commit (const CPath& oPath);
-		void Finalize(const CPath& oFilefilename, const CPath& oDir, OOX::CContentTypes& oContent);
-		void Finalize(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent);
-
-	public:
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		
 		template<class TypeOut> 
@@ -119,13 +96,26 @@ namespace OOX
 		int GetGlobalNumberByType(const std::wstring& sOverrideType);
 		void AssignOutputFilename(smart_ptr<OOX::File>& pFile);
 
-	private:
-		const RId				GetMaxRId();
+		const RId GetMaxRId();
+	protected:
+		static UnknowTypeFile										m_oUnknown;
+		std::vector<smart_ptr<OOX::File>>							m_arContainer;
+		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
 
+        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
+        unsigned int												m_lMaxRid;
+
+		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
+		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
+		void Write (OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
+
+		void Commit (const CPath& oPath);
+		void Finalize(const CPath& oFilefilename, const CPath& oDir, OOX::CContentTypes& oContent);
+		void Finalize(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent);
+
+	private:
         boost::unordered_map<std::wstring, size_t>			m_mapAddNamePair;
 		boost::unordered_map<std::wstring, std::wstring>	m_mapHyperlinks;      
 	};
 
 } // namespace OOX
-
-#endif // OOX_XLSXIFILE_CONTAINER_INCLUDE_H_

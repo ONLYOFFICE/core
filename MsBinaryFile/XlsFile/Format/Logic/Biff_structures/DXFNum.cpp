@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,6 +58,7 @@ void DXFNum::load(CFRecord& record)
 	{
 		record >> fmt_id;
 	}
+	fmt_id.ifmt = global_info->RegisterNumFormat(fmt_id.ifmt, user_defined.fmt.value()); // return update
 }
 
 
@@ -71,7 +72,7 @@ int DXFNum::serialize(std::wostream & stream)
 		CP_XML_NODE(L"numFmt")
 		{	
 			if (!parent->ifmtNinch)
-				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
+				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt); 
  			
 			if (parent->fIfmtUser)
  				CP_XML_ATTR(L"formatCode", /*XmlUtils::EncodeXmlString*/(user_defined.fmt.value()));

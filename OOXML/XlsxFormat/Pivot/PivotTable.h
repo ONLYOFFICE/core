@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,10 +31,35 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../FileTypes_Spreadsheet.h"
+
+#include "../../Common/ComplexTypes.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CShowDataAs;
+		class CDataConsolidateFunction;
+		class CPivotItemType;
+		class CPivotAxisType;
+		class CPivotAreaType;
+		class CFieldSortType;
+		class CFormatAction;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CSharedItemsIndex : public WritingElement
@@ -147,7 +172,7 @@ namespace OOX
 		class CField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CField)
+			WritingElement_AdditionMethods(CField)
 
 			CField(){}
 			virtual ~CField() {}
@@ -185,7 +210,7 @@ namespace OOX
 		class CColumnRowFields : public WritingElementWithChilds<CField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CColumnRowFields)
+			WritingElement_AdditionMethods(CColumnRowFields)
             WritingElement_XlsbConstructors(CColumnRowFields)
 			CColumnRowFields(){}
 			virtual ~CColumnRowFields() {}
@@ -212,7 +237,7 @@ namespace OOX
 		class CDataField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataField)
+			WritingElement_AdditionMethods(CDataField)
             WritingElement_XlsbConstructors(CDataField)
 			CDataField(){}
 			virtual ~CDataField() {}
@@ -247,7 +272,7 @@ namespace OOX
 		class CDataFields : public WritingElementWithChilds<CDataField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataFields)
+			WritingElement_AdditionMethods(CDataFields)
             WritingElement_XlsbConstructors(CDataFields)
 			CDataFields(){}
 			virtual ~CDataFields() {}
@@ -273,7 +298,7 @@ namespace OOX
 		class CPageField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageField)
+			WritingElement_AdditionMethods(CPageField)
             WritingElement_XlsbConstructors(CPageField)
 			CPageField(){}
 			virtual ~CPageField() {}
@@ -306,7 +331,7 @@ namespace OOX
 		class CPageFields : public WritingElementWithChilds<CPageField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageFields)
+			WritingElement_AdditionMethods(CPageFields)
             WritingElement_XlsbConstructors(CPageFields)
 			CPageFields(){}
 			virtual ~CPageFields() {}
@@ -332,7 +357,7 @@ namespace OOX
 		class CFieldItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFieldItem)
+			WritingElement_AdditionMethods(CFieldItem)
             WritingElement_XlsbConstructors(CFieldItem)
 			CFieldItem(){}
 			virtual ~CFieldItem() {}
@@ -370,7 +395,7 @@ namespace OOX
 		class CFieldItems : public WritingElementWithChilds<CFieldItem>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFieldItems)
+			WritingElement_AdditionMethods(CFieldItems)
             WritingElement_XlsbConstructors(CFieldItems)
 			CFieldItems(){}
 			virtual ~CFieldItems() {}
@@ -396,7 +421,7 @@ namespace OOX
 		class CReference : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CReference)
+			WritingElement_AdditionMethods(CReference)
             WritingElement_XlsbConstructors(CReference)
 			CReference(){}
 			virtual ~CReference() {}
@@ -442,7 +467,7 @@ namespace OOX
 		class CReferences : public WritingElementWithChilds<CReference>
 		{
 		public:
-			WritingElement_AdditionConstructors(CReferences)
+			WritingElement_AdditionMethods(CReferences)
             WritingElement_XlsbConstructors(CReferences)
 			CReferences(){}
 			virtual ~CReferences() {}
@@ -468,7 +493,7 @@ namespace OOX
 		class CPivotArea : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotArea)
+			WritingElement_AdditionMethods(CPivotArea)
             WritingElement_XlsbConstructors(CPivotArea)
 			CPivotArea(){}
 			virtual ~CPivotArea() {}
@@ -509,7 +534,7 @@ namespace OOX
 		class CAutoSortScope : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAutoSortScope)
+			WritingElement_AdditionMethods(CAutoSortScope)
             WritingElement_XlsbConstructors(CAutoSortScope)
 			CAutoSortScope(){}
 			virtual ~CAutoSortScope() {}
@@ -535,7 +560,7 @@ namespace OOX
 		class CPivotField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotField)
+			WritingElement_AdditionMethods(CPivotField)
             WritingElement_XlsbConstructors(CPivotField)
 			CPivotField(){}
 			virtual ~CPivotField() {}
@@ -613,7 +638,7 @@ namespace OOX
 		class CPivotFields : public WritingElementWithChilds<CPivotField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotFields)
+			WritingElement_AdditionMethods(CPivotFields)
             WritingElement_XlsbConstructors(CPivotFields)
 			CPivotFields(){}
 			virtual ~CPivotFields() {}
@@ -639,7 +664,7 @@ namespace OOX
 		class CColumnRowItem : public WritingElementWithChilds<CSharedItemsIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CColumnRowItem)
+			WritingElement_AdditionMethods(CColumnRowItem)
             WritingElement_XlsbConstructors(CColumnRowItem)
 			CColumnRowItem(){}
 			virtual ~CColumnRowItem() {}
@@ -668,7 +693,7 @@ namespace OOX
 		class CColumnRowItems : public WritingElementWithChilds<CColumnRowItem>
         {
 		public:
-			WritingElement_AdditionConstructors(CColumnRowItems)
+			WritingElement_AdditionMethods(CColumnRowItems)
             WritingElement_XlsbConstructors(CColumnRowItems)
 			CColumnRowItems(){}
 			virtual ~CColumnRowItems() {}
@@ -695,7 +720,7 @@ namespace OOX
 		class CPivotTableFormat : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotTableFormat)
+			WritingElement_AdditionMethods(CPivotTableFormat)
             WritingElement_XlsbConstructors(CPivotTableFormat)
 			CPivotTableFormat(){}
 			virtual ~CPivotTableFormat() {}
@@ -726,7 +751,7 @@ namespace OOX
 		class CPivotTableFormats : public WritingElementWithChilds<CPivotTableFormat>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotTableFormats)
+			WritingElement_AdditionMethods(CPivotTableFormats)
             WritingElement_XlsbConstructors(CPivotTableFormats)
 			CPivotTableFormats(){}
 			virtual ~CPivotTableFormats() {}
@@ -752,7 +777,7 @@ namespace OOX
 		class CPivotTableStyleInfo : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotTableStyleInfo)
+			WritingElement_AdditionMethods(CPivotTableStyleInfo)
             WritingElement_XlsbConstructors(CPivotTableStyleInfo)
 			CPivotTableStyleInfo(){}
 			virtual ~CPivotTableStyleInfo() {}
@@ -794,7 +819,7 @@ namespace OOX
 		class CPivotTableLocation : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotTableLocation)
+			WritingElement_AdditionMethods(CPivotTableLocation)
             WritingElement_XlsbConstructors(CPivotTableLocation)
 			CPivotTableLocation(){}
 			virtual ~CPivotTableLocation() {}
@@ -832,7 +857,7 @@ namespace OOX
 		class CPivotTableDefinition : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotTableDefinition)
+			WritingElement_AdditionMethods(CPivotTableDefinition)
             WritingElement_XlsbConstructors(CPivotTableDefinition)
 			CPivotTableDefinition()
 			{

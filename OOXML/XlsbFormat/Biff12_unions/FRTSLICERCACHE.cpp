@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -86,6 +86,20 @@ namespace XLSB
 
         return m_SLICERCACHEBOOKPIVOTTABLES || m_TABLESLICERCACHE || m_SLICERCACHECROSSFILTEREXT;
     }
+
+	const bool FRTSLICERCACHE::saveContent(BinProcessor& proc)
+	{
+		if (m_SLICERCACHEBOOKPIVOTTABLES != nullptr)
+			proc.mandatory(*m_SLICERCACHEBOOKPIVOTTABLES);
+
+		if (m_TABLESLICERCACHE != nullptr)
+			proc.mandatory(*m_TABLESLICERCACHE);
+
+		if (m_SLICERCACHECROSSFILTEREXT != nullptr)
+			proc.mandatory(*m_SLICERCACHECROSSFILTEREXT);
+
+		return true;
+	}
 
 } // namespace XLSB
 

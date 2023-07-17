@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,9 @@ namespace OOX
 {
 	namespace Rels
 	{
+		CRelationShip::CRelationShip()
+		{
+		}
 		CRelationShip::CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 		{
 			XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
@@ -75,11 +78,13 @@ namespace OOX
 		std::wstring CRelationShip::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"Id",         m_rId.ToString() );
-			oAttr.Write(L"Type",       m_sType );
+			oAttr.Write(L"Id", m_rId.ToString() );
+			oAttr.Write(L"Type", m_sType );
 			std::wstring sTarget = m_oTarget.m_strFilename;
 
-			XmlUtils::replace_all(sTarget,L"\\",L"/");
+			if (false == IsExternal())
+				XmlUtils::replace_all(sTarget,L"\\",L"/");
+
 			sTarget = XmlUtils::EncodeXmlString(sTarget);
 			oAttr.Write(L"Target", sTarget);
 			if(m_sMode.IsInit())
@@ -94,12 +99,11 @@ namespace OOX
 		void CRelationShip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sTempTarget;
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
+				WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
 			WritingElement_ReadAttributes_End( oReader )
 
 			//External rels не нормализуем, иначе искажаются пути в гиперссылках.
@@ -172,7 +176,9 @@ namespace OOX
 					sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (L"Relationship" == sName )
 					{
-						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip(oReader);
+						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip();
+						*pRel = oReader;
+
 						if (pRel)
 						{
 							std::wstring rid = pRel->rId().get();
@@ -187,7 +193,8 @@ namespace OOX
 	}
 	void CRels::Write(const CPath& oFilePath) const
 	{
-		if ( m_mapRelations.empty() )return;
+		if ( m_mapRelations.empty() ) return;
+
 		CPath oFile = CreateFileName( oFilePath );
 		CSystemUtility::CreateDirectories( oFile.GetDirectory() );
 
@@ -209,9 +216,43 @@ namespace OOX
 
 		NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 	}
+	void CRels::Registration(const RId& rId, const std::wstring& oRelationShipType, const CPath& oPath, bool bExternal)
+	{
+		if (oRelationShipType.empty()) return;
+
+		std::wstring strFileName = oPath.m_strFilename;
+
+		std::wstring strDir = oPath.GetDirectory() + L"";
+
+		Rels::CRelationShip* pRel = NULL;
+
+		if (L"" == oPath.GetExtention())
+		{
+			if (oRelationShipType == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject")
+			{
+				strFileName += (strFileName.empty() ? L"" : L".bin");
+				pRel = new Rels::CRelationShip(rId, oRelationShipType, strDir + strFileName, bExternal);
+			}
+			else if (oRelationShipType == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
+			{
+				strFileName += L".wmf";
+				pRel = new Rels::CRelationShip(rId, oRelationShipType, strDir + strFileName, bExternal);
+			}
+		}
+		else
+		{
+			pRel = new Rels::CRelationShip(rId, oRelationShipType, oPath.GetPath(), bExternal);
+
+		}
+		if (pRel)
+		{
+			m_arRelations.push_back(pRel);
+			m_mapRelations.insert(std::make_pair(rId.get(), pRel));
+		}
+	}
 	void CRels::Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal)
 	{
-		if( FileTypes::Unknow == oType ) return;
+		if( FileTypes::Unknown == oType ) return;
 
 		std::wstring strFileName = oPath.m_strFilename;
 

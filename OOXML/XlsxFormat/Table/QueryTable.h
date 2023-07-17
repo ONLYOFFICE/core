@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,18 +30,22 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "Autofilter.h"
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CQueryTableField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableField)
+			WritingElement_AdditionMethods(CQueryTableField)
 			WritingElement_XlsbConstructors(CQueryTableField)
 
 			CQueryTableField(){}
@@ -79,7 +83,7 @@ namespace OOX
 		class CQueryTableFields : public WritingElementWithChilds<CQueryTableField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableFields)
+			WritingElement_AdditionMethods(CQueryTableFields)
 			WritingElement_XlsbConstructors(CQueryTableFields)
 
 			CQueryTableFields() {}
@@ -106,7 +110,7 @@ namespace OOX
 		class CQueryTableDeletedField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableDeletedField)
+			WritingElement_AdditionMethods(CQueryTableDeletedField)
 			WritingElement_XlsbConstructors(CQueryTableDeletedField)
 
 			CQueryTableDeletedField() {}
@@ -135,7 +139,7 @@ namespace OOX
 		class CQueryTableDeletedFields : public WritingElementWithChilds<CQueryTableDeletedField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableDeletedFields)
+			WritingElement_AdditionMethods(CQueryTableDeletedFields)
 			WritingElement_XlsbConstructors(CQueryTableDeletedFields)
 			CQueryTableDeletedFields() {}
 			virtual ~CQueryTableDeletedFields() {}
@@ -162,7 +166,7 @@ namespace OOX
 		class CQueryTableRefresh : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableRefresh)
+			WritingElement_AdditionMethods(CQueryTableRefresh)
 			WritingElement_XlsbConstructors(CQueryTableRefresh)
 			CQueryTableRefresh() {}
 			virtual ~CQueryTableRefresh() {}
@@ -201,7 +205,7 @@ namespace OOX
 		class CQueryTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTable)
+			WritingElement_AdditionMethods(CQueryTable)
 			WritingElement_XlsbConstructors(CQueryTable)
 			CQueryTable()
 			{

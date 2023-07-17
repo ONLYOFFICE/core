@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,11 +56,13 @@ namespace XLSB
     //EXTCONNECTIONS = BrtBeginExtConnections 1*EXTCONNECTION BrtEndExtConnectionss
     const bool EXTCONNECTIONS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginExtConnections>())
-        {
-            m_BrtBeginExtConnections = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<BeginExtConnections>())
+		{
+			m_bBrtBeginExtConnections = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtBeginExtConnections = false;
 
         int countEXTCONNECTION = proc.repeated<EXTCONNECTION>(0, 0);
 
@@ -73,12 +75,28 @@ namespace XLSB
 
         if (proc.optional<EndExtConnections>())
         {
-            m_BrtEndExtConnections = elements_.back();
+            m_bBrtEndExtConnections = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndExtConnections = false;
 
-        return m_BrtBeginExtConnections && m_BrtEndExtConnections;
+        return m_bBrtBeginExtConnections && m_bBrtEndExtConnections;
     }
+
+	const bool EXTCONNECTIONS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginExtConnections>();
+
+		for (auto &item : m_arEXTCONNECTION)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndExtConnections>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

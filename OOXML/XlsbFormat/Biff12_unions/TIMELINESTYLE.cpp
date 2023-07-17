@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -67,9 +67,11 @@ namespace XLSB
 
         if (proc.optional<BeginTimelineStyleElements>())
         {
-            m_BrtBeginTimelineStyleElements = elements_.back();
+            m_bBrtBeginTimelineStyleElements = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginTimelineStyleElements = false;
 
         int count = proc.repeated<TimelineStyleElement>(0, 7);
 
@@ -82,18 +84,41 @@ namespace XLSB
 
         if (proc.optional<EndTimelineStyleElements>())
         {
-            m_BrtEndTimelineStyleElements = elements_.back();
+            m_bBrtEndTimelineStyleElements = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTimelineStyleElements = false;
 
         if (proc.optional<EndTimelineStyle>())
         {
-            m_BrtEndTimelineStyle = elements_.back();
+            m_bBrtEndTimelineStyle = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTimelineStyle = false;
 
-        return m_BrtBeginTimelineStyle && m_BrtBeginTimelineStyleElements && m_BrtEndTimelineStyleElements && m_BrtEndTimelineStyle;
+        return m_BrtBeginTimelineStyle && m_bBrtBeginTimelineStyleElements && m_bBrtEndTimelineStyleElements && m_bBrtEndTimelineStyle;
     }
+
+	const bool TIMELINESTYLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginTimelineStyle != nullptr)
+			proc.mandatory(*m_BrtBeginTimelineStyle);
+
+		proc.mandatory<BeginTimelineStyleElements>();
+
+		for (auto &item : m_arBrtTimelineStyleElement)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndTimelineStyleElements>();
+
+		proc.mandatory<EndTimelineStyle>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

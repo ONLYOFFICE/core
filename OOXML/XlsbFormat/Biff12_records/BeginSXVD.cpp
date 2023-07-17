@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -116,8 +116,74 @@ namespace XLSB
 
         if(fUseMemPropCaption)
             record >> irstMemberPropertyCaption;
-
     }
+
+	void BeginSXVD::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags1 = 0, flags2 = 0;
+
+		 SETBIT(flags1, 0, sxaxis.bRw)
+		 SETBIT(flags1, 1, sxaxis.bCol)
+		 SETBIT(flags1, 2, sxaxis.bPage)
+		 SETBIT(flags1, 3, sxaxis.bData)
+		 SETBIT(flags1, 8, fDefault)
+		 SETBIT(flags1, 9, fSum)
+		 SETBIT(flags1, 10, fCounta)
+		 SETBIT(flags1, 11, fAverage)
+		 SETBIT(flags1, 12, fMax)
+		 SETBIT(flags1, 13, fMin)
+		 SETBIT(flags1, 14, fProduct)
+		 SETBIT(flags1, 15, fCount)
+		 SETBIT(flags1, 16, fStdev)
+		 SETBIT(flags1, 17, fStdevp)
+		 SETBIT(flags1, 18, fVar)
+		 SETBIT(flags1, 19, fVarp)
+		 SETBIT(flags1, 24, fDrilledLevel)
+		 SETBIT(flags1, 25, fHideDD)
+		 SETBIT(flags1, 26, fHiddenLvl)
+		 SETBIT(flags1, 27, fUseMemPropCaption)
+		 SETBIT(flags1, 28, fCompact)
+		 SETBIT(flags1, 29, fDisplayName)
+		 SETBIT(flags1, 30, fDisplaySub)
+		 SETBIT(flags1, 31, fTensorSort)
+
+		 SETBIT(flags2, 0, fDragToRow)
+		 SETBIT(flags2, 1, fDragToColumn)
+		 SETBIT(flags2, 2, fDragToPage)
+		 SETBIT(flags2, 3, fDragToHide)
+		 SETBIT(flags2, 4, fDragToData)
+		 SETBIT(flags2, 5, fShowAllItems)
+		 SETBIT(flags2, 6, fOutline)
+		 SETBIT(flags2, 7, fInsertBlankRow)
+		 SETBIT(flags2, 8, fSubtotalAtTop)
+		 SETBIT(flags2, 9, fServerBased)
+		 SETBIT(flags2, 11, fPageBreaksBetweenItems)
+		 SETBIT(flags2, 12, fAutoSort)
+		 SETBIT(flags2, 13, fAscendSort)
+		 SETBIT(flags2, 14, fAutoShow)
+		 SETBIT(flags2, 15, fTopAutoShow)
+		 SETBIT(flags2, 16, fHideNewItems)
+		 SETBIT(flags2, 17, fHasAdvFilter)
+		 SETBIT(flags2, 18, fFilterInclusive)
+		 SETBIT(flags2, 19, fEnableMultiplePageItems)
+		 SETBIT(flags2, 20, fNotAutoSortDft)
+		 SETBIT(flags2, 21, fMemPropDisplayInReport)
+		 SETBIT(flags2, 22, fMemPropDisplayInTip)
+		 SETBIT(flags2, 23, fMemPropDisplayInCaption)
+		 SETBIT(flags2, 24, fItemsDrilledByDefault)
+
+		record << flags1 << ifmt << flags2;
+		record << citmAutoShow << isxdiAutoShow;
+
+		if (fDisplayName)
+			record << irstName;
+
+		if (fDisplaySub)
+			record << irstSub;
+
+		if (fUseMemPropCaption)
+			record << irstMemberPropertyCaption;
+	}
 
 } // namespace XLSB
 

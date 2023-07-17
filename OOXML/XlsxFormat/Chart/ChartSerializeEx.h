@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,9 +33,43 @@
 #pragma once
 
 #include "ChartSerialize.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CFormulaDirection;
+		class CSidePos;
+		class CPosAlign;
+		class CIntervalClosedSide;
+		class CDimensionType;
+		class CQuartileMethod;
+		class CDataLabelPos;
+		class CSeriesLayout;
+		class CTickMarksType;
+		class CAxisUnit;
+		template<EDoubleOrAutomatic eDefValue> class CDoubleOrAutomatic;
+	}
+}
+namespace ComplexTypes
+{
+	class CDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CParentLabelLayout;
+		class CRegionLabelLayout;
+	}
+}
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx
@@ -44,7 +78,7 @@ namespace ChartEx
 	class CFormula : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CFormula)	
+		WritingElement_AdditionMethods(CFormula)	
 
 		CFormula(){}
 
@@ -63,7 +97,7 @@ namespace ChartEx
 	class CTextData : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CTextData)	
+		WritingElement_AdditionMethods(CTextData)	
 
 		CTextData(){}
 
@@ -80,7 +114,7 @@ namespace ChartEx
 	class CText : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CText)	
+		WritingElement_AdditionMethods(CText)	
 
 		CText(){}
 
@@ -97,7 +131,7 @@ namespace ChartEx
 	class CTitle : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CTitle)	
+		WritingElement_AdditionMethods(CTitle)	
 
 		CTitle(){}
 
@@ -110,8 +144,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CText>										m_tx;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 //for chart title only (but not axis title)
@@ -123,7 +157,7 @@ namespace ChartEx
 	class CNumericValue: public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CNumericValue)	
+		WritingElement_AdditionMethods(CNumericValue)	
 
 		CNumericValue(){}
 
@@ -142,7 +176,7 @@ namespace ChartEx
 	class CNumericLevel : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CNumericLevel)	
+		WritingElement_AdditionMethods(CNumericLevel)	
 
 		CNumericLevel(){}
 		virtual ~CNumericLevel();
@@ -165,7 +199,7 @@ namespace ChartEx
 	class CStringValue: public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CStringValue)	
+		WritingElement_AdditionMethods(CStringValue)	
 
 		CStringValue(){}
 
@@ -184,7 +218,7 @@ namespace ChartEx
 	class CStringLevel : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CStringLevel)	
+		WritingElement_AdditionMethods(CStringLevel)	
 
 		CStringLevel(){}
 		virtual ~CStringLevel();
@@ -206,7 +240,7 @@ namespace ChartEx
 	class CSeriesElementVisibilities : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CSeriesElementVisibilities)
+		WritingElement_AdditionMethods(CSeriesElementVisibilities)
 
 		CSeriesElementVisibilities(){}
 
@@ -228,7 +262,7 @@ namespace ChartEx
 	class CDataLabelVisibilities : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CDataLabelVisibilities)
+		WritingElement_AdditionMethods(CDataLabelVisibilities)
 
 		CDataLabelVisibilities(){}
 
@@ -248,7 +282,7 @@ namespace ChartEx
 	class CBinning : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CBinning)
+		WritingElement_AdditionMethods(CBinning)
 
 		CBinning(){}
 
@@ -264,14 +298,14 @@ namespace ChartEx
 		nullable_int		m_binCount;
 
 		nullable<SimpleTypes::Spreadsheet::CIntervalClosedSide>		m_intervalClosed;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_underflow;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_overflow;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_underflow;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_overflow;
 	};
 //------------------------------------------------------------------------------
 	class CStatistics : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CStatistics)
+		WritingElement_AdditionMethods(CStatistics)
 
 		CStatistics(){}
 
@@ -289,7 +323,7 @@ namespace ChartEx
 	class CSubtotals : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CSubtotals)
+		WritingElement_AdditionMethods(CSubtotals)
 
 		CSubtotals(){}
 
@@ -305,7 +339,7 @@ namespace ChartEx
 	class CSeriesLayoutProperties : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CSeriesLayoutProperties)
+		WritingElement_AdditionMethods(CSeriesLayoutProperties)
 
 		CSeriesLayoutProperties(){}
 
@@ -330,7 +364,7 @@ namespace ChartEx
 	class CNumberFormat : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CNumberFormat)
+		WritingElement_AdditionMethods(CNumberFormat)
 
 		CNumberFormat(){}
 
@@ -349,7 +383,7 @@ namespace ChartEx
 	class CDataLabelHidden : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CDataLabelHidden)
+		WritingElement_AdditionMethods(CDataLabelHidden)
 
 		CDataLabelHidden(){}
 
@@ -367,7 +401,7 @@ namespace ChartEx
 	class CDataLabel : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CDataLabel)
+		WritingElement_AdditionMethods(CDataLabel)
 
 		CDataLabel(){}
 
@@ -380,8 +414,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CNumberFormat>								m_numFmt;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		nullable<CDataLabelVisibilities>					m_visibility;
 		nullable_string										m_separator; //node
@@ -393,7 +427,7 @@ namespace ChartEx
 	class CDataLabels : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CDataLabels)
+		WritingElement_AdditionMethods(CDataLabels)
 
 		CDataLabels(){}
 		virtual ~CDataLabels();
@@ -407,8 +441,8 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<CNumberFormat>								m_numFmt;
-		nullable<PPTX::Logic::TxBody>						m_oTxPr;
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::TxBody>						m_txPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		nullable<CDataLabelVisibilities>					m_visibility;
 		nullable_string										m_separator;
@@ -421,7 +455,7 @@ namespace ChartEx
 	class CDataPoint : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CDataPoint)
+		WritingElement_AdditionMethods(CDataPoint)
 
 		CDataPoint(){}
 
@@ -433,7 +467,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 		nullable_int										m_idx;
@@ -442,7 +476,7 @@ namespace ChartEx
 	class CSeries : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CSeries)	
+		WritingElement_AdditionMethods(CSeries)	
 
 		virtual void fromXML(XmlUtils::CXmlNode& node) {}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -464,7 +498,7 @@ namespace ChartEx
 		nullable<CText>									m_tx;
 		std::vector<unsigned long>						m_arAxisId;
 		nullable<ComplexTypes::CDecimalNumber>			m_dataId;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable<SimpleTypes::Spreadsheet::CSeriesLayout>	m_oLayoutId;
@@ -477,7 +511,7 @@ namespace ChartEx
 	class CCatScaling : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CCatScaling)	
+		WritingElement_AdditionMethods(CCatScaling)	
 
 		CCatScaling(){}
 
@@ -489,13 +523,13 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>> m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio 
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>> m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio
 	};
 //------------------------------------------------------------------------------
 	class CValScaling : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CValScaling)	
+		WritingElement_AdditionMethods(CValScaling)	
 
 		CValScaling() {}
 
@@ -507,17 +541,17 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_max;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_min;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_max;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_min;
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_majorUnit; //ST_ValueAxisUnit == ST_DoubleOrAutomatic  
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_minorUnit;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_majorUnit; //ST_ValueAxisUnit == ST_DoubleOrAutomatic
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_minorUnit;
 	};
 //------------------------------------------------------------------------------
 	class CAxisUnitsLabel : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CAxisUnitsLabel)
+		WritingElement_AdditionMethods(CAxisUnitsLabel)
 
 		CAxisUnitsLabel(){}
 
@@ -528,15 +562,15 @@ namespace ChartEx
 		virtual EElementType getType () const;
 
 		nullable<CText>									m_tx;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
 	class CAxisUnit : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CAxisUnit)	
+		WritingElement_AdditionMethods(CAxisUnit)	
 		
 		CAxisUnit(){}
 
@@ -557,7 +591,7 @@ namespace ChartEx
 	class CGridlines : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CGridlines)
+		WritingElement_AdditionMethods(CGridlines)
 
 		CGridlines(){}
 
@@ -567,7 +601,7 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		nullable<PPTX::Logic::SpPr>							m_oSpPr;
+		nullable<PPTX::Logic::SpPr>							m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 		std::wstring m_name;
@@ -576,7 +610,7 @@ namespace ChartEx
 	class CTickMarks : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CTickMarks)	
+		WritingElement_AdditionMethods(CTickMarks)	
 		
 		CTickMarks(){}
 
@@ -596,7 +630,7 @@ namespace ChartEx
 	class CAxis : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CAxis)	
+		WritingElement_AdditionMethods(CAxis)	
 
 		CAxis() {}
 
@@ -621,8 +655,8 @@ namespace ChartEx
 
 		nullable_bool				m_tickLabels;//blank node
 
-		nullable<PPTX::Logic::SpPr>		m_oSpPr;
-		nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>		m_spPr;
+		nullable<PPTX::Logic::TxBody>	m_txPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable_uint					m_id;
@@ -632,7 +666,7 @@ namespace ChartEx
 	class CPlotSurface : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CPlotSurface)	
+		WritingElement_AdditionMethods(CPlotSurface)	
 
 		CPlotSurface(){}
 
@@ -642,14 +676,14 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
 	class CPlotAreaRegion : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CPlotAreaRegion)	
+		WritingElement_AdditionMethods(CPlotAreaRegion)	
 
 		CPlotAreaRegion(){}
 		virtual ~CPlotAreaRegion();
@@ -668,7 +702,7 @@ namespace ChartEx
 	class CPlotArea : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CPlotArea)	
+		WritingElement_AdditionMethods(CPlotArea)	
 
 		CPlotArea(){}
 		virtual ~CPlotArea();
@@ -682,14 +716,14 @@ namespace ChartEx
 		CPlotAreaRegion									m_plotAreaRegion;
 
         std::vector<CAxis*>								m_arAxis;
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
+		nullable<PPTX::Logic::SpPr>						m_spPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	};
 //------------------------------------------------------------------------------
 	class CLegend : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CLegend)	
+		WritingElement_AdditionMethods(CLegend)	
 
 		CLegend() {}
 
@@ -701,8 +735,8 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 		nullable<SimpleTypes::Spreadsheet::CSidePos>	m_pos;
@@ -713,7 +747,7 @@ namespace ChartEx
 	class CChart : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CChart)	
+		WritingElement_AdditionMethods(CChart)	
 
 		CChart() {}
 
@@ -752,7 +786,7 @@ namespace ChartEx
 	class CNumDimension : public CDimension
 	{
 	public:
-		WritingElement_AdditionConstructors(CNumDimension)	
+		WritingElement_AdditionMethods(CNumDimension)	
 
 		CNumDimension();
 		virtual ~CNumDimension();
@@ -771,7 +805,7 @@ namespace ChartEx
 	class CStrDimension : public CDimension
 	{
 	public:
-		WritingElement_AdditionConstructors(CStrDimension)	
+		WritingElement_AdditionMethods(CStrDimension)	
 
 		CStrDimension();
 		virtual ~CStrDimension();
@@ -790,7 +824,7 @@ namespace ChartEx
 	class CData : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CData)	
+		WritingElement_AdditionMethods(CData)	
 
 		CData() {}
 		virtual ~CData();
@@ -811,7 +845,7 @@ namespace ChartEx
 	class CExternalData : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CExternalData)
+		WritingElement_AdditionMethods(CExternalData)
 		CExternalData() {}
 
 		virtual void fromXML(XmlUtils::CXmlNode& node) {}
@@ -829,7 +863,7 @@ namespace ChartEx
 	class CChartData : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CChartData)	
+		WritingElement_AdditionMethods(CChartData)	
 
 		CChartData() {}
 		virtual ~CChartData();
@@ -849,7 +883,7 @@ namespace ChartEx
 	{
 	public:
 		CChartSpace() {}
-		WritingElement_AdditionConstructors(CChartSpace)	
+		WritingElement_AdditionMethods(CChartSpace)	
 
 		virtual void fromXML(XmlUtils::CXmlNode& node) {}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -860,8 +894,8 @@ namespace ChartEx
 		CChartData										m_chartData;
 		CChart											m_chart;
 
-		nullable<PPTX::Logic::SpPr>						m_oSpPr;
-		nullable<PPTX::Logic::TxBody>					m_oTxPr;	
+		nullable<PPTX::Logic::SpPr>						m_spPr;
+		nullable<PPTX::Logic::TxBody>					m_txPr;	
 
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		nullable<PPTX::Logic::ClrMap>					m_oClrMapOvr;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,26 +33,41 @@
 
 #include "../Xlsx.h"
 
-#include "../CommonInclude.h"
-
-#include "Borders.h"
-#include "CellStyles.h"
-#include "Xfs.h"
-#include "Colors.h"
-#include "dxf.h"
-#include "Fills.h"
-#include "Fonts.h"
-#include "NumFmts.h"
-#include "TableStyles.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CBorder;
+		class CBorders;
+		class CFill;
+		class CFont;
+		class CNumFmt;
+		class CAligment;
+		class CCellStyles;
+		class CCellStyleXfs;
+		class CCellXfs;
+		class CColors;
+		class CDxfs;
+		class CFills;
+		class CFonts;
+		class CNumFmts;
+		class CTableStyles;
+	}
+
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
+	namespace Spreadsheet
+	{
 		class CStyle2003 : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStyle2003)
+			WritingElement_AdditionMethods(CStyle2003)
 			CStyle2003(OOX::Document* pMain);
 			virtual ~CStyle2003();
 

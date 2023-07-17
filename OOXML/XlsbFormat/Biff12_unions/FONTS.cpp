@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -86,12 +86,42 @@ namespace XLSB
 
         if (proc.optional<EndFonts>())
         {
-            m_BrtEndFonts = elements_.back();
+            m_bBrtEndFonts = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndFonts = false;
 
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
+        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_bBrtEndFonts;
     }
+
+	const bool FONTS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginFonts == nullptr)
+			m_BrtBeginFonts = XLS::BaseObjectPtr(new XLSB::BeginFonts());
+
+		if (m_BrtBeginFonts != nullptr)
+		{
+			auto ptrBrtBeginFonts = static_cast<XLSB::BeginFonts*>(m_BrtBeginFonts.get());
+
+			if (ptrBrtBeginFonts != nullptr)
+				ptrBrtBeginFonts->cfonts = m_arBrtFont.size();
+
+			proc.mandatory(*m_BrtBeginFonts);
+		}
+
+		for (auto &item : m_arBrtFont)
+		{
+			proc.mandatory(*item);
+		}
+
+		if (m_ACFONTS != nullptr)
+			proc.mandatory(*m_ACFONTS);
+
+		proc.mandatory<EndFonts>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

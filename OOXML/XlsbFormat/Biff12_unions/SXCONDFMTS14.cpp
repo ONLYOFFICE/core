@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXCondFmts14>())
         {
-            m_BrtEndSXCondFmts14 = elements_.back();
+            m_bBrtEndSXCondFmts14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXCondFmts14 = false;
 
-        return m_BrtBeginSXCondFmts14 && !m_arSXCONDFMT14.empty() && m_BrtEndSXCondFmts14;
+        return m_BrtBeginSXCondFmts14 && !m_arSXCONDFMT14.empty() && m_bBrtEndSXCondFmts14;
     }
+
+	const bool SXCONDFMTS14::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXCondFmts14 == nullptr)
+			m_BrtBeginSXCondFmts14 = XLS::BaseObjectPtr(new XLSB::BeginSXCondFmts14());
+
+		if (m_BrtBeginSXCondFmts14 != nullptr)
+		{
+			auto ptrBrtBeginSXCondFmts14 = static_cast<XLSB::BeginSXCondFmts14*>(m_BrtBeginSXCondFmts14.get());
+
+			if (ptrBrtBeginSXCondFmts14 != nullptr)
+				ptrBrtBeginSXCondFmts14->csxcondfmts = m_arSXCONDFMT14.size();
+
+			proc.mandatory(*m_BrtBeginSXCondFmts14);
+		}
+
+		for (auto &item : m_arSXCONDFMT14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXCondFmts14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

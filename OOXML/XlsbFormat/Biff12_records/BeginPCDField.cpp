@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -86,6 +86,44 @@ namespace XLSB
         if(fLoadPropName)
             record >> stMemPropName;
     }
+
+	void BeginPCDField::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fServerBased)
+		SETBIT(flags, 1, fCantGetUniqueItems)
+		SETBIT(flags, 2, fSrcField)
+		SETBIT(flags, 3, fCaption)
+		SETBIT(flags, 4, fOlapMemPropField)
+		SETBIT(flags, 8, fLoadFmla)
+		SETBIT(flags, 9, fLoadPropName)
+
+		record << flags;
+
+		cIsxtmps = rgisxtmp.size();
+
+		record << ifmt << wTypeSql << ihdb << isxtl << cIsxtmps;
+
+		record << stFldName;
+
+		if (fCaption)
+			record << stFldCaption;
+
+		if (fLoadFmla)
+			record << fldFmla;
+
+		if (cIsxtmps > 0)
+			record << cbRgisxtmp;
+
+		for (auto& item : rgisxtmp)
+		{
+			record << item;
+		}
+
+		if (fLoadPropName)
+			record << stMemPropName;
+	}
 
 } // namespace XLSB
 

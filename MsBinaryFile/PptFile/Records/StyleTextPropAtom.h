@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,75 +32,27 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordStyleTextPropAtom : public CUnknownRecord
-	{
-	public:
-		// нужно еще хранить позицию в стриме, 
-		// указатель на начало
-		LONG m_lOffsetInStream;
+class CRecordStyleTextPropAtom : public CUnknownRecord
+{
+public:
+	// нужно еще хранить позицию в стриме, 
+	// указатель на начало
+	LONG m_lOffsetInStream;
+	
+	// просто данные. будут обновляться по мере прибытия
+	// Text.Bytes/Chars.Atom
+	_UINT32 m_lCount; 
 
-		// просто данные. будут обновляться по мере прибытия
-		// Text.Bytes/Chars.Atom
-		_UINT32 m_lCount;
+	std::vector<CTextPFRunRecord> m_arrPFs;
+	std::vector<CTextCFRunRecord> m_arrCFs;
+	
 
-		std::vector<CTextPFRunRecord> m_arrPFs;
-		std::vector<CTextCFRunRecord> m_arrCFs;
+    CRecordStyleTextPropAtom();
+    ~CRecordStyleTextPropAtom();
 
-		CRecordStyleTextPropAtom()
-		{
-			m_lCount = 0;
-			m_lOffsetInStream = 0;
-		}
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
-		~CRecordStyleTextPropAtom()
-		{
-			m_lCount = 0;
-		}
-
-		void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-			StreamUtils::StreamPosition(m_lOffsetInStream, pStream);
-
-			_UINT32 lMemCount = 0;
-			_UINT32 lCountItems = 0;
-
-			if (0 == m_lCount)
-			{
-				StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
-				return;
-			}
-
-			while (lMemCount < m_lCount + 1)
-			{
-				CTextPFRunRecord elm;
-				m_arrPFs.push_back(elm);
-				m_arrPFs[lCountItems].LoadFromStream(pStream);
-				lMemCount += m_arrPFs[lCountItems].m_lCount;
-
-				++lCountItems;
-			}
-
-			lMemCount = 0;
-			lCountItems = 0;
-			while (lMemCount < m_lCount + 1)
-			{
-				CTextCFRunRecord elm;
-				m_arrCFs.push_back(elm);
-
-				m_arrCFs[lCountItems].LoadFromStream(pStream);
-				lMemCount += m_arrCFs[lCountItems].m_lCount;
-
-				++lCountItems;
-			}
-
-			// на всякий случай...
-			// здесь когда текст сначала другой (т.е. например - placeholder в мастере) - 
-			// то у нас неправильно выставился m_lCount...
-			StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
-		}
-
-	};
+};
 }

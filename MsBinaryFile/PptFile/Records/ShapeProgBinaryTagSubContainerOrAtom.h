@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,59 +40,32 @@
 #define TN_PPT10 L"___PPT10"
 #define TN_PPT11 L"___PPT11"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordPP9ShapeBinaryTagExtension : public CUnknownRecord
 {
 public:
     CRecordStyleTextProp9Atom m_styleTextPropAtom;
-    virtual ~CRecordPP9ShapeBinaryTagExtension(){}
 
 
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        SRecordHeader ReadHeader;
-        ReadHeader.ReadFromStream(pStream);
-
-        m_styleTextPropAtom.ReadFromStream(ReadHeader, pStream);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 
 class CRecordPP10ShapeBinaryTagExtension : public CUnknownRecord
 {
 public:
     CRecordStyleTextProp10Atom m_styleTextPropAtom;
-    virtual ~CRecordPP10ShapeBinaryTagExtension(){}
 
 
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        SRecordHeader ReadHeader;
-        ReadHeader.ReadFromStream(pStream);
-
-        m_styleTextPropAtom.ReadFromStream(ReadHeader, pStream);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 
 class CRecordPP11ShapeBinaryTagExtension : public CUnknownRecord
 {
 public:
     CRecordStyleTextProp11Atom m_styleTextPropAtom;
-    virtual ~CRecordPP11ShapeBinaryTagExtension(){}
 
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        SRecordHeader ReadHeader;
-        ReadHeader.ReadFromStream(pStream);
-
-        m_styleTextPropAtom.ReadFromStream(ReadHeader, pStream);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 
 class CRecordShapeProgBinaryTagSubContainerOrAtom : public CUnknownRecord
@@ -101,42 +74,8 @@ public:
     IRecord*           m_pTagContainer;
     CRecordCString*    m_pTagName;
 
-    CRecordShapeProgBinaryTagSubContainerOrAtom() : m_pTagContainer(NULL), m_pTagName(NULL){}
-    virtual ~CRecordShapeProgBinaryTagSubContainerOrAtom(){}
+    CRecordShapeProgBinaryTagSubContainerOrAtom();
 
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-        LONG lPos = 0; StreamUtils::StreamPosition(lPos, pStream);
-
-        SRecordHeader ReadHeader;
-        ReadHeader.ReadFromStream(pStream);
-
-        if (ReadHeader.RecType == RT_CString)
-        {
-            RELEASEOBJECT(m_pTagName);
-            RELEASEOBJECT(m_pTagContainer);
-            m_pTagName = new CRecordCString();
-            m_pTagName->ReadFromStream(ReadHeader, pStream);
-
-            SRecordHeader childHeader;
-            if (!childHeader.ReadFromStream(pStream))
-                return;
-
-            if (m_pTagName->m_strText == TN_PPT9) {
-                m_pTagContainer = new CRecordPP9ShapeBinaryTagExtension();
-                dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>
-                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-            } else if (m_pTagName->m_strText == TN_PPT10) {
-                m_pTagContainer = new CRecordPP10ShapeBinaryTagExtension();
-                dynamic_cast<CRecordPP10ShapeBinaryTagExtension*>
-                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-            } else if (m_pTagName->m_strText == TN_PPT11) {
-                m_pTagContainer = new CRecordPP11ShapeBinaryTagExtension();
-                dynamic_cast<CRecordPP11ShapeBinaryTagExtension*>
-                        (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-            }
-        }
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 }

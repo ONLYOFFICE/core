@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,111 +46,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Seq)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				cTn = node.ReadNode(_T("p:cTn"));
-				prevCondLst = node.ReadNode(_T("p:prevCondLst"));
-				nextCondLst = node.ReadNode(_T("p:nextCondLst"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-                XmlMacroReadAttributeBase(node, L"concurrent", concurrent);
-                XmlMacroReadAttributeBase(node, L"prevAc", prevAc);
-                XmlMacroReadAttributeBase(node, L"nextAc", nextAc);
+			virtual OOX::EElementType getType() const;
 
-				FillParentPointersForChilds();
-			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("concurrent"), concurrent);
-				oAttr.WriteLimitNullable(_T("prevAc"), prevAc);
-				oAttr.WriteLimitNullable(_T("nextAc"), nextAc);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cTn);
-				oValue.WriteNullable(prevCondLst);
-				oValue.WriteNullable(nextCondLst);
-
-                return XmlUtils::CreateNode(L"p:seq", oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:seq");
-					pWriter->WriteAttribute(L"concurrent", concurrent);
-					pWriter->WriteAttribute(L"prevAc", prevAc);
-					pWriter->WriteAttribute(L"nextAc", nextAc);
-				pWriter->EndAttributes();
-
-				cTn.toXmlWriter(pWriter);
-
-				if (prevCondLst.IsInit())
-					prevCondLst->toXmlWriter(pWriter);
-
-				if (nextCondLst.IsInit())
-					nextCondLst->toXmlWriter(pWriter);
-				
-				pWriter->EndNode(L"p:seq");
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_seq;
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at) concurrent = pReader->GetBool();
-					else if (1 == _at) nextAc = pReader->GetUChar();
-					else if (2 == _at) prevAc = pReader->GetUChar();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						prevCondLst.Init(); prevCondLst->node_name = L"prevCondLst";
-						prevCondLst->fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						nextCondLst.Init(); nextCondLst->node_name = L"nextCondLst";
-						nextCondLst->fromPPTY(pReader);
-					}break;
-					case 2:
-					{
-						cTn.fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteBool2(0, concurrent);
-					pWriter->WriteLimit2(1, nextAc);
-					pWriter->WriteLimit2(2, prevAc);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, prevCondLst);
-				pWriter->WriteRecord2(1, nextCondLst);
-				pWriter->WriteRecord1(2, cTn);
-			}
 			CTn									cTn;
 			nullable<CondLst>					nextCondLst;
 			nullable<CondLst>					prevCondLst;
@@ -158,15 +62,9 @@ namespace PPTX
 			nullable_bool						concurrent;
 			nullable_limit<Limit::TLNextAc>		nextAc;
 			nullable_limit<Limit::TLPrevAc>		prevAc;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cTn.SetParentPointer(this);
-				if(prevCondLst.IsInit())
-					prevCondLst->SetParentPointer(this);
-				if(nextCondLst.IsInit())
-					nextCondLst->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

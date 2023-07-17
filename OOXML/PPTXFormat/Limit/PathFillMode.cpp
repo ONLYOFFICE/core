@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,60 +38,60 @@ namespace PPTX
 	{		
 		PathFillMode::PathFillMode()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void PathFillMode::set(const std::wstring& strValue)
 		{
-			if ((_T("darken") == strValue) ||
-				(_T("darkenLess") == strValue) ||
-				(_T("lighten") == strValue) ||
-				(_T("lightenLess") == strValue) ||
-				(_T("none") == strValue) ||
-				(_T("norm") == strValue))
+			if ((L"darken" == strValue) ||
+				(L"darkenLess" == strValue) ||
+				(L"lighten" == strValue) ||
+				(L"lightenLess" == strValue) ||
+				(L"none" == strValue) ||
+				(L"norm" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PathFillMode::GetBYTECode() const
+		unsigned char PathFillMode::GetBYTECode() const
 		{
-			if (_T("darken") == m_strValue)
+			if (L"darken" == m_strValue)
 				return 0;
-			if (_T("darkenLess") == m_strValue)
+			if (L"darkenLess" == m_strValue)
 				return 1;
-			if (_T("lighten") == m_strValue)
+			if (L"lighten" == m_strValue)
 				return 2;
-			if (_T("lightenLess") == m_strValue)
+			if (L"lightenLess" == m_strValue)
 				return 3;
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 4;
-			if (_T("norm") == m_strValue)
+			if (L"norm" == m_strValue)
 				return 5;
 			return 4;
 		}
-		void PathFillMode::SetBYTECode(const BYTE& src)
+		void PathFillMode::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("darken");
+				m_strValue = L"darken";
 				break;
 			case 1:
-				m_strValue = _T("darkenLess");
+				m_strValue = L"darkenLess";
 				break;
 			case 2:
-				m_strValue = _T("lighten");
+				m_strValue = L"lighten";
 				break;
 			case 3:
-				m_strValue = _T("lightenLess");
+				m_strValue = L"lightenLess";
 				break;
 			case 4:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			case 5:
-				m_strValue = _T("norm");
+				m_strValue = L"norm";
 				break;
 			default:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			}
 		}

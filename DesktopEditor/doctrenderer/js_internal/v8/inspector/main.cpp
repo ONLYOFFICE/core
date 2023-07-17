@@ -1,85 +1,105 @@
-#include "../v8_base.h"
-#include "inspector_impl.h"
+#include "../../js_base.h"
 
-int main(int argc, char *argv[])
+#include <iostream>
+#include <fstream>
+
+std::string readFileContent(const std::string& sFilename)
 {
-    //V8 INIT
-    JSSmart<NSJSBase::CJSContext> pJSContext = new NSJSBase::CJSContext();
-    pJSContext->Initialize();
+	std::ifstream oFile(sFilename);
+	if (!oFile.is_open())
+	{
+		std:: cerr << "Could not open the file: " << sFilename << std::endl;
+		return "";
+	}
+	std::string sContent((std::istreambuf_iterator<char>(oFile)), std::istreambuf_iterator<char>());
+	return sContent;
+}
 
-    {
-        JSSmart<NSJSBase::CJSIsolateScope> isolate_scope = pJSContext->CreateIsolateScope();
-        JSSmart<NSJSBase::CJSLocalScope> handle_scope = pJSContext->CreateLocalScope();
+using namespace NSJSBase;
+int main()
+{
+	JSSmart<CJSContext> pContext1 = new CJSContext();
+	JSSmart<CJSContext> pContext2 = new CJSContext();
 
-        pJSContext->CreateGlobalForContext();
-        pJSContext->CreateContext();
+	{
+		CJSContextScope oScope(pContext1);
 
-        JSSmart<NSJSBase::CJSContextScope> context_scope = pJSContext->CreateContextScope();
-        JSSmart<NSJSBase::CJSTryCatch> try_catch = pJSContext->GetExceptions();
-        JSSmart<NSJSBase::CJSObject> global_js = pJSContext->GetGlobal();
+		JSSmart<CJSValue> pRet = pContext1->runScript("var special = 42;\n"
+													  "special;\n");
 
-        //zero
-        pJSContext->
-                runScript(
-                                "var a = 1;\nvar b = 2;\nvar c = 3;\nvar d = 4;", try_catch
-                            );
-        try_catch->Check();
-        std::cout << "after zero\n";
-
-
-        //one
-        pJSContext->
-                runScript(
-                                "function function_1() \n { \n return 1 + 2;\n }", try_catch
-                            );
-        try_catch->Check();
-        std::cout << "after one\n";
-
-        //two
-        pJSContext->
-                runScript(
-                        "function function_2()\n {\n return 100 + function_1(); \n}", try_catch
-                    );
-        try_catch->Check();
-        std::cout << "after two\n";
-
-        //three
-        JSSmart<NSJSBase::CJSValue> js_result =
-                global_js->call_func("function_1")
-                ;
-        std::cout << "after three\n";
-
-        //four
-        JSSmart<NSJSBase::CJSValue> js_result2 = global_js->call_func("function_2");
-        std::cout << "after four\n";
-
-        std::cout << "function_1 = ";
-        //check
-        if (js_result.IsInit()){
-            if (js_result->isNumber()) {
-                std::cout << js_result->toInt32() << std::endl;
-            } else {
-                std::cout << "no result\n";
-            }
-        } else {
-            std::cout << "result not init\n";
-        }
+		{
+			CJSContextScope oScope(pContext2);
 
 
-        std::cout << "function_2 = ";
-        //check
-        if (js_result.IsInit()){
-            if (js_result2->isNumber()) {
-                std::cout << js_result2->toInt32() << std::endl;
-            } else {
-                std::cout << "no result\n";
-            }
-        } else {
-            std::cout << "result not init\n";
-        }
-    }
+			JSSmart<CJSValue> pRet = pContext2->runScript(readFileContent("../example/code.js"));
 
-    pJSContext->Dispose();
-    NSJSBase::CJSContext::ExternalDispose();
-    return 0;
+			std::cout << "RESULT: ";
+			if (pRet->isString())
+			{
+				std::cout << pRet->toStringA() << std::endl;
+			}
+			else
+			{
+				std::cout << "ERROR!" << std::endl;
+			}
+		}
+
+		std::cout << "RESULT: ";
+		if (pRet->isNumber())
+		{
+			std::cout << pRet->toInt32() << std::endl;
+		}
+		else
+		{
+			std::cout << "ERROR!" << std::endl;
+		}
+	}
+
+
+	{
+		CJSContextScope oScope(pContext1);
+
+		JSSmart<CJSValue> pRet = pContext1->runScript("function sayHi(name) {\n"
+													  "  var a = special;\n"
+													  "  var msg = 'Hi, ' + name;\n"
+													  "  return msg;\n"
+													  "}\n"
+													  "sayHi('Foo');\n");
+		pContext1->runScript("sayHi('Foo 2');\n");
+		std::cout << "RESULT: ";
+		if (pRet->isString())
+		{
+			std::cout << pRet->toStringA() << std::endl;
+		}
+		else
+		{
+			std::cout << "ERROR!" << std::endl;
+		}
+	}
+
+	{
+		CJSContextScope oScope(pContext1);
+
+		JSSmart<CJSObject> pGlobal = pContext1->GetGlobal();
+		JSSmart<CJSValue> argv[1];
+		argv[0] = pContext1->createString("Bar");
+		JSSmart<CJSValue> pRet = pGlobal->call_func("sayHi", 1, argv);
+
+		std::cout << "RESULT: ";
+		if (pRet->isString())
+		{
+			std::cout << pRet->toStringA() << std::endl;
+		}
+		else
+		{
+			std::cout << "ERROR!" << std::endl;
+		}
+	}
+
+	pContext1->Dispose();
+	std::cout << "AFTER CONTEXT1 DISPOSE" << std::endl;
+	pContext2->Dispose();
+	std::cout << "AFTER CONTEXT2 DISPOSE" << std::endl;
+
+	return 0;
 }

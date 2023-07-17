@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,20 +38,20 @@ namespace PPTX
 	{		
 		TLChartSubElement::TLChartSubElement()
 		{
-			m_strValue = _T("series");
+			m_strValue = L"series";
 		}
 		void TLChartSubElement::set(const std::wstring& strValue)
 		{
-			if ((_T("category") == strValue) ||
-				(_T("gridLegend") == strValue) ||
-				(_T("ptInCategory") == strValue) ||
-				(_T("ptInSeries") == strValue) ||
-				(_T("series") == strValue))
+			if ((L"category" == strValue) ||
+				(L"gridLegend" == strValue) ||
+				(L"ptInCategory" == strValue) ||
+				(L"ptInSeries" == strValue) ||
+				(L"series" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLChartSubElement::GetBYTECode() const
+		unsigned char TLChartSubElement::GetBYTECode() const
 		{
 			if (L"category" == m_strValue)	return 0;
 			if (L"gridLegend" == m_strValue)	return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"series" == m_strValue)	return 4;
 			return 0;
 		}
-		void TLChartSubElement::SetBYTECode(const BYTE& src)
+		void TLChartSubElement::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

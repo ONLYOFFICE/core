@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginBundleShs>())
         {
-            m_BrtBeginBundleShs = elements_.back();
+            m_bBrtBeginBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginBundleShs = false;
 
         while (proc.optional<BundleSh>())
         {
@@ -70,12 +72,27 @@ namespace XLSB
 
         if (proc.optional<EndBundleShs>())
         {
-            m_BrtEndBundleShs = elements_.back();
+            m_bBrtEndBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndBundleShs = false;
 
-        return m_BrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_BrtEndBundleShs;
+        return m_bBrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_bBrtEndBundleShs;
     }
+
+	const bool BUNDLESHS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginBundleShs>();
+
+		for (auto &item : m_arBrtBundleSh)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndBundleShs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

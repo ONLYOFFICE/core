@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -148,7 +148,7 @@ style_list_level_properties * odf_lists_styles_context::get_list_level_propertie
 
 	return props;
 }
-style_text_properties * odf_lists_styles_context::get_text_properties()
+text_format_properties* odf_lists_styles_context::get_text_properties()
 {
 	if (lists_format_array_.empty()) return NULL;
 	if (lists_format_array_.back().elements.empty()) return NULL;
@@ -179,7 +179,7 @@ style_text_properties * odf_lists_styles_context::get_text_properties()
 
 		props =  dynamic_cast<style_text_properties *>(style_image_->style_text_properties_.get());    
 	}
-	return props;
+	return props ? &props->content_ : NULL;
 }
 
 style_list_level_label_alignment * odf_lists_styles_context::get_list_level_alignment_properties()

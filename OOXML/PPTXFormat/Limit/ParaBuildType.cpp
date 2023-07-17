@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,19 +38,19 @@ namespace PPTX
 	{		
 		ParaBuildType::ParaBuildType()
 		{
-			m_strValue = _T("whole");
+			m_strValue = L"whole";
 		}
 		void ParaBuildType::set(const std::wstring& strValue)
 		{
-			if ((_T("allAtOnce") == strValue) ||
-				(_T("cust") == strValue) ||
-				(_T("p") == strValue) ||
-				(_T("whole") == strValue))
+			if ((L"allAtOnce" == strValue) ||
+				(L"cust" == strValue) ||
+				(L"p" == strValue) ||
+				(L"whole" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE ParaBuildType::GetBYTECode() const
+		unsigned char ParaBuildType::GetBYTECode() const
 		{
 			if (L"allAtOnce" == m_strValue)	return 0;
 			if (L"cust" == m_strValue)		return 1;
@@ -58,7 +58,7 @@ namespace PPTX
 			if (L"whole" == m_strValue)		return 3;
 			return 0;
 		}
-		void ParaBuildType::SetBYTECode(const BYTE& src)
+		void ParaBuildType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

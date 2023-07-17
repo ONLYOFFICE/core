@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -94,6 +94,38 @@ void PtgRef3d::loadFields(CFRecord& record)
         record >> ixti >> rgce_loc_xlsb;
     }
 	
+}
+
+void PtgRef3d::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+	if (global_info->Version < 0x0600)
+	{
+		unsigned char	col = 0;
+		_UINT16			rw = 0;
+		record << ixals;
+		record.reserveNunBytes(8);
+
+		record << itabFirst << itabLast;
+
+		SETBIT(rw, 15, rgce_loc.rowRelative)
+		SETBIT(rw, 14, rgce_loc.colRelative)
+		SETBITS(rw, 0, 13, rgce_loc.row)
+
+		col = rgce_loc.column;
+
+		record << rw << col;
+	}
+	else if (global_info->Version < 0x0800)
+	{
+		record << ixti << rgce_loc;
+
+		rgce_loc_rel = rgce_loc;
+	}
+	else
+	{
+		record << ixti << rgce_loc_xlsb;
+	}
 }
 
 

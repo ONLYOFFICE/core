@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -140,13 +140,12 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																	Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			
 				//часть свойств переходов между слайдами тута
@@ -322,13 +321,12 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if ((style_inst) && (style_inst->content()))
 		{
-			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+			style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
 
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																	Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			
 	////////////////////////////////////////////////

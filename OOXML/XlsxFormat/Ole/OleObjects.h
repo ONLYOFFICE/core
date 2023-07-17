@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,19 +33,33 @@
 #ifndef OOX_OLEOBJECTS_FILE_INCLUDE_H_
 #define OOX_OLEOBJECTS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
-#include "../Drawing/FromTo.h"
-#include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
-#include "../../XlsbFormat/Biff12_records/OleObject.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/Media/OleObject.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class ST_DvAspect;
+		class ST_OleUpdate;
+	}
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CFromTo;
+
 		class CExtAnchor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExtAnchor)
+			WritingElement_AdditionMethods(CExtAnchor)
 			CExtAnchor();
 			virtual ~CExtAnchor();
 
@@ -72,7 +86,7 @@ namespace OOX
 		class COleObjectPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObjectPr)
+			WritingElement_AdditionMethods(COleObjectPr)
 			COleObjectPr();
 			virtual ~COleObjectPr();
 
@@ -107,7 +121,7 @@ namespace OOX
 		class COleObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObject)
+			WritingElement_AdditionMethods(COleObject)
 			WritingElement_XlsbConstructors(COleObject)
 			COleObject();
 			virtual ~COleObject();
@@ -145,7 +159,7 @@ namespace OOX
 		class COleObjects : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObjects)
+			WritingElement_AdditionMethods(COleObjects)
 			WritingElement_XlsbConstructors(COleObjects)
 			COleObjects();
 			virtual ~COleObjects();

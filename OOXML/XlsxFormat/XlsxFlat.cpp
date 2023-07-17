@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,6 +39,17 @@
 #include "Worksheets/Worksheet.h"
 #include "Workbook/DefinedNames.h"
 
+#include "Styles/Borders.h"
+#include "Styles/CellStyles.h"
+#include "Styles/Xfs.h"
+#include "Styles/Colors.h"
+#include "Styles/dxf.h"
+#include "Styles/Fills.h"
+#include "Styles/Fonts.h"
+#include "Styles/NumFmts.h"
+#include "Styles/TableStyles.h"
+
+#include "ComplexTypes_Spreadsheet.h"
 
 namespace OOX
 {
@@ -148,6 +159,10 @@ namespace Spreadsheet
 			{
 				m_pWorkbook->fromXML(oReader);
 			}
+			else if (L"OfficeDocumentSettings" == sName)
+			{
+				ReadSettingAttributes(oReader);
+			}
 			else if ( L"Worksheet" == sName )
 			{
 				CWorksheet *pWorksheet = new CWorksheet(dynamic_cast<OOX::Document*>(this));
@@ -256,6 +271,19 @@ namespace Spreadsheet
 		return m_maxDigitSize;
 	}
 
+	void CXlsxFlat::ReadSettingAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		nullable_bool bReadOnly;
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, L"ReadOnlyRecommended", bReadOnly)
+		WritingElement_ReadAttributes_End(oReader)
+
+		if (bReadOnly.IsInit())
+		{
+			m_pWorkbook->m_oFileSharing.Init();
+			m_pWorkbook->m_oFileSharing->m_oReadOnlyRecommended = true;
+		}
+	}
 }
 
 }

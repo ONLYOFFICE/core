@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,22 +31,32 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
-#include "FromTo.h"
-#include "Pos.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
-#include "../../PPTXFormat/Logic/GraphicFrame.h"
-#include "../../PPTXFormat/Logic/Shape.h"
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpTreeElem;
+	}
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CFromTo;
+		class CPos;
+		class CExt;
+		class CClientData;
+
 		class CClientData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CClientData)
+			WritingElement_AdditionMethods(CClientData)
 			CClientData();
 			virtual ~CClientData();
 
@@ -69,8 +79,9 @@ namespace OOX
 		class CCellAnchor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellAnchor)
+			WritingElement_AdditionMethods(CCellAnchor)
            
+			CCellAnchor();
 			CCellAnchor(const SimpleTypes::Spreadsheet::ECellAnchorType& oAnchorType);
 			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType& oAnchorType);
 			virtual ~CCellAnchor();
@@ -94,22 +105,22 @@ namespace OOX
 			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire);
 
 		public:
-			bool											m_bShapeOle;
-			bool											m_bShapeControl;
+			bool												m_bShapeOle;
+			bool												m_bShapeControl;
 
-			SimpleTypes::Spreadsheet::CCellAnchorType		m_oAnchorType;
+			SimpleTypes::Spreadsheet::CCellAnchorType			m_oAnchorType;
 			nullable<SimpleTypes::Spreadsheet::CCellAnchorType> m_oEditAs;
-			nullable<OOX::Spreadsheet::CFromTo>				m_oFrom;
-			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
-			nullable<OOX::Spreadsheet::CPos>				m_oPos;
-			nullable<OOX::Spreadsheet::CExt>				m_oExt;
-			nullable<OOX::Spreadsheet::CClientData>			m_oClientData;
+			nullable<OOX::Spreadsheet::CFromTo>					m_oFrom;
+			nullable<OOX::Spreadsheet::CFromTo>					m_oTo;
+			nullable<OOX::Spreadsheet::CPos>					m_oPos;
+			nullable<OOX::Spreadsheet::CExt>					m_oExt;
+			nullable<OOX::Spreadsheet::CClientData>				m_oClientData;
 
-			nullable<PPTX::Logic::SpTreeElem>				m_oElement;
+			nullable<PPTX::Logic::SpTreeElem>					m_oElement;
 
 		//для удобства
-			nullable<std::wstring>							m_sVmlSpId;
-			nullable<int>									m_nId; 
+			nullable<std::wstring>								m_sVmlSpId;
+			nullable<int>										m_nId;
 		};
 	} //Spreadsheet
 } // namespace OOX

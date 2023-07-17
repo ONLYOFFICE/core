@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,15 +33,11 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
 
-#include "RunProperty.h"
-#include "Run.h"
-#include "Hyperlink.h"
-#include "SmartTag.h"
-#include "Dir.h"
-#include "Bdo.h"
-#include "../Math/oMathPara.h"
+namespace SimpleTypes
+{
+	class CLongHexNumber;
+}
 
 namespace OOX
 {
@@ -54,26 +50,13 @@ namespace OOX
 		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
-			CParagraph(OOX::Document *pMain = NULL);
-			CParagraph(XmlUtils::CXmlNode &oNode);
-			CParagraph(XmlUtils::CXmlLiteReader& oReader);
+			CParagraph(OOX::Document *pMain = NULL, WritingElement *parent = NULL);
 			virtual ~CParagraph();
 
 			const CParagraph &operator =(const XmlUtils::CXmlNode& oNode);
 			const CParagraph &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void ClearItems();
-
-			void AddRun(CRun *pRun);
-			void AddText(std::wstring& sText);
-            void AddText(std::wstring& sText, CRunProperty *pProperty);
-			void AddTab();
-			void AddTab(CRunProperty *pProperty);
-			void AddBreak(SimpleTypes::EBrType eType);
-			void AddSpace(const int nCount);
-			void AddSpace(const int nCount, CRunProperty *pProperty);
-			void AddBookmarkStart(int nId, std::wstring& sName);
-			void AddBookmarkEnd  (int nId);
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -96,6 +79,7 @@ namespace OOX
 
 			CParagraphProperty *m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
+			WritingElement *m_oParent = NULL;
 		};
 	} // namespace Logic
 } // namespace OOX

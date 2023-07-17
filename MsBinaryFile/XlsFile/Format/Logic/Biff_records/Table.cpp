@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -60,7 +60,7 @@ void Table::readFields(CFRecord& record)
         Col_NegativeOne colInpCol;
 
         record >> ref_;
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
         fAlwaysCalc     = GETBIT(flags, 0);
         fRw             = GETBIT(flags, 2);
@@ -85,7 +85,7 @@ void Table::readFields(CFRecord& record)
         record >> rfx;
         record >> rwInput1 >> colInput1 >> rwInput2 >> colInput2;
 
-        unsigned char flags;
+        BYTE flags;
         record >> flags;
         fRw             = GETBIT(flags, 0);
         fTbl2           = GETBIT(flags, 1);
@@ -105,6 +105,67 @@ void Table::readFields(CFRecord& record)
         r1 = static_cast<std::wstring >(CellRef(rwInput1, colInput1, true, true));
         r2 = static_cast<std::wstring >(CellRef(rwInput2, colInput2, true, true));
     }
+}
+
+void Table::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		R_RwU rwInpRw;
+		Col_NegativeOne colInpRw;
+		R_RwU rwInpCol;
+		Col_NegativeOne colInpCol;
+
+		record << ref_;
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fAlwaysCalc)
+		SETBIT(flags, 2, fRw)
+		SETBIT(flags, 3, fTbl2)
+		SETBIT(flags, 4, fDeleted1)
+		SETBIT(flags, 5, fDeleted2)
+
+		record << flags;
+
+		CellRef ref1(r1);
+		CellRef ref2(r2);
+
+		rwInpRw = ref1.getRow();
+		colInpRw = ref1.getColumn();
+		rwInpCol = ref2.getRow();
+		colInpCol = ref2.getColumn();
+
+		record << rwInpRw << colInpRw << rwInpCol << colInpCol;
+	}
+	else
+	{
+		UncheckedRw  rwInput1;
+		UncheckedCol colInput1;
+		UncheckedRw  rwInput2;
+		UncheckedCol colInput2;
+
+		record << rfx;
+
+		CellRef ref1(r1);
+		CellRef ref2(r2);
+
+		rwInput1 = ref1.getRow();
+		colInput1 = ref1.getColumn();
+		rwInput2 = ref2.getRow();
+		colInput2 = ref2.getColumn();
+
+		record << rwInput1 << colInput1 << rwInput2 << colInput2;
+
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fRw)
+		SETBIT(flags, 1, fTbl2)
+		SETBIT(flags, 2, fDeleted1)
+		SETBIT(flags, 3, fDeleted2)
+		SETBIT(flags, 4, fAlwaysCalc)
+
+		record << flags;
+	}
 }
 
 } // namespace XLS

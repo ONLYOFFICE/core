@@ -1,37 +1,39 @@
 Crypto++: free C++ Class Library of Cryptographic Schemes
-Version 7.0 - APR/08/2018
+Version 8.8 - TBD
 
 Crypto++ Library is a free C++ class library of cryptographic schemes.
 Currently the library contains the following algorithms:
 
                    algorithm type  name
 
- authenticated encryption schemes  GCM, CCM, EAX
+ authenticated encryption schemes  GCM, CCM, EAX, ChaCha20Poly1305 and
+                                   XChaCha20Poly1305
 
-        high speed stream ciphers  ChaCha (8/12/20), Panama, Sosemanuk, Salsa20,
-                                   XSalsa20
+        high speed stream ciphers  ChaCha (8/12/20), ChaCha (IETF), Panama, Salsa20,
+                                   Sosemanuk, XSalsa20, XChaCha20
 
            AES and AES candidates  AES (Rijndael), RC6, MARS, Twofish, Serpent,
                                    CAST-256
 
-                                   ARIA, IDEA, Blowfish, Triple-DES (DES-EDE2 and
-                                   DES-EDE3), Camellia, SEED, Kalyna (128/256/512),
-              other block ciphers  RC5, SIMON-64, SIMON-128, SPECK-64, SPECK-128,
-                                   Skipjack, SHACAL-2, SM4, Threefish (256/512/1024),
-                                   TEA, XTEA
+                                   ARIA, Blowfish, Camellia, CHAM, HIGHT, IDEA,
+                                   Kalyna (128/256/512), LEA, SEED, RC5, SHACAL-2,
+              other block ciphers  SIMON (64/128), Skipjack, SPECK (64/128),
+                                   Simeck, SM4, Threefish (256/512/1024),
+                                   Triple-DES (DES-EDE2 and DES-EDE3), TEA, XTEA
 
   block cipher modes of operation  ECB, CBC, CBC ciphertext stealing (CTS),
-                                   CFB, OFB, counter mode (CTR)
+                                   CFB, OFB, counter mode (CTR), XTS
 
      message authentication codes  BLAKE2s, BLAKE2b, CMAC, CBC-MAC, DMAC, GMAC, HMAC,
-                                   Poly1305, SipHash, Two-Track-MAC, VMAC,
+                                   Poly1305, Poly1305 (IETF), SipHash, Two-Track-MAC,
+                                   VMAC
 
-                                   BLAKE2s, BLAKE2b, Keccack (F1600), SHA-1,
-                   hash functions  SHA-2 (224/256/384/512), SHA-3 (224/256/384/512),
-                                   SipHash, SM3, Tiger, RIPEMD-128, RIPEMD-160,
-                                   RIPEMD-256, RIPEMD-320, WHIRLPOOL
+                                   BLAKE2s, BLAKE2b, Keccack (F1600), LSH (256/512),
+                   hash functions  SHA-1, SHA-2 (224/256/384/512), SHA-3 (224/256),
+                                   SHA-3 (384/512), SHAKE (128/256), SipHash, SM3, Tiger,
+                                   RIPEMD (128/160/256/320), WHIRLPOOL
 
-                                   RSA, DSA, Determinsitic DSA, ElGamal,
+                                   RSA, DSA, Deterministic DSA, ElGamal,
           public-key cryptography  Nyberg-Rueppel (NR), Rabin-Williams (RW), LUC,
                                    LUCELG, EC-based German Digital Signature (ECGDSA),
                                    DLIES (variants of DHAES), ESIGN
@@ -39,11 +41,12 @@ Currently the library contains the following algorithms:
    padding schemes for public-key  PKCS#1 v2.0, OAEP, PSS, PSSR, IEEE P1363
                           systems  EMSA2 and EMSA5
 
-                                   Diffie-Hellman (DH), Unified Diffie-Hellman
-            key agreement schemes  (DH2), Menezes-Qu-Vanstone (MQV), Hashed MQV (HMQV),
+                                   Diffie-Hellman (DH), Unified Diffie-Hellman (DH2),
+            key agreement schemes  Menezes-Qu-Vanstone (MQV), Hashed MQV (HMQV),
                                    Fully Hashed MQV (FHMQV), LUCDIF, XTR-DH
 
-      elliptic curve cryptography  ECDSA, Determinsitic ECDSA, ECNR, ECIES, ECDH, ECMQV
+      elliptic curve cryptography  ECDSA, Deterministic ECDSA, ed25519, ECNR, ECIES,
+                                   ECDH, ECMQV, x25519
 
           insecure or obsolescent  MD2, MD4, MD5, Panama Hash, DES, ARC4, SEAL
 algorithms retained for backwards  3.0, WAKE-OFB, DESX (DES-XEX3), RC2,
@@ -53,7 +56,7 @@ algorithms retained for backwards  3.0, WAKE-OFB, DESX (DES-XEX3), RC2,
 Other features include:
 
   * pseudo random number generators (PRNG): ANSI X9.17 appendix C, RandomPool,
-    VIA Padlock, RDRAND, RDSEED, NIST Hash and HMAC DRBGs
+    DARN, VIA Padlock, RDRAND, RDSEED, NIST Hash and HMAC DRBGs
   * password based key derivation functions: PBKDF1 and PBKDF2 from PKCS #5,
     PBKDF from PKCS #12 appendix B, HKDF from RFC 5869, Scrypt from RFC 7914
   * Shamir's secret sharing scheme and Rabin's information dispersal algorithm
@@ -68,36 +71,34 @@ Other features include:
       + 32-bit CRC, CRC-C and Adler32 checksum
   * class wrappers for these platform and operating system features (optional):
       + high resolution timers on Windows, Unix, and Mac OS
-      + Berkeley and Windows style sockets
-      + Windows named pipes
       + /dev/random, /dev/urandom, /dev/srandom
       + Microsoft's CryptGenRandom or BCryptGenRandom on Windows
   * A high level interface for most of the above, using a filter/pipeline
     metaphor
   * benchmarks and validation testing
-  * x86, x64 (x86-64), x32 (ILP32), ARM-32, Aarch32, Aarch64 and Power8 in-core code
-    for the commonly used algorithms
+  * x86, x64 (x86-64), x32 (ILP32), ARM-32, Aarch32, Aarch64 and Power8
+    in-core code for the commonly used algorithms
       + run-time CPU feature detection and code selection
       + supports GCC-style and MSVC-style inline assembly, and MASM for x64
       + x86, x64 (x86-64), x32 provides MMX, SSE2, and SSE4 implementations
       + ARM-32, Aarch32 and Aarch64 provides NEON, ASIMD and ARMv8 implementations
       + Power8 provides in-core AES using NX Crypto Acceleration
 
-The Crypto++ library was orginally written by Wei Dai. The library is now
+The Crypto++ library was originally written by Wei Dai. The library is now
 maintained by several team members and the community. You are welcome to use it
 for any purpose without paying anyone, but see License.txt for the fine print.
 
 The following compilers are supported for this release. Please visit
 http://www.cryptopp.com the most up to date build instructions and porting notes.
 
-  * Visual Studio 2003 - 2017
-  * GCC 3.3 - 8.0
-  * Apple Clang 4.3 - 9.3
-  * LLVM Clang 2.9 - 4.0
-  * C++Builder 2010
+  * Visual Studio 2003 - 2022
+  * GCC 3.3 - 12.2
+  * Apple Clang 4.3 - 12.0
+  * LLVM Clang 2.9 - 14.0
+  * C++ Builder 2015
   * Intel C++ Compiler 9 - 16.0
-  * Sun Studio 12u1 - 12.5
-  * IBM XL C/C++ 10.0 - 13.1
+  * Sun Studio 12u1 - 12.7
+  * IBM XL C/C++ 10.0 - 14.0
 
 *** Important Usage Notes ***
 
@@ -127,9 +128,8 @@ cryptdll - This builds the DLL. Please note that if you wish to use Crypto++
 dlltest - This builds a sample application that only uses the DLL.
 
 The DLL used to provide FIPS validated cryptography. The library was moved
-to the CMVP's <A HREF=
-"http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140val-historical.htm">
-Historical Validation List</A>. The library and the DLL are no longer considered
+to the CMVP's [Historical Validation List](http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140val-historical.htm).
+The library and the DLL are no longer considered
 validated. You should no longer use the DLL.
 
 To use the Crypto++ DLL in your application, #include "dll.h" before including
@@ -204,16 +204,28 @@ library in your programs to help avoid unwanted redirections.
 
 *** Side Channel Attacks ***
 
-Crypto++ attempts to resist side channel attacks using various remediations. We
-believe the library is hardened but the remdiations may be incomplete. The first
-line of defense uses hardware instructions when possible. The library also uses
-cache-aware algoirthms and access patterns to minimize leakage. If you suspect
-or find an information leak then please report it.
+Crypto++ attempts to resist side channel attacks using various remediations.
+The remdiations are applied as a best effort but are probably incomplete. They
+are incomplete due to cpu speculation bugs like Spectre, Meltdown, Foreshadow.
+The attacks target both cpu caches and internal buffers. Intel generally refers
+to internal buffer attacks as "Microarchitectural Data Sampling" (MDS).
 
-Crypto++ does not enagage Specter remediations at this time. The GCC options for
-Specter are -mfunction-return=thunk and -mindirect-branch=thunk, and the library
-uses them during testing. If you want the Specter workarounds then add the GCC
-options to your CXXFLAGS when building the library.
+The library uses hardware instructions when possible for block ciphers, hashes
+and other operations. The hardware acceleration remediates some timing
+attacks. The library also uses cache-aware algorithms and access patterns
+to minimize leakage cache evictions.
+
+Elliptic curves over binary fields are believed to leak information. The task is a
+work in progress. We don't believe binary fields are used in production, so we feel it
+is a low risk at the moment.
+
+Crypto++ does not engage Specter remediations at this time. The GCC options
+for Specter are -mfunction-return=thunk and -mindirect-branch=thunk, and the
+library uses them during testing. If you want the Specter workarounds then add
+the GCC options to your CXXFLAGS when building the library.
+
+To help resist attacks you should disable hyperthreading on cpus. If you
+suspect or find an information leak then please report it.
 
 *** Documentation and Support ***
 
@@ -235,7 +247,7 @@ The source code and its planned changes are available at the following locations
 
   * The Crypto++ GitHub repository allows you to view the latest (unreleased)
     Crypto++ source code via the Linux kernel's git beginning around June 2015.
-    Its also serves as an incubator to nuture and grow the library.
+    Its also serves as an incubator to nurture and grow the library.
   * The former Crypto++ SourceForge repository allows you to view the Crypto++
     source code via Apache's subversion until about July 2015. At that time,
     SourceForge had infrastructure problems and a cutover to GutHub was performed.
@@ -282,124 +294,152 @@ documentation is one of the highest returns on investment.
 The items in this section comprise the most recent history. Please see History.txt
 for the record back to Crypto++ 1.0.
 
-7.0.0 - April 8, 2018
+8.7.0 - August 7, 2022
+      - minor release, recompile of programs required
+      - expanded community input and support
+        * 81 unique contributors as of this release
+      - fix RSA key generation for small moduli
+      - fix AES-GCM with AESNI but without CLMUL
+      - fix Clang warning with C++17
+      - fix MinGW builds due to use of O_NOFOLLOW
+      - rework CFB_CipherTemplate::ProcessData and AdditiveCipherTemplate::ProcessData
+        * restored performance and avoided performance penalty of a temp buffer
+      - fix undersized SecBlock buffer in Integer bit operations
+      - work around several GCC 11 & 12 problems
+
+8.6.0 - September 21, 2021
+      - minor release, recompile of programs required
+      - expanded community input and support
+        * 74 unique contributors as of this release
+      - fix ElGamal encryption
+      - fix ChaCha20 AVX2 implementation
+      - add octal and decimal literal prefix parsing to Integer
+      - add missing overload in ed25519Signer and ed25519Verifier
+      - make SHA-NI independent of AVX and AVX2
+      - fix OldRandomPool GenerateWord32
+      - use CPPFLAGS during feature testing
+      - fix compile on CentOS 5
+      - fix compile on FreeBSD
+      - fix feature testing on ARM A-32 and Aarch64
+      - enable inline ASM for CRC and PMULL on Apple M1
+      - fix Intel oneAPI compile
+      - rename test files with *.cpp extension
+      - fix GCC compile error due to missing _mm256_set_m128i
+      - add LSH-256 and LSH-512 hash functions
+      - add ECIES_P1363 for backwards compatibility
+      - fix AdditiveCipherTemplate<T> ProcessData
+      - remove CRYPTOPP_NO_CXX11 define
+      - add -fno-common for Darwin builds
+      - update documentation
+
+8.5.0 - March 7, 2021
+      - minor release, no recompile of programs required
+      - expanded community input and support
+        * 70 unique contributors as of this release
+      - port to Apple M1 hardware
+
+8.4.0 - January 2, 2021
+      - minor release, recompile of programs required
+      - expanded community input and support
+        * 67 unique contributors as of this release
+      - fix SIGILL on POWER8 when compiling with GCC 10
+      - fix potential out-of-bounds write in FixedSizeAllocatorWithCleanup
+      - fix compile on AIX POWER7 with IBM XLC 12.01
+      - fix compile on Solaris with SunCC 12.6
+      - revert changes for constant-time elliptic curve algorithms
+      - fix makefile clean and distclean recipes
+
+8.3.0 - December 20, 2020
+      - minor release, recompile of programs required
+      - expanded community input and support
+        * 66 unique contributors as of this release
+      - fix use of macro CRYPTOPP_ALIGN_DATA
+      - fix potential out-of-bounds read in ECDSA
+      - fix std::bad_alloc when using ByteQueue in pipeline
+      - fix missing CRYPTOPP_CXX17_EXCEPTIONS with Clang
+      - fix potential out-of-bounds read in GCM mode
+      - add configure.sh when preprocessor macros fail
+      - fix potential out-of-bounds read in SipHash
+      - fix compile error on POWER9 due to vec_xl_be
+      - fix K233 curve on POWER8
+      - add Cirrus CI testing
+      - fix broken encryption for some 64-bit ciphers
+      - fix Android cpu-features.c using C++ compiler
+      - disable RDRAND and RDSEED for some AMD processors
+      - fix BLAKE2 hash calculation using Salt and Personalization
+      - refresh Android and iOS build scripts
+      - add XTS mode
+      - fix circular dependency between misc.h and secblock.h
+      - add Certificate interface
+      - fix recursion in AES::Encryption without AESNI
+      - add missing OID for ElGamal encryption
+      - fix missing override in KeyDerivationFunction-derived classes
+      - fix RDSEED assemble under MSVC
+      - fix elliptic curve timing leaks (CVE-2019-14318)
+      - add link-library variable to Makefiles
+      - fix SIZE_MAX definition in misc.h
+      - add GetWord64 and PutWord64 to BufferedTransformation
+      - use HKDF in AutoSeededX917RNG::Reseed
+      - fix Asan finding in VMAC on i686 in inline asm
+      - fix undeclared identifier _mm_roti_epi64 on Gentoo
+      - fix ECIES and GetSymmetricKeyLength
+      - fix possible divide by zero in PKCS5_PBKDF2_HMAC
+      - refine ASN.1 encoders and decoders
+      - disable BMI2 code paths in Integer class
+      - fix use of CRYPTOPP_CLANG_VERSION
+      - add NEON SHA1, SHA256 and SHA512 from Cryptogams
+      - add ARM SHA1, SHA256 and SHA512 from Cryptogams
+      - make config.h more autoconf friendly
+      - handle Clang triplet armv8l-unknown-linux-gnueabihf
+      - fix reference binding to misaligned address in xed25519
+      - clear asserts in TestDataNameValuePairs
+
+8.2.0 - April 28, 2019
+      - minor release, no recompile of programs required
+      - expanded community input and support
+        * 56 unique contributors as of this release
+      - use PowerPC unaligned loads and stores with Power8
+      - add SKIPJACK test vectors
+      - fix SHAKE-128 and SHAKE-256 compile
+      - removed IS_NEON from Makefile
+      - fix Aarch64 build on Fedora 29
+      - fix missing GF2NT_233_Multiply_Reduce_CLMUL in FIPS DLL
+      - add missing BLAKE2 constructors
+      - fix missing BlockSize() in BLAKE2 classes
+
+8.1.0 - February 22, 2019
+      - minor release, no recompile of programs required
+      - expanded community input and support
+        * 56 unique contributors as of this release
+      - fix OS X PowerPC builds with Clang
+      - add Microsoft ARM64 support
+      - fix iPhone Simulator build due to missing symbols
+      - add CRYPTOPP_BUGGY_SIMD_LOAD_AND_STORE
+      - add carryless multiplies for NIST b233 and k233 curves
+      - fix OpenMP build due to use of OpenMP 4 with down-level compilers
+      - add SignStream and VerifyStream for ed25519 and large files
+      - fix missing AlgorithmProvider in PanamaHash
+      - add SHAKE-128 and SHAKE-256
+      - fix AVX2 build due to _mm256_broadcastsi128_si256
+      - add IETF ChaCha, XChaCha, ChaChaPoly1305 and XChaChaPoly1305
+
+8.0.0 - December 28, 2018
       - major release, recompile of programs required
       - expanded community input and support
-         * 48 unique contributors as of this release
-      - fix incorrect result when using Integer::ModInverse
-         * may be CVE worthy, but request was not submitted
-      - fix ARIA/CTR bus error on Sparc64
-      - fix incorrect result when using a_exp_b_mod_c
-      - fix undeclared identifier uint32_t on early Visual Studio
-      - fix iPhoneSimulator build on i386
-      - fix incorrect adler32 in ZlibDecompressor
-      - fix Power7 test using PPC_FEATURE_ARCH_2_06
-      - workaround incorrect Glibc sysconf return value on ppc64-le
-      - add KeyDerivationFunction interface
-      - add scrypt key derivation function
-      - add Salsa20_Core transform callable from outside class
-      - add sbyte, sword16, sword32 and sword64
-      - remove s_nullNameValuePairs from unnamed namespace
-      - ported to MSVC 2017, Xcode 9.3, Sun Studio 12.5, GCC 8.0.1,
-        MacPorts GCC 7.0, Clang 4.0, Intel C++ 17.00, IBM XL C/C++ 13.1
-
-6.1.0 - February 22, 2018
-      - minor release, maintenance items
-      - expanded community input and support
-         * 46 unique contributors as of this release
-      - use 2048-bit modulus default for DSA
-      - fix build under Linuxbrew
-      - use /bin/sh in GNUmakefile
-      - fix missing flags for SIMON and SPECK in GNUMakefile-cross
-      - fix ARM and MinGW misdetection
-      - port setenv-android.sh to latest NDK
-      - fix Clang check for C++11 lambdas
-      - Simon and Speck to little-endian implementation
-      - use LIB_MAJOR for ABI compatibility
-      - fix ODR violation in AdvancedProcessBlocks_{ARCH} templates
-      - handle C++17 std::uncaught_exceptions
-      - ported to MSVC 2017, Xcode 8.1, Sun Studio 12.5, GCC 8.0.1,
-        MacPorts GCC 7.0, Clang 4.0, Intel C++ 17.00, IBM XL C/C++ 13.1
-
-6.0.0 - January 22, 2018
-      - major release, recompile of programs required
-      - expanded community input and support
-         * 43 unique contributors as of this release
-      - fixed CVE-2016-9939 (Issue 346, transient DoS)
-      - fixed CVE-2017-9434 (Issue 414, misidentified memory error)
-      - converted to BASE+SIMD implementation
-         * BASE provides an architecture neutral C++ implementation
-         * SIMD provides architecture specific hardware acceleration
-      - improved PowerPC Power4, Power7 and Power8 support
-      - added ARIA, EC German DSA, Deterministic signatures (RFC 6979),
-        Kalyna, NIST Hash and HMAC DRBG, Padlock RNG, Poly1305, SipHash,
-        Simon, Speck, SM3, SM4, Threefish algorithms
-      - added NaCl interface from the compact library
-         * x25519 key exhange and ed25519 signing provided through NaCl interface
-      - improved Testing and QA
-      - ported to MSVC 2017, Xcode 8.1, Sun Studio 12.5, GCC 7.3,
-        MacPorts GCC 7.0, Clang 4.0, Intel C++ 17.00, IBM XL C/C++ 13.1
-
-5.6.5 - October 11, 2016
-      - maintenance release, recompile of programs recommended
-      - expanded community input and support
-         * 25 unique contributors as of this release
-      - fixed CVE-2016-7420 (Issue 277, document NDEBUG for production/release)
-      - fixed CVE-2016-7544 (Issue 302, avoid _malloca and _freea)
-      - shipped library in recommended state
-         * backwards compatibility achieved with <config.compat>
-      - Visual Studio project file cleanup
-         * improved X86 and X64 MSBuild support
-         * added ARM-based MSBuild awareness
-      - improved Testing and QA
-         * expanded platforms and compilers
-         * expanded Coverity into OS X and Windows platforms
-         * added Windows test scripts using Strawberry Perl
-      - ported to MSVC 2015 SP3, Xcode 7.3, Sun Studio 12.5, GCC 7.0,
-        MacPorts GCC 7.0, Clang 3.8, Intel C++ 17.00
-
-5.6.4 - September 11, 2016
-      - maintenance release, honored API/ABI/Versioning requirements
-      - expanded community input and support
-         * 22 unique contributors for this release
-      - fixed CVE-2016-3995
-      - changed SHA3 to FIPS 202 (F1600, XOF d=0x06)
-      - added Keccak (F1600, XOF d=0x01)
-      - added ChaCha (ChaCha8/12/20)
-      - added HMQV and FHMQV
-         * Hashed and Fully Hashed MQV
-      - added BLAKE2 (BLAKE2s and BLAKE2b)
-         * C++, SSE2, SSE4, ARM NEON and ARMv8 ASIMD
-      - added CRC32-C
-         * C/C++, Amd64 CRC, and ARMv8 CRC
-      - improved Rabin-William signatures
-         * Tweaked roots <em>e</em> and <em>f</em>
-      - improved C++11 support
-         * atomics, threads and fences
-         * alginof, alignas
-         * constexpr
-         * noexcept
-      - improved GCM mode
-         * ARM NEON and ARMv8 ASIMD
-         * ARMv8 carry-less multiply
-      - improved Windows 8 and 10 support
-         * Windows Phone, Universal Windows Platform, Windows Store
-      - improved MIPS, ARMv7 and ARMv8 support
-         * added scripts setenv-{android|embedded|ios}.sh for GNUmakefile-cross
-         * aggressive use of -march=<arch> and -mfpu=<fpu> in cryptest.sh
-      - improved build systems
-         * Visual Studio 2010 default
-         * added CMake support (lacks FindCryptopp.cmake)
-         * archived VC++ 5/0/6.0 project files (vc60.zip)
-         * archived VS2005 project files (vs2005.zip)
-         * archived Borland project files (bds10.zip)
-      - improved Testing and QA
-         * expanded platforms and compilers
-         * added code generation tests based on CPU features
-         * added C++03, C++11, C++14, C++17 testing
-         * added -O3, -O5, -Ofast and -Os testing
-      - ported to MSVC 2015 SP3, Xcode 9.0, Sun Studio 12.5, GCC 7.0,
-        MacPorts GCC 7.0, Clang 3.8, Intel C++ 17.00
+         * 54 unique contributors as of this release
+      - add x25519 key exchange and ed25519 signature scheme
+      - add limited Asymmetric Key Package support from RFC 5958
+      - add Power9 DARN random number generator support
+      - add CHAM, HC-128, HC-256, Hight, LEA, Rabbit, Simeck
+      - fix FixedSizeAllocatorWithCleanup may be unaligned on some platforms
+      - cutover to GNU Make-based cpu feature tests
+      - rename files with dashes to underscores
+      - fix LegacyDecryptor and LegacyDecryptorWithMAC use wrong MAC
+      - fix incorrect AES/CBC decryption on Windows
+      - avoid Singleton<T> when possible, avoid std::call_once completely
+      - fix SPARC alignment problems due to GetAlignmentOf<T>() on word64
+      - add ARM AES asm implementation from Cryptogams
+      - remove CRYPTOPP_ALLOW_UNALIGNED_DATA_ACCESS support
 
 June 2015 - Changing of the guard. Wei Dai turned the library over to the
         community. The first community release was Crypto++ 5.6.3. Wei is

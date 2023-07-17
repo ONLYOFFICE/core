@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -59,6 +59,19 @@ namespace XLSB
         sheet_info.name = strName.value();
         record.getGlobalWorkbookInfo()->sheets_info.push_back(sheet_info);
     }
+
+	void BundleSh::writeFields(XLS::CFRecord& record)
+	{
+		record << hsState << iTabID << strRelID << strName;
+	}
+
+	void BundleSh::saveSheetInfo(XLS::GlobalWorkbookInfo* global_info_)
+	{
+		GlobalWorkbookInfo::_sheet_info sheet_info;
+		sheet_info.state = hsState;
+		sheet_info.name = strName.value();
+		global_info_->sheets_info.push_back(sheet_info);
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "../../OOXML/Base/Base.h"
+
 namespace DocFileFormat
 {
 	/// Specifies an approximation of a real number, where the approximation has a fixed number of digits after the radix point. 
@@ -47,50 +49,11 @@ namespace DocFileFormat
 		unsigned short Integral;
 		unsigned short Fractional;
 
-		FixedPointNumber( unsigned short integral = 0, unsigned short fractional = 0 )
-		{
-			this->Integral = integral;
-			this->Fractional = fractional;
-		}
+		FixedPointNumber( unsigned short integral = 0, unsigned short fractional = 0 );
+		FixedPointNumber( _UINT32 value );
+		FixedPointNumber( const unsigned char* bytes, unsigned int size );
 
-		FixedPointNumber( _UINT32 value )
-		{
-			unsigned short* bytes = (unsigned short*)(&value);
-
-			this->Integral = bytes[0];
-			this->Fractional = bytes[1];
-		}
-
-		FixedPointNumber( const unsigned char* bytes, unsigned int size )
-		{
-			if ( ( bytes != NULL ) && ( size >= 4 ) )
-			{
-				this->Integral = FormatUtils::BytesToUInt16( bytes, 0, size );
-				this->Fractional = FormatUtils::BytesToUInt16( bytes, 2, size );
-			}
-		}
-
-		double ToAngle() const
-		{
-			if ( this->Fractional != 0 )
-			{
-				// negative angle
-				return ( this->Fractional - 65536.0 );
-			}
-			else if ( this->Integral != 0 )
-			{
-				//positive angle
-				return ( 65536.0 - this->Integral );
-			}
-			else
-			{
-				return 0.0;
-			}
-		}
-
-		double GetValue() const
-		{
-			return (double)( this->Integral + ( (double)this->Fractional / 65536.0 ) );
-		}
+		double ToAngle() const;
+		double GetValue() const;
 	};
 }

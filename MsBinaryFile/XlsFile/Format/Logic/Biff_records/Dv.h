@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,8 +35,8 @@
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/DVParsedFormula.h"
 #include "../Biff_structures/SqRefU.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/FRTHeader.h"
+#include "../Biff_structures/BIFF12/UncheckedSqRfX.h"
+#include "../Biff_structures/BIFF12/FRTHeader.h"
 
 namespace XLS
 {
@@ -70,9 +70,10 @@ public:
     Dv(bool ext14 = false);
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
-        static const ElementType	type = typeDv;
+	static const ElementType	type = typeDv;
 
 	int serialize(std::wostream & stream);
 
@@ -88,23 +89,22 @@ public:
 	bool			fShowErrorMsg;
 	_typOperatorDv	typOperator;
 
-        std::wstring    PromptTitle;//XLUnicodeString
-        std::wstring    ErrorTitle;
-        std::wstring    Prompt;
-        std::wstring    Error;
+    std::wstring    PromptTitle;//XLUnicodeString
+    std::wstring    ErrorTitle;
+    std::wstring    Prompt;
+    std::wstring    Error;
 	
 	DVParsedFormula formula1;
 	DVParsedFormula formula2;
-	
-        SqRefU			sqref;
 
-        XLSB::UncheckedSqRfX sqrfx; //biff12
-        //for ext14
-        bool            _ext14;
-        bool            fDVMinFmla;
-        bool            fDVMaxFmla;
-        XLSB::FRTHeader FRTheader;
+    SqRefU			sqref;
 
+    XLSB::UncheckedSqRfX sqrfx; //biff12
+    //for ext14
+    bool            _ext14;
+    bool            fDVMinFmla;
+    bool            fDVMaxFmla;
+    XLSB::FRTHeader FRTheader;
 
 };
 

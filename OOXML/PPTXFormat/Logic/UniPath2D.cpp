@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,17 +47,17 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (name == _T("moveTo"))
-				Path2D.reset(new Logic::MoveTo(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::MoveTo>(oReader));
 			else if (name == _T("lnTo"))
-				Path2D.reset(new Logic::LineTo(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::LineTo>(oReader));
 			else if (name == _T("cubicBezTo"))
-				Path2D.reset(new Logic::CubicBezTo(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::CubicBezTo>(oReader));
 			else if (name == _T("close"))
-				Path2D.reset(new Logic::Close(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::Close>(oReader));
 			else if (name == _T("arcTo"))
-				Path2D.reset(new Logic::ArcTo(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::ArcTo>(oReader));
 			else if (name == _T("quadBezTo"))
-				Path2D.reset(new Logic::QuadBezTo(oReader));
+				Path2D.reset(CreatePtrXmlContent<Logic::QuadBezTo>(oReader));
 			else Path2D.reset();
 		}
 		void UniPath2D::fromXML(XmlUtils::CXmlNode& node)
@@ -65,17 +65,17 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("moveTo"))
-				Path2D.reset(new Logic::MoveTo(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::MoveTo>(node));
 			else if (name == _T("lnTo"))
-				Path2D.reset(new Logic::LineTo(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::LineTo>(node));
 			else if (name == _T("cubicBezTo"))
-				Path2D.reset(new Logic::CubicBezTo(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::CubicBezTo>(node));
 			else if (name == _T("close"))
-				Path2D.reset(new Logic::Close(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::Close>(node));
 			else if (name == _T("arcTo"))
-				Path2D.reset(new Logic::ArcTo(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::ArcTo>(node));
 			else if (name == _T("quadBezTo"))
-				Path2D.reset(new Logic::QuadBezTo(node));
+				Path2D.reset(CreatePtrXmlContent<Logic::QuadBezTo>(node));
 			else Path2D.reset();
 		}
 		void UniPath2D::GetPath2DFrom(XmlUtils::CXmlNode& element)
@@ -83,17 +83,17 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 
 			if(element.GetNode(_T("a:moveTo"), oNode))
-				Path2D.reset(new Logic::MoveTo(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::MoveTo>(oNode));
 			else if(element.GetNode(_T("a:lnTo"), oNode))
-				Path2D.reset(new Logic::LineTo(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::LineTo>(oNode));
 			else if(element.GetNode(_T("a:cubicBezTo"), oNode))
-				Path2D.reset(new Logic::CubicBezTo(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::CubicBezTo>(oNode));
 			else if(element.GetNode(_T("a:close"), oNode))
-				Path2D.reset(new Logic::Close(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::Close>(oNode));
 			else if(element.GetNode(_T("a:arcTo"), oNode))
-				Path2D.reset(new Logic::ArcTo(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::ArcTo>(oNode));
 			else if(element.GetNode(_T("a:quadBezTo"), oNode))
-				Path2D.reset(new Logic::QuadBezTo(oNode));
+				Path2D.reset(CreatePtrXmlContent<Logic::QuadBezTo>(oNode));
 			else Path2D.reset();
 		}
 		std::wstring UniPath2D::toXML() const

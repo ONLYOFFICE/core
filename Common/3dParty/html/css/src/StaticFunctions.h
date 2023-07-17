@@ -315,6 +315,26 @@ namespace NSCSS
             return sValue.empty() ? false : std::all_of(sValue.begin(), sValue.end(), [] (const wchar_t& cChar) { return iswdigit(cChar); });
         }
 
+		inline std::wstring NormalizeRGB(const std::wstring& wsValue)
+		{
+			std::wstring wsNewValue = wsValue;
+
+			size_t unBegin = 0, unEnd;
+
+			while (std::wstring::npos != (unBegin = wsNewValue.find(L"rgb(", unBegin)))
+			{
+				unEnd = wsNewValue.find(L")", unBegin);
+
+				while ((unBegin = wsNewValue.find(L" ", unBegin)) != std::wstring::npos && unBegin < unEnd)
+				{
+					wsNewValue.replace(unBegin, 1, L",");
+					++unBegin;
+				}
+			}
+
+			return wsNewValue;
+		}
+
         inline std::wstring ConvertRgbToHex(const std::wstring& sRgbValue)
         {
             size_t posFirst = sRgbValue.find_first_of(L"01234567890");

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,50 +38,16 @@
 class Utils
 {
 public:	
-    static int CopyDirOrFile(std::wstring sSource, std::wstring sDestination)
-	{
-		//удаляем sDestination, чтобы там не было.
-		if( 0 != RemoveDirOrFile( sDestination ) )
-			return 1;
+	static int CopyDirOrFile(std::wstring sSource, std::wstring sDestination);
 
-		//копируем
-        CDirectory::CopyFile(sSource, sDestination);
-
-		return 0;
-	}
-// return "" если не удалось создать
+	// return "" если не удалось создать
  
-    static int RemoveDirOrFile(std::wstring sPath)
-	{
-		CDirectory::DeleteFile(sPath);
-		return 0;
-	}
-    static std::wstring CreateTempFile( )
-	{
-        return CreateTempFile(NSDirectory::GetTempPath());
-	}
-    static std::wstring CreateTempFile( std::wstring sDir )
-	{
-        if( !sDir.empty() )
-		{
-            return NSDirectory::CreateTempFileWithUniqueName(sDir, L"img");
-		}
-		else
-			return CreateTempFile();
-	}
-// return "" если не удалось создать
-    static std::wstring CreateTempDir( std::wstring sDir )//создаем файл в папке sDir
-	{
-        if( !sDir.empty() )
-        {
-            return NSDirectory::CreateDirectoryWithUniqueName(sDir);
-		}
-		else
-			return CreateTempDir();
-	}
-    static std::wstring CreateTempDir()
-	{
-        std::wstring tmpDirectory = NSDirectory::GetTempPath();
-        return NSDirectory::CreateDirectoryWithUniqueName(tmpDirectory);
-	}
+	static int RemoveDirOrFile(std::wstring sPath);
+	static std::wstring CreateTempFile( );
+	static std::wstring CreateTempFile( std::wstring sDir );
+
+	// return "" если не удалось создать
+
+	static std::wstring CreateTempDir( std::wstring sDir ); //создаем файл в папке sDir
+	static std::wstring CreateTempDir();
 };

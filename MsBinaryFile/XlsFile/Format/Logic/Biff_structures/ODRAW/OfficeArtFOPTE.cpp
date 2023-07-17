@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,47 +39,47 @@
 
 namespace ODRAW
 {
-	static int GetCountPoints2(NSCustomShapesConvert::RulesType eRuler, int lRepeatCount)
+	static int GetCountPoints2(ODRAW::RulesType eRuler, int lRepeatCount)
 	{
 		switch (eRuler)
 		{
-		case NSCustomShapesConvert::rtMoveTo:				
-		case NSCustomShapesConvert::rtRMoveTo:
+		case ODRAW::rtMoveTo:
+		case ODRAW::rtRMoveTo:
 			{ return 1; }
 		
-		case NSCustomShapesConvert::rtLineTo:		
-		case NSCustomShapesConvert::rtRLineTo:
+		case ODRAW::rtLineTo:
+		case ODRAW::rtRLineTo:
 			{ return lRepeatCount; }
 		
-		case NSCustomShapesConvert::rtCurveTo:		
-		case NSCustomShapesConvert::rtRCurveTo:
+		case ODRAW::rtCurveTo:
+		case ODRAW::rtRCurveTo:
 			{ return 3 * lRepeatCount; }
 		
-		case NSCustomShapesConvert::rtNoFill:
-		case NSCustomShapesConvert::rtNoStroke:
-		case NSCustomShapesConvert::rtClose:
-		case NSCustomShapesConvert::rtEnd:	
+		case ODRAW::rtNoFill:
+		case ODRAW::rtNoStroke:
+		case ODRAW::rtClose:
+		case ODRAW::rtEnd:
 			{ return 0; }
 		
-		case NSCustomShapesConvert::rtAngleEllipseTo:
-		case NSCustomShapesConvert::rtAngleEllipse:
+		case ODRAW::rtAngleEllipseTo:
+		case ODRAW::rtAngleEllipse:
 			{ return lRepeatCount; }
 		
-		case NSCustomShapesConvert::rtArc:
-		case NSCustomShapesConvert::rtArcTo:
+		case ODRAW::rtArc:
+		case ODRAW::rtArcTo:
 
-		case NSCustomShapesConvert::rtClockwiseArcTo:
-		case NSCustomShapesConvert::rtClockwiseArc:
+		case ODRAW::rtClockwiseArcTo:
+		case ODRAW::rtClockwiseArc:
 			{ return lRepeatCount; }
 
-		case NSCustomShapesConvert::rtEllipticalQuadrX:
-		case NSCustomShapesConvert::rtEllipticalQuadrY:
+		case ODRAW::rtEllipticalQuadrX:
+		case ODRAW::rtEllipticalQuadrY:
 			{ return 1 * lRepeatCount; }
 
-		case NSCustomShapesConvert::rtQuadrBesier:			
+		case ODRAW::rtQuadrBesier:
 			{ return /*2 * */lRepeatCount; }
-		case NSCustomShapesConvert::rtFillColor:
-		case NSCustomShapesConvert::rtLineColor:
+		case ODRAW::rtFillColor:
+		case ODRAW::rtLineColor:
 			{
 				return 1;
 			}
@@ -1016,15 +1016,15 @@ void PihlShape::ReadComplexData(IBinaryReader* reader)
 }
 void XmlString::ReadComplexData(IBinaryReader* reader)
 {
-	unsigned char* pData = reader->ReadBytes(op, true);
-	
-	data = std::string((char*)pData, op);
-
-	delete []pData;
+	boost::shared_array<char> buffer((char*)reader->ReadBytes(op, true));
+	data = std::make_pair(buffer, op);
 }
 void XmlString::ReadComplexData(XLS::CFRecord& record)
 {
-	data = std::string(record.getCurData<char>(), op);
+	boost::shared_array<char> buffer(new char[op]);
+	memcpy(buffer.get(), record.getCurData<char>(), op);
+	
+	data = std::make_pair(buffer, (size_t)op);
 
 	record.skipNunBytes(op);
 }
@@ -1216,7 +1216,7 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	
 	if (type <= 4)
 	{
-		m_eRuler	= (NSCustomShapesConvert::RulesType)type;
+		m_eRuler	= (ODRAW::RulesType)type;
 		m_nCount	= (mem & 0x1FFF);
 		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
 		return;
@@ -1229,68 +1229,68 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	{
 	case 0x00:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			m_eRuler = ODRAW::rtLineTo;
 			break;
 		}
 	case 0x01:
 		{
-			m_eRuler = NSCustomShapesConvert::rtAngleEllipseTo;
+			m_eRuler = ODRAW::rtAngleEllipseTo;
 			break;
 		}
 	case 0x02:
 		{
-			m_eRuler = NSCustomShapesConvert::rtAngleEllipse;
+			m_eRuler = ODRAW::rtAngleEllipse;
 			break;
 		}
 	case 0x03:
 		{
-			m_eRuler = NSCustomShapesConvert::rtArcTo;
+			m_eRuler = ODRAW::rtArcTo;
 			break;
 		}
 	case 0x04:
 		{
-			m_eRuler = NSCustomShapesConvert::rtArc;
+			m_eRuler = ODRAW::rtArc;
 			break;
 		}
 	case 0x05:
 		{
-			m_eRuler = NSCustomShapesConvert::rtClockwiseArcTo;
+			m_eRuler = ODRAW::rtClockwiseArcTo;
 			break;
 		}
 	case 0x06:
 		{
-			m_eRuler = NSCustomShapesConvert::rtClockwiseArc;
+			m_eRuler = ODRAW::rtClockwiseArc;
 			break;
 		}
 	case 0x07:
 		{
-			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrX;
+			m_eRuler = ODRAW::rtEllipticalQuadrX;
 			break;
 		}
 	case 0x08:
 		{
-			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrY;
+			m_eRuler = ODRAW::rtEllipticalQuadrY;
 			break;
 		}
 	case 0x09:
 		{
-			m_eRuler = NSCustomShapesConvert::rtQuadrBesier;
+			m_eRuler = ODRAW::rtQuadrBesier;
 			break;
 		}
 	case 0x0A:
 		{
-			m_eRuler = NSCustomShapesConvert::rtNoFill;
+			m_eRuler = ODRAW::rtNoFill;
 			break;
 		}
 	case 0x0B:
 		{
-			m_eRuler = NSCustomShapesConvert::rtNoStroke;
+			m_eRuler = ODRAW::rtNoStroke;
 			break;
 		}
 	case 0x0C:
 	case 0x10:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			m_eRuler = ODRAW::rtLineTo;
 			break;
 		}
 	case 0x0D:
@@ -1301,22 +1301,22 @@ void MSOPATHINFO::load(IBinaryReader* reader)
 	case 0x13:
 	case 0x14:
 		{
-			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			m_eRuler = ODRAW::rtCurveTo;
 			break;
 		}
 	case 0x15:
 		{
-			m_eRuler = NSCustomShapesConvert::rtFillColor;
+			m_eRuler = ODRAW::rtFillColor;
 			break;
 		}
 	case 0x16:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineColor;
+			m_eRuler = ODRAW::rtLineColor;
 			break;
 		}
 	default:
 		{
-			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			m_eRuler = ODRAW::rtCurveTo;
 		}
 	};
 
@@ -1333,7 +1333,7 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	
 	if (type <= 4)
 	{
-		m_eRuler	= (NSCustomShapesConvert::RulesType)type;
+		m_eRuler	= (ODRAW::RulesType)type;
 		m_nCount	= (mem & 0x1FFF);
 		m_nCount	= (_UINT16)GetCountPoints2(m_eRuler, m_nCount);
 		return;
@@ -1346,68 +1346,68 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	{
 	case 0x00:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			m_eRuler = ODRAW::rtLineTo;
 			break;
 		}
 	case 0x01:
 		{
-			m_eRuler = NSCustomShapesConvert::rtAngleEllipseTo;
+			m_eRuler = ODRAW::rtAngleEllipseTo;
 			break;
 		}
 	case 0x02:
 		{
-			m_eRuler = NSCustomShapesConvert::rtAngleEllipse;
+			m_eRuler = ODRAW::rtAngleEllipse;
 			break;
 		}
 	case 0x03:
 		{
-			m_eRuler = NSCustomShapesConvert::rtArcTo;
+			m_eRuler = ODRAW::rtArcTo;
 			break;
 		}
 	case 0x04:
 		{
-			m_eRuler = NSCustomShapesConvert::rtArc;
+			m_eRuler = ODRAW::rtArc;
 			break;
 		}
 	case 0x05:
 		{
-			m_eRuler = NSCustomShapesConvert::rtClockwiseArcTo;
+			m_eRuler = ODRAW::rtClockwiseArcTo;
 			break;
 		}
 	case 0x06:
 		{
-			m_eRuler = NSCustomShapesConvert::rtClockwiseArc;
+			m_eRuler = ODRAW::rtClockwiseArc;
 			break;
 		}
 	case 0x07:
 		{
-			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrX;
+			m_eRuler = ODRAW::rtEllipticalQuadrX;
 			break;
 		}
 	case 0x08:
 		{
-			m_eRuler = NSCustomShapesConvert::rtEllipticalQuadrY;
+			m_eRuler = ODRAW::rtEllipticalQuadrY;
 			break;
 		}
 	case 0x09:
 		{
-			m_eRuler = NSCustomShapesConvert::rtQuadrBesier;
+			m_eRuler = ODRAW::rtQuadrBesier;
 			break;
 		}
 	case 0x0A:
 		{
-			m_eRuler = NSCustomShapesConvert::rtNoFill;
+			m_eRuler = ODRAW::rtNoFill;
 			break;
 		}
 	case 0x0B:
 		{
-			m_eRuler = NSCustomShapesConvert::rtNoStroke;
+			m_eRuler = ODRAW::rtNoStroke;
 			break;
 		}
 	case 0x0C:
 	case 0x10:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineTo;
+			m_eRuler = ODRAW::rtLineTo;
 			break;
 		}
 	case 0x0D:
@@ -1418,22 +1418,22 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 	case 0x13:
 	case 0x14:
 		{
-			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			m_eRuler = ODRAW::rtCurveTo;
 			break;
 		}
 	case 0x15:
 		{
-			m_eRuler = NSCustomShapesConvert::rtFillColor;
+			m_eRuler = ODRAW::rtFillColor;
 			break;
 		}
 	case 0x16:
 		{
-			m_eRuler = NSCustomShapesConvert::rtLineColor;
+			m_eRuler = ODRAW::rtLineColor;
 			break;
 		}
 	default:
 		{
-			m_eRuler = NSCustomShapesConvert::rtCurveTo;
+			m_eRuler = ODRAW::rtCurveTo;
 		}
 	};
 
@@ -1462,7 +1462,7 @@ void MSOSG::load(IBinaryReader* reader)
 {
 	_UINT16 ftType = reader->ReadUInt16();
 	
-	m_eType = NSCustomShapesConvert::FormulaType(ftType & 0x1FFF);
+	m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
 
 	m_param_type1 = (unsigned char)(ftType & 0x04);
 	m_param_type2 = (unsigned char)(ftType & 0x02);
@@ -1478,7 +1478,7 @@ void MSOSG::load(XLS::CFRecord& record)
 	_UINT16 ftType;
 	record >> ftType;
 
-	m_eType = NSCustomShapesConvert::FormulaType(ftType & 0x1FFF);
+	m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
 
 	m_param_type1 = (unsigned char)(ftType & 0x04);
 	m_param_type2 = (unsigned char)(ftType & 0x02);

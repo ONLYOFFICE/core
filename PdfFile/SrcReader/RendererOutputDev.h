@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -301,7 +301,7 @@ namespace PdfReader
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
-		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM);
+		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
 		void updateClip(GfxState *pGState);
 		void updateClipAttack(GfxState *pGState);
@@ -330,9 +330,11 @@ namespace PdfReader
 		bool                          m_bTransparentGroupSoftMaskEnd;
 		std::vector<bool>             m_arrTransparentGroupSoftMask;
 
+        /*
 		unsigned char*                m_pSoftMask;
 		int                           m_nSoftMaskWidth;
 		int                           m_nSoftMaskHeight;
+        */
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

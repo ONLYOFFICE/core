@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,92 +45,21 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Iterate)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"type", type);
-                XmlMacroReadAttributeBase(node, L"backwards", backwards);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlUtils::CXmlNode oNode;			
-				if (node.GetNode(_T("p:tmAbs"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", tmAbs)
-				else if (node.GetNode(_T("p:tmPct"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", tmPct)
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("type"), type);
-				oAttr.Write(_T("backwards"), backwards);
-				
-				if (tmAbs.IsInit())
-				{
-					XmlUtils::CAttribute oAttr1;
-					oAttr1.Write(_T("val"), tmAbs);
-					return XmlUtils::CreateNode(_T("p:iterate"), oAttr, XmlUtils::CreateNode(_T("p:tmAbs"), oAttr1));
-				}
-				else if (tmPct.IsInit())
-				{
-					XmlUtils::CAttribute oAttr1;
-					oAttr1.Write(_T("val"), tmPct);
-					return XmlUtils::CreateNode(_T("p:iterate"), oAttr, XmlUtils::CreateNode(_T("p:tmPct"), oAttr1));
-				}
-
-				return XmlUtils::CreateNode(_T("p:iterate"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteLimit2(0, type);
-					pWriter->WriteBool2(1, backwards);
-					pWriter->WriteString2(2, tmAbs);
-					pWriter->WriteInt2(3, tmPct);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	type = pReader->GetUChar();
-					else if (1 == _at)	backwards = pReader->GetBool();
-					else if (2 == _at)	tmAbs = pReader->GetString2();
-					else if (3 == _at)	tmPct = pReader->GetLong();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_limit<Limit::IterateType>		type;
 			nullable_bool							backwards;
 
 			nullable_string							tmAbs;
 			nullable_int							tmPct;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

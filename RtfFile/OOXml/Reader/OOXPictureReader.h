@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,38 +30,18 @@
  *
  */
 #pragma once
-#include "../../Format/RtfPicture.h"
-#include "OOXPictureAnchorReader.h"
-#include "OOXPictureInlineReader.h"
 
+#include "OOXReaderBasic.h"
+#include "../../Format/RtfPicture.h"
 #include "../../../OOXML/DocxFormat/Drawing/Drawing.h"
 
 class OOXDrawingReader
 {
 private:
 	OOX::Logic::CDrawing* m_ooxDrawing;
+
 public: 
-	OOXDrawingReader(OOX::Logic::CDrawing* ooxDrawing)
-	{
-		m_ooxDrawing	= ooxDrawing;
-	}
+	OOXDrawingReader(OOX::Logic::CDrawing* ooxDrawing);
  
-	int Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
-	{
-		if (m_ooxDrawing == NULL) return 0;
-
-		if (m_ooxDrawing->m_oInline.IsInit())
-		{
-			OOXDrawingInlineReader oDrawingInlineReader(m_ooxDrawing->m_oInline.GetPointer());
-			return oDrawingInlineReader.Parse( oParam, pOutput );
-		}
-
-		if (m_ooxDrawing->m_oAnchor.IsInit())
-		{
-			OOXDrawingAnchorReader oDrawingAnchorReader(m_ooxDrawing->m_oAnchor.GetPointer());
-			return oDrawingAnchorReader.Parse( oParam, pOutput );
-		}
-
-		return 0;
-	}
+	int Parse( ReaderParameter oParam , RtfShapePtr & pOutput);
 };

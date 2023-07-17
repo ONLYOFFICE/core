@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,26 +36,6 @@
 
 namespace Writers
 {
-	class ContentWriter
-	{
-	public:		
-		NSStringUtils::CStringBuilder	m_oBackground;
-		NSStringUtils::CStringBuilder	m_oContent;
-		NSStringUtils::CStringBuilder	m_oSecPr;
-	};
-
-	class HdrFtrItem
-	{
-	public:
-		HdrFtrItem(SimpleTypes::EHdrFtr _eType);
-
-		bool IsEmpty();
-
-        std::wstring			m_sFilename;
-		ContentWriter			Header;
-        std::wstring			rId;
-		SimpleTypes::EHdrFtr	eType;
-	};
 
 static  std::wstring g_string_xml_start = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 static  std::wstring g_string_xmlns = L"xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
@@ -76,18 +56,39 @@ xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 mc:Ignorable=\"w14 w15 wp14\">";
-   
-	static  std::wstring g_string_hdr_Start = g_string_xml_start + L"<w:hdr " + g_string_xmlns;
-    static  std::wstring g_string_hdr_End = L"</w:hdr>";
 
-    static  std::wstring g_string_ftr_Start = g_string_xml_start + L"<w:ftr " + g_string_xmlns;
-    static  std::wstring g_string_ftr_End = L"</w:ftr>";
+	static  std::wstring g_string_hdr_Start = g_string_xml_start + L"<w:hdr " + g_string_xmlns;
+	static  std::wstring g_string_hdr_End = L"</w:hdr>";
+
+	static  std::wstring g_string_ftr_Start = g_string_xml_start + L"<w:ftr " + g_string_xmlns;
+	static  std::wstring g_string_ftr_End = L"</w:ftr>";
 
 	static  std::wstring g_string_footnotes_Start = g_string_xml_start + L"<w:footnotes " + g_string_xmlns;
 	static  std::wstring g_string_footnotes_End = L"</w:footnotes>";
 
 	static  std::wstring g_string_endnotes_Start = g_string_xml_start + L"<w:endnotes " + g_string_xmlns;
-    static  std::wstring g_string_endnotes_End = L"</w:endnotes>";
+	static  std::wstring g_string_endnotes_End = L"</w:endnotes>";
+	class ContentWriter
+
+	{
+	public:		
+		NSStringUtils::CStringBuilder	m_oBackground;
+		NSStringUtils::CStringBuilder	m_oContent;
+		NSStringUtils::CStringBuilder	m_oSecPr;
+	};
+
+	class HdrFtrItem
+	{
+	public:
+		HdrFtrItem(SimpleTypes::EHdrFtr _eType);
+
+		bool IsEmpty();
+
+        std::wstring			m_sFilename;
+		ContentWriter			Header;
+        std::wstring			rId;
+		SimpleTypes::EHdrFtr	eType;
+	};
 
 	class HeaderFooterWriter 
 	{

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,9 +31,9 @@
  */
 
 #include "PCRRecord.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 #include "../Biff12_structures/PCDIDateTime.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 
@@ -88,6 +88,35 @@ namespace XLSB
             }
         }
     }
+
+	void PCRRecord::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 index;
+		Xnum xnum;
+		PCDIDateTime dateTime;
+		XLWideString string;
+
+		for (const auto& item : data)
+			switch (item.first)
+			{
+			case XLS::typePCDIIndex:
+				index = *boost::any_cast<_UINT32>(&item.second);
+				record << index;
+				break;
+			case XLS::typePCDINumber:
+				xnum.data.value = *boost::any_cast<double>(&item.second);
+				record << xnum;
+				break;
+			case XLS::typePCDIDatetime:
+				dateTime.fromString(*boost::any_cast<std::wstring>(&item.second));
+				record << dateTime;
+				break;
+			case XLS::typePCDIString:
+				string = *boost::any_cast<std::wstring>(&item.second);
+				record << string;
+				break;
+			}			
+	}
 
 } // namespace XLSB
 

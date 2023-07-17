@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,108 +58,10 @@ namespace PPTX
 			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:tc"));
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->StartAttributes();
-
-				pWriter->WriteAttribute(_T("rowSpan"), RowSpan);
-				pWriter->WriteAttribute(_T("gridSpan"), GridSpan);
-				pWriter->WriteAttribute(_T("hMerge"), HMerge);
-				pWriter->WriteAttribute(_T("vMerge"), VMerge);
-				pWriter->WriteAttribute(_T("id"), Id);
-
-				pWriter->EndAttributes();
-
-                pWriter->Write(txBody);
-				pWriter->Write(CellProperties);				
-
-				pWriter->EndNode(_T("a:tc"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, Id);
-				pWriter->WriteInt2(1, RowSpan);
-				pWriter->WriteInt2(2, GridSpan);
-				pWriter->WriteBool2(3, HMerge);
-				pWriter->WriteBool2(4, VMerge);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, CellProperties);
-                pWriter->WriteRecord2(1, txBody);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							Id = pReader->GetString2();
-							break;
-						}
-						case 1:
-						{
-							RowSpan = pReader->GetLong();
-							break;
-						}
-						case 2:
-						{
-							GridSpan = pReader->GetLong();
-							break;
-						}
-						case 3:
-						{
-							HMerge = pReader->GetBool();
-							break;
-						}
-						case 4:
-						{
-							VMerge = pReader->GetBool();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							CellProperties = new TableCellProperties();
-							CellProperties->fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-                            txBody = new Logic::TxBody();
-                            txBody->fromPPTY(pReader);
-							txBody->m_name = _T("a:txBody");
-							break;
-						}
-						default:
-							break;
-					}
-				}				
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
             nullable<TxBody>				txBody;
@@ -169,6 +71,7 @@ namespace PPTX
 			nullable_bool					HMerge;
 			nullable_bool					VMerge;
 			nullable_string					Id;
+
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

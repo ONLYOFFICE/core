@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,22 +52,25 @@ style_table_cell_properties *odf_table_styles_context::get_table_cell_properties
 	return dynamic_cast<style_table_cell_properties *>(current->table_cell_props.get());
 
 }
-style_paragraph_properties *odf_table_styles_context::get_paragraph_properties()
+paragraph_format_properties *odf_table_styles_context::get_paragraph_properties()
 {
 	if (current == NULL)return NULL;
 
 	if (!current->paragraph_props)
 		create_element(L"style", L"paragraph-properties", current->paragraph_props, context_);
 	
-	return dynamic_cast<style_paragraph_properties *>(current->paragraph_props.get());
+	style_paragraph_properties *props = dynamic_cast<style_paragraph_properties *>(current->paragraph_props.get());
+	return props ? &props->content_ : NULL;
 }
-style_text_properties *odf_table_styles_context::get_text_properties()
+text_format_properties *odf_table_styles_context::get_text_properties()
 {
 	if (current == NULL)return NULL;
 	
 	if (!current->text_props)
 		create_element(L"style", L"text-properties", current->text_props, context_);
-	return dynamic_cast<style_text_properties *>(current->text_props.get());
+
+	style_text_properties *props = dynamic_cast<style_text_properties *>(current->text_props.get());
+	return props ? &props->content_ : NULL;
 }
 style_table_properties *odf_table_styles_context::get_table_properties()
 {
@@ -205,8 +208,9 @@ void odf_table_styles_context::set_current_dimension(int col, int row)
 }
 void odf_table_styles_context::end_table()
 {
-	if (current_used_.empty()) 
-		current_used_.pop_back();
+	if (current_used_.empty()) return;
+	
+	current_used_.pop_back();
 }
 _CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideV()
 {
@@ -220,13 +224,13 @@ _CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideH()
 }
 void odf_table_styles_context::get_table_cell_properties (int col, int row, style_table_cell_properties* cell_props)
 {
-	if (current_used_.size() < 1) return;
-	if (cell_props == NULL)			return;
+	if (current_used_.empty()) return;
+	if (cell_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
-	int col_shift =0;
-	int row_shift =0;
+	int col_shift = 0;
+	int row_shift = 0;
 
 	if (state.firstCol_.is && current_used_.back().first_col)col_shift = 1;
 	if (state.firstRow_.is && current_used_.back().first_row)row_shift = 1;
@@ -276,7 +280,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 void odf_table_styles_context::get_table_properties (style_table_properties* table_props)
 {
 	if (current_used_.empty()) return;
-	if (table_props == NULL)	  return;
+	if (table_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
@@ -290,14 +294,16 @@ bool odf_table_styles_context::is_paragraph_properties()
 
 	return state.table_.paragraph_props.get() != NULL;
 }
-void odf_table_styles_context::get_paragraph_properties (style_paragraph_properties* para_props)
+void odf_table_styles_context::get_paragraph_properties (paragraph_format_properties* para_props)
 {
 	if (current_used_.empty()) return;
-	if (para_props == NULL)	  return;
+	if (para_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
-	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get()));
+	style_paragraph_properties *props = dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get());
+	if (props)
+		para_props->apply_from(props->content_);
 }
 bool odf_table_styles_context::is_text_properties()
 {
@@ -307,28 +313,29 @@ bool odf_table_styles_context::is_text_properties()
 
 	return state.table_.text_props.get() != NULL;
 }
-void odf_table_styles_context::get_text_properties (style_text_properties* text_props)
+void odf_table_styles_context::get_text_properties (text_format_properties* text_props)
 {
 	if (current_used_.empty()) return;
-	if (text_props == NULL)	  return;
+	if (text_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
-
-	text_props->apply_from(dynamic_cast<style_text_properties *>(state.table_.text_props.get()));
+	style_text_properties *props = dynamic_cast<style_text_properties *>(state.table_.text_props.get());
+	if (props)
+		text_props->apply_from(props->content_);
 }
 void odf_table_styles_context::get_table_cell_properties (style_table_cell_properties* table_cell_props)
 {
-	if (current_used_.size() < 1) return;
-	if (table_cell_props == NULL)	  return;
+	if (current_used_.empty()) return;
+	if (table_cell_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
 	table_cell_props->apply_from(dynamic_cast<style_table_cell_properties *>(state.table_.table_cell_props.get()));
 }
-void odf_table_styles_context::get_text_properties (int col, int row, style_text_properties* text_props)
+void odf_table_styles_context::get_text_properties (int col, int row, text_format_properties* text_props)
 {
-	if (current_used_.size() < 1) return;
-	if (text_props == NULL)		  return;
+	if (current_used_.empty()) return;
+	if (text_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
@@ -354,50 +361,145 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell
 //----------------------------------------------------------------------------------------------------------------------------------
 //порядок рассмотрения - main, odd, even first, last, ne, ....
-					text_props->apply_from(dynamic_cast<style_text_properties *>(state.table_.text_props.get()));
+	style_text_properties *props = NULL;
+	
+	props = dynamic_cast<style_text_properties *>(state.table_.text_props.get());
+	if (props) text_props->apply_from(props->content_);
 
 	if (current_used_.back().cols)
 	{	
-		if (odd_col)	text_props->apply_from(dynamic_cast<style_text_properties *>(state.band1Vert_.text_props.get()));
-		else			text_props->apply_from(dynamic_cast<style_text_properties *>(state.band2Vert_.text_props.get()));
+		if (odd_col)
+		{
+			props = dynamic_cast<style_text_properties *>(state.band1Vert_.text_props.get());
+			if (props) text_props->apply_from(props->content_);
+		}
+		else
+		{
+			props = dynamic_cast<style_text_properties *>(state.band2Vert_.text_props.get());
+			if (props) text_props->apply_from(props->content_);
+		}
 	}
 	
 	if (current_used_.back().rows)
 	{
-		if (odd_row)	text_props->apply_from(dynamic_cast<style_text_properties *>(state.band1Horz_.text_props.get()));
-		else			text_props->apply_from(dynamic_cast<style_text_properties *>(state.band2Horz_.text_props.get()));
+		if (odd_row)
+		{
+			props = dynamic_cast<style_text_properties *>(state.band1Horz_.text_props.get());
+			if (props) text_props->apply_from(props->content_);
+		}
+		else
+		{
+			props = dynamic_cast<style_text_properties *>(state.band2Horz_.text_props.get());
+			if (props) text_props->apply_from(props->content_);
+		}
 	}
 	
-	if (first_col && current_used_.back().first_col)text_props->apply_from(dynamic_cast<style_text_properties *>(state.firstCol_.text_props.get()));
-	if (last_col && current_used_.back().last_col)	text_props->apply_from(dynamic_cast<style_text_properties *>(state.lastCol_.text_props.get()));
+	if (first_col && current_used_.back().first_col)
+	{
+		props = dynamic_cast<style_text_properties *>(state.firstCol_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
+	if (last_col && current_used_.back().last_col)
+	{
+		props = dynamic_cast<style_text_properties *>(state.lastCol_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
+	if (first_row && current_used_.back().first_row)
+	{
+		props = dynamic_cast<style_text_properties *>(state.firstRow_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
+	if (last_row && current_used_.back().last_row)
+	{
+		props = dynamic_cast<style_text_properties *>(state.lastRow_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
 
-	if (first_row && current_used_.back().first_row)text_props->apply_from(dynamic_cast<style_text_properties *>(state.firstRow_.text_props.get()));
-	if (last_row && current_used_.back().last_row)	text_props->apply_from(dynamic_cast<style_text_properties *>(state.lastRow_.text_props.get()));
+	if (ne)
+	{
+		props = dynamic_cast<style_text_properties *>(state.neCell_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
 
-	if (ne)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.neCell_.text_props.get()));
-	if (nw)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.nwCell_.text_props.get()));
-
-	if (se)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.seCell_.text_props.get()));
-	if (sw)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.swCell_.text_props.get()));
+	}
+	if (nw)
+	{
+		props = dynamic_cast<style_text_properties *>(state.nwCell_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
+	if (se)
+	{
+		props = dynamic_cast<style_text_properties *>(state.seCell_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
+	if (sw)
+	{
+		props = dynamic_cast<style_text_properties *>(state.swCell_.text_props.get());
+		if (props) text_props->apply_from(props->content_);
+	}
 }
-void odf_table_styles_context::get_paragraph_properties (int col, int row, style_paragraph_properties* para_props)
+bool odf_table_styles_context::is_styled(int col, int row)
+{
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	int col_shift = 0;
+	int row_shift = 0;
+
+	if (state.firstCol_.is && current_used_.back().first_col) col_shift = 1;
+	if (state.firstRow_.is && current_used_.back().first_row) row_shift = 1;
+	//------------------------------------------------------------------------------
+	bool first_row = (row == 1) ? true : false;
+	bool first_col = (col == 1) ? true : false;
+
+	if (state.firstCol_.is && first_col) return true;
+	if (state.firstRow_.is && first_row) return true;
+
+	bool last_row = (row == current_used_.back().table_row_count_) ? true : false;
+	bool last_col = (col == current_used_.back().table_col_count_) ? true : false;
+	
+	if (state.lastCol_.is && last_col) return true;
+	if (state.lastRow_.is && last_row) return true;
+
+	bool odd_row = ((row + row_shift) % 2 != 0) ? true : false;//нечетные
+	bool odd_col = ((col + col_shift) % 2 != 0) ? true : false;
+
+	if (state.band1Vert_.is && odd_col) return true;
+	if (state.band1Horz_.is && odd_row) return true;
+
+	if (state.band2Vert_.is && !odd_col) return true;
+	if (state.band2Horz_.is && !odd_row) return true;
+
+	bool ne = (row == 1 && col == current_used_.back().table_col_count_) ? true : false; //top right cell
+	bool nw = (row == 1 && col == 1) ? true : false;						//top left cell.
+
+	if (state.neCell_.is && ne) return true;
+	if (state.nwCell_.is && nw) return true;
+
+	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true : false; //bottom right cell
+	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true : false;						//bottom left cell.
+
+	if (state.seCell_.is && se) return true;
+	if (state.swCell_.is && sw) return true;
+
+	return false;
+}
+void odf_table_styles_context::get_paragraph_properties (int col, int row, paragraph_format_properties* para_props)
 {
 	if (current_used_.empty()) return;
 	if (para_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
-	int col_shift =0;
-	int row_shift =0;
+	int col_shift = 0;
+	int row_shift = 0;
 
-	if (state.firstCol_.is && current_used_.back().first_col)col_shift = 1;
-	if (state.firstRow_.is && current_used_.back().first_row)row_shift = 1;
+	if (state.firstCol_.is && current_used_.back().first_col) col_shift = 1;
+	if (state.firstRow_.is && current_used_.back().first_row) row_shift = 1;
 //------------------------------------------------------------------------------
-	bool first_row = (row == 1)? true: false;
-	bool first_col = (col == 1)? true: false;
+	bool first_row = (row == 1)? true : false;
+	bool first_col = (col == 1)? true : false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
-	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
+	bool odd_row = ((row + row_shift) % 2 != 0) ? true : false;//нечетные
+	bool odd_col = ((col + col_shift) % 2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
 	bool last_col = (col == current_used_.back().table_col_count_) ? true: false; 
@@ -408,31 +510,77 @@ void odf_table_styles_context::get_paragraph_properties (int col, int row, style
 	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true: false; //bottom right cell
 	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true: false;						//bottom left cell.
 //----------------------------------------------------------------------------------------------------------------------------------
-	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get()));
+	style_paragraph_properties *props = NULL;
+
+	props = dynamic_cast<style_paragraph_properties *>(state.table_.paragraph_props.get());
+	if (props) para_props->apply_from(props->content_);
 
 	if (current_used_.back().cols)
 	{
-		if (odd_col)	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.band1Vert_.paragraph_props.get()));
-		else			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.band2Vert_.paragraph_props.get()));
-	}
-	
+		if (odd_col)
+		{
+			props = dynamic_cast<style_paragraph_properties *>(state.band1Vert_.paragraph_props.get());
+			if (props) para_props->apply_from(props->content_);
+		}
+		else
+		{
+			props = dynamic_cast<style_paragraph_properties *>(state.band2Vert_.paragraph_props.get());
+			if (props) para_props->apply_from(props->content_);
+		}
+	}	
 	if (current_used_.back().cols)
 	{
-		if (odd_row)	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.band1Horz_.paragraph_props.get()));
-		else			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.band2Horz_.paragraph_props.get()));
+		if (odd_row)
+		{
+			props = dynamic_cast<style_paragraph_properties *>(state.band1Horz_.paragraph_props.get());
+			if (props) para_props->apply_from(props->content_);
+		}
+		else
+		{
+			props = dynamic_cast<style_paragraph_properties *>(state.band2Horz_.paragraph_props.get());
+			if (props) para_props->apply_from(props->content_);
+		}
+	}	
+	if (first_col && current_used_.back().first_col)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.firstCol_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
 	}
-	
-	if (first_col && current_used_.back().first_col)para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.firstCol_.paragraph_props.get()));
-	if (last_col && current_used_.back().last_col)	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.lastCol_.paragraph_props.get()));
-
-	if (first_row && current_used_.back().first_row)para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.firstRow_.paragraph_props.get()));
-	if (last_row && current_used_.back().last_row)	para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.lastRow_.paragraph_props.get()));
-
-	if (ne)			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.neCell_.paragraph_props.get()));
-	if (nw)			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.nwCell_.paragraph_props.get()));
-
-	if (se)			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.seCell_.paragraph_props.get()));
-	if (sw)			para_props->apply_from(dynamic_cast<style_paragraph_properties *>(state.swCell_.paragraph_props.get()));
+	if (last_col && current_used_.back().last_col)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.lastCol_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (first_row && current_used_.back().first_row)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.firstRow_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (last_row && current_used_.back().last_row)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.lastRow_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (ne)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.neCell_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (nw)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.nwCell_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (se)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.seCell_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
+	if (sw)
+	{
+		props = dynamic_cast<style_paragraph_properties *>(state.swCell_.paragraph_props.get());
+		if (props) para_props->apply_from(props->content_);
+	}
 
 }
 

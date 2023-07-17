@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,7 +42,7 @@ namespace PPTX
 		{
 			if (!pOOXToVMLRenderer) return;
 
-			PPT_FORMAT::CShapeElement* lpShapeElement = NULL;
+			PPT::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
@@ -51,7 +51,7 @@ namespace PPTX
 				if(_lspt == OOXMLShapes::sptNil) 
 					return;
 
-				lpShapeElement = new PPT_FORMAT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
+				lpShapeElement = new PPT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
 				std::wstring strAdjustValues = lpGeom.GetODString();
 				
 				lpShapeElement->m_pShape->getBaseShape()->LoadAdjustValuesList(strAdjustValues);
@@ -60,7 +60,7 @@ namespace PPTX
 			{
 				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
 				std::wstring strShape = lpGeom.GetODString();
-				lpShapeElement = new PPT_FORMAT::CShapeElement(strShape);
+				lpShapeElement = new PPT::CShapeElement(strShape);
 			}
 
 			if (lpShapeElement == NULL)
@@ -147,9 +147,9 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (strName == _T("prstGeom"))
-				m_geometry.reset(new Logic::PrstGeom(oReader));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oReader));
 			else if (strName == _T("custGeom"))
-				m_geometry.reset(new Logic::CustGeom(oReader));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oReader));
 			else
 				m_geometry.reset();
 		}
@@ -158,18 +158,18 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (strName == _T("prstGeom"))
-				m_geometry.reset(new Logic::PrstGeom(node));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(node));
 			else if (strName == _T("custGeom"))
-				m_geometry.reset(new Logic::CustGeom(node));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(node));
 			else m_geometry.reset();
 		}
 		void Geometry::GetGeometryFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:prstGeom"), oNode))
-				m_geometry.reset(new Logic::PrstGeom(oNode));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oNode));
 			else if (element.GetNode(_T("a:custGeom"), oNode))
-				m_geometry.reset(new Logic::CustGeom(oNode));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oNode));
 			else m_geometry.reset();
 		}
 		std::wstring Geometry::toXML() const

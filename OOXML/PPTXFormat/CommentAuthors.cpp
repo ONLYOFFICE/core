@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -128,13 +128,12 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oNode.GetNodes(_T("p:cmAuthor"), oNodes);
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oCm;
-			oNodes.GetAt(i, oCm);
+			XmlUtils::CXmlNode & oCm = oNodes[i];
 
 			PPTX::Logic::CommentAuthor comm;
 

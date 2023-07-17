@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -80,9 +80,11 @@ const bool StylesStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<BeginStyleSheet>())
                 {
-                    m_BrtBeginStyleSheet = elements_.back();
+                    m_bBrtBeginStyleSheet = true;
                     elements_.pop_back();
                 }
+				else
+					m_bBrtBeginStyleSheet = false;
             }break;
 
             case rt_BeginFmts:
@@ -188,9 +190,12 @@ const bool StylesStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<EndStyleSheet>())
                 {
-                    m_BrtEndStyleSheet = elements_.back();
+                    m_bBrtEndStyleSheet = true;
                     elements_.pop_back();
                 }
+				else
+					m_bBrtEndStyleSheet = false;
+
             }break;
 
 			default://skip					
@@ -199,6 +204,48 @@ const bool StylesStream::loadContent(BinProcessor& proc)
             }break;
 		}
 	}	
+
+	return true;
+}
+
+const bool StylesStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginStyleSheet>();
+
+	if (m_FMTS != nullptr)
+		proc.mandatory(*m_FMTS);
+
+	if (m_FONTS != nullptr)
+		proc.mandatory(*m_FONTS);
+
+	if (m_FILLS != nullptr)
+		proc.mandatory(*m_FILLS);
+
+	if(m_BORDERS != nullptr)
+		proc.mandatory(*m_BORDERS);
+
+	if(m_CELLSTYLEXFS != nullptr)
+		proc.mandatory(*m_CELLSTYLEXFS);
+
+	if(m_CELLXFS != nullptr)
+		proc.mandatory(*m_CELLXFS);
+
+	if(m_STYLES != nullptr)
+		proc.mandatory(*m_STYLES);
+
+	if(m_DXFS != nullptr)
+		proc.mandatory(*m_DXFS);
+
+	if (m_TABLESTYLES != nullptr)
+		proc.mandatory(*m_TABLESTYLES);
+	
+	if(m_COLORPALETTE != nullptr)
+		proc.mandatory(*m_COLORPALETTE);
+	
+	if(m_FRTSTYLESHEET != nullptr)
+		proc.mandatory(*m_FRTSTYLESHEET);
+
+	proc.mandatory<EndStyleSheet>();
 
 	return true;
 }

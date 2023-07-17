@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,9 +47,9 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("ahXY"))
-				ah.reset(new Logic::AhXY(node));
+				ah.reset(CreatePtrXmlContent<Logic::AhXY>(node));
 			else if (name == _T("ahPolar"))
-				ah.reset(new Logic::AhPolar(node));
+				ah.reset(CreatePtrXmlContent<Logic::AhPolar>(node));
 			else ah.reset();
 		}
 		void AhBase::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -57,18 +57,18 @@ namespace PPTX
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (sName == L"ahXY")
-				ah.reset(new Logic::AhXY(oReader));
+				ah.reset(CreatePtrXmlContent<Logic::AhXY>(oReader));
 			else if(sName == L"ahPolar")
-				ah.reset(new Logic::AhPolar(oReader));
+				ah.reset(CreatePtrXmlContent<Logic::AhPolar>(oReader));
 			else ah.reset();
 		}
 		void AhBase::GetAdjustHandleFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:ahXY"), oNode))
-				ah.reset(new Logic::AhXY(oNode));
+				ah.reset(CreatePtrXmlContent<Logic::AhXY>(oNode));
 			else if(element.GetNode(_T("a:ahPolar"), oNode))
-				ah.reset(new Logic::AhPolar(oNode));
+				ah.reset(CreatePtrXmlContent<Logic::AhPolar>(oNode));
 			else ah.reset();
 		}
 		std::wstring AhBase::toXML() const

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,55 +32,29 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordBlipStoreEntry : public CUnknownRecord
-	{
-	public:
-		ODRAW::eBlipType m_btWin32;
-		ODRAW::eBlipType m_btMacOS;
+class CRecordBlipStoreEntry : public CUnknownRecord
+{
+public:
+	ODRAW::eBlipType m_btWin32;
+	ODRAW::eBlipType m_btMacOS;
+	
+	BYTE m_pRgbUid[16];
+	unsigned short m_nTag;
+	_UINT32 m_nSize;
+	_UINT32 m_nCountRef;
+	_UINT32 m_nFoDelay;
 
-		BYTE m_pRgbUid[16];
-		unsigned short m_nTag;
-		_UINT32 m_nSize;
-		_UINT32 m_nCountRef;
-		_UINT32 m_nFoDelay;
+	ODRAW::eBlipUsage m_eUsage;
+	BYTE m_nLenName;
 
-		ODRAW::eBlipUsage m_eUsage;
-		BYTE m_nLenName;
+	BYTE m_nUnused2;
+	BYTE m_nUnused3;
+	
+    CRecordBlipStoreEntry();
+    ~CRecordBlipStoreEntry();
 
-		BYTE m_nUnused2;
-		BYTE m_nUnused3;
-
-		CRecordBlipStoreEntry()
-		{
-		}
-
-		~CRecordBlipStoreEntry()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_btWin32 = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
-			m_btMacOS = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
-
-			pStream->read(m_pRgbUid, 16);
-
-			m_nTag = StreamUtils::ReadWORD(pStream);
-
-			m_nSize = StreamUtils::ReadDWORD(pStream);
-			m_nCountRef = StreamUtils::ReadDWORD(pStream);
-			m_nFoDelay = StreamUtils::ReadDWORD(pStream);
-
-			m_eUsage = (ODRAW::eBlipUsage)StreamUtils::ReadBYTE(pStream);
-
-			m_nLenName = StreamUtils::ReadBYTE(pStream);
-
-			m_nUnused2 = StreamUtils::ReadBYTE(pStream);
-			m_nUnused3 = StreamUtils::ReadBYTE(pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,7 +32,11 @@
 
 #include "Borders.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/Biff12_records/Border.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {
@@ -158,6 +162,8 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
 				else if (*sLineStyle == L"Dash")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
+				else if (*sLineStyle == L"None")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
 				else if (*sLineStyle == L"Continuous")
@@ -172,11 +178,13 @@ namespace OOX
 				{
 					case 1:	 //Thin
 					{
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
+						if (false == sLineStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 					}break;
 					case 3: //Thick
 					{
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
+						if (false == sLineStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 					}break;
 					default://2: //Medium
 					{
@@ -269,7 +277,9 @@ namespace OOX
 					m_oVertical = oReader;
 				else if (L"Border" == sName)
 				{
-					CBorderProp* border = new CBorderProp(oReader);
+					CBorderProp* border = new CBorderProp();
+					*border = oReader;
+
 					if ((border) && (border->m_oType.IsInit()))
 					{
 						if (*border->m_oType == L"Bottom")		m_oBottom	= border;
@@ -370,7 +380,9 @@ namespace OOX
 
 				if ( L"border" == sName || L"Border" == sName)
 				{
-					CBorder *pBorder = new CBorder( oReader );
+					CBorder *pBorder = new CBorder();
+					*pBorder = oReader;
+
 					m_arrItems.push_back( pBorder );
 					m_mapBorders.insert(std::make_pair(index++, pBorder));
 				}

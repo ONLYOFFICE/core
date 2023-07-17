@@ -7,8 +7,6 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-CONFIG += core_static_link_libstd
-
 CORE_ROOT_DIR = $$PWD/../../../../core
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)

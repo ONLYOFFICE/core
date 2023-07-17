@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,7 +30,9 @@
  *
  */
 #include "DocumentRecords.h"
-#include "SlideListWithText.h"
+#include "RecordsIncluder.h"
+
+using namespace PPT;
 
 CRecordDocument::CRecordDocument()
 {
@@ -92,7 +94,9 @@ void CRecordDocument::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStre
             oPersist.m_nPsrRef = pAtom->m_arSlides[index]->m_nPsrRef;
             oPersist.m_nSlideID = pAtom->m_arSlides[index]->m_nSlideID;
 
-            oPersist.m_arTextAttrs.insert(oPersist.m_arTextAttrs.end(), pAtom->m_arTextPlaceHolders[index].begin(),pAtom->m_arTextPlaceHolders[index].end());
+//            oPersist.m_arTextAttrs.insert(oPersist.m_arTextAttrs.end(), pAtom->m_arTextPlaceHolders[index].begin(),pAtom->m_arTextPlaceHolders[index].end());
+            for (auto& textPlaceHolder : pAtom->m_arTextPlaceHolders[index])
+                            oPersist.m_arTextAttrs.push_back(&textPlaceHolder);
 
             pArray->push_back(oPersist);
         }

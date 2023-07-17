@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -76,7 +76,7 @@ namespace XLSB
 
         record.skipNunBytes(8);
 
-        unsigned short flags;
+		_UINT16 flags;
         record >> flags;
         fStopTrue   = GETBIT(flags, 1);
         fAbove      = GETBIT(flags, 2);
@@ -94,6 +94,33 @@ namespace XLSB
         if(cbFmla3)
             rgce1.load(record);
     }
+
+	void BeginCFRule::writeFields(XLS::CFRecord& record)
+	{
+		record << iType << iTemplate << dxfId << iPri << iParam;
+
+		record.reserveNunBytes(8);
+
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 1, fStopTrue)
+		SETBIT(flags, 2, fAbove)
+		SETBIT(flags, 3, fBottom)
+		SETBIT(flags, 4, fPercent)
+
+		record << flags;
+
+		record << cbFmla1 << cbFmla2 << cbFmla3 << strParam;
+
+		if (cbFmla1)
+			rgce1.save(record);
+
+		if (cbFmla2)
+			rgce1.save(record);
+
+		if (cbFmla3)
+			rgce1.save(record);
+	}
 
 } // namespace XLSB
 

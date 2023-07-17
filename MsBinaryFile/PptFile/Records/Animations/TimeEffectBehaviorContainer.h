@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,59 +37,13 @@
 #include "TimeVariant.h"
 #include "TimeBehaviorContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeEffectBehaviorContainer : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-        LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
-
-        SRecordHeader header;
-        if ( header.ReadFromStream(pStream) )
-            m_effectBehaviorAtom.ReadFromStream ( header, pStream );
-
-        if ( m_effectBehaviorAtom.m_bTypePropertyUsed )
-        {
-            if ( header.ReadFromStream(pStream) )
-                m_oVarType.ReadFromStream ( header, pStream );
-        }
-
-        if ( m_effectBehaviorAtom.m_bProgressPropertyUsed )
-        {
-            if ( header.ReadFromStream(pStream) )
-                m_oVarProgress.ReadFromStream ( header, pStream );
-        }
-
-        if ( m_effectBehaviorAtom.m_bRuntimeContextObsolete )
-        {
-            if ( header.ReadFromStream(pStream) )
-                m_oVarRuntimeContext.ReadFromStream ( header, pStream );
-        }
-
-        if ( header.ReadFromStream(pStream) )
-        {
-            if (header.RecType == 0xF12A)
-            {
-                m_oBehavior.ReadFromStream (header, pStream);
-            }
-            else
-            {
-                StreamUtils::StreamSkip (header.RecLen, pStream);
-                if ( header.ReadFromStream(pStream) )
-                {
-                    m_oBehavior.ReadFromStream ( header, pStream );
-                }
-            }
-        }
-
-        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
-    }
-
-public:
 
     CRecordTimeEffectBehaviorAtom	m_effectBehaviorAtom;
 

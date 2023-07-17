@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -59,9 +59,11 @@ namespace XLSB
     {
         if (proc.optional<BeginColorPalette>())
         {
-            m_BrtBeginColorPalette = elements_.back();
+            m_bBrtBeginColorPalette = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginColorPalette = false;
 
         if (proc.optional<INDEXEDCOLORS>())
         {
@@ -77,12 +79,29 @@ namespace XLSB
 
         if (proc.optional<EndColorPalette>())
         {
-            m_BrtEndColorPalette = elements_.back();
+			m_bBrtEndColorPalette = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColorPalette = false;
 
-        return m_BrtBeginColorPalette && m_BrtEndColorPalette;
+        return m_bBrtBeginColorPalette && m_bBrtEndColorPalette;
     }
+
+	const bool COLORPALETTE::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginColorPalette>();
+
+		if (m_INDEXEDCOLORS != nullptr)
+			proc.mandatory(*m_INDEXEDCOLORS);
+
+		if (m_MRUCOLORS != nullptr)
+			proc.mandatory(*m_MRUCOLORS);
+
+		proc.mandatory<EndColorPalette>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

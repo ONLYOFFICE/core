@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -60,11 +60,17 @@ public:
 	void start_view	();
 	void end_view	();
 	void set_current_view(int id);
+	void add_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
 
 	void start_table(std::wstring name);
 	void end_table	();
 
-	void add_property(std::wstring name, std::wstring type, std::wstring value);
+	office_element_ptr create_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+	
+	void add_config_content_item(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+	void add_common_views_property(const std::wstring &name, const std::wstring &type, const std::wstring &value);
+
+	void set_modify_info(const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count);
 private:
 	struct _table
 	{
@@ -79,6 +85,7 @@ private:
 
 	std::vector<_view>				views_;
 
+	std::vector<office_element_ptr>	common_views_content_;
 	std::vector<office_element_ptr>	config_content_;
 	odf_conversion_context*			odf_context_;
 

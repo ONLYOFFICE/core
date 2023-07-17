@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,23 +31,29 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
-#include "Borders.h"
-#include "Fills.h"
-#include "Fonts.h"
-#include "NumFmts.h"
-#include "Xfs.h"
-
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CProtection;
+		class CAligment;
+		class CBorder;
+		class CFill;
+		class CFont;
+		class CNumFmt;
+
 		class CDxf : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxf)
+			WritingElement_AdditionMethods(CDxf)
             WritingElement_XlsbConstructors(CDxf)
 			CDxf();
 			virtual ~CDxf();
@@ -79,7 +85,7 @@ namespace OOX
 		class CDxfs : public WritingElementWithChilds<CDxf>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxfs)
+			WritingElement_AdditionMethods(CDxfs)
             WritingElement_XlsbVectorConstructors(CDxfs)
 			CDxfs();
 			virtual ~CDxfs();

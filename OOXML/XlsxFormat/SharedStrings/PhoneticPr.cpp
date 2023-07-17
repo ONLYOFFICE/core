@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,13 +31,16 @@
  */
 
 #include "PhoneticPr.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_structures/PhRun.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		CPhonetic::CPhonetic()
+		CPhonetic::CPhonetic(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CPhonetic::~CPhonetic()
@@ -122,9 +125,8 @@ namespace OOX
 			}
 		}
 
-		CRPh::CRPh()
-		{
-		}
+		CRPh::CRPh(OOX::Document *pMain) : WritingElementWithChilds<CText>(pMain) {}
+
 		CRPh::~CRPh()
 		{
 		}
@@ -151,7 +153,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("t") == sName )
-					m_arrItems.push_back( new CText( oReader ));
+				{
+					CText* pText = new CText();
+					*pText = oReader;
+					m_arrItems.push_back(pText);
+				}
 			}
 		}
 		void CRPh::fromBin(XLS::BiffStructure& obj, std::wstring& str)

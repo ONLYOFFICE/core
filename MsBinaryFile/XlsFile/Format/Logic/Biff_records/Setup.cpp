@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,8 +31,8 @@
  */
 
 #include "Setup.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/RelID.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
+#include "../Biff_structures/BIFF12/RelID.h"
 
 namespace XLS
 {
@@ -51,7 +51,7 @@ BaseObjectPtr Setup::clone()
 
 void Setup::readFields(CFRecord& record)
 {
-	unsigned short flags;
+	_UINT16 flags;
 
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
@@ -131,6 +131,82 @@ void Setup::readFields(CFRecord& record)
             szRelID = str.value();
         }
     }
+}
+
+void Setup::writeFields(CFRecord& record)
+{
+	_UINT16 flags;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 iPaperSize_2b = iPaperSize;
+		_UINT16 iScale_2b = iScale;
+		_INT16 iPageStart_2b = iPageStart;
+		_UINT16 iFitWidth_2b = iFitWidth;
+		_UINT16 iFitHeight_2b = iFitHeight;
+
+		record << iPaperSize_2b << iScale_2b << iPageStart_2b << iFitWidth_2b << iFitHeight_2b;
+
+		SETBIT(flags, 0, fLeftToRight)
+		SETBIT(flags, 1, fPortrait)
+		SETBIT(flags, 2, fNoPls)
+		SETBIT(flags, 3, fNoColor)
+		SETBIT(flags, 4, fDraft)
+		SETBIT(flags, 5, fNotes)
+		SETBIT(flags, 6, fNoOrient)
+		SETBIT(flags, 7, fUsePage)
+		SETBIT(flags, 9, fEndNotes)
+		SETBITS(flags, 10, 11, iErrors)
+
+		record << flags;
+
+		if (record.getGlobalWorkbookInfo()->Version > 0x0200)
+		{
+			_UINT16 iRes_2b = iRes;
+			_UINT16 iVRes_2b = iVRes;
+			_UINT16 iCopies_2b = iCopies;
+
+			record << iRes_2b << iVRes_2b << numHdr << numFtr << iCopies_2b;
+		}
+	}
+	else
+	{
+		if (_isChart)
+		{
+			_INT16 iPageStart_2b = iPageStart;
+			record << iPaperSize << iRes << iVRes << iCopies << iPageStart_2b;
+
+			SETBIT(flags, 0, fLandscape);
+			SETBIT(flags, 2, fNoColor);
+			SETBIT(flags, 3, fNoOrient);
+			SETBIT(flags, 4, fUsePage);
+			SETBIT(flags, 5, fDraft);
+
+			record << flags;
+
+			XLSB::RelID str = szRelID;
+			record << str;
+		}
+		else
+		{
+			record << iPaperSize << iScale << iRes << iVRes << iCopies << iPageStart << iFitWidth << iFitHeight;
+
+			SETBIT(flags, 0, fLeftToRight)
+			SETBIT(flags, 1, fLandscape)
+			SETBIT(flags, 3, fNoColor)
+			SETBIT(flags, 4, fDraft)
+			SETBIT(flags, 5, fNotes)
+			SETBIT(flags, 6, fNoOrient)
+			SETBIT(flags, 7, fUsePage)
+			SETBIT(flags, 8, fEndNotes)
+			SETBITS(flags, 9, 10, iErrors)
+
+			record << flags;
+
+			XLSB::XLNullableWideString str = szRelID;
+			record << str;
+		}
+	}
 }
 
 } // namespace XLS

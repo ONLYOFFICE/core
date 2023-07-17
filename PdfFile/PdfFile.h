@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -102,6 +102,11 @@ public:
     // --- READER ---
 
     int GetError();
+    bool IsNeedCMap();
+    void SetCMapMemory(BYTE* pData, DWORD nSizeData);
+    void SetCMapFolder(const std::wstring& sFolder);
+    void SetCMapFile(const std::wstring& sFile);
+	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
     virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
@@ -126,7 +131,6 @@ public:
     void RotatePage   (int nRotate);
     void SetPassword  (const std::wstring& wsPassword);
     void SetDocumentID(const std::wstring& wsDocumentID);
-    void SetCore      (const std::wstring& wsCoreXml);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
@@ -269,7 +273,8 @@ public:
     virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
     virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
     virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
-	virtual HRESULT AddFormField(IFormField* pFieldInfo);
+    virtual HRESULT AddFormField(IFormField* pFieldInfo);
+    virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 
 private:
     CPdfFile_Private* m_pInternal;

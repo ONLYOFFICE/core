@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,28 +38,28 @@ namespace PPTX
 	{
 		SplitterBarState::SplitterBarState()
 		{
-			m_strValue = _T("restored");
+			m_strValue = L"restored";
 		}
 		void SplitterBarState::set(const std::wstring& strValue)
 		{
-			if ((_T("maximized") == strValue) ||
-				(_T("minimized") == strValue) ||
-				(_T("restored") == strValue))
+			if ((L"maximized" == strValue) ||
+				(L"minimized" == strValue) ||
+				(L"restored" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE SplitterBarState::GetBYTECode() const
+		unsigned char SplitterBarState::GetBYTECode() const
 		{
-			if (_T("maximized") == m_strValue)
+			if (L"maximized" == m_strValue)
 				return 0;
-			if (_T("minimized") == m_strValue)
+			if (L"minimized" == m_strValue)
 				return 1;
-			if (_T("restored") == m_strValue)
+			if (L"restored" == m_strValue)
 				return 2;
 			return 2;
 		}
-		void SplitterBarState::SetBYTECode(const BYTE& src)
+		void SplitterBarState::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

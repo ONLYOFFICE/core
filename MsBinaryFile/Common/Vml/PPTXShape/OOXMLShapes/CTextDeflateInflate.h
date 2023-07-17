@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,70 +34,5 @@
 
 namespace OOXMLShapes
 {
-	class CTextDeflateInflate : public CPPTXShape
-	{
-		public:
-			CTextDeflateInflate()
-			{
-				LoadFromXML(
-					_T("<ooxml-shape>")
-					_T("<avLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<gd name=\"adj\" fmla=\"val 35000\" />")
-					_T("</avLst>")
-					_T("<gdLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<gd name=\"a\" fmla=\"pin 5000 adj 95000\" />")
-					  _T("<gd name=\"dy\" fmla=\"*/ a h 100000\" />")
-					  _T("<gd name=\"del\" fmla=\"*/ h 5 100\" />")
-					  _T("<gd name=\"dh1\" fmla=\"*/ h 45 100\" />")
-					  _T("<gd name=\"dh2\" fmla=\"*/ h 55 100\" />")
-					  _T("<gd name=\"yh\" fmla=\"+- dy 0 del\" />")
-					  _T("<gd name=\"yl\" fmla=\"+- dy del 0\" />")
-					  _T("<gd name=\"y3\" fmla=\"+- yh yh dh1\" />")
-					  _T("<gd name=\"y4\" fmla=\"+- yl yl dh2\" />")
-					_T("</gdLst>")
-					_T("<ahLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<ahXY gdRefY=\"adj\" minY=\"5000\" maxY=\"95000\">")
-						_T("<pos x=\"hc\" y=\"dy\" />")
-					  _T("</ahXY>")
-					_T("</ahLst>")
-					_T("<pathLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<path>")
-						_T("<moveTo>")
-						  _T("<pt x=\"l\" y=\"t\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"r\" y=\"t\" />")
-						_T("</lnTo>")
-					  _T("</path>")
-					  _T("<path>")
-						_T("<moveTo>")
-						  _T("<pt x=\"l\" y=\"dh1\" />")
-						_T("</moveTo>")
-						_T("<quadBezTo>")
-						  _T("<pt x=\"hc\" y=\"y3\" />")
-						  _T("<pt x=\"r\" y=\"dh1\" />")
-						_T("</quadBezTo>")
-					  _T("</path>")
-					  _T("<path>")
-						_T("<moveTo>")
-						  _T("<pt x=\"l\" y=\"dh2\" />")
-						_T("</moveTo>")
-						_T("<quadBezTo>")
-						  _T("<pt x=\"hc\" y=\"y4\" />")
-						  _T("<pt x=\"r\" y=\"dh2\" />")
-						_T("</quadBezTo>")
-					  _T("</path>")
-					  _T("<path>")
-						_T("<moveTo>")
-						  _T("<pt x=\"l\" y=\"b\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"r\" y=\"b\" />")
-						_T("</lnTo>")
-					  _T("</path>")
-					_T("</pathLst>")
-					_T("</ooxml-shape>")
-				);
-			}
-	};
+	DEFINE_SHAPE_CLASS(CTextDeflateInflate, CPPTXShape)
 }

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -61,10 +61,23 @@ namespace XLSB
         record.skipNunBytes(1); // unused
     }
 
+	void SrvFmtCV::save(XLS::CFRecord& record)
+	{
+		record << ciRed << ciGreen << ciBlue;
+		record.reserveNunBytes(1); // unused
+	}
+
     _UINT32 SrvFmtCV::toHex()
     {
         return ((ciRed & 0xff) << 16) + ((ciGreen & 0xff) << 8) + (ciBlue & 0xff);
     }
+
+	void SrvFmtCV::fromHex(_UINT32 hexValue)
+	{
+		ciRed = ((hexValue >> 16) & 0xFF) / 255.0;  // Extract the RR byte
+		ciGreen = ((hexValue >> 8) & 0xFF) / 255.0;   // Extract the GG byte
+		ciBlue = ((hexValue) & 0xFF) / 255.0;        // Extract the BB byte
+	}
 
 } // namespace XLSB
 

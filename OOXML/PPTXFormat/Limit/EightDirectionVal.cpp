@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		EightDirectionVal::EightDirectionVal()
 		{
-			m_strValue = _T("l");
+			m_strValue = L"l";
 		}
 		void EightDirectionVal::set(const std::wstring& strValue)
 		{
-			if ((_T("ld") == strValue) ||
-				(_T("lu") == strValue) ||
-				(_T("rd") == strValue) ||
-				(_T("ru") == strValue) ||
-				(_T("d") == strValue) ||
-				(_T("l") == strValue) ||
-				(_T("r") == strValue) ||
-				(_T("u") == strValue))
+			if ((L"ld" == strValue) ||
+				(L"lu" == strValue) ||
+				(L"rd" == strValue) ||
+				(L"ru" == strValue) ||
+				(L"d" == strValue) ||
+				(L"l" == strValue) ||
+				(L"r" == strValue) ||
+				(L"u" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE EightDirectionVal::GetBYTECode() const
+		unsigned char EightDirectionVal::GetBYTECode() const
 		{
 			if (L"ld" == m_strValue)	return 0;
 			if (L"lu" == m_strValue)	return 1;
@@ -66,7 +66,7 @@ namespace PPTX
 			if (L"u" == m_strValue)		return 7;
 			return 0;
 		}
-		void EightDirectionVal::SetBYTECode(const BYTE& src)
+		void EightDirectionVal::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

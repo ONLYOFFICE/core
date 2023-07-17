@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -476,11 +476,12 @@ void xlsx_table_state::serialize_header_footer (std::wostream & strm)
 	{			
 		CP_XML_NODE(L"headerFooter")
 		{
-			if (master_style_->style_header_left_ || master_style_->style_footer_left_)
+			if ((header_even && header_even->attlist_.style_display_) || (footer_even && footer_even->attlist_.style_display_))
 			{
 				CP_XML_ATTR(L"differentOddEven",  1);
 			}
-			if (master_style_->style_header_first_ || master_style_->style_footer_first_)
+			if ((header_first && header_first->attlist_.style_display_ && !header_first->content_.empty()) ||
+				(footer_first && footer_first->attlist_.style_display_ && !footer_first->content_.empty()))
 			{
 				CP_XML_ATTR(L"differentFirst",  1);
 			}
@@ -631,18 +632,20 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 							CP_XML_ATTR(L"xSplit", bXSplit ? nXSplit : 0);			
 							CP_XML_ATTR(L"ySplit", bYSplit ? nYSplit : 0);			
 							CP_XML_ATTR(L"topLeftCell", getCellAddress(nXSplit, nYSplit));
-							CP_XML_ATTR(L"activePane", L"bottomLeft");
-							CP_XML_ATTR(L"state", L"frozen");			
+							//CP_XML_ATTR(L"activePane", L"bottomLeft");
+							CP_XML_ATTR(L"activePane", L"topLeft");
+							CP_XML_ATTR(L"state", L"frozen");
 						}	
 					}
 					if (col >= 0 && row >= 0)
 					{
 						CP_XML_NODE(L"selection")
 						{	
-							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
-							CP_XML_ATTR(L"activeCellId",	0);			
-							CP_XML_ATTR(L"pane",			((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
-							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCell", getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCellId", 0);			
+							//CP_XML_ATTR(L"pane", ((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
+							CP_XML_ATTR(L"activePane", L"topLeft");
+							CP_XML_ATTR(L"sqref", getCellAddress(col, row));
 						}						
 					}
 				}

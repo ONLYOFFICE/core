@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,12 +32,8 @@
 #pragma once
 
 #include "OOXFontReader.h"
-#include "OOXReaderBasic.h"
 #include "OOXColorReader.h"
-#include "OOXShadingReader.h"
-#include "OOXBorderReader.h"
 
-#include "../../Format/RtfDocument.h"
 #include "../../Format/RtfProperty.h"
 
 class OOXrPrReader
@@ -47,20 +43,12 @@ private:
 
 	PPTX::Logic::RunProperties *	m_drawingRunProps;
 	OOX::Logic::CRunProperty *		m_ooxRunProps;
+
 public: 
 	bool m_bDefStyle;
 	
-	OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxRunProps		= ooxRunProps;
-		m_drawingRunProps	= NULL;
-	}
-	OOXrPrReader(PPTX::Logic::RunProperties *ooxRunProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxRunProps		= NULL;
-		m_drawingRunProps	= ooxRunProps;
-	}	
-	bool Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProperty);
+	OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps);
+	OOXrPrReader(PPTX::Logic::RunProperties *ooxRunProps);
+
+	bool Parse( ReaderParameter oParam, RtfCharProperty& oOutputProperty);
 };

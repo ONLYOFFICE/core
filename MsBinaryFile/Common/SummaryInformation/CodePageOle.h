@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,9 +43,8 @@ namespace OLEPS
 class PropertyCodePage : public Property
 {
 public:
-    PropertyCodePage(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type), code_page(0)
-	{
-	}
+	PropertyCodePage(unsigned int prop_type, const unsigned short value_type);
+
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
 
@@ -53,14 +52,12 @@ public:
 	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyCodePage> PropertyCodePagePtr;
+
 //-----------------------------------------------------------------------------------------
 class PropertyString : public Property
 {
 public:
-	PropertyString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
-	{
-		code_page = code_page_;
-	}
+	PropertyString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_);
 	
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
@@ -70,13 +67,12 @@ public:
 	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyString> PropertyStringPtr;
+
 //-----------------------------------------------------------------------------------------
 class PropertyWString : public Property
 {
 public:
-	PropertyWString(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
-	{
-	}
+	PropertyWString(unsigned int prop_type, const unsigned short value_type);
 
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
@@ -84,13 +80,13 @@ public:
 	std::wstring value;
 };
 typedef boost::shared_ptr<PropertyWString> PropertyWStringPtr;
+
 //-----------------------------------------------------------------------------------------
 class PropertyDTM : public Property
 {
 public:
-    PropertyDTM(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
-	{
-	}
+	PropertyDTM(unsigned int prop_type, const unsigned short value_type);
+
 	virtual bool IsEmpty();
 
 	virtual std::wstring toString();
@@ -100,40 +96,38 @@ public:
 	_UINT32 dwHighDateTime;
 };
 typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
+
 //-----------------------------------------------------------------------------------------
 class PropertyInt : public Property
 {
 public:
-    PropertyInt(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
-	{
-	}
+	PropertyInt(unsigned int prop_type, const unsigned short value_type);
+
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
 
 	_UINT32			value;
 };
 typedef boost::shared_ptr<PropertyInt> PropertyIntPtr;
+
 //-----------------------------------------------------------------------------------------
 class PropertyBool : public Property
 {
 public:
-    PropertyBool(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
-	{
-	}
+	PropertyBool(unsigned int prop_type, const unsigned short value_type);
+
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
 
 	bool value;
 };
 typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
+
 //----------------------------------------------------------------------------------
 class PropertyVecString : public Property
 {
 public:
-	PropertyVecString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
-	{
-		code_page = code_page_;
-	}
+	PropertyVecString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_);
 
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
@@ -142,6 +136,7 @@ public:
 	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyVecString> PropertyVecStringPtr;
+
 //----------------------------------------------------------------------------------
 class PropertyVecHeadingPair : public Property
 {
@@ -151,10 +146,7 @@ public:
 		std::wstring headingString;
 		_INT32 headerParts; // + TypeId(2) + Padding(2)
 	};
-	PropertyVecHeadingPair(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
-	{
-		code_page = code_page_;
-	}
+	PropertyVecHeadingPair(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_);
 
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
@@ -163,6 +155,7 @@ public:
 	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyVecHeadingPair> PropertyVecHeadingPairPtr;
+
 //----------------------------------------------------------------------------------
 class PropertyDigSig : public Property
 {
@@ -233,7 +226,8 @@ public:
 		SignatureInfo sigInfo;
 		// padding; //skip for reading
 	};
-	PropertyDigSig(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type) {}
+
+	PropertyDigSig(unsigned int prop_type, const unsigned short value_type);
 
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();

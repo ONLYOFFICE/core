@@ -7,12 +7,13 @@ TARGET = ooxml_crypt
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 
-CONFIG += core_static_link_libstd
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
-ADD_DEPENDENCY(kernel)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib -lCompoundFileLib
+ADD_DEPENDENCY(UnicodeConverter, kernel)
+
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 CONFIG += open_ssl_common
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
@@ -32,7 +33,8 @@ SOURCES += \
 SOURCES += \
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp \
     $$CORE_ROOT_DIR/Common/3dParty/pole/pole.cpp \
-    $$CORE_ROOT_DIR/Common/DocxFormat/Source/Base/unicode_util.cpp
+    $$CORE_ROOT_DIR/MsBinaryFile/DocFile/MemoryStream.cpp \
+    $$CORE_ROOT_DIR/OOXML/Base/unicode_util.cpp
 
 SOURCES += \
     $$PWD/main.cpp
@@ -51,6 +53,5 @@ core_windows {
 }
 
 core_linux {
-    LIBS += -lz -pthread
-    QMAKE_LFLAGS += -Wl,--rpath=./
+    LIBS += -lz -pthread -ldl
 }

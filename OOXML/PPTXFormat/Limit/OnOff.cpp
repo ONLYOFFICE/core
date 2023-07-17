@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		OnOff::OnOff()
 		{
-			m_strValue = _T("def");
+			m_strValue = L"def";
 		}
 		void OnOff::set(const std::wstring& strValue)
 		{
-			if ((_T("on") == strValue) ||
-				(_T("off") == strValue) ||
-				(_T("def") == strValue))
+			if ((L"on" == strValue) ||
+				(L"off" == strValue) ||
+				(L"def" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE OnOff::GetBYTECode() const
+		unsigned char OnOff::GetBYTECode() const
 		{
-			if (_T("on") == m_strValue)
+			if (L"on" == m_strValue)
 				return 0;
-			if (_T("off") == m_strValue)
+			if (L"off" == m_strValue)
 				return 1;
-			if (_T("def") == m_strValue)
+			if (L"def" == m_strValue)
 				return 2;
 			return 2;
 		}
-		void OnOff::SetBYTECode(const BYTE& src)
+		void OnOff::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("on");
+				m_strValue = L"on";
 				break;
 			case 1:
-				m_strValue = _T("off");
+				m_strValue = L"off";
 				break;
 			default:
-				m_strValue = _T("def");
+				m_strValue = L"def";
 				break;
 			}
 		}

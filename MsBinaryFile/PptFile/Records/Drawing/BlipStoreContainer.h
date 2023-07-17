@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,48 +31,14 @@
  */
 #pragma once
 #include "../../Reader/Records.h"
-#include "BlipStoreEntry.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordBlipStoreContainer : public CRecordsContainer
-	{
-	public:
-
-		CRecordBlipStoreContainer()
-		{
-		}
-
-		~CRecordBlipStoreContainer()
-		{
-		}
-
-		void SetUpPicturesInfos(std::vector<int>* pArray)
-		{
-			if (NULL == pArray)
-				return;
-
-			pArray->clear();
-
-			std::map<_UINT32, int> image_map;
-			for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
-			{
-				CRecordBlipStoreEntry* pEntry = dynamic_cast<CRecordBlipStoreEntry*>(m_arRecords[nIndex]);
-				if (NULL != pEntry)
-				{
-					image_map.insert(std::pair<_UINT32, int>(pEntry->m_nFoDelay, pArray->size()));
-
-					int offset = pEntry->m_nFoDelay;
-					if (0 == pEntry->m_oHeader.RecInstance)	offset = -1;
-
-					if (pEntry->m_oHeader.RecType == 0xf007)
-					{
-						//inside here?
-					}
-
-					pArray->push_back(offset);
-				}
-			}
-		}
-	};
+class CRecordBlipStoreContainer : public CRecordsContainer
+{
+public:
+    CRecordBlipStoreContainer();
+    ~CRecordBlipStoreContainer();
+    void SetUpPicturesInfos(std::vector<int>* pArray);
+};
 }

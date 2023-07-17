@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,6 +34,25 @@
 #include "../OOXml/Writer/OOXRelsWriter.h"
 #include "RtfDocument.h"
 #include "../../Common/OfficeFileFormatChecker.h"
+
+RtfOle::RtfOle()
+{
+	SetDefault();
+}
+RtfOle::~RtfOle()
+{
+	SetDefault();
+}
+
+int RtfOle::GetType( )
+{
+	return TYPE_RTF_OLE;
+}
+bool RtfOle::IsValid()
+{
+	return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && L"" != m_sOleFilename;
+			/*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
+}
 
 std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
@@ -232,4 +251,21 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 	//}
 	sResult += L"}";
 	return sResult;
+}
+
+void RtfOle::SetFilename( std::wstring sFilename )
+{
+	m_sOleFilename = sFilename;
+}
+void RtfOle::SetDefault()
+{
+	m_eOleType	 = ot_none;
+	m_nShapeId	= PROP_DEF;
+	m_nWidth	= PROP_DEF;
+	m_nHeight	= PROP_DEF;
+
+	Utils::RemoveDirOrFile( m_sOleFilename );
+	m_sOleFilename = L"";
+
+	m_oCharProperty.SetDefault();
 }

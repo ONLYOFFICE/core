@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#include "OOXStyleReader.h"
-#include "OOXDocDefaultsReader.h"
 
 #include "../../../OOXML/DocxFormat/Styles.h"
 
@@ -41,38 +39,7 @@ private:
 	OOX::CStyles* m_ooxStyles;
 
 public: 
-	OOXStyleTableReader(OOX::CStyles* ooxStyles)
-	{
-		m_ooxStyles = ooxStyles;
-	}
+	OOXStyleTableReader(OOX::CStyles* ooxStyles);
 	
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxStyles == NULL) return false;
-
-		if (m_ooxStyles->m_oDocDefaults.IsInit())
-		{
-			OOXDocDefaultsReader oDocDefaultsReader(m_ooxStyles->m_oDocDefaults.GetPointer());
-			oDocDefaultsReader.Parse( oParam );
-		}
-		
-		for (size_t i = 0; i< m_ooxStyles->m_arrStyle.size(); i++)
-		{
-			RtfStylePtr oNewStyle;
-			OOXStyleReader oStyleReader(m_ooxStyles->m_arrStyle[i]);
-			
-			oStyleReader.ParseStyle( oParam, oNewStyle);
-			
-			if( NULL != oNewStyle )
-				oParam.oRtf->m_oStyleTable.AddItem( oNewStyle );
-		}
-		//только чтобы добавить связи между стилями
-		
-		for (size_t i=0; i< m_ooxStyles->m_arrStyle.size(); i++)
-		{
-			OOXStyleReader oStyleReader(m_ooxStyles->m_arrStyle[i]);
-			oStyleReader.ParseRelations( oParam );
-		}	
-		return true;
-	}
+	bool Parse( ReaderParameter oParam );
 };

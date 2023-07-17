@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndPNames>())
         {
-            m_BrtEndPNames = elements_.back();
+            m_bBrtEndPNames = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPNames = false;
 
-        return m_BrtBeginPNames && m_BrtEndPNames;
+        return m_BrtBeginPNames && m_bBrtEndPNames;
     }
+
+	const bool PNAMES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPNames == nullptr)
+			m_BrtBeginPNames = XLS::BaseObjectPtr(new XLSB::BeginPNames());
+
+		if (m_BrtBeginPNames != nullptr)
+		{
+			auto ptrBrtBeginPNames = static_cast<XLSB::BeginPNames*>(m_BrtBeginPNames.get());
+
+			if (ptrBrtBeginPNames != nullptr)
+				ptrBrtBeginPNames->cnames = m_arPNAME.size();
+
+			proc.mandatory(*m_BrtBeginPNames);
+		}
+
+		for (auto &item : m_arPNAME)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPNames>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

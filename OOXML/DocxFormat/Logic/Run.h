@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,31 +31,27 @@
  */
 #pragma once
 
-#include "RunProperty.h"
-#include "RunContent.h"
-#include "FldChar.h"
-#include "FldSimple.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
 
-#include "../Drawing/Drawing.h"
-#include "../Comments.h"
-#include "Pict.h"
-#include "Annotations.h"
-#include "AlternateContent.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+namespace SimpleTypes
+{
+	class CLongHexNumber;
+}
 
 namespace OOX
 {
 	namespace Logic
 	{
+        class CRunProperty;
 		//--------------------------------------------------------------------------------
 		// CRun 17.3.2.25 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun(OOX::Document *pMain = NULL);
-			CRun(XmlUtils::CXmlNode &oNode);
-			CRun(XmlUtils::CXmlLiteReader& oReader);
+			CRun(OOX::Document *pMain = NULL, WritingElement *parent = NULL);
+
 			virtual ~CRun();
 
 			const CRun &operator =(const XmlUtils::CXmlNode& oNode);
@@ -82,6 +78,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidRPr;
 			OOX::Logic::CRunProperty				*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
+			WritingElement *m_oParent = NULL;
 		};
 	} // namespace Logic
 } // namespace OOX

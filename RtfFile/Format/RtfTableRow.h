@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,61 +38,11 @@ class RtfTableRow : public IDocumentElement, public ItemContainer< RtfTableCellP
 {
 public: 
 	RtfRowProperty m_oProperty;
-	int GetType()
-	{
-		return TYPE_RTF_TABLE_ROW;
-	}
-	RtfTableRow()
-	{
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		sResult += L"\n";
-		if( RENDER_TO_RTF_PARAM_NESTED == oRenderParameter.nType )
-		{
-			for (size_t i = 0; i < m_aArray.size(); i++ )
-			{
-				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
-			}
-			sResult += L"{\\*\\nesttableprops";
-			sResult += m_oProperty.RenderToRtf( oRenderParameter );
-			sResult += L"\\nestrow}{\\nonesttables \\par}";
-		}
-		else
-		{
-			sResult += m_oProperty.RenderToRtf( oRenderParameter );
-			for (size_t i = 0; i < m_aArray.size(); i++ )
-			{
-				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
-			}
-			sResult += L"\\row";
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		XmlUtils::CXmlWriter oXmlWriter;
-		oXmlWriter.WriteNodeBegin(L"w:tr",0);
-		
-		RenderParameter oNewParam = oRenderParameter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-        std::wstring sRowProp = m_oProperty.RenderToOOX(oNewParam);
-		if( false == sRowProp.empty() )
-		{
-            std::wstring sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
-			oXmlWriter.WriteString(sXml);
-		}
-		for (size_t i = 0 ; i < m_aArray.size(); i++)
-		{
-			oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );
-		}
-		oXmlWriter.WriteNodeEnd(L"w:tr");
-		return oXmlWriter.GetXmlString();
-	}
+	RtfTableRow();
+	int GetType();
 
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
-
-
 typedef boost::shared_ptr<RtfTableRow> RtfTableRowPtr;

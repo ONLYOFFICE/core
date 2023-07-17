@@ -38,7 +38,7 @@ XMLPUBVAR unsigned int xmlParserMaxDepth;
  * use XML_PARSE_HUGE option to override it.
  * Introduced in 2.9.0
  */
-#define XML_MAX_TEXT_LENGTH 10000000
+#define XML_MAX_TEXT_LENGTH 15000000
 
 /**
  * XML_MAX_NAME_LENGTH:
@@ -60,7 +60,7 @@ XMLPUBVAR unsigned int xmlParserMaxDepth;
  * use XML_PARSE_HUGE option to override it.
  * Introduced in 2.9.0
  */
-#define XML_MAX_DICTIONARY_LIMIT 10000000
+#define XML_MAX_DICTIONARY_LIMIT 15000000
 
 /**
  * XML_MAX_LOOKUP_LIMIT:
@@ -70,7 +70,7 @@ XMLPUBVAR unsigned int xmlParserMaxDepth;
  * behaviour on "unfriendly' content
  * Introduced in 2.9.0
  */
-#define XML_MAX_LOOKUP_LIMIT 10000000
+#define XML_MAX_LOOKUP_LIMIT 15000000
 
 /**
  * XML_MAX_NAMELEN:

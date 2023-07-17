@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,6 +30,8 @@
  *
  */
 #include "oMathPara.h"
+#include "../Logic/Run.h"
+
 namespace OOX
 {	
 	namespace Logic
@@ -58,23 +60,23 @@ namespace OOX
 		}
 		void COMathPara::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;			
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						if ( _T("w:r") == sName )
-							pItem = new CRun( oItem );
+							AssignPtrXmlContent(pItem, CRun, oItem)
 						else if ( _T("m:oMath") == sName )
-							pItem = new COMath( oItem );
+							AssignPtrXmlContent(pItem, COMath, oItem)
 						else if ( _T("m:oMathParaPr") == sName )
-							pItem = new COMathParaPr( oItem );
+							AssignPtrXmlContent(pItem, COMathParaPr, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -94,11 +96,11 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					AssignPtrXmlContent(pItem, COMath, oReader)
 				else if ( _T("m:oMathParaPr") == sName )
-					pItem = new COMathParaPr( oReader );
+					AssignPtrXmlContent(pItem, COMathParaPr, oReader)
 				else if ( _T("w:r") == sName )
-					pItem = new CRun( oReader );
+					AssignPtrXmlContent(pItem, CRun, oReader)
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );

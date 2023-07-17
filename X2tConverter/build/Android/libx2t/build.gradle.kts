@@ -1,8 +1,39 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id("com.android.library")
     kotlin("android")
+    id("maven-publish")
+}
+
+apply {
+    from("../extras/gradle/common.gradle")
+}
+
+val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = PublishEditors.groupId
+            artifactId = PublishEditors.x2tId
+            version = PublishEditors.version
+            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("${PublishEditors.publishUrl}/")
+            credentials {
+                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
+                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
+            }
+        }
+    }
 }
 
 android {
@@ -10,6 +41,11 @@ android {
     buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
     compileSdk = AppDependency.COMPILE_SDK_VERSION
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
+
+    publishing {
+        singleVariant("release") {
+        }
+    }
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION
@@ -50,7 +86,6 @@ android {
     sourceSets {
         getByName("main") {
             java.srcDir("src/main/java")
-            jni.srcDir("src/main/cpp")
             jniLibs.srcDirs(
                 arrayOf(
                     extra.get("PATH_LIB_DST") as String,
@@ -91,7 +126,7 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.extra.get("kotlin_version")}")
 }
 
@@ -104,12 +139,17 @@ dependencies {
 fun getProjectPath(path: String, isRelativeCreate: Boolean = true): String {
     val absolutePath = file(path)
     val relativePath = file("${file(".").absolutePath}/$path")
-    //def relativePath = file("${rootProject.projectDir}/path")
+
+    val replaced = if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+       "\\"
+    } else {
+        "\\\\"
+    }
 
     if (absolutePath.exists() && absolutePath.isDirectory) {
-        return absolutePath.toString().replace("\\\\", "/")
+        return absolutePath.toString().replace(replaced, "/")
     } else if ((relativePath.exists() && relativePath.isDirectory) || (isRelativeCreate && relativePath.mkdirs())) {
-        return relativePath.toString().replace("\\\\", "/")
+        return relativePath.toString().replace(replaced, "/")
     }
 
     throw GradleException("getProjectPath($path) - path doesn't exist...")
@@ -135,8 +175,13 @@ tasks.create("copyIcuDatFiles") {
             throw GradleException("Property PATH_SRC_ICU_V8_DAT_FILE with core repository path doesn't exist...")
         }
 
+        if (!project.hasProperty("PATH_SRC_ICU_V8_EXTRA_DAT_FILE")) {
+            throw GradleException("Property PATH_SRC_ICU_V8_EXTRA_DAT_FILE with core repository path doesn't exist...")
+        }
+
         val pathIcuDatFiles = project.extra.get("PATH_SRC_ICU_DAT_FILE") as String
         val pathIcuV8DatFiles = project.extra.get("PATH_SRC_ICU_V8_DAT_FILE") as String
+        val pathIcuV8DatExtraFiles = project.extra.get("PATH_SRC_ICU_V8_EXTRA_DAT_FILE") as String
 
         if (!file(pathIcuDatFiles).exists()) {
             throw GradleException("Path with build_tools repository doesn't exist...")
@@ -146,9 +191,13 @@ tasks.create("copyIcuDatFiles") {
             throw GradleException("Path with core repository doesn't exist...")
         }
 
+        if (!file(pathIcuV8DatExtraFiles).exists()) {
+            throw GradleException("Path with core repository doesn't exist...")
+        }
+        
         copy {
             println("\nCopy dat files...")
-            from(pathIcuDatFiles, pathIcuV8DatFiles)
+            from(pathIcuDatFiles, pathIcuV8DatFiles, pathIcuV8DatExtraFiles)
             into(pathAssets)
         }
     }

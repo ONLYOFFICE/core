@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,12 +30,19 @@
  *
  */
 #pragma once
+
 #include "OOXRunReader.h"
 #include "OOXpPrReader.h"
-#include "OOXMathReader.h"
 
 #include "../../Format/RtfDocument.h"
-#include "../../Format/RtfField.h"
+
+namespace OOX
+{
+    namespace Logic
+    {
+        class CParagraph;
+    }
+}
 
 class OOXParagraphReader
 {
@@ -43,31 +50,14 @@ private:
 	PPTX::Logic::Paragraph								*m_drawingParagraph;
 	OOX::Logic::CParagraph								*m_ooxParagraph;
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElement;
+
 public: 
 	RtfCharProperty										m_oCharProperty;
 
-	OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph)
-	{
-		m_ooxElement		= NULL; 
-		m_ooxParagraph		= ooxParagraph;
-		m_drawingParagraph	= NULL;
-		
-		m_oCharProperty.SetDefault();
-	}
-	OOXParagraphReader (PPTX::Logic::Paragraph *ooxParagraph)
-	{
-		m_ooxElement		= NULL; 
-		m_ooxParagraph		= NULL;
-		m_drawingParagraph	= ooxParagraph;
-		
-		m_oCharProperty.SetDefault();
-	}
-	OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement)
-	{
-		m_drawingParagraph	= NULL;
-		m_ooxParagraph		= NULL;
-		m_ooxElement		= ooxElement;
-	}
+    OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph);
+    OOXParagraphReader (PPTX::Logic::Paragraph *ooxParagraph);
+    OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement);
+
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle);
 	bool Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle);
 	bool Parse3( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle, OOX::WritingElement* m_ooxElement);

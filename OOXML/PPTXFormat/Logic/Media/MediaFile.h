@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,66 +43,27 @@ namespace PPTX
 		class MediaFile : public WrapperWritingElement
 		{
 		public:			
-			WritingElement_AdditionConstructors(MediaFile)
+			WritingElement_AdditionMethods(MediaFile)
 
-			MediaFile(std::wstring name_)
-			{
-				name = name_;
-			}
+			MediaFile();
+			MediaFile(std::wstring name_);
 
-			MediaFile& operator=(const MediaFile& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			MediaFile& operator=(const MediaFile& oSrc);
 
-				name = oSrc.name;
-				link = oSrc.link;
-				contentType = oSrc.contentType;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				name = XmlUtils::GetNameNoNS(oReader.GetName());
-				
-				ReadAttributes(oReader);
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name		= XmlUtils::GetNameNoNS(node.GetName());
-				link		= node.GetAttribute(_T("r:link"));
-				XmlMacroReadAttributeBase(node, L"contentType", contentType);
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"r:link",	link)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"contentType",	contentType)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"r:link", link.ToString());
-				oAttr.Write(L"contentType", contentType);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				return XmlUtils::CreateNode(L"a:" + name, oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:" + name);
-					pWriter->StartAttributes();
-						pWriter->WriteAttribute (L"r:link", link.ToString());
-						pWriter->WriteAttribute (L"contentType", contentType);
-					pWriter->EndAttributes();
-				pWriter->EndNode(L"a:" + name);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring		name;
 			OOX::RId			link;
 			nullable_string		contentType;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

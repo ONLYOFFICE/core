@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -54,6 +54,7 @@ public:
 	virtual void end_document();
 
 	void set_tables_structure_lock(bool val);
+	void set_repeat_at_lasts(bool val);
 
 	void start_sheet();
         void set_sheet_dimension(const std::wstring & ref);
@@ -100,16 +101,11 @@ public:
 //-----------------------------------------------------------------------
 	ods_table_state_ptr & current_table() { return table_context_.state();}
 //-----------------------------------------------------------------------
-	virtual void start_text_context();
-	virtual void end_text_context();
 
-	virtual odf_drawing_context		* drawing_context()	{return current_table()->drawing_context();}
-	virtual odf_text_context		* text_context()	{return current_text_context_;}
+	virtual odf_drawing_context		* drawing_context();
+	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context(){return current_table()->controls_context();}
 	
-	void start_drawings();
-	void end_drawings();
-
 	bool start_header(int type);
 	bool start_footer(int type);
 	void end_header_footer();
@@ -140,10 +136,10 @@ public:
 
 	std::vector<ods_external_state>	externals_;
 private:
-	ods_table_context			table_context_;
-	
-	odf_text_context*			current_text_context_;
-	office_spreadsheet*			root_spreadsheet_;
+	ods_table_context table_context_;	
+	office_spreadsheet* root_spreadsheet_;
+	bool repeat_at_lasts_ = true;
+	bool header_row_ = false;
 };
 
 

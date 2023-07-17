@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -125,7 +125,7 @@ public:
 		default_cell_properties.clear();
 	}
 
-	odf_style_context *styles_context() {return odf_context_->styles_context();}
+	odf_style_context *styles_context() {return odf_context_->styles_context().get();}
 
 	odf_conversion_context *odf_context_; 
 
@@ -155,7 +155,13 @@ void odf_table_context::set_table_styled(bool val)
 {
 	impl_->current_table().styled = val;
 }
+bool odf_table_context::is_styled(int row, int col)
+{
+	if (impl_->empty()) return false;
+	if (!impl_->current_table().styled) return false;
 
+	return impl_->styles_context()->table_styles().is_styled(row, col);
+}
 bool odf_table_context::is_styled()
 {
 	if (impl_->empty()) return false;
@@ -171,7 +177,7 @@ void odf_table_context::set_table_size(size_t cols, size_t rows)
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
 	table_table * table = dynamic_cast<table_table *>(elm.get());
-	if (!table)return;	
+	if (!table) return;	
 	
 	odf_table_state state;
 	
@@ -213,7 +219,7 @@ void odf_table_context::end_table()
 	{
 		if (impl_->current_table().table_width > 0)
 		{
-			style_table_properties * table_props = style_->content_.get_style_table_properties();
+			style_table_properties * table_props = style_->content_.add_get_style_table_properties();
 			if (table_props)
 			{
 				table_props->content_.style_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
@@ -449,7 +455,7 @@ void odf_table_context::set_column_optimal(bool val)
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
 
 	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
+	style_table_column_properties *properties = style_->content_.add_get_style_table_column_properties();
 	if (properties == NULL) return;
 
 	properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -477,7 +483,7 @@ void odf_table_context::change_current_column_width(double width)
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns[index].style_elm.get());
 
 	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
+	style_table_column_properties *properties = style_->content_.add_get_style_table_column_properties();
 	if (properties == NULL) return;
 
 	length length_ = length(length(width, length::pt).get_value_unit(length::cm), length::cm);
@@ -498,7 +504,7 @@ void odf_table_context::set_column_width(double width)
 	if (impl_->current_table().columns.empty())return;
 
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
-	style_table_column_properties *properties = style_ ? style_->content_.get_style_table_column_properties() : NULL;
+	style_table_column_properties *properties = style_ ? style_->content_.add_get_style_table_column_properties() : NULL;
 
 	if (width > 0)
 	{

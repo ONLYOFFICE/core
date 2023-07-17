@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,13 +48,13 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if(name == _T("r"))
-				Elem.reset(new Logic::Run(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Run>(oReader));
 			else if(name == _T("fld"))
-				Elem.reset(new Logic::Fld(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Fld>(oReader));
 			else if(name == _T("br"))
-				Elem.reset(new Logic::Br(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Br>(oReader));
 			else if(name == _T("m"))
-				Elem.reset(new Logic::MathParaWrapper(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::MathParaWrapper>(oReader));
 			else
 				Elem.reset();
 		}
@@ -63,13 +63,13 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if(name == _T("r"))
-				Elem.reset(new Logic::Run(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Run>(node));
 			else if(name == _T("fld"))
-				Elem.reset(new Logic::Fld(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Fld>(node));
 			else if(name == _T("br"))
-				Elem.reset(new Logic::Br(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Br>(node));
 			else if(name == _T("m"))
-				Elem.reset(new Logic::MathParaWrapper(node));
+				Elem.reset(CreatePtrXmlContent<Logic::MathParaWrapper>(node));
 			else
 				Elem.reset();
 		}

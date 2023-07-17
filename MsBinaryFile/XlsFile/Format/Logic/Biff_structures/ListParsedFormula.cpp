@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,6 +39,12 @@ ListParsedFormula::ListParsedFormula() : ParsedFormula(CellRef())
 {
 }
 
+ListParsedFormula& ListParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
+
 BiffStructurePtr ListParsedFormula::clone()
 {
 	return BiffStructurePtr(new ListParsedFormula(*this));
@@ -48,28 +54,80 @@ void ListParsedFormula::load(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce;
+        _UINT16 cce;
         record >> cce;
         record.skipNunBytes(2); // unused
         rgce.load(record, cce);
     }
     else
     {
-        unsigned int cce;
+        _UINT32 cce;
         record >> cce;
 
         rgce.load(record, cce);
 
-        unsigned int cb;
+        _UINT32 cb;
         record >> cb;
 
         if(cb > 0)
             rgcb.load(record, rgce.getPtgs(), false);
     }
 }
+void ListParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+			record.reserveNunBytes(2); // unused
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+	}
+	else
+	{
+		_UINT32 size = 0;
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		saving(rgcb);
+	}
+}
 //-------------------------------------------------------------------------------
 ListParsedArrayFormula::ListParsedArrayFormula() : ArrayParsedFormula(false, CellRef())
 {
+}
+
+ListParsedArrayFormula& ListParsedArrayFormula::operator=(const std::wstring& value)
+{
+	ArrayParsedFormula::operator = (value);
+	return *this;
 }
 
 BiffStructurePtr ListParsedArrayFormula::clone()
@@ -80,6 +138,11 @@ BiffStructurePtr ListParsedArrayFormula::clone()
 void ListParsedArrayFormula::load(CFRecord& record)
 {
 	ArrayParsedFormula::load(record);
+}
+
+void ListParsedArrayFormula::save(CFRecord& record)
+{
+	ArrayParsedFormula::save(record);
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -76,11 +76,11 @@ void StreamCacheReader::SkipRecord(bool log_debug)
 	{
 		if (log_debug)
 		{
-			CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
-			if (rec_name.empty())
-				Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
-			else
-				Log::warning("The record has been skipped (" + rec_name + ")");
+		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
+		if (rec_name.empty())
+			Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
+		else
+			Log::warning("The record has been skipped (" + rec_name + ")");
 		}
 		records_cache.pop_front(); 
 	}
@@ -524,7 +524,9 @@ const size_t BinaryStreamCacheReader::readFromStream(const size_t num_of_records
 //Return current position in stream
 const int BinaryStreamCacheReader::GetRecordPosition()
 {
-    return binaryStream_->GetPos() - records_cache.front()->getDataSize() - records_cache.front()->getSizeOfRecordTypeRecordLength();
+	if(!records_cache.empty())
+		return binaryStream_->GetPos() - records_cache.front()->getDataSize() - records_cache.front()->getSizeOfRecordTypeRecordLength();
+	return 0;
 }
 
 void BinaryStreamCacheReader::SetRecordPosition(const int position)

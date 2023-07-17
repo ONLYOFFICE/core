@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -57,7 +57,7 @@ namespace odf_reader {
 static formulasconvert::odf2oox_converter formulas_converter;
 
 
-int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) 
+int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_ptr text_properties, bool need_cache)
 {
 	if (elements_.empty()) return -1;
 
@@ -69,7 +69,7 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
         elements_[i]->xlsx_convert(Context);
 	}
    
-	const int sharedStrId = Context.get_table_context().end_cell_content();
+	const int sharedStrId = Context.get_table_context().end_cell_content(need_cache);
 
     return sharedStrId;
 }
@@ -398,6 +398,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
+
+	if (sparkline_groups_)
+	{
+		sparkline_groups_->xlsx_convert(Context);
+	}
 
 	for (size_t i = 0 ; i < table_named_.size(); i++)
 	{
@@ -732,7 +737,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -922,14 +927,14 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			&cellFormat, num_format, num_format_type, false, is_style_visible);
 	}
 
-	bool need_content_convert = false;
+	bool need_cache_convert = false;
 	if (number_val.empty() && !bool_val)
 	{
 		if (false == formula.empty())
 			xlsx_value_type = oox::XlsxCellType::str;
 		else
 		{
-			need_content_convert = true;
+			need_cache_convert = true;
 		}
 	}		
 //---------------------------------------------------------------------------------------------------------	
@@ -944,11 +949,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 //---------------------------------------------------------------------------------------------------------	
-		if (need_content_convert)
-		{
-			need_content_convert = false;
-			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
-		}
+		sharedStringId = content_.xlsx_convert(Context, textFormatProperties, need_cache_convert);
 
 		if (xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)
 		{
@@ -1132,7 +1133,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_content_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
+    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
 	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
     style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
 

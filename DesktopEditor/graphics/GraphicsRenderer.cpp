@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1158,6 +1158,9 @@ HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
         m_pRenderer->m_bIsDarkMode = (1 == lCommand);
 	if (c_nUseDictionaryFonts == lType && m_pFontManager)
 		m_pFontManager->SetUseCorrentFontByName((1 == lCommand) ? true : false);
+	if (c_nPenWidth0As1px == lType && m_pRenderer)
+		m_pRenderer->m_bIs0PenWidthAs1px = (1 == lCommand) ? true : false;
+
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)

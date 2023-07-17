@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,43 +31,16 @@
  */
 #pragma once
 
-
 #include "../../Reader/Records.h"
 #include "../../Enums/_includer.h"
 #include "TimeVariant.h"
 
 
-//-------------------------------------------------------------------------------
-#define CREATE_BY_Instanse(RECORD_Instanse, CLASS_RECORD_NAME)					\
-    case RECORD_Instanse: { pRecord = new CLASS_RECORD_NAME(); break; }				\
-//-------------------------------------------------------------------------------
-
-
-namespace PPT_FORMAT
+namespace PPT
 {
-//TODO
 class FactoryTimeVariant4Behavior
 {
 public:
-    static IRecord* createByInstanse(unsigned short recInstance)
-    {
-        IRecord* pRecord = nullptr;
-
-        switch (recInstance)
-        {
-        CREATE_BY_Instanse(TL_TBPID_UnknownPropertyList,    CRecordTimeVariantString)
-        CREATE_BY_Instanse(TL_TBPID_RuntimeContext,         CRecordTimeRuntimeContext)
-        CREATE_BY_Instanse(TL_TBPID_MotionPathEditRelative, CRecordTimeVariantBool)
-        CREATE_BY_Instanse(TL_TBPID_ColorColorModel,        CRecordTimeColorModel)
-        CREATE_BY_Instanse(TL_TBPID_ColorDirection,         CRecordTimeColorDirection)
-        CREATE_BY_Instanse(TL_TBPID_Override,               CRecordTimeOverride)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationAngle,  CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationX,      CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationY,      CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PointsTypes,            CRecordTimePointsTypes)
-        }
-
-        return pRecord;
-    }
+    static IRecord* createByInstanse(unsigned short recInstance);
 };
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,53 +37,17 @@
 #include "TimeAnimationValueAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
-class CRecordTimeAnimationEntry
+class CRecordTimeAnimationValueListEntry
 {
 public:
 
-    CRecordTimeAnimationEntry()
-    {
+    CRecordTimeAnimationValueListEntry();
+    virtual ~CRecordTimeAnimationValueListEntry();
 
-    }
-
-    virtual ~CRecordTimeAnimationEntry()
-    {
-    }
-
-    virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
-        CurLen += 4;
-
-//        UINT res = 0;
-        SRecordHeader ReadHeader;
-
-        ReadHeader.ReadFromStream(pStream);
-        if ( ReadHeader.RecInstance == 0 &&
-             ReadHeader.RecType == RT_TimeVariant )
-        {
-            m_pVarValue = TimeVariantFactoryMethod( ReadHeader, pStream );
-            CurLen += 8 + ReadHeader.RecLen;
-        }else
-        {
-            StreamUtils::StreamSkipBack(8, pStream);
-        }
-
-        ReadHeader.ReadFromStream(pStream);
-        if ( ReadHeader.RecInstance == 1 &&
-             ReadHeader.RecType == RT_TimeVariant)
-        {
-            m_VarFormula.ReadFromStream ( ReadHeader, pStream );
-            CurLen += 8 + ReadHeader.RecLen;
-        } else
-        {
-            StreamUtils::StreamSkipBack(8, pStream);
-        }
-
-    }
+    virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream );
 
     CRecordTimeAnimationValueAtom       m_oTimeAnimationValueAtom;
     nullable<CRecordTimeVariant>        m_pVarValue;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,10 +40,11 @@ namespace OOX
 {
 	class CSettingsCustom;
 	class CSettings;
+	class CNumbering;
 }
-namespace BinDocxRW {
 
-
+namespace BinDocxRW
+{
 class Binary_CommonReader
 {
 protected:
@@ -111,15 +112,17 @@ public:
 	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read(long stLen, void* poResult);
 	int ReadContent( BYTE type, long length, void* poResult);
+
 	int ReadPPrChange(BYTE type, long length, void* poResult);
 	int ReadInd(BYTE type, long length, void* poResult);
 	int ReadSpacing(BYTE type, long length, void* poResult);
 	int ReadTabs(BYTE type, long length, void* poResult);
 	int ReadTabItem(BYTE type, long length, void* poResult);
 	int ReadNumPr(BYTE type, long length, void* poResult);
+	int ReadTableCellBorders(BYTE type, long length, void* poResult);
+	int ReadTableBorders(BYTE type, long length, void* poResult);
 	int ReadBorders(BYTE type, long length, void* poResult);
 	int ReadBorder(BYTE type, long length, void* poResult);
-	int ReadBorder2(BYTE type, long length, void* poResult);
 	int ReadFramePr(BYTE type, long length, void* poResult);
     int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);
@@ -168,13 +171,10 @@ class Binary_NumberingTableReader : public Binary_CommonReader
 {
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
-	Writers::NumberingWriter& oNumberingWriters;
-	Writers::FontTableWriter& m_oFontTableWriter;
-	std::vector<docNum*> m_aDocNums;
-	std::vector<docANum*> m_aDocANums;
-	std::map<int, int> m_mapANumToNum;
+	
+	OOX::CNumbering *m_pNumbering;
 public:
-	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CNumbering *numbering);
 	int Read();
 	int ReadNumberingContent(BYTE type, long length, void* poResult);
 	int ReadNums(BYTE type, long length, void* poResult);
@@ -286,17 +286,20 @@ private:
     Binary_rPrReader                oBinary_rPrReader;
     Binary_tblPrReader              oBinary_tblPrReader;
 	NSStringUtils::CStringBuilder*	m_pCurWriter;
-    OOX::Logic::CRunProperty		m_oCur_rPr;
+   
+	OOX::Logic::CRunProperty		m_oCur_rPr;
 	OOX::Logic::CRunProperty		m_oMath_rPr;
-	NSStringUtils::CStringBuilder	m_oCur_pPr;
-    BYTE                            m_byteLastElemType;
+	OOX::Logic::CParagraphProperty	m_oCur_pPr;
+    
+	BYTE                            m_byteLastElemType;
 public:
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;
 
 	bool							m_bUsedParaIdCounter;
+	bool							m_bOFormRead;
 
-    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter);
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead);
 	~Binary_DocumentTableReader();
 	
 	int Read();
@@ -506,9 +509,10 @@ private:
     std::wstring					m_sFileInDir;
 	bool							m_bMacro = false;
 	bool							m_bMacroRead = false;
+	bool							m_bOForm = false;
 public:
-		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
-		int ReadFile();
-		int ReadMainTable();
+	BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false, bool bOForm = false);
+	int ReadFile();
+	int ReadMainTable();
 };
 }

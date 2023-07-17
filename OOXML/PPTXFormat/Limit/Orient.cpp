@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,28 +38,28 @@ namespace PPTX
 	{		
 		Orient::Orient()
 		{
-			m_strValue = _T("vert");
+			m_strValue = L"vert";
 		}
 		void Orient::set(const std::wstring& strValue)
 		{
-			if ((_T("horz") == strValue) ||
-				(_T("vert") == strValue))
+			if ((L"horz" == strValue) ||
+				(L"vert" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE Orient::GetBYTECode() const
+		unsigned char Orient::GetBYTECode() const
 		{
-			if (_T("horz") == m_strValue)
+			if (L"horz" == m_strValue)
 				return 0;
 			return 1;
 		}
-		void Orient::SetBYTECode(const BYTE& src)
+		void Orient::SetBYTECode(const unsigned char& src)
 		{
 			if (0 == src)
-				m_strValue = _T("horz");
+				m_strValue = L"horz";
 			else
-				m_strValue = _T("vert");
+				m_strValue = L"vert";
 		}
 	} // namespace Limit
 } // namespace PPTX

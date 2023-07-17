@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,7 +45,7 @@ namespace PPTX
 		class SpTree : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SpTree)
+			WritingElement_AdditionMethods(SpTree)
 
 			SpTree(std::wstring ns = L"p");
 
@@ -56,7 +56,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL, bool in_group = false);
+			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
@@ -80,7 +80,7 @@ namespace PPTX
 		class LockedCanvas : public SpTree
 		{
 		public:
-			WritingElement_AdditionConstructors(LockedCanvas)
+			WritingElement_AdditionMethods(LockedCanvas)
 
 			LockedCanvas();
 

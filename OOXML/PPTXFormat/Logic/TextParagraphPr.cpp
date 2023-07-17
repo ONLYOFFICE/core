@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -104,7 +104,8 @@ namespace PPTX
 							std::wstring sName1 = oReader.GetName();
 							if (_T("a:tab") == sName1)
 							{
-								Tab tab(oReader);
+								Tab tab;
+								tab = oReader;
 								tabLst.push_back(tab);
 							}
 						}
@@ -143,14 +144,13 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"marR", marR);
 			XmlMacroReadAttributeBase(node, L"rtl", rtl);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -488,7 +488,7 @@ namespace PPTX
 			if(defRPr.is_init())
 				defRPr->SetParentPointer(this);
 		}
-		AVSINLINE void TextParagraphPr::Normalize()
+		void TextParagraphPr::Normalize()
 		{
 			indent.normalize(-51206400, 51206400);
 			lvl.normalize(0, 8);

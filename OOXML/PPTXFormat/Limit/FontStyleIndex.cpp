@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		FontStyleIndex::FontStyleIndex()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void FontStyleIndex::set(const std::wstring& strValue)
 		{
-			if ((_T("major") == strValue) ||
-				(_T("minor") == strValue) ||
-				(_T("none") == strValue))
+			if ((L"major" == strValue) ||
+				(L"minor" == strValue) ||
+				(L"none" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE FontStyleIndex::GetBYTECode() const
+		unsigned char FontStyleIndex::GetBYTECode() const
 		{
-			if (_T("major") == m_strValue)
+			if (L"major" == m_strValue)
 				return 0;
-			if (_T("minor") == m_strValue)
+			if (L"minor" == m_strValue)
 				return 1;
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 2;
 			return 2;
 		}
-		void FontStyleIndex::SetBYTECode(const BYTE& src)
+		void FontStyleIndex::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("major");
+				m_strValue = L"major";
 				break;
 			case 1:
-				m_strValue = _T("minor");
+				m_strValue = L"minor";
 				break;
 			default:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 			}
 		}
 	} // namespace Limit

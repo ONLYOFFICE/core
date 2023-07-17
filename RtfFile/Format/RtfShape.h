@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -234,23 +234,12 @@ public:
 	TextItemContainerPtr	m_aTextItems;
 	RtfPicturePtr			m_oPicture;
 //------------------------------------------------------------------------------------------------------
-	RtfShape()
-	{
-		SetDefault();
-	}
+	RtfShape();
 
-	bool IsValid()
-	{
-		return PROP_DEF != m_nShapeType;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
+	bool IsValid();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
 	void SetDefault();
 
 	void SetNotSupportShape();
@@ -261,31 +250,8 @@ public:
     std::wstring RenderToOOXBegin	(RenderParameter oRenderParameter);
     std::wstring RenderToOOXEnd		(RenderParameter oRenderParameter);
 	
-	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
-	{
-		nAngel = nAngel/ 65536;
-		//поворачиваем на 45 градусов
-		nAngel -= 45;
-		//делаем угол от 0 до 360
-		nAngel = nAngel % 360;
-		
-		if( nAngel < 0 )	nAngel += 360;
+	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom );
 
-		int nQuater = nAngel / 90; // определяем четверть
-		if( 0 == nQuater || 2 == nQuater )
-		{
-			//поворачиваем относительно центра на 90 градусов обратно
-			int nCenterX	= ( nLeft + nRight ) / 2;
-			int nCenterY	= ( nTop + nBottom ) / 2;
-			int nWidth		= nRight - nLeft;
-			int nHeight		= nBottom - nTop;
-
-			nLeft	= nCenterX - nHeight / 2;
-			nRight	= nCenterX + nHeight / 2;
-			nTop	= nCenterY - nWidth / 2;
-			nBottom = nCenterY + nWidth / 2;
-		}
-	}
     std::wstring RenderToRtfShapeProperty(RenderParameter oRenderParameter);
     std::wstring GetShapeNodeName();
    

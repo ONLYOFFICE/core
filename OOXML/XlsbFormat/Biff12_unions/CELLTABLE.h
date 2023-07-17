@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,8 +31,7 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
-
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 
 namespace XLSB
@@ -47,11 +46,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr                   m_BrtBeginSheetData;
+        bool								 m_bBrtBeginSheetData;
         std::vector<XLS::BaseObjectPtr>      m_arParenthesis_CELLTABLE;
-        XLS::BaseObjectPtr                   m_BrtEndSheetData;
+		bool			                     m_bBrtEndSheetData;
 
         std::vector<XLS::CellRangeRef>      shared_formulas_locations_ref_;
 
@@ -61,13 +61,13 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
     public:
-
         Parenthesis_CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
         ~Parenthesis_CELLTABLE();
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr                    m_ACCELLTABLE;
         XLS::BaseObjectPtr                    m_BrtRowHdr;

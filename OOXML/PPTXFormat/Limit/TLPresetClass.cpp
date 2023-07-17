@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,21 +38,21 @@ namespace PPTX
 	{		
 		TLPresetClass::TLPresetClass()
 		{
-			m_strValue = _T("exit");
+			m_strValue = L"exit";
 		}
 		void TLPresetClass::set(const std::wstring& strValue)
 		{
-			if ((_T("emph") == strValue) ||
-				(_T("entr") == strValue) ||
-				(_T("exit") == strValue) ||
-				(_T("mediacall") == strValue) ||
-				(_T("path") == strValue) ||
-				(_T("verb") == strValue))
+			if ((L"emph" == strValue) ||
+				(L"entr" == strValue) ||
+				(L"exit" == strValue) ||
+				(L"mediacall" == strValue) ||
+				(L"path" == strValue) ||
+				(L"verb" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLPresetClass::GetBYTECode() const
+		unsigned char TLPresetClass::GetBYTECode() const
 		{
 			if (L"emph" == m_strValue)	return 0;
 			if (L"entr" == m_strValue)	return 1;
@@ -63,7 +63,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLPresetClass::SetBYTECode(const BYTE& src)
+		void TLPresetClass::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

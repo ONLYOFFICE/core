@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,9 @@
 #include "Settings.h"
 #include "../Endnote.h"
 #include "../Footnote.h"
+#include "../Math/oMathContent.h"
+#include "../Logic/Vml.h"
+#include "../Logic/VmlOfficeDrawing.h"
 
 namespace OOX
 {
@@ -238,7 +241,9 @@ namespace Settings
 
 			if ( L"w:autoCaption" == sName )
 			{
-				OOX::Settings::CAutoCaption *oAC = new OOX::Settings::CAutoCaption(oReader);
+				OOX::Settings::CAutoCaption *oAC = new OOX::Settings::CAutoCaption();
+				*oAC = oReader;
+
 				if (oAC) m_arrAutoCaption.push_back( oAC );
 			}
 		}
@@ -384,7 +389,9 @@ namespace Settings
 
 			if ( L"w:caption" == sName )
 			{
-				OOX::Settings::CCaption *oC = new OOX::Settings::CCaption(oReader);
+				OOX::Settings::CCaption *oC = new OOX::Settings::CCaption();
+				*oC = oReader;
+
 				if (oC) m_arrCaption.push_back( oC );
 			}
 			else if ( L"w:autoCaptions" == sName )
@@ -714,7 +721,9 @@ namespace Settings
 				m_oCachedColBalance = oReader;
 			else if ( L"w:compatSetting" == sName )
 			{
-				OOX::Settings::CCompatSetting *oCS = new OOX::Settings::CCompatSetting(oReader);
+				OOX::Settings::CCompatSetting *oCS = new OOX::Settings::CCompatSetting();
+				*oCS = oReader;
+
 				if (oCS)m_arrCompatSettings.push_back( oCS );
 			}
 		}
@@ -832,7 +841,7 @@ namespace Settings
 		sResult += m_oFormatting.ToAttribute( L"w:formatting");
 		sResult += m_oEnforcment.ToAttribute( L"w:enforcement");
 
-		if (m_oCryptProviderType.IsInit())
+		if (m_oCryptProviderType.IsInit() || m_oCryptAlgorithmSid.IsInit())
 		{
 			ComplexTypes_WriteAttribute(L"w:cryptProviderType=\"", m_oCryptProviderType);
 			sResult += m_oAlgIdExt.ToAttribute(L"w:algIdEx");
@@ -1079,7 +1088,9 @@ namespace Settings
 
 			if ( L"w:docVar" == sName )
 			{
-				OOX::Settings::CDocVar *oDV = new OOX::Settings::CDocVar(oReader);
+				OOX::Settings::CDocVar *oDV = new OOX::Settings::CDocVar();
+				*oDV = oReader;
+
 				if (oDV) m_arrDocVar.push_back( oDV );
 			}
 		}
@@ -1450,7 +1461,9 @@ namespace Settings
 
 			if ( L"w:rsid" == sName )
 			{
-				ComplexTypes::Word::CLongHexNumber *oRsid = new ComplexTypes::Word::CLongHexNumber(oReader);
+				ComplexTypes::Word::CLongHexNumber *oRsid = new ComplexTypes::Word::CLongHexNumber();
+				*oRsid = oReader;
+
 				if (oRsid) m_arrRsid.push_back( oRsid );
 			}
 			else if ( L"w:rsidRoot" == sName )
@@ -1736,7 +1749,7 @@ namespace Settings
 
 		sResult += m_oRecommended.ToAttribute( L"w:recommended");
 
-		if (m_oCryptProviderType.IsInit())
+		if (m_oCryptProviderType.IsInit() || m_oCryptAlgorithmSid.IsInit())
 		{
 			ComplexTypes_WriteAttribute(L"w:cryptProviderType=\"", m_oCryptProviderType);
 			sResult += m_oAlgIdExt.ToAttribute(L"w:algIdEx");
@@ -2192,7 +2205,9 @@ namespace Settings
 
 			if ( L"sl:schema" == sName )
 			{
-				OOX::Settings::CSchema *oSchema = new OOX::Settings::CSchema(oReader);
+				OOX::Settings::CSchema *oSchema = new OOX::Settings::CSchema();
+				*oSchema = oReader;
+
 				if (oSchema) m_arrSchema.push_back( oSchema );
 			}
 		}
@@ -2219,6 +2234,9 @@ namespace Settings
 	//--------------------------------------------------------------------------------
 	// CShapeDefaults 9.7.2.1;9.7.2.2 (Part 4)
 	//--------------------------------------------------------------------------------
+	CShapeDefaults::CShapeDefaults()
+	{
+	}
 	CShapeDefaults::CShapeDefaults(EElementType type)
 	{
 		m_eType = type;
@@ -2261,83 +2279,83 @@ namespace Settings
 				{
 				case 'b':
 					if ( L"o:bottom" == sName )
-						pItem = new OOX::VmlOffice::CStrokeChild( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oReader)
 
 					break;
 
 				case 'c':
 					if ( L"o:callout" == sName )
-						pItem = new OOX::VmlOffice::CCallout( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CCallout, oReader)
 					else if ( L"o:clippath" == sName )
-						pItem = new OOX::VmlOffice::CClipPath( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CClipPath, oReader)
 					else if ( L"o:column" == sName )
-						pItem = new OOX::VmlOffice::CStrokeChild( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oReader)
 					else if ( L"o:complex" == sName )
-						pItem = new OOX::VmlOffice::CComplex( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CComplex, oReader)
 
 					break;
 
 				case 'd':
 					if ( L"o:diagram" == sName )
-						pItem = new OOX::VmlOffice::CDiagram( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CDiagram, oReader)
 
 					break;
 
 				case 'e':
 					if ( L"o:equationxml" == sName )
-						pItem = new OOX::VmlOffice::CEquationXml( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CEquationXml, oReader)
 					else if ( L"o:extrusion" == sName )
-						pItem = new OOX::VmlOffice::CExtrusion( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CExtrusion, oReader)
 
 					break;
 
 				case 'f':
 					if ( L"o:fill" == sName )
-						pItem = new OOX::VmlOffice::CFill( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CFill, oReader)
 
 					break;
 
 				case 'i':
 					if ( L"o:ink" == sName )
-						pItem = new OOX::VmlOffice::CInk( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CInk, oReader)
 
 					break;
 
 				case 'l':
 					if ( L"o:left" == sName )
-						pItem = new OOX::VmlOffice::CStrokeChild( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oReader)
 					else if ( L"o:lock" == sName )
-						pItem = new OOX::VmlOffice::CLock( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CLock, oReader)
 
 					break;
 
 				case 'O':
 					if ( L"o:OLEObject" == sName )
-						pItem = new OOX::VmlOffice::COLEObject( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::COLEObject, oReader)
 
 					break;
 
 				case 'r':
 					if ( L"o:right" == sName )
-						pItem = new OOX::VmlOffice::CStrokeChild( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oReader)
 
 					break;
 
 				case 's':
 					if ( L"o:shapedefaults" == sName )
-						pItem = new OOX::VmlOffice::CShapeDefaults( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeDefaults, oReader)
 					else if ( L"o:shapelayout" == sName )
-						pItem = new OOX::VmlOffice::CShapeLayout( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeLayout, oReader)
 					else if ( L"o:signatureline" == sName )
-						pItem = new OOX::VmlOffice::CSignatureLine( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CSignatureLine, oReader)
 					else if ( L"o:skew" == sName )
-						pItem = new OOX::VmlOffice::CSkew( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CSkew, oReader)
 
 					break;
 
 				case 't':
 					if ( L"o:top" == sName )
-						pItem = new OOX::VmlOffice::CStrokeChild( oReader );
+						AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oReader)
 
 					break;
 				}
@@ -2422,6 +2440,7 @@ namespace Settings
 		}
 
 		m_arrSmartTagType.clear();
+		m_oMathPr.reset();
 	}
 	void CSettings::read(const CPath& oFilePath)
 	{
@@ -2619,7 +2638,9 @@ namespace Settings
 					else if ( L"w:showXMLTags"                == sName ) m_oShowXMLTags                = oReader;
 					else if ( L"w:smartTagType"               == sName )
 					{
-						OOX::Settings::CSmartTagType *oSTT = new OOX::Settings::CSmartTagType(oReader);
+						OOX::Settings::CSmartTagType *oSTT = new OOX::Settings::CSmartTagType();
+						*oSTT = oReader;
+
 						if (oSTT) m_arrSmartTagType.push_back( oSTT );
 					}
 					else if ( L"w:strictFirstAndLastChars"    == sName ) m_oStrictFirstAndLastChars    = oReader;

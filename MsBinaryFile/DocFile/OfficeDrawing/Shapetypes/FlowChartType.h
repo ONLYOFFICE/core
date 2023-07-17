@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,7 +70,8 @@ namespace DocFileFormat
             Formulas.push_back(L"prod width 1 2");
             Formulas.push_back(L"prod height 1 2");
 
-            AdjustmentValues	=	L"2700";
+			Adjustments.push_back(2700);
+
             ConnectorLocations	=	L"@8,0;0,@9;@8,@7;@6,@9";
             TextBoxRectangle	=	L"@3,@3,@4,@5";
             Limo				=	L"10800,10800";
@@ -144,9 +145,12 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill	=	true;
 			Joins				=	miter;
-            Path				=	L"m,20172v945,400,1887,628,2795,913c3587,21312,4342,21370,5060,21597v2037,,2567,-227,3095,-285c8722,21197,9325,20970,9855,20800v490,-228,945,-400,1472,-740c11817,19887,12347,19660,12875,19375v567,-228,1095,-513,1700,-740c15177,18462,15782,18122,16537,17950v718,-113,1398,-398,2228,-513c19635,17437,20577,17322,21597,17322l21597,,,xe";
+            
+			Path				=	L"m,20172v945,400,1887,628,2795,913c3587,21312,4342,21370,5060,21597v2037,,2567,-227,3095,-285c8722,21197,9325,20970,9855,20800v490,-228,945,-400,1472,-740c11817,19887,12347,19660,12875,19375v567,-228,1095,-513,1700,-740c15177,18462,15782,18122,16537,17950v718,-113,1398,-398,2228,-513c19635,17437,20577,17322,21597,17322l21597,,,xe";
 
-            AdjustmentValues	=	L"21600,21600";
+			Adjustments.push_back(21600);
+			Adjustments.push_back(21600);
+
             ConnectorLocations	=	L"10800,0;0,10800;10800,20400;21600,10800";
             TextBoxRectangle	=	L"0,0,21600,17322";
 		}
@@ -159,9 +163,12 @@ namespace DocFileFormat
 		{
 			ShapeConcentricFill	=	true;
 			Joins				=	miter;
-            Path				=	L"m,20465v810,317,1620,452,2397,725c3077,21325,3790,21417,4405,21597v1620,,2202,-180,2657,-272c7580,21280,8002,21010,8455,20917v422,-135,810,-405,1327,-542c10205,20150,10657,19967,11080,19742v517,-182,970,-407,1425,-590c13087,19017,13605,18745,14255,18610v615,-180,1262,-318,1942,-408c16975,18202,17785,18022,18595,18022r,-1670l19192,16252r808,l20000,14467r722,-75l21597,14392,21597,,2972,r,1815l1532,1815r,1860l,3675,,20465xem1532,3675nfl18595,3675r,12677em2972,1815nfl20000,1815r,12652e";
+            
+			Path				=	L"m,20465v810,317,1620,452,2397,725c3077,21325,3790,21417,4405,21597v1620,,2202,-180,2657,-272c7580,21280,8002,21010,8455,20917v422,-135,810,-405,1327,-542c10205,20150,10657,19967,11080,19742v517,-182,970,-407,1425,-590c13087,19017,13605,18745,14255,18610v615,-180,1262,-318,1942,-408c16975,18202,17785,18022,18595,18022r,-1670l19192,16252r808,l20000,14467r722,-75l21597,14392,21597,,2972,r,1815l1532,1815r,1860l,3675,,20465xem1532,3675nfl18595,3675r,12677em2972,1815nfl20000,1815r,12652e";
 
-            AdjustmentValues	=	L"21600,21600";
+			Adjustments.push_back(21600);
+			Adjustments.push_back(21600);
+
             ConnectorLocations	=	L"10800,0;0,10800;10800,19890;21600,10800";
             TextBoxRectangle	=	L"0,3675,18595,18022";
 		}
@@ -415,7 +422,13 @@ namespace DocFileFormat
             Path				=	L"m10800,qx,3391l,18209qy10800,21600,21600,18209l21600,3391qy10800,xem,3391nfqy10800,6782,21600,3391e";
 
             ConnectorLocations	=	L"10800,6782;10800,0;0,10800;10800,21600;21600,10800";
-            ConnectorAngles		=	L"270,270,180,90,0";
+            
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"0,6782,21600,18209";
 		}
 	};
@@ -430,7 +443,13 @@ namespace DocFileFormat
             Path				=	L"m21600,10800qy18019,21600l3581,21600qx,10800,3581,l18019,qx21600,10800xem18019,21600nfqx14438,10800,18019,e";
 
             ConnectorLocations	=	L"10800,0;0,10800;10800,21600;14438,10800;21600,10800";
-            ConnectorAngles		=	L"270,180,90,0,0";
+
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"3581,0,14438,21600";
 		}
 	};

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		LineCap::LineCap()
 		{
-			m_strValue = _T("flat");
+			m_strValue = L"flat";
 		}
 		void LineCap::set(const std::wstring& strValue)
 		{
-			if ((_T("flat") == strValue) ||
-				(_T("rnd") == strValue) ||
-				(_T("sq") == strValue))
+			if ((L"flat" == strValue) ||
+				(L"rnd" == strValue) ||
+				(L"sq" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE LineCap::GetBYTECode() const
+		unsigned char LineCap::GetBYTECode() const
 		{
-			if (_T("flat") == m_strValue)
+			if (L"flat" == m_strValue)
 				return 0;
-			if (_T("rnd") == m_strValue)
+			if (L"rnd" == m_strValue)
 				return 1;
-			if (_T("sq") == m_strValue)
+			if (L"sq" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void LineCap::SetBYTECode(const BYTE& src)
+		void LineCap::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 1:
-				m_strValue = _T("rnd");
+				m_strValue = L"rnd";
 				break;
 			case 2:
-				m_strValue = _T("sq");
+				m_strValue = L"sq";
 				break;
 			default:
-				m_strValue = _T("flat");
+				m_strValue = L"flat";
 				break;
 			}
 		}

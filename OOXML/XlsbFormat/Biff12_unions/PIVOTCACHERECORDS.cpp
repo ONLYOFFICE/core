@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -79,12 +79,39 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheRecords>())
         {
-            m_BrtEndPivotCacheRecords = elements_.back();
+            m_bBrtEndPivotCacheRecords = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheRecords = false;
 
-        return m_BrtBeginPivotCacheRecords && !m_arPIVOTCACHERECORD.empty() && m_BrtEndPivotCacheRecords;
+        return m_BrtBeginPivotCacheRecords && !m_arPIVOTCACHERECORD.empty() && m_bBrtEndPivotCacheRecords;
     }
+
+	const bool PIVOTCACHERECORDS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPivotCacheRecords == nullptr)
+			m_BrtBeginPivotCacheRecords = XLS::BaseObjectPtr(new XLSB::BeginPivotCacheRecords());
+
+		if (m_BrtBeginPivotCacheRecords != nullptr)
+		{
+			auto ptrBrtBeginPivotCacheRecords = static_cast<XLSB::BeginPivotCacheRecords*>(m_BrtBeginPivotCacheRecords.get());
+
+			if (ptrBrtBeginPivotCacheRecords != nullptr)
+				ptrBrtBeginPivotCacheRecords->crecords = m_arPIVOTCACHERECORD.size();
+
+			proc.mandatory(*m_BrtBeginPivotCacheRecords);
+		}
+
+		for (auto &item : m_arPIVOTCACHERECORD)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPivotCacheRecords>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

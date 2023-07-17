@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,61 +30,35 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordSplitMenuColorRecord : public CUnknownRecord
-	{
-	public:
-		ODRAW::SColorAtom m_oFillColor;
-		ODRAW::SColorAtom m_oLineColor;
-		ODRAW::SColorAtom m_oShadowColor;
-		ODRAW::SColorAtom m_o3DColor;
+class CRecordSplitMenuColorRecord: public CUnknownRecord
+{
+public:
+    ODRAW::SColorAtom m_oFillColor;
+    ODRAW::SColorAtom m_oLineColor;
+    ODRAW::SColorAtom m_oShadowColor;
+    ODRAW::SColorAtom m_o3DColor;
+	
+    CRecordSplitMenuColorRecord();
+    ~CRecordSplitMenuColorRecord();
 
-		CRecordSplitMenuColorRecord()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 
-		~CRecordSplitMenuColorRecord()
-		{
-		}
+class CRecordMostRecentlyUserColors : public CUnknownRecord
+{
+public:
+    std::vector<ODRAW::SColorAtom>	m_oColors;
+	
 
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
+    CRecordMostRecentlyUserColors();
+    ~CRecordMostRecentlyUserColors();
 
-			NSStreamReader::Read(pStream, m_oFillColor);
-			NSStreamReader::Read(pStream, m_oLineColor);
-			NSStreamReader::Read(pStream, m_oShadowColor);
-			NSStreamReader::Read(pStream, m_o3DColor);
-		}
-	};
-
-	class CRecordMostRecentlyUserColors : public CUnknownRecord
-	{
-	public:
-		std::vector<ODRAW::SColorAtom>	m_oColors;
-
-		CRecordMostRecentlyUserColors()
-		{
-		}
-
-		~CRecordMostRecentlyUserColors()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			for (unsigned int i = 0; i < m_oHeader.RecLen / 4; i++)
-			{
-				ODRAW::SColorAtom color;
-				NSStreamReader::Read(pStream, color);
-
-				m_oColors.push_back(color);
-			}
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

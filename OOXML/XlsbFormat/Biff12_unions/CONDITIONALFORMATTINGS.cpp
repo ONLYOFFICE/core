@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,8 +41,9 @@ using namespace XLS;
 
 namespace XLSB
 {
+	class EndConditionalFormatting;
 
-    CONDITIONALFORMATTINGS::CONDITIONALFORMATTINGS()
+	CONDITIONALFORMATTINGS::CONDITIONALFORMATTINGS()
     {
     }
 
@@ -67,9 +68,11 @@ namespace XLSB
 
         if (proc.optional<BeginConditionalFormattings>())
         {
-            m_BrtBeginConditionalFormattings = elements_.back();
+			m_bBrtBeginConditionalFormattings = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginConditionalFormattings = false;
 
         int count = proc.repeated<CONDITIONALFORMATTING14>(0, 2147483647);
 
@@ -82,19 +85,44 @@ namespace XLSB
 
         if (proc.optional<EndConditionalFormattings>())
         {
-            m_BrtEndConditionalFormattings = elements_.back();
+            m_bBrtEndConditionalFormattings = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndConditionalFormattings = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
 
-        return m_BrtFRTBegin && m_BrtBeginConditionalFormattings && !m_arCONDITIONALFORMATTING14.empty() && m_BrtEndConditionalFormattings;
+        return m_BrtFRTBegin && m_bBrtBeginConditionalFormattings && !m_arCONDITIONALFORMATTING14.empty() && m_bBrtEndConditionalFormattings;
     }
+
+	const bool CONDITIONALFORMATTINGS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+		
+		proc.mandatory<BeginConditionalFormattings>();
+
+		for (auto& item : m_arCONDITIONALFORMATTING14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndConditionalFormattings>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

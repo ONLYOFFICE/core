@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "SortData.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "../Biff_structures/BIFF12/CellRangeRef.h"
 
 namespace XLS
 {
@@ -53,7 +53,7 @@ void SortData::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short flags;
+        _UINT16 flags;
 
         record >> frtHeader >> flags;
 
@@ -84,7 +84,7 @@ void SortData::readFields(CFRecord& record)
     }
     else
     {
-        unsigned short flags;
+        _UINT16 flags;
 
         record >> flags;
 
@@ -97,6 +97,46 @@ void SortData::readFields(CFRecord& record)
         rfx = static_cast<std::wstring >(rfx_orig);
 
     }
+
+}
+
+void SortData::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fCol)
+		SETBIT(flags, 1, fCaseSensitive)
+		SETBIT(flags, 2, fAltMethod)
+		SETBITS(flags, 3, 5, sfp)
+
+		record << frtHeader << flags;
+
+		RFX rfx_orig(rfx);
+		cconditions = sortCond12Array.size();
+		record << rfx_orig << cconditions;
+
+		record << idParent;
+
+		for (auto& item: sortCond12Array)
+		{
+			record << *item;
+		}
+	}
+	else
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fCol)
+		SETBIT(flags, 1, fCaseSensitive)
+		SETBIT(flags, 2, fAltMethod)
+
+		record << flags;
+		XLSB::UncheckedRfX rfx_orig(rfx);
+		record << rfx_orig;
+
+	}
 
 }
 

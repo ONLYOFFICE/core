@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -94,6 +94,23 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
 	while(count > 0)
 	{
+		Format *fmt = dynamic_cast<Format *>(elements_.back().get());
+		if ((fmt) && (fmt->ifmt == 0xffff))
+		{
+			std::map<std::wstring, int>::iterator pFind = global_info->mapDefaultFormatCode.find(fmt->stFormat);
+			if (pFind != global_info->mapDefaultFormatCode.end())
+			{
+				fmt->ifmt_used = fmt->ifmt = pFind->second;
+			}
+			else
+			{
+				fmt->ifmt_used = fmt->ifmt = global_info->last_User_NumFmt++;
+			}
+		}
+		else
+		{
+			fmt->ifmt_used = global_info->RegisterNumFormat(fmt->ifmt, fmt->stFormat);
+		}
 		global_info->m_arNumFormats.insert(global_info->m_arNumFormats.begin(), elements_.back());
 		elements_.pop_back();
 		count--;

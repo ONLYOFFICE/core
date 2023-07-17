@@ -25,14 +25,11 @@ DEFINES += UNICODE _UNICODE \
 
 INCLUDEPATH += ../../../OdfFile/include
 
-core_mac {
-LIBS += $$DESTDIR -lUnicodeConverter
-}
-
 core_release {
 SOURCES += \
     rtffile_source.cpp
 }
+
 core_debug {
 SOURCES += \
 	../../Format/RtfBookmark.cpp \
@@ -51,6 +48,15 @@ SOURCES += \
 	../../Format/RtfWriter.cpp \
 	../../Format/RtfMath.cpp \
 	../../Format/RtfTable.cpp \
+	../../Format/IdGenerator.cpp \
+	../../Format/Ole1FormatReader.cpp \
+	../../Format/RtfLex.cpp \
+	../../Format/RtfTableCell.cpp \
+	../../Format/RtfTableRow.cpp \
+	../../Format/RtfToken.cpp \
+	../../Format/UniversalConverterUtils.cpp \
+	../../Format/Utils.cpp \
+	\
 	../../OOXml/Reader/OOXMathReader.cpp \
 	../../OOXml/Reader/OOXDrawingGraphicReader.cpp \
 	../../OOXml/Reader/OOXHeaderReader.cpp \
@@ -60,8 +66,46 @@ SOURCES += \
 	../../OOXml/Reader/OOXTableReader.cpp \
 	../../OOXml/Reader/OOXDocumentReader.cpp \
 	../../OOXml/Reader/OOXTextItemReader.cpp \
+	../../OOXml/Reader/OOXAbstractNumReader.cpp \
+	../../OOXml/Reader/OOXAppReader.cpp \
+	../../OOXml/Reader/OOXBorderReader.cpp \
+	../../OOXml/Reader/OOXcnfStyleReader.cpp \
+	../../OOXml/Reader/OOXColorReader.cpp \
+	../../OOXml/Reader/OOXColorReader2.cpp \
+	../../OOXml/Reader/OOXColorSchemeReader.cpp \
+	../../OOXml/Reader/OOXCoreReader.cpp \
+	../../OOXml/Reader/OOXDocDefaultsReader.cpp \
+	../../OOXml/Reader/OOXFontReader.cpp \
+	../../OOXml/Reader/OOXFontSchemeReader.cpp \
+	../../OOXml/Reader/OOXFontTableReader.cpp \
+	../../OOXml/Reader/OOXFootnotesReader.cpp \
+	../../OOXml/Reader/OOXLevelReader.cpp \
+	../../OOXml/Reader/OOXNumberingMapReader.cpp \
+	../../OOXml/Reader/OOXNumberingReader.cpp \
+	../../OOXml/Reader/OOXPictureAnchorReader.cpp \
+	../../OOXml/Reader/OOXPictureInlineReader.cpp \
+	../../OOXml/Reader/OOXPictureReader.cpp \
+	../../OOXml/Reader/OOXpPrTabReader.cpp \
+	../../OOXml/Reader/OOXShadingReader.cpp \
+	../../OOXml/Reader/OOXStyleReader.cpp \
+	../../OOXml/Reader/OOXStyleTableReader.cpp \
+	../../OOXml/Reader/OOXtblLookReader.cpp \
+	../../OOXml/Reader/OOXtblpPrReader.cpp \
+	../../OOXml/Reader/OOXtblPrReader.cpp \
+	../../OOXml/Reader/OOXtcPrReader.cpp \
+	../../OOXml/Reader/OOXThemeReader.cpp \	
+	\
 	../../OOXml/Writer/OOXDocumentWriter.cpp \
-	../../OOXml/Writer/OOXWriter.cpp
+	../../OOXml/Writer/OOXWriter.cpp \
+	../../OOXml/Writer/OOXCommentsWriter.cpp \
+	../../OOXml/Writer/OOXContentTypesWriter.cpp \
+	../../OOXml/Writer/OOXFontTableWriter.cpp \
+	../../OOXml/Writer/OOXFootnoteWriter.cpp \
+	../../OOXml/Writer/OOXNumberingWriter.cpp \
+	../../OOXml/Writer/OOXRelsWriter.cpp \
+	../../OOXml/Writer/OOXSettingsWriter.cpp \
+	../../OOXml/Writer/OOXStylesWriter.cpp \
+	../../OOXml/Writer/OOXThemeWriter.cpp
 }
 
 SOURCES += \
@@ -73,7 +117,6 @@ HEADERS += \
 	../../Format/ConvertationManager.h \
 	../../Format/DestinationCommand.h \
 	../../Format/IdGenerator.h \
-	../../Format/OOXColorTable.h \
 	../../Format/RtfBookmark.h \
 	../../Format/RtfChar.h \
 	../../Format/RtfDefine.h \
@@ -98,6 +141,7 @@ HEADERS += \
 	../../Format/UniversalConverterUtils.h \
 	../../Format/Utils.h \
 	../../Format/Ole1FormatReader.h \
+	\
 	../../OOXml/Reader/OOXAbstractNumReader.h \
 	../../OOXml/Reader/OOXAppReader.h \
 	../../OOXml/Reader/OOXBorderReader.h \
@@ -105,7 +149,6 @@ HEADERS += \
 	../../OOXml/Reader/OOXColorReader.h \
 	../../OOXml/Reader/OOXColorReader2.h \
 	../../OOXml/Reader/OOXColorSchemeReader.h \
-	../../OOXml/Reader/OOXContentTypeReader.h \
 	../../OOXml/Reader/OOXCoreReader.h \
 	../../OOXml/Reader/OOXDocDefaultsReader.h \
 	../../OOXml/Reader/OOXDocumentReader.h \
@@ -114,7 +157,6 @@ HEADERS += \
 	../../OOXml/Reader/OOXFontTableReader.h \
 	../../OOXml/Reader/OOXFootnotesReader.h \
 	../../OOXml/Reader/OOXHeaderReader.h \
-	../../OOXml/Reader/OOXLatentStyleReader.h \
 	../../OOXml/Reader/OOXLevelReader.h \
 	../../OOXml/Reader/OOXMathPropReader.h \
 	../../OOXml/Reader/OOXMathReader.h \
@@ -149,6 +191,7 @@ HEADERS += \
 	../../OOXml/Reader/OOXTextItemReader.h \
 	../../OOXml/Reader/OOXThemeReader.h \
 	../../OOXml/Reader/OOXtrPrReader.h \
+	\
 	../../OOXml/Writer/OOXContentTypesWriter.h \
 	../../OOXml/Writer/OOXDocumentWriter.h \
 	../../OOXml/Writer/OOXFontTableWriter.h \
@@ -158,4 +201,5 @@ HEADERS += \
 	../../OOXml/Writer/OOXSettingsWriter.h \
 	../../OOXml/Writer/OOXStylesWriter.h \
 	../../OOXml/Writer/OOXThemeWriter.h \
-	../../OOXml/Writer/OOXWriter.h
+	../../OOXml/Writer/OOXWriter.h \
+	../../OOXml/Writer/OOXCommentsWriter.h

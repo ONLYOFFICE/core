@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,9 +38,9 @@
 class TCell
 {
 public:
-	TCell(PPT_FORMAT::CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
+	TCell(PPT::CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
 
-	void FillTc(PPTX::Logic::TableCell &oTc, PPT_FORMAT::CTextCFRun *pLastCF);
+	void FillTc(PPTX::Logic::TableCell &oTc, PPT::CTextCFRun *pLastCF);
 
 	enum eMergeDirection {
 		none = 0b00,
@@ -58,13 +58,13 @@ public:
 		lnTlToBr,
 		lnBlToTr
 	};
-	void setBorder(eBorderPossition borderPos, PPT_FORMAT::CElementPtr ptrBorder);
+	void setBorder(eBorderPossition borderPos, PPT::CElementPtr ptrBorder);
 
 	eMergeDirection parentDirection() const;
 	int getHeight()const;
 
 	void setPParent(TCell *pParent);
-	void setPShape(PPT_FORMAT::CElementPtr ptrShape);
+	void setPShape(PPT::CElementPtr ptrShape);
 
 	void setRowSpan(int rowSpan);
 
@@ -73,22 +73,22 @@ public:
 	bool isRealCell()const;
 
 private:
-	void FillTxBody(PPTX::Logic::TxBody &oTxBody, PPT_FORMAT::CTextCFRun *pLastCF);
+	void FillTxBody(PPTX::Logic::TxBody &oTxBody, PPT::CTextCFRun *pLastCF);
 	void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
 	void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr)const;
 	void SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties& oTcPr, eBorderPossition eBP)const;
-	static bool isInvisibleBorder(const PPT_FORMAT::CElementPtr ptrBorder);
+	static bool isInvisibleBorder(const PPT::CElementPtr ptrBorder);
 	bool isInvisibleBorders() const;
-	void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, PPT_FORMAT::CElementPtr ptrBorder);
+	void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, PPT::CElementPtr ptrBorder);
 	void SetLnName(PPTX::Logic::Ln& Ln, eBorderPossition eBP) const;
 	void ApplyLn(PPTX::Logic::TableCellProperties& oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP) const;
 	void FillMergeDirection(PPTX::Logic::TableCell& oTc);
 	void setParentDirection();
 
 private:
-	PPT_FORMAT::CElementPtr m_ptrSpElCell;
+	PPT::CElementPtr m_ptrSpElCell;
 
-	std::map<eBorderPossition, PPT_FORMAT::CElementPtr> m_mapBorders;
+	std::map<eBorderPossition, PPT::CElementPtr> m_mapBorders;
 
 	// Proto table's coord
 	int m_row, m_col;
@@ -112,28 +112,28 @@ typedef std::vector<ProtoTableRow> MProtoTable;
 class ProtoTable
 {
 public:
-	ProtoTable(std::vector<PPT_FORMAT::CElementPtr> &arrCells,
-		std::vector<PPT_FORMAT::CElementPtr>& arrSpliters,
+	ProtoTable(std::vector<PPT::CElementPtr> &arrCells,
+		std::vector<PPT::CElementPtr>& arrSpliters,
 		CRelsGenerator* pRels);
 
-	static std::vector<int> getWidth(const std::vector<PPT_FORMAT::CElementPtr> &arrCells, long tableWidth = -1, bool isWidth = true);
-	static std::vector<int> getHeight(const std::vector<PPT_FORMAT::CElementPtr> &arrCells, long tableHeight = -1, bool isHeight = true);
+	static std::vector<int> getWidth(const std::vector<PPT::CElementPtr> &arrCells, long tableWidth = -1, bool isWidth = true);
+	static std::vector<int> getHeight(const std::vector<PPT::CElementPtr> &arrCells, long tableHeight = -1, bool isHeight = true);
 	static bool checkRowForZeroHeight(const ProtoTableRow& oRow);
 	MProtoTable getTable() const;
 
 private:
 	void initProtoTable();
-	bool fillProtoTable(std::vector<PPT_FORMAT::CElementPtr> &arrCells, std::vector<PPT_FORMAT::CElementPtr> &arrSpliters);
-	bool fillCells(std::vector<PPT_FORMAT::CElementPtr> &arrCells);
-	void fillBorders(std::vector<PPT_FORMAT::CElementPtr> &arrSpliters);
+	bool fillProtoTable(std::vector<PPT::CElementPtr> &arrCells, std::vector<PPT::CElementPtr> &arrSpliters);
+	bool fillCells(std::vector<PPT::CElementPtr> &arrCells);
+	void fillBorders(std::vector<PPT::CElementPtr> &arrSpliters);
 	bool findCellPos(const int top, const int left, UINT& posRow, UINT& posCol);
 	std::list<TCell*> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
-	void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, PPT_FORMAT::CElementPtr ptrBorder);
+	void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, PPT::CElementPtr ptrBorder);
 
-	bool isDefaultBoard(const PPT_FORMAT::CShapeElement *pBorder);
+	bool isDefaultBoard(const PPT::CShapeElement *pBorder);
 
-	std::vector<std::vector<PPT_FORMAT::CShapeElement *> >
-		getRows(std::vector<PPT_FORMAT::CShapeElement *> &arrCells);
+	std::vector<std::vector<PPT::CShapeElement *> >
+		getRows(std::vector<PPT::CShapeElement *> &arrCells);
 
 private:
 	std::vector<int> m_arrLeft;
@@ -145,7 +145,7 @@ private:
 class TableWriter
 {
 public:
-	TableWriter(PPT_FORMAT::CTableElement *pTableElement, CRelsGenerator* pRels);
+	TableWriter(PPT::CTableElement *pTableElement, CRelsGenerator* pRels);
 
 	void Convert(PPTX::Logic::GraphicFrame& oGraphicFrame);
 
@@ -156,9 +156,9 @@ private:
 
 	void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
 	void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid,
-		std::vector<PPT_FORMAT::CElementPtr> &arrCells);
-	void prepareShapes(std::vector<PPT_FORMAT::CElementPtr> &arrCells,
-		std::vector<PPT_FORMAT::CElementPtr> &arrSpliters);
+		std::vector<PPT::CElementPtr> &arrCells);
+	void prepareShapes(std::vector<PPT::CElementPtr> &arrCells,
+		std::vector<PPT::CElementPtr> &arrSpliters);
 
 	void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
@@ -169,7 +169,7 @@ private:
 	void FillnvPr(PPTX::Logic::NvPr& oNvPr);
 
 private:
-	PPT_FORMAT::CTableElement* m_pTableElement;
+	PPT::CTableElement* m_pTableElement;
 	CRelsGenerator* m_pRels;
 	nullable<ProtoTable> m_nPTable;
 };

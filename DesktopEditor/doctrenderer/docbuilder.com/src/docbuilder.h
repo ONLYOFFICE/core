@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -787,14 +787,7 @@ public:
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 
-		int nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		CStringW sType = (CString)type;
-		if (L"pptx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"xlsx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-
-		bool bRet = m_pBuilder->CreateFile(nType);
+		bool bRet = m_pBuilder->CreateFile(type);
 		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
@@ -811,41 +804,8 @@ public:
 		if (NULL == m_pBuilder)
 			return S_FALSE;
 
-		int nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		CStringW sType = (CString)type;
-		if (L"docx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		else if (L"doc" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-		else if (L"odt" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		else if (L"rtf" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		else if (L"txt" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-		else if (L"pptx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"odp" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		else if (L"xlsx" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-		else if (L"xls" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-		else if (L"ods" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		else if (L"csv" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-		else if (L"pdf" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-		else if (L"image" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-		else if (L"jpg" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-		else if (L"png" == sType)
-			nType = AVS_OFFICESTUDIO_FILE_IMAGE;
-
-		bool bRet = m_pBuilder->SaveFile(nType, path);
-		*result = bRet ? VARIANT_TRUE : VARIANT_FALSE;
+		int nRet = m_pBuilder->SaveFile(type, path);
+		*result = (nRet == 0) ? VARIANT_TRUE : VARIANT_FALSE;
 		return S_OK;
 	}
 	STDMETHOD(CloseFile)()

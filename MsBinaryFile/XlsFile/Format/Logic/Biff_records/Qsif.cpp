@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "Qsif.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLS
 {
@@ -53,7 +53,7 @@ void Qsif::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short  flags1, flags2;
+        _UINT16  flags1, flags2;
         XLUnicodeString rgbTitle;
 
         record >> frtHeaderOld >> flags1 >> flags2 >> idField;
@@ -93,6 +93,51 @@ void Qsif::readFields(CFRecord& record)
             name    = irstName.value();
         }
     }
+}
+
+void Qsif::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16			flags1 = 0, flags2 = 0;
+		XLUnicodeString rgbTitle;
+
+		SETBIT(flags1, 0, fUserIns)
+		SETBIT(flags1, 1, fFillDown)
+		SETBIT(flags1, 2, fSortDes)
+		SETBITS(flags1, 3, 10, iSortKey)
+		SETBIT(flags1, 11, fRowNums)
+		SETBIT(flags1, 13, fSorted)
+
+		SETBIT(flags2, 0, fClipped)
+
+		record << frtHeaderOld << flags1 << flags2 << idField << idList;
+
+		rgbTitle = name;
+
+		record << rgbTitle;
+
+	}
+
+	else
+	{
+		_UINT32            flags = 0;
+		XLSB::XLWideString irstName;
+
+		SETBIT(flags, 0, fUserIns)
+		SETBIT(flags, 1, fFillDown)
+		SETBIT(flags, 2, fRowNums)
+		SETBIT(flags, 3, fClipped)
+		SETBIT(flags, 4, fIrstName)
+
+		record << flags << idField << idList;
+
+		if (fIrstName)
+		{
+			irstName = name;
+			record << irstName;
+		}
+	}
 }
 
 } // namespace XLS

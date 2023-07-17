@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -68,17 +68,44 @@ namespace XLSB
         {
             m_arPCDI.insert(m_arPCDI.begin(), elements_.back());
             elements_.pop_back();
-            countPCDI--;
+            --countPCDI;
         }
 
         if (proc.optional<EndECWPTables>())
         {
-            m_BrtEndEcWpTables = elements_.back();
+            m_bBrtEndEcWpTables = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndEcWpTables = false;
 
-        return m_BrtBeginEcWpTables && m_BrtEndEcWpTables;
+        return m_BrtBeginEcWpTables && m_bBrtEndEcWpTables;
     }
+
+	const bool ECWPTABLES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginEcWpTables == nullptr)
+			m_BrtBeginEcWpTables = XLS::BaseObjectPtr(new XLSB::BeginEcWpTables());
+
+		if (m_BrtBeginEcWpTables != nullptr)
+		{
+			auto ptrBrtBeginEcWpTables = static_cast<XLSB::BeginEcWpTables*>(m_BrtBeginEcWpTables.get());
+
+			if (ptrBrtBeginEcWpTables != nullptr)
+				ptrBrtBeginEcWpTables->cTables = m_arPCDI.size();
+
+			proc.mandatory(*m_BrtBeginEcWpTables);
+		}
+
+		for (auto &item : m_arPCDI)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndECWPTables>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

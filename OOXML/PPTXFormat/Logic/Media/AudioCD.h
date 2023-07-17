@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,73 +42,27 @@ namespace PPTX
 		class AudioCD : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AudioCD)
+			WritingElement_AdditionMethods(AudioCD)
 
-			AudioCD()
-			{
-			}
+			AudioCD();
 
-			AudioCD& operator=(const AudioCD& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AudioCD& operator=(const AudioCD& oSrc);
 
-				stTrack		= oSrc.stTrack;
-				endTrack	= oSrc.endTrack;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				stTime		= oSrc.stTime;
-				endTime		= oSrc.endTime;
+			virtual std::wstring toXML() const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				//todooo
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oMem;
-
-				oMem		= node.ReadNode(_T("a:st"));
-				stTrack		= oMem.ReadAttributeInt(L"track");
-				XmlMacroReadAttributeBase(oMem, L"time", stTime);
-
-				oMem		= node.ReadNode(_T("a:end"));
-				endTrack	= oMem.ReadAttributeInt(L"track");
-				XmlMacroReadAttributeBase(oMem, L"time", endTime);
-
-				Normalize();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(_T("track"), stTrack);
-				oAttr1.Write(_T("time"), stTime);
-				
-				XmlUtils::CAttribute oAttr2;
-				oAttr2.Write(_T("track"), endTrack);
-				oAttr2.Write(_T("time"), endTime);
-
-				return _T("<a:audioCd>") + XmlUtils::CreateNode(_T("a:st"), oAttr1) + XmlUtils::CreateNode(_T("a:end"), oAttr2) + _T("</a:audioCd>");
-			}
 		public:
 			int stTrack;
 			int endTrack;
 
 			nullable_int	stTime;
 			nullable_int	endTime;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
-
-			AVSINLINE void Normalize()
-			{
-                stTrack = (std::max)(0, (std::min)(255, stTrack));
-                stTrack = (std::max)(0, (std::min)(255, endTrack));
-
-				stTime.normalize_positive();
-				endTime.normalize_positive();
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

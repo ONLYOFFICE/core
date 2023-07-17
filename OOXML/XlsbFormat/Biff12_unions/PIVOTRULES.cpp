@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -53,7 +53,7 @@ namespace XLSB
         return BaseObjectPtr(new PIVOTRULES(*this));
     }
 
-    //PIVOTRULES = BrtBeginSXRules PIVOTRULE BrtEndSxRules
+    //PIVOTRULES = BrtBeginSXRules PIVOTRULE BrtEndSxRules // скорее всего ошибка и должно быть *PIVOTRULE
     const bool PIVOTRULES::loadContent(BinProcessor& proc)
     {
         if (proc.optional<BeginSXRules>())
@@ -70,12 +70,27 @@ namespace XLSB
 
         if (proc.optional<EndSXRules>())
         {
-            m_BrtEndSXRules = elements_.back();
+            m_bBrtEndSXRules = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXRules = false;
 
-        return m_BrtBeginSXRules && m_BrtEndSXRules;
+        return m_BrtBeginSXRules && m_bBrtEndSXRules;
     }
+
+	const bool PIVOTRULES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXRules != nullptr)
+			proc.mandatory(*m_BrtBeginSXRules);
+
+		if (m_PIVOTRULE != nullptr)
+			proc.mandatory(*m_PIVOTRULE);
+
+		proc.mandatory<EndSXRules>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

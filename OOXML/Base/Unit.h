@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef _UNIT_INCLUDE_H_
-#define _UNIT_INCLUDE_H_
 
 #include "Base.h"
 #include "../../DesktopEditor/common/Types.h"
@@ -149,8 +147,27 @@ namespace XmlUtils
 	std::wstring ToString(const int& value);
 	std::wstring ToString(const long& value);
 	std::wstring ToString(const unsigned long& value);
-	std::wstring ToString(int value, const wchar_t* format);
-	std::string ToString(int value, const char* format);
+
+	std::wstring ToString(BYTE value, const wchar_t* format);
+	std::string ToString(BYTE value, const char* format);
+
+	std::wstring ToString(_INT16 value, const wchar_t* format);
+	std::string ToString(_INT16 value, const char* format);
+	std::wstring ToString(_UINT16 value, const wchar_t* format);
+	std::string ToString(_UINT16 value, const char* format);
+
+	std::wstring ToString(_INT64 value, const wchar_t* format);	
+	std::string ToString(_INT64 value, const char* format);
+	std::wstring ToString(_UINT64 value, const wchar_t* format);
+	std::string ToString(_UINT64 value, const char* format);
+
+	std::wstring ToString(_INT32 value, const wchar_t* format);
+	std::string ToString(_INT32 value, const char* format);
+	std::wstring ToString(_UINT32 value, const wchar_t* format);
+	std::string ToString(_UINT32 value, const char* format);
+
+	std::wstring ToString(double value, const wchar_t* format);
+	std::string ToString(double value, const char* format);
 
 	int Rand();
 	int GenerateInt();
@@ -163,4 +180,3 @@ namespace XmlUtils
 	std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = true);
 }
 
-#endif // _UNIT_INCLUDE_H_

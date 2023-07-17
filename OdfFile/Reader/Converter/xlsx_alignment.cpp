@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -88,7 +88,7 @@ bool is_default(const xlsx_alignment & rVal)
 }
 
 xlsx_alignment OdfProperties2XlsxAlignment(	xlsx_conversion_context * context,
-											const odf_reader::text_format_properties_content_ptr	textProp, 
+											const odf_reader::text_format_properties_ptr	textProp, 
 											const odf_reader::paragraph_format_properties			* parProp,
 											const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {

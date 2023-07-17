@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,14 +29,19 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "ChartSerializer.h"
-
 #include <algorithm>
+
+#include "ChartSerializer.h"
+#include "../../../XlsxFormat/Chart/ChartSerialize.h"
 
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
 
 #define NUMID_START 160
@@ -578,15 +583,12 @@ namespace BinXlsxRW{
 				//SharedStrings
 				if(pCell->m_oValue.IsInit())
 				{
-					if (pCell->m_oType.IsInit())
+					if ((pCell->m_oType.IsInit()) && (pCell->m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeSharedString))
 					{
-						if (pCell->m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeSharedString)
-						{
-							aSharedStrings.push_back(pCell->m_oValue->m_sText);
-							pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
-						}
+						aSharedStrings.push_back(pCell->m_oValue->m_sText);
+						pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
 					}
-					else
+					else if (false == pCell->m_oStyle.IsInit())
 					{
 						pCell->m_oType.Init();
 						const std::wstring& val = pCell->m_oValue->m_sText;
@@ -631,7 +633,7 @@ namespace BinXlsxRW{
 			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 		}
 	}
-	void ChartWriter::parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL, bool bAlwaysSharedString)
+	void ChartWriter::parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring format, bool bAlwaysSharedString)
 	{
         std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::const_iterator itSheets = m_mapSheets.find(sheet);
         std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>* rows = NULL;
@@ -669,21 +671,21 @@ namespace BinXlsxRW{
 			cells->insert(std::make_pair(nCol, pNewCell));
 		}
 	}
-	OOX::Spreadsheet::CCell* ChartWriter::parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL)
+	OOX::Spreadsheet::CCell* ChartWriter::parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring format)
 	{
 		OOX::Spreadsheet::CCell* pNewCell = new OOX::Spreadsheet::CCell();
 		//пока добавляем как есть, shared string после записи таблицы
 		pNewCell->m_oValue.Init();
 		pNewCell->m_oValue->m_sText = val;
 
-        if(NULL != format)
+        if (!format.empty())
 		{
 			unsigned int nXfsIndex = m_aXfs.size();
 
-            boost::unordered_map<std::wstring, unsigned int>::const_iterator itFormat = m_mapFormats.find(*format);
+            boost::unordered_map<std::wstring, unsigned int>::const_iterator itFormat = m_mapFormats.find(format);
 			if(itFormat == m_mapFormats.end())
 			{
-				m_mapFormats[*format] = nXfsIndex;
+				m_mapFormats[format] = nXfsIndex;
 			}
 			else
 			{
@@ -708,10 +710,11 @@ namespace BinXlsxRW{
 	}
 	void ChartWriter::parseStrRef(const OOX::Spreadsheet::CT_StrRef* pStrRef, bool bUpdateRange, const wchar_t* cRangeName)
 	{
-		if(NULL != pStrRef && NULL != pStrRef->m_f)
+		if(NULL != pStrRef && pStrRef->m_f.IsInit())
 		{
 			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
+			
 			if(OOX::Spreadsheet::CCell::parse3DRef(*pStrRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
 					sheetFrom.length() > 0 && 0 == sheetTo.length() && NULL != pStrRef->m_strCache)
 			{
@@ -724,14 +727,14 @@ namespace BinXlsxRW{
 						{
 							if(nCol1 > 1)
 							{
-								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL, true);
+								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), L"", true);
 							}
 						}
 						else
 						{
 							if(nRow1 > 1)
 							{
-								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL, true);
+								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), L"", true);
 							}
 						}
 					}
@@ -755,7 +758,7 @@ namespace BinXlsxRW{
 				for(size_t i = 0; i < pStrRef->m_strCache->m_pt.size(); ++i)
 				{
 					OOX::Spreadsheet::CT_StrVal* val = pStrRef->m_strCache->m_pt[i];
-					if(NULL != val->m_idx && NULL != val->m_v)
+					if (val->m_idx.IsInit() && val->m_v.IsInit())
 					{
 						int nRow, nCol;
 						if(bRow)
@@ -768,7 +771,7 @@ namespace BinXlsxRW{
 							nRow = nRow1 + *val->m_idx;
 							nCol = nCol1;
 						}
-						parseCell(sheetFrom, nRow, nCol, *val->m_v, NULL, true);
+						parseCell(sheetFrom, nRow, nCol, *val->m_v, L"", true);
 					}
 				}
 			}
@@ -776,7 +779,7 @@ namespace BinXlsxRW{
 	}
 	void ChartWriter::parseNumRef(const OOX::Spreadsheet::CT_NumRef* pNumRef, bool bUpdateRange, const wchar_t* cRangeName)
 	{
-		if(NULL != pNumRef && NULL != pNumRef->m_f)
+		if(NULL != pNumRef && pNumRef->m_f.IsInit())
 		{
 			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
@@ -792,14 +795,14 @@ namespace BinXlsxRW{
 						{
 							if(nCol1 > 1)
 							{
-								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), L"");
 							}
 						}
 						else
 						{
 							if(nRow1 > 1)
 							{
-								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), L"");
 							}
 						}
 					}
@@ -820,13 +823,13 @@ namespace BinXlsxRW{
 						m_nCol2 = nCol2;
 					}
 				}
-				std::wstring* formatCodeSer = pNumRef->m_numCache->m_formatCode;
+				std::wstring formatCodeSer = pNumRef->m_numCache->m_formatCode.IsInit() ? *pNumRef->m_numCache->m_formatCode : L"";
 				for(size_t i = 0; i < pNumRef->m_numCache->m_pt.size(); ++i)
 				{
 					OOX::Spreadsheet::CT_NumVal* val = pNumRef->m_numCache->m_pt[i];
-					if(NULL != val->m_idx && NULL != val->m_v)
+					if(val->m_idx.IsInit() && val->m_v.IsInit())
 					{
-						std::wstring* formatCode = NULL != val->m_formatCode ? val->m_formatCode : formatCodeSer;
+						std::wstring formatCode = val->m_formatCode.IsInit() ? *val->m_formatCode : formatCodeSer;
 						int nRow, nCol;
 						if(bRow)
 						{

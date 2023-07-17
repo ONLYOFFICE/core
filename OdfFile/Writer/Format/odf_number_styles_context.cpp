@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -392,7 +392,10 @@ void odf_number_styles_context::create_style(number_format_state & state)
 		case office_value_type::Fraction:	create_number_style		(state, elm);	break;
 		case office_value_type::Currency:	create_currency_style	(state, elm);	break;
 		case office_value_type::Percentage:	create_percentage_style	(state, elm);	break;
-		case office_value_type::Date:		create_date_style		(state, elm);	break;
+		case office_value_type::DateTime:	
+											state.ods_type = office_value_type::Date;
+		case office_value_type::Date:		
+											create_date_style		(state, elm);	break;
 		case office_value_type::Time:		create_time_style		(state, elm);	break;
 		case office_value_type::Boolean:	create_boolean_style	(state, elm);	break;
 		case office_value_type::String:		create_text_style		(state, elm);	break;
@@ -590,9 +593,26 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 {
 	create_element(L"number", L"currency-style", root_elm, odf_context_);
 	{
-        int res1 = (int)state.format_code[0].rfind(L"]");
+        int res1 = (int)state.format_code[0].rfind(L"[");
         int res2 = (int)state.format_code[0].rfind(L"#");
         int res3 = (int)state.format_code[0].rfind(L"0");
+		int res4 = (int)state.format_code[0].rfind(L"]");
+
+		if (res1 >= 0 && res4 >= 0)
+		{
+			state.format_code[0].erase(state.format_code[0].begin() + res1, state.format_code[0].begin() + res4 + 1);
+			
+			std::vector<std::wstring> tmp;
+			boost::algorithm::split(tmp, state.format_code[0], boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < tmp.size(); ++i)
+			{
+				if (!tmp[i].empty())
+				{
+					state.format_code[0] = tmp[i];
+					break;
+				}
+			}
+		}
 
 		office_element_ptr elm_symbol;
 		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);
@@ -631,7 +651,7 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		office_element_ptr elm_text;
 		create_element(L"number", L"text", elm_text, odf_context_);
 		number_text* number_text_ = dynamic_cast<number_text*>(elm_text.get());		
-		if (number_text_)number_text_->add_text(L" "); 
+		if (number_text_) number_text_->add_text(L" "); 
 		styles_elments.push_back(elm_text);
 ////////////////////////////////////////////
 		if (res1 > res2 || res1 > res3)
@@ -656,32 +676,74 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	//state.language_code == L"F800" System long date format
 	
 	std::wstring s = state.format_code[0];
-	boost::algorithm::to_lower(s);
 	
-	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
+	boost::wregex re(L"([mMdDyYhHsS^(AM)^(PM)^(am)^(pm)]+)([^m^M^d^D^y^Y^h^H^s^S^(AM)^(PM)^(am)^(pm)]+)");
 	
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
-	result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
+	result.push_back(s);
 
 	size_t sz = 0;
 	
-	for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
+	bool bDate = false;
+	bool bTime = false;
+	bool bAM = false;
+
+	for (std::list<std::wstring>::iterator i = result.begin(); i != result.end(); ++i)
 	{
 		office_element_ptr elm;
 		s = *i;
+		if (s.empty()) continue;
+
 		sz = s.length();
-		if (std::wstring::npos != s.find(L"m")) 
-		{
-			create_element(L"number", L"month", elm, odf_context_);
-			number_month* number_month_ = dynamic_cast<number_month*>(elm.get());
 		
-			if (number_month_ && sz > 2)number_month_->number_textual_ = true;
-			if (sz == 1 || sz == 3) number_month_->number_style_ = L"short";
-			if (sz == 2 || sz == 4) number_month_->number_style_ = L"long";
-		}
-		else if (std::wstring::npos != s.find(L"d"))
+		if (std::wstring::npos != s.find(L"AM") || std::wstring::npos != s.find(L"am"))
 		{
+			bAM = true;
+		}
+		else if (std::wstring::npos != s.find(L"PM") || std::wstring::npos != s.find(L"pm"))
+		{
+			if (bAM)
+			{
+				create_element(L"number", L"am-pm", elm, odf_context_);
+				bAM = false;
+			}
+		}
+		else if (std::wstring::npos != s.find(L"m") || std::wstring::npos != s.find(L"M"))
+		{
+			if (bDate)
+			{
+				create_element(L"number", L"month", elm, odf_context_);
+				number_month* number_month_ = dynamic_cast<number_month*>(elm.get());
+
+				if (number_month_ && sz > 2)number_month_->number_textual_ = true;
+				if (sz == 1 || sz == 3) number_month_->number_style_ = L"short";
+				if (sz == 2 || sz == 4) number_month_->number_style_ = L"long";
+			}
+			else
+			{
+				create_element(L"number", L"minutes", elm, odf_context_);
+			}
+		}
+		else if (std::wstring::npos != s.find(L"h") || std::wstring::npos != s.find(L"H"))
+		{
+			bTime = true;
+			bDate = false;
+
+			create_element(L"number", L"hours", elm, odf_context_);
+		}
+		else if (std::wstring::npos != s.find(L"s") || std::wstring::npos != s.find(L"S"))
+		{
+			bTime = true;
+			bDate = false;
+
+			create_element(L"number", L"seconds", elm, odf_context_);
+		}
+		else if (std::wstring::npos != s.find(L"d") || std::wstring::npos != s.find(L"D"))
+		{
+			bTime = false;
+			bDate = true;
+			
 			if (sz < 3)
 			{
 				create_element(L"number", L"day", elm, odf_context_);
@@ -694,6 +756,9 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			}
 			else
 			{
+				bTime = false;
+				bDate = true;
+				
 				create_element(L"number", L"day-of-week", elm, odf_context_);
 				number_day_of_week* number_day_of_week_ = dynamic_cast<number_day_of_week*>(elm.get());
 				if (number_day_of_week_)
@@ -703,8 +768,11 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				}
 			}
 		}
-		else if (std::wstring::npos != s.find(L"y"))
+		else if (std::wstring::npos != s.find(L"y") || std::wstring::npos != s.find(L"Y"))
 		{
+			bTime = false;
+			bDate = true;
+
 			create_element(L"number", L"year", elm, odf_context_);
 			number_year* number_year_ = dynamic_cast<number_year*>(elm.get());
 			if (number_year_)
@@ -713,7 +781,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				else		number_year_->number_style_ = L"long";
 			}
 		}
-		else
+		else if (!bAM) // разделителя am.pm в либре нет
 		{	//////////////////// делитель ////////////////////	
 			if(sz > 1) 
 			{
@@ -816,16 +884,23 @@ void odf_number_styles_context::create_text_style(number_format_state & state, o
 {
 	create_element(L"number", L"text-style", root_elm, odf_context_);
 }
-
+static std::wstring replace_unwanted(boost::wsmatch const & what)
+{
+	return L"";
+}
 void odf_number_styles_context::detect_format(number_format_state & state)
 {
 	if (state.ods_type != office_value_type::Custom) return;
-	if (state.format_code.empty())return;
+	if (state.format_code.empty()) return;
+
+	boost::wregex re_unwanted(L"([\"'])(.+?)\\1");
+	
+	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_default | boost::format_all);
 
  	//find [$<Currency String>-<language info>].
 	boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
 	boost::wsmatch result;
-	bool b = boost::regex_search(state.format_code[0], result, re);
+	bool b = boost::regex_search(strFormatCode, result, re);
 	
 	if (b && result.size() >= 3)
 	{
@@ -840,53 +915,49 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 
 		//state.format_code[0] = boost::regex_replace( state.format_code[0],re,L"");
 	}
-	if (!state.currency_str.empty() && state.language_code != 0xF400 && state.language_code != 0xF800)
-	{
-		state.ods_type = office_value_type::Currency;
-		return;
-	}
-
-	//if (state.format_code.size() == 2)//>0, <0
-	//{
-
-	//}
-	//else if (state.format_code.size() == 3)//>0, <0, ==0
-	//{
-	//}
 
 	if (state.format_code.size() > 0) //any
 	{
-		std::wstring tmp = state.format_code[0]; 
-		XmlUtils::GetLower(tmp);
+		boost::wregex re1(L"([mMhH{2,}sS{2,}]+)");
+		boost::wregex re2(L"([mMdD{1,}yY{2,}]+)");
 
-		if (std::wstring::npos != tmp.find(L"at") || 
-			std::wstring::npos != tmp.find(L"pm") ||
-			std::wstring::npos != tmp.find(L"h") || 
-			std::wstring::npos != tmp.find(L"s") || state.language_code == 0xF400)
+		std::wstring tmp = strFormatCode;
+		
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), tmp, re1);
+
+		tmp = strFormatCode;
+		std::list<std::wstring> result2;
+		bool b2 = boost::regex_split(std::back_inserter(result2), tmp, re2);
+		
+		if (b1 && b2 && result1.size() > 2 && result2.size() > 2)
 		{
-			state.ods_type = office_value_type::Time;
-			if (b)
-				state.format_code[0] = boost::regex_replace( state.format_code[0], re, L"");
+			state.ods_type = office_value_type::DateTime;
 			return;
 		}
-		if (std::wstring::npos != tmp.find(L"y") || 
-			std::wstring::npos != tmp.find(L"d") || 
-			std::wstring::npos != tmp.find(L"m") || state.language_code == 0xF800)//minutes отсеялись выше
+		if (b1 && result1.size() > 2)
+		{
+			state.ods_type = office_value_type::Time;
+			return;
+		}
+		if (b2 && result2.size() > 1)
 		{
 			state.ods_type = office_value_type::Date;
-
-			if (b)
-				state.format_code[0] = boost::regex_replace( state.format_code[0], re, L"");
 			return;
-		}		
-		if (std::wstring::npos != tmp.find(L"%"))
+		}
+		if (!state.currency_str.empty() && state.language_code != 0xF400 && state.language_code != 0xF800)
+		{
+			state.ods_type = office_value_type::Currency;
+			return;
+		}
+		if (std::wstring::npos != strFormatCode.find(L"%"))
 		{
 			state.ods_type = office_value_type::Percentage;
 			return;
 		}
-		if (std::wstring::npos != tmp.find(L"#") || 
-			std::wstring::npos != tmp.find(L"?") || 
-			std::wstring::npos != tmp.find(L"0"))
+		if (std::wstring::npos != strFormatCode.find(L"#") ||
+			std::wstring::npos != strFormatCode.find(L"?") ||
+			std::wstring::npos != strFormatCode.find(L"0"))
 		{
 			state.ods_type = office_value_type::Float;
 			return;

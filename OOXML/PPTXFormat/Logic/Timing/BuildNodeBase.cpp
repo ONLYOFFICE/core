@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "BuildNodeBase.h"
 #include "BldP.h"
 #include "BldDgm.h"
@@ -41,56 +40,49 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		BuildNodeBase::BuildNodeBase()
 		{
 		}
-
 		BuildNodeBase::~BuildNodeBase()
 		{
 		}
-
 		BuildNodeBase::BuildNodeBase(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const BuildNodeBase& BuildNodeBase::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 		void BuildNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("bldP"))
-				m_node.reset(new Logic::BldP(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldP>(node));
 			else if (name == _T("bldDgm"))
-				m_node.reset(new Logic::BldDgm(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldDgm>(node));
 			else if (name == _T("bldGraphic"))
-				m_node.reset(new Logic::BldGraphic(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldGraphic>(node));
 			else if (name == _T("bldOleChart"))
-				m_node.reset(new Logic::BldOleChart(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldOleChart>(node));
 			else m_node.reset();
 		}
-
 		void BuildNodeBase::GetBuildNodeFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
 			
 			if (element.GetNode(_T("p:bldP"), oNode))
-				m_node.reset(new Logic::BldP(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldP>(oNode));
 			else if (element.GetNode(_T("p:bldDgm"), oNode))
-				m_node.reset(new Logic::BldDgm(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldDgm>(oNode));
 			else if (element.GetNode(_T("p:bldGraphic"), oNode))
-				m_node.reset(new Logic::BldGraphic(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldGraphic>(oNode));
 			else if (element.GetNode(_T("p:bldOleChart"), oNode))
-				m_node.reset(new Logic::BldOleChart(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldOleChart>(oNode));
 			else m_node.reset();
 		}
-
 		std::wstring BuildNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
@@ -138,5 +130,11 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void BuildNodeBase::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				m_node->SetParentPointer(pParent);
+		}
+		void BuildNodeBase::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

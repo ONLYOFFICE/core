@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,8 +44,8 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 }
 
 namespace oox {
@@ -74,8 +74,8 @@ public:
 
 	void set_position		(int Val){position_	= Val;}
 
-	void add_dLbl			(int ind, odf_reader::text_format_properties_content_ptr text_properties);
-	void set_common_dLbl	( odf_reader::text_format_properties_content_ptr text_properties);
+	void add_dLbl			(int ind, odf_reader::text_format_properties_ptr text_properties);
+	void set_common_dLbl	( odf_reader::text_format_properties_ptr text_properties);
    
 private:
 
@@ -91,8 +91,8 @@ private:
 
 	int position_;
 
-	odf_reader::text_format_properties_content_ptr					textPr_;
-	std::map<int, odf_reader::text_format_properties_content_ptr>	dLbls_;
+	odf_reader::text_format_properties_ptr					textPr_;
+	std::map<int, odf_reader::text_format_properties_ptr>	dLbls_;
 
 
 //delete (Delete) §21.2.2.40

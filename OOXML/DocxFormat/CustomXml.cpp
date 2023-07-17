@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,7 @@
  */
 
 #include "CustomXml.h"
+#include "Document.h"
 
 namespace OOX
 {
@@ -55,11 +56,11 @@ namespace OOX
 	}
 	void CCustomXMLProps::CShemaRef::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		XmlMacroReadAttributeBase( oNode, _T("ds:uri"), m_sUri );
+		XmlMacroReadAttributeBase( oNode, L"ds:uri", m_sUri );
 	}
 	std::wstring CCustomXMLProps::CShemaRef::toXML() const
 	{
-		std::wstring sResult = _T("<ds:schemaRef ds:uri=\"") + m_sUri  + _T("\" />");
+		std::wstring sResult = L"<ds:schemaRef ds:uri=\"" + m_sUri  + L"\" />";
 		return sResult;
 	}
 	EElementType CCustomXMLProps::CShemaRef::getType() const
@@ -117,13 +118,15 @@ namespace OOX
 	}
 	void CCustomXMLProps::CShemaRefs::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		XmlUtils::CXmlNodes oNodes;
-		if ( oNode.GetNodes( _T("ds:schemaRef"), oNodes ) )
+		std::vector<XmlUtils::CXmlNode> oNodes;
+		if (oNode.GetNodes(L"*", oNodes))
 		{
-			XmlUtils::CXmlNode oItem;
-			for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+			for (size_t i = 0; i < oNodes.size(); ++i)
 			{
-				if ( oNodes.GetAt( nIndex, oItem ) )
+				XmlUtils::CXmlNode& oItem = oNodes[i];
+
+				std::wstring sName = XmlUtils::GetNameNoNS(oItem.GetName());
+				if ( L"schemaRef" == sName )
 				{
 					CShemaRef *oShemeRef = new CShemaRef(oItem);
 					if (oShemeRef) m_arrItems.push_back( oShemeRef );
@@ -133,12 +136,12 @@ namespace OOX
 	}
 	std::wstring CCustomXMLProps::CShemaRefs::toXML() const
 	{
-		std::wstring sResult = _T("<ds:schemaRefs>");
+		std::wstring sResult = L"<ds:schemaRefs>";
 
 		for ( size_t nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			sResult += m_arrItems[nIndex]->toXML();
 
-		sResult += _T("</ds:schemaRefs>");
+		sResult += L"</ds:schemaRefs>";
 
 		return sResult;
 	}
@@ -166,25 +169,25 @@ namespace OOX
 	}
 	void CCustomXMLProps::fromXML(XmlUtils::CXmlNode& oNode)
 	{
-		if (_T("ds:datastoreItem") == oNode.GetName())
+		if (L"datastoreItem" == XmlUtils::GetNameNoNS(oNode.GetName()));
 		{
-			m_oItemID = oNode.ReadAttribute(_T("ds:itemID"));
+			m_oItemID = oNode.ReadAttribute(L"ds:itemID");
 
 			XmlUtils::CXmlNode oItem;
-			if (oNode.GetNode(_T("ds:schemaRefs"), oItem))
+			if (oNode.GetNode(L"ds:schemaRefs", oItem))
 				m_oShemaRefs = oItem;
 		}
 	}
 	std::wstring CCustomXMLProps::toXML() const
 	{
-		std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"");
+		std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"";
 		sXml += m_oItemID.ToString();
-		sXml += _T("\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">");
+		sXml += L"\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">";
 
 		if (m_oShemaRefs.IsInit())
 			sXml += m_oShemaRefs->toXML();
 
-		sXml += _T("</ds:datastoreItem>");
+		sXml += L"</ds:datastoreItem>";
 
 		return sXml;
 	}
@@ -199,7 +202,7 @@ namespace OOX
 	{
 		NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), toXML());
 
-		oContent.Registration( type().OverrideType(), OOX::CPath(L"customXml"), oFilePath.GetFilename() );
+		oContent.Registration( type().OverrideType(), OOX::CPath(L"customXml"), oFilePath.GetFilename());
 	}
 	EElementType CCustomXMLProps::getType() const
 	{

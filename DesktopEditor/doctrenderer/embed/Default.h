@@ -1,18 +1,11 @@
 #ifndef _BUILD_NATIVE_DEFAULT_EMBED_H_
 #define _BUILD_NATIVE_DEFAULT_EMBED_H_
 
-#include "./ZipEmbed.h"
-#include "./TextMeasurerEmbed.h"
-#include "./MemoryStreamEmbed.h"
+ #include "../js_internal/js_base.h"
 
 namespace NSJSBase
 {
-    static void CreateDefaults(JSSmart<CJSContext>& context)
-    {
-        CZipEmbed::CreateObjectInContext("CreateNativeZip", context);
-        CTextMeasurerEmbed::CreateObjectInContext("CreateNativeTextMeasurer", context);
-        CMemoryStreamEmbed::CreateObjectInContext("CreateNativeMemoryStream", context);
-    }
+	void JS_DECL CreateDefaults();
 }
 
 #endif // _BUILD_NATIVE_DEFAULT_EMBED_H_

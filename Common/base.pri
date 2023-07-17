@@ -11,9 +11,17 @@ BUILD_NUMBER = $$(BUILD_NUMBER)
 
 DEFINES += INTVER=$$VERSION
 
+WIN_VERSION = $$replace(VERSION, \., ",")
+DEFINES += WIN_INTVER=$$WIN_VERSION
+
 PUBLISHER_NAME = $$(PUBLISHER_NAME)
 isEmpty(PUBLISHER_NAME){
     PUBLISHER_NAME = $$cat(copyright.txt)
+}
+
+APPLICATION_NAME_DEFAULT = $$(APPLICATION_NAME_DEFAULT)
+!isEmpty(APPLICATION_NAME_DEFAULT){
+    DEFINES += "APPLICATION_NAME_DEFAULT=$${APPLICATION_NAME_DEFAULT}"
 }
 
 OO_BUILD_BRANDING = $$(OO_BRANDING)
@@ -30,6 +38,8 @@ win32 {
 !win32 {
     CURRENT_YEAR = $$system(date +%Y)
 }
+
+DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
@@ -135,10 +145,21 @@ mac {
     }
 }
 
+gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION_ARRAY = $$split(COMPILER_VERSION, ".")
+    COMPILER_MAJOR_VERSION = $$member(COMPILER_MAJOR_VERSION_ARRAY, 0)
+    lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
+    lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
+}
+
 # DEFINES
 core_windows {
     DEFINES += WIN32 _WIN32
     DEFINES += NOMINMAX
+
+    # use default _ITERATOR_DEBUG_LEVEL value
+    #core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }
 core_win_64 {
     DEFINES += WIN64 _WIN64
@@ -206,6 +227,11 @@ core_linux {
     }
 }
 
+core_linux {
+    equals(TEMPLATE, app):CONFIG += core_static_link_libstd
+    plugin:CONFIG += core_static_link_libstd
+}
+
 core_win_32 {
     CORE_BUILDS_PLATFORM_PREFIX = win_32
 }
@@ -263,11 +289,23 @@ core_ios {
     } else {
 
         QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
-        CONFIG += core_ios_main_arch
 
         QMAKE_CFLAGS += -fembed-bitcode
         QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_LFLAGS += -fembed-bitcode
+        QMAKE_CXXFLAGS += -fobjc-arc
+
+        bundle_xcframeworks {
+            xcframework_platform_ios_simulator {
+                QMAKE_APPLE_DEVICE_ARCHS=
+                QMAKE_APPLE_SIMULATOR_ARCHS=x86_64 arm64
+            } else {
+                QMAKE_APPLE_DEVICE_ARCHS = arm64
+                QMAKE_APPLE_SIMULATOR_ARCHS=
+            }
+        } else {
+            CONFIG += core_ios_main_arch
+        }
 
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
@@ -276,10 +314,6 @@ core_ios {
             core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
             }
-        } else {
-            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
-            QMAKE_APPLE_DEVICE_ARCHS=
-            QMAKE_APPLE_SIMULATOR_ARCHS=
         }
 
         core_ios_nomain_arch {
@@ -337,6 +371,7 @@ core_android {
 }
 
 core_debug {
+    DEFINES += _DEBUG
     CORE_BUILDS_CONFIGURATION_PREFIX    = debug
 }
 core_release {
@@ -352,11 +387,9 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
-greaterThan(QT_MAJOR_VERSION, 5) {
-    !core_windows {
-        QMAKE_CXXFLAGS += -Wno-register
-        QMAKE_CFLAGS += -Wno-register
-    }
+!core_windows {
+    QMAKE_CXXFLAGS += -Wno-register
+	QMAKE_CFLAGS += -Wno-register
 }
 
 core_linux {
@@ -365,17 +398,7 @@ core_static_link_libstd {
     message(core_static_link_libstd)
 }
 plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
-
     TARGET_EXT = .so
-}
-}
-
-core_mac {
-plugin {
-    QMAKE_CXXFLAGS += -fvisibility=hidden
-    QMAKE_CFLAGS += -fvisibility=hidden
 }
 }
 
@@ -385,8 +408,24 @@ plugin {
 }
 }
 
-core_disable_all_warnings {
-    CONFIG += warn_off
+!core_windows {
+    plugin:CONFIG += config_hidden_symbols
+    staticlib:CONFIG += config_hidden_symbols
+}
+
+config_hidden_symbols {
+    QMAKE_CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+    QMAKE_CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+
+    core_mac:CONFIG += clang_no_exclude_libs
+    core_ios:CONFIG += clang_no_exclude_libs
+
+    !clang_no_exclude_libs {
+        plugin:QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        equals(TEMPLATE, app) {
+            QMAKE_LFLAGS += -Wl,--exclude-libs,ALL
+        }
+    }
 }
 
 # BUILD_PATHS
@@ -397,6 +436,16 @@ OBJECTS_DIR = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 MOC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/moc
 RCC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/rcc
 UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/ui
+
+bundle_xcframeworks {
+    xcframework_platform_ios_simulator {
+        OBJECTS_DIR = $$OBJECTS_DIR/simulator
+        MOC_DIR     = $$MOC_DIR/simulator
+        RCC_DIR     = $$RCC_DIR/simulator
+        UI_DIR      = $$UI_DIR/simulator
+    }
+}
+
 build_xp {
     OBJECTS_DIR = $$OBJECTS_DIR/xp
     MOC_DIR     = $$MOC_DIR/xp
@@ -423,6 +472,13 @@ core_debug {
 !isEmpty(OO_DESTDIR_BUILD_OVERRIDE) {
     CORE_BUILDS_LIBRARIES_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
     CORE_BUILDS_BINARY_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
+}
+
+core_ios {
+    xcframework_platform_ios_simulator {
+        CORE_BUILDS_LIBRARIES_PATH = $$CORE_BUILDS_LIBRARIES_PATH/simulator
+        CORE_BUILDS_BINARY_PATH = $$CORE_BUILDS_BINARY_PATH/simulator
+    }
 }
 
 plugin {
@@ -506,3 +562,15 @@ defineTest(ADD_DEPENDENCY) {
 
 ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 !isEmpty(ADD_INC_PATH):INCLUDEPATH += $$ADD_INC_PATH
+
+!core_enable_all_warnings {
+    core_disable_all_warnings {
+	    QMAKE_CXXFLAGS_WARN_OFF = -w
+		QMAKE_CFLAGS_WARN_OFF = -w
+		CONFIG += warn_off
+	}
+}
+
+!disable_precompiled_header {
+    CONFIG += precompile_header
+}

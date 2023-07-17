@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,6 +35,7 @@
 #include "Pic.h"
 #include "../Theme.h"
 #include "ClrMap.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
@@ -125,14 +126,13 @@ namespace PPTX
 
 			SpTreeElems.clear();
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -186,7 +186,7 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(name_, oValue);
 		}
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
@@ -196,24 +196,25 @@ namespace PPTX
 
 			pWriter->m_lObjectIdVML++;
 
-			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			if (pWriter->m_strId.empty())
 			{
-				if (NULL == pId)
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					pWriter->WriteAttribute(L"id", strSpid);
+					pWriter->WriteAttribute(L"id", strSpid); //??
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"id", strId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"id", pWriter->m_strId);
 				pWriter->WriteAttribute(L"o:spid", strSpid);
+				pWriter->m_strId.clear();
 			}
-
+			
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 
 			if (pWriter->m_strStyleMain.empty())
@@ -308,15 +309,15 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}				
 			}
 

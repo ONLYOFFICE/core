@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -91,6 +91,9 @@ namespace XMLSTUFF
 
 const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix);
 const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix = L"");
-
+unsigned short sheetsnames2ixti(std::wstring name);
+unsigned int definenames2index(std::wstring name);
+bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex);
+bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn);
 }
 

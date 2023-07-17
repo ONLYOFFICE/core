@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,7 +75,7 @@ namespace XLSB
                 else return false;
 
                 return true;
-            };
+            }
 
             //BaseObjectPtr   m_ACDVALLIST;
             BaseObjectPtr	m_BrtDVal14;
@@ -111,18 +111,43 @@ namespace XLSB
 
         if (proc.optional<EndDVals14>())
         {
-            m_BrtEndDVals14 = elements_.back();
+            m_bBrtEndDVals14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDVals14 = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginDVals14 && m_BrtEndDVals14 && m_BrtFRTEnd;
+        return m_BrtBeginDVals14 && m_bBrtEndDVals14 && m_bBrtFRTEnd;
     }
+
+	const bool DVALS14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginDVals14>();
+
+		for (auto& item : m_arBrtDVal14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDVals14>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

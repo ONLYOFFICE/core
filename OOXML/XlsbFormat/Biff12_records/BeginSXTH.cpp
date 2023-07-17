@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,6 +72,30 @@ namespace XLSB
         if(fLoadCap)
             record >> irstCaption;
     }
+
+	void BeginSXTH::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags1 = 0;
+		_UINT16 flags2 = 0;
+
+		 SETBIT(flags1, 0, fOutlineMode)
+		 SETBIT(flags1, 1, fEnableMultiplePageItems)
+		 SETBIT(flags1, 2, fSubtotalAtTop)
+		 SETBIT(flags1, 3, fDontShowFList)
+		 SETBIT(flags1, 4, fDragToRow)
+		 SETBIT(flags1, 5, fDragToColumn)
+		 SETBIT(flags1, 6, fDragToPage)
+		 SETBIT(flags1, 7, fDragToHide)
+		 SETBIT(flags1, 8, fDragToData)
+		 SETBIT(flags1, 9, fFilterInclusive)
+
+		 SETBIT(flags2, 0, fLoadCap)
+
+		record << flags1 << flags2;
+
+		if (fLoadCap)
+			record << irstCaption;
+	}
 
 } // namespace XLSB
 

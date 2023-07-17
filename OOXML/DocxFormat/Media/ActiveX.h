@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,6 +37,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../IFileContainer.h"
 #include "../Document.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
 
@@ -53,6 +54,7 @@ namespace OOX
 	{
 	public:
 		ActiveXObject() {}
+		virtual ~ActiveXObject() {}
 		static ActiveXObject* Create(const std::wstring &class_id);
 		static ActiveXObject* Create(_UINT16 type);
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
@@ -116,6 +118,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectScroll);
 		}
+		virtual ~ActiveXObjectScroll() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectButton : public ActiveXObject
@@ -126,6 +129,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectButton);
 		}
+		virtual ~ActiveXObjectButton() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectImage : public ActiveXObject
@@ -136,6 +140,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectImage);
 		}
+		virtual ~ActiveXObjectImage() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		virtual std::wstring toXml();
 
@@ -153,6 +158,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectLabel);
 		}
+		virtual ~ActiveXObjectLabel() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectSpin : public ActiveXObject
@@ -163,6 +169,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectSpin);
 		}
+		virtual ~ActiveXObjectSpin() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	
@@ -174,6 +181,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
 		}
+		virtual ~ActiveXObjectFormControl() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		
 // FormDataBlock
@@ -210,6 +218,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectGBox);
 		}
+		virtual ~ActiveXObjectFrame() {}
 	};
 	class ActiveXObjectMorphData : public ActiveXObject
 	{
@@ -222,6 +231,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(type);
 		}
+		virtual ~ActiveXObjectMorphData() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectTabStrip : public ActiveXObject
@@ -232,6 +242,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectTabStrip);
 		}
+		virtual ~ActiveXObjectTabStrip() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		virtual std::wstring toXml();
 
@@ -254,7 +265,7 @@ namespace OOX
 	class COcxPr : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(COcxPr)
+		WritingElement_AdditionMethods(COcxPr)
 		COcxPr() {}
 		virtual ~COcxPr() {}
 		virtual void fromXML(XmlUtils::CXmlNode& node)

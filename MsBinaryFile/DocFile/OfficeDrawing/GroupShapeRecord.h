@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,42 +40,11 @@ namespace DocFileFormat
 	public:
 		static const unsigned short TYPE_CODE_0xF009 = 0xF009;
 
-		GroupShapeRecord () : Record(), rcgBounds()
-		{
-		}
+		GroupShapeRecord ();
+		GroupShapeRecord(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~GroupShapeRecord();
 
-		GroupShapeRecord(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record(_reader, size, typeCode, version, instance), rcgBounds()
-		{
-			int left	=	Reader->ReadInt32();
-			int top		=	Reader->ReadInt32();
-			int right	=	Reader->ReadInt32();
-			int bottom	=	Reader->ReadInt32();
-
-			//left = max( 0, left );
-			//top = max( 0, top );
-			//right = max( 0, right );
-			//bottom = max( 0, bottom );
-
-			POINT oPoint;
-			oPoint.x	=	left;
-			oPoint.y	=	top;
-
-			SIZE oSize;
-			oSize.cx	=	( right - left );
-			oSize.cy	=	( bottom - top );
-
-			rcgBounds	=	DocFileFormat::Rectangle(oPoint,oSize);
-		}
-
-		virtual ~GroupShapeRecord()
-		{
-
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new GroupShapeRecord( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
 
 		DocFileFormat::Rectangle rcgBounds;
 	};

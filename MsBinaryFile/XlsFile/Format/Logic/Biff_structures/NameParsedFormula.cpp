@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,8 +41,11 @@ NameParsedFormula::NameParsedFormula(const bool is_part_of_a_revision)
 {
 
 }
-
-
+NameParsedFormula& NameParsedFormula::operator=(const std::wstring& value)
+{
+    ParsedFormula::operator = (value);
+	return *this;
+}
 BiffStructurePtr NameParsedFormula::clone()
 {
 	return BiffStructurePtr(new NameParsedFormula(*this));
@@ -61,7 +64,31 @@ void NameParsedFormula::load(CFRecord& record)
     record >> _cce;
     rgce.load(record, _cce);
     record >> _cb;
-    rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+	if (_cb > 0)
+		rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+}
+
+void NameParsedFormula::save(CFRecord& record)
+{
+	_UINT32 size = 0;	
+
+	auto saving = [&](BiffStructure& rgceORrgb)
+	{
+		record << size;
+
+		auto rdPtr = record.getRdPtr();
+
+		rgceORrgb.save(record);
+
+		size = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(size + 4);
+		record << size;
+		record.skipNunBytes(size);
+	};
+
+	saving(rgce);
+	saving(rgcb);
 }
 
 } // namespace XLS

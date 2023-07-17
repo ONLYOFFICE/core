@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -77,7 +77,6 @@ typedef enum CF_RECORD_TYPE
 	rt_Header					= 0x0014,
 	rt_Footer					= 0x0015,
 	rt_ExternSheet				= 0x0017,
-	rt_Lbl						= 0x0018,
 	rt_WinProtect				= 0x0019,
 	rt_VerticalPageBreaks		= 0x001a,
 	rt_HorizontalPageBreaks		= 0x001b,
@@ -276,8 +275,8 @@ typedef enum CF_RECORD_TYPE
 	rt_BOF_BIFF3				= 0x0209,
 	rt_Index_BIFF2				= 0x000b,
 	rt_Index					= 0x020b,
-	rt_DefinedName_BIFF2		= 0x0018,
-	rt_DefinedName				= 0x0218,
+	rt_Lbl						= 0x0018,
+	rt_Lbl_BIFF34				= 0x0218,
 	rt_Array_BIFF2				= 0x0021,
 	rt_Array					= 0x0221,
 	rt_DefaultRowHeight_BIFF2	= 0x0025,

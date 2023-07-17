@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -194,16 +194,29 @@ private:
 		std::wstringstream	& math_style_stream()	{ return math_style_stream_; }
 		
 		odf_reader::fonts_container &			fonts_container_;
-		int										base_font_size_;
+		int										base_font_size_ = 12;
+		std::wstring							base_font_name_;
+		int										base_alignment_ = 1; //center
+		bool									base_font_bold_ = false;
+		bool									base_font_italic_ = false;
+
 		odf_reader::style_text_properties_ptr	text_properties_;
 
-		std::wstring							nsRPr_;
-		bool									graphRPR_;
+		std::wstring nsRPr_;
+		bool graphRPR_;
 
-		bool									is_need_e_;
+		struct _state
+		{
+			bool is_need_e_ = false;
+			bool bMatrix = false;
+		};
+		std::vector<_state>	levels;
+		
+		void start_level() { _state state;  levels.push_back(state); }
+		void end_level() { if (!levels.empty()) levels.pop_back(); }
 	private:
-		std::wstringstream						math_stream_;
-		std::wstringstream						math_style_stream_;
+		std::wstringstream math_stream_;
+		std::wstringstream math_style_stream_;
 	};
 
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -88,7 +88,9 @@ namespace DocFileFormat
             Formulas.push_back((L"if @4 @32 21600"));
             Formulas.push_back((L"if @6 @41 @33"));
 
-            AdjustmentValues	=	(L"11796480,5400");
+			Adjustments.push_back(11796480);
+			Adjustments.push_back(5400);
+
             ConnectorLocations	=	(L"10800,@27;@22,@23;10800,@26;@24,@23");
             TextBoxRectangle	=	(L"@36,@40,@37,@42");
 

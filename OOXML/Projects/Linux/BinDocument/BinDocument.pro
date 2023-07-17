@@ -25,9 +25,10 @@ DEFINES += UNICODE \
 	DONT_WRITE_EMBEDDED_FONTS \
 	AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-CONFIG += precompile_header
-PRECOMPILED_HEADER = precompiled.h
-HEADERS += precompiled.h
+precompile_header {
+    PRECOMPILED_HEADER = precompiled.h
+    HEADERS += precompiled.h
+}
 
 SOURCES += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.cpp \
@@ -42,8 +43,6 @@ SOURCES += \
 	../../../Binary/Sheets/Reader/BinaryWriter.cpp \
 	../../../Binary/Sheets/Writer/BinaryReader.cpp \
 	../../../Binary/Sheets/Writer/CSVWriter.cpp \
-	../../../../OfficeCryptReader/source/ECMACryptFile.cpp \
-	../../../../OfficeCryptReader/source/CryptTransform.cpp \
 	../../../Binary/Document/BinReader/ReaderClasses.cpp \
 	../../../Binary/Document/BinReader/Readers.cpp \
 	../../../Binary/Document/BinReader/CustomXmlWriter.cpp \
@@ -59,7 +58,18 @@ SOURCES += \
 	../../../Binary/Document/BinReader/NumberingWriter.cpp \
 	../../../Binary/Document/BinReader/SettingWriter.cpp \
 	../../../Binary/Document/BinReader/StylesWriter.cpp \
-	../../../Binary/Document/BinReader/webSettingsWriter.cpp
+        ../../../Binary/Document/BinReader/webSettingsWriter.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLReader.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.cpp \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLReader2.cpp \
+        ../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.cpp \
+        ../../../Binary/Sheets/Reader/CellFormatController/DateReader.cpp\
+        ../../../Binary/Sheets/Reader/CellFormatController/DigitReader.cpp\
+        ../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.cpp
 
 HEADERS += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.h \
@@ -96,4 +106,14 @@ HEADERS += \
 	../../../Binary/Document/DocWrapper/ChartWriter.h \
 	../../../../OfficeCryptReader/source/ECMACryptFile.h \
 	../../../../OfficeCryptReader/source/CryptTransform.h \
-	../../../Binary/Document/BinReader/CustomXmlWriter.h
+        ../../../Binary/Document/BinReader/CustomXmlWriter.h\
+        ../../../Binary/Sheets/Reader/XMLReader/XMLReader.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XML2TableConverter.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XLSXTableController.h \
+        ../../../Binary/Sheets/Reader/XMLReader/columnNameController.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLConverter2.h \
+        ../../../Binary/Sheets/Reader/XMLReader/XMLMap.h \
+        ../../../Binary/Sheets/Reader/CellFormatController/CellFormatController.h \
+        ../../../Binary/Sheets/Reader/CellFormatController/DateReader.h\
+        ../../../Binary/Sheets/Reader/CellFormatController/DigitReader.h\
+        ../../../Binary/Sheets/Reader/CellFormatController/CurrencyReader.h

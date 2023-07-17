@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,6 +39,7 @@
 #include "../../DocxFormat/External/HyperLink.h"
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 
@@ -305,7 +306,8 @@ namespace OOX
 				}
 				else if (L"Names" == sName)
 				{
-					CDefinedNames names(oReader);
+					CDefinedNames names;
+					names = oReader;
 
 					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
 					if (xlsx_flat)
@@ -330,7 +332,11 @@ namespace OOX
 					}
 				}
 				else if (L"conditionalFormatting" == sName)
-					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
+				{
+					CConditionalFormatting* pConditionalFormatting = new CConditionalFormatting();
+					*pConditionalFormatting = oReader;
+					m_arrConditionalFormatting.push_back(pConditionalFormatting);
+				}
 				else if (L"sheetFormatPr" == sName)
 					m_oSheetFormatPr = oReader;
 				else if (L"sheetViews" == sName)

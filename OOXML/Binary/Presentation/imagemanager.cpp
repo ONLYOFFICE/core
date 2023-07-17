@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -81,6 +81,13 @@ namespace NSShapeImageGen
 		}
 		
 		return GenerateImageID(oImage, (std::max)(1.0, width), (std::max)(1.0, height));
+	}
+	CMediaInfo CMediaManager::WriteImage(const std::string& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
+	{
+		if (width < 0 && height < 0)
+			return GenerateImageID(strFile, L"", -1, -1, strAdditionalFile, typeAdditionalFile);
+
+		return GenerateImageID(strFile, L"", (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
 	}
 	CMediaInfo CMediaManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
@@ -397,7 +404,34 @@ namespace NSShapeImageGen
 
 		return oInfo;
 	}
+	CMediaInfo CMediaManager::GenerateImageID(std::string strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
+	{
+		if (0 == strFileName.find("data:base64,"))
+		{
+			int nHeaderSize = 12;
+			int nBase64DataSize = (int)strFileName.length() - nHeaderSize;
 
+			int dstLen = NSBase64::Base64DecodeGetRequiredLength(nBase64DataSize);
+			BYTE* pDstBuffer = new BYTE[dstLen];
+			NSBase64::Base64Decode(strFileName.c_str() + nHeaderSize, nBase64DataSize, pDstBuffer, &dstLen);
+
+			CImageFileFormatChecker checker;
+			std::wstring sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
+			std::wstring tempFilePath = m_strTempMedia + FILE_SEPARATOR_STR;
+
+			std::wstring strFileNameNew = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + L"." + sImageExtension;
+
+			NSFile::CFileBinary oTempFile;
+			oTempFile.CreateFile(strFileNameNew);
+			oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+			oTempFile.CloseFile();
+
+			RELEASEARRAYOBJECTS(pDstBuffer);
+		
+			return GenerateImageID(strFileNameNew, strUrl, dWidth, dHeight, strAdditionalFile, typeAdditionalFile);
+		}
+		return CMediaInfo();
+	}
 	CMediaInfo CMediaManager::GenerateImageID(std::wstring strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
 		if (0 == strFileName.find(L"data:base64,"))

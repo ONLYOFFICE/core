@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,6 +30,11 @@
  *
  */
 #include "ExternalLinks.h"
+
+#include "../Common.h"
+
+#include "../SharedStrings/Text.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
@@ -59,10 +64,25 @@
 #include "../../XlsbFormat/Biff12_records/SupNameValueStart.h"
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+
 namespace OOX
 {
 namespace Spreadsheet
 {
+	CExternalSheetNames::CExternalSheetNames()
+	{
+	}
+	CExternalSheetNames::~CExternalSheetNames()
+	{
+	}
+	void CExternalSheetNames::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetNames::getType() const
+	{
+		return et_x_ExternalSheetNames;
+	}
 	void CExternalSheetNames::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -74,7 +94,7 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"sheetName" == sName)
 			{
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::String(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Spreadsheet::String>(oReader));
 			}
 		}
 	}
@@ -112,7 +132,19 @@ namespace Spreadsheet
 		}
 	}
 
-
+	CExternalDefinedName::CExternalDefinedName()
+	{
+	}
+	CExternalDefinedName::~CExternalDefinedName()
+	{
+	}
+	void CExternalDefinedName::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalDefinedName::getType() const
+	{
+		return et_x_ExternalDefinedName;
+	}
 	void CExternalDefinedName::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -175,7 +207,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
-
+	CExternalDefinedNames::CExternalDefinedNames()
+	{
+	}
+	CExternalDefinedNames::~CExternalDefinedNames()
+	{
+	}
+	void CExternalDefinedNames::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalDefinedNames::getType() const
+	{
+		return et_x_ExternalDefinedNames;
+	}
 	void CExternalDefinedNames::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -187,7 +231,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"definedName" == sName)
 			{
-				m_arrItems.push_back(new CExternalDefinedName(oReader));
+				CExternalDefinedName* pExternalDefinedName = new CExternalDefinedName();
+				*pExternalDefinedName = oReader;
+				m_arrItems.push_back(pExternalDefinedName);
 			}
 		}
 	}
@@ -217,6 +263,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CExternalCell::CExternalCell()
+	{
+	}
+	CExternalCell::~CExternalCell()
+	{
+	}
+	void CExternalCell::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalCell::getType() const
+	{
+		return et_x_ExternalCell;
+	}
 	void CExternalCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -342,6 +401,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CExternalRow::CExternalRow()
+	{
+	}
+	CExternalRow::~CExternalRow()
+	{
+	}
+	void CExternalRow::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalRow::getType() const
+	{
+		return et_x_ExternalRow;
+	}
 	void CExternalRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -355,7 +427,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"cell" == sName)
 			{
-				m_arrItems.push_back(new CExternalCell(oReader));
+				CExternalCell* pExternalCell = new CExternalCell();
+				*pExternalCell = oReader;
+				m_arrItems.push_back(pExternalCell);
 			}
 		}
 	}
@@ -407,6 +481,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CExternalSheetData::CExternalSheetData()
+	{
+	}
+	CExternalSheetData::~CExternalSheetData()
+	{
+	}
+	void CExternalSheetData::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetData::getType() const
+	{
+		return et_x_ExternalSheetData;
+	}
 	void CExternalSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -420,7 +507,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"row" == sName)
 			{
-				m_arrItems.push_back(new CExternalRow(oReader));
+				CExternalRow* pExternalRow = new CExternalRow();
+				*pExternalRow = oReader;
+				m_arrItems.push_back(pExternalRow);
 			}
 		}
 	}
@@ -475,7 +564,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
-
+	CExternalSheetDataSet::CExternalSheetDataSet()
+	{
+	}
+	CExternalSheetDataSet::~CExternalSheetDataSet()
+	{
+	}
+	void CExternalSheetDataSet::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetDataSet::getType() const
+	{
+		return et_x_ExternalSheetDataSet;
+	}
 	void CExternalSheetDataSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -487,7 +588,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"sheetData" == sName)
 			{
-				m_arrItems.push_back(new CExternalSheetData(oReader));
+				CExternalSheetData* pExternalSheetData = new CExternalSheetData();
+				*pExternalSheetData = oReader;
+				m_arrItems.push_back(pExternalSheetData);
 			}
 		}
 	}
@@ -517,6 +620,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CExternalBook::CExternalBook()
+	{
+	}
+	CExternalBook::~CExternalBook()
+	{
+	}
+	void CExternalBook::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalBook::getType() const
+	{
+		return et_x_ExternalBook;
+	}
 	void CExternalBook::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -527,7 +643,7 @@ namespace Spreadsheet
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = oReader.GetNameNoNS();
 
 			if (L"sheetNames" == sName)
 			{
@@ -541,6 +657,10 @@ namespace Spreadsheet
 			{
 				m_oSheetDataSet = oReader;
 			}
+			else if (L"alternateUrls" == sName)
+			{
+				m_oAlternateUrls = oReader;
+			}
 		}
 	}
 	void CExternalBook::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -553,6 +673,10 @@ namespace Spreadsheet
 			writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
 		}
 		writer.WriteString(L">");
+		if (m_oAlternateUrls.IsInit())
+		{
+			m_oAlternateUrls ->toXML(writer);
+		}
 		if (m_oSheetNames.IsInit())
 		{
 			m_oSheetNames->toXML(writer);
@@ -592,7 +716,6 @@ namespace Spreadsheet
 			}
 		}
 	}
-
 	void CExternalBook::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
@@ -609,6 +732,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 	}
 
+	CDdeValue::CDdeValue()
+	{
+	}
+	CDdeValue::~CDdeValue()
+	{
+	}
+	void CDdeValue::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeValue::getType() const
+	{
+		return et_x_DdeValue;
+	}
 	void CDdeValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -623,7 +759,9 @@ namespace Spreadsheet
 
 			if (L"val" == sName)
 			{
-				m_arrItems.push_back(new CText(oReader));
+				CText* pText = new CText();
+				*pText = oReader;
+				m_arrItems.push_back(pText);
 			}
 		}
 	}
@@ -739,6 +877,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeValues::CDdeValues()
+	{
+	}
+	CDdeValues::~CDdeValues()
+	{
+	}
+	void CDdeValues::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeValues::getType() const
+	{
+		return et_x_DdeValues;
+	}
 	void CDdeValues::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -753,7 +904,9 @@ namespace Spreadsheet
 
 			if (L"value" == sName)
 			{
-				m_arrItems.push_back(new CDdeValue(oReader));
+				CDdeValue* pDdeValue = new CDdeValue();
+				*pDdeValue = oReader;
+				m_arrItems.push_back(pDdeValue);
 			}
 		}
 	}
@@ -807,6 +960,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeItem::CDdeItem()
+	{
+	}
+	CDdeItem::~CDdeItem()
+	{
+	}
+	void CDdeItem::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeItem::getType() const
+	{
+		return et_x_OleItem;
+	}
 	void CDdeItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -883,6 +1049,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeItems::CDdeItems()
+	{
+	}
+	CDdeItems::~CDdeItems()
+	{
+	}
+	void CDdeItems::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeItems::getType() const
+	{
+		return et_x_DdeItems;
+	}
 	void CDdeItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -895,7 +1074,9 @@ namespace Spreadsheet
 
 			if (L"ddeItem" == sName)
 			{
-				m_arrItems.push_back(new CDdeItem(oReader));
+				CDdeItem* pDdeItem = new CDdeItem();
+				*pDdeItem = oReader;
+				m_arrItems.push_back(pDdeItem);
 			}
 		}
 	}
@@ -975,6 +1156,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CDdeLink::CDdeLink()
+	{
+	}
+	CDdeLink::~CDdeLink()
+	{
+	}
+	void CDdeLink::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeLink::getType() const
+	{
+		return et_x_DdeLink;
+	}
 	void CDdeLink::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
@@ -994,6 +1188,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	COleItem::COleItem()
+	{
+	}
+	COleItem::~COleItem()
+	{
+	}
+	void COleItem::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleItem::getType() const
+	{
+		return et_x_OleItem;
+	}
 	void COleItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1051,6 +1258,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	COleItems::COleItems()
+	{
+	}
+	COleItems::~COleItems()
+	{
+	}
+	void COleItems::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleItems::getType() const
+	{
+		return et_x_OleItems;
+	}
 	void COleItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -1063,7 +1283,9 @@ namespace Spreadsheet
 
 			if (L"oleItem" == sName)
 			{
-				m_arrItems.push_back(new COleItem(oReader));
+				COleItem* pOleItem = new COleItem();
+				*pOleItem = oReader;
+				m_arrItems.push_back(pOleItem);
 			}
 		}
 	}
@@ -1095,6 +1317,19 @@ namespace Spreadsheet
 		}
 	}
 
+	COleLink::COleLink()
+	{
+	}
+	COleLink::~COleLink()
+	{
+	}
+	void COleLink::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleLink::getType() const
+	{
+		return et_x_OleLink;
+	}
 	void COleLink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1159,9 +1394,80 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if(oReader, (L"r:id"), m_oRid)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"relationships:id"), m_oRid)
 			WritingElement_ReadAttributes_Read_else_if(oReader, (L"progId"), m_oProgId)
-			WritingElement_ReadAttributes_End(oReader)
+		WritingElement_ReadAttributes_End(oReader)
 	}
+	CAlternateUrls::CAlternateUrls()
+	{
+	}
+	CAlternateUrls::~CAlternateUrls()
+	{
+	}
+	void CAlternateUrls::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CAlternateUrls::getType() const
+	{
+		return et_x_ExternalDefinedName;
+	}
+	void CAlternateUrls::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
 
+		if (oReader.IsEmptyNode())
+			return;
+		
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = oReader.GetNameNoNS();
+
+			if (L"absoluteUrl" == sName)
+			{
+				ReadAttributes(oReader, m_oAbsoluteUrlRid);
+			}
+			else if (L"relativeUrl" == sName)
+			{
+				ReadAttributes(oReader, m_oRelativeUrlRid);
+			}
+		}
+	}
+	void CAlternateUrls::ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CRelationshipId>& rid)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_ReadSingle(oReader, (L"r:id"), rid)
+		WritingElement_ReadAttributes_End(oReader)
+	}
+	void CAlternateUrls::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_Read_if(oReader, (L"driveId"), m_oDriveId)
+			WritingElement_ReadAttributes_Read_else_if(oReader, (L"itemId"), m_oItemId)
+		WritingElement_ReadAttributes_End(oReader)
+	}
+	void CAlternateUrls::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<xxl21:alternateUrls");
+		WritingStringNullableAttrEncodeXmlString2(L"driveId", m_oDriveId);
+		WritingStringNullableAttrEncodeXmlString2(L"itemId", m_oItemId);
+		writer.WriteString(L">");
+
+		if (m_oAbsoluteUrlRid.IsInit())
+		{
+			writer.WriteString(L"<xxl21:absoluteUrl r:id=\"" + m_oAbsoluteUrlRid->ToString() + L"\"/>");
+		}
+		else if (m_oRelativeUrlRid.IsInit())
+		{
+			writer.WriteString(L"<xxl21:relativeUrl r:id=\"" + m_oRelativeUrlRid->ToString() + L"\"/>");
+		}
+		writer.WriteString(L"</xxl21:alternateUrls>");
+	}
+	std::wstring CAlternateUrls::toXML() const
+	{
+		NSStringUtils::CStringBuilder writer;
+		toXML(writer);
+		return writer.GetData().c_str();
+	}
+//---------------------------------------------------------------------------------------------------------------------------------
 	CExternalLink::CExternalLink(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 	{
 		m_bSpreadsheets = true;
@@ -1272,11 +1578,11 @@ namespace Spreadsheet
 
 						for (size_t i = 0; (oExtLst.IsInit()) && (i < oExtLst->m_arrExt.size()); i++)
 						{
-							if (oExtLst->m_arrExt[i]->m_oFileId.IsInit() ||
-								oExtLst->m_arrExt[i]->m_oPortalName.IsInit())
+							if (oExtLst->m_arrExt[i]->m_oFileKey.IsInit() ||
+								oExtLst->m_arrExt[i]->m_oInstanceId.IsInit())
 							{
-								m_oFileId = oExtLst->m_arrExt[i]->m_oFileId;
-								m_oPortalName = oExtLst->m_arrExt[i]->m_oPortalName;
+								m_oFileKey = oExtLst->m_arrExt[i]->m_oFileKey;
+								m_oInstanceId = oExtLst->m_arrExt[i]->m_oInstanceId;
 								break;
 							}
 						}
@@ -1284,13 +1590,17 @@ namespace Spreadsheet
 				}
 			}
 		}
-
 	}
 	void CExternalLink::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		NSStringUtils::CStringBuilder sXml;
 		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-		sXml.WriteString(L"<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
+		sXml.WriteString(L"<externalLink \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"x14 xxl21\" \
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks2021\">");
 
 		if (m_oExternalBook.IsInit())
 		{
@@ -1304,11 +1614,11 @@ namespace Spreadsheet
 		{
 			m_oDdeLink->toXML(sXml);
 		}
-		if (m_oFileId.IsInit() || m_oPortalName.IsInit())
+		if (m_oFileKey.IsInit() || m_oInstanceId.IsInit())
 		{
 			OOX::Drawing::COfficeArtExtension oExt;
-			oExt.m_oFileId = m_oFileId;
-			oExt.m_oPortalName = m_oPortalName;
+			oExt.m_oFileKey = m_oFileKey;
+			oExt.m_oInstanceId = m_oInstanceId;
 
 			oExt.m_sUri = L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}";
 
@@ -1322,6 +1632,28 @@ namespace Spreadsheet
 		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		IFileContainer::Write(oPath, oDirectory, oContent);
 	}
-
+	bool CExternalLink::isValid() const
+	{
+		return true;
+	}
+	const OOX::FileType CExternalLink::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::ExternalLinks;
+	}
+	const CPath CExternalLink::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CExternalLink::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CExternalLink::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CExternalLink::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+	}
 }
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,141 +32,234 @@
 
 #include "FileTransporter_private.h"
 #include "../include/FileTransporter.h"
+#include "Session.h"
 
 #ifdef USE_EXTERNAL_TRANSPORT
 #include "transport_external.h"
 #endif
 
 #if _IOS
-    #import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 #else
-    #include <Cocoa/Cocoa.h>
+#include <Cocoa/Cocoa.h>
 #endif
 
 namespace NSNetwork
 {
-    namespace NSFileTransport
-    {
-        static NSString* StringWToNSString ( const std::wstring& Str )
-        {
-            NSString* pString = [ [ NSString alloc ]
-                                 initWithBytes : (char*)Str.data()
-                                 length : Str.size() * sizeof(wchar_t)
-                                 encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
-            return pString;
-        }
-        class CFileTransporterBaseCocoa : public CFileTransporterBase
-        {
-        public :
-            CFileTransporterBaseCocoa(const std::wstring &sDownloadFileUrl, bool bDelete = true)
-                : CFileTransporterBase(sDownloadFileUrl, bDelete)
-            {
-            }
-            CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
-                : CFileTransporterBase(sUploadUrl, cData, nSize)
-            {
-            }
-            CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
-                : CFileTransporterBase(sUploadUrl, sUploadFilePath)
-            {
+	namespace NSFileTransport
+	{
+		class CSessionMAC : public CSession_private
+		{
+		public:
+			NSURLSession* m_session;
 
-            }
-            virtual ~CFileTransporterBaseCocoa()
-            {
-            }
+		public:
+			CSessionMAC()
+			{
+				m_session = nil;
+			}
+			~CSessionMAC()
+			{
+				m_session = nil;
+			}
 
-            virtual int DownloadFile() override
-            {
-                if (m_sDownloadFilePath.empty())
-                {
-                    m_sDownloadFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
-                    if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
-                        NSFile::CFileBinary::Remove(m_sDownloadFilePath);
-                }
+			void Create()
+			{
+				NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 
-        #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = download_external(m_sDownloadFileUrl, m_sDownloadFilePath);
-                if (0 == nExternalTransport)
-                    return 0;
-        #endif
+				std::map<std::string, std::string>::iterator iter;
 
-                NSString* stringURL = StringWToNSString(m_sDownloadFileUrl);
-                NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-                NSURL  *url = [NSURL URLWithString:escapedURL];
-                NSData *urlData = [NSData dataWithContentsOfURL:url];
-                if ( urlData )
-                {
-                    NSArray       *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                    NSString  *documentsDirectory = [paths objectAtIndex:0];
+				iter = m_props.find("timeoutIntervalForResource");
+				if (iter != m_props.end())
+					configuration.timeoutIntervalForResource = std::stoi(iter->second);
 
-                    NSString  *filePath = StringWToNSString ( m_sDownloadFilePath );
-                    [urlData writeToFile:filePath atomically:YES];
+				iter = m_props.find("HTTPMaximumConnectionsPerHost");
+				if (iter != m_props.end())
+					configuration.HTTPMaximumConnectionsPerHost = std::stoi(iter->second);
 
-        #if defined(_IOS)
-                    return 0;
-        #else
-        #ifndef _ASC_USE_ARC_
-                    if (!GetARCEnabled())
-                    {
-                        [stringURL release];
-                        //[url release];
-                        [urlData release];
-                    }
-        #endif
-        #endif
-                    return 0;
-                }
+				iter = m_props.find("allowsCellularAccess");
+				if (iter != m_props.end())
+					configuration.allowsCellularAccess = (std::stoi(iter->second) == 1) ? YES : NO;
 
-        #if defined(_IOS)
-                return 1;
-        #else
-        #ifndef _ASC_USE_ARC_
-                if (!GetARCEnabled())
-                {
-                    [stringURL release];
-                    //[url release];
-                }
-        #endif
-        #endif
-                return 1;
-            }
+				iter = m_props.find("requestCachePolicy");
+				if (iter != m_props.end())
+				{
+					if ("NSURLRequestUseProtocolCachePolicy" == iter->second)
+						configuration.requestCachePolicy = NSURLRequestUseProtocolCachePolicy;
+				}
 
-            virtual int UploadData() override
-            {
-        #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = uploaddata_external(m_sUploadUrl, m_cData, m_nSize);
-                if (0 == nExternalTransport)
-                    return 0;
-        #endif
-                //stub
-                return -1;
-            }
+				m_session = [NSURLSession sessionWithConfiguration:configuration];
+			}
+		};
 
-            virtual int UploadFile() override
-            {
-        #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = uploadfile_external(m_sUploadUrl, m_sUploadFilePath);
-                if (0 == nExternalTransport)
-                    return 0;
-        #endif
-                //stub
-                return -1;
-            }
-        };
+		CSession_private* CreateSession()
+		{
+			return new CSessionMAC();
+		}
+	}
+}
 
-        CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
-        {
-            m_pInternal = new CFileTransporterBaseCocoa(sDownloadFileUrl, bDelete);
-        }
+namespace NSNetwork
+{
+	namespace NSFileTransport
+	{
+		static NSString* StringWToNSString ( const std::wstring& Str )
+		{
+			NSString* pString = [ [ NSString alloc ]
+					initWithBytes : (char*)Str.data() length : Str.size() * sizeof(wchar_t)
+			  encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
+			return pString;
+		}
+		class CFileTransporterBaseCocoa : public CFileTransporterBase
+		{
+		public :
+			CFileTransporterBaseCocoa(const std::wstring &sDownloadFileUrl, bool bDelete = true)
+				: CFileTransporterBase(sDownloadFileUrl, bDelete)
+			{
+			}
+			CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+				: CFileTransporterBase(sUploadUrl, cData, nSize)
+			{
+			}
+			CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+				: CFileTransporterBase(sUploadUrl, sUploadFilePath)
+			{
 
-        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
-        {
-            m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, cData, nSize);
-        }
+			}
+			virtual ~CFileTransporterBaseCocoa()
+			{
+			}
 
-        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
-        {
-            m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, sUploadFilePath);
-        }
-    }
+			virtual int DownloadFile() override
+			{
+				if (m_sDownloadFilePath.empty())
+				{
+					m_sDownloadFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
+					if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
+						NSFile::CFileBinary::Remove(m_sDownloadFilePath);
+				}
+
+#ifdef USE_EXTERNAL_TRANSPORT
+				int nExternalTransport = download_external(m_sDownloadFileUrl, m_sDownloadFilePath);
+				if (0 == nExternalTransport)
+					return 0;
+#endif
+
+				NSString* stringURL = StringWToNSString(m_sDownloadFileUrl);
+				NSString* escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
+				int nResult = 1;
+
+				if (m_pSession)
+				{
+					NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:escapedURL]];
+
+					__block NSData* result = nil;
+					dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+
+					NSURLSession* _session = ((CSessionMAC*)m_pSession->m_pInternal)->m_session;
+					if (nil == _session)
+						_session = [NSURLSession sharedSession];
+
+					[[_session dataTaskWithRequest:urlRequest
+											completionHandler:^(NSData *data, NSURLResponse* response, NSError *error) {
+						if (error == nil)
+							result = data;
+
+						dispatch_semaphore_signal(sem);
+					}] resume];
+
+					dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+
+					if (result)
+					{
+						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
+						[result writeToFile:filePath atomically:YES];
+
+						nResult = 0;
+					}
+					else
+					{
+						nResult = 1;
+					}
+
+					return nResult;
+				}
+				else
+				{
+					NSURL* url = [NSURL URLWithString:escapedURL];
+					NSData* urlData = [NSData dataWithContentsOfURL:url];
+					if ( urlData )
+					{
+						NSString* filePath = StringWToNSString(m_sDownloadFilePath);
+						[urlData writeToFile:filePath atomically:YES];
+
+	#if defined(_IOS)
+						return 0;
+	#else
+	#ifndef _ASC_USE_ARC_
+						if (!GetARCEnabled())
+						{
+							[stringURL release];
+							//[url release];
+							[urlData release];
+						}
+	#endif
+	#endif
+						return 0;
+					}
+
+	#if defined(_IOS)
+					return 1;
+	#else
+	#ifndef _ASC_USE_ARC_
+					if (!GetARCEnabled())
+					{
+						[stringURL release];
+						//[url release];
+					}
+	#endif
+	#endif
+					return 1;
+				}
+			}
+
+			virtual int UploadData() override
+			{
+#ifdef USE_EXTERNAL_TRANSPORT
+				int nExternalTransport = uploaddata_external(m_sUploadUrl, m_cData, m_nSize);
+				if (0 == nExternalTransport)
+					return 0;
+#endif
+				//stub
+				return -1;
+			}
+
+			virtual int UploadFile() override
+			{
+#ifdef USE_EXTERNAL_TRANSPORT
+				int nExternalTransport = uploadfile_external(m_sUploadUrl, m_sUploadFilePath);
+				if (0 == nExternalTransport)
+					return 0;
+#endif
+				//stub
+				return -1;
+			}
+		};
+
+		CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
+		{
+			m_pInternal = new CFileTransporterBaseCocoa(sDownloadFileUrl, bDelete);
+		}
+
+		CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+		{
+			m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, cData, nSize);
+		}
+
+		CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+		{
+			m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, sUploadFilePath);
+		}
+	}
 }

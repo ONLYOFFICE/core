@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -157,11 +157,18 @@ namespace BinDocxRW
 			if (name.empty()) return;
 			
 			OOX::CPath path(m_sDestPath + name);
+
+			std::wstring fileName = path.GetPath();
+
+			if (std::wstring::npos == fileName.find(m_sDestPath))
+			{
+				return;
+			}
 			
 			NSDirectory::CreateDirectories(path.GetDirectory());
 			
 			NSFile::CFileBinary file;
-			if (file.CreateFileW(path.GetPath()))
+			if (file.CreateFileW(fileName))
 			{
 				BYTE* pDstBuffer = NULL;
 				int dstLen = Base64::Base64DecodeGetRequiredLength((int)data.size());
@@ -181,7 +188,7 @@ namespace BinDocxRW
 	};
 }
 
-BinDocxRW::CDocxSerializer::CDocxSerializer() : m_bIsMacro(false), m_bIsNoBase64Save(false), m_bIsNoBase64(false)
+BinDocxRW::CDocxSerializer::CDocxSerializer() : m_bIsMacro(false), m_bIsNoBase64Save(false), m_bIsNoBase64(false), m_bIsOForm(false)
 {
 	m_pParamsWriter		= NULL;
 	m_pCurFileWriter	= NULL;
@@ -191,9 +198,9 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(m_pCurFileWriter);
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
 {
-	OOX::CPath pathMain(sSrcFileName);
+	OOX::CPath pathMain(sDstFileName);
     
 	OOX::CPath pathMedia = pathMain.GetDirectory() + FILE_SEPARATOR_STR + _T("media");
 	NSDirectory::CreateDirectory(pathMedia.GetPath());
@@ -242,7 +249,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	{
 		oBufferedStream.WriteStringUtf8(oBinaryFileWriter.WriteFileHeader(0, g_nFormatVersionNoBase64));
 	}
-	oBinaryFileWriter.intoBindoc(sDstPath);
+	oBinaryFileWriter.intoBindoc(sSrcPath);
 	
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
@@ -251,7 +258,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	if (m_bIsNoBase64 || m_bIsNoBase64Save)
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(sSrcFileName);
+		oFile.CreateFileW(sDstFileName);
 		oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 		oFile.CloseFile();
 	}
@@ -263,7 +270,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
         if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
 		{
 			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(sSrcFileName);
+			oFile.CreateFileW(sDstFileName);
 			oFile.WriteStringUTF8(oBinaryFileWriter.WriteFileHeader(nBinBufferLen, g_nFormatVersion));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
@@ -417,7 +424,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 
                 oDrawingConverter.SetSrcPath(sFileInDir);
 				
-				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro);
+				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro, m_bIsOForm);
 				oBinaryFileReader.ReadFile();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//themes
@@ -478,7 +485,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
-	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter);
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_bIsOForm);
 	oBinary_DocumentTableReader.ReadDocumentContentOut(nLength);
 
     sOutputXml = oTempContentWriter.m_oContent.GetData();
@@ -566,7 +573,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
-	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter);
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_bIsOForm);
 
 	if(OOX::et_m_oMathPara == eType)
 	{
@@ -605,6 +612,10 @@ void BinDocxRW::CDocxSerializer::setIsNoBase64(bool val)
 void BinDocxRW::CDocxSerializer::setMacroEnabled(bool val)
 {
 	m_bIsMacro = val;
+}
+void BinDocxRW::CDocxSerializer::setOFormEnabled(bool val)
+{
+	m_bIsOForm = val;
 }
 bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
 {

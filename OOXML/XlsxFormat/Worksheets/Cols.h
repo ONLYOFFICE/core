@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,15 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDouble;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -42,7 +50,7 @@ namespace OOX
 		class CCol : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCol)
+			WritingElement_AdditionMethods(CCol)
 			CCol(OOX::Document *pMain = NULL);
 			virtual ~CCol();
 
@@ -75,7 +83,7 @@ namespace OOX
 		class CCols  : public WritingElementWithChilds<CCol>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCols)
+			WritingElement_AdditionMethods(CCols)
             WritingElement_XlsbVectorConstructors(CCols)
 			CCols(OOX::Document *pMain = NULL);
 			virtual ~CCols();

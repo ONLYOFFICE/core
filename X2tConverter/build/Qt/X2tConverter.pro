@@ -11,6 +11,7 @@ CONFIG   -= app_bundle
 # before include(base.pri) !!!
 ios:CONFIG += build_x2t_as_library
 android:CONFIG += build_x2t_as_library
+
 build_x2t_as_library {
     TEMPLATE = lib
     CONFIG -= console
@@ -20,15 +21,10 @@ build_x2t_as_library {
     CONFIG += shared
     CONFIG += plugin
 
-    CONFIG += core_static_link_libstd
+    !core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
 }
 
 include(X2tConverter.pri)
-
-build_x2t_as_library {
-!core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
-}
-
 
 !build_x2t_as_library {
     SOURCES += ../../src/main.cpp

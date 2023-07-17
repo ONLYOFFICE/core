@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,36 +40,20 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class SndAc : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(SndAc)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				stSnd = node.ReadNode(_T("p:stSnd"));
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				if(stSnd.IsInit())
-				{
-					return XmlUtils::CreateNode(_T("p:sndAc"), stSnd->toXML());
-				}
-				return _T("<p:sndAc><p:endSnd/></p:sndAc>");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 		public:
 			nullable<StSnd> stSnd;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(stSnd.IsInit())
-					stSnd->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

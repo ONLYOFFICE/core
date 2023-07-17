@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -137,7 +137,10 @@ void table_table_source::add_child_element( xml::sax * Reader, const std::wstrin
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:table-protection
-const wchar_t * table_table_protection::ns = L"loext"; //?? table odf 1.3
+const wchar_t * loext_table_protection::ns = L"loext"; 
+const wchar_t * loext_table_protection::name = L"table-protection";
+
+const wchar_t * table_table_protection::ns = L"table";
 const wchar_t * table_table_protection::name = L"table-protection";
 
 void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -211,7 +214,11 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     {
         CP_CREATE_ELEMENT(office_forms_);    
     }
-	else 
+    else if CP_CHECK_NAME(L"calcext", L"sparkline-groups")
+    {
+        CP_CREATE_ELEMENT(sparkline_groups_);
+    }
+    else
         CP_NOT_APPLICABLE_ELM();
 }
 

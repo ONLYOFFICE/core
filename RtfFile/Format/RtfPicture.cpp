@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,54 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "RtfWriter.h"
 #include "Utils.h"
+
+RtfPicture::RtfPicture()
+{
+	m_bIsCopy = false;
+	SetDefault();
+}
+RtfPicture::~RtfPicture()
+{
+	SetDefault();
+	for (size_t i = 0; i < m_aTempFiles.size(); i++ )
+		Utils::RemoveDirOrFile( m_aTempFiles[i] );
+}
+
+int RtfPicture::GetType()
+{
+	return TYPE_RTF_PICTURE;
+}
+bool RtfPicture::IsValid()
+{
+	return !m_sPicFilename.empty() && dt_none != eDataType;
+}
+void RtfPicture::SetDefaultRtf()
+{
+	SetDefault();
+}
+void RtfPicture::SetDefaultOOX()
+{
+	SetDefault();
+}
+void RtfPicture::SetDefault()
+{
+	eDataType = dt_none;
+	DEFAULT_PROPERTY( m_nWidth )
+	DEFAULT_PROPERTY( m_nWidthGoal )
+	DEFAULT_PROPERTY( m_nHeight )
+	DEFAULT_PROPERTY( m_nHeightGoal )
+
+	DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
+	DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
+	DEFAULT_PROPERTY( m_bScaled )
+
+	DEFAULT_PROPERTY( m_nCropL )
+	DEFAULT_PROPERTY( m_nCropT )
+	DEFAULT_PROPERTY( m_nCropR )
+	DEFAULT_PROPERTY( m_nCropB )
+
+	m_sPicFilename = L"";
+}
 
 std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter) //копия растра в векторе
 {
@@ -159,4 +207,73 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);
 
 	return srId;
+}
+
+RtfPicture::DataType RtfPicture::GetPictureType( std::wstring sFilename )
+{
+	BYTE	pBuffer[ 100 ];
+	DWORD	dwBytesRead = 0;
+
+	NSFile::CFileBinary file;
+	if (file.OpenFile(sFilename) == false) return dt_none;
+
+	file.ReadFile(pBuffer, 100);
+	dwBytesRead = (DWORD)file.GetPosition();
+	file.CloseFile();
+
+	//jpeg
+	// Hex: FF D8 FF
+	if ( (3 <= dwBytesRead) && (0xFF == pBuffer[0]) && (0xD8 == pBuffer[1]) && (0xFF == pBuffer[2]) )
+		return dt_jpg;
+
+	//png
+	//Hex: 89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52
+	//ASCII: .PNG........IHDR
+	if ( (16 <= dwBytesRead) && (0x89 == pBuffer[0]) && (0x50 == pBuffer[1]) && (0x4E == pBuffer[2]) && (0x47 == pBuffer[3])
+		&& (0x0D == pBuffer[4]) && (0x0A == pBuffer[5]) && (0x1A == pBuffer[6]) && (0x0A == pBuffer[7])
+		&& (0x00 == pBuffer[8]) && (0x00 == pBuffer[9]) && (0x00 == pBuffer[10]) && (0x0D == pBuffer[11])
+		&& (0x49 == pBuffer[12]) && (0x48 == pBuffer[13]) && (0x44 == pBuffer[14]) && (0x52 == pBuffer[15]))
+		return dt_png;
+	//wmf (aldus placeable header (apm))
+	//Hex: D7 CD C6 9A 00 00
+	if ( 6 <= dwBytesRead )
+	{
+		if ( ((0xD7 == pBuffer[0]) && (0xCD == pBuffer[1]) && (0xC6 == pBuffer[2]) && (0x9A == pBuffer[3])&& (0x00 == pBuffer[4]) && (0x00 == pBuffer[5]) ) )
+			return dt_apm;
+	}
+	//wmf
+	//or for Windows 3.x
+	//Hex: 01 00 09 00 00 03
+	if ( 6 <= dwBytesRead )
+	{
+		if ( ((0xD7 == pBuffer[0]) && (0xCD == pBuffer[1]) && (0xC6 == pBuffer[2]) && (0x9A == pBuffer[3])&& (0x00 == pBuffer[4]) && (0x00 == pBuffer[5]) ) ||
+			((0x01 == pBuffer[0]) && (0x00 == pBuffer[1]) && (0x09 == pBuffer[2]) && (0x00 == pBuffer[3]) && (0x00 == pBuffer[4]) && (0x03 == pBuffer[5]) ))
+			return dt_wmf;
+	}
+	//emf
+	//Hex: 01 00 00 00
+	if ( (4 <= dwBytesRead) && (0x01 == pBuffer[0]) && (0x00 == pBuffer[1]) && (0x00 == pBuffer[2]) && (0x00 == pBuffer[3]) )
+		return dt_emf;
+
+	if ('<' == pBuffer[0] &&
+		's' == pBuffer[1] &&
+		'v' == pBuffer[2] &&
+		'g' == pBuffer[3])
+	{
+		return dt_svg;;
+	}
+
+	if ('<' == pBuffer[0] &&
+		'?' == pBuffer[1] &&
+		'x' == pBuffer[2] &&
+		'm' == pBuffer[3] &&
+		'l' == pBuffer[4])
+	{
+		std::string test((char*)pBuffer, dwBytesRead);
+		if (std::string::npos != test.find("<svg"))
+		{
+			return dt_svg;;
+		}
+	}
+	return dt_none;
 }

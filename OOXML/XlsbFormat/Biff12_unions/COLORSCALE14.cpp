@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -59,7 +59,7 @@ namespace XLSB
     {
         if (proc.optional<BeginColorScale14>())
         {
-            m_BrtBeginColorScale14 = elements_.back();
+            m_bBrtBeginColorScale14 = true;
             elements_.pop_back();
         }        
         else
@@ -85,12 +85,33 @@ namespace XLSB
 
         if (proc.optional<EndColorScale14>())
         {
-            m_BrtEndColorScale14 = elements_.back();
+            m_bBrtEndColorScale14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndColorScale14 = false;
 
-        return m_BrtBeginColorScale14 && !m_arCFVO14.empty() && !m_arBrtColor14.empty() && m_BrtEndColorScale14;
+        return m_bBrtBeginColorScale14 && !m_arCFVO14.empty() && !m_arBrtColor14.empty() && m_bBrtEndColorScale14;
     }
+
+	const bool COLORSCALE14::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginColorScale14>();
+
+		for (auto &item : m_arCFVO14)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtColor14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndColorScale14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

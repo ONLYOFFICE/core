@@ -4,17 +4,18 @@
 #include "../../Common/MetaFileUtils.h"
 #include "CEmfInterpretatorBase.h"
 #include "../EmfParser/CEmfParserBase.h"
-#include "../../../../xml/include/xmlwriter.h"
+
+#include "../../Wmf/WmfInterpretator/CInterpretatorSvgBase.h"
 
 namespace MetaFile
 {
 	struct TSvgConditional
 	{
-		CEmfParserBase *m_pParser = NULL;
-		std::wstring   m_wsLastClipId;
+		IMetaFileBase *m_pParser = NULL;
+		CSvgClip       m_oClip;
 	};
 
-	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
+	class CEmfInterpretatorSvg : public CEmfInterpretatorBase, public CInterpretatorSvgBase
 	{
 	public:
 		CEmfInterpretatorSvg(CEmfParserBase* pParser = NULL, double dWidth = 0, double dHeight = 0);
@@ -25,64 +26,60 @@ namespace MetaFile
 
 		InterpretatorType   GetType() const override;
 
-		void SetSize(double dWidth, double dHeight);
-		void GetSize(double &dWidth, double &dHeight);
-		void UpdateSize();
-
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
-		void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS& oTEmfStretchDIBITS, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_BITBLT(const TEmfBitBlt& oTEmfBitBlt, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice& oTEmfSetDiBitsToDevice, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) override ;
+		void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS& oTEmfStretchDIBITS, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_BITBLT(const TEmfBitBlt& oTEmfBitBlt, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice& oTEmfSetDiBitsToDevice, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) override {};
 		void HANDLE_EMR_EOF() override ;
-		void HANDLE_EMR_SAVEDC() override ;
+		void HANDLE_EMR_SAVEDC() override {};
 		void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override ;
-		void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm& oXForm, const unsigned int& unMode) override ;
-		void HANDLE_EMR_SETWORLDTRANSFORM(const TEmfXForm& oXForm) override ;
-		void HANDLE_EMR_CREATEBRUSHINDIRECT(const unsigned int& unBrushIndex, const CEmfLogBrushEx* pBrush) override ;
-		void HANDLE_EMR_SETTEXTCOLOR(const TEmfColor& oColor) override ;
-		void HANDLE_EMR_SELECTOBJECT(const unsigned int& unObjectIndex) override ;
-		void HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int& unIndex, CEmfLogFont* oLogFont) override ;
-		void HANDLE_EMR_SETTEXTALIGN(const unsigned int &unAlign) override ;
-		void HANDLE_EMR_SETBKMODE(const unsigned int &unBgMode) override ;
-		void HANDLE_EMR_DELETEOBJECT(const unsigned int &unObjectIndex) override ;
-		void HANDLE_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit) override ;
-		void HANDLE_EMR_EXTCREATEPEN(const unsigned int& unPenIndex, CEmfLogPen* pPen, const std::vector<unsigned int>& arUnused) override ;
-		void HANDLE_EMR_CREATEPEN(const unsigned int& unPenIndex, const unsigned int& unWidthX, const CEmfLogPen* pPen) override ;
-		void HANDLE_EMR_SETPOLYFILLMODE(const unsigned int& unFillMode) override ;
-		void HANDLE_EMR_BEGINPATH() override ;
-		void HANDLE_EMR_ENDPATH() override ;
-		void HANDLE_EMR_CLOSEFIGURE() override ;
-		void HANDLE_EMR_FLATTENPATH() override ;
-		void HANDLE_EMR_WIDENPATH() override ;
-		void HANDLE_EMR_ABORTPATH() override ;
-		void HANDLE_EMR_MOVETOEX(const TEmfPointL& oPoint) override ;
-		void HANDLE_EMR_SETARCDIRECTION(const unsigned int& unDirection) override ;
-		void HANDLE_EMR_FILLPATH(const TEmfRectL& oBounds) override ;
-		void HANDLE_EMR_SETMAPMODE(const unsigned int& unMapMode) override ;
-		void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL& oOrigin) override ;
-		void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL& oExtent) override ;
-		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override ;
-		void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL& oOrigin) override ;
-		void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL& oExtent) override ;
-		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override ;
-		void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int& unStretchMode) override ;
-		void HANDLE_EMR_SETICMMODE(const unsigned int& unICMMode) override ;
-		void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override ;
-		void HANDLE_EMR_SETBKCOLOR(const TEmfColor& oColor) override ;
+		void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm& oXForm, const unsigned int& unMode) override {};
+		void HANDLE_EMR_SETWORLDTRANSFORM(const TEmfXForm& oXForm) override {};
+		void HANDLE_EMR_CREATEBRUSHINDIRECT(const unsigned int& unBrushIndex, const CEmfLogBrushEx* pBrush) override {};
+		void HANDLE_EMR_SETTEXTCOLOR(const TEmfColor& oColor) override {};
+		void HANDLE_EMR_SELECTOBJECT(const unsigned int& unObjectIndex) override {};
+		void HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int& unIndex, CEmfLogFont* oLogFont) override {};
+		void HANDLE_EMR_SETTEXTALIGN(const unsigned int &unAlign) override {};
+		void HANDLE_EMR_SETBKMODE(const unsigned int &unBgMode) override {};
+		void HANDLE_EMR_DELETEOBJECT(const unsigned int &unObjectIndex) override {};
+		void HANDLE_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit) override {};
+		void HANDLE_EMR_EXTCREATEPEN(const unsigned int& unPenIndex, CEmfLogPen* pPen, const std::vector<unsigned int>& arUnused) override {};
+		void HANDLE_EMR_CREATEPEN(const unsigned int& unPenIndex, const unsigned int& unWidthX, const CEmfLogPen* pPen) override {};
+		void HANDLE_EMR_SETPOLYFILLMODE(const unsigned int& unFillMode) override {};
+		void HANDLE_EMR_BEGINPATH() override {};
+		void HANDLE_EMR_ENDPATH() override {};
+		void HANDLE_EMR_CLOSEFIGURE() override {};
+		void HANDLE_EMR_FLATTENPATH() override {};
+		void HANDLE_EMR_WIDENPATH() override {};
+		void HANDLE_EMR_ABORTPATH() override {};
+		void HANDLE_EMR_MOVETOEX(const TEmfPointL& oPoint) override{} ;
+		void HANDLE_EMR_SETARCDIRECTION(const unsigned int& unDirection) override {};
+		void HANDLE_EMR_FILLPATH(const TEmfRectL& oBounds) override;
+		void HANDLE_EMR_SETMAPMODE(const unsigned int& unMapMode) override {};
+		void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL& oOrigin) override {};
+		void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
+		void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL& oOrigin) override {};
+		void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
+		void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int& unStretchMode) override {};
+		void HANDLE_EMR_SETICMMODE(const unsigned int& unICMMode) override {};
+		void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
+		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override;
+		void HANDLE_EMR_SETBKCOLOR(const TEmfColor& oColor) override {};
 		void HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL& oClip) override ;
 		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override ;
-		void HANDLE_EMR_SETMETARGN() override ;
-		void HANDLE_EMR_SETROP2(const unsigned int& unRop2Mode) override ;
-		void HANDLE_EMR_CREATEPALETTE(const unsigned int& unPaletteIndex, const CEmfLogPalette* oEmfLogPalette) override ;
-		void HANDLE_EMR_SELECTPALETTE(const unsigned int& unPaletteIndex) override ;
-		void HANDLE_EMR_REALIZEPALETTE() override ;
+		void HANDLE_EMR_SETMETARGN() override;
+		void HANDLE_EMR_SETROP2(const unsigned int& unRop2Mode) override {};
+		void HANDLE_EMR_CREATEPALETTE(const unsigned int& unPaletteIndex, const CEmfLogPalette* oEmfLogPalette) override {};
+		void HANDLE_EMR_SELECTPALETTE(const unsigned int& unPaletteIndex) override {};
+		void HANDLE_EMR_REALIZEPALETTE() override {};
 		void HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL& oClip) override ;
-		void HANDLE_EMR_SETLAYOUT(const unsigned int& unLayoutMode) override ;
-		void HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL& oOrigin) override ;
+		void HANDLE_EMR_SETLAYOUT(const unsigned int& unLayoutMode) override {};
+		void HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL& oOrigin) override {};
 		void HANDLE_EMR_ANGLEARC(const TEmfPointL& oCenter, const unsigned int& unRadius, const double& dStartAngle, const double& dSweepAngle) override ;
 		void HANDLE_EMR_ARC(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override ;
 		void HANDLE_EMR_ARCTO(const TEmfRectL& oBox, const TEmfPointL& oStart, const TEmfPointL& oEnd) override ;
@@ -115,8 +112,9 @@ namespace MetaFile
 		void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override ;
 		void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override ;
 		void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
+		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode) override;
 
-		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
+		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override {};
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
 		void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
 		void HANDLE_EMR_FRAMERGN(const TEmfRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
@@ -133,7 +131,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_COMMENT(CDataStream& oStream, unsigned int unSize) override {};
 
 		// 2.3.3 Control Record Types
-		void HANDLE_EMFPLUS_ENDOFFILE() override {};
+		void HANDLE_EMFPLUS_ENDOFFILE() override;
 		void HANDLE_EMFPLUS_GETDC() override {};
 		void HANDLE_EMFPLUS_HEADER(unsigned int unEmfPlusFlags, unsigned int m_unLogicalDpiX, unsigned int m_unLogicalDpiY) override {};
 
@@ -145,8 +143,8 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWCURVE(short shOgjectIndex, double dTension, unsigned int unOffset, unsigned int unNumSegments, const std::vector<TEmfPlusPointF>& arPoints) override;
 		void HANDLE_EMFPLUS_DRAWDRIVERSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, TEmfPlusXForm* pMatrix, const std::wstring& wsString, const std::vector<TPointD>& arGlyphPos) override;
 		void HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF& oRect) override;
-		void HANDLE_EMFPLUS_DRAWIMAGE(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
-		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
+		void HANDLE_EMFPLUS_DRAWIMAGE(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
+		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWLINES(short shOgjectIndex, const std::vector<TEmfPlusPointF>& arPoints) override;
 		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath) override;
 		void HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF& oRect) override;
@@ -195,20 +193,6 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_TRANSLATEWORLDTRANSFORM(short, double, double) override {};
 
 	private:
-		XmlUtils::CXmlWriter    m_oXmlWriter;
-
-		CEmfParserBase          *m_pParser;
-
-		TSvgViewport            m_oViewport;
-		TEmfPointD              m_oSizeWindow;
-
-		unsigned int			m_unNumberDefs;
-		std::wstring			m_wsDefs;
-
-		TEmfScale               m_oScale;
-
-		std::wstring            m_wsLastClipId;
-
 		TSvgConditional         m_oSecondConditional;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
@@ -218,7 +202,7 @@ namespace MetaFile
 		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
-						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
+		                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
 
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override {};
 
@@ -242,35 +226,9 @@ namespace MetaFile
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
 
-		void SetXmlWriter(XmlUtils::CXmlWriter* pXmlWriter);
-		XmlUtils::CXmlWriter* GetXmlWriter();
+		TRectD TranslateRect(const TEmfRectL &oRect) const;
 
-		std::wstring GetFile();
-		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm* pTransform);
-	private:
-		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
-		void WriteNodeBegin(const std::wstring& wsNodeName, const NodeAttributes& arAttributes);
-		void WriteNodeEnd(const std::wstring& wsNodeName);
-		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale);
-
-		void AddStroke(NodeAttributes &arAttributes);
-		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
-		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
-		void AddClip(NodeAttributes &arAttributes);
-
-		void AddNoneFill(NodeAttributes &arAttributes);
-
-		TRectD TranslateRect(const TEmfRectL& oRect);
-
-		TPointD GetCutPos() const;
-
-		std::wstring CreatePath(const CEmfPath* pPath = NULL, const TXForm* pTransform = NULL) const;
-		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
-		std::wstring CreateDibPatternStyle(IBrush *pBrush);
-		std::wstring CreatePatternStyle(IBrush *pBrush);
-		std::wstring CreateGradient(IBrush *pBrush);
-
-		void UpdateClip();
+		std::wstring CreatePath(const CEmfPath* pPath = NULL, const TXForm* pTransform = NULL);
 	};
 }
 

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndDeletedNames>())
         {
-            m_BrtEndDeletedNames = elements_.back();
+			m_bBrtEndDeletedNames = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDeletedNames = false;
 
-        return m_BrtBeginDeletedNames && m_BrtEndDeletedNames;
+        return m_BrtBeginDeletedNames && m_bBrtEndDeletedNames;
     }
+
+	const bool DELETEDNAMES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginDeletedNames == nullptr)
+			m_BrtBeginDeletedNames = XLS::BaseObjectPtr(new XLSB::BeginDeletedNames());
+
+		if (m_BrtBeginDeletedNames != nullptr)
+		{
+			auto ptrBrtBeginDeletedNames = static_cast<XLSB::BeginDeletedNames*>(m_BrtBeginDeletedNames.get());
+
+			if (ptrBrtBeginDeletedNames != nullptr)
+				ptrBrtBeginDeletedNames->nCols = m_arDELETEDNAME.size();
+
+			proc.mandatory(*m_BrtBeginDeletedNames);
+		}
+
+		for (auto &item : m_arDELETEDNAME)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDeletedNames>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,85 +31,26 @@
  */
 #pragma once
 
-#include "OOXTableReader.h"
-#include "OOXParagraphReader.h"
 #include "OOXtcPrReader.h"
-
 #include "../../Format/RtfDocument.h"
 #include "../../Format/RtfTable.h"
+
+namespace OOX
+{
+    namespace Logic
+    {
+        class CTc;
+        class CTableProperty;
+    }
+}
 
 class OOXTableCellReader
 {
 private:
 	OOX::Logic::CTc						*m_ooxTableCell;
 	OOX::Logic::CTableProperty			*m_ooxTableProps;
+
 public: 
-	OOXTableCellReader(OOX::Logic::CTc *ooxTableCell, OOX::Logic::CTableProperty* ooxTableProps)
-	{
-		m_ooxTableCell	= ooxTableCell;
-		m_ooxTableProps	= ooxTableProps;
-	}
-	bool Parse( ReaderParameter oParam ,RtfTableCell& oOutputCell,  CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount )
-	{
-		if (m_ooxTableCell == NULL) return false;
-
-		if( m_ooxTableCell->m_pTableCellProperties )
-		{
-			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_pTableCellProperties, m_ooxTableProps);
-			oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//может поменяться на любой condition (firstRow)
-		}
-		else
-		{
-			RtfTableStylePtr oResultStyle = oConditionalTableStyle.ApplyTableStyle( oParam.poTableStyle );
-			if( NULL != oResultStyle )
-				oOutputCell.m_oProperty.Merge( oResultStyle->m_oCellProp );
-			oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
-		}
-
-        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTableCell->m_arrItems.begin(); it != m_ooxTableCell->m_arrItems.end(); ++it)
-		{
-			switch((*it)->getType())
-			{
-				case OOX::et_w_p:
-				{
-					OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(*it);
-			
-					RtfParagraphPtr oNewParagraph( new RtfParagraph() );
-					//применяем к новому параграфу default property
-					oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
-					oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-					
-					OOXParagraphReader oParagraphReader(pParagraph);
-					oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle );
-					
-					//ставим стиль таблицы
-					if( NULL != oParam.poTableStyle )
-						oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
-					oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
-					oNewParagraph->m_oProperty.m_bInTable = 1;
-					
-					oOutputCell.AddItem( oNewParagraph );
-				}break;
-				case OOX::et_w_tbl:
-				{
-					OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(*it);
-					
-					oParam.oReader->m_nCurItap ++ ;
-					RtfTablePtr oNewTabel( new RtfTable() );
-					OOXTableReader oTableReader(pTbl);
-					oTableReader.Parse( oParam, *oNewTabel);
-					oOutputCell.AddItem( oNewTabel );
-					oParam.oReader->m_nCurItap -- ;
-				}break;
-				default:
-				{
-					//todooo - универсальный риадер
-					//OOXElementReader oElementReader((*it));
-					//ITextItemPtr *rtfElement = oElementReader.Parse( oParam);
-					//oOutputCell.AddItem( rtfElement );
-				}break;
-			}
-		}
-		return true;
-	}
+    OOXTableCellReader(OOX::Logic::CTc *ooxTableCell, OOX::Logic::CTableProperty* ooxTableProps);
+	bool Parse( ReaderParameter oParam, RtfTableCell& oOutputCell, CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount );
 };

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,9 +31,17 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
 #include "../Chart/ChartSerialize.h"
 #include "../Styles/rPr.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class ST_SparklineType;
+		class ST_SparklineAxisMinMax;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +50,7 @@ namespace OOX
 		class CSparkline : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparkline)
+			WritingElement_AdditionMethods(CSparkline)
             WritingElement_XlsbConstructors(CSparkline)
 			CSparkline();
 			virtual ~CSparkline();
@@ -61,14 +69,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<std::wstring>										m_oRef;
-			nullable<std::wstring>										m_oSqRef;
+			nullable<std::wstring> m_oRef;
+			nullable<std::wstring> m_oSqRef;
 		};
 
 		class CSparklines  : public WritingElementWithChilds<CSparkline>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklines)
+			WritingElement_AdditionMethods(CSparklines)
             WritingElement_XlsbConstructors(CSparklines)
 			CSparklines();
 			virtual ~CSparklines();
@@ -89,7 +97,7 @@ namespace OOX
 		class CSparklineGroup : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklineGroup)
+			WritingElement_AdditionMethods(CSparklineGroup)
             WritingElement_XlsbConstructors(CSparklineGroup)
 			CSparklineGroup();
 			virtual ~CSparklineGroup();
@@ -136,12 +144,14 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CColor>					m_oColorLow;
 			nullable<std::wstring>								m_oRef;
 			nullable<CSparklines>								m_oSparklines;
+
+			nullable_string										m_oUId;
 		};
 
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklineGroups)
+			WritingElement_AdditionMethods(CSparklineGroups)
             WritingElement_XlsbConstructors(CSparklineGroups)
 			CSparklineGroups();
 			virtual ~CSparklineGroups();

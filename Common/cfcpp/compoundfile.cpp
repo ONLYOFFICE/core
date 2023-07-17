@@ -1,34 +1,34 @@
 /*
-* (c) Copyright Ascensio System SIA 2010-2019
-*
-* This program is a free software product. You can redistribute it and/or
-* modify it under the terms of the GNU Affero General Public License (AGPL)
-* version 3 as published by the Free Software Foundation. In accordance with
-* Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
-* that Ascensio System SIA expressly excludes the warranty of non-infringement
-* of any third-party rights.
-*
-* This program is distributed WITHOUT ANY WARRANTY; without even the implied
-* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
-* details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
-*
-* You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
-* street, Riga, Latvia, EU, LV-1050.
-*
-* The  interactive user interfaces in modified source and object code versions
-* of the Program must display Appropriate Legal Notices, as required under
-* Section 5 of the GNU AGPL version 3.
-*
-* Pursuant to Section 7(b) of the License you must retain the original Product
-* logo when distributing the program. Pursuant to Section 7(e) we decline to
-* grant you any rights under trademark law for use of our trademarks.
-*
-* All the Product's GUI elements, including illustrations and icon sets, as
-* well as technical writing content are licensed under the terms of the
-* Creative Commons Attribution-ShareAlike 4.0 International. See the License
-* terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
-*
-*/
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "compoundfile_impl.h"
 #include "directoryentry.h"
 #include "cfexception.h"
@@ -47,7 +47,7 @@ using namespace CFCPP;
 CompoundFile::CompoundFile() : _impl(new CFCPP::CompoundFile_impl())
 {
 }
-CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters) :
+CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters) :
     _impl(new CFCPP::CompoundFile_impl(fileName, updateMode, configParameters))
 {
 }
@@ -67,9 +67,9 @@ std::shared_ptr<CFStorage> CompoundFile::RootStorage()
 {
     return _impl->RootStorage();
 }
-void CompoundFile::Save(std::wstring wFileName)
+bool CompoundFile::Save(std::wstring wFileName)
 {
-    _impl->Save(wFileName);
+    return _impl->Save(wFileName);
 }
 void CompoundFile::Save(Stream stream)
 {
@@ -115,7 +115,7 @@ CompoundFile_impl::CompoundFile_impl() :
     CompoundFile_impl(CFSVersion::Ver_3, CFSConfiguration::Default)
 {}
 
-CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
+CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters)
 {
     configuration = configParameters;
     isValidationExceptionEnabled = !(configParameters & CFSConfiguration::NoValidationException);
@@ -316,15 +316,23 @@ void CompoundFile_impl::Load(Stream stream)
     }
 }
 
-void CompoundFile_impl::Save(std::wstring wFileName)
-{
-    if (isDisposed)
-        throw CFException("Compound File closed: cannot save data");
+bool CompoundFile_impl::Save(std::wstring wFileName)
+{	
+	if (isDisposed)
+	{
+		//throw CFException("Compound File closed: cannot save data");
+		return false;
+	}
 
     Stream file = OpenFileStream(wFileName, true, true);
-    file->seek(0, std::ios::beg);
 
-    try
+	if (!file) return false;
+	if (file->isError()) return false;
+    
+	file->seek(0, std::ios::beg);
+
+	bool result = true;
+	try
     {
         Save(file);
 
@@ -343,7 +351,9 @@ void CompoundFile_impl::Save(std::wstring wFileName)
             file->close();
 
         throw CFException("Error saving file [" + fileName + "]", ex);
+		result = false;
     }
+	return result;
 }
 
 
@@ -1796,7 +1806,6 @@ _INT32 CompoundFile_impl::GetSectorSize()
 {
     return 2 << (header->sectorShift - 1);
 }
-
 void CompoundFile_impl::Dispose(bool disposing)
 {
     try

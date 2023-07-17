@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -942,9 +942,10 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		}
 	}
 //-------------------------------------------------------------------
+	bool result = true;
 	if (bLargeFile)
 	{
-		pStorageNew->Save(file_name_out);
+		result = pStorageNew->Save(file_name_out);
 		pStorageNew->Close();
 		delete pStorageNew;
 	}
@@ -974,7 +975,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	}
 ////test back---------------------------------------------------------------------------------test back
 
-	return true;
+	return result;
 }
 bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity)
 {
@@ -1143,26 +1144,54 @@ std::string ECMACryptFile::ReadAdditional(const std::wstring &file_name, const s
 }
 bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::wstring &addit_name, const std::string &addit_info)
 {
-	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
-	
-	if (!pStorage)return false;
-
-	if (!pStorage->open(true, false))
+	try
 	{
+		CFCPP::CompoundFile *pStorage = new CFCPP::CompoundFile(file_name, CFCPP::Update, (CFCPP::SectorRecycle | CFCPP::NoValidationException | CFCPP::EraseFreeSectors));
+		if (!pStorage)return false;
+		std::shared_ptr<CFCPP::CFStream> pAddit = pStorage->RootStorage()->GetStream(addit_name);
+
+		if (pAddit)
+		{
+			pStorage->RootStorage()->Delete(addit_name);
+		}
+		pAddit = pStorage->RootStorage()->AddStream(addit_name);
+
+		pAddit->Write(addit_info.c_str(), 0, addit_info.size());
+		pStorage->Commit();
+//todooo_2 flush
+		pStorage->Save(file_name + L"~");
+		pStorage->Close();
 		delete pStorage;
+//todooo_1 rename
+		//NSFile::CFileBinary::Rename(file_name + L"~", file_name);
+		NSFile::CFileBinary::Copy(file_name + L"~", file_name);
+		NSFile::CFileBinary::Remove(file_name + L"~");
+	}
+	catch (...)
+	{
 		return false;
 	}
 
-	POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name, true, addit_info.size());
-	
-	pStream->write((unsigned char*)addit_info.c_str(), addit_info.size());
-	pStream->setSize(addit_info.size());
+	//POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
+	//
+	//if (!pStorage)return false;
 
-	pStream->flush();
-	delete pStream;
+	//if (!pStorage->open(true, false))
+	//{
+	//	delete pStorage;
+	//	return false;
+	//}
 
-	pStorage->close();
-	delete pStorage;
+	//POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name, true, addit_info.size());
+	//
+	//pStream->write((unsigned char*)addit_info.c_str(), addit_info.size());
+	//pStream->setSize(addit_info.size());
+
+	//pStream->flush();
+	//delete pStream;
+
+	//pStorage->close();
+	//delete pStorage;
 
 	return true;
 }

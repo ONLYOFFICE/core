@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,11 +31,7 @@
  */
 #pragma once
 
-#ifndef OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
-#define OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
-
 #include "../WritingElement.h"
-
 #include "../../Common/ComplexTypes.h"
 
 namespace ComplexTypes
@@ -194,7 +190,7 @@ namespace OOX
 		class CTblBorders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTblBorders)
+			WritingElement_AdditionMethods(CTblBorders)
 
 			CTblBorders();
 			virtual ~CTblBorders();
@@ -219,8 +215,6 @@ namespace OOX
 
 				return oResult;
 			}
-
-		public:
 			nullable<ComplexTypes::Word::CBorder > m_oBottom;
 			nullable<ComplexTypes::Word::CBorder > m_oEnd;
 			nullable<ComplexTypes::Word::CBorder > m_oInsideH;
@@ -236,7 +230,7 @@ namespace OOX
 		class CTblCellMar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTblCellMar)
+			WritingElement_AdditionMethods(CTblCellMar)
 
 			CTblCellMar();
 			virtual ~CTblCellMar();
@@ -277,10 +271,9 @@ namespace OOX
 		class CTblPrChange : public WritingElement
 		{
 		public:
-			CTblPrChange(OOX::Document *pMain = NULL);
-			CTblPrChange(XmlUtils::CXmlNode &oNode);
-			CTblPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblPrChange();
+
 			const CTblPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -309,9 +302,7 @@ namespace OOX
 		class CTableProperty : public WritingElement
 		{
 		public:
-			CTableProperty(OOX::Document *pMain = NULL);
-			CTableProperty(XmlUtils::CXmlNode &oNode);
-			CTableProperty(XmlUtils::CXmlLiteReader& oReader);
+			CTableProperty(OOX::Document *pMain = NULL);			
 			virtual ~CTableProperty();
 
 			const CTableProperty& operator=(const XmlUtils::CXmlNode &oNode);
@@ -340,26 +331,26 @@ namespace OOX
 			}
 
 		public:
-			bool                                                           m_bTblPrChange;
+			bool m_bTblPrChange = false;
 
-			nullable<ComplexTypes::Word::COnOff2 > m_oBidiVisual;
-			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
-			nullable<ComplexTypes::Word::CShading                        > m_oShade;
-			nullable<OOX::Logic::CTblBorders                             > m_oTblBorders;
-			nullable<ComplexTypes::Word::String                        > m_oTblCaption;
-			nullable<OOX::Logic::CTblCellMar                             > m_oTblCellMar;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::String                        > m_oTblDescription;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblInd;
-			nullable<ComplexTypes::Word::CTblLayoutType                  > m_oTblLayout;
-			nullable<ComplexTypes::Word::CTblLook                        > m_oTblLook;
-			nullable<ComplexTypes::Word::CTblOverlap                     > m_oTblOverlap;
-			nullable<ComplexTypes::Word::CTblPPr                         > m_oTblpPr;
-			nullable<OOX::Logic::CTblPrChange                            > m_oTblPrChange;
-			nullable<ComplexTypes::Word::String                        > m_oTblStyle;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleColBandSize;
-			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleRowBandSize;
-			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblW;
+			nullable<ComplexTypes::Word::COnOff2> m_oBidiVisual;
+			nullable<ComplexTypes::Word::CJcTable> m_oJc;
+			nullable<ComplexTypes::Word::CShading> m_oShade;
+			nullable<OOX::Logic::CTblBorders> m_oTblBorders;
+			nullable<ComplexTypes::Word::String> m_oTblCaption;
+			nullable<OOX::Logic::CTblCellMar> m_oTblCellMar;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblCellSpacing;
+			nullable<ComplexTypes::Word::String> m_oTblDescription;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblInd;
+			nullable<ComplexTypes::Word::CTblLayoutType> m_oTblLayout;
+			nullable<ComplexTypes::Word::CTblLook> m_oTblLook;
+			nullable<ComplexTypes::Word::CTblOverlap> m_oTblOverlap;
+			nullable<ComplexTypes::Word::CTblPPr> m_oTblpPr;
+			nullable<OOX::Logic::CTblPrChange> m_oTblPrChange;
+			nullable<ComplexTypes::Word::String> m_oTblStyle;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oTblStyleColBandSize;
+			nullable<ComplexTypes::Word::CDecimalNumber> m_oTblStyleRowBandSize;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblW;
 		};
 
 	} // namespace Logic
@@ -408,10 +399,9 @@ namespace OOX
 		class CTrPrChange : public WritingElement
 		{
 		public:
-			CTrPrChange(OOX::Document *pMain = NULL);
-			CTrPrChange(XmlUtils::CXmlNode &oNode);
-			CTrPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTrPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTrPrChange();
+
 			const CTrPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTrPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -442,9 +432,7 @@ namespace OOX
 		class CTableRowProperties : public WritingElement
 		{
 		public:
-			CTableRowProperties(OOX::Document *pMain = NULL);
-			CTableRowProperties(XmlUtils::CXmlNode &oNode);
-			CTableRowProperties(XmlUtils::CXmlLiteReader& oReader);
+			CTableRowProperties(OOX::Document *pMain = NULL);			
 			virtual ~CTableRowProperties();
 
 			const CTableRowProperties& operator =(const XmlUtils::CXmlNode &oNode);
@@ -475,17 +463,17 @@ namespace OOX
 		public:
 			bool                                                           m_bTrPrChange;
 
-			nullable<ComplexTypes::Word::COnOff2 > m_oCantSplit;
+			nullable<ComplexTypes::Word::COnOff2						 > m_oCantSplit;
 			nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oDivId;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridAfter;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridBefore;
-			nullable<ComplexTypes::Word::COnOff2 > m_oHidden;
+			nullable<ComplexTypes::Word::COnOff2						 > m_oHidden;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::COnOff2 > m_oTblHeader;
+			nullable<ComplexTypes::Word::COnOff2						 > m_oTblHeader;
 			nullable<ComplexTypes::Word::CHeight                         > m_oTblHeight;
 			nullable<OOX::Logic::CTrPrChange                             > m_oTrPrChange;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
@@ -588,7 +576,7 @@ namespace OOX
 		class CHeaders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHeaders)
+			WritingElement_AdditionMethods(CHeaders)
 
 			CHeaders(OOX::Document *pMain = NULL);
 			virtual ~CHeaders();
@@ -608,7 +596,7 @@ namespace OOX
 		class CTcBorders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTcBorders)
+			WritingElement_AdditionMethods(CTcBorders)
 
 			CTcBorders();
 			virtual ~CTcBorders();
@@ -652,7 +640,7 @@ namespace OOX
 		class CTcMar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTcMar)
+			WritingElement_AdditionMethods(CTcMar)
 
 			CTcMar();
 			virtual ~CTcMar();
@@ -692,9 +680,7 @@ namespace OOX
 		class CTcPrChange : public WritingElement
 		{
 		public:
-			CTcPrChange(OOX::Document *pMain = NULL);
-			CTcPrChange(XmlUtils::CXmlNode &oNode);
-			CTcPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTcPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTcPrChange();
 
 			const CTcPrChange& operator = (const XmlUtils::CXmlNode &oNode);
@@ -723,9 +709,7 @@ namespace OOX
 		class CTableCellProperties : public WritingElement
 		{
 		public: 
-			CTableCellProperties(OOX::Document *pMain = NULL);
-			CTableCellProperties(XmlUtils::CXmlNode &oNode);
-			CTableCellProperties(XmlUtils::CXmlLiteReader& oReader);
+			CTableCellProperties(OOX::Document *pMain = NULL);			
 			virtual ~CTableCellProperties();
 
 			const CTableCellProperties& operator =(const XmlUtils::CXmlNode &oNode);
@@ -780,4 +764,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_

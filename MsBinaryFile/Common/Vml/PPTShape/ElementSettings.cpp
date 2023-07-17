@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,9 +37,26 @@
 #include "../../../PptFile/Reader/Records.h"
 #include "../../../PptFile/Reader/PPTFileDefines.h"
 
+#include "../../../PptFile/Records/Drawing/ArtBlip.h"
+
 // это класс, использующийся для передачи свойств объектов,
 // например - указатель на картинку... (по PID'у)
 
+CProperty::CProperty()
+{
+	m_ePID = ODRAW::ePropertyId_left;
+	m_bIsBlip = false;
+	m_bComplex = false;
+	m_lValue = 0;
+	m_pOptions = NULL;
+
+	m_bIsTruncated = false;
+}
+CProperty::~CProperty()
+{
+	if (m_pOptions)	delete []m_pOptions;
+	m_pOptions = NULL;
+}
 void CProperty::FromStream(POLE::Stream* pStream)
 {
 	// читаем из стрима...
@@ -53,7 +70,6 @@ void CProperty::FromStream(POLE::Stream* pStream)
 
 	m_lValue = StreamUtils::ReadDWORD(pStream);
 }
-
 void CProperty::ComplexFromStream(POLE::Stream* pStream)
 {
 	if (m_bComplex && m_lValue > 0)
@@ -100,7 +116,7 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 		{
 		case ODRAW::fillBlip:
 		{
-			PPT_FORMAT::SRecordHeader oHeader;
+            PPT::SRecordHeader oHeader;
 			if (oHeader.ReadFromStream(pStream) == false)
 			{
 				return;
@@ -115,7 +131,7 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 			case RECORD_TYPE_ESCHER_BLIP_DIB:
 			case RECORD_TYPE_ESCHER_BLIP_TIFF:
 			{
-				PPT_FORMAT::CRecordOfficeArtBlip art_blip;
+                PPT::CRecordOfficeArtBlip art_blip;
 				art_blip.ReadFromStream(oHeader, pStream);
 			}
 			}
@@ -141,7 +157,14 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 	}
 }
 
-
+CProperties::CProperties() : m_arProperties()
+{
+}
+CProperties::~CProperties()
+{
+	m_lCount = 0;
+	m_arProperties.clear();
+}
 void CProperties::FromStream(POLE::Stream* pStream, long lCount)
 {
 	m_lCount = lCount;
@@ -158,8 +181,6 @@ void CProperties::FromStream(POLE::Stream* pStream, long lCount)
 		m_arProperties[lIndex].ComplexFromStream(pStream);
 	}
 }
-
-
 size_t CProperties::GetLen()
 {
 	size_t dwLen = 6 * m_lCount;

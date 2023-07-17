@@ -367,11 +367,11 @@ public:
 						if (curRel.target_mode == L"Internal" && !CSignFolderFiles::CheckNeedSign(curRel.target))
 							continue;
 
-						std::wstring sFullPath = oInfo.GetHeadPath(curRel.target);
-
 						// если внутренний файл отсутствует - не валидная подпись
 						if (curRel.target_mode == L"Internal")
 						{
+							std::wstring sFullPath = oInfo.GetHeadPath(curRel.target);
+
 							if (!m_pFolder->exists(sFullPath))
 								m_valid = OOXML_SIGNATURE_INVALID;
 							else

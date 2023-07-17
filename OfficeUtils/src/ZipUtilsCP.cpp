@@ -217,6 +217,17 @@ namespace ZLibZipUtils
 			pos += replace.length();
 		}
 	}
+
+	static void replace_all_w(std::wstring& subject, const std::wstring& search, const std::wstring& replace)
+	{
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::wstring::npos)
+		{
+			subject.replace(pos, search.length(), replace);
+			pos += replace.length();
+		}
+	}
+
 	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
 	{
 		char filename_inzipA[4096];
@@ -279,31 +290,28 @@ namespace ZLibZipUtils
 			}
 			//-------------------------------------------------------------------------------------------------
 
-			char* current_directory = getcwd(NULL, 0);
-
-			if (current_directory)
+			if (unzip_dir)
 			{
-				std::string current_path(current_directory);
-				free(current_directory);
+				std::wstring current_path(unzip_dir);
+				current_path += FILE_SEPARATOR_STR;
 
-				current_path += FILE_SEPARATOR_STRA;
+				replace_all_w(current_path, L"/", FILE_SEPARATOR_STR);
+				replace_all_w(current_path, L"\\", FILE_SEPARATOR_STR);
 
-				replace_all(current_path, "/", FILE_SEPARATOR_STRA);
-				replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
+				std::wstring filename_inzip(filenameW);
 
-				std::string filename_inzip(filename_inzipA);
+				replace_all_w(filename_inzip, L"/", FILE_SEPARATOR_STR);
+				replace_all_w(filename_inzip, L"\\", FILE_SEPARATOR_STR);
 
-				replace_all(filename_inzip, "/", FILE_SEPARATOR_STRA);
-				replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
+				std::wstring norm_path = NSSystemPath::NormalizePath(current_path + filename_inzip);
+				std::wstring norm_current_path = NSSystemPath::NormalizePath(current_path);
 
-				std::string norm_path = NSSystemPath::NormalizePath(current_path + filename_inzip);
-				std::string norm_current_path = NSSystemPath::NormalizePath(current_path);
-
-				if (std::string::npos == norm_path.find(norm_current_path))
+				if (std::wstring::npos == norm_path.find(norm_current_path))
 				{
 					return UNZ_INTERNALERROR;
 				}
 			}
+
 			//-------------------------------------------------------------------------------------------------
 			NSFile::CFileBinary oFile;
 			FILE *fout = NULL;

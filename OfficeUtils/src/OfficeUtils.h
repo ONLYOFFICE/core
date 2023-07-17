@@ -40,7 +40,7 @@
 #define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
 
 #ifndef Z_DEFLATED
-    #define Z_DEFLATED 8
+#define Z_DEFLATED 8
 #endif
 
 class KERNEL_DECL COfficeUtils
@@ -51,7 +51,7 @@ public:
 	COfficeUtils(OnProgressCallback* bCallback = NULL);
 
 	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
-    HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1, bool bDateTime = false);
+	HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1, bool bDateTime = false);
 	
 	HRESULT Uncompress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize);
 	HRESULT Compress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize, short level = -1);
@@ -63,8 +63,8 @@ public:
 	HRESULT CompressFilesFromMemory	(const std::wstring& zipFile, const RequestFileCallback& data_source, void* pParam, short compression_level, bool* result);
 	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);
 
-    static int GetAddonFlag();
-    static void SetAddonFlag(int flag);
+	static int GetAddonFlag();
+	static void SetAddonFlag(int flag);
 };
 
 #define DEFLATE_NO_FLUSH      0
@@ -93,52 +93,52 @@ class CDeflate_private;
 class KERNEL_DECL CDeflate
 {
 private:
-    CDeflate_private* m_internal;
+	CDeflate_private* m_internal;
 
 public:
-    CDeflate();
-    ~CDeflate();
+	CDeflate();
+	~CDeflate();
 
 public:
-    void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
-    void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
+	void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
+	void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
 
-    UINT GetAvailIn();
-    UINT GetAvailOut();
+	UINT GetAvailIn();
+	UINT GetAvailOut();
 
-    void Init(int level, int stream_size = -1);
-    int Process(int flush);
-    void End();
+	void Init(int level, int stream_size = -1);
+	int Process(int flush);
+	void End();
 };
 
 class CInflate_private;
 class KERNEL_DECL CInflate
 {
 private:
-    CInflate_private* m_internal;
+	CInflate_private* m_internal;
 
 public:
-    CInflate();
-    ~CInflate();
+	CInflate();
+	~CInflate();
 
 public:
-    void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
-    void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
+	void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
+	void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
 
-    UINT GetAvailIn();
-    UINT GetAvailOut();
+	UINT GetAvailIn();
+	UINT GetAvailOut();
 
-    void ClearFuncs();
+	void ClearFuncs();
 
-    void Init();
-    void Init2();
-    int Process(int flush);
-    void End();
+	void Init();
+	void Init2();
+	int Process(int flush);
+	void End();
 };
 
 namespace NSZip
 {
-    bool KERNEL_DECL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen);
+	bool KERNEL_DECL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen);
 }
 
 #endif

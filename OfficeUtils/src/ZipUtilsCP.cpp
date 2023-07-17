@@ -118,8 +118,6 @@ namespace ZLibZipUtils
 #endif
 	}
 	static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date );
-	static int mymkdir( const wchar_t* dirname );
-	static int makedir( const wchar_t *newdir );
 	static int do_extract_currentfile( unzFile uf, const wchar_t* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password );
 	static int do_extract( unzFile uf, const wchar_t* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress );
 
@@ -149,61 +147,6 @@ namespace ZLibZipUtils
 		SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
 		CloseHandle(hFile);
 #endif
-	}
-
-	/*========================================================================================================*/
-
-	/* mymkdir and change_file_date are not 100 % portable
-	 As I don't know well Unix, I wait feedback for the unix portion */
-
-	static int mymkdir( const wchar_t* dirname )
-	{
-		return NSDirectory::CreateDirectory(dirname) ? 0 : -1;
-	}
-
-	/*========================================================================================================*/
-
-	static int makedir( const wchar_t *newdir )
-	{
-		wchar_t *buffer ;
-		wchar_t *p;
-		int  len = (int)wcslen(newdir);
-
-		if (len <= 0)
-			return 0;
-
-		buffer = new wchar_t[len+1];
-		wcscpy(buffer, newdir);
-
-		if (buffer[len-1] == '/') {
-			buffer[len-1] = '\0';
-		}
-		if (mymkdir(buffer) == 0)
-		{
-			delete[] buffer;
-			return 1;
-		}
-
-		p = buffer+1;
-		while (1)
-		{
-			char hold;
-
-			while(*p && *p != '\\' && *p != '/')
-				p++;
-			hold = *p;
-			*p = 0;
-			if ((mymkdir(buffer) == -1) && !NSDirectory::Exists(buffer))
-			{
-				delete[] buffer;
-				return 0;
-			}
-			if (hold == 0)
-				break;
-			*p++ = hold;
-		}
-		delete[] buffer;
-		return 1;
 	}
 
 	/*========================================================================================================*/
@@ -259,7 +202,7 @@ namespace ZLibZipUtils
 		{
 			if ((*popt_extract_without_path)==0)
 			{
-				mymkdir(output.c_str());
+				NSDirectory::CreateDirectory(output);
 			}
 		}
 		else
@@ -273,35 +216,20 @@ namespace ZLibZipUtils
 				write_filename = output_withoutpath.c_str();
 
 			err = unzOpenCurrentFilePassword(uf, password);
-			if (((*popt_overwrite)==0) && (err==UNZ_OK))
-			{
-				char rep = 0;
-				NSFile::CFileBinary oFileTemp;
-				if (oFileTemp.OpenFile(write_filename))
-				{
-					oFileTemp.CloseFile();
-				}
 
-				if (rep == 'N')
-					skip = 1;
-
-				if (rep == 'A')
-					*popt_overwrite=1;
-			}
 			//-------------------------------------------------------------------------------------------------
 
 			if (unzip_dir)
 			{
 				std::wstring current_path(unzip_dir);
-				current_path += FILE_SEPARATOR_STR;
-
-				replace_all_w(current_path, L"/", FILE_SEPARATOR_STR);
-				replace_all_w(current_path, L"\\", FILE_SEPARATOR_STR);
+				current_path += L"/";
 
 				std::wstring filename_inzip(filenameW);
 
-				replace_all_w(filename_inzip, L"/", FILE_SEPARATOR_STR);
-				replace_all_w(filename_inzip, L"\\", FILE_SEPARATOR_STR);
+#ifdef _WIN32
+				replace_all_w(current_path, L"\\", L"/");
+				replace_all_w(filename_inzip, L"\\", L"/");
+#endif
 
 				std::wstring norm_path = NSSystemPath::NormalizePath(current_path + filename_inzip);
 				std::wstring norm_current_path = NSSystemPath::NormalizePath(current_path);

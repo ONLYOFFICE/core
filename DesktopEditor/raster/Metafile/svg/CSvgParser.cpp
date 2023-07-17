@@ -133,7 +133,7 @@ namespace SVG
 
 		CObject *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName || L"a" == wsElementName)
 		{
 			pObject = new CGraphicsContainer(oElement, pParent);
 			if (!ReadChildrens(oElement, (CGraphicsContainer*)pObject, pFile, (CGraphicsContainer*)pObject))

@@ -102,14 +102,10 @@ namespace NSCSS
 
 		switch (oRule->type) {
 			case KatanaRuleStyle:
+			{
 				GetStyleRule((KatanaStyleRule*)oRule);
 				break;
-			case KatanaRuleImport:
-			case KatanaRuleFontVariantFace:
-			case KatanaRuleKeyframes:
-			case KatanaRuleMedia:
-			case KatanaRuleSupports:
-			case KatanaRuleUnkown:
+			}
 			default:
 				break;
 		}

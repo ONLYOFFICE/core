@@ -318,8 +318,7 @@ namespace ZLibZipUtils
 						(filenameW_withoutpath!=filenameW))
 				{
 					std::wstring folder = NSDirectory::GetFolderPath(write_filename);
-					while(!NSDirectory::CreateDirectories(folder))
-						;
+					NSDirectory::CreateDirectories(folder);
 
 					if(oFile.CreateFileW(write_filename))
 					{

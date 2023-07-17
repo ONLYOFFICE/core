@@ -230,12 +230,12 @@ namespace ZLibZipUtils
 		std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzipA);
 #ifdef _WIN32
 		for(std::wstring::size_type i = 0, len = filenameW.length(); i < len; ++i)
-			if(filenameW[i] == '\\')
-				filenameW[i] = '/';
+			if(filenameW[i] == L'/')
+				filenameW[i] = L'\\';
 #endif
 
 		std::wstring filenameW_withoutpath = L"";
-		std::wstring::size_type posSeparator = filenameW.find_last_of('/');
+		std::wstring::size_type posSeparator = filenameW.find_last_of(FILE_SEPARATOR_STR);
 		if (posSeparator == std::wstring::npos)
 			filenameW_withoutpath = filenameW;
 		else if (posSeparator != (filenameW.length() - 1))
@@ -317,7 +317,9 @@ namespace ZLibZipUtils
 				if ((fout == NULL) && ((*popt_extract_without_path)==0) &&
 						(filenameW_withoutpath!=filenameW))
 				{
-					makedir(write_filename);
+					std::wstring folder = NSDirectory::GetFolderPath(write_filename);
+					while(!NSDirectory::CreateDirectories(folder))
+						;
 
 					if(oFile.CreateFileW(write_filename))
 					{

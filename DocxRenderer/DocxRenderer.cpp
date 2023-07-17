@@ -87,6 +87,14 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
 
 int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
 {
+	// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
+	// но для шрифтов из темповых папок - нет. Темповая папка для Reader (PDF/XPS/DJVU)
+	// может быть одной и той же. И создание там файлов функцией создания временных файлов
+	// может вернуть один и тот же путь. И шрифт возьмется из старого файла.
+	m_pInternal->m_oDocument.m_oFontManager.ClearCache();
+	if (m_pInternal->m_oDocument.m_pAppFonts)
+		m_pInternal->m_oDocument.m_pAppFonts->GetStreams()->Clear();
+
 	CreateNewFile(sDstFile, bIsOutCompress);
 
 	if (odftPDF == pFile->GetType())

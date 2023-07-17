@@ -146,6 +146,8 @@ namespace NSDocxRenderer
 							   double& dBoxWidth,
 							   double& dBoxHeight,
 							   MeasureType measureType) const;
+
+		void ClearCache();
 	private:
 		NSFonts::IFontManager* m_pManager;
 

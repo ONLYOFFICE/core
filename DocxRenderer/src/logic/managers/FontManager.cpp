@@ -767,4 +767,11 @@ namespace NSDocxRenderer
 			}
 		}
 	}
+
+	void CFontManager::ClearCache()
+	{
+		if (nullptr == m_pManager)
+			return;
+		m_pManager->GetCache()->Clear();
+	}
 }

@@ -23,6 +23,7 @@ def install_deps():
   base.cmd("sudo", ["apt-get", "install", "-y"] + packages)
 
   # build-dep vlc packages
+  # NOTE: this command needs enabled source packages downloading (can be enabled in `software-properties-gtk`)
   base.cmd("sudo", ["apt-get", "build-dep", "-y", "vlc"])
 
   # prepare directory for sources
@@ -70,7 +71,7 @@ def install_deps():
   base.cmd("tar", ["-xzf", "protobuf-cpp-" + protobuf_version + ".tar.gz"])
   os.chdir(src_dir + "/protobuf-" + protobuf_version)
   base.cmd("mkdir", ["-p", "build"])
-  base.cmd("sed", ["-i.orig", "\'s,#ifdef _MSC_VER,#if 1,\'", "\"src/google/protobuf/repeated_field.h\""])
+  base.run_command("sed -i.orig \'s,#ifdef _MSC_VER,#if 1,\' \"src/google/protobuf/repeated_field.h\"")
   base.cmd("cmake", ["-S", "cmake", "-B", "build", "-DBUILD_SHARED_LIBS=OFF", "-Dprotobuf_BUILD_TESTS=OFF", "-Dprotobuf_BUILD_EXAMPLES=OFF"])
   base.cmd("cmake", ["--build", "build", "--parallel", "$(nproc)"])
   base.cmd("sudo", ["cmake", "--install", "build"])

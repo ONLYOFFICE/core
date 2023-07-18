@@ -273,12 +273,15 @@ void ReadAction(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "left " << (double)nPathLength / 100.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "bottom " << (double)nPathLength / 100.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "right " << (double)nPathLength / 100.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "top " << (double)nPathLength / 100.0 << ", ";
@@ -616,6 +619,7 @@ int main(int argc, char* argv[])
 			DWORD nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Annot - AP " << nPathLength << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Flag " << nPathLength << ", ";
@@ -623,15 +627,19 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Page " << nPathLength << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
@@ -662,9 +670,11 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Field Flag " << nPathLength << ", ";
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Flags " << nPathLength << ", ";
+
 			int nFlags = nPathLength;
 			if (nFlags & (1 << 0))
 			{
@@ -699,14 +709,17 @@ int main(int argc, char* argv[])
 				BYTE nBorderType = READ_BYTE(pWidgets + i);
 				i += 1;
 				std::cout << "Border type " << arrBorder[nBorderType] << " ";
+
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "width " << (double)nPathLength / 100.0 << ", ";
+
 				if (nBorderType == 2)
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
+
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << (double)nPathLength / 100.0 << ", ";
@@ -717,6 +730,7 @@ int main(int argc, char* argv[])
 				int nBCLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "BC ";
+
 				for (int j = 0; j < nBCLength; ++j)
 				{
 					nPathLength = READ_INT(pWidgets + i);
@@ -736,6 +750,7 @@ int main(int argc, char* argv[])
 				int nBCLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "BG ";
+
 				for (int j = 0; j < nBCLength; ++j)
 				{
 					nPathLength = READ_INT(pWidgets + i);
@@ -756,6 +771,7 @@ int main(int argc, char* argv[])
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
 				unsigned int nIFFlag = READ_INT(pWidgets + i);
 				i += 4;
+
 				if (sType == "button")
 				{
 					if (nFlags & (1 << 10))
@@ -815,6 +831,7 @@ int main(int argc, char* argv[])
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
 						std::cout << "A " << (double)nPathLength / 100.0 << " ";
+
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
 						std::cout << (double)nPathLength / 100.0 << ", ";
@@ -871,6 +888,7 @@ int main(int argc, char* argv[])
 						i += 4;
 						std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
+
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
 						std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
@@ -896,6 +914,7 @@ int main(int argc, char* argv[])
 				int nCLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "C ";
+
 				for (int j = 0; j < nCLength; ++j)
 				{
 					nPathLength = READ_INT(pWidgets + i);

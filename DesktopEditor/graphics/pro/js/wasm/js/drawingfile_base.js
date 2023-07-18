@@ -532,14 +532,13 @@
 			rec["AP"]["i"] = reader.readInt();
 			rec["annotflag"] = reader.readInt();
 			// 12.5.3
-			let bHidden   = (rec["annotflag"] >> 1) & 1; // Hidden
-			let bPrint    = (rec["annotflag"] >> 2) & 1; // Print
-			rec["noZoom"]   = (rec["annotflag"] >> 3) & 1; // NoZoom
+			let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
+			let bPrint = (rec["annotflag"] >> 2) & 1; // Print
+			rec["noZoom"] = (rec["annotflag"] >> 3) & 1; // NoZoom
 			rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
-			let bNoView   = (rec["annotflag"] >> 5) & 1; // NoView
-			// rec["readOnly"] = (rec["annotflag"] >> 6) & 1; // ReadOnly
-			rec["locked"]   = (rec["annotflag"] >> 7) & 1; // Locked
-			rec["lockedC"]  = (rec["annotflag"] >> 9) & 1; // LockedContents
+			let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
+			rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+			rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
 
 			// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
 			rec["display"] = 0;
@@ -640,7 +639,7 @@
 
 			if (rec["type"] == 3 || rec["type"] == 2 || rec["type"] == 1)
 			{
-				rec["value"] = flags & (1 << 9) ? "Yes" : "Off";
+				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
 				let IFflags = reader.readInt();
 				// Характеристики внешнего вида - MK
 				if (rec["type"] == 1)

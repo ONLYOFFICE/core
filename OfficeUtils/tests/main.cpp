@@ -51,6 +51,11 @@ public:
 	std::wstring unzipDirectory;
 	std::wstring wsep;
 
+	std::vector<std::wstring> expected_general;
+	std::vector<std::wstring> expected_general_no_folder;
+	std::vector<std::wstring> expected_deep;
+	std::vector<std::wstring> expected_docx_like;
+
 	virtual void SetUp() override
 	{
 
@@ -65,6 +70,59 @@ public:
 
 		if(!NSDirectory::Exists(unzipDirectory))
 			NSDirectory::CreateDirectories(unzipDirectory);
+
+		// general
+		expected_general.push_back(L"1.txt");
+		expected_general.push_back(L"2.txt");
+		expected_general.push_back(L"3.txt");
+
+		expected_general.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم");
+		expected_general.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم123" + wsep + L"222.txt");
+
+		expected_general.push_back(L"НП" + wsep + L"НП" + wsep + L"NF" + wsep + L"new.txt");
+		expected_general.push_back(L"MF" + wsep + L"file.txt");
+
+		expected_general.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓ⓡ⣾⩬⍠⊆≆⳩≾⃉⌮⢸⠐⩏„⨑☰⟬∬⤢"
+						   L"⹛⮚∅✢⓴✎ℙ⥅ⅱ‟⥩⩲⺐⫒Ⱌⴳ⒎⹰ⲧ⩷ₗ∸⬐⭹⓾✓⤓≪♽™⠒⌙➴"
+						   L"⵶⡣⼷⬖⓭⒱Ȿ⹦⸪⼺⒣≕◼⾙‖" + wsep + L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
+
+		expected_general.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"-_=+[{]};',.`~!@#$%^&()!№;%()");
+		expected_general.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"こんにちは世界 مرحبا بالعالم");
+
+		// general_no_folder
+		expected_general_no_folder.push_back(L"1.txt");
+		expected_general_no_folder.push_back(L"2.txt");
+		expected_general_no_folder.push_back(L"3.txt");
+
+		expected_general_no_folder.push_back(L"こんにちは世界 مرحبا بالعالم");
+		expected_general_no_folder.push_back(L"222.txt");
+
+		expected_general_no_folder.push_back(L"new.txt");
+		expected_general_no_folder.push_back(L"file.txt");
+
+		expected_general_no_folder.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
+		expected_general_no_folder.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()");
+
+		// deep
+		expected_deep.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"hi.txt");
+		expected_deep.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"5" + wsep +
+						   L"6" + wsep + L"7" + wsep + L"8" + wsep + L"9" + wsep + L"10" + wsep + L"hi.txt");
+
+		// docx_like
+		expected_docx_like.push_back(L"[Content_Types].xml");
+		expected_docx_like.push_back(L"_rels" + wsep + L".rels");
+
+		expected_docx_like.push_back(L"docProps" + wsep + L"app.xml");
+		expected_docx_like.push_back(L"docProps" + wsep + L"core.xml");
+
+		expected_docx_like.push_back(L"word" + wsep + L"document.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"endnotes.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"fontTable.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"footnotes.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"settings.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"webSettings.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"theme" + wsep + L"theme1.xml");
+
 	}
 
 	virtual void TearDown() override
@@ -96,26 +154,44 @@ TEST_F(COfficeUtilsTest, general_win)
 		actual.push_back(subpath);
 	}
 
-	std::vector<std::wstring> expected;
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general));
 
-	expected.push_back(L"1.txt");
-	expected.push_back(L"2.txt");
-	expected.push_back(L"3.txt");
+	// data check
+	std::wstring data;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8(unzip_folder + wsep + L"MF" + wsep + L"file.txt", data));
+	EXPECT_EQ(data, L"123 321");
+}
 
-	expected.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم");
-	expected.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم123" + wsep + L"222.txt");
+TEST_F(COfficeUtilsTest, general_linux)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
 
-	expected.push_back(L"НП" + wsep + L"НП" + wsep + L"NF" + wsep + L"new.txt");
-	expected.push_back(L"MF" + wsep + L"file.txt");
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
 
-	expected.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓ⓡ⣾⩬⍠⊆≆⳩≾⃉⌮⢸⠐⩏„⨑☰⟬∬⤢"
-					   L"⹛⮚∅✢⓴✎ℙ⥅ⅱ‟⥩⩲⺐⫒Ⱌⴳ⒎⹰ⲧ⩷ₗ∸⬐⭹⓾✓⤓≪♽™⠒⌙➴"
-					   L"⵶⡣⼷⬖⓭⒱Ȿ⹦⸪⼺⒣≕◼⾙‖" + wsep + L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
+	NSDirectory::CreateDirectories(unzip_folder);
 
-	expected.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"-_=+[{]};',.`~!@#$%^&()!№;%()");
-	expected.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"こんにちは世界 مرحبا بالعالم");
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
 
-	EXPECT_TRUE(IsFilesPathsEqual(actual, expected));
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general));
+
+	// data check
+	std::wstring data;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8(unzip_folder + wsep + L"MF" + wsep + L"file.txt", data));
+	EXPECT_EQ(data, L"123 321");
 }
 
 TEST_F(COfficeUtilsTest, general_win_no_folder)
@@ -141,23 +217,33 @@ TEST_F(COfficeUtilsTest, general_win_no_folder)
 		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
 		actual.push_back(subpath);
 	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general_no_folder));
+}
 
-	std::vector<std::wstring> expected;
+TEST_F(COfficeUtilsTest, general_linux_no_folder)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + L"general_linux_no_folder";
 
-	expected.push_back(L"1.txt");
-	expected.push_back(L"2.txt");
-	expected.push_back(L"3.txt");
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
 
-	expected.push_back(L"こんにちは世界 مرحبا بالعالم");
-	expected.push_back(L"222.txt");
+	NSDirectory::CreateDirectories(unzip_folder);
 
-	expected.push_back(L"new.txt");
-	expected.push_back(L"file.txt");
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, true);
+	ASSERT_EQ(error_code, S_OK);
 
-	expected.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
-	expected.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()");
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
 
-	EXPECT_TRUE(IsFilesPathsEqual(actual, expected));
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general_no_folder));
 }
 
 TEST_F(COfficeUtilsTest, deep_win)
@@ -183,14 +269,33 @@ TEST_F(COfficeUtilsTest, deep_win)
 		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
 		actual.push_back(subpath);
 	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_deep));
+}
 
-	std::vector<std::wstring> expected;
+TEST_F(COfficeUtilsTest, deep_linux)
+{
+	std::wstring zip_filename = L"deep_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
 
-	expected.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"hi.txt");
-	expected.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"5" + wsep +
-					   L"6" + wsep + L"7" + wsep + L"8" + wsep + L"9" + wsep + L"10" + wsep + L"hi.txt");
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
 
-	EXPECT_TRUE(IsFilesPathsEqual(actual, expected));
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_deep));
 }
 
 TEST_F(COfficeUtilsTest, docx_like_win)
@@ -216,24 +321,33 @@ TEST_F(COfficeUtilsTest, docx_like_win)
 		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
 		actual.push_back(subpath);
 	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_docx_like));
+}
 
-	std::vector<std::wstring> expected;
+TEST_F(COfficeUtilsTest, docx_like_linux)
+{
+	std::wstring zip_filename = L"docx_like_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
 
-	expected.push_back(L"[Content_Types].xml");
-	expected.push_back(L"_rels" + wsep + L".rels");
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
 
-	expected.push_back(L"docProps" + wsep + L"app.xml");
-	expected.push_back(L"docProps" + wsep + L"core.xml");
+	NSDirectory::CreateDirectories(unzip_folder);
 
-	expected.push_back(L"word" + wsep + L"document.xml");
-	expected.push_back(L"word" + wsep + L"endnotes.xml");
-	expected.push_back(L"word" + wsep + L"fontTable.xml");
-	expected.push_back(L"word" + wsep + L"footnotes.xml");
-	expected.push_back(L"word" + wsep + L"settings.xml");
-	expected.push_back(L"word" + wsep + L"webSettings.xml");
-	expected.push_back(L"word" + wsep + L"theme" + wsep + L"theme1.xml");
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
 
-	EXPECT_TRUE(IsFilesPathsEqual(actual, expected));
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_docx_like));
 }
 
 

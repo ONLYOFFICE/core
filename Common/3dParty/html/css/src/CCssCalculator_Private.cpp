@@ -733,11 +733,6 @@ namespace NSCSS
 				          });
 			}
 
-			oStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);
-
-			for (const CElement* oElement : arFindElements)
-				oStyle.AddStyle(oElement->GetStyle(), i + 1);
-
 			if (NULL != m_mStatictics)
 			{
 				std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_wsStyle});
@@ -755,6 +750,11 @@ namespace NSCSS
 			}
 			else
 				oStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+
+			for (const CElement* oElement : arFindElements)
+				oStyle.AddStyle(oElement->GetStyle(), i + 1);
+
+			oStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);
 		}
 
 		if (!bIsSettings)

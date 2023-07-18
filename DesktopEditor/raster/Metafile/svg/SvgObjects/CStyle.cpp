@@ -179,12 +179,12 @@ namespace SVG
 						  });
 			}
 
-                        pSvgObject->SetData(arSelectors[i].m_mAttributes, i + 1);
+			pSvgObject->SetData(arSelectors[i].m_wsStyle, i + 1, true);
 
 			for (const NSCSS::CElement* oElement : arFindElements)
 				pSvgObject->SetData(oElement->GetStyle(), i + 1);
 
-                        pSvgObject->SetData(arSelectors[i].m_wsStyle, i + 1, true);
+			pSvgObject->SetData(arSelectors[i].m_mAttributes, i + 1);
 		}
 	}
 }

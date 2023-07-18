@@ -7,6 +7,8 @@ namespace NSCSS
 {
 	namespace NSProperties
 	{
+	#define CHECK_CONDITIONS (m_bImportant || unLevel <= m_unLevel)
+
 	static bool CutImportant(std::wstring& wsValue)
 	{
 		size_t unBegin = wsValue.find(L"!important");
@@ -83,7 +85,7 @@ namespace NSCSS
 	template<typename T>
 	CValue<T>& CValue<T>::operator=(const T &oValue)
 	{
-		m_oValue = oValue.m_oValue;
+//		m_oValue = oValue.m_oValue;
 
 		return *this;
 	}
@@ -117,7 +119,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -136,7 +138,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, const std::vector<std::wstring> &arValiableValues, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || arValiableValues.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (wsValue.empty() || arValiableValues.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -160,7 +162,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, const std::map<std::wstring, std::wstring> &arValiableValues, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || arValiableValues.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (wsValue.empty() || arValiableValues.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -413,7 +415,7 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -423,8 +425,21 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		if (!CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure))
+		double dNewValue;
+		UnitMeasure enNewUnitMeasure;
+
+		if (!CUnitMeasureConverter::GetValue(wsValue, dNewValue, enNewUnitMeasure))
 			return false;
+
+		if (Percent == enNewUnitMeasure && !Empty() && unLevel > m_unLevel)
+		{
+			m_oValue *= dNewValue / 100.;
+		}
+		else
+		{
+			m_oValue        = dNewValue;
+			m_enUnitMeasure = enNewUnitMeasure;
+		}
 
 		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
@@ -496,7 +511,7 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
+		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		if (wsValue.empty())
@@ -698,7 +713,7 @@ namespace NSCSS
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (((m_bImportant || unLevel < m_unLevel) && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
+		if ((CHECK_CONDITIONS && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -2326,7 +2341,7 @@ namespace NSCSS
 
 	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || m_mMap.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+		if (wsValue.empty() || m_mMap.empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;

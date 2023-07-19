@@ -60,7 +60,8 @@ struct drawing_object_description
 	bool									bInner_;
 
 	std::wstring							name_;	
-	std::wstring							descriptor_;	
+	std::wstring							descriptor_;
+	std::wstring 							xml_id_;
 
 	_CP_OPT(_rect)							svg_rect_;
 

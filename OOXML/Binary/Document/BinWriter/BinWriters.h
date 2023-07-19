@@ -208,9 +208,11 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
+		void WriteCnfStyle(ComplexTypes::Word::CCnf *cnf);
 	};
 	class Binary_tblPrWriter
 	{
+		Binary_pPrWriter bpPrs;
 		BinaryCommonWriter m_oBcw;
 	public:
 		Binary_tblPrWriter(ParamsWriter& oParamsWriter);

@@ -140,6 +140,7 @@ public:
 	int ReadCol(BYTE type, long length, void* poResult);
 	int ReadPageBorders(BYTE type, long length, void* poResult);
 	int ReadPageBorder(BYTE type, long length, void* poResult);
+	int ReadCnfStyle(BYTE type, long length, void* poResult);
 };
 class Binary_tblPrReader : public Binary_CommonReader
 {

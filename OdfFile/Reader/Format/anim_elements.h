@@ -124,6 +124,7 @@ public:
 	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
 	_CP_OPT(std::wstring)						smil_mode_;
 	_CP_OPT(odf_types::color)					smil_fadeColor_;
+	_CP_OPT(std::wstring)						smil_target_element_;
 };
 class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
 {

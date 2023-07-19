@@ -103,7 +103,7 @@ namespace oox {
 			_CP_OPT(std::wstring)							Delay;
 			_CP_OPT(std::wstring)							End;
 			_CP_OPT(std::wstring)							Fill;
-			_CP_OPT(std::wstring)							TargetElement;
+			_CP_OPT(size_t)									ShapeID;
 			_CP_OPT(std::wstring)							AttributeName;
 			_CP_OPT(std::wstring)							ToValue;
 
@@ -117,7 +117,7 @@ namespace oox {
 			_CP_OPT(std::wstring)							Filter;
 			_CP_OPT(std::wstring)							Transition;
 			_CP_OPT(int)									Duration; // in ms
-			_CP_OPT(std::wstring)							ShapeID;
+			_CP_OPT(size_t)									ShapeID;
 
 			void serialize(std::wostream & strm) override;
 		};
@@ -136,7 +136,7 @@ namespace oox {
 
 			_CP_OPT(std::wstring)							SmilFill;
 			_CP_OPT(std::wstring)							AnimSubItem;
-			_CP_OPT(std::wstring)							SmilTargetElement;
+			_CP_OPT(size_t)									ShapeID;
 			_CP_OPT(std::wstring)							SvgPath;
 
 			void serialize(std::wostream & strm) override;
@@ -154,7 +154,7 @@ namespace oox {
 			_CP_OPT(std::wstring)							End;
 
 			_CP_OPT(std::wstring)							Fill;
-			_CP_OPT(std::wstring)							ShapeID;
+			_CP_OPT(size_t)									ShapeID;
 			_CP_OPT(std::wstring)							AttributeName;
 			_CP_OPT(std::wstring)							Delay;
 			_CP_OPT(std::wstring)							ToValue;
@@ -179,7 +179,7 @@ namespace oox {
 
 			_CP_OPT(std::wstring)							CalcMode;
 			_CP_OPT(std::wstring)							ValueType;
-			_CP_OPT(std::wstring)							ShapeID;
+			_CP_OPT(size_t)									ShapeID;
 			_CP_OPT(int)									Duration; // in ms
 			_CP_OPT(std::wstring)							AttributeName;
 			_CP_OPT(std::vector<_keypoint>)					KeypointArray;
@@ -446,9 +446,9 @@ namespace oox {
 		impl_->set_description_->Fill = value;
 	}
 
-	void pptx_animation_context::set_set_target_element(const std::wstring& value)
+	void pptx_animation_context::set_set_shape_id(size_t value)
 	{
-		impl_->set_description_->TargetElement = value;
+		impl_->set_description_->ShapeID = value;
 	}
 
 	void pptx_animation_context::set_set_attribute_name(const std::wstring& value)
@@ -493,7 +493,7 @@ namespace oox {
 		impl_->anim_effect_description_->Duration = value;
 	}
 
-	void pptx_animation_context::set_anim_effect_shape_id(const std::wstring& value)
+	void pptx_animation_context::set_anim_effect_shape_id(size_t value)
 	{
 		impl_->anim_effect_description_->ShapeID = value;
 	}
@@ -550,9 +550,9 @@ namespace oox {
 		impl_->animate_motion_description_->SmilFill = value;
 	}
 
-	void pptx_animation_context::set_animate_motion_target_element(const std::wstring& value)
+	void pptx_animation_context::set_animate_motion_shape_id(size_t value)
 	{
-		impl_->animate_motion_description_->SmilTargetElement = value;
+		impl_->animate_motion_description_->ShapeID = value;
 	}
 
 	void pptx_animation_context::set_animate_motion_svg_path(const std::wstring& value)
@@ -588,7 +588,7 @@ namespace oox {
 		impl_->anim_description_->ValueType = value;
 	}
 
-	void pptx_animation_context::set_animate_shape_id(const std::wstring& value)
+	void pptx_animation_context::set_animate_shape_id(size_t value)
 	{
 		impl_->anim_description_->ShapeID = value;
 	}
@@ -648,6 +648,11 @@ namespace oox {
 	void pptx_animation_context::set_animate_color_to_value(const std::wstring& value)
 	{
 		impl_->anim_clr_description_->ToValue = value;
+	}
+
+	void pptx_animation_context::set_animate_color_shape_id(size_t value)
+	{
+		impl_->anim_clr_description_->ShapeID = value;
 	}
 
 	void pptx_animation_context::end_animate_color()
@@ -796,7 +801,7 @@ namespace oox {
 					{
 						CP_XML_NODE(L"p:spTgt")
 						{
-							std::wstring shapeId = TargetElement ? TargetElement.value() : L"-1";
+							size_t shapeId = ShapeID ? ShapeID.value() : 0;
 							CP_XML_ATTR(L"spid", shapeId);
 						}
 					}
@@ -881,7 +886,8 @@ namespace oox {
 					{
 						CP_XML_NODE(L"p:spTgt")
 						{
-							CP_XML_ATTR(L"spid", SmilTargetElement);
+							size_t shapeID = ShapeID ? ShapeID.value() : 0;
+							CP_XML_ATTR(L"spid", shapeID);
 						}
 					}
 				}
@@ -911,7 +917,7 @@ namespace oox {
 					{
 						CP_XML_NODE(L"p:spTgt")
 						{
-							std::wstring shapeID = ShapeID ? ShapeID.value() : L"-1";
+							size_t shapeID = ShapeID ? ShapeID.value() : 0;
 							CP_XML_ATTR(L"spid", shapeID);
 						}
 					}
@@ -984,7 +990,7 @@ namespace oox {
 					}
 					CP_XML_NODE(L"p:tgtEl")
 					{
-						std::wstring shapeID = ShapeID ? ShapeID.value() : L"-1";
+						size_t shapeID = ShapeID ? ShapeID.value() : 0;
 						CP_XML_NODE(L"p:spTgt")
 						{
 							CP_XML_ATTR(L"spid", shapeID);

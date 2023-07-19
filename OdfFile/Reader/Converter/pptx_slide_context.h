@@ -67,6 +67,7 @@ public:
 	void set_rotate		(double angle, bool translate = false);
 
 	void set_name		(std::wstring const & name);
+	void set_id			(std::wstring const & id);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
 	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
@@ -133,7 +134,8 @@ public:
 	void set_page_number();
 	void set_date_time();
 
-	pptx_animation_context & get_animation_context() { return pptx_animation_context_; }
+	pptx_animation_context &	get_animation_context() { return pptx_animation_context_; }
+	size_t						get_id(const std::wstring& id);
 private:
 	void default_set();
 

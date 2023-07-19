@@ -83,6 +83,12 @@ public:
 
 	bool header, footer, date_time, slideNum;
 
+	// NOTE: Key - ODF draw:id(xml:id), value - OOX ShapeID
+	// NOTE: draw:id is deprecated. Instead prefer using xml:id. 
+	// draw:id and xml:id MUST be equal to each other
+	typedef std::unordered_map<std::wstring, size_t> id_map;
+	id_map id_map_;
+
     void add_drawing(_pptx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type)
     {
         pptx_drawings_->add(d, isInternal, rid, ref, type);
@@ -101,6 +107,7 @@ public:
 	void clear()
 	{
 		objects_.clear();
+		id_map_.clear();
 		
 		background_fill_		= boost::none;
 
@@ -126,6 +133,18 @@ public:
     {
         return pptx_drawings_;
     }
+	size_t get_id(const std::wstring& id)
+	{
+		id_map::iterator it = id_map_.find(id);
+		if (it == id_map_.end())
+		{
+			size_t rId = next_rId();
+			id_map_.insert(std::make_pair(id, rId));
+			return rId;
+		}
+
+		return it->second;
+	}
 	std::wstring  odfPacket_;
     
 	void process_drawings();
@@ -154,7 +173,7 @@ void pptx_slide_context::Impl::process_drawings()
 
 		drawing.type		= objects_[i].type_;			
 		drawing.name		= objects_[i].name_;
-		drawing.id			= next_rId();	
+		drawing.id			= get_id(objects_[i].xml_id_);	
 		drawing.lined		= objects_[i].lined_;
 		drawing.connector	= objects_[i].connector_;
 		
@@ -230,6 +249,7 @@ void pptx_slide_context::default_set()
     impl_->object_description_.xlink_href_	= L"";
     impl_->object_description_.name_		= L"";
 	impl_->object_description_.descriptor_  = L"";
+	impl_->object_description_.xml_id_		= L"";
 	impl_->object_description_.anchor_		= L"";
 
 	impl_->object_description_.additional_.clear();
@@ -372,6 +392,11 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 void pptx_slide_context::set_name(std::wstring const & name)
 {
 	impl_->object_description_.name_ = name;
+}
+
+void pptx_slide_context::set_id(std::wstring const& id)
+{
+	impl_->object_description_.xml_id_ = id;
 }
 
 void pptx_slide_context::start_shape(int type)
@@ -764,6 +789,16 @@ void pptx_slide_context::set_date_time()
 {
 	impl_->slideNum = true;
 }
+
+size_t pptx_slide_context::get_id(const std::wstring& id)
+{
+	Impl::id_map::iterator it = impl_->id_map_.find(id);
+	if (it == impl_->id_map_.end())
+		return 0;
+
+	return it->second;
+}
+
 void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 {
 	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type == 0))) return;
@@ -900,7 +935,7 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 			}
 		}
 	}
-	process_drawings();
+	//process_drawings();
 	impl_->get_drawings()->serialize(strm);   
 }
 

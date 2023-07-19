@@ -180,13 +180,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 			}
 		}
 	}
-	//сначала анимашки .. потому что объекты используют анимацию не нанапрямую (как бы ) а с общей кучи
-	//animation_context на slide_context завести
-	if (animation_)
-	{
-		Context.get_slide_context().get_animation_context().clear();
-		animation_->pptx_convert(Context);
-	}
+	
 /////////////////////////
 	for (size_t i = 0; i < content_.size(); i++)
     {
@@ -203,7 +197,15 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
-	
+
+	Context.get_slide_context().process_drawings();
+
+	if (animation_)
+	{
+		Context.get_slide_context().get_animation_context().clear();
+		animation_->pptx_convert(Context);
+	}
+
 	Context.end_page();
 
  	if (presentation_notes_)

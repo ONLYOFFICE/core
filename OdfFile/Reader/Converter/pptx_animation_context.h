@@ -69,7 +69,7 @@ namespace oox {
 			void set_set_delay(const std::wstring& value);
 			void set_set_end(const std::wstring& value);
 			void set_set_fill(const std::wstring& value);
-			void set_set_target_element(const std::wstring& value);
+			void set_set_shape_id(size_t value);
 			void set_set_attribute_name(const std::wstring& value);
 			void set_set_to_value(const std::wstring& value);
 		void end_set();
@@ -78,7 +78,7 @@ namespace oox {
 			void set_anim_effect_filter(const std::wstring& value);
 			void set_anim_effect_transition(const std::wstring& value);
 			void set_anim_effect_duration(int value);
-			void set_anim_effect_shape_id(const std::wstring& value);
+			void set_anim_effect_shape_id(size_t value);
 		void end_anim_effect();
 
 		void start_animate_motion();
@@ -89,14 +89,14 @@ namespace oox {
 			void set_animate_motion_delay(const std::wstring& value);
 			void set_animate_motion_end(const std::wstring& value);
 			void set_animate_motion_fill(const std::wstring& value);
-			void set_animate_motion_target_element(const std::wstring& value);
+			void set_animate_motion_shape_id(size_t value);
 			void set_animate_motion_svg_path(const std::wstring& value);
 		void end_animate_motion();
 
 		void start_animate();
 			void set_animate_calc_mode(const std::wstring& value);
 			void set_animate_value_type(const std::wstring& value);
-			void set_animate_shape_id(const std::wstring& value);
+			void set_animate_shape_id(size_t value);
 			void set_animate_duration(int value);
 			void set_animate_attribute_name(const std::wstring& value);
 			void add_animate_keypoint(int time, const std::wstring& value);
@@ -108,6 +108,7 @@ namespace oox {
 			void set_animate_color_delay(const std::wstring& value);
 			void set_animate_color_attribute_name(const std::wstring& value);
 			void set_animate_color_to_value(const std::wstring& value);
+			void set_animate_color_shape_id(size_t value);
 		void end_animate_color();
 
 		void serialize(std::wostream & strm);

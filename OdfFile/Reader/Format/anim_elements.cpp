@@ -44,6 +44,7 @@
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
+#include <unordered_map>
 
 namespace cpdoccore { 
 
@@ -51,6 +52,219 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
+struct preset_id_maping
+{
+	odf_types::preset_id::type	ODF_PresetID;
+	int							OOX_PresetID;
+};
+
+// TODO: replace with unordered_map??
+static const preset_id_maping g_preset_id_map[] = {
+	{ preset_id::type::ooo_entrance_appear				, 1 },
+	{ preset_id::type::ooo_entrance_fly_in				, 2 },
+	{ preset_id::type::ooo_entrance_venetian_blinds		, 3 },
+	{ preset_id::type::ooo_entrance_box					, 4 },
+	{ preset_id::type::ooo_entrance_checkerboard		, 5 },
+	{ preset_id::type::ooo_entrance_circle				, 6 },
+	{ preset_id::type::ooo_entrance_fly_in_slow			, 7 },
+	{ preset_id::type::ooo_entrance_diamond				, 8 },
+	{ preset_id::type::ooo_entrance_dissolve_in			, 9 },
+	{ preset_id::type::ooo_entrance_fade_in				, 10 },
+	{ preset_id::type::ooo_entrance_flash_once			, 11 },
+	{ preset_id::type::ooo_entrance_peek_in				, 12 },
+	{ preset_id::type::ooo_entrance_plus				, 13 },
+	{ preset_id::type::ooo_entrance_random_bars			, 14 },
+	{ preset_id::type::ooo_entrance_spiral_in			, 15 },
+	{ preset_id::type::ooo_entrance_split				, 16 },
+	{ preset_id::type::ooo_entrance_stretchy			, 17 },
+	{ preset_id::type::ooo_entrance_diagonal_squares	, 18 },
+	{ preset_id::type::ooo_entrance_swivel				, 19 },
+	{ preset_id::type::ooo_entrance_wedge				, 20 },
+	{ preset_id::type::ooo_entrance_wheel				, 21 },
+	{ preset_id::type::ooo_entrance_wipe				, 22 },
+	{ preset_id::type::ooo_entrance_zoom				, 23 },
+	{ preset_id::type::ooo_entrance_random				, 24 },
+	{ preset_id::type::ooo_entrance_boomerang			, 25 },
+	{ preset_id::type::ooo_entrance_bounce				, 26 },
+	{ preset_id::type::ooo_entrance_colored_lettering	, 27 },
+	{ preset_id::type::ooo_entrance_movie_credits		, 28 },
+	{ preset_id::type::ooo_entrance_ease_in				, 29 },
+	{ preset_id::type::ooo_entrance_float				, 30 },
+	{ preset_id::type::ooo_entrance_turn_and_grow		, 31 },
+	{ preset_id::type::ooo_entrance_breaks				, 34 },
+	{ preset_id::type::ooo_entrance_pinwheel			, 35 },
+	{ preset_id::type::ooo_entrance_rise_up				, 37 },
+	{ preset_id::type::ooo_entrance_falling_in			, 38 },
+	{ preset_id::type::ooo_entrance_thread				, 39 },
+	{ preset_id::type::ooo_entrance_unfold				, 40 },
+	{ preset_id::type::ooo_entrance_whip				, 41 },
+	{ preset_id::type::ooo_entrance_ascend				, 42 },
+	{ preset_id::type::ooo_entrance_center_revolve		, 43 },
+	{ preset_id::type::ooo_entrance_fade_in_and_swivel	, 45 },
+	{ preset_id::type::ooo_entrance_descend				, 47 },
+	{ preset_id::type::ooo_entrance_sling				, 48 },
+	{ preset_id::type::ooo_entrance_spin_in				, 49 },
+	{ preset_id::type::ooo_entrance_compress			, 50 },
+	{ preset_id::type::ooo_entrance_magnify				, 51 },
+	{ preset_id::type::ooo_entrance_curve_up			, 52 },
+	{ preset_id::type::ooo_entrance_fade_in_and_zoom	, 53 },
+	{ preset_id::type::ooo_entrance_glide				, 54 },
+	{ preset_id::type::ooo_entrance_expand				, 55 },
+	{ preset_id::type::ooo_entrance_flip				, 56 },
+	{ preset_id::type::ooo_entrance_fold				, 58 },
+
+	{ preset_id::type::ooo_emphasis_fill_color			, 1 },
+	{ preset_id::type::ooo_emphasis_font				, 2 },
+	{ preset_id::type::ooo_emphasis_font_color			, 3 },
+	{ preset_id::type::ooo_emphasis_font_size			, 4 },
+	{ preset_id::type::ooo_emphasis_font_style			, 5 },
+	{ preset_id::type::ooo_emphasis_grow_and_shrink		, 6 },
+	{ preset_id::type::ooo_emphasis_line_color			, 7 },
+	{ preset_id::type::ooo_emphasis_spin				, 8 },
+	{ preset_id::type::ooo_emphasis_transparency		, 9 },
+	{ preset_id::type::ooo_emphasis_bold_flash			, 10 },
+	{ preset_id::type::ooo_emphasis_blast				, 14 },
+	{ preset_id::type::ooo_emphasis_bold_reveal			, 15 },
+	{ preset_id::type::ooo_emphasis_color_over_by_word	, 16 },
+	{ preset_id::type::ooo_emphasis_reveal_underline	, 18 },
+	{ preset_id::type::ooo_emphasis_color_blend			, 19 },
+	{ preset_id::type::ooo_emphasis_color_over_by_letter, 20 },
+	{ preset_id::type::ooo_emphasis_complementary_color	, 21 },
+	{ preset_id::type::ooo_emphasis_complementary_color_2, 22 },
+	{ preset_id::type::ooo_emphasis_contrasting_color	, 23 },
+	{ preset_id::type::ooo_emphasis_darken				, 24 },
+	{ preset_id::type::ooo_emphasis_desaturate			, 25 },
+	{ preset_id::type::ooo_emphasis_flash_bulb			, 26 },
+	{ preset_id::type::ooo_emphasis_flicker				, 27 },
+	{ preset_id::type::ooo_emphasis_grow_with_color		, 28 },
+	{ preset_id::type::ooo_emphasis_lighten				, 30 },
+	{ preset_id::type::ooo_emphasis_style_emphasis		, 31 },
+	{ preset_id::type::ooo_emphasis_teeter				, 32 },
+	{ preset_id::type::ooo_emphasis_vertical_highlight	, 33 },
+	{ preset_id::type::ooo_emphasis_wave				, 34 },
+	{ preset_id::type::ooo_emphasis_blink				, 35 },
+	{ preset_id::type::ooo_emphasis_shimmer				, 36 },
+
+	{ preset_id::type::ooo_exit_disappear				, 1 },
+	{ preset_id::type::ooo_exit_fly_out					, 2 },
+	{ preset_id::type::ooo_exit_venetian_blinds			, 3 },
+	{ preset_id::type::ooo_exit_box						, 4 },
+	{ preset_id::type::ooo_exit_checkerboard			, 5 },
+	{ preset_id::type::ooo_exit_circle					, 6 },
+	{ preset_id::type::ooo_exit_crawl_out				, 7 },
+	{ preset_id::type::ooo_exit_diamond					, 8 },
+	{ preset_id::type::ooo_exit_dissolve				, 9 },
+	{ preset_id::type::ooo_exit_fade_out				, 10 },
+	{ preset_id::type::ooo_exit_flash_once				, 11 },
+	{ preset_id::type::ooo_exit_peek_out				, 12 },
+	{ preset_id::type::ooo_exit_plus					, 13 },
+	{ preset_id::type::ooo_exit_random_bars				, 14 },
+	{ preset_id::type::ooo_exit_spiral_out				, 15 },
+	{ preset_id::type::ooo_exit_split					, 16 },
+	{ preset_id::type::ooo_exit_collapse				, 17 },
+	{ preset_id::type::ooo_exit_diagonal_squares		, 18 },
+	{ preset_id::type::ooo_exit_swivel					, 19 },
+	{ preset_id::type::ooo_exit_wedge					, 20 },
+	{ preset_id::type::ooo_exit_wheel					, 21 },
+	{ preset_id::type::ooo_exit_wipe					, 22 },
+	{ preset_id::type::ooo_exit_zoom					, 23 },
+	{ preset_id::type::ooo_exit_random					, 24 },
+	{ preset_id::type::ooo_exit_boomerang				, 25 },
+	{ preset_id::type::ooo_exit_bounce					, 26 },
+	{ preset_id::type::ooo_exit_colored_lettering		, 27 },
+	{ preset_id::type::ooo_exit_movie_credits			, 28 },
+	{ preset_id::type::ooo_exit_ease_out				, 29 },
+	{ preset_id::type::ooo_exit_float					, 30 },
+	{ preset_id::type::ooo_exit_turn_and_grow			, 31 },
+	{ preset_id::type::ooo_exit_breaks					, 34 },
+	{ preset_id::type::ooo_exit_pinwheel				, 35 },
+	{ preset_id::type::ooo_exit_sink_down				, 37 },
+	{ preset_id::type::ooo_exit_swish					, 38 },
+	{ preset_id::type::ooo_exit_thread					, 39 },
+	{ preset_id::type::ooo_exit_unfold					, 40 },
+	{ preset_id::type::ooo_exit_whip					, 41 },
+	{ preset_id::type::ooo_exit_descend					, 42 },
+	{ preset_id::type::ooo_exit_center_revolve			, 43 },
+	{ preset_id::type::ooo_exit_fade_out_and_swivel		, 45 },
+	{ preset_id::type::ooo_exit_ascend					, 47 },
+	{ preset_id::type::ooo_exit_sling					, 48 },
+	{ preset_id::type::ooo_exit_fade_out_and_zoom		, 53 },
+	{ preset_id::type::ooo_exit_contract				, 55 },
+	{ preset_id::type::ooo_exit_spin_out				, 49 },
+	{ preset_id::type::ooo_exit_stretchy				, 50 },
+	{ preset_id::type::ooo_exit_magnify					, 51 },
+	{ preset_id::type::ooo_exit_curve_down				, 52 },
+	{ preset_id::type::ooo_exit_glide					, 54 },
+	{ preset_id::type::ooo_exit_flip					, 56 },
+	{ preset_id::type::ooo_exit_fold					, 58 },
+
+	{ preset_id::type::ooo_motionpath_4_point_star		, 16 },
+	{ preset_id::type::ooo_motionpath_5_point_star		, 5 },
+	{ preset_id::type::ooo_motionpath_6_point_star		, 11 },
+	{ preset_id::type::ooo_motionpath_8_point_star		, 17 },
+	{ preset_id::type::ooo_motionpath_circle			, 1 },
+	{ preset_id::type::ooo_motionpath_crescent_moon		, 6 },
+	{ preset_id::type::ooo_motionpath_diamond			, 3 },
+	{ preset_id::type::ooo_motionpath_equal_triangle	, 13 },
+	{ preset_id::type::ooo_motionpath_oval				, 12 },
+	{ preset_id::type::ooo_motionpath_heart				, 9 },
+	{ preset_id::type::ooo_motionpath_hexagon			, 4 },
+	{ preset_id::type::ooo_motionpath_octagon			, 10 },
+	{ preset_id::type::ooo_motionpath_parallelogram		, 14 },
+	{ preset_id::type::ooo_motionpath_pentagon			, 15 },
+	{ preset_id::type::ooo_motionpath_right_triangle	, 2 },
+	{ preset_id::type::ooo_motionpath_square			, 7 },
+	{ preset_id::type::ooo_motionpath_teardrop			, 18 },
+	{ preset_id::type::ooo_motionpath_trapezoid			, 8 },
+	{ preset_id::type::ooo_motionpath_arc_down			, 37 },
+	{ preset_id::type::ooo_motionpath_arc_left			, 51 },
+	{ preset_id::type::ooo_motionpath_arc_right			, 58 },
+	{ preset_id::type::ooo_motionpath_arc_up			, 44 },
+	{ preset_id::type::ooo_motionpath_bounce_left		, 41 },
+	{ preset_id::type::ooo_motionpath_bounce_right		, 54 },
+	{ preset_id::type::ooo_motionpath_curvy_left		, 48 },
+	{ preset_id::type::ooo_motionpath_curvy_right		, 61 },
+	{ preset_id::type::ooo_motionpath_decaying_wave		, 60 },
+	{ preset_id::type::ooo_motionpath_diagonal_down_right, 49 },
+	{ preset_id::type::ooo_motionpath_diagonal_up_right	, 56 },
+	{ preset_id::type::ooo_motionpath_down				, 42 },
+	{ preset_id::type::ooo_motionpath_funnel			, 52 },
+	{ preset_id::type::ooo_motionpath_spring			, 53 },
+	{ preset_id::type::ooo_motionpath_stairs_down		, 62 },
+	{ preset_id::type::ooo_motionpath_turn_down			, 50 },
+	{ preset_id::type::ooo_motionpath_turn_down_right	, 36 },
+	{ preset_id::type::ooo_motionpath_turn_up			, 43 },
+	{ preset_id::type::ooo_motionpath_turn_up_right		, 57 },
+	{ preset_id::type::ooo_motionpath_up				, 64 },
+	{ preset_id::type::ooo_motionpath_wave				, 47 },
+	{ preset_id::type::ooo_motionpath_zigzag			, 38 },
+	{ preset_id::type::ooo_motionpath_bean				, 31 },
+	{ preset_id::type::ooo_motionpath_buzz_saw			, 25 },
+	{ preset_id::type::ooo_motionpath_curved_square		, 20 },
+	{ preset_id::type::ooo_motionpath_curved_x			, 21 },
+	{ preset_id::type::ooo_motionpath_curvy_star		, 23 },
+	{ preset_id::type::ooo_motionpath_figure_8_four		, 28 },
+	{ preset_id::type::ooo_motionpath_horizontal_figure_8, 26 },
+	{ preset_id::type::ooo_motionpath_inverted_square	, 34 },
+	{ preset_id::type::ooo_motionpath_inverted_triangle	, 33 },
+	{ preset_id::type::ooo_motionpath_loop_de_loop		, 24 },
+	{ preset_id::type::ooo_motionpath_neutron			, 29 },
+	{ preset_id::type::ooo_motionpath_peanut			, 27 },
+	{ preset_id::type::ooo_motionpath_clover			, 32 },
+	{ preset_id::type::ooo_motionpath_pointy_star		, 19 },
+	{ preset_id::type::ooo_motionpath_swoosh			, 30 },
+	{ preset_id::type::ooo_motionpath_vertical_figure_8	, 22 },
+	{ preset_id::type::ooo_motionpath_left				, 35 },
+	{ preset_id::type::ooo_motionpath_right				, 63 },
+	{ preset_id::type::ooo_motionpath_spiral_left		, 55 },
+	{ preset_id::type::ooo_motionpath_spiral_right		, 46 },
+	{ preset_id::type::ooo_motionpath_sine_wave			, 40 },
+	{ preset_id::type::ooo_motionpath_s_curve_1			, 59 },
+	{ preset_id::type::ooo_motionpath_s_curve_2			, 39 },
+	{ preset_id::type::ooo_motionpath_heartbeat			, 45 },
+
+	{ preset_id::type::none								, 0 },
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,46 +340,39 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 		else if (common_attlist_.smil_begin_.get() == L"next")
 			delay = L"indefinite";
 	}
-	
-	// NOTE: Юзлес штука
+
 	// TODO: Figure out correct value
 	end = boost::none;
 
 	if (par_attlist_.presentation_preset_class_)
 	{
-		if (par_attlist_.presentation_preset_class_.value() == L"entrance")
+		switch (par_attlist_.presentation_preset_class_.value().get_type())
 		{
+		case preset_class::entrance:
 			presentationPresetClass = L"entr";
-			presentationPresetId = convert_entrance_preset_id();
-		}
-		else if (par_attlist_.presentation_preset_class_.value() == L"exit")
-		{
+			presentationPresetId = pptx_convert_preset_id();
+			break;
+		case preset_class::exit:
 			presentationPresetClass = L"exit";
-			presentationPresetId = convert_exit_preset_id();
-		}
-		else if (par_attlist_.presentation_preset_class_.value() == L"emphasis")
-		{
+			presentationPresetId = pptx_convert_preset_id();
+			break;
+		case preset_class::emphasis:
 			presentationPresetClass = L"emph";
-			presentationPresetId = convert_emphasis_preset_id();
-		}
-		else if (par_attlist_.presentation_preset_class_.value() == L"motion-path")
-		{
+			presentationPresetId = pptx_convert_preset_id();
+			break;
+		case preset_class::motion_path:
 			presentationPresetClass = L"path";
-			presentationPresetId = convert_motion_path_preset_id();
-		}
-		else if (par_attlist_.presentation_preset_class_.value() == L"ole-action")	
+			presentationPresetId = pptx_convert_preset_id();
+			break;
+		case preset_class::ole_action:
 			presentationPresetClass = L"verb";
-		else if (par_attlist_.presentation_preset_class_.value() == L"media-call")	
+			break;
+		case preset_class::media_call:
 			presentationPresetClass = L"mediacall";
-		else
+			break;
+		default:
 			presentationPresetClass = L"custom";
-	}
-
-	if (par_attlist_.presentation_preset_class_)
-	{
-		std::wstring presetClass = par_attlist_.presentation_preset_class_.value();
-		if(presetClass == L"ent")
-		presentationPresetId = boost::none;
+		}			
 	}
 	
 	animationContext.start_par_animation();
@@ -210,245 +417,19 @@ void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, co
 		CP_CREATE_ELEMENT(content_);
 }
 
-_CP_OPT(int) anim_par::convert_entrance_preset_id()
+boost::optional<int> anim_par::pptx_convert_preset_id()
 {
 	if (par_attlist_.presentation_preset_id_)
 	{
-		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
+		preset_id::type presetID = par_attlist_.presentation_preset_id_.value().get_type();
 
-			 if (presetId == L"ooo-entrance-appear")					return 1;
-		else if (presetId == L"ooo-entrance-fly-in") 					return 2;
-		else if (presetId == L"ooo-entrance-venetian-blinds")			return 3;
-		else if (presetId == L"ooo-entrance-box") 						return 4;
-		else if (presetId == L"ooo-entrance-checkerboard") 				return 5;
-		else if (presetId == L"ooo-entrance-circle") 					return 6;
-		else if (presetId == L"ooo-entrance-fly-in-slow") 				return 7;
-		else if (presetId == L"ooo-entrance-diamond") 					return 8;
-		else if (presetId == L"ooo-entrance-dissolve-in")				return 9;
-		else if (presetId == L"ooo-entrance-fade-in") 					return 10;
-		else if (presetId == L"ooo-entrance-flash-once")				return 11;
-		else if (presetId == L"ooo-entrance-peek-in") 					return 12;
-		else if (presetId == L"ooo-entrance-plus") 						return 13;
-		else if (presetId == L"ooo-entrance-random-bars")				return 14;
-		else if (presetId == L"ooo-entrance-spiral-in")					return 15;
-		else if (presetId == L"ooo-entrance-split") 					return 16;
-		else if (presetId == L"ooo-entrance-stretchy") 					return 17;
-		else if (presetId == L"ooo-entrance-diagonal-squares") 			return 18;
-		else if (presetId == L"ooo-entrance-swivel") 					return 19;
-		else if (presetId == L"ooo-entrance-wedge") 					return 20;
-		else if (presetId == L"ooo-entrance-wheel") 					return 21;
-		else if (presetId == L"ooo-entrance-wipe") 						return 22;
-		else if (presetId == L"ooo-entrance-zoom") 						return 23;
-		else if (presetId == L"ooo-entrance-random") 					return 24;
-		else if (presetId == L"ooo-entrance-boomerang") 				return 25;
-		else if (presetId == L"ooo-entrance-bounce") 					return 26;
-		else if (presetId == L"ooo-entrance-colored-lettering") 		return 27;
-		else if (presetId == L"ooo-entrance-movie-credits") 			return 28;
-		else if (presetId == L"ooo-entrance-ease-in") 					return 29;
-		else if (presetId == L"ooo-entrance-float") 					return 30;
-		else if (presetId == L"ooo-entrance-turn-and-grow") 			return 31;
-		else if (presetId == L"ooo-entrance-breaks") 					return 34;
-		else if (presetId == L"ooo-entrance-pinwheel") 					return 35;
-		else if (presetId == L"ooo-entrance-rise-up") 					return 37;
-		else if (presetId == L"ooo-entrance-falling-in") 				return 38;
-		else if (presetId == L"ooo-entrance-thread") 					return 39;
-		else if (presetId == L"ooo-entrance-unfold") 					return 40;
-		else if (presetId == L"ooo-entrance-whip") 						return 41;
-		else if (presetId == L"ooo-entrance-ascend") 					return 42;
-		else if (presetId == L"ooo-entrance-center-revolve") 			return 43;
-		else if (presetId == L"ooo-entrance-fade-in-and-swivel") 		return 45;
-		else if (presetId == L"ooo-entrance-descend") 					return 47;
-		else if (presetId == L"ooo-entrance-sling") 					return 48;
-		else if (presetId == L"ooo-entrance-spin-in") 					return 49;
-		else if (presetId == L"ooo-entrance-compress") 					return 50;
-		else if (presetId == L"ooo-entrance-magnify") 					return 51;
-		else if (presetId == L"ooo-entrance-curve-up") 					return 52;
-		else if (presetId == L"ooo-entrance-fade-in-and-zoom") 			return 53;
-		else if (presetId == L"ooo-entrance-glide") 					return 54;
-		else if (presetId == L"ooo-entrance-expand") 					return 55;
-		else if (presetId == L"ooo-entrance-flip") 						return 56;
-		else if (presetId == L"ooo-entrance-fold") 						return 58;
+		for (size_t i = 0; g_preset_id_map[i].ODF_PresetID != preset_id::type::none; i++)
+		{
+			if (g_preset_id_map[i].ODF_PresetID == presetID)
+				return g_preset_id_map[i].OOX_PresetID;
+		}
 	}
-
-	return boost::none;
-}
-
-_CP_OPT(int) anim_par::convert_emphasis_preset_id()
-{
-	if (par_attlist_.presentation_preset_id_)
-	{
-		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
-
-			 if (presetId == L"ooo-emphasis-fill-color") 					return 1;
-		else if (presetId == L"ooo-emphasis-font") 							return 2;
-		else if (presetId == L"ooo-emphasis-font-color") 					return 3;
-		else if (presetId == L"ooo-emphasis-font-size") 					return 4;
-		else if (presetId == L"ooo-emphasis-font-style") 					return 5;
-		else if (presetId == L"ooo-emphasis-grow-and-shrink") 				return 6;
-		else if (presetId == L"ooo-emphasis-line-color") 					return 7;
-		else if (presetId == L"ooo-emphasis-spin") 							return 8;
-		else if (presetId == L"ooo-emphasis-transparency") 					return 9;
-		else if (presetId == L"ooo-emphasis-bold-flash") 					return 10;
-		else if (presetId == L"ooo-emphasis-blast") 						return 14;
-		else if (presetId == L"ooo-emphasis-bold-reveal") 					return 15;
-		else if (presetId == L"ooo-emphasis-color-over-by-word") 			return 16;
-		else if (presetId == L"ooo-emphasis-reveal-underline") 				return 18;
-		else if (presetId == L"ooo-emphasis-color-blend") 					return 19;
-		else if (presetId == L"ooo-emphasis-color-over-by-letter") 			return 20;
-		else if (presetId == L"ooo-emphasis-complementary-color") 			return 21;
-		else if (presetId == L"ooo-emphasis-complementary-color-2") 		return 22;
-		else if (presetId == L"ooo-emphasis-contrasting-color") 			return 23;
-		else if (presetId == L"ooo-emphasis-darken") 						return 24;
-		else if (presetId == L"ooo-emphasis-desaturate") 					return 25;
-		else if (presetId == L"ooo-emphasis-flash-bulb") 					return 26;
-		else if (presetId == L"ooo-emphasis-flicker") 						return 27;
-		else if (presetId == L"ooo-emphasis-grow-with-color") 				return 28;
-		else if (presetId == L"ooo-emphasis-lighten") 						return 30;
-		else if (presetId == L"ooo-emphasis-style-emphasis") 				return 31;
-		else if (presetId == L"ooo-emphasis-teeter") 						return 32;
-		else if (presetId == L"ooo-emphasis-vertical-highlight") 			return 33;
-		else if (presetId == L"ooo-emphasis-wave") 							return 34;
-		else if (presetId == L"ooo-emphasis-blink") 						return 35;
-		else if (presetId == L"ooo-emphasis-shimmer") 						return 36;
-	}
-
-	return boost::none;
-}
-
-_CP_OPT(int) anim_par::convert_exit_preset_id()
-{
-	if (par_attlist_.presentation_preset_id_)
-	{
-		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
-
-		if (presetId == L"ooo-exit-disappear")					return 1;
-		else if (presetId == L"ooo-exit-fly-out")				return 2;
-		else if (presetId == L"ooo-exit-venetian-blinds")		return 3;
-		else if (presetId == L"ooo-exit-box")					return 4;
-		else if (presetId == L"ooo-exit-checkerboard")			return 5;
-		else if (presetId == L"ooo-exit-circle")				return 6;
-		else if (presetId == L"ooo-exit-crawl-out")				return 7;
-		else if (presetId == L"ooo-exit-diamond")				return 8;
-		else if (presetId == L"ooo-exit-dissolve")				return 9;
-		else if (presetId == L"ooo-exit-fade-out")				return 10;
-		else if (presetId == L"ooo-exit-flash-once")			return 11;
-		else if (presetId == L"ooo-exit-peek-out")				return 12;
-		else if (presetId == L"ooo-exit-plus")					return 13;
-		else if (presetId == L"ooo-exit-random-bars")			return 14;
-		else if (presetId == L"ooo-exit-spiral-out")			return 15;
-		else if (presetId == L"ooo-exit-split")					return 16;
-		else if (presetId == L"ooo-exit-collapse")				return 17;
-		else if (presetId == L"ooo-exit-diagonal-squares")		return 18;
-		else if (presetId == L"ooo-exit-swivel")				return 19;
-		else if (presetId == L"ooo-exit-wedge")					return 20;
-		else if (presetId == L"ooo-exit-wheel")					return 21;
-		else if (presetId == L"ooo-exit-wipe")					return 22;
-		else if (presetId == L"ooo-exit-zoom")					return 23;
-		else if (presetId == L"ooo-exit-random")				return 24;
-		else if (presetId == L"ooo-exit-boomerang")				return 25;
-		else if (presetId == L"ooo-exit-bounce")				return 26;
-		else if (presetId == L"ooo-exit-colored-lettering")		return 27;
-		else if (presetId == L"ooo-exit-movie-credits")			return 28;
-		else if (presetId == L"ooo-exit-ease-out")				return 29;
-		else if (presetId == L"ooo-exit-float")					return 30;
-		else if (presetId == L"ooo-exit-turn-and-grow")			return 31;
-		else if (presetId == L"ooo-exit-breaks")				return 34;
-		else if (presetId == L"ooo-exit-pinwheel")				return 35;
-		else if (presetId == L"ooo-exit-sink-down")				return 37;
-		else if (presetId == L"ooo-exit-swish")					return 38;
-		else if (presetId == L"ooo-exit-thread")				return 39;
-		else if (presetId == L"ooo-exit-unfold")				return 40;
-		else if (presetId == L"ooo-exit-whip")					return 41;
-		else if (presetId == L"ooo-exit-descend")				return 42;
-		else if (presetId == L"ooo-exit-center-revolve")		return 43;
-		else if (presetId == L"ooo-exit-fade-out-and-swivel")	return 45;
-		else if (presetId == L"ooo-exit-ascend")				return 47;
-		else if (presetId == L"ooo-exit-sling")					return 48;
-		else if (presetId == L"ooo-exit-fade-out-and-zoom")		return 53;
-		else if (presetId == L"ooo-exit-contract")				return 55;
-		else if (presetId == L"ooo-exit-spin-out")				return 49;
-		else if (presetId == L"ooo-exit-stretchy")				return 50;
-		else if (presetId == L"ooo-exit-magnify")				return 51;
-		else if (presetId == L"ooo-exit-curve-down")			return 52;
-		else if (presetId == L"ooo-exit-glide")					return 54;
-		else if (presetId == L"ooo-exit-flip")					return 56;
-		else if (presetId == L"ooo-exit-fold")					return 58;
-	}
-
-	return boost::none;
-}
-
-_CP_OPT(int) anim_par::convert_motion_path_preset_id()
-{
-	if (par_attlist_.presentation_preset_id_)
-	{
-		const std::wstring& presetId = par_attlist_.presentation_preset_id_.value();
-
-			 if (presetId == L"ooo-motionpath-4-point-star")			return 16;
-		else if (presetId == L"ooo-motionpath-5-point-star")			return 5;
-		else if (presetId == L"ooo-motionpath-6-point-star")			return 11;
-		else if (presetId == L"ooo-motionpath-8-point-star")			return 17;
-		else if (presetId == L"ooo-motionpath-circle")					return 1;
-		else if (presetId == L"ooo-motionpath-crescent-moon")			return 6;
-		else if (presetId == L"ooo-motionpath-diamond")					return 3;
-		else if (presetId == L"ooo-motionpath-equal-triangle")			return 13;
-		else if (presetId == L"ooo-motionpath-oval")					return 12;
-		else if (presetId == L"ooo-motionpath-heart")					return 9;
-		else if (presetId == L"ooo-motionpath-hexagon")					return 4;
-		else if (presetId == L"ooo-motionpath-octagon")					return 10;
-		else if (presetId == L"ooo-motionpath-parallelogram")			return 14;
-		else if (presetId == L"ooo-motionpath-pentagon")				return 15;
-		else if (presetId == L"ooo-motionpath-right-triangle")			return 2;
-		else if (presetId == L"ooo-motionpath-square")					return 7;
-		else if (presetId == L"ooo-motionpath-teardrop")				return 18;
-		else if (presetId == L"ooo-motionpath-trapezoid")				return 8;
-		else if (presetId == L"ooo-motionpath-arc-down")				return 37;
-		else if (presetId == L"ooo-motionpath-arc-left")				return 51;
-		else if (presetId == L"ooo-motionpath-arc-right")				return 58;
-		else if (presetId == L"ooo-motionpath-arc-up")					return 44;
-		else if (presetId == L"ooo-motionpath-bounce-left")				return 41;
-		else if (presetId == L"ooo-motionpath-bounce-right")			return 54;
-		else if (presetId == L"ooo-motionpath-curvy-left")				return 48;
-		else if (presetId == L"ooo-motionpath-curvy-right")				return 61;
-		else if (presetId == L"ooo-motionpath-decaying-wave")			return 60;
-		else if (presetId == L"ooo-motionpath-diagonal-down-right")		return 49;
-		else if (presetId == L"ooo-motionpath-diagonal-up-right")		return 56;
-		else if (presetId == L"ooo-motionpath-down")					return 42;
-		else if (presetId == L"ooo-motionpath-funnel")					return 52;
-		else if (presetId == L"ooo-motionpath-spring")					return 53;
-		else if (presetId == L"ooo-motionpath-stairs-down")				return 62;
-		else if (presetId == L"ooo-motionpath-turn-down")				return 50;
-		else if (presetId == L"ooo-motionpath-turn-down-right")			return 36;
-		else if (presetId == L"ooo-motionpath-turn-up")					return 43;
-		else if (presetId == L"ooo-motionpath-turn-up-right")			return 57;
-		else if (presetId == L"ooo-motionpath-up")						return 64;
-		else if (presetId == L"ooo-motionpath-wave")					return 47;
-		else if (presetId == L"ooo-motionpath-zigzag")					return 38;
-		else if (presetId == L"ooo-motionpath-bean")					return 31;
-		else if (presetId == L"ooo-motionpath-buzz-saw")				return 25;
-		else if (presetId == L"ooo-motionpath-curved-square")			return 20;
-		else if (presetId == L"ooo-motionpath-curved-x")				return 21;
-		else if (presetId == L"ooo-motionpath-curvy-star")				return 23;
-		else if (presetId == L"ooo-motionpath-figure-8-four")			return 28;
-		else if (presetId == L"ooo-motionpath-horizontal-figure-8")		return 26;
-		else if (presetId == L"ooo-motionpath-inverted-square")			return 34;
-		else if (presetId == L"ooo-motionpath-inverted-triangle")		return 33;
-		else if (presetId == L"ooo-motionpath-loop-de-loop")			return 24;
-		else if (presetId == L"ooo-motionpath-neutron")					return 29;
-		else if (presetId == L"ooo-motionpath-peanut")					return 27;
-		else if (presetId == L"ooo-motionpath-clover")					return 32;
-		else if (presetId == L"ooo-motionpath-pointy-star")				return 19;
-		else if (presetId == L"ooo-motionpath-swoosh")					return 30;
-		else if (presetId == L"ooo-motionpath-vertical-figure-8")		return 22;
-		else if (presetId == L"ooo-motionpath-left")					return 35;
-		else if (presetId == L"ooo-motionpath-right")					return 63;
-		else if (presetId == L"ooo-motionpath-spiral-left")				return 55;
-		else if (presetId == L"ooo-motionpath-spiral-right")			return 46;
-		else if (presetId == L"ooo-motionpath-sine-wave")				return 40;
-		else if (presetId == L"ooo-motionpath-s-curve-1")				return 59;
-		else if (presetId == L"ooo-motionpath-s-curve-2")				return 39;
-		else if (presetId == L"ooo-motionpath-heartbeat")				return 45;
-	}
+	
 
 	return boost::none;
 }
@@ -482,17 +463,18 @@ void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 	animationContext.end_seq_animation();
 }
 void anim_seq::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
+{ 
 	if	CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(anim_par_array_);
 }
 ////////////////////////////////////////////////////////////////
 void anim_transition_filter_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"smil:subtype",		smil_subtype_);
-    CP_APPLY_ATTR(L"smil:type",			smil_type_);
-	CP_APPLY_ATTR(L"smil:fadeColor",	smil_fadeColor_);
-	CP_APPLY_ATTR(L"smil:mode",			smil_mode_);
+    CP_APPLY_ATTR(L"smil:subtype",			smil_subtype_);
+    CP_APPLY_ATTR(L"smil:type",				smil_type_);
+	CP_APPLY_ATTR(L"smil:fadeColor",		smil_fadeColor_);
+	CP_APPLY_ATTR(L"smil:mode",				smil_mode_);
+	CP_APPLY_ATTR(L"smil:targetElement",	smil_target_element_);
 }
 void anim_audio_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -893,13 +875,16 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 
 	std::wstring filter = convert_filter();
 	std::wstring transition = L"in";
-	std::wstring shapeId = L"2";
+	size_t shapeId = 0;
 
 	if (filter_attlist_.smil_mode_)
 	{
 		if (filter_attlist_.smil_mode_.value() == L"out")
 			transition = L"out";
 	}
+
+	if (filter_attlist_.smil_target_element_)
+		shapeId = Context.get_slide_context().get_id(filter_attlist_.smil_target_element_.value());
 
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
@@ -944,9 +929,9 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 	_CP_OPT(std::wstring)		delay;
 	_CP_OPT(std::wstring)		end;
 	_CP_OPT(std::wstring)		fill;
-	_CP_OPT(std::wstring)		target_element;
 	_CP_OPT(std::wstring)		attribute_name;
 	_CP_OPT(std::wstring)		to_value;
+	size_t						shapeID = 0;
 
 	if (common_attlist_.smil_direction_)
 	{	
@@ -981,8 +966,7 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (set_attlist_.smil_target_element_)
 	{
-		// TODO: Figure out correct value
-		target_element = L"2";
+		shapeID = Context.get_slide_context().get_id(set_attlist_.smil_target_element_.value());
 	}
 
 	if (set_attlist_.smil_attribute_name_)
@@ -1008,9 +992,9 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 	if (delay)				animationContext.set_set_delay(delay.value());
 	if (end)				animationContext.set_set_end(end.value());
 	if (fill)				animationContext.set_set_fill(fill.value());
-	if (target_element)		animationContext.set_set_target_element(target_element.value());
 	if (attribute_name)		animationContext.set_set_attribute_name(attribute_name.value());
 	if (to_value)			animationContext.set_set_to_value(to_value.value());
+	animationContext.set_set_shape_id(shapeID);
 	animationContext.end_set();
 }
 
@@ -1035,18 +1019,24 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 {
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
+	size_t shapeID = 0;
+
+	if (animate_motion_attlist_.smil_target_element_)
+		shapeID = Context.get_slide_context().get_id(animate_motion_attlist_.smil_target_element_.value());
+
 	animationContext.start_animate_motion();
 
-	if (common_attlist_.presentation_node_type_)			animationContext.set_animate_motion_presentation_node_type(common_attlist_.presentation_node_type_.value());
-	if (common_attlist_.smil_direction_)					animationContext.set_animate_motion_direction(common_attlist_.smil_direction_.value());
-	if (common_attlist_.smil_restart_)						animationContext.set_animate_motion_restart(common_attlist_.smil_restart_.value());
+//	if (common_attlist_.presentation_node_type_)			animationContext.set_animate_motion_presentation_node_type(common_attlist_.presentation_node_type_.value());
+//	if (common_attlist_.smil_direction_)					animationContext.set_animate_motion_direction(common_attlist_.smil_direction_.value());
+//	if (common_attlist_.smil_restart_)						animationContext.set_animate_motion_restart(common_attlist_.smil_restart_.value());
 	if (common_attlist_.smil_dur_)							animationContext.set_animate_motion_dur(common_attlist_.smil_dur_.value().get_value());
-	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_delay(common_attlist_.smil_begin_.value());
-	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
+//	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_delay(common_attlist_.smil_begin_.value());
+//	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
 
 	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(animate_motion_attlist_.smil_fill_.value());
-	if (animate_motion_attlist_.smil_target_element_)		animationContext.set_animate_motion_target_element(L"-1");
 	if (animate_motion_attlist_.svg_path_)					animationContext.set_animate_motion_svg_path(animate_motion_attlist_.svg_path_.value());
+
+	animationContext.set_animate_motion_shape_id(shapeID);
 	
 	animationContext.end_animate_motion();
 }
@@ -1079,6 +1069,7 @@ void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 	_CP_OPT(std::wstring) delay;
 	_CP_OPT(std::wstring) attributeName;
 	_CP_OPT(std::wstring) toValue;
+	size_t				  shapeID = 0;
 
 	colorSpace = L"rgb";
 	
@@ -1104,6 +1095,9 @@ void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 		boost::algorithm::erase_all(toValue.value(), L"#");
 	}
 
+	if (animate_color_attlist_.smil_target_element_)
+		shapeID = Context.get_slide_context().get_id(animate_color_attlist_.smil_target_element_.value());
+
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
 	animationContext.start_animate_color();
@@ -1112,6 +1106,7 @@ void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 	if (delay)				animationContext.set_animate_color_delay(delay.value());
 	if (attributeName)		animationContext.set_animate_color_attribute_name(attributeName.value());
 	if (toValue)			animationContext.set_animate_color_to_value(toValue.value());
+	animationContext.set_animate_color_shape_id(shapeID);
 	animationContext.end_animate_color();
 }
 
@@ -1141,9 +1136,9 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 {
 	_CP_OPT(std::wstring)						calcmode;
 	_CP_OPT(std::wstring)						valueType;
-	_CP_OPT(std::wstring)						shapeID;
 	_CP_OPT(int)								duration;
 	_CP_OPT(std::wstring)						attributeName;
+	size_t										shapeID = 0;
 
 	if (animate_attlist_.smil_calc_mode_)
 	{
@@ -1154,7 +1149,6 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		calcmode = L"lin";
 
 	valueType = L"num";
-	shapeID = L"-1";
 	duration = animate_attlist_.smil_dur_ ? animate_attlist_.smil_dur_->get_value() : 1;
 
 	if (animate_attlist_.smil_attribute_name_)
@@ -1165,6 +1159,9 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		else if (animate_attlist_.smil_attribute_name_.value() == L"x")					attributeName = L"ppt_x";
 		else if (animate_attlist_.smil_attribute_name_.value() == L"y")					attributeName = L"ppt_y";
 	}
+
+	if (animate_attlist_.smil_target_element_)
+		shapeID = Context.get_slide_context().get_id(animate_attlist_.smil_target_element_.value());
 	
 	std::vector<std::wstring>	timesOdp;
 	std::vector<int>			timesPptx;
@@ -1206,9 +1203,9 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	animationContext.start_animate();
 	if (calcmode)			animationContext.set_animate_calc_mode(calcmode.value());
 	if (valueType)			animationContext.set_animate_value_type(valueType.value());
-	if (shapeID)			animationContext.set_animate_shape_id(shapeID.value());
 	if (duration)			animationContext.set_animate_duration(duration.value());
 	if (attributeName)		animationContext.set_animate_attribute_name(attributeName.value());
+	animationContext.set_animate_shape_id(shapeID);
 
 	if (timesPptx.size() == valuesPptx.size())
 	{

@@ -92,8 +92,6 @@ private:
     
 	std::vector<table_row_spanned> rows_spanned_;
 	
-	bool close_table_covered_cell_;
-   
 	std::vector<unsigned int> columns_;
     std::vector<std::wstring> columnsDefaultCellStyleName_;
    

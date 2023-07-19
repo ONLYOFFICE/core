@@ -2413,14 +2413,16 @@ namespace Word
 
 		if (m_oEnd.IsInit())
 		{
-			sResult += L"w:end=\"";
+			//sResult += L"w:end=\""; 
+			sResult += L"w:right=\""; // Transitional Migration Features
 			sResult += m_oEnd->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oEndChars.IsInit())
 		{
-			sResult += L"w:endChars=\"";
+//			sResult += L"w:endChars=\"";
+			sResult += L"w:rightChars=\""; // Transitional Migration Features
 			sResult += m_oEndChars->ToString();
 			sResult += L"\" ";
 		}
@@ -2455,14 +2457,16 @@ namespace Word
 
 		if (m_oStart.IsInit())
 		{
-			sResult += L"w:start=\"";
+//			sResult += L"w:start=\"";
+			sResult += L"w:left=\""; // Transitional Migration Features
 			sResult += m_oStart->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oStartChars.IsInit())
 		{
-			sResult += L"w:startChars=\"";
+//			sResult += L"w:startChars=\"";
+			sResult += L"w:leftChars=\""; // Transitional Migration Features
 			sResult += m_oStartChars->ToString();
 			sResult += L"\" ";
 		}

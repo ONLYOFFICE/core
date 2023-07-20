@@ -23,6 +23,8 @@ INCLUDEPATH += \
 core_release {
     SOURCES += $$PWD/libxml2_all.c
     SOURCES += $$PWD/libxml2_all2.c
+
+    DEFINES += XML_ERROR_DISABLE_MODE
 }
 
 core_debug {

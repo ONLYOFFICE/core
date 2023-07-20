@@ -31,7 +31,6 @@
  */
 #include "ZipBuffer.h"
 #include "ZipUtilsCP.h"
-#include "zlib-1.2.11/contrib/minizip/ioapibuf.h"
 
 #include <algorithm>
 

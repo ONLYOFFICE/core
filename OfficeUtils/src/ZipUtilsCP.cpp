@@ -766,6 +766,60 @@ namespace ZLibZipUtils
 
 	/*========================================================================================================*/
 
+	int UnzipToDir(BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
+	{
+		unzFile uf = NULL;
+
+		int err = -1;
+
+		if(NSDirectory::Exists(unzipDir))
+			err = 0;
+
+		if ( ( data != NULL ) && ( len != 0 ) )
+		{
+			int old = zlip_get_addition_flag();
+			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
+
+			BUFFER_IO* buf = new BUFFER_IO;
+			buf->buffer = data;
+			buf->nSize  = len;
+
+			zlib_filefunc_def ffunc;
+			fill_buffer_filefunc(&ffunc, buf);
+			uf = unzOpen2(NULL, &ffunc);
+
+			zlip_set_addition_flag(old);
+		}
+
+		if ( uf != NULL )
+		{
+			if ( clearOutputDirectory )
+			{
+				ClearDirectory( unzipDir );
+			}
+
+			if ( err == 0 )
+			{
+				if(NULL != password)
+				{
+					std::string passwordA = codepage_issue_fixToOEM(password);
+					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, passwordA.c_str(), progress );
+				}
+				else
+					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress );
+			}
+
+			if ( err == UNZ_OK )
+			{
+				err = unzClose( uf );
+			}
+		}
+
+		return err;
+	}
+
+	/*========================================================================================================*/
+
 	int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize )
 	{
 		int err = -1;

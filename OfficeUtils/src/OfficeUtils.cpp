@@ -59,6 +59,25 @@ HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& _zipFile, const std
 	}
 }
 
+HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstring& _unzipDir, wchar_t* password, short extract_without_path)
+{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+	std::wstring unzipDir = CorrectPathW(_unzipDir);
+#else
+	std::wstring zipFile = _zipFile;
+	std::wstring unzipDir = _unzipDir;
+#endif
+
+	if( ZLibZipUtils::UnzipToDir( data, len, unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+}
+
 
 HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& _name, const std::wstring& _outputFile, bool bSorted, int method, short level, bool bDateTime)
 {

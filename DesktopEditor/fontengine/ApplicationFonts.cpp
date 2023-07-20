@@ -1649,7 +1649,7 @@ static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring
         if (hkey)
             RegCloseKey(hkey);
         hkey = NULL;
-        return ERROR_SUCCESS;
+		return ERROR_SUCCESS + 1;
     }
 
     // if subkey is specified then open key (first time)
@@ -1748,6 +1748,10 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
             continue;
         }
     }
+
+	sName = L"";
+	sData = L"";
+	GetNextNameValue(0, L"", sName, sData);
 
     if (true)
     {

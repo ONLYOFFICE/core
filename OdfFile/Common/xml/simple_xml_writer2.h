@@ -40,6 +40,8 @@
 
 #include "../../../OOXML/Base/Unit.h"
 
+
+
 namespace cpdoccore
 {
 
@@ -49,14 +51,14 @@ namespace cpdoccore
         class CBufferXml
         {
         public:
-            CBufferXml() : currbuf(0), bufcount(1)
+            CBufferXml() : currbuf(0), bufcount(5)
             {
-                /*for (int i = 0; i < bufcount; i++)
-                {*/
-                std::vector<A> mbuf;
-                buffer.push_back(mbuf);
-                buffer[0].reserve(1000);
-                /* }*/
+                for (int i = 0; i < bufcount; i++)
+                {
+                    std::vector<A> mbuf;
+                    buffer.push_back(mbuf);
+                    buffer[0].reserve(1000);
+                }
             }
             ~CBufferXml() { buffer.clear(); }
             size_t Get_currbuf() { return currbuf; }
@@ -378,19 +380,19 @@ namespace cpdoccore
                     {
                         switch (*str)
                         {
-                        case chars<T>::amp:
+                        case chars2<T>::amp:
                             wr_.puts(chars2<T>::amp_str()); break;
 
-                        case chars<T>::left_brocket:
+                        case chars2<T>::left_brocket:
                             wr_.puts(chars2<T>::left_brocket_str()); break;
 
-                        case chars<T>::right_brocket:
+                        case chars2<T>::right_brocket:
                             wr_.puts(chars2<T>::right_brocket_str()); break;
 
-                        case chars<T>::apos:
+                        case chars2<T>::apos:
                             wr_.puts(chars2<T>::apos_str()); break;
 
-                        case chars<T>::quote:
+                        case chars2<T>::quote:
                             wr_.puts(chars2<T>::quote_str()); break;
 
                         default:
@@ -418,18 +420,18 @@ namespace cpdoccore
     typedef xml::writer::writer2<wchar_t> xml_writer2;
     typedef xml::writer::element2<wchar_t> xml_element2;
 
-#define CP_XML_WRITER_2(BUFF) if (bool _b_ = false) {} else for (xml_writer2 _xml_wr_((BUFF));!_b_;_b_=true)
-#define CP_XML_NODE_2(NAME) if (bool _b_ = false) {} else for (xml_element2 _xml_node_(_xml_wr_, (NAME));!_b_;_b_=true)
-#define CP_XML_ATTR_2(NAME, VAL) _xml_node_.attr((NAME),(VAL))
-#define CP_XML_ATTR2_2(NAME, VAL) _xml_node_.attr((std::wstring(NAME).c_str()),(VAL))
-#define CP_XML_CONTENT_2(VAL) _xml_node_.contents((VAL))
-#define CP_XML_BUFFER_2() _xml_node_.buffer()
+#define CP_XML_WRITER_2(BUFF) if (bool _b_ = false) {} else for (xml_writer2 _xml_wr_2((BUFF));!_b_;_b_=true)
+#define CP_XML_NODE_2(NAME) if (bool _b_ = false) {} else for (xml_element2 _xml_node_2(_xml_wr_2, (NAME));!_b_;_b_=true)
+#define CP_XML_ATTR_2(NAME, VAL) _xml_node_2.attr((NAME),(VAL))
+#define CP_XML_ATTR2_2(NAME, VAL) _xml_node_2.attr((std::wstring(NAME).c_str()),(VAL))
+#define CP_XML_CONTENT_2(VAL) _xml_node_2.contents((VAL))
+#define CP_XML_BUFFER_2() _xml_node_2.buffer()
 
-#define CP_GET_XML_NODE_2() _xml_node_
+#define CP_GET_XML_NODE_2() _xml_node_2
 
-#define CP_ATTR_NODE_2 xml_element2 & _xml_node_
+#define CP_ATTR_NODE_2 xml_element2 & _xml_node_2
 
-#define CP_XML_ATTR_ENCODE_STRING_2(NAME, VAL) _xml_node_.attr((NAME), XmlUtils::EncodeXmlString(VAL))
+#define CP_XML_ATTR_ENCODE_STRING_2(NAME, VAL) _xml_node_2.attr((NAME), XmlUtils::EncodeXmlString(VAL))
 
 #define CP_XML_ATTR_OPT_2(NAME, VAL) if (VAL)CP_XML_ATTR_2(NAME, (*VAL))
 #define CP_XML_ATTR_OPT_ENCODE_STRING_2(NAME, STR) if (STR)CP_XML_ATTR_2(NAME, XmlUtils::EncodeXmlString(*STR))

@@ -63,7 +63,7 @@ namespace DocFileFormat
 		bool	_webHidden;
 		bool	_isRTL;
 	private:
-        void convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent );
+        void convertSprms( std::vector<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent );
 		std::list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );
 		bool applyToggleHierachy( const SinglePropertyModifier& sprm );
 		bool toogleValue( bool currentValue, unsigned char toggle );

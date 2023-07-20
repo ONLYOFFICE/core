@@ -131,8 +131,8 @@ namespace DocFileFormat
 		
 		bool bNumPr = false;
 
-		std::list<SinglePropertyModifier>::iterator end = papx->grpprl->end();
-		for (std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
+		std::vector<SinglePropertyModifier>::iterator end = papx->grpprl->end();
+		for (std::vector<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
 		{
 			int nProperty = 0; //for unknown test
 

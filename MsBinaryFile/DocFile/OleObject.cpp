@@ -404,7 +404,7 @@ std::wstring OleObject::getOleEntryName( const CharacterPropertyExceptions* chpx
 
 	if ( chpx != NULL )
 	{
-	  for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+	  for ( std::vector<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 	  {
 		if ( iter->OpCode == sprmCPicLocation || iter->OpCode == sprmOldCPicLocation)
 		{

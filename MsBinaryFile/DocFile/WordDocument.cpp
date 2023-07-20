@@ -529,12 +529,13 @@ namespace DocFileFormat
 		AllPapx			=	new std::map<int, ParagraphPropertyExceptions*>();
 		AllPapxVector	=	new std::vector<int>();
 
-		for (std::list<FormattedDiskPagePAPX*>::iterator iter = AllPapxFkps->begin(); iter != AllPapxFkps->end(); ++iter)
+		for (size_t i = 0; i < AllPapxFkps->size(); ++i)
 		{
-			for (unsigned int j = 0; j < (*iter)->grppapxSize; ++j)
+			FormattedDiskPagePAPX*& iter = AllPapxFkps->at(i);
+			for (unsigned int j = 0; j < (iter)->grppapxSize; ++j)
 			{
-				int nVal = (*iter)->rgfc[j];
-				AllPapx->insert( std::pair<int, ParagraphPropertyExceptions*>( nVal, (*iter)->grppapx[j] ) );
+				int nVal = (iter)->rgfc[j];
+				AllPapx->insert( std::pair<int, ParagraphPropertyExceptions*>( nVal, (iter)->grppapx[j] ) );
 				AllPapxVector->push_back(nVal);
 			}
 		}
@@ -809,9 +810,10 @@ namespace DocFileFormat
 		
 		if (AllPapxFkps)
 		{
-			for (std::list<FormattedDiskPagePAPX*>::iterator iter = AllPapxFkps->begin(); iter != AllPapxFkps->end(); ++iter)
+			for (size_t i = 0; i < AllPapxFkps->size(); ++i)
 			{
-				RELEASEOBJECT(*iter);
+				FormattedDiskPagePAPX*& iter = AllPapxFkps->at(i);
+				RELEASEOBJECT(iter);
 			}
 
 			RELEASEOBJECT(AllPapxFkps);
@@ -819,9 +821,10 @@ namespace DocFileFormat
 
 		if (AllChpxFkps)
 		{
-			for (std::list<FormattedDiskPageCHPX*>::iterator iter = AllChpxFkps->begin(); iter != AllChpxFkps->end(); ++iter)
+			for (size_t i = 0; i < AllChpxFkps->size(); ++i)
 			{
-				RELEASEOBJECT(*iter);
+				FormattedDiskPageCHPX*& iter = AllChpxFkps->at(i);
+				RELEASEOBJECT(iter);
 			}
 
 			RELEASEOBJECT(AllChpxFkps);
@@ -904,9 +907,9 @@ namespace DocFileFormat
 
 		int i = 0;
 
-		for (std::list<FormattedDiskPageCHPX*>::iterator iter = AllChpxFkps->begin(); iter != AllChpxFkps->end(); ++iter)
+		for (size_t it = 0; it < AllChpxFkps->size(); ++it)
 		{
-			FormattedDiskPageCHPX *fkp = (*iter);
+			FormattedDiskPageCHPX *fkp = AllChpxFkps->at(it);
 
 			//if the last fc of this fkp is smaller the fcMin
 			//this fkp is before the requested range
@@ -923,16 +926,16 @@ namespace DocFileFormat
 			}
 
 			//don't add the duplicated values of the FKP boundaries (Length-1)
-			int max = fkp->rgfcSize - 1;
+			int max_ = fkp->rgfcSize - 1;
 
 			//last fkp? 
 			//use full table
 			if ( i++ == ( AllChpxFkps->size() - 1 ) )
 			{
-				max = fkp->rgfcSize;
+				max_ = fkp->rgfcSize;
 			}
 
-			for (int j = 0; j < max; ++j)
+			for (int j = 0; j < max_; ++j)
 			{
 				if ( ( fkp->rgfc[j] < fcMin ) && ( fkp->rgfc[j + 1] > fcMin ) )
 				{
@@ -957,13 +960,13 @@ namespace DocFileFormat
 
 	// Returnes a list of all CharacterPropertyExceptions which correspond to text 
 
-	std::list<CharacterPropertyExceptions*>* WordDocument::GetCharacterPropertyExceptions(int fcMin, int fcMax)
+	std::vector<CharacterPropertyExceptions*>* WordDocument::GetCharacterPropertyExceptions(int fcMin, int fcMax)
 	{
-		std::list<CharacterPropertyExceptions*>* cpeList = new std::list<CharacterPropertyExceptions*>();
+		std::vector<CharacterPropertyExceptions*>* cpeList = new std::vector<CharacterPropertyExceptions*>();
 
-		for (std::list<FormattedDiskPageCHPX*>::iterator iter = AllChpxFkps->begin(); iter != AllChpxFkps->end(); ++iter)
+		for (size_t i = 0; i < AllChpxFkps->size(); ++i)
 		{
-			FormattedDiskPageCHPX *fkp = (*iter);      
+			FormattedDiskPageCHPX *fkp = AllChpxFkps->at(i);
 
 // get the CHPX
 			for (unsigned int j = 0; j < fkp->grpchpxSize; ++j)

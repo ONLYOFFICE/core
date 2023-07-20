@@ -121,7 +121,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-    void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
+    void CharacterPropertiesMapping::convertSprms( std::vector<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
 	{
         XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( L"w:rFonts" );
         XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( L"w:color" );
@@ -136,8 +136,8 @@ namespace DocFileFormat
 		}
 		if ((sprms) && (!sprms->empty()))
 		{
-			std::list<SinglePropertyModifier>::iterator end = sprms->end();
-			for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
+			std::vector<SinglePropertyModifier>::iterator end = sprms->end();
+			for (std::vector<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 			{
 				int nProperty = 0; //for unknown test
 
@@ -640,8 +640,8 @@ namespace DocFileFormat
 		std::list<CharacterPropertyExceptions*>::const_iterator end = _hierarchy.end();
 		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = _hierarchy.begin(); iter != end; ++iter)        
 		{
-			std::list<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
-			for (std::list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)	 
+			std::vector<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
+			for (std::vector<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)
 			{
 				if (grpprlIter->OpCode == sprm.OpCode)
 				{

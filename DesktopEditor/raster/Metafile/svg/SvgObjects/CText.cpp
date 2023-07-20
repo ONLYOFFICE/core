@@ -318,7 +318,7 @@ namespace SVG
 			return 0.;
 
 		std::wstring wsName = DefaultFontFamily;
-		double dSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+		double dSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel);
 
 		if (!m_oFont.GetFamily().Empty())
 		{
@@ -408,16 +408,17 @@ namespace SVG
 		m_oY = oPosition.dY;
 	}
 
-	std::vector<CTSpan*> CTSpan::Split() const
+	std::vector<CTSpan> CTSpan::Split() const
 	{
-		std::vector<CTSpan*> arGlyphs(m_wsText.length());
+		std::vector<CTSpan> arGlyphs;
+		arGlyphs.reserve(m_wsText.length());
 
 		Point oPosition{m_oX.ToDouble(NSCSS::Pixel), m_oY.ToDouble(NSCSS::Pixel)};
 
 		for (unsigned int unIndex = 0; unIndex < m_wsText.length(); ++unIndex)
 		{
-			arGlyphs[unIndex] = CTSpan::Create(std::wstring(1, m_wsText[unIndex]), oPosition, m_pParent, m_pFontManager, false);
-			oPosition.dX += arGlyphs[unIndex]->GetWidth();
+			arGlyphs.push_back(CTSpan(std::wstring(1, m_wsText[unIndex]), oPosition, m_pParent, m_pFontManager, false));
+			oPosition.dX += arGlyphs[unIndex].GetWidth();
 		}
 
 		return arGlyphs;
@@ -482,8 +483,8 @@ namespace SVG
 
 		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
 
-		for (CTSpan* pTSpan : Split())
-			DrawGlyph(pTSpan, oMovingPath, pRenderer, pFile, oMode);
+		for (CTSpan& oTSpan : Split())
+			DrawGlyph(&oTSpan, oMovingPath, pRenderer, pFile, oMode);
 
 		for (const CTSpan* pTSpan : m_arObjects)
 		{
@@ -492,8 +493,8 @@ namespace SVG
 				oMovingPath.ToStart();
 				oMovingPath.Move(pTSpan->m_oX.ToDouble(NSCSS::Pixel));
 			}
-			for (CTSpan* pGlyphs : pTSpan->Split())
-				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pFile, oMode);
+			for (CTSpan& oGlyphs : pTSpan->Split())
+				DrawGlyph(&oGlyphs, oMovingPath, pRenderer, pFile, oMode);
 		}
 
 		return true;
@@ -520,10 +521,7 @@ namespace SVG
 		double dWidthSpan = pTSpan->GetWidth();
 
 		if (!oMovingPath.Move(dWidthSpan / 2))
-		{
-			delete pTSpan;
 			return;
-		}
 
 		double dAngle = oMovingPath.GetAngle();
 		Point oPoint = oMovingPath.GetPosition() - Point{(dWidthSpan / 2.) * std::cos(dAngle / 180 * M_PI), (dWidthSpan / 2.) * std::sin(dAngle / 180 * M_PI)};
@@ -531,8 +529,6 @@ namespace SVG
 		pTSpan->SetPosition(oPoint);
 		pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
 		pTSpan->Draw(pRenderer, pFile, oMode);
-
-		delete pTSpan;
 
 		oMovingPath.Move(dWidthSpan / 2);
 	}

@@ -193,6 +193,80 @@ namespace SVG
 		return pCBezierElement;
 	}
 
+	std::vector<IPathElement *> CCBezierElement::CreateFromArc(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
+	{
+		if (arValues.size() < 7)
+			return std::vector<IPathElement *>();
+
+		std::vector<IPathElement *> arCurves;
+
+		Point oTranslatePoint{0., 0.};
+
+		if (bRelativeCoordinate && NULL != pPrevElement)
+			oTranslatePoint = (*pPrevElement)[-1];
+
+		Point oRadius{arValues[0], arValues[1]};
+		Point oSrartPoint{(*pPrevElement)[-1]};
+
+		Point oCenter{0, 0};
+		double dAngle = 0, dSweep = 0;
+
+		CArcElement::CalculateData(oSrartPoint, Point{arValues[5], arValues[6]} + oTranslatePoint, oRadius, oCenter, arValues[2], (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false, dAngle, dSweep);
+
+		double dStartAngle = dAngle;
+		double dEndAngle;
+
+		Point oEndPoint, oControl1, oControl2;
+
+		while (dStartAngle != (dAngle + dSweep))
+		{
+			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
+				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
+			else
+				dEndAngle = (int)(dStartAngle / 90.) * ((dSweep > 0.) ? 90. : -90.);
+
+			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
+				dEndAngle = dAngle + dSweep;
+
+			oEndPoint = CArcElement::GetPoint(oRadius, dEndAngle);
+			oEndPoint.Rotate(arValues[2]);
+			oEndPoint += oCenter;
+
+			double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180.;
+
+			if (std::abs(dSweepRad) > M_PI)
+			{
+				dSweepRad -= M_PI * 2.;
+				dSweepRad = fmod(dSweepRad, M_PI * 2.);
+			}
+
+			double dFactor = (4. / 3.) * std::tan(dSweepRad / 4.);
+
+			double distToCtrPointX = std::sqrt(oRadius.dX * oRadius.dX * (1 + dFactor * dFactor));
+			double distToCtrPointY = std::sqrt(oRadius.dY * oRadius.dY * (1 + dFactor * dFactor));
+
+			double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
+			double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
+
+			oControl1 = {std::cos(dAngle1) * distToCtrPointX, std::sin(dAngle1) * distToCtrPointY};
+			oControl2 = {std::cos(dAngle2) * distToCtrPointX, std::sin(dAngle2) * distToCtrPointY};
+
+			oControl1.Rotate(arValues[2]);
+			oControl2.Rotate(arValues[2]);
+
+			oControl1 += oCenter;
+			oControl2 += oCenter;
+
+			arCurves.push_back(new CCBezierElement(oControl1, oControl2, oEndPoint));
+
+			dStartAngle = dEndAngle;
+		}
+
+		arValues.erase(arValues.begin(), arValues.begin() + 7);
+
+		return arCurves;
+	}
+
 	void CCBezierElement::Draw(IRenderer *pRenderer) const
 	{
 		if (3 != m_arPoints.size())
@@ -319,6 +393,59 @@ namespace SVG
 	{
 		m_arPoints.push_back(oStart);
 		m_arPoints.push_back(oEnd);
+
+		double dAngle = 0, dSweep = 0;
+
+		CalculateData(m_arPoints[0], m_arPoints[1], m_oRadius, m_oCenter, m_dXAxisRotation, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
+
+		double dStartAngle = dAngle;
+		double dEndAngle;
+
+		Point oEndPoint, oControl1, oControl2;
+
+		while (dStartAngle != (dAngle + dSweep))
+		{
+			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
+				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
+			else
+				dEndAngle = (int)(dStartAngle / 90.) * ((dSweep > 0.) ? 90. : -90.);
+
+			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
+				dEndAngle = dAngle + dSweep;
+
+			oEndPoint = GetPoint(oRadius, dEndAngle);
+			oEndPoint.Rotate(m_dXAxisRotation);
+			oEndPoint += m_oCenter;
+
+			double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180.;
+
+			if (std::abs(dSweepRad) > M_PI)
+			{
+				dSweepRad -= M_PI * 2.;
+				dSweepRad = fmod(dSweepRad, M_PI * 2.);
+			}
+
+			double dFactor = (4. / 3.) * std::tan(dSweepRad / 4.);
+
+			double distToCtrPointX = std::sqrt(oRadius.dX * oRadius.dX * (1 + dFactor * dFactor));
+			double distToCtrPointY = std::sqrt(oRadius.dY * oRadius.dY * (1 + dFactor * dFactor));
+
+			double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
+			double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
+
+			oControl1 = {std::cos(dAngle1) * distToCtrPointX, std::sin(dAngle1) * distToCtrPointY};
+			oControl2 = {std::cos(dAngle2) * distToCtrPointX, std::sin(dAngle2) * distToCtrPointY};
+
+			oControl1.Rotate(m_dXAxisRotation);
+			oControl2.Rotate(m_dXAxisRotation);
+
+			oControl1 += m_oCenter;
+			oControl2 += m_oCenter;
+
+			m_arBezierCurves.push_back(CCBezierElement(oControl1, oControl2, oEndPoint));
+
+			dStartAngle = dEndAngle;
+		}
 	}
 
 	EPathElement CArcElement::GetType() const
@@ -347,65 +474,13 @@ namespace SVG
 
 	void CArcElement::Draw(IRenderer *pRenderer) const
 	{
-		if (m_arPoints.size() != 2)
+		if (m_arPoints.size() != 2 || m_arBezierCurves.empty())
 			return;
-
-		Point oRadius{m_oRadius};
-		Point oCenter{0, 0};
-		double dAngle = 0, dSweep = 0;
-
-		CalculateData(m_arPoints[0], m_arPoints[1], oRadius, oCenter, m_dXAxisRotation, m_bLargeArcFlag, m_bSweepFlag, dAngle, dSweep);
-
-		double dStartAngle = dAngle;
-		double dEndAngle;
-
-		Point oEndPoint, oControl1, oControl2;
 
 		pRenderer->PathCommandLineTo(m_arPoints[0].dX, m_arPoints[0].dY);
 
-		while (dStartAngle != (dAngle + dSweep))
-		{
-			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
-				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
-			else
-				dEndAngle = (int)(dStartAngle / 90.) * 90.;
-
-			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
-				dEndAngle = dAngle + dSweep;
-
-			oEndPoint = GetPoint(oRadius, dEndAngle);
-			oEndPoint.Rotate(m_dXAxisRotation);
-			oEndPoint += oCenter;
-
-			double dSweepRad = (dEndAngle - dStartAngle) * M_PI / 180.;
-
-			if (std::abs(dSweepRad) > M_PI)
-			{
-				dSweepRad -= M_PI * 2.;
-				dSweepRad = fmod(dSweepRad, M_PI * 2.);
-			}
-
-			double dFactor = (4. / 3.) * std::tan(dSweepRad / 4.);
-
-			double distToCtrPointX = std::sqrt(oRadius.dX * oRadius.dX * (1 + dFactor * dFactor));
-			double distToCtrPointY = std::sqrt(oRadius.dY * oRadius.dY * (1 + dFactor * dFactor));
-
-			double dAngle1 = dStartAngle * M_PI / 180. + std::atan(dFactor);
-			double dAngle2 = dEndAngle   * M_PI / 180. - std::atan(dFactor);
-
-			oControl1 = {std::cos(dAngle1) * distToCtrPointX, std::sin(dAngle1) * distToCtrPointY};
-			oControl2 = {std::cos(dAngle2) * distToCtrPointX, std::sin(dAngle2) * distToCtrPointY};
-
-			oControl1.Rotate(m_dXAxisRotation);
-			oControl2.Rotate(m_dXAxisRotation);
-
-			oControl1 += oCenter;
-			oControl2 += oCenter;
-
-			pRenderer->PathCommandCurveTo(oControl1.dX, oControl1.dY, oControl2.dX, oControl2.dY, oEndPoint.dX, oEndPoint.dY);
-
-			dStartAngle = dEndAngle;
-		}
+		for (const CCBezierElement& oCurveBezier : m_arBezierCurves)
+			oCurveBezier.Draw(pRenderer);
 	}
 
 	Point CArcElement::GetPoint(const Point &oRadius, double dAngle)
@@ -474,8 +549,6 @@ namespace SVG
     #define EPSILON 0.05
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
-    #define ARCSTEP 0.5
-    #define MINARCSTEP 0.01
 
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CRenderedObject* pParent, bool bChechCommands)
 		: CRenderedObject(oNode, pParent), m_bEvenOddRule(false)
@@ -735,7 +808,19 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					AddElements<CArcElement>(arValues, iswlower(*oFirstPos));
+					std::vector<IPathElement*> arCurves;
+
+					while(true)
+					{
+						arCurves = CCBezierElement::CreateFromArc(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+
+						if (arCurves.empty())
+							break;
+
+						for (IPathElement* pCurve : arCurves)
+							AddElement(pCurve);
+					}
+
 					break;
 				}
 			}
@@ -844,64 +929,7 @@ namespace SVG
 
 			return NextMove(dX, (*m_pCurrentElement)[-1]);
 		}
-		case EPathElement::Arc:
-		{
-			CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
-			Point oRadius{pArcElement->m_oRadius};
-
-			if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
-			{
-				Point oCenter{0, 0};
-
-				double dAngle, dSweep;
-
-				pArcElement->CalculateData(pArcElement->m_arPoints[0], pArcElement->m_arPoints[1], oRadius, oCenter, 0, pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, dAngle, dSweep);
-
-				m_oLastPoint  = oCenter;
-				m_oPosition   = oCenter + pArcElement->GetPoint(oRadius, dAngle);
-				m_dStartAngle = dAngle;
-				m_dEndAngle   = dAngle + dSweep;
-				m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
-			}
-
-			double dPrevValue = dX;
-
-			while(std::abs(m_dEndAngle - m_dStartAngle) > ARCSTEP)
-			{
-				if (MINARCSTEP > std::abs(m_dArcStep))
-				{
-					m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
-					return true;
-				}
-
-				if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
-					m_dArcStep /= 2.;
-
-				if (dX > 0.)
-					m_dStartAngle += m_dArcStep;
-				else if (dX < 0)
-					m_dStartAngle -= m_dArcStep;
-				else
-					return true;
-
-				dPrevValue = dX;
-
-				UpdatePosition(m_oLastPoint + CArcElement::GetPoint(oRadius, m_dStartAngle), dX);
-
-				double dMainAngle = std::fmod(std::atan2(m_oLastPoint.dY - m_oPosition.dY, m_oLastPoint.dX - m_oPosition.dX) * 180. / M_PI, 360);
-
-				int nFirstQuarter  = (int)(dMainAngle / 90) + ((dMainAngle > 0) ? 1 : -1);
-				int nSecondQuarter = (int)(m_dAngle   / 90) + ((m_dAngle > 0)   ? 1 : -1) - 1;
-
-				if ((nFirstQuarter * nSecondQuarter < 0 && std::abs(nSecondQuarter - nFirstQuarter) == 3) ||
-					(nFirstQuarter * nSecondQuarter > 0 && std::abs(nSecondQuarter - nFirstQuarter) == 2))
-					m_dAngle += 180;
-			}
-
-			return NextMove(dX, (*m_pCurrentElement)[-1]);
-		}
 		default: return false;
-
 		}
 
 		return false;
@@ -915,9 +943,8 @@ namespace SVG
 		m_unIndexElement = 0;
 		m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
 		m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
-		m_dAngle = m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;
+		m_dAngle = m_dCurveIndex = 0.;
 		m_dCurveStep = CURVESTEP;
-		m_dArcStep = ARCSTEP;
 	}
 
 	Point CMovingPath::GetPosition() const
@@ -949,7 +976,7 @@ namespace SVG
 			return true;
 		}
 
-		m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;
+		m_dCurveIndex = 0.;
 		m_oPosition = m_oLastPoint = oPoint;
 		m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
 		return Move(dX);

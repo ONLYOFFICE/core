@@ -39,7 +39,7 @@ namespace SVG
 		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
 		void SetPosition(const Point& oPosition);
 
-		std::vector<CTSpan*> Split() const;
+		std::vector<CTSpan> Split() const;
 
 		NSFonts::IFontManager* m_pFontManager;
 

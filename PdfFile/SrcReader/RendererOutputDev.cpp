@@ -734,6 +734,8 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateMiterLimit(GfxState *pGState)
 	{
+		double dMiterLimit = pGState->getMiterLimit();
+		m_pRenderer->put_PenMiterLimit(dMiterLimit);
 	}
 	void RendererOutputDev::updateLineWidth(GfxState *pGState)
 	{

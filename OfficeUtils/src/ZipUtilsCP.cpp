@@ -775,12 +775,12 @@ namespace ZLibZipUtils
 		if(NSDirectory::Exists(unzipDir))
 			err = 0;
 
+		BUFFER_IO* buf = new BUFFER_IO;
 		if ( ( data != NULL ) && ( len != 0 ) )
 		{
 			int old = zlip_get_addition_flag();
 			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
 
-			BUFFER_IO* buf = new BUFFER_IO;
 			buf->buffer = data;
 			buf->nSize  = len;
 
@@ -814,7 +814,7 @@ namespace ZLibZipUtils
 				err = unzClose( uf );
 			}
 		}
-
+		RELEASEOBJECT(buf);
 		return err;
 	}
 

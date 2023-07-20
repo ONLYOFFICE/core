@@ -1191,7 +1191,7 @@ BYTE* CPdfReader::GetWidgets()
 
     // Родительские Fields
     int nParentsPos = oRes.GetSize();
-    int nParents = 0;
+    size_t nParents = 0;
     oRes.AddInt(nParents);
     std::vector<int> arrParents;
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
@@ -1568,7 +1568,7 @@ oObj.free();\
                 }
                 else
                 {
-                    unsigned int nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
+                    BYTE nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
                     if (oMK.dictLookup("CA", &oObj)->isString())
                     {
                         std::string sCA(oObj.getString()->getCString());
@@ -1587,7 +1587,7 @@ oObj.free();\
                             nStyle = 4;
                     }
                     oObj.free();
-                    oRes.AddInt(nStyle);
+                    oRes.WriteBYTE(nStyle);
                 }
 
                 // 14 - Положение заголовка - TP

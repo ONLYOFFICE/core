@@ -552,67 +552,70 @@ int main(int argc, char* argv[])
 		int i = 4;
 		nLength -= 4;
 
-		DWORD nCOLength = READ_INT(pWidgets + i);
-		i += 4;
-		if (nCOLength > 0)
-			std::cout << "CO ";
-		for (int j = 0; j < nCOLength; ++j)
+		if (i < nLength)
 		{
-			DWORD nPathLength = READ_INT(pWidgets + i);
+			DWORD nCOLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			if (nCOLength > 0)
+				std::cout << "CO ";
+			for (int j = 0; j < nCOLength; ++j)
+			{
+				DWORD nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nCOLength > 0)
+				std::cout << std::endl;
+
+			DWORD nParentsLength = READ_INT(pWidgets + i);
+			i += 4;
+			if (nParentsLength > 0)
+				std::cout << "Parents" << std::endl;
+			for (int j = 0; j < nParentsLength; ++j)
+			{
+				DWORD nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "# " << nPathLength << ", ";
+
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Flags " << nPathLength << ", ";
+				int nFlags = nPathLength;
+
+				if (nFlags & (1 << 0))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "T " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 1))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "V " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 2))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 3))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Parent " << nPathLength;
+				}
+
+				std::cout << std::endl;
+			}
+			if (nParentsLength > 0)
+				std::cout << std::endl;
 		}
-		if (nCOLength > 0)
-			std::cout << std::endl;
-
-		DWORD nParentsLength = READ_INT(pWidgets + i);
-		i += 4;
-		if (nParentsLength > 0)
-			std::cout << "Parents" << std::endl;
-		for (int j = 0; j < nParentsLength; ++j)
-		{
-			DWORD nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "# " << nPathLength << ", ";
-
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "Flags " << nPathLength << ", ";
-			int nFlags = nPathLength;
-
-			if (nFlags & (1 << 0))
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "T " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-				i += nPathLength;
-			}
-			if (nFlags & (1 << 1))
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "V " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-				i += nPathLength;
-			}
-			if (nFlags & (1 << 2))
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-				i += nPathLength;
-			}
-			if (nFlags & (1 << 3))
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "Parent " << nPathLength;
-			}
-
-			std::cout << std::endl;
-		}
-		if (nParentsLength > 0)
-			std::cout << std::endl;
 
 		while (i < nLength)
 		{

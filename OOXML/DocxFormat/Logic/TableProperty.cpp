@@ -786,7 +786,8 @@ namespace OOX
 			}
 			if (m_oStart.IsInit())
 			{
-				sResult += L"<w:start ";
+				//sResult += L"<w:start ";
+				sResult += L"<w:left ";  //Transitional Migration Features
 				sResult += m_oStart->ToString();
 				sResult += L"/>";
 			}
@@ -798,7 +799,8 @@ namespace OOX
 			}
 			if ( m_oEnd.IsInit() )
 			{
-				sResult += L"<w:end ";
+				//sResult += L"<w:end ";
+				sResult += L"<w:right ";  //Transitional Migration Features
 				sResult += m_oEnd->ToString();
 				sResult += L"/>";
 			}

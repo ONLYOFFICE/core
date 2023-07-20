@@ -723,44 +723,14 @@ namespace ZLibZipUtils
 	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		unzFile uf = NULL;
-
-		int err = -1;
-
-		if(NSDirectory::Exists(unzipDir))
-			err = 0;
-
-		if ( ( zipFile != NULL ) && ( unzipDir != NULL ) )
+		if ( ( zipFile != NULL ) )
 		{
 			int old = zlip_get_addition_flag();
 			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
 			uf = unzOpenHelp (zipFile);
 			zlip_set_addition_flag(old);
 		}
-
-		if ( uf != NULL )
-		{
-			if ( clearOutputDirectory )
-			{
-				ClearDirectory( unzipDir );
-			}
-
-			if ( err == 0 )
-			{
-				if(NULL != password)
-				{
-					std::string passwordA = codepage_issue_fixToOEM(password);
-					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, passwordA.c_str(), progress );
-				}
-				else
-					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress );
-			}
-
-			if ( err == UNZ_OK )
-			{
-				err = unzClose( uf );
-			}
-		}
-
+		int err = UnzipToDir(uf, unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
 		return err;
 	}
 
@@ -769,12 +739,6 @@ namespace ZLibZipUtils
 	int UnzipToDir(BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
 		unzFile uf = NULL;
-
-		int err = -1;
-
-		if(NSDirectory::Exists(unzipDir))
-			err = 0;
-
 		BUFFER_IO* buf = new BUFFER_IO;
 		if ( ( data != NULL ) && ( len != 0 ) )
 		{
@@ -790,8 +754,18 @@ namespace ZLibZipUtils
 
 			zlip_set_addition_flag(old);
 		}
+		int err = UnzipToDir(uf, unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
+		RELEASEOBJECT(buf);
+		return err;
+	}
 
-		if ( uf != NULL )
+	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
+	{
+		int err = -1;
+		if(NSDirectory::Exists(unzipDir))
+			err = 0;
+
+		if ( uf != NULL && unzipDir != NULL )
 		{
 			if ( clearOutputDirectory )
 			{
@@ -814,7 +788,6 @@ namespace ZLibZipUtils
 				err = unzClose( uf );
 			}
 		}
-		RELEASEOBJECT(buf);
 		return err;
 	}
 

@@ -63,6 +63,7 @@ namespace ZLibZipUtils
 	int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false);
 	int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false );
 	bool ClearDirectory( const WCHAR* dir, bool delDir = false );
+	int UnzipToDir( unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory );
 	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
 	int UnzipToDir( BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
 	int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize );

@@ -181,9 +181,8 @@ TEST_F(COfficeUtilsTest, general_win_mem)
 	NSFile::CFileBinary::ReadAllBytes(zip_path, &bytes, len);
 
 	HRESULT error_code = utils.ExtractToDirectory(bytes, len, unzip_folder, NULL, false);
-	ASSERT_EQ(error_code, S_OK);
-
 	delete[] bytes;
+	ASSERT_EQ(error_code, S_OK);
 
 	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
 	std::vector<std::wstring> actual;
@@ -277,9 +276,8 @@ TEST_F(COfficeUtilsTest, general_linux_mem)
 	NSFile::CFileBinary::ReadAllBytes(zip_path, &bytes, len);
 
 	HRESULT error_code = utils.ExtractToDirectory(bytes, len, unzip_folder, NULL, false);
-	ASSERT_EQ(error_code, S_OK);
-
 	delete[] bytes;
+	ASSERT_EQ(error_code, S_OK);
 
 	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
 	std::vector<std::wstring> actual;
@@ -427,6 +425,42 @@ TEST_F(COfficeUtilsTest, docx_like_linux)
 		actual.push_back(subpath);
 	}
 	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_docx_like));
+}
+
+TEST_F(COfficeUtilsTest, other_win)
+{
+	std::wstring zip_filename = L"general_win";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+
+	// IsArchive(...)
+
+	HRESULT error_code = utils.IsArchive(zip_path);
+	EXPECT_EQ(error_code, S_OK);
+
+	size_t len = 100;
+	BYTE* data = new BYTE[len];
+	error_code = utils.IsArchive(data, len);
+	delete [] data;
+	EXPECT_EQ(error_code, S_FALSE);
+
+	// IsFileExistInArchive(...)
+
+	error_code = utils.IsFileExistInArchive(zip_path, L"2.txt");
+	EXPECT_EQ(error_code, S_OK);
+
+	error_code = utils.IsFileExistInArchive(zip_path, L"4.txt");
+	EXPECT_EQ(error_code, S_FALSE);
+
+	// LoadFileFromArchive(...)
+
+	data = new BYTE[100];
+	ULONG nFileSize;
+	error_code = utils.LoadFileFromArchive(zip_path, L"MF/file.txt", &data, nFileSize);
+	std::wstring wstr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(data, nFileSize);
+	delete[] data;
+
+	ASSERT_EQ(error_code, S_OK);
+	EXPECT_EQ(wstr, L"123 321");
 }
 
 

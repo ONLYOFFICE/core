@@ -43,8 +43,86 @@
 #define WRITEBUFFERSIZE 8192
 #define READBUFFERSIZE 8192
 
+unzFile unzOpenHelp(const wchar_t* filename);
+
 namespace ZLibZipUtils
 {
+	// internal class for C unzFile struct
+	class CunzFileWrapped
+	{
+	public:
+		CunzFileWrapped() = default;
+		~CunzFileWrapped();
+
+		// NOTE: calls Close() first
+		void Open(const wchar_t* filename);
+
+		// NOTE: calls Close() first
+		void Open(BYTE* data, size_t len);
+
+		int Close();
+
+		// NOTE: unzfile will be released after Close() or ~CunzFileWrapped()!
+		// return value will be NULL, if Open(...) fails
+		unzFile Get();
+
+	private:
+		unzFile m_unzFile {NULL};
+		BUFFER_IO* m_buffer {NULL};
+	};
+
+	CunzFileWrapped::~CunzFileWrapped()
+	{
+		Close();
+	}
+
+	void CunzFileWrapped::Open(const wchar_t* filename)
+	{
+		Close();
+		if(filename != NULL)
+		{
+			int old = zlip_get_addition_flag();
+			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
+			m_unzFile = unzOpenHelp(filename);
+			zlip_set_addition_flag(old);
+		}
+	}
+
+	void CunzFileWrapped::Open(BYTE* data, size_t len)
+	{
+		Close();
+		m_buffer = new BUFFER_IO;
+		if ((data != NULL) && (len != 0))
+		{
+			int old = zlip_get_addition_flag();
+			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
+
+			m_buffer->buffer = data;
+			m_buffer->nSize  = len;
+
+			zlib_filefunc_def ffunc;
+			fill_buffer_filefunc(&ffunc, m_buffer);
+			m_unzFile = unzOpen2(NULL, &ffunc);
+
+			zlip_set_addition_flag(old);
+		}
+	}
+	int CunzFileWrapped::Close()
+	{
+		int err = 0;
+		if(m_unzFile)
+			err = unzClose(m_unzFile);
+		m_unzFile = NULL;
+
+		RELEASEOBJECT(m_buffer)
+		return err;
+	}
+
+	unzFile CunzFileWrapped::Get()
+	{
+		return m_unzFile;
+	}
+
 #ifndef _IOS
 	zipFile zipOpenHelp(const wchar_t* filename)
 	{
@@ -722,15 +800,13 @@ namespace ZLibZipUtils
 
 	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
-		unzFile uf = NULL;
-		if ( ( zipFile != NULL ) )
-		{
-			int old = zlip_get_addition_flag();
-			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
-			uf = unzOpenHelp (zipFile);
-			zlip_set_addition_flag(old);
-		}
-		int err = UnzipToDir(uf, unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
+		CunzFileWrapped ufw;
+		ufw.Open(zipFile);
+		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
+
+		// call Close() instead ~...() because of error code
+		if(err == UNZ_OK)
+			err = ufw.Close();
 		return err;
 	}
 
@@ -738,26 +814,17 @@ namespace ZLibZipUtils
 
 	int UnzipToDir(BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
-		unzFile uf = NULL;
-		BUFFER_IO* buf = new BUFFER_IO;
-		if ( ( data != NULL ) && ( len != 0 ) )
-		{
-			int old = zlip_get_addition_flag();
-			zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
+		CunzFileWrapped ufw;
+		ufw.Open(data, len);
+		int err = UnzipToDir(ufw.Get(), unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
 
-			buf->buffer = data;
-			buf->nSize  = len;
-
-			zlib_filefunc_def ffunc;
-			fill_buffer_filefunc(&ffunc, buf);
-			uf = unzOpen2(NULL, &ffunc);
-
-			zlip_set_addition_flag(old);
-		}
-		int err = UnzipToDir(uf, unzipDir, progress, password, opt_extract_without_path, clearOutputDirectory);
-		RELEASEOBJECT(buf);
+		// call Close() instead ~...() because of error code
+		if(err == UNZ_OK)
+			err = ufw.Close();
 		return err;
 	}
+
+	/*========================================================================================================*/
 
 	int UnzipToDir(unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
 	{
@@ -781,11 +848,6 @@ namespace ZLibZipUtils
 				}
 				else
 					err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress );
-			}
-
-			if ( err == UNZ_OK )
-			{
-				err = unzClose( uf );
 			}
 		}
 		return err;
@@ -817,56 +879,62 @@ namespace ZLibZipUtils
 
 	bool IsArchive(const WCHAR* filename)
 	{
-		unzFile uf = NULL;
-		bool isZIP = false;
+		CunzFileWrapped ufw;
+		ufw.Open(filename);
+		return ufw.Get() != NULL;
+	}
 
-		if (( filename != NULL ))
-			uf = unzOpenHelp( filename );
+	/*========================================================================================================*/
 
-		if ( uf != NULL )
-		{
-			isZIP = true;
-			unzClose( uf );
-		}
-
-		return isZIP;
+	bool IsArchive(BYTE* data, size_t len)
+	{
+		CunzFileWrapped ufw;
+		ufw.Open(data, len);
+		return ufw.Get() != NULL;
 	}
 
 	/*========================================================================================================*/
 
 	bool IsFileExistInArchive(const WCHAR* zipFile, const WCHAR* filePathInZip)
 	{
-		unzFile uf = NULL;
-		bool isIn = false;
+		CunzFileWrapped ufw;
+		ufw.Open(zipFile);
+		unzFile uf = ufw.Get();
 
-		if ( ( zipFile != NULL ) && ( filePathInZip != NULL ) )
-			uf = unzOpenHelp( zipFile );
-		if ( uf != NULL )
-		{
-			isIn = is_file_in_archive( uf, filePathInZip );
-			unzClose( uf );
-		}
+		return filePathInZip != NULL && uf != NULL && is_file_in_archive(uf, filePathInZip);
+	}
 
-		return isIn;
+	/*========================================================================================================*/
+
+	bool IsFileExistInArchive(BYTE* data, size_t len, const WCHAR* filePathInZip)
+	{
+		CunzFileWrapped ufw;
+		ufw.Open(data, len);
+		unzFile uf = ufw.Get();
+
+		return filePathInZip != NULL && uf != NULL && is_file_in_archive(uf, filePathInZip);
 	}
 
 	/*========================================================================================================*/
 
 	bool LoadFileFromArchive(const WCHAR* zipFile, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize)
 	{
-		unzFile uf = NULL;
-		bool isIn = false;
+		CunzFileWrapped ufw;
+		ufw.Open(zipFile);
+		unzFile uf = ufw.Get();
 
-		if ( ( zipFile != NULL ) && ( filePathInZip != NULL ) )
-			uf = unzOpenHelp( zipFile );
+		return filePathInZip != NULL && uf != NULL && get_file_in_archive( uf, filePathInZip, fileInBytes, nFileSize);
+	}
 
-		if ( uf != NULL )
-		{
-			isIn = get_file_in_archive( uf, filePathInZip, fileInBytes, nFileSize);
-			unzClose( uf );
-		}
+	/*========================================================================================================*/
 
-		return isIn;
+	bool LoadFileFromArchive(BYTE* data, size_t len, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize)
+	{
+		CunzFileWrapped ufw;
+		ufw.Open(data, len);
+		unzFile uf = ufw.Get();
+
+		return filePathInZip != NULL && uf != NULL && get_file_in_archive( uf, filePathInZip, fileInBytes, nFileSize);
 	}
 
 	/*========================================================================================================*/

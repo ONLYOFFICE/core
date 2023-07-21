@@ -64,7 +64,6 @@ HRESULT COfficeUtils::ExtractToDirectory(BYTE* data, size_t len, const std::wstr
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 	std::wstring unzipDir = CorrectPathW(_unzipDir);
 #else
-	std::wstring zipFile = _zipFile;
 	std::wstring unzipDir = _unzipDir;
 #endif
 
@@ -157,6 +156,18 @@ HRESULT COfficeUtils::IsArchive(const std::wstring& _filename)
 	}
 }
 
+HRESULT COfficeUtils::IsArchive(BYTE* data, size_t len)
+{
+	if( ZLibZipUtils::IsArchive(data, len) )
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+}
+
 HRESULT COfficeUtils::IsFileExistInArchive(const std::wstring& _zipFile, const std::wstring& filePath)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -175,6 +186,18 @@ HRESULT COfficeUtils::IsFileExistInArchive(const std::wstring& _zipFile, const s
 	}
 }
 
+HRESULT COfficeUtils::IsFileExistInArchive(BYTE* data, size_t len, const std::wstring& filePath)
+{
+	if( ZLibZipUtils::IsFileExistInArchive( data, len, filePath.c_str()) )
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+}
+
 HRESULT COfficeUtils::LoadFileFromArchive(const std::wstring& _zipFile, const std::wstring& filePath, BYTE** fileInBytes, ULONG& nFileSize)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -184,6 +207,18 @@ HRESULT COfficeUtils::LoadFileFromArchive(const std::wstring& _zipFile, const st
 #endif
 
 	if( ZLibZipUtils::LoadFileFromArchive( zipFile.c_str(), filePath.c_str(), fileInBytes, nFileSize))
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+}
+
+HRESULT COfficeUtils::LoadFileFromArchive(BYTE* data, size_t len, const std::wstring& filePath, BYTE** fileInBytes, ULONG& nFileSize)
+{
+	if( ZLibZipUtils::LoadFileFromArchive( data, len, filePath.c_str(), fileInBytes, nFileSize))
 	{
 		return S_OK;
 	}

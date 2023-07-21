@@ -19,8 +19,6 @@ namespace SVG
 	{
 		Move,
 		Line,
-		VLine,
-		HLine,
 		CBezier,
 		SBezier,
 		QBezier,
@@ -70,79 +68,26 @@ namespace SVG
 		virtual ~CLineElement();
 		EPathElement GetType() const override;
 		static CLineElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static CLineElement* CreateFromVArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static CLineElement* CreateFromHArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
-	};
-
-	class CVLineElement : public CLineElement
-	{
-	public:
-		CVLineElement(const Point& oPoint);
-		EPathElement GetType() const override;
-		static CVLineElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-	};
-
-	class CHLineElement : public CLineElement
-	{
-	public:
-		CHLineElement(const Point& oPoint);
-		EPathElement GetType() const override;
-		static CHLineElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 	};
 
 	class CCBezierElement : public IPathElement
 	{
 	public:
-		CCBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE);
-		EPathElement GetType() const override;
-		static CCBezierElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-		static std::vector<IPathElement*> CreateFromArc(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-		void Draw(IRenderer* pRenderer) const override;
-	};
-
-	class CSBezierElement : public CCBezierElement
-	{
-	public:
-		CSBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE);
-		EPathElement GetType() const override;
-		static CSBezierElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-	};
-
-	class CQBezierElement : public CCBezierElement
-	{
-	public:
-		CQBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE);
-		EPathElement GetType() const override;
-		static CQBezierElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-	};
-
-	class CTBezierElement : public CCBezierElement
-	{
-	public:
-		CTBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE);
+		CCBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE, EPathElement enType = CBezier);
 		EPathElement GetType() const override;
 		static IPathElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
-	};
-
-	class CArcElement : public IPathElement
-	{
-	public:
-		CArcElement(const Point& oRadius, double dXRotation, bool LargeArcFlag, bool bSweepFlag, const Point& oStart, const Point& oEnd);
-		EPathElement GetType() const override;
-		static CArcElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static IPathElement* CreateFromSArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static IPathElement* CreateFromQArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static IPathElement* CreateFromTArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
+		static std::vector<IPathElement*> CreateFromArc(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
-
-		static void CalculateData(const Point& oFirst, const Point& oSecond, Point& oRadius, Point& oCenter, double dAngle, bool bLargeArc, bool bSweep, double& dStartAngle, double& dSweep);
-		static Point GetPoint(const Point& oRadius, double dAngle);
 	private:
-		friend class CMovingPath;
+		static void  CalculateArcData(const Point& oFirst, const Point& oSecond, Point& oRadius, Point& oCenter, double dAngle, bool bLargeArc, bool bSweep, double& dStartAngle, double& dSweep);
 
-		Point  m_oRadius;
-		double m_dXAxisRotation;
-		bool   m_bLargeArcFlag;
-		bool   m_bSweepFlag;
-
-		Point  m_oCenter;
-		std::vector<CCBezierElement> m_arBezierCurves;
+		EPathElement m_enType;
 	};
 
 	class CCloseElement : public IPathElement
@@ -174,8 +119,6 @@ namespace SVG
 
 		void ReadFromString(const std::wstring& wsValue);
 		bool AddElement(IPathElement* pElement);
-		template <typename TypeElement>
-		void AddElements(std::vector<double>& arValues, bool bRelativeCoordinate);
 
 		friend class CLine;
 		friend class CPolygon;

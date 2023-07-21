@@ -348,6 +348,7 @@ namespace PPTX
 						pReader->Skip(6); // len + start attributes + type
 
 						std::wstring strImagePath = pReader->GetString2(true);
+						bool bIsTheme = false;
 
 						if (0 != strImagePath.find(_T("http:")) &&
 							0 != strImagePath.find(_T("https:")) &&
@@ -359,6 +360,7 @@ namespace PPTX
 							if (0 == strImagePath.find(_T("theme")))
 							{
 								pathNormalizer = pReader->m_strFolderExternalThemes;
+								bIsTheme = true;
 							}
 							else
 							{
@@ -371,7 +373,7 @@ namespace PPTX
 							pathNormalizer = strImagePath;
 							strImagePath = pathNormalizer.GetPath();
 
-							if (std::wstring::npos != strImagePath.find(strPath))
+							if (!bIsTheme && std::wstring::npos != strImagePath.find(strPath))
 							{
 								CImageFileFormatChecker checker;
 								if (false == checker.isImageFile(strImagePath))

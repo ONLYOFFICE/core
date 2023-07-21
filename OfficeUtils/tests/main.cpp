@@ -461,6 +461,19 @@ TEST_F(COfficeUtilsTest, other_win)
 
 	ASSERT_EQ(error_code, S_OK);
 	EXPECT_EQ(wstr, L"123 321");
+
+	DWORD bytes_count = 0;
+	BYTE* bytes = new BYTE[MAX_SIZE];
+	NSFile::CFileBinary::ReadAllBytes(zip_path, &bytes, bytes_count);
+
+	data = new BYTE[100];
+	error_code = utils.LoadFileFromArchive(zip_path, L"MF/file.txt", &data, nFileSize);
+	wstr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(data, nFileSize);
+	delete[] data;
+	delete[] bytes;
+
+	ASSERT_EQ(error_code, S_OK);
+	EXPECT_EQ(wstr, L"123 321");
 }
 
 

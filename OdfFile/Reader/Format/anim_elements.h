@@ -36,6 +36,7 @@
 
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/smil_transitiontype.h"
+#include "../../DataTypes/smil_attributename.h"
 #include "../../DataTypes/presetclass.h"
 #include "../../DataTypes/presetid.h"
 
@@ -179,10 +180,10 @@ class anim_set_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)		smil_fill_;
-	_CP_OPT(std::wstring)		smil_target_element_;
-	_CP_OPT(std::wstring)		smil_attribute_name_;
-	_CP_OPT(std::wstring)		smil_to_;
+	_CP_OPT(std::wstring)						smil_fill_;
+	_CP_OPT(std::wstring)						smil_target_element_;
+	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
+	_CP_OPT(std::wstring)						smil_to_;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class anim_set : public office_element_impl<anim_set>
@@ -242,13 +243,13 @@ class anim_animate_color_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)				smil_fill_;
-	_CP_OPT(std::wstring)				smil_target_element_;
-	_CP_OPT(std::wstring)				smil_attribute_name_;
-	_CP_OPT(std::wstring)				smil_to_;
-	_CP_OPT(std::wstring)				presentation_master_element_;
-	_CP_OPT(std::wstring)				anim_color_interpolation_;
-	_CP_OPT(std::wstring)				anim_color_interpolation_direction;
+	_CP_OPT(std::wstring)						smil_fill_;
+	_CP_OPT(std::wstring)						smil_target_element_;
+	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
+	_CP_OPT(std::wstring)						smil_to_;
+	_CP_OPT(std::wstring)						presentation_master_element_;
+	_CP_OPT(std::wstring)						anim_color_interpolation_;
+	_CP_OPT(std::wstring)						anim_color_interpolation_direction;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class anim_animate_color : public office_element_impl<anim_animate_color>
@@ -277,12 +278,12 @@ class anim_animate_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(odf_types::clockvalue)		smil_dur_;
-	_CP_OPT(std::wstring)				smil_target_element_;
-	_CP_OPT(std::wstring)				smil_attribute_name_;
-	_CP_OPT(std::wstring)				smil_values_;
-	_CP_OPT(std::wstring)				smil_key_times_;
-	_CP_OPT(std::wstring)				smil_calc_mode_;
+	_CP_OPT(odf_types::clockvalue)				smil_dur_;
+	_CP_OPT(std::wstring)						smil_target_element_;
+	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
+	_CP_OPT(std::wstring)						smil_values_;
+	_CP_OPT(std::wstring)						smil_key_times_;
+	_CP_OPT(std::wstring)						smil_calc_mode_;
 };
 class anim_animate : public office_element_impl<anim_animate>
 {

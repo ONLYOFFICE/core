@@ -266,6 +266,36 @@ static const preset_id_maping g_preset_id_map[] = {
 	{ preset_id::type::none								, 0 },
 };
 
+static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attribute_name& smil_attribute_name_)
+{
+	using namespace odf_types;
+
+	switch (smil_attribute_name_.get_type())
+	{
+	case smil_attribute_name::charColor:		return L"";
+	case smil_attribute_name::charFontName:		return L"";
+	case smil_attribute_name::charHeight:		return L"";
+	case smil_attribute_name::charPosture:		return L"";
+	case smil_attribute_name::charUnderline:	return L"";
+	case smil_attribute_name::charWeight:		return L"";
+	case smil_attribute_name::color:			return L"style.color";
+	case smil_attribute_name::fillColor:		return L"fillcolor";
+	case smil_attribute_name::fillStyle:		return L"";
+	case smil_attribute_name::height:			return L"";
+	case smil_attribute_name::lineColor:		return L"";
+	case smil_attribute_name::lineStyle:		return L"";
+	case smil_attribute_name::opacity:			return L"style.opacity";
+	case smil_attribute_name::rotate:			return L"r";
+	case smil_attribute_name::skewX:			return L"xshear";
+	case smil_attribute_name::skewY:			return L"";
+	case smil_attribute_name::visibility:		return L"style.visibility";
+	case smil_attribute_name::width:			return L"ppt_w";
+	case smil_attribute_name::x:				return L"ppt_x";
+	case smil_attribute_name::y:				return L"ppt_y";
+	}
+
+	return L"";
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t* anim_par::ns = L"anim";
@@ -971,8 +1001,7 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (set_attlist_.smil_attribute_name_)
 	{
-		if (set_attlist_.smil_attribute_name_.value() == L"visibility")
-			attribute_name = L"style.visibility";
+		attribute_name = pptx_convert_smil_attribute_name(set_attlist_.smil_attribute_name_.value());
 	}
 
 	if (set_attlist_.smil_to_)
@@ -1087,7 +1116,10 @@ void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 			delay = L"0";
 	}
 
-	attributeName = L"ppt_c";
+	if (animate_color_attlist_.smil_attribute_name_)
+	{
+		attributeName = pptx_convert_smil_attribute_name(animate_color_attlist_.smil_attribute_name_.value());
+	}
 
 	if (animate_color_attlist_.smil_to_)
 	{
@@ -1153,11 +1185,7 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (animate_attlist_.smil_attribute_name_)
 	{
-			 if (animate_attlist_.smil_attribute_name_.value() == L"visibility")		attributeName = L"style.visibility";
-		else if (animate_attlist_.smil_attribute_name_.value() == L"width")				attributeName = L"ppt_w";
-		else if (animate_attlist_.smil_attribute_name_.value() == L"height")			attributeName = L"ppt_h";
-		else if (animate_attlist_.smil_attribute_name_.value() == L"x")					attributeName = L"ppt_x";
-		else if (animate_attlist_.smil_attribute_name_.value() == L"y")					attributeName = L"ppt_y";
+		attributeName = pptx_convert_smil_attribute_name(animate_attlist_.smil_attribute_name_.value());
 	}
 
 	if (animate_attlist_.smil_target_element_)

@@ -99,6 +99,8 @@ namespace oox {
 			void set_animate_shape_id(size_t value);
 			void set_animate_duration(int value);
 			void set_animate_attribute_name(const std::wstring& value);
+			void set_animate_from(const std::wstring& value);
+			void set_animate_to(const std::wstring& value);
 			void add_animate_keypoint(int time, const std::wstring& value);
 		void end_animate();
 		

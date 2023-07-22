@@ -182,6 +182,8 @@ namespace oox {
 			_CP_OPT(size_t)									ShapeID;
 			_CP_OPT(int)									Duration; // in ms
 			_CP_OPT(std::wstring)							AttributeName;
+			_CP_OPT(std::wstring)							From;
+			_CP_OPT(std::wstring)							To;
 			_CP_OPT(std::vector<_keypoint>)					KeypointArray;
 
 			void serialize(std::wostream& strm) override;
@@ -603,6 +605,16 @@ namespace oox {
 		impl_->anim_description_->AttributeName = value;
 	}
 
+	void pptx_animation_context::set_animate_from(const std::wstring& value)
+	{
+		impl_->anim_description_->From = value;
+	}
+
+	void pptx_animation_context::set_animate_to(const std::wstring& value)
+	{
+		impl_->anim_description_->To = value;
+	}
+
 	void pptx_animation_context::add_animate_keypoint(int time, const std::wstring& value)
 	{
 		impl_->anim_description_->KeypointArray->push_back(Impl::_anim::_keypoint(time, value));
@@ -903,6 +915,8 @@ namespace oox {
 			{
 				if (CalcMode)		CP_XML_ATTR(L"calcmode", CalcMode.value());
 				if (ValueType)		CP_XML_ATTR(L"valueType", ValueType.value());
+				if(From)			CP_XML_ATTR(L"from", From.value());
+				if (To)				CP_XML_ATTR(L"to", To.value());
 
 				CP_XML_NODE(L"p:cBhvr")
 				{

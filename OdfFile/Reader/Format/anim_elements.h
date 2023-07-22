@@ -284,6 +284,9 @@ public:
 	_CP_OPT(std::wstring)						smil_values_;
 	_CP_OPT(std::wstring)						smil_key_times_;
 	_CP_OPT(std::wstring)						smil_calc_mode_;
+	_CP_OPT(std::wstring)						smil_from_;
+	_CP_OPT(std::wstring)						smil_to_;
+
 };
 class anim_animate : public office_element_impl<anim_animate>
 {

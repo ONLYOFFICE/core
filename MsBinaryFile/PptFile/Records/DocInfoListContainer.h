@@ -40,6 +40,7 @@ class DocInfoListSubContainerOrAtom
 {
 public:
     nullable<IRecord> m_record;
+    _commonInfo* m_pCommonInfo = NULL;
 
     void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream);
 };
@@ -49,7 +50,6 @@ class CRecordDocInfoListContainer : public CUnknownRecord
 public:
     std::vector<DocInfoListSubContainerOrAtom* > m_rgChildRec;
 
-public:
     CRecordDocInfoListContainer();
     virtual ~CRecordDocInfoListContainer() override;
 

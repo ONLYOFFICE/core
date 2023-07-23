@@ -38,6 +38,7 @@
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <unistd.h>
 #include <sys/stat.h>
+#include <iconv.h>
 #endif
 
 #define WRITEBUFFERSIZE 8192
@@ -157,6 +158,34 @@ namespace ZLibZipUtils
 #endif
 	static std::wstring ascii_to_unicode(const char *src)
 	{
+//		iconv_t cd;
+//		size_t len = strlen(src);
+//		size_t reserved = sizeof(wchar_t) * (len + 1);
+
+//		char* in = new char[len + 1];
+//		char* out = new char[reserved];
+
+//		for(int i = 0; i < len; i++)
+//			in[i] = src[i];
+//		in[len] = 0;
+
+//		memset(out, 0, reserved);
+//		cd = iconv_open("WCHAR_T", "CP866");
+
+//		size_t offset_in = len;
+//		size_t offset_out = reserved;
+//		size_t k = iconv(cd, &in, &offset_in, &out, &offset_out);
+//		out = out - reserved + offset_out;
+//		in = in - len + offset_in;
+//		wchar_t* wc = (wchar_t*)out;
+//		wc[len] = 0;
+//		std::wstring ws = std::wstring(wc);
+
+//		delete[] out;
+//		delete[] in;
+//		iconv_close(cd);
+//		return ws;
+
 		std::string sAnsi(src);
 		return std::wstring(sAnsi.begin(), sAnsi.end());
 	}

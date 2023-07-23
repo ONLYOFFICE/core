@@ -101,6 +101,10 @@ namespace oox {
 			void set_animate_attribute_name(const std::wstring& value);
 			void set_animate_from(const std::wstring& value);
 			void set_animate_to(const std::wstring& value);
+			void set_animate_by(const std::wstring& value);
+			void set_animate_additive(const std::wstring& value);
+			void set_animate_auto_reverse(bool value);
+			void set_animate_delay(const std::wstring& value);
 			void add_animate_keypoint(int time, const std::wstring& value);
 		void end_animate();
 		

@@ -307,6 +307,18 @@ static std::wstring pptx_convert_animation_function(std::wstring animation_funct
 	return animation_function;
 }
 
+static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
+{
+	std::wstring delay;
+	clockvalue delayClockvalue = clockvalue::parse(smil_begin);
+	if (delayClockvalue.get_value() != -1)
+		delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
+	else
+		delay = L"indefinite";
+
+	return delay;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t* anim_par::ns = L"anim";
 const wchar_t* anim_par::name = L"par";
@@ -374,11 +386,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
-		if (delayClockvalue.get_value() != -1)
-			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
-		else if (common_attlist_.smil_begin_.get() == L"next")
-			delay = L"indefinite";
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 
 	// TODO: Figure out correct value
@@ -988,11 +996,7 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
-		if (delayClockvalue.get_value() != -1)
-			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
-		else
-			delay = boost::none;
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 
 	if (common_attlist_.smil_end_)
@@ -1119,11 +1123,7 @@ void anim_animate_color::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		clockvalue delayClockvalue = clockvalue::parse(common_attlist_.smil_begin_.get());
-		if (delayClockvalue.get_value() != -1)
-			delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
-		else
-			delay = L"0";
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 
 	if (animate_color_attlist_.smil_attribute_name_)
@@ -1160,7 +1160,6 @@ void anim_animate_color::add_attributes(const xml::attributes_wc_ptr& Attributes
 
 void anim_animate_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
 {
-	CP_APPLY_ATTR(L"smil:dur",					smil_dur_);
 	CP_APPLY_ATTR(L"smil:targetElement",		smil_target_element_);
 	CP_APPLY_ATTR(L"smil:attributeName",		smil_attribute_name_);
 	CP_APPLY_ATTR(L"smil:values",				smil_values_);
@@ -1168,6 +1167,8 @@ void anim_animate_attlist::add_attributes(const xml::attributes_wc_ptr& Attribut
 	CP_APPLY_ATTR(L"smil:calcMode",				smil_calc_mode_);
 	CP_APPLY_ATTR(L"smil:from",					smil_from_);
 	CP_APPLY_ATTR(L"smil:to",					smil_to_);
+	CP_APPLY_ATTR(L"smil:by",					smil_by_);
+	CP_APPLY_ATTR(L"smil:autoReverse",			smil_auto_reverse_);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1185,6 +1186,10 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	size_t										shapeID = 0;
 	_CP_OPT(std::wstring)						from;
 	_CP_OPT(std::wstring)						to;
+	_CP_OPT(std::wstring)						by;
+	_CP_OPT(std::wstring)						additive;
+	_CP_OPT(bool)								autoRev;
+	_CP_OPT(std::wstring)						delay;
 
 	if (animate_attlist_.smil_calc_mode_)
 	{
@@ -1195,7 +1200,7 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		calcmode = L"lin";
 
 	valueType = L"num";
-	duration = animate_attlist_.smil_dur_ ? animate_attlist_.smil_dur_->get_value() : 1;
+	duration = common_attlist_.smil_dur_ ? common_attlist_.smil_dur_->get_value() : 1;
 
 	if (animate_attlist_.smil_attribute_name_)
 	{
@@ -1245,6 +1250,33 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 		to = pptx_convert_animation_function(animate_attlist_.smil_to_.value());
 	}
 
+	if (animate_attlist_.smil_by_)
+	{
+		by = pptx_convert_animation_function(animate_attlist_.smil_by_.value());
+	}
+
+	if (animate_attlist_.smil_additive_)
+	{
+		switch (animate_attlist_.smil_additive_.value().get_type())
+		{
+		case odf_types::smil_additive::replace: additive = L"repl";
+		case odf_types::smil_additive::sum: additive = L"sum";
+		default: additive = L"repl";
+		}
+	}
+	else
+		additive = L"repl";
+
+	if (animate_attlist_.smil_auto_reverse_)
+	{
+		autoRev = animate_attlist_.smil_auto_reverse_.value().get();
+	}
+
+	if (common_attlist_.smil_begin_)
+	{
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
+	}
+
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 	animationContext.start_animate();
 	if (calcmode)			animationContext.set_animate_calc_mode(calcmode.value());
@@ -1253,6 +1285,10 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	if (attributeName)		animationContext.set_animate_attribute_name(attributeName.value());
 	if (from)				animationContext.set_animate_from(from.value());
 	if (to)					animationContext.set_animate_to(to.value());
+	if (by)					animationContext.set_animate_by(by.value());
+	if (additive)			animationContext.set_animate_additive(additive.value());
+	if (autoRev)			animationContext.set_animate_auto_reverse(autoRev.value());
+	if (delay)				animationContext.set_animate_delay(delay.value());
 	animationContext.set_animate_shape_id(shapeID);
 
 	if (timesPptx.size() == valuesPptx.size())
@@ -1270,6 +1306,7 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 
 void anim_animate::add_attributes(const xml::attributes_wc_ptr& Attributes)
 {
+	common_attlist_.add_attributes(Attributes);
 	animate_attlist_.add_attributes(Attributes);
 }
 

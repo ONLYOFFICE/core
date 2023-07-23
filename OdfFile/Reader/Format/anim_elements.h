@@ -37,6 +37,7 @@
 #include "../../DataTypes/common_attlists.h"
 #include "../../DataTypes/smil_transitiontype.h"
 #include "../../DataTypes/smil_attributename.h"
+#include "../../DataTypes//smil_additive.h"
 #include "../../DataTypes/presetclass.h"
 #include "../../DataTypes/presetid.h"
 
@@ -278,7 +279,6 @@ class anim_animate_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(odf_types::clockvalue)				smil_dur_;
 	_CP_OPT(std::wstring)						smil_target_element_;
 	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
 	_CP_OPT(std::wstring)						smil_values_;
@@ -286,6 +286,9 @@ public:
 	_CP_OPT(std::wstring)						smil_calc_mode_;
 	_CP_OPT(std::wstring)						smil_from_;
 	_CP_OPT(std::wstring)						smil_to_;
+	_CP_OPT(std::wstring)						smil_by_;
+	_CP_OPT(odf_types::smil_additive)			smil_additive_;
+	_CP_OPT(odf_types::Bool)					smil_auto_reverse_;
 
 };
 class anim_animate : public office_element_impl<anim_animate>
@@ -299,7 +302,8 @@ public:
 
 	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 
-	anim_animate_attlist				animate_attlist_;
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	anim_animate_attlist						animate_attlist_;
 
 private:
 	virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}

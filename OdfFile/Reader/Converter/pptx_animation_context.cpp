@@ -184,6 +184,10 @@ namespace oox {
 			_CP_OPT(std::wstring)							AttributeName;
 			_CP_OPT(std::wstring)							From;
 			_CP_OPT(std::wstring)							To;
+			_CP_OPT(std::wstring)							By;
+			_CP_OPT(std::wstring)							Additive;
+			_CP_OPT(bool)									AutoReverse;
+			_CP_OPT(std::wstring)							Delay;
 			_CP_OPT(std::vector<_keypoint>)					KeypointArray;
 
 			void serialize(std::wostream& strm) override;
@@ -615,6 +619,26 @@ namespace oox {
 		impl_->anim_description_->To = value;
 	}
 
+	void pptx_animation_context::set_animate_by(const std::wstring& value)
+	{
+		impl_->anim_description_->By = value;
+	}
+
+	void pptx_animation_context::set_animate_additive(const std::wstring& value)
+	{
+		impl_->anim_description_->Additive = value;
+	}
+
+	void pptx_animation_context::set_animate_auto_reverse(bool value)
+	{
+		impl_->anim_description_->AutoReverse = value;
+	}
+
+	void pptx_animation_context::set_animate_delay(const std::wstring& value)
+	{
+		impl_->anim_description_->Delay = value;
+	}
+
 	void pptx_animation_context::add_animate_keypoint(int time, const std::wstring& value)
 	{
 		impl_->anim_description_->KeypointArray->push_back(Impl::_anim::_keypoint(time, value));
@@ -917,15 +941,31 @@ namespace oox {
 				if (ValueType)		CP_XML_ATTR(L"valueType", ValueType.value());
 				if(From)			CP_XML_ATTR(L"from", From.value());
 				if (To)				CP_XML_ATTR(L"to", To.value());
+				if (By)				CP_XML_ATTR(L"by", By.value());
 
 				CP_XML_NODE(L"p:cBhvr")
 				{
-					CP_XML_ATTR(L"additive", L"repl");
+					if (Additive)	CP_XML_ATTR(L"additive", Additive.value());
 					
 					CP_XML_NODE(L"p:cTn")
 					{
 						int duration = Duration ? Duration.value() : 1;
 						CP_XML_ATTR(L"dur", duration);
+
+						if (AutoReverse)
+						{
+							int autoRev = AutoReverse.value() ? 1 : 0;
+							CP_XML_ATTR(L"autoRev", autoRev);
+						}
+
+						CP_XML_NODE(L"p:stCondLst")
+						{
+							std::wstring delay = Delay ? Delay.value() : L"0";
+							CP_XML_NODE(L"p:cond")
+							{
+								CP_XML_ATTR(L"delay", delay);
+							}
+						}
 					}
 					CP_XML_NODE(L"p:tgtEl")
 					{

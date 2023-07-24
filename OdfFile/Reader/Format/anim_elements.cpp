@@ -1310,5 +1310,102 @@ void anim_animate::add_attributes(const xml::attributes_wc_ptr& Attributes)
 	animate_attlist_.add_attributes(Attributes);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// anim:animateTransform
+
+const wchar_t* anim_animate_transform::ns = L"anim";
+const wchar_t* anim_animate_transform::name = L"animateTransform";
+
+void anim_animate_transform::pptx_convert(oox::pptx_conversion_context& Context)
+{
+	size_t shapeID = 0;
+	_CP_OPT(int) duration;
+	_CP_OPT(std::wstring) fill;
+	_CP_OPT(std::wstring) delay;
+	_CP_OPT(bool) autoRev;
+
+	if(animate_transform_attlist_.smil_target_element_)
+		shapeID = Context.get_slide_context().get_id(animate_transform_attlist_.smil_target_element_.value());
+
+	if (common_attlist_.smil_dur_)
+		duration = common_attlist_.smil_dur_.value().get_value();
+
+	if (animate_transform_attlist_.smil_fill_)
+		fill = animate_transform_attlist_.smil_fill_.value();
+
+	if (common_attlist_.smil_begin_)
+		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
+
+	if (animate_transform_attlist_.smil_auto_reverse_)
+		autoRev = animate_transform_attlist_.smil_auto_reverse_.value().get();
+
+	if (animate_transform_attlist_.svg_type_)
+	{
+		oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+
+		switch (animate_transform_attlist_.svg_type_->get_type())
+		{
+		case odf_types::svg_type::scale:
+		{
+
+			animationContext.start_animate_scale();
+			animationContext.set_animate_scale_shape_id(shapeID);
+			if (duration)		animationContext.set_animate_scale_duration(duration.value());
+			if (fill)			animationContext.set_animate_scale_fill(fill.value());
+			if (delay)			animationContext.set_animate_scale_delay(delay.value());
+			if (autoRev)		animationContext.set_animate_scale_auto_reverse(autoRev.value());
+
+			if (animate_transform_attlist_.smil_from_)
+			{
+				const int pptx_mulipier = 100000;
+				std::vector<std::wstring> oox_from;
+				boost::split(oox_from, animate_transform_attlist_.smil_from_.value(), boost::is_any_of(","));
+				if (oox_from.size() >= 2)
+				{
+					int x = boost::lexical_cast<double>(oox_from[0]) * pptx_mulipier;
+					int y = boost::lexical_cast<double>(oox_from[1]) * pptx_mulipier;
+
+					animationContext.set_animate_scale_from(x, y);
+				}
+			}
+
+			if (animate_transform_attlist_.smil_to_)
+			{
+				const int pptx_mulipier = 100000;
+				std::vector<std::wstring> oox_to;
+				boost::split(oox_to, animate_transform_attlist_.smil_to_.value(), boost::is_any_of(","));
+				if (oox_to.size() >= 2)
+				{
+					int x = boost::lexical_cast<double>(oox_to[0]) * pptx_mulipier;
+					int y = boost::lexical_cast<double>(oox_to[1]) * pptx_mulipier;
+
+					animationContext.set_animate_scale_to(x, y);
+				}				
+			}
+
+			animationContext.end_animate_scale();
+			break;
+		} 
+		}
+	}
+}
+
+void anim_animate_transform::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	common_attlist_.add_attributes(Attributes);
+	animate_transform_attlist_.add_attributes(Attributes);
+}
+
+void anim_animate_transform_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"smil:fill", smil_fill_);
+	CP_APPLY_ATTR(L"smil:autoReverse", smil_auto_reverse_);
+	CP_APPLY_ATTR(L"smil:targetElement", smil_target_element_);
+	CP_APPLY_ATTR(L"smil:from", smil_from_);
+	CP_APPLY_ATTR(L"smil:to", smil_to_);
+	CP_APPLY_ATTR(L"smil:by", smil_by_);
+	CP_APPLY_ATTR(L"svg:type", svg_type_);
+}
+
 }
 }

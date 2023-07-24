@@ -117,6 +117,16 @@ namespace oox {
 			void set_animate_color_shape_id(size_t value);
 		void end_animate_color();
 
+		void start_animate_scale();
+			void set_animate_scale_shape_id(size_t value);
+			void set_animate_scale_duration(int value);
+			void set_animate_scale_fill(const std::wstring& value);
+			void set_animate_scale_from(int x, int y);
+			void set_animate_scale_to(int x, int y);
+			void set_animate_scale_delay(const std::wstring& value);
+			void set_animate_scale_auto_reverse(bool value);
+		void end_animate_scale();
+		
 		void serialize(std::wostream & strm);
 		void clear();
 

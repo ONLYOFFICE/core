@@ -747,8 +747,10 @@ bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 	return (hmac == expected);
 }
 
-void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out, unsigned long start_iv_block)
+void ECMADecryptor::Decrypt(unsigned char* data_inp, int size, unsigned char*& data_out, unsigned long start_iv_block)
 {
+	if (!data_inp || size < 0) return;
+
 	data_out = new unsigned char[size];
 	
 	_buf pPassword	(password);

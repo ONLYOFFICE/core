@@ -542,6 +542,7 @@ enum ElementType
 	typeAnimIterate,
 	typeAnimSet,
 	typeAnimAnimate,
+	typeAnimAnimateTransform,
 	typeAnimAnimateMotion,
 	typeAnimAnimateColor,
 

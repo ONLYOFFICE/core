@@ -110,16 +110,6 @@ int main()
         return 0;
     }
 
-    if (false)
-    {
-        pdfFile.CreatePdf();
-        pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
-
-        RELEASEINTERFACE(pApplicationFonts);
-        RELEASEOBJECT(pCertificate);
-        return 0;
-    }
-
     if (true)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
@@ -174,7 +164,8 @@ int main()
         {
             if (pdfFile.EditPage(0))
             {
-                pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+                TEST(&pdfFile);
+                pdfFile.Sign(10, 120, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
             }
         }
         else

@@ -135,6 +135,7 @@ public:
 	void set_date_time();
 
 	pptx_animation_context &	get_animation_context() { return pptx_animation_context_; }
+	void						generate_id(const std::wstring& id);
 	size_t						get_id(const std::wstring& id);
 private:
 	void default_set();

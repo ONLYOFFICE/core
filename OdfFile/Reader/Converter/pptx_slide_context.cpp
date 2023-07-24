@@ -133,18 +133,24 @@ public:
     {
         return pptx_drawings_;
     }
+	size_t generate_id(const std::wstring& id)
+	{
+		size_t result = next_rId();
+		id_map_.insert(std::make_pair(id, result));
+
+		return result;
+	}
 	size_t get_id(const std::wstring& id)
 	{
 		id_map::iterator it = id_map_.find(id);
 		if (it == id_map_.end())
 		{
-			size_t rId = next_rId();
-			id_map_.insert(std::make_pair(id, rId));
-			return rId;
+			return generate_id(id);
 		}
 
 		return it->second;
 	}
+	
 	std::wstring  odfPacket_;
     
 	void process_drawings();
@@ -788,6 +794,11 @@ void pptx_slide_context::set_page_number()
 void pptx_slide_context::set_date_time()
 {
 	impl_->slideNum = true;
+}
+
+void pptx_slide_context::generate_id(const std::wstring& id)
+{
+	impl_->generate_id(id);
 }
 
 size_t pptx_slide_context::get_id(const std::wstring& id)

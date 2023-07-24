@@ -218,6 +218,20 @@ namespace oox {
 			void serialize(std::wostream& strm) override;
 		};
 
+		struct _anim_rotate;
+		typedef shared_ptr<_anim_rotate>::Type					_anim_rotate_ptr;
+		struct _anim_rotate : _animation_element
+		{
+			_CP_OPT(size_t)									ShapeID;
+			_CP_OPT(int)									Duration; // in ms
+			_CP_OPT(std::wstring)							Fill;
+			_CP_OPT(int)									By;
+			_CP_OPT(std::wstring)							Delay;
+			_CP_OPT(bool)									AutoReverse;
+
+			void serialize(std::wostream& strm) override;
+		};
+
 		_par_animation_ptr							root_animation_element_;
 		_par_animation_array						par_animation_levels_;
 
@@ -227,6 +241,7 @@ namespace oox {
 		_anim_ptr									anim_description_;
 		_anim_clr_ptr								anim_clr_description_;
 		_anim_scale_ptr								anim_scale_description_;
+		_anim_rotate_ptr							anim_rotate_description_;
 
 		void clear()
 		{
@@ -238,6 +253,7 @@ namespace oox {
 			anim_description_				= nullptr;
 			anim_clr_description_			= nullptr;
 			anim_scale_description_			= nullptr;
+			anim_rotate_description_ = nullptr;
 		}
 
 		Impl()
@@ -780,6 +796,53 @@ namespace oox {
 		impl_->anim_scale_description_ = nullptr;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// p:animRot
+	void pptx_animation_context::start_animate_rotate()
+	{
+		impl_->anim_rotate_description_ = boost::make_shared<Impl::_anim_rotate>();
+	}
+
+	void pptx_animation_context::set_animate_rotate_shape_id(size_t value)
+	{
+		impl_->anim_rotate_description_->ShapeID = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_duration(int value)
+	{
+		impl_->anim_rotate_description_->Duration = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_fill(const std::wstring& value)
+	{
+		impl_->anim_rotate_description_->Fill = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_by(int value)
+	{
+		impl_->anim_rotate_description_->By = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_delay(const std::wstring& value)
+	{
+		impl_->anim_rotate_description_->Delay = value;
+	}
+
+	void pptx_animation_context::set_animate_rotate_auto_reverse(bool value)
+	{
+		impl_->anim_rotate_description_->AutoReverse = value;
+	}
+
+	void pptx_animation_context::end_animate_rotate()
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->AnimationActionArray.push_back(impl_->anim_rotate_description_);
+		}
+		impl_->anim_rotate_description_ = nullptr;
+	}
+
 	void pptx_animation_context::serialize(std::wostream& strm)
 	{
 		CP_XML_WRITER(strm)
@@ -1202,6 +1265,46 @@ namespace oox {
 					{
 						CP_XML_ATTR(L"x", To->x);
 						CP_XML_ATTR(L"y", To->y);
+					}
+				}
+			}
+		}
+	}
+
+	void pptx_animation_context::Impl::_anim_rotate::serialize(std::wostream& strm)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"p:animRot")
+			{
+				if (By)		CP_XML_ATTR(L"by", By.value());
+
+				CP_XML_NODE(L"p:cBhvr")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						int duration = Duration ? Duration.value() : 1;
+						CP_XML_ATTR(L"dur", duration);
+
+						if (AutoReverse)	CP_XML_ATTR(L"autoRev", AutoReverse.value());
+						if (Fill)			CP_XML_ATTR(L"fill", Fill.value());
+
+						CP_XML_NODE(L"p:stCondLst")
+						{
+							std::wstring delay = Delay ? Delay.value() : L"0";
+							CP_XML_NODE(L"p:cond")
+							{
+								CP_XML_ATTR(L"delay", delay);
+							}
+						}
+					}
+					CP_XML_NODE(L"p:tgtEl")
+					{
+						CP_XML_NODE(L"p:spTgt")
+						{
+							size_t shapeID = ShapeID ? ShapeID.value() : 0;
+							CP_XML_ATTR(L"spid", shapeID);
+						}
 					}
 				}
 			}

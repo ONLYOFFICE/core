@@ -126,6 +126,15 @@ namespace oox {
 			void set_animate_scale_delay(const std::wstring& value);
 			void set_animate_scale_auto_reverse(bool value);
 		void end_animate_scale();
+
+		void start_animate_rotate();
+			void set_animate_rotate_shape_id(size_t value);
+			void set_animate_rotate_duration(int value);
+			void set_animate_rotate_fill(const std::wstring& value);
+			void set_animate_rotate_by(int value);
+			void set_animate_rotate_delay(const std::wstring& value);
+			void set_animate_rotate_auto_reverse(bool value);
+		void end_animate_rotate();
 		
 		void serialize(std::wostream & strm);
 		void clear();

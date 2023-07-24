@@ -1169,6 +1169,7 @@ void anim_animate_attlist::add_attributes(const xml::attributes_wc_ptr& Attribut
 	CP_APPLY_ATTR(L"smil:to",					smil_to_);
 	CP_APPLY_ATTR(L"smil:by",					smil_by_);
 	CP_APPLY_ATTR(L"smil:autoReverse",			smil_auto_reverse_);
+	CP_APPLY_ATTR(L"smil:additive",				smil_additive_);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1323,6 +1324,7 @@ void anim_animate_transform::pptx_convert(oox::pptx_conversion_context& Context)
 	_CP_OPT(std::wstring) fill;
 	_CP_OPT(std::wstring) delay;
 	_CP_OPT(bool) autoRev;
+	_CP_OPT(int) by;
 
 	if(animate_transform_attlist_.smil_target_element_)
 		shapeID = Context.get_slide_context().get_id(animate_transform_attlist_.smil_target_element_.value());
@@ -1338,6 +1340,7 @@ void anim_animate_transform::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (animate_transform_attlist_.smil_auto_reverse_)
 		autoRev = animate_transform_attlist_.smil_auto_reverse_.value().get();
+		
 
 	if (animate_transform_attlist_.svg_type_)
 	{
@@ -1385,7 +1388,34 @@ void anim_animate_transform::pptx_convert(oox::pptx_conversion_context& Context)
 
 			animationContext.end_animate_scale();
 			break;
-		} 
+		}
+		case odf_types::svg_type::rotate:
+		{
+			if (animate_transform_attlist_.smil_by_)
+			{
+				try
+				{
+					const int pptx_muliplier = 60000;
+					by = boost::lexical_cast<double>(animate_transform_attlist_.smil_by_.value()) * pptx_muliplier;
+				}
+				catch (...)
+				{
+					by = 0;
+				}
+			}
+
+			animationContext.start_animate_rotate();
+			animationContext.set_animate_rotate_shape_id(shapeID);
+			if (duration)		animationContext.set_animate_rotate_duration(duration.value());
+			if (fill)			animationContext.set_animate_rotate_fill(fill.value());
+			if (delay)			animationContext.set_animate_rotate_delay(delay.value());
+			if (autoRev)		animationContext.set_animate_rotate_auto_reverse(autoRev.value());
+			if (by)				animationContext.set_animate_rotate_by(by.value());
+
+			animationContext.end_animate_rotate();
+			break;
+			break;
+		}
 		}
 	}
 }

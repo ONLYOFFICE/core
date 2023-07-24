@@ -1095,7 +1095,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 		{
 			NSFile::CFileBinary f;
             f.CreateFileW(file_name_out);
-			f.WriteFile(data_out, lengthData);
+			f.WriteFile(data_out, (std::min)((int)lengthData, readData));
 			f.CloseFile();
 
 			delete []data_out;

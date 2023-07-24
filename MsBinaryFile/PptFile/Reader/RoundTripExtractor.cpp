@@ -93,7 +93,6 @@ bool RoundTripExtractor::extract()
         return false;
    
     NSFile::CFileBinary::Remove(tempZipPath);
-
     return true;
 }
 

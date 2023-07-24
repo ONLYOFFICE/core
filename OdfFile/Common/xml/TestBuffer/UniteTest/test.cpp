@@ -4,6 +4,10 @@
 #include <random>
 #include <sstream>
 #include <chrono>
+#include <codecvt>
+#include <fstream>
+#include "../../../utf8cpp/utf8.h"
+#include "../../../../DesktopEditor/common/File.h"
 #include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../simple_xml_writer.h"
 #include "../../simple_xml_writer2.h"
@@ -42,33 +46,42 @@ public:
 class ReadAndWrite
 {
 public:
-	ReadAndWrite(xml_writer& _xml_wr_, XmlUtils::CXmlLiteReader& oReader, int md) : _xml_wr_(_xml_wr_), oReader(oReader), maxdepth(md) {};
+	ReadAndWrite(xml_writer& _xml_wr_, XmlUtils::CXmlLiteReader& oReader) : _xml_wr_(_xml_wr_), oReader(oReader) {};
 	~ReadAndWrite() {};
 	void AddNode(int depth)
 	{
 		while (oReader.ReadNextSiblingNode(depth))
 		{
 			int tmp = oReader.GetDepth();
-			CP_XML_NODE(oReader.GetName())
+			std::wstring sName = oReader.GetName();
+			CP_XML_NODE(sName)
 			{
 				int na = oReader.GetAttributesCount();
 				if (na > 0)
 				{
 					if (oReader.MoveToFirstAttribute())
 					{
-						CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+						std::wstring sNameAttr = oReader.GetName();
+						std::wstring sAttr = oReader.GetText();
+						CP_XML_ATTR2(sNameAttr, sAttr);
 						for (int i = 1; i < na; i++)
+						{
 							if (oReader.MoveToNextAttribute())
-								CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+							{
+								sNameAttr = oReader.GetName();
+								sAttr = oReader.GetText();
+								CP_XML_ATTR2(sNameAttr, sAttr);
+							}
+						}		
 						oReader.MoveToElement();
 					}
 				}
-				if (depth == maxdepth - 1)
+				if (sName == L"w:t" || sName == L"w:instrText" || sName == L"m:t")
 				{
-					CP_XML_CONTENT(oReader.GetText2());
-					if (oReader.MoveToElement()) this->AddNode(tmp);
-				}	
-				else this->AddNode(tmp);
+					std::wstring sVal = oReader.GetText2();
+					CP_XML_CONTENT(sVal);
+				}
+				else if (!oReader.IsEmptyNode()) this->AddNode(tmp);
 			}
 		}
 	}
@@ -76,65 +89,67 @@ public:
 public:
 	xml_writer& _xml_wr_;
 	XmlUtils::CXmlLiteReader& oReader;
-	int maxdepth;
 };
 
 class ReadAndWrite2
 {
 public:
-	ReadAndWrite2(xml_writer2& _xml_wr_2, XmlUtils::CXmlLiteReader& oReader, int md) :  _xml_wr_2(_xml_wr_2), oReader(oReader), maxdepth(md) {};
+	ReadAndWrite2(xml_writer2& _xml_wr_2, XmlUtils::CXmlLiteReader& oReader) :  _xml_wr_2(_xml_wr_2), oReader(oReader) {};
 	~ReadAndWrite2() {};
 	void AddNode(int depth)
 	{
 		while (oReader.ReadNextSiblingNode(depth))
 		{
 			int tmp = oReader.GetDepth();
-			CP_XML_NODE_2(oReader.GetName())
+			std::wstring sName = oReader.GetName();
+			CP_XML_NODE_2(sName)
 			{
 				int na = oReader.GetAttributesCount();
 				if (na > 0)
 				{
 					if (oReader.MoveToFirstAttribute())
 					{
-						CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+						std::wstring sNameAttr = oReader.GetName();
+						std::wstring sAttr = oReader.GetText();
+						CP_XML_ATTR2_2(sNameAttr, sAttr);
 						for (int i = 1; i < na; i++)
+						{
 							if (oReader.MoveToNextAttribute())
-								CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+							{
+								sNameAttr = oReader.GetName();
+								sAttr = oReader.GetText();
+								CP_XML_ATTR2_2(sNameAttr, sAttr);
+							}	
+						}	
 						oReader.MoveToElement();
 					}
 				}
-				if (depth == maxdepth - 1)
+				if (sName == L"w:t" || sName == L"w:instrText" || sName == L"m:t")
 				{
-					CP_XML_CONTENT_2(oReader.GetText2());
-					if (oReader.MoveToElement()) this->AddNode(tmp);
+					std::wstring sVal = oReader.GetText2();
+					CP_XML_CONTENT_2(sVal);
 				}
-				else this->AddNode(tmp);
+				else if (!oReader.IsEmptyNode()) this->AddNode(tmp);
 			}
 		}
 	}
 public:
 	xml_writer2& _xml_wr_2;
 	XmlUtils::CXmlLiteReader& oReader;
-	int maxdepth;
 };
 
 TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 {
+	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
 	XmlUtils::CXmlLiteReader oReader;
-	if (!oReader.FromFile(L"test.xml"))
+	if (!oReader.FromFile(filename))
 		return;
 	if (!oReader.ReadNextNode())
 		return;
-
-	int md = 0;
-	while (oReader.ReadNextNode()) if (oReader.GetDepth() > md) md = oReader.GetDepth();
-	if (!oReader.MoveToStart())
-		return;
-	if (!oReader.ReadNextNode())
-		return;
-
-	std::wstring sName = oReader.GetName();
+	
 	int n = oReader.GetDepth();
+	std::wstring sName = oReader.GetName();
+	
 	//Reading and writing an XML doc via buffer
 	auto begin1 = std::chrono::steady_clock::now();
 	xml::CBufferXml<wchar_t> outputbuffer;
@@ -142,7 +157,19 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	{
 		CP_XML_NODE_2(sName)
 		{
-			ReadAndWrite2 rnw(_xml_wr_2, oReader, md);
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite2 rnw(_xml_wr_2, oReader);
 			rnw.AddNode(n);
 		}
 	}
@@ -153,9 +180,10 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 		return;
 	if (!oReader.ReadNextNode())
 		return;
-
+	
 	sName = oReader.GetName();
 	n = oReader.GetDepth();
+	
 	//Reading and writing an XML doc via sstream
 	auto begin2 = std::chrono::steady_clock::now();
 	std::wstringstream outputstream;
@@ -163,15 +191,37 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	{
 		CP_XML_NODE(sName)
 		{
-			ReadAndWrite rnw(_xml_wr_, oReader, md);
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite rnw(_xml_wr_, oReader);
 			rnw.AddNode(n);
 		}
 	}
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_ms2 = std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2);
-
 	EXPECT_EQ(outputstream.str(), outputbuffer.str());
-
+	std::string res;
+	std::wstring out = outputstream.str();
+	utf8::utf16to8(out.begin(), out.end(), std::back_inserter(res));
+	NSFile::CFileBinary file;
+	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[3])) == true)
+	{
+		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+		file.WriteFile((BYTE*)root.c_str(), root.length());
+		file.WriteFile((BYTE*)res.c_str(), res.length());
+		file.CloseFile();
+	}
+	
 	std::cout << '\n' << "Reading and writing an XML doc via buffer time - " << elapsed_ms1.count() << "(ms)" << '\n' << "Reading and writing an XML doc via sstream time - " << elapsed_ms2.count() << "(ms)" << '\n';
 }
 

@@ -105,6 +105,7 @@ public:
 			g_is_initialize = true;
 			ERR_load_crypto_strings();
 			OpenSSL_add_all_algorithms();
+			OPENSSL_config(NULL);
 		}
 
 		m_cert = NULL;
@@ -119,6 +120,13 @@ public:
 			X509_FREE(m_cert);
 		if (NULL != m_key)
 			EVP_PKEY_FREE(m_key);
+		if (g_is_initialize)
+		{
+			g_is_initialize = false;
+			EVP_cleanup();
+			CRYPTO_cleanup_all_ex_data();
+			ERR_free_strings();
+		}
 	}
 
 	virtual int GetType()
@@ -368,9 +376,6 @@ public:
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
-		ERR_load_crypto_strings();
-		OpenSSL_add_all_algorithms();
-
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
 		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
@@ -392,8 +397,6 @@ public:
 		BIO_free(outputbio);
 		PKCS7_free(pkcs7);
 
-		EVP_cleanup();
-
 		return true;
 	}
 
@@ -402,8 +405,6 @@ public:
 							unsigned char* pData, unsigned int nSize)
 	{
 		int nRes = 0;
-		ERR_load_crypto_strings();
-		OpenSSL_add_all_algorithms();
 
 		BIO* outputbio = BIO_new_mem_buf(pPKCS7Data, nPKCS7Size);
 
@@ -418,9 +419,6 @@ public:
 		BIO* inputbio = BIO_new_mem_buf(pData, nSize);
 
 		BIO* out_verify = BIO_new(BIO_s_mem());
-
-		int nTRes = VerifySelf();
-
 
 		X509_STORE* x509_store = X509_STORE_new();
 		X509_STORE_add_cert(x509_store, m_cert);
@@ -472,8 +470,6 @@ public:
 		BIO_free(out_verify);
 		PKCS7_free(pkcs7);
 		X509_STORE_free(x509_store);
-
-		EVP_cleanup();
 
 		return nRes;
 	}

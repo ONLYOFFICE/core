@@ -40,6 +40,7 @@
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 #include "lib/xpdf/PDFDoc.h"
+#include "lib/xpdf/PDFCore.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/TextString.h"
@@ -1145,6 +1146,88 @@ void getParents(PDFDoc* pdfDoc, Object* oFieldRef, NSWasm::CData& oRes, std::vec
     oParentRefObj.free();
     oRes.AddInt(nFlags, nFlagPos);
 }
+unsigned int getBorder(Object* oBorder, bool bBSorBorder, NSWasm::CData& oRes)
+{
+    // Границы и Dash Pattern - Border/BS
+    unsigned int nBorderType = 5;
+    if (!oBorder)
+        return nBorderType;
+    double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
+    if (bBSorBorder)
+    {
+        nBorderType = annotBorderSolid;
+        Object oV;
+        if (oBorder->dictLookup("S", &oV)->isName())
+        {
+            if (oV.isName("S"))
+                nBorderType = annotBorderSolid;
+            else if (oV.isName("D"))
+                nBorderType = annotBorderDashed;
+            else if (oV.isName("B"))
+                nBorderType = annotBorderBeveled;
+            else if (oV.isName("I"))
+                nBorderType = annotBorderInset;
+            else if (oV.isName("U"))
+                nBorderType = annotBorderUnderlined;
+        }
+        oV.free();
+        if (oBorder->dictLookup("W", &oV)->isNum())
+            dBorderWidth = oV.getNum();
+        oV.free();
+        if (oBorder->dictLookup("D", &oV)->isArray())
+        {
+            Object oV1;
+            if (oV.arrayGet(0, &oV1)->isNum())
+                dDashesAlternating = oV1.getNum();
+            oV1.free();
+            if (oV.arrayGet(1, &oV1)->isNum())
+                dGaps = oV1.getNum();
+            else
+                dGaps = dDashesAlternating;
+            oV1.free();
+        }
+        oV.free();
+    }
+    else
+    {
+        nBorderType = annotBorderSolid;
+        Object oV;
+        if (oBorder->arrayGet(2, &oV) && oV.isNum())
+            dBorderWidth = oV.getNum();
+        oV.free();
+
+        if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oV)->isArray() && oV.arrayGetLength() > 1)
+        {
+            nBorderType = annotBorderDashed;
+            Object oV1;
+            if (oV.arrayGet(0, &oV1)->isNum())
+                dDashesAlternating = oV1.getNum();
+            oV1.free();
+            if (oV.arrayGet(1, &oV1)->isNum())
+                dGaps = oV1.getNum();
+            oV1.free();
+        }
+        oV.free();
+    }
+
+    if (nBorderType != 5)
+    {
+        BYTE nBP = nBorderType;
+        if (nBP == 1)
+            nBP = 2;
+        else if (nBP == 2)
+            nBP = 1;
+
+        oRes.WriteBYTE(nBP);
+        oRes.AddDouble(dBorderWidth);
+        if (nBorderType == annotBorderDashed)
+        {
+            oRes.AddDouble(dDashesAlternating);
+            oRes.AddDouble(dGaps);
+        }
+    }
+    return nBorderType;
+}
 
 BYTE* CPdfReader::GetWidgets()
 {
@@ -1273,6 +1356,7 @@ BYTE* CPdfReader::GetWidgets()
         oRes.WriteDouble(dx2);
         oRes.WriteDouble(dy2);
 
+        // Цветовое пространство - из DA
         int nSpace;
         GList *arrColors = pField->getColorSpace(&nSpace);
         oRes.AddInt(nSpace);
@@ -1362,85 +1446,17 @@ oObj.free();\
         // 5 - Границы и Dash Pattern - Border/BS
         Object oBorder;
         unsigned int nBorderType = 5;
-        double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
         if (pField->fieldLookup("BS", &oBorder)->isDict())
-        {
-            nBorderType = annotBorderSolid;
-            Object oV;
-            if (oBorder.dictLookup("S", &oV)->isName())
-            {
-                if (oV.isName("S"))
-                    nBorderType = annotBorderSolid;
-                else if (oV.isName("D"))
-                    nBorderType = annotBorderDashed;
-                else if (oV.isName("B"))
-                    nBorderType = annotBorderBeveled;
-                else if (oV.isName("I"))
-                    nBorderType = annotBorderInset;
-                else if (oV.isName("U"))
-                    nBorderType = annotBorderUnderlined;
-            }
-            oV.free();
-            if (oBorder.dictLookup("W", &oV)->isNum())
-                dBorderWidth = oV.getNum();
-            oV.free();
-            if (oBorder.dictLookup("D", &oV)->isArray())
-            {
-                Object oV1;
-                if (oV.arrayGet(0, &oV1)->isNum())
-                    dDashesAlternating = oV1.getNum();
-                oV1.free();
-                if (oV.arrayGet(1, &oV1)->isNum())
-                    dGaps = oV1.getNum();
-                else
-                    dGaps = dDashesAlternating;
-                oV1.free();
-            }
-            oV.free();
-        }
+            nBorderType = getBorder(&oBorder, true, oRes);
         else
         {
             oBorder.free();
             if (pField->fieldLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
-            {
-                nBorderType = annotBorderSolid;
-                Object oV;
-                if (oBorder.arrayGet(2, &oV) && oV.isNum())
-                    dBorderWidth = oV.getNum();
-                oV.free();
-
-                if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV)->isArray() && oV.arrayGetLength() > 1)
-                {
-                    nBorderType = annotBorderDashed;
-                    Object oV1;
-                    if (oV.arrayGet(0, &oV1)->isNum())
-                        dDashesAlternating = oV1.getNum();
-                    oV1.free();
-                    if (oV.arrayGet(1, &oV1)->isNum())
-                        dGaps = oV1.getNum();
-                    oV1.free();
-                }
-                oV.free();
-            }
+                nBorderType = getBorder(&oBorder, false, oRes);
         }
         oBorder.free();
         if (nBorderType != 5)
-        {
             nFlags |= (1 << 4);
-            BYTE nBP = nBorderType;
-            if (nBP == 1)
-                nBP = 2;
-            else if (nBP == 2)
-                nBP = 1;
-
-            oRes.WriteBYTE(nBP);
-            oRes.AddDouble(dBorderWidth);
-            if (nBorderType == annotBorderDashed)
-            {
-                oRes.AddDouble(dDashesAlternating);
-                oRes.AddDouble(dGaps);
-            }
-        }
 
         Object oMK;
         if (pField->fieldLookup("MK", &oMK)->isDict())
@@ -2773,6 +2789,240 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 
         if (nMKPos > 0)
             oRes.AddInt(nMKLength, nMKPos);
+    }
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
+}
+
+void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
+{
+    double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
+    Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+    if (!pPage)
+        return;
+
+    Object oAnnots;
+    XRef* xref = pdfDoc->getXRef();
+    if (!pPage->getAnnots(&oAnnots)->isArray() || !xref)
+    {
+        oAnnots.free();
+        return;
+    }
+
+    for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+    {
+        // Ходовые объекты
+        Object oObj, oObj2;
+
+        Object oAnnot;
+        if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+        {
+            oAnnot.free();
+            continue;
+        }
+
+        // Номер объекта аннотации
+        int nAnnotRef = 0;
+        if (oAnnots.arrayGetNF(i, &oObj)->isRef())
+            nAnnotRef = oObj.getRefNum();
+        oObj.free();
+        oRes.AddInt(nAnnotRef);
+
+        // Флаг аннотации - F
+        int nAnnotFlag = 0;
+        if (oAnnot.dictLookup("F", &oObj)->isInt())
+            nAnnotFlag = oObj.getInt();
+        oObj.free();
+        oRes.AddInt(nAnnotFlag);
+
+        // Номер страницы - P
+        oRes.AddInt(nPageIndex);
+
+#define ARR_GET_NUM(take, get, put) \
+{\
+    if (take.arrayGet(get, &oObj2)->isNum())\
+        put = oObj2.getNum();\
+    oObj2.free();\
+}
+        // Координаты - Rect
+        double dx1 = 0.0, dy1 = 0.0, dx2 = 0.0, dy2 = 0.0;
+        if (oAnnot.dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+        {
+            ARR_GET_NUM(oObj, 0, dx1);
+            ARR_GET_NUM(oObj, 1, dy1);
+            ARR_GET_NUM(oObj, 2, dx2);
+            ARR_GET_NUM(oObj, 3, dy2);
+
+            double dTemp;
+            if (dx1 > dx2)
+            {
+                dTemp = dx1; dx1 = dx2; dx2 = dTemp;
+            }
+            if (dy1 > dy2)
+            {
+                dTemp = dy1; dy1 = dy2; dy2 = dTemp;
+            }
+            dTemp = dy1; dy1 = dHeight - dy2; dy2 = dHeight - dTemp;
+        }
+        oObj.free();
+        oRes.AddDouble(dx1);
+        oRes.AddDouble(dy1);
+        oRes.AddDouble(dx2);
+        oRes.AddDouble(dy2);
+
+        int nFlags = 0;
+        unsigned int nFlagPos = oRes.GetSize();
+        oRes.AddInt(nFlags);
+
+        // 1 - Всплывающая аннотация - Popup
+        if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
+        {
+            nFlags |= (1 << 0);
+            oRes.AddInt(oObj.getRefNum());
+        }
+
+        // 2 - Текстовая метка пользователя - T
+        DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1);
+
+        // 3 - Эффекты границы - BE
+        Object oBorderBE, oBorderBEI;
+        if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+        {
+            nFlags |= (1 << 2);
+            oRes.AddDouble(oBorderBEI.getNum());
+        }
+        oObj.free(); oBorderBE.free(); oBorderBEI.free();
+
+        // 4 - Цвет - C
+        if (oAnnot.dictLookup("C", &oObj)->isArray())
+        {
+            nFlags |= (1 << 3);
+            int nBCLength = oObj.arrayGetLength();
+            oRes.AddInt(nBCLength);
+            for (int j = 0; j < nBCLength; ++j)
+            {
+                oRes.AddDouble(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+                oObj2.free();
+            }
+        }
+        oObj.free();
+
+        // 5 - Границы и Dash Pattern - Border/BS
+        unsigned int nBorderType = 5;
+        if (oAnnot.dictLookup("BS", &oObj)->isDict())
+            nBorderType = getBorder(&oObj, true, oRes);
+        else
+        {
+            oObj.free();
+            if (oAnnot.dictLookup("Border", &oObj)->isArray() && oObj.arrayGetLength() > 2)
+                nBorderType = getBorder(&oObj, false, oRes);
+        }
+        oObj.free();
+        if (nBorderType != 5)
+            nFlags |= (1 << 4);
+
+        // 6 - Значение непрозрачности - CA
+        if (oAnnot.dictLookup("CA", &oObj)->isNum())
+        {
+            nFlags |= (1 << 5);
+            oRes.AddDouble(oObj.getNum());
+        }
+        oObj.free();
+
+        std::string sType;
+        if (oAnnot.dictLookup("Subtype", &oObj)->isName())
+            sType = oObj.getName();
+        oObj.free();
+        if (sType == "Text")
+        {
+            oRes.WriteBYTE(0);
+        }
+        else if (sType == "Link")
+        {
+
+        }
+        else if (sType == "FreeText")
+        {
+
+        }
+        else if (sType == "Line")
+        {
+
+        }
+        else if (sType == "Square")
+        {
+
+        }
+        else if (sType == "Circle")
+        {
+
+        }
+        else if (sType == "Polygon")
+        {
+
+        }
+        else if (sType == "PolyLine")
+        {
+
+        }
+        else if (sType == "Highlight" ||
+                 sType == "Underline" ||
+                 sType == "Squiggly"  ||
+                 sType == "StrikeOut")
+        {
+            double x1 = 0.0, x2 = 0.0, x3 = 0.0, x4 = 0.0;
+            double y1 = 0.0, y2 = 0.0, y3 = 0.0, y4 = 0.0;
+            if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray() && oObj.arrayGetLength() == 8)
+            {
+
+                ARR_GET_NUM(oObj, 0, x1);
+                ARR_GET_NUM(oObj, 1, y1);
+                ARR_GET_NUM(oObj, 2, x2);
+                ARR_GET_NUM(oObj, 3, y2);
+                ARR_GET_NUM(oObj, 4, x3);
+                ARR_GET_NUM(oObj, 5, y3);
+                ARR_GET_NUM(oObj, 6, x4);
+                ARR_GET_NUM(oObj, 7, y4);
+            }
+            oObj.free();
+            oRes.AddDouble(x1);
+            oRes.AddDouble(x2);
+            oRes.AddDouble(x3);
+            oRes.AddDouble(x4);
+            oRes.AddDouble(y1);
+            oRes.AddDouble(y2);
+            oRes.AddDouble(y3);
+            oRes.AddDouble(y4);
+        }
+        // TODO Все аннотации
+
+        oRes.AddInt(nFlags, nFlagPos);
+
+        oAnnot.free();
+    }
+
+    oAnnots.free();
+}
+
+BYTE* CPdfReader::GetAnnotations(int nPageIndex)
+{
+    if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+        return NULL;
+
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
+    if (nPageIndex >= 0)
+        GetPageAnnots(m_pPDFDocument, oRes, nPageIndex);
+    else
+    {
+        for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
+        {
+            GetPageAnnots(m_pPDFDocument, oRes, nPage);
+        }
     }
 
     oRes.WriteLen();

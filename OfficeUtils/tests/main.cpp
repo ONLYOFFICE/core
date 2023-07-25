@@ -1,82 +1,382 @@
 #include <iostream>
+#include <algorithm>
+
+#include "gtest/gtest.h"
 
 #include "../src/OfficeUtils.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../DesktopEditor/common/StringBuilder.h"
 
-int main(int argc, char *argv[])
+// max buffer size for reading a zip file into memory
+#define MAX_SIZE 100000
+
+testing::AssertionResult IsFilesPathsEqual(std::vector<std::wstring> files1, std::vector<std::wstring> files2)
 {
-	std::wstring sep;
-#ifdef WIN32
-	sep = L"\\";
-#else
-	sep = L"/";
-#endif // WIN32
+	// sort
+	std::sort(files1.begin(), files1.end());
+	std::sort(files2.begin(), files2.end());
 
+	// compare count
+	if(files1.size() != files2.size())
+		return testing::AssertionFailure() << "count of files is not equal "
+										   << files1.size()
+										   << " != "
+										   << files2.size();
+
+	// compare filenames
+	for(size_t i = 0; i < files1.size(); ++i)
+	{
+		std::wstring filename1 = NSFile::GetFileName(files1[i]);
+		std::wstring filename2 = NSFile::GetFileName(files2[i]);
+
+		if(filename1 != filename2)
+			return testing::AssertionFailure() << U_TO_UTF8(filename2)
+											   << " is not found";
+	}
+
+	for(size_t i = 0; i < files1.size(); ++i)
+	{
+		if(files1[i] != files2[i])
+			return testing::AssertionFailure() << U_TO_UTF8(files1[i])
+											   << " is not equal "
+											   << U_TO_UTF8(files2[i]);
+	}
+	return testing::AssertionSuccess();
+}
+
+class COfficeUtilsTest : public testing::Test
+{
+public:
 	COfficeUtils utils;
-	std::wstring curr_dir = NSFile::GetProcessDirectory();
-	std::wstring output_dir = curr_dir + sep + L"output";
-	std::wstring input_dir = curr_dir + sep + L"input";
-	std::wstring temp_dir = curr_dir + sep + L"temp";
 
-	if(NSDirectory::Exists(input_dir))
-		NSDirectory::DeleteDirectory(input_dir);
-	NSDirectory::CreateDirectory(input_dir);
+	std::wstring workDirectory;
+	std::wstring zipDirectory;
+	std::wstring unzipDirectory;
+	std::wstring wsep;
 
-	if(NSDirectory::Exists(output_dir))
-		NSDirectory::DeleteDirectory(output_dir);
-	NSDirectory::CreateDirectory(output_dir);
+	std::vector<std::wstring> expected_general;
+	std::vector<std::wstring> expected_general_no_folder;
+	std::vector<std::wstring> expected_deep;
+	std::vector<std::wstring> expected_docx_like;
 
-	if(NSDirectory::Exists(temp_dir))
-		NSDirectory::DeleteDirectory(temp_dir);
-	NSDirectory::CreateDirectory(temp_dir);
-
-	std::vector<std::wstring> tests;
-	tests.push_back(L"qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890");
-	tests.push_back(L"-_=+[{]};\',.`~!@#$%^&()!№;%()");
-	tests.push_back(L"こんにちは世界 مرحبا بالعالم");
-	tests.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓ⓡ⣾⩬⍠⊆≆⳩≾⃉⌮⢸⠐⩏„⨑☰⟬∬⤢⹛⮚∅✢⓴✎ℙ⥅ⅱ‟⥩⩲⺐⫒Ⱌⴳ⒎⹰ⲧ⩷ₗ∸⬐⭹⓾✓⤓≪♽™⠒⌙➴⵶⡣⼷⬖⓭⒱Ȿ⹦⸪⼺⒣≕◼⾙‖");
-
-#ifdef LINUX
-	tests.push_back(L"\\\\hello\\world!\\\\");
-#endif // LINUX
-
-	std::wstring long_test;
-	for(int i = 0; i < 100; i++)
-		long_test += L"a";
-	tests.push_back(long_test);
-
-	for(int i = 0; i < tests.size(); i++)
+	virtual void SetUp() override
 	{
-		while(!NSDirectory::Exists(input_dir + sep + tests[i]))
-			NSDirectory::CreateDirectories(input_dir + sep + tests[i]);
-		std::wstring dir = input_dir + sep + tests[i];
 
-		std::wstring file_path = dir + sep + tests[i];
-		std::wstring simple_file_path = dir + sep + L"file";
+#ifdef WIN32
+		wsep = L"\\";
+#else
+		wsep = L"/";
+#endif // WIN32
+		workDirectory = NSFile::GetProcessDirectory();
+		unzipDirectory = workDirectory + wsep + L".." + wsep + L"unzip";
+		zipDirectory = workDirectory + wsep + L".." + wsep + L"zip";
 
-		NSFile::CFileBinary file;
-		file.CreateFile(file_path);
-		file.WriteStringUTF8(file_path, true);
-		file.CloseFile();
+		if(!NSDirectory::Exists(unzipDirectory))
+			NSDirectory::CreateDirectories(unzipDirectory);
 
-		file.CreateFile(simple_file_path);
-		file.WriteStringUTF8(simple_file_path, true);
-		file.CloseFile();
+		// general
+		expected_general.push_back(L"1.txt");
+		expected_general.push_back(L"2.txt");
+		expected_general.push_back(L"3.txt");
 
-		utils.CompressFileOrDirectory(input_dir + sep + tests[i], temp_dir + sep + tests[i] + L".zip");
+		expected_general.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم");
+		expected_general.push_back(L"こんにちは世界 مرحبا بالعالم" + wsep + L"こんにちは世界 مرحبا بالعالم123" + wsep + L"222.txt");
+
+		expected_general.push_back(L"НП" + wsep + L"НП" + wsep + L"NF" + wsep + L"new.txt");
+		expected_general.push_back(L"MF" + wsep + L"file.txt");
+
+		expected_general.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓ⓡ⣾⩬⍠⊆≆⳩≾⃉⌮⢸⠐⩏„⨑☰⟬∬⤢"
+						   L"⹛⮚∅✢⓴✎ℙ⥅ⅱ‟⥩⩲⺐⫒Ⱌⴳ⒎⹰ⲧ⩷ₗ∸⬐⭹⓾✓⤓≪♽™⠒⌙➴"
+						   L"⵶⡣⼷⬖⓭⒱Ȿ⹦⸪⼺⒣≕◼⾙‖" + wsep + L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
+
+		expected_general.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"-_=+[{]};',.`~!@#$%^&()!№;%()");
+		expected_general.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()" + wsep + L"こんにちは世界 مرحبا بالعالم");
+
+		// general_no_folder
+		expected_general_no_folder.push_back(L"1.txt");
+		expected_general_no_folder.push_back(L"2.txt");
+		expected_general_no_folder.push_back(L"3.txt");
+
+		expected_general_no_folder.push_back(L"こんにちは世界 مرحبا بالعالم");
+		expected_general_no_folder.push_back(L"222.txt");
+
+		expected_general_no_folder.push_back(L"new.txt");
+		expected_general_no_folder.push_back(L"file.txt");
+
+		expected_general_no_folder.push_back(L"⌦ⵄ⬺▨⿐⸌⍒⿆₟⹖Ⅼ⌡┓");
+		expected_general_no_folder.push_back(L"-_=+[{]};',.`~!@#$%^&()!№;%()");
+
+		// deep
+		expected_deep.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"hi.txt");
+		expected_deep.push_back(L"1" + wsep + L"2" + wsep + L"3" + wsep + L"4" + wsep + L"5" + wsep +
+						   L"6" + wsep + L"7" + wsep + L"8" + wsep + L"9" + wsep + L"10" + wsep + L"hi.txt");
+
+		// docx_like
+		expected_docx_like.push_back(L"[Content_Types].xml");
+		expected_docx_like.push_back(L"_rels" + wsep + L".rels");
+
+		expected_docx_like.push_back(L"docProps" + wsep + L"app.xml");
+		expected_docx_like.push_back(L"docProps" + wsep + L"core.xml");
+
+		expected_docx_like.push_back(L"word" + wsep + L"document.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"endnotes.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"fontTable.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"footnotes.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"settings.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"webSettings.xml");
+		expected_docx_like.push_back(L"word" + wsep + L"theme" + wsep + L"theme1.xml");
+
 	}
 
-	std::vector<std::wstring> files = NSDirectory::GetFiles(temp_dir);
-
-	for(auto &file : files)
+	virtual void TearDown() override
 	{
-		std::wstring filename = NSFile::GetFileName(file);
-		NSDirectory::CreateDirectory(output_dir + sep + filename);
-		utils.ExtractToDirectory(file, output_dir + sep + filename, NULL, false);
+	}
+};
+
+TEST_F(COfficeUtilsTest, general_linux)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
 	}
 
-	return 0;
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general));
+
+	// data check
+	std::wstring data;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8(unzip_folder + wsep + L"MF" + wsep + L"file.txt", data));
+	EXPECT_EQ(data, L"123 321");
+}
+
+TEST_F(COfficeUtilsTest, general_linux_mem)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + L"general_linux_mem";
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	DWORD len = 0;
+	BYTE* bytes = new BYTE[MAX_SIZE];
+	NSFile::CFileBinary::ReadAllBytes(zip_path, &bytes, len);
+
+	HRESULT error_code = utils.ExtractToDirectory(bytes, len, unzip_folder, NULL, false);
+	delete[] bytes;
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general));
+
+	// data check
+	std::wstring data;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8(unzip_folder + wsep + L"MF" + wsep + L"file.txt", data));
+	EXPECT_EQ(data, L"123 321");
+}
+
+TEST_F(COfficeUtilsTest, general_linux_no_folder)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + L"general_linux_no_folder";
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, true);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_general_no_folder));
+}
+
+TEST_F(COfficeUtilsTest, deep_win)
+{
+	std::wstring zip_filename = L"deep_win";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_deep));
+}
+
+TEST_F(COfficeUtilsTest, deep_linux)
+{
+	std::wstring zip_filename = L"deep_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_deep));
+}
+
+TEST_F(COfficeUtilsTest, docx_like_win)
+{
+	std::wstring zip_filename = L"docx_like_win";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_docx_like));
+}
+
+TEST_F(COfficeUtilsTest, docx_like_linux)
+{
+	std::wstring zip_filename = L"docx_like_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if(NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, false);
+	ASSERT_EQ(error_code, S_OK);
+
+	std::vector<std::wstring> unzip_files = NSDirectory::GetFiles(unzip_folder, true);
+	std::vector<std::wstring> actual;
+
+	for(size_t i = 0; i < unzip_files.size(); ++i)
+	{
+		size_t subpath_n = unzip_files[i].size() - unzip_folder.size() - 1;
+		std::wstring subpath = unzip_files[i].substr(unzip_folder.size() + 1, subpath_n);
+		actual.push_back(subpath);
+	}
+	EXPECT_TRUE(IsFilesPathsEqual(actual, expected_docx_like));
+}
+
+TEST_F(COfficeUtilsTest, other_win)
+{
+	std::wstring zip_filename = L"general_linux";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+
+	// IsArchive(...)
+
+	HRESULT error_code = utils.IsArchive(zip_path);
+	EXPECT_EQ(error_code, S_OK);
+
+	size_t len = 100;
+	BYTE* data = new BYTE[len];
+	error_code = utils.IsArchive(data, len);
+	delete [] data;
+	EXPECT_EQ(error_code, S_FALSE);
+
+	// IsFileExistInArchive(...)
+
+	error_code = utils.IsFileExistInArchive(zip_path, L"2.txt");
+	EXPECT_EQ(error_code, S_OK);
+
+	error_code = utils.IsFileExistInArchive(zip_path, L"4.txt");
+	EXPECT_EQ(error_code, S_FALSE);
+
+	// LoadFileFromArchive(...)
+
+	data = new BYTE[100];
+	ULONG nFileSize;
+	error_code = utils.LoadFileFromArchive(zip_path, L"MF/file.txt", &data, nFileSize);
+	std::wstring wstr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(data, nFileSize);
+	delete[] data;
+
+	ASSERT_EQ(error_code, S_OK);
+	EXPECT_EQ(wstr, L"123 321");
+
+	DWORD bytes_count = 0;
+	BYTE* bytes = new BYTE[MAX_SIZE];
+	NSFile::CFileBinary::ReadAllBytes(zip_path, &bytes, bytes_count);
+
+	data = new BYTE[100];
+	error_code = utils.LoadFileFromArchive(zip_path, L"MF/file.txt", &data, nFileSize);
+	wstr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(data, nFileSize);
+	delete[] data;
+	delete[] bytes;
+
+	ASSERT_EQ(error_code, S_OK);
+	EXPECT_EQ(wstr, L"123 321");
 }

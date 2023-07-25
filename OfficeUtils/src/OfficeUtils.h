@@ -51,14 +51,22 @@ public:
 	COfficeUtils(OnProgressCallback* bCallback = NULL);
 
 	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
+	HRESULT ExtractToDirectory		(BYTE* data, size_t len, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
+
 	HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1, bool bDateTime = false);
 	
 	HRESULT Uncompress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize);
 	HRESULT Compress	(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize, short level = -1);
 
 	HRESULT IsArchive				(const std::wstring& filename);
+	HRESULT IsArchive				(BYTE* data, size_t len);
+
 	HRESULT IsFileExistInArchive	(const std::wstring& zipFile, const std::wstring& filePath);
+	HRESULT IsFileExistInArchive	(BYTE* data, size_t len, const std::wstring& filePath);
+
 	HRESULT LoadFileFromArchive		(const std::wstring& zipFile, const std::wstring& filePath, BYTE** fileInBytes, ULONG& nFileSize);
+	HRESULT LoadFileFromArchive		(BYTE* data, size_t len, const std::wstring& filePath, BYTE** fileInBytes, ULONG& nFileSize);
+
 	HRESULT ExtractFilesToMemory	(const std::wstring& zipFile, const ExtractedFileCallback& data_receiver, void* pParam, bool* result);
 	HRESULT CompressFilesFromMemory	(const std::wstring& zipFile, const RequestFileCallback& data_source, void* pParam, short compression_level, bool* result);
 	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);

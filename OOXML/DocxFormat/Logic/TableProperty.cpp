@@ -1577,9 +1577,11 @@ namespace OOX
 			std::wstring sResult = L"<w:tcBorders>";
 
 			WritingElement_WriteNode_1( L"<w:top ",     m_oTop );
-			WritingElement_WriteNode_1( L"<w:start ",   m_oStart );
+			//WritingElement_WriteNode_1( L"<w:start ",	m_oStart );
+			WritingElement_WriteNode_1( L"<w:left ",	m_oStart); //Transitional Migration Features
 			WritingElement_WriteNode_1( L"<w:bottom ",  m_oBottom );
-			WritingElement_WriteNode_1( L"<w:end ",     m_oEnd );
+			//WritingElement_WriteNode_1( L"<w:end ",	m_oEnd );
+			WritingElement_WriteNode_1( L"<w:right ",	m_oEnd); //Transitional Migration Features
 			WritingElement_WriteNode_1( L"<w:insideH ", m_oInsideH );
 			WritingElement_WriteNode_1( L"<w:insideV ", m_oInsideV );
 			WritingElement_WriteNode_1( L"<w:tl2br ",   m_oTL2BR );

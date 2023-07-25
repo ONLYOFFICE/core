@@ -5322,6 +5322,10 @@ namespace NExtractTools
 		_UINT32 result = 0;
 		switch(conversion)
 		{
+			case TCD_NON_AUTO:
+			{
+				result = AVS_FILEUTILS_ERROR_CONVERT_DETECT;
+			}break;
 			case TCD_DOCX2DOCT:
 			{
 				result = docx2doct (sFileFrom, sFileTo, sTempDir, oInputParams);

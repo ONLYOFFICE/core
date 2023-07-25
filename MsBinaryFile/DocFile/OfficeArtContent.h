@@ -70,11 +70,11 @@ namespace DocFileFormat
 		ShapeContainer* GetShapeContainer (int spid);
 		const DrawingGroup* GetDrawingGroup () const;
 
-		unsigned int					m_uLastShapeId;
+		unsigned int m_uLastShapeId;
 
 	private:
-		ShapeContainer*					m_pBackgroud;
-		DrawingGroup*					m_pDrawingGroupData;
-		std::list<OfficeArtWordDrawing>	m_arrDrawings;
+		ShapeContainer* m_pBackgroud;
+		DrawingGroup* m_pDrawingGroupData;
+		std::vector<OfficeArtWordDrawing> m_arrDrawings;
 	};
 }

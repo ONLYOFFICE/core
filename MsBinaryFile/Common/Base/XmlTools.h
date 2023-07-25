@@ -32,8 +32,8 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
-#include <list>
+#include <map>
+#include <vector>
 
 #include <boost/shared_ptr.hpp>
 
@@ -73,13 +73,7 @@ namespace XMLTools
 
 		void SetValue( const std::wstring & value );
 		std::wstring GetName() const;
-
-		/*========================================================================================================*/
-
 		std::wstring GetValue() const;
-
-		/*========================================================================================================*/
-
 		std::wstring GetXMLString();
 	};
 
@@ -95,17 +89,19 @@ namespace XMLTools
         typedef std::pair< std::wstring, std::wstring> AttributeValuePair;
 
 	private:
-        std::wstring									m_Name;
-        std::wstring									m_ElementText;
-        std::unordered_map<std::wstring, std::wstring>	m_AttributeMap;
-        std::unordered_map<std::wstring, int>			m_ChildMap; //for uniq
-        std::list<XMLElement>                           m_Elements;
+        std::wstring	m_Name;
+        std::wstring	m_ElementText;
 
-        typedef std::list<XMLElement>::iterator          ElementsIterator;
-        typedef std::list<XMLElement>::const_iterator    ElementsIteratorConst;
+        std::map<std::wstring, std::wstring>	m_AttributeMap;
+        std::map<std::wstring, int>				m_ChildMap; //for uniq
 
-        typedef std::unordered_map<std::wstring, std::wstring>::iterator            AttMapIterator;
-        typedef std::unordered_map<std::wstring, std::wstring>::const_iterator      AttMapIteratorConst;
+        std::vector<XMLElement>	m_Elements;
+
+        typedef std::vector<XMLElement>::iterator          ElementsIterator;
+        typedef std::vector<XMLElement>::const_iterator    ElementsIteratorConst;
+
+        typedef std::map<std::wstring, std::wstring>::iterator            AttMapIterator;
+        typedef std::map<std::wstring, std::wstring>::const_iterator      AttMapIteratorConst;
 
     public:
 		XMLElement();
@@ -123,28 +119,14 @@ namespace XMLTools
 		void AppendChild( XMLElementPtr element, bool uniq = false);
 
 		void RemoveChild( const XMLElement& element );
-
-		bool FindChild( const XMLElement& element );
-		bool FindChildByName( const std::wstring & elementName ) const;
-
 		bool RemoveChildByName( const std::wstring& elementName );
 
 		bool operator == ( const XMLElement& element ) const;
 
-		/*========================================================================================================*/
 
 		std::wstring GetName() const;
-
-		/*========================================================================================================*/
-
 		std::wstring GetXMLString();
-
-		/*========================================================================================================*/
-
 		unsigned int GetAttributeCount() const;
-
-		/*========================================================================================================*/
-
 		unsigned int GetChildCount() const;
 	};
 

@@ -135,56 +135,37 @@ namespace XMLTools
 	}
 	void XMLElement::RemoveChild( const XMLElement& element )
 	{
-		m_Elements.remove( element );
-	}
-	bool XMLElement::FindChild( const XMLElement& element )
-	{
-		bool result = false;
-
-		for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+		for (ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 		{
-			if ( *iter == element )
+			if (*iter == element)
 			{
-				result = true;
-
+				m_Elements.erase(iter);
 				break;
 			}
+			break;
 		}
-
-		return result;
-	}
-	bool XMLElement::FindChildByName( const std::wstring & elementName ) const
-	{
-		bool result = false;
-
-		for ( ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
-		{
-			if ( iter->m_Name == std::wstring( elementName ) )
-			{
-				result = true;
-
-				break;
-			}
-		}
-
-		return result;
 	}
 	bool XMLElement::RemoveChildByName( const std::wstring& elementName )
 	{
 		bool result = false;
 
+		for (ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
+		{
+			if (iter->m_Name == elementName)
+			{
+				result = true;
+				m_Elements.erase(iter);
+				break;
+			}
+		}
 		for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
 		{
 			if ( iter->m_Name == elementName )
 			{
 				m_Elements.erase( iter );
-
-				result = true;
-
 				break;
 			}
 		}
-
 		return result;
 	}
 	bool XMLElement::operator == ( const XMLElement& element ) const

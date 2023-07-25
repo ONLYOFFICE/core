@@ -42,24 +42,24 @@
 
 namespace NSFile
 {
-	namespace IOS
+	namespace NSIOS
 	{
 		std::string GetFileSystemRepresentation(const std::wstring& path)
 		{
 			if (path.empty())
 				return "";
 
-			NSString *path = [[NSString alloc] initWithBytes:(char*)path.data() length:path.size() * sizeof(wchar_t)
+			NSString* _path = [[NSString alloc] initWithBytes:(char*)path.data() length:path.size() * sizeof(wchar_t)
 			  encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];
 
-			return std::string((const char*)[path fileSystemRepresentation]);
+			return std::string((const char*)[_path fileSystemRepresentation]);
 		}
 	}
 }
 
 namespace NSDirectory
 {
-	namespace IOS
+	namespace NSIOS
 	{
 		void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion)
 		{

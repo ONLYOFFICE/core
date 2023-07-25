@@ -1798,7 +1798,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #endif
     
 #ifdef _IOS
-	std::vector<std::wstring> _array = NSDirectory::GetFiles2(L"/System/Library/Fonts", oArray, true);
+	std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/System/Library/Fonts", true);
 	if (_array.empty())
 		NSDirectory::GetFiles2(L"/Library/Fonts", _array, true);
 	return _array;

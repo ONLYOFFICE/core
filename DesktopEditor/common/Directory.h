@@ -80,7 +80,7 @@ namespace NSDirectory
 	KERNEL_DECL bool PathIsDirectory(const std::wstring& pathName);
 
 #ifdef _IOS
-	namespace IOS
+	namespace NSIOS
 	{
 		KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
 	}

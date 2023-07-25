@@ -203,7 +203,7 @@ namespace NSFile
 	};
 
 #ifdef _IOS
-	namespace IOS
+	namespace NSIOS
 	{
 		KERNEL_DECL std::string GetFileSystemRepresentation(const std::wstring& path);
 	}

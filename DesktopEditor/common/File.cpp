@@ -45,10 +45,6 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef _IOS
-const char* fileSystemRepresentation(const std::wstring& sFileName);
-#endif
-
 #ifdef _MAC
 #include <mach-o/dyld.h>
 #endif
@@ -959,64 +955,15 @@ namespace NSFile
 		return (unsigned long)m_lFilePosition;
 	}
 
-#ifdef _IOS
-
-	bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
-	{
-		m_pFile = fopen(fileSystemRepresentation(sFileName), bRewrite ? "rb+" : "rb");
-
-		if (NULL == m_pFile) {
-#if DEBUG
-			//    printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
-#endif
-			return false;
-		}
-
-		fseek(m_pFile, 0, SEEK_END);
-		m_lFileSize = ftell(m_pFile);
-		fseek(m_pFile, 0, SEEK_SET);
-
-		m_lFilePosition = 0;
-
-		if (0 < sFileName.length())
-		{
-			if (((wchar_t)'/') == sFileName.c_str()[sFileName.length() - 1])
-				m_lFileSize = 0x7FFFFFFF;
-		}
-
-		unsigned int err = 0x7FFFFFFF;
-		unsigned int cur = (unsigned int)m_lFileSize;
-		if (err == cur)
-		{
-			CloseFile();
-			return false;
-		}
-
-		return true;
-	}
-
-	bool CFileBinary::CreateFileW(const std::wstring& sFileName)
-	{
-		m_pFile = fopen(fileSystemRepresentation(sFileName), "wb");
-
-		if (NULL == m_pFile) {
-#if DEBUG
-			//    printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
-#endif
-			return false;
-		}
-
-		m_lFilePosition = 0;
-		return true;
-	}
-
-#else
-
 	bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
 	{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 		if ( NULL == (m_pFile = _wfsopen( sFileName.c_str(), bRewrite ? L"rb+" : L"rb", _SH_DENYNO)))
 			return false;
+#else
+#ifdef _IOS
+		std::string sFilePath = NSIOS::GetFileSystemRepresentation(sFileName);
+		m_pFile = fopen((char*)sFilePath.c_str(), bRewrite ? "rb+" : "rb");
 #else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
@@ -1027,9 +974,10 @@ namespace NSFile
 			return false;
 
 		m_pFile = fopen((char*)pUtf8, bRewrite ? "rb+" : "rb");
-
 		delete [] pUtf8;
 #endif
+#endif
+
 		if (NULL == m_pFile)
 			return false;
 
@@ -1062,11 +1010,16 @@ namespace NSFile
 		if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), L"wb"))
 			return false;
 #else
+#ifdef _IOS
+		std::string sFilePath = NSIOS::GetFileSystemRepresentation(sFileName);
+		m_pFile = fopen((char*)sFilePath.c_str(), "wb");
+#else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
 		CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
 		m_pFile = fopen((char*)pUtf8, "wb");
 		delete [] pUtf8;
+#endif
 #endif
 		if (NULL == m_pFile)
 			return false;
@@ -1074,8 +1027,6 @@ namespace NSFile
 		m_lFilePosition = 0;
 		return true;
 	}
-
-#endif
 
 	bool CFileBinary::CreateFile(const std::wstring& sFileName)
 	{

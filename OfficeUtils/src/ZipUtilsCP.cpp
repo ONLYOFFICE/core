@@ -131,7 +131,7 @@ namespace ZLibZipUtils
 		zipFile zf = zipOpen2_64(filename, APPEND_STATUS_CREATE, NULL, &ffunc);
 #else
 #ifdef _IOS
-		std::string filePath = NSFile::IOS::GetFileSystemRepresentation(filename);
+		std::string filePath = NSFile::NSIOS::GetFileSystemRepresentation(filename);
 		zipFile zf = filePath.empty() ? NULL : zipOpen(filePath.c_str(), APPEND_STATUS_CREATE);
 #else
 		BYTE* pUtf8 = NULL;
@@ -151,8 +151,8 @@ namespace ZLibZipUtils
 		unzFile uf = unzOpen2_64(filename, &ffunc);
 #else
 #ifdef _IOS
-		std::string filePath = NSFile::IOS::GetFileSystemRepresentation(filename);
-		unzFile zf = filePath.empty() ? NULL : unzOpen(filePath.c_str());
+		std::string filePath = NSFile::NSIOS::GetFileSystemRepresentation(filename);
+		unzFile uf = filePath.empty() ? NULL : unzOpen(filePath.c_str());
 #else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;

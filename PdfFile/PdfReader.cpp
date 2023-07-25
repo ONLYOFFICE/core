@@ -34,10 +34,10 @@
 
 #include "PdfReader.h"
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/common/StringExt.h"
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
@@ -1292,22 +1292,6 @@ BYTE* CPdfReader::GetWidgets()
             getParents(m_pPDFDocument, &oParentRefObj, oRes, arrParents);
         }
         oParentRefObj.free();
-
-        /*
-        XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
-        {
-            oFieldRef.free(); oField.free();
-            continue;
-        }
-
-        Object oParentRefObj;
-        if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-        {
-            getParents(m_pPDFDocument, &oParentRefObj, oRes, arrParents);
-        }
-        oParentRefObj.free();
-        */
     }
     nParents = arrParents.size();
     arrParents.clear();
@@ -1317,14 +1301,14 @@ BYTE* CPdfReader::GetWidgets()
     {
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
-        XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
+        if (!pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
         {
             // TODO Если ошибочная аннотация
             oRes.AddInt(0xFFFFFFFF);
             oFieldRef.free(); oField.free();
             continue;
         }
+        oFieldRef.free();
 
         // Номер аннотации для сопоставления с AP
         oRes.AddInt(i);
@@ -2074,7 +2058,6 @@ oObj.free();\
         default:
             break;
         }
-        oFieldRef.free(); oField.free();
 
         // 16 - Альтернативный текст - Contents
         DICT_LOOKUP_STRING(pField->fieldLookup, "Contents", 15);
@@ -2147,6 +2130,8 @@ oObj.free();\
 
         oRes.AddInt(nActionLength, nActionPos);
         oRes.AddInt(nFlags, nFlagPos);
+
+        oField.free();
     }
 
     oRes.WriteLen();

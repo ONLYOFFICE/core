@@ -57,7 +57,6 @@ using namespace std;
 
 namespace ZLibZipUtils
 {
-
 	zipFile zipOpenHelp(const wchar_t* filename);
 	unzFile unzOpenHelp(const wchar_t* filename);
 

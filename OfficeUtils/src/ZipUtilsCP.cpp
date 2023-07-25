@@ -123,7 +123,6 @@ namespace ZLibZipUtils
 		return m_unzFile;
 	}
 
-#ifndef _IOS
 	zipFile zipOpenHelp(const wchar_t* filename)
 	{
 #if defined(_WIN32) || defined (_WIN64)
@@ -131,11 +130,16 @@ namespace ZLibZipUtils
 		fill_win32_filefunc64W(&ffunc);
 		zipFile zf = zipOpen2_64(filename, APPEND_STATUS_CREATE, NULL, &ffunc);
 #else
+#ifdef _IOS
+		std::string filePath = NSFile::IOS::GetFileSystemRepresentation(filename);
+		zipFile zf = filePath.empty() ? NULL : zipOpen(filePath.c_str(), APPEND_STATUS_CREATE);
+#else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(filename, wcslen(filename), pUtf8, lLen, false);
 		zipFile zf = zipOpen( (char*)pUtf8, APPEND_STATUS_CREATE );
 		delete [] pUtf8;
+#endif
 #endif
 		return zf;
 	}
@@ -146,15 +150,20 @@ namespace ZLibZipUtils
 		fill_win32_filefunc64W(&ffunc);
 		unzFile uf = unzOpen2_64(filename, &ffunc);
 #else
+#ifdef _IOS
+		std::string filePath = NSFile::IOS::GetFileSystemRepresentation(filename);
+		unzFile zf = filePath.empty() ? NULL : unzOpen(filePath.c_str());
+#else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(filename, wcslen(filename), pUtf8, lLen, false);
 		unzFile uf = unzOpen( (char*)pUtf8 );
 		delete [] pUtf8;
 #endif
+#endif
 		return uf;
 	}
-#endif
+
 	static std::wstring ascii_to_unicode(const char *src)
 	{
 		// TODO: check codepage of system (for "bad" archive)

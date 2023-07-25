@@ -5,3 +5,8 @@ INCLUDEPATH += $$VLC_BUILD_DIR/include
 
 LIBS += -L$$VLC_LIB_DIR -lvlc
 LIBS += -L$$VLC_LIB_DIR -lvlccore
+
+core_windows:vs2019 {
+    QMAKE_CXXFLAGS_RELEASE += -permissive-
+    QMAKE_CXXFLAGS += -permissive-
+}

@@ -5,11 +5,6 @@ CONFIG -= qt
 
 TARGET = tests
 
-SOURCES += \
-$$PWD/../../Common/OfficeFileFormatChecker2.cpp \
-	$$PWD/../../Common/3dParty/pole/pole.cpp \
-	$$PWD/../../OOXML/Base/unicode_util.cpp
-
 SOURCES += main.cpp
 
 CORE_ROOT_DIR = $$PWD/../../

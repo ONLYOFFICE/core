@@ -380,7 +380,3 @@ TEST_F(COfficeUtilsTest, other_win)
 	ASSERT_EQ(error_code, S_OK);
 	EXPECT_EQ(wstr, L"123 321");
 }
-
-
-
-

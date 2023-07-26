@@ -1265,7 +1265,7 @@ namespace Aggplus
 	base_renderer_type& CGraphics::GetRendererBase()
 	{
 		if (m_pAlphaMask && GenerationAlphaMask == m_pAlphaMask->GetStatus() && ImageBuffer == m_pAlphaMask->GetDataType())
-			return m_pAlphaMask->m_internal->GetRendererBaseImage();
+			return (base_renderer_type&)m_pAlphaMask->m_internal->GetRendererBaseImage();
 
 		return m_frame_buffer.ren_base();
 	}

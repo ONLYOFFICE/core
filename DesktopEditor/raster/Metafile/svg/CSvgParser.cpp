@@ -102,21 +102,14 @@ namespace SVG
 
 		if (L"svg" == wsElementName || L"g" == wsElementName || L"defs" == wsElementName)
 		{
-			XmlUtils::CXmlNodes arChilds;
+			std::vector<XmlUtils::CXmlNode> arChilds;
 
 			oElement.GetChilds(arChilds);
 
-			XmlUtils::CXmlNode oChild;
-
-			for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
+			for (XmlUtils::CXmlNode& oChild : arChilds)
 			{
-				if (!arChilds.GetAt(unChildrenIndex, oChild))
-					break;
-
 				if (ScanStyles(oChild, pFile))
 					bScanResult = true;
-
-				oChild.Clear();
 			}
 		}
 
@@ -273,24 +266,15 @@ namespace SVG
 	template <class ObjectType>
 	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer<ObjectType>* pContainer, CSvgFile* pFile, CRenderedObject *pParent) const
 	{
-		XmlUtils::CXmlNodes arChilds;
+		std::vector<XmlUtils::CXmlNode> arChilds;
 
 		oElement.GetChilds(arChilds);
 
-		if (0 == arChilds.GetCount())
+		if (arChilds.empty())
 			return false;
 
-		XmlUtils::CXmlNode oChild;
-
-		for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
-		{
-			if (!arChilds.GetAt(unChildrenIndex, oChild))
-				break;
-
+		for (XmlUtils::CXmlNode& oChild : arChilds)
 			ReadObject(oChild, pContainer, pFile, pParent);
-
-			oChild.Clear();
-		}
 
 		return true;
 	}

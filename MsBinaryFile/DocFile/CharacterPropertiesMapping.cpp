@@ -247,29 +247,25 @@ namespace DocFileFormat
 					{	//latin					
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
 
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Default);
-
-						langid.Convert(langIDMapping);
-
-						RELEASEOBJECT(langIDMapping);
+						std::wstring strLCID = _doc->m_lcidConverter.get_wstring(langid.Id);
+						LanguageIdMapping langIDMapping(lang, Default, strLCID);
+						langid.Convert(&langIDMapping);
 					}break;
 					case sprmOldCLid:
 					case sprmCRgLid1_80:
 					case sprmCRgLid1:
 					{	//east asia				
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
-
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, EastAsian);
-
-						langid.Convert(langIDMapping);
-
-						RELEASEOBJECT(langIDMapping);
+						std::wstring lang_code = _doc->m_lcidConverter.get_wstring(langid.Id);
+						LanguageIdMapping langIDMapping(lang, EastAsian, lang_code);
+						langid.Convert(&langIDMapping);
 					}break;
 					case sprmCLidBi:
 					{
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
+						std::wstring lang_code = _doc->m_lcidConverter.get_wstring(langid.Id);
 
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Complex);
+						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Complex, lang_code);
 
 						langid.Convert(langIDMapping);
 
@@ -586,9 +582,9 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	std::vector<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
+	std::list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
 	{
-		std::vector<CharacterPropertyExceptions*> hierarchy;
+		std::list<CharacterPropertyExceptions*> hierarchy;
 	
 		unsigned int istd = (unsigned int)istdStart;
 		bool goOn = true;

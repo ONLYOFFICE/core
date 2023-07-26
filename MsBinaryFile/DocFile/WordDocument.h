@@ -59,6 +59,8 @@
 #include "FieldCharacter.h"
 #include "IVisitable.h"
 
+#include "../../Common/MS-LCID.h"
+
 namespace CRYPT
 {
 	class Decryptor;
@@ -148,6 +150,8 @@ namespace DocFileFormat
 		
 		void Clear();
 
+		MS_LCID_converter		m_lcidConverter;
+		
 		std::wstring			m_sFileName;
 		std::wstring			m_sPassword;	
 		std::wstring			m_sTempFolder;

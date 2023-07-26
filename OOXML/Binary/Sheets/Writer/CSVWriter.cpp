@@ -76,6 +76,8 @@ private:
 	const std::wstring& m_sDelimiter;
 	bool m_bJSON;
 
+	MS_LCID_converter m_lcidConverter;
+
 	wchar_t* m_pWriteBuffer;
 	int m_nCurrentIndex;
 	std::wstring m_sEscape;
@@ -380,8 +382,8 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				BYTE CalendarType = GETBITS(language_code, 16, 23);
 				BYTE NumberType = GETBITS(language_code, 24, 31);
 
-				CodePage = msLCID2DefCodePage(LanguageID);
-				std::wstring wsLCID = msLCID2wstring(LanguageID);
+				CodePage = m_lcidConverter.get_codepage(LanguageID);
+				std::wstring wsLCID = m_lcidConverter.get_wstring(LanguageID);
 
 				LCID = std::string(wsLCID.begin(), wsLCID.end());
 			}

@@ -292,8 +292,7 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( L"w:rFonts" );
 
-			LanguageId langid(this->m_document->FIB->m_FibBase.lid);
-			std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
+			std::wstring langcode = m_document->m_lcidConverter.get_wstring(m_document->FIB->m_FibBase.lid);
 
 			m_pXmlWriter->WriteNodeBegin( L"w:lang", TRUE );
 			m_pXmlWriter->WriteAttribute( L"w:val", langcode);

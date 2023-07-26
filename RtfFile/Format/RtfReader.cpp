@@ -33,8 +33,6 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
-#include "../../Common/MS-LCID.h"
-
 RtfReader::ReaderState::ReaderState()
 {
 	m_bControlPresent = false;
@@ -390,11 +388,11 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 	}
 	if (nCodepage == CP_ACP && oDocument.m_nUserLCID > 0)
 	{
-		nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
+		nCodepage = oDocument.m_lcidConverter.get_codepage(oDocument.m_nUserLCID);
 	}
 	if (m_bUseGlobalCodepage && nCodepage == 0 && PROP_DEF != oDocument.m_oProperty.m_nDefLang )
 	{
-		nCodepage = msLCID2DefCodePage(oDocument.m_oProperty.m_nDefLang);
+		nCodepage = oDocument.m_lcidConverter.get_codepage(oDocument.m_oProperty.m_nDefLang);
 	}
 
 	if (m_bUseGlobalCodepage && nCodepage == 0)

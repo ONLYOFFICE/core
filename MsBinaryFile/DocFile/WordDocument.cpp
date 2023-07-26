@@ -33,7 +33,6 @@
 #include "WordDocument.h"
 
 #include "../../Common/OfficeFileErrorDescription.h"
-#include "../../Common/MS-LCID.h"
 
 #include "../Common/SummaryInformation/PropertySetStream.h"
 #include "../XlsFile/Format/Binary/CFStream.h"
@@ -284,7 +283,7 @@ namespace DocFileFormat
 
 		if (!bDocumentCodePage && m_nUserLCID > 0)
 		{
-			int user_codepage = msLCID2DefCodePage(m_nUserLCID);
+			int user_codepage = m_lcidConverter.get_codepage(m_nUserLCID);
 			
 			if (user_codepage > 0)
 			{

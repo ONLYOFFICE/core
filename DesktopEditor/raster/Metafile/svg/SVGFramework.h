@@ -513,7 +513,7 @@ namespace SVG
 			if (0 == len) return 0;
 			for (size_t i = 0; i < len; ++i)
 			{
-				if (isdigit(buf[i]) || (buf[i] == L'-') /* || (value[i] == L'.') || (value[i] == L',') */)
+				if (iswdigit(buf[i]) || (buf[i] == L'-') /* || (value[i] == L'.') || (value[i] == L',') */)
 					continue;
 
 				return std::stol(value.substr(0, i));
@@ -527,7 +527,7 @@ namespace SVG
 			if (0 == len) return 0;
 			for (size_t i = 0; i < len; ++i)
 			{
-				if (isdigit(buf[i]) || (buf[i] == L'.') || (buf[i] == L',') || (buf[i] == L'-') || (buf[i] == 'e'))
+				if (iswdigit(buf[i]) || (buf[i] == L'.') || (buf[i] == L',') || (buf[i] == L'-') || (buf[i] == 'e'))
 					continue;
 
 				return std::stol(value.substr(0, i));
@@ -589,7 +589,7 @@ namespace SVG
 					number = L"";
 				}
 
-				if (isdigit(Source[i]) || (Source[i] == '.') || (Source[i] == '-') || (Source[i] == 'e'))
+				if (iswdigit(Source[i]) || (Source[i] == '.') || (Source[i] == '-') || (Source[i] == 'e'))
 				{
 					number += Source[i];
 					continue;
@@ -671,6 +671,26 @@ namespace SVG
 
 			return UNDEFINED;
 		}
+
+		static inline void ConvertValue(double &dValue, Metrics eMetrics)
+		{
+			switch (eMetrics)
+			{
+				case EM: break;
+				case EX: break;
+				case PX: dValue *= 96 / 25.4;
+				case PT: break;
+				case PC: break;
+				case CM: break;
+				case MM: break;
+				case INCH: break;
+
+				case PCT: break;
+
+				case UNDEFINED: break;
+			}
+		}
+
 		static inline std::wstring UrlRefValue(const std::wstring& sUrlRef)
 		{
 			if (sUrlRef.length() > 3)
@@ -1943,6 +1963,10 @@ namespace SVG
 		{
 			m_nFontSize			=	StrUtils::DoubleValue(oXml.GetAttribute(L"font-size"));
 			m_nFontMetrics		=	StrUtils::GetMetrics(oXml.GetAttribute(L"font-size"));
+
+			if (UNDEFINED != m_nFontMetrics && 0 != m_nFontSize)
+				StrUtils::ConvertValue(m_nFontSize, m_nFontMetrics);
+
 			m_FontFamily		=	oXml.GetAttributeOrValue(L"font-family", L"Arial");
 
 			m_nFontTextAnchor	=	FontTextAnchorStart;
@@ -1997,6 +2021,10 @@ namespace SVG
 					{
 						m_nFontSize		=	StrUtils::DoubleValue ( Value );
 						m_nFontMetrics	=	StrUtils::GetMetrics ( Value );
+
+						if (UNDEFINED != m_nFontMetrics && 0 != m_nFontSize)
+							StrUtils::ConvertValue(m_nFontSize, m_nFontMetrics);
+
 						continue;
 					}
 
@@ -2043,10 +2071,13 @@ namespace SVG
 		bool UpdateStyle(XmlUtils::CXmlNode& oXmlNode)
 		{
 			if (!oXmlNode.GetAttribute ( L"font-size" ).empty())
+			{
 				m_nFontSize			=	StrUtils::DoubleValue ( oXmlNode.GetAttribute ( L"font-size") );
-
-			if (!oXmlNode.GetAttribute ( L"font-size" ).empty())
 				m_nFontMetrics		=	StrUtils::GetMetrics ( oXmlNode.GetAttribute ( L"font-size" ) );
+
+				if (UNDEFINED != m_nFontMetrics && 0 != m_nFontSize)
+					StrUtils::ConvertValue(m_nFontSize, m_nFontMetrics);
+			}
 
 			if (!oXmlNode.GetAttributeOrValue ( L"font-family", L"Arial" ).empty())
 				m_FontFamily		=	oXmlNode.GetAttributeOrValue ( L"font-family", L"Arial");

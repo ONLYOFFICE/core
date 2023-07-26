@@ -1,6 +1,6 @@
 #include "SVGFramework.h"
 
-#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( G << 16 ) | ( G << 8 ) | R ))
+#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 0 ) | ( G << 8 ) | ( B << 16 ) ))
 
 namespace SVG
 {
@@ -247,7 +247,7 @@ namespace SVG
 		if (0 == Color[3])
 			return -2;
 
-		return ( ( (int) (Color [ 2 ]) << 16 ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 0 ]) );
+		return ( ( (int) (Color [ 0 ]) ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 2 ]) << 16 );
 	}
 	long ColorParser::ColorFromHexString(const std::wstring& Hex)
 	{

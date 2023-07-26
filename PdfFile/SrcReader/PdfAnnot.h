@@ -38,16 +38,12 @@
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/AcroForm.h"
 
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+
 namespace PdfReader
 {
 
-enum EAnnotType
-{
-    annot_type_unknown,
-    annot_type_widget
-};
-
-struct CAnnotParent
+struct CAnnotParent final
 {
     CAnnotParent()
     {
@@ -55,6 +51,8 @@ struct CAnnotParent
         unRefNum = 0;
         unRefNumParent = 0;
     }
+
+    void ToWASM(NSWasm::CData& oRes);
 
     unsigned int unFlags;
     unsigned int unRefNum; // Номер ссылки на объект
@@ -64,7 +62,7 @@ struct CAnnotParent
     std::string sDV;
 };
 
-struct CBorderType
+struct CBorderType final
 {
     CBorderType()
     {
@@ -74,28 +72,80 @@ struct CBorderType
         dGaps = 3;
     }
 
+    void ToWASM(NSWasm::CData& oRes);
+
     BYTE nType;
     double dWidth;
     double dDashesAlternating;
     double dGaps;
 };
 
+//------------------------------------------------------------------------
+// PdfReader::CAction
+//------------------------------------------------------------------------
+
 struct CAction
 {
-    CAction()
-    {
-        nA = 0;
-    }
+    virtual void ToWASM(NSWasm::CData& oRes);
+
+    CAction() : pNext(NULL) {}
+    virtual ~CAction() { RELEASEOBJECT(pNext); }
 
     std::string sType;
-    BYTE nA;
+    CAction* pNext;
+};
+struct CActionGoTo       final : public CAction
+{
+    unsigned int unPage;
+    unsigned int unKindFlag;
+    double pRect[4];
+    BYTE nKind;
+
+    void ToWASM(NSWasm::CData& oRes) override;
+};
+struct CActionURI        final : public CAction
+{
+    std::string sURI;
+
+    void ToWASM(NSWasm::CData& oRes) override;
+};
+struct CActionNamed      final : public CAction
+{
+    std::string sNamed;
+
+    void ToWASM(NSWasm::CData& oRes) override;
+};
+struct CActionJavaScript final : public CAction
+{
+    std::string sJavaScript;
+
+    void ToWASM(NSWasm::CData& oRes) override;
+};
+struct CActionHide       final : public CAction
+{
+    bool bHideFlag;
+    std::vector<std::string> arrAnnotName;
+
+    void ToWASM(NSWasm::CData& oRes) override;
+};
+struct CActionResetForm  final : public CAction
+{
+    CActionResetForm()
+    {
+        unFlags = 0;
+    }
+
+    unsigned int unFlags;
+    std::vector<std::string> arrAnnotName;
+
+    void ToWASM(NSWasm::CData& oRes) override;
 };
 
 //------------------------------------------------------------------------
 // PdfReader::CAnnotAP
 //------------------------------------------------------------------------
 
-class CAnnotAP
+class CAnnotAP final
 {
 
 };
@@ -107,13 +157,10 @@ class CAnnotAP
 class CAnnot
 {
 public:
-    CAnnot(XRef* xref, AcroFormField* pField);
+    CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
     virtual ~CAnnot();
 
-    virtual EAnnotType GetAnnotType() const
-    {
-        return annot_type_unknown;
-    }
+    virtual void ToWASM(NSWasm::CData& oRes);
 
 private:
     unsigned int m_unAFlags;
@@ -123,39 +170,89 @@ private:
     unsigned int m_unPage; // Страница
     double m_pRect[4]; // Координаты - Rect
     CBorderType* m_pBorder; // Граница
+    double m_dBE; // Эффекты границы - BE
 };
 
 //------------------------------------------------------------------------
 // PdfReader::CWidgetAnnot
 //------------------------------------------------------------------------
 
-class CWidgetAnnot : public CAnnot
+class CAnnotWidget : public CAnnot
 {
 public:
-    CWidgetAnnot(XRef* xref, AcroFormField* pField);
+    CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
-    EAnnotType GetAnnotType() const
-    {
-        return annot_type_widget;
-    }
-private:
+    virtual void ToWASM(NSWasm::CData& oRes) override;
+
     unsigned int m_unFlags;
+    BYTE m_nType; // Тип - FT + флаги
     unsigned int m_unFieldFlag; // Флаг - Ff
-    unsigned int n_unR; // Поворот аннотации относительно страницы - R
+
+private:
+    unsigned int m_unR; // Поворот аннотации относительно страницы - R
     std::vector<double> m_arrColorSpace; // Цветовое пространство - из DA
     std::vector<double> m_arrBC; // Цвет границ - BC
     std::vector<double> m_arrBG; // Цвет фона - BG
     std::vector<double> m_arrC; // Специальный цвет для аннотации - C
-    std::vector<CAction> m_arrAction; // Действия
+    std::vector<CAction*> m_arrAction; // Действия
     BYTE m_nQ; // Выравнивание текста - Q
-    BYTE m_nType; // Тип - FT + флаги
     BYTE m_nH; // Режим выделения - H
     std::string m_sTU; // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
     std::string m_sDS; // Строка стиля по умолчанию - DS
     std::string m_sDV; // Значение по-умолчанию - DV
     std::string m_sContents; // Альтернативный текст - Contents
     std::string m_sT; // Частичное имя поля - T
-    double m_dBE; // Эффекты границы - BE
+};
+
+class CAnnotWidgetBtn final : public CAnnotWidget
+{
+public:
+    CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField);
+
+    void ToWASM(NSWasm::CData& oRes) override;
+private:
+    BYTE m_nStyle;
+    BYTE m_nTP;
+    BYTE m_nSW;
+    BYTE m_nS;
+    unsigned int m_unIFFlag;
+    std::string m_sCA;
+    std::string m_sRC;
+    std::string m_sAC;
+    std::string m_sAP_N_Yes;
+    double m_dA1, m_dA2;
+};
+
+class CAnnotWidgetTx final : public CAnnotWidget
+{
+public:
+    CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField);
+
+    void ToWASM(NSWasm::CData& oRes) override;
+private:
+    std::string m_sV;
+    unsigned int m_unMaxLen;
+    std::string m_sRV;
+};
+
+class CAnnotWidgetCh final : public CAnnotWidget
+{
+public:
+    CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField);
+
+    void ToWASM(NSWasm::CData& oRes) override;
+private:
+    std::string m_sV;
+    std::vector<std::pair<std::string, std::string>> m_arrOpt;
+    unsigned int m_unTI;
+};
+
+class CAnnotWidgetSig final : public CAnnotWidget
+{
+public:
+    CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField);
+
+    void ToWASM(NSWasm::CData& oRes) override;
 };
 
 //------------------------------------------------------------------------
@@ -165,8 +262,10 @@ private:
 class CAnnots
 {
 public:
-    CAnnots(XRef* xref, AcroForm* pAcroForms);
+    CAnnots(PDFDoc* pdfDoc, AcroForm* pAcroForms);
     ~CAnnots();
+
+    void ToWASM(NSWasm::CData& oRes);
 
 private:
     std::vector<std::string> m_arrCO; // Порядок вычислений - CO

@@ -309,8 +309,8 @@ void ReadAction(BYTE* pWidgets, int& i)
 	}
 	else if (sType == "Hide")
 	{
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
+		nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
 		std::cout << "Hide flag " << nPathLength << ", ";
 
 		int nHideLength = READ_INT(pWidgets + i);
@@ -552,6 +552,7 @@ int main(int argc, char* argv[])
 		int i = 4;
 		nLength -= 4;
 
+		DWORD nAnnots = 0;
 		if (i < nLength)
 		{
 			DWORD nCOLength = READ_INT(pWidgets + i);
@@ -615,9 +616,12 @@ int main(int argc, char* argv[])
 			}
 			if (nParentsLength > 0)
 				std::cout << std::endl;
+
+			nAnnots = READ_INT(pWidgets + i);
+			i += 4;
 		}
 
-		while (i < nLength)
+		for (int q = 0; q < nAnnots; ++q)
 		{
 			DWORD nPathLength = READ_INT(pWidgets + i);
 			i += 4;
@@ -660,8 +664,8 @@ int main(int argc, char* argv[])
 			if (nTCLength)
 				std::cout << ", ";
 
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
+			nPathLength = READ_BYTE(pWidgets + i);
+			i += 1;
 			std::cout << "Q " << nPathLength << ", ";
 
 			std::string arrType[] = {"", "button", "radiobutton", "checkbox", "text", "combobox", "listbox", "signature"};

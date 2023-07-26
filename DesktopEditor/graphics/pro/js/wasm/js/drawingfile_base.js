@@ -497,17 +497,17 @@
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
 		var reader = new CBinaryReader(buffer, 0, len);
 
-		let n = reader.readInt();
-		if (n > 0)
+		let k = reader.readInt();
+		if (k > 0)
 			res["CO"] = [];
-		for (let i = 0; i < n; ++i)
+		for (let i = 0; i < k; ++i)
 			// В массиве используются имена аннотаций - rec["name"]
 			res["CO"].push(reader.readString());
 		
-		n = reader.readInt();
-		if (n > 0)
+		k = reader.readInt();
+		if (k > 0)
 			res["Parents"] = [];
-		for (let i = 0; i < n; ++i)
+		for (let i = 0; i < k; ++i)
 		{
 			var rec = {};
 			rec["i"] = reader.readInt();
@@ -524,7 +524,8 @@
 		}
 
 		res["Fields"] = [];
-		while (reader.isValid())
+		k = reader.readInt();
+		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
 			var rec = {};
 			rec["AP"] = {};
@@ -578,7 +579,7 @@
 					rec["textColor"].push(reader.readDouble());
 			}
 			
-			rec["alignment"] = reader.readInt();
+			rec["alignment"] = reader.readByte();
 			// Тип аннотации виджета - FT
 			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
 			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature

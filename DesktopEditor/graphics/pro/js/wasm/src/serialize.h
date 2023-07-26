@@ -144,6 +144,10 @@ namespace NSWasm
             m_pDataCur += len;
             m_lSizeCur += len;
         }
+        void WriteString(std::string sStr)
+        {
+            WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+        }
         void Write(BYTE* value, unsigned int len)
         {
             if (!value || len == 0)

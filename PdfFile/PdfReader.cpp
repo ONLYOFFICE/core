@@ -775,7 +775,7 @@ TextString* getName(Object* oField)
 
     return sResName;
 }
-void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
+void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction)
 {
     Object oActType;
     std::string sSName;
@@ -958,7 +958,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
     // Скрытие аннотаций
     case actionHide:
     {
-        oRes.AddInt(((LinkHide*)oAct)->getHideFlag());
+        oRes.WriteBYTE(((LinkHide*)oAct)->getHideFlag());
         Object* oHideObj = ((LinkHide*)oAct)->getFields();
         int nHide = 1, k = 0;
         if (oHideObj->isArray())
@@ -1047,7 +1047,7 @@ void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
     if (oAction->dictLookup("Next", &oNextAction)->isDict())
     {
         oRes.WriteBYTE(1);
-        getAction(pdfDoc, oRes, &oNextAction, nAnnot);
+        getAction(pdfDoc, oRes, &oNextAction);
     }
     else
         oRes.WriteBYTE(0);
@@ -1297,21 +1297,18 @@ BYTE* CPdfReader::GetWidgets()
     arrParents.clear();
     oRes.AddInt(nParents, nParentsPos);
 
-    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+    int nAcroForms = pAcroForms->getNumFields();
+    oRes.AddInt(nAcroForms);
+    for (int i = 0; i < nAcroForms; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
-        if (!pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
-        {
-            // TODO Если ошибочная аннотация
-            oRes.AddInt(0xFFFFFFFF);
-            oFieldRef.free(); oField.free();
-            continue;
-        }
-        oFieldRef.free();
+        pField->getFieldRef(&oFieldRef);
+        oFieldRef.fetch(xref, &oField);
 
         // Номер аннотации для сопоставления с AP
-        oRes.AddInt(i);
+        oRes.AddInt(oFieldRef.getRefNum());
+        oFieldRef.free();
 
         Object oObj;
         // Флаг аннотации - F
@@ -1345,17 +1342,15 @@ BYTE* CPdfReader::GetWidgets()
         GList *arrColors = pField->getColorSpace(&nSpace);
         oRes.AddInt(nSpace);
         for (int j = 0; j < nSpace; ++j)
-        {
             oRes.AddDouble(*(double*)arrColors->get(j));
-        }
         deleteGList(arrColors, double);
 
         // Выравнивание текста - Q
-        int nQ = 0;
+        BYTE nQ = 0;
         if (pField->fieldLookup("Q", &oObj)->isInt())
             nQ = oObj.getInt();
         oObj.free();
-        oRes.AddInt(nQ);
+        oRes.WriteBYTE(nQ);
 
         // Тип - FT + флаги
         AcroFormFieldType oType = pField->getAcroFormFieldType();
@@ -1513,42 +1508,6 @@ oObj.free();\
             // 10 - Включено
             if (sValue != "Off")
                 nFlags |= (1 << 9);
-
-            // Если Checkbox/RadioButton наследует Opt, то состояние соответствует порядковому в массиве Kids из Opt
-            /*
-            int nDepth = 0;
-            Object oParentObj;
-            oField.dictLookup("Parent", &oParentObj);
-            while (oParentObj.isDict() && nDepth < 50)
-            {
-                Object oOpt, oKids;
-                if (oParentObj.dictLookup("Opt", &oOpt) && oOpt.isArray() && oParentObj.dictLookup("Kids", &oKids) && oKids.isArray() && oOpt.arrayGetLength() == oKids.arrayGetLength())
-                {
-                    for (int j = 0, nLength = oOpt.arrayGetLength(); j < nLength; ++j)
-                    {
-                        Object oOptJ, oOptI;
-                        if (oKids.arrayGetNF(j, &oOptJ) && oOptJ.isRef() && oOptJ.getRefGen() == oFieldRef.getRefGen() && oOptJ.getRefNum() == oFieldRef.getRefNum() &&
-                                oOpt.arrayGet(j, &oOptI) && oOptI.isString())
-                        {
-                            TextString* s = new TextString(oOptI.getString());
-                            sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                            if (sValue != "Off")
-                                nFlags |= (1 << 9);
-                            delete s;
-                        }
-                        oOptJ.free(); oOptI.free();
-                    }
-                }
-                oOpt.free(); oKids.free();
-
-                Object oParentObj2;
-                oParentObj.dictLookup("Parent", &oParentObj2);
-                oParentObj.free();
-                oParentObj = oParentObj2;
-                ++nDepth;
-            }
-            oParentObj.free();
-            */
 
             int nIFPos = oRes.GetSize();
             unsigned int nIFFlag = 0;
@@ -2100,7 +2059,7 @@ oObj.free();\
 
             std::string sAA = "A";
             oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
-            getAction(m_pPDFDocument, oRes, &oAction, i);
+            getAction(m_pPDFDocument, oRes, &oAction);
         }
         oAction.free();
 
@@ -2122,7 +2081,7 @@ oObj.free();\
                     continue;
                 }
 
-                getAction(m_pPDFDocument, oRes, &oAction, i);
+                getAction(m_pPDFDocument, oRes, &oAction);
                 oAction.free();
             }
         }
@@ -2296,7 +2255,10 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
             continue;
 
         // Номер аннотации для сопоставления с AP
-        oRes.AddInt(i);
+        Object oRef;
+        pField->getFieldRef(&oRef);
+        oRes.AddInt(oRef.getRefNum());
+        oRef.free();
 
         // Координаты - BBox
         double dx1, dy1, dx2, dy2;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,7 +34,6 @@
 #include "../WritingElement.h"
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
 #include "../../PPTXFormat/Logic/Ln.h"
@@ -53,22 +52,15 @@ namespace OOX
 		class CStylisticSets : public WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>
 		{
 		public:
-			WritingElement_AdditionConstructors(CStylisticSets)
-			CStylisticSets(OOX::Document *pMain = NULL) : WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>(pMain)
-			{
-			}
-			virtual ~CStylisticSets() {}
+			WritingElement_AdditionMethods(CStylisticSets)
+			CStylisticSets(OOX::Document *pMain = NULL);
+			virtual ~CStylisticSets();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_stylisticSets;
-			}
+			virtual EElementType getType() const;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -98,41 +90,17 @@ namespace OOX
             nullable<CRunProperty>					m_pRunPr;
 		};
 
-
 		class CRunProperty : public WritingElement
 		{
 		public:
-			CRunProperty()
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-			}
-			virtual ~CRunProperty()
-			{
-				RELEASEOBJECT(m_pText);
-			}
-			CRunProperty(const XmlUtils::CXmlNode &oNode)
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-				fromXML( (XmlUtils::CXmlNode &)oNode );
-			}
-			CRunProperty(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-			}
-			const CRunProperty& operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode &)oNode );
-				return *this;
-			}
-			const CRunProperty& operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			CRunProperty();
+			virtual ~CRunProperty();
+			CRunProperty(const XmlUtils::CXmlNode &oNode);
+			CRunProperty(const XmlUtils::CXmlLiteReader& oReader);
+
+			const CRunProperty& operator=(const XmlUtils::CXmlNode &oNode);
+			const CRunProperty& operator=(const XmlUtils::CXmlLiteReader& oReader);
+
 			bool IsNoEmpty();
 			void Clear();
 
@@ -141,10 +109,8 @@ namespace OOX
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, CRun* pRun);
             virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual EElementType getType() const
-			{
-				return et_w_rPr;
-			}
+			virtual EElementType getType() const;
+
 			template<typename Type>
 			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{

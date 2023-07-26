@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,14 +33,15 @@
 #include "FMLACELL.h"
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/Fmla.h"
-#include "../Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FMLACELL::FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    FMLACELL::FMLACELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref), isShared(false), m_sharedIndex(-1)
     {
     }
@@ -97,6 +98,16 @@ namespace XLSB
         elements_.pop_back();
         return true;
     }
+
+	const bool FMLACELL::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+		else
+			return false;
+
+		return true;
+	}
 
 } // namespace XLSB
 

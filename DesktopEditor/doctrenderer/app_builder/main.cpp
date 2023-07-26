@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -50,32 +50,32 @@ void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, wchar_t *argv[])
 void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, char *argv[])
 #endif
 {
-    for (int i = 0; i < argc; ++i)
-    {
+	for (int i = 0; i < argc; ++i)
+	{
 #ifdef WIN32
-        std::wstring sW(argv[i]);
-        std::string sParam = U_TO_UTF8(sW);
+		std::wstring sW(argv[i]);
+		std::string sParam = U_TO_UTF8(sW);
 #else
-        std::string sParam(argv[i]);
+		std::string sParam(argv[i]);
 #endif
 
-        if (sParam.find("--") == 0)
-        {
-            std::string::size_type _pos = sParam.find('=');
-            if (std::string::npos == _pos)
-                builder->SetProperty(sParam.c_str(), L"");
-            else
-            {
-                std::string sName = sParam.substr(0, _pos);
-                std::string sValue = sParam.substr(_pos + 1);
+		if (sParam.find("--") == 0)
+		{
+			std::string::size_type _pos = sParam.find('=');
+			if (std::string::npos == _pos)
+				builder->SetProperty(sParam.c_str(), L"");
+			else
+			{
+				std::string sName = sParam.substr(0, _pos);
+				std::string sValue = sParam.substr(_pos + 1);
 
-                std::wstring sValueW = UTF8_TO_U(sValue);
-                builder->SetProperty(sName.c_str(), sValueW.c_str());
-            }
-        }
-        else
-            continue;
-    }
+				std::wstring sValueW = UTF8_TO_U(sValue);
+				builder->SetProperty(sName.c_str(), sValueW.c_str());
+			}
+		}
+		else
+			continue;
+	}
 }
 
 #ifdef WIN32
@@ -84,84 +84,84 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    if (argc <= 0)
-        return 0;
+	if (argc <= 0)
+		return 0;
 
-    bool bIsHelp = false;
-    bool bIsFonts = false;
-    for (int i = 0; i < argc; ++i)
-    {
+	bool bIsHelp = false;
+	bool bIsFonts = false;
+	for (int i = 0; i < argc; ++i)
+	{
 #ifdef WIN32
-        std::wstring sW(argv[i]);
-        std::string sParam(sW.begin(), sW.end());
+		std::wstring sW(argv[i]);
+		std::string sParam(sW.begin(), sW.end());
 #else
-        std::string sParam(argv[i]);
+		std::string sParam(argv[i]);
 #endif
-        if (sParam == "-v" || sParam == "-version")
-        {
-            std::cout << "v" VALUE(INTVER) << std::endl;
-            NSDoctRenderer::CDocBuilder oBuilder;
-            oBuilder.ExecuteCommand(L"checkL");
+		if (sParam == "-v" || sParam == "-version")
+		{
+			std::cout << "v" VALUE(INTVER) << std::endl;
+			NSDoctRenderer::CDocBuilder oBuilder;
+			oBuilder.ExecuteCommand(L"checkL");
 
-            char* sSdkVer = oBuilder.GetVersion();
-            if (NULL != sSdkVer)
-            {
-                std::string sSdkVerStd(sSdkVer);
-                std::cout << "sdk version: " << sSdkVerStd << std::endl;
-                delete [] sSdkVer;
-            }
+			char* sSdkVer = oBuilder.GetVersion();
+			if (NULL != sSdkVer)
+			{
+				std::string sSdkVerStd(sSdkVer);
+				std::cout << "sdk version: " << sSdkVerStd << std::endl;
+				delete [] sSdkVer;
+			}
 
-            return 0;
-        }
-        if (sParam == "-h" || sParam == "-help")
-        {
-            bIsHelp = true;
-        }
-        else if (sParam == "-f" || sParam == "-fonts")
-        {
-            bIsFonts = true;
-        }
-    }
+			return 0;
+		}
+		if (sParam == "-h" || sParam == "-help")
+		{
+			bIsHelp = true;
+		}
+		else if (sParam == "-f" || sParam == "-fonts")
+		{
+			bIsFonts = true;
+		}
+	}
 
-    if (bIsFonts)
-    {
-        NSDoctRenderer::CDocBuilder oBuilder;
-        parse_args(&oBuilder, argc, argv);
+	if (bIsFonts)
+	{
+		NSDoctRenderer::CDocBuilder oBuilder;
+		parse_args(&oBuilder, argc, argv);
 
-        oBuilder.ExecuteCommand(L"checkL");
-        return 0;
-    }
+		oBuilder.ExecuteCommand(L"checkL");
+		return 0;
+	}
 
-    if (argc < 2 || bIsHelp)
-    {
-        std::cout << "USAGE: documentbuilder \"path_to_script_file\"" << std::endl;
-        NSDoctRenderer::CDocBuilder oBuilder;
-        oBuilder.ExecuteCommand(L"checkL");
-        return 0;
-    }
+	if (argc < 2 || bIsHelp)
+	{
+		std::cout << "USAGE: documentbuilder \"path_to_script_file\"" << std::endl;
+		NSDoctRenderer::CDocBuilder oBuilder;
+		oBuilder.ExecuteCommand(L"checkL");
+		return 0;
+	}
 
 #ifdef WIN32
-    std::wstring sBuildFile(argv[argc - 1]);
+	std::wstring sBuildFile(argv[argc - 1]);
 #else
-    std::string sBuildFileA(argv[argc - 1]);
-    std::wstring sBuildFile = UTF8_TO_U(sBuildFileA);
+	std::string sBuildFileA(argv[argc - 1]);
+	std::wstring sBuildFile = UTF8_TO_U(sBuildFileA);
 #endif
 
-    if (true)
-    {
-        NSDoctRenderer::CDocBuilder oBuilder;
+	if (true)
+	{
+		NSDoctRenderer::CDocBuilder oBuilder;
 
-        // если отключена эта опция - то она отключится на parse_args
-        oBuilder.SetProperty("--check-fonts", L"");
+		// если отключена эта опция - то она отключится на parse_args
+		oBuilder.SetProperty("--check-fonts", L"");
 
-        //oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
-        //oBuilder.SetProperty("--work-directory", L"builder");
+		//oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
+		//oBuilder.SetProperty("--work-directory", L"builder");
 
-        parse_args(&oBuilder, argc - 1, argv);
+		parse_args(&oBuilder, argc - 1, argv);
 
-        oBuilder.Run(sBuildFile.c_str());
-    }
+		oBuilder.Run(sBuildFile.c_str());
+	}
 
-    NSDoctRenderer::CDocBuilder::Dispose();
-    return 0;
+	NSDoctRenderer::CDocBuilder::Dispose();
+	return 0;
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,7 +42,7 @@ namespace PPTX
 		{
 			if (!pOOXToVMLRenderer) return;
 
-			PPT_FORMAT::CShapeElement* lpShapeElement = NULL;
+			PPT::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
@@ -51,7 +51,7 @@ namespace PPTX
 				if(_lspt == OOXMLShapes::sptNil) 
 					return;
 
-				lpShapeElement = new PPT_FORMAT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
+				lpShapeElement = new PPT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
 				std::wstring strAdjustValues = lpGeom.GetODString();
 				
 				lpShapeElement->m_pShape->getBaseShape()->LoadAdjustValuesList(strAdjustValues);
@@ -60,7 +60,7 @@ namespace PPTX
 			{
 				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
 				std::wstring strShape = lpGeom.GetODString();
-				lpShapeElement = new PPT_FORMAT::CShapeElement(strShape);
+				lpShapeElement = new PPT::CShapeElement(strShape);
 			}
 
 			if (lpShapeElement == NULL)
@@ -132,6 +132,340 @@ namespace PPTX
             if (lpShapeElement)
                 delete lpShapeElement;
         }
+
+		Geometry::Geometry()
+		{
+		}
+		OOX::EElementType Geometry::getType() const
+		{
+			if (m_geometry.IsInit())
+				return m_geometry->getType();
+			return OOX::et_Unknown;
+		}
+		void Geometry::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (strName == _T("prstGeom"))
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oReader));
+			else if (strName == _T("custGeom"))
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oReader));
+			else
+				m_geometry.reset();
+		}
+		void Geometry::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
+
+			if (strName == _T("prstGeom"))
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(node));
+			else if (strName == _T("custGeom"))
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(node));
+			else m_geometry.reset();
+		}
+		void Geometry::GetGeometryFrom(XmlUtils::CXmlNode& element)
+		{
+			XmlUtils::CXmlNode oNode;
+			if (element.GetNode(_T("a:prstGeom"), oNode))
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oNode));
+			else if (element.GetNode(_T("a:custGeom"), oNode))
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oNode));
+			else m_geometry.reset();
+		}
+		std::wstring Geometry::toXML() const
+		{
+			if (m_geometry.IsInit())
+				return m_geometry->toXML();
+			return _T("");
+		}
+		void Geometry::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (m_geometry.is_init())
+				m_geometry->toXmlWriter(pWriter);
+		}
+		void Geometry::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (m_geometry.is_init())
+				m_geometry->toPPTY(pWriter);
+		}
+		void Geometry::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			if (pReader->GetPos() < _end_rec)
+			{
+				BYTE _t = pReader->GetUChar();
+
+				if (GEOMETRY_TYPE_PRST == _t)
+				{
+					// preset shape
+					LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+					pReader->Skip(1); // start attributes
+
+					Logic::PrstGeom* pGeom = new Logic::PrstGeom();
+
+					while (true)
+					{
+						BYTE _at = pReader->GetUChar_TypeNode();
+						if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+							break;
+
+						if (0 == _at)
+							pGeom->prst.set(pReader->GetString2());
+						else
+							break;
+					}
+
+					while (pReader->GetPos() < _e)
+					{
+						BYTE _at = pReader->GetUChar();
+						switch (_at)
+						{
+							case 0:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									pReader->Skip(1);
+									pGeom->avLst.push_back(Gd());
+									pGeom->avLst[i].fromPPTY(pReader);
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							default:
+								break;
+						}
+					}
+
+					m_geometry.reset(pGeom);
+				}
+				else if (GEOMETRY_TYPE_CUSTOM == _t)
+				{
+					LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+					Logic::CustGeom* pGeom = new Logic::CustGeom();
+					while (pReader->GetPos() < _e)
+					{
+						BYTE _at = pReader->GetUChar();
+						switch (_at)
+						{
+							case 0:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									pReader->Skip(1);
+									pGeom->avLst.push_back(Gd());
+									pGeom->avLst[i].fromPPTY(pReader);
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							case 1:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									pReader->Skip(1);
+									pGeom->gdLst.push_back(Gd());
+									pGeom->gdLst[i].fromPPTY(pReader);
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							case 2:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									BYTE _type1 = pReader->GetUChar();
+									pReader->Skip(4); // len
+									BYTE _type = pReader->GetUChar();
+									pReader->Skip(5); // len + start attributes
+
+									if (1 == _type)
+									{
+										Logic::AhPolar* p = new Logic::AhPolar();
+										while (true)
+										{
+											BYTE _at2 = pReader->GetUChar_TypeNode();
+											if (_at2 == NSBinPptxRW::g_nodeAttributeEnd)
+												break;
+
+											switch (_at2)
+											{
+											case 0: p->x = pReader->GetString2(); break;
+											case 1: p->y = pReader->GetString2(); break;
+											case 2: p->gdRefAng = pReader->GetString2(); break;
+											case 3: p->gdRefR = pReader->GetString2(); break;
+											case 4: p->maxAng = pReader->GetString2(); break;
+											case 5: p->maxR = pReader->GetString2(); break;
+											case 6: p->minAng = pReader->GetString2(); break;
+											case 7: p->minR = pReader->GetString2(); break;
+											default:
+												break;
+											}
+										}
+										pGeom->ahLst.push_back(AhBase());
+										pGeom->ahLst[i].ah.reset(p);
+									}
+									else
+									{
+										Logic::AhXY* p = new Logic::AhXY();
+										while (true)
+										{
+											BYTE _at2 = pReader->GetUChar_TypeNode();
+											if (_at2 == NSBinPptxRW::g_nodeAttributeEnd)
+												break;
+
+											switch (_at2)
+											{
+											case 0: p->x = pReader->GetString2(); break;
+											case 1: p->y = pReader->GetString2(); break;
+											case 2: p->gdRefX = pReader->GetString2(); break;
+											case 3: p->gdRefY = pReader->GetString2(); break;
+											case 4: p->maxX = pReader->GetString2(); break;
+											case 5: p->maxY = pReader->GetString2(); break;
+											case 6: p->minX = pReader->GetString2(); break;
+											case 7: p->minY = pReader->GetString2(); break;
+											default:
+												break;
+											}
+										}
+										pGeom->ahLst.push_back(AhBase());
+										pGeom->ahLst[i].ah.reset(p);
+									}
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							case 3:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									BYTE _type = pReader->GetUChar();
+									pReader->Skip(5); // len + start attributes
+
+									pGeom->cxnLst.push_back(Cxn());
+									while (true)
+									{
+										BYTE _at2 = pReader->GetUChar_TypeNode();
+										if (_at2 == NSBinPptxRW::g_nodeAttributeEnd)
+											break;
+
+										switch (_at2)
+										{
+										case 0:
+											pGeom->cxnLst[i].x = pReader->GetString2();
+											break;
+										case 1:
+											pGeom->cxnLst[i].y = pReader->GetString2();
+											break;
+										case 2:
+											pGeom->cxnLst[i].ang = pReader->GetString2();
+											break;
+										default:
+											break;
+										}
+									}
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							case 4:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+								ULONG _c = pReader->GetULong();
+
+								for (ULONG i = 0; i < _c; ++i)
+								{
+									BYTE _type = pReader->GetUChar();
+									pGeom->pathLst.push_back(Path2D());
+									pGeom->pathLst[i].fromPPTY(pReader);
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							case 5:
+							{
+								LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+								pReader->Skip(1); // start attributes
+
+								pGeom->rect = new Logic::Rect();
+								pGeom->rect->m_name = _T("a:rect");
+								pGeom->rect->l = _T("l");
+								pGeom->rect->t = _T("t");
+								pGeom->rect->r = _T("r");
+								pGeom->rect->b = _T("b");
+								while (true)
+								{
+									BYTE _at2 = pReader->GetUChar_TypeNode();
+									if (_at2 == NSBinPptxRW::g_nodeAttributeEnd)
+										break;
+
+									switch (_at2)
+									{
+									case 0:
+										pGeom->rect->l = pReader->GetString2();
+										break;
+									case 1:
+										pGeom->rect->t = pReader->GetString2();
+										break;
+									case 2:
+										pGeom->rect->r = pReader->GetString2();
+										break;
+									case 3:
+										pGeom->rect->b = pReader->GetString2();
+										break;
+									default:
+										break;
+									}
+								}
+
+								pReader->Seek(_end_rec2);
+								break;
+							}
+							default:
+								break;
+						}
+					}
+
+					m_geometry.reset(pGeom);
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		bool Geometry::is_init() const
+		{
+			return (m_geometry.IsInit());
+		}
+		void Geometry::FillParentPointersForChilds() {}
+		void Geometry::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				m_geometry->SetParentPointer(pParent);
+		}
 	}
 }
 

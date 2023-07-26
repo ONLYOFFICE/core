@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,198 +44,23 @@ namespace PPTX
 		class NvPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(NvPr)
+			WritingElement_AdditionMethods(NvPr)
 			
-			NvPr(std::wstring ns = L"p")
-			{
-				m_namespace = ns;
-			}
-			NvPr& operator=(const NvPr& oSrc)
-			{
-				isPhoto		=	oSrc.isPhoto;
-				userDrawn	=	oSrc.userDrawn;
-				media		=	oSrc.media;
-				ph			=	oSrc.ph;
+			NvPr(std::wstring ns = L"p");
 
-				for (size_t i=0; i < oSrc.extLst.size(); i++)
-					extLst.push_back(oSrc.extLst[i]);
-				
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-				
-				ReadAttributes(oReader);
+			NvPr& operator=(const NvPr& oSrc);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-						
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-					if (strName == L"ph")
-						ph = oReader;
-					else if (strName == L"extLst")
-					{
-						if ( oReader.IsEmptyNode() )
-							continue;
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const;
 
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							Ext element(oReader);
-							extLst.push_back(element);
-						}
-					}
-					else
-					{
-						media.fromXML(oReader);
-					}
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"isPhoto",	isPhoto)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"userDrawn",	userDrawn)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				XmlMacroReadAttributeBase(node, L"isPhoto", isPhoto);
-				XmlMacroReadAttributeBase(node, L"userDrawn", userDrawn);
-
-				ph = node.ReadNodeNoNS(L"ph");
-				media.GetMediaFrom(node);
-
-				XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
-				if (list.IsValid())
-				{		
-					XmlUtils::CXmlNodes oNodes;
-					if (list.GetNodes(_T("*"), oNodes))
-					{
-						int nCount = oNodes.GetCount();
-						for (int i = 0; i < nCount; ++i)
-						{
-							XmlUtils::CXmlNode oNode;
-							oNodes.GetAt(i, oNode);	
-
-							Ext element;
-							element.fromXML(oNode);
-							extLst.push_back (element);
-						}
-					}
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"isPhoto", isPhoto);
-				oAttr.Write(L"userDrawn", userDrawn);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(ph);
-				oValue.Write(media);
-
-                return XmlUtils::CreateNode(L"p:nvPr", oAttr, oValue);
-
-			}
-            virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-            {
-                std::wstring namespace_ = m_namespace;
-                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_= L"pic";
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_= L"xdr";
-
-                toXmlWriter2(namespace_, pWriter);
-            }
-            void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
-            {
-                pWriter->StartNode(strNS + L":nvPr");
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"isPhoto", isPhoto);
-				pWriter->WriteAttribute(L"userDrawn", userDrawn);
-				pWriter->EndAttributes();
-
-				pWriter->Write(ph);
-				media.toXmlWriter(pWriter);
-
-				std::wstring namespace_extLst = L"a";
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)	namespace_extLst = L"p";
-
-				pWriter->WriteArray(namespace_extLst + L":extLst", extLst);
-				
-                pWriter->EndNode(strNS + L":nvPr");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, isPhoto);
-				pWriter->WriteBool2(1, userDrawn);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, ph);
-				pWriter->WriteRecord1(1, media);
-				pWriter->WriteRecordArray(2, 0, extLst);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							isPhoto = pReader->GetBool();
-							break;
-						}
-						case 1:
-						{
-							userDrawn = pReader->GetBool();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							ph = new Ph();
-							ph->fromPPTY(pReader);
-							break;
-						}
-						default:
-						{
-							pReader->SkipRecord();
-							break;
-						}
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 			std::wstring		m_namespace;
 	// Attributes
 			nullable_bool		isPhoto;
@@ -246,14 +71,9 @@ namespace PPTX
 			UniMedia			media;
 	//custDataLst
 			std::vector<Ext>	extLst;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(ph.IsInit())
-					ph->SetParentPointer(this);
-				if(media.is_init())
-					media.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

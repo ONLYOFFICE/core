@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,103 +43,19 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(CViewPr)
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"varScale", attrVarScale);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				Scale	= node.ReadNode(L"p:scale");
-				Origin	= node.ReadNode(L"p:origin");
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"varScale", attrVarScale);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(Scale);
-				oValue.Write(Origin);
-
-				return XmlUtils::CreateNode(L"p:cViewPr", oAttr, oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, attrVarScale);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, Origin);
-				pWriter->WriteRecord1(1, Scale);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							attrVarScale = pReader->GetBool();
-						}break;
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							Origin.fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							Scale.fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:cViewPr");
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"varScale", attrVarScale);
-				pWriter->EndAttributes();
-
-				Scale.toXmlWriter(pWriter);
-				Origin.toXmlWriter(pWriter);				
-				
-				pWriter->EndNode(L"p:cViewPr");
-			}
 			nullable_bool			attrVarScale;
 			nsViewProps::Origin		Origin;
 			nsViewProps::Scale		Scale;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Scale.SetParentPointer(this);
-				Origin.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

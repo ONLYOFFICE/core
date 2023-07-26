@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,76 +44,20 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(HF)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"dt", dt);
-                XmlMacroReadAttributeBase(node, L"ftr", ftr);
-                XmlMacroReadAttributeBase(node, L"hdr", hdr);
-                XmlMacroReadAttributeBase(node, L"sldNum", sldNum);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"dt", dt);
-				oAttr.Write(L"ftr", ftr);
-				oAttr.Write(L"hdr", hdr);
-				oAttr.Write(L"sldNum", sldNum);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				return XmlUtils::CreateNode(L"p:hf", oAttr);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, dt);
-				pWriter->WriteBool2(1, ftr);
-				pWriter->WriteBool2(2, hdr);
-				pWriter->WriteBool2(3, sldNum);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:hf");
-
-				pWriter->StartAttributes();
-					pWriter->WriteAttribute(L"dt", dt);
-					pWriter->WriteAttribute(L"ftr", ftr);
-					pWriter->WriteAttribute(L"hdr", hdr);
-					pWriter->WriteAttribute(L"sldNum", sldNum);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(L"p:hf");
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-						dt = pReader->GetBool();
-					else if (1 == _at)
-						ftr = pReader->GetBool();
-					else if (2 == _at)
-						hdr = pReader->GetBool();
-					else if (3 == _at)
-						sldNum = pReader->GetBool();
-				}
-
-				pReader->Seek(_e);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_bool		dt;
 			nullable_bool		ftr;
 			nullable_bool		hdr;
 			nullable_bool		sldNum;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

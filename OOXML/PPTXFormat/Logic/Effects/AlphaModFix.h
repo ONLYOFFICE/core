@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,96 +43,29 @@ namespace PPTX
 		class AlphaModFix : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaModFix)
+			WritingElement_AdditionMethods(AlphaModFix)
 			PPTX_LOGIC_BASE2(AlphaModFix)
 
-			AlphaModFix& operator=(const AlphaModFix& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaModFix& operator=(const AlphaModFix& oSrc);
 
-				amt = oSrc.amt;
-				return *this;
-			}			
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaModFix;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("amt"), amt)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"amt", amt);
-				Normalize();
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual std::wstring toXML() const
-			{
-				if (amt.IsInit())
-				{
-					return L"<a:alphaModFix amt=\"" + std::to_wstring(*amt) + L"\"/>";
-				}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return L"";
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:alphaModFix");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"amt", amt);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:alphaModFix");
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (_at == 0)
-						amt = pReader->GetLong(); 
-					else break;
-				}
-				pReader->Seek(_e);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHAMODFIX);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, amt);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
 		public:
 			nullable_int amt;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				amt.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

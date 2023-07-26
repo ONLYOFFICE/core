@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -92,6 +92,7 @@ public:
 	std::wostream					& custom_views()		{ return xlsx_custom_views_; }
 	std::wostream					& workbook_format()		{ return xlsx_workbook_pr_; }	
 	std::wostream					& workbook_protection()	{ return xlsx_workbookProtection_; }
+	std::wostream					& workbook_calcpr()		{ return xlsx_workbookCalcPr_; }
 
 	xlsx_text_context				& get_text_context()	{ return text_context_; }
     xlsx_sheet_context				& get_sheet_context()	{ return sheet_context_; }
@@ -144,6 +145,7 @@ private:
 	std::wstringstream					xlsx_custom_views_;
 	std::wstringstream					xlsx_workbook_pr_;
 	std::wstringstream					xlsx_workbookProtection_;
+	std::wstringstream					xlsx_workbookCalcPr_;
 
     xlsx_drawing_context_handle			xlsx_drawing_context_handle_;
     xlsx_comments_context_handle		xlsx_comments_context_handle_;

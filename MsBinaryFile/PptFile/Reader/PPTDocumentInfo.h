@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,12 +33,16 @@
 
 #include "PPTDocumentInfoOneUser.h"
 
+namespace PPT
+{
+
 class CPPTDocumentInfo
 {
 public:
-	CCurrentUser					m_oCurrentUser;
+    _commonInfo*                    m_pCommonInfo = NULL;
+    
+    CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-    std::wstring					m_strTmpDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
 	bool							m_bMacros;
@@ -46,95 +50,12 @@ public:
 	std::wstring					m_app_xml;
 	std::wstring					m_core_xml;
 
-	CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true)
-	{
-	}
+    CPPTDocumentInfo();
+    ~CPPTDocumentInfo();
 
-	~CPPTDocumentInfo()
-	{
-		Clear();
-	}
+    void Clear();
 
-	void Clear()
-	{
-		size_t nCount = m_arUsers.size();
-		while(0 != nCount) 
-		{ 
-			if (NULL != m_arUsers[nCount-1])
-                RELEASEOBJECT(m_arUsers[nCount-1])
-			
-			m_arUsers.pop_back();
-			--nCount;
-		} 
-	}
-
-    bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream)
-	{
-		m_oCurrentUser.FromAtom(pCurrentUser);
-
-		_UINT32 offsetToEdit = m_oCurrentUser.m_nOffsetToCurrentEdit;
-		SRecordHeader oHeader;
-		CRecordUserEditAtom oUserAtom;
-
-		Clear();
-
-		size_t nCountUsers = 0;
-
-		while (0 < offsetToEdit) 
-		{
-			StreamUtils::StreamSeek(offsetToEdit, pStream);
-			
-			oHeader.ReadFromStream(pStream);
-			oUserAtom.ReadFromStream(oHeader, pStream);
-
-			CPPTUserInfo* pInfo			= new CPPTUserInfo();
-			
-			pInfo->m_strTmpDirectory	= m_strTmpDirectory;
-			pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
-			pInfo->m_strPassword		= m_strPassword;
-			pInfo->m_bMacros			= m_bMacros;
-           
-			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
-
-			m_bMacros					= pInfo->m_bMacros;
-			offsetToEdit				= pInfo->m_oUser.m_nOffsetLastEdit;
-			m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
-			
-			if (bResult == false)
-			{
-                delete pInfo;
-                pInfo = NULL;   // may not work
-
-				if (m_oCurrentUser.m_bIsEncrypt)
-					return false;
-				else
-					continue;
-			}
-			
-			m_arUsers.push_back(pInfo);
-			// теперь нужно выставить у него параметры для других юзеров
-			pInfo->m_pDocumentInfo = this;
-			pInfo->m_lIndexThisUser = m_arUsers.size() - 1;
-
-			pInfo = NULL;
-		}
-
-		return true;
-	}
-    bool LoadDocument(std::wstring strFolderMem)
-	{
-		if (m_arUsers.empty()) return false;
-		
-		try
-		{
-			m_arUsers[0]->ReadExtenalObjects(strFolderMem);
-			m_arUsers[0]->FromDocument();
-		}
-		catch(int) //error code
-		{
-			return false;
-		}
-
-		return true;
-	}
+    bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream);
+    bool LoadDocument();
 };
+}

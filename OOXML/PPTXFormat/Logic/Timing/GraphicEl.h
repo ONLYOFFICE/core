@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,86 +46,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(GraphicEl)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oNode;
-				
-				if (node.GetNode(_T("p:chart"), oNode))
-				{
-                    XmlMacroReadAttributeBase(oNode, L"bldStep", chartBuildStep);
-                    XmlMacroReadAttributeBase(oNode, L"seriesIdx", seriesIdx);
-                    XmlMacroReadAttributeBase(oNode, L"categoryIdx", categoryIdx);
-				}
-				else if (node.GetNode(_T("a:dgm"), oNode))
-				{
-                    XmlMacroReadAttributeBase(oNode, L"bldStep", dgmBuildStep);
-                    XmlMacroReadAttributeBase(oNode, L"id", dgmId);
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				if (chartBuildStep.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.WriteLimitNullable(_T("bldStep"), chartBuildStep);
-					oAttr.Write(_T("seriesIdx"), seriesIdx);
-					oAttr.Write(_T("categoryIdx"), categoryIdx);
-
-					return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("p:chart"), oAttr));
-				}
-
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("id"), dgmId);
-				oAttr.WriteLimitNullable(_T("bldStep"), dgmBuildStep);
-
-				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("a:dgm"), oAttr));
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteString2(0, dgmId);
-					pWriter->WriteLimit2(1, dgmBuildStep);
-					pWriter->WriteLimit2(2, chartBuildStep);
-					pWriter->WriteInt2(3, seriesIdx);
-					pWriter->WriteInt2(4, categoryIdx);
-					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	dgmId = pReader->GetString2();
-					else if (1 == _at)	dgmBuildStep = pReader->GetUChar();
-					else if (2 == _at)	chartBuildStep = pReader->GetUChar();
-					else if (3 == _at)	seriesIdx = pReader->GetLong();
-					else if (4 == _at)	categoryIdx = pReader->GetLong();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			//Dgm
 			nullable_string						dgmId;
@@ -135,8 +61,9 @@ namespace PPTX
 			nullable_limit<Limit::ChartBuild>	chartBuildStep;
 			nullable_int						seriesIdx;
 			nullable_int						categoryIdx;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

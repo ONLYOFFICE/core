@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,12 +33,15 @@
 #pragma once
 
 #include "../WritingElement.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../PPTXFormat/Logic/UniColor.h"
 #include "../../PPTXFormat/Logic/Colors/ColorModifier.h"
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx
@@ -46,116 +49,37 @@ namespace ChartEx
 	class CVariation : public WritingElementWithChilds<PPTX::Logic::ColorModifier>
 	{
 	public:
-		WritingElement_AdditionConstructors(CVariation)
+		WritingElement_AdditionMethods(CVariation)
 
-		CVariation() {}
+		CVariation();
 
-		virtual void fromXML(XmlUtils::CXmlNode& node) {}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if (oReader.IsEmptyNode())
-				return;
+		virtual void fromXML(XmlUtils::CXmlNode& node);
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
-			{
-				m_arrItems.push_back(new PPTX::Logic::ColorModifier());
-				m_arrItems.back()->fromXML(oReader);
-			}
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			writer.WriteString(L"<cs:variation>");
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+		virtual std::wstring toXML() const;
 
-			for (size_t i = 0; i < m_arrItems.size(); ++i)
-			{
-				if (m_arrItems[i])
-					writer.WriteString(m_arrItems[i]->toXML());
-			}
-			writer.WriteString(L"</cs:variation>");
-		}
-		virtual std::wstring toXML() const 
-		{
-			NSStringUtils::CStringBuilder writer;
-			toXML(writer);
-			return writer.GetData();
-		}
-		virtual EElementType getType()
-		{
-			return et_cs_Variation;
-		}
+		virtual EElementType getType();
 	};
+
 	//------------------------------------------------------------------------------
+
 	class CColorStyle : public OOX::WritingElementWithChilds<>
 	{
 	public:
-		CColorStyle() {}
+		CColorStyle();
 
-		WritingElement_AdditionConstructors(CColorStyle)
+		WritingElement_AdditionMethods(CColorStyle)
 
-		virtual void fromXML(XmlUtils::CXmlNode& node) {}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes(oReader);
+		virtual void fromXML(XmlUtils::CXmlNode& node);
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+		virtual std::wstring toXML() const;
 
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
-				else if (L"variation" == sName)
-				{
-					m_arrItems.push_back(new CVariation());
-					m_arrItems.back()->fromXML(oReader);
-				}
-				else
-				{
-					PPTX::Logic::UniColor *pColor = new PPTX::Logic::UniColor();
-					pColor->fromXML(oReader);
-					
-					m_arrItems.push_back(dynamic_cast<OOX::WritingElement*>(pColor));
-				}
-			}
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			writer.WriteString(L"<cs:colorStyle");
-				WritingStringAttrString(L"xmlns:cs", L"http://schemas.microsoft.com/office/drawing/2012/chartStyle");
-				WritingStringAttrString(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-				WritingStringNullableAttrString(L"meth", m_meth, *m_meth)
-				WritingStringNullableAttrInt(L"id", m_id, *m_id)
-			writer.WriteString(L">");
+		virtual EElementType getType() const;
 
-			for (size_t i = 0; i < m_arrItems.size(); ++i)
-			{
-				if (m_arrItems[i])
-					writer.WriteString(m_arrItems[i]->toXML());
-			}
-			writer.WriteString(L"</cs:colorStyle>");
-		}
-		virtual std::wstring toXML() const 
-		{
-			NSStringUtils::CStringBuilder writer;
-			toXML(writer);
-			return writer.GetData();
-		}
-		virtual EElementType getType() const
-		{
-			return et_cs_ColorStyle;
-		}
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_if(oReader, L"id", m_id)
-				WritingElement_ReadAttributes_Read_else_if(oReader, L"meth", m_meth)
-			WritingElement_ReadAttributes_End_No_NS(oReader)
-		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable_uint m_id;
 		nullable_string m_meth;

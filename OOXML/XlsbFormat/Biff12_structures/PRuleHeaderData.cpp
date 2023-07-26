@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -78,6 +78,31 @@ namespace XLSB
         if(fPart)
             record >> rfxLoc;
     }
+
+	void PRuleHeaderData::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBITS(flags, 0, 7, isxrtype)
+		SETBIT(flags, 8, fDataOnly)
+		SETBIT(flags, 9, fLabelOnly)
+		SETBIT(flags, 10, fGrandRw)
+		SETBIT(flags, 11, fGrandCol)
+		SETBIT(flags, 12, fCacheBased)
+		SETBIT(flags, 13, fLineMode)
+		SETBIT(flags, 14, fPart)
+		SETBIT(flags, 15, fFuzzy)
+		SETBIT(flags, 16, sxaxis.bRw)
+		SETBIT(flags, 17, sxaxis.bCol)
+		SETBIT(flags, 18, sxaxis.bPage)
+		SETBIT(flags, 19, sxaxis.bData)
+		SETBITS(flags, 20, 27, iDim)
+
+		record << isxvd << flags;
+
+		if (fPart)
+			record << rfxLoc;
+	}
 
 } // namespace XLSB
 

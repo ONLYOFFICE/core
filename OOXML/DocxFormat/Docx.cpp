@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,21 +40,76 @@
 #include "Styles.h"
 #include "Footnote.h"
 #include "Endnote.h"
-#include "Settings/WebSettings.h"
 #include "Settings/Settings.h"
-#include "External/HyperLink.h"
-#include "Media/Image.h"
-#include "Media/OleObject.h"
-#include "Media/ActiveX.h"
 #include "Media/VbaProject.h"
 #include "Media/JsaProject.h"
 #include "HeaderFooter.h"
 #include "CustomXml.h"
 
 #include "../PPTXFormat/Theme.h"
+#include "../../DesktopEditor/common/Directory.h"
 
-namespace OOX {
-	
+namespace OOX
+{
+	void CDocx::_part_summary::init()
+	{
+		document = NULL;
+		fontTable = NULL;
+		numbering = NULL;
+		styles = NULL;
+		footnotes = NULL;
+		endnotes = NULL;
+		settings = NULL;
+		comments = NULL;
+	}
+
+	CDocx::CDocx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
+	{
+		init();
+	}
+	CDocx::CDocx(const CPath& oFilePath) : OOX::IFileContainer(this)
+	{
+		init();
+		Read( oFilePath );
+	}
+	CDocx::~CDocx()
+	{
+		m_oMain.init();
+		m_oGlossary.init();
+
+		m_pApp = NULL;
+		m_pCore = NULL;
+		m_pTheme = NULL;
+
+		m_pCommentsExt = NULL;
+		m_pCommentsExtensible = NULL;
+		m_pCommentsIds = NULL;
+		m_pPeople = NULL;
+		m_pDocumentComments = NULL;
+		m_pDocumentCommentsExt = NULL;
+		m_pDocumentCommentsExtensible = NULL;
+		m_pDocumentPeople = NULL;
+		m_pDocumentCommentsIds = NULL;
+		m_pCommentsUserData = NULL;
+
+		m_pVbaProject = NULL;
+		m_pJsaProject = NULL;
+	}
+	bool CDocx::Write(const CPath& oFilePath)
+	{
+		// Создаем папку
+        std::wstring filePath = oFilePath.GetPath();
+        NSDirectory::CreateDirectory(filePath);
+
+		OOX::CRels         oRels;
+		OOX::CContentTypes oContent;
+
+		IFileContainer::Write( oRels, oFilePath, OOX::CPath( L"" ), oContent );
+		oRels.Write( oFilePath / FILE_SEPARATOR_STR );
+		oContent.Write( oFilePath );
+
+		return true;
+	}
     bool CDocx::Read(const CPath& oFilePath)
     {
 		m_sDocumentPath = oFilePath.GetPath();
@@ -134,5 +189,30 @@ namespace OOX {
 			}
 		}
 		return L"";
+	}
+	void CDocx::init()
+	{
+		m_oMain.init();
+		m_oGlossary.init();
+
+		m_pApp       = NULL;
+		m_pCore      = NULL;
+		m_pTheme     = NULL;
+
+		m_pCommentsExt	= NULL;
+		m_pCommentsExtensible	= NULL;
+		m_pCommentsIds	= NULL;
+		m_pPeople		= NULL;
+		m_pDocumentComments  = NULL;
+		m_pDocumentCommentsExt	= NULL;
+		m_pDocumentCommentsExtensible	= NULL;
+		m_pDocumentPeople		= NULL;
+		m_pDocumentCommentsIds	= NULL;
+		m_pCommentsUserData = NULL;
+
+		m_pVbaProject	= NULL;
+		m_pJsaProject	= NULL;
+
+		m_bGlossaryRead = false;
 	}
 }

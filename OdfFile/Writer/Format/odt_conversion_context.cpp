@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,6 +47,7 @@
 
 #include "office_text.h"
 #include "office_annotation.h"
+#include "office_meta.h"
 
 #include "paragraph_elements.h"
 #include "text_elements.h"
@@ -177,7 +178,7 @@ odf_comment_context* odt_conversion_context::comment_context()
 	return &comment_context_;
 }
 
-odf_style_context* odt_conversion_context::styles_context()	
+odf_style_context_ptr odt_conversion_context::styles_context()	
 {
 	if (text_context_.size() > 0)
 	{
@@ -210,21 +211,7 @@ odf_text_context* odt_conversion_context::text_context()
 		return main_text_context_;
 	}
 } 
-void odt_conversion_context::start_text_context()
-{
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, /*odf_conversion_context::*/styles_context()));
-	//объекты с текстом в колонтитулах
-	if (!new_text_context_)return;
 
-	text_context_.push_back(new_text_context_);
-}
-void odt_conversion_context::end_text_context()
-{
-	if (text_context_.size() > 0)
-	{
-		text_context_.pop_back();
-	}
-}
 void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
@@ -232,13 +219,13 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
         int count = (int)text.length();
 		drop_cap_state_.characters += count;
 		
-		style_text_properties * props = text_context()->get_text_properties();
+		text_format_properties * props = text_context()->get_text_properties();
 		if (props)
 		{
 			if (drop_cap_state_.inline_style == false)
 			{
-				std::wstring f_name = props->content_.fo_font_family_.get_value_or(L"Arial");
-				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
+				std::wstring f_name = props->fo_font_family_.get_value_or(L"Arial");
+				double f_size = props->fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
 					
 				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
@@ -258,31 +245,26 @@ void odt_conversion_context::add_to_root()
 	odf_element_state & state = text_context()->current_level_.back();
 	current_root_elements_.push_back(state);
 }
-void odt_conversion_context::start_drawings()
+void odt_conversion_context::start_drawing_context()
 {
-	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
-	if (!new_drawing_context_)return;
-	
-	new_drawing_context_->set_styles_context(styles_context());
+	odf_conversion_context::start_drawing_context();
 
-	new_drawing_context_->set_footer_state(is_footer_);
-	new_drawing_context_->set_header_state(is_header_);
-
-	drawing_context_.push_back(new_drawing_context_);
+	drawing_context()->set_footer_state(is_footer_);
+	drawing_context()->set_header_state(is_header_);
 }
 bool odt_conversion_context::start_math()
 {
 	if (false == math_context()->isEmpty()) return false;
 
-	start_drawings();
+	start_drawing_context();
 	return odf_conversion_context::start_math();
 }
 void odt_conversion_context::end_math()
 {
 	odf_conversion_context::end_math();
-	end_drawings();
+	end_drawing_context();
 }
-void odt_conversion_context::end_drawings()
+void odt_conversion_context::end_drawing_context()
 {
 	if (drawing_context_.empty()) return;
 
@@ -742,12 +724,35 @@ void odt_conversion_context::set_field_instr()
 		current_fields.back().in_span = false;
 		
 		std::wstring ref;
-		boost::match_results<std::wstring::const_iterator> res;
-		boost::wregex r2 (L"(\".*?\")+");	
-        if (boost::regex_search(instr, res, r2))
+		boost::wregex r2 (L"([\"'])(.+?)\\1");			
+
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), instr, r2);
+
+		if (b1 && !result1.empty())
         {
-            ref = res[1].str();
-			current_fields.back().value = ref.substr(1, ref.length() - 2);
+			std::list<std::wstring>::iterator it = result1.begin();
+			it++;
+
+			if (it != result1.end())
+			{
+				ref = *it;
+				if (ref.size() > 2)
+					current_fields.back().value = ref;
+
+				it++;
+				if (it != result1.end())
+				{
+					it++;
+					if (it != result1.end())
+					{
+						std::wstring ref2 = *it;
+
+						if (ref2.size() > 2)
+							current_fields.back().value += L"#" + ref2;
+					}
+				}
+			}
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
@@ -1025,9 +1030,9 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties	= style_->content_.get_style_section_properties();
+	style_section_properties* section_properties = style_->content_.add_get_style_section_properties();
 	
-	create_element(L"style", L"columns",section_properties->style_columns_,this);	
+	create_element(L"style", L"columns", section_properties->style_columns_,this);	
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -1057,8 +1062,8 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double, do
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties		= style_->content_.get_style_section_properties();
-	//section_properties->text_dont_balance_text_columns_	= true;
+	style_section_properties* section_properties = style_->content_.add_get_style_section_properties();
+	//section_properties->text_dont_balance_text_columns_ = true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -1265,8 +1270,6 @@ void odt_conversion_context::flush_section()
 }
 void odt_conversion_context::start_run(bool styled)
 {
-	if (is_hyperlink_ && text_context_.size() > 0) return;
-	
 	if (!current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
 	{
 		current_fields.back().status = 2;
@@ -1286,9 +1289,9 @@ void odt_conversion_context::start_run(bool styled)
 
 	if (drop_cap_state_.enabled)
 	{
-		style_text_properties *props = text_context()->get_text_properties();
-		if (props)
-			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get()));
+		text_format_properties *props = text_context()->get_text_properties();
+		if (props && drop_cap_state_.text_properties)
+			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get())->content_);
 
 	}
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
@@ -1299,8 +1302,6 @@ void odt_conversion_context::start_run(bool styled)
 }
 void odt_conversion_context::end_run()
 {
-	if (is_hyperlink_ && text_context_.size() > 0) return;
-
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)
 	{
 		end_field();
@@ -1543,15 +1544,15 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-style_text_properties* odt_conversion_context::get_drop_cap_properties() 
+text_format_properties* odt_conversion_context::get_drop_cap_properties()
 {
 	if (!drop_cap_state_.text_properties)
 	{
 		create_element(L"style", L"text-properties", drop_cap_state_.text_properties, this);
 	}
-	return dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get());
+	return &(dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get()))->content_;
 }
-void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
+void odt_conversion_context::start_drop_cap(paragraph_format_properties *paragraph_properties)
 {
 	if (drop_cap_state_.enabled) 
 		end_drop_cap(); // 2 подряд ваще возможны ???
@@ -1562,7 +1563,7 @@ void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragrap
 	drop_cap_state_.paragraph_properties = paragraph_properties;
 
 	office_element_ptr comm_elm;
-	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content_.style_drop_cap_, this);
+	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->style_drop_cap_, this);
 }
 
 void odt_conversion_context::set_drop_cap_lines(int lines)
@@ -1570,7 +1571,7 @@ void odt_conversion_context::set_drop_cap_lines(int lines)
 	if (!drop_cap_state_.enabled) return;
 	if (!drop_cap_state_.paragraph_properties) return;
 
-	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
+	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->style_drop_cap_.get());
 	if (drop_cap)drop_cap->style_lines_ = lines;
 
 	drop_cap_state_.lines = lines;
@@ -1586,7 +1587,7 @@ void odt_conversion_context::end_drop_cap()
 
 	if (drop_cap_state_.characters > 0 && drop_cap_state_.paragraph_properties)
 	{
-		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
+		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->style_drop_cap_.get());
 		if (drop_cap)
 		{
 			drop_cap->style_length_ = drop_cap_length(drop_cap_state_.characters);
@@ -1604,7 +1605,7 @@ void odt_conversion_context::end_drop_cap()
 			//		indent_percent = drop_cap_state_.paragraph_properties->content_.fo_text_indent_->get_percent()->get_value();
 			//}
 			
-			drop_cap_state_.paragraph_properties->content_.fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
+			drop_cap_state_.paragraph_properties->fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
 			//drop_cap_state_.characters * size_char;
 		}
 	}
@@ -1684,10 +1685,22 @@ void odt_conversion_context::end_table_header_rows()
 {
 	text_context()->end_element();
 }
-void odt_conversion_context::start_table_row(bool styled)
+void odt_conversion_context::start_table_row(bool styled, bool header)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"table-row", elm, this);
+
+	if (header && !table_row_header_state_)
+	{
+		start_table_header_rows();
+		table_row_header_state_ = true;
+	}
+
+	if (!header && table_row_header_state_)
+	{
+		end_table_header_rows();
+		table_row_header_state_ = false;
+	}
 
 	if (styled)
 	{

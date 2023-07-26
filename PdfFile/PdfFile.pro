@@ -7,7 +7,6 @@ TEMPLATE = lib
 
 CONFIG += shared
 CONFIG += plugin
-CONFIG += core_static_link_libstd
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
@@ -78,9 +77,11 @@ HEADERS += \
     Resources/Fontn022023l.h \
     Resources/Fontn022024l.h \
     Resources/Fonts050000l.h \
+    Resources/CMapMemory/cmap_memory.h \
     Resources/BaseFonts.h
 
 SOURCES += \
+    Resources/CMapMemory/cmap_memory.cpp \
     Resources/BaseFonts.cpp
 
 CONFIG += use_external_jpeg2000
@@ -99,7 +100,7 @@ use_external_jpeg2000 {
 #CONFIG += build_viewer_module
 build_viewer_module {
     DEFINES += BUILDING_WASM_MODULE \
-               TEST_AS_EXECUTABLE
+               TEST_CPP_BINARY
 
     HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
     SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
@@ -201,5 +202,4 @@ HEADERS += PdfFile.h \
 SOURCES += PdfFile.cpp \
            PdfWriter.cpp \
            PdfReader.cpp \
-           OnlineOfficeBinToPdf.cpp \
-           PdfWriter_empty.cpp
+           OnlineOfficeBinToPdf.cpp

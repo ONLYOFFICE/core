@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,7 +33,13 @@
 #ifndef OOX_POS_FILE_INCLUDE_H_
 #define OOX_POS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CEmu;
+}
 
 namespace OOX
 {
@@ -44,51 +50,21 @@ namespace OOX
 		class CPos : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPos)
-			CPos()
-			{
-			}
-			virtual ~CPos()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<xdr:pos"));
-				WritingStringNullableAttrInt64(L"x", m_oX, m_oX->ToEmu());
-				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->ToEmu());
-				writer.WriteString(_T("/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CPos)
+			CPos();
+			virtual ~CPos();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_FromTo;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"),      m_oX )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("y"),      m_oY )
-
-					WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
 			nullable<SimpleTypes::CEmu>			m_oX;
 			nullable<SimpleTypes::CEmu>			m_oY;

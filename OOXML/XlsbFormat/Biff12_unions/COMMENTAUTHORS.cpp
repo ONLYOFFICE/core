@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,9 +58,12 @@ namespace XLSB
     {
         if (proc.optional<BeginCommentAuthors>())
         {
-            m_BrtBeginCommentAuthors = elements_.back();
+            m_bBrtBeginCommentAuthors = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginCommentAuthors = false;
+
         int count = proc.repeated<CommentAuthor>(0, 0);
 
         while(count > 0)
@@ -71,12 +74,28 @@ namespace XLSB
         }
         if (proc.optional<EndCommentAuthors>())
         {
-            m_BrtEndCommentAuthors = elements_.back();
+            m_bBrtEndCommentAuthors = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCommentAuthors = false;
 
-        return m_BrtBeginCommentAuthors && m_BrtEndCommentAuthors;
+        return m_bBrtBeginCommentAuthors && m_bBrtEndCommentAuthors;
     }
+
+	const bool COMMENTAUTHORS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginCommentAuthors>();
+
+		for (auto &item : m_arBrtCommentAuthor)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndCommentAuthors>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

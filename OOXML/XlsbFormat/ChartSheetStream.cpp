@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -218,6 +218,51 @@ const bool ChartSheetStream::loadContent(BinProcessor& proc)
 			}break;
 		}
 	}
+
+	return true;
+}
+
+const bool ChartSheetStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginSheet>();
+
+	if (m_BrtDrawing != nullptr)
+		proc.mandatory(*m_BrtDrawing);
+
+	if (m_BrtLegacyDrawing != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawing);
+
+	if (m_BrtLegacyDrawingHF != nullptr)
+		proc.mandatory(*m_BrtLegacyDrawingHF);
+
+	if (m_CSVIEWS != nullptr)
+		proc.mandatory(*m_CSVIEWS);
+
+	if (m_BrtMargins != nullptr)
+		proc.mandatory(*m_BrtMargins);
+
+	if (m_BrtCsPageSetup != nullptr)
+		proc.mandatory(*m_BrtCsPageSetup);
+	
+	if (m_BrtCsProp != nullptr)
+		proc.mandatory(*m_BrtCsProp);
+
+	if (m_HEADERFOOTER != nullptr)
+		proc.mandatory(*m_HEADERFOOTER);
+
+	if (m_BrtCsProtectionIso != nullptr)
+		proc.mandatory(*m_BrtCsProtectionIso);
+
+	if (m_BrtCsProtection != nullptr)
+		proc.mandatory(*m_BrtCsProtection);
+
+	if (m_USERCSVIEWS != nullptr)
+		proc.mandatory(*m_USERCSVIEWS);
+
+	if (m_WEBPUBITEMS != nullptr)
+		proc.mandatory(*m_WEBPUBITEMS);
+
+	proc.mandatory<EndSheet>();
 
 	return true;
 }

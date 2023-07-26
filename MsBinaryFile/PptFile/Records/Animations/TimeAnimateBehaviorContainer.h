@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,48 +40,12 @@
 #include "TimeBehaviorContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeAnimateBehaviorContainer : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        SRecordHeader ReadHeader;
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-            m_oAnimateBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
-
-        ReadHeader.ReadFromStream(pStream) ;
-        if (ReadHeader.RecType == RT_TimeAnimationValueList)
-            m_oAnimateValueList.ReadFromStream ( ReadHeader, pStream );
-        else
-            StreamUtils::StreamSkipBack(8, pStream);
-
-
-        if ( m_oAnimateBehaviorAtom.m_bByPropertyUsed )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) )
-                m_oVarBy.ReadFromStream ( ReadHeader, pStream );
-        }
-
-        if ( m_oAnimateBehaviorAtom.m_bFromPropertyUsed )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) )
-                m_oVarFrom.ReadFromStream ( ReadHeader, pStream );
-        }
-
-        if ( m_oAnimateBehaviorAtom.m_bToPropertyUsed )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) )
-                m_oVarTo.ReadFromStream ( ReadHeader, pStream );
-        }
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-            m_oBehavior.ReadFromStream ( ReadHeader, pStream );
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream );
 
 public:
 

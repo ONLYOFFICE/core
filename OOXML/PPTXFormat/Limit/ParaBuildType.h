@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,44 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class ParaBuildType : public BaseLimit
-		{
-		public:
-			ParaBuildType()
-			{
-				m_strValue = _T("whole");
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("allAtOnce") == strValue) ||
-					(_T("cust") == strValue) ||
-					(_T("p") == strValue) ||
-					(_T("whole") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"allAtOnce" == m_strValue)	return 0;
-				if (L"cust" == m_strValue)		return 1;
-				if (L"p" == m_strValue)			return 2;
-				if (L"whole" == m_strValue)		return 3;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"allAtOnce"; break;
-				case 1: m_strValue = L"cust"; break;
-				case 2: m_strValue = L"p"; break;
-				case 3: m_strValue = L"whole"; break;
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(ParaBuildType)
 	} // namespace Limit
 } // namespace PPTX

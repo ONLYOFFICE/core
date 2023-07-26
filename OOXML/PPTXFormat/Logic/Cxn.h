@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,109 +40,33 @@ namespace PPTX
 		class Cxn : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Cxn)
+			WritingElement_AdditionMethods(Cxn)
 			PPTX_LOGIC_BASE2(Cxn)
 			
-			Cxn& operator=(const Cxn& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Cxn& operator=(const Cxn& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				x	= oSrc.x;
-				y	= oSrc.y;
-				ang	= oSrc.ang;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_cxn;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
 
-					if (sName == L"a:pos")
-					{
-						ReadAttributes2(oReader);
-					}
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("ang"), ang )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				ang = node.GetAttribute(_T("ang"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				XmlUtils::CXmlNode oPos;
-				if (node.GetNode(_T("a:pos"), oPos))
-				{
-					x = oPos.GetAttribute(_T("x"));
-					y = oPos.GetAttribute(_T("y"));
-				}
-			}
-
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:cxn ang=\"") + ang + _T("\"><a:pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></a:cxn>");
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:cxn"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("ang"), ang);
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(_T("a:pos"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x);
-				pWriter->WriteAttribute(_T("y"), y);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:pos"));
-
-				pWriter->EndNode(_T("a:cxn"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, x);
-				pWriter->WriteString1(1, y);
-				pWriter->WriteString1(2, ang);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			std::wstring x;
 			std::wstring y;
 			std::wstring ang;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			std::wstring GetODString()const
-			{
-				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\"/></cxn>");
-			}
+			std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

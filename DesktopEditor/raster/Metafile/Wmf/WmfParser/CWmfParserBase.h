@@ -58,6 +58,8 @@ namespace MetaFile
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
 		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -87,7 +89,9 @@ namespace MetaFile
 		void RegisterPoint(short shX, short shY);
 
 		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
-		void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage, unsigned int unRasterOperation);
+		void DrawImage(const TRect& oDestRect, const TRect& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
+
+		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRect& oNewRect);
 
 		void UpdateOutputDC();
 	private:

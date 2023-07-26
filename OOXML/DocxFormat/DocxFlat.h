@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,9 +31,7 @@
  */
 #pragma once
 
-
 #include "IFileContainer.h"
-#include "FileTypes.h"
 #include "../Common/SimpleTypes_Word.h"
 #include "../../DesktopEditor/common/File.h"
 
@@ -64,56 +62,24 @@ namespace OOX
 		CDocxFlat(const CPath& oFilePath);
 		virtual ~CDocxFlat();
 
-		virtual void read(const CPath& oFilePath)
-		{
-			XmlUtils::CXmlLiteReader oReader;
-			
-			if ( !oReader.FromFile( oFilePath.GetPath() ) )
-				return;
+		virtual void read(const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-			if ( !oReader.ReadNextNode() )
-				return;
+		virtual const OOX::FileType type() const;
 
-			fromXML(oReader);
-		}
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-			std::wstring sXml = toXML();
-			
-			NSFile::CFileBinary file;
-			file.CreateFileW(oFilePath.GetPath());
-			file.WriteStringUTF8(sXml);
-			file.CloseFile();
-		}
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::DocumentFlat;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& oNode)
-		{
-		}
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		virtual void fromXML(XmlUtils::CXmlNode& oNode);
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-        virtual std::wstring toXML() const
-		{
-			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
-			return sXml;
-		}
-		virtual EElementType getType() const
-		{
-			return et_w_wordDocument;
-		}
+		virtual std::wstring toXML() const;
+		virtual EElementType getType() const;
+
 		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
 		void ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader);
+
 //-----------------------------------------------------------------------
 		nullable<SimpleTypes::CXmlSpace> m_oSpace;
 

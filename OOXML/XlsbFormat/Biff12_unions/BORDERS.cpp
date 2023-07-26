@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -71,14 +71,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndBorders>())
-        {
-            m_BrtEndBorders = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndBorders>())
+		{
+			m_bBrtEndBorders = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndBorders = false;
 
-        return m_BrtBeginBorders && !m_arBrtBorder.empty() && m_BrtEndBorders;
+        return m_BrtBeginBorders && !m_arBrtBorder.empty() && m_bBrtEndBorders;
     }
+
+	const bool BORDERS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginBorders == nullptr)
+			m_BrtBeginBorders = XLS::BaseObjectPtr(new XLSB::BeginBorders());
+
+		if (m_BrtBeginBorders != nullptr)
+		{
+			auto ptrBrtBeginBorders = static_cast<XLSB::BeginBorders*>(m_BrtBeginBorders.get());
+
+			if (ptrBrtBeginBorders != nullptr)
+				ptrBrtBeginBorders->cborders = m_arBrtBorder.size();
+
+			proc.mandatory(*m_BrtBeginBorders);
+		}
+
+		for (auto &item : m_arBrtBorder)
+		{
+			proc.mandatory(*item);
+		}
+		
+		proc.mandatory<EndBorders>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

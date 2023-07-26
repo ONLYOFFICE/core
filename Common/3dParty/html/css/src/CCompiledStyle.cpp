@@ -490,4 +490,172 @@ namespace NSCSS
 		return m_sId;
 	}
 }
+=======
+    typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
+
+    CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Default){}
+
+
+    CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
+        m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
+        m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
+        m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackground(oStyle.m_pBackground),
+        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder), m_pDisplay(oStyle.m_pDisplay){}
+
+    CCompiledStyle::~CCompiledStyle()
+    {
+        m_arParentsStyles.clear();
+    }
+
+
+    CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
+    {
+        m_pBackground   += oElement.m_pBackground;
+        m_pBorder        = oElement.m_pBorder;
+        m_pFont         += oElement.m_pFont;
+        m_pMargin       += oElement.m_pMargin;
+        m_pText         += oElement.m_pText;
+        m_pDisplay      += oElement.m_pDisplay;
+
+        return *this;
+    }
+
+    CCompiledStyle& CCompiledStyle::operator= (const CCompiledStyle &oElement)
+    {
+        m_sId               = oElement.m_sId;
+        m_arParentsStyles   = oElement.m_arParentsStyles;
+
+        m_nDpi          = oElement.m_nDpi;
+        m_UnitMeasure   = oElement.m_UnitMeasure;
+
+        m_pBackground   = oElement.m_pBackground;
+        m_pBorder       = oElement.m_pBorder;
+        m_pFont         = oElement.m_pFont;
+        m_pMargin       = oElement.m_pMargin;
+        m_pText         = oElement.m_pText;
+        m_pDisplay      = oElement.m_pDisplay;
+
+        return *this;
+    }
+
+    bool CCompiledStyle::operator== (const CCompiledStyle& oStyle) const
+    {
+        return GetId()[0]        == oStyle.GetId()[0]        &&
+               m_arParentsStyles == oStyle.m_arParentsStyles &&
+               m_pBackground     == oStyle.m_pBackground     &&
+               m_pBorder         == oStyle.m_pBorder         &&
+               m_pFont           == oStyle.m_pFont           &&
+               m_pMargin         == oStyle.m_pMargin         &&
+               m_pText           == oStyle.m_pText           &&
+               m_pDisplay        == oStyle.m_pDisplay;
+    }
+
+    void CCompiledStyle::StyleEquation(CCompiledStyle &oFirstStyle, CCompiledStyle &oSecondStyle)
+    {
+        NSConstValues::NSCssProperties::Font::FontEquation(oFirstStyle.m_pFont, oSecondStyle.m_pFont);
+        NSConstValues::NSCssProperties::Margin::MarginEquation(oFirstStyle.m_pMargin, oSecondStyle.m_pMargin);
+        NSConstValues::NSCssProperties::Background::BackgroundEquation(oFirstStyle.m_pBackground, oSecondStyle.m_pBackground);
+        NSConstValues::NSCssProperties::Text::TextEquation(oFirstStyle.m_pText, oSecondStyle.m_pText);
+        NSConstValues::NSCssProperties::Border::BorderEquation(oFirstStyle.m_pBorder, oSecondStyle.m_pBorder);
+        NSConstValues::NSCssProperties::Display::DisplayEquation(oFirstStyle.m_pDisplay, oSecondStyle.m_pDisplay);
+
+        oFirstStyle.ClearImportants();
+        oSecondStyle.ClearImportants();
+    }
+
+    void CCompiledStyle::SetDpi(const unsigned short &uiDpi)
+    {
+        m_nDpi = uiDpi;
+    }
+
+    void CCompiledStyle::SetUnitMeasure(const UnitMeasure &enUnitMeasure)
+    {
+        m_UnitMeasure = enUnitMeasure;
+    }
+
+    void CCompiledStyle::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
+    {
+        m_oSourceWindow = oSizeWindow;
+    }
+
+    void CCompiledStyle::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_oDeviceWindow = oSizeWindow;
+    }
+
+    bool CCompiledStyle::Empty() const
+    {
+        return m_pBackground.Empty() && m_pBorder.Empty() &&
+               m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty() && m_pDisplay.Empty();
+    }
+
+    void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
+    {
+        AddStyle({{sProperty, sValue}}, unLevel, bHardMode);
+    }
+
+    void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
+    {
+        const bool bIsThereBorder = (m_pBorder.Empty()) ? false : true;
+        const float fSize = m_pFont.GetSize();
+
+        for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
+        {
+            std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+            SWITCH(pPropertie.first)
+            {
+                //FONT
+                CASE(L"font"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.c_str(), fSize), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetFont(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
+                        m_pFont.SetImportantAll(true);
+                    }
+                    break;
+                }
+                CASE(L"font-size"):
+                CASE(L"font-size-adjust"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second, fSize), unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetSize(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), fSize), unLevel, true);
+                        m_pFont.SetImportantSize(true);
+                    }
+                    break;
+                }
+
+                CASE(L"font-stretch"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStretch(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
+                        m_pFont.SetStretch(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                        m_pFont.SetImportantenStretch(true);
+                    }
+                    break;
+                }
+                CASE(L"font-style"):
+                {
+                    const size_t unPositionImp = pPropertie.second.find(L"!i");
+                    if (unPositionImp == std::wstring::npos)
+                    {
+                        m_pFont.SetStyle(pPropertie.second, unLevel, bHardMode);
+                    }
+                    else if (unPositionImp != 0)
+                    {
 

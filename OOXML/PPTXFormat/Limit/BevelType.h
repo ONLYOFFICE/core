@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,56 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class BevelType : public BaseLimit
-		{
-		public:
-			BevelType()
-			{
-				m_strValue = L"circle";
-			}
-
-			_USE_STRING_OPERATOR
-			
-			virtual void set(const std::wstring& strValue)
-			{
-				m_strValue = strValue;
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"angle" == m_strValue)			return 0;
-				if (L"artDeco" == m_strValue)		return 1;
-				if (L"circle" == m_strValue)		return 2;
-				if (L"convex" == m_strValue)		return 3;
-				if (L"coolSlant" == m_strValue)		return 4;
-				if (L"cross" == m_strValue)			return 5;
-				if (L"divot" == m_strValue)			return 6;
-				if (L"hardEdge" == m_strValue)		return 7;
-				if (L"relaxedInset" == m_strValue)	return 8;
-				if (L"riblet" == m_strValue)		return 9;
-				if (L"slope" == m_strValue)			return 10;
-				if (L"softRound" == m_strValue)		return 11;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				switch (val)
-				{
-					case 0:		m_strValue = L"angle";		break;
-					case 1:		m_strValue = L"artDeco";	break;
-					case 2:		m_strValue = L"circle";		break;
-					case 3:		m_strValue = L"convex";		break;
-					case 4:		m_strValue = L"coolSlant";	break;
-					case 5:		m_strValue = L"cross";		break;
-					case 6:		m_strValue = L"divot";		break;
-					case 7:		m_strValue = L"hardEdge";	break;
-					case 8:		m_strValue = L"relaxedInset";break;
-					case 9:		m_strValue = L"riblet";		break;
-					case 10:	m_strValue = L"slope";		break;
-					case 11:	m_strValue = L"softRound";	break;
-					default:	m_strValue = L"angle";
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(BevelType);
 	} // namespace Limit
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,7 @@
 #include "BinProcessor.h"
 #include "../Binary/CFStream.h"
 #include "../Binary/CFStreamCacheReader.h"
+#include "../Binary/CFStreamCacheWriter.h"
 #include "../Logic/Biff_structures/BiffString.h"
 
 
@@ -160,19 +161,17 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 			// We don't update ret_val here because we are reading to the copy of the object.
 			// And the real object will remain uninitialized
 			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)			
-			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */; 
-							it != wanted_objects.end();)
+			for (BaseObjectPtrList::iterator it = wanted_objects.begin(); it != wanted_objects.end();)
 			{
 				const BaseObjectPtr w_object = *it;				
-				if(w_object->read(reader_, parent_, false))
+				BaseObjectPtrList::iterator it_del = wanted_objects.end();
+				if (w_object->read(reader_, parent_, false))
 				{
-					// Remove successfully read object from the wanted objects list
-					wanted_objects.erase(++it);
+					it_del = it;
 				}
-				else
-				{
 					++it;
-				}
+				if (it_del != wanted_objects.end())
+					wanted_objects.erase(it_del);
 			}
 		}
 	}
@@ -262,6 +261,49 @@ void BinReaderProcessor::SetRecordPosition(const int position)
 {
   if (reader_)
       reader_->SetRecordPosition(position);
+}
+	
+// =========================== Writer ======================================
+
+
+BinWriterProcessor::BinWriterProcessor(StreamCacheWriterPtr writer, BaseObject* parent)
+	: writer_(writer),
+	BinProcessor(parent, writer ? writer->getGlobalWorkbookInfo() : NULL)
+{
+}
+
+const bool BinWriterProcessor::optional(BaseObject& object)
+{
+	return writeChild(object, false);
+}
+const bool BinWriterProcessor::mandatory(BaseObject& object)
+{
+	return writeChild(object, true);
+}
+
+// object_copy is necessary in case we haven't found the desired record and have to put it to the queue
+const bool BinWriterProcessor::writeChild(BaseObject& object, const bool is_mandatory)
+{
+	if (!writer_)
+		return false;
+
+	bool ret_val = false;
+	try
+	{
+		ret_val = object.write(writer_, parent_);
+		if (!ret_val && is_mandatory)
+		{
+			if (global_info_->decryptor)
+			{
+				if (global_info_->decryptor->IsVerify() == false)
+					return false;
+			}
+		}
+	}
+	catch (...)
+	{
+	}
+	return ret_val;
 }
 
 

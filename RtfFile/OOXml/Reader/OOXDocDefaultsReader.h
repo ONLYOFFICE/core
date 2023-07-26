@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,51 +30,17 @@
  *
  */
 #pragma once
-#include "OOXrPrReader.h"
-#include "OOXpPrReader.h"
 
+#include "OOXReaderBasic.h"
 #include "../../../OOXML/DocxFormat/Styles.h"
 
 class OOXDocDefaultsReader
 {
 private:
 	OOX::CDocDefaults* m_ooxDefaults;
-public: 
 
-	OOXDocDefaultsReader(OOX::CDocDefaults* ooxDefaults)
-	{
-		m_ooxDefaults = ooxDefaults;
-	}
+public:
+	OOXDocDefaultsReader(OOX::CDocDefaults* ooxDefaults);
 
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxDefaults == NULL) return false;
-
-		if (m_ooxDefaults->m_oRunPr.IsInit())
-		{
-			RtfCharProperty oNewProperty;
-			oNewProperty.SetDefaultOOX();
-			
-			OOXrPrReader orPrReader(m_ooxDefaults->m_oRunPr.GetPointer());
-			orPrReader.m_bDefStyle = false;
-			
-			if( true == orPrReader.Parse( oParam, oNewProperty ) )
-				oParam.oRtf->m_oDefaultCharProp = oNewProperty;
-		}
-		if (m_ooxDefaults->m_oParPr.IsInit())
-		{
-			RtfParagraphProperty oNewProperty;
-			OOXpPrReader opPrReader(m_ooxDefaults->m_oParPr.GetPointer());
-			
-			opPrReader.m_bDefStyle = false;
-			
-			//bool bStartNewSectoion;
-
-            CcnfStyle style;
-			
-            if( true == opPrReader.Parse( oParam, oNewProperty, style) )
-				oParam.oRtf->m_oDefaultParagraphProp = oNewProperty;
-		}
-		return true;
-	}
+	bool Parse( ReaderParameter oParam );
 };

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,7 +33,16 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../Common/ComplexTypes.h"
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class String;
+		class CDocPartBehavior;
+		class CDocPartGallery;
+	}
+}
 
 namespace OOX
 {
@@ -42,95 +51,69 @@ namespace OOX
 		class CDocPartTypes : public WritingElementWithChilds<ComplexTypes::Word::String>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartTypes)
-			CDocPartTypes(OOX::Document *pMain = NULL) : WritingElementWithChilds<ComplexTypes::Word::String>(pMain)
-			{
-			}
-			virtual ~CDocPartTypes() {}
+			WritingElement_AdditionMethods(CDocPartTypes)
+
+			CDocPartTypes(OOX::Document *pMain = NULL);
+			virtual ~CDocPartTypes();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_docPartTypes;
-			}
+			virtual EElementType getType() const;
 			
 			nullable_bool m_oAll;
-		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_ReadSingle(oReader, L"w:all", m_oAll)
-				WritingElement_ReadAttributes_End(oReader)
-			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 		class CDocPartBehaviors : public WritingElementWithChilds<ComplexTypes::Word::CDocPartBehavior>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartBehaviors)
-			CDocPartBehaviors(OOX::Document *pMain = NULL) : WritingElementWithChilds<ComplexTypes::Word::CDocPartBehavior>(pMain)
-			{
-			}
-			virtual ~CDocPartBehaviors() {}
+			WritingElement_AdditionMethods(CDocPartBehaviors)
+
+			CDocPartBehaviors(OOX::Document *pMain = NULL);
+			virtual ~CDocPartBehaviors();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_docPartBehaviors;
-			}
+			virtual EElementType getType() const;
 		};
+
 		class CDocPartCategory : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartCategory)
-			CDocPartCategory(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CDocPartCategory() {}
+			WritingElement_AdditionMethods(CDocPartCategory)
+
+			CDocPartCategory(OOX::Document *pMain = NULL);
+			virtual ~CDocPartCategory();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_docPartCategory;
-			}
+			virtual EElementType getType() const;
 
 			nullable<ComplexTypes::Word::String>			m_oName;
 			nullable<ComplexTypes::Word::CDocPartGallery>	m_oGallery;
 		};
+
 		class CDocPartPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartPr)
-			CDocPartPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CDocPartPr() {}
+			WritingElement_AdditionMethods(CDocPartPr)
+
+			CDocPartPr(OOX::Document *pMain = NULL);
+			virtual ~CDocPartPr();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_docPartPr;
-			}
+			virtual EElementType getType() const;
 
 			nullable<ComplexTypes::Word::String>	m_oName;
 			nullable<ComplexTypes::Word::String>	m_oDescription;
@@ -140,65 +123,54 @@ namespace OOX
 			nullable<CDocPartTypes>					m_oTypes;
 			nullable<CDocPartBehaviors>				m_oBehaviors;
 		};
+
 		class CDocPartBody : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPartBody)
-			CDocPartBody(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
+			WritingElement_AdditionMethods(CDocPartBody)
+
+			CDocPartBody(OOX::Document *pMain = NULL);
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_docPartBody;
-			}
+			virtual EElementType getType() const;
 		};
+
 		class CDocPart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocPart)
-			CDocPart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CDocPart() {}
+			WritingElement_AdditionMethods(CDocPart)
+
+			CDocPart(OOX::Document *pMain = NULL);
+			virtual ~CDocPart();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_docPart;
-			}
+			virtual EElementType getType() const;
+
 			nullable<CDocPartPr>	m_oDocPartPr;
 			nullable<CDocPartBody>	m_oDocPartBody;
 		};
+
 		class CDocParts : public WritingElementWithChilds<CDocPart>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDocParts)
-			CDocParts(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDocPart>(pMain)
-			{
-			}
-			virtual ~CDocParts()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const;
+			WritingElement_AdditionMethods(CDocParts)
 
-			virtual EElementType getType() const
-			{
-				return et_w_docParts;
-			}
+			CDocParts(OOX::Document *pMain = NULL);
+			virtual ~CDocParts();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 		};
+
 	} // namespace Logic
 } // namespace OOX
 

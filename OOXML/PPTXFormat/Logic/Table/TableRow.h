@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,136 +43,26 @@ namespace PPTX
 		class TableRow : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TableRow)
+			WritingElement_AdditionMethods(TableRow)
 
-			TableRow()
-			{
-			}
+			TableRow();
 
-			TableRow& operator=(const TableRow& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			TableRow& operator=(const TableRow& oSrc);
 
-				Height = oSrc.Height;
-				Cells = oSrc.Cells;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (strName == L"tc")
-					{
-						TableCell c;
-						Cells.push_back(c);
-						Cells.back().fromXML(oReader);
-					}			
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("h"),	Height)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Height = node.ReadAttributeInt(L"h");
-				XmlMacroLoadArray(node, _T("a:tc"), Cells, TableCell);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:tr"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"h", Height);
-				pWriter->EndAttributes();
-
-				size_t len = Cells.size();
-				for (size_t i = 0; i < len; ++i)
-					Cells[i].toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:tr"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, Height);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecordArray(0, 1, Cells);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							Height = pReader->GetLong();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							pReader->Skip(4);
-							LONG len = pReader->GetLong();
-							for (LONG i = 0; i < len; ++i)
-							{
-								pReader->Skip(1);
-								Cells.push_back(TableCell());
-								Cells[i].fromPPTY(pReader);
-							}
-							break;
-						}
-						default:
-							break;
-					}
-				}				
-
-				pReader->Seek(_end_rec);
-			}
-			
 			nullable_int				Height;
 			std::vector<TableCell>		Cells;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				size_t count = Cells.size();
-				for (size_t i = 0; i < count; ++i)
-					Cells[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -81,6 +81,8 @@ namespace MetaFile
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
 		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
 		bool            IsViewportFlippedY();
 		bool            IsViewportFlippedX();
 
@@ -224,7 +226,7 @@ namespace MetaFile
 		void HANDLE_EMR_POLYBEZIER(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
 		template<typename T> void HANDLE_EMR_POLYBEZIER_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints)
 		{
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
 
 			MoveTo(arPoints[0]);
@@ -238,7 +240,7 @@ namespace MetaFile
 		void HANDLE_EMR_POLYBEZIERTO(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
 		template<typename T> void HANDLE_EMR_POLYBEZIERTO_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints)
 		{
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
 
 			for (unsigned int unIndex = 0; unIndex < arPoints.size(); unIndex += 3)
@@ -293,7 +295,7 @@ namespace MetaFile
 				}
 			}
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
 		}
 		void HANDLE_EMR_POLYGON(TEmfRectL& oBounds, std::vector<TEmfPointL>& arPoints);
@@ -308,7 +310,7 @@ namespace MetaFile
 			for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
 				LineTo(arPoints[unIndex]);
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
 
 			ClosePath();
@@ -326,7 +328,7 @@ namespace MetaFile
 			for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
 				LineTo(arPoints[unIndex]);
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
 
 			DrawPath(true, false);
@@ -338,7 +340,7 @@ namespace MetaFile
 			for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
 				LineTo(arPoints[unIndex]);
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
 		}
 		void HANDLE_EMR_POLYPOLYGON(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointL>>& arPoints);
@@ -357,7 +359,7 @@ namespace MetaFile
 
 			DrawPath(true, true);
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
 		}
 		void HANDLE_EMR_POLYPOLYLINE(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointL>>& arPoints);
@@ -376,7 +378,7 @@ namespace MetaFile
 
 			DrawPath(true, false);
 
-			if (NULL != m_pInterpretator)
+			if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 				m_pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
 		}
 		//TODO: Реализовать сохранение полигонов в полигоне
@@ -386,6 +388,8 @@ namespace MetaFile
 		void HANDLE_EMR_SMALLTEXTOUT(TEmfSmallTextout& oText);
 		void HANDLE_EMR_STROKEANDFILLPATH(TEmfRectL& oBounds);
 		void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
+
+		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode);
 
 		void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);

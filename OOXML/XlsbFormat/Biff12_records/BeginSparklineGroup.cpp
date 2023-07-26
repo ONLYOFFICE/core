@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -82,6 +82,40 @@ namespace XLSB
 
         record >> dManualMax >> dManualMin >> dLineWeight >> isltype;
     }
+
+	void BeginSparklineGroup::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fDateAxis)
+		SETBITS(flags, 1, 2, fShowEmptyCellAsZero)
+		SETBIT(flags, 3, fMarkers)
+		SETBIT(flags, 4, fHigh)
+		SETBIT(flags, 5, fLow)
+		SETBIT(flags, 6, fFirst)
+		SETBIT(flags, 7, fLast)
+		SETBIT(flags, 8, fNegative)
+		SETBIT(flags, 9, fAxis)
+		SETBIT(flags, 10, fDisplayHidden)
+		SETBIT(flags, 11, fIndividualAutoMax)
+		SETBIT(flags, 12, fIndividualAutoMin)
+		SETBIT(flags, 13, fGroupAutoMax)
+		SETBIT(flags, 14, fGroupAutoMin)
+		SETBIT(flags, 15, fRTL)
+
+		record << FRTheader << flags;
+
+		brtcolorSeries.writeFields(record);
+		brtcolorNegative.writeFields(record);
+		brtcolorAxis.writeFields(record);
+		brtcolorMarkers.writeFields(record);
+		brtcolorFirst.writeFields(record);
+		brtcolorLast.writeFields(record);
+		brtcolorHigh.writeFields(record);
+		brtcolorLow.writeFields(record);
+
+		record << dManualMax << dManualMin << dLineWeight << isltype;
+	}
 
 } // namespace XLSB
 

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,7 +52,7 @@ namespace XLSB
 
     void WbProp::readFields(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT32 flags;
         record >> flags;
 
         f1904                    = GETBIT(flags, 0);
@@ -75,6 +75,31 @@ namespace XLSB
         record >> dwThemeVersion;
         record >> strName;
     }
+
+	void WbProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, f1904)
+		SETBIT(flags, 2, fHideBorderUnselLists)
+		SETBIT(flags, 3, fFilterPrivacy)
+		SETBIT(flags, 4, fBuggedUserAboutSolution)
+		SETBIT(flags, 5, fShowInkAnnotation)
+		SETBIT(flags, 6, fBackup)
+		SETBIT(flags, 7, fNoSaveSup)
+		SETBITS(flags, 8, 9, grbitUpdateLinks)
+		SETBIT(flags, 10, fHidePivotTableFList)
+		SETBIT(flags, 11, fPublishedBookItems)
+		SETBIT(flags, 12, fCheckCompat)
+		SETBITS(flags, 13, 14, mdDspObj);
+		SETBIT(flags, 15, fShowPivotChartFilter)
+		SETBIT(flags, 16, fAutoCompressPictures)
+		SETBIT(flags, 17, fRefreshAll)
+
+		record << flags;
+		record << dwThemeVersion;
+		record << strName;
+	}
 
 } // namespace XLSB
 

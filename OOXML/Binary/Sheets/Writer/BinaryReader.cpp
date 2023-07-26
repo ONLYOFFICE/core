@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,12 +49,22 @@
 #include "../../../PPTXFormat/App.h"
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
+#include "../../../PPTXFormat/Logic/Shape.h"
 
 #include "../../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../XlsxFormat/Drawing/Drawing.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
 #include "../../../XlsxFormat/Comments/Comments.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
+#include "../../../XlsxFormat/Styles/Fills.h"
+#include "../../../XlsxFormat/Styles/Fonts.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/CellStyles.h"
+#include "../../../XlsxFormat/Styles/TableStyles.h"
 #include "../../../XlsxFormat/CalcChain/CalcChain.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
@@ -68,6 +78,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../XlsxFormat/Slicer/SlicerCache.h"
@@ -557,9 +568,8 @@ int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 
 		READ1_DEF(length, res, this->ReadAltTextTable, pOfficeArtExtension->m_oAltTextTable.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
-		pOfficeArtExtension->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
-		pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+		pOfficeArtExtension->m_sUri = L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 		pTable->m_oExtLst.Init();
 		pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
@@ -1327,7 +1337,6 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		pOfficeArtExtension->m_oDxfs->m_oCount.Init();
 		pOfficeArtExtension->m_oDxfs->m_oCount->SetValue((unsigned int)pOfficeArtExtension->m_oDxfs->m_arrItems.size());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{46F421CA-312F-682f-3DD2-61675219B42D}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -1343,7 +1352,6 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oBufferedStream.GetUChar();//type
 		pOfficeArtExtension->m_oSlicerStyles->fromPPTY(&m_oBufferedStream);
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -2125,6 +2133,23 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	{
 		m_oWorkbook.m_oOleSize = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookTypes::FileSharing == type)
+	{
+		m_oWorkbook.m_oFileSharing.Init();
+		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
+	}
+	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
+	{	
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oExternalLinksAutoRefresh = m_oBufferedStream.GetBool();
+
+		pOfficeArtExtension->m_sUri = L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:xxlnp=\"http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_bMacroRead = true;
@@ -2192,7 +2217,6 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 
 		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCaches.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{BBE1A952-AA13-448e-AADC-164F8A28A991}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -2207,7 +2231,6 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 
 		READ1_DEF(length, res, this->ReadSlicerCaches, pOfficeArtExtension->m_oSlicerCachesExt.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{46BE6895-7355-4a93-B00E-2C351335B9C9}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 
@@ -2607,6 +2630,45 @@ int BinaryWorkbookTableReader::ReadConnectionWebPr(BYTE type, long length, void*
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadFileSharing(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CFileSharing* pFileSharing = static_cast<OOX::Spreadsheet::CFileSharing*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerFileSharing::AlgorithmName == type)
+	{
+		pFileSharing->m_oAlgorithmName.Init();
+		pFileSharing->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerFileSharing::SpinCount == type)
+	{
+		pFileSharing->m_oSpinCount.Init();
+		pFileSharing->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerFileSharing::HashValue == type)
+	{
+		pFileSharing->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::SaltValue == type)
+	{
+		pFileSharing->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::Password == type)
+	{
+		pFileSharing->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::UserName == type)
+	{
+		pFileSharing->m_oUserName= m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerFileSharing::ReadOnly == type)
+	{
+		pFileSharing->m_oReadOnlyRecommended = m_oBufferedStream.GetBool();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -2669,6 +2731,11 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
+	else if (c_oSerWorkbookPrTypes::UpdateLinks == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2676,7 +2743,7 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 int BinaryWorkbookTableReader::ReadBookViews(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::WorkbookView == type)
+	if (c_oSerWorkbookTypes::WorkbookView == type)
 	{
 		OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookView, pWorkbookView);
@@ -2699,64 +2766,55 @@ int BinaryWorkbookTableReader::ReadWorkbookView(BYTE type, long length, void* po
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadExternalReference(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+
+	OOX::Spreadsheet::CExternalLink *externalLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+	
+	if (c_oSerWorkbookTypes::ExternalBook == type)
+	{
+		externalLink->m_oExternalBook.Init();
+		READ1_DEF(length, res, this->ReadExternalBook, externalLink);
+	}
+	else if (c_oSerWorkbookTypes::OleLink == type)
+	{
+		externalLink->m_oOleLink.Init();
+		READ1_DEF(length, res, this->ReadOleLink, externalLink);
+	}
+	else if (c_oSerWorkbookTypes::DdeLink == type)
+	{
+		externalLink->m_oDdeLink.Init();
+		READ1_DEF(length, res, this->ReadDdeLink, externalLink->m_oDdeLink.GetPointer());
+	}
+	else if (c_oSerWorkbookTypes::ExternalFileKey == type)
+	{
+		externalLink->m_oFileKey = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorkbookTypes::ExternalInstanceId == type)
+	{
+		externalLink->m_oInstanceId = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadExternalReferences(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::ExternalBook == type)
+	if (c_oSerWorkbookTypes::ExternalReference == type)
 	{
 		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oExternalBook.Init();
-		READ1_DEF(length, res, this->ReadExternalBook, extLink);
-		if (extLink->m_oExternalBook->m_oRid.IsInit())
-		{
-			OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
-
-			smart_ptr<OOX::File> oCurFile(extLink);
-			const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
-
-			pExternalReference->m_oRid.Init();
-			pExternalReference->m_oRid->SetValue(oRId.get());
-
-
-			m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
-		}
-		else
-		{
-			RELEASEOBJECT(extLink)
-		}
-	}
-	else if(c_oSerWorkbookTypes::OleLink == type)
-	{
-		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oOleLink.Init();
-		READ1_DEF(length, res, this->ReadOleLink, extLink);
-		if (extLink->m_oOleLink->m_oRid.IsInit())
-		{
-			smart_ptr<OOX::File> oCurFile(extLink);
-			const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
-
-			OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
-			pExternalReference->m_oRid.Init();
-			pExternalReference->m_oRid->SetValue(oRId.get());
-			m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
-		}
-		else
-		{
-			RELEASEOBJECT(extLink)
-		}
-	}
-	else if(c_oSerWorkbookTypes::DdeLink == type)
-	{
-		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oDdeLink.Init();
-		READ1_DEF(length, res, this->ReadDdeLink, extLink->m_oDdeLink.GetPointer());
+		READ1_DEF(length, res, this->ReadExternalReference, extLink);
 
 		smart_ptr<OOX::File> oCurFile(extLink);
 		const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
 
 		OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
+
 		pExternalReference->m_oRid.Init();
 		pExternalReference->m_oRid->SetValue(oRId.get());
+		
 		m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
 	}
 	else
@@ -2876,16 +2934,63 @@ int BinaryWorkbookTableReader::ReadCalcPr(BYTE type, long length, void* poResult
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadExternalAlternateUrls(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+	if (!extLink) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+	if (!pExternalBook) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CAlternateUrls* altUrls = pExternalBook->m_oAlternateUrls.GetPointer();
+	if (!altUrls) return c_oSerConstants::ReadUnknown;
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_ExternalLinkTypes::AbsoluteUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+		
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oAbsoluteUrlRid.Init();
+		altUrls->m_oAbsoluteUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::RelativeUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oRelativeUrlRid.Init();
+		altUrls->m_oRelativeUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsDriveId == type)
+	{
+		altUrls->m_oDriveId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsItemId == type)
+	{
+		altUrls->m_oItemId = m_oBufferedStream.GetString3(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
 	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::Id == type)
+	if (c_oSer_ExternalLinkTypes::Id == type)
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
-		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, sName);
+		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
 		smart_ptr<OOX::File> oLinkFile(link);
 		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
 
@@ -2906,6 +3011,11 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 	{
 		pExternalBook->m_oSheetDataSet.Init();
 		READ1_DEF(length, res, this->ReadExternalSheetDataSet, pExternalBook->m_oSheetDataSet.GetPointer());
+	}
+	else if (c_oSer_ExternalLinkTypes::AlternateUrls == type)
+	{
+		pExternalBook->m_oAlternateUrls.Init();
+		READ1_DEF(length, res, this->ReadExternalAlternateUrls, extLink);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3108,6 +3218,7 @@ int BinaryWorkbookTableReader::ReadOleItem(BYTE type, long length, void* poResul
 int BinaryWorkbookTableReader::ReadDdeLink(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CDdeLink* ddeLink = static_cast<OOX::Spreadsheet::CDdeLink*>(poResult);
+	
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_DdeLinkTypes::DdeService == type)
 	{
@@ -3865,7 +3976,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	}
 	else
 	{
-		pOfficeArtExtensionCF->m_sUri.Init();
 		pOfficeArtExtensionCF->m_sUri = L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
 		pOfficeArtExtensionCF->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -3914,7 +4024,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	}
 	else
 	{
-		pOfficeArtExtensionDV->m_sUri.Init();
 		pOfficeArtExtensionDV->m_sUri = L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}";
 		pOfficeArtExtensionDV->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -3986,6 +4095,29 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadControls, &oControls);
 	//SEEK_TO_POS_END(oControls); ниже ...
 	SEEK_TO_POS_END2(); 
+//-------------------------------------------------------------------------------------------------------------
+	OOX::Spreadsheet::CUserProtectedRanges *pUserProtectedRanges = new OOX::Spreadsheet::CUserProtectedRanges();
+
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::UserProtectedRanges);
+	READ1_DEF(length, res, this->ReadUserProtectedRanges, pUserProtectedRanges);
+	SEEK_TO_POS_END2();
+
+	if (false == pUserProtectedRanges->m_arrItems.empty())
+	{
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		
+		pOfficeArtExtension->m_oUserProtectedRanges.reset(pUserProtectedRanges);
+		pOfficeArtExtension->m_sUri = L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}";
+		
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else
+	{
+		delete pUserProtectedRanges;
+	}
 //-------------------------------------------------------------------------------------------------------------
 	OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
 	OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
@@ -4073,7 +4205,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 
 		READ1_DEF(length, res, this->ReadSparklineGroups, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -4088,7 +4219,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		pOfficeArtExtension->m_oSlicerList.Init();
 		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerList.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
@@ -4102,7 +4232,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		pOfficeArtExtension->m_oSlicerListExt.Init();
 		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerListExt.GetPointer());
 
-		pOfficeArtExtension->m_sUri.Init();
 		pOfficeArtExtension->m_sUri = L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 
@@ -5389,7 +5518,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, NULL, false, true);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -5621,7 +5750,8 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 	{
 		OOX::CVmlDrawing::_vml_shape oVmlShape;
 		READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawing, &oVmlShape);
-		if(NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
+		
+		if (NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
 		{
 			PPTX::Logic::SpTreeElem* pSpTree = static_cast<PPTX::Logic::SpTreeElem*>(oVmlShape.pElement);
 			
@@ -5631,9 +5761,11 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 			oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+			oWriter.m_strId = oVmlShape.sXml;
+
+			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());
-			
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -6370,6 +6502,70 @@ int BinaryWorksheetsTableReader::ReadFormula(BYTE type, long length, void* poRes
 	else if(c_oSerFormulaTypes::Text == type)
 	{
 		pFormula->m_sText = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRanges(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRanges *pUserProtectedRanges = static_cast<OOX::Spreadsheet::CUserProtectedRanges*>(poResult);
+	
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_UserProtectedRange::UserProtectedRange == type)
+	{
+		OOX::Spreadsheet::CUserProtectedRange* pUserProtectedRange = new OOX::Spreadsheet::CUserProtectedRange();
+		READ1_DEF(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
+		pUserProtectedRanges->m_arrItems.push_back(pUserProtectedRange);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc *desc = static_cast<OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oSer_UserProtectedRangeDesc::Name == type)
+	{
+		desc->name = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRangeDesc::Id == type)
+	{
+		desc->id = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRange(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRange *pUserProtectedRange = static_cast<OOX::Spreadsheet::CUserProtectedRange*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_UserProtectedRange::Name == type)
+	{
+		pUserProtectedRange->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::Sqref == type)
+	{
+		pUserProtectedRange->m_oSqref = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::Text == type)
+	{
+		pUserProtectedRange->m_oText = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::User == type)
+	{
+		OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc desc;
+		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRangeDesc, &desc);
+		pUserProtectedRange->m_arUsers.push_back(desc);
+	}
+	else if (c_oSer_UserProtectedRange::UsersGroup == type)
+	{
+		OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc desc;
+		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRangeDesc, &desc);
+		pUserProtectedRange->m_arUsersGroups.push_back(desc);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7566,7 +7762,10 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
-				oCSVWriter.Start(sDstPathCSV);
+				
+				bResultOk = oCSVWriter.Start(sDstPathCSV);
+				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
+
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try

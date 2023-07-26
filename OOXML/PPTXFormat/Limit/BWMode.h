@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,70 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class BWMode : public BaseLimit
-		{
-		public:
-			BWMode()
-			{
-				m_strValue = L"auto";
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"auto"			== strValue) ||
-					(L"black"		== strValue) ||
-					(L"blackGray"	== strValue) ||
-					(L"blackWhite"	== strValue) ||
-					(L"clr"			== strValue) ||
-					(L"gray"			== strValue) ||
-					(L"grayWhite"	== strValue) ||
-					(L"hidden"		== strValue) ||
-					(L"invGray"		== strValue) ||
-					(L"ltGray"		== strValue) ||
-					(L"white"		== strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"auto" == m_strValue)		return 0;
-				if (L"black" == m_strValue)		return 1;
-				if (L"blackGray" == m_strValue)	return 2;
-				if (L"blackWhite" == m_strValue)return 3;
-				if (L"clr" == m_strValue)		return 4;
-				if (L"gray" == m_strValue)		return 5;
-				if (L"grayWhite" == m_strValue)	return 6;
-				if (L"hidden" == m_strValue)	return 7;
-				if (L"invGray" == m_strValue)	return 8;
-				if (L"ltGray" == m_strValue)	return 9;
-				if (L"white" == m_strValue)		return 10;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"auto"; break;
-				case 1: m_strValue = L"black"; break;
-				case 2: m_strValue = L"blackGray"; break;
-				case 3: m_strValue = L"blackWhite"; break;
-				case 4: m_strValue = L"clr"; break;
-				case 5: m_strValue = L"gray"; break;
-				case 6: m_strValue = L"grayWhite"; break;
-				case 7: m_strValue = L"hidden"; break;
-				case 8: m_strValue = L"invGray"; break;
-				case 9: m_strValue = L"ltGray"; break;
-				case 10: m_strValue = L"white"; break;
-				default:
-					m_strValue = L"auto";
-					break;
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(BWMode)
 	} // namespace Limit
 } // namespace PPTX

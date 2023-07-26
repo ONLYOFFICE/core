@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,22 +58,40 @@ namespace XLSB
     {
         if (proc.optional<BeginAutoSortScope>())
         {
-            m_BrtBeginAutoSortScope = elements_.back();
+            m_bBrtBeginAutoSortScope = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginAutoSortScope = false;
+
         if (proc.optional<PIVOTRULE>())
         {
             m_PIVOTRULE = elements_.back();
             elements_.pop_back();
         }
+
         if (proc.optional<EndAutoSortScope>())
         {
-            m_BrtEndAutoSortScope = elements_.back();
+            m_bBrtEndAutoSortScope = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndAutoSortScope = false;
 
-        return m_BrtBeginAutoSortScope && m_PIVOTRULE && m_BrtEndAutoSortScope;
+        return m_bBrtBeginAutoSortScope && m_PIVOTRULE && m_bBrtEndAutoSortScope;
     }
+
+	const bool AUTOSORTSCOPE::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginAutoSortScope>();
+
+		if (m_PIVOTRULE != nullptr)
+			proc.mandatory(*m_PIVOTRULE);
+
+		proc.mandatory<EndAutoSortScope>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

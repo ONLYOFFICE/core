@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,34 +41,15 @@ namespace Writers
 	class NumberingWriter
 	{
 		NSStringUtils::CStringBuilder	m_oWriter;
-		std::wstring			m_sDir;
+		std::wstring					m_sDir;
+
 	public:
 		NSStringUtils::CStringBuilder	m_oANum;
 		NSStringUtils::CStringBuilder	m_oNumList;
 
-		NumberingWriter( std::wstring sDir) : m_sDir(sDir)
-		{
-		}
-		bool IsEmpty()
-		{
-			return 0 == m_oANum.GetCurSize();
-		}
-		void Write(bool bGlossary = false)
-		{
-			if(IsEmpty()) return;
+		NumberingWriter(std::wstring sDir);
 
-			m_oWriter.WriteString(g_string_n_Start);
-			m_oWriter.Write(m_oANum);
-			m_oWriter.Write(m_oNumList);
-			m_oWriter.WriteString(g_string_n_End);
-
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("numbering.xml");
-
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath.GetPath());
-
-			oFile.WriteStringUTF8(m_oWriter.GetData());
-			oFile.CloseFile();
-		}
+		bool IsEmpty();
+		void Write(bool bGlossary = false);
 	};
 }

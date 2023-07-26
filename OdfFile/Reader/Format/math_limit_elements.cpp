@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,17 +70,22 @@ void math_msub::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSub>";
 
 		strm << L"<m:e>";
-			Context.is_need_e_ = false;
+
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
-			Context.is_need_e_ = false; //??
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sub>";
 
 	strm << L"</m:sSub>";
@@ -112,15 +117,21 @@ void math_msup::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSup>";
 
 		strm << L"<m:e>";
-			Context.is_need_e_ = false;
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sup>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSup>";
@@ -148,21 +159,31 @@ void math_msubsup::oox_convert(oox::math_context & Context)
 
 	strm << L"<m:sSubSup>";
 	
-	Context.is_need_e_ = false;
-
 		strm << L"<m:e>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+		
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sub>";
 
 		strm << L"<m:sup>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[2].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSubSup>";
@@ -262,7 +283,7 @@ void math_munderover::add_child_element( xml::sax * Reader, const std::wstring &
 void math_munderover::oox_convert(oox::math_context & Context)
 {//3 elements (+1)
 	if (content_.size() < 4)
-	{
+	{//??? 
 		return;
 	}
 	std::wstringstream strmTemp; 
@@ -355,18 +376,32 @@ void math_mover::oox_convert(oox::math_context & Context)
 
 	office_math_element* math_element = NULL;
 
+	int index_lim = content_.size() > 1 ? 1 : 0;
+	int index_e = content_.size() > 1 ? 0 : -1;
+
 	strm << L"<m:limUpp>";	
 		strm << L"<m:limUppPr/>";
 		strm << L"<m:e>";
 	
-		Context.is_need_e_ = false;
-
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_e && index_e >= 0)
+		{
+			Context.start_level();
+			
+			math_element = dynamic_cast<office_math_element*>(content_[index_e].get());
+			math_element->oox_convert(Context);
+			
+			Context.end_level();
+		}
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_lim && index_lim >= 0)
+		{
+			Context.start_level();
+
+			math_element = dynamic_cast<office_math_element*>(content_[index_lim].get());
+			math_element->oox_convert(Context);
+			Context.end_level();
+		}
 		strm << L"</m:lim>";
 	strm << L"</m:limUpp>";
 }
@@ -388,31 +423,40 @@ void math_munder::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
 
-	bool need_e = Context.is_need_e_;
-	if (need_e)
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"<m:e>";
 	}
-	Context.is_need_e_ = false;
+	Context.start_level();
+
+	int index_lim = content_.size() > 1 ? 1 : 0;
+	int index_e = content_.size() > 1 ? 0 : -1;
 
 	office_math_element* math_element = NULL;
 	strm << L"<m:limLow>";	
 		strm << L"<m:limLowPr/>";
 		strm << L"<m:e>";
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_e && index_e >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_e].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_lim && index_lim >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_lim].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:lim>";
 	strm << L"</m:limLow>";
 
-	if (need_e)
+	Context.end_level();
+	
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"</m:e>";
 	}
-	Context.is_need_e_ = need_e;
 }
 }
 }

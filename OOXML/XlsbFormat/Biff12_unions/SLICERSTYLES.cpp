@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndSlicerStyles>())
         {
-            m_BrtEndSlicerStyles = elements_.back();
+            m_bBrtEndSlicerStyles = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerStyles = false;
 
-        return m_BrtBeginSlicerStyles && m_BrtEndSlicerStyles;
+        return m_BrtBeginSlicerStyles && m_bBrtEndSlicerStyles;
     }
+
+	const bool SLICERSTYLES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSlicerStyles != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerStyles);
+
+		for (auto &item : m_arSLICERSTYLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerStyles>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

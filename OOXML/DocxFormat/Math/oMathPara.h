@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "oMathContent.h"
-#include "../Logic/Run.h"
 
 namespace OOX
 {	
@@ -45,68 +44,17 @@ namespace OOX
 		class COMathPara : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(COMathPara)
-			COMathPara(OOX::Document *pMain = NULL) : WritingElementWithChilds<WritingElement>(pMain)
-			{
-			}
+			WritingElement_AdditionMethods(COMathPara)
+
+			COMathPara(OOX::Document *pMain = NULL);
 			virtual ~COMathPara();
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-							if ( _T("w:r") == sName )
-								pItem = new CRun( oItem );
-							else if ( _T("m:oMath") == sName )
-								pItem = new COMath( oItem );
-							else if ( _T("m:oMathParaPr") == sName )
-								pItem = new COMathParaPr( oItem );
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = oReader.GetName();				
-					WritingElement *pItem = NULL;
-
-					if ( _T("m:oMath") == sName )
-						pItem = new COMath( oReader );
-					else if ( _T("m:oMathParaPr") == sName )
-						pItem = new COMathParaPr( oReader );
-					else if ( _T("w:r") == sName )
-						pItem = new CRun( oReader );
-
-					if ( pItem )
-						m_arrItems.push_back( pItem );
-					
-				}
-			}
 			virtual std::wstring toXML() const;
-			
-
-			virtual EElementType getType() const
-			{
-				return et_m_oMathPara;
-			}
+			virtual EElementType getType() const;
 		};
+
 	}//namespace Logic
 }//namespace OOX

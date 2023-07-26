@@ -704,6 +704,12 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
 	}
 
+	void CEmfInterpretatorArray::HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex> &arVertex, const std::vector<std::pair<int, int> > &arIndexes, unsigned int unFillMode)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMR_GRADIENTFILL(arVertex, arIndexes, unFillMode);
+	}
+
 	void CEmfInterpretatorArray::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)

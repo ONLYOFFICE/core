@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,14 +31,13 @@
  */
 #pragma once
 
-#include "Rels.h"
 #include "IFileContainer.h"
-#include "FileTypes.h"
 #include "../../DesktopEditor/common/Directory.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <sys/stat.h>
 #endif
+
 namespace PPTX
 {
 	class Theme;
@@ -83,43 +82,16 @@ namespace OOX
 			OOX::CSettings		*settings = NULL;					// Настройки         /settings.xml
 			OOX::CComments		*comments = NULL;					// Комментарии		 /comments.xml
 
-			void init()
-			{
-				document = NULL;
-				fontTable = NULL;
-				numbering = NULL;
-				styles = NULL;
-				footnotes = NULL;
-				endnotes = NULL;
-				settings = NULL;
-				comments = NULL;
-			}
+			void init();
 		};
-		CDocx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
-		{
-			init();
-		}
-		CDocx(const CPath& oFilePath) : OOX::IFileContainer(this)
-		{
-			init();
-			Read( oFilePath );
-		}
+
+		CDocx();
+		CDocx(const CPath& oFilePath);
+		virtual ~CDocx();
+
         bool Read(const CPath& oFilePath);
 		void FixAfterRead();
-        bool Write(const CPath& oFilePath)
-		{
-			// Создаем папку
-			NSDirectory::CreateDirectory(oFilePath.GetPath());
-
-			OOX::CRels         oRels;
-			OOX::CContentTypes oContent;
-
-			IFileContainer::Write( oRels, oFilePath, OOX::CPath( L"" ), oContent );
-			oRels.Write( oFilePath / FILE_SEPARATOR_STR );
-			oContent.Write( oFilePath );
-
-            return true;
-		}
+		bool Write(const CPath& oFilePath);
 
 		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId, bool glossary = false) const;
 		const std::wstring GetCustomSettings() const;
@@ -148,31 +120,8 @@ namespace OOX
 		OOX::JsaProject		*m_pJsaProject;
 		
 		PPTX::Theme			*m_pTheme;
+
 private:
-		void init()
-		{
-			m_oMain.init();
-			m_oGlossary.init();
-
-			m_pApp       = NULL;
-			m_pCore      = NULL;
-			m_pTheme     = NULL;
-
-			m_pCommentsExt	= NULL;
-			m_pCommentsExtensible	= NULL;
-			m_pCommentsIds	= NULL;
-			m_pPeople		= NULL;
-			m_pDocumentComments  = NULL;
-			m_pDocumentCommentsExt	= NULL;
-			m_pDocumentCommentsExtensible	= NULL;
-			m_pDocumentPeople		= NULL;
-			m_pDocumentCommentsIds	= NULL;
-			m_pCommentsUserData = NULL;
-			
-			m_pVbaProject	= NULL;
-			m_pJsaProject	= NULL;
-
-			m_bGlossaryRead = false;
-		}
+		void init();
 	};
 } // OOX

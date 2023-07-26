@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,42 +32,21 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
-#include "BuildAtom.h"
+#include "BuildListSubContainer.h"
 #include "DiagramBuildAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
-class CRecordDiagramBuildContainer : public CUnknownRecord
+class CRecordDiagramBuildContainer : public CRecordBuildListSubContainer
 {
 public:
-    CRecordDiagramBuildContainer()
-    {
+    CRecordDiagramBuildContainer();
+    ~CRecordDiagramBuildContainer();
 
-    }
-
-    ~CRecordDiagramBuildContainer()
-    {
-
-    }
-
-    void ReadFromStream(SRecordHeader &thisHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = thisHeader;
-
-
-        SRecordHeader oHeader;
-        if (oHeader.ReadFromStream(pStream))
-            m_oBuildAtom.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            m_oDiagramBuildAtom.ReadFromStream ( oHeader, pStream );
-
-    }
+    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override;
 
 public:
-    CRecordBuildAtom            m_oBuildAtom;
     CRecordDiagramBuildAtom     m_oDiagramBuildAtom;
 };
 }

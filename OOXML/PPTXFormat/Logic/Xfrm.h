@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,372 +40,33 @@ namespace PPTX
 		class Xfrm : public WrapperWritingElement
 		{
 		public:
-			Xfrm()	
-			{
-				node_name = L"a:xfrm";
-			}
-			virtual ~Xfrm() {}
-			explicit Xfrm(XmlUtils::CXmlNode& node)			{ fromXML(node); }
-			explicit Xfrm(XmlUtils::CXmlLiteReader& oReader){ fromXML(oReader); }
-			const Xfrm& operator =(XmlUtils::CXmlNode& node)
-			{
-				fromXML(node);
-				return *this;
-			}
-			Xfrm(const Xfrm& oSrc) { *this = oSrc; }
+			Xfrm();
+			virtual ~Xfrm();
+			explicit Xfrm(XmlUtils::CXmlNode& node);
+			explicit Xfrm(XmlUtils::CXmlLiteReader& oReader);
+
+			const Xfrm& operator =(XmlUtils::CXmlNode& node);
+			const Xfrm& operator =(XmlUtils::CXmlLiteReader& oReader);
+			Xfrm(const Xfrm& oSrc);
 			
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_xfrm;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				node_name = oReader.GetName();
-				
-				ReadAttributes(oReader);
+			virtual OOX::EElementType getType () const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes1(XmlUtils::CXmlLiteReader& oReader, nullable_int & x, nullable_int & y);
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, nullable_int & cx, nullable_int & cy);
 
-					if (sName == L"a:off")
-						ReadAttributes1(oReader, offX, offY);
-					else if (sName == L"a:ext")
-						ReadAttributes2(oReader, extX, extY);
-					else if (sName == L"a:chOff")
-						ReadAttributes1(oReader, chOffX, chOffY);
-					else if (sName == L"a:chExt")
-						ReadAttributes2(oReader, chExtX, chExtY);
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("flipH"), flipH)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("flipV"), flipV )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rot"), rot )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			void ReadAttributes1(XmlUtils::CXmlLiteReader& oReader, nullable_int & x, nullable_int & y)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, nullable_int & cx, nullable_int & cy)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("cx"), cx )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cy"), cy )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				node_name = node.GetName();
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				XmlMacroReadAttributeBase(node, L"flipH", flipH);
-				XmlMacroReadAttributeBase(node, L"flipV", flipV);
-				XmlMacroReadAttributeBase(node, L"rot", rot);
+			void Merge(nullable<Xfrm>& xfrm) const;
 
-				XmlUtils::CXmlNode oNodeOff;
-				if(node.GetNode(_T("a:off"), oNodeOff))
-				{
-					XmlMacroReadAttributeBase(oNodeOff, L"x", offX);
-					XmlMacroReadAttributeBase(oNodeOff, L"y", offY);
-				}
-				XmlUtils::CXmlNode oNodeExt;
-				if(node.GetNode(_T("a:ext"), oNodeExt))
-				{
-					XmlMacroReadAttributeBase(oNodeExt, L"cx", extX);
-					XmlMacroReadAttributeBase(oNodeExt, L"cy", extY);
-				}
-				XmlUtils::CXmlNode oNodeChOff;
-				if(node.GetNode(_T("a:chOff"), oNodeChOff))
-				{
-					XmlMacroReadAttributeBase(oNodeChOff, L"x", chOffX);
-					XmlMacroReadAttributeBase(oNodeChOff, L"y", chOffY);
-				}
-				XmlUtils::CXmlNode oNodeChExt;
-				if(node.GetNode(_T("a:chExt"), oNodeChExt))
-				{
-					XmlMacroReadAttributeBase(oNodeChExt, L"cx", chExtX);
-					XmlMacroReadAttributeBase(oNodeChExt, L"cy", chExtY);
-				}
-				Normalize();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"rot", rot);
-				oAttr.Write(L"flipH", flipH);
-				oAttr.Write(L"flipV", flipV);
-
-				XmlUtils::CNodeValue oValue;
-				
-				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(L"x", offX);
-				oAttr1.Write(L"y", offY);
-
-				XmlUtils::CAttribute oAttr2;
-				oAttr2.Write(_T("cx"), extX);
-				oAttr2.Write(_T("cy"), extY);
-
-				XmlUtils::CAttribute oAttr3;
-				oAttr3.Write(_T("x"), chOffX);
-				oAttr3.Write(_T("y"), chOffY);
-
-				XmlUtils::CAttribute oAttr4;
-				oAttr4.Write(_T("cx"), chExtX);
-				oAttr4.Write(_T("cy"), chExtY);
-
-				std::wstring strValue = _T("");
-				
-				if (_T("") != oAttr1.m_strValue)
-					strValue += XmlUtils::CreateNode(_T("a:off"), oAttr1);
-				if (_T("") != oAttr2.m_strValue)
-					strValue += XmlUtils::CreateNode(_T("a:ext"), oAttr2);
-				if (_T("") != oAttr3.m_strValue)
-					strValue += XmlUtils::CreateNode(_T("a:chOff"), oAttr3);
-				if (_T("") != oAttr4.m_strValue)
-					strValue += XmlUtils::CreateNode(_T("a:chExt"), oAttr4);
-				
-				return XmlUtils::CreateNode(node_name, oAttr, strValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(node_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("rot"), rot);
-				pWriter->WriteAttribute(_T("flipH"), flipH);
-				pWriter->WriteAttribute(_T("flipV"), flipV);
-				pWriter->EndAttributes();
-				
-				if (offX.is_init() || offY.is_init())
-				{
-					pWriter->StartNode(_T("a:off"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("x"), offX);
-					pWriter->WriteAttribute(_T("y"), offY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:off"));
-				}
-
-				if (extX.is_init() || extY.is_init())
-				{
-					pWriter->StartNode(_T("a:ext"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("cx"), extX);
-					pWriter->WriteAttribute(_T("cy"), extY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:ext"));
-				}
-
-				if (chOffX.is_init() || chOffY.is_init())
-				{
-					pWriter->StartNode(_T("a:chOff"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("x"), chOffX);
-					pWriter->WriteAttribute(_T("y"), chOffY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:chOff"));
-				}
-
-				if (chExtX.is_init() || chExtY.is_init())
-				{
-					pWriter->StartNode(_T("a:chExt"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("cx"), chExtX);
-					pWriter->WriteAttribute(_T("cy"), chExtY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:chExt"));
-				}
-
-				pWriter->EndNode(node_name);
-			}
-
-			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(strNS + L":xfrm");
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("rot"), rot);
-				pWriter->WriteAttribute(_T("flipH"), flipH);
-				pWriter->WriteAttribute(_T("flipV"), flipV);
-				pWriter->EndAttributes();
-				
-				if (offX.is_init() || offY.is_init())
-				{
-					pWriter->StartNode(_T("a:off"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("x"), offX);
-					pWriter->WriteAttribute(_T("y"), offY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:off"));
-				}
-
-				if (extX.is_init() || extY.is_init())
-				{
-					pWriter->StartNode(_T("a:ext"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("cx"), extX);
-					pWriter->WriteAttribute(_T("cy"), extY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:ext"));
-				}
-
-				if (chOffX.is_init() || chOffY.is_init())
-				{
-					pWriter->StartNode(_T("a:chOff"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("x"), chOffX);
-					pWriter->WriteAttribute(_T("y"), chOffY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:chOff"));
-				}
-
-				if (chExtX.is_init() || chExtY.is_init())
-				{
-					pWriter->StartNode(_T("a:chExt"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("cx"), chExtX);
-					pWriter->WriteAttribute(_T("cy"), chExtY);
-					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:chExt"));
-				}
-
-				pWriter->EndNode(strNS + _T(":xfrm"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, offX);
-				pWriter->WriteInt2(1, offY);
-				pWriter->WriteInt2(2, extX);
-				pWriter->WriteInt2(3, extY);
-				pWriter->WriteInt2(4, chOffX);
-				pWriter->WriteInt2(5, chOffY);
-				pWriter->WriteInt2(6, chExtX);
-				pWriter->WriteInt2(7, chExtY);
-				pWriter->WriteBool2(8, flipH);
-				pWriter->WriteBool2(9, flipV);
-				pWriter->WriteInt2(10, rot);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							offX = pReader->GetLong();
-							break;
-						}
-						case 1:
-						{
-							offY = pReader->GetLong();
-							break;
-						}
-						case 2:
-						{
-							extX = pReader->GetLong();
-							break;
-						}
-						case 3:
-						{
-							extY = pReader->GetLong();
-							break;
-						}
-						case 4:
-						{
-							chOffX = pReader->GetLong();
-							break;
-						}
-						case 5:
-						{
-							chOffY = pReader->GetLong();
-							break;
-						}
-						case 6:
-						{
-							chExtX = pReader->GetLong();
-							break;
-						}
-						case 7:
-						{
-							chExtY = pReader->GetLong();
-							break;
-						}
-						case 8:
-						{
-							flipH = pReader->GetBool();
-							break;
-						}
-						case 9:
-						{
-							flipV = pReader->GetBool();
-							break;
-						}
-						case 10:
-						{
-							rot = pReader->GetLong();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-			void Merge(nullable<Xfrm>& xfrm)const
-			{
-				if(!xfrm.IsInit())
-					xfrm = new Xfrm();
-				if(offX.IsInit())
-					xfrm->offX = *offX;
-				if(offY.IsInit())
-					xfrm->offY = *offY;
-				if(extX.IsInit())
-					xfrm->extX = *extX;
-				if(extY.IsInit())
-					xfrm->extY = *extY;
-				if(chOffX.IsInit())
-					xfrm->chOffX = *chOffX;
-				if(chOffY.IsInit())
-					xfrm->chOffY = *chOffY;
-				if(chExtX.IsInit())
-					xfrm->chExtX = *chExtX;
-				if(chExtY.IsInit())
-					xfrm->chExtY = *chExtY;
-				if(flipH.IsInit())
-					xfrm->flipH = *flipH;
-				if(flipV.IsInit())
-					xfrm->flipV = *flipV;
-				if(rot.IsInit())
-					xfrm->rot = *rot;
-			}
 			nullable_int		offX;
 			nullable_int		offY;
 			nullable_int		extX;
@@ -420,16 +81,10 @@ namespace PPTX
 			nullable_int		rot;
 
 			std::wstring		node_name;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				extX.normalize_positive();
-				extY.normalize_positive();
-				chExtX.normalize_positive();
-				chExtY.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

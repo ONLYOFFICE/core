@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -53,52 +53,19 @@ namespace PPTX
 			PPTX_LOGIC_BASE(HeadingVariant)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(_T("i4"));
-				if (oNode.IsValid())
-				{
-					m_type		= L"i4";
-					m_iContent	= oNode.GetTextExt();
-				}
-				else
-				{
-					m_type		 = L"lpstr";
-					m_strContent =	 node.ReadNodeNoNS(_T("lpstr")).GetTextExt();
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				if (m_type.IsInit() && (m_type->get() == _T("i4")))
-				{
-                    return _T("<vt:variant><vt:i4>") + std::to_wstring(*m_iContent) + _T("</vt:i4></vt:variant>");
-				}
-				return _T("<vt:variant><vt:lpstr>") + *m_strContent + _T("</vt:lpstr></vt:variant>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("vt:variant"));
-				pWriter->EndAttributes();
-
-				if (m_type.IsInit() && (m_type->get() == _T("i4")))
-				{
-					pWriter->WriteNodeValue(_T("vt:i4"), *m_iContent);
-				}
-				else
-				{
-					pWriter->WriteNodeValue(_T("vt:lpstr"), *m_strContent);
-				}
-
-				pWriter->EndNode(_T("vt:variant"));
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			nullable_limit<Limit::VariantType>		m_type;
 			nullable_string							m_strContent;
 			nullable_int							m_iContent;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
+
 		class CVariantVStream : public WrapperWritingElement
 		{
 		public:
@@ -117,6 +84,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+
 		class CVariant : public WrapperWritingElement
 		{
 		public:
@@ -146,6 +114,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+
 		class CVariantVector : public WrapperWritingElement
 		{
 		public:
@@ -166,6 +135,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
+
 		class CVariantArray : public WrapperWritingElement
 		{
 		public:

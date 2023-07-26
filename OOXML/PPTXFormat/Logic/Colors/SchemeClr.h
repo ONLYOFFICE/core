@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,24 +42,16 @@ namespace PPTX
 		class SchemeClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(SchemeClr)
+			WritingElement_AdditionMethods(SchemeClr)
 			PPTX_LOGIC_BASE2(SchemeClr)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_schemeClr;
-			}	
+			virtual OOX::EElementType getType() const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;
@@ -73,49 +65,36 @@ namespace PPTX
 
 		public:
 			Limit::SchemeClrVal val;
+
 		private:
 			void FillRGBFromVal(DWORD rgb);
 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
+
 		class StyleClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(StyleClr)
+			WritingElement_AdditionMethods(StyleClr)
 			PPTX_LOGIC_BASE2(StyleClr)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_styleClr;
-			}
+			virtual OOX::EElementType getType() const;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string sVal;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_ReadAttributes_Start_No_NS(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, L"val", sVal)
-				WritingElement_ReadAttributes_End_No_NS(oReader)
-
-				if (sVal.IsInit())
-				{
-					if (*sVal == L"auto") bAuto = true;
-					else
-						val = *sVal;
-				}
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 			nullable_uint val;
 			bool bAuto = false;
+
 		protected:
-			virtual void FillParentPointersForChilds() {};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

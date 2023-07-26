@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,15 +30,23 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_HYPERLINK_INCLUDE_H_
-#define OOX_LOGIC_HYPERLINK_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/ComplexTypes.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CRelationshipId;
+}
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class CMatchSrc;
+	}
+}
 
 namespace OOX
 {
@@ -50,54 +58,22 @@ namespace OOX
 		class CHyperlink : public WritingElementWithChilds<>
 		{
 		public:
-			CHyperlink(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CHyperlink(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CHyperlink(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CHyperlink()
-			{
-			}
-			const CHyperlink &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CHyperlink &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void ClearItems()
-			{
-				m_sAnchor.reset();
-				m_sDocLocation.reset();
-				m_oHistory.reset();
-				m_oId.reset();
-				m_sTgtFrame.reset();
-				m_sTooltip.reset();
-				m_sDestinition.reset();
+			CHyperlink(OOX::Document *pMain = NULL);			
+			virtual ~CHyperlink();
 
-				WritingElementWithChilds::ClearItems();
-			}
+			const CHyperlink &operator =(const XmlUtils::CXmlNode& oNode);
+			const CHyperlink &operator =(const XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void ClearItems();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_hyperlink;
-			}
+			virtual EElementType getType() const;
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string											m_sAnchor;
 			nullable_string											m_sDestinition;
@@ -107,58 +83,47 @@ namespace OOX
 			nullable_string											m_sTgtFrame;
 			nullable_string											m_sTooltip;
 		};
+
 		//--------------------------------------------------------------------------------
 		// AltChunkPr 17.17.2.2 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CAltChunkPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAltChunkPr)
-			CAltChunkPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CAltChunkPr()
-			{
-			}
+			WritingElement_AdditionMethods(CAltChunkPr)
+
+			CAltChunkPr(OOX::Document *pMain = NULL);
+			virtual ~CAltChunkPr();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_altChunkPr;
-			}
+			virtual EElementType getType() const;
+
 			nullable<ComplexTypes::Word::CMatchSrc> m_oMatchSrc;
 		};
+
 		//--------------------------------------------------------------------------------
 		// AltChunk 17.17.2.1 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CAltChunk : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAltChunk)
-			CAltChunk(OOX::Document *pMain) : WritingElement(pMain)
-			{
-			}
-			virtual ~CAltChunk()
-			{
-			}
+			WritingElement_AdditionMethods(CAltChunk)
+
+			CAltChunk();
+			CAltChunk(OOX::Document *pMain);
+			virtual ~CAltChunk();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_altChunk;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if( oReader, L"id", m_oId)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<CAltChunkPr>					m_oAltChunkPr;
@@ -168,4 +133,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_HYPERLINK_INCLUDE_H_

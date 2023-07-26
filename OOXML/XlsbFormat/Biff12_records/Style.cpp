@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "Style.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 
@@ -69,6 +69,25 @@ namespace XLSB
         record >> str;
         stName = str.value();
     }
+
+	void Style::writeFields(XLS::CFRecord& record)
+	{
+		record << ixf;
+
+		_UINT16 flag = 0;
+
+		SETBIT(flag, 0, fBuiltIn)
+		SETBIT(flag, 1, fHidden)
+		SETBIT(flag, 2 , fCustom)
+
+		record << flag;
+
+		record << iStyBuiltIn;
+		record << iLevel;
+
+		XLNullableWideString str(stName);
+		record << str;
+	}
 
 } // namespace XLSB
 

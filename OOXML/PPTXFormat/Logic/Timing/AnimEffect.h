@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,88 +47,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimEffect)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-            {
-                XmlMacroReadAttributeBase(node, L"transition", transition);
-                XmlMacroReadAttributeBase(node, L"filter", filter);
-                XmlMacroReadAttributeBase(node, L"prLst", prLst);
-				
-				cBhvr		= node.ReadNode(_T("p:cBhvr"));
-				progress	= node.ReadNodeNoNS(_T("progress"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-                oAttr.WriteLimitNullable(_T("transition"), transition);
-				oAttr.Write(_T("filter"), filter);
-				oAttr.Write(_T("prLst"), prLst);
+			virtual OOX::EElementType getType() const;
 
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cBhvr);
-				oValue.WriteNullable(progress);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				return XmlUtils::CreateNode(_T("p:animEffect"), oAttr, oValue);
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_animEffect;
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, transition);
-				pWriter->WriteString2(1, filter);
-				pWriter->WriteString2(2, prLst);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, cBhvr);
-				pWriter->WriteRecord2(1, progress);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	transition = pReader->GetUChar();
-					else if (1 == _at)	filter = pReader->GetString2();
-					else if (2 == _at)	prLst = pReader->GetString2();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						cBhvr.fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						progress.Init(); progress->node_name = L"progress";
-						progress->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			CBhvr cBhvr;			
 			nullable<AnimVariant>				progress;
@@ -138,12 +65,7 @@ namespace PPTX
 			nullable_string						prLst;
 
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cBhvr.SetParentPointer(this);
-				if(progress.IsInit())
-					progress->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

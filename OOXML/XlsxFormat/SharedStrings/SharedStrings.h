@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,20 +31,16 @@
  */
 #pragma once
 
-#include "../Xlsx.h"
-#include "../../XlsbFormat/Xlsb.h"
-#include "../CommonInclude.h"
-
-#include "Si.h"
 #include <map>
 #include <thread>
 #include <algorithm>
 
-#include "../../XlsbFormat/SharedStringsStream.h"
-
-#include "../../XlsbFormat/Biff12_records/BeginSst.h"
-#include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
+#include "Si.h"
+#include "../Xlsx.h"
 #include "../Styles/Styles.h"
+
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/SharedStringsStream.h"
 
 namespace OOX
 {
@@ -53,204 +49,38 @@ namespace OOX
 		class CSharedStrings : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CSharedStrings(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
-			{
-                m_nCount        = 0;
-				m_bSpreadsheets = true;
+			CSharedStrings(OOX::Document* pMain);
+			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CSharedStrings();
 
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if ((xlsx) && (!xlsx->m_pSharedStrings))
-					xlsx->m_pSharedStrings = this;
-			}
-			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
-			{
-                m_nCount        = 0;
-                m_bSpreadsheets = true;
+			void readBin(const CPath& oPath);
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if ((xlsx) && (!xlsx->m_pSharedStrings))
-					xlsx->m_pSharedStrings = this;
+			virtual const OOX::FileType type() const;
 
-				read( oRootPath, oPath );
-			}
-			virtual ~CSharedStrings()
-			{
-				ClearItems();
-			}
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 
-            void readBin(const CPath& oPath)
-            {
-                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-                if (xlsb)
-                {
-                    XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
+			const CPath& GetReadPath();
+			const int AddSi(CSi* pSi);
 
-                    xlsb->ReadBin(oPath, sharedStringsStream.get());
-
-                    if (sharedStringsStream != nullptr)
-                    {
-                        auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
-                        if (ptr != nullptr)
-                        {
-                            ReadAttributes(ptr->m_BrtBeginSst);
-
-                            for(auto &sstItem : ptr->m_arBrtSSTItem)
-                            {
-                                CSi* pItem = new CSi();
-                                auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
-                                if(ptr != nullptr)
-                                {
-                                    pItem->fromBin(ptr->richStr);
-                                }
-                                m_arrItems.push_back(pItem);
-                                m_nCount++;
-                            }
-
-                        }
-
-                    }
-
-                    //sharedStringsStream.reset();
-                }
-
-            }
-
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
-
-                if( m_oReadPath.GetExtention() == _T(".bin"))
-                {
-                    readBin(m_oReadPath);
-                    return;
-                }
-
-				XmlUtils::CXmlLiteReader oReader;
-
-				if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
-				{
-					//test un-upper(lower)case open - CALACATA GREECE.xlsx
-					if (!m_oReadPath.FileInDirectoryCorrect())
-						return;
-					if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
-						return;
-				}
-
-                if ( !oReader.ReadNextNode() )
-                    return;
-
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("sst") == sName )
-				{
-					ReadAttributes( oReader );
-
-					m_nCount = 0;
-
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nSharedStringsDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nSharedStringsDepth ) )
-						{
-							sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-							if ( _T("si") == sName )
-							{
-								CSi* pItem = new CSi( oReader );
-                                m_arrItems.push_back(pItem );
-								m_nCount++;
-							}
-						}
-					}
-				}		
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				NSStringUtils::CStringBuilder writer;
-				writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
-				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
-				writer.WriteString(_T(">"));
-
-                for(size_t i = 0; i < m_arrItems.size(); i++)
-				{
-                    m_arrItems[i]->toXML(writer);
-				}
-
-				writer.WriteString(_T("</sst>"));
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
-
-                oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::SharedStrings;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
-			const int AddSi(CSi* pSi)
-			{
-				int nIndex = m_nCount++;
-                m_arrItems.push_back(pSi);
-				return nIndex;
-			}
 		private:
 			CPath m_oReadPath;
 
-			void ClearItems()
-			{
-				m_nCount = 0;
-                for(size_t i = 0; i < m_arrItems.size(); i++)
-				{
-                    if ( m_arrItems[i] )delete m_arrItems[i];
+			void ClearItems();
 
-                    m_arrItems[i] = NULL;
-				}
-                m_arrItems.clear();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"),		m_oCount )
-                    WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::BeginSst*>(obj.get());
-
-                if(ptr != nullptr)
-                {
-                    m_oCount        = ptr->cstTotal;
-                    m_oUniqueCount  = ptr->cstUnique;
-                }
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oUniqueCount;
             std::vector<CSi*>                               m_arrItems;
 			int												m_nCount;
-
 		};
+
 	} //Spreadsheet
 } // namespace OOX
 

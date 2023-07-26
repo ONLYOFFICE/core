@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -97,8 +97,55 @@ namespace XLSB
 
         if(fLoadMeasGrp)
             record >> stMeasGrp;
-
     }
+
+	void BeginPCDHierarchy::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags1 = 0;
+		BYTE    flags2 = 0;
+
+		SETBIT(flags1, 0, fMeasure)
+		SETBIT(flags1, 1, fSet)
+		SETBIT(flags1, 2, fAttributeHierarchy)
+		SETBIT(flags1, 3, fMeasureHierarchy)
+		SETBIT(flags1, 4, fOnlyOneField)
+		SETBIT(flags1, 5, fTimeHierarchy)
+		SETBIT(flags1, 6, fKeyAttributeHierarchy)
+		SETBIT(flags1, 7, fAttributeMemberValueTypeKnown)
+		SETBIT(flags1, 8, fUnbalancedRealKnown)
+		SETBIT(flags1, 9, fUnbalancedReal)
+		SETBIT(flags1, 10, fUnbalancedGroupKnown)
+		SETBIT(flags1, 11, fUnbalancedGroup)
+		SETBIT(flags1, 12, fHidden)
+
+		SETBIT(flags2, 0, fLoadDimUnq)
+		SETBIT(flags2, 1, fLoadDefaultUnq)
+		SETBIT(flags2, 2, fLoadAllUnq)
+		SETBIT(flags2, 3, fLoadAllDisp)
+		SETBIT(flags2, 4, fLoadDispFld)
+		SETBIT(flags2, 5, fLoadMeasGrp)
+
+		record << flags1 << cLevels << isetParent << iconSet << flags2 << wAttributeMemberValueType;
+		record << stUnique << stCaption;
+
+		if (fLoadDimUnq)
+			record << stDimUnq;
+
+		if (fLoadDefaultUnq)
+			record << stDefaultUnq;
+
+		if (fLoadAllUnq)
+			record << stAllUnq;
+
+		if (fLoadAllDisp)
+			record << stAllDisp;
+
+		if (fLoadDispFld)
+			record << stDispFld;
+
+		if (fLoadMeasGrp)
+			record << stMeasGrp;
+	}
 
 } // namespace XLSB
 

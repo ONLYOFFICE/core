@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,6 +34,266 @@
 #include "PptxShape.h"
 #include "PresetShapesHeader.h"
 
+CPPTXShape::CPPTXShape() : CBaseShape(), FManager(m_arAdjustments, m_arGuides)
+{
+	m_eType = OOXMLShapes::sptMin;
+}
+CPPTXShape::~CPPTXShape()
+{
+}
+bool CPPTXShape::LoadFromXML(const std::wstring& xml)
+{
+	XmlUtils::CXmlNode oNodePict;
+	if (oNodePict.FromXmlString(xml))
+	{
+		return LoadFromXML(oNodePict);
+	}
+	return false;
+}
+bool CPPTXShape::LoadFromXML(XmlUtils::CXmlNode& root)
+{
+	//std::wstring tempXML = _T("<ooxml-shape>") + xml + _T("</ooxml-shape>");
+
+	XmlUtils::CXmlNode avLst;
+	bool res = true;
+	if(root.GetNode(_T("avLst"), avLst))
+		res &= LoadAdjustValuesList(avLst.GetXml());
+
+	XmlUtils::CXmlNode gdLst;
+	if(root.GetNode(_T("gdLst"), gdLst))
+		res &= LoadGuidesList(gdLst.GetXml());
+
+	XmlUtils::CXmlNode ahLst;
+	if(root.GetNode(_T("ahLst"), ahLst))
+		res &= LoadAdjustHandlesList(ahLst.GetXml());
+
+	XmlUtils::CXmlNode cxnLst;
+	if(root.GetNode(_T("cxnLst"), cxnLst))
+		res &= LoadConnectorsList(cxnLst.GetXml());
+
+	XmlUtils::CXmlNode textRect;
+	if(root.GetNode(_T("rect"), textRect))
+	{
+		m_strRect = textRect.GetXml();
+		res &= LoadTextRect(m_strRect);
+	}
+
+	XmlUtils::CXmlNode pathLst;
+	if(root.GetNode(_T("pathLst"), pathLst))
+	{
+		m_strPath = pathLst.GetXml();
+		res &= LoadPathList(m_strPath);
+	}
+
+	return res;
+}
+bool CPPTXShape::LoadAdjustValuesList(const std::wstring& xml)
+{
+	XmlUtils::CXmlNode avLst;
+	if(avLst.FromXmlString(xml))
+	{
+		std::vector<XmlUtils::CXmlNode> list;
+		if(avLst.GetNodes(_T("gd"), list))
+		{
+			for(size_t i = 0; i < list.size(); i++)
+			{
+				XmlUtils::CXmlNode & gd = list[i];
+				FManager.AddAdjustment(gd.GetAttribute(_T("name")), gd.GetAttribute(_T("fmla")));
+			}
+		}
+		return true;
+	}
+	return false;
+}
+bool CPPTXShape::LoadGuidesList(const std::wstring& xml)
+{
+	XmlUtils::CXmlNode gdLst;
+	if(gdLst.FromXmlString(xml))
+	{
+		std::vector<XmlUtils::CXmlNode> list;
+		if(gdLst.GetNodes(_T("gd"), list))
+		{
+			for(size_t i = 0; i < list.size(); i++)
+			{
+				XmlUtils::CXmlNode & gd = list[i];
+				FManager.AddGuide(gd.GetAttribute(_T("name")), gd.GetAttribute(_T("fmla")));
+			}
+		}
+		return true;
+	}
+	return false;
+}
+bool CPPTXShape::LoadAdjustHandlesList(const std::wstring& xml)
+{
+	/*XmlUtils::CXmlNode ahLst;
+			if(ahLst.FromXmlString(xml))
+			{
+					std::vector<XmlUtils::CXmlNode> oNodes;
+					if (ahLst.GetNodes(_T("ahXY"), oNodes))
+					{
+							size_t nCount = oNodes.size();
+							for (int i = 0; i < nCount; ++i)
+							{
+									XmlUtils::CXmlNode oNodeH;
+									oNodes.GetAt(i, oNodeH);
+
+									CHandle_ oH;
+									oH.switchHandle = oNodeH.GetAttribute(_T("switch"));
+									oH.xrange = oNodeH.GetAttribute(_T("minX")) + _T(" ") + oNodeH.GetAttribute(_T("maxX"));
+									oH.yrange = oNodeH.GetAttribute(_T("minY")) + _T(" ") + oNodeH.GetAttribute(_T("maxY"));
+
+									std::vector<XmlUtils::CXmlNode> oPosNodes;
+									if (oNodeH.GetNodes(_T("pos"), oPosNodes))
+									{
+											int nCountPos = oPosNodes.GetCount();
+											XmlUtils::CXmlNode oPosNode;
+											oPosNodes.GetAt(0, oPosNode);
+
+											std::wstring strX = oPosNode.GetAttribute(_T("x"));
+											std::wstring strY = oPosNode.GetAttribute(_T("y"));
+
+											if (strX == _T("l"))
+													oH.position += _T("topLeft");
+											else if (strX == _T("r"))
+													oH.position += _T("bottomRight");
+											else
+													oH.position += oNodeH.GetAttribute(_T("gdRefX"));
+
+											if (strY == _T("t"))
+													oH.position += _T("topLeft");
+											else if (strY == _T("b"))
+													oH.position += _T("bottomRight");
+											else
+													oH.position += _T(" ") + oNodeH.GetAttribute(_T("gdRefY"));
+									}
+									//TODO разобраться с полярными хендлами
+									//поля:
+									//polar = 10800, 10800
+									//position = gdrefR, gdrefAng (adj)
+									//radiusrange = minR, maxR
+
+									m_arHandles.push_back(oH);
+							}
+					}
+					return true;
+			}
+			return false;*/
+	return true;
+}
+bool CPPTXShape::LoadConnectorsList(const std::wstring& xml)
+{
+	return true;
+}
+bool CPPTXShape::LoadTextRect(const std::wstring& xml)
+{
+	XmlUtils::CXmlNode rect;
+	if(rect.FromXmlString(xml))
+	{
+		Aggplus::RECT TextRect;
+		TextRect.top = (long)FManager.GetValue(rect.GetAttribute(_T("t")));
+		TextRect.left = (long)FManager.GetValue(rect.GetAttribute(_T("l")));
+		TextRect.right = (long)FManager.GetValue(rect.GetAttribute(_T("r")));
+		TextRect.bottom = (long)FManager.GetValue(rect.GetAttribute(_T("b")));
+		if(m_arTextRects.size() > 0)
+			m_arTextRects[0] = TextRect;
+		else m_arTextRects.push_back(TextRect);
+		return true;
+	}
+	return false;
+}
+bool CPPTXShape::LoadPathList(const std::wstring& xml)
+{
+	XmlUtils::CXmlNode pathLst;
+	if(pathLst.FromXmlString(xml))
+	{
+		std::vector<XmlUtils::CXmlNode> list;
+		if(pathLst.GetNodes(_T("path"), list))
+		{
+			m_oPath.FromXML(list, FManager);
+		}
+		return true;
+	}
+	return false;
+}
+bool CPPTXShape::SetAdjustment(long index, long value)
+{
+	FManager.Clear();
+	if (index < (long)m_arAdjustments.size() && index >=0)
+	{
+		m_arAdjustments[index] = value;
+		return TRUE;
+	}
+	return FALSE;
+}
+std::wstring CPPTXShape::ToXML(CGeomShapeInfo& GeomInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
+{
+	FManager.SetWidthHeight(GeomInfo.m_dWidth, GeomInfo.m_dHeight);
+	ReCalculate();
+
+	return m_oPath.ToXml(GeomInfo, StartTime, EndTime, Pen, Brush, NSBaseShape::pptx);
+}
+void CPPTXShape::ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore)
+{
+	FManager.SetWidthHeight(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight);
+	ReCalculate();
+
+	m_oPath.ToRenderer(pRenderer, pGeomInfo, dStartTime, dEndTime, pPen, pFore, GetClassType());
+}
+void CPPTXShape::ReCalculate()
+{
+	FManager.ReCalculateGuides();
+	LoadTextRect(m_strRect);
+	LoadPathList(m_strPath);
+}
+const ClassType CPPTXShape::GetClassType()const
+{
+	return NSBaseShape::pptx;
+}
+bool CPPTXShape::SetProperties(CBaseShape* Shape)
+{
+	if(Shape == NULL)
+		return false;
+
+	if(Shape->GetClassType() != NSBaseShape::pptx)
+		return false;
+
+	FManager = ((CPPTXShape*)Shape)->FManager;
+	return CBaseShape::SetProperties(Shape);
+}
+bool CPPTXShape::SetToDublicate(CBaseShape* Shape)
+{
+	if(Shape == NULL)
+		return false;
+
+	if(Shape->GetClassType() != NSBaseShape::pptx)
+		return false;
+
+	((CPPTXShape*)Shape)->FManager = FManager;
+	return CBaseShape::SetToDublicate(Shape);
+}
+bool CPPTXShape::SetShapeType(OOXMLShapes::ShapeType type)
+{
+	CBaseShapePtr pShape = CreateByType(type);
+	if(pShape)
+	{
+		m_eType = type;
+
+		SetProperties(pShape.get());
+		return true;
+	}
+
+	m_eType = OOXMLShapes::sptCustom;
+	return false;
+}
+void CPPTXShape::SetWidthHeightLogic(const double& dWidth, const double& dHeight)
+{
+	FManager.SetWidthHeight(dWidth, dHeight);
+}
+void CPPTXShape::GetWidthHeightLogic(double& dWidth, double& dHeight)
+{
+	dWidth = FManager.GetWidth();
+	dHeight = FManager.GetHeight();
+}
 CBaseShapePtr CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 {
 	CBaseShapePtr shape;

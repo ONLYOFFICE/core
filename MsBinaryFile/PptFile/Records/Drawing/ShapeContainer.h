@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,12 +58,13 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace ODRAW;
-using namespace PPT_FORMAT;
-
+namespace PPT
+{
 class CPPTElement
 {
 public:
+    CPPTElement(const std::wstring& tempPath);
+
     bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2);
     CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme);
 
@@ -73,6 +74,8 @@ public:
     void SetUpPropertyAudio(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
     void SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
     void SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+
+    std::wstring m_tempPath;
 };
 
 class CRecordShapeContainer : public CRecordsContainer
@@ -84,60 +87,18 @@ public:
 
     bool bGroupShape;
 
-    CRecordShapeContainer()
-    {
-        bGroupShape = false;
+    CRecordShapeContainer();
 
-        m_pStream = NULL;
+    ~CRecordShapeContainer();
 
-    }
-
-    ~CRecordShapeContainer()
-    {
-        m_pStream = NULL;
-    }
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_pStream = pStream;
-        CRecordsContainer::ReadFromStream(oHeader, pStream);
-    }
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
     CElementPtr GetElement (bool inGroup, CExMedia* pMapIDs,
                             CTheme* pTheme, CLayout* pLayout,
                             CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 
-    PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
-    {
-        switch (eType)
-        {
-            //case sptMin:
-        case sptMax:
-        case sptNil:
-            {
-                return etShape;
-            }
-        case sptPictureFrame:
-            {
-                return etPicture;
-            }
-        default:
-            {
-                return etShape;
-            }
-        };
-        return etShape;
-    }
-    AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
-    {
-        int nIndex = strFilePath.rfind(wchar_t('\\'));
-        if (-1 != nIndex)
-        {
-            return strFilePath.substr(nIndex + 1);
-        }
-        return strFilePath;
-    }
+    ElementType GetTypeElem(eSPT eType);
+    std::wstring GetFileName(std::wstring strFilePath);
 
 protected:
 
@@ -153,3 +114,4 @@ protected:
     void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
 
+}

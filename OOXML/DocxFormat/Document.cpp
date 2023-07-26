@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,12 +30,32 @@
  *
  */
 #pragma once
+
 #include "Document.h"
+#include "Math/oMathPara.h"
+
+#include "Logic/Annotations.h"
+#include "Logic/Hyperlink.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+#include "Logic/DocParts.h"
+#include "Logic/Vml.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+		CBackground::CBackground(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CBackground::~CBackground()
+		{
+		}
+		EElementType CBackground::getType() const
+		{
+			return et_w_background;
+		}
 		void CBackground::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase(oNode, L"w:color", m_oColor);
@@ -125,6 +145,23 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 
+		CBgPict::CBgPict(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CBgPict::~CBgPict()
+		{
+		}
+		void CBgPict::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		std::wstring CBgPict::toXML() const
+		{
+			return L"";
+		}
+		EElementType CBgPict::getType() const
+		{
+			return et_w_bgPict;
+		}
 		void CBgPict::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -186,8 +223,13 @@ namespace OOX
 	{
 		m_bMacroEnabled = false;
 
+		std::wstring fileName = XmlUtils::GetLower(oPath.GetFilename());
+		size_t pos = fileName.find(L".");
+	
+		if (pos != std::wstring::npos) fileName = fileName.substr(0, pos);
+
 		CDocx* docx = dynamic_cast<CDocx*>(pMain);
-		if (docx)
+		if (docx && fileName == L"document")
 		{
 			if (type == OOX::FileTypes::Document)
 			{
@@ -287,7 +329,7 @@ namespace OOX
 			else if (L"m:oMathPara" == sName )
 				pItem = new Logic::COMathPara( document );
 			else if (L"p" == sName )
-				pItem = new Logic::CParagraph( document );
+				pItem = new Logic::CParagraph( document, this );
 			else if (L"permEnd" == sName )
 				pItem = new Logic::CPermEnd( document );
 			else if (L"permStart" == sName )
@@ -306,11 +348,13 @@ namespace OOX
 				{
 					OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
 					
-					OOX::CDocument::_section section;
-					section.sect = m_oSectPr.GetPointer();
-					section.end_elm = doc->m_arrItems.size();
-
-					doc->m_arrSections.push_back(section);
+					if (doc->m_arrSections.empty())
+					{
+						OOX::CDocument::_section section;
+						doc->m_arrSections.push_back(section);
+					}
+					doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
+					doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); //активный рутовый еще не добавлен
 				}
 //-------------------------------------------------------------------------
 			}
@@ -344,14 +388,15 @@ namespace OOX
 			else if (L"docParts" == sName && !oReader.IsEmptyNode())
 			{
 				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_arrItems.push_back(pItem);
+				
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ( pItem )
 			{
-				m_arrItems.push_back( pItem );
 				pItem->fromXML(oReader);
+				m_arrItems.push_back( pItem );
 			}
 		}
 	}
@@ -471,6 +516,50 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		sXml += L"</w:body></w:document>";
 
 		return sXml;
+	}
+	CDocument::~CDocument()
+	{
+		ClearItems();
+	}
+	const CDocument& CDocument::operator =(const XmlUtils::CXmlNode& oNode)
+	{
+		fromXML( (XmlUtils::CXmlNode&)oNode );
+		return *this;
+	}
+	const CDocument& CDocument::operator =(const XmlUtils::CXmlLiteReader& oReader)
+	{
+		fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+		return *this;
+	}
+	void CDocument::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CDocument::type() const
+	{
+		if (m_bMacroEnabled)	return FileTypes::DocumentMacro;
+		else					return FileTypes::Document;
+	}
+	const CPath CDocument::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDocument::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CDocument::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CDocument::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDocument::getType() const
+	{
+		return et_w_document;
 	}
 
 } // namespace OOX

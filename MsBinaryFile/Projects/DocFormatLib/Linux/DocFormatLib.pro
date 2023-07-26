@@ -19,21 +19,20 @@ include(../../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+#SHAPETYPES
+include($$PWD/../../../DocFile/OfficeDrawing/Shapetypes/pri/shapetypes.pri)
+
 DEFINES +=  UNICODE \
         _UNICODE \
         DONT_WRITE_EMBEDDED_FONTS
 
-core_mac {
-    #QMAKE_MAC_SDK = macosx10.11
-}
-
 SOURCES +=  \
 	../../../DocFile/Main/DocFormatLib.cpp \
-	../../../../Common/3dParty/pole/pole.cpp \
 	../../../DocFile/EncryptionHeader.cpp \
 	../../../DocFile/DrawingPrimitives.cpp \
 	../../../DocFile/Spa.cpp \
-	../../../DocFile/OleObject.cpp
+	../../../DocFile/OleObject.cpp \
+	../../../Common/Base/XmlTools.cpp
 
 core_release {
 SOURCES += \
@@ -87,9 +86,78 @@ SOURCES += \
 	../../../DocFile/WordDocument.cpp \
 	../../../DocFile/WordprocessingDocument.cpp \
 	../../../DocFile/FormFieldData.cpp \
+	../../../DocFile/AbstractOpenXmlMapping.cpp \
+	../../../DocFile/AnnotationOwnerList.cpp \
+	../../../DocFile/AutoSummaryInfo.cpp \
+	../../../DocFile/BookmarkFirst.cpp \
+	../../../DocFile/BorderCode.cpp \
+	../../../DocFile/ByteStructure.cpp \
+	../../../DocFile/CharacterPropertyExceptions.cpp \
+	../../../DocFile/CharacterRange.cpp \
+	../../../DocFile/CommentsMapping.cpp \
+	../../../DocFile/ConversionContext.cpp \
+	../../../DocFile/DateAndTime.cpp \
+	../../../DocFile/DocumentTypographyInfo.cpp \
+	../../../DocFile/DrawingObjectGrid.cpp \
+	../../../DocFile/EmuValue.cpp \
+	../../../DocFile/EndnoteDescriptor.cpp \
+	../../../DocFile/EndnotesMapping.cpp \
+	../../../DocFile/FieldCharacter.cpp \
+	../../../DocFile/FileInformationBlock.cpp \
+	../../../DocFile/FixedPointNumber.cpp \
+	../../../DocFile/FootnoteDescriptor.cpp \
+	../../../DocFile/FootnotesMapping.cpp \
+	../../../DocFile/FormattedDiskPage.cpp \
+	../../../DocFile/FormFieldDataMapping.cpp \
+	../../../DocFile/LanguageId.cpp \
+	../../../DocFile/LineSpacingDescriptor.cpp \
+	../../../DocFile/ListFormatOverride.cpp \
+	../../../DocFile/ListFormatOverrideLevel.cpp \
+	../../../DocFile/ListFormatOverrideTable.cpp \
+	../../../DocFile/MemoryStream.cpp \
+	../../../DocFile/OfficeArtContent.cpp \
+	../../../DocFile/OleObjectMapping.cpp \
+	../../../DocFile/PieceDescriptor.cpp \
+	../../../DocFile/RGBColor.cpp \
+	../../../DocFile/SectionDescriptor.cpp \
+	../../../DocFile/SectionPropertyExceptions.cpp \
+	../../../DocFile/ShadingDescriptor.cpp \
+	../../../DocFile/SprmTDefTable.cpp \
+	../../../DocFile/StructuredStorageReader.cpp \
+	../../../DocFile/TabDescriptor.cpp \
+	../../../DocFile/TableInfo.cpp \
+	../../../DocFile/TablePropertyExceptions.cpp \
+	../../../DocFile/Tbkd.cpp \
+	../../../DocFile/TwipsValue.cpp \
+	../../../DocFile/VirtualStreamReader.cpp \
+	../../../DocFile/WideString.cpp \
+	\
 	../../../DocFile/OfficeDrawing/Record.cpp \
 	../../../DocFile/OfficeDrawing/RecordFactory.cpp \
-	../../../DocFile/OfficeDrawing/ShapeTypeFactory.cpp
+	../../../DocFile/OfficeDrawing/ShapeTypeFactory.cpp \
+	../../../DocFile/OfficeDrawing/BitmapBlip.cpp \
+	../../../DocFile/OfficeDrawing/BlipStoreContainer.cpp \
+	../../../DocFile/OfficeDrawing/BlipStoreEntry.cpp \
+	../../../DocFile/OfficeDrawing/ChildAnchor.cpp \
+	../../../DocFile/OfficeDrawing/ClientAnchor.cpp \
+	../../../DocFile/OfficeDrawing/ClientData.cpp \
+	../../../DocFile/OfficeDrawing/DiagramBooleanProperties.cpp \
+	../../../DocFile/OfficeDrawing/DrawingContainer.cpp \
+	../../../DocFile/OfficeDrawing/DrawingGroup.cpp \
+	../../../DocFile/OfficeDrawing/DrawingGroupRecord.cpp \
+	../../../DocFile/OfficeDrawing/DrawingRecord.cpp \
+	../../../DocFile/OfficeDrawing/GroupContainer.cpp \
+	../../../DocFile/OfficeDrawing/GroupShapeRecord.cpp \
+	../../../DocFile/OfficeDrawing/MetafilePictBlip.cpp \
+	../../../DocFile/OfficeDrawing/OfficeArtClientTextbox.cpp \
+	../../../DocFile/OfficeDrawing/OfficeArtFRITContainer.cpp \
+	../../../DocFile/OfficeDrawing/RegularContainer.cpp \
+	../../../DocFile/OfficeDrawing/Shape.cpp \
+	../../../DocFile/OfficeDrawing/ShapeContainer.cpp \
+	../../../DocFile/OfficeDrawing/ShapeOptions.cpp \
+	../../../DocFile/OfficeDrawing/ShapeType.cpp \
+	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.cpp \
+	../../../DocFile/OfficeDrawing/UnknownRecord.cpp
 }
 
 HEADERS +=  \
@@ -106,6 +174,7 @@ HEADERS +=  \
 	../../../Common/Base/TextMark.h \
 	../../../Common/Base/utf8.h \
 	../../../Common/Base/XmlTools.h \
+	\
 	../../../DocFile/AbstractOpenXmlMapping.h \
 	../../../DocFile/AnnotationOwnerList.h \
 	../../../DocFile/AnnotationReferenceDescriptor.h \
@@ -203,6 +272,9 @@ HEADERS +=  \
 	../../../DocFile/WideString.h \
 	../../../DocFile/WordDocument.h \
 	../../../DocFile/WordprocessingDocument.h \
+	../../../DocFile/EncryptionHeader.h \
+	../../../DocFile/DrawingPrimitives.h \
+	\
 	../../../DocFile/OfficeDrawing/BitmapBlip.h \
 	../../../DocFile/OfficeDrawing/BlipStoreContainer.h \
 	../../../DocFile/OfficeDrawing/BlipStoreEntry.h \
@@ -226,43 +298,7 @@ HEADERS +=  \
 	../../../DocFile/OfficeDrawing/ShapeContainer.h \
 	../../../DocFile/OfficeDrawing/ShapeOptions.h \
 	../../../DocFile/OfficeDrawing/ShapeType.h \
+	../../../DocFile/OfficeDrawing/PresetShapeTypes.h \
 	../../../DocFile/OfficeDrawing/ShapeTypeFactory.h \
 	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.h \
-	../../../DocFile/OfficeDrawing/UnknownRecord.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/ArcType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/ArrowType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BevelType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BlockArcType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/BracketsType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CalloutsType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CanType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/Connector.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/CubeType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/DiamondType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/DonutType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/FlowChartType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/FoldedCornerlType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/HeartType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/HexagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/IsoscelesTriangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/LightningBoltType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/LineType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/MoonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/NoSmokingType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/OctagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/OvalType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/ParallelogramType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PentagonType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PictureFrameType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PlaqueType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/PlusType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RectangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RightTriangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/RoundedRectangleType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/SmileyFaceType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/StarType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/SunType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/TextboxType.h \
-	../../../DocFile/OfficeDrawing/Shapetypes/TrapezoidType.h \
-	../../../DocFile/EncryptionHeader.h \
-	../../../DocFile/DrawingPrimitives.h
+	../../../DocFile/OfficeDrawing/UnknownRecord.h

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,34 +31,16 @@
  */
 #pragma once
 
+#include "OOXWriter.h"
 #include "../../Format/IdGenerator.h"
 
 class OOXThemeWriter
 {
 private: 
 	OOXWriter& m_oWriter;
-public: 
-	OOXThemeWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
-	{
-	}
-	bool Save( std::wstring sFolder ) //todo доделать очистку поле ошибок
-	{
-		std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
-		
-        NSDirectory::CreateDirectory(pathWord) ;
-        NSDirectory::CreateDirectory(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
 
-		//todooo default theme !!!!!
-		//
-		//if( true == RtfUtility:: SaveResourceToFile( IDR_THEME, L"XML", sFolder + _T("\\word\\theme\\theme1.xml") ) )
-		//{
-		//	m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
-		//	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
-		//}
-		//else
-		//{
-		//	RemoveDirectory( sFolder + _T("\\word\\theme") );
-		//}
-		return true;
-	}
+public: 
+	OOXThemeWriter(OOXWriter& oWriter,RtfDocument& oDocument );
+
+	bool Save( std::wstring sFolder ); //todo доделать очистку поле ошибок
 };

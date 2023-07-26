@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,42 +31,57 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Styles/dxf.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDecimalNumber;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class ST_CfvoType;
+		class ST_IconSetType;
+		class ST_DataBarAxisPosition;
+		class ST_DataBarDirection;
+		class ST_CfOperator;
+		class ST_TimePeriod;
+		class ST_CfType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
+		class CDxf;
+		class CColor;
+
 		//необработано:
 		//<extLst>
 		class CFormulaCF : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormulaCF)
-			CFormulaCF()
-			{
-			}
-			virtual ~CFormulaCF()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+			WritingElement_AdditionMethods(CFormulaCF)
+
+			CFormulaCF();
+			virtual ~CFormulaCF();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual std::wstring toXML() const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType () const
-			{
-				return et_x_FormulaCF;
-			}
+			virtual EElementType getType () const;
+
 			static const CFormulaCF Merge(const CFormulaCF& oPrev, const CFormulaCF& oCurrent);
 			bool isExtended ();
 
@@ -77,46 +92,26 @@ namespace OOX
 		class CConditionalFormatValueObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatValueObject)
+			WritingElement_AdditionMethods(CConditionalFormatValueObject)
             WritingElement_XlsbConstructors(CConditionalFormatValueObject)
-			CConditionalFormatValueObject()
-			{
-			}
-			virtual ~CConditionalFormatValueObject()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			CConditionalFormatValueObject();
+			virtual ~CConditionalFormatValueObject();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_ConditionalFormatValueObject;
-			}
-			bool isExtended ()
-			{
-				return (m_oFormula.IsInit());
-			}
-		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
-					WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
-					WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			virtual EElementType getType () const;
+			bool isExtended ();
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
@@ -130,34 +125,25 @@ namespace OOX
 		class CConditionalFormatIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+			WritingElement_AdditionMethods(CConditionalFormatIconSet)
             WritingElement_XlsbConstructors(CConditionalFormatIconSet)
-			CConditionalFormatIconSet()
-			{
-			}
-			virtual ~CConditionalFormatIconSet()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			CConditionalFormatIconSet();
+			virtual ~CConditionalFormatIconSet();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+
             void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_ConditionalFormatIconSet;
-			}
+
+			virtual EElementType getType () const;
 
 			nullable<SimpleTypes::Spreadsheet::ST_IconSetType>		m_oIconSet;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oIconId;
@@ -166,32 +152,23 @@ namespace OOX
 		class CColorScale : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorScale)
+			WritingElement_AdditionMethods(CColorScale)
             WritingElement_XlsbConstructors(CColorScale)
-			CColorScale()
-			{
-			}
-			virtual ~CColorScale()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			CColorScale();
+			virtual ~CColorScale();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_ColorScale;
-			}
+
+			virtual EElementType getType () const;
+
 			template<typename Type>
 			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
 			static const CColorScale Merge(const CColorScale& oPrev, const CColorScale& oCurrent);
@@ -206,38 +183,30 @@ namespace OOX
 		class CDataBar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataBar)
+			WritingElement_AdditionMethods(CDataBar)
             WritingElement_XlsbConstructors(CDataBar)
-			CDataBar()
-			{
-			}
-			virtual ~CDataBar()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+
+			CDataBar();
+			virtual ~CDataBar();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			bool isExtended ();
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_DataBar;
-			}
+
+			virtual EElementType getType () const;
+
 			template<typename Type>
 			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
 			static const CDataBar Merge(const CDataBar& oPrev, const CDataBar& oCurrent);
-		private:
 
+		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
@@ -268,38 +237,30 @@ namespace OOX
 		class CIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CIconSet)
+			WritingElement_AdditionMethods(CIconSet)
             WritingElement_XlsbConstructors(CIconSet)
-			CIconSet()
-			{
-			}
-			virtual ~CIconSet()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			CIconSet();
+			virtual ~CIconSet();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_IconSet;
-			}
+
+			virtual EElementType getType () const;
+
 			template<typename Type>
 			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
 			static const CIconSet Merge(const CIconSet& oPrev, const CIconSet& oCurrent);
-			bool isExtended ();
-		private:
 
+			bool isExtended ();
+
+		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
@@ -318,45 +279,34 @@ namespace OOX
 		class CConditionalFormattingRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormattingRule)
+			WritingElement_AdditionMethods(CConditionalFormattingRule)
             WritingElement_XlsbConstructors(CConditionalFormattingRule)
-			CConditionalFormattingRule() : bUsage (false)
-			{
-			}
-			virtual ~CConditionalFormattingRule()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+
+			CConditionalFormattingRule();
+			virtual ~CConditionalFormattingRule();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			bool isExtended();
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_ConditionalFormattingRule;
-			}
-			bool isValid () const
-			{
-				return m_oType.IsInit() && m_oPriority.IsInit();
-			}
+
+			virtual EElementType getType () const;
+			bool isValid () const;
 
 			template<typename Type>
 			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent);
 			static const CConditionalFormattingRule Merge(const CConditionalFormattingRule& oPrev, const CConditionalFormattingRule& oCurrent);
-		private:
 
+		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<CDxf>										m_oDxf;
 			nullable<SimpleTypes::COnOff>						m_oAboveAverage;
@@ -375,7 +325,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
-			nullable<std::wstring>								m_oExtId;
+			nullable_string										m_oExtId;
 
 			nullable<CIconSet>					m_oIconSet;
 			nullable<CColorScale>				m_oColorScale;
@@ -388,34 +338,23 @@ namespace OOX
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatting)
+			WritingElement_AdditionMethods(CConditionalFormatting)
             WritingElement_XlsbConstructors(CConditionalFormatting)
-			CConditionalFormatting(OOX::Document *pMain = NULL) : WritingElementWithChilds<CConditionalFormattingRule>(pMain), m_bIsExtended(false), m_bIsValid(false)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			bool IsExtended();
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if (m_bIsValid == false) return;
 
-				if (m_bIsExtended == false)
-					toXML2(writer, false);
-			}
+			CConditionalFormatting(OOX::Document *pMain = NULL);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			bool IsExtended();
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_ConditionalFormatting;
-			}
 
+			virtual EElementType getType () const;
 			bool IsUsage();
 		
 		private:
@@ -429,5 +368,6 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>	m_oPivot;
 			nullable<std::wstring >			m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
+
 	} //Spreadsheet
 } // namespace OOX

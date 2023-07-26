@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginDbTables15>())
         {
-            m_BrtBeginDbTables15 = elements_.back();
+			m_bBrtBeginDbTables15 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginDbTables15 = false;
 
         int countDbTable15 = proc.repeated<DbTable15>(0, 0);
 
@@ -73,12 +75,28 @@ namespace XLSB
 
         if (proc.optional<EndDbTables15>())
         {
-            m_BrtEndDbTables15 = elements_.back();
+            m_bBrtEndDbTables15 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDbTables15 = false;
 
-        return m_BrtBeginDbTables15 && m_BrtEndDbTables15;
+        return m_bBrtBeginDbTables15 && m_bBrtEndDbTables15;
     }
+
+	const bool DBTABLES15::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginDbTables15>();
+
+		for (auto &item : m_arBrtDbTable15)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDbTables15>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

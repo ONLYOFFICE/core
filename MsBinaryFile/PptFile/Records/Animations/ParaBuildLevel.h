@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,34 +36,15 @@
 #include "LevelInfoAtom.h"
 #include "ExtTimeNodeContainer.h"
 
-
+namespace PPT
+{
 class CRecordParaBuildLevel
 {
 public:
-    CRecordParaBuildLevel () : m_nRecordLen(0)
-    {
-    }
+    CRecordParaBuildLevel ();
+    ~CRecordParaBuildLevel(); 
 
-    ~CRecordParaBuildLevel()
-    {
-    }
-
-    virtual void ReadFromStream ( POLE::Stream* pStream )
-    {
-        SRecordHeader oHeader;
-
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oLevelInfoAtom.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
-
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oTimeNode.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
-    }
+    virtual void ReadFromStream ( POLE::Stream* pStream );
 
     _UINT32 getRecordLen()const {return m_nRecordLen;}
 
@@ -71,5 +52,6 @@ public:
     CRecordExtTimeNodeContainer     m_oTimeNode;	// ExtTimeNodeContainer
 
 private:
-    _UINT32 m_nRecordLen;
+    _UINT32 m_nRecordLen = 0;
 };
+}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_READER_H
-#define _MATH_EQUATION_READER_H
+#pragma once
 
 #include "../../../Common/3dParty/pole/pole.h"
 
@@ -48,21 +47,10 @@ namespace MathEquation
 	{
 	public:
 
-        CEquationReader(const wchar_t* wsFilePath) : m_oStorage(wsFilePath), pStm(NULL), pS(NULL), nHAlign(0), nVAlign(0)
-		{
-			InitSizes();
-		}
-
-		~CEquationReader()
-		{
-			if (NULL != pS)
-				delete pS;
-            if (NULL != pStm)
-                delete pStm;
-		}
+		CEquationReader(const wchar_t* wsFilePath);
+		~CEquationReader();
 
         void SetOutputDev(IOutputDev *pOutput);
-
 		int Parse();
 
 	private:
@@ -150,5 +138,3 @@ namespace MathEquation
 		TFontMap mFontMap;
 	};
 }
-
-#endif

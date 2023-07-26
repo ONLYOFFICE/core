@@ -27,6 +27,8 @@
 #include "Stream.h"
 #include "CMap.h"
 
+#include "../../SrcReader/Adaptors.h"
+
 //------------------------------------------------------------------------
 
 struct CMapVectorEntry {
@@ -76,6 +78,22 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA,
 		  GString *cMapNameA) {
   FILE *f;
   CMap *cMap;
+
+  if (cMapNameA->cmp("Identity") && cMapNameA->cmp("Identity-H") && cMapNameA->cmp("Identity-V")) {
+    char* pDataCMap = NULL;
+    unsigned int nSizeCMap = 0;
+    if (((GlobalParamsAdaptor*)globalParams)->GetCMap(cMapNameA->getCString(), pDataCMap, nSizeCMap)) {
+      Object obj;
+      obj.initNull();
+      BaseStream *str = new MemStream(pDataCMap, 0, nSizeCMap, &obj);
+      if (!str)
+        return NULL;
+      cMap = new CMap(collectionA->copy(), cMapNameA->copy());
+      cMap->parse2(cache, &getCharFromStream, str);
+      delete str;
+      return cMap;
+    }
+  }
 
   if (!(f = globalParams->findCMapFile(collectionA, cMapNameA))) {
 

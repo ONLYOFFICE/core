@@ -54,9 +54,15 @@ bool CSVGTransformer::OpenFromFile(const std::wstring& file)
 	m_internal->m_oRender.SetWorkingDirectory(sDirectory);
 	m_internal->m_oStorage.SetWorkingDirectory(sDirectory);
 
-	if (0 == m_internal->m_oXmlParser.LoadFromFile(file, &m_internal->m_oStorage))
+	try
+	{
+		if (!m_internal->m_oXmlParser.LoadFromFile(file, &m_internal->m_oStorage))
+			return false;
+	}
+	catch(...)
+	{
 		return false;
-
+	}
 	return true;
 }
 bool CSVGTransformer::Load(const std::wstring& content)

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -88,6 +88,45 @@ namespace XLSB
         if(fLoadSSOApplicationID)
             record >> stSso;
     }
+
+	void BeginExtConnection::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		record << bVerRefreshed << bVerRefreshableMin << pc;
+
+		record.reserveNunBytes(1);
+
+		SETBIT(flags, 0, fMaintain)
+		SETBIT(flags, 1, fNewQuery)
+		SETBIT(flags, 2, fDeleted)
+		SETBIT(flags, 3, fAlwaysUseConnectionFile)
+		SETBIT(flags, 4, fBackgroundQuery)
+		SETBIT(flags, 5, fRefreshOnLoad)
+		SETBIT(flags, 6, fSaveData)
+		SETBIT(flags, 16, fLoadSourceDataFile)
+		SETBIT(flags, 17, fLoadSourceConnectionFile)
+		SETBIT(flags, 18, fLoadConnectionDesc)
+		SETBIT(flags, 20, fLoadSSOApplicationID)
+
+		record << wInterval << flags;
+
+		record << idbtype << irecontype << dwConnID << iCredMethod;
+
+		if (fLoadSourceDataFile)
+			record << stDataFile;
+
+		if (fLoadSourceConnectionFile)
+			record << stConnectionFile;
+
+		if (fLoadConnectionDesc)
+			record << stConnDesc;
+
+		record << stConnName;
+
+		if (fLoadSSOApplicationID)
+			record << stSso;
+	}
 
 } // namespace XLSB
 

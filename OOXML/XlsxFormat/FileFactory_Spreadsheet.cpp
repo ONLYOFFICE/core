@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,6 +49,7 @@
 #include "Comments/ThreadedComments.h"
 #include "Comments/Comments.h"
 #include "Controls/Controls.h"
+#include "Chart/Chart.h"
 
 #include "Pivot/PivotTable.h"
 #include "Pivot/PivotCacheDefinition.h"
@@ -67,7 +68,7 @@
 #include "../DocxFormat/Diagram/DiagramColors.h"
 #include "../DocxFormat/Diagram/DiagramLayout.h"
 #include "../DocxFormat/Diagram/DiagramQuickStyle.h"
-#include "Chart//ChartDrawing.h"
+#include "Chart/ChartDrawing.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -82,11 +83,17 @@ namespace OOX
 			OOX::CPath	oRelationFilename = oRelation.Filename();
 			CPath		oFileName;
 			
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
-				oFileName = oRootPath / oRelationFilename;
+			if (oRelation.IsExternal())
+			{
+				oFileName = oRelationFilename;
+			}
 			else
-				oFileName = oPath / oRelationFilename;
-
+			{
+				if (oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
+					oFileName = oRootPath / oRelationFilename;
+				else
+					oFileName = oPath / oRelationFilename;
+			}
 			if ( oRelation.Type() == FileTypes::Workbook || 
 				 oRelation.Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( pMain, oRootPath, oFileName ));
@@ -148,16 +155,7 @@ namespace OOX
 				return smart_ptr<OOX::File>(new ExternalLinkPath( pMain, oRelation.Target()));
 			}
 			else if (  oRelation.Type() == OOX::FileTypes::OleObject)
-			{
-				if (oRelation.IsExternal())
-				{
-					return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oRelationFilename ));
-				}
-				else
-				{
-					return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oFileName ));
-				}
-			}
+				return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oFileName ));
 			else if (	oRelation.Type() == OOX::FileTypes::DiagramData)
 				return smart_ptr<OOX::File>(new OOX::CDiagramData( pMain, oRootPath, oFileName ));
 			else if (	oRelation.Type() == OOX::FileTypes::DiagramDrawing)
@@ -187,11 +185,18 @@ namespace OOX
 			
 			OOX::CPath oRelationFilename = pRelation->Filename();
 			CPath oFileName;
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
-				oFileName = oRootPath / oRelationFilename;
-			else
-				oFileName = oPath / oRelationFilename;
 
+			if (pRelation->IsExternal())
+			{
+				oFileName = oRelationFilename;
+			}
+			else
+			{
+				if (oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
+					oFileName = oRootPath / oRelationFilename;
+				else
+					oFileName = oPath / oRelationFilename;
+			}
 			if ( pRelation->Type() == FileTypes::Workbook || 
 				 pRelation->Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( pMain, oRootPath, oFileName ));
@@ -276,16 +281,7 @@ namespace OOX
 			else if (pRelation->Type() == FileTypes::Connections )
 				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
 			else if (pRelation->Type() == OOX::FileTypes::OleObject)
-			{
-				if (pRelation->IsExternal())
-				{
-					return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oRelationFilename ));
-				}
-				else
-				{
-					return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oFileName ));
-				}
-			}
+				return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oFileName ));
 			else if (pRelation->Type() == OOX::FileTypes::DiagramData)
 				return smart_ptr<OOX::File>(new OOX::CDiagramData( pMain, oRootPath, oFileName ));
 			else if (pRelation->Type() == OOX::FileTypes::DiagramDrawing)

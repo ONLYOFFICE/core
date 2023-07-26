@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,103 +41,22 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Hyperlink : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Hyperlink)
+			WritingElement_AdditionMethods(Hyperlink)
 
-			Hyperlink(const std::wstring & name = L"hlinkClick")
-			{
-				m_name = name;
-			}
+			Hyperlink(const std::wstring & name = L"hlinkClick");
+			virtual OOX::EElementType getType () const;
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_hyperlink;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
-				
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (sName == L"snd")
-					{
-						snd	= oReader;
-						break;
-					}
-
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"), id )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), id )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"invalidUrl"), invalidUrl )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"action"), action )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"tgtFrame"), tgtFrame )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"tooltip"), tooltip )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"history"), history)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"highlightClick"), highlightClick )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"endSnd"), endSnd )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = XmlUtils::GetNameNoNS(node.GetName());
-
-                std::wstring sSndNodeName = (L"snd");
-                snd	= node.ReadNodeNoNS(sSndNodeName);
-
-				XmlMacroReadAttributeBase(node, L"r:id", id);
-				XmlMacroReadAttributeBase(node, L"invalidUrl", invalidUrl);
-				XmlMacroReadAttributeBase(node, L"action", action);
-				XmlMacroReadAttributeBase(node, L"tgtFrame", tgtFrame);
-				XmlMacroReadAttributeBase(node, L"tooltip", tooltip);
-				XmlMacroReadAttributeBase(node, L"history", history);
-				XmlMacroReadAttributeBase(node, L"highlightClick", highlightClick);
-				XmlMacroReadAttributeBase(node, L"endSnd", endSnd);
-				
-				if (false == id.IsInit())
-				{
-					XmlMacroReadAttributeBase( node, L"relationships:id", id );
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:" + m_name);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute	(L"r:id",		id);
-                pWriter->WriteAttribute2(L"invalidUrl", invalidUrl);
-                pWriter->WriteAttribute2(L"action",		action);
-                pWriter->WriteAttribute2(L"tgtFrame",	tgtFrame);
-				
-				if (tooltip.IsInit()) 
-					pWriter->WriteAttribute(L"tooltip", XmlUtils::EncodeXmlString(*tooltip));
-				
-				pWriter->WriteAttribute(L"history",			history);
-				pWriter->WriteAttribute(L"highlightClick",	highlightClick);
-				pWriter->WriteAttribute(L"endSnd",			endSnd);
-				pWriter->EndAttributes();
-
-				pWriter->Write(snd);
-				
-				pWriter->EndNode(L"a:" + m_name);
-			}
-			
 			nullable<WavAudioFile>	snd;
 
 			nullable_string			id;				//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
@@ -150,14 +69,10 @@ namespace PPTX
 			nullable_bool			endSnd;			//default="false"
 
 			std::wstring			m_name;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(snd.IsInit())
-					snd->SetParentPointer(this);
-			}
 
-			virtual std::wstring GetPathFromId(OOX::IFileContainer* pRels, const std::wstring &rId)const;
+		protected:
+			virtual void FillParentPointersForChilds();
+			virtual std::wstring GetPathFromId(OOX::IFileContainer* pRels, const std::wstring &rId) const;
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,11 @@
 namespace OOX
 {
 	class CDiagramData;
+	
+	namespace Diagram
+	{
+		class CBg;
+	}
 }
 
 namespace PPTX
@@ -45,35 +50,16 @@ namespace PPTX
 		class SmartArt : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SmartArt)
+			WritingElement_AdditionMethods(SmartArt)
 
-			SmartArt()
-			{
-			}
+			SmartArt();
+			SmartArt& operator=(const SmartArt& oSrc);
 
-			SmartArt& operator=(const SmartArt& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			virtual OOX::EElementType getType () const;
 
-				return *this;
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_dgm_DiagrammParts;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"r:dm", id_data);
-				XmlMacroReadAttributeBase(node, L"r:cs", id_color);
-				XmlMacroReadAttributeBase(node, L"r:lo", id_layout);
-				XmlMacroReadAttributeBase(node, L"r:qs", id_style);
-			}
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
@@ -88,79 +74,35 @@ namespace PPTX
 			nullable<OOX::RId> id_layout;
 			nullable<OOX::RId> id_style;
 
+			nullable<OOX::Diagram::CBg> m_oDataBg;
 			nullable<PPTX::Logic::SpTree> m_oDrawing;
+			
 			smart_ptr<OOX::IFileContainer> m_pDrawingContainer;
+			smart_ptr<OOX::IFileContainer> m_pDataContainer;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-			}
+			virtual void FillParentPointersForChilds();
+
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, (L"r:cs"), id_color)
-					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:dm"), id_data)
-					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:lo"), id_layout)
-					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:qs"), id_style)
-				WritingElement_ReadAttributes_End(oReader)
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			smart_ptr<OOX::File> FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const;
 		};
 
 		class ChartRec : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ChartRec)
+			WritingElement_AdditionMethods(ChartRec)
 			
-			ChartRec()
-			{
-			}
+			ChartRec();
+			ChartRec(const ChartRec& oSrc);
 
-			ChartRec(const ChartRec& oSrc) 
-			{ 
-				*this = oSrc; 
-			}
-			ChartRec& operator=(const ChartRec& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			ChartRec& operator=(const ChartRec& oSrc);
 
-				return *this;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, L"id", id_data )
-				WritingElement_ReadAttributes_End_No_NS	( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring ns = XmlUtils::GetNamespace(oReader.GetName());
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				m_bChartEx = false;
-				
-				ReadAttributes( oReader );
-				FillParentPointersForChilds();
-				
-				if (ns == L"cx")
-				{
-					m_bChartEx = true;
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_bChartEx = false;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				std::wstring ns = XmlUtils::GetNamespace(node.GetName());
-
-				XmlMacroReadAttributeBase(node, L"r:id", id_data);
-				FillParentPointersForChilds();
-
-				if (ns == L"cx")
-				{
-					m_bChartEx = true;
-				}
-			}
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			
@@ -171,10 +113,9 @@ namespace PPTX
 
 			bool				m_bChartEx = false;
 			int					m_nCountCharts = 0;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{				
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

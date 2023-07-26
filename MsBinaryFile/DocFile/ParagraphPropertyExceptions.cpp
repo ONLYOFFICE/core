@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,6 +34,17 @@
 
 namespace DocFileFormat
 {
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions() : PropertyExceptions(), istd(0)
+	{
+	}
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions( const std::vector<SinglePropertyModifier>& grpprl ):
+														  PropertyExceptions( grpprl ), istd(0)
+	{
+	}
+	ParagraphPropertyExceptions::~ParagraphPropertyExceptions()
+	{
+	}
+
 	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, int nWordVersion): 
 				PropertyExceptions( ( bytes + 2 ), ( size - 2 ),  nWordVersion)
 	{
@@ -227,13 +238,11 @@ namespace DocFileFormat
 
 			//There is a SPRM that points to an offset in the data stream, 
 			//where a list of SPRM is saved.
-			for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
+			for ( std::vector<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
 			{
-				SinglePropertyModifier sprm( *iter );
-
-				if( ( sprm.OpCode == sprmPHugePapx ) || ( (int)sprm.OpCode == 0x6646 ) )
+				if( (iter->OpCode == sprmPHugePapx ) || ( (int)iter->OpCode == 0x6646 ) )
 				{
-					unsigned int fc = FormatUtils::BytesToUInt32( sprm.Arguments, 0, sprm.argumentsSize );
+					unsigned int fc = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize );
 					reader = new VirtualStreamReader( dataStream, (int)fc, nWordVersion);
 
 					//parse the size of the external grpprl
@@ -250,14 +259,20 @@ namespace DocFileFormat
 
 					//assign the external grpprl
 					RELEASEOBJECT( grpprl );
-					grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
+					grpprl = new std::vector<SinglePropertyModifier>( *(externalPx.grpprl) );
 
+					RELEASEARRAYOBJECTS(grpprlBytes);
+					RELEASEOBJECT(reader)
+						
 					//remove the sprmPHugePapx
-					grpprl->remove( sprm );
-
-					RELEASEARRAYOBJECTS( grpprlBytes );
-					RELEASEOBJECT( reader )
-
+					for (std::vector<SinglePropertyModifier>::iterator iter2 = grpprl->begin(); iter2 != grpprl->end(); iter2++)
+					{
+						if ((iter2->OpCode == sprmPHugePapx) || ((int)iter2->OpCode == 0x6646))
+						{
+							grpprl->erase(iter2);
+							break;
+						}
+					}
 					break;
 				}
 			}

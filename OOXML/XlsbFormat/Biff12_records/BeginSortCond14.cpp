@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -52,7 +52,7 @@ namespace XLSB
 
     void BeginSortCond14::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+		_UINT16 flags;
         record >> flags;
 
         fSortDes	= GETBIT(flags, 0);
@@ -73,8 +73,33 @@ namespace XLSB
         }
 
         record >> stSslist;
-
     }
+
+	void BeginSortCond14::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fSortDes);
+		SETBITS(flags, 1, 4, sortOn);
+
+		record << flags;
+
+		record << rfx;
+
+		switch (sortOn)
+		{
+		case 0x00:
+		case 0x01:
+		case 0x02:
+			record << condDataValue;
+			break;
+		case 0x03:
+			record << cfflag14;
+			break;
+		}
+
+		record << stSslist;
+	}
 
 } // namespace XLSB
 

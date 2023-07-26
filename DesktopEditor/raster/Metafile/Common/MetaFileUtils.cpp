@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,10 +38,14 @@
 #include <math.h>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 
 #ifndef DIB_RGB_COLORS
     #define DIB_RGB_COLORS  0x00
 #endif
+
+#define MINACCURACY 2
+#define MAXACCURACY 10
 
 namespace MetaFile
 {
@@ -1012,10 +1016,10 @@ namespace MetaFile
 		return sTmpFile;
 	}
 
-	    std::wstring StringNormalization(std::wstring wsString)
-	    {
+	std::wstring StringNormalization(const std::wstring& wsString)
+	{
 		std::wstring wsText;
-		for (wchar_t wChar : wsString)
+		for (const wchar_t& wChar : wsString)
 		    if (wChar == L'<')
 			   wsText += L"&lt;";
 		    else if (wChar == L'>')
@@ -1026,21 +1030,85 @@ namespace MetaFile
 			   wsText += L"&apos;";
 		    else if (wChar == L'"')
 			   wsText += L"&quot;";
-			else if (wChar == L'\r')
+			else if (wChar == L'\r' || (wChar >= 0x00 && wChar <=0x1F))
 				continue;
-		    else if (wChar == 0x00)
-			   return wsText;
 
 		    else wsText += wChar;
 		return wsText;
-		}
+	}
 
-		std::wstring ConvertToWString(double dValue, unsigned int unAccuracy)
+	bool StringEquals(const std::wstring& wsFirst, const std::wstring& wsSecond)
+	{
+#if 0
+		// since c++14!
+		return std::equal(wsFirst.begin(), wsFirst.end(),
+						  wsSecond.begin(), wsSecond.end(),
+						   [](wchar_t wchFirst, wchar_t wchSecond) {
+							   return tolower(wchFirst) == tolower(wchSecond);
+						   });
+#else
+		size_t sizeFirst = wsFirst.length();
+		size_t sizeSecond = wsSecond.length();
+		if (sizeFirst != sizeSecond)
+			return false;
+
+		for (size_t i = 0; i < sizeFirst; ++i)
 		{
-			std::wstringstream owsStream;
-			owsStream << std::fixed << std::setprecision(unAccuracy) << dValue;
+			if (tolower(wsFirst[i]) != tolower(wsSecond[i]))
+				return false;
+		}
+		return true;
+#endif
+	}
 
-			return owsStream.str();
+	static int GetMinAccuracy(double dValue)
+	{
+		if (dValue == (int)dValue)
+			return 0;
+
+		if (dValue < 0.)
+			dValue = -dValue;
+
+		if (dValue > 1.)
+			return MINACCURACY;
+
+		unsigned int unAccuracy = 0;
+
+		while (unAccuracy < MAXACCURACY)
+		{
+			dValue *= 10;
+
+			if (dValue >= 1.)
+				break;
+
+			++unAccuracy;
 		}
 
+		if (MAXACCURACY == unAccuracy)
+			return 0;
+		else
+			return unAccuracy + 3;
+	}
+
+	std::wstring ConvertToWString(double dValue, int nAccuracy)
+	{
+		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+
+		std::wstringstream owsStream;
+		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;
+
+		return owsStream.str();
+	}
+
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy)
+	{
+		std::wstringstream owsStream;
+
+		for (double dValue : arValues)
+			owsStream << std::fixed << std::setprecision((-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue)) << dValue << L" ";
+
+		owsStream.seekp(-1, std::ios_base::end);
+
+		return owsStream.str();
+	}
 }

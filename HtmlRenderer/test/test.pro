@@ -12,8 +12,6 @@ TARGET = test
 CONFIG   += console
 CONFIG   -= app_bundle
 
-CONFIG += c++11
-
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
@@ -28,17 +26,9 @@ TEMPLATE = app
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
-
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lkernel_network
-
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDjVuFile
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXpsFile
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
-
 include($$PWD/../../Common/3dParty/icu/icu.pri)
+
+ADD_DEPENDENCY(UnicodeConverter kernel graphics kernel_network HtmlRenderer PdfFile DjVuFile XpsFile)
 
 win32 {
 LIBS += -lgdi32 \

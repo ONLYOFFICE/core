@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,37 +39,10 @@ namespace DocFileFormat
 	class WideString: public std::wstring, public ByteStructure
 	{
 	public:
-		WideString( VirtualStreamReader reader, int length ): std::wstring()
-		{
-		}
+		WideString( VirtualStreamReader reader, int length );
+		WideString();
+		virtual ~WideString();
 
-		WideString(): std::wstring()
-		{
-		}
-
-		virtual ~WideString()
-		{
-		}
-
-        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-		{
-			WideString* newObject = new WideString();
-
-			unsigned char *bytes = NULL;
-			bytes = reader->ReadBytes( length, true );
-
-			//It's a real string table
-			if (reader->nWordVersion > 0)
-			{
-				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_WINDOWS_1250 );
-			}
-			else
-			{
-				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_UTF16 );
-			}
-			RELEASEARRAYOBJECTS( bytes );
-
-			return static_cast<ByteStructure*>( newObject );
-		}
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 	};
 }

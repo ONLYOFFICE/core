@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,39 +30,17 @@
  *
  */
 #pragma once
-#include "OOXFontReader.h"
-#include "../../Format/RtfProperty.h"
 
+#include "OOXFontReader.h"
+#include "../../../OOXML/PPTXFormat/Theme/FontScheme.h"
 
 class OOXFontSchemeReader
 {
 private:
 	PPTX::nsTheme::FontScheme * m_ooxFontScheme;
+
 public: 
-	OOXFontSchemeReader(PPTX::nsTheme::FontScheme * ooxFontScheme)
-	{
-		m_ooxFontScheme = ooxFontScheme;
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxFontScheme == NULL) return false;
-		
-		oParam.oReader->m_smajorAscii = m_ooxFontScheme->majorFont.latin.typeface;
-		oParam.oReader->m_smajorHAnsi = m_ooxFontScheme->majorFont.latin.typeface;
-		
-		oParam.oReader->m_smajorEastAsia	= m_ooxFontScheme->majorFont.ea.typeface;
-		oParam.oReader->m_smajorBidi		= m_ooxFontScheme->majorFont.cs.typeface;
+	OOXFontSchemeReader(PPTX::nsTheme::FontScheme * ooxFontScheme);
 
-		oParam.oReader->m_sminorAscii = m_ooxFontScheme->minorFont.latin.typeface;
-		oParam.oReader->m_sminorHAnsi = m_ooxFontScheme->minorFont.latin.typeface;
-
-		oParam.oReader->m_sminorEastAsia = m_ooxFontScheme->minorFont.ea.typeface;
-		oParam.oReader->m_sminorBidi = m_ooxFontScheme->minorFont.cs.typeface;
-		//for (long i=0 ; i < m_ooxFontScheme->m_oMinorFont.m_arrFont.size(); i++)
-		//{
-		//}
-
-
-		return true;
-	}
+	bool Parse( ReaderParameter oParam );
 };

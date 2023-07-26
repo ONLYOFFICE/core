@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,8 +40,8 @@ namespace ComplexTypes
 		class ComplexType
 		{
 		public:
-			ComplexType(){};
-            virtual ~ComplexType() {}
+			ComplexType();
+			virtual ~ComplexType();
 
 			virtual void			FromXML(XmlUtils::CXmlNode& oNode) = 0;
 			virtual std::wstring	ToString() const = 0;
@@ -52,482 +52,181 @@ namespace ComplexTypes
 		public:
 			ComplexTypes_AdditionConstructors(COnOff2)
 
-			COnOff2()
-			{
-			}
-			virtual ~COnOff2()
-			{
-			}
+			COnOff2();
+			virtual ~COnOff2();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				sResult += _T("val=\"");
-				sResult += m_oVal.ToString();
-				sResult += _T("\" ");
-
-				return sResult;
-			}
-
-			void FromBool(bool bVal)
-			{
-				m_oVal.FromBool(bVal);
-			}
-
-			bool ToBool()
-			{
-				return m_oVal.ToBool();
-			}
+			void FromBool(bool bVal);
+			bool ToBool();
 
             SimpleTypes::COnOff m_oVal = SimpleTypes::onoffTrue;
-
 		};
 
         class String : public ComplexType
 		{
 		public:
             ComplexTypes_AdditionConstructors(String)
-			String()
-			{
-			}
-            virtual ~String()
-			{
-			}
+			String();
+			virtual ~String();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_sVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			std::wstring ToString2() const;
 
-				if ( m_sVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += *m_sVal;
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
-			std::wstring ToString2() const
-			{
-				std::wstring sResult;
-
-				if ( m_sVal.IsInit() )
-					sResult += *m_sVal;
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_sVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable_string m_sVal;
 		};
+
 		class CDouble : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CDouble)
-			CDouble()
-			{
-			}
-			virtual ~CDouble()
-			{
-			}
+			CDouble();
+			virtual ~CDouble();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
-		private:
-		
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+		private:		
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDouble > m_oVal;
 		};
+
 		class CPointMeasure : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CPointMeasure)
-			CPointMeasure()
-			{
-			}
-			virtual ~CPointMeasure()
-			{
-			}
+			CPointMeasure();
+			virtual ~CPointMeasure();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CPointMeasure> m_oVal;
 		};
+
 		class CChartLayoutTarget : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartLayoutTarget)
-			CChartLayoutTarget()
-			{
-			}
-			virtual ~CChartLayoutTarget()
-			{
-			}
+			CChartLayoutTarget();
+			virtual ~CChartLayoutTarget();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::Spreadsheet::CChartLayoutTarget> m_oVal;
 		};
+
 		class CChartHMode : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartHMode)
-			CChartHMode()
-			{
-			}
-			virtual ~CChartHMode()
-			{
-			}
+			CChartHMode();
+			virtual ~CChartHMode();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::Spreadsheet::CChartHMode> m_oVal;
 		};
+
 		class CChartAxPos : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartAxPos)
-			CChartAxPos()
-			{
-			}
-			virtual ~CChartAxPos()
-			{
-			}
+			CChartAxPos();
+			virtual ~CChartAxPos();
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::Spreadsheet::CChartAxPos> m_oVal;
 		};
+
 		class CChartBarGrouping : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarGrouping)
-			CChartBarGrouping()
-			{
-			}
-			virtual ~CChartBarGrouping()
-			{
-			}
+			CChartBarGrouping();
+			virtual ~CChartBarGrouping();
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-					WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::Spreadsheet::CChartBarGrouping> m_oVal;
 		};
+
 		class CChartBarDerection : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartBarDerection)
-			CChartBarDerection()
-			{
-			}
-			virtual ~CChartBarDerection()
-			{
-			}
+			CChartBarDerection();
+			virtual ~CChartBarDerection();
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::Spreadsheet::CChartBarDirection> m_oVal;
 		};
+
 		class CChartSymbol : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CChartSymbol)
 			
-			CChartSymbol(){}
-			virtual ~CChartSymbol() {}
+			CChartSymbol();
+			virtual ~CChartSymbol();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-				return sResult;
-			}
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::Spreadsheet::CChartSymbol> m_oVal;
 		};
 
@@ -536,84 +235,38 @@ namespace ComplexTypes
 		public:
 			ComplexTypes_AdditionConstructors(CRegionLabelLayout)
 			
-			CRegionLabelLayout(){}
-			virtual ~CRegionLabelLayout() {}
+			CRegionLabelLayout();
+			virtual ~CRegionLabelLayout();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-				return sResult;
-			}
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::Spreadsheet::CRegionLabelLayout> m_oVal;
 		};
+
 		class CParentLabelLayout : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CParentLabelLayout)
 			
-			CParentLabelLayout(){}
-			virtual ~CParentLabelLayout() {}
+			CParentLabelLayout();
+			virtual ~CParentLabelLayout();
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
-
-				if ( m_oVal.IsInit() )
-				{
-					sResult += _T("val=\"");
-					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
-				}
-				return sResult;
-			}
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::Spreadsheet::CParentLabelLayout> m_oVal;
 		};
+
 	}
 } // ComplexTypes

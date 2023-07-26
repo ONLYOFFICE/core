@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,13 +40,19 @@
 #include "../../../../OOXML/Base/Base.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-#include <fstream>
 #include "../../Enums/_includer.h"
+#include "../RecordsIncluder.h"
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 ULONG xmlName = 1;
 
+using namespace ODRAW;
+using namespace PPT;
+
+CPPTElement::CPPTElement(const std::wstring& tempPath) : m_tempPath(tempPath)
+{
+}
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
     CBgraFrame bgraFrame;
@@ -207,7 +213,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
     size_t lCount = pProperties->m_lCount;
     switch (pElement->m_etType)
     {
-    case PPT_FORMAT::etVideo:
+    case PPT::etVideo:
     {
         if (reset_default)
         {
@@ -219,7 +225,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etPicture:
+    case PPT::etPicture:
     {
         if (reset_default)
         {
@@ -232,7 +238,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etAudio:
+    case PPT::etAudio:
     {
         if (reset_default)
         {
@@ -244,7 +250,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etGroup:
+    case PPT::etGroup:
     {
         if (reset_default)
         {
@@ -256,7 +262,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
         }
     }break;
-    case PPT_FORMAT::etShape:
+    case PPT::etShape:
     {
         CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
         CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
@@ -918,9 +924,8 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     {
         NSFile::CFileBinary file;
 
-        std::wstring temp = NSDirectory::GetTempPath();
-
-        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+        std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
+        std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
         if (file.CreateFileW(tempFileName))
         {
@@ -947,6 +952,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
             delete []utf8Data;
         }
         NSFile::CFileBinary::Remove(tempFileName);
+        NSDirectory::DeleteDirectory(tempPath);
     }break;
     case ODRAW::geoRight:
     {
@@ -1074,8 +1080,8 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
                     if (str.at(i) > 13 ) break;
                     length--;
                 }
-                PPT_FORMAT::CParagraph p;
-                PPT_FORMAT::CSpan s;
+                PPT::CParagraph p;
+                PPT::CSpan s;
                 s.m_strText = str.substr(0,length);
                 p.m_arSpans.push_back(s);
                 pParentShape->m_oText.m_arParagraphs.push_back(p);
@@ -1506,6 +1512,24 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 }
 
 
+CRecordShapeContainer::CRecordShapeContainer()
+{
+    bGroupShape = false;
+    m_pStream = NULL;
+
+}
+
+CRecordShapeContainer::~CRecordShapeContainer()
+{
+    m_pStream = NULL;
+}
+
+void CRecordShapeContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    m_pStream = pStream;
+    CRecordsContainer::ReadFromStream(oHeader, pStream);
+}
+
 CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                                                CTheme* pTheme, CLayout* pLayout,
                                                CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
@@ -1526,7 +1550,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
     PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-    PPT_FORMAT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
+    PPT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
 
     int lMasterID = -1;
 
@@ -1913,7 +1937,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
 
         //------ shape properties ----------------------------------------------------------------------------------------
-        CPPTElement oElement;
+        CPPTElement oElement(m_pCommonInfo->tempPath);
+
         for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
         {
             oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
@@ -2034,7 +2059,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     }
     else
     {//image, audio, video ....
-        CPPTElement oElement;
+        CPPTElement oElement(m_pCommonInfo->tempPath);
         for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
         {
             oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
@@ -2057,6 +2082,36 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     return pElement;
 }
 
+PPT::ElementType CRecordShapeContainer::GetTypeElem(eSPT eType)
+{
+    switch (eType)
+    {
+        //case sptMin:
+    case sptMax:
+    case sptNil:
+        {
+            return etShape;
+        }
+    case sptPictureFrame:
+        {
+            return etPicture;
+        }
+    default:
+        {
+            return etShape;
+        }
+    };
+    return etShape;
+}
+
+std::wstring CRecordShapeContainer::GetFileName(std::wstring strFilePath)
+{
+    int nIndex = strFilePath.rfind(wchar_t('\\'));
+    if (-1 != nIndex)
+        return strFilePath.substr(nIndex + 1);
+    else
+        return strFilePath;
+}
 bool CRecordShapeContainer::isTable() const
 {
     std::vector<CRecordShapeProperties*> oArrayOptions;
@@ -2093,8 +2148,8 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
         if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
         {
-            std::wstring temp = NSDirectory::GetTempPath();
-            std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+            std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_pCommonInfo->tempPath);
+            std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
             NSFile::CFileBinary file;
             if (file.CreateFileW(tempFileName))
@@ -2110,6 +2165,7 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
             delete[] utf8Data;
             NSFile::CFileBinary::Remove(tempFileName);
+            NSDirectory::DeleteDirectory(tempPath);
         }
     }
 
@@ -2250,7 +2306,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
             pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-            PPT_FORMAT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
+            PPT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
 
             bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
@@ -2471,7 +2527,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
         oArrayCF.push_back(elm1);
 
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+        PPT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
     }
 
     if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
@@ -2856,8 +2912,8 @@ void CRecordShapeContainer::ConvertStyleTextProp9(CTextAttributesEx *pText)
 
 //}
 
-void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-{
-    CRecordsContainer::ReadFromStream(oHeader, pStream);
+//void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+//{
+//    CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-}
+//}

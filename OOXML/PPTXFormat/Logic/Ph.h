@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,118 +44,18 @@ namespace PPTX
 		class Ph : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Ph)
+			WritingElement_AdditionMethods(Ph)
 
-			Ph()
-			{
-			}
+			Ph();
 				
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("hasCustomPrompt"),	hasCustomPrompt)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("idx"),	idx)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("orient"),	orient)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sz"),	sz)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),	type)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"hasCustomPrompt", hasCustomPrompt);
-				XmlMacroReadAttributeBase(node, L"idx", idx);
-				XmlMacroReadAttributeBase(node, L"orient", orient);
-				XmlMacroReadAttributeBase(node, L"sz", sz);
-				XmlMacroReadAttributeBase(node, L"type", type);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("type"), type);
-				oAttr.WriteLimitNullable(_T("orient"), orient);
-				oAttr.WriteLimitNullable(_T("sz"), sz);
-				oAttr.Write(_T("idx"), idx);
-				oAttr.Write(_T("hasCustomPrompt"), hasCustomPrompt);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return XmlUtils::CreateNode(_T("p:ph"), oAttr);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:ph"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("type"), type);
-				pWriter->WriteAttribute(_T("orient"), orient);
-				pWriter->WriteAttribute(_T("sz"), sz);
-				pWriter->WriteAttribute(_T("idx"), idx);
-				pWriter->WriteAttribute(_T("hasCustomPrompt"), hasCustomPrompt);
-				pWriter->EndAttributes();
-				
-				pWriter->EndNode(_T("p:ph"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, hasCustomPrompt);
-				pWriter->WriteString2(1, idx);
-				pWriter->WriteLimit2(2, orient);
-				pWriter->WriteLimit2(3, sz);
-				pWriter->WriteLimit2(4, type);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							hasCustomPrompt = pReader->GetBool();
-							break;
-						}
-						case 1:
-						{
-							idx = pReader->GetString2();
-							break;
-						}
-						case 2:
-						{
-							orient = pReader->GetUChar();
-							break;
-						}
-						case 3:
-						{
-							sz = pReader->GetUChar();
-							break;
-						}
-						case 4:
-						{
-							type = pReader->GetUChar();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			nullable_bool							hasCustomPrompt;
@@ -163,8 +63,9 @@ namespace PPTX
 			nullable_limit<Limit::Orient>			orient;
 			nullable_limit<Limit::PlaceholderSize>	sz;
 			nullable_limit<Limit::PlaceholderType>	type;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -7,6 +7,14 @@
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
 
+#include "../../../../OOXML/Base/Types_32.h"
+
+#ifndef MININT32
+#define MAXUINT32   ((_UINT32)~((_UINT32)0))
+#define MAXINT32    ((_INT32)(MAXUINT32 >> 1))
+#define MININT32    ((_INT32)~MAXINT32)
+#endif
+
 namespace MetaFile
 {
 	typedef enum
@@ -20,7 +28,8 @@ namespace MetaFile
 		ObjectTypeFont            = 0x06,
 		ObjectTypeStringFormat    = 0x07,
 		ObjectTypeImageAttributes = 0x08,
-		ObjectTypeCustomLineCap   = 0x09
+		ObjectTypeCustomLineCap   = 0x09,
+		ObjectTypeBuffer          = 0xff
 	} EEmfPlusObjectType;
 
     #define CEmfPlusObjectBase      CEmfObjectBase
@@ -290,7 +299,6 @@ namespace MetaFile
 				return Brush->Color.chAlpha;
 
 			return 255;
-//			return (unsigned int)Color.chAlpha;
 		}
 
 		double GetMiterLimit()
@@ -397,6 +405,69 @@ namespace MetaFile
 		PathPointTypeBezier = 0x03
 	} EEmfPlusPathPointType;
 
+	class CEmfPlusBuffer : public CEmfPlusObject
+	{
+	public:
+		CEmfPlusBuffer() : m_pBuffer(NULL), m_ulPosition(0), m_ulFullSize(0)
+		{}
+		~CEmfPlusBuffer()
+		{
+			if (NULL != m_pBuffer)
+				delete m_pBuffer;
+		}
+
+		virtual EEmfPlusObjectType GetObjectType() override
+		{
+			return ObjectTypeBuffer;
+		}
+
+		void SetSize(unsigned int unSize)
+		{
+			if (NULL != m_pBuffer)
+				delete [] m_pBuffer;
+
+			m_pBuffer = new BYTE[unSize];
+			m_ulFullSize   = unSize;
+		}
+
+		unsigned int GetSize() const
+		{
+			return m_ulFullSize;
+		}
+
+		void AddData(BYTE *pData, unsigned int unSize)
+		{
+			if (NULL == m_pBuffer && 0 == m_ulFullSize && 0 < unSize)
+				SetSize(unSize);
+			else if (0 == m_ulFullSize)
+				    return;
+
+			if (unSize + m_ulPosition > m_ulFullSize)
+				unSize = m_ulFullSize - m_ulPosition;
+
+			memcpy(m_pBuffer + m_ulPosition * sizeof (BYTE), pData, unSize);
+
+			m_ulPosition += unSize;
+		}
+
+		unsigned int GetUnreadSize() const
+		{
+			return (m_ulFullSize - m_ulPosition);
+		}
+
+		void GetData(BYTE*& pBuffer, unsigned int& unSize) const
+		{
+			pBuffer = m_pBuffer;
+			unSize = m_ulPosition;
+		}
+	private:
+		BYTE* m_pBuffer;
+		ULONG m_ulPosition;
+		ULONG m_ulFullSize;
+
+		friend class CEmfPlusImage;
+	};
+
 	class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
 	{
 	public:
@@ -417,7 +488,8 @@ namespace MetaFile
 		{
 			TRectD oRect;
 
-			oRect.dRight = oRect.dBottom = 0;
+			oRect.dRight = oRect.dBottom = MININT32;
+			oRect.dLeft  = oRect.dTop    = MAXINT32;
 
 			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 			{
@@ -484,17 +556,12 @@ namespace MetaFile
 //		   BitmapDataTypeCompressed = 0x00000001
 //		 } BitmapDataType;
 
-	class CEmfPlusImage : public CEmfPlusObject
+	class CEmfPlusImage : public CEmfPlusBuffer
 	{
 	public:
-		CEmfPlusImage() : CEmfPlusObject(), m_pImageBuffer(NULL), m_ulPosition(0),
-		                  m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown),
+		CEmfPlusImage() : m_eImageDataType(ImageDataTypeUnknown),
 		                  m_eMetafileDataType(MetafileDataTypeUnknown),
 		                  m_unWidth(0), m_unHeight(0){};
-		virtual ~CEmfPlusImage()
-		{
-			RELEASEARRAYOBJECTS(m_pImageBuffer);
-		};
 
 		virtual EEmfPlusObjectType GetObjectType() override
 		{
@@ -532,15 +599,6 @@ namespace MetaFile
 			return m_eMetafileDataType;
 		}
 
-		void SetSizeData(unsigned int unSize)
-		{
-			if (NULL != m_pImageBuffer)
-				delete [] m_pImageBuffer;
-
-			m_pImageBuffer = new BYTE[unSize];
-			m_ulFullSize   = unSize;
-		}
-
 		void SetImageSize(unsigned int unWidth, unsigned int unHeight)
 		{
 			m_unWidth  = unWidth;
@@ -552,37 +610,7 @@ namespace MetaFile
 			unWidth  = m_unWidth;
 			unHeight = m_unHeight;
 		}
-
-		unsigned int GetUnreadSize() const
-		{
-			return (m_ulFullSize - m_ulPosition);
-		}
-
-		void AddData(BYTE *pData, unsigned int unSize)
-		{
-			if (NULL == m_pImageBuffer && 0 == m_ulFullSize && 0 < unSize)
-				SetSizeData(unSize);
-			else if (0 == m_ulFullSize)
-				    return;
-
-			if (unSize + m_ulPosition > m_ulFullSize)
-				unSize = m_ulFullSize - m_ulPosition;
-
-			memcpy(m_pImageBuffer + m_ulPosition * sizeof (BYTE), pData, unSize);
-
-			m_ulPosition += unSize;
-		}
-
-		void GetData(BYTE*& pBuffer, unsigned int& unSize) const
-		{
-			pBuffer = m_pImageBuffer;
-			unSize = m_ulPosition;
-		}
-
 	private:
-		BYTE* m_pImageBuffer;
-		ULONG m_ulPosition;
-		ULONG m_ulFullSize;
 
 		EEmfPlusImageDataType    m_eImageDataType;
 		EEmfPlusMetafileDataType m_eMetafileDataType;

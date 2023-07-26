@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -131,8 +131,8 @@ namespace DocFileFormat
 		
 		bool bNumPr = false;
 
-		std::list<SinglePropertyModifier>::iterator end = papx->grpprl->end();
-		for (std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
+		std::vector<SinglePropertyModifier>::iterator end = papx->grpprl->end();
+		for (std::vector<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
 		{
 			int nProperty = 0; //for unknown test
 
@@ -577,7 +577,8 @@ namespace DocFileFormat
 					unsigned short val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					switch (val)
 					{
-					case 0x0000:	break; //inline
+					case 0x0000:	
+									appendValueAttribute( _framePr, L"w:yAlign", L"inline");	break;
 					case 0xfffc:	appendValueAttribute( _framePr, L"w:yAlign", L"top");		break;
 					case 0xfff8:	appendValueAttribute( _framePr, L"w:yAlign", L"center");	break;
 					case 0xfff4:	appendValueAttribute( _framePr, L"w:yAlign", L"bottom");	break;

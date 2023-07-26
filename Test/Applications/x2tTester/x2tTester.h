@@ -19,41 +19,50 @@
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 class CFormatsList
 {
 public:
 	CFormatsList();
+	CFormatsList(const CFormatsList& list);
+	CFormatsList& operator=(const CFormatsList& list);
 
-	std::vector<int> GetDocuments() const;
-	std::vector<int> GetPresentations() const;
-	std::vector<int> GetSpreadsheets() const;
-	std::vector<int> GetCrossplatform() const;
-	std::vector<int> GetImages() const;
-	int GetPdf() const;
+	std::vector<std::wstring> GetDocuments() const;
+	std::vector<std::wstring> GetPresentations() const;
+	std::vector<std::wstring> GetSpreadsheets() const;
+	std::vector<std::wstring> GetCrossplatform() const;
+	std::vector<std::wstring> GetImages() const;
+	std::wstring GetPdf() const;
 
-	bool isDocument(int format) const;
-	bool isPresentation(int format) const;
-	bool isSpreadsheet(int format) const;
-	bool isCrossplatform(int format) const;
-	bool isImage(int format) const;
-	bool isPdf(int format) const;
+	bool IsDocument(const std::wstring& ext) const;
+	bool IsPresentation(const std::wstring& ext) const;
+	bool IsSpreadsheet(const std::wstring& ext) const;
+	bool IsCrossplatform(const std::wstring& ext) const;
+	bool IsImage(const std::wstring& ext) const;
+	bool IsPdf(const std::wstring& ext) const;
 
-	// all formats
-	void SetDefault();
+	void AddDocument(const std::wstring& ext);
+	void AddPresentation(const std::wstring& ext);
+	void AddSpreadsheet(const std::wstring& ext);
+	void AddCrossplatform(const std::wstring& ext);
+	void AddImage(const std::wstring& ext);
 
-	// all writable formats
-	void SetOutput();
+	std::vector<std::wstring> GetAllExts() const;
 
-	std::vector<int> allFormats() const;
+	// all supported exts
+	static CFormatsList GetDefaultExts();
+
+	// all writable exts
+	static CFormatsList  GetOutputExts();
 
 private:
-	std::vector<int> m_documents;
-	std::vector<int> m_presentations;
-	std::vector<int> m_spreadsheets;
-	std::vector<int> m_crossplatform;
-	std::vector<int> m_images;
-	int m_pdf;
+	std::vector<std::wstring> m_documents;
+	std::vector<std::wstring> m_presentations;
+	std::vector<std::wstring> m_spreadsheets;
+	std::vector<std::wstring> m_crossplatform;
+	std::vector<std::wstring> m_images;
+	std::wstring m_pdf;
 };
 
 
@@ -65,38 +74,39 @@ public:
 	{
 		std::wstring inputFile;
 		std::wstring outputFile;
-		DWORD time;
+		std::wstring direction;
+		unsigned long time;
 		int inputSize;
 		int outputSize;
-		int exitCode;
+		std::wstring exitCode;
 		std::wstring log;
 	};
 
 	Cx2tTester(const std::wstring& configPath);
 	~Cx2tTester();
 
-	void setConfig(const std::wstring& configPath);
+	void SetConfig(const std::wstring& configPath);
 	void Start();
 
-	void writeReportHeader();
-	void writeReport(const Report& report);
-	void writeReports(const std::vector<Report>& reports);
-	void writeTime();
+	void WriteReportHeader();
+	void WriteReport(const Report& report);
+	void WriteReports(const std::vector<Report>& reports);
+	void WriteTime();
 
-	bool isAllBusy();
-	bool isAllFree();
+	bool IsAllBusy();
+	bool IsAllFree();
 
 	NSCriticalSection::CRITICAL_SECTION m_coresCS;
 	NSCriticalSection::CRITICAL_SECTION m_reportCS;
 	NSCriticalSection::CRITICAL_SECTION m_outputCS;
-	NSCriticalSection::CRITICAL_SECTION m_utilsCS;
 
 	int m_currentProc;
 	int m_maxProc;
 
 private:
-	// parse string like "docx txt" into vector of formats
-	std::vector<int> parseExtensionsString(std::wstring extensions, const CFormatsList& fl);
+	// parse string like "docx txt" into vector
+	std::vector<std::wstring> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
+	void Convert(const std::vector<std::wstring>& files, bool bNoDirectory = false);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -105,6 +115,8 @@ private:
 	std::wstring m_x2tPath;
 
 	std::wstring m_errorsXmlDirectory;
+	std::wstring m_troughConversionDirectory;
+	std::wstring m_fontsDirectory;
 
 	// fonts
 	bool m_bIsUseSystemFonts;
@@ -113,20 +125,30 @@ private:
 	NSFile::CFileBinary m_reportStream;
 
 	// takes from config or sets all
-	std::vector<int> m_inputFormats;
-	std::vector<int> m_outputFormats;
+	std::vector<std::wstring> m_inputExts;
+	std::vector<std::wstring> m_outputExts;
 
 	std::vector<std::wstring> m_inputFiles;
 
-	// list of formats
+	// lists
 	CFormatsList m_inputFormatsList;
 	CFormatsList m_outputFormatsList;
 
 	bool m_bIsErrorsOnly;
 	bool m_bIsTimestamp;
 	bool m_bIsDeleteOk;
+	bool m_bIsFilenameCsvTxtParams;
+	bool m_bIsFilenamePassword;
 
-	DWORD m_timeStart;
+	std::wstring m_defaultCsvTxtEndcoding;
+	std::wstring m_defaultCsvDelimiter;
+
+
+	unsigned long m_timeout;
+	unsigned long m_timeStart;
+
+	// format -> *t format -> all formats
+	bool m_bTroughConversion;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport
@@ -137,26 +159,29 @@ public:
 	virtual ~CConverter();
 
 	void SetInputFile(const std::wstring& inputFile);
-	void SetInputFormat(int inputFormat);
+	void SetInputExt(const std::wstring& inputExt);
 	void SetOutputFilesDirectory(const std::wstring& outputFilesDirectory);
-	void SetOutputFormats(const std::vector<int> outputFormats);
+	void SetOutputExts(const std::vector<std::wstring>& outputExts);
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
-	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetErrorsOnly(bool bIsErrorsOnly);
 	void SetDeleteOk(bool bIsDeleteOk);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
+	void SetCsvTxtEncoding(int csvTxtEncoding);
+	void SetCsvDelimiter(const std::wstring& csvDelimiter);
+	void SetPassword(const std::wstring& password);
+	void SetTimeout(unsigned long timeout);
 	void SetFilesCount(int totalFiles, int currFile);
 
 	virtual DWORD ThreadProc();
 
 private:
 	Cx2tTester* m_internal;
-
 	std::wstring m_inputFile;
-	int m_inputFormat;
 
 	std::wstring m_outputFilesDirectory;
-	std::vector<int> m_outputFormats;
+	std::vector<std::wstring> m_outputExts;
+	std::wstring m_inputExt;
 
 	std::wstring m_fontsDirectory;
 	COfficeFileFormatChecker checker;
@@ -164,11 +189,17 @@ private:
 	std::wstring m_x2tPath;
 	std::wstring m_errorsXmlDirectory;
 
+	int m_csvTxtEncoding;
+	std::wstring m_csvDelimiter;
+	std::wstring m_password;
+
 	bool m_bIsErrorsOnly;
 	bool m_bIsDeleteOk;
 
 	int m_totalFiles;
 	int m_currFile;
+
+	unsigned long m_timeout;
 };
 
 #endif // X2T_TESTER_H

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,14 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/MergeCell.h"
+
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -42,56 +48,22 @@ namespace OOX
 		class CMergeCell : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMergeCell)
-			CMergeCell(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CMergeCell()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<mergeCell"));
-				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
-				writer.WriteString(_T("/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CMergeCell)
+			CMergeCell(OOX::Document *pMain = NULL);
+			virtual ~CMergeCell();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}            
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_MergeCell;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), m_oRef )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
-                m_oRef  = ptr->rfx.toString();
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable_string m_oRef;
@@ -100,93 +72,24 @@ namespace OOX
 		class CMergeCells  : public WritingElementWithChilds<CMergeCell>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMergeCells)
+			WritingElement_AdditionMethods(CMergeCells)
             WritingElement_XlsbVectorConstructors(CMergeCells)
-			CMergeCells(OOX::Document *pMain = NULL) : WritingElementWithChilds<CMergeCell>(pMain)
-			{
-			}
-			virtual ~CMergeCells()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_arrItems.empty()) return;
+			CMergeCells(OOX::Document *pMain = NULL);
+			virtual ~CMergeCells();
 
-				writer.WriteString(_T("<mergeCells"));
-				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				writer.WriteString(_T(">"));
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
-				writer.WriteString(_T("</mergeCells>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			virtual EElementType getType () const;
 
-					if ( _T("mergeCell") == sName )
-					{
-						CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
-						m_arrItems.push_back(pMergeCell);
-						
-						pMergeCell->fromXML(oReader);						
-					}
-				}
-			}
-
-            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                ReadAttributes(obj);
-
-                if (obj.empty())
-                    return;
-
-                for(auto &mergeCell : obj)
-                {
-                    CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
-                    m_arrItems.push_back(pMergeCell);
-
-                    pMergeCell->fromBin(mergeCell);
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_MergeCells;
-			}
-		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                m_oCount = (_UINT32)obj.size();
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,98 +39,31 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class AlphaBiLevel : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaBiLevel)
+			WritingElement_AdditionMethods(AlphaBiLevel)
 			PPTX_LOGIC_BASE2(AlphaBiLevel)
 
-			AlphaBiLevel& operator=(const AlphaBiLevel& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaBiLevel& operator=(const AlphaBiLevel& oSrc);
 
-				thresh = oSrc.thresh;
-				return *this;
-			}
+			virtual OOX::EElementType getType() const;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaBiLevel;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle     ( oReader, _T("thresh"), thresh)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"thresh", thresh);
-				Normalize();
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("thresh"), thresh);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				return XmlUtils::CreateNode(_T("a:alphaBiLevel"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:alphaBiLevel");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"thresh", thresh);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:alphaBiLevel");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHABILEVEL);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, thresh);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (_at == 0)
-						thresh = pReader->GetLong();
-					else break;
-				}
-				pReader->Seek(_e);
-			}
 		public:
 			nullable_int thresh;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				thresh.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

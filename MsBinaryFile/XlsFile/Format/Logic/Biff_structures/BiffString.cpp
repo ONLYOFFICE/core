@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "BiffString.h"
-#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../Common/Utils/OptPtr.h"
 
 namespace XLS
 {
@@ -205,6 +205,35 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
 		}
 		record.skipNunBytes(raw_length);
+	}
+}
+
+void BiffString::save(CFRecord& record, const size_t cch1, const bool is_wide1)
+{
+	bool is_wide = is_wide1;
+
+	size_t cch = cch1;
+	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	{
+		cch = cch_.get();
+	}
+
+	if (is_wide)
+	{
+        unsigned char *out_str = nullptr;
+        int out_size = 0;
+
+#if defined(_WIN32) || defined(_WIN64)
+        record.appendRawDataToStatic(str_.c_str(), str_.size());
+#else            
+        convertWStringToUtf16(str_, out_str, out_size);
+        record.appendRawDataToStatic(out_str, out_size);
+#endif
+
+	}
+	else
+	{
+		//stub
 	}
 }
 

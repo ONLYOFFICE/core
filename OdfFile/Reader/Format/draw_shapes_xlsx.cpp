@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -126,11 +126,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 
 		instances.push_back(styleInst);
 	}
-	graphic_format_properties properties = calc_graphic_properties_content(instances);
 
-////////////////////////////////////////////////////////////////////////////////////
-	properties.apply_to(Context.get_drawing_context().get_properties());
-	
  	for (size_t i = 0; i < additional_.size(); i++)
 	{
 		Context.get_drawing_context().set_property(additional_[i]);
@@ -139,12 +135,18 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_is_connector_shape(connector_);
 	
 	oox::_oox_fill fill;
-	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles(), fill);	
+	graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+	if (properties)
+	{
+		properties->apply_to(Context.get_drawing_context().get_properties());
+	
+		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);	
+	}
 	Context.get_drawing_context().set_fill(fill);
 
 //////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_text_context().start_drawing_content();
+	Context.start_drawing_context();
 
 	if (word_art_)
 	{
@@ -156,6 +158,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
         content_[i]->xlsx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	Context.end_drawing_context();
 
 	if (!text_content_.empty())
 	{
@@ -171,7 +174,6 @@ void draw_rect::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_ellipse::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -180,7 +182,6 @@ void draw_ellipse::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_circle::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -189,7 +190,6 @@ void draw_circle::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_line::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -200,7 +200,6 @@ void draw_line::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 
 
@@ -213,7 +212,6 @@ void draw_path::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 
 void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -234,7 +232,6 @@ void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_polygon::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -245,7 +242,6 @@ void draw_polygon::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_polyline::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -256,7 +252,6 @@ void draw_polyline::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_custom_shape::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -265,7 +260,6 @@ void draw_custom_shape::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -276,7 +270,6 @@ void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
@@ -392,7 +385,6 @@ void dr3d_scene::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -519,8 +511,6 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	//_CP_OPT(odf_types::Bool)	dropdown_;
 
 	Context.get_drawing_context().end_control();
-	Context.get_drawing_context().clear();
-
 }
 
 }

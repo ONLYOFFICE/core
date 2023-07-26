@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,7 @@
 
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 struct DateTimeStruct : public IStruct
@@ -49,21 +49,8 @@ struct DateTimeStruct : public IStruct
     WORD m_wSecond;
     WORD m_wMilliseconds;
 
-    DateTimeStruct() :
-    m_wYear(0), m_wMonth(0),    m_wDayOfWeek(0),    m_wDay(0),
-    m_wHour(0), m_wMinute(0),   m_wSecond(0),       m_wMilliseconds(0)
-    {}
 
-    void ReadFromStream(POLE::Stream *pStream) override
-    {
-        m_wYear         = StreamUtils::ReadWORD(pStream);
-        m_wMonth        = StreamUtils::ReadWORD(pStream);
-        m_wDayOfWeek    = StreamUtils::ReadWORD(pStream);
-        m_wDay          = StreamUtils::ReadWORD(pStream);
-        m_wHour         = StreamUtils::ReadWORD(pStream);
-        m_wMinute       = StreamUtils::ReadWORD(pStream);
-        m_wSecond       = StreamUtils::ReadWORD(pStream);
-        m_wMilliseconds = StreamUtils::ReadWORD(pStream);
-    }
+    DateTimeStruct();
+    void ReadFromStream(POLE::Stream *pStream) override;
 };
 }

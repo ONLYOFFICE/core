@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,52 +36,26 @@
 
 namespace DocFileFormat
 {
-  class SectionDescriptor: public ByteStructure
-  {
-    friend class WordDocument;
+	class SectionDescriptor: public ByteStructure
+	{
+		friend class WordDocument;
 
-    private:
-      short fn;
-      short fnMpr;
-      int fcMpr;
-      /// A signed integer that specifies the position in the WordDocument Stream where a Sepx structure is located.
-      int fcSepx;
+	private:
+		short fn;
+		short fnMpr;
+		int fcMpr;
+		/// A signed integer that specifies the position in the WordDocument Stream where a Sepx structure is located.
+		int fcSepx;
 
 		static const int STRUCTURE_SIZE = 12;
 		static const int STRUCTURE_SIZE_OLD = 6;
-    public:
-		static const int GetSize(int nWordVersion)
-		{
-			return (nWordVersion == 2) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
-		}
-		SectionDescriptor() : fn(0), fnMpr(0), fcMpr(0), fcSepx(0)
-		{
-		}
 
-	  virtual ~SectionDescriptor()
-	  {
-	  }
+	public:
+		static const int GetSize(int nWordVersion);
 
-      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-	  {
-        SectionDescriptor *newObject = new SectionDescriptor();
+		SectionDescriptor();
+		virtual ~SectionDescriptor();
 
-		if (reader->nWordVersion == 2)
-		{
-			newObject->fn = reader->ReadInt16();
-			newObject->fcSepx = reader->ReadInt32();
-			//newObject->fnMpr = reader->ReadInt16();
-			//newObject->fcMpr = reader->ReadInt16();
-		}
-		else
-		{
-			newObject->fn = reader->ReadInt16();
-			newObject->fcSepx = reader->ReadInt32();
-			newObject->fnMpr = reader->ReadInt16();
-			newObject->fcMpr = reader->ReadInt32();
-		}
-
-        return static_cast<ByteStructure*>( newObject );
-      }
-  };
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+	};
 }

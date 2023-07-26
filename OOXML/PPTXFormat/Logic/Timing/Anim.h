@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,96 +46,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Anim)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"by", by);
-                XmlMacroReadAttributeBase(node, L"from", from);
-                XmlMacroReadAttributeBase(node, L"to", to);
-                XmlMacroReadAttributeBase(node, L"calcmode", calcmode);
-                XmlMacroReadAttributeBase(node, L"valueType", valueType);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				cBhvr		= node.ReadNode(_T("p:cBhvr"));
-				tavLst		= node.ReadNode(_T("p:tavLst"));
+			virtual OOX::EElementType getType() const;
 
-				FillParentPointersForChilds();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("by"), by);
-				oAttr.Write(_T("from"), from);
-				oAttr.Write(_T("to"), to);
-				oAttr.WriteLimitNullable(_T("calcmode"), calcmode);
-				oAttr.WriteLimitNullable(_T("valueType"), valueType);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cBhvr);
-				oValue.WriteNullable(tavLst);
-
-				return XmlUtils::CreateNode(_T("p:anim"), oAttr, oValue);
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_anim;
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, calcmode);
-				pWriter->WriteString2(1, by);
-				pWriter->WriteString2(2, from);
-				pWriter->WriteString2(3, to);
-				pWriter->WriteLimit2(4, valueType);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, cBhvr);
-				pWriter->WriteRecord2(1, tavLst);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	calcmode = pReader->GetUChar();
-					else if (1 == _at)	by = pReader->GetString2();
-					else if (2 == _at)	from = pReader->GetString2();
-					else if (3 == _at)	to = pReader->GetString2();
-					else if (4 == _at)	valueType = pReader->GetUChar();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						cBhvr.fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						tavLst.Init();
-						tavLst->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			CBhvr cBhvr;
 			nullable<TavLst> tavLst;
@@ -145,13 +64,9 @@ namespace PPTX
 			nullable_string						from; //W3C XML Schema string 
 			nullable_string						to; //W3C XML Schema string 
 			nullable_limit<Limit::TLValueType>	valueType; //ST_TLAnimateBehaviorValueType
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cBhvr.SetParentPointer(this);
-				if(tavLst.IsInit())
-					tavLst->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

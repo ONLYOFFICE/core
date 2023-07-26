@@ -27,8 +27,4 @@ core_windows {
     LIBS += -lUser32
 }
 
-core_linux {
-    QMAKE_LFLAGS += -Wl,--rpath=./
-}
-
 SOURCES += main.cpp

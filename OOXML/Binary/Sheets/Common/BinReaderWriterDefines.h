@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -229,7 +229,11 @@ namespace BinXlsxRW
 		SlicerCachesExt = 19,
 		SlicerCache = 20,
 		Protection = 21,
-		OleSize = 22
+		OleSize = 22,
+		ExternalFileKey = 23,
+		ExternalInstanceId = 24,
+		FileSharing = 25,
+		ExternalLinksAutoRefresh = 26
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -240,6 +244,16 @@ namespace BinXlsxRW
 		LockWindows = 5,
 		Password = 6
 	}; }
+	
+	namespace c_oSerFileSharing {enum c_oSerFileSharing{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		UserName = 4,
+		ReadOnly = 5,
+		Password = 6
+	};}
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
 		Connection = 0,
@@ -341,7 +355,8 @@ namespace BinXlsxRW
 		Date1904 = 0,
 		DateCompatibility = 1,
 		HidePivotFieldList = 2,
-		ShowPivotChartFilter = 3
+		ShowPivotChartFilter = 3,
+		UpdateLinks = 4
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
@@ -419,7 +434,8 @@ namespace BinXlsxRW
 		ProtectedRange = 43,
 		CellWatches = 44,
 		CellWatch = 45,
-		CellWatchR = 46
+		CellWatchR = 46,
+		UserProtectedRanges = 47
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -1143,6 +1159,20 @@ namespace BinXlsxRW
 		iconSet = 0,
 		iconId = 1
 	};}
+	namespace c_oSer_UserProtectedRange {enum c_oSer_UserProtectedRange
+	{
+		UserProtectedRange = 0,
+		Sqref = 1,
+		Name = 2,
+		Text = 3,
+		User = 4,
+		UsersGroup = 5
+	};}
+	namespace c_oSer_UserProtectedRangeDesc {enum c_oSer_UserProtectedRangeDesc
+	{
+		Id = 0,
+		Name = 1
+	};}
 	namespace c_oSer_DataValidation{enum c_oSer_DataValidation
 	{
 		DataValidations = 0,
@@ -1304,7 +1334,12 @@ namespace BinXlsxRW
 		SheetDataRowCell = 14,
 		SheetDataRowCellRef = 15,
 		SheetDataRowCellType = 16,
-		SheetDataRowCellValue = 17
+		SheetDataRowCellValue = 17,
+		AlternateUrls = 18,
+		AbsoluteUrl = 19,
+		RelativeUrl = 20,
+		ExternalAlternateUrlsDriveId = 21,
+		ExternalAlternateUrlsItemId = 22
 	};}
 	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
 	{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -57,16 +57,7 @@ public:
             std::string             m_sCurText;
 			bool					m_bControlPresent;
 			
-			ReaderState()
-			{
-				m_bControlPresent = false;
-				m_nUnicodeClean = 1;
-				m_oCharProp.SetDefaultRtf();
-				m_oParagraphProp.SetDefaultRtf();
-				m_oRowProperty.SetDefaultRtf();
-				m_oCellProperty.SetDefaultRtf();
-				m_oCurOldList.SetDefault();
-			}
+			ReaderState();
 	};
 
     ReaderStatePtr      m_oState;
@@ -74,23 +65,19 @@ public:
     RtfLex              m_oLex;
     int                 m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
     int                 m_nDefFont;
-    std::wstring		m_sTempFolder;
+	int					m_nDefLang;
+	int					m_nDefLangAsian;
+	std::wstring		m_sTempFolder;
 
 	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
-	~RtfReader()
-	{
-	}
+	~RtfReader();
+
 	void PushState();
 	void PopState();
 	bool Load();
-	long GetProgress()
-	{
-		return (long)( g_cdMaxPercent * m_oLex.GetProgress());
-	}
-	void Stop()
-	{
-		m_oLex.CloseSource();
-	}
+	long GetProgress();
+	void Stop();
+
 private:
 	RtfDocument& m_oDocument;
 	std::wstring m_sFilename;
@@ -101,82 +88,25 @@ class RtfAbstractReader
 public:
 	NFileWriter::CBufferedFileWriter* m_oFileWriter;
 
-	RtfAbstractReader()
-	{
-		m_bCanStartNewReader = false;
-		m_bSkip = false;
-		m_nSkipChars = 0;
-		m_nCurGroups = 1;
-		m_oFileWriter = NULL;
-		m_bStopReader = false;
+	RtfAbstractReader();
 
-		m_bUseGlobalCodepage = false;
-	}
 	bool Parse(RtfDocument& oDocument, RtfReader& oReader);
-	virtual void PushState(RtfReader& oReader)
-	{
-		oReader.PushState();
-		m_nCurGroups++;
-		m_bCanStartNewReader = true;
-	}
-	virtual void PopState(RtfDocument& oDocument, RtfReader& oReader)
-	{
-		if( m_nCurGroups > 0 )
-			m_nCurGroups--;
-		else
-			;//ASSERT(false);
-		if( m_nCurGroups == 0 )
-		{
-			m_bStopReader = true;
-			ExitReader( oDocument, oReader );
-		}
-		oReader.PopState();
-		if( m_nCurGroups == 0 )
-			ExitReader2( oDocument, oReader );
-	}
-	bool StartSubReader( RtfAbstractReader& poNewReader, RtfDocument& oDocument, RtfReader& oReader  )
-	{
-		if( true == m_bCanStartNewReader )
-		{
-			m_bCanStartNewReader = false;
-			m_nCurGroups--;
 
-			poNewReader.m_bSkip = m_bSkip;
-			return poNewReader.Parse(oDocument, oReader);
-		}
-		return false;
-	}
-	void Skip( RtfDocument& oDocument, RtfReader& oReader )
-	{
-		int cGroup = 1;
-		while( cGroup >= 1 )
-		{
-			m_oTok = oReader.m_oLex.NextToken();
-			if(m_oTok.Type == RtfToken::GroupStart)
-				cGroup++;
-			else if(m_oTok.Type == RtfToken::GroupEnd)
-				cGroup--;
-			else if(m_oTok.Type == RtfToken::Eof)
-				break;
-		}
-		PopState( oDocument, oReader );
-	}
-    virtual bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar )
-	{
-		return true;
-	}
-    virtual void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText )
-	{
-	}
-	virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
-	{
-	}
-	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
-	{
-	}
+	virtual void PushState(RtfReader& oReader);
+	virtual void PopState(RtfDocument& oDocument, RtfReader& oReader);
+
+	bool StartSubReader( RtfAbstractReader& poNewReader, RtfDocument& oDocument, RtfReader& oReader  );
+	void Skip( RtfDocument& oDocument, RtfReader& oReader );
+
+	virtual bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar );
+
+	virtual void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText );
+	virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReader );
+	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader );
+
 	std::wstring ExecuteTextInternal(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars);
-
 	virtual void ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars);
+
 	void ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars);
 	void ExecuteTextInternalSkipChars(std::string & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars);
 	std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
@@ -193,6 +123,5 @@ private:
 
 protected: 
 	int			m_nCurGroups;
-
 };
 

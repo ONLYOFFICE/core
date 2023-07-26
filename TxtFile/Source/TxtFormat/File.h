@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,13 +45,13 @@ namespace Txt
 		void read			(const std::wstring& filename);
 		void read			(const std::wstring& filename, int code_page);
 		
-		void write			(const std::wstring& filename) const;
+		bool write			(const std::wstring& filename) const;
 		
-		void writeCodePage	(const std::wstring& filename, int code_page) const;
-		void writeUtf8		(const std::wstring& filename) const;
-		void writeUnicode	(const std::wstring& filename) const;
-		void writeBigEndian	(const std::wstring& filename) const;
-		void writeAnsi		(const std::wstring& filename) const;
+		bool writeCodePage	(const std::wstring& filename, int code_page) const;
+		bool writeUtf8		(const std::wstring& filename) const;
+		bool writeUnicode	(const std::wstring& filename) const;
+		bool writeBigEndian	(const std::wstring& filename) const;
+		bool writeAnsi		(const std::wstring& filename) const;
 		
 		const bool isValid	(const std::wstring& filename) const;
 		

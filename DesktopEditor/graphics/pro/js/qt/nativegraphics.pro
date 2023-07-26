@@ -8,10 +8,9 @@ CONFIG += console
 CONFIG += object_parallel_to_source
 CONFIG -= app_bundle
 
-DEFINES += TEST_AS_EXECUTABLE \
+DEFINES += TEST_CPP_BINARY \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
     BUILDING_WASM_MODULE \
-    CMAP_USE_MEMORY \
     _QT
 
 CORE_ROOT_DIR = $$PWD/../../../../..
@@ -20,7 +19,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 include(../../freetype.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, PdfFile, HtmlRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel, HtmlRenderer)
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/agg-2.4/include \
@@ -651,6 +650,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/SrcReader/Adaptors.h \
     $$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
     $$PDF_ROOT_DIR/SrcReader/GfxClip.h \
+    $$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
     $$PDF_ROOT_DIR/PdfReader.h \
     $$PDF_ROOT_DIR/PdfFile.h
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,54 +44,16 @@ namespace Writers
 			int				index;
 		};
 		std::vector<_chartElem> m_aCharts;
+
 	public:
         std::wstring m_sDir;
 		int nEmbeddedCount;
 
-		ChartWriter(std::wstring sDir) : m_sDir(sDir)
-		{
-			nEmbeddedCount = 1000;
-		}
-		~ChartWriter()
-		{
-		}
-		bool IsEmpty()
-		{
-			return 0 == m_aCharts.size();
-		}
-		bool Write()
-		{
-			if(IsEmpty()) return false;
+		ChartWriter(std::wstring sDir);
+		~ChartWriter();
 
-			OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
-           
-			for(size_t i = 0; i < m_aCharts.size(); ++i)
-			{
-				_chartElem & elem = m_aCharts[i];
-
-                OOX::CPath filePath = pathChartDir + FILE_SEPARATOR_STR + elem.filename;
-
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(filePath.GetPath());
-				oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-				oFile.WriteStringUTF8(elem.content);
-				oFile.CloseFile();
-			}
-			return true;
-		}
-		void AddChart(std::wstring& content, std::wstring& sRelsName, std::wstring& sFileName, int index)
-		{
-			_chartElem oChartElem;
-			
-			oChartElem.content	= content;
-			oChartElem.index	= index;
-            
-			oChartElem.filename = L"chart" + std::to_wstring(oChartElem.index) + L".xml";
-			
-			sRelsName	= L"charts/" + oChartElem.filename;
-			sFileName	= oChartElem.filename;
-
-			m_aCharts.push_back(oChartElem);
-		}
+		bool IsEmpty();
+		bool Write();
+		void AddChart(std::wstring& content, std::wstring& sRelsName, std::wstring& sFileName, int index);
 	};
 }

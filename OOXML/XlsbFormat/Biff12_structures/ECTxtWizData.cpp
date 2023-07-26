@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -74,6 +74,26 @@ namespace XLSB
 
         record >> chCustom >> rowStartAt >> chDecimal >> chThousSep;
     }
+
+	void ECTxtWizData::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBITS(flags, 0, 1, iCpid)
+		SETBITS(flags, 2, 11, iCpidNew)
+		SETBIT(flags, 12, fDelimited)
+		SETBIT(flags, 13, fTab)
+		SETBIT(flags, 14, fSpace)
+		SETBIT(flags, 15, fComma)
+		SETBIT(flags, 16, fSemiColon)
+		SETBIT(flags, 17, fConsecutive)
+		SETBITS(flags, 18, 19, fTextDelim)
+		SETBIT(flags, 21, fPromptForFile)
+		SETBIT(flags, 22, fCustom)
+
+		record << flags;
+		record << chCustom << rowStartAt << chDecimal << chThousSep;
+	}
 
 } // namespace XLSB
 

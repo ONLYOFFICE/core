@@ -8,10 +8,6 @@ TEMPLATE = lib
 CONFIG += shared
 CONFIG += plugin
 
-CONFIG += c++11
-
-CONFIG += core_static_link_libstd
-
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
@@ -31,6 +27,7 @@ HEADERS += \
     src/XmlTransform.h
 
 SOURCES += \
+    src/common.h \
     src/XmlTransform.cpp \
 	src/CertificateCommon.cpp \
     src/OOXMLSigner.cpp \
@@ -47,7 +44,13 @@ core_windows {
     LIBS += -lUser32
 }
 
+DEFINES += SUPPORT_OPENSSL
 HEADERS += src/Certificate_openssl.h
+
+support_oform {
+    DEFINES += SUPPORT_OFORM
+	HEADERS += src/Certificate_oform.h
+}
 
 CONFIG += open_ssl_common
 include(../../../Common/3dParty/openssl/openssl.pri)

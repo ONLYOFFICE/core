@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSxRow>())
         {
-            m_BrtEndSxRow = elements_.back();
+            m_bBrtEndSxRow = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSxRow = false;
 
-        return m_BrtBeginSxRow && m_BrtEndSxRow;
+        return m_BrtBeginSxRow && m_bBrtEndSxRow;
     }
+
+	const bool PIVOTROWS15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSxRow == nullptr)
+			m_BrtBeginSxRow = XLS::BaseObjectPtr(new XLSB::BeginSxRow());
+
+		if (m_BrtBeginSxRow != nullptr)
+		{
+			auto ptrBrtBeginSxRow = static_cast<XLSB::BeginSxRow*>(m_BrtBeginSxRow.get());
+
+			if (ptrBrtBeginSxRow != nullptr)
+				ptrBrtBeginSxRow->csxvcells = m_arPIVOTVALUECELL15.size();
+
+			proc.mandatory(*m_BrtBeginSxRow);
+		}
+
+		for (auto &item : m_arPIVOTVALUECELL15)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSxRow>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

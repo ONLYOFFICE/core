@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,50 +40,10 @@ namespace PPTX
 		class TLNodeFillType : public BaseLimit
 		{
 		public:
-			TLNodeFillType()
-			{
-				m_strValue = _T("hold");
-			}
-
-            TLNodeFillType(UINT fill)
-            {
-                if (    fill == 0       ||
-                        fill == 3) m_strValue = L"hold";
-                else if(fill == 1       ||
-                        fill == 4) m_strValue = L"transition";
-                else m_strValue = L"freeze";
-            }
-
-			_USE_STRING_OPERATOR
+			TLNodeFillType();
+			TLNodeFillType(unsigned int fill);
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("freeze") == strValue) ||
-					(_T("hold") == strValue) ||
-					(_T("remove") == strValue) ||
-					(_T("transition") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"freeze" == m_strValue)		return 0;
-				if (L"hold" == m_strValue)			return 1;
-				if (L"remove" == m_strValue)		return 2;
-				if (L"transition" == m_strValue)	return 3;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"freeze"; break;
-				case 1: m_strValue = L"hold"; break;
-				case 2: m_strValue = L"remove"; break;
-				case 3: m_strValue = L"transition"; break;
-				}
-			}
+			DEFINE_LIMIT_PVIRTUAL
 		};
 	} // namespace Limit
 } // namespace PPTX

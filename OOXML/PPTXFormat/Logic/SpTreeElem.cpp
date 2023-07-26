@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,6 +44,7 @@
 #include "../../DocxFormat/Media/Audio.h"
 #include "../../DocxFormat/Media/Video.h"
 #include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
@@ -241,8 +242,15 @@ namespace PPTX
 					strNode = L"<v:stroke dashstyle=\"" + value  + L"\"/>";
 			}
 		}
+
 		SpTreeElem::SpTreeElem()
 		{
+		}
+		OOX::EElementType SpTreeElem::getType () const
+		{
+			if (m_elem.IsInit())
+				return m_elem->getType();
+			return OOX::et_Unknown;
 		}
 		SpTreeElem::~SpTreeElem()
 		{
@@ -254,6 +262,11 @@ namespace PPTX
 		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
+			return *this;
+		}
+		SpTreeElem& SpTreeElem::operator=(const SpTreeElem& oSrc)
+		{
+			m_elem = oSrc.m_elem;
 			return *this;
 		}
 		SpTreeElem::SpTreeElem(XmlUtils::CXmlLiteReader& oReader)
@@ -276,9 +289,9 @@ namespace PPTX
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(oReader));
 			else if (name == L"lockedCanvas")
-				m_elem.reset(new Logic::LockedCanvas(oReader));
+				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(oReader));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(new Logic::SpTree(oReader));
+				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
 			else if (name == L"graphicFrame")
 			{
 				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame();
@@ -332,9 +345,9 @@ namespace PPTX
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(node));
 			else if (name == L"lockedCanvas")
-				m_elem.reset(new Logic::LockedCanvas(node));
+				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(node));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(new Logic::SpTree(node));
+				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
 			else if (name == L"graphicFrame")
 			{
 				m_elem.reset(new Logic::GraphicFrame(node));
@@ -353,17 +366,16 @@ namespace PPTX
 				if (node.GetNode(L"mc:Choice", oNodeChoice))
 				{
 					XmlUtils::CXmlNode oNodeFall;
-					XmlUtils::CXmlNodes oNodesC;
+					std::vector<XmlUtils::CXmlNode> oNodesC;
 					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
 					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.GetCount())
+						if (1 == oNodesC.size())
 						{
-							XmlUtils::CXmlNode oNodeC;
-							oNodesC.GetAt(0, oNodeC);
+							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
 							fromXML(oNodeC);
 				
@@ -374,10 +386,9 @@ namespace PPTX
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.GetCount())
+						if (1 == oNodesC.size())
 						{
-							XmlUtils::CXmlNode oNodeC;
-							oNodesC.GetAt(0, oNodeC);
+							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
 							fromXML(oNodeC);
 							isEmpty = false;
@@ -392,7 +403,7 @@ namespace PPTX
 			}
 			else if (name == L"binData")
 			{
-				m_binaryData = node.GetText();
+				m_binaryData = node;
 			}
 			else m_elem.reset();
 		}
@@ -402,7 +413,6 @@ namespace PPTX
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("Requires"), m_sRequires )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-
 		std::wstring SpTreeElem::GetUriElem()
 		{
 			if (m_elem.IsInit() == false)
@@ -505,15 +515,22 @@ namespace PPTX
 				}break;
 			}
 		}
-
+		void SpTreeElem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (m_elem.is_init())
+				m_elem->toPPTY(pWriter);
+		}
+		void SpTreeElem::InitElem(WrapperWritingElement* pElem)
+		{
+			m_elem.reset(pElem);
+		}
 		std::wstring SpTreeElem::toXML() const
 		{
 			if (m_elem.IsInit())
 				return m_elem->toXML();
 			return L"";
 		}
-
-		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId) const
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const
 		{
 			if (m_elem.IsInit() == false) return;
 
@@ -522,22 +539,27 @@ namespace PPTX
 				case OOX::et_a_Shape:
 				{
 					smart_ptr<PPTX::Logic::Shape> oShape = m_elem.smart_dynamic_cast<PPTX::Logic::Shape>();
-					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
+					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap);
 				}break;
 				case OOX::et_pic:
 				{
 					smart_ptr<PPTX::Logic::Pic> oPic = m_elem.smart_dynamic_cast<PPTX::Logic::Pic>();
-					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
+					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap);
 				}break;
 				case OOX::et_p_ShapeTree:
 				case OOX::et_lc_LockedCanvas:
 				{
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
-					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap, pId);
+					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
 				}break;
 				default:
 					break;
 			}
+		}
+		void SpTreeElem::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (m_elem.is_init())
+				m_elem->toXmlWriter(pWriter);
 		}
 		std::wstring SpTreeElem::GetSlicerRequires()
 		{
@@ -555,5 +577,15 @@ namespace PPTX
 			}
 			return L"";
 		}
+		smart_ptr<WrapperWritingElement> SpTreeElem::GetElem()
+		{
+			return m_elem;
+		}
+		void SpTreeElem::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if (is_init())
+				m_elem->SetParentPointer(pParent);
+		}
+		void SpTreeElem::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

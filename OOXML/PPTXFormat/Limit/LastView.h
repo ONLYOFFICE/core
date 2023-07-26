@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,57 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class LastView : public BaseLimit
-		{
-		public:
-			LastView()
-			{
-				m_strValue = L"sldThumbnailView";
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"handoutView" == strValue) ||
-					(L"notesMasterView" == strValue) ||
-					(L"notesView" == strValue) ||
-					(L"outlineView" == strValue) ||
-					(L"sldMasterView" == strValue) ||
-					(L"sldSorterView" == strValue) ||
-					(L"sldThumbnailView" == strValue) ||
-					(L"sldView" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"handoutView" == m_strValue)		return 0;
-				if (L"notesMasterView" == m_strValue)	return 1;
-				if (L"notesView" == m_strValue)			return 2;
-				if (L"outlineView" == m_strValue)		return 3;
-				if (L"sldMasterView" == m_strValue)		return 4;
-				if (L"sldSorterView" == m_strValue)		return 5;
-				if (L"sldThumbnailView" == m_strValue)	return 6;
-				if (L"sldView" == m_strValue)			return 7;
-				return 6;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"handoutView"; break;
-				case 1: m_strValue = L"notesMasterView"; break;
-				case 2: m_strValue = L"notesView"; break;
-				case 3: m_strValue = L"outlineView"; break;
-				case 4: m_strValue = L"sldMasterView"; break;
-				case 5: m_strValue = L"sldSorterView"; break;
-				case 6: m_strValue = L"sldThumbnailView"; break;
-				case 7: m_strValue = L"sldView"; break;
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(LastView)
 	} // namespace Limit
 } // namespace PPTX

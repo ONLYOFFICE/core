@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,232 +36,38 @@
 #include "FileTypes.h"
 
 #include "Limit/LastView.h"
-#include "ViewProps/GridSpacing.h"
-#include "ViewProps/NormalViewPr.h"
-#include "ViewProps/NotesTextViewPr.h"
-#include "ViewProps/NotesViewPr.h"
-#include "ViewProps/OutlineViewPr.h"
-#include "ViewProps/SlideViewPr.h"
-#include "ViewProps/SorterViewPr.h"
 
 namespace PPTX
 {
+	namespace nsViewProps
+	{
+		class GridSpacing;
+		class NormalViewPr;
+		class NotesTextViewPr;
+		class NotesViewPr;
+		class OutlineViewPr;
+		class SlideViewPr;
+		class SorterViewPr;
+	}
+
 	class ViewProps : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		ViewProps(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
-		{
-		}
-		ViewProps(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
-		{
-			read(filename, map);
-		}
-		virtual ~ViewProps()
-		{
-		}
-		virtual void read(const OOX::CPath& filename, FileMap& map)
-		{
-			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile(filename.m_strFilename);
+		ViewProps(OOX::Document* pMain);
+		ViewProps(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~ViewProps();
 
-            XmlMacroReadAttributeBase(oNode, L"lastView", attrLastView);
-            XmlMacroReadAttributeBase(oNode, L"showComments", attrShowComments);
-			
-			XmlUtils::CXmlNodes oNodes;
-			if (oNode.GetNodes(_T("*"), oNodes))
-			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
-				{
-					XmlUtils::CXmlNode oNodeChild;
-					oNodes.GetAt(i, oNodeChild);
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
-					std::wstring strName = XmlUtils::GetNameNoNS(oNodeChild.GetName());
-					if (L"gridSpacing" == strName)
-					{
-						GridSpacing = oNodeChild;
-						if (GridSpacing.is_init())
-							GridSpacing->SetParentFilePointer(this);
-					}
-					else if (L"normalViewPr" == strName)
-					{
-						NormalViewPr = oNodeChild;
-						if (NormalViewPr.is_init())
-							NormalViewPr->SetParentFilePointer(this);
-					}
-					else if (L"notesTextViewPr" == strName)
-					{
-						NotesTextViewPr = oNodeChild;
-						if (NotesTextViewPr.is_init())
-							NotesTextViewPr->SetParentFilePointer(this);
-					}
-					else if (L"notesViewPr" == strName)
-					{
-						NotesViewPr = oNodeChild;
-						if (NotesViewPr.is_init())
-							NotesViewPr->SetParentFilePointer(this);
-					}
-					else if (L"outlineViewPr" == strName)
-					{
-						OutlineViewPr = oNodeChild;
-						if (OutlineViewPr.is_init())
-							OutlineViewPr->SetParentFilePointer(this);
-					}
-					else if (L"slideViewPr" == strName)
-					{
-						SlideViewPr = oNodeChild;
-						if (SlideViewPr.is_init())
-							SlideViewPr->SetParentFilePointer(this);
-					}
-					else if (L"sorterViewPr" == strName)
-					{
-						SorterViewPr = oNodeChild;
-						if (SorterViewPr.is_init())
-							SorterViewPr->SetParentFilePointer(this);
-					}
-				}
-			}
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{
-			WrapperFile::write(filename, directory, content);
-			FileContainer::write(filename, directory, content);
-		}
-		virtual const OOX::FileType type() const
-		{
-			return OOX::Presentation::FileTypes::ViewProps;
-		}
-		virtual const OOX::CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const OOX::CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
 
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->StartRecord(NSBinPptxRW::NSMainTables::ViewProps);
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			pWriter->WriteLimit2(0, attrLastView);
-			pWriter->WriteBool2(1, attrShowComments);
-
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-			pWriter->WriteRecord2(0, GridSpacing);
-			pWriter->WriteRecord2(1, NormalViewPr);
-			pWriter->WriteRecord2(2, NotesTextViewPr);
-			pWriter->WriteRecord2(3, NotesViewPr);
-			pWriter->WriteRecord2(4, OutlineViewPr);
-			pWriter->WriteRecord2(5, SlideViewPr);
-			pWriter->WriteRecord2(6, SorterViewPr);
-
-			pWriter->EndRecord();
-		}
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			pReader->Skip(1);
-
-			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-			pReader->Skip(1); // start attributes
-
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-
-				switch (_at)
-				{
-					case 0:
-					{
-						attrLastView = pReader->GetUChar();					
-					}break;
-					case 1:
-					{
-						attrShowComments = pReader->GetBool();					
-					}break;
-					default:
-						break;
-				}
-			}
-
-			while (pReader->GetPos() < _end_rec)
-			{
-				BYTE _rec = pReader->GetUChar();
-
-				switch (_rec)
-				{
-					case 0:
-					{
-						GridSpacing = new nsViewProps::GridSpacing();
-						GridSpacing->fromPPTY(pReader);						
-					}break;
-					case 1:
-					{
-						NormalViewPr = new nsViewProps::NormalViewPr();
-						NormalViewPr->fromPPTY(pReader);
-					}break;
-					case 2:
-					{
-						NotesTextViewPr = new nsViewProps::NotesTextViewPr();
-						NotesTextViewPr->fromPPTY(pReader);
-					}break;
-					case 3:
-					{
-						NotesViewPr = new nsViewProps::NotesViewPr();
-						NotesViewPr->fromPPTY(pReader);
-					}break;
-					case 4:
-					{
-						OutlineViewPr = new nsViewProps::OutlineViewPr();
-						OutlineViewPr->fromPPTY(pReader);
-					}break;
-					case 5:
-					{
-						SlideViewPr = new nsViewProps::SlideViewPr();
-						SlideViewPr->fromPPTY(pReader);
-					}break;
-					case 6:
-					{
-						SorterViewPr = new nsViewProps::SorterViewPr();
-						SorterViewPr->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();						
-					}break;
-				}
-			}
-			pReader->Seek(_end_rec);
-		}
-		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			pWriter->StartNode(L"p:viewPr");
-
-			pWriter->StartAttributes();
-
-			pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
-			pWriter->WriteAttribute(L"lastView", attrLastView);
-			pWriter->WriteAttribute(L"showComments", attrShowComments);
-
-			pWriter->EndAttributes();
-
-			pWriter->Write(NormalViewPr);
-			pWriter->Write(SlideViewPr);
-			pWriter->Write(OutlineViewPr);
-			pWriter->Write(NotesTextViewPr);
-			pWriter->Write(SorterViewPr);
-			pWriter->Write(NotesViewPr);
-			pWriter->Write(GridSpacing);
-
-			pWriter->EndNode(L"p:viewPr");
-		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		nullable_limit<Limit::LastView>				attrLastView;
 		nullable_bool								attrShowComments;

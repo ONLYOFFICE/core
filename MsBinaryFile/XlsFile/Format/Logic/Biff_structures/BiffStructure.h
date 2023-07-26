@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,67 +44,54 @@
 namespace XLS
 {
 
-class BiffStructure_NoVtbl
-{
-public:
-	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
-	void load(IBinaryReader* reader);
-};
+	class BiffStructure;
+	typedef boost::shared_ptr<BiffStructure>	BiffStructurePtr;
+	typedef std::vector<BiffStructurePtr>		BiffStructurePtrVector;
 
-class BiffStructure;
-typedef boost::shared_ptr<BiffStructure>	BiffStructurePtr;
-typedef std::vector<BiffStructurePtr>		BiffStructurePtrVector;
-
-class BiffStructure : protected BiffStructure_NoVtbl
-{
-public:
-
-	virtual BiffStructurePtr clone() = 0;
-
-	virtual void load(CFRecord& record) = 0;
-	virtual void load(IBinaryReader* reader)
+	class BiffStructure
 	{
-	}
+	public:
+		virtual ~BiffStructure() {}
+		virtual BiffStructurePtr clone() = 0;
 
-	virtual ElementType get_type() = 0;
+		virtual void load(CFRecord& record) = 0;
+		virtual void load(IBinaryReader* reader) {}
 
-	virtual int serialize(std::wostream & _stream)
-	{
-        std::stringstream s;
-        s << std::string("This element - ") << getClassName() << std::string("- not serialize");
-		Log::warning(s.str());
-		return 0;
-	}
+		virtual void save(CFRecord& record) {}//= 0;
 
-    virtual const std::string & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
+		virtual ElementType get_type() = 0;
 
-};
+		virtual int serialize(std::wostream & _stream)
+		{
+			std::stringstream s;
+			s << std::string("This element - ") << getClassName() << std::string("- not serialize");
+			Log::warning(s.str());
+			return 0;
+		}
+
+		virtual const std::string & getClassName() const = 0;   // The return value must be a reference to a static variable inside the getter
+	};
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
 	public: \
-        const std::string & getClassName() const { static std::string  str(#class_name); return str;}\
-		virtual XLS::ElementType get_type() { return type; }
-	
+	const std::string & getClassName() const { static std::string str(#class_name); return str; }\
+	virtual XLS::ElementType get_type() { return type; }
 
-
-bool DiffBiff(BiffStructure_NoVtbl & val);
-bool DiffBiff(BiffStructure & val);
-
-
-template<class T>
-CFRecord& operator>>(CFRecord& record, T& val)
-{
-	if(DiffBiff(val))
+	template<typename T, typename = typename std::enable_if<!std::is_base_of<BiffStructure, T>::value, T>::type>
+	CFRecord& operator>>(CFRecord& record, T& val)
 	{
 		record.loadAnyData(val);
+		return record;
 	}
-	else
+	template<typename T, typename = typename std::enable_if<!std::is_base_of<BiffStructure, T>::value, T>::type>
+	CFRecord& operator<<(CFRecord& record, T& val)
 	{
-		val.load(record);
+		record.storeAnyData(val);
+		return record;
 	}
-	return record;
-}
 
+	CFRecord& operator>>(CFRecord& record, BiffStructure& val);
+	CFRecord& operator<<(CFRecord& record, BiffStructure& val);
 
 } // namespace XLS
 

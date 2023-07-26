@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -74,16 +74,38 @@ void PtgExtraArray::load(CFRecord& record)
     }
 	for(int i = 0; i < (cols + 1) * (rows + 1); ++i)
 	{
-		if (record.getRdPtr() >= record.getDataSize()) 
+		if (record.getRdPtr() >= record.getDataSize())
 			break;
 		unsigned char rec_type;
 		record >> rec_type;
 		SerArPtr ser(SerAr::createSerAr(rec_type));
-		record >> *ser;
-		array_.push_back(ser);
+        if(ser.get())
+        {
+            record >> *ser;
+            array_.push_back(ser);
+        }
 	}
 }
 
+void PtgExtraArray::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		DColunByteU cols_xls;
+		DRw rows_xls;
+		cols_xls = cols;
+		rows_xls = rows;
+		record << cols_xls << rows_xls;
+	}
+	else
+	{
+		record << cols << rows;
+	}
+	for (auto& item : array_)
+	{
+		record << *item;
+	}
+}
 
 const std::wstring PtgExtraArray::toString() const
 {

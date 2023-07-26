@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -241,6 +241,26 @@ public:
 		std::wstring m_wsCert;
 		bool         m_bDate;
 	};
+	
+	class GRAPHICS_DECL CDateTimeFormPr
+	{
+	public:
+		CDateTimeFormPr();
+		
+		void SetValue(const std::wstring& wsValue);
+		void SetPlaceHolder(const std::wstring& wsValue);
+		void SetFormat(const std::wstring& wsValue);
+		
+		const std::wstring& GetValue() const;
+		const std::wstring& GetPlaceHolder() const;
+		const std::wstring& GetFormat() const;
+		
+	private:
+		
+		std::wstring m_wsValue;
+		std::wstring m_wsPlaceHolder;
+		std::wstring m_wsFormat;
+	};
 
 public:
 	CFormFieldInfo();
@@ -285,6 +305,7 @@ public:
 	bool IsCheckBox() const;
 	bool IsPicture() const;
 	bool IsSignature() const;
+	bool IsDateTime() const;
 
 	CTextFormPr* GetTextFormPr();
 	const CTextFormPr* GetTextPr() const;
@@ -300,7 +321,10 @@ public:
 
 	CSignatureFormPr* GetSignatureFormPr();
 	const CSignatureFormPr* GetSignaturePr() const;
-
+	
+	CDateTimeFormPr* GetDateTimeFormPr();
+	const CDateTimeFormPr* GetDateTimePr() const;
+	
 private:
 	int          m_nType;
 	double       m_dX;
@@ -324,6 +348,7 @@ private:
 	CCheckBoxFormPr  m_oCheckBoxPr;
 	CPictureFormPr   m_oPicturePr;
 	CSignatureFormPr m_oSignaturePr;
+	CDateTimeFormPr  m_oDateTimePr;
 };
 
 #endif // _BUILD_FORMFIELD_H_

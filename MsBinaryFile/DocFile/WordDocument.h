@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -144,7 +144,7 @@ namespace DocFileFormat
 		std::vector<wchar_t>* GetChars			(int fcStart, int fcEnd, int cp);
 		
 		std::vector<int>*							GetFileCharacterPositions		( int fcMin, int fcMax );
-		std::list<CharacterPropertyExceptions*>*	GetCharacterPropertyExceptions	( int fcMin, int fcMax );
+		std::vector<CharacterPropertyExceptions*>*	GetCharacterPropertyExceptions	( int fcMin, int fcMax );
 		
 		void Clear();
 
@@ -162,24 +162,29 @@ namespace DocFileFormat
 		StructuredStorageReader	* m_pStorage;			//POLE::Storage* Storage
 		
 		std::vector<wchar_t>						* Text;			// All text of the Word document
-		std::list<FormattedDiskPagePAPX*>			* AllPapxFkps;	// A list of all FKPs that contain PAPX
-		std::list<FormattedDiskPageCHPX*>			* AllChpxFkps;	// A list of all FKPs that contain CHPX
+		std::vector<FormattedDiskPagePAPX*>			* AllPapxFkps;	// A list of all FKPs that contain PAPX
+		std::vector<FormattedDiskPageCHPX*>			* AllChpxFkps;	// A list of all FKPs that contain CHPX
 		
 		std::map<int, ParagraphPropertyExceptions*>	* AllPapx;		// The value is the PAPX that formats the paragraph.
 		std::map<int, SectionPropertyExceptions*>	* AllSepx;		// The value is the SEPX that formats the section.
 		std::vector<int>							* AllPapxVector;// A vector to quick find in AllPapx
 
-		std::map<int, int>						PictureBulletsCPsMap;
+		std::map<int, int> PictureBulletsCPsMap;
 
-		struct _annotStartEnd
+		std::map<int, char>	m_mapBadCP;
+
+		struct _bmkStartEnd
 		{
 			int start;
 			int end;			
 			_UINT32 bookmarkId;
 		};
-		std::vector<std::pair<int, int>>		BookmarkStartEndCPs;
-		std::vector<_annotStartEnd>				AnnotStartEndCPs;
-		std::map<int, int>						mapCommentsBookmarks;
+		std::vector<_bmkStartEnd> BookmarkStartEndCPs;
+		std::vector<_bmkStartEnd> BookmarkProtStartEndCPs;
+		std::vector<_bmkStartEnd> AnnotStartEndCPs;
+		
+		std::map<int, int> mapAnnotBookmarks; //id, index
+		std::map<int, int> mapProtBookmarks;
 
 		FileInformationBlock				* FIB;
 		StyleSheet							* Styles;					// The style sheet of the document
@@ -197,9 +202,12 @@ namespace DocFileFormat
 		StringTable<WideString>				*BookmarkNames;
 		StringTable<WideString>				*AutoTextNames;
 		StringTable<WideString>				*AssocNames;
-		StringTable<WideString>				*BookmarkAnnotNames;
+		StringTable<WideString>				*BkmkAnnotNames;
 		StringTable<WideString>				*Captions;
 		StringTable<WideString>				*AutoCaptions;
+		
+		StringTableEx<ProtInfoBookmark>		*BkmkProt;
+		StringTable<WideString>				*BkmkProtUser;
 
 		Plex<EmptyStructure>				*IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
 		Plex<FootnoteDescriptor>			*FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
@@ -226,6 +234,9 @@ namespace DocFileFormat
 		Plex<BookmarkFirst>					*AnnotStartPlex;
 		Plex<EmptyStructure>				*AnnotEndPlex;
 
+		Plex<BookmarkFirst>					*BookmarkProtStartPlex;
+		Plex<EmptyStructure>                *BookmarkProtEndPlex;
+
 		Plex<ListNumCache>					*ListPlex;
 		Plex<FieldCharacter>				*FieldsPlex;
 		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
@@ -235,6 +246,7 @@ namespace DocFileFormat
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		
+
 		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
 //------------------------------------------------------------------------------
 		void CorrectColor(ODRAW::OfficeArtCOLORREF & color);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,17 +30,43 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+#include "../FileTypes_Spreadsheet.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+namespace XLS
+{
+	class BiffStructure;
+}
+
+namespace SimpleTypes
+{
+	class CGuid;
+
+	namespace Spreadsheet
+	{
+		class COlapSlicerCacheSortOrder;
+		class CSlicerCacheCrossFilter;
+		class CTabularSlicerCacheSortOrder;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class COlapSlicerCacheItemParent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheItemParent)
+			WritingElement_AdditionMethods(COlapSlicerCacheItemParent)
 			COlapSlicerCacheItemParent(){}
 			virtual ~COlapSlicerCacheItemParent(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -58,10 +84,11 @@ namespace OOX
 			//Attributes
 			nullable_string m_oN;
 		};
+
 		class COlapSlicerCacheItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheItem)
+			WritingElement_AdditionMethods(COlapSlicerCacheItem)
 			COlapSlicerCacheItem(){}
 			virtual ~COlapSlicerCacheItem(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -85,10 +112,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItemParent> m_oP;
 		};
+
 		class COlapSlicerCacheRange : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheRange)
+			WritingElement_AdditionMethods(COlapSlicerCacheRange)
 			COlapSlicerCacheRange(){}
 			virtual ~COlapSlicerCacheRange(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -110,10 +138,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItem> m_oI;
 		};
+
 		class CTabularSlicerCacheItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCacheItem)
+			WritingElement_AdditionMethods(CTabularSlicerCacheItem)
 			CTabularSlicerCacheItem(){}
 			virtual ~CTabularSlicerCacheItem(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -135,10 +164,11 @@ namespace OOX
 			nullable_bool m_oS;//False
 			nullable_bool m_oNd;//False
 		};
+
 		class COlapSlicerCacheSelection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheSelection)
+			WritingElement_AdditionMethods(COlapSlicerCacheSelection)
 			COlapSlicerCacheSelection(){}
 			virtual ~COlapSlicerCacheSelection(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -160,10 +190,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItemParent> m_oP;
 		};
+
 		class COlapSlicerCacheLevelData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheLevelData)
+			WritingElement_AdditionMethods(COlapSlicerCacheLevelData)
 			COlapSlicerCacheLevelData(){}
 			virtual ~COlapSlicerCacheLevelData(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -189,10 +220,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheRange> m_oRanges;
 		};
+
 		class CTabularSlicerCacheItems : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCacheItems)
+			WritingElement_AdditionMethods(CTabularSlicerCacheItems)
             WritingElement_XlsbConstructors(CTabularSlicerCacheItems)
 			CTabularSlicerCacheItems(){}
 			virtual ~CTabularSlicerCacheItems(){}
@@ -214,10 +246,11 @@ namespace OOX
 			//Members
 			std::vector<CTabularSlicerCacheItem> m_oI;
 		};
+
 		class COlapSlicerCacheSelections : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheSelections)
+			WritingElement_AdditionMethods(COlapSlicerCacheSelections)
             WritingElement_XlsbConstructors(COlapSlicerCacheSelections)
 			COlapSlicerCacheSelections(){}
 			virtual ~COlapSlicerCacheSelections(){}
@@ -239,10 +272,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheSelection> m_oSelection;
 		};
+
 		class COlapSlicerCacheLevelsData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheLevelsData)
+			WritingElement_AdditionMethods(COlapSlicerCacheLevelsData)
             WritingElement_XlsbConstructors(COlapSlicerCacheLevelsData)
 			COlapSlicerCacheLevelsData(){}
 			virtual ~COlapSlicerCacheLevelsData(){}
@@ -264,10 +298,11 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheLevelData> m_oLevel;
 		};
+
 		class CTabularSlicerCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCache)
+			WritingElement_AdditionMethods(CTabularSlicerCache)
             WritingElement_XlsbConstructors(CTabularSlicerCache)
 			CTabularSlicerCache(){}
 			virtual ~CTabularSlicerCache(){}
@@ -295,10 +330,11 @@ namespace OOX
 			nullable<CTabularSlicerCacheItems> m_oItems;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class COlapSlicerCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCache)
+			WritingElement_AdditionMethods(COlapSlicerCache)
             WritingElement_XlsbConstructors(COlapSlicerCache)
 			COlapSlicerCache(){}
 			virtual ~COlapSlicerCache(){}
@@ -323,10 +359,11 @@ namespace OOX
 			nullable<COlapSlicerCacheSelections> m_oSelections;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class CSlicerCacheData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicerCacheData)
+			WritingElement_AdditionMethods(CSlicerCacheData)
             WritingElement_XlsbConstructors(CSlicerCacheData)
 			CSlicerCacheData(){}
 			virtual ~CSlicerCacheData(){}
@@ -347,10 +384,11 @@ namespace OOX
 			nullable<COlapSlicerCache> m_oOlap;
 			nullable<CTabularSlicerCache> m_oTabular;
 		};
+
 		class CSlicerCachePivotTable : public WritingElement
 		{
 		public:
-            WritingElement_AdditionConstructors(CSlicerCachePivotTable)
+            WritingElement_AdditionMethods(CSlicerCachePivotTable)
 			CSlicerCachePivotTable(){}
 			virtual ~CSlicerCachePivotTable(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -371,10 +409,11 @@ namespace OOX
 			nullable_uint m_oTabId;
 			nullable_string m_oName;
 		};
+
 		class CSlicerCacheDefinition : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicerCacheDefinition)
+			WritingElement_AdditionMethods(CSlicerCacheDefinition)
             WritingElement_XlsbConstructors(CSlicerCacheDefinition)
 			CSlicerCacheDefinition(){}
 			virtual ~CSlicerCacheDefinition(){}
@@ -409,8 +448,8 @@ namespace OOX
 			{
 				m_bSpreadsheets = true;
 			}
-			CSlicerCacheFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::
-IFileContainer(pMain)
+			CSlicerCacheFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) :
+							 OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
@@ -442,11 +481,13 @@ IFileContainer(pMain)
 			}
 
 			nullable<CSlicerCacheDefinition> m_oSlicerCacheDefinition;
+
 		private:
 			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
+
 	} //Spreadsheet
 } // namespace OOX

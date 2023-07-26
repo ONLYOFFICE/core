@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,10 +33,14 @@
 
 #include "./../WrapperWritingElement.h"
 #include "ClrScheme.h"
-#include "./../Logic/ClrMap.h"
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class ClrMap;
+	}
+
 	namespace nsTheme
 	{
 		class ExtraClrScheme : public WrapperWritingElement
@@ -45,78 +49,19 @@ namespace PPTX
 			PPTX_LOGIC_BASE(ExtraClrScheme)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				clrScheme	= node.ReadNode(_T("a:clrScheme"));
-				clrMap		= node.ReadNode(_T("a:clrMap"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(clrScheme);
-				oValue.WriteNullable(clrMap);
-
-				return XmlUtils::CreateNode(_T("a:extraClrScheme"), oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:extraClrScheme"));
-				pWriter->EndAttributes();
-
-				clrScheme.toXmlWriter(pWriter);
-				pWriter->Write(clrMap);
-
-				pWriter->EndNode(_T("a:extraClrScheme"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, clrScheme);
-				pWriter->WriteRecord2(1, clrMap);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _e)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							clrScheme.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							clrMap = new Logic::ClrMap();
-							clrMap->m_name = _T("a:clrMap");
-							clrMap->fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_e);				
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			ClrScheme				clrScheme;
 			nullable<Logic::ClrMap> clrMap;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				clrScheme.SetParentPointer(this);
-				if(clrMap.is_init())
-					clrMap->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsTheme
 } // namespace PPTX

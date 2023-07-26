@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,19 +40,15 @@
 #include "FileTypes.h"
 #include "IFileContainer.h"
 
-#include "Logic/DocParts.h"
 #include "Logic/SectionProperty.h"
-#include "Logic/Annotations.h"
-#include "Logic/Paragraph.h"
-#include "Logic/Sdt.h"
-#include "Logic/Table.h"
 #include "Logic/Pict.h"
-#include "Math/oMathPara.h"
-#include "Math/OMath.h"
-#include "External/HyperLink.h"
 
 namespace OOX
 {
+	namespace Vml
+	{
+		class CBackground;
+	}
 	namespace Logic
 	{
 		//--------------------------------------------------------------------------------
@@ -62,70 +58,55 @@ namespace OOX
 		class CBackground : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBackground)
-				CBackground(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CBackground()
-			{
-			}
+			WritingElement_AdditionMethods(CBackground)
+			CBackground(OOX::Document *pMain = NULL);
+			virtual ~CBackground();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const;
 
-			virtual EElementType getType() const
-			{
-				return et_w_background;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
+			nullable<SimpleTypes::CHexColor> m_oColor;
+			nullable<SimpleTypes::CThemeColor> m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber> m_oThemeTint;
 
-			nullable<SimpleTypes::CHexColor          >	m_oColor;
-			nullable<SimpleTypes::CThemeColor        >	m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeTint;
-
-			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
-			nullable<OOX::Vml::CBackground>				m_oBackground;
+			nullable<OOX::Logic::CDrawing> m_oDrawing;
+			nullable<OOX::Vml::CBackground> m_oBackground;
 		};
 
 		//Word 2003 XML Reference
 		class CBgPict : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBgPict)
-				CBgPict(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CBgPict()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+			WritingElement_AdditionMethods(CBgPict)
+			CBgPict(OOX::Document *pMain = NULL);
+			virtual ~CBgPict();
 
-			virtual EElementType getType() const
-			{
-				return et_w_bgPict;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<OOX::Logic::CBinData>		m_oBinData;
 			nullable<SimpleTypes::CHexColor>	m_oColor;
 			nullable_string						m_oBackgroundType;
 			nullable<OOX::Vml::CBackground>		m_oBackground;
 		};
+
 	}
+
 	//--------------------------------------------------------------------------------
 	// CDocument 17.2.3 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -136,59 +117,32 @@ namespace OOX
 		CDocument(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath, OOX::FileType type = OOX::FileTypes::Document);
 		CDocument(XmlUtils::CXmlNode& oNode);
 		CDocument(XmlUtils::CXmlLiteReader& oReader);
-		virtual ~CDocument()
-		{
-			ClearItems();
-		}
-		const CDocument& operator =(const XmlUtils::CXmlNode& oNode)
-		{
-			fromXML( (XmlUtils::CXmlNode&)oNode );
-			return *this;
-		}
-		const CDocument& operator =(const XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-			return *this;
-		}
-		virtual void read(const CPath& oPath)
-		{
-			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-			CPath oRootPath;
-			read(oRootPath, oPath);
-		}
+		virtual ~CDocument();
+
+		const CDocument& operator =(const XmlUtils::CXmlNode& oNode);
+		const CDocument& operator =(const XmlUtils::CXmlLiteReader& oReader);
+
+		virtual void read(const CPath& oPath);
 		
 		void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 
 		virtual void read(const CPath& oRootPath, const CPath& oPath);
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-		virtual const OOX::FileType type() const
-		{
-			if (m_bMacroEnabled)	return FileTypes::DocumentMacro;
-			else					return FileTypes::Document;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		const CPath& GetReadPath()
-		{
-			return m_oReadPath;
-		}
+		virtual const OOX::FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		const CPath& GetReadPath();
+
 		void ClearItems();
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		virtual void fromXML(XmlUtils::CXmlNode& oNode)
-		{
-		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode);
+
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 		virtual std::wstring toXML() const;
-		virtual EElementType getType() const
-		{
-			return et_w_document;
-		}
+		virtual EElementType getType() const;
+
 //---------------------------------------------------------------------------------------------
 		bool									m_bMacroEnabled = false;
 		CPath									m_oReadPath;
@@ -212,5 +166,6 @@ namespace OOX
 		std::vector<_section> m_arrSections; // дублирование ... для удобства конвертаций
 
 	};
+
 } // namespace OOX
 

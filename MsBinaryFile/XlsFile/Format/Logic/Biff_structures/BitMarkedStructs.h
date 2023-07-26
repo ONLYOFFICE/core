@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -81,13 +81,13 @@ typedef BiffAttributeSimple<unsigned char>		BIFF_BYTE;
 typedef BiffAttributeSimple<_UINT16>			BIFF_WORD;
 typedef BiffAttributeSimple<_UINT32>			BIFF_DWORD;
 
-struct PtgAttrSpaceType : public BiffStructure_NoVtbl
+struct PtgAttrSpaceType
 {
 	unsigned char type;
 	unsigned char cch;
 };
 
-struct RkNumber : public BiffStructure_NoVtbl
+struct RkNumber
 {
 	unsigned int	fX100	: 1;
 	unsigned int	fInt	: 1;
@@ -123,7 +123,7 @@ private:
 };
 
 
-struct BErr : public BiffStructure_NoVtbl
+struct BErr
 {
 	unsigned char err;
     BErr() {}
@@ -197,7 +197,7 @@ struct BErr : public BiffStructure_NoVtbl
 };
 
 
-struct XColorType : public BiffStructure_NoVtbl
+struct XColorType
 {
 	_UINT32 type;
 	enum
@@ -211,7 +211,7 @@ struct XColorType : public BiffStructure_NoVtbl
 };
 
 
-struct RevisionType : public BiffStructure_NoVtbl
+struct RevisionType
 {
 	_UINT16 type;
 	enum
@@ -239,7 +239,7 @@ struct RevisionType : public BiffStructure_NoVtbl
 
 
 
-struct Ts : public BiffStructure_NoVtbl
+struct Ts
 {
 private:
 	unsigned char unused1 : 1;
@@ -255,7 +255,7 @@ private:
 };
 
 
-struct DXFNumIFmt : public BiffStructure_NoVtbl
+struct DXFNumIFmt
 {
 private:
 	unsigned char unused;
@@ -263,7 +263,7 @@ public:
 	unsigned char ifmt;
 };
 
-struct FFErrorCheck : public BiffStructure_NoVtbl
+struct FFErrorCheck
 {
 	unsigned int ffecCalcError : 1;
 	unsigned int ffecEmptyCellRef : 1;
@@ -277,21 +277,21 @@ struct FFErrorCheck : public BiffStructure_NoVtbl
 };
 
 
-struct ExtSheetPair : public BiffStructure_NoVtbl
+struct ExtSheetPair
 {
 	short itabFirst;
 	short itabLast;
 };
 
 
-struct CondDataValue : public BiffStructure_NoVtbl
+struct CondDataValue
 {
 	_UINT32 condDataValue;
 	_UINT32 reserved;
 };
 
 
-struct KPISets : public BiffStructure_NoVtbl
+struct KPISets
 {
 	_UINT32 set;
 	enum {
@@ -316,7 +316,7 @@ struct KPISets : public BiffStructure_NoVtbl
 	};
 };
 
-struct KPISets14 : public BiffStructure_NoVtbl // in biff12
+struct KPISets14 // in biff12
 {
     _UINT32 set;
     enum {
@@ -345,19 +345,19 @@ struct KPISets14 : public BiffStructure_NoVtbl // in biff12
 };
 
 
-struct CFFlag : public BiffStructure_NoVtbl
+struct CFFlag
 {
 	KPISets iIconSet;
 	long iIcon;
 };
 
-struct CFFlag14 : public BiffStructure_NoVtbl // in biff12
+struct CFFlag14 // in biff12
 {
     KPISets14 iIconSet;
     long iIcon;
 };
 
-struct FrtFlags : public BiffStructure_NoVtbl
+struct FrtFlags
 {
 	FrtFlags() : fFrtRef(false), fFrtAlert(false), reserved2(0), reserved(0) {};
 	bool fFrtRef : 1;
@@ -368,7 +368,7 @@ private:
 };
 
 
-struct CFrtId : public BiffStructure_NoVtbl
+struct CFrtId
 {
 	unsigned short rtFirst;
 	unsigned short rtLast;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -50,6 +50,8 @@
 #include "./../SlideLayout.h"
 #include "./../SlideMaster.h"
 #include "./../Slide.h"
+#include "./../NotesSlide.h"
+#include "./../NotesMaster.h"
 
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"
@@ -68,6 +70,114 @@
 
 namespace PPTX
 {
+	namespace Limit
+	{
+		OLEDrawAspectType::OLEDrawAspectType()
+		{
+			m_strValue = L"Content";
+		}
+		void OLEDrawAspectType::set(const std::wstring& strValue)
+		{
+			if ((L"Content" == strValue) ||
+				(L"Icon" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEDrawAspectType::GetBYTECode() const
+		{
+			if (L"Content" == m_strValue)
+				return 0;
+			if (L"Icon" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEDrawAspectType::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Content";
+				break;
+			case 1:
+				m_strValue = L"Icon";
+				break;
+			default:
+				break;
+			}
+		}
+
+		OLEType::OLEType()
+		{
+			m_strValue = L"Embed";
+		}
+		void OLEType::set(const std::wstring& strValue)
+		{
+			if ((L"Embed" == strValue) ||
+				(L"Link" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEType::GetBYTECode() const
+		{
+			if (L"Embed" == m_strValue)
+				return 0;
+			if (L"Link" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEType::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Embed";
+				break;
+			case 1:
+				m_strValue = L"Link";
+				break;
+			default:
+				break;
+			}
+		}
+
+		OLEUpdateMode::OLEUpdateMode()
+		{
+			m_strValue = L"Always";
+		}
+		void OLEUpdateMode::set(const std::wstring& strValue)
+		{
+			if ((L"Always" == strValue) ||
+				(L"OnCall" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEUpdateMode::GetBYTECode() const
+		{
+			if (L"Always" == m_strValue)
+				return 0;
+			if (L"OnCall" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEUpdateMode::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Always";
+				break;
+			case 1:
+				m_strValue = L"OnCall";
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	namespace Logic
 	{
 		void COLEObject::fromXML(XmlUtils::CXmlNode& node)
@@ -102,7 +212,6 @@ namespace PPTX
 				m_OleObjectFile->set_filename_cache	(ole_image);
 			}
 		}
-
 		std::wstring COLEObject::toXML() const
 		{
 			return L"";
@@ -335,7 +444,7 @@ namespace PPTX
 				pWriter->EndRecord();
 
 				MathEquation::CEquationReader		oReader		(ole_file->filename().GetPath().c_str());
-				MathEquation::BinaryEquationWriter	oBinEqWriter(*pWriter);
+                MathEquation::BinaryEquationWriter	oBinEqWriter(pWriter);
 				
 				oReader.SetOutputDev(&oBinEqWriter);
 				
@@ -344,7 +453,6 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		}
-
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -584,7 +692,6 @@ namespace PPTX
 		{
 			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_OleObjectFile.IsInit());
 		}
-
 		smart_ptr<OOX::OleObject> COLEObject::GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels) const
 		{
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
@@ -622,6 +729,10 @@ namespace PPTX
 			}
 			return sRes;
 		}
+		OOX::EElementType COLEObject::getType () const
+		{
+			return OOX::et_pic;
+		}
 
 		Pic::Pic(std::wstring ns)
 		{
@@ -641,7 +752,10 @@ namespace PPTX
 			m_pLevelUp	= NULL;
 			fromXML(oReader);
 		}		
-		
+		OOX::EElementType Pic::getType () const
+		{
+			return OOX::et_pic;
+		}
 		const Pic& Pic::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -677,21 +791,19 @@ namespace PPTX
 			}
 			FillParentPointersForChilds();
 		}
-
 		void Pic::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
 
 			XmlMacroReadAttributeBase(node, L"macro", macro);
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode item;
-					oNodes.GetAt(i, item);
+					XmlUtils::CXmlNode& item = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(item.GetName());
 
@@ -724,7 +836,6 @@ namespace PPTX
 			
 			FillParentPointersForChilds();
 		}
-
 		std::wstring Pic::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -738,7 +849,6 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":pic", oAttr, oValue);
 		}
-		
 		void Pic::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			if(oleObject.IsInit())
@@ -864,7 +974,6 @@ namespace PPTX
 			}
 			pWriter->EndRecord();
 		}
-
 		void Pic::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			std::wstring namespace_ = m_namespace;
@@ -955,8 +1064,6 @@ namespace PPTX
 				}
 			}
 		}
-
-
 		void Pic::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -1123,7 +1230,6 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}
-
 		void Pic::FillLevelUp()
 		{
 			if ((m_pLevelUp == NULL) && (nvPicPr.nvPr.ph.IsInit()))
@@ -1145,7 +1251,6 @@ namespace PPTX
 				}
 			}
 		}
-
 		void Pic::Merge(Pic& pic, bool bIsSlidePlaceholder)
 		{
 			if (m_pLevelUp)
@@ -1163,7 +1268,6 @@ namespace PPTX
 				pic.style->SetParentFilePointer(parentFile);
 			}
 		}
-
 		void Pic::FillParentPointersForChilds()
 		{
 			nvPicPr.SetParentPointer(this);
@@ -1174,7 +1278,6 @@ namespace PPTX
 			if (oleObject.IsInit())
 				oleObject->SetParentPointer(this);
 		}
-
 		void Pic::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom	= 0;
@@ -1192,7 +1295,6 @@ namespace PPTX
 			if(parentIs<Logic::SpTree>())
 				parentAs<Logic::SpTree>().NormalizeRect(pRect);
 		}
-
 		std::wstring Pic::GetFullPicName()const
 		{
 			if (blipFill.blip.IsInit())
@@ -1235,7 +1337,6 @@ namespace PPTX
 			}
 			return file;
 		}
-
 		DWORD Pic::GetFill(UniFill& fill)const
 		{
 			DWORD BGRA = 0;
@@ -1257,7 +1358,6 @@ namespace PPTX
 				spPr.Fill.Merge(fill);
 			return BGRA;
 		}
-
 		DWORD Pic::GetLine(Ln& line)const
 		{
 			DWORD BGRA = 0;
@@ -1279,8 +1379,6 @@ namespace PPTX
 				spPr.ln->Merge(line);
 			return BGRA;
 		}
-
-		
 		double Pic::GetStTrim () const
 		{
 			double trim = 0.0;
@@ -1307,7 +1405,6 @@ namespace PPTX
 
 			return trim;
 		}
-
 		double Pic::GetEndTrim () const
 		{
 			double trim = -1.0;
@@ -1334,13 +1431,12 @@ namespace PPTX
 
 			return trim;
 		}
-
 		long Pic::GetRefId() const
 		{
 			return (long) nvPicPr.cNvPr.id;
 		}
 
-		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
+		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			bool bOle = oleObject.IsInit() && oleObject->isValid();
 			std::wstring sOleNodeName;
@@ -1425,8 +1521,9 @@ namespace PPTX
 					oStylesWriter.WriteAttributeCSS(L"flip", L"y");
 				}
 			}
+			oStylesWriter.WriteAttributeCSS(L"z-index", L"1");
 
-            std::wstring strPath;
+			std::wstring strPath;
             std::wstring strTextRect;
 
 			LONG lW = 43200;
@@ -1441,13 +1538,22 @@ namespace PPTX
 
 			pWriter->StartNode(L"v:shapetype");
 			pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"type", L"#_x0000_t75");
-				pWriter->WriteAttribute(L"o:spt", L"75");
+				pWriter->WriteAttribute(L"id", L"_x0000_t75");
 				pWriter->WriteAttribute(L"coordsize", L"21600,21600");
+				pWriter->WriteAttribute(L"o:spt", L"75");
 				pWriter->WriteAttribute(L"o:preferrelative", L"t");
 				pWriter->WriteAttribute(L"path", L"m@4@5l@4@11@9@11@9@5xe");
-			pWriter->EndAttributes();
-			pWriter->StartNode(L"v:formulas");
+				pWriter->WriteAttribute(L"filled", L"f");
+				pWriter->WriteAttribute(L"stroked", L"f");
+				pWriter->EndAttributes();
+				
+				pWriter->StartNode(L"v:stroke");
+					pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"joinstyle", L"miter");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"v:stroke");
+
+				pWriter->StartNode(L"v:formulas");
 				pWriter->EndAttributes();
 				pWriter->WriteString(L"<v:f eqn=\"if lineDrawn pixelLineWidth 0\"/>\
 <v:f eqn=\"sum @0 1 0\"/>\
@@ -1462,27 +1568,43 @@ namespace PPTX
 <v:f eqn=\"prod @7 21600 pixelHeight\"/>\
 <v:f eqn=\"sum @10 21600 0\"/>");
 				pWriter->EndNode(L"v:formulas");
+
+				pWriter->StartNode(L"v:path"); 
+					pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"o:extrusionok", L"f");
+					pWriter->WriteAttribute(L"gradientshapeok", L"t");
+					pWriter->WriteAttribute(L"o:connecttype", L"rect");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"v:path");
+
+				pWriter->StartNode(L"o:lock");
+					pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"v:ext", L"edit");
+						pWriter->WriteAttribute(L"aspectratio", L"t");
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"o:lock");
 			pWriter->EndNode(L"v:shapetype");
 			
 			pWriter->StartNode(L"v:shape");
 			pWriter->StartAttributes();
 
-			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			if (pWriter->m_strId.empty())
 			{
-				if(NULL == pId)
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					pWriter->WriteAttribute(L"id", strSpid);
+					pWriter->WriteAttribute(L"id", strSpid); //??
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"id", strId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"id", pWriter->m_strId);
 				pWriter->WriteAttribute(L"o:spid", strSpid);
+				pWriter->m_strId.clear();
 			}
 			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
 			
@@ -1513,12 +1635,6 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			pWriter->StartNode(L"v:path");
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"textboxrect", strTextRect);
-			pWriter->EndAttributes();
-			pWriter->EndNode(L"v:path");
-
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes.clear();
 			
@@ -1538,7 +1654,12 @@ namespace PPTX
 				pWriter->EndAttributes();
 				pWriter->EndNode(L"v:imagedata");
 			}
-
+			pWriter->StartNode(L"o:lock");
+			pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"v:ext", L"edit");
+				pWriter->WriteAttribute(L"rotation", L"t");
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"o:lock");
 			if (m_sClientDataXml.IsInit())
 				pWriter->WriteString(*m_sClientDataXml);
 
@@ -1605,6 +1726,12 @@ namespace PPTX
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
             XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);
+		}
+		void Pic::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("macro"), macro)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 	} // namespace Logic
 } // namespace PPTX

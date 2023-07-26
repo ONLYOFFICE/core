@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -47,85 +47,19 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ThemeElements)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				clrScheme	= node.ReadNode(_T("a:clrScheme"));
-				fontScheme	= node.ReadNode(_T("a:fontScheme"));
-				fmtScheme	= node.ReadNode(_T("a:fmtScheme"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(clrScheme);
-				oValue.Write(fontScheme);
-				oValue.Write(fmtScheme);
-
-				return XmlUtils::CreateNode(_T("a:themeElements"), oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, clrScheme);
-				pWriter->WriteRecord1(1, fontScheme);
-				pWriter->WriteRecord1(2, fmtScheme);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:themeElements"));
-				pWriter->EndAttributes();
-
-				clrScheme.toXmlWriter(pWriter);
-				fontScheme.toXmlWriter(pWriter);
-				fmtScheme.toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:themeElements"));
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							clrScheme.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							fontScheme.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							fmtScheme.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			ClrScheme	clrScheme;
 			FontScheme	fontScheme;
 			FmtScheme	fmtScheme;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				clrScheme.SetParentPointer(this);
-				fontScheme.SetParentPointer(this);
-				fmtScheme.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsTheme
 } // namespace PPTX

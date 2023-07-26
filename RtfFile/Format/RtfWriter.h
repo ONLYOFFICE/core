@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,34 +39,19 @@ class RtfDocument;
 
 class RtfWriter
 {
-public:
-	
+public:	
     std::wstring                m_sTempFolder;
     std::vector<std::wstring>   m_aTempFiles;
     std::vector<std::wstring>   m_aTempFilesSectPr;
 
-	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
-	{
-		m_sFilename = sFilename;
-		m_sTempFolder = sFolder;
-		m_bFirst = true;
-		m_oCurTempFileWriter = NULL;
-		m_oCurTempFileSectWriter = NULL;
-	}
-	~RtfWriter()
-	{
-		RELEASEOBJECT( m_oCurTempFileWriter );
-		RELEASEOBJECT( m_oCurTempFileSectWriter );
-		for( int i = 0; i < (int)m_aTempFiles.size(); i++ )
-			Utils::RemoveDirOrFile( m_aTempFiles[i] );
-		for( int i = 0; i < (int)m_aTempFilesSectPr.size(); i++ )
-			Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
-		m_aTempFiles.clear();
-	}
+	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder );
+	~RtfWriter();
+
 	bool Save();
 	bool SaveByItemStart();
 	bool SaveByItem();
 	bool SaveByItemEnd();
+
 private: 
 	RtfDocument& m_oDocument;
     std::wstring m_sFilename;

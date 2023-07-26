@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,18 +31,32 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "Autofilter.h"
+#include "../../DocxFormat/IFileContainer.h"
+#include "../FileTypes_Spreadsheet.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CTableType;
+		class CTotalsRowFunction;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CAltTextTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAltTextTable)
+			WritingElement_AdditionMethods(CAltTextTable)
             WritingElement_XlsbConstructors(CAltTextTable)
 			CAltTextTable()
 			{
@@ -69,14 +83,16 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<std::wstring > m_oAltText;
 			nullable<std::wstring > m_oAltTextSummary;
 		};
+
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyleInfo)
+			WritingElement_AdditionMethods(CTableStyleInfo)
             WritingElement_XlsbConstructors(CTableStyleInfo)
 			CTableStyleInfo()
 			{
@@ -103,6 +119,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<std::wstring > m_oName;
 			nullable<SimpleTypes::COnOff > m_oShowColumnStripes;
@@ -110,10 +127,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff > m_oShowLastColumn;
 			nullable<SimpleTypes::COnOff > m_oShowRowStripes;
 		};
+
 		class CTableColumn : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableColumn)
+			WritingElement_AdditionMethods(CTableColumn)
             WritingElement_XlsbConstructors(CTableColumn)
 			CTableColumn()
 			{
@@ -139,6 +157,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable_string												m_oDataCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDataDxfId;
@@ -159,10 +178,11 @@ namespace OOX
 																		//xmlColumnPr;
 																		//ext
 		};
+
 		class CTableColumns : public WritingElementWithChilds<CTableColumn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableColumns)
+			WritingElement_AdditionMethods(CTableColumns)
             WritingElement_XlsbConstructors(CTableColumns)
 			CTableColumns()
 			{
@@ -190,13 +210,15 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
+
 		class CTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTable)
+			WritingElement_AdditionMethods(CTable)
             WritingElement_XlsbConstructors(CTable)
 			CTable()
 			{
@@ -224,6 +246,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable_string										m_oComment;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oConnectionId;
@@ -255,10 +278,11 @@ namespace OOX
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		};
+
 		class CTablePart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTablePart)
+			WritingElement_AdditionMethods(CTablePart)
             WritingElement_XlsbConstructors(CTablePart)
 			CTablePart()
 			{
@@ -284,13 +308,15 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRId;
 		};
+
 		class CTableParts : public WritingElementWithChilds<CTablePart>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableParts)
+			WritingElement_AdditionMethods(CTableParts)
             WritingElement_XlsbConstructors(CTableParts)
 			CTableParts()
 			{
@@ -317,9 +343,11 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
+
 		//необработанные child:
 		//<extLst>
 		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
@@ -364,11 +392,14 @@ namespace OOX
 			}
 
 			nullable<CTable>	m_oTable;
+
 		private:
 			CPath				m_oReadPath;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
+
 	} //Spreadsheet
 } // namespace OOX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,130 +45,39 @@ namespace PPTX
 		class BulletSize : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BulletSize)
+			WritingElement_AdditionMethods(BulletSize)
 			PPTX_LOGIC_BASE2(BulletSize)
 
-			BulletSize& operator=(const BulletSize& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BulletSize& operator=(const BulletSize& oSrc);
 
-				m_Size			= oSrc.m_Size;
+			virtual OOX::EElementType getType () const;
 
-				return *this;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				if (m_Size.IsInit())
-					return m_Size->getType();
-				return OOX::et_Unknown;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring strName = oReader.GetName();
-				
-				if (strName == _T("a:buSzTx"))
-					m_Size.reset(new Logic::BuSzTx(oReader));
-				else if (strName == _T("a:buSzPct"))
-					m_Size.reset(new Logic::BuSzPct(oReader));
-				else if (strName == _T("a:buSzPts"))
-					m_Size.reset(new Logic::BuSzPts(oReader));
-				else 
-					m_Size.reset();
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring strName = node.GetName();
+			virtual void ReadBulletSizeFrom(XmlUtils::CXmlNode& element);
 
-				if (strName == _T("a:buSzTx"))
-					m_Size.reset(new Logic::BuSzTx(node));
-				else if (strName == _T("a:buSzPct"))
-					m_Size.reset(new Logic::BuSzPct(node));
-				else if (strName == _T("a:buSzPts"))
-					m_Size.reset(new Logic::BuSzPts(node));
-				else 
-					m_Size.reset();
-			}
-
-			virtual void ReadBulletSizeFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode;
-				if(element.GetNode(_T("a:buSzTx"), oNode))
-					m_Size.reset(new Logic::BuSzTx(oNode));
-				else if(element.GetNode(_T("a:buSzPct"), oNode))
-					m_Size.reset(new Logic::BuSzPct(oNode));
-				else if(element.GetNode(_T("a:buSzPts"), oNode))
-					m_Size.reset(new Logic::BuSzPts(oNode));
-				else
-					m_Size.reset();
-			}
-			virtual bool is_init()const{return (m_Size.IsInit());};
-			virtual bool has_spec_size()const{return ((is_init()) && (!is<BuSzTx>()));};
+			virtual bool is_init() const;
+			virtual bool has_spec_size() const;
 			
 			template<class T> AVSINLINE const bool	is() const	{ return m_Size.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return m_Size.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Size.as<T>(); }
 
-			virtual std::wstring toXML()const
-			{
-				if (m_Size.IsInit())
-					return m_Size->toXML();
-				return _T("");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (m_Size.is_init())
-					m_Size->toXmlWriter(pWriter);
-			}
+			virtual std::wstring toXML()const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (m_Size.is_init())
-					m_Size->toPPTY(pWriter);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				if (pReader->GetPos() == _end_rec)
-					return;
-
-				BYTE _type = pReader->GetUChar();
-
-				if (_type == BULLET_TYPE_SIZE_TX)
-				{
-					m_Size.reset(new Logic::BuSzTx());
-				}
-				else if (_type == BULLET_TYPE_SIZE_PTS)
-				{
-					Logic::BuSzPts* p = new Logic::BuSzPts();
-					pReader->Skip(6); // len + + startattr type(0)
-					p->val = pReader->GetLong();
-					m_Size.reset(p);
-				}
-				else
-				{
-					Logic::BuSzPct* p = new Logic::BuSzPct();
-					pReader->Skip(6); // len + + startattr type(0)
-					p->val = pReader->GetLong();
-					m_Size.reset(p);
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-		public:
-		//private:
+		public:		
 			smart_ptr<WrapperWritingElement> m_Size;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					m_Size->SetParentPointer(pParent);
-			};
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 		};
 	} // namespace Logic
 } // namespace PPTX

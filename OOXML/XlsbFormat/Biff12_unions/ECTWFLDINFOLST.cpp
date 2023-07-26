@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -73,12 +73,39 @@ namespace XLSB
 
         if (proc.optional<EndECTWFldInfoLst>())
         {
-            m_BrtEndECTWFldInfoLst = elements_.back();
+			m_bBrtEndECTWFldInfoLst = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndECTWFldInfoLst = false;
 
-        return m_BrtBeginECTWFldInfoLst && m_BrtEndECTWFldInfoLst;
+        return m_BrtBeginECTWFldInfoLst && m_bBrtEndECTWFldInfoLst;
     }
+
+	const bool ECTWFLDINFOLST::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginECTWFldInfoLst == nullptr)
+			m_BrtBeginECTWFldInfoLst = XLS::BaseObjectPtr(new XLSB::BeginECTWFldInfoLst());
+
+		if (m_BrtBeginECTWFldInfoLst != nullptr)
+		{
+			auto ptrBrtBeginECTWFldInfoLst = static_cast<XLSB::BeginECTWFldInfoLst*>(m_BrtBeginECTWFldInfoLst.get());
+
+			if (ptrBrtBeginECTWFldInfoLst != nullptr)
+				ptrBrtBeginECTWFldInfoLst->cFields = m_arBrtBeginECTwFldInfo.size();
+
+			proc.mandatory(*m_BrtBeginECTWFldInfoLst);
+		}
+
+		for (auto &item : m_arBrtBeginECTwFldInfo)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndECTWFldInfoLst>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

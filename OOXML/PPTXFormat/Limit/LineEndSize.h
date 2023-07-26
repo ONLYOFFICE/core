@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,58 +33,10 @@
 
 #include "BaseLimit.h"
 
-
 namespace PPTX
 {
 	namespace Limit
 	{
-		class LineEndSize : public BaseLimit
-		{
-		public:
-			LineEndSize()
-			{
-				m_strValue = _T("med");
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("lg") == strValue) ||
-					(_T("med") == strValue) ||
-					(_T("sm") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("lg") == m_strValue)
-					return 0;
-				if (_T("med") == m_strValue)
-					return 1;
-				if (_T("sm") == m_strValue)
-					return 2;				
-				return 1;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("lg");
-					break;
-				case 1:
-					m_strValue = _T("med");
-					break;
-				case 2:
-					m_strValue = _T("sm");
-					break;
-				default:
-					break;
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(LineEndSize)
 	} // namespace Limit
 } // namespace PPTX

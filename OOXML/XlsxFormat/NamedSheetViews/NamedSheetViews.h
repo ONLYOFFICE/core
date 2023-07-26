@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,8 +31,17 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+#include "../../DocxFormat/IFileContainer.h"
 
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CSortMethod;
+	}
+}
 namespace OOX
 {
 	namespace Drawing
@@ -58,7 +67,7 @@ namespace OOX
 		class CSortRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortRule)
+			WritingElement_AdditionMethods(CSortRule)
 			CSortRule(){}
 			virtual ~CSortRule(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -84,7 +93,7 @@ namespace OOX
 		class CSortRules : public WritingElementWithChilds<CSortRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortRules)
+			WritingElement_AdditionMethods(CSortRules)
 			CSortRules(){}
 			virtual ~CSortRules(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -108,7 +117,7 @@ namespace OOX
 		class CColumnFilter : public WritingElementWithChilds<CFilterColumn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CColumnFilter)
+			WritingElement_AdditionMethods(CColumnFilter)
 			CColumnFilter(){}
 			virtual ~CColumnFilter(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -133,7 +142,7 @@ namespace OOX
 		class CNsvFilter : public WritingElementWithChilds<CColumnFilter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNsvFilter)
+			WritingElement_AdditionMethods(CNsvFilter)
 			CNsvFilter(){}
 			virtual ~CNsvFilter(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -159,7 +168,7 @@ namespace OOX
 		class CNamedSheetView : public WritingElementWithChilds<CNsvFilter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNamedSheetView)
+			WritingElement_AdditionMethods(CNamedSheetView)
 			CNamedSheetView(){}
 			virtual ~CNamedSheetView(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -183,7 +192,7 @@ namespace OOX
 		class CNamedSheetViews : public WritingElementWithChilds<CNamedSheetView>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNamedSheetViews)
+			WritingElement_AdditionMethods(CNamedSheetViews)
 			CNamedSheetViews(){}
 			virtual ~CNamedSheetViews(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -205,47 +214,27 @@ namespace OOX
 		class CNamedSheetViewFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CNamedSheetViewFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-			}
-			CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::
-IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-				read( oRootPath, oPath );
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
+			CNamedSheetViewFile(OOX::Document* pMain);
+			CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+
+			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
+
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::NamedSheetView;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			nullable<CNamedSheetViews> m_oNamedSheetViews;
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX

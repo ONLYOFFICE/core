@@ -1,0 +1,84 @@
+{
+	"name": "openssl",
+	"res_folder": "./deploy",
+	"wasm": true,
+	"asm": true,
+	"embed_mem_file": true,
+	"run_before": "before.py",
+	"run_after": "after.py",
+	"base_js_content": "./engine.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-fno-rtti",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"-s ENVIRONMENT='web'"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_XmlSignature_Malloc",
+		"_XmlSignature_Free",
+		"_XmlSignature_CreateCertificate",
+		"_XmlSignature_LoadCert",
+		"_XmlSignature_LoadKey",
+		"_XmlSignature_DestroyCertificate",
+		"_XmlSignature_CreateFile",
+		"_XmlSignature_DestroyFile",
+		"_XmlSignature_GetFileSize",
+		"_XmlSignature_GetFileRaw",
+		"_XmlSignature_Sign"
+	],
+	"include_path": [
+		"./../3rdParty/openssl/include", "./../3rdParty/openssl",
+		"./../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "./../../../../../OfficeUtils/src/zlib-1.2.11", "./../../../../../OfficeUtils/src",
+		"./../3rdParty/xml/libxml2/include", "./../3rdParty/xml/libxml2/include/libxml", "./../3rdParty/xml/build/qt",
+		"emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
+	],
+	"define": [
+		"HAVE_VA_COPY", "LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", "LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", 
+		"LIBXML_C14N_ENABLED", "LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", "IN_LIBXML", "LIBXML_STATIC", 
+		"BUILD_ZLIB_AS_SOURCES", 
+		"__linux__", "_LINUX"
+	],
+	"compile_files_array": [
+	{
+		"name": "x",
+		"folder": "./../3rdParty/xml/",
+		"files": ["build/qt/libxml2_all.c", "build/qt/libxml2_all2.c", "src/xmllight.cpp", "src/xmldom.cpp"]
+	},
+	{
+		"name": "k",
+		"folder": "../../../../common/",
+		"files": ["StringBuilder.cpp", "StringExt.cpp", "Base64.cpp", "Path.cpp", "File.cpp", "Directory.cpp"]
+	},
+	{
+		"name": "of",
+		"folder": "../../../../../OfficeUtils/src/",
+		"files": ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp", "zlib_addon.c"]
+	},
+	{
+		"name": "mz",
+		"folder": "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/",
+		"files": ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
+	},
+	{
+		"name": "z",
+		"folder": "../../../../../OfficeUtils/src/zlib-1.2.11/",
+		"files": ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c"]
+	},
+	{
+		"name": "s",
+		"folder": "../../../../xmlsec/src/src/",
+		"files": ["XmlTransform.cpp", "CertificateCommon.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp"]
+	},
+	{
+		"name": "a",
+		"folder": "./",
+		"files": ["main.cpp"]
+	}
+	],
+	"sources": ["./../3rdParty/openssl/libcrypto.a"]
+}

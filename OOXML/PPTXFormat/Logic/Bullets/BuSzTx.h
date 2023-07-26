@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,38 +42,20 @@ namespace PPTX
 		class BuSzTx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuSzTx)
+			WritingElement_AdditionMethods(BuSzTx)
 			PPTX_LOGIC_BASE2(BuSzTx)
 
-			BuSzTx& operator=(const BuSzTx& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BuSzTx& operator=(const BuSzTx& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_buSzTx;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(L"<a:buSzTx/>");
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_SIZE_TX);
-				pWriter->EndRecord();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

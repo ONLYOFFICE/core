@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 namespace XLSB
 {
@@ -45,16 +45,17 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginSlicerCache;
+		bool							 m_bBrtBeginSlicerCache;
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheDef;
         XLS::BaseObjectPtr               m_BrtSlicerCachePivotTables;
         XLS::BaseObjectPtr               m_slicerCacheData;
         XLS::BaseObjectPtr               m_FRTSLICERCACHE;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCacheDef;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCache;
+		bool							 m_bBrtEndSlicerCacheDef;
+		bool				             m_bBrtEndSlicerCache;
     };
 
 } // namespace XLSB

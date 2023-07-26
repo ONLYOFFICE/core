@@ -1,20 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="OOMXL">
-      <UniqueIdentifier>{78f5db2a-76d2-49ef-a438-8a2851029b4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="OOMXL\OOXReader">
-      <UniqueIdentifier>{715362a1-7e7d-445b-bb2e-631c63dc3d84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="OOMXL\OOXWriter">
+    <Filter Include="OOXWriter">
       <UniqueIdentifier>{cae0af0f-d827-4e9e-8d7e-7923ef558bbc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{95794ea8-1003-43ce-bfd1-2707898c3c5b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Format">
       <UniqueIdentifier>{28b462c0-4897-439d-94d0-45d6d1f6035f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXReader">
+      <UniqueIdentifier>{715362a1-7e7d-445b-bb2e-631c63dc3d84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,39 +64,177 @@
       <Filter>Format</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXDocumentReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXDrawingGraphicReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXHeaderReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXMathReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXParagraphElementReaders.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXShapeReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXTableReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Reader\OOXTextItemReader.cpp">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Writer\OOXDocumentWriter.cpp">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OOXml\Writer\OOXWriter.cpp">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Format\ConvertationManager.cpp" />
+    <ClCompile Include="..\..\..\Format\IdGenerator.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\Ole1FormatReader.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\RtfLex.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\RtfTableCell.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\RtfTableRow.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\RtfToken.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\UniversalConverterUtils.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Format\Utils.cpp">
+      <Filter>Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXAbstractNumReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXAppReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXBorderReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXcnfStyleReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorReader2.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorSchemeReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXCoreReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXDocDefaultsReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontSchemeReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontTableReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFootnotesReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXLatentStyleReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXLevelReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXNumberingMapReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXNumberingReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureAnchorReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureInlineReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXpPrTabReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXShadingReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXStyleReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXStyleTableReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblLookReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblpPrReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblPrReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtcPrReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXThemeReader.cpp">
+      <Filter>OOXReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXCommentsWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXContentTypesWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXFontTableWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXFootnoteWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXNumberingWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXRelsWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXSettingsWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXStylesWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXThemeWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Format\Basic.h">
@@ -190,187 +322,187 @@
       <Filter>Format</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXAbstractNumReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXAppReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXBorderReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXcnfStyleReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXColorReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXColorReader2.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXColorSchemeReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXContentTypeReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXCoreReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXDocDefaultsReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXDocumentReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXDrawingGraphicReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXFontReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXFontSchemeReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXFontTableReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXFootnotesReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXHeaderReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXLatentStyleReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXLevelReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXMathReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXNumberingMapReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXNumberingReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXParagraphReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureAnchorReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureInlineReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrFrameReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrTabReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXReaderBasic.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXRelsReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXrPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXRunReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXSectionPropertyReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXSettingsReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXShadingReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXShapeReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXStyleReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXStyleTableReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXTableCellReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXTableReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXTableRowReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXtblLookReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXtblpPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXtblPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXtcPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXTextItemReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXThemeReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Reader\OOXtrPrReader.h">
-      <Filter>OOMXL\OOXReader</Filter>
+      <Filter>OOXReader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXCommentsWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXContentTypesWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXDocumentWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXFontTableWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXFootnoteWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXNumberingWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXRelsWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXSettingsWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXStylesWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXThemeWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\OOXml\Writer\OOXWriter.h">
-      <Filter>OOMXL\OOXWriter</Filter>
+      <Filter>OOXWriter</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Format\convertationmanager.h" />
   </ItemGroup>

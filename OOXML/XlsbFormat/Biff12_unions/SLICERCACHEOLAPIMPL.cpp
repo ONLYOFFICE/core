@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -87,12 +87,30 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheOlapImpl>())
         {
-            m_BrtEndSlicerCacheOlapImpl = elements_.back();
+            m_bBrtEndSlicerCacheOlapImpl = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheOlapImpl = false;
 
-        return m_BrtBeginSlicerCacheOlapImpl && m_SLICERCACHELEVELSDATA && m_SLICERCACHESELECTIONS && m_BrtEndSlicerCacheOlapImpl;
+        return m_BrtBeginSlicerCacheOlapImpl && m_SLICERCACHELEVELSDATA && m_SLICERCACHESELECTIONS && m_bBrtEndSlicerCacheOlapImpl;
     }
+
+	const bool SLICERCACHEOLAPIMPL::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheOlapImpl != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerCacheOlapImpl);
+
+		if (m_SLICERCACHELEVELSDATA != nullptr)
+			proc.mandatory(*m_SLICERCACHELEVELSDATA);
+
+		if (m_SLICERCACHESELECTIONS != nullptr)
+			proc.mandatory(*m_SLICERCACHESELECTIONS);
+
+		proc.mandatory<EndSlicerCacheOlapImpl>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

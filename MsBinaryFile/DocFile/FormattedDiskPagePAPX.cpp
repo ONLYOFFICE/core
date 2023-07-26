@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -162,9 +162,9 @@ namespace DocFileFormat
 	/*========================================================================================================*/
 
 	/// Parses the 0Table (or 1Table) for FKP _entries containing PAPX
-	std::list<FormattedDiskPagePAPX*>* FormattedDiskPagePAPX::GetAllPAPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream)
+	std::vector<FormattedDiskPagePAPX*>* FormattedDiskPagePAPX::GetAllPAPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream, POLE::Stream* dataStream)
     {
-      std::list<FormattedDiskPagePAPX*>* PAPXlist = new std::list<FormattedDiskPagePAPX*>();
+      std::vector<FormattedDiskPagePAPX*>* PAPXlist = new std::vector<FormattedDiskPagePAPX*>();
 
       //get bintable for PAPX
 	  unsigned char* binTablePapx = new unsigned char[fib->m_FibWord97.lcbPlcfBtePapx];
@@ -237,7 +237,7 @@ namespace DocFileFormat
 	/*========================================================================================================*/
 
 	/// Returns a list of all PAPX FCs between they given boundaries.
-	std::list<int>* FormattedDiskPagePAPX::GetFileCharacterPositions
+	std::vector<int>* FormattedDiskPagePAPX::GetFileCharacterPositions
 	(
       int fcMin,
       int fcMax,
@@ -247,25 +247,25 @@ namespace DocFileFormat
       POLE::Stream* dataStream
 	)
     {
-      std::list<int>* cpList = new std::list<int>();
-	  std::list<FormattedDiskPagePAPX*> *fkps = FormattedDiskPagePAPX::GetAllPAPXFKPs( fib, wordStream, tableStream, dataStream );
+      std::vector<int>* cpList = new std::vector<int>();
+	  std::vector<FormattedDiskPagePAPX*> *fkps = FormattedDiskPagePAPX::GetAllPAPXFKPs( fib, wordStream, tableStream, dataStream );
       unsigned int i = 0;
 	  FormattedDiskPagePAPX* fkp = NULL;
 
-	  for ( std::list<FormattedDiskPagePAPX*>::iterator iter = fkps->begin(); iter != fkps->end(); iter++ )
+	  for (size_t i = 0; i < fkps->size(); ++i )
       {
-		fkp = (*iter);
+		fkp = fkps->at(i);
 
         //the last entry of each is always the same as the first entry of the next FKP
         //so, ignore all last _entries except for the last FKP.
-		int max = fkp->rgfcSize;
+		int max_ = fkp->rgfcSize;
         
 		if ( i++ < fkps->size() - 1 )
 		{
-		  max--;
+		  max_--;
 		}
          
-		for ( int j = 0; j < max; j++ )
+		for ( int j = 0; j < max_; j++ )
         {
           if( ( fkp->rgfc[j] >= fcMin ) && ( fkp->rgfc[j] < fcMax ) )
 		  {
@@ -286,7 +286,7 @@ namespace DocFileFormat
 
     /// Returnes a list of all ParagraphPropertyExceptions which correspond to text 
     /// between the given offsets.
-	std::list<ParagraphPropertyExceptions*>* FormattedDiskPagePAPX::GetParagraphPropertyExceptions
+	std::vector<ParagraphPropertyExceptions*>* FormattedDiskPagePAPX::GetParagraphPropertyExceptions
 	(
       int fcMin,
       int fcMax,
@@ -296,28 +296,26 @@ namespace DocFileFormat
       POLE::Stream* dataStream
 	)
     {
-      std::list<ParagraphPropertyExceptions*>* ppxList	= new std::list<ParagraphPropertyExceptions*>();
-	  std::list<FormattedDiskPagePAPX*>*		fkps	= FormattedDiskPagePAPX::GetAllPAPXFKPs( fib, wordStream, tableStream, dataStream );
-	  FormattedDiskPagePAPX *fkp = NULL;
+      std::vector<ParagraphPropertyExceptions*>* ppxList = new std::vector<ParagraphPropertyExceptions*>();
+	  std::vector<FormattedDiskPagePAPX*>* fkps = FormattedDiskPagePAPX::GetAllPAPXFKPs( fib, wordStream, tableStream, dataStream );
       
-	  for ( std::list<FormattedDiskPagePAPX*>::iterator iter = fkps->begin(); iter != fkps->end(); iter++ )
-      {
-        fkp = (*iter);
+	  for (size_t i = 0; i < fkps->size(); ++i)
+	  {
+		  FormattedDiskPagePAPX* fkp = fkps->at(i);
 
-		for ( unsigned int j = 0; j < fkp->grppapxSize; j++ )
-        {
-          if ( ( fkp->rgfc[j] >= fcMin ) && ( fkp->rgfc[j] < fcMax ) )
+		  for (unsigned int j = 0; j < fkp->grppapxSize; j++)
 		  {
-			  ppxList->push_back( fkp->grppapx[j] );
-          }
-        }
+			  if ((fkp->rgfc[j] >= fcMin) && (fkp->rgfc[j] < fcMax))
+			  {
+				  ppxList->push_back(fkp->grppapx[j]);
+			  }
+		  }
 
-		RELEASEOBJECT( fkp );
+		  RELEASEOBJECT(fkp);
 
-	    fkps->clear();
-		RELEASEOBJECT( fkps );
-      }
-
+		  fkps->clear();
+		  RELEASEOBJECT(fkps);
+	  }
       return ppxList;
 	}
 }

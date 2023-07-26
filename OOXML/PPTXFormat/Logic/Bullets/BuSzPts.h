@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,67 +42,26 @@ namespace PPTX
 		class BuSzPts : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuSzPts)
+			WritingElement_AdditionMethods(BuSzPts)
 			PPTX_LOGIC_BASE2(BuSzPts)
 
-			BuSzPts& operator=(const BuSzPts& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BuSzPts& operator=(const BuSzPts& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				val = oSrc.val;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_buSzPts;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, L"val", val)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				val = node.ReadAttributeInt(L"val");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:buSzPts");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"val", val);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:buSzPts");
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_SIZE_PTS);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, val.get_value_or(0));
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				pWriter->EndRecord();
-			}
 		public:
 			nullable_int val;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
-			AVSINLINE void Normalize()
-			{
-				if (val.IsInit())
-				{
-					int tmp = *val;
-					normalize_value(tmp, 100, 400000);
-					val = tmp;
-				}
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

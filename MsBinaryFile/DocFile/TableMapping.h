@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,6 +41,8 @@ namespace DocFileFormat
 		virtual int GetCPStart() const = 0;
 		virtual int GetCPEnd() const = 0;
 		virtual ~ITableCellElement() {}
+
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0) = 0;
 	};
 
 	typedef NSCommon::smart_ptr<ITableCellElement> ITableCellElementPtr;
@@ -61,11 +63,13 @@ namespace DocFileFormat
 		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int cellIndex );
 		~TableCell();
 
+		ITableCellElementPtr GetLast() { return cellElements.back(); }
+
 	private:
 
 		int cp;
 		unsigned int depth;
-		std::list<ITableCellElementPtr> cellElements;
+		std::vector<ITableCellElementPtr> cellElements;
 
 		DocumentMapping* documentMapping;
 	};
@@ -88,7 +92,7 @@ namespace DocFileFormat
 
 		int cp;
 		unsigned int depth;
-		std::list<TableCell> cells;
+		std::vector<TableCell> cells;
 
 		DocumentMapping* documentMapping;
 	};
@@ -105,6 +109,7 @@ namespace DocFileFormat
 		virtual IVirtualConstructor* Clone() const;
 		virtual void Convert( IMapping* mapping );
 		virtual ~DocParagraph();
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0);
 
 	private:
 
@@ -122,7 +127,7 @@ namespace DocFileFormat
 
 	protected:
 
-		bool IsCellMarker( int _cp );
+		bool IsCellMarker( int _cp, bool & bBadMarker);
 		bool IsRowMarker( int _cp );
 		bool IsParagraphMarker( int _cp );
 
@@ -142,13 +147,14 @@ namespace DocFileFormat
 		virtual IVirtualConstructor* Clone() const;
 		virtual void Convert( IMapping* mapping );
 		virtual ~Table();
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0);
 
 	private:
 
 		int cpStart;
 		int cpEnd;
 		unsigned int depth;
-		std::list<TableRow> rows;
+		std::vector<TableRow> rows;
 
 		DocumentMapping* documentMapping;
 	};

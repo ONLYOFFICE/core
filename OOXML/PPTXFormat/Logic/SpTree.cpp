@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,17 +30,50 @@
  *
  */
 
-
 #include "SpTree.h"
 #include "Shape.h"
 #include "Pic.h"
 #include "../Theme.h"
 #include "ClrMap.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
+		SpTree::SpTree(std::wstring ns) : nvGrpSpPr(ns), grpSpPr(ns)
+		{
+			m_namespace		= ns;
+			m_lGroupIndex	= 0;
+		}
+		SpTree& SpTree::operator=(const SpTree& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			nvGrpSpPr	= oSrc.nvGrpSpPr;
+			grpSpPr		= oSrc.grpSpPr;
+
+			for (size_t i=0; i < oSrc.SpTreeElems.size(); i++)
+				SpTreeElems.push_back(oSrc.SpTreeElems[i]);
+
+			m_namespace		= oSrc.m_namespace;
+			m_lGroupIndex	= oSrc.m_lGroupIndex;
+
+			return *this;
+		}
+		OOX::EElementType SpTree::getType () const
+		{
+			return OOX::et_p_ShapeTree;
+		}
+		void SpTree::FillParentPointersForChilds()
+	{
+		nvGrpSpPr.SetParentPointer(this);
+		grpSpPr.SetParentPointer(this);
+
+		for (size_t i = 0; i < SpTreeElems.size(); ++i)
+			SpTreeElems[i].SetParentPointer(this);
+	}
 		void SpTree::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
@@ -93,14 +126,13 @@ namespace PPTX
 
 			SpTreeElems.clear();
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -154,7 +186,7 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(name_, oValue);
 		}
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
@@ -164,24 +196,25 @@ namespace PPTX
 
 			pWriter->m_lObjectIdVML++;
 
-			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			if (pWriter->m_strId.empty())
 			{
-				if (NULL == pId)
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					pWriter->WriteAttribute(L"id", strSpid);
+					pWriter->WriteAttribute(L"id", strSpid); //??
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"id", strId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"id", pWriter->m_strId);
 				pWriter->WriteAttribute(L"o:spid", strSpid);
+				pWriter->m_strId.clear();
 			}
-
+			
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 
 			if (pWriter->m_strStyleMain.empty())
@@ -276,15 +309,15 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, NULL, true);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}				
 			}
 
@@ -339,7 +372,6 @@ namespace PPTX
 
 			pWriter->EndNode(name_);
 		}
-
 		void SpTree::NormalizeRect(Aggplus::RECT& rect)const
 		{
 			if (grpSpPr.xfrm.IsInit())
@@ -359,7 +391,6 @@ namespace PPTX
 			if (parentIs<Logic::SpTree>())
 				parentAs<Logic::SpTree>().NormalizeRect(rect);
 		}
-
 		void SpTree::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			if (getType() == OOX::et_lc_LockedCanvas)
@@ -428,6 +459,152 @@ namespace PPTX
 				}
 			}
 			pReader->Seek(_end_rec);
+		}
+
+		LockedCanvas::LockedCanvas() : SpTree(L"a")
+		{
+		}
+		LockedCanvas& LockedCanvas::operator=(const LockedCanvas& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			nvGrpSpPr	= oSrc.nvGrpSpPr;
+			grpSpPr		= oSrc.grpSpPr;
+
+			for (size_t i=0; i < oSrc.SpTreeElems.size(); i++)
+				SpTreeElems.push_back(oSrc.SpTreeElems[i]);
+
+			m_lGroupIndex	= oSrc.m_lGroupIndex;
+
+			return *this;
+		}
+		OOX::EElementType LockedCanvas::getType () const
+		{
+			return OOX::et_lc_LockedCanvas;
+		}
+		void LockedCanvas::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			SpTree::fromXML(oReader);
+		}
+		void LockedCanvas::fromXML(XmlUtils::CXmlNode& node)
+		{
+			SpTree::fromXML(node);
+		}
+		std::wstring LockedCanvas::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"xmlns:lc", L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas");
+
+			XmlUtils::CNodeValue oValue;
+			oValue.Write(nvGrpSpPr);
+			oValue.Write(grpSpPr);
+
+			oValue.WriteArray(SpTreeElems);
+
+			return XmlUtils::CreateNode(L"lc:lockedCanvas", oAttr, oValue);
+		}
+		void LockedCanvas::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			BYTE lDocType = pWriter->m_lDocType;
+			pWriter->m_lDocType = XMLWRITER_DOC_TYPE_GRAPHICS;
+
+			pWriter->StartNode(L"lc:lockedCanvas");
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"xmlns:lc", L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas");
+
+			pWriter->EndAttributes();
+
+			nvGrpSpPr.toXmlWriter(pWriter);
+
+			grpSpPr.toXmlWriter(pWriter);
+
+			pWriter->m_lGroupIndex++;
+
+			for (size_t i = 0; i < SpTreeElems.size(); ++i)
+			{
+				SpTreeElems[i].toXmlWriter(pWriter);
+			}
+
+			pWriter->m_lGroupIndex--;
+
+			pWriter->EndNode(L"lc:lockedCanvas");
+
+			pWriter->m_lDocType = lDocType;
+		}
+		void LockedCanvas::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			BinDocxRW::CDocxSerializer* docx = pWriter->m_pMainDocument;
+			pWriter->m_pMainDocument = NULL;
+
+			pWriter->StartRecord(SPTREE_TYPE_LOCKED_CANVAS);
+
+			pWriter->WriteRecord1(0, nvGrpSpPr);
+			pWriter->WriteRecord1(1, grpSpPr);
+			pWriter->WriteRecordArray(2, 0, SpTreeElems);
+
+			pWriter->EndRecord();
+			pWriter->m_pMainDocument = docx;
+		}
+		void LockedCanvas::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(5); // type + len
+
+			BinDocxRW::CDocxSerializer* docx = pReader->m_pMainDocument;
+			pReader->m_pMainDocument = NULL;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						nvGrpSpPr.fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						grpSpPr.fromPPTY(pReader);
+						break;
+					}
+					case 2:
+					{
+						pReader->Skip(4); // len
+						ULONG _c = pReader->GetULong();
+
+						for (ULONG i = 0; i < _c; ++i)
+						{
+							pReader->Skip(1); // type (0)
+							LONG nElemLength = pReader->GetLong(); // len
+							//SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
+							if(nElemLength > 0)
+							{
+								SpTreeElem elm;
+								elm.fromPPTY(pReader);
+
+								if (elm.is_init())
+								{
+									if (elm.getType() == OOX::et_p_ShapeTree)
+									{
+										smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
+										e->m_lGroupIndex = m_lGroupIndex + 1;
+									}
+									SpTreeElems.push_back(elm);
+								}
+							}
+						}
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+			pReader->Seek(_end_rec);
+			pReader->m_pMainDocument = docx;
 		}
 	}
 }

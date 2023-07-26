@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,7 +30,15 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
+
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -41,79 +49,23 @@ namespace OOX
 		class CDefinedName : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDefinedName)
-			CDefinedName(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-            virtual ~CDefinedName()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-                writer.WriteString(L"<definedName");
-				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName);
-				WritingStringNullableAttrInt(L"localSheetId", m_oLocalSheetId, m_oLocalSheetId->GetValue());
-				WritingStringNullableAttrBool(L"hidden", m_oHidden);
-				writer.WriteString(L">");
-				if(m_oRef.IsInit())
-					writer.WriteEncodeXmlString(*m_oRef);
-				writer.WriteString(L"</definedName>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CDefinedName)
+			CDefinedName(OOX::Document *pMain = NULL);
+			virtual ~CDefinedName();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				m_oRef = oReader.GetText3();
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_DefinedName;
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> SheetData.cpp
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::Name*>(obj.get());
-                m_oComment                  = ptr->comment.value();
-               // m_oCustomMenu               = ptr->.value();
-                m_oDescription              = ptr->description.value();
-                m_oFunction                 = ptr->fFunc;
-                m_oFunctionGroupId          = ptr->fGrp;
-                m_oHelp                     = ptr->helpTopic.value();
-                m_oHidden                   = ptr->fHidden;
-
-                if(ptr->itab != 0xFFFFFFFF)
-                    m_oLocalSheetId         = ptr->itab;
-
-                m_oName                     = ptr->name.value();
-                m_oPublishToServer          = ptr->fPublished;
-                m_oShortcutKey              = std::to_wstring(ptr->chKey);
-                //m_oStatusBar                = ;
-                m_oVbProcedure              = ptr->fOB;
-                m_oWorkbookParameter        = ptr->fWorkbookParam;
-                m_oXlm                      = ptr->fFutureFunction;
-                m_oRef                      = ptr->rgce.getAssembledFormula();
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 				nullable_string									m_oComment;
@@ -138,84 +90,23 @@ namespace OOX
 		class CDefinedNames : public WritingElementWithChilds<CDefinedName>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDefinedNames)
+			WritingElement_AdditionMethods(CDefinedNames)
             WritingElement_XlsbVectorConstructors(CDefinedNames)
-			CDefinedNames(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDefinedName>(pMain)
-			{
-			}            
-			virtual ~CDefinedNames()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_arrItems.empty()) return;
-				
-				writer.WriteString(L"<definedNames>");
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
-				writer.WriteString(L"</definedNames>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CDefinedNames(OOX::Document *pMain = NULL);
+			virtual ~CDefinedNames();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if ( L"definedName" == sName || L"NamedRange" == sName)
-					{
-						CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
-						m_arrItems.push_back( pDefinedName);
-						
-						pDefinedName->fromXML(oReader);
-					}
-				}
-			}
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			virtual EElementType getType () const;
 
-            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                //ReadAttributes(obj);
-
-                if (obj.empty())
-                    return;
-
-                for(auto &definedName : obj)
-                {
-                    CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
-                    m_arrItems.push_back( pDefinedName);
-
-                    pDefinedName->fromBin(definedName);
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_DefinedNames;
-			}
-		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX

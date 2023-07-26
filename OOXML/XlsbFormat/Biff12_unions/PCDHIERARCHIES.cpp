@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndPCDHierarchies>())
         {
-            m_BrtEndPCDHierarchies = elements_.back();
+            m_bBrtEndPCDHierarchies = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDHierarchies = false;
 
-        return m_BrtBeginPCDHierarchies && m_BrtEndPCDHierarchies;
+        return m_BrtBeginPCDHierarchies && m_bBrtEndPCDHierarchies;
     }
+
+	const bool PCDHIERARCHIES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDHierarchies == nullptr)
+			m_BrtBeginPCDHierarchies = XLS::BaseObjectPtr(new XLSB::BeginPCDHierarchies());
+
+		if (m_BrtBeginPCDHierarchies != nullptr)
+		{
+			auto ptrBrtBeginPCDHierarchies = static_cast<XLSB::BeginPCDHierarchies*>(m_BrtBeginPCDHierarchies.get());
+
+			if (ptrBrtBeginPCDHierarchies != nullptr)
+				ptrBrtBeginPCDHierarchies->cHier = m_arPCDHIERARCHY.size();
+
+			proc.mandatory(*m_BrtBeginPCDHierarchies);
+		}
+
+		for (auto &item : m_arPCDHIERARCHY)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDHierarchies>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

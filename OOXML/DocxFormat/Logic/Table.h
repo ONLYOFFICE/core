@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_TABLE_INCLUDE_H_
-#define OOX_LOGIC_TABLE_INCLUDE_H_
 
-#include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "TableProperty.h"
 
 namespace ComplexTypes
@@ -48,49 +44,18 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CTblGridCol)
-			CTblGridCol()
-			{
-			}
-			virtual ~CTblGridCol()
-			{
-			}
+			CTblGridCol();
+			virtual ~CTblGridCol();
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:w", m_oW );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual std::wstring ToString() const;
 
-				if ( m_oW.IsInit() )
-				{
-					sResult += L"w:w=\"";
-					sResult += m_oW->ToString();
-					sResult += L"\" ";
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:w", m_oW )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CTwipsMeasure > m_oW;
 		};
 
@@ -100,7 +65,7 @@ namespace ComplexTypes
 namespace OOX
 {
 	namespace Logic
-	{
+    {
 		//--------------------------------------------------------------------------------
 		// CTblGridChange 17.13.5.33 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -109,31 +74,26 @@ namespace OOX
 		class CTblGridChange : public WritingElement
 		{
 		public:
-			CTblGridChange(OOX::Document *pMain = NULL);
-			CTblGridChange(XmlUtils::CXmlNode &oNode);
-			CTblGridChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblGridChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblGridChange();
+
 			const CTblGridChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblGridChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_tblGridChange;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
 			CTblGrid								*m_pTblGrid;
 		};
+
 		//--------------------------------------------------------------------------------
 		// CTblGrid 17.4.49 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -182,15 +142,16 @@ namespace OOX
 				if ( !m_bTblGridChange && oNode.GetNode( L"w:tblGridChange", oChild ) )
 					m_oTblGridChange = oChild;
 
-				XmlUtils::CXmlNodes oGridColNodes;
+				std::vector<XmlUtils::CXmlNode> oGridColNodes;
 				if ( oNode.GetNodes( L"w:gridCol", oGridColNodes ) )
 				{
-					XmlUtils::CXmlNode oGridColNode;
-					for ( int nIndex = 0; nIndex < oGridColNodes.GetCount(); nIndex++ )
+					for ( size_t nIndex = 0; nIndex < oGridColNodes.size(); nIndex++ )
 					{
-						if ( oGridColNodes.GetAt( nIndex, oGridColNode ) )
+						XmlUtils::CXmlNode & oGridColNode = oGridColNodes[nIndex];
+						if ( oGridColNode.IsValid() )
 						{
-							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oGridColNode);
+							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+							*oGridCol = oGridColNode;
 							if (oGridCol) m_arrGridCol.push_back( oGridCol );
 						}
 					}
@@ -209,7 +170,9 @@ namespace OOX
 						m_oTblGridChange = oReader;
 					else if ( L"w:gridCol" == sName )
 					{
-						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oReader);
+						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+						*oGridCol = oReader;
+
 						if (oGridCol) m_arrGridCol.push_back( oGridCol );
 					}
 				}
@@ -248,30 +211,25 @@ namespace OOX
 		// CTblPrExChange 17.13.5.35 (Part 1)
 		//--------------------------------------------------------------------------------
 		class CTblPrEx;
+
 		class CTblPrExChange : public WritingElement
 		{
 		public:
-			CTblPrExChange(OOX::Document *pMain = NULL);
-			CTblPrExChange(XmlUtils::CXmlNode &oNode);
-			CTblPrExChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblPrExChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblPrExChange();
+
 			const CTblPrExChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrExChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_tblPrExChange;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			// Attributes
 			nullable<std::wstring					> m_sAuthor;
 			nullable<SimpleTypes::CDateTime			> m_oDate;
@@ -281,6 +239,7 @@ namespace OOX
 			// Childs
 			nullable<CTblPrEx						> m_pTblPrEx;
 		};
+
 		//--------------------------------------------------------------------------------
 		// CTblPrEx 17.4.61 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -398,63 +357,26 @@ namespace OOX
 			nullable<OOX::Logic::CTblPrExChange         > m_oTblPrExChange;
 			nullable<ComplexTypes::Word::CTblWidth      > m_oTblW;
 		};
+
 		//--------------------------------------------------------------------------------
 		// CTbl 17.4.38 (Part 1)
 		//--------------------------------------------------------------------------------
 		class CTbl : public WritingElementWithChilds<>
 		{
 		public:
-			CTbl(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-				m_oTableProperties = NULL;
-				m_nCountRow = 0;
-			}
-			CTbl(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				m_oTableProperties	= NULL;
-				m_nCountRow = 0;
-				fromXML( oNode );
-			}
-			CTbl(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				m_oTableProperties = NULL;
-				m_nCountRow = 0;
-				fromXML( oReader );
-			}
-			virtual ~CTbl()
-			{
-			}
+			CTbl(OOX::Document *pMain = NULL);			
+			virtual ~CTbl();
 
-			const CTbl &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
+			const CTbl &operator =(const XmlUtils::CXmlNode& oNode);
+			const CTbl &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			const CTbl &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-
-			virtual void ClearItems()
-			{	
-				m_oTblGrid.reset();
-				m_oTableProperties = NULL;
-				m_nCountRow = 0;
-				
-				WritingElementWithChilds::ClearItems();
-			}
-
+			virtual void ClearItems();
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_tbl;
-			}
+			virtual EElementType getType() const;
+
 			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			
 			int										m_nCountRow;
@@ -469,56 +391,18 @@ namespace OOX
 		class CTr : public WritingElementWithChilds<>
 		{
 		public:
-			CTr(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-				m_nCountCell = 0;
-				m_pTableRowProperties = NULL;
-			}
-			CTr(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				m_nCountCell = 0;
-				m_pTableRowProperties = NULL;
-				fromXML( oNode );
-			}
-			CTr(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				m_nCountCell = 0;
-				m_pTableRowProperties = NULL;
-				fromXML( oReader );
-			}
-			virtual ~CTr()
-			{
-			}
-			const CTr &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CTr &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void ClearItems()
-			{
-				m_pTableRowProperties = NULL;
-				m_oRsidDel.reset();
-				m_oRsidR.reset();
-				m_oRsidRPr.reset();
-				m_oRsidTr.reset();
+			CTr(OOX::Document *pMain = NULL);
+			virtual ~CTr();
 
-				WritingElementWithChilds::ClearItems();
+			const CTr &operator =(const XmlUtils::CXmlNode& oNode);
+			const CTr &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			}
+			virtual void ClearItems();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_tr;
-			}
+			virtual EElementType getType() const;
 
 		private:
 			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
@@ -542,56 +426,18 @@ namespace OOX
 		class CTc : public WritingElementWithChilds<>
 		{
 		public:
-			CTc(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-				m_nNumCol = 0;
-				m_pTableCellProperties = NULL;
-			}
-			CTc(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				m_nNumCol = 0;
-				m_pTableCellProperties = NULL;
-				fromXML( oNode );
-			}
-			CTc(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				m_nNumCol = 0;
-				m_pTableCellProperties = NULL;
-				fromXML( oReader );
-			}
-			virtual ~CTc()
-			{
-			}
-			const CTc &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CTc &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void ClearItems()
-			{
-				m_pTableCellProperties = NULL;
-				m_nNumCol = 0;
-				m_sId.reset();
+			CTc(OOX::Document *pMain = NULL);			
+			virtual ~CTc();
 
-				WritingElementWithChilds::ClearItems();
-			}
+			const CTc &operator =(const XmlUtils::CXmlNode& oNode);
+			const CTc &operator =(const XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void ClearItems();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_tc;
-			}
+			virtual EElementType getType() const;
 
 		private:
 			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
@@ -606,4 +452,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_TABLE_INCLUDE_H_

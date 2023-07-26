@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,7 +58,7 @@ namespace DocFileFormat
 	struct RelationshipsFile
 	{
 		std::wstring			FileName;
-		std::list<Relationship> Relationships;
+		std::vector<Relationship> Relationships;
 		int						RelID;
 
 		RelationshipsFile():
@@ -71,7 +71,7 @@ namespace DocFileFormat
 		{
 		}
 
-		RelationshipsFile( int relID, const std::wstring& fileName, const std::list<Relationship>& relationships ):
+		RelationshipsFile( int relID, const std::wstring& fileName, const std::vector<Relationship>& relationships ):
 					RelID(relID), FileName( fileName ), Relationships( relationships )
 		{
 		}
@@ -107,8 +107,8 @@ namespace DocFileFormat
 		std::wstring ext;
 		std::wstring objectID;
         std::wstring clsid;
-
-		std::string	data;
+		
+		std::pair<boost::shared_array<char>, size_t> data;
 
         OleObjectFileStructure( const std::wstring& _ext, const std::wstring& _objectID, const std::wstring&/*REFCLSID*/ _clsid ):
 					ext(_ext), objectID(_objectID), clsid(_clsid){}
@@ -128,8 +128,8 @@ namespace DocFileFormat
 		RelationshipsFile CommentsRelationshipsFile;
 		RelationshipsFile NumberingRelationshipsFile;
 		
-		std::list<RelationshipsFile> HeaderRelationshipsFiles;
-		std::list<RelationshipsFile> FooterRelationshipsFiles;
+		std::vector<RelationshipsFile> HeaderRelationshipsFiles;
+		std::vector<RelationshipsFile> FooterRelationshipsFiles;
 
 		int relID;
 

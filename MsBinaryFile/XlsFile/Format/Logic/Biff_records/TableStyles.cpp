@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,7 @@
  */
 
 #include "TableStyles.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLS
 {
@@ -53,8 +53,8 @@ void TableStyles::readFields(CFRecord& record)
 {	
     if(record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cchDefTableStyle;
-        unsigned short cchDefPivotStyle;
+        _UINT16 cchDefTableStyle;
+        _UINT16 cchDefPivotStyle;
         record >> frtHeader >> cts >> cchDefTableStyle >> cchDefPivotStyle;
 
         LPWideStringNoCch	rgchDefTableStyle_;
@@ -76,6 +76,31 @@ void TableStyles::readFields(CFRecord& record)
         rgchDefTableStyle = strDefList.value();
         rgchDefPivotStyle = strDefPivot.value();
     }
+}
+
+void TableStyles::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 cchDefTableStyle;
+		_UINT16 cchDefPivotStyle;
+
+		LPWideStringNoCch	rgchDefTableStyle_(rgchDefTableStyle);
+		LPWideStringNoCch	rgchDefPivotStyle_(rgchDefPivotStyle);
+
+		cchDefTableStyle = rgchDefTableStyle_.getSize();
+		cchDefPivotStyle = rgchDefPivotStyle_.getSize();
+
+		record << frtHeader << cts << cchDefTableStyle << cchDefPivotStyle;
+		record << rgchDefTableStyle_ << rgchDefPivotStyle_;
+	}
+	else
+	{
+		XLSB::XLNullableWideString    strDefList(rgchDefTableStyle);
+		XLSB::XLNullableWideString    strDefPivot(rgchDefPivotStyle);
+
+		record << cts << strDefList << strDefPivot;
+	}
 }
 
 } // namespace XLS

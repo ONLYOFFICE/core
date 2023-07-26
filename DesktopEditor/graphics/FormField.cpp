@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -383,6 +383,35 @@ bool CFormFieldInfo::CSignatureFormPr::GetDate() const
 }
 
 //
+CFormFieldInfo::CDateTimeFormPr::CDateTimeFormPr()
+{
+}
+void CFormFieldInfo::CDateTimeFormPr::SetValue(const std::wstring& wsValue)
+{
+	m_wsValue = wsValue;
+}
+void CFormFieldInfo::CDateTimeFormPr::SetPlaceHolder(const std::wstring& wsValue)
+{
+	m_wsPlaceHolder = wsValue;
+}
+void CFormFieldInfo::CDateTimeFormPr::SetFormat(const std::wstring& wsValue)
+{
+	m_wsFormat = wsValue;
+}
+const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetValue() const
+{
+	return m_wsValue;
+}
+const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetPlaceHolder() const
+{
+	return m_wsPlaceHolder;
+}
+const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetFormat() const
+{
+	return m_wsFormat;
+}
+
+//
 CFormFieldInfo::CFormFieldInfo()
 {
 	m_nType = 0;
@@ -542,6 +571,10 @@ bool CFormFieldInfo::IsSignature() const
 {
 	return (m_nType == 5);
 }
+bool CFormFieldInfo::IsDateTime() const
+{
+	return (m_nType == 6);
+};
 CFormFieldInfo::CTextFormPr* CFormFieldInfo::GetTextFormPr()
 {
 	return &m_oTextPr;
@@ -581,4 +614,12 @@ CFormFieldInfo::CSignatureFormPr* CFormFieldInfo::GetSignatureFormPr()
 const CFormFieldInfo::CSignatureFormPr* CFormFieldInfo::GetSignaturePr() const
 {
 	return &m_oSignaturePr;
+}
+CFormFieldInfo::CDateTimeFormPr* CFormFieldInfo::GetDateTimeFormPr()
+{
+	return &m_oDateTimePr;
+}
+const CFormFieldInfo::CDateTimeFormPr* CFormFieldInfo::GetDateTimePr() const
+{
+	return &m_oDateTimePr;
 }

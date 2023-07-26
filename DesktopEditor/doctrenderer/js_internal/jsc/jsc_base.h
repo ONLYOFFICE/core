@@ -1,19 +1,14 @@
 #ifndef _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 #define _BUILD_NATIVE_CONTROL_JSC_BASE_H_
 
-#include "../js_base.h"
+#include "../js_embed.h"
+#include "../js_base_p.h"
 
-#import <Foundation/Foundation.h>
-#import <JavaScriptCore/JavaScriptCore.h>
 #include <JavaScriptCore/JSTypedArray.h>
 #include <JavaScriptCore/JSValueRef.h>
 
 #import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 #include <vector>
-
-@protocol JSEmbedObjectProtocol
-- (void*) getNative;
-@end
 
 namespace NSJSBase
 {
@@ -36,6 +31,9 @@ namespace NSJSBase
         static JSContext* GetCurrentContext();
         static bool IsOldVersion();
     };
+
+	// embed
+	id CreateEmbedNativeObject(NSString* name);
 }
 
 namespace NSJSBase
@@ -82,10 +80,10 @@ namespace NSJSBase
         virtual std::string toStringA();
         virtual std::wstring toStringW();
 
-        virtual CJSObject* toObject();
-        virtual CJSArray* toArray();
-        virtual CJSTypedArray* toTypedArray();
-        virtual CJSFunction* toFunction();
+		virtual JSSmart<CJSObject> toObject();
+		virtual JSSmart<CJSArray> toArray();
+		virtual JSSmart<CJSTypedArray> toTypedArray();
+		virtual JSSmart<CJSFunction> toFunction();
 
         JSContext* getContext()
         {
@@ -112,7 +110,7 @@ namespace NSJSBase
             value = nil;
         }
 
-        virtual CJSValue* get(const char* name)
+		virtual JSSmart<CJSValue> get(const char* name)
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = [value valueForProperty:[[NSString alloc] initWithUTF8String:name]];
@@ -394,7 +392,7 @@ namespace NSJSBase
             value = nil;
         }
 
-        virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
+		virtual JSSmart<CJSValue> Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
         {
             NSMutableArray* arr = [[NSMutableArray alloc] init];
             for (int i = 0; i < argc; ++i)
@@ -411,7 +409,7 @@ namespace NSJSBase
     };
 
     template<typename T>
-    CJSObject* CJSValueJSCTemplate<T>::toObject()
+	JSSmart<CJSObject> CJSValueJSCTemplate<T>::toObject()
     {
         CJSObjectJSC* _value = new CJSObjectJSC();
         _value->value = value;
@@ -419,7 +417,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSArray* CJSValueJSCTemplate<T>::toArray()
+	JSSmart<CJSArray> CJSValueJSCTemplate<T>::toArray()
     {
         CJSArrayJSC* _value = new CJSArrayJSC();
         _value->value = value;
@@ -427,7 +425,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSTypedArray* CJSValueJSCTemplate<T>::toTypedArray()
+	JSSmart<CJSTypedArray> CJSValueJSCTemplate<T>::toTypedArray()
     {
         CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(getContext());
         _value->value = value;
@@ -435,7 +433,7 @@ namespace NSJSBase
     }
 
     template<typename T>
-    CJSFunction* CJSValueJSCTemplate<T>::toFunction()
+	JSSmart<CJSFunction> CJSValueJSCTemplate<T>::toFunction()
     {
         CJSFunctionJSC* _value = new CJSFunctionJSC();
         _value->value = value;
@@ -482,11 +480,13 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     return _tmp->value;
 }
 
-#define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED)                                       \
+#define FUNCTION_WRAPPER_JS_0(NAME, NAME_EMBED)                                     \
     -(JSValue*) NAME                                                                \
     {                                                                               \
         return js_return(m_internal->NAME_EMBED());                                 \
     }
+
+#define FUNCTION_WRAPPER_JS(NAME, NAME_EMBED) FUNCTION_WRAPPER_JS_0(NAME, NAME_EMBED)
 
 #define FUNCTION_WRAPPER_JS_1(NAME, NAME_EMBED)                                     \
     -(JSValue*) NAME:(JSValue*)p1                                                   \
@@ -528,42 +528,5 @@ inline JSValue* js_return(JSSmart<NSJSBase::CJSValue> _value)
     {                                                                                                                                                   \
         return js_return(m_internal->NAME_EMBED(js_value(p1), js_value(p2), js_value(p3), js_value(p4), js_value(p5), js_value(p6), js_value(p7), js_value(p8)));     \
     }
-
-#if __has_feature(objc_arc)
-#define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
--(id) init                                      \
-{                                               \
-    self = [super init];                        \
-    if (self)                                   \
-        m_internal = new CLASS();               \
-    return self;                                \
-}                                               \
--(void) dealloc                                 \
-{                                               \
-    RELEASEOBJECT(m_internal);                  \
-}                                               \
-- (void*) getNative                             \
-{                                               \
-    return m_internal;                          \
-}
-#else
-#define EMBED_OBJECT_WRAPPER_METHODS(CLASS)     \
--(id) init                                      \
-{                                               \
-    self = [super init];                        \
-    if (self)                                   \
-        m_internal = new CLASS();               \
-    return self;                                \
-}                                               \
--(void) dealloc                                 \
-{                                               \
-    RELEASEOBJECT(m_internal);                  \
-    [super dealloc];                            \
-}                                               \
-- (void*) getNative                             \
-{                                               \
-    return m_internal;                          \
-}
-#endif
 
 #endif // _BUILD_NATIVE_CONTROL_JSC_BASE_H_

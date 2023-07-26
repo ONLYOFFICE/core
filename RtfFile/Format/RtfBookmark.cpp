@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,6 +38,15 @@
 
 #include "Utils.h"
 
+RtfBookmarkStart::RtfBookmarkStart()
+{
+	nFirstColumn = PROP_DEF;
+	nLastColumn = PROP_DEF;
+}
+int RtfBookmarkStart::GetType()
+{
+	return TYPE_RTF_BOOKMARKSTART;
+}
 std::wstring RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -82,6 +91,14 @@ std::wstring RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 	sResult += L"/>";
 	return sResult;
 }
+
+RtfBookmarkEnd::RtfBookmarkEnd()
+{
+}
+int RtfBookmarkEnd::GetType()
+{
+	return TYPE_RTF_BOOKMARKEND;
+}
 std::wstring RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -119,6 +136,13 @@ std::wstring RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
+RtfAnnotElem::RtfAnnotElem(int type) : m_nType (type)
+{
+}
+int RtfAnnotElem::GetType()
+{
+	return TYPE_RTF_ANNOTVALUE;
+}
 std::wstring RtfAnnotElem::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -133,7 +157,6 @@ std::wstring RtfAnnotElem::RenderToRtf(RenderParameter oRenderParameter)
 
 	return sResult;
 }
-
 std::wstring RtfAnnotElem::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if (m_nType > 8 || m_nType < 1) return L"";
@@ -185,6 +208,14 @@ std::wstring RtfAnnotElem::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
+RtfAnnotation::RtfAnnotation()
+{
+	m_oContent = TextItemContainerPtr( new TextItemContainer() );
+}
+int RtfAnnotation::GetType()
+{
+	return TYPE_RTF_ANNOTATION;
+}
 std::wstring RtfAnnotation::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -209,7 +240,6 @@ std::wstring RtfAnnotation::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-
 std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
 {
  	OOXWriter* poOOXWriter = static_cast<OOXWriter*> (oRenderParameter.poWriter);		
@@ -243,6 +273,15 @@ std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
 	return L"";
 }
 
+RtfFootnote::RtfFootnote()
+{
+	m_bEndNote = false;
+	m_oContent = TextItemContainerPtr( new TextItemContainer() );
+}
+int RtfFootnote::GetType()
+{
+	return TYPE_RTF_FOOTNOTE;
+}
 std::wstring RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,24 @@
 #include "RtfWriter.h"
 #include "RtfDocument.h"
 
+RtfWriter::RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
+{
+	m_sFilename = sFilename;
+	m_sTempFolder = sFolder;
+	m_bFirst = true;
+	m_oCurTempFileWriter = NULL;
+	m_oCurTempFileSectWriter = NULL;
+}
+RtfWriter::~RtfWriter()
+{
+	RELEASEOBJECT( m_oCurTempFileWriter );
+	RELEASEOBJECT( m_oCurTempFileSectWriter );
+	for( int i = 0; i < (int)m_aTempFiles.size(); i++ )
+		Utils::RemoveDirOrFile( m_aTempFiles[i] );
+	for( int i = 0; i < (int)m_aTempFilesSectPr.size(); i++ )
+		Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
+	m_aTempFiles.clear();
+}
 bool RtfWriter::Save()
 {
 	int nItemsCount = GetCount();
@@ -165,6 +183,7 @@ bool RtfWriter::SaveByItem()
 }
 bool RtfWriter::SaveByItemEnd()
 {
+	bool result = true;
 	//окончательно дописываем темповый файл
 	RELEASEOBJECT( m_oCurTempFileWriter );
 
@@ -254,7 +273,9 @@ bool RtfWriter::SaveByItemEnd()
 		oTargetFileWriter.Write( &nEndFile, 1);
 	}
 	catch(...)
-	{}
+	{
+		result = false;
+	}
 
 	for (size_t i = 0; i < m_aTempFiles.size(); i++ )
 		Utils::RemoveDirOrFile( m_aTempFiles[i] );
@@ -265,7 +286,8 @@ bool RtfWriter::SaveByItemEnd()
 		Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
 
 	m_aTempFilesSectPr.clear();
-	return true;
+	
+	return result;
 }
 int RtfWriter::GetCount()
 {
@@ -340,7 +362,6 @@ std::wstring RtfWriter::CreateRtfStart()
 	sResult += L"\n\n";
 	return sResult;
 }
-
 std::wstring RtfWriter::CreateRtfEnd( )
 {
 	return L"\n}\n";

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,7 +39,16 @@
 #include "../../OOXML/DocxFormat/Styles.h"
 #include "../../OOXML/DocxFormat/Footnote.h"
 #include "../../OOXML/DocxFormat/Endnote.h"
-#include "../../OOXML/DocxFormat/HeaderFooter.h"
+#include "../../OOXML/DocxFormat/FtnEdn.h"
+#include "../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../OOXML/DocxFormat/Logic/Sdt.h"
+#include "../../OOXML/DocxFormat/Logic/FldSimple.h"
+#include "../../OOXML/DocxFormat/Logic/Hyperlink.h"
+#include "../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../OOXML/DocxFormat/Logic/SectionProperty.h"
+#include "../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../OOXML/DocxFormat/Logic/FldChar.h"
 
 #include <map>
 
@@ -53,10 +62,10 @@ namespace Docx2Txt
 
 		void convert();
 
-		void writeUtf8		(const std::wstring& path) const;
-		void writeUnicode	(const std::wstring& path) const;
-		void writeBigEndian	(const std::wstring& path) const;
-		void writeAnsi		(const std::wstring& path) const;
+		bool writeUtf8		(const std::wstring& path) const;
+		bool writeUnicode	(const std::wstring& path) const;
+		bool writeBigEndian	(const std::wstring& path) const;
+		bool writeAnsi		(const std::wstring& path) const;
 
 		Txt::File		m_outputFile;
 		OOX::CDocx		m_inputFile;
@@ -106,33 +115,32 @@ namespace Docx2Txt
 		return converter_->convert();
 	}
 
-	void Converter::read(const std::wstring & path)
+	bool Converter::read(const std::wstring & path)
 	{
-		bool res =  converter_->m_inputFile.Read(path);
-		return;
+		return converter_->m_inputFile.Read(path);
 	}
 
-	void Converter::write(const std::wstring & path)
+	bool Converter::write(const std::wstring & path)
 	{
 		return converter_->m_outputFile.write(path);
 	}
 
-	void Converter::writeUtf8(const std::wstring & path) const
+	bool Converter::writeUtf8(const std::wstring & path) const
 	{
 		return converter_->writeUtf8(path);
 	}
 
-	void Converter::writeUnicode(const std::wstring & path) const
+	bool Converter::writeUnicode(const std::wstring & path) const
 	{
 		return converter_->writeUnicode(path);
 	}
 
-	void Converter::writeBigEndian(const std::wstring & path) const
+	bool Converter::writeBigEndian(const std::wstring & path) const
 	{
 		return converter_->writeBigEndian(path);
 	}
 
-	void Converter::writeAnsi(const std::wstring & path) const
+	bool Converter::writeAnsi(const std::wstring & path) const
 	{
 		return converter_->writeAnsi(path);
 	}
@@ -195,27 +203,21 @@ namespace Docx2Txt
 	}
 
 
-	void Converter_Impl::writeUtf8(const std::wstring& path) const
+	bool Converter_Impl::writeUtf8(const std::wstring& path) const
 	{
-		m_outputFile.writeUtf8(path);
+		return m_outputFile.writeUtf8(path);
 	}
-
-
-	void Converter_Impl::writeUnicode(const std::wstring& path) const
+	bool Converter_Impl::writeUnicode(const std::wstring& path) const
 	{
-		m_outputFile.writeUnicode(path);
+		return m_outputFile.writeUnicode(path);
 	}
-
-
-	void Converter_Impl::writeBigEndian(const std::wstring& path) const
+	bool Converter_Impl::writeBigEndian(const std::wstring& path) const
 	{
-		m_outputFile.writeBigEndian(path);
+		return m_outputFile.writeBigEndian(path);
 	}
-
-
-	void Converter_Impl::writeAnsi(const std::wstring& path) const
+	bool Converter_Impl::writeAnsi(const std::wstring& path) const
 	{
-		m_outputFile.writeAnsi(path);
+		return m_outputFile.writeAnsi(path);
 	}
 	void Converter_Impl::convert(OOX::WritingElement* item, std::vector<std::wstring>& textOut, bool bEnter,
 								 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)

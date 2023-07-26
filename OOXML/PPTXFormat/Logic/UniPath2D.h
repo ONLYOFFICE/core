@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,111 +49,35 @@ namespace PPTX
 		class UniPath2D : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(UniPath2D)
+			WritingElement_AdditionMethods(UniPath2D)
 			PPTX_LOGIC_BASE2(UniPath2D)
 
-			virtual OOX::EElementType getType() const
-			{
-				if (Path2D.IsInit())
-					return Path2D->getType();
-				return OOX::et_Unknown;
-			}			
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
-				
-				if (name == _T("moveTo"))
-					Path2D.reset(new Logic::MoveTo(oReader));
-				else if (name == _T("lnTo"))
-					Path2D.reset(new Logic::LineTo(oReader));
-				else if (name == _T("cubicBezTo"))
-					Path2D.reset(new Logic::CubicBezTo(oReader));
-				else if (name == _T("close"))
-					Path2D.reset(new Logic::Close(oReader));
-				else if (name == _T("arcTo"))
-					Path2D.reset(new Logic::ArcTo(oReader));
-				else if (name == _T("quadBezTo"))
-					Path2D.reset(new Logic::QuadBezTo(oReader));
-				else Path2D.reset();
-			}
-				
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				if (name == _T("moveTo"))
-					Path2D.reset(new Logic::MoveTo(node));
-				else if (name == _T("lnTo"))
-					Path2D.reset(new Logic::LineTo(node));
-				else if (name == _T("cubicBezTo"))
-					Path2D.reset(new Logic::CubicBezTo(node));
-				else if (name == _T("close"))
-					Path2D.reset(new Logic::Close(node));
-				else if (name == _T("arcTo"))
-					Path2D.reset(new Logic::ArcTo(node));
-				else if (name == _T("quadBezTo"))
-					Path2D.reset(new Logic::QuadBezTo(node));
-				else Path2D.reset();
-			}
+			virtual void GetPath2DFrom(XmlUtils::CXmlNode& element);
 
-			virtual void GetPath2DFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode;
-				
-				if(element.GetNode(_T("a:moveTo"), oNode))
-					Path2D.reset(new Logic::MoveTo(oNode));
-				else if(element.GetNode(_T("a:lnTo"), oNode))
-					Path2D.reset(new Logic::LineTo(oNode));
-				else if(element.GetNode(_T("a:cubicBezTo"), oNode))
-					Path2D.reset(new Logic::CubicBezTo(oNode));
-				else if(element.GetNode(_T("a:close"), oNode))
-					Path2D.reset(new Logic::Close(oNode));
-				else if(element.GetNode(_T("a:arcTo"), oNode))
-					Path2D.reset(new Logic::ArcTo(oNode));
-				else if(element.GetNode(_T("a:quadBezTo"), oNode))
-					Path2D.reset(new Logic::QuadBezTo(oNode));
-				else Path2D.reset();
-			}
+			virtual std::wstring toXML() const;
 
-			virtual std::wstring toXML() const
-			{
-				if (Path2D.IsInit())
-					return Path2D->toXML();
-				return _T("");
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (Path2D.is_init())
-					Path2D->toPPTY(pWriter);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (Path2D.is_init())
-					Path2D->toXmlWriter(pWriter);
-			}
-
-			virtual bool is_init()const{return (Path2D.IsInit());};
+			virtual bool is_init() const;
 			
 			template<class T> const bool is() const { return (!Path2D.IsInit())?false:(typeid(*Path2D) == typeid(T));}
 			template<class T> T& as() {return static_cast<T&>(*Path2D);}
 			template<class T> const T& as() const {return static_cast<const T&>(*Path2D);}
 
 			smart_ptr<PathBase> Path2D;
-		protected:
-			virtual void FillParentPointersForChilds(){};
-		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					Path2D->SetParentPointer(pParent);
-			};
 
-			std::wstring GetODString()const
-			{
-				return Path2D->GetODString();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+
+		public:
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
+			std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

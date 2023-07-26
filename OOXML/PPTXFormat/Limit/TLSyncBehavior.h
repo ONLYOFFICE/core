@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,39 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TLSyncBehavior : public BaseLimit
-		{
-		public:
-			TLSyncBehavior()
-			{
-				m_strValue = L"canSlip";
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"canSlip" == strValue) ||
-					(L"locked" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"canSlip" == m_strValue)	return 0;
-				if (L"locked" == m_strValue)	return 1;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				switch (val)
-				{
-				case 0: m_strValue = L"canSlip";	break;
-				case 1: m_strValue = L"locked";		break;
-				}
-			}
-		};
+		DEFINE_LIMIT_BASE(TLSyncBehavior)
 	} // namespace Limit
 } // namespace PPTX

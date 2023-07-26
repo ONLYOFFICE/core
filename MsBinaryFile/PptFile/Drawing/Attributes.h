@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,7 +70,7 @@ static inline std::wstring BoolToString(bool bValue)
     return bValue ? L"1" : L"0";
 }
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CExFilesInfo
 {
@@ -111,7 +111,7 @@ public:
     static int GetSlideNumber(const std::wstring &str)
     {
         std::wstring sldHeader = L"Slide ";
-        int strIter = str.find(sldHeader);
+        int strIter = (int)str.find(sldHeader);
         if (strIter != -1)
         {
             std::wstring sNum(str.begin() + sldHeader.size() + strIter, str.end());
@@ -142,15 +142,15 @@ public:
     }
     static bool isHTTPLink(const std::wstring &str)
     {
-        int iter1 = str.find(L"http://");
-        int iter2 = str.find(L"https://");
+        int iter1 = (int)str.find(L"http://");
+        int iter2 = (int)str.find(L"https://");
         return iter1 != -1 || iter2 != -1;
     }
     static bool isAudioLink(const std::wstring &str)
     {
-        int iter1 = str.find(L".mp3");
-        int iter2 = str.find(L".wav");
-        int iter3 = str.find(L".waw");
+        int iter1 = (int)str.find(L".mp3");
+        int iter2 = (int)str.find(L".wav");
+        int iter3 = (int)str.find(L".waw");
         return iter1 != -1 || iter2 != -1 || iter3 != -1;
     }
 };
@@ -322,7 +322,7 @@ public:
     BYTE B;
     BYTE A;
 
-    LONG m_lSchemeIndex;
+    _INT32 m_lSchemeIndex;
 
     CColor()
     {
@@ -382,7 +382,7 @@ public:
         if (lBGR & 0xFF000000)
             m_lSchemeIndex = R;
     }
-    void SetBGR(const LONG& lBGR)
+    void SetBGR(const _INT32& lBGR)
     {
         R = (BYTE)(lBGR);
         G = (BYTE)(lBGR >> 8);
@@ -411,18 +411,18 @@ public:
         return ((color1.R == color2.R) && (color1.G == color2.G) && (color1.B == color2.B));
     }
 
-    LONG GetLONG() const
+	_INT32 GetLONG() const
     {
-        LONG dwColor = 0;
+		_INT32 dwColor = 0;
         dwColor |= R;
         dwColor |= (G << 8);
         dwColor |= (B << 16);
 
         return dwColor;
     }
-    LONG GetLONG_RGB() const
+    _INT32 GetLONG_RGB() const
     {
-        LONG dwColor = 0;
+		_INT32 dwColor = 0;
         dwColor |= B;
         dwColor |= (G << 8);
         dwColor |= (R << 16);
@@ -525,7 +525,7 @@ public:
 
     double DashOffset;
 
-    LONG Align;
+    _INT32 Align;
     double MiterLimit;
 
     CColor Color2;	//backLine
@@ -588,7 +588,7 @@ public:
             pRenderer->put_PenColor(Color.GetLONG());
         else
         {
-            LONG lColor = Color.GetLONG();
+            _INT32 lColor = Color.GetLONG();
             lColor |= (0xFF000000 & ((Color.m_lSchemeIndex + 1 + 100) << 24));
             pRenderer->put_PenColor(lColor);
         }
@@ -703,7 +703,7 @@ public:
 
     std::vector<std::pair<CColor, double>> ColorsPosition;
 
-    inline LONG ConstantCompatible(LONG nConstant)
+    inline _INT32 ConstantCompatible(_INT32 nConstant)
     {
         if( c_BrushTypeDiagonal1_ == nConstant )
             nConstant = c_BrushTypeDiagonal2_;
@@ -873,7 +873,7 @@ public:
                 pRenderer->put_BrushColor1(Color1.GetLONG());
             else
             {
-                LONG lColor = Color1.GetLONG();
+                _INT32 lColor = Color1.GetLONG();
                 lColor |= (0xFF000000 & ((Color1.m_lSchemeIndex + 1 + 100) << 24));
                 pRenderer->put_BrushColor1(lColor);
             }
@@ -897,7 +897,7 @@ public:
                 pRenderer->put_BrushColor1(Color1.GetLONG());
             else
             {
-                LONG lColor = Color1.GetLONG();
+                _INT32 lColor = Color1.GetLONG();
                 lColor |= (0xFF000000 & ((Color1.m_lSchemeIndex + 1 + 100) << 24));
                 pRenderer->put_BrushColor1(lColor);
             }
@@ -945,9 +945,9 @@ public:
                 (Bold == pFont->Bold) && (Italic == pFont->Italic));
     }
 
-    LONG GetStyle() const
+    _INT32 GetStyle() const
     {
-        LONG lStyle = 0;
+        _INT32 lStyle = 0;
         if (Bold)
             lStyle |= 0x01;
         if (Italic)
@@ -956,7 +956,7 @@ public:
         lStyle |= Strikeout << 7;
         return lStyle;
     }
-    void SetStyle(LONG const& lStyle)
+    void SetStyle(_INT32 const& lStyle)
     {
         Bold		= (0x01 == (0x01 & lStyle));
         Italic		= (0x02 == (0x02 & lStyle));

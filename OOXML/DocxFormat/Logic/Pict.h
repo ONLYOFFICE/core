@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,84 +32,39 @@
 #pragma once
 
 #include "../Drawing/Drawing.h"
-#include "../../Common/SimpleTypes_Word.h"
-
-#include "VmlOfficeDrawing.h"
-#include "Vml.h"
 
 namespace OOX
 {
+	namespace Vml
+	{
+		class CShape;
+		class CShapeType;
+	}
+	namespace VmlOffice
+	{
+		class COLEObject;
+	}
+
 	namespace Logic
 	{
 		class CBinData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBinData)
-			CBinData(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
-			virtual ~CBinData() {}
+			WritingElement_AdditionMethods(CBinData)
 
-            virtual void fromXML(XmlUtils::CXmlNode &oNode)
-			{
-			}
+			CBinData(OOX::Document *pMain = NULL);
+			virtual ~CBinData();
 
-            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode &oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				m_sData = oReader.GetText2A();
-			}
-
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:binData ";
-
-				ComplexTypes_WriteAttribute2( L"w:name=\"", m_sName );
-
-				sResult += L">";
-
-				if (m_sData.IsInit())
-				{
-				}
-				sResult += L"</w:binData>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_binData;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					if ( L"w:name" == wsName )
-						m_sName = oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-
-				oReader.MoveToElement();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
             nullable<std::wstring>		m_sName;
 			nullable<std::string>		m_sData;
 		};
@@ -120,62 +75,21 @@ namespace OOX
 		class CControl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControl)
-			CControl(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
-			virtual ~CControl() {}
+			WritingElement_AdditionMethods(CControl)
 
-			virtual void fromXML(XmlUtils::CXmlNode &oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"r:id",      m_rId  );
-				XmlMacroReadAttributeBase( oNode, L"w:name",    m_sName );
-				XmlMacroReadAttributeBase( oNode, L"w:shapeid", m_sShapeId );
+			CControl(OOX::Document *pMain = NULL);
+			virtual ~CControl();
 
-				if (false == m_rId.IsInit())
-				{
-					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_rId );
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlNode &oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd( oReader.GetDepth() );
-			}
-
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:control";
-
-				ComplexTypes_WriteAttribute ( L" r:id=\"",      m_rId );
-				ComplexTypes_WriteAttribute2( L" w:name=\"",    m_sName );
-				ComplexTypes_WriteAttribute2( L" w:shapeid=\"", m_sShapeId );
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_control;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"r:id",				m_rId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"relationships:id",	m_rId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",				m_sName )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shapeid",			m_sShapeId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
             nullable<SimpleTypes::CRelationshipId>      m_rId;
             nullable<std::wstring>                      m_sName;
             nullable<std::wstring>                      m_sShapeId;
@@ -187,22 +101,17 @@ namespace OOX
 		class CPicture : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPicture)
-			CPicture(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) {}
-			virtual ~CPicture() 
-			{
-			}
+			WritingElement_AdditionMethods(CPicture)
+
+			CPicture(OOX::Document *pMain = NULL);
+			virtual ~CPicture();
 
 			virtual void fromXML(XmlUtils::CXmlNode &oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromStringXML(const std::wstring & xml_string);
 
 			virtual std::wstring toXML() const;
-
-			virtual EElementType getType() const
-			{
-				return et_w_pict;
-			}
+			virtual EElementType getType() const;
 
             nullable<std::wstring>          m_sXml;
 
@@ -215,28 +124,22 @@ namespace OOX
 			// TO DO: Добавить класс, читающий movie
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// CObject 17.3.3.19 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CObject : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CObject)
-			CObject(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) {}
-			virtual ~CObject() 
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const;
+			WritingElement_AdditionMethods(CObject)
 
-			virtual EElementType getType() const
-			{
-				return et_w_object;
-			}
+			CObject(OOX::Document *pMain = NULL);
+			virtual ~CObject();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
             nullable<std::wstring>					m_sXml;
 //-----------------------------------------------------------------------
@@ -252,17 +155,8 @@ namespace OOX
 			nullable<OOX::Vml::CShape>				m_oShape;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if		( oReader, L"w:dxaOrig", m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, L"w:dyaOrig", m_oDyaOrig )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
-
-
 
 	} // namespace Logic
 } // namespace OOX

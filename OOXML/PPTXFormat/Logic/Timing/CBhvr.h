@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,112 +49,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CBhvr)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"accumulate", accumulate);
-                XmlMacroReadAttributeBase(node, L"additive", additive);
-                XmlMacroReadAttributeBase(node, L"by", by);
-                XmlMacroReadAttributeBase(node, L"from", from);
-                XmlMacroReadAttributeBase(node, L"override", override_);
-                XmlMacroReadAttributeBase(node, L"rctx", rctx);
-                XmlMacroReadAttributeBase(node, L"to", to);
-                XmlMacroReadAttributeBase(node, L"xfrmType", xfrmType);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				cTn			= node.ReadNode(_T("p:cTn"));
-				tgtEl		= node.ReadNode(_T("p:tgtEl"));
-				attrNameLst = node.ReadNode(_T("p:attrNameLst"));
-
-				FillParentPointersForChilds();
-			}
-
-			std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("accumulate"), accumulate);
-				oAttr.WriteLimitNullable(_T("additive"), additive);
-				oAttr.Write(_T("by"), by);
-				oAttr.Write(_T("from"), from);
-				oAttr.WriteLimitNullable(_T("override"), override_);
-				oAttr.Write(_T("rctx"), rctx);
-				oAttr.Write(_T("to"), to);
-				oAttr.WriteLimitNullable(_T("xfrmType"), xfrmType);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cTn);
-				oValue.Write(tgtEl);
-				oValue.WriteNullable(attrNameLst);
-
-				return XmlUtils::CreateNode(_T("p:cBhvr"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteLimit2(0, accumulate);
-					pWriter->WriteLimit2(1, additive);
-					pWriter->WriteString2(2, by);
-					pWriter->WriteString2(3, from);
-					pWriter->WriteLimit2(4, override_);
-					pWriter->WriteString2(5, rctx);
-					pWriter->WriteString2(6, to);
-					pWriter->WriteLimit2(7, xfrmType);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, cTn);
-				pWriter->WriteRecord1(1, tgtEl);
-				pWriter->WriteRecord2(2, attrNameLst);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	accumulate = pReader->GetUChar();
-					else if (1 == _at)	additive = pReader->GetUChar();
-					else if (2 == _at)	by = pReader->GetString2();
-					else if (3 == _at)	from = pReader->GetString2();
-					else if (4 == _at)	override_ = pReader->GetUChar();
-					else if (5 == _at)	rctx = pReader->GetString2();
-					else if (6 == _at)	to = pReader->GetString2();
-					else if (7 == _at)	xfrmType = pReader->GetUChar();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						cTn.fromPPTY(pReader);
-					}break;
-					case 1:
-					{
-						tgtEl.fromPPTY(pReader);
-					}break;
-					case 2:
-					{
-						attrNameLst.Init(); 
-						attrNameLst->fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			CTn						cTn;
 			TgtEl					tgtEl;
@@ -168,14 +68,9 @@ namespace PPTX
 			nullable_string							rctx;		//"PPT"/"IE" W3C XML Schema string 
 			nullable_string							to;			//W3C XML Schema string 
 			nullable_limit<Limit::TLTransform>		xfrmType;	//ST_TLBehaviorTransformType 
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cTn.SetParentPointer(this);
-				tgtEl.SetParentPointer(this);
-				if(attrNameLst.IsInit())
-					attrNameLst->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

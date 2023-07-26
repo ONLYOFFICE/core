@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,119 +45,21 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(FontScheme)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name = node.GetAttribute(_T("name"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				majorFont = node.ReadNode(_T("a:majorFont"));
-				minorFont = node.ReadNode(_T("a:minorFont"));
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				FillWithDefaults();
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), name);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(majorFont);
-				oValue.Write(minorFont);
-
-				return XmlUtils::CreateNode(_T("a:fontScheme"), oAttr, oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, name);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, majorFont);
-				pWriter->WriteRecord1(1, minorFont);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:fontScheme"));
-
-				pWriter->StartAttributes();
-                pWriter->WriteAttribute2(_T("name"), name);
-				pWriter->EndAttributes();
-
-				majorFont.toXmlWriter(pWriter);
-				minorFont.toXmlWriter(pWriter);				
-
-				pWriter->EndNode(_T("a:fontScheme"));
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-						name = pReader->GetString2();
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							majorFont.m_name = _T("a:majorFont");
-							majorFont.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							minorFont.m_name = _T("a:minorFont");
-							minorFont.fromPPTY(pReader);							
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-			void FillWithDefaults()
-			{
-				if (OOX::et_Unknown == majorFont.latin.m_eType)
-				{
-					majorFont.latin.m_name = _T("a:latin");
-					majorFont.latin.typeface = L"Arial";
-				}
-				if (OOX::et_Unknown == minorFont.latin.m_eType)
-				{
-					minorFont.latin.m_name = _T("a:latin");
-					minorFont.latin.typeface = L"Arial";
-				}
-				FillParentPointersForChilds();
-			}
+			void FillWithDefaults();
 
 			std::wstring			name;
 			Logic::FontCollection	majorFont;
 			Logic::FontCollection	minorFont;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				majorFont.SetParentPointer(this);
-				minorFont.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsTheme
 } // namespace PPTX

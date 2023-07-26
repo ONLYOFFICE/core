@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,6 +34,7 @@
 #include "../../../Base/Unit.h"
 #include "../../../SystemUtility/SystemUtility.h"
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 #include <string>
 #include <vector>
@@ -46,6 +47,7 @@ namespace SerializeCommon
     VOID convertBase64ToImage (NSFile::CFileBinary& oFile, std::wstring &pBase64);
 	long Round(double val);
     std::wstring changeExtention(const std::wstring& sSourcePath, const std::wstring& sTargetExt);
+
 	class CommentData
 	{
 	public :
@@ -63,18 +65,11 @@ namespace SerializeCommon
 		bool bSolved;
 		bool bDocument;
 		std::vector<CommentData*> aReplies;
-		CommentData()
-		{
-			bSolved = false;
-			bDocument = false;
-		}
-		~CommentData()
-		{
-			for(size_t i = 0, length = aReplies.size(); i < length; ++i)
-				delete aReplies[i];
-			aReplies.clear();
-		}
+
+		CommentData();
+		~CommentData();
 	};
+
 	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
 }
 

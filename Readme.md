@@ -8,7 +8,7 @@ Server core components which are a part of [ONLYOFFICE Document Server][2] and [
 
 Official website: [http://www.onlyoffice.com](http://onlyoffice.com "http://www.onlyoffice.com")
 
-Code repository: [https://github.com/ONLYOFFICE/core](https://github.com/ONLYOFFICE/сore "https://github.com/ONLYOFFICE/core")
+Code repository: [https://github.com/ONLYOFFICE/core](https://github.com/ONLYOFFICE/core "https://github.com/ONLYOFFICE/core")
 
 SaaS version: [https://www.onlyoffice.com/cloud-office.aspx](https://www.onlyoffice.com/cloud-office.aspx "https://www.onlyoffice.com/cloud-office.aspx")
 

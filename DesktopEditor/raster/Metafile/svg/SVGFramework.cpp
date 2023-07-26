@@ -208,7 +208,7 @@ namespace SVG
 
 		const wchar_t* buf = Rgb.c_str();
 		size_t len = Rgb.length();
-		for ( size_t i = 0; i < len; ++i )
+		for ( size_t i = 0; i < len && IndCol < 4; ++i )
 		{
 			if ( isdigit ( buf [ i ] ) )
 			{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WEBSETTINGS_INCLUDE_H_
-#define OOX_WEBSETTINGS_INCLUDE_H_
 
 #include "../File.h"
 #include "../../Common/ComplexTypes.h"
@@ -44,42 +42,20 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// OptimizeForBrowser 17.15.2.34 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class COptimizeForBrowser : public ComplexType
 		{
 		public:
 			ComplexTypes_AdditionConstructors(COptimizeForBrowser)
-			COptimizeForBrowser()
-			{
-			}
-			virtual ~COptimizeForBrowser()
-			{
-			}
+			COptimizeForBrowser();
+			virtual ~COptimizeForBrowser();
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),    m_oVal );
-				XmlMacroReadAttributeBase( oNode, _T("w:target"), m_oTarget );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:val"),    m_oVal )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:target"), m_oTarget )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            virtual std::wstring ToString() const
-			{
-                std::wstring sResult;
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute( _T("w:val=\""),    m_oVal );
-				ComplexTypes_WriteAttribute( _T("w:target=\""), m_oTarget );
-
-				return sResult;
-			}
+			virtual std::wstring ToString() const;
 
 		public:
-
 			nullable<SimpleTypes::COptimizeForBrowserTarget> m_oTarget;
 			nullable<SimpleTypes::COnOff                   > m_oVal;
 		};
@@ -94,90 +70,27 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// CWebSettings 17.11.15
 	//--------------------------------------------------------------------------------	
+
 	class CWebSettings : public OOX::File
 	{
 	public:
-		CWebSettings(OOX::Document *pMain) : OOX::File(pMain)
-		{
-		}
-		CWebSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
-		{
-			read( oPath );
-		}
-		virtual ~CWebSettings()
-		{
-		}
+		CWebSettings(OOX::Document *pMain);
+		CWebSettings(OOX::Document *pMain, const CPath& oPath);
+		virtual ~CWebSettings();
 
 	public:
-		virtual void read(const CPath& oFilePath)
-		{
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oFilePath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = oReader.GetName();
-			if ( _T("w:webSettings") == sName && !oReader.IsEmptyNode() )
-			{
-				int nStylesDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-				{
-					sName = oReader.GetName();
-					if ( _T("w:allowPNG") == sName )
-						m_oAllowPNG = oReader;
-					else if ( _T("w:optimizeForBrowser") == sName )
-						m_oOptimizeForBrowser = oReader;
-				}
-			}
-		}
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-            std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">");
-
-			if ( m_oAllowPNG.IsInit() )
-			{
-				sXml += _T("<w:allowPNG ");
-				sXml += m_oAllowPNG->ToString();
-				sXml += _T("/>");
-			}
-
-			if ( m_oOptimizeForBrowser.IsInit() )
-			{
-				sXml += _T("<w:optimizeForBrowser ");
-				sXml += m_oOptimizeForBrowser->ToString();
-				sXml += _T("/>");
-			}
-
-			sXml += _T("</w:webSettings>");
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
-
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
-		}
+		virtual void read(const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
 	public:
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::WebSetting;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 
 	public:
-
 		// Childs
 		nullable<ComplexTypes::Word::COnOff2 > m_oAllowPNG;
 		nullable<ComplexTypes::Word::COptimizeForBrowser             > m_oOptimizeForBrowser;
 	};
-} // namespace OOX
 
-#endif // OOX_WEBSETTING_INCLDUE_H_
+} // namespace OOX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../XlsxFormat/WritingElement.h"
+
 namespace OOX
 {
 	namespace Logic
@@ -46,49 +46,18 @@ namespace OOX
 		class CAlternateContent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAlternateContent)
-			CAlternateContent(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+			WritingElement_AdditionMethods(CAlternateContent)
 
-			virtual ~CAlternateContent()
-			{
-				Clear();
-			}
-			void Clear()
-			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrChoiceItems.size(); nIndex++ )
-				{
-					if ( m_arrChoiceItems[nIndex] )
-						delete m_arrChoiceItems[nIndex];
-					m_arrChoiceItems[nIndex] = NULL;
-				}
-				m_arrChoiceItems.clear();
-				for (unsigned int nIndex = 0; nIndex < m_arrFallbackItems.size(); nIndex++ )
-				{
-					if ( m_arrFallbackItems[nIndex] )
-						delete m_arrFallbackItems[nIndex];
-					m_arrFallbackItems[nIndex] = NULL;
-				}
-				m_arrFallbackItems.clear();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
+			CAlternateContent(OOX::Document *pMain = NULL);
+			virtual ~CAlternateContent();
+
+			void Clear();
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual EElementType getType() const
-			{
-				return OOX::et_mc_alternateContent;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_string & oRequires)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, (L"Requires"), oRequires )
-				WritingElement_ReadAttributes_End( oReader )
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_string & oRequires);
 
-			}
 			nullable_string					m_oChoiceRequires;
 	
 			std::vector<WritingElement *>	m_arrChoiceItems;

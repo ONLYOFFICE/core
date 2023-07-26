@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,6 @@
  *
  */
 #include "GlobalWorkbookInfo.h"
-
-#include <boost/lexical_cast.hpp>
 
 #include "Biff_records/Font.h"
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
@@ -62,7 +60,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 
     //for (int i = 0; i <= 9; ++i)
     {
-		//if (FALSE == (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
+		//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
 		//	return std::pair<float, float>(7,8);
 
 		if (FALSE == (hr = pFontManager->LoadString2( L"xxxxx", 0, 0)))
@@ -91,7 +89,10 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 	double width = (minWidth + 2 * maxWidth) /3. /5.;
     return std::pair<float, float>(width, maxHeight);
 }
-
+std::vector<GlobalWorkbookInfo::_xti>				GlobalWorkbookInfo::arXti_External_static;
+std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_static;
+std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
+std::vector<std::wstring>							GlobalWorkbookInfo::arDefineNames_static;
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
@@ -99,6 +100,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	
 	last_Axes_id			= 0x2000000;
 	last_Extern_id			= 1;
+	last_User_NumFmt		= 165;
 	lcid_user				= -1;
 
 	Version					= 0x0600; 
@@ -158,6 +160,11 @@ GlobalWorkbookInfo::~GlobalWorkbookInfo()
 {
     if (applicationFonts)
         delete applicationFonts;
+
+	arXti_External_static.clear();
+	mapTableNames_static.clear();
+	mapTableColumnNames_static.clear();
+	arDefineNames_static.clear();
 }
 
 const size_t GlobalWorkbookInfo::RegisterBorderId(const BorderInfo& border)
@@ -213,7 +220,29 @@ void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
 	colors_palette.insert(std::make_pair(id, rgb));
 }
+_UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring & format_code)
+{
+	_UINT16 ifmt_used = ifmt;
 
+	std::map<_UINT16, _UINT16>::iterator pFind = mapUsedFormatCode.find(ifmt);
+	if (pFind != mapUsedFormatCode.end())
+	{
+		return pFind->second;
+	}
+	else
+	{
+		if (ifmt > 49)
+		{
+			ifmt_used = last_User_NumFmt++;
+		}
+		else
+		{
+			//todooo проверка по mapDefaultFormatCode -> ooxml fmtNum format code
+		}
+		mapUsedFormatCode.insert(std::make_pair(ifmt, ifmt_used));
+	}
+	return ifmt_used;
+}
 const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
 {
 	if (dxfn.empty() == true) return -1;

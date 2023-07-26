@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,14 +75,32 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<EndSXTupleSet>())
-        {
-            m_BrtEndSXTupleSet = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndSXTupleSet>())
+		{
+			m_bBrtEndSXTupleSet = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndSXTupleSet = false;
 
-        return m_BrtBeginSXTupleSet && m_SXTUPLESETHEADER && m_SXTUPLESETDATA && m_BrtEndSXTupleSet;
+        return m_BrtBeginSXTupleSet && m_SXTUPLESETHEADER && m_SXTUPLESETDATA && m_bBrtEndSXTupleSet;
     }
+
+	const bool SXTUPLESET::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXTupleSet != nullptr)
+			proc.mandatory(*m_BrtBeginSXTupleSet);
+
+		if (m_SXTUPLESETHEADER != nullptr)
+			proc.mandatory(*m_SXTUPLESETHEADER);
+
+		if (m_SXTUPLESETDATA != nullptr)
+			proc.mandatory(*m_SXTUPLESETDATA);
+
+		proc.mandatory<EndSXTupleSet>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

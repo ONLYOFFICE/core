@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -42,6 +42,7 @@
 #include "../../DataTypes/iconset_type.h"
 #include "../../DataTypes/calcext_type.h"
 #include "../../DataTypes/timeperiod.h"
+#include "../../DataTypes/sparklines.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -52,11 +53,11 @@ class calcext_data_bar_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::color)	calcext_axis_color_;
-	_CP_OPT(odf_types::color)	calcext_positive_color_;
-	_CP_OPT(odf_types::color)	calcext_negative_color_;
-	_CP_OPT(int)				calcext_max_length_;
-	_CP_OPT(int)				calcext_min_length_;
+	_CP_OPT(odf_types::color) axis_color_;
+	_CP_OPT(odf_types::color) positive_color_;
+	_CP_OPT(odf_types::color) negative_color_;
+	_CP_OPT(int) max_length_;
+	_CP_OPT(int) min_length_;
 };
 
 class calcext_condition_attr
@@ -64,10 +65,9 @@ class calcext_condition_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(std::wstring)		calcext_base_cell_address_;
-	_CP_OPT(std::wstring)		calcext_apply_style_name_;
-	_CP_OPT(std::wstring)		calcext_value_;
-
+	_CP_OPT(std::wstring) base_cell_address_;
+	_CP_OPT(std::wstring) apply_style_name_;
+	_CP_OPT(std::wstring) value_;
 };
 
 class calcext_icon_set_attr
@@ -75,7 +75,7 @@ class calcext_icon_set_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::iconset_type)	calcext_icon_set_type_;
+	_CP_OPT(odf_types::iconset_type) icon_set_type_;
 
 };
 
@@ -84,10 +84,46 @@ class calcext_date_is_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(std::wstring)	calcext_style_;
-	_CP_OPT(odf_types::time_period)	calcext_date_;
+	_CP_OPT(std::wstring) style_;
+	_CP_OPT(odf_types::time_period) date_;
 
 };
+class calcext_sparkline_group_attr
+{
+public:
+    void add_attributes(const xml::attributes_wc_ptr& Attributes);
+
+    _CP_OPT(std::wstring) id_;
+    _CP_OPT(std::wstring) ref_;
+    _CP_OPT(odf_types::sparkline_type) type_;
+    _CP_OPT(odf_types::length) line_width_;
+    _CP_OPT(bool) first_;
+    _CP_OPT(bool) last_;
+    _CP_OPT(bool) display_hidden_;
+    _CP_OPT(bool) right_to_left_;
+    _CP_OPT(bool) display_x_axis_;
+    _CP_OPT(bool) date_axis_;
+    _CP_OPT(bool) negative_;
+    _CP_OPT(bool) markers_;
+    _CP_OPT(bool) high_;
+    _CP_OPT(bool) low_;
+
+    _CP_OPT(odf_types::sparkline_empty) display_empty_cells_as_;
+    _CP_OPT(odf_types::sparkline_axis_type) min_axis_type_;
+    _CP_OPT(odf_types::sparkline_axis_type) max_axis_type_;
+    _CP_OPT(double) manual_min_;
+    _CP_OPT(double) manual_max_;
+
+    _CP_OPT(odf_types::color) color_series_;
+    _CP_OPT(odf_types::color) color_negative_;
+    _CP_OPT(odf_types::color) color_axis_;
+    _CP_OPT(odf_types::color) color_markers_;
+    _CP_OPT(odf_types::color) color_first_;
+    _CP_OPT(odf_types::color) color_last_;
+    _CP_OPT(odf_types::color) color_high_;
+    _CP_OPT(odf_types::color) color_low_;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  calcext:color-scale-entry
@@ -97,7 +133,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeCalcextColorScaleEntry;
+    static const ElementType type = typeCalcextColorScaleEntry;
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -105,9 +141,9 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	_CP_OPT(odf_types::color)			calcext_color_;
-	_CP_OPT(std::wstring)				calcext_value_;
-	_CP_OPT(odf_types::calcext_type)	calcext_type_;
+	_CP_OPT(odf_types::color) color_;
+	_CP_OPT(std::wstring) value_;
+	_CP_OPT(odf_types::calcext_type) type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale_entry);
@@ -119,7 +155,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeCalcextFormattingEntry;
+    static const ElementType type = typeCalcextFormattingEntry;
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -127,8 +163,8 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	_CP_OPT(std::wstring)				calcext_value_;
-	_CP_OPT(odf_types::calcext_type)	calcext_type_;
+	_CP_OPT(std::wstring) value_;
+	_CP_OPT(odf_types::calcext_type) type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);
@@ -140,7 +176,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeCalcextIconSet;
+    static const ElementType type = typeCalcextIconSet;
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -148,9 +184,9 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-	_CP_OPT(bool)				calcext_show_value_;
-	calcext_icon_set_attr		attr_;
-    office_element_ptr_array	content_;
+	_CP_OPT(bool) show_value_;
+	calcext_icon_set_attr attr_;
+    office_element_ptr_array content_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_icon_set);
@@ -170,9 +206,9 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-	_CP_OPT(bool)				calcext_show_value_;
-	calcext_data_bar_attr		attr_;
-    office_element_ptr_array	content_;
+	_CP_OPT(bool) show_value_;
+	calcext_data_bar_attr attr_;
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)
 
@@ -202,7 +238,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeCalcextDateIs;
+    static const ElementType type = typeCalcextDateIs;
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -248,7 +284,7 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
-	_CP_OPT(std::wstring) calcext_target_range_address_;
+	_CP_OPT(std::wstring) target_range_address_;
 
     office_element_ptr_array content_;
 
@@ -256,23 +292,101 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_format)
 
 //  calcext:conditional-formats
-class calcext_conditional_formats: public office_element_impl<calcext_conditional_formats>
+class calcext_conditional_formats : public office_element_impl<calcext_conditional_formats>
 {
 public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
+    static const wchar_t* ns;
+    static const wchar_t* name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type		= typeCalcextConditionalFormats;
+    static const ElementType type = typeCalcextConditionalFormats;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
 
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	
+    virtual void xlsx_convert(oox::xlsx_conversion_context& Context);
+
     office_element_ptr_array content_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_formats)
+
+//  calcext:sparkline-groups
+class calcext_sparkline_groups : public office_element_impl<calcext_sparkline_groups>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklineGroups;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+
+    virtual void xlsx_convert(oox::xlsx_conversion_context& Context);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline_groups)
+
+//  calcext:sparkline-group
+class calcext_sparkline_group : public office_element_impl<calcext_sparkline_group>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklineGroup;
+    CPDOCCORE_DEFINE_VISITABLE()
+        
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+
+    void serialize(std::wostream& strm);
+
+    calcext_sparkline_group_attr attr_;
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline_group)
+
+//  calcext:sparklines
+class calcext_sparklines : public office_element_impl<calcext_sparklines>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklines;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes) {}
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name);
+
+    void serialize(std::wostream& strm);
+
+    office_element_ptr_array content_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparklines)
+
+//  calcext:sparkline
+class calcext_sparkline : public office_element_impl<calcext_sparkline>
+{
+public:
+    static const wchar_t* ns;
+    static const wchar_t* name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeCalcextSparklines;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    virtual void add_attributes(const xml::attributes_wc_ptr& Attributes);
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+
+    void serialize(std::wostream& strm);
+
+    _CP_OPT(std::wstring) data_range_;
+    _CP_OPT(std::wstring) cell_address_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(calcext_sparkline)
 }
 }

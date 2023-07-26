@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -121,7 +121,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-    void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
+    void CharacterPropertiesMapping::convertSprms( std::vector<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
 	{
         XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( L"w:rFonts" );
         XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( L"w:color" );
@@ -136,8 +136,8 @@ namespace DocFileFormat
 		}
 		if ((sprms) && (!sprms->empty()))
 		{
-			std::list<SinglePropertyModifier>::iterator end = sprms->end();
-			for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
+			std::vector<SinglePropertyModifier>::iterator end = sprms->end();
+			for (std::vector<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 			{
 				int nProperty = 0; //for unknown test
 
@@ -586,9 +586,10 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	std::list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
+	std::vector<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
 	{
-		std::list<CharacterPropertyExceptions*> hierarchy;
+		std::vector<CharacterPropertyExceptions*> hierarchy;
+	
 		unsigned int istd = (unsigned int)istdStart;
 		bool goOn = true;
 
@@ -637,15 +638,13 @@ namespace DocFileFormat
 	{
 		bool ret = false;
 
-		std::list<CharacterPropertyExceptions*>::const_iterator end = _hierarchy.end();
-		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = _hierarchy.begin(); iter != end; ++iter)        
+		for (auto& iter : _hierarchy)
 		{
-			std::list<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
-			for (std::list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)	 
+			for (auto& grpprlIter : *(iter->grpprl))
 			{
-				if (grpprlIter->OpCode == sprm.OpCode)
+				if (grpprlIter.OpCode == sprm.OpCode)
 				{
-					unsigned char ancient = grpprlIter->Arguments[0];
+					unsigned char ancient = grpprlIter.Arguments[0];
 					ret = toogleValue(ret, ancient);
 					break;
 				}

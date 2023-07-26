@@ -1,48 +1,50 @@
 /*
-* (c) Copyright Ascensio System SIA 2010-2019
-*
-* This program is a free software product. You can redistribute it and/or
-* modify it under the terms of the GNU Affero General Public License (AGPL)
-* version 3 as published by the Free Software Foundation. In accordance with
-* Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
-* that Ascensio System SIA expressly excludes the warranty of non-infringement
-* of any third-party rights.
-*
-* This program is distributed WITHOUT ANY WARRANTY; without even the implied
-* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
-* details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
-*
-* You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
-* street, Riga, Latvia, EU, LV-1050.
-*
-* The  interactive user interfaces in modified source and object code versions
-* of the Program must display Appropriate Legal Notices, as required under
-* Section 5 of the GNU AGPL version 3.
-*
-* Pursuant to Section 7(b) of the License you must retain the original Product
-* logo when distributing the program. Pursuant to Section 7(e) we decline to
-* grant you any rights under trademark law for use of our trademarks.
-*
-* All the Product's GUI elements, including illustrations and icon sets, as
-* well as technical writing content are licensed under the terms of the
-* Creative Commons Attribution-ShareAlike 4.0 International. See the License
-* terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
-*
-*/
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "RoundTripExtractor.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include <boost/regex.hpp>
 
-RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt) :
-    m_roundTripRecord(rt), m_hasError(false)
+using namespace PPT;
+
+RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt, const std::wstring& tempPath) : m_roundTripRecord(rt), m_hasError(false)
 {
+    m_tempPath = NSDirectory::CreateDirectoryWithUniqueName(tempPath) + FILE_SEPARATOR_STR;
     m_hasError = !extract();
 }
 
 RoundTripExtractor::~RoundTripExtractor()
 {
-    NSDirectory::DeleteDirectory(m_extractedFolderPath);
+    NSDirectory::DeleteDirectory(m_tempPath);
 }
 
 vector_string RoundTripExtractor::find(const std::wstring& strRegEx) const
@@ -75,12 +77,7 @@ bool RoundTripExtractor::extract()
     if (!m_roundTripRecord)
         return false;
 
-
-    std::wstring tempRootPath = NSDirectory::GetTempPath();
-    if (false == NSDirectory::Exists(tempRootPath))
-        return false;
-    std::wstring tempZipPath = tempRootPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
-
+    std::wstring tempZipPath = m_tempPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
 
     BYTE* zipData = m_roundTripRecord->data.first.get();
     ULONG zipDataLen = m_roundTripRecord->data.second;
@@ -91,11 +88,11 @@ bool RoundTripExtractor::extract()
     binFile.CloseFile();
 
     COfficeUtils officeUtils(NULL);
-    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(tempRootPath);
+    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
     if(S_FALSE == officeUtils.ExtractToDirectory(tempZipPath, m_extractedFolderPath, NULL, 0))
         return false;
+   
     NSFile::CFileBinary::Remove(tempZipPath);
-
     return true;
 }
 

@@ -27,8 +27,21 @@ namespace NSGraphics
 
 		int nRasterW = (int)width_px;
 		int nRasterH = (int)height_px;
-		BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
 
+		// TODO:
+		int nLimit = 2000;
+		int nMax = (nRasterW > nRasterH) ? nRasterW : nRasterH;
+		if (nMax > nLimit)
+		{
+			double dKoef = (double)nLimit / nMax;
+			nRasterW = (int)(0.5 + dKoef * nRasterW);
+			nRasterH = (int)(0.5 + dKoef * nRasterH);
+
+			if (nRasterW < 1) nRasterW = 0;
+			if (nRasterH < 1) nRasterH = 0;
+		}
+
+		BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
 		unsigned int back = 0xffffff;
 		unsigned int* pData32 = (unsigned int*)pData;
 		unsigned int* pData32End = pData32 + nRasterW * nRasterH;

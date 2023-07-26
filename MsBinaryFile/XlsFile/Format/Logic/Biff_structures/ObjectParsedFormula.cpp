@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,6 +40,11 @@ ObjectParsedFormula::ObjectParsedFormula() : ParsedFormula(CellRef())
 {
 }
 
+ObjectParsedFormula& ObjectParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr ObjectParsedFormula::clone()
 {
@@ -51,7 +56,7 @@ void ObjectParsedFormula::load(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce;
+        _UINT16 cce;
         record >> cce;
         cce = GETBITS(cce, 0, 14);
 
@@ -71,10 +76,58 @@ void ObjectParsedFormula::load(CFRecord& record)
         rgce.load(record, cce);
 
         record >> cb;
+
+		record.skipNunBytes(cb);
     }
 }
 
+void ObjectParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 size;
 
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+	}
+	else
+	{
+		_UINT32 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		saving(rgcb);
+	}
+	
+}
 
 } // namespace XLS
 

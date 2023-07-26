@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,10 +33,144 @@
 
 #include "Workbook.h"
 
+#include "../../XlsbFormat/WorkBookStream.h"
+
+#include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
+#include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
+#include "../../XlsbFormat/Biff12_records/FileVersion.h"
+#include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
-	{
+	{	
+		CWorkbookPivotCache::CWorkbookPivotCache()
+		{
+		}
+		CWorkbookPivotCache::~CWorkbookPivotCache()
+		{
+		}
+		void CWorkbookPivotCache::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CWorkbookPivotCache::toXML() const
+		{
+			return L"";
+		}
+		void CWorkbookPivotCache::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<pivotCache");
+				WritingStringNullableAttrInt(L"cacheId", m_oCacheId, m_oCacheId->GetValue());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+			writer.WriteString(L"/>");
+		}
+		void CWorkbookPivotCache::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+		}
+		void CWorkbookPivotCache::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::PIVOTCACHEID*>(obj.get());
+			if(ptr != nullptr)
+			{
+				ReadAttributes(ptr->m_BrtBeginPivotCacheID);
+			}
+		}
+		EElementType CWorkbookPivotCache::getType() const
+		{
+			return et_x_WorkbookPivotCache;
+		}
+		void CWorkbookPivotCache::ReadAttributes(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::BeginPivotCacheID*>(obj.get());
+			if(ptr != nullptr)
+			{
+				m_oCacheId = ptr->idSx;
+
+				if(!ptr->irstcacheRelID.value.value().empty())
+					m_oRid = ptr->irstcacheRelID.value.value();
+			}
+		}
+		void CWorkbookPivotCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("cacheId"), m_oCacheId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("r:id"), m_oRid)
+			WritingElement_ReadAttributes_End(oReader)
+
+		}
+
+		CWorkbookPivotCaches::CWorkbookPivotCaches(OOX::Document *pMain) : WritingElementWithChilds<CWorkbookPivotCache>(pMain)
+		{
+		}
+		CWorkbookPivotCaches::~CWorkbookPivotCaches()
+		{
+		}
+		void CWorkbookPivotCaches::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CWorkbookPivotCaches::toXML() const
+		{
+			return L"";
+		}
+		void CWorkbookPivotCaches::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if (m_arrItems.empty()) return;
+
+			writer.WriteString(L"<pivotCaches>");
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+
+			writer.WriteString(L"</pivotCaches>");
+		}
+		void CWorkbookPivotCaches::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"pivotCaches" == sName)
+				{
+					CWorkbookPivotCache *pPivotCache = new CWorkbookPivotCache();
+					m_arrItems.push_back(pPivotCache);
+
+					pPivotCache->fromXML(oReader);
+				}
+			}
+		}
+		void CWorkbookPivotCaches::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::PIVOTCACHEIDS*>(obj.get());
+			if(ptr != nullptr)
+			{
+				for(auto &item : ptr->m_arPIVOTCACHEID)
+					m_arrItems.push_back(new CWorkbookPivotCache(item));
+			}
+
+		}
+		EElementType CWorkbookPivotCaches::getType() const
+		{
+			return et_x_WorkbookPivotCaches;
+		}
+
 		CWorkbook::CWorkbook(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 		{
 			m_bMacroEnabled = false;
@@ -104,13 +238,32 @@ namespace OOX
 
 					if (workBookStream->m_FRTWORKBOOK != nullptr)
 						m_oExtLst = workBookStream->m_FRTWORKBOOK;
+					
+					if (workBookStream->m_BrtFileSharingIso != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
+					else if (workBookStream->m_BrtFileSharing != nullptr)
+						m_oFileSharing = workBookStream->m_BrtFileSharing;
 				}
 
 				//workBookStream.reset();
 
 			}
 		}
-
+		void CWorkbook::read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		void CWorkbook::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CWorkbook::toXML() const
+		{
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
+		}
 		void CWorkbook::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -144,12 +297,13 @@ namespace OOX
 				m_bMacroEnabled = true;
 			}
 		}
-
 		void CWorkbook::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">");
 
+			if (m_oFileSharing.IsInit())
+				m_oFileSharing->toXML(writer);
 			if (m_oWorkbookPr.IsInit())
 				m_oWorkbookPr->toXML(writer);
 			if (m_oWorkbookProtection.IsInit())
@@ -204,6 +358,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						m_oPivotCaches = oReader;
 					else if (L"extLst" == sName)
 						m_oExtLst = oReader;
+					else if (L"fileSharing" == sName)
+						m_oFileSharing = oReader;
 					else if (L"oleSize" == sName)
 					{
 						WritingElement_ReadAttributes_Start(oReader)
@@ -215,7 +371,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						WritingElement_ReadAttributes_Start(oReader)
 							WritingElement_ReadAttributes_Read_if(oReader, L"appName", m_oAppName)
 						WritingElement_ReadAttributes_End(oReader)
-					}					
+					}		
 					else if (L"WindowHeight" == sName)
 					{
 					}
@@ -244,6 +400,28 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
+		const OOX::FileType CWorkbook::type() const
+		{
+			if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
+			else					return OOX::Spreadsheet::FileTypes::Workbook;
+		}
+		const CPath CWorkbook::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath CWorkbook::DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		EElementType CWorkbook::getType () const
+		{
+			return et_x_Workbook;
+		}
+		const CPath& CWorkbook::GetReadPath()
+		{
+			return m_oReadPath;
+		}
+
 		void CWorkbook::PrepareToWrite()
 		{
 			//WorkbookPr
@@ -301,6 +479,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			}
 			return lActiveSheet;
 		}
+
 	} //Spreadsheet
 } // namespace OOX
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,15 +45,19 @@ class ParsedFormula : public BiffStructure
 public:
 	ParsedFormula(const CellRef& cell_base_ref);
 
+    virtual ParsedFormula& operator=(const std::wstring& value);
+
 	void set_base_ref(const CellRef& cell_base_ref);
 
 	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
 	const size_t	getCCE() const;
-	
+
 	const bool HasPtgTbl() const;
 	const bool IsVolatile() const;
 
-	const std::wstring getAssembledFormula(bool full_names = false) const;
+    const std::wstring getAssembledFormula(bool full_names = false) const;
+
+    const bool parseStringFormula(const std::wstring formula, const std::wstring & tag_name);
 	
 	static const ElementType	type = typeParsedFormula;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -51,6 +51,14 @@ namespace OOX
 {
 	namespace Logic
 	{
+		//--------------------------------------------------------------------------------
+		// StylisticSets
+		//--------------------------------------------------------------------------------
+
+		CStylisticSets::CStylisticSets(OOX::Document *pMain) : WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>(pMain)
+		{
+		}
+		CStylisticSets::~CStylisticSets() {}
 		void CStylisticSets::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -63,9 +71,12 @@ namespace OOX
 
 				if (L"stylisticSet" == sName)
 				{
-					m_arrItems.push_back(new ComplexTypes::Word::CStylisticSet(oReader));
+					m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Word::CStylisticSet>(oReader));
 				}
 			}
+		}
+		void CStylisticSets::fromXML(XmlUtils::CXmlNode& node)
+		{
 		}
 		std::wstring CStylisticSets::toXML() const
 		{
@@ -82,6 +93,11 @@ namespace OOX
 			sResult += L"</w14:stylisticSets>";
 			return sResult;
 		}
+		EElementType CStylisticSets::getType() const
+		{
+			return et_w_stylisticSets;
+		}
+
 		//--------------------------------------------------------------------------------
 		// RPrChange 
 		//--------------------------------------------------------------------------------	
@@ -192,6 +208,41 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
+		//--------------------------------------------------------------------------------
+		// RunProperty
+		//--------------------------------------------------------------------------------
+
+		CRunProperty::CRunProperty()
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+		}
+		CRunProperty::~CRunProperty()
+		{
+			RELEASEOBJECT(m_pText);
+		}
+		CRunProperty::CRunProperty(const XmlUtils::CXmlNode &oNode)
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+		}
+		CRunProperty::CRunProperty(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+		}
+		const CRunProperty& CRunProperty::operator=(const XmlUtils::CXmlNode &oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+			return *this;
+		}
+		const CRunProperty& CRunProperty::operator=(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		void CRunProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			fromXML(oReader, NULL);
@@ -346,7 +397,6 @@ namespace OOX
 				m_oRFonts->m_sAscii = *m_oFontName->m_sVal;
 			}
 		}
-
 		void CRunProperty::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( L"w:rPr" != oNode.GetName() )
@@ -364,7 +414,8 @@ namespace OOX
 				XmlUtils::CXmlNode oChild1;
 				if (oChild.GetNode(L"w:t", oChild1))
 				{
-					m_pText = new CText(oChild1);	//XpertdocOnlineDemoEn.docx
+					//m_pText = new CText();	//XpertdocOnlineDemoEn.docx
+					AssignPtrXmlContent(m_pText, CText, oChild1)
 				}
 			}
 			if ( oNode.GetNode( L"w:bdr", oChild ) )
@@ -503,7 +554,6 @@ namespace OOX
 			if (!pWriter) return;
 			pWriter->WriteString(toXML());
 		}
-
         std::wstring CRunProperty::toXML() const
 		{
             std::wstring sResult = L"<w:rPr>";
@@ -730,7 +780,10 @@ namespace OOX
 
 			return oProperties;
 		}
-
+		EElementType CRunProperty::getType() const
+		{
+			return et_w_rPr;
+		}
 
 
 	} // Logic

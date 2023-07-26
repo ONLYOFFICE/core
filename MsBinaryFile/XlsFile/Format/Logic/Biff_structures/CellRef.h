@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,7 +56,8 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-    virtual void load(CFRecord& record) {}
+    void load(CFRecord& record) override {}
+	void save(CFRecord& record) override {}
 
     const int	getRow() const;
     const int	getColumn() const;
@@ -142,7 +143,7 @@ public:
 		return BiffStructurePtr(new CellRef_T(*this));
 	};
 
-	virtual void load(CFRecord& record)
+	void load(CFRecord& record) override
 	{
 		RwType rw;
 		ColType col;
@@ -167,7 +168,18 @@ public:
 				fQuoted = 0 != (col & (1 << (sizeof(ColType) * 8 - 2)));
 				break;
 		}
-	};
+	}
+
+	void save(CFRecord& record) override
+	{
+		RwType rw;
+		ColType col;
+
+		rw = row;
+		col = column;
+
+		record << rw << col;
+	}
 
 };
 

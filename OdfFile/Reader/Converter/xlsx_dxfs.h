@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,12 +40,16 @@
 namespace cpdoccore {
 	namespace odf_reader {
 
-	class text_format_properties_content;
-	typedef boost::shared_ptr<text_format_properties_content> text_format_properties_content_ptr;
+	class text_format_properties;
+	typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
 
 	class graphic_format_properties;
+	typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
+
+	class fonts_container;
 }
 
 namespace oox {
@@ -53,11 +57,11 @@ namespace oox {
     class xlsx_dxfs
     {
     public:
-		xlsx_dxfs();
+		xlsx_dxfs(odf_reader::fonts_container & fonts);
 		~xlsx_dxfs();
 
-		size_t dxfId(	const odf_reader::text_format_properties_content_ptr	textProp,
-						const odf_reader::graphic_format_properties				* graphProp,
+		size_t dxfId(	const odf_reader::text_format_properties_ptr &textProp,
+						const odf_reader::graphic_format_properties_ptr &graphProp,
 						const odf_reader::style_table_cell_properties_attlist	* cellProp);
 		
         void serialize(std::wostream & _Wostream) const;
@@ -65,6 +69,8 @@ namespace oox {
     private:
         class Impl;
         _CP_SCOPED_PTR(Impl) impl_;
+
+		odf_reader::fonts_container &fonts_container;
     };
 
 }

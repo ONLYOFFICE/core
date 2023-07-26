@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,88 +30,47 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
-#define OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../DocxFormat/Logic/FldChar.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+		class CFFData;
+
 		//--------------------------------------------------------------------------------
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CFldSimple : public WritingElementWithChilds<>
 		{
 		public:
-			CFldSimple(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CFldSimple(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CFldSimple(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFldSimple()
-			{
-			}
-			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void ClearItems()
-			{
-				m_oDirty.SetValue( SimpleTypes::onoffFalse );
-				m_oFldLock.SetValue( SimpleTypes::onoffFalse );
-				m_sInstr.reset();
+			CFldSimple(OOX::Document *pMain = NULL);			
+			virtual ~CFldSimple();
 
-				WritingElementWithChilds::ClearItems();
-			}
+			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode);
+			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void ClearItems();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_fldSimple;
-			}
+			virtual EElementType getType() const;
+
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
+			SimpleTypes::COnOff				m_oDirty;
+			SimpleTypes::COnOff				m_oFldLock;
+			nullable_string					m_sInstr;
+			nullable_string					m_sPrivateData;
 
-			SimpleTypes::COnOff								m_oDirty;
-			SimpleTypes::COnOff								m_oFldLock;
-			nullable<std::wstring>							m_sInstr;
-
-			nullable<OOX::Logic::CFFData>					m_oFFData;
+			nullable<OOX::Logic::CFFData>	m_oFFData;
 		};
 
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_

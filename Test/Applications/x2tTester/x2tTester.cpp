@@ -8,189 +8,126 @@ class CConverter;
 CFormatsList::CFormatsList()
 {
 }
+CFormatsList::CFormatsList(const CFormatsList& list)
+{
+	*this = list;
+}
 
-std::vector<int> CFormatsList::GetDocuments() const
+CFormatsList& CFormatsList::operator=(const CFormatsList& list)
+{
+	m_documents.clear();
+	m_presentations.clear();
+	m_spreadsheets.clear();
+	m_images.clear();
+	m_crossplatform.clear();
+
+	for(auto& val : list.m_documents)
+		m_documents.push_back(val);
+
+	for(auto& val : list.m_presentations)
+		m_presentations.push_back(val);
+
+	for(auto& val : list.m_spreadsheets)
+		m_spreadsheets.push_back(val);
+
+	for(auto& val : list.m_images)
+		m_images.push_back(val);
+
+	for(auto& val : list.m_crossplatform)
+		m_crossplatform.push_back(val);
+
+	m_pdf = list.m_pdf;
+	return *this;
+}
+
+std::vector<std::wstring> CFormatsList::GetDocuments() const
 {
 	return m_documents;
 }
-std::vector<int> CFormatsList::GetPresentations() const
+std::vector<std::wstring> CFormatsList::GetPresentations() const
 {
 	return m_presentations;
 }
-std::vector<int> CFormatsList::GetSpreadsheets() const
+std::vector<std::wstring> CFormatsList::GetSpreadsheets() const
 {
 	return m_spreadsheets;
 }
-std::vector<int> CFormatsList::GetCrossplatform() const
+std::vector<std::wstring> CFormatsList::GetCrossplatform() const
 {
 	return m_crossplatform;
 }
-std::vector<int> CFormatsList::GetImages() const
+std::vector<std::wstring> CFormatsList::GetImages() const
 {
 	return m_images;
 }
-int CFormatsList::GetPdf() const
+std::wstring CFormatsList::GetPdf() const
 {
 	return m_pdf;
 }
 
-bool CFormatsList::isDocument(int format) const
+bool CFormatsList::IsDocument(const std::wstring& ext) const
 {
-	return std::find(m_documents.begin(), m_documents.end(), format) != m_documents.end();
+	return std::find(m_documents.begin(), m_documents.end(), ext) != m_documents.end();
 }
-bool CFormatsList::isPresentation(int format) const
+bool CFormatsList::IsPresentation(const std::wstring& ext) const
 {
-	return std::find(m_presentations.begin(), m_presentations.end(), format) != m_presentations.end();
+	return std::find(m_presentations.begin(), m_presentations.end(), ext) != m_presentations.end();
 }
-bool CFormatsList::isSpreadsheet(int format) const
+bool CFormatsList::IsSpreadsheet(const std::wstring& ext) const
 {
-	return std::find(m_spreadsheets.begin(), m_spreadsheets.end(), format) != m_spreadsheets.end();
+	return std::find(m_spreadsheets.begin(), m_spreadsheets.end(), ext) != m_spreadsheets.end();
 }
-bool CFormatsList::isCrossplatform(int format) const
+bool CFormatsList::IsCrossplatform(const std::wstring& ext) const
 {
-	return std::find(m_crossplatform.begin(), m_crossplatform.end(), format) != m_crossplatform.end();
+	return std::find(m_crossplatform.begin(), m_crossplatform.end(), ext) != m_crossplatform.end();
 }
-bool CFormatsList::isImage(int format) const
+bool CFormatsList::IsImage(const std::wstring& ext) const
 {
-	return std::find(m_images.begin(), m_images.end(), format) != m_images.end();
+	return std::find(m_images.begin(), m_images.end(), ext) != m_images.end();
 }
-bool CFormatsList::isPdf(int format) const
+bool CFormatsList::IsPdf(const std::wstring& ext) const
 {
-	return format == m_pdf;
-}
-
-void CFormatsList::SetDefault()
-{
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF);
-
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE);
-
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE);
-
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU);
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS);
-
-	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_JPG);
-	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_PNG);
-
-	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+	return ext == m_pdf;
 }
 
-void CFormatsList::SetOutput()
+void CFormatsList::AddDocument(const std::wstring& ext)
 {
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER);
-//	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM);
-	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF);
-
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
-//	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM);
-//	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT);
-	m_presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP);
-//	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE);
-
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
-//	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM);
-//	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
-//	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT);
-	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS);
-//	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT);
-//	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE);
-
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU);
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS);
-
-	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_JPG);
-	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_PNG);
-
-	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+	m_documents.push_back(ext);
 }
-std::vector<int> CFormatsList::allFormats() const
+void CFormatsList::AddPresentation(const std::wstring& ext)
 {
-	std::vector<int> all_formats;
+	m_presentations.push_back(ext);
+}
+void CFormatsList::AddSpreadsheet(const std::wstring& ext)
+{
+	m_spreadsheets.push_back(ext);
+}
+void CFormatsList::AddCrossplatform(const std::wstring& ext)
+{
+	m_crossplatform.push_back(ext);
+}
+void CFormatsList::AddImage(const std::wstring& ext)
+{
+	m_images.push_back(ext);
+}
 
-	for(auto val : m_documents)
+std::vector<std::wstring> CFormatsList::GetAllExts() const
+{
+	std::vector<std::wstring> all_formats;
+
+	for(auto& val : m_documents)
 		all_formats.push_back(val);
 
-	for(auto val : m_presentations)
+	for(auto& val : m_presentations)
 		all_formats.push_back(val);
 
-	for(auto val : m_spreadsheets)
+	for(auto& val : m_spreadsheets)
 		all_formats.push_back(val);
 
-	for(auto val : m_images)
+	for(auto& val : m_images)
 		all_formats.push_back(val);
 
-	for(auto val : m_crossplatform)
+	for(auto& val : m_crossplatform)
 		all_formats.push_back(val);
 
 	all_formats.push_back(m_pdf);
@@ -198,15 +135,124 @@ std::vector<int> CFormatsList::allFormats() const
 	return all_formats;
 }
 
-void WaitDirectory(const std::wstring& path, const bool& exist_check = true)
+CFormatsList CFormatsList::GetDefaultExts()
 {
-	while (exist_check != NSDirectory::Exists(path))
-		NSThreads::Sleep(10);
+	CFormatsList list;
+
+	list.m_documents.push_back(L"doct");
+	list.m_documents.push_back(L"doc");
+	list.m_documents.push_back(L"docm");
+	list.m_documents.push_back(L"docx");
+	list.m_documents.push_back(L"docxf");
+	list.m_documents.push_back(L"dot");
+	list.m_documents.push_back(L"dotm");
+	list.m_documents.push_back(L"dotx");
+	list.m_documents.push_back(L"epub");
+	list.m_documents.push_back(L"fb2");
+	list.m_documents.push_back(L"fodt");
+	list.m_documents.push_back(L"htm");
+	list.m_documents.push_back(L"html");
+	list.m_documents.push_back(L"mht");
+	list.m_documents.push_back(L"odt");
+	list.m_documents.push_back(L"ott");
+	list.m_documents.push_back(L"oxps");
+	list.m_documents.push_back(L"rtf");
+	list.m_documents.push_back(L"stw");
+	list.m_documents.push_back(L"sxw");
+	list.m_documents.push_back(L"txt");
+	list.m_documents.push_back(L"wps");
+	list.m_documents.push_back(L"wpt");
+
+	list.m_presentations.push_back(L"pptt");
+	list.m_presentations.push_back(L"dps");
+	list.m_presentations.push_back(L"dpt");
+	list.m_presentations.push_back(L"fodp");
+	list.m_presentations.push_back(L"odp");
+	list.m_presentations.push_back(L"otp");
+	list.m_presentations.push_back(L"pot");
+	list.m_presentations.push_back(L"potm");
+	list.m_presentations.push_back(L"potx");
+	list.m_presentations.push_back(L"pps");
+	list.m_presentations.push_back(L"ppsm");
+	list.m_presentations.push_back(L"ppsx");
+	list.m_presentations.push_back(L"ppt");
+	list.m_presentations.push_back(L"pptm");
+	list.m_presentations.push_back(L"pptx");
+	list.m_presentations.push_back(L"sxi");
+
+	list.m_spreadsheets.push_back(L"xlst");
+	list.m_spreadsheets.push_back(L"csv");
+	list.m_spreadsheets.push_back(L"et");
+	list.m_spreadsheets.push_back(L"ett");
+	list.m_spreadsheets.push_back(L"fods");
+	list.m_spreadsheets.push_back(L"ods");
+	list.m_spreadsheets.push_back(L"ots");
+	list.m_spreadsheets.push_back(L"sxc");
+	list.m_spreadsheets.push_back(L"xls");
+	list.m_spreadsheets.push_back(L"xlsb");
+	list.m_spreadsheets.push_back(L"xlsm");
+	list.m_spreadsheets.push_back(L"xlsx");
+	list.m_spreadsheets.push_back(L"xlt");
+	list.m_spreadsheets.push_back(L"xltm");
+	list.m_spreadsheets.push_back(L"xltx");
+
+	list.m_crossplatform.push_back(L"djvu");
+	list.m_crossplatform.push_back(L"xps");
+
+	list.m_images.push_back(L"jpg");
+	list.m_images.push_back(L"png");
+
+	list.m_pdf = L"pdf";
+
+	return list;
 }
-void WaitFile(const std::wstring& path, const bool& exist_check = true)
+
+CFormatsList CFormatsList::GetOutputExts()
 {
-	while (exist_check != NSFile::CFileBinary::Exists(path))
-		NSThreads::Sleep(10);
+	CFormatsList list;
+
+	list.m_documents.push_back(L"doct");
+	list.m_documents.push_back(L"docm");
+	list.m_documents.push_back(L"docx");
+	list.m_documents.push_back(L"docxf");
+	list.m_documents.push_back(L"dotm");
+	list.m_documents.push_back(L"dotx");
+	list.m_documents.push_back(L"epub");
+	list.m_documents.push_back(L"fb2");
+	list.m_documents.push_back(L"html");
+	list.m_documents.push_back(L"odt");
+	list.m_documents.push_back(L"ott");
+	list.m_documents.push_back(L"rtf");
+	list.m_documents.push_back(L"txt");
+
+	list.m_presentations.push_back(L"pptt");
+	list.m_presentations.push_back(L"odp");
+	list.m_presentations.push_back(L"otp");
+	list.m_presentations.push_back(L"potm");
+	list.m_presentations.push_back(L"potx");
+	list.m_presentations.push_back(L"ppsm");
+	list.m_presentations.push_back(L"ppsx");
+	list.m_presentations.push_back(L"pptm");
+	list.m_presentations.push_back(L"pptx");
+
+	list.m_spreadsheets.push_back(L"xlst");
+	list.m_spreadsheets.push_back(L"csv");
+	list.m_spreadsheets.push_back(L"ods");
+	list.m_spreadsheets.push_back(L"ots");
+	list.m_spreadsheets.push_back(L"xlsm");
+	list.m_spreadsheets.push_back(L"xlsx");
+	list.m_spreadsheets.push_back(L"xltm");
+	list.m_spreadsheets.push_back(L"xltx");
+
+	list.m_crossplatform.push_back(L"djvu");
+	list.m_crossplatform.push_back(L"xps");
+
+	list.m_images.push_back(L"jpg");
+	list.m_images.push_back(L"png");
+
+	list.m_pdf = L"pdf";
+
+	return list;
 }
 
 Cx2tTester::Cx2tTester(const std::wstring& configPath)
@@ -215,10 +261,35 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsErrorsOnly = false;
 	m_bIsTimestamp = true;
 	m_bIsDeleteOk = false;
-	m_inputFormatsList.SetDefault();
-	m_outputFormatsList.SetOutput();
-	setConfig(configPath);
-	m_errorsXmlDirectory = m_outputDirectory + L"/_errors";
+	m_bIsFilenameCsvTxtParams = true;
+	m_bIsFilenamePassword = true;
+	m_bTroughConversion = false;
+	m_defaultCsvDelimiter = L";";
+	m_defaultCsvTxtEndcoding = L"UTF-8";
+	m_inputFormatsList = CFormatsList::GetDefaultExts();
+	m_outputFormatsList = CFormatsList::GetOutputExts();
+	m_timeout = 5 * 60; // 5 min
+	SetConfig(configPath);
+	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
+	m_troughConversionDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_t";
+	m_fontsDirectory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
+
+
+	// CorrectPathW works strange with directories starts with "./"
+	if(m_outputDirectory.find(L"./") == 0)
+		m_outputDirectory.erase(0, 2);
+
+	// no slash at the end
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'/')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+	// on linux the backslash can be part of the filename
+#ifdef WIN32
+
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'\\')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+#endif
 
 	if(m_bIsTimestamp)
 	{
@@ -249,34 +320,30 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_coresCS.InitializeCriticalSection();
 	m_reportCS.InitializeCriticalSection();
 	m_outputCS.InitializeCriticalSection();
-	m_utilsCS.InitializeCriticalSection();
 
 	m_currentProc = 0;
-	writeReportHeader();
+	WriteReportHeader();
 }
 Cx2tTester::~Cx2tTester()
 {
 	m_coresCS.DeleteCriticalSection();
 	m_reportCS.DeleteCriticalSection();
 	m_outputCS.DeleteCriticalSection();
-	m_utilsCS.DeleteCriticalSection();
-
 	m_reportStream.CloseFile();
 }
 
-void Cx2tTester::setConfig(const std::wstring& configPath)
+void Cx2tTester::SetConfig(const std::wstring& configPath)
 {
 	bool default_input_formats = true;
 	bool default_output_formats = true;
 
 	XmlUtils::CXmlNode root;
-	XmlUtils::CXmlNodes nodes;
+	std::vector<XmlUtils::CXmlNode> nodes;
 	if(root.FromXmlFile(configPath) && root.GetChilds(nodes))
 	{
-		for(int i = 0; i < nodes.GetCount(); i++)
+		for(size_t i = 0; i < nodes.size(); i++)
 		{
-			XmlUtils::CXmlNode node;
-			nodes.GetAt(i, node);
+			XmlUtils::CXmlNode node = nodes[i];
 			std::wstring name = node.GetName();
 
 			// key-value
@@ -285,21 +352,26 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			else if(name == L"outputDirectory") m_outputDirectory = node.GetText();
 			else if(name == L"x2tPath") m_x2tPath = node.GetText();
 			else if(name == L"cores") m_maxProc = std::stoi(node.GetText());
-			else if(name == L"errorsOnly") m_bIsErrorsOnly = std::stoi(node.GetText());
-			else if(name == L"timestamp") m_bIsTimestamp = std::stoi(node.GetText());
-			else if(name == L"deleteOk") m_bIsDeleteOk = std::stoi(node.GetText());
-			else if(name == L"inputFilesList")
+			else if(name == L"errorsOnly" && !node.GetText().empty()) m_bIsErrorsOnly = std::stoi(node.GetText());
+			else if(name == L"timestamp" && !node.GetText().empty()) m_bIsTimestamp = std::stoi(node.GetText());
+			else if(name == L"deleteOk" && !node.GetText().empty()) m_bIsDeleteOk = std::stoi(node.GetText());
+			else if(name == L"timeout" && !node.GetText().empty()) m_timeout = std::stoi(node.GetText());
+			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty()) m_bIsFilenameCsvTxtParams = std::stoi(node.GetText());
+			else if(name == L"filenamePassword" && !node.GetText().empty()) m_bIsFilenamePassword = std::stoi(node.GetText());
+			else if(name == L"troughConversion" && !node.GetText().empty()) m_bTroughConversion = std::stoi(node.GetText());
+			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
+			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
+			else if(name == L"inputFilesList" && !node.GetText().empty())
 			{
 				XmlUtils::CXmlNode files_list_root;
-				XmlUtils::CXmlNodes files_list_nodes;
+				std::vector<XmlUtils::CXmlNode> files_list_nodes;
 
 				std::wstring files_list = node.GetText();
 				if(files_list_root.FromXmlFile(files_list) && files_list_root.GetChilds(files_list_nodes))
 				{
-					for(int j = 0; j < files_list_nodes.GetCount(); j++)
+					for(size_t j = 0; j < files_list_nodes.size(); j++)
 					{
-						XmlUtils::CXmlNode n;
-						files_list_nodes.GetAt(j, n);
+						XmlUtils::CXmlNode &n = files_list_nodes[j];
 						m_inputFiles.push_back(n.GetText());
 					}
 				}
@@ -308,28 +380,27 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 					std::cerr << "Input files list is not open!" << std::endl;
 				}
 			}
-			else if(name == L"input")
+			else if(name == L"input" && !node.GetText().empty())
 			{
 				default_input_formats = false;
 				std::wstring extensions = node.GetText();
 				extensions += L' ';
-				m_inputFormats = parseExtensionsString(extensions, m_inputFormatsList);
+				m_inputExts = ParseExtensionsString(extensions, m_inputFormatsList);
 			}
-			else if(name == L"output")
+			else if(name == L"output" && !node.GetText().empty())
 			{
 				default_output_formats = false;
 				std::wstring extensions = node.GetText();
 				extensions += L' ';
-				m_outputFormats = parseExtensionsString(extensions, m_outputFormatsList);
+				m_outputExts = ParseExtensionsString(extensions, m_outputFormatsList);
 			}
 			else if (name == L"fonts")
 			{
 				m_bIsUseSystemFonts = (1 == node.ReadAttributeInt(L"system", 1)) ? true : false;
-				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directory");
-				for (int nIndex = 0, nCount = oNodeFontDirs.GetCount(); nIndex < nCount; ++nIndex)
+				std::vector<XmlUtils::CXmlNode> oNodeFontDirs = node.ReadNodesNoNS(L"directory");
+				for (size_t nIndex = 0, nCount = oNodeFontDirs.size(); nIndex < nCount; ++nIndex)
 				{
-					XmlUtils::CXmlNode oNodeDir;
-					oNodeFontDirs.GetAt(nIndex, oNodeDir);
+					XmlUtils::CXmlNode &oNodeDir = oNodeFontDirs[nIndex];
 					m_arAdditionalFontsDirs.push_back(oNodeDir.GetText());
 				}
 			}
@@ -342,25 +413,19 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 	}
 
 	if(default_input_formats)
-		m_inputFormats = m_inputFormatsList.allFormats();
+		m_inputExts = m_inputFormatsList.GetAllExts();
 
 	if(default_output_formats)
-		m_outputFormats = m_outputFormatsList.allFormats();
-
-
+		m_outputExts = m_outputFormatsList.GetAllExts();
 }
 void Cx2tTester::Start()
 {
 	// setup timer
 	m_timeStart = NSTimers::GetTickCount();
 
-	// start utils_CS
-	CTemporaryCS utils_CS(&m_utilsCS);
-
 	// check fonts
-	std::wstring fonts_directory = NSFile::GetProcessDirectory() + L"/fonts";
 	CApplicationFontsWorker fonts_worker;
-	fonts_worker.m_sDirectory = fonts_directory;
+	fonts_worker.m_sDirectory = m_fontsDirectory;
 	if (!NSDirectory::Exists(fonts_worker.m_sDirectory))
 		NSDirectory::CreateDirectory(fonts_worker.m_sDirectory);
 
@@ -370,7 +435,7 @@ void Cx2tTester::Start()
 	{
 		std::wstring sFolder = *i;
 		if (0 == sFolder.find(L"."))
-			sFolder = NSFile::GetProcessDirectory() + L"/" + sFolder;
+			sFolder = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + sFolder;
 		fonts_worker.m_arAdditionalFolders.push_back(sFolder);
 	}
 
@@ -378,16 +443,15 @@ void Cx2tTester::Start()
 	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
 	RELEASEINTERFACE(pFonts);
 
+	m_outputDirectory = CorrectPathW(m_outputDirectory);
+	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
+	m_troughConversionDirectory = CorrectPathW(m_troughConversionDirectory);
+
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputDirectory))
 		NSDirectory::DeleteDirectory(m_outputDirectory);
 
-	WaitDirectory(m_outputDirectory, false);
-
 	NSDirectory::CreateDirectory(m_outputDirectory);
-
-	// waiting for directory
-	WaitDirectory(m_outputDirectory);
 
 	// setup & clear errors folder
 	if(NSDirectory::Exists(m_errorsXmlDirectory))
@@ -395,20 +459,16 @@ void Cx2tTester::Start()
 
 	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
 
-	// waiting for directory
-	WaitDirectory(m_errorsXmlDirectory);
 
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, true);
 	for(int i = 0; i < files.size(); i++)
 	{
 		std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
-
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
-		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
 
 		// if no format in input formats - skip
-		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end()
+		if(std::find(m_inputExts.begin(), m_inputExts.end(), input_ext) == m_inputExts.end()
 		|| (std::find(m_inputFiles.begin(), m_inputFiles.end(), input_filename) == m_inputFiles.end()
 		&& !m_inputFiles.empty()))
 		{
@@ -417,208 +477,248 @@ void Cx2tTester::Start()
 		}
 	}
 
-	utils_CS.LeaveCS();
-
 	if(files.size() < m_maxProc)
 		m_maxProc = files.size();
 
+	// conversion in _t directory -> _t directory to output
+	if(m_bTroughConversion)
+	{
+		if(NSDirectory::Exists(m_troughConversionDirectory))
+			NSDirectory::DeleteDirectory(m_troughConversionDirectory);
+
+		NSDirectory::CreateDirectory(m_troughConversionDirectory);
+
+		auto copy_outputDirectory = m_outputDirectory;
+		auto copy_outputExts = m_outputExts;
+
+		m_outputDirectory = m_troughConversionDirectory;
+		m_outputExts = {L"doct", L"xlst", L"pptt"};
+
+		Convert(files, true);
+
+		m_outputDirectory = copy_outputDirectory;
+		m_outputExts = copy_outputExts;
+		m_inputDirectory = m_troughConversionDirectory;
+
+		files = NSDirectory::GetFiles(m_troughConversionDirectory, true);
+	}
+
+	Convert(files);
+	WriteTime();
+}
+
+void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory)
+{
 	for(int i = 0; i < files.size(); i++)
 	{
-		std::wstring& input_file = files[i];
-
-		// start utils_CS
-		utils_CS.EnterCS(&m_utilsCS);
-
+		const std::wstring& input_file = files[i];
+		std::wstring input_filename = NSFile::GetFileName(input_file);
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
-		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
-
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
-		std::wstring output_files_directory = m_outputDirectory;
 
 		// takes full directory after input folder
 		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
 																	input_file_directory.size() - m_inputDirectory.size());
-		output_files_directory += input_subfolders;
 
-		// setup & clear output subfolder
-		std::wstring folder = output_files_directory + L"/";
-		int subs = 0;
-		while(!NSDirectory::Exists(folder))
-		{
-			folder += L"../";
-			subs++;
-		}
-
-		// creating folders step by step
-		for(int i = 0; i < subs; i++)
-		{
-			folder = folder.substr(0, folder.size() - 3);
-			NSDirectory::CreateDirectory(folder);
-
-			// waiting for directory
-			WaitDirectory(folder);
-		}
-		output_files_directory += L'/' + NSFile::GetFileName(input_file);
-
-		// end utils_CS
-		utils_CS.LeaveCS();
+		std::wstring output_files_directory = m_outputDirectory + input_subfolders;
+		if(!bNoDirectory)
+			output_files_directory += FILE_SEPARATOR_STR + input_filename;
 
 		// setup output_formats for file
-		std::vector<int> output_file_formats;
+		std::vector<std::wstring> output_file_exts;
 
-		for(auto format : m_outputFormats)
+		for(auto& ext : m_outputExts)
 		{
 			// documents -> documents
-			if(((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
+			if(((m_outputFormatsList.IsDocument(ext) && m_inputFormatsList.IsDocument(input_ext))
 			// spreadsheets -> spreadsheets
-			|| (m_outputFormatsList.isSpreadsheet(format) && m_inputFormatsList.isSpreadsheet(input_format))
+			|| (m_outputFormatsList.IsSpreadsheet(ext) && m_inputFormatsList.IsSpreadsheet(input_ext))
 			//presentations -> presentations
-			|| (m_outputFormatsList.isPresentation(format) && m_inputFormatsList.isPresentation(input_format))
-			// crossplatform -> documents
-			|| (m_outputFormatsList.isDocument(format) && m_inputFormatsList.isCrossplatform(input_format))
+			|| (m_outputFormatsList.IsPresentation(ext) && m_inputFormatsList.IsPresentation(input_ext))
+			// xps -> docx
+			|| (ext == L"docx" && input_ext == L"xps")
 			// pdf -> docx
-			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && m_inputFormatsList.isPdf(input_format))
+			|| (ext == L"docx" && m_inputFormatsList.IsPdf(input_ext))
 			// all formats -> images
-			|| m_outputFormatsList.isImage(format)
+			|| m_outputFormatsList.IsImage(ext)
 			// all formats -> pdf
-			|| m_outputFormatsList.isPdf(format))
+			|| m_outputFormatsList.IsPdf(ext))
 			// input format != output format
-			&& format != input_format)
+			&& ext != input_ext)
 			{
-				output_file_formats.push_back(format);
+				output_file_exts.push_back(ext);
 			}
 		}
 
-		// utils_CS start
-		utils_CS.EnterCS(&m_utilsCS);
+		if(output_file_exts.empty())
+			continue;
 
-		// setup folder for output files
-		if(NSDirectory::Exists(output_files_directory))
-			NSDirectory::DeleteDirectory(output_files_directory);
+		// setup & clear output subfolder
+		while(!NSDirectory::Exists(output_files_directory))
+			NSDirectory::CreateDirectories(output_files_directory);
 
-		NSDirectory::CreateDirectory(output_files_directory);
+		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
+		std::wstring csvDelimiter = m_defaultCsvDelimiter;
 
-		// waiting
-		WaitDirectory(output_files_directory);
+		// setup csv & txt additional params
+		if(m_bIsFilenameCsvTxtParams
+				|| input_ext == L"txt"
+				|| input_ext == L"csv")
+		{
+			std::wstring find_str = L"[cp";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				csvTxtEncodingS = input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size());
+		}
 
-		utils_CS.LeaveCS();
+		int csvTxtEncoding;
+		for(auto &val : NSUnicodeConverter::Encodings)
+			if(val.Name == U_TO_UTF8(csvTxtEncodingS))
+			{
+				csvTxtEncoding = val.Index;
+				break;
+			}
 
+		if(m_bIsFilenameCsvTxtParams || input_ext == L"csv")
+		{
+			std::wstring find_str = L"[del%";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				csvDelimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
+		}
+
+		std::wstring password;
+		if(m_bIsFilenamePassword)
+		{
+			std::wstring find_str = L"[pass";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				password = input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size());
+		}
 
 		// waiting...
 		do
+		{
 			NSThreads::Sleep(50);
-		while(isAllBusy());
+		} while(IsAllBusy());
 
-		CTemporaryCS CS(&m_coresCS);
+		m_coresCS.Enter();
 
 		// setup & start new coverter
 		CConverter *converter = new CConverter(this);
 		converter->SetInputFile(input_file);
-		converter->SetInputFormat(input_format);
+		converter->SetInputExt(input_ext);
 		converter->SetOutputFilesDirectory(output_files_directory);
-		converter->SetOutputFormats(output_file_formats);
-		converter->SetFontsDirectory(fonts_directory);
+		converter->SetOutputExts(output_file_exts);
+		converter->SetFontsDirectory(m_fontsDirectory);
 		converter->SetX2tPath(m_x2tPath);
-		converter->SetOnlyErrors(m_bIsErrorsOnly);
+		converter->SetErrorsOnly(m_bIsErrorsOnly);
 		converter->SetDeleteOk(m_bIsDeleteOk);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
+		converter->SetCsvTxtEncoding(csvTxtEncoding);
+		converter->SetCsvDelimiter(csvDelimiter);
+		converter->SetPassword(password);
+		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
 		converter->DestroyOnFinish();
 		m_currentProc++;
-		CS.LeaveCS();
+
+		m_coresCS.Leave();
 
 		converter->Start(0);
 	}
 
 	// waiting all procs end
-	while(!isAllFree())
+	while(!IsAllFree())
 		NSThreads::Sleep(150);
-
-	writeTime();
 }
-void Cx2tTester::writeReportHeader()
+void Cx2tTester::WriteReportHeader()
 {
 	CTemporaryCS CS(&m_reportCS);
-	m_reportStream.WriteStringUTF8(L"Input file\t", false);
-	m_reportStream.WriteStringUTF8(L"Output file\t", true);
-	m_reportStream.WriteStringUTF8(L"Time\t", true);
-	m_reportStream.WriteStringUTF8(L"Input size\t", true);
-	m_reportStream.WriteStringUTF8(L"Output size\t", true);
-	m_reportStream.WriteStringUTF8(L"Exit code\t", true);
-	m_reportStream.WriteStringUTF8(L"Log\n", true);
+	m_reportStream.WriteStringUTF8(L"Input file\t", true);
+	m_reportStream.WriteStringUTF8(L"Output file\t", false);
+	m_reportStream.WriteStringUTF8(L"Direction\t", false);
+	m_reportStream.WriteStringUTF8(L"Time\t", false);
+	m_reportStream.WriteStringUTF8(L"Input size\t", false);
+	m_reportStream.WriteStringUTF8(L"Output size\t", false);
+	m_reportStream.WriteStringUTF8(L"Exit code\t", false);
+	m_reportStream.WriteStringUTF8(L"Log\n", false);
 }
-void Cx2tTester::writeReport(const Report& report)
+void Cx2tTester::WriteReport(const Report& report)
 {
 	CTemporaryCS CS(&m_reportCS);
 
-	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.exitCode + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 }
-void Cx2tTester::writeReports(const std::vector<Report>& reports)
+void Cx2tTester::WriteReports(const std::vector<Report>& reports)
 {
 	CTemporaryCS CS(&m_reportCS);
 	for(auto& report : reports)
 	{
-		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.exitCode + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 	}
 }
-void Cx2tTester::writeTime()
+void Cx2tTester::WriteTime()
 {
 	CTemporaryCS CS(&m_reportCS);
-	DWORD time = NSTimers::GetTickCount() - m_timeStart;
+	unsigned long time = NSTimers::GetTickCount() - m_timeStart;
 	m_reportStream.WriteStringUTF8(L"Time: " + std::to_wstring(time));
 }
 
-bool Cx2tTester::isAllBusy()
+bool Cx2tTester::IsAllBusy()
 {
 	CTemporaryCS CS(&m_coresCS);
 	return m_currentProc == m_maxProc;
 }
-bool Cx2tTester::isAllFree()
+bool Cx2tTester::IsAllFree()
 {
 	CTemporaryCS CS(&m_coresCS);
 	return m_currentProc == 0;
 }
 
-std::vector<int> Cx2tTester::parseExtensionsString(std::wstring extensions, const CFormatsList& fl)
+std::vector<std::wstring> Cx2tTester::ParseExtensionsString(std::wstring extensions, const CFormatsList& fl)
 {
-	std::vector<int> formats;
+	std::vector<std::wstring> exts;
 	int pos = 0;
 	while ((pos = extensions.find(' ')) != std::wstring::npos)
 	{
 		std::wstring ext = extensions.substr(0, pos);
 
 		if(ext == L"documents")
-			formats = fl.GetDocuments();
+			exts = fl.GetDocuments();
 
 		else if(ext == L"presentations")
-			formats = fl.GetPresentations();
+			exts = fl.GetPresentations();
 
 		else if(ext == L"spreadsheets")
-			formats = fl.GetSpreadsheets();
+			exts = fl.GetSpreadsheets();
 
-		else
-		{
-			int format =  COfficeFileFormatChecker::GetFormatByExtension(L'.' + ext);
-			formats.push_back(format);
-		}
+		else if (pos != 0)
+			exts.push_back(ext);
+
 		extensions.erase(0, pos + 1);
 	}
-	return formats;
+	return exts;
 }
 
-CConverter::CConverter(Cx2tTester* internal) : m_internal(internal), m_bIsErrorsOnly(false)
+CConverter::CConverter(Cx2tTester* internal) : m_internal(internal)
 {
 }
 CConverter::~CConverter()
@@ -630,17 +730,17 @@ void CConverter::SetInputFile(const std::wstring& inputFile)
 {
 	m_inputFile = inputFile;
 }
-void CConverter::SetInputFormat(int inputFormat)
+void CConverter::SetInputExt(const std::wstring& inputExt)
 {
-	m_inputFormat = inputFormat;
+	m_inputExt = inputExt;
 }
 void CConverter::SetOutputFilesDirectory(const std::wstring& outputFilesDirectory)
 {
 	m_outputFilesDirectory = outputFilesDirectory;
 }
-void CConverter::SetOutputFormats(const std::vector<int> outputFormats)
+void CConverter::SetOutputExts(const std::vector<std::wstring>& outputExts)
 {
-	m_outputFormats = outputFormats;
+	m_outputExts = outputExts;
 }
 void CConverter::SetFontsDirectory(const std::wstring& fontsDirectory)
 {
@@ -650,7 +750,7 @@ void CConverter::SetX2tPath(const std::wstring& x2tPath)
 {
 	m_x2tPath = x2tPath;
 }
-void CConverter::SetOnlyErrors(bool bIsErrorsOnly)
+void CConverter::SetErrorsOnly(bool bIsErrorsOnly)
 {
 	m_bIsErrorsOnly = bIsErrorsOnly;
 }
@@ -661,6 +761,22 @@ void CConverter::SetDeleteOk(bool bIsDeleteOk)
 void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 {
 	m_errorsXmlDirectory = errorsXmlDirectory;
+}
+void CConverter::SetCsvTxtEncoding(int csvTxtEncoding)
+{
+	m_csvTxtEncoding = csvTxtEncoding;
+}
+void CConverter::SetCsvDelimiter(const std::wstring& csvDelimiter)
+{
+	m_csvDelimiter = csvDelimiter;
+}
+void CConverter::SetPassword(const std::wstring& password)
+{
+	m_password = password;
+}
+void CConverter::SetTimeout(unsigned long timeout)
+{
+	m_timeout = timeout;
 }
 void CConverter::SetFilesCount(int totalFiles, int currFile)
 {
@@ -673,40 +789,38 @@ DWORD CConverter::ThreadProc()
 {
 	std::vector<Cx2tTester::Report> reports;
 
-	// utils_CS start
-	CTemporaryCS utils_CS(&m_internal->m_utilsCS);
-
 	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
-	std::wstring input_ext = NSFile::GetFileExtention(input_filename);
-	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size() - 1);
+	std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_filename);
+	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size());
 
-	utils_CS.LeaveCS();
-
-	DWORD time_file_start = NSTimers::GetTickCount();
+	unsigned long time_file_start = NSTimers::GetTickCount();
 
 	bool is_all_ok = true;
 
+#ifdef WIN32
+
+	// x2t cannot work with normalized paths in xml
+	if(m_outputFilesDirectory.find(L"\\\\?\\") == 0)
+		m_outputFilesDirectory.erase(0, 4);
+
+#endif // WIN32
+
 	// input_format in many output exts
-	for(int i = 0; i < m_outputFormats.size(); i++)
+	for(int i = 0; i < m_outputExts.size(); i++)
 	{
-		int& output_format = m_outputFormats[i];
+		std::wstring output_ext = L"."+ m_outputExts[i];
+		int output_format =  checker.GetFormatByExtension(output_ext);
 
-//		if(m_inputFormat == output_format)
-//			continue;
-
-		// utils_CS start
-		utils_CS.EnterCS(&m_internal->m_utilsCS);
-
-		std::wstring output_ext =  checker.GetExtensionByType(output_format);
 		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
-		std::wstring xml_params_file = m_outputFilesDirectory + L"/" + xml_params_filename;
+		std::wstring xml_params_file = m_outputFilesDirectory + FILE_SEPARATOR_STR + xml_params_filename;
 
 		std::wstring output_file = m_outputFilesDirectory
-				+ L"/" + input_filename_no_ext + output_ext;
+				+ FILE_SEPARATOR_STR + input_filename_no_ext + output_ext;
 
 		std::wstring output_filename = NSFile::GetFileName(output_file);
 
-		utils_CS.LeaveCS();
+		xml_params_file = CorrectPathW(xml_params_file);
+
 
 		// creating temporary xml file with params
 		NSStringUtils::CStringBuilder builder;
@@ -720,10 +834,6 @@ DWORD CConverter::ThreadProc()
 
 		builder.WriteString(L"<m_sFileTo>");
 		builder.WriteEncodeXmlString(output_file);
-
-		if (output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-			builder.WriteEncodeXmlString(L".zip");
-
 		builder.WriteString(L"</m_sFileTo>");
 
 		builder.WriteString(L"<m_nFormatTo>");
@@ -737,7 +847,7 @@ DWORD CConverter::ThreadProc()
 		builder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 
 		builder.WriteString(L"<m_sAllFontsPath>");
-		builder.WriteEncodeXmlString(m_fontsDirectory + L"/AllFonts.js");
+		builder.WriteEncodeXmlString(m_fontsDirectory + FILE_SEPARATOR_STR + L"AllFonts.js");
 		builder.WriteString(L"</m_sAllFontsPath>");
 
 		builder.WriteString(L"<m_sFontDir>");
@@ -751,28 +861,69 @@ DWORD CConverter::ThreadProc()
 				builder.WriteString(L"3");
 			else
 				builder.WriteString(L"4");
-			builder.WriteString(L"</format><aspect>2</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+			builder.WriteString(L"</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
+		}
+
+		// csv & txt needs encoding param
+		if(m_inputExt == L"txt" || m_inputExt == L"csv")
+		{
+			builder.WriteString(L"<m_nCsvTxtEncoding>");
+			builder.WriteEncodeXmlString(std::to_wstring(m_csvTxtEncoding));
+			builder.WriteString(L"</m_nCsvTxtEncoding>");
+		}
+
+		// csv needs delimiter param
+		if(m_inputExt == L"csv")
+		{
+			builder.WriteString(L"<m_nCsvDelimiterChar>");
+			builder.WriteEncodeXmlString(m_csvDelimiter);
+			builder.WriteString(L"</m_nCsvDelimiterChar>");
+		}
+
+		// password
+		if(!m_password.empty())
+		{
+			builder.WriteString(L"<m_sPassword>");
+			builder.WriteEncodeXmlString(m_password);
+			builder.WriteString(L"</m_sPassword>");
 		}
 
 		builder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
-
 		builder.WriteString(L"</Root>");
 
-		utils_CS.EnterCS(&m_internal->m_utilsCS);
-
 		std::wstring xml_params = builder.GetData();
-		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
-		// waiting
-		WaitFile(xml_params_file);
+		NSFile::CFileBinary o_xml_file;
+		bool is_created = o_xml_file.CreateFileW(xml_params_file);
+		if(!is_created)
+		{
+			m_internal->m_outputCS.Enter();
+			std::cout << "Error creating XML conversion file!" << std::endl;
+			m_internal->m_outputCS.Leave();
+			continue;
+		}
+		o_xml_file.WriteStringUTF8(xml_params, true);
+		o_xml_file.CloseFile();
 
-		// utils_CS end
-		utils_CS.LeaveCS();
+#ifdef WIN32
 
-		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
+		// x2t cannot work with normalized paths in xml
+		if(xml_params_file.find(L"\\\\?\\") == 0)
+			xml_params_file.erase(0, 4);
 
-		// utils_CS start
-		utils_CS.EnterCS(&m_internal->m_utilsCS);
+#endif // WIN32
+
+		bool is_timeout = false;
+		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout);
+
+		bool exist;
+		if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+			exist = NSDirectory::Exists(output_file);
+		else
+			exist = NSFile::CFileBinary::Exists(output_file);
+
+		// is everything ok
+		bool ok = !exit_code && exist && !is_timeout;
 
 		int input_size = 0;
 		int output_size = 0;
@@ -783,120 +934,97 @@ DWORD CConverter::ThreadProc()
 		input_size = b_file.GetFileSize();
 		b_file.CloseFile();
 
-		if (!exit_code)
+		// get sizes
+		if (ok)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-				b_file.OpenFile(output_file + L".zip");
+			{
+				int total_size = 0;
+				std::vector<std::wstring> pages = NSDirectory::GetFiles(output_file);
+				for(int j = 0; j < pages.size(); j++)
+				{
+					b_file.OpenFile(pages[j]);
+					total_size += b_file.GetFileSize();
+					b_file.CloseFile();
+				}
+				output_size = total_size;
+			}
 			else
+			{
 				b_file.OpenFile(output_file);
-
-			output_size = b_file.GetFileSize();
-			b_file.CloseFile();
-		}
-
-		utils_CS.LeaveCS();
-
-		if (!exit_code && output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-		{
-			// utils_CS start
-			utils_CS.EnterCS(&m_internal->m_utilsCS);
-
-			NSDirectory::CreateDirectory(output_file);
-
-			// waiting
-			WaitDirectory(output_file);
-
-			COfficeUtils oUtils;
-
-			if (S_OK == oUtils.ExtractToDirectory(output_file + L".zip", output_file, NULL, 0))
-				NSFile::CFileBinary::Remove(output_file + L".zip"); 
-
-			// utils_CS end
-			utils_CS.LeaveCS();
+				output_size = b_file.GetFileSize();
+				b_file.CloseFile();
+			}
 		}
 
 		// save param xml of error conversion
-		if(exit_code)
+		if(!ok)
 		{
-			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_filename;
-
-			// utils_CS start
-			utils_CS.EnterCS(&m_internal->m_utilsCS);
-
+			std::wstring err_xml_file = m_errorsXmlDirectory + FILE_SEPARATOR_STR + xml_params_filename;
+			err_xml_file = CorrectPathW(err_xml_file);
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
-
-			// utils_CS end
-			utils_CS.LeaveCS();
 		}
 
-		// utils_CS start
-		utils_CS.EnterCS(&m_internal->m_utilsCS);
-
 		// writing report
-		if(!m_bIsErrorsOnly || exit_code)
+		if(!m_bIsErrorsOnly || !ok)
 		{
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
 			report.outputFile = output_filename;
+			report.direction = input_ext.substr(1, input_ext.size() - 1) + L"-" + output_ext.substr(1, output_ext.size() - 1);
 			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.inputSize = input_size;
 			report.outputSize = output_size;
-			report.exitCode = exit_code;
+			if(is_timeout)
+				report.exitCode = L"TIMEOUT";
+			else
+				report.exitCode = std::to_wstring(exit_code);
 			report.log = xml_params;
 			reports.push_back(report);
 		}
 
-		NSFile::CFileBinary::Remove(xml_params_file);
-
-		// utils_CS end
-		utils_CS.LeaveCS();
+		if(ok)
+			NSFile::CFileBinary::Remove(xml_params_file);
 
 		std::string input_file_UTF8 = U_TO_UTF8(input_filename);
 		std::string output_file_UTF8 = U_TO_UTF8(output_filename);
 
 		// output_CS start
-		CTemporaryCS output_CS(&m_internal->m_outputCS);
+		m_internal->m_outputCS.Enter();
 
-		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_outputFormats.size() << ") ";
+		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_outputExts.size() << ") ";
 		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
 		std::cout << input_file_UTF8 << " to " << output_file_UTF8 << " ";
 
-		if(!exit_code)
-		{
-			std::cout << "OK ";
-		}
+		if(ok)
+			std::cout << "OK";
 		else
 		{
 			is_all_ok = false;
 			std::cout << "BAD ";
+			if(is_timeout)
+				std::cout << "TIMEOUT";
+			else if(exit_code)
+				std::cout << exit_code;
+			else
+				std::cout << "NOT EXIST";
 		}
 
 		std::cout << std::endl;
-		output_CS.LeaveCS();
+		m_internal->m_outputCS.Leave();
 
-		if(m_bIsDeleteOk && !exit_code)
+		if(m_bIsDeleteOk && ok)
 		{
-			utils_CS.EnterCS(&m_internal->m_utilsCS);
-			NSFile::CFileBinary::Remove(output_file);
-
-			// waiting
-			WaitFile(output_file, false);
-
-			utils_CS.LeaveCS();
+			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+				NSDirectory::DeleteDirectory(output_file);
+			else
+				NSFile::CFileBinary::Remove(output_file);
 		}
 	}
-	m_internal->writeReports(reports);
+	m_internal->WriteReports(reports);
 
 	if(m_bIsDeleteOk && is_all_ok)
-	{
-		utils_CS.EnterCS(&m_internal->m_utilsCS);
 		NSDirectory::DeleteDirectory(m_outputFilesDirectory);
-
-		// waiting
-		WaitDirectory(m_outputFilesDirectory, false);
-
-		utils_CS.LeaveCS();
-	}
 
 	CTemporaryCS CS(&m_internal->m_coresCS);
 	m_internal->m_currentProc--;

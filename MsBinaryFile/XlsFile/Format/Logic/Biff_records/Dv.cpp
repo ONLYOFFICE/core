@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,8 @@
 #include "../../../../../OOXML/Base/Unit.h"
 #include <boost/algorithm/string.hpp>
 
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/DValStrings.h"
+#include "../Biff_structures/BIFF12/DValStrings.h"
+
 
 namespace XLS
 {
@@ -111,7 +112,8 @@ void Dv::readFields(CFRecord& record)
     }
     else
     {
-        record >> sqrfx;
+		if (!_ext14)
+			record >> sqrfx;
 
         XLSB::DValStrings dvalstr;
         record >> dvalstr;
@@ -134,7 +136,63 @@ void Dv::readFields(CFRecord& record)
         }
     }
 }
+void Dv::writeFields(CFRecord& record)
+{
+	if (_ext14 && record.getGlobalWorkbookInfo()->Version == 0x0800)
+		record << FRTheader;
 
+	_UINT32 flags = 0;
+
+	SETBITS(flags, 0, 3, valType)
+	SETBITS(flags, 4, 6, errStyle)
+
+	SETBIT(flags, 7, fStrLookup)
+	SETBIT(flags, 8, fAllowBlank)
+	SETBIT(flags, 9, fSuppressCombo)
+	SETBITS(flags, 10, 17, mdImeMode)
+	SETBIT(flags, 18, fShowInputMsg)
+	SETBIT(flags, 19, fShowErrorMsg)
+	SETBITS(flags, 20, 23, typOperator)
+	SETBIT(flags, 24, fDVMinFmla)
+	SETBIT(flags, 25, fDVMaxFmla)
+
+	record << flags;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		XLUnicodeString    PromptTitle_(PromptTitle);
+		XLUnicodeString    ErrorTitle_(ErrorTitle);
+		XLUnicodeString    Prompt_(Prompt);
+		XLUnicodeString    Error_(Error);
+
+		record << PromptTitle_ << ErrorTitle_ << Prompt_ << Error_;
+	}
+	else
+	{
+		if (!_ext14)
+			record << sqrfx;
+
+		XLSB::DValStrings dvalstr;
+		dvalstr.strPromptTitle = PromptTitle;
+		dvalstr.strErrorTitle = ErrorTitle;
+		dvalstr.strPrompt = Prompt;
+		dvalstr.strError = Error;
+
+		record << dvalstr;
+	}
+
+	if (!_ext14)
+	{
+		formula1.save(record, valType != typeDvNone);
+
+		formula2.save(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2);
+
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		{
+			record << sqref;
+		}
+	}
+}
 int Dv::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

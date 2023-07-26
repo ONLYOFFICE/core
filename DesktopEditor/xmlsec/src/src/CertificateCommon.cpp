@@ -2,9 +2,16 @@
 #include "./Certificate_mscrypto.h"
 #endif
 
+#ifdef SUPPORT_OPENSSL
 #include "./Certificate_openssl.h"
+#endif
+
+#ifdef SUPPORT_OFORM
+#include "./Certificate_oform.h"
+#endif
 
 #include "./../include/CertificateCommon.h"
+#include "../../../common/File.h"
 
 ICertificate::ICertificate()
 {
@@ -19,6 +26,7 @@ CCertificateInfo::~CCertificateInfo() {}
 
 namespace NSOpenSSL
 {
+#ifdef SUPPORT_OPENSSL
 	int LoadKey(std::wstring file, std::string password)
 	{
 		return CCertificate_openssl::LoadKey(file, password, NULL);
@@ -37,6 +45,24 @@ namespace NSOpenSSL
 	{
 		return CCertificate_openssl::LoadCert(data, (DWORD)len, password, NULL);
 	}
+#else
+	int LoadKey(std::wstring file, std::string password)
+	{
+		return OPEN_SSL_WARNING_ERR;
+	}
+	int LoadCert(std::wstring file, std::string password)
+	{
+		return OPEN_SSL_WARNING_ERR;
+	}
+	int LoadKeyRaw(unsigned char* data, unsigned int len, std::string password)
+	{
+		return OPEN_SSL_WARNING_ERR;
+	}
+	int LoadCertRaw(unsigned char* data, unsigned int len, std::string password)
+	{
+		return OPEN_SSL_WARNING_ERR;
+	}
+#endif
 }
 
 namespace NSCertificate
@@ -99,10 +125,12 @@ namespace NSCertificate
 		CertCloseStore(hStoreHandle, 0);
 #else
 
+#ifdef SUPPORT_OPENSSL
 		CCertificate_openssl* pCertificate = (CCertificate_openssl*)CreateInstance(CERTIFICATE_ENGINE_TYPE_OPENSSL);
 		if (pCertificate->FromKey(id))
 			return pCertificate;
 		delete pCertificate;
+#endif
 
 #endif
 
@@ -121,20 +149,24 @@ namespace NSCertificate
 
 	ICertificate* FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
 	{
+#ifdef SUPPORT_OPENSSL
 		CCertificate_openssl* pCert = new CCertificate_openssl();
 		if (pCert->FromFiles(keyPath, keyPassword, certPath, certPassword))
 			return pCert;
 		RELEASEOBJECT(pCert);
+#endif
 		return NULL;
 	}
 
 	ICertificate* FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
 							   unsigned char* cert, unsigned int certLen, const std::string& certPassword)
 	{
+#ifdef SUPPORT_OPENSSL
 		CCertificate_openssl* pCert = new CCertificate_openssl();
 		if (pCert->FromFilesRaw(key, keyLen, keyPassword, cert, certLen, certPassword))
 			return pCert;
 		RELEASEOBJECT(pCert);
+#endif
 		return NULL;
 	}
 
@@ -176,6 +208,12 @@ namespace NSCertificate
 				"urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512" == sAlg)
 			return OOXML_HASH_ALG_GOST_GR3411_2012_512;
 
+		if ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512" == sAlg)
+			return OOXML_HASH_ALG_SHA512;
+
+		if ("http://www.w3.org/2001/04/xmldsig-more#sha3-512" == sAlg)
+			return OOXML_HASH_ALG_SHA3_512;
+
 		return OOXML_HASH_ALG_INVALID;
 	}
 	std::string GetDigestMethodA(const int& nAlg)
@@ -201,6 +239,8 @@ namespace NSCertificate
 		case OOXML_HASH_ALG_ED25519:
 		case OOXML_HASH_ALG_ED448:
 			return "http://www.w3.org/2001/04/xmlenc#sha512";
+		case OOXML_HASH_ALG_SHA3_512:
+			return "http://www.w3.org/2001/04/xmlenc#sha3-512";
 		default:
 			break;
 		}
@@ -234,6 +274,8 @@ namespace NSCertificate
 		case OOXML_HASH_ALG_ED25519:
 		case OOXML_HASH_ALG_ED448:
 			return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512";
+		case OOXML_HASH_ALG_SHA3_512:
+			return "http://www.w3.org/2001/04/xmldsig-more#sha3-512";
 		default:
 			break;
 		}
@@ -258,16 +300,25 @@ namespace NSCertificate
 #endif
 		}
 
+#ifdef SUPPORT_OPENSSL
 		if (typeCreate == CERTIFICATE_ENGINE_TYPE_OPENSSL)
 			return new CCertificate_openssl();
+#endif
 
 #ifdef SUPPORT_MS_CRYPTO
 		if (typeCreate == CERTIFICATE_ENGINE_TYPE_MSCRYPTO)
 			return new CCertificate_mscrypto();
 #endif
 
+#ifdef SUPPORT_OFORM
+		if (typeCreate == CERTIFICATE_ENGINE_TYPE_OFORM)
+			return new CCertificate_oform();
+#endif
+
 		return NULL;
 	}
 };
 
+#ifdef SUPPORT_OPENSSL
 bool CCertificate_openssl::g_is_initialize = false;
+#endif

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 
 #include "TimeNodeBase.h"
 #include "Seq.h"
@@ -50,88 +49,82 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		TimeNodeBase::TimeNodeBase()
 		{
 		}
-
 		TimeNodeBase::~TimeNodeBase()
 		{
 		}
-
 		TimeNodeBase::TimeNodeBase(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const TimeNodeBase& TimeNodeBase::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 		void TimeNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if(name == L"seq")
-				m_node.reset(new Logic::Seq(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Seq>(node));
 			else if(name == L"par")
-				m_node.reset(new Logic::Par(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Par>(node));
 			else if(name == L"audio")
-				m_node.reset(new Logic::Audio(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Audio>(node));
 			else if(name == L"video")
-				m_node.reset(new Logic::Video(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Video>(node));
 			else if(name == L"excl")
-				m_node.reset(new Logic::Excl(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Excl>(node));
 			else if(name == L"anim")
-				m_node.reset(new Logic::Anim(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Anim>(node));
 			else if(name == L"animClr")
-				m_node.reset(new Logic::AnimClr(node));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimClr>(node));
 			else if(name == L"animEffect")
-				m_node.reset(new Logic::AnimEffect(node));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimEffect>(node));
 			else if(name == L"animMotion")
-				m_node.reset(new Logic::AnimMotion(node));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimMotion>(node));
 			else if(name == L"animRot")
-				m_node.reset(new Logic::AnimRot(node));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimRot>(node));
 			else if(name == L"animScale")
-				m_node.reset(new Logic::AnimScale(node));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimScale>(node));
 			else if(name == L"cmd")
-				m_node.reset(new Logic::Cmd(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Cmd>(node));
 			else if(name == L"set")
-				m_node.reset(new Logic::Set(node));
+				m_node.reset(CreatePtrXmlContent<Logic::Set>(node));
 			else m_node.reset();
 		}
-
 		void TimeNodeBase::GetTimeNodeFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;			
 			if(element.GetNode(L"p:seq", oNode))
-				m_node.reset(new Logic::Seq(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Seq>(oNode));
 			else if(element.GetNode(L"p:par", oNode))
-				m_node.reset(new Logic::Par(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Par>(oNode));
 			else if(element.GetNode(L"p:audio", oNode))
-				m_node.reset(new Logic::Audio(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Audio>(oNode));
 			else if(element.GetNode(L"p:video", oNode))
-				m_node.reset(new Logic::Video(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Video>(oNode));
 			else if(element.GetNode(L"p:excl", oNode))
-				m_node.reset(new Logic::Excl(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Excl>(oNode));
 			else if(element.GetNode(L"p:anim", oNode))
-				m_node.reset(new Logic::Anim(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Anim>(oNode));
 			else if(element.GetNode(L"p:animClr", oNode))
-				m_node.reset(new Logic::AnimClr(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimClr>(oNode));
 			else if(element.GetNode(L"p:animEffect", oNode))
-				m_node.reset(new Logic::AnimEffect(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimEffect>(oNode));
 			else if(element.GetNode(L"p:animMotion", oNode))
-				m_node.reset(new Logic::AnimMotion(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimMotion>(oNode));
 			else if(element.GetNode(L"p:animRot", oNode))
-				m_node.reset(new Logic::AnimRot(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimRot>(oNode));
 			else if(element.GetNode(L"p:animScale", oNode))
-				m_node.reset(new Logic::AnimScale(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::AnimScale>(oNode));
 			else if(element.GetNode(L"p:cmd", oNode))
-				m_node.reset(new Logic::Cmd(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Cmd>(oNode));
 			else if(element.GetNode(L"p:set", oNode))
-				m_node.reset(new Logic::Set(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::Set>(oNode));
 			else m_node.reset();
 		}
 		std::wstring TimeNodeBase::toXML() const
@@ -200,5 +193,11 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void TimeNodeBase::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(m_node.IsInit())
+				m_node->SetParentPointer(pParent);
+		}
+		void TimeNodeBase::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

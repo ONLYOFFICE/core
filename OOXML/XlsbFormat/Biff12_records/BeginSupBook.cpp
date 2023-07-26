@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,8 +31,8 @@
  */
 
 #include "BeginSupBook.h"
-#include "../Biff12_structures/RelID.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/RelID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 
@@ -86,6 +86,41 @@ namespace XLSB
             }
         }
     }
+
+	void BeginSupBook::writeFields(XLS::CFRecord& record)
+	{
+		record << sbt;
+		switch (sbt.value().get())
+		{
+			case ExternalReferenceType::WORKBOOK:
+			{
+				RelID relID;
+				XLNullableWideString str;
+				relID.value = string1;
+				str = string2;
+				record << relID << str;
+				break;
+			}
+			case ExternalReferenceType::DDE:
+			{
+				XLWideString str1;
+				XLWideString str2;
+				str1 = string1;
+				str2 = string2;
+				record << str1 << str2;
+				break;
+			}
+			case ExternalReferenceType::OLE:
+			{
+				RelID relID;
+				XLWideString str;
+				relID.value = string1;
+				str = string2;
+				record << relID << str;
+				break;
+			}
+		}
+	}
 
 } // namespace XLSB
 

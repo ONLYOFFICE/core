@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -68,15 +68,14 @@ namespace NSDoctRenderer
 		}
 		void private_LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& files, const std::wstring& sConfigDir)
 		{
-			XmlUtils::CXmlNodes oNodes;
+            std::vector<XmlUtils::CXmlNode> oNodes;
 			if (oNode.GetNodes(L"file", oNodes))
 			{
-				int nCount = oNodes.GetCount();
+                size_t nCount = oNodes.size();
 				XmlUtils::CXmlNode node;
-				for (int i = 0; i < nCount; ++i)
+                for (size_t i = 0; i < nCount; ++i)
 				{
-					oNodes.GetAt(i, node);
-					files.push_back(private_GetFile(sConfigDir, node.GetText()));
+                    files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 				}
 			}
 		}
@@ -102,18 +101,18 @@ namespace NSDoctRenderer
 			XmlUtils::CXmlNode oNode;
 			if (oNode.FromXmlFile(sConfigPath))
 			{
-				XmlUtils::CXmlNodes oNodes;
+                std::vector<XmlUtils::CXmlNode> oNodes;
 				if (oNode.GetNodes(L"file", oNodes))
 				{
-					int nCount = oNodes.GetCount();
+                    size_t nCount = oNodes.size();
 					XmlUtils::CXmlNode node;
-					for (int i = 0; i < nCount; ++i)
+                    for (size_t i = 0; i < nCount; ++i)
 					{
-						oNodes.GetAt(i, node);
-						m_arrFiles.push_back(private_GetFile(sConfigDir, node.GetText()));
+                        m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 					}
 				}
 
+				bool bIsAbsoluteFontsPath = false;
 				if (!m_bIsNotUseConfigAllFontsDir)
 				{
 					std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
@@ -129,7 +128,11 @@ namespace NSDoctRenderer
 							{
 								std::wstring sAppDir = NSSystemUtils::GetAppDataDir();
 								if (NSDirectory::CreateDirectory(sAppDir + L"/docbuilder"))
+								{
 									m_strAllFonts = sAppDir + L"/docbuilder/AllFonts.js";
+									// файл может не существовать пока - и тогда private_GetFile не учтет его
+									bIsAbsoluteFontsPath = true;
+								}
 							}
 							else
 							{
@@ -138,7 +141,7 @@ namespace NSDoctRenderer
 						}
 					}
 				}
-				m_arrFiles.push_back(private_GetFile(sConfigDir, m_strAllFonts));
+				m_arrFiles.push_back(bIsAbsoluteFontsPath ? m_strAllFonts : private_GetFile(sConfigDir, m_strAllFonts));
 			}
 
 			std::wstring sSdkPath = oNode.ReadNodeText(L"sdkjs");

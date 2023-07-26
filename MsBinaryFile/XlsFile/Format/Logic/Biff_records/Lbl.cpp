@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -172,7 +172,7 @@ void Lbl::readFields(CFRecord& record)
 
     else
     {
-        unsigned int flags;
+		_UINT32 flags;
         record >> flags;
 
         fHidden			= GETBIT(flags, 0);
@@ -198,6 +198,89 @@ void Lbl::readFields(CFRecord& record)
             record >> unusedstring2;
         }
     }
+}
+
+void Lbl::writeFields(CFRecord& record)
+{
+	unsigned short flags;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		//stub
+	}
+
+	else
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fHidden)
+		SETBIT(flags, 1, fFunc)
+		SETBIT(flags, 2, fOB)
+		SETBIT(flags, 3, fProc)
+		SETBIT(flags, 4, fCalcExp)
+		SETBIT(flags, 5, fBuiltin)
+		SETBITS(flags, 6, 14, fGrp)
+		SETBIT(flags, 15, fPublished)
+		SETBIT(flags, 16, fWorkbookParam)
+		SETBIT(flags, 17, fFutureFunction)
+
+		record << flags;
+
+		record << chKey << itab;
+		record << name;
+
+
+       /* std::vector<std::wstring>inputs {
+                L"1E+10+3+5",
+                L"3 * 4 + 5",
+                L"50",
+                L"1+1",
+                L"SUM(1,2,3,4)",
+                L"IF(P5=1.0,\"NA\",IF(P5=2.0,\"A\",IF(P5=3.0,\"B\",IF(P5=4.0,\"C\",IF(P5=5.0,\"D\",IF(P5=6.0,\"E\",IF(P5=7.0,\"F\",IF(P5=8.0,\"G\"))))))))",
+                L"SUM(123 + SUM(456) + (45DATE(2002,1,6),0,IF(ISERROR(R[41]C[2]),0,IF(R13C3>=R[41]C[2],0, IF(AND(R[23]C[11]>=55,R[24]C[11]>=20),R53C3,0))))",
+                L"$A1",
+                L"$B$2",
+                L"SUM(B5:B15)",
+                L"SUM(B5:B15,D5:D15)",
+                L"SUM(B5:B15 A7:D7)",
+                L"SUM(sheet1!$A$1:$B$2)",
+                L"[data.xls]sheet1!$A$1",
+                L"SUM((A:A 1:1))",
+                L"SUM((A:A,1:1))",
+                L"SUM((A:A A1:B1))",
+                L"SUM(D9:D11,E9:E11,F9:F11)",
+                L"SUM((D9:D11,(E9:E11,F9:F11)))",
+                L"{SUM(B2:D2*B3:D3)}",
+                L"IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, "
+                    "(R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3=\"YES\")),R[44]C[11],R[43]C[11]))+(R[14]C[11] "
+                    "*IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3=\"YES\")), "
+                    "R[45]C[11],R[43]C[11])),0))"
+            };
+            std::vector<std::wstring> outputs;
+            for (const auto& input: inputs)
+            {
+                NameParsedFormula rg(false);
+                rg.parseStringFormula(input, L"");
+                auto assem = rg.getAssembledFormula();
+                outputs.push_back(assem);
+
+            }
+
+*/
+		//NameParsedFormula example(false);
+		//example = std::wstring(L"3 * 4 + 5");
+		//example.save(record);
+
+        rgce.save(record);
+		record << comment;
+		if (fProc)
+		{
+			record << unusedstring1;
+			record << description;
+			record << helpTopic;
+			record << unusedstring2;
+		}
+	}
 }
 
 

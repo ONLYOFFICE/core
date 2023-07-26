@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,6 +37,11 @@
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 #include "../../../OOXML/DocxFormat/Math/oMathBottomNodes.h"
 
+OOXMathReader::OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
+{
+	m_ooxElem = ooxElem;
+	m_oCharProperty.SetDefault();
+}
 bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath)
 {
 	if (!ooxMath) return false;
@@ -597,6 +602,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSubHide.GetPointer(), oSubMath))
 					rtfMath->AddItem(oSubMath);
+
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSupHide.GetPointer(), oSubMath))
 					rtfMath->AddItem(oSubMath);
@@ -927,10 +933,14 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
 	//----------------------------------
-			nullable<std::wstring>	sVal;
+			nullable_string	sVal;
 			
-			if		((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
-			else if ((ooxElemChar)		&& (ooxElemChar->m_val.IsInit()))			sVal = ooxElemChar->m_val->GetValue();
+			if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))
+			{
+				rtfMath->m_bIsChar = true;
+				sVal = ooxElemChar->m_val->GetValue();
+			}
+			else if ((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
 			else if ((ooxElemMeasure)	&& (ooxElemMeasure->m_val.IsInit()))		sVal = ooxElemMeasure->m_val->ToString();
 			else if ((ooxElemInt255)	&& (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
 			else if ((ooxElemLim)		&& (ooxElemLim->m_val.IsInit()))			sVal = ooxElemLim->m_val->ToString();
@@ -957,13 +967,17 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			}
 			else if (sVal.IsInit())
 			{
-				rtfMath->m_bIsVal = true;
-				
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-                if (!sVal->empty())
-					oChar->setText( L" " + *sVal );
-				
-				rtfMath->m_oVal.AddItem( oChar );
+				rtfMath->m_bIsVal = true;				
+				rtfMath->m_sVal = *sVal;
+
+				if (rtfMath->m_bIsChar)
+				{
+					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+					if (!sVal->empty())
+						oChar->setText(*sVal);
+
+					rtfMath->m_oVal.AddItem(oChar);
+				}
 			}
 			else
 			{

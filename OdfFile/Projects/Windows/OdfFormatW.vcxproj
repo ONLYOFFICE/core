@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\Writer\Format\office_elements_create.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_event_listeners.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_forms.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_meta.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_presentation.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_scripts.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_settings.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="..\..\Writer\Format\office_elements_type.h" />
     <ClInclude Include="..\..\Writer\Format\office_event_listeners.h" />
     <ClInclude Include="..\..\Writer\Format\office_forms.h" />
+    <ClInclude Include="..\..\Writer\Format\office_meta.h" />
     <ClInclude Include="..\..\Writer\Format\office_presentation.h" />
     <ClInclude Include="..\..\Writer\Format\office_scripts.h" />
     <ClInclude Include="..\..\Writer\Format\office_settings.h" />
@@ -195,48 +197,34 @@
     <ClInclude Include="..\..\Writer\Format\text_elements.h" />
     <ClInclude Include="..\..\Writer\Format\visitor.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
-      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="cpcommon.vcxproj">
-      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
-    </ProjectReference>
-    <ProjectReference Include="cpxml.vcxproj">
-      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="formulasconvert.vcxproj">
-      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>OdfFormatWriterLib</ProjectName>
     <ProjectGuid>{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}</ProjectGuid>
     <RootNamespace>OdfFormat</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -265,15 +253,15 @@
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(Platform)\$(Configuration)\Writer\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\Writer\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_64\include;..\..\Common;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;..\..\Common;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -284,8 +272,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -302,8 +289,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />

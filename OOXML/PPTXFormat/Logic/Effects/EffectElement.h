@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,91 +39,31 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class EffectElement : public WrapperWritingElement
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(EffectElement)
+			WritingElement_AdditionMethods(EffectElement)
 			PPTX_LOGIC_BASE2(EffectElement)
 
-			EffectElement& operator=(const EffectElement& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			EffectElement& operator=(const EffectElement& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				ref = oSrc.ref;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_effect;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), ref)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"ref", ref);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				if (!ref.IsInit())
-					return _T("<a:effect/>");
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				return _T("<a:effect ref=\"") + *ref + _T("\"/>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:effect");
-				pWriter->StartAttributes();
-					pWriter->WriteAttribute(L"ref", ref);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:effect");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ELEMENT);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, ref);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (_at == 0)
-						ref = pReader->GetString2();
-					else break;
-				}
-				pReader->Seek(_end_rec);
-			}
 		public:
 			nullable_string		ref;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

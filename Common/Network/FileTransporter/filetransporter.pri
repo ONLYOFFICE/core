@@ -1,9 +1,14 @@
 HEADERS += \
     $$PWD/include/FileTransporter.h \
+	$$PWD/include/manager.h \
     $$PWD/src/FileTransporter_private.h \
-    $$PWD/src/transport_external.h
+	$$PWD/src/transport_external.h \
+	$$PWD/src/Session.h
 
-SOURCES += $$PWD/src/FileTransporter.cpp
+SOURCES += \
+    $$PWD/src/FileTransporter.cpp \
+	$$PWD/src/Session.cpp \
+	$$PWD/src/manager.cpp
 
 core_windows {
     SOURCES += $$PWD/src/FileTransporter_win.cpp
@@ -24,14 +29,14 @@ core_linux {
     SOURCES += $$PWD/src/FileTransporter_curl.cpp
 }
 core_mac {
+    use_v8:DEFINES += OLD_MACOS_SYSTEM
+
     OBJECTIVE_SOURCES += $$PWD/src/FileTransporter_mac.mm
     LIBS += -framework AppKit
 }
 
 core_ios {
-    OBJECTIVE_SOURCES += \
-        $$PWD/src/FileTransporter_mac.mm
-
+    OBJECTIVE_SOURCES += $$PWD/src/FileTransporter_mac.mm
     LIBS += -framework Foundation
 }
 

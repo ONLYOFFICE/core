@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,11 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
 		return AVS_ERROR_FILEACCESS; 
 	}
 
-	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
-	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
+    m_pReader = new PPT::CPPTFileReader(pStgFrom, m_strTempDirectory);
+    PPT::CPPTFileReader* pptReader = (PPT::CPPTFileReader*)m_pReader;
     
-	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
-	pptReader->m_oDocumentInfo.m_strPassword		= password;
-	pptReader->m_oDocumentInfo.m_bMacros			= bMacros;
+	pptReader->m_oDocumentInfo.m_strPassword = password;
+	pptReader->m_oDocumentInfo.m_bMacros = bMacros;
 		
 	if	(pptReader->IsPowerPoint() == false) 
 	{ 
@@ -108,7 +107,7 @@ bool COfficePPTFile::CloseFile()
 {
 	m_Status = NULLMODE;
 
-	CPPTFileReader* r = (CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
+    PPT::CPPTFileReader* r = (PPT::CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
 	m_pReader = NULL;
 	return S_OK;
 }
@@ -127,15 +126,14 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		m_Status = NULLMODE;
 		return nResult;
 	}
-	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
+    if (!((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		PPT_FORMAT::CPPTXWriter oPPTXWriter;
-        oPPTXWriter.m_strTempDirectory = sDstPath;
-		
-		oPPTXWriter.m_xmlApp  = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
-		oPPTXWriter.m_xmlCore = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
+		PPT::CPPTXWriter oPPTXWriter(sDstPath);
 
-		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
+        oPPTXWriter.m_xmlApp  = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
+        oPPTXWriter.m_xmlCore = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
+
+        oPPTXWriter.CreateFile(((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);
 		oPPTXWriter.CloseFile();
 	}
 	return S_OK;

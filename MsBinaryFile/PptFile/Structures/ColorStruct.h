@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,30 +34,18 @@
 #include "IStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
-struct ColorStruct  {
-
+struct ColorStruct : public IStruct
+{
     BYTE m_red;
     BYTE m_green;
     BYTE m_blue;
 
-    ColorStruct()
-    {
-        clear();
-    }
 
-    void clear()
-    {
-        m_red = m_green = m_blue = 0;
-    }
+    ColorStruct();
+    void clear();
 
-    void ReadFromStream(POLE::Stream * pStream)
-    {
-        m_red       = StreamUtils::ReadBYTE(pStream);
-        m_green     = StreamUtils::ReadBYTE(pStream);
-        m_blue      = StreamUtils::ReadBYTE(pStream);
-        StreamUtils::StreamSkip(1, pStream);
-    }
+    void ReadFromStream(POLE::Stream * pStream) override;
 };
 }

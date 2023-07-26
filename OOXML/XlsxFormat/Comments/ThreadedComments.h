@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,79 +30,41 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_
-#define OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_
 
 #include <unordered_map>
 
 #include "../Xlsx.h"
 #include "../Workbook/Workbook.h"
-#include "../SharedStrings/Si.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class CDateTime;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CText;
+
 		class CPerson : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPerson)
-			CPerson()
-			{
-			}
-			virtual ~CPerson()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<person");
-					WritingStringNullableAttrEncodeXmlString(L"displayName", displayName, *displayName);
-					WritingStringNullableAttrString(L"id", id, *id);
-					WritingStringNullableAttrString(L"userId", userId, *userId);
-					WritingStringNullableAttrEncodeXmlString(L"providerId", providerId, *providerId);
-				writer.WriteString(L"/>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CPerson)
+			CPerson();
+			virtual ~CPerson();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( L"extLst" == sName )
-					{
-						extLst = oReader;
-					}
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_ThreadedComment;
-			}
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"displayName",	displayName )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"userId",		userId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"providerId",	providerId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",			id )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:		
 			nullable_string displayName;
 			nullable_string userId;
@@ -115,368 +77,98 @@ namespace OOX
 		class CPersonList : public OOX::File, public WritingElementWithChilds<CPerson>
 		{
 		public:
-			CPersonList(OOX::Document* pMain) : OOX::File(pMain)
-			{
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && xlsx->m_pWorkbook)
-				{
-					xlsx->m_pWorkbook->m_pPersonList = this;
-				}
-			}
-			CPersonList(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain)
-			{
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && xlsx->m_pWorkbook)
-				{
-					xlsx->m_pWorkbook->m_pPersonList = this;
-				}
-				read( oRootPath, oPath );
-			}
-			virtual ~CPersonList()
-			{
-				ClearItems();
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
+			CPersonList(OOX::Document* pMain);
+			CPersonList(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CPersonList();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual const OOX::FileType type() const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( L"personList" == sName )
-				{
-					fromXML(oReader);
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<personList ");
-					writer.WriteString(L" xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2018/threadedcomments\"");
-					writer.WriteString(L" xmlns:x=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"");
-				writer.WriteString(L">");
+			const CPath& GetReadPath();
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-
-				writer.WriteString(L"</personList>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( L"person" == sName )
-					{
-						m_arrItems.push_back(new CPerson(oReader));
-					}
-				}
-			}
-			virtual EElementType getType () const
-			{
-				return et_x_PersonList;
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-
-				toXML(sXml);
-
-				std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::Persons;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
 		public:
-			const nullable<std::unordered_map<std::wstring, CPerson*>> GetPersonList()
-			{
-				nullable<std::unordered_map<std::wstring, CPerson*>> mapPersonList;
-				mapPersonList.Init();
-				for (size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					if (m_arrItems[i]->id.IsInit())
-					{
-						(*mapPersonList)[m_arrItems[i]->id.get()] = m_arrItems[i];
-					}
-				}
-				return mapPersonList;
-			}
+			const nullable<std::unordered_map<std::wstring, CPerson*>> GetPersonList();
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 		class CThreadedCommentMention : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMention)
-			CThreadedCommentMention()
-			{
-			}
-			virtual ~CThreadedCommentMention()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<mention");
-					WritingStringNullableAttrString(L"mentionpersonId", mentionpersonId, mentionpersonId->ToString());
-					WritingStringNullableAttrString(L"mentionId", mentionId, mentionId->ToString());
-					WritingStringNullableAttrInt(L"startIndex", startIndex, startIndex->GetValue());
-					WritingStringNullableAttrInt(L"length", length, length->GetValue());
-				writer.WriteString(L"/>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CThreadedCommentMention)
+			CThreadedCommentMention();
+			virtual ~CThreadedCommentMention();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_ThreadedCommentMention;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"mentionpersonId",  mentionpersonId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"mentionId",		mentionId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"startIndex",		startIndex )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"length",			length )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
 			nullable<SimpleTypes::CGuid>						mentionpersonId;
 			nullable<SimpleTypes::CGuid>						mentionId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		startIndex;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		length;
 		};
+
 		class CThreadedCommentMentions : public WritingElementWithChilds<CThreadedCommentMention>
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMentions)
-			CThreadedCommentMentions()
-			{
-			}
-			virtual ~CThreadedCommentMentions()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<mentions>");
+			WritingElement_AdditionMethods(CThreadedCommentMentions)
+			CThreadedCommentMentions();
+			virtual ~CThreadedCommentMentions();
 
-				for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					if (  m_arrItems[i] )
-					{
-						m_arrItems[i]->toXML(writer);
-					}
-				}
-				writer.WriteString(L"</mentions>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("mention") == sName )
-						m_arrItems.push_back(new CThreadedCommentMention(oReader));
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_ThreadedCommentMentions;
-			}
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 		class CThreadedComment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedComment)
-			CThreadedComment()
-			{
-			}
-			virtual ~CThreadedComment()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<threadedComment");
-					WritingStringNullableAttrEncodeXmlString(L"ref", ref, ref.get());
-					WritingStringNullableAttrString(L"dT", dT, dT->ToString());
-					WritingStringNullableAttrString(L"personId", personId, personId->ToString());
-					WritingStringNullableAttrString(L"id", id, id->ToString());
-					WritingStringNullableAttrString(L"parentId", parentId, parentId->ToString());
-					WritingStringNullableAttrBool2(L"done", done);
-				writer.WriteString(L">");
-					
-				if(m_oText.IsInit())
-				{
-					writer.WriteString(_T("<text xml:space=\"preserve\">"));
-					writer.WriteEncodeXmlStringHHHH(m_oText->m_sText);
-					//last '\n' not in format but excel add it
-					writer.WriteString(_T("\n"));//todo \r?
-					writer.WriteString(_T("</text>"));
-				}
-				if(m_oMentions.IsInit())
-				{
-					m_oMentions->toXML(writer);
-				}
-				writer.WriteString(L"</threadedComment>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			WritingElement_AdditionMethods(CThreadedComment)
+			CThreadedComment();
+			virtual ~CThreadedComment();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual EElementType getType () const;
 
-					if ( _T("text") == sName )
-						m_oText = oReader;
-					else if ( _T("mentions") == sName )
-						m_oMentions = oReader;
-				}
-				PrepareText();
-			}
+			bool operator < (const CThreadedComment& elem) const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_ThreadedComment;
-			}
-			bool operator < (const CThreadedComment& elem) const
-			{
-				if(dT.IsInit() && elem.dT.IsInit())
-				{
-					return dT->GetValue() < elem.dT->GetValue();
-				}
-				return true;
-			}
-			void PrepareText ()
-			{
-				//last '\n' not in format but excel add it
-				if(m_oText.IsInit())
-				{
-					if(m_oText->m_sText.length() > 0 && '\n' == m_oText->m_sText[m_oText->m_sText.length() - 1])
-						m_oText->m_sText.pop_back();
-					if(m_oText->m_sText.length() > 0 && '\r' == m_oText->m_sText[m_oText->m_sText.length() - 1])
-						m_oText->m_sText.pop_back();
-				}
-			}
-			static bool Compare (CThreadedComment* val1, CThreadedComment* val2)
-			{
-				return *val1 < *val2;
-			}
+			void PrepareText ();
+
+			static bool Compare (CThreadedComment* val1, CThreadedComment* val2);
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"ref",      ref )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"dT",		dT )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"personId", personId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",		id )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"parentId",	parentId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"done",		done )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-
-				WritingElement_ReadAttributes_End( oReader )
-
-				//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
-				if(id.IsInit() && id->IsZero())
-				{
-					id = L"{" + XmlUtils::GenerateGuid() + L"}";
-				}
-			}
 		public:
 			nullable_string						ref;
 			nullable<SimpleTypes::CDateTime>	dT;
@@ -490,192 +182,39 @@ namespace OOX
 
 			std::vector<CThreadedComment*>  m_arrReplies;
 		};
+
         class CThreadedComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer, public WritingElementWithChilds<CThreadedComment>
 		{
 		public:
-            CThreadedComments(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-			{
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
-				{
-					xlsx->m_arWorksheets.back()->m_pThreadedComments = this;
-				}
-			}
-            CThreadedComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-			{
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
-				{
-					xlsx->m_arWorksheets.back()->m_pThreadedComments = this;
-				}
-				read( oRootPath, oPath );
-			}
-			virtual ~CThreadedComments()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-                IFileContainer::Read( oRootPath, oPath );
+			CThreadedComments(OOX::Document* pMain);
+			CThreadedComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CThreadedComments();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			void PrepareTopLevelComments ();
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			virtual EElementType getType () const;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual const OOX::FileType type() const;
 
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( L"ThreadedComments" == sName )
-				{
-					fromXML(oReader);
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<ThreadedComments");
-				writer.WriteString(L" xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2018/threadedcomments\"");
-				writer.WriteString(L" xmlns:x=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"");
-				writer.WriteString(L">");
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
+			const CPath& GetReadPath();
 
-				writer.WriteString(L"</ThreadedComments>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( L"threadedComment" == sName )
-					{
-						CThreadedComment* pThreadedComment = new CThreadedComment(oReader);
-						m_arrItems.push_back(pThreadedComment);
-					}
-				}
-				PrepareTopLevelComments();
-			}
-			void PrepareTopLevelComments ()
-			{
-				//find TopLevelComments
-				for(size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					CThreadedComment* pThreadedComment = m_arrItems[i];
-					if(pThreadedComment->id.IsInit() && !pThreadedComment->parentId.IsInit())
-					{
-						m_mapTopLevelThreadedComments[pThreadedComment->id->ToString()] = pThreadedComment;
-					}
-				}
-				//to remove reply duplicates
-				std::unordered_map<std::wstring, bool> mapUniqueue;
-				//add Replies
-				for(size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					CThreadedComment* pThreadedComment = m_arrItems[i];
-					if(pThreadedComment->parentId.IsInit())
-					{
-						//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
-						if(pThreadedComment->parentId->IsZero() && pThreadedComment->ref.IsInit())
-						{
-							if (pThreadedComment->dT.IsInit() && mapUniqueue.find(pThreadedComment->dT->ToString()) == mapUniqueue.end())
-							{
-								mapUniqueue[pThreadedComment->dT->ToString()] = true;
-								//find parents by ref
-								for (std::unordered_map<std::wstring, CThreadedComment*>::const_iterator it = m_mapTopLevelThreadedComments.begin(); it != m_mapTopLevelThreadedComments.end(); ++it)
-								{
-									if (it->second->ref.IsInit() && pThreadedComment->ref.get() == it->second->ref.get())
-									{
-										it->second->m_arrReplies.push_back(pThreadedComment);
-										break;
-									}
-								}
-							}
-						}
-						else
-						{
-							std::unordered_map<std::wstring, CThreadedComment*>::const_iterator oFind = m_mapTopLevelThreadedComments.find(pThreadedComment->parentId->ToString());
-							if(m_mapTopLevelThreadedComments.end() != oFind)
-							{
-								oFind->second->m_arrReplies.push_back(pThreadedComment);
-							}
-						}
-					}
-				}
-				//sort Replies
-				for (std::unordered_map<std::wstring, CThreadedComment*>::const_iterator it = m_mapTopLevelThreadedComments.begin(); it != m_mapTopLevelThreadedComments.end(); ++it)
-				{
-					std::sort (it->second->m_arrReplies.begin(), it->second->m_arrReplies.end(), CThreadedComment::Compare);
-				}
-			}
-			virtual EElementType getType () const
-			{
-				return et_x_ThreadedComments;
-			}
-
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-
-				toXML(sXml);
-
-				std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::ThreadedComments;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
 		public:
 			std::unordered_map<std::wstring, CThreadedComment*> m_mapTopLevelThreadedComments;
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_

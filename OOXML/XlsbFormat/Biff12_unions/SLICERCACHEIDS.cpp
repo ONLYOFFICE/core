@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -66,9 +66,11 @@ namespace XLSB
 
         if (proc.optional<BeginSlicerCacheIDs>())
         {
-            m_BrtBeginSlicerCacheIDs = elements_.back();
+            m_bBrtBeginSlicerCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicerCacheIDs = false;
 
         int count = proc.repeated<SLICERCACHEID>(0, 0);
 
@@ -81,18 +83,43 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheIDs>())
         {
-            m_BrtEndSlicerCacheIDs = elements_.back();
+            m_bBrtEndSlicerCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheIDs = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginSlicerCacheIDs && m_BrtEndSlicerCacheIDs && m_BrtFRTEnd;
+        return m_bBrtBeginSlicerCacheIDs && m_bBrtEndSlicerCacheIDs && m_bBrtFRTEnd;
     }
+
+	const bool SLICERCACHEIDS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginSlicerCacheIDs>();
+
+		for (auto& item : m_arSLICERCACHEID)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheIDs>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

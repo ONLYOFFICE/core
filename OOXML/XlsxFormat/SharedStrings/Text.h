@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,12 +30,11 @@
  *
  */
 #pragma once
-#ifndef OOX_TEXT_FILE_INCLUDE_H_
-#define OOX_TEXT_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
-#include "../../../DesktopEditor/common/StringExt.h"
-#include "../../XlsbFormat/Biff12_structures/RichStr.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../Common/SimpleTypes_Word.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace OOX
 {
@@ -49,13 +48,16 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve);
 			void fromStringA(const char* sVal);
+
 		public:
 			WCHAR* m_sBuffer;
 			LONG m_nSize;
 			LONG m_nLen;
+
 		protected:
 			void checkBufferSize(_UINT32 nRequired);
 		};
+
 		class CTextXLSB
 		{
 		public:
@@ -63,6 +65,7 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			bool m_bIsInit;
 			SimpleTypes::CXmlSpace m_oSpace;
@@ -71,120 +74,38 @@ namespace OOX
 			_UINT32 m_nValue;
 			CStringXLSB m_oValue;
 		};
+
 		//необработано:
 		class CText : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CText)
-			CText() {}
-			virtual ~CText() {}
+			WritingElement_AdditionMethods(CText)
+			CText(OOX::Document *pMain = NULL);
+			virtual ~CText();
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-            {
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<t"));
-				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
-					writer.WriteString(_T(" xml:space=\"preserve\""));
-				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</t>"));
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
-			{
-				writer.WriteString(_T("<"));
-				writer.WriteString(name);
-				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
-					writer.WriteString(_T(" xml:space=\"preserve\""));
-				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</"));
-				writer.WriteString(name);
-				writer.WriteString(_T(">"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const;
 
-				int nDepth = oReader.GetDepth();
-				XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
-				while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
-				{
-					if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
-					{
-						std::string sTemp = oReader.GetTextA();
-						wchar_t* pUnicodes = NULL;
-						LONG lOutputCount = 0;
-						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), (LONG)sTemp.length(), pUnicodes, lOutputCount);
-						m_sText.append(pUnicodes);
-						RELEASEARRAYOBJECTS(pUnicodes);
-					}
-				}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				trimString(m_sText, GetSpace());
-			}
-            void fromBin(std::wstring& str)
-            {
-                m_sText = str;
-                m_oSpace.Init();
-                m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
-            }
+			void fromBin(std::wstring& str);
+
 			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
-			std::wstring ToString() const
-			{
-				return m_sText;
-			}
+			std::wstring ToString() const;
+
 			SimpleTypes::EXmlSpace GetSpace() const;
-			virtual EElementType getType() const
-			{
-				return et_x_t;
-			}
+			virtual EElementType getType() const;
+
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = XmlUtils::GetNameNoNS(oReader.GetName());
-				while( !wsName.empty() )
-				{
-					if ( _T("space") == wsName )
-					{
-						m_oSpace = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = XmlUtils::GetNameNoNS(oReader.GetName());
-				}
-
-				oReader.MoveToElement();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
-			// Attributes
-			nullable<SimpleTypes::CXmlSpace>		m_oSpace;
-
-			// Value
-			std::wstring                             m_sText;
+			nullable<SimpleTypes::CXmlSpace>	m_oSpace;
+			std::wstring						m_sText;
 
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TEXT_FILE_INCLUDE_H_

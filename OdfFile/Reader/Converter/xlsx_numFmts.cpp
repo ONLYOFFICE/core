@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,7 +56,7 @@ private:
 
 	unsigned int add(const std::wstring & format_code, unsigned int id);
 public:   
-	unsigned int add_or_find(const std::wstring & format_code, char type);
+	unsigned int add_or_find(std::wstring format_code, char type);
 	void serialize(std::wostream & _Wostream) const;
 };
 unsigned int xlsx_num_fmts::Impl::add(const std::wstring & format_code, unsigned int id)
@@ -79,7 +79,7 @@ unsigned int xlsx_num_fmts::Impl::add(const std::wstring & format_code, unsigned
 	}
 	return id;
 }
-unsigned int xlsx_num_fmts::Impl::add_or_find(const std::wstring & format_code, char format_code_type)
+unsigned int xlsx_num_fmts::Impl::add_or_find(std::wstring format_code, char format_code_type)
 {
 	if (format_code.empty()) return 0;
 
@@ -116,29 +116,49 @@ unsigned int xlsx_num_fmts::Impl::add_or_find(const std::wstring & format_code, 
 		{
 			if (std::wstring::npos != format_code.find(L"h:mm AM/PM"))			id = 18; 
 			else if (std::wstring::npos != format_code.find(L"h:mm:ss AM/PM"))	id = 19; 
-			else if (std::wstring::npos != format_code.find(L"h:mm"))			id = 20; 
-			else if (std::wstring::npos != format_code.find(L"h:mm:ss"))		id = 21; 
 			else if (std::wstring::npos != format_code.find(L"m/d/yy h:mm"))	id = 22; 
+			else if (std::wstring::npos != format_code.find(L"h:mm:ss"))		id = 21; 
+			else if (std::wstring::npos != format_code.find(L"h:mm"))			id = 20; 
 			else
 				id = last_custom_id++;
 		}
 		else if (format_code_type == odf_types::office_value_type::Scientific)
 		{
-			if (std::wstring::npos != format_code.find(L"0.00E+00"))			id = 11;
+			if (std::wstring::npos != format_code.find(L"0.00E+00"))
+			{
+				format_code.clear();
+				id = 11;
+			}
 			else
 				id = last_custom_id++;
 		}
 		else if (format_code_type == odf_types::office_value_type::Fraction)
 		{
-			if (std::wstring::npos != format_code.find(L"??/??"))				id = 13;
-			else if (std::wstring::npos != format_code.find(L"?/?"))			id = 12; 
+			if (std::wstring::npos != format_code.find(L"??/??"))
+			{
+				format_code.clear();
+				id = 13;
+			}
+			else if (std::wstring::npos != format_code.find(L"?/?"))
+			{
+				format_code.clear();
+				id = 12;
+			}
 			else
 				id = last_custom_id++;
 		}
 		else if (format_code_type == odf_types::office_value_type::Percentage)
 		{
-			if (std::wstring::npos != format_code.find(L"0.00%"))				id = 10;
-			else if (std::wstring::npos != format_code.find(L"0%"))				id = 9;
+			if (std::wstring::npos != format_code.find(L"0.00%"))
+			{
+				format_code.clear();
+				id = 10;
+			}
+			else if (std::wstring::npos != format_code.find(L"0%"))
+			{
+				format_code.clear();
+				id = 9;
+			}
 			else
 				id = last_custom_id++;
 		}
@@ -159,10 +179,13 @@ void xlsx_num_fmts::Impl::serialize(std::wostream & strm) const
 			
 			for (size_t i = 0; i < arrFormats.size(); ++i)
 			{
-				CP_XML_NODE(L"numFmt")
-				{	
-					CP_XML_ATTR (L"numFmtId", arrFormats[i].id);
-					CP_XML_ATTR (L"formatCode", arrFormats[i].code);
+				if (false == arrFormats[i].code.empty())
+				{
+					CP_XML_NODE(L"numFmt")
+					{
+						CP_XML_ATTR(L"numFmtId", arrFormats[i].id);
+						CP_XML_ATTR(L"formatCode", arrFormats[i].code);
+					}
 				}
 			}
 		}

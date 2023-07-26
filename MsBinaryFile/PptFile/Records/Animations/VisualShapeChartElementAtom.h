@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,22 +35,12 @@
 #include "../../Reader/Records.h"
 #include "../../Enums/_includer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordVisualShapeChartElementAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        m_eType             = (TimeVisualElementEnum)StreamUtils::ReadDWORD(pStream);
-        m_eRefType          = (ElementTypeEnum)StreamUtils::ReadDWORD(pStream);
-
-        m_nShapeIdRef       = StreamUtils::ReadDWORD(pStream);
-        m_nData1            = StreamUtils::ReadDWORD(pStream);
-        m_nData2            = StreamUtils::ReadDWORD(pStream);
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
 public:
     TimeVisualElementEnum   m_eType;

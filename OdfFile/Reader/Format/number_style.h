@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -78,12 +78,26 @@ public:
    
 	CPDOCCORE_DEFINE_VISITABLE();
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(number_number_style);
 
-//  number:currency-style
+// number:boolean-style
+class number_boolean_style : public number_style_base
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeNumberBooleanStyle;
+
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(number_boolean_style);
+
+// number:currency-style
 class number_currency_style : public number_style_base
 {
 public:
@@ -97,7 +111,6 @@ public:
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(number_currency_style);
 
 //  number:text-style
@@ -645,10 +658,32 @@ private:
     _CP_OPT(int) number_denominator_value_;
     _CP_OPT(int) number_min_numerator_digits_;
     _CP_OPT(int) number_min_denominator_digits_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(number_fraction);
 
+//  number:boolean
+class number_boolean : public number_element
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+
+	static const xml::NodeType	xml_type = xml::typeElement;
+	static const ElementType	type = typeNumberBoolean;
+
+	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+	virtual void oox_convert(oox::num_format_context & Context);
+
+private:
+	virtual void add_attributes(const xml::attributes_wc_ptr & Attributes) {}
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+	virtual void add_text(const std::wstring & Text) {}
+	virtual void add_space(const std::wstring & Text) {}
+
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(number_boolean);
 }
 }

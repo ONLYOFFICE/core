@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,8 +41,20 @@
 
 #include "../../../OOXML/Base/Base.h"
 
-namespace cpdoccore {
-namespace oox {
+namespace cpdoccore 
+{
+	namespace odf_reader
+	{
+
+		class text_format_properties;
+		typedef boost::shared_ptr<text_format_properties> text_format_properties_ptr;
+
+		class graphic_format_properties;
+		typedef boost::shared_ptr<graphic_format_properties> graphic_format_properties_ptr;
+	}
+
+namespace oox 
+{
 
     struct _hlink_desc
     {
@@ -108,7 +120,7 @@ namespace oox {
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;
 
-        std::vector<odf_reader::_property>	additional;
+        std::vector<odf_reader::_property> additional;
 
 		virtual void serialize	(std::wostream & strm) = 0;
 
@@ -117,6 +129,9 @@ namespace oox {
 		void serialize_bodyPr	(std::wostream & strm, const std::wstring & namespace_ = L"a");
     };   
 	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
+
+	void oox_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val, bool always_draw = false, const std::wstring &ns = L"a");
+	void vml_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val);
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false, const std::wstring &ns = L"a");
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, const std::wstring &ns = L"a");

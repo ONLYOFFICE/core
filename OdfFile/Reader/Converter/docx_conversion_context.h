@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -521,9 +521,12 @@ public:
 		int							type = 0;
 		std::wstring				style_name;
 		std::vector<std::wstring>	content;	//delete elements		
+		
 		bool						active = false;
 		bool						in_drawing = false;
 		bool						out_active = false;
+		bool						in_para = false;
+		_UINT32						oox_id = 0;
 
 		void clear()
 		{
@@ -535,6 +538,7 @@ public:
 			content.clear();
 			active = false;
 			in_drawing = false;
+			oox_id = 0;
 		}
 	};
 	std::wstring dumpPPr_;
@@ -983,8 +987,8 @@ public:
 	bool		delayed_converting_;
 	bool		convert_delayed_enabled_;
 
-	void		start_changes();
-	void		end_changes();
+	void		start_changes(bool in_para);
+	void		end_changes(bool in_para);
 
 	void		add_jsaProject(const std::string &content);
 

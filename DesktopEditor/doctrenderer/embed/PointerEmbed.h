@@ -5,31 +5,31 @@
 
 namespace NSPointerObjectDeleters
 {
-    using PointerObjectDeleter = void (*)(void* data);
+	using PointerObjectDeleter = void (*)(void* data);
 
-    void EmptyDeleter(void* data);
-    void FreeDeleter(void* data);
+	void EmptyDeleter(void* data);
+	void FreeDeleter(void* data);
 }
 
 #define POINTER_DELETER(CLASS_NAME, NAME) void NAME(void* data) { CLASS_NAME* p = (CLASS_NAME*)data; delete data; }
 
 using namespace NSJSBase;
-class CPointerEmbedObject : public CJSEmbedObject
+class JS_DECL CPointerEmbedObject : public CJSEmbedObject
 {
 public:
-    void* Data;
+	void* Data;
 
 private:
-    NSPointerObjectDeleters::PointerObjectDeleter Deleter;
+	NSPointerObjectDeleters::PointerObjectDeleter Deleter;
 
 public:
-    CPointerEmbedObject(void* data, NSPointerObjectDeleters::PointerObjectDeleter = nullptr);
-    void Free();
-    virtual ~CPointerEmbedObject();
+	CPointerEmbedObject(void* data, NSPointerObjectDeleters::PointerObjectDeleter = nullptr);
+	void Free();
+	virtual ~CPointerEmbedObject();
 
-    virtual void* getObject() { return Data; }
+	virtual void* getObject() { return Data; }
 
-    JSSmart<CJSValue> createObject();
+	JSSmart<CJSValue> createObject();
 };
 
 #endif // _BUILD_NATIVE_POINTER_EMBED_H_

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -199,9 +199,11 @@ const bool PivotCacheDefStream::loadContent(BinProcessor& proc)
                 {
                     if (proc.optional<EndPivotCacheDef>())
                     {
-                        m_BrtEndPivotCacheDef = elements_.back();
+						m_bBrtEndPivotCacheDef = true;
                         elements_.pop_back();
                     }
+					else
+						m_bBrtEndPivotCacheDef = false;
                 }break;
 
                 default://skip
@@ -210,6 +212,49 @@ const bool PivotCacheDefStream::loadContent(BinProcessor& proc)
                 }break;
             }
 	}
+
+	return true;
+}
+
+const bool PivotCacheDefStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_BrtBeginPivotCacheDef != nullptr)
+		proc.mandatory(*m_BrtBeginPivotCacheDef);
+
+	if(m_PCDSOURCE != nullptr)
+		proc.mandatory(*m_PCDSOURCE);
+
+	if (m_PCDFIELDS != nullptr)
+		proc.mandatory(*m_PCDFIELDS);
+
+	if(m_PCDCALCITEMS != nullptr)
+		proc.mandatory(*m_PCDCALCITEMS);
+
+	if (m_PCDHIERARCHIES != nullptr)
+		proc.mandatory(*m_PCDHIERARCHIES);
+
+	if(m_PCDKPIS != nullptr)
+		proc.mandatory(*m_PCDKPIS);
+
+	if(m_PCDCALCMEMS != nullptr)
+		proc.mandatory(*m_PCDCALCMEMS);
+
+	if(m_PCDSDTUPLECACHE != nullptr)
+		proc.mandatory(*m_PCDSDTUPLECACHE);
+
+	if(m_DIMS != nullptr)
+		proc.mandatory(*m_DIMS);
+
+	if(m_MGS != nullptr)
+		proc.mandatory(*m_MGS);
+
+	if(m_MGMAPS != nullptr)
+		proc.mandatory(*m_MGMAPS);
+
+	if(m_FRTPIVOTCACHEDEF != nullptr)
+		proc.mandatory(*m_FRTPIVOTCACHEDEF);
+
+	proc.mandatory<EndPivotCacheDef>();
 
 	return true;
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -142,7 +142,8 @@ extern int g_nCurFormatVersion;
 		DocumentComments = 17,
 		CustomProperties = 18,
 		Glossary	= 19,
-		Customs		= 20
+		Customs		= 20,
+		OForm		= 21
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -158,6 +159,22 @@ extern int g_nCurFormatVersion;
 		HdrFtr_Content = 5,
 		HdrFtr_Y2 = 6,//устарел
 		HdrFtr_Y = 7//устарел
+	};}
+	namespace c_oSerCnf {enum c_oSerCnf
+	{
+		Val = 0,
+		EvenHBand = 1,
+		EvenVBand = 2,
+		FirstColumn = 3,
+		FirstRow = 4,
+		FirstRowFirstColumn = 5,
+		FirstRowLastColumn = 6,
+		LastColumn = 7,
+		LastRow = 8,
+		LastRowFirstColumn = 9,
+		LastRowLastColumn = 10,
+		OddHBand = 11,
+		OddVBand = 12
 	};}
 	namespace c_oSerNumTypes{enum c_oSerNumTypes
 	{
@@ -366,7 +383,8 @@ extern int g_nCurFormatVersion;
 		Spacing_AfterTwips = 41,
 		Tab_Item_PosTwips = 42,
 		Tab_Item_Val = 43,
-		SuppressLineNumbers = 44
+		SuppressLineNumbers = 44,
+		CnfStyle = 45
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -448,7 +466,8 @@ extern int g_nCurFormatVersion;
 		Ins = 16,
 		trPrChange = 17,
 		TableCellSpacingTwips = 18,
-		Height_ValueTwips = 19
+		Height_ValueTwips = 19,
+		CnfStyle = 20
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
@@ -467,7 +486,8 @@ extern int g_nCurFormatVersion;
 		hideMark = 12,
 		noWrap = 13,
 		tcFitText = 14,
-		HMerge = 15
+		HMerge = 15,
+		CnfStyle = 16
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{
@@ -532,7 +552,10 @@ extern int g_nCurFormatVersion;
 		BookmarkEnd = 24,
 		MRun = 25,
 		AltChunk = 26,
-		DocParts = 27
+		DocParts = 27,
+		PermStart = 28,
+		PermEnd = 29,
+		JsaProjectExternal = 30
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary
@@ -1084,7 +1107,8 @@ extern int g_nCurFormatVersion;
 		Content = 0,
 		Instr = 1,
 		FFData = 2,
-		CharType = 3
+		CharType = 3,
+		PrivateData = 4
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{
@@ -1266,7 +1290,8 @@ extern int g_nCurFormatVersion;
 		TextFormPrFormatVal     = 81,
 		TextFormPrFormatSymbols = 82,	
 		ComplexFormPr     = 90,
-		ComplexFormPrType = 91
+		ComplexFormPrType = 91,
+		OformMaster = 92
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{
@@ -1314,6 +1339,15 @@ extern int g_nCurFormatVersion;
 		DisplacedByCustomXml = 2,
 		ColFirst = 3,
 		ColLast = 4
+	};}
+	namespace c_oSerPermission {enum c_oSerPermission
+	{
+		Id = 0,
+		DisplacedByCustomXml = 1,
+		ColFirst = 2,
+		ColLast = 3,
+		Ed = 4,
+		EdGroup = 5
 	};}
 	namespace c_oSerCompat{enum c_oSerCompat
 	{

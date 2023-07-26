@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,44 +40,9 @@ namespace DocFileFormat
 	class RegularContainer: public Record
 	{
 	public: 
-		RegularContainer() :	Record()
-		{
-		}
-
-		virtual ~RegularContainer()
-		{
-			for (std::vector<Record*>::iterator iter = Children.begin(); iter != Children.end(); ++iter)
-			{
-				RELEASEOBJECT (*iter);
-			}
-		}
-
-		RegularContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance)
-		{
-			unsigned int readSize = 0;
-			unsigned int idx = 0;
-
-			while ( readSize < this->BodySize )
-			{
-				Record* child = NULL;
-
-				child = RecordFactory::ReadRecord( this->Reader, idx );
-
-				if ( child != NULL )
-				{
-					this->Children.push_back( child );
-					child->_ParentRecord = this;
-
-					readSize += child->GetTotalSize();
-
-					idx++;
-				}
-				else
-				{
-					readSize += this->BodySize;
-				}
-			}
-		}
+		RegularContainer();
+		virtual ~RegularContainer();
+		RegularContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
 
 		/// Finds the first child of the given type.
 		template<class T> T* FirstChildWithType() const
@@ -98,7 +63,6 @@ namespace DocFileFormat
 		}
 
 	public: 
-
 		std::vector<Record*> Children;
 	};
 }

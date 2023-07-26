@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,111 +44,27 @@ namespace PPTX
 		class FontRef : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(FontRef)
+			WritingElement_AdditionMethods(FontRef)
 
-			FontRef()
-			{
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_Unknown;
-			}
+			FontRef();
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = oReader.GetName();
+			virtual OOX::EElementType getType () const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ReadAttributes( oReader );
-				
-				Color.fromXMLParent(oReader);
-				
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("idx"), idx )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				XmlMacroReadAttributeBase(node, L"idx", idx);
-				Color.GetColorFrom(node);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				FillParentPointersForChilds();
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("idx"), idx);
-				pWriter->EndAttributes();
-
-				Color.toXmlWriter(pWriter);
-
-				pWriter->EndNode(m_name);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, idx);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, Color);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-					{
-						idx = pReader->GetUChar();
-					}
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Color.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-			
 			UniColor								Color;
 			nullable_limit<Limit::FontStyleIndex>	idx;
 
 			std::wstring							m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

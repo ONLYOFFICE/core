@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,10 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "NamedSheetViews.h"
 #include "../Styles/dxf.h"
 #include "../../Binary/Sheets/Reader/BinaryWriter.h"
 #include "../../Binary/Sheets/Writer/BinaryReader.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../Styles/Colors.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace OOX
 {
@@ -41,9 +46,9 @@ namespace Spreadsheet
 	void CSortRule::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar( oReader, "colId", m_oColId)
-				WritingElement_ReadAttributes_Read_else_ifChar( oReader, "id", m_oId)
-				WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar( oReader, "colId", m_oColId)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "id", m_oId)
+		WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 	}
 	void CSortRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -180,7 +185,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("sortRule", sName) == 0)
 			{
-				m_arrItems.push_back(new CSortRule(oReader));
+				CSortRule* pSortRule = new CSortRule();
+				*pSortRule = oReader;
+				m_arrItems.push_back(pSortRule);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -289,7 +296,9 @@ namespace Spreadsheet
 				m_oDxf = oReader;
 			else if (strcmp("filter", sName) == 0)
 			{
-				m_arrItems.push_back(new CFilterColumn(oReader));
+				CFilterColumn* pFilterColumn = new CFilterColumn();
+				*pFilterColumn = oReader;
+				m_arrItems.push_back(pFilterColumn);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -429,7 +438,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("columnFilter", sName) == 0)
 			{
-				m_arrItems.push_back(new CColumnFilter(oReader));
+				CColumnFilter* pColumnFilter = new CColumnFilter();
+				*pColumnFilter = oReader;
+				m_arrItems.push_back(pColumnFilter);
 			}
 			else if (strcmp("sortRules", sName) == 0)
 				m_oSortRules = oReader;
@@ -549,7 +560,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("nsvFilter", sName) == 0)
 			{
-				m_arrItems.push_back(new CNsvFilter(oReader));
+				CNsvFilter* pNsvFilter = new CNsvFilter();
+				*pNsvFilter = oReader;
+				m_arrItems.push_back(pNsvFilter);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -650,7 +663,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("namedSheetView", sName) == 0)
 			{
-				m_arrItems.push_back(new CNamedSheetView(oReader));
+				CNamedSheetView* pNamedSheetView = new CNamedSheetView();
+				*pNamedSheetView = oReader;
+				m_arrItems.push_back(pNamedSheetView);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -721,6 +736,37 @@ namespace Spreadsheet
 		pReader->Seek(_end_rec);
 	}
 
+	CNamedSheetViewFile::CNamedSheetViewFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+	}
+	CNamedSheetViewFile::CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+		read( oRootPath, oPath );
+	}
+	void CNamedSheetViewFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CNamedSheetViewFile::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::NamedSheetView;
+	}
+	const CPath CNamedSheetViewFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CNamedSheetViewFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CNamedSheetViewFile::GetReadPath()
+	{
+		return m_oReadPath;
+	}
 	void CNamedSheetViewFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
@@ -751,6 +797,9 @@ namespace Spreadsheet
 
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
+	}
+	void CNamedSheetViewFile::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
 	}
 
 } //Spreadsheet

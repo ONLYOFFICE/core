@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -65,21 +65,19 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
-	virtual void start_text_context();
-	virtual void end_text_context();
-
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
 
-	virtual odf_style_context		* styles_context();
+	virtual odf_style_context_ptr	styles_context();
 		
 	odf_comment_context				* comment_context();
 	odf_table_context				* table_context();
 	
 	odf_notes_context				* notes_context();
-	void start_drawings ();
-	void end_drawings ();
+
+	virtual void start_drawing_context();
+	virtual void end_drawing_context();
 
 	virtual bool start_math();
 	virtual void end_math();
@@ -146,12 +144,12 @@ public:
 
 	void set_master_page_name(std::wstring master_name);
 
-	void start_drop_cap			(style_paragraph_properties * paragraph_properties);
+	void start_drop_cap			(paragraph_format_properties* paragraph_properties);
 		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap			();
 	bool in_drop_cap			() {return drop_cap_state_.enabled;}
-	style_text_properties* get_drop_cap_properties();
+	text_format_properties* get_drop_cap_properties();
 	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
 	int start_comment			(int oox_comment_id);
@@ -172,9 +170,7 @@ public:
 		void start_table_columns	();
 			void add_table_column	(double width = -1);
 		void end_table_columns		();
-		void start_table_header_rows();
-		void end_table_header_rows	();
-		void start_table_row		(bool styled = false);
+		void start_table_row		(bool styled = false, bool header = false);
 			void add_default_cell	();
 			void start_table_cell	(int col, bool covered, bool styled = false);
 			void end_table_cell		();
@@ -202,6 +198,9 @@ public:
 	bool empty() {return current_root_elements_.empty();}
 
 private:
+	void start_table_header_rows();
+	void end_table_header_rows	();
+
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
 	
@@ -216,9 +215,6 @@ private:
 	bool			is_background_;
 
 	std::wstring	current_master_page_;
-	
-	std::vector<odf_drawing_context_ptr>	drawing_context_;	
-	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 
 	
 	odf_controls_context					controls_context_;	
 
@@ -265,6 +261,8 @@ private:
 		std::vector<int>	current_types;
 	}text_changes_state_;
 
+	bool table_row_header_state_ = false;
+
 	bool is_hyperlink_;
 
 	struct _drop_cap_state
@@ -281,7 +279,7 @@ private:
 		}
 
 		bool enabled = false;
-		style_paragraph_properties	*paragraph_properties = NULL;
+		paragraph_format_properties	*paragraph_properties = NULL;
 		office_element_ptr			text_properties;
 
 		int		lines = 0;

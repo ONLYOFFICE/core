@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,141 +43,33 @@ namespace PPTX
 		class Rect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Rect)
+			WritingElement_AdditionMethods(Rect)
 			PPTX_LOGIC_BASE2(Rect)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_rect;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = oReader.GetName();
+			virtual OOX::EElementType getType() const;
 
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("t"), t )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), l )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r"), r )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("b"), b )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				XmlMacroReadAttributeBase(node, L"t", t);
-				XmlMacroReadAttributeBase(node, L"b", b);
-				XmlMacroReadAttributeBase(node, L"l", l);
-				XmlMacroReadAttributeBase(node, L"r", r);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("l"), l);
-				oAttr.Write(_T("t"), t);
-				oAttr.Write(_T("r"), r);
-				oAttr.Write(_T("b"), b);
-				
-				return XmlUtils::CreateNode(m_name, oAttr);			
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring _name;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					_name = _T("w14:") + XmlUtils::GetNameNoNS(m_name);
-					sAttrNamespace = _T("w14:");
-				}
-				else
-					_name = m_name;
-				pWriter->StartNode(_name);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + _T("l"), l);
-				pWriter->WriteAttribute(sAttrNamespace + _T("t"), t);
-				pWriter->WriteAttribute(sAttrNamespace + _T("r"), r);
-				pWriter->WriteAttribute(sAttrNamespace + _T("b"), b);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(_name);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, l);
-				pWriter->WriteString2(1, t);
-				pWriter->WriteString2(2, r);
-				pWriter->WriteString2(3, b);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							l = pReader->GetString2();
-							break;
-						}
-						case 1:
-						{
-							t = pReader->GetString2();
-							break;
-						}
-						case 2:
-						{
-							r = pReader->GetString2();
-							break;
-						}
-						case 3:
-						{
-							b = pReader->GetString2();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 			nullable_string t;
 			nullable_string b;
 			nullable_string l;
 			nullable_string r;
 
 			std::wstring m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual std::wstring GetODString()const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("l"), l);
-				oAttr.Write(_T("t"), t);
-				oAttr.Write(_T("r"), r);
-				oAttr.Write(_T("b"), b);
-				
-				return XmlUtils::CreateNode(XmlUtils::GetNameNoNS(m_name), oAttr);	
-			}
+			virtual std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,148 +44,22 @@ namespace PPTX
 		class Fld : public RunBase
 		{
 		public:
-			WritingElement_AdditionConstructors(Fld)			
+			WritingElement_AdditionMethods(Fld)			
 			PPTX_LOGIC_BASE2(Fld)
 
-			Fld& operator=(const Fld& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Fld& operator=(const Fld& oSrc);
+			virtual OOX::EElementType getType () const;
 
-				id		= oSrc.id;
-				type	= oSrc.type;
-				rPr		= oSrc.rPr;
-				pPr		= oSrc.pPr;
-				text	= oSrc.text;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_fld;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			void SetText(const std::wstring& src);
+			virtual std::wstring GetText() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("rPr") == strName)
-					{
-						if (!rPr.IsInit())
-							rPr = oReader;
-					}
-					else if (_T("pPr") == strName)
-					{
-						if (!pPr.IsInit())
-							pPr = oReader;
-					}
-					else if (_T("t") == strName)
-					{
-						if (!text.IsInit())
-							text = oReader.GetText2();
-					}
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"), id)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				id = node.GetAttribute(_T("id"));
-				XmlMacroReadAttributeBase(node, L"type", type);
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int count = oNodes.GetCount();
-					for (int i = 0; i < count; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("rPr") == strName)
-						{
-							if (!rPr.IsInit())
-								rPr = oNode;
-						}
-						else if (_T("pPr") == strName)
-						{
-							if (!pPr.IsInit())
-								pPr = oNode;
-						}
-						else if (_T("t") == strName)
-						{
-							if (!text.IsInit())
-								text = oNode.GetTextExt();
-						}
-					}
-				}
-				FillParentPointersForChilds();
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:fld"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("id"), id);
-                pWriter->WriteAttribute(_T("type"), type);
-				pWriter->EndAttributes();
-
-				pWriter->Write(rPr);
-				pWriter->Write(pPr);
-				
-				if (text.IsInit())
-                {
-                    pWriter->WriteString(_T("<a:t>"));
-                        pWriter->WriteStringXML(*text);
-                    pWriter->WriteString(_T("</a:t>"));
-                }
-				
-				pWriter->EndNode(_T("a:fld"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(PARRUN_TYPE_FLD);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, id);
-				pWriter->WriteString2(1, type);
-				pWriter->WriteString2(2, text);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, rPr);
-				pWriter->WriteRecord2(1, pPr);
-
-				pWriter->EndRecord();
-
-
-                if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
-					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
-
-			}
-
-			void SetText(const std::wstring& src)
-			{
-				text = src;
-			}
-
-			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
 		public:
 			std::wstring						id;
 			
@@ -193,16 +67,12 @@ namespace PPTX
 
 			nullable<RunProperties>		rPr;
 			nullable<TextParagraphPr>	pPr;
+
 		private:
 			nullable_string				text;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(rPr.IsInit())
-					rPr->SetParentPointer(this);
-				if(pPr.IsInit())
-					pPr->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,10 +44,10 @@
 #include "Footnote.h"
 #include "Endnote.h"
 #include "Settings/Settings.h"
+#include "Logic/SectionProperty.h"
 
 namespace OOX
 {
-
 	CDocxFlat::CDocxFlat() : File(dynamic_cast<Document*>(this))
 	{
 	}
@@ -56,6 +56,42 @@ namespace OOX
 		read( oFilePath );
 	}
 	CDocxFlat::~CDocxFlat()
+	{
+	}
+	void CDocxFlat::read(const CPath& oFilePath)
+	{
+		XmlUtils::CXmlLiteReader oReader;
+
+		if ( !oReader.FromFile( oFilePath.GetPath() ) )
+			return;
+
+		if ( !oReader.ReadNextNode() )
+			return;
+
+		fromXML(oReader);
+	}
+	void CDocxFlat::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		std::wstring sXml = toXML();
+
+		NSFile::CFileBinary file;
+		file.CreateFileW(oFilePath.GetPath());
+		file.WriteStringUTF8(sXml);
+		file.CloseFile();
+	}
+	const OOX::FileType CDocxFlat::type() const
+	{
+		return FileTypes::DocumentFlat;
+	}
+	const CPath CDocxFlat::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDocxFlat::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CDocxFlat::fromXML(XmlUtils::CXmlNode& oNode)
 	{
 	}
 	void CDocxFlat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -161,6 +197,16 @@ namespace OOX
 			m_pDocument->Add(file);
 		}
 	}
+	std::wstring CDocxFlat::toXML() const
+	{
+		std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
+		return sXml;
+	}
+	EElementType CDocxFlat::getType() const
+	{
+		return et_w_wordDocument;
+	}
 	void CDocxFlat::ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -260,4 +306,5 @@ namespace OOX
 		else
 			return NULL;
 	}
+
 }

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,6 +75,27 @@ namespace XLSB
         if(fLoadParentUnique)
             record >> stParentUnique;
     }
+
+	void PCDCalcMemCommon::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fLoadMemberName)
+		SETBIT(flags, 1, fLoadSourceHier)
+		SETBIT(flags, 2, fLoadParentUnique)
+
+		record << flags;
+		record << wSolveOrder << fSet << stName << stMdx;
+
+		if (fLoadMemberName)
+			record << stMemberName;
+
+		if (fLoadSourceHier)
+			record << stSourceHier;
+
+		if (fLoadParentUnique)
+			record << stParentUnique;
+	}
 
 } // namespace XLSB
 

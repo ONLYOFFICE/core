@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,13 +35,21 @@
 
 #include "../../Reader/PPTDocumentInfo.h"
 
+using namespace PPT;
 
+CRecordOfficeArtBlip::CRecordOfficeArtBlip()
+{
+}
+
+CRecordOfficeArtBlip::~CRecordOfficeArtBlip()
+{
+}
 
 void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
 	if ((oHeader.RecVersion == PSFLAG_CONTAINER) || ((oHeader.RecVersion & 0x0F) == 0x0F)) return;
 	
-	CRYPT::ECMADecryptor *pDecryptor = m_oDocumentInfo ? m_oDocumentInfo->m_arUsers[0]->m_pDecryptor : NULL;
+	CRYPT::ECMADecryptor *pDecryptor = m_pDocumentInfo ? m_pDocumentInfo->m_arUsers[0]->m_pDecryptor : NULL;
 
 	CMetaFileBuffer	oMetaFile;
 	std::wstring sExt = L".jpg";
@@ -183,9 +191,9 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		}
 	}
 	int nImagesCount = 0;
-	if (m_oDocumentInfo)
+	if (m_pDocumentInfo)
 	{
-		nImagesCount = m_oDocumentInfo->m_mapStoreImageFile.size();
+		nImagesCount = m_pDocumentInfo->m_mapStoreImageFile.size();
 	}
 	//else nImagesCount = generate uniq name
 
@@ -195,12 +203,12 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 		NSFile::CFileBinary fileMeta;
 	
-		if (fileMeta.CreateFileW(m_strTmpDirectory + FILE_SEPARATOR_STR + strFile))
+		if (fileMeta.CreateFileW(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
 		{
 			oMetaFile.ToFile(&fileMeta);
 			fileMeta.CloseFile();
 		}
-		m_sFileName = strFile;
+		m_fileName = strFile;
 	}
 	else
 	{
@@ -215,7 +223,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		
 		NSFile::CFileBinary fileImage;
 
-		if (fileImage.CreateFileW(m_strTmpDirectory + FILE_SEPARATOR_STR + strFile))
+		if (fileImage.CreateFileW(m_pCommonInfo->tempPath + FILE_SEPARATOR_STR + strFile))
 		{
 			if (RECORD_TYPE_ESCHER_BLIP_DIB == oHeader.RecType)
 			{
@@ -234,6 +242,21 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		if (pImage)delete[] pImage;
 		pImage = NULL;	
 
-		m_sFileName = strFile;
+		m_fileName = strFile;
 	}
+}
+
+CRecordBitmapBlip::CRecordBitmapBlip()
+{
+
+}
+
+CRecordBitmapBlip::~CRecordBitmapBlip()
+{
+
+}
+
+void CRecordBitmapBlip::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    return CUnknownRecord::ReadFromStream(oHeader, pStream);
 }

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,6 +36,7 @@
 #include "ACSORTCONDS.h"
 #include "RICHSORTCONDITION.h"
 #include "FRT.h"
+#include "LISTPARTS.h"
 #include "../Biff12_records/EndSortState.h"
 
 using namespace XLS;
@@ -89,11 +90,27 @@ namespace XLSB
 
         if (proc.optional<EndSortState>())
         {
-            m_BrtEndSortState = elements_.back();
+			m_bBrtEndSortState = true;
             elements_.pop_back();
         }
-        return m_BrtBeginSortState && m_source && m_BrtEndSortState;
+		else
+			m_bBrtEndSortState = false;
+
+        return m_BrtBeginSortState && m_source && m_bBrtEndSortState;
     }
+
+	const bool SORTSTATE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSortState != nullptr)
+			proc.mandatory(*m_BrtBeginSortState);
+
+		if (m_source != nullptr)				
+			proc.mandatory(*m_source);
+		
+		proc.mandatory<EndSortState>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -22,6 +22,11 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+precompile_header {
+    PRECOMPILED_HEADER = precompiled.h
+    HEADERS += precompiled.h
+}
+
 core_release {
 SOURCES += \
 	docx_format_logic.cpp
@@ -47,10 +52,22 @@ SOURCES += \
 	../../../DocxFormat/Logic/Vml.cpp \
 	../../../DocxFormat/Logic/DocParts.cpp \
 	../../../DocxFormat/Logic/Pict.cpp \
+	../../../DocxFormat/Logic/FldChar.cpp \
+	../../../DocxFormat/Logic/RunContent.cpp \
+	../../../DocxFormat/Logic/VmlOfficeDrawing.cpp \
+	../../../DocxFormat/Logic/VmlWord.cpp \
+	../../../DocxFormat/Logic/Shape.cpp \
+	../../../DocxFormat/External/ExternalHyperLink.cpp \
+	../../../DocxFormat/External/External.cpp \
+	../../../DocxFormat/Media/ActiveX.cpp \
 	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
 	../../../DocxFormat/Media/ActiveX.cpp \
+	../../../DocxFormat/Media/Audio.cpp \
+	../../../DocxFormat/Media/Video.cpp \
+	../../../DocxFormat/Media/Image.cpp \
+	../../../DocxFormat/Media/OleObject.cpp \
 	../../../DocxFormat/Math/oMath.cpp \
 	../../../DocxFormat/Math/oMathContent.cpp \
 	../../../DocxFormat/Math/oMathPara.cpp \
@@ -60,6 +77,12 @@ SOURCES += \
 	../../../DocxFormat/Comments.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../DocxFormat/VmlDrawing.cpp \
+	../../../DocxFormat/Namespaces.cpp \
+	../../../XlsxFormat/CalcChain/CalcChain.cpp \
+	../../../XlsxFormat/Chart/Chart.cpp \
+	../../../XlsxFormat/Chart/ChartColors.cpp \
+	../../../XlsxFormat/Chart/ChartDrawing.cpp \
+	../../../XlsxFormat/Chart/ChartStyle.cpp \
 	../../../XlsxFormat/Chart/ChartSerialize.cpp \
 	../../../XlsxFormat/Chart/ChartSerializeEx.cpp \
 	../../../XlsxFormat/Common.cpp \
@@ -70,16 +93,39 @@ SOURCES += \
 	../../../XlsxFormat/Worksheets/SheetData.cpp \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp \
 	../../../XlsxFormat/Worksheets/DataValidation.cpp \
+	../../../XlsxFormat/Worksheets/Cols.cpp \
+	../../../XlsxFormat/Worksheets/XlsxHyperlinks.cpp \
+	../../../XlsxFormat/Worksheets/MergeCells.cpp \
+	../../../XlsxFormat/Worksheets/Sparkline.cpp \
+	../../../XlsxFormat/Worksheets/WorksheetChildOther.cpp \
 	../../../XlsxFormat/Table/Tables.cpp \
+	../../../XlsxFormat/Table/Autofilter.cpp \
+	../../../XlsxFormat/Table/Connections.cpp \
 	../../../XlsxFormat/Controls/Controls.cpp \
 	../../../DocxFormat/Settings/Settings.cpp \
+	../../../DocxFormat/Settings/WebSettings.cpp \
 	../../../DocxFormat/App.cpp \
 	../../../DocxFormat/Core.cpp \
+	../../../DocxFormat/Bibliography.cpp \
+	../../../DocxFormat/ContentTypes.cpp \
+	../../../DocxFormat/CustomXml.cpp \
+	../../../DocxFormat/File.cpp \
+	../../../DocxFormat/FileType.cpp \
+	../../../DocxFormat/Font.cpp \
+	../../../DocxFormat/FontTable.cpp \
+	../../../DocxFormat/Footnote.cpp \
+	../../../DocxFormat/FtnEdn.cpp \
 	../../../DocxFormat/FileFactory.cpp \
 	../../../DocxFormat/FileTypes.cpp \
+	../../../DocxFormat/Numbering.cpp \
+	../../../DocxFormat/Rels.cpp \
+	../../../DocxFormat/RId.cpp \
+	../../../DocxFormat/Styles.cpp \
+	../../../DocxFormat/UnknowTypeFile.cpp \
 	../../../DocxFormat/IFileContainer.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../XlsxFormat/FileFactory_Spreadsheet.cpp \
+	../../../XlsxFormat/ComplexTypes_Spreadsheet.cpp \
 	../../../DocxFormat/Drawing/Drawing.cpp \
 	../../../DocxFormat/Drawing/DrawingExt.cpp \
 	../../../DocxFormat/Diagram/DiagramColors.cpp \
@@ -100,19 +146,47 @@ SOURCES += \
 	../../../Common/SimpleTypes_Vml.cpp \
 	../../../Common/ComplexTypes.cpp \
 	../../../SystemUtility/SystemUtility.cpp \
-	../../../SystemUtility/File.cpp \
+	../../../SystemUtility/FileUtils.cpp \
 	../../../XML/XmlSimple.cpp \
-	../../../XlsxFormat/Styles/Styles.cpp \
+	../../../XlsxFormat/Styles/XlsxStyles.cpp \
 	../../../XlsxFormat/Styles/rPr.cpp \
+	../../../XlsxFormat/Styles/Borders.cpp \
+	../../../XlsxFormat/Styles/CellStyles.cpp \
+	../../../XlsxFormat/Styles/Colors.cpp \
+	../../../XlsxFormat/Styles/dxf.cpp \
+	../../../XlsxFormat/Styles/Fills.cpp \
+	../../../XlsxFormat/Styles/Fonts.cpp \
+	../../../XlsxFormat/Styles/NumFmts.cpp \
+	../../../XlsxFormat/Styles/TableStyles.cpp \
+	../../../XlsxFormat/Styles/Xfs.cpp \
 	../../../XlsxFormat/SharedStrings/Si.cpp \
 	../../../XlsxFormat/SharedStrings/Text.cpp \
+	../../../XlsxFormat/SharedStrings/PhoneticPr.cpp \
+	../../../XlsxFormat/SharedStrings/XlsxRun.cpp \
+	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
-	../../../XlsxFormat/Workbook/Workbook.cpp
+	../../../XlsxFormat/Workbook/Workbook.cpp \
+	../../../XlsxFormat/Workbook/BookViews.cpp \
+	../../../XlsxFormat/Workbook/CalcPr.cpp \
+	../../../XlsxFormat/Workbook/DefinedNames.cpp \
+	../../../XlsxFormat/Workbook/ExternalReferences.cpp \
+	../../../XlsxFormat/Workbook/Sheets.cpp \
+	../../../XlsxFormat/Workbook/WorkbookPr.cpp \
+	../../../XlsxFormat/Comments/XlsxComments.cpp \
+	../../../XlsxFormat/Comments/ThreadedComments.cpp \
+	../../../XlsxFormat/Drawing/CellAnchor.cpp \
+	../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
+	../../../XlsxFormat/Drawing/FromTo.cpp \
+	../../../XlsxFormat/Drawing/Pos.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
+	../../../XlsxFormat/Ole/OleObjects.cpp
 }
 
 
@@ -142,13 +216,11 @@ HEADERS += \
 	../../../Common/Wrap.h \
 	../../../Common/ZIndex.h \
 	../../../DocxFormat/Drawing/Drawing.h \
-	../../../DocxFormat/Drawing/DrawingBody.h \
 	../../../DocxFormat/Drawing/DrawingExt.h \
 	../../../DocxFormat/External/External.h \
 	../../../DocxFormat/External/HyperLink.h \
 	../../../DocxFormat/Logic/AlternateContent.h \
 	../../../DocxFormat/Logic/Annotations.h \
-	../../../DocxFormat/Logic/BaseLogicSettings.h \
 	../../../DocxFormat/Logic/Bdo.h \
 	../../../DocxFormat/Logic/Dir.h \
 	../../../DocxFormat/Logic/FldChar.h \
@@ -174,12 +246,14 @@ HEADERS += \
 	../../../DocxFormat/Math/oMathBottomNodes.h \
 	../../../DocxFormat/Math/oMathContent.h \
 	../../../DocxFormat/Math/oMathPara.h \
+	../../../DocxFormat/Media/ActiveX.h \
 	../../../DocxFormat/Media/Audio.h \
 	../../../DocxFormat/Media/Image.h \
 	../../../DocxFormat/Media/Media.h \
 	../../../DocxFormat/Media/OleObject.h \
 	../../../DocxFormat/Media/Video.h \
 	../../../DocxFormat/Media/JsaProject.h \
+	../../../DocxFormat/Media/VbaProject.h \
 	../../../DocxFormat/Settings/Settings.h \
 	../../../DocxFormat/Settings/WebSettings.h \
 	../../../DocxFormat/App.h \
@@ -211,6 +285,7 @@ HEADERS += \
 	../../../DocxFormat/Styles.h \
 	../../../DocxFormat/Unit.h \
 	../../../DocxFormat/UnknowTypeFile.h \
+	../../../DocxFormat/VmlDrawing.h \
 	../../../DocxFormat/WritingElement.h \
 	../../../SystemUtility/SystemUtility.h \
 	../../../Base/codecvt.h \
@@ -222,6 +297,9 @@ HEADERS += \
 	../../../XlsxFormat/Chart/Chart.h \
 	../../../XlsxFormat/Chart/ChartSerialize.h \
 	../../../XlsxFormat/Chart/ChartSerializeEx.h \
+	../../../XlsxFormat/Chart/ChartColors.h \
+	../../../XlsxFormat/Chart/ChartDrawing.h \
+	../../../XlsxFormat/Chart/ChartStyle.h \
 	../../../XlsxFormat/Comments/Comments.h \
 	../../../XlsxFormat/Comments/ThreadedComments.h \
 	../../../XlsxFormat/Drawing/CellAnchor.h \
@@ -229,7 +307,6 @@ HEADERS += \
 	../../../XlsxFormat/Drawing/FromTo.h \
 	../../../XlsxFormat/Drawing/Pos.h \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.h \
-	../../../XlsxFormat/SharedStrings/rPr.h \
 	../../../XlsxFormat/SharedStrings/Run.h \
 	../../../XlsxFormat/SharedStrings/SharedStrings.h \
 	../../../XlsxFormat/SharedStrings/Si.h \
@@ -247,12 +324,16 @@ HEADERS += \
 	../../../XlsxFormat/Styles/Xfs.h \
 	../../../XlsxFormat/Table/Autofilter.h \
 	../../../XlsxFormat/Table/Table.h \
+	../../../XlsxFormat/Table/Autofilter.h \
+	../../../XlsxFormat/Table/Connections.h \
+	../../../XlsxFormat/Table/QueryTable.h \
 	../../../XlsxFormat/Workbook/BookViews.h \
 	../../../XlsxFormat/Workbook/CalcPr.h \
 	../../../XlsxFormat/Workbook/DefinedNames.h \
 	../../../XlsxFormat/Workbook/Sheets.h \
 	../../../XlsxFormat/Workbook/Workbook.h \
 	../../../XlsxFormat/Workbook/WorkbookPr.h \
+	../../../XlsxFormat/Workbook/ExternalReferences.h \
 	../../../XlsxFormat/Worksheets/Cols.h \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.h \
 	../../../XlsxFormat/Worksheets/DataValidation.h \
@@ -285,7 +366,7 @@ HEADERS += \
 	../../../XlsxFormat/ExternalLinks/ExternalLinks.h \
 	../../../XlsxFormat/Worksheets/Sparkline.h \
 	../../../XlsxFormat/Ole/OleObjects.h \
-	../../../DocxFormat/ Diagram/DiagramColors.h \
+	../../../DocxFormat/Diagram/DiagramColors.h \
 	../../../DocxFormat/Diagram/DiagramData.h \
 	../../../DocxFormat/Diagram/DiagramDrawing.h \
 	../../../DocxFormat/Diagram/DiagramLayout.h \

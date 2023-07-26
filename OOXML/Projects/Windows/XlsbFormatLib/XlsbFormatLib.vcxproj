@@ -267,7 +267,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BkHim.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookProtection.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookView.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Border.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Brk.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BundleSh.cpp" />
@@ -277,7 +276,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\CFRuleExt.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\CFVO.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\CFVO14.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Color.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Color14.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\ColorFilter.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\CommentAuthor.cpp" />
@@ -665,26 +663,15 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\CFVOType14.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\CmdType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\CodeName.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ColSpan.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DataConsolidationFunction.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DBType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DDEItemProperties.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DValStrings.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ECTwFldInfoData.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ECTxtWizData.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ExternalNameProperties.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ExternalReferenceType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTBlank.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormula.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormulas.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTHeader.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTParsedFormula.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTProductVersion.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRef.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRefs.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRelID.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqref.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqrefs.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\GradientStop.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\GrbitFmla.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\IIFtab.cpp" />
@@ -704,7 +691,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\PRFilter_bs.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\PRuleHeaderData.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RangeProtectionTitleSDRel.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RelID.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RichStr.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SdSetSortOrder.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ShowDataAs.cpp" />
@@ -718,7 +704,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Tws.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\UncheckedSqRfX.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ACABSPATH.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ACCELLTABLE.cpp" />
@@ -1300,7 +1285,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BkHim.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookProtection.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookView.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Border.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Brk.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BundleSh.h" />
@@ -1311,7 +1295,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\CFRuleExt.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\CFVO.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\CFVO14.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Color.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Color14.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\ColorFilter.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\CommentAuthor.h" />
@@ -1694,8 +1677,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Blxf.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\BookProtectionFlags.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Cell.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CellRangeRef.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CellRef.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CFDateOper.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CFOper.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CFTemp.h" />
@@ -1705,26 +1686,15 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CFVOType14.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CmdType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CodeName.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ColSpan.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DataConsolidationFunction.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DBType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DDEItemProperties.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DValStrings.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ECTwFldInfoData.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ECTxtWizData.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ExternalNameProperties.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ExternalReferenceType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTBlank.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormula.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormulas.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTHeader.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTParsedFormula.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTProductVersion.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRef.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRefs.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRelID.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqref.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqrefs.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\GradientStop.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\GrbitFmla.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\IIFtab.h" />
@@ -1744,7 +1714,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\PRFilter.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\PRuleHeaderData.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RangeProtectionTitleSDRel.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RelID.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RichStr.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SdSetSortOrder.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ShowDataAs.h" />
@@ -1758,8 +1727,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Tws.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\UncheckedSqRfX.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\XLWideString.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ACABSPATH.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ACCELLTABLE.h" />
@@ -2097,32 +2064,32 @@
     <ProjectGuid>{13E13907-49DA-482E-AD58-026D06A5CD11}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>XlsbFormatLib</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -2145,14 +2112,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\XlsbFormat\</OutDir>
+    <OutDir>$(Configuration)\</OutDir>
     <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
-    <IntDir>$(Configuration)\XlsbFormat\</IntDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_64\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -2160,7 +2132,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -2173,7 +2145,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

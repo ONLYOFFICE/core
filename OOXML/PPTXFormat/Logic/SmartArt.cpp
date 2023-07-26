@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,6 +43,8 @@
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
 #include "../../Binary/Document/BinWriter/BinWriters.h"
 
+#include "../../XlsxFormat/Chart/Chart.h"
+
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../DocxFormat/Diagram/DiagramColors.h"
@@ -52,10 +54,37 @@
 #include "../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../DesktopEditor/common/Directory.h"
+
 namespace PPTX
 {
 	namespace Logic
 	{
+		SmartArt::SmartArt()
+		{
+		}
+		SmartArt& SmartArt::operator=(const SmartArt& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			return *this;
+		}
+		OOX::EElementType SmartArt::getType () const
+		{
+			return OOX::et_dgm_DiagrammParts;
+		}
+		void SmartArt::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+		}
+		void SmartArt::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"r:dm", id_data);
+			XmlMacroReadAttributeBase(node, L"r:cs", id_color);
+			XmlMacroReadAttributeBase(node, L"r:lo", id_layout);
+			XmlMacroReadAttributeBase(node, L"r:qs", id_style);
+		}
 		smart_ptr<OOX::File> SmartArt::FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const
 		{
 			if (!pDiagramData) return NULL;
@@ -83,6 +112,11 @@ namespace PPTX
 			OOX::CDiagramData* pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());
 
 			if (!pDiagramData) return false;
+
+			if (pDiagramData->m_oDataModel.IsInit())
+				m_oDataBg = pDiagramData->m_oDataModel->m_oBg;
+
+			m_pDataContainer = oFileData.smart_dynamic_cast<OOX::IFileContainer>();
 
 			// это smart art ..есть у него drawing или нет - неважно
 			smart_ptr<OOX::File> oFileDrawing;
@@ -116,10 +150,10 @@ namespace PPTX
 				if (!m_oDrawing->grpSpPr.xfrm.IsInit())
 					m_oDrawing->grpSpPr.xfrm = new PPTX::Logic::Xfrm;
 			}
-			else
-			{
-				//parse pDiagramData !!
-			}
+			//else
+			//{
+			//	//parse pDiagramData !!
+			//}
 			return true;
 		}
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
@@ -397,6 +431,67 @@ namespace PPTX
 		{
 			pWriter->WriteString(toXML());
 		}
+		void SmartArt::FillParentPointersForChilds()
+		{
+		}
+		void SmartArt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, (L"r:cs"), id_color)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:dm"), id_data)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:lo"), id_layout)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:qs"), id_style)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+
+		ChartRec::ChartRec()
+		{
+		}
+		ChartRec::ChartRec(const ChartRec& oSrc)
+		{
+			*this = oSrc;
+		}
+		ChartRec& ChartRec::operator=(const ChartRec& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			return *this;
+		}
+		void ChartRec::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"id", id_data )
+			WritingElement_ReadAttributes_End_No_NS	( oReader )
+		}
+		void ChartRec::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring ns = XmlUtils::GetNamespace(oReader.GetName());
+
+			m_bChartEx = false;
+
+			ReadAttributes( oReader );
+			FillParentPointersForChilds();
+
+			if (ns == L"cx")
+			{
+				m_bChartEx = true;
+			}
+		}
+		void ChartRec::fromXML(XmlUtils::CXmlNode& node)
+		{
+			m_bChartEx = false;
+
+			std::wstring ns = XmlUtils::GetNamespace(node.GetName());
+
+			XmlMacroReadAttributeBase(node, L"r:id", id_data);
+			FillParentPointersForChilds();
+
+			if (ns == L"cx")
+			{
+				m_bChartEx = true;
+			}
+		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
@@ -414,7 +509,7 @@ namespace PPTX
 
 	//----------------------------------------------------------------
 			std::wstring id;
-			if ((pChart.IsInit()) && (pChart->m_oChartSpace.m_externalData) && (pChart->m_oChartSpace.m_externalData->m_id))
+			if ((pChart.IsInit()) && (pChart->m_oChartSpace.m_externalData) && (pChart->m_oChartSpace.m_externalData->m_id.IsInit()))
 				id = *pChart->m_oChartSpace.m_externalData->m_id;
 			else if ((pChartEx.IsInit()) && (true == pChartEx->m_oChartSpace.m_chartData.m_externalData.IsInit()))
 				id = pChartEx->m_oChartSpace.m_chartData.m_externalData->m_id.get_value_or(L"");
@@ -426,96 +521,106 @@ namespace PPTX
 
 				if (oMediaFile.IsInit())
 				{
-					OOX::CPath oox_file = oMediaFile->filename();
-					OOX::CPath embed_folder = oox_file.GetDirectory(true);
-					OOX::CPath oox_unpacked = embed_folder + L"Temp_unpacked";
-					NSDirectory::CreateDirectory(oox_unpacked.GetPath());
-
-					COfficeUtils oOfficeUtils(NULL);
-					oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
-
-					COfficeFileFormatChecker office_checker;
-					office_checker.isOOXFormatFile(oox_file.GetPath());
-
-					if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
-						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+					if (oMediaFile->IsExternal())
 					{
-						DocWrapper::FontProcessor oFontProcessor;
-						NSBinPptxRW::CDrawingConverter oDrawingConverter;
-
-						NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = pWriter->GetRels();
-						NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
-
-						NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
-						oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
-
-						oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
-
-//----------------------------
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
-						OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
-						NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
-
-						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
-							pXlsxEmbedded = new OOX::Spreadsheet::CXlsb();
-						else
-							pXlsxEmbedded = new OOX::Spreadsheet::CXlsx();
-
-						//startheader for test
-						//oXlsbWriter.WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
-						oXlsbWriter.WriteReserved(xlsxBinaryWriter.GetMainTableSize());
-						unsigned int nXlsbWriterStartPos = oXlsbWriter.GetPositionAbsolute();
-
-						pXlsxEmbedded->m_pXlsbWriter = &oXlsbWriter;
-						pXlsxEmbedded->m_bNeedCalcChain = false;
-
-						pXlsxEmbedded->Read(oox_unpacked);
-						pXlsxEmbedded->PrepareWorkbook();
-
-						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute() ;
-
-						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
-						{
-							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
-							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
-                            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->ReadSheetData();
-						}
-						//startheader for test
-						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
-						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
-
-						if (nXlsbWriterEndPos  > nXlsbWriterStartPos)
-						{
-							xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos - nXlsbWriterStartPos);
-						}
-						xlsxBinaryWriter.WriteContent(pXlsxEmbedded, NULL, &oDrawingConverter);
-						xlsxBinaryWriter.WriteMainTableEnd();
-
-						pXlsxEmbedded->m_pXlsbWriter = NULL;
-
-						delete pXlsxEmbedded;
-//------------------------------
-						pWriter->SetRels(old_rels);
-						*pWriter->m_pTheme = old_theme;
-						oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
-						
-						pWriter->StartRecord(/*c_oserct_chartspaceXLSX*/16);
-						
-						BYTE* pbBinBuffer = oDrawingConverter.m_pBinaryWriter->GetBuffer();
-						int nBinBufferLen = oDrawingConverter.m_pBinaryWriter->GetPosition();
-
-						pWriter->WriteBYTEArray(pbBinBuffer, nBinBufferLen);
-
+						pWriter->StartRecord(/*c_oserct_chartspaceXLSXEXTERRNAL = */19);
+						pWriter->WriteStringW4(oMediaFile->filename().GetPath());
 						pWriter->EndRecord();
 
-						//for test
-						//NSFile::CFileBinary oFile;
-						//oFile.CreateFileW(L"d:\\Editor.bin");
-						//oFile.WriteFile(pbBinBuffer, nBinBufferLen);
-						//oFile.CloseFile();
 					}
+					else
+					{
+						OOX::CPath oox_file = oMediaFile->filename();
+						OOX::CPath embed_folder = oox_file.GetDirectory(true);
+						OOX::CPath oox_unpacked = embed_folder + L"Temp_unpacked";
+						NSDirectory::CreateDirectory(oox_unpacked.GetPath());
 
-					NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+						COfficeUtils oOfficeUtils(NULL);
+						oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
+
+						COfficeFileFormatChecker office_checker;
+						office_checker.isOOXFormatFile(oox_file.GetPath());
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
+							office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+						{
+							DocWrapper::FontProcessor oFontProcessor;
+							NSBinPptxRW::CDrawingConverter oDrawingConverter;
+
+							NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = pWriter->GetRels();
+							NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
+
+							NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
+							oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
+
+							oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
+
+			//----------------------------
+							BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+							OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
+							NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
+
+							if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+								pXlsxEmbedded = new OOX::Spreadsheet::CXlsb();
+							else
+								pXlsxEmbedded = new OOX::Spreadsheet::CXlsx();
+
+							//startheader for test
+							//oXlsbWriter.WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+							oXlsbWriter.WriteReserved(xlsxBinaryWriter.GetMainTableSize());
+							unsigned int nXlsbWriterStartPos = oXlsbWriter.GetPositionAbsolute();
+
+							pXlsxEmbedded->m_pXlsbWriter = &oXlsbWriter;
+							pXlsxEmbedded->m_bNeedCalcChain = false;
+
+							pXlsxEmbedded->Read(oox_unpacked);
+							pXlsxEmbedded->PrepareWorkbook();
+
+							unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute();
+
+							if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+							{
+								dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
+								dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
+								dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->ReadSheetData();
+							}
+							//startheader for test
+							//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+							xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
+
+							if (nXlsbWriterEndPos > nXlsbWriterStartPos)
+							{
+								xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos - nXlsbWriterStartPos);
+							}
+							xlsxBinaryWriter.WriteContent(pXlsxEmbedded, NULL, &oDrawingConverter);
+							xlsxBinaryWriter.WriteMainTableEnd();
+
+							pXlsxEmbedded->m_pXlsbWriter = NULL;
+
+							delete pXlsxEmbedded;
+							//------------------------------
+							pWriter->SetRels(old_rels);
+							*pWriter->m_pTheme = old_theme;
+							oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
+
+							pWriter->StartRecord(/*c_oserct_chartspaceXLSX*/16);
+
+							BYTE* pbBinBuffer = oDrawingConverter.m_pBinaryWriter->GetBuffer();
+							int nBinBufferLen = oDrawingConverter.m_pBinaryWriter->GetPosition();
+
+							pWriter->WriteBYTEArray(pbBinBuffer, nBinBufferLen);
+
+							pWriter->EndRecord();
+
+							//for test
+							//NSFile::CFileBinary oFile;
+							//oFile.CreateFileW(L"d:\\Editor.bin");
+							//oFile.WriteFile(pbBinBuffer, nBinBufferLen);
+							//oFile.CloseFile();
+						}
+
+						NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+					}
 				}
 			}
 	//----------------------------------------------------------------
@@ -596,7 +701,6 @@ namespace PPTX
 		{
 			pWriter->WriteString(toXML());
 		}
-
 		void ChartRec::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			ULONG lLen = pReader->GetLong();
@@ -648,6 +752,9 @@ namespace PPTX
 			}
 			oDrawingConverter.m_pReader			= pOldReader;
 			oDrawingConverter.m_pImageManager	= pOldImageManager;
+		}
+		void ChartRec::FillParentPointersForChilds()
+		{
 		}
 	} // namespace Logic
 } // namespace PPTX

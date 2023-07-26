@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,58 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef NATIVECONTROLBUILDER
-#define NATIVECONTROLBUILDER
+#ifndef _BUILD_NATIVE_BUILDER_EMBED_H_
+#define _BUILD_NATIVE_BUILDER_EMBED_H_
 
 #include "../docbuilder.h"
 #include "../js_internal/js_base.h"
+
+// For windows fileapi
+#ifdef CreateFile
+#undef CreateFile
+#endif
 
 using namespace NSJSBase;
 class CBuilderEmbed : public CJSEmbedObject
 {
 public:
-    NSDoctRenderer::CDocBuilder* m_pBuilder;
+	NSDoctRenderer::CDocBuilder* m_pBuilder;
 
-    CBuilderEmbed() : m_pBuilder(NULL) {}
-    ~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
+	CBuilderEmbed() : m_pBuilder(NULL) {}
+	~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
 
-    virtual void* getObject() { return (void*)m_pBuilder; }
-
-public:
-    JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
-    JSSmart<CJSValue> builder_CreateFile(JSSmart<CJSValue> type);
-    JSSmart<CJSValue> builder_SetTmpFolder(JSSmart<CJSValue> path);
-    JSSmart<CJSValue> builder_SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
-    JSSmart<CJSValue> builder_CloseFile();
-    JSSmart<CJSValue> builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
-};
-
-class CBuilderDocumentEmbed : public CJSEmbedObject
-{
-public:
-    NSDoctRenderer::CDocBuilder* m_pBuilder;
-    bool m_bIsValid;
-    std::wstring m_sFolder;
+	virtual void* getObject() { return (void*)m_pBuilder; }
 
 public:
-    CBuilderDocumentEmbed() : m_pBuilder(NULL), m_bIsValid(false) {}
-    ~CBuilderDocumentEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
+	JSSmart<CJSValue> OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
+	JSSmart<CJSValue> CreateFile(JSSmart<CJSValue> type);
+	JSSmart<CJSValue> SetTmpFolder(JSSmart<CJSValue> path);
+	JSSmart<CJSValue> SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
+	JSSmart<CJSValue> CloseFile();
+	JSSmart<CJSValue> OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
 
-    virtual void* getObject() { return (void*)m_pBuilder; }
-    NSDoctRenderer::CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->GetPrivate(); }
-
-public:
-    void OpenFile(const std::wstring& sFile, const std::wstring& sParams);
-    void CloseFile();
-
-public:
-    JSSmart<CJSValue> builder_doc_IsValid();
-    JSSmart<CJSValue> builder_doc_GetBinary();
-    JSSmart<CJSValue> builder_doc_GetFolder();
-    JSSmart<CJSValue> builder_doc_CloseFile();
-    JSSmart<CJSValue> builder_doc_GetImageMap();
+	DECLARE_EMBED_METHODS
 };
 
 void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder);
 
-#endif // NATIVECONTROLBUILDER
+#endif // _BUILD_NATIVE_BUILDER_EMBED_H_

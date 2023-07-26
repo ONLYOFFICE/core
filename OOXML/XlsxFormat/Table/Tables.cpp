@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -55,6 +55,10 @@
 #include "../../XlsbFormat/Biff12_unions/DELETEDNAMES.h"
 #include "../../XlsbFormat/Biff12_unions/DELETEDNAME.h"
 #include "../../XlsbFormat/Biff12_records/BeginDeletedName.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace OOX
 {
@@ -153,6 +157,7 @@ namespace Spreadsheet
 
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
 	void CTableColumn::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
         std::wstring sRoot;
@@ -313,6 +318,7 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if     ( oReader, L"uid",				m_oUid )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
 	void CTableColumns::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		if(m_arrItems.empty()) return;
@@ -344,7 +350,11 @@ namespace Spreadsheet
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( (L"tableColumn") == sName )
-				m_arrItems.push_back(new CTableColumn(oReader));
+			{
+				CTableColumn* pTableColumn = new CTableColumn();
+				*pTableColumn = oReader;
+				m_arrItems.push_back(pTableColumn);
+			}
 		}
 	}
     void CTableColumns::fromBin(XLS::BaseObjectPtr& obj)
@@ -462,7 +472,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				m_oExtLst = oReader;
 		}
 	}
-
     void CTable::fromBin(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::TABLE*>(obj.get());
@@ -514,7 +523,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"totalsRowShown",		m_oTotalsRowShown )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-
     void CTable::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::BeginList*>(obj.get());
@@ -660,10 +668,13 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( (L"tablePart") == sName )
-				m_arrItems.push_back(new CTablePart(oReader));
+			{
+				CTablePart* pTablePart = new CTablePart();
+				*pTablePart = oReader;
+				m_arrItems.push_back(pTablePart);
+			}
 		}
 	}
-
     void CTableParts::fromBin(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::LISTPARTS*>(obj.get());
@@ -678,14 +689,12 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             }
         }
     }
-
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-
     void CTableParts::ReadAttributes(XLS::BaseObjectPtr &obj)
     {
         auto ptr = static_cast<XLSB::BeginListParts*>(obj.get());
@@ -693,7 +702,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             m_oCount = ptr->cParts;
     }
 
-    void CTableFile::readBin(const CPath& oPath)
+	void CTableFile::readBin(const CPath& oPath)
     {
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
@@ -712,7 +721,6 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
         }
     }
-
 	void CTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
@@ -750,7 +758,9 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
 	}
+
 //---------------------------------------------------------------------------------------------------------------------
+
 	void CQueryTableField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<queryTableField");
@@ -851,7 +861,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"queryTableField" == sName )
-				m_arrItems.push_back(new CQueryTableField(oReader));
+			{
+				CQueryTableField* pQueryTableField = new CQueryTableField();
+				*pQueryTableField = oReader;
+				m_arrItems.push_back(pQueryTableField);
+			}
 		}
 	}
     void CQueryTableFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -872,6 +886,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
 	void CQueryTableDeletedField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<deletedField");
@@ -939,7 +954,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"deletedField" == sName )
-				m_arrItems.push_back(new CQueryTableDeletedField(oReader));
+			{
+				CQueryTableDeletedField* pQueryTableDeletedField = new CQueryTableDeletedField();
+				*pQueryTableDeletedField = oReader;
+				m_arrItems.push_back(pQueryTableDeletedField);
+			}
 		}
 	}
     void CQueryTableDeletedFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -960,6 +979,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
 	void CQueryTableRefresh::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<queryTableRefresh");
@@ -1201,7 +1221,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"rowNumbers",			m_oRowNumbers )
 		WritingElement_ReadAttributes_End( oReader )
 	}
-    void CQueryTableFile::readBin(const CPath& oPath)
+
+	void CQueryTableFile::readBin(const CPath& oPath)
     {
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
@@ -1256,5 +1277,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
 	}
+
 } //Spreadsheet
 } // namespace OOX

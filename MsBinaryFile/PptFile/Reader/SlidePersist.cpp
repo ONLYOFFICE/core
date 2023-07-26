@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,27 +33,30 @@
 
 #include "../Records/TextFullSettings.h"
 
-SSlidePersist::SSlidePersist() : m_arTextAttrs()
+namespace PPT
 {
-}
+	SSlidePersist::SSlidePersist() : m_arTextAttrs()
+	{
+	}
 
-SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
-{
-	*this = oSrc;
-}
+	SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
+	{
+		*this = oSrc;
+	}
 
-//std::wstring SSlidePersist::ToString()
-//{
-//    std::wstring str = _T("");
-//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
-//	return str;
-//}
+	//std::wstring SSlidePersist::ToString()
+	//{
+	//    std::wstring str = _T("");
+	//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
+	//	return str;
+	//}
 
-SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
-{
-	m_nPsrRef	= oSrc.m_nPsrRef;
-	m_nSlideID = oSrc.m_nSlideID;
+	SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
+	{
+		m_nPsrRef = oSrc.m_nPsrRef;
+		m_nSlideID = oSrc.m_nSlideID;
 
-	m_arTextAttrs = oSrc.m_arTextAttrs;
-	return (*this);
+		m_arTextAttrs = oSrc.m_arTextAttrs;
+		return (*this);
+	}
 }

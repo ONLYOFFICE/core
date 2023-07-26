@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,233 +45,21 @@ namespace PPTX
 		class TableProperties : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TableProperties)
+			WritingElement_AdditionMethods(TableProperties)
 			
-			TableProperties()
-			{
-			}
+			TableProperties();
 
-			TableProperties& operator=(const TableProperties& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			TableProperties& operator=(const TableProperties& oSrc);
 
-				Fill		= oSrc.Fill;
-				Effects		= oSrc.Effects;
-				TableStyleId = oSrc.TableStyleId;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				Rtl			= oSrc.Rtl;
-				FirstRow	= oSrc.FirstRow;
-				FirstCol	= oSrc.FirstCol;
-				LastRow		= oSrc.LastRow;
-				LastCol		= oSrc.LastCol;
-				BandRow		= oSrc.BandRow;
-				BandCol		= oSrc.BandCol;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
-
-					if (strName == L"a:tableStyleId")
-					{
-						TableStyleId = oReader.GetText2();
-					}
-					else if ( L"a:blipFill"	== strName	||
-							  L"a:gradFill"	== strName	||
-							  L"a:grpFill"	== strName	||
-							  L"a:noFill"	== strName	||
-							  L"a:pattFill"	== strName	||
-							  L"a:solidFill"== strName )
-					{
-						Fill.fromXML(oReader);
-					}
-					else if ( L"a:effectDag"	== strName	||
-							  L"a:effectLst"	== strName)
-					{
-						Effects.fromXML(oReader);		
-					}			
-					else if ( L"a:extLst" == strName )
-					{
-						if ( oReader.IsEmptyNode() )
-							continue;
-
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							Ext element;
-							element.fromXML(oReader);
-							extLst.push_back (element);
-						}
-					}
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("rtl"),	Rtl)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstRow"),	FirstRow)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstCol"),	FirstCol)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lastRow"),	LastRow)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lastCol"),	LastCol)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("bandRow"),	BandRow)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("bandCol"),	BandCol)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Fill.GetFillFrom(node);
-				Effects.GetEffectListFrom(node);
-
-				XmlUtils::CXmlNode oNode;
-				if (node.GetNode(_T("a:tableStyleId"), oNode))
-					TableStyleId = oNode.GetTextExt();
-
-				XmlMacroReadAttributeBase(node, L"rtl", Rtl);
-				XmlMacroReadAttributeBase(node, L"firstRow", FirstRow);
-				XmlMacroReadAttributeBase(node, L"firstCol", FirstCol);
-				XmlMacroReadAttributeBase(node, L"lastRow", LastRow);
-				XmlMacroReadAttributeBase(node, L"lastCol", LastCol);
-				XmlMacroReadAttributeBase(node, L"bandRow", BandRow);
-				XmlMacroReadAttributeBase(node, L"bandCol", BandCol);
-
-				FillParentPointersForChilds();
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:tblPr"));
-
-				pWriter->StartAttributes();
-
-				pWriter->WriteAttribute(_T("rtl"), Rtl);
-				pWriter->WriteAttribute(_T("firstRow"), FirstRow);
-				pWriter->WriteAttribute(_T("firstCol"), FirstCol);
-				pWriter->WriteAttribute(_T("lastRow"), LastRow);
-				pWriter->WriteAttribute(_T("lastCol"), LastCol);
-				pWriter->WriteAttribute(_T("bandRow"), BandRow);
-				pWriter->WriteAttribute(_T("bandCol"), BandCol);
-
-				pWriter->EndAttributes();
-
-				if (TableStyleId.is_init())
-					pWriter->WriteString(_T("<a:tableStyleId>") + *TableStyleId + _T("</a:tableStyleId>"));
-
-				Fill.toXmlWriter(pWriter);
-				Effects.toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:tblPr"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, TableStyleId);
-
-				pWriter->WriteBool2(1, Rtl);
-				pWriter->WriteBool2(2, FirstRow);
-				pWriter->WriteBool2(3, FirstCol);
-				pWriter->WriteBool2(4, LastRow);
-				pWriter->WriteBool2(5, LastCol);
-				pWriter->WriteBool2(6, BandRow);
-				pWriter->WriteBool2(7, BandCol);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, Fill);
-				pWriter->WriteRecord1(1, Effects);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							TableStyleId = pReader->GetString2();
-							break;
-						}
-						case 1:
-						{
-							Rtl = pReader->GetBool();
-							break;
-						}
-						case 2:
-						{
-							FirstRow = pReader->GetBool();
-							break;
-						}
-						case 3:
-						{
-							FirstCol = pReader->GetBool();
-							break;
-						}
-						case 4:
-						{
-							LastRow = pReader->GetBool();
-							break;
-						}
-						case 5:
-						{
-							LastCol = pReader->GetBool();
-							break;
-						}
-						case 6:
-						{
-							BandRow = pReader->GetBool();
-							break;
-						}
-						case 7:
-						{
-							BandCol = pReader->GetBool();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Fill.fromPPTY(pReader);							
-							break;
-						}
-						case 1:
-						{
-							Effects.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}				
-
-				pReader->Seek(_end_rec);
-			}
-			
 		public:
 			UniFill						Fill;
 			EffectProperties			Effects;
@@ -293,13 +81,7 @@ namespace PPTX
 			nullable_bool				BandCol;
 
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(Fill.is_init())
-					Fill.SetParentPointer(this);
-				if(Effects.is_init())
-					Effects.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

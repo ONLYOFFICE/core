@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,7 +45,7 @@ namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
 		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
-		_endnoteNr(0), _commentNr(1), _caller(caller)
+		_endnoteNr(0), _commentNr(1), _caller(caller), _permissionNr(1)
 	{
 		m_document				=	NULL;
 		m_context				=	context;
@@ -153,12 +153,20 @@ namespace DocFileFormat
 
 		if ((m_document->Text) && (cpParaEnd < (int)m_document->Text->size()))
 		{
-            while ( ( m_document->Text->at( cpParaEnd ) != TextMark::ParagraphEnd ) &&
-                    ( m_document->Text->at( cpParaEnd ) != TextMark::CellOrRowMark ) &&
-                    !(( m_document->Text->at( cpParaEnd ) == TextMark::PageBreakOrSectionMark )&&
-                    isSectionEnd( cpParaEnd ) ) )
+            while (true)
 			{
-                if (cpParaEnd >= (int)m_document->Text->size()-1) break;
+				if (m_document->m_mapBadCP.end() != m_document->m_mapBadCP.find(cpParaEnd))
+				{
+					cpParaEnd++;
+					continue;
+				}
+				if ((m_document->Text->at(cpParaEnd) == TextMark::ParagraphEnd) ||
+					(m_document->Text->at(cpParaEnd) == TextMark::CellOrRowMark) ||
+					((m_document->Text->at(cpParaEnd) == TextMark::PageBreakOrSectionMark) &&
+						isSectionEnd(cpParaEnd)))
+					break;
+
+				if (cpParaEnd >= (int)m_document->Text->size()-1) break;
 				cpParaEnd++;
 			}
 
@@ -199,10 +207,10 @@ namespace DocFileFormat
 
 		// get all CHPX between these boundaries to determine the count of runs
 		
-		std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fc, fcEnd);
-		std::vector<int>* chpxFcs						= m_document->GetFileCharacterPositions(fc, fcEnd);
+		std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
+		std::vector<int>* chpxFcs = m_document->GetFileCharacterPositions(fc, fcEnd);
 
-		CharacterPropertyExceptions* paraEndChpx		=	NULL;
+		CharacterPropertyExceptions* paraEndChpx = NULL;
 
 		if (chpxFcs)
 		{
@@ -263,22 +271,18 @@ namespace DocFileFormat
 
 		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())//? второе
 		{
-			int i = 0;
+			size_t i = 0;
 
 			// write a runs for each CHPX
-			std::list<CharacterPropertyExceptions*>::iterator cpeIter_last = chpxs->end(); cpeIter_last--;
-
-			for (std::list<CharacterPropertyExceptions*>::iterator cpeIter = chpxs->begin(); cpeIter != chpxs->end(); ++cpeIter)
+			for (size_t it = 0; it < chpxs->size(); ++it)
 			{
 				//get the FC range for this run
 
-				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i)		: fc;
-				int fcChpxEnd	=	chpxFcs ? chpxFcs->at(i + 1)	: fcEnd;
-
-		//?		if (lastBad && cpeIter == cpeIter_last)
-		//?		{
-		//?			fcChpxEnd = fcEnd;
-		//?		}
+				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i) : fc;
+				int fcChpxEnd	=	fcEnd;
+				
+				if ((chpxFcs) && ( i < chpxFcs->size() - 1))
+					fcChpxEnd = chpxFcs->at(i + 1);
 
 				//it's the first chpx and it starts before the paragraph
 
@@ -296,21 +300,19 @@ namespace DocFileFormat
 					fcChpxEnd = fcEnd;
 				}
 
-				//read the chars that are formatted via this CHPX
 				std::vector<wchar_t>* chpxChars = m_document->GetChars(fcChpxStart, fcChpxEnd, cp);
 
-				//search for bookmarks in the chars
-				std::vector<int> annot = searchAnnot(chpxChars, cp);
-				if (!annot.empty())
+				std::vector<int> annot = searchAnnotation(chpxChars, cp);
+				if (false == annot.empty())
 				{
-					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &annot);
+					std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &annot);
 					if (runs) 
 					{
-						for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+						for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 						{
 							if (writeAnnotations(cp))
 							{
-								cp = writeRun(&(*iter), *cpeIter, cp);
+								cp = writeRun(&(*iter), chpxs->at(it), cp);
 							}
 						}
 
@@ -319,20 +321,18 @@ namespace DocFileFormat
 				}
 				else
 				{
-					//search for bookmarks in the chars
 					std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
 
-					//if there are bookmarks in this run, split the run into several runs
-					if (!bookmarks.empty())
+					if (false == bookmarks.empty())
 					{
-						std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
+						std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
 						if (runs) 
 						{
-							for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+							for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 							{
 								if (writeBookmarks(cp))
 								{
-									cp = writeRun(&(*iter), *cpeIter, cp);
+									cp = writeRun(&(*iter), chpxs->at(it), cp);
 								}
 							}
 
@@ -341,7 +341,28 @@ namespace DocFileFormat
 					}
 					else
 					{
-						cp = writeRun(chpxChars, *cpeIter, cp);
+						std::vector<int> permissions = searchPermission(chpxChars, cp);
+
+						if (false == permissions.empty())
+						{
+							std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &permissions);
+							if (runs)
+							{
+								for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+								{
+									if (writePermissions(cp))
+									{
+										cp = writeRun(&(*iter), chpxs->at(it), cp);
+									}
+								}
+
+								RELEASEOBJECT(runs);
+							}
+						}
+						else
+						{
+							cp = writeRun(chpxChars, chpxs->at(it), cp);
+						}
 					}
 				}
 
@@ -371,7 +392,7 @@ namespace DocFileFormat
 	{
 		if (papx)  
 		{
-			for (std::list<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); ++iter)
+			for (std::vector<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); ++iter)
 			{
 				// rsid for paragraph property enditing (write to parent element)
 				
@@ -572,7 +593,7 @@ namespace DocFileFormat
 				if (cpPic < cpFieldEnd)
 				{
 					int fcPic = m_document->FindFileCharPos( cpPic );
-					std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+					std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 
 					if (chpxs)
 					{
@@ -655,7 +676,7 @@ namespace DocFileFormat
 			if (cpPic < cpFieldEnd)
 			{
 				int fcPic = m_document->FindFileCharPos( cpPic );
-				std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+				std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 				
 				CharacterPropertyExceptions* chpxObj =	chpxs->front();
 
@@ -708,7 +729,7 @@ namespace DocFileFormat
 						int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
 						int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
 						
-						std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+						std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) );
 						CharacterPropertyExceptions* chpxSep = chpxs->front();
 						
 						OleObject ole ( chpxSep, m_document);
@@ -716,9 +737,9 @@ namespace DocFileFormat
 						
 						if (oVmlMapper.m_isEmbedded)
 						{
-							ole.isEquation		= oVmlMapper.m_isEquation;
-							ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-							ole.emeddedData		= oVmlMapper.m_embeddedData;
+							ole.isEquation = oVmlMapper.m_isEquation;
+							ole.isEmbedded = oVmlMapper.m_isEmbedded;
+							ole.embeddedData = oVmlMapper.m_embeddedData;
 						}
 						ole.Convert( &oleObjectMapping );
 
@@ -934,12 +955,12 @@ namespace DocFileFormat
 				Spa* pSpa =	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
 				{
-					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStructByCP(cp));
 				}
 				else if ((typeid(*this) == typeid(HeaderMapping) ) || ( typeid(*this) == typeid(FooterMapping)))
 				{
 					int headerCp = ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
-					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStructByCP(headerCp));
 				}
 
 				bool bPicture = false;
@@ -1020,9 +1041,9 @@ namespace DocFileFormat
 								OleObject ole ( chpx, m_document);
 								OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
 								
-								ole.isEquation		= oVmlMapper.m_isEquation;
-								ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-								ole.emeddedData		= oVmlMapper.m_embeddedData;
+								ole.isEquation = oVmlMapper.m_isEquation;
+								ole.isEmbedded = oVmlMapper.m_isEmbedded;
+								ole.embeddedData = oVmlMapper.m_embeddedData;
 							
 								ole.Convert( &oleObjectMapping );
 							}
@@ -1074,7 +1095,7 @@ namespace DocFileFormat
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
 
-					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStruct(cp));
+					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStructByCP(cp));
 
 					if (atrdPre10)
 					{
@@ -1086,11 +1107,11 @@ namespace DocFileFormat
 							}
 							else
 							{
-								std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(atrdPre10->m_BookmarkId);
-								if (pFind == m_document->mapCommentsBookmarks.end())
+								std::map<int, int>::iterator pFind = m_document->mapAnnotBookmarks.find(atrdPre10->m_BookmarkId);
+								if (pFind == m_document->mapAnnotBookmarks.end())
 								{
 									atrdPre10->m_CommentId = _commentNr++;
-									m_document->mapCommentsBookmarks.insert(std::make_pair(atrdPre10->m_BookmarkId, atrdPre10->m_CommentId));
+									m_document->mapAnnotBookmarks.insert(std::make_pair(atrdPre10->m_BookmarkId, atrdPre10->m_CommentId));
 								}
 								else
 								{
@@ -1202,7 +1223,7 @@ namespace DocFileFormat
 			{
 				if ((m_document->BookmarkStartPlex->IsCpExists(cp)) ||	(m_document->BookmarkEndPlex->IsCpExists(cp)))
 				{
-					ret.push_back(i);
+					ret.push_back((int)i);
 				}
 
 				++cp;
@@ -1211,8 +1232,7 @@ namespace DocFileFormat
 
 		return ret;
 	}
-	// Searches for bookmarks in the list of characters.
-	std::vector<int> DocumentMapping::searchAnnot(std::vector<wchar_t>* chars, int initialCp)
+	std::vector<int> DocumentMapping::searchAnnotation(std::vector<wchar_t>* chars, int initialCp)
 	{
 		std::vector<int> ret;
 
@@ -1226,7 +1246,7 @@ namespace DocFileFormat
 			{
 				if ((m_document->AnnotStartPlex->IsCpExists(cp)) ||	(m_document->AnnotEndPlex->IsCpExists(cp)))
 				{
-					ret.push_back(i);
+					ret.push_back((int)i);
 				}
 
 				++cp;
@@ -1235,7 +1255,27 @@ namespace DocFileFormat
 
 		return ret;
 	}
+	std::vector<int> DocumentMapping::searchPermission(std::vector<wchar_t>* chars, int initialCp)
+	{
+		std::vector<int> ret;
 
+		if (m_document->BookmarkProtStartPlex->IsValid())
+		{
+			int cp = initialCp;
+
+			size_t count = chars->size();
+
+			for (size_t i = 0; i < count; ++i)
+			{
+				if ((m_document->BookmarkProtStartPlex->IsCpExists(cp)) || (m_document->BookmarkProtEndPlex->IsCpExists(cp)))
+				{
+					ret.push_back((int)i);
+				}
+				++cp;
+			}
+		}
+		return ret;
+	}
 	ParagraphPropertyExceptions* DocumentMapping::findValidPapx(int fc)
 	{
 		ParagraphPropertyExceptions* ret	= NULL;
@@ -1270,10 +1310,10 @@ namespace DocFileFormat
 		return ret;
 	}
 
-	std::list<std::vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
+	std::vector<std::vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
 	{
-		std::list<std::vector<wchar_t> >* ret = new std::list<std::vector<wchar_t> >();
-		std::vector<wchar_t>		wcharVector;
+		std::vector<std::vector<wchar_t> >* ret = new std::vector<std::vector<wchar_t> >();
+		std::vector<wchar_t> wcharVector;
 
 		int startIndex = 0;
 
@@ -1392,7 +1432,7 @@ namespace DocFileFormat
 		{
 			fEndNestingLevel = false;
 
-			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); !fEndNestingLevel && iter != papx->grpprl->end(); iter++ )
+			for ( std::vector<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); !fEndNestingLevel && iter != papx->grpprl->end(); iter++ )
 			{
 				DWORD code = iter->OpCode;
 
@@ -1416,7 +1456,8 @@ namespace DocFileFormat
 			if (nestingLevel == iTap_current)
 			{ 
 				bool bPresent = false; //118854.doc
-				for ( std::list<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
+				
+				for ( std::vector<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
 				{
 					//find the tDef SPRM
 					DWORD code = iter->OpCode;
@@ -1640,7 +1681,7 @@ namespace DocFileFormat
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
 		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->nWordVersion);
 
-		std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+		std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 		TableRowPropertiesMapping* trpMapping = new TableRowPropertiesMapping( m_pXmlWriter, *(chpxs->begin()) );
 		tapx.Convert( trpMapping );
 		
@@ -1797,10 +1838,10 @@ namespace DocFileFormat
 			{
 				desc->bUsed = true;
 				m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
-				if (desc->aFtnIdx == 0)
-				{
-					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-				}
+				//if (desc->aFtnIdx == 0)
+				//{
+				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				//}
 				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
@@ -1817,10 +1858,10 @@ namespace DocFileFormat
 			{
 				desc->bUsed = true;
 				m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-				if (desc->aEndIdx == 0)
-				{
-					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-				}
+				//if (desc->aEndIdx == 0)
+				//{
+				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				//}
 				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
@@ -1841,16 +1882,15 @@ namespace DocFileFormat
 	bool DocumentMapping::writeBookmarks(int cp)
 	{
 		bool result =	true;
-		int count	=	(int)m_document->BookmarkStartEndCPs.size();
 
-		for (int b = 0; b < count; ++b)
+		for (size_t b = 0; b < m_document->BookmarkStartEndCPs.size(); ++b)
 		{
-			if (m_document->BookmarkStartEndCPs[b].first == cp)
+			if (m_document->BookmarkStartEndCPs[b].start == cp)
 			{
 				result = writeBookmarkStart(b);
 			}
 
-			if (m_document->BookmarkStartEndCPs[b].second == cp)
+			if (m_document->BookmarkStartEndCPs[b].end == cp)
 			{
 				result = writeBookmarkEnd(b);  
 			}
@@ -1867,11 +1907,11 @@ namespace DocFileFormat
 			if (m_document->AnnotStartEndCPs[i].start == cp)
 			{
 				int index = -1;
-				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
-				if (pFind == m_document->mapCommentsBookmarks.end())
+				std::map<int, int>::iterator pFind = m_document->mapAnnotBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapAnnotBookmarks.end())
 				{
 					index = _commentNr++;
-					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+					m_document->mapAnnotBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
 				}
 				else index = pFind->second;
 
@@ -1881,11 +1921,11 @@ namespace DocFileFormat
 			if (m_document->AnnotStartEndCPs[i].end == cp)
 			{
 				int index = -1;
-				std::map<int, int>::iterator pFind = m_document->mapCommentsBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
-				if (pFind == m_document->mapCommentsBookmarks.end())
+				std::map<int, int>::iterator pFind = m_document->mapAnnotBookmarks.find(m_document->AnnotStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapAnnotBookmarks.end())
 				{
 					index = _commentNr++;
-					m_document->mapCommentsBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
+					m_document->mapAnnotBookmarks.insert(std::make_pair(m_document->AnnotStartEndCPs[i].bookmarkId, index ));
 				}
 				else index = pFind->second;
 
@@ -1895,10 +1935,45 @@ namespace DocFileFormat
 
 		return result;
 	}
+	bool DocumentMapping::writePermissions(int cp)
+	{
+		bool result = true;
+
+		for (size_t i = 0; i < m_document->BookmarkProtStartEndCPs.size(); i++)
+		{
+			if (m_document->BookmarkProtStartEndCPs[i].start == cp)
+			{
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapProtBookmarks.find(m_document->BookmarkProtStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapProtBookmarks.end())
+				{
+					index = _permissionNr++;
+					m_document->mapProtBookmarks.insert(std::make_pair(m_document->BookmarkProtStartEndCPs[i].bookmarkId, index));
+				}
+				else index = pFind->second;
+
+				result = writePermissionStart(index, i);
+			}
+
+			if (m_document->BookmarkProtStartEndCPs[i].end == cp)
+			{
+				int index = -1;
+				std::map<int, int>::iterator pFind = m_document->mapProtBookmarks.find(m_document->BookmarkProtStartEndCPs[i].bookmarkId);
+				if (pFind == m_document->mapProtBookmarks.end())
+				{
+					index = _permissionNr++;
+					m_document->mapProtBookmarks.insert(std::make_pair(m_document->BookmarkProtStartEndCPs[i].bookmarkId, index));
+				}
+				else index = pFind->second;
+
+				result = writePermissionEnd(index);
+			}
+		}
+
+		return result;
+	}
 	bool DocumentMapping::writeBookmarkStart(short id)
 	{
-		// write bookmark start
-		
 		WideString* bookmarkName = static_cast<WideString*>(m_document->BookmarkNames->operator [](id));
 
         if ((bookmarkName != NULL) && (*bookmarkName != L"_PictureBullets"))
@@ -1912,7 +1987,6 @@ namespace DocFileFormat
 
 			return true;
 		}
-
 		return false;
 	}
 
@@ -1936,31 +2010,70 @@ namespace DocFileFormat
 	bool DocumentMapping::writeAnnotationStart(short id)
 	{
         XMLTools::XMLElement bookmarkElem(L"w:commentRangeStart");
-
         bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
-
 		m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
 
 		return true;
 	}
-
 	bool DocumentMapping::writeAnnotationEnd(short id)
 	{
-        XMLTools::XMLElement bookmarkElem( L"w:commentRangeEnd" );
-
-        bookmarkElem.AppendAttribute( L"w:id", FormatUtils::IntToWideString( id ));
-
-		m_pXmlWriter->WriteString( bookmarkElem.GetXMLString()); 
+		XMLTools::XMLElement bookmarkElem(L"w:commentRangeEnd");
+		bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
+		m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
 
 		return true;
 	}
-	// Checks if the CHPX is special
+	bool DocumentMapping::writePermissionStart(short id, size_t index)
+	{
+		XMLTools::XMLElement bookmarkElem(L"w:permStart");
+		bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
+
+		ProtInfoBookmark *prot = static_cast<ProtInfoBookmark*>(m_document->BkmkProt->operator[](index));
+		BookmarkFirst *prot_base = static_cast<BookmarkFirst*>(m_document->BookmarkProtStartPlex->GetStruct(index));
+
+		if (prot_base && prot_base->fCol)
+		{
+			bookmarkElem.AppendAttribute(L"w:colFirst", FormatUtils::IntToWideString(prot_base->itcFirst));
+			bookmarkElem.AppendAttribute(L"w:colLast", FormatUtils::IntToWideString(prot_base->itcLim - 1));
+		}
+		if (prot && (prot->uidSel == 0 || prot->uidSel > 0xfff0))
+		{
+			switch (prot->uidSel)
+			{
+			case 0xFFFF: bookmarkElem.AppendAttribute(L"w:edGrp", L"everyone");
+			case 0xFFFE: bookmarkElem.AppendAttribute(L"w:edGrp", L"administrators");
+			case 0xFFFD: bookmarkElem.AppendAttribute(L"w:edGrp", L"contributors");
+			case 0xFFFC: bookmarkElem.AppendAttribute(L"w:edGrp", L"owners");
+			case 0xFFFB: bookmarkElem.AppendAttribute(L"w:edGrp", L"editors");
+			case 0xFFFA: bookmarkElem.AppendAttribute(L"w:edGrp", L"current");
+			case 0x0000: bookmarkElem.AppendAttribute(L"w:edGrp", L"none");
+			}
+		}
+		if (prot && (prot->uidSel > 0 && prot->uidSel < 0xfff0))
+		{
+			WideString* user = static_cast<WideString*>(m_document->BkmkProtUser->operator[](prot->uidSel - 1));
+
+			if (user && false == user->empty())
+				bookmarkElem.AppendAttribute(L"w:ed", *user);
+		}
+		m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
+
+		return true;
+	}
+	bool DocumentMapping::writePermissionEnd(short id)
+	{
+		XMLTools::XMLElement bookmarkElem(L"w:permEnd");
+		bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
+		m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
+
+		return true;
+	}
 	bool DocumentMapping::isSpecial(CharacterPropertyExceptions* chpx)
 	{
 		if (!chpx) return false;
 		if (!chpx->grpprl)	 return false;
 
-		for (std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
+		for (std::vector<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{
 			if ((sprmCPicLocation == iter->OpCode) || (sprmCHsp == iter->OpCode))	//	PICTURE
 			{
@@ -1985,7 +2098,7 @@ namespace DocFileFormat
 	{
 		Symbol ret;
 
-		for (std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
+		for (std::vector<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{
 			if (DocFileFormat::sprmCSymbol == iter->OpCode)
 			{

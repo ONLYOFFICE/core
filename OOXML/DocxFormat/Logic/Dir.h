@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,11 +30,14 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_DIR_INCLUDE_H_
-#define OOX_LOGIC_DIR_INCLUDE_H_
 
+#include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "RunProperty.h"
+
+namespace SimpleTypes
+{
+	class CDirVal;
+}
 
 namespace OOX
 {
@@ -43,58 +46,23 @@ namespace OOX
 		class CDir : public WritingElementWithChilds<>
 		{
 		public:
-			CDir(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CDir(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CDir(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CDir()
-			{
-			}
+			CDir(OOX::Document *pMain = NULL);			
+			virtual ~CDir();
 
-		public:
+			const CDir &operator =(const XmlUtils::CXmlNode& oNode);
+			const CDir &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			const CDir &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CDir &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			virtual void			fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring	toXML() const;
+			virtual EElementType	getType() const;
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_dir;
-			}
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CDirVal> m_oVal;
 			// Childs
 		};
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_DIR_INCLUDE_H_

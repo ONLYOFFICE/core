@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,64 +33,23 @@
 
 #include "../../Sheets/Common/Common.h"
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace Writers
 {
 	class MediaWriter
 	{
 		NSStringUtils::CStringBuilder	m_oWriter;
-        std::wstring            m_sDir;
-        std::wstring            m_sMediaDir;
+		std::wstring					m_sDir;
+		std::wstring					m_sMediaDir;
+
 	public:
         std::vector<std::wstring> m_aImageNames;
 		long nImageCount;
 
-        MediaWriter(std::wstring sDir):m_sDir(sDir)
-		{
-			nImageCount = 0;
+		MediaWriter(std::wstring sDir);
 
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"media";
-
-            m_sMediaDir = filePath.GetPath();
-		}
-        std::wstring AddImageGetNewPath()
-		{
-			NSDirectory::CreateDirectories(m_sMediaDir);
-
-            std::wstring sNewImgName = L"image" + std::to_wstring(nImageCount + 1) + L".jpg";
-            std::wstring sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;
-			nImageCount++;
-			return sNewImg;
-		}
-		void AddImage2(FILE* pFile)
-		{
-			long size = ftell(pFile);
-			if(size > 0)
-			{
-				rewind(pFile);
-				BYTE* pData = new BYTE[size];
-				_UINT32 dwSizeRead = (_UINT32)fread((void*)pData, 1, size, pFile);
-				if(dwSizeRead > 0)
-				{
-                    std::wstring sNewImagePath = AddImageGetNewPath();
-					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(sNewImagePath);
-					oFile.WriteFile(pData, dwSizeRead);
-					oFile.CloseFile();
-                    std::wstring sFilename = NSSystemPath::GetFileName(sNewImagePath);
-					m_aImageNames.push_back(sFilename);
-				}
-				RELEASEARRAYOBJECTS(pData);
-			}
-		}
-        void AddImage(const std::wstring& sImg)
-		{
-            OOX::CPath pathNewImg = AddImageGetNewPath();
-
-            NSFile::CFileBinary::Copy(sImg, pathNewImg.GetPath());
-            std::wstring sFilename = NSSystemPath::GetFileName(pathNewImg.GetPath()).c_str();
-			m_aImageNames.push_back(sFilename);
-		}
+		std::wstring AddImageGetNewPath();
+		void AddImage2(FILE* pFile);
+		void AddImage(const std::wstring& sImg);
 	};
 }

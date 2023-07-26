@@ -11,8 +11,7 @@ DEFINES += EPUBFORMAT_USE_DYNAMIC_LIBRARY
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
-
-core_linux:include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
 

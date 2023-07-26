@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,7 +44,7 @@ namespace odf_writer {
 class ods_conversion_context;
 class style_list_level_properties;
 class style_list_level_label_alignment;
-class style_text_properties;
+class text_format_properties;
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -69,7 +69,7 @@ public:
 		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
-			style_text_properties				* get_text_properties();
+			text_format_properties				* get_text_properties();
 
 			void set_bullet_image_size(double size);
 			void set_bullet_image	(std::wstring ref);

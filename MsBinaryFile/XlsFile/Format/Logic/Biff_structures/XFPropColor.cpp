@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,9 @@
 #include "XFPropColor.h"
 #include "../../../../Common/Utils/simple_xml_writer.h"
 
+#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
+
 namespace XLS
 {
 
@@ -52,6 +55,17 @@ void XFPropColor::load(CFRecord& record)
 	xclrType	= GETBITS(flags, 1, 7);
 	
 	record >> icv >> nTintShade >> dwRgba;
+}
+
+void XFPropColor::save(CFRecord& record)
+{
+	unsigned char flags = 0;
+
+	SETBIT(flags, 0, fValidRGBA)
+	SETBITS(flags, 1, 7, xclrType)
+
+	record << flags;
+	record << icv << nTintShade << dwRgba;
 }
 
 int XFPropColor::serialize(std::wostream & stream, const std::wstring &node_name)
@@ -75,6 +89,46 @@ int XFPropColor::serialize(std::wostream & stream, const std::wstring &node_name
 				CP_XML_ATTR(L"tint", nTintShade/ 32767.0);
 			}
 		}
+	}
+	return 0;
+}
+
+int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
+{
+	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+	{
+		std::wstring wsPropName = oReader.GetName();
+		nTintShade = 0;
+		while (!wsPropName.empty())
+		{			
+			if (wsPropName == L"auto" && oReader.GetText() == L"1")
+				xclrType = 0;
+			else if (wsPropName == L"indexed")
+			{
+				xclrType = 1;
+				icv = XmlUtils::GetInteger(oReader.GetText());
+			}
+			else if (wsPropName == L"theme")
+			{
+				xclrType = 3;
+				icv = XmlUtils::GetInteger(oReader.GetText());
+			}
+			else if (wsPropName == L"rgb")
+			{
+				xclrType = 2;
+				dwRgba.Parse(oReader.GetText());
+			}
+			else if (wsPropName == L"tint")
+			{
+				nTintShade = XmlUtils::GetInteger(oReader.GetText()) * 32767.0;
+			}
+
+			if (!oReader.MoveToNextAttribute())
+				break;
+
+			wsPropName = oReader.GetName();
+		}
+		oReader.MoveToElement();
 	}
 	return 0;
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,6 +38,17 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		UniFill::UniFill()
+		{
+			m_type = notInit;
+			Fill.reset();
+		}
+		OOX::EElementType UniFill::getType() const
+		{
+			if (Fill.IsInit())
+				return Fill->getType();
+			return OOX::et_Unknown;
+		}
 		void UniFill::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
@@ -45,32 +56,32 @@ namespace PPTX
 			if (name == _T("blipFill"))
 			{
 				m_type = blipFill;
-				Fill.reset(new Logic::BlipFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(oReader));
 			}
 			else if(name == _T("noFill"))
 			{
 				m_type = noFill;
-				Fill.reset(new Logic::NoFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::NoFill>(oReader));
 			}
 			else if(name == _T("solidFill"))
 			{
 				m_type = solidFill;
-				Fill.reset(new Logic::SolidFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(oReader));
 			}
 			else if(name == _T("gradFill"))
 			{
 				m_type = gradFill;
-				Fill.reset(new Logic::GradFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::GradFill>(oReader));
 			}
 			else if(name == _T("pattFill"))
 			{
 				m_type = pattFill;
-				Fill.reset(new Logic::PattFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::PattFill>(oReader));
 			}
 			else if(name == _T("grpFill"))
 			{
 				m_type = grpFill;
-				Fill.reset(new Logic::GrpFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(oReader));
 			}
 			else
 			{
@@ -78,7 +89,6 @@ namespace PPTX
 				Fill.reset();
 			}	
 		}
-
 		void UniFill::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -86,32 +96,32 @@ namespace PPTX
 			if (name == _T("blipFill"))
 			{
 				m_type = blipFill;
-				Fill.reset(new Logic::BlipFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(node));
 			}
 			else if(name == _T("noFill"))
 			{
 				m_type = noFill;
-				Fill.reset(new Logic::NoFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::NoFill>(node));
 			}
 			else if(name == _T("solidFill"))
 			{
 				m_type = solidFill;
-				Fill.reset(new Logic::SolidFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(node));
 			}
 			else if(name == _T("gradFill"))
 			{
 				m_type = gradFill;
-				Fill.reset(new Logic::GradFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::GradFill>(node));
 			}
 			else if(name == _T("pattFill"))
 			{
 				m_type = pattFill;
-				Fill.reset(new Logic::PattFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::PattFill>(node));
 			}
 			else if(name == _T("grpFill"))
 			{
 				m_type = grpFill;
-				Fill.reset(new Logic::GrpFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(node));
 			}
 			else
 			{
@@ -119,54 +129,52 @@ namespace PPTX
 				Fill.reset();
 			}
 		}
-
 		void UniFill::GetFillFrom(XmlUtils::CXmlNode& element)
 		{
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (element.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("blipFill") == strName)
 					{
 						m_type = blipFill;
-						Fill.reset(new Logic::BlipFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(oNode));
 						return;
 					}
 					if (_T("noFill") == strName)
 					{
 						m_type = noFill;
-						Fill.reset(new Logic::NoFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::NoFill>(oNode));
 						return;
 					}
 					if (_T("solidFill") == strName)
 					{
 						m_type = solidFill;
-						Fill.reset(new Logic::SolidFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(oNode));
 						return;
 					}
 					if (_T("gradFill") == strName)
 					{
 						m_type = gradFill;
-						Fill.reset(new Logic::GradFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::GradFill>(oNode));
 						return;
 					}
 					if (_T("pattFill") == strName)
 					{
 						m_type = pattFill;
-						Fill.reset(new Logic::PattFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::PattFill>(oNode));
 						return;
 					}
 					if (_T("grpFill") == strName)
 					{
 						m_type = grpFill;
-						Fill.reset(new Logic::GrpFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(oNode));
 						return;
 					}
 				}
@@ -175,7 +183,6 @@ namespace PPTX
 			m_type = notInit;
 			Fill.reset();
 		}
-
 		void UniFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG read_start = pReader->GetPos();
@@ -626,6 +633,61 @@ namespace PPTX
 
 			pReader->Seek(read_end);
 		}
+		std::wstring UniFill::toXML() const
+		{
+			if (Fill.IsInit())
+				return Fill->toXML();
+			return _T("");
+		}
+		void UniFill::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (Fill.is_init())
+				Fill->toPPTY(pWriter);
+		}
+		void UniFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (Fill.is_init())
+				Fill->toXmlWriter(pWriter);
+		}
+		bool UniFill::is_init() const
+		{
+			return (Fill.IsInit());
+		}
+		const UniFill& UniFill::operator+=(const UniFill& fill)
+		{
+			if(!fill.is_init())
+				return (*this);
+			*this = fill;
+			return (*this);
+		}
+		void UniFill::Merge(UniFill& fill)const
+		{
+			if(!fill.is_init())
+			{
+				fill = *this;
+				return;
+			}
 
+			if(m_type != fill.m_type)
+			{
+				fill = *this;
+				return;
+			}
+			if(m_type == solidFill)
+			{
+				as<SolidFill>().Merge(fill.as<SolidFill>());
+				return;
+			}
+			if(m_type == gradFill)
+			{
+				as<GradFill>().Merge(fill.as<GradFill>());
+				return;
+			}
+		}
+		void UniFill::FillParentPointersForChilds()
+		{
+			if(is_init())
+				Fill->SetParentPointer(this);
+		}
 	} // namespace Logic
 } // namespace PPTX

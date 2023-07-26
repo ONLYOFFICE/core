@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -62,33 +62,7 @@ namespace DocFileFormat
 
     public:
 	  /// Parses the given Stream Reader to retrieve a ListFormatOverride
-	  ListFormatOverride( VirtualStreamReader* reader, int length ):
-	  lsid(0), clfolvl(0), ibstFltAutoNum(0), grfhic(0)
-      {
-	    long startPos = reader->GetPosition();
-
-        this->lsid = reader->ReadInt32();
-        reader->ReadBytes( 8, false );
-        this->clfolvl = reader->ReadByte();
-        this->ibstFltAutoNum = reader->ReadByte();
-        this->grfhic = reader->ReadByte();
-        reader->ReadByte();
-
-        if ( this->clfolvl != 0 )
-		{
-		  this->rgLfoLvl = std::vector<ListFormatOverrideLevel*>( this->clfolvl );
-		}
-
-        reader->Seek( startPos, 0/*STREAM_SEEK_SET*/ );
-        reader->ReadBytes( LFO_LENGTH, false );
-      }
-
-	  virtual ~ListFormatOverride()
-	  {
-	    for ( std::vector<ListFormatOverrideLevel*>::iterator iter = this->rgLfoLvl.begin(); iter != this->rgLfoLvl.end(); iter++ )
-		{
-		  RELEASEOBJECT( *iter );  
-		}
-	  }
+	  ListFormatOverride( VirtualStreamReader* reader, int length );
+	  virtual ~ListFormatOverride();
   };
 }

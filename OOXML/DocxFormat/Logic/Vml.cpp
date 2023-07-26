@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,142 +32,41 @@
 #include "../DocxFlat.h"
 #include "Vml.h"
 #include "VmlOfficeDrawing.h"
+#include "VmlWord.h"
 
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "Sdt.h"
 #include "Hyperlink.h"
 #include "Table.h"
+#include "Pict.h"
 
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
 #include "../../XlsxFormat/Drawing/CellAnchor.h"
+#include "../../XlsxFormat/Drawing/FromTo.h"
 
-namespace OOX
-{
-// TO DO: Нехватающие классы:
-	//        <w:customXml>
-	//        <w:moveFrom>
-	//        <w:moveTo>
-	namespace Logic
-	{
-		//--------------------------------------------------------------------------------
-		// CTxbxContent 9.8.1.1 (Part 4)
-		//--------------------------------------------------------------------------------	
-		void CTxbxContent::fromXML(XmlUtils::CXmlNode& oNode)
-		{
-			// TO DO: Реализовать CTxbxContent::fromXML(XmlUtils::CXmlNode& oNode)
-		}
-		void CTxbxContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ClearItems();
-			
-			if ( oReader.IsEmptyNode() )
-				return;
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
-			OOX::Document* document = WritingElement::m_pMainDocument;
-
-			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
-			{
-				std::wstring sName = oReader.GetName();
-				WritingElement *pItem = NULL;
-
-				if (L"w:altChunk" == sName )
-					pItem = new CAltChunk( document );
-				else if (L"w:bookmarkEnd" == sName )
-					pItem = new CBookmarkEnd( document );
-				else if (L"w:bookmarkStart" == sName )
-					pItem = new CBookmarkStart( document );
-				else if (L"w:commentRangeEnd" == sName )
-					pItem = new CCommentRangeEnd( document );
-				else if (L"w:commentRangeStart" == sName )
-					pItem = new CCommentRangeStart( document );
-				//else if (L"w:customXml" == sName )
-				//	pItem = new CCustomXml( document );
-				else if (L"w:customXmlDelRangeEnd" == sName )
-					pItem = new CCustomXmlDelRangeEnd( document );
-				else if (L"w:customXmlDelRangeStart" == sName )
-					pItem = new CCustomXmlDelRangeStart( document );
-				else if (L"w:customXmlInsRangeEnd" == sName )
-					pItem = new CCustomXmlInsRangeEnd( document );
-				else if (L"w:customXmlInsRangeStart" == sName )
-					pItem = new CCustomXmlInsRangeStart( document );
-				else if (L"w:customXmlMoveFromRangeEnd" == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( document );
-				else if (L"w:customXmlMoveFromRangeStart" == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( document );
-				else if (L"w:customXmlMoveToRangeEnd" == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( document );
-				else if (L"w:customXmlMoveToRangeStart" == sName )
-					pItem = new CCustomXmlMoveToRangeStart( document );
-				else if (L"w:del" == sName )
-					pItem = new CDel( document );
-				else if (L"w:ins" == sName )
-					pItem = new CIns( document );
-				else if (L"w:moveFrom" == sName )
-					pItem = new CMoveFrom( document );
-				else if (L"w:moveFromRangeEnd" == sName )
-					pItem = new CMoveFromRangeEnd( document );
-				else if (L"w:moveFromRangeStart" == sName )
-					pItem = new CMoveFromRangeStart( document );
-				else if (L"w:moveTo" == sName )
-					pItem = new CMoveTo( document );
-				else if (L"w:moveToRangeEnd" == sName )
-					pItem = new CMoveToRangeEnd( document );
-				else if (L"w:moveToRangeStart" == sName )
-					pItem = new CMoveToRangeStart( document );
-				else if (L"m:oMath" == sName )
-					pItem = new COMath( document );
-				else if (L"m:oMathPara" == sName )
-					pItem = new COMathPara( document );
-				else if (L"w:p" == sName )
-					pItem = new CParagraph( document );
-				else if (L"w:permEnd" == sName )
-					pItem = new CPermEnd( document );
-				else if (L"w:permStart" == sName )
-					pItem = new CPermStart( document );
-				else if (L"w:proofErr" == sName )
-					pItem = new CProofErr( document );
-				else if (L"w:sdt" == sName )
-					pItem = new CSdt( document );
-				else if (L"w:tbl" == sName )
-					pItem = new CTbl( document );
-
-				if ( pItem )
-				{
-					m_arrItems.push_back( pItem );
-					pItem->fromXML(oReader);
-				}
-			}
-		}
-		std::wstring CTxbxContent::toXML() const
-		{
-			std::wstring sResult = L"<w:txbxContent>";
-
-            for ( size_t i = 0; i < m_arrItems.size(); ++i)
-            {
-                if ( m_arrItems[i] )
-                {
-                    sResult += m_arrItems[i]->toXML();
-                }
-            }
-
-			sResult += L"</w:txbxContent>";
-
-			return sResult;
-		}
-
-	} // namespace Logic
-} // namespace OOX
 namespace OOX
 {
 	namespace Vml
 	{
+		CVmlCommonElements::CVmlCommonElements(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		};
+		CVmlCommonElements::~CVmlCommonElements(){}
+		void CVmlCommonElements::fromXML(XmlUtils::CXmlNode& oNode){}
+		void CVmlCommonElements::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes	(oReader);
+			ReadElements	(oReader);
+		}
 		void CVmlCommonElements::CreateElement(XmlUtils::CXmlLiteReader& oReader)
 		{
 			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
@@ -282,6 +181,41 @@ namespace OOX
 					pItem = new OOX::VmlWord::CWrap(document);
 				else if (L"w10:wrap" == sName)
 					pItem = new OOX::VmlWord::CWrap(document);
+				else if (L"w:binData" == sName)
+				{
+					OOX::Logic::CBinData oBinData;
+					oBinData.fromXML(oReader);
+
+					if (oBinData.m_sData.IsInit())
+					{
+						OOX::CDocxFlat* docx_flat = dynamic_cast<OOX::CDocxFlat*>(document);
+						if (docx_flat)
+						{
+							smart_ptr<OOX::Image> pImageFile = smart_ptr<OOX::Image>(new OOX::Image(document, true));
+
+							int dstLen = Base64::Base64DecodeGetRequiredLength((int)oBinData.m_sData->size());
+							pImageFile->m_Data.resize(dstLen);
+							Base64::Base64Decode(oBinData.m_sData->c_str(), (int)oBinData.m_sData->size(), pImageFile->m_Data.data(), &dstLen);
+							pImageFile->m_Data.resize(dstLen);
+
+							CImageFileFormatChecker fileChecker;
+							std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
+							if (false == ext.empty())
+							{
+								OOX::CPath filename(L"image." + ext);
+								pImageFile->set_filename(filename, false, true);
+
+								NSCommon::smart_ptr<OOX::File> file = pImageFile.smart_dynamic_cast<OOX::File>();
+								const OOX::RId rId = docx_flat->m_currentContainer->Add(file);
+
+								if (oBinData.m_sName.IsInit())
+								{
+									docx_flat->m_mapImages[*oBinData.m_sName] = file;
+								}
+							}
+						}
+					}
+				}
 
 				break;
 			case 'x':
@@ -295,8 +229,8 @@ namespace OOX
 
 			if (NULL != pItem)
 			{
-				m_arrItems.push_back(pItem);
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ((image_data) && (image_data->m_rId.IsInit()))
@@ -320,7 +254,6 @@ namespace OOX
 				CreateElement(oReader);
 			}
 		}
-
 		void CVmlCommonElements::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -532,7 +465,6 @@ namespace OOX
 			if (false == m_oClipToWrap.IsInit())	m_oClipToWrap = parent->m_oClipToWrap;
 			if (false == m_oClip.IsInit())			m_oClip = parent->m_oClip;
 		}
-
 		std::wstring CVmlCommonElements::WriteAttributes() const
 		{
 			std::wstring sResult;
@@ -640,9 +572,224 @@ namespace OOX
 		{
 			return L"";
 		}
+		EElementType CVmlCommonElements::getType() const
+		{
+			return et_v_shape_elements;
+		}
+
+		//--------------------------------------------------------------------------------
+		// CArc 14.1.2.1 (Part4)
+		//--------------------------------------------------------------------------------
+		CArc::CArc(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CArc::~CArc(){}
+		void CArc::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CArc::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CArc::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring CArc::toXML() const
+		{
+			std::wstring sResult = _T("<v:arc ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			sResult += _T("startangle=\"") + m_oStartAngle.ToString() + _T("\" ");
+			sResult += _T("endangle=\"")   + m_oEndAngle.ToString()   + _T("\">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:arc>");
+
+			return sResult;
+		}
+		EElementType CArc::getType() const
+		{
+			return OOX::et_v_arc;
+		}
+		void CArc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'e':
+						if      ( _T("endangle") == wsName || _T("endAngle") == wsName ) m_oEndAngle   = oReader.GetText();
+						break;
+
+					case 's':
+						if      ( _T("startangle") == wsName || _T("startAngle") == wsName ) m_oStartAngle = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		//--------------------------------------------------------------------------------
+		// CCurve 14.1.2.3 (Part4)
+		//--------------------------------------------------------------------------------
+		CCurve::CCurve(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CCurve::~CCurve(){}
+		void CCurve::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CCurve::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CCurve::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring CCurve::toXML() const
+		{
+			std::wstring sResult = _T("<v:curve ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			sResult += _T("from=\"")     + m_oFrom.ToString()     + _T("\" ");
+			sResult += _T("control1=\"") + m_oControl1.ToString() + _T("\" ");
+			sResult += _T("control2=\"") + m_oControl2.ToString() + _T("\" ");
+			sResult += _T("to=\"")       + m_oTo.ToString()       + _T("\">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:curve>");
+
+			return sResult;
+		}
+		EElementType CCurve::getType() const
+		{
+			return OOX::et_v_curve;
+		}
+		void CCurve::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'c':
+						if      ( _T("control1") == wsName ) m_oControl1 = oReader.GetText();
+						else if ( _T("control2") == wsName ) m_oControl2 = oReader.GetText();
+						break;
+
+					case 'f':
+						if      ( _T("from")     == wsName ) m_oFrom     = oReader.GetText();
+						break;
+
+					case 't':
+						if      ( _T("to")       == wsName ) m_oTo       = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		//--------------------------------------------------------------------------------
+		// CF 14.1.2.4 (Part4)
+		//--------------------------------------------------------------------------------
+		CF::CF()
+		{
+		}
+		CF::~CF()
+		{
+		}
+		void CF::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CF::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CF::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CF::toXML() const
+		{
+			std::wstring sResult = _T("<v:f eqn=\"") + m_sEqn + _T("\"/>");
+			return sResult;
+		}
+		EElementType CF::getType() const
+		{
+			return OOX::et_v_f;
+		}
+		void CF::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'e':
+						if      ( _T("eqn") == wsName ) m_sEqn = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+
+				// TO DO: Сделать парсер формул ( или использовать уже сделанный парсер в OfficeDrawing\Shapes)
+			}
+
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.6 (Part4)
 		//--------------------------------------------------------------------------------	
+		CGroup::CGroup(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CGroup::~CGroup(){}
+		EElementType CGroup::getType() const
+		{
+			return OOX::et_v_group;
+		}
 		void CGroup::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
@@ -692,8 +839,8 @@ namespace OOX
 
 				if ( NULL != pItem )
 				{
-					m_arrElements.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrElements.push_back( pItem );
 				}
 			}
 		}
@@ -705,8 +852,6 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:editas", m_oEditAs)
 			WritingElement_ReadAttributes_End(oReader)
 		}
-
-
 		std::wstring CGroup::toXML() const
 		{
 			std::wstring sResult = L"<v:group ";
@@ -721,13 +866,65 @@ namespace OOX
 
 			sResult += CVmlCommonElements::WriteElements();
 
+			for (size_t i = 0; i < m_arrElements.size(); ++i)
+			{
+				if (m_arrElements[i])
+					sResult += m_arrElements[i]->toXML();
+			}
+
 			sResult += L"</v:group>";
 
 			return sResult;
 		}
+
 		//--------------------------------------------------------------------------------
 		// CPolyLine 14.1.2.15 (Part4)
-		//--------------------------------------------------------------------------------	
+		//--------------------------------------------------------------------------------
+		CPolyLine::CPolyLine(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CPolyLine::~CPolyLine(){}
+		void CPolyLine::fromXML(XmlUtils::CXmlNode& oNode){}
+		void CPolyLine::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		EElementType CPolyLine::getType() const
+		{
+			return OOX::et_v_polyline;
+		}
+		void CPolyLine::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Выставляем значения по умолчанию
+				m_oPoints.SetDelimiter( ' ' );
+
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'p':
+						if      ( _T("points") == wsName ) m_oPoints = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
 		std::wstring CPolyLine::toXML() const
 		{
 			std::wstring sResult = L"<v:polyline ";
@@ -742,9 +939,293 @@ namespace OOX
 
 			return sResult;
 		}
+
+		//--------------------------------------------------------------------------------
+		// CRect 14.1.2.16 (Part4)
+		//--------------------------------------------------------------------------------
+		CRect::CRect(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CRect::~CRect(){}
+		void CRect::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CRect::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CRect::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring CRect::toXML() const
+		{
+			std::wstring sResult = _T("<v:rect ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			sResult += _T(">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:rect>");
+
+			return sResult;
+		}
+		EElementType CRect::getType() const
+			{
+				return OOX::et_v_rect;
+			}
+
+		//--------------------------------------------------------------------------------
+		// CRoundRect 14.1.2.17 (Part4)
+		//--------------------------------------------------------------------------------
+		CRoundRect::CRoundRect(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CRoundRect::~CRoundRect(){}
+		void CRoundRect::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CRoundRect::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CRoundRect::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring CRoundRect::toXML() const
+		{
+			std::wstring sResult = _T("<v:roundrect ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			sResult += _T("arcsize=\"") + m_oArcSize.ToString() + _T("\" ");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:roundrect>");
+
+			return sResult;
+		}
+		EElementType CRoundRect::getType() const
+		{
+			return OOX::et_v_roundrect;
+		}
+		void CRoundRect::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Выставляем значения по умолчанию
+				m_oArcSize.SetPercentage( 20 );
+
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'a':
+						if      ( _T("arcsize") == wsName ) m_oArcSize = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		//--------------------------------------------------------------------------------
+		// CShadow 14.1.2.18 (Part4)
+		//--------------------------------------------------------------------------------
+		CShadow::CShadow(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CShadow::~CShadow()
+		{
+		}
+		void CShadow::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase(oNode, L"on", m_oOn);
+			XmlMacroReadAttributeBase(oNode, L"id", m_oId);
+			XmlMacroReadAttributeBase(oNode, L"type", m_oType);
+			XmlMacroReadAttributeBase(oNode, L"color", m_oColor);
+			XmlMacroReadAttributeBase(oNode, L"opacity", m_oOpacity);
+			XmlMacroReadAttributeBase(oNode, L"offset", m_oOffset);
+			XmlMacroReadAttributeBase(oNode, L"origin", m_oOrigin);
+			XmlMacroReadAttributeBase(oNode, L"obscured", m_oObscured);
+			XmlMacroReadAttributeBase(oNode, L"color2", m_oColor2);
+			XmlMacroReadAttributeBase(oNode, L"offset2", m_oOffset2);
+			XmlMacroReadAttributeBase(oNode, L"matrix", m_oMatrix);
+		}
+		void CShadow::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CShadow::toXML() const
+		{
+			std::wstring sResult = _T("<v:shadow ");
+
+			ComplexTypes_WriteAttribute3( L"id=\"", m_oId );
+
+			if ( SimpleTypes::booleanTrue != m_oOn.GetValue() )
+				sResult += L"on=\"false\" ";
+
+			if ( SimpleTypes::shadowtypeSingle != m_oType.GetValue() )
+				sResult += _T("type=\"") + m_oType.ToString() + _T("\" ");
+
+			if ( SimpleTypes::booleanFalse != m_oObscured.GetValue() )
+				sResult += _T("obscured=\"true\" ");
+
+			if ( 128 != m_oColor.Get_R() || 128 != m_oColor.Get_G() || 128 != m_oColor.Get_B() )
+				sResult += _T("color=\"") + m_oColor.ToString() + _T("\" ");
+
+			if (m_oOpacity.IsInit())
+				sResult += _T("opacity=\"") + m_oOpacity->ToString() + _T("\" ");
+
+			sResult += _T("offset=\"") + m_oOffset.ToString() + _T("\" ");
+
+			if ( 203 != m_oColor2.Get_R() || 203 != m_oColor2.Get_G() || 203 != m_oColor2.Get_B() )
+				sResult += _T("color2=\"") + m_oColor2.ToString() + _T("\" ");
+
+			sResult += _T("offset2=\"") + m_oOffset2.ToString() + _T("\" ");
+
+			if ( 0 != m_oOrigin.GetX() || 0 != m_oOrigin.GetY() )
+				sResult += _T("origin=\"") + m_oOrigin.ToString() + _T("\" ");
+
+			ComplexTypes_WriteAttribute ( _T("matrix=\""), m_oMatrix );
+
+			sResult += _T("/>");
+
+			return sResult;
+		}
+		EElementType CShadow::getType() const
+		{
+			return OOX::et_v_shadow;
+		}
+		void CShadow::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Выставляем значения по умолчанию
+				m_oColor.SetRGB( 128, 128, 128 );
+				m_oColor2.SetRGB( 203, 203, 203 );
+				m_oOffset.SetValue_Points( 2, 2 );
+				m_oOffset2.SetValue_Points( -2, -2 );
+				m_oOrigin.SetValue( 0, 0 );
+
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'c':
+						if      ( _T("color")      == wsName ) m_oColor      = oReader.GetText();
+						else if ( _T("color2")     == wsName ) m_oColor2     = oReader.GetText();
+						break;
+
+					case 'i':
+						if      ( _T("id")         == wsName ) m_oId         = oReader.GetText();
+						break;
+
+					case 'm':
+						if      ( _T("matrix")     == wsName ) m_oMatrix     = oReader.GetText();
+						break;
+
+					case 'o':
+						if      ( _T("obscured")   == wsName ) m_oObscured   = oReader.GetText();
+						else if ( _T("offset")     == wsName ) m_oOffset     = oReader.GetText();
+						else if ( _T("offset2")    == wsName ) m_oOffset2    = oReader.GetText();
+						else if ( _T("on")         == wsName ) m_oOn         = oReader.GetText();
+						else if ( _T("opacity")    == wsName ) m_oOpacity    = oReader.GetText();
+						else if ( _T("origin")     == wsName ) m_oOrigin     = oReader.GetText();
+						break;
+
+					case 't':
+						if      ( _T("type")       == wsName ) m_oType       = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
 		//--------------------------------------------------------------------------------
 		// CShape 14.1.2.19 (Part4)
 		//--------------------------------------------------------------------------------	
+		CShape::CShape(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CShape::~CShape(){}
+		void CShape::fromXML(XmlUtils::CXmlNode& oNode){}
+		void CShape::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		EElementType CShape::getType() const
+		{
+			return OOX::et_v_shape;
+		}
+		void CShape::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'a':
+					if      ( _T("adj")         == wsName ) m_sAdj         = oReader.GetText();
+					break;
+				case 'e':
+					if      ( _T("equationxml") == wsName ) m_sEquationXML = oReader.GetText();
+					break;
+				case 'o':
+					//if      ( _T("o:gfxdata")   == wsName ) m_sGfxData       = oReader.GetText();
+					break;
+				case 'p':
+					if      ( _T("path")        == wsName ) m_oPath        = oReader.GetText();
+					break;
+				case 't':
+					if      ( _T("type")        == wsName ) m_sType        = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+
+			// TO DO: Сделать парсер Adj
+		}
 		std::wstring CShape::toXML() const
 		{
 			std::wstring sResult = L"<v:shape ";
@@ -786,9 +1267,61 @@ namespace OOX
 
 			CVmlCommonElements::mergeFrom(shape_type);
 		}
+
 		//--------------------------------------------------------------------------------
 		// CShapeType 14.1.2.20 (Part4)
 		//--------------------------------------------------------------------------------	
+		CShapeType::CShapeType(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CShapeType::~CShapeType() {}
+		void CShapeType::fromXML(XmlUtils::CXmlNode& oNode) {}
+		void CShapeType::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			CVmlCommonElements::ReadAttributes(oReader);
+			CVmlCommonElements::ReadElements(oReader);
+		}
+		EElementType CShapeType::getType() const
+		{
+			return OOX::et_v_shapetype;
+		}
+		void CShapeType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.GetAttributesCount() <= 0)
+				return;
+			if (!oReader.MoveToFirstAttribute())
+				return;
+
+			std::wstring wsName = oReader.GetName();
+			while (!wsName.empty())
+			{
+				wchar_t wsChar = wsName[0];
+				switch (wsChar)
+				{
+				case 'o':
+					if (_T("o:master") == wsName) m_oMaster = oReader.GetText();
+					break;
+				case 'p':
+					if (_T("path") == wsName) m_oPath = oReader.GetText();
+					break;
+				case 'a':
+					if (_T("adj") == wsName) m_sAdj = oReader.GetText();
+					break;
+				case 't':
+					if (_T("type") == wsName) m_sType = oReader.GetText(); // для некоторых багнутых файлов
+					break;
+				}
+
+				if (!oReader.MoveToNextAttribute())
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+
+			// TO DO: Сделать парсер Adj
+		}
 		std::wstring CShapeType::toXML() const
 		{
 			std::wstring sResult = L"<v:shapetype ";
@@ -815,6 +1348,31 @@ namespace OOX
 			return sResult;
 		}
 
+		CClientData::CClientData(OOX::Document *pMain) : WritingElement(pMain) {}
+		CClientData::~CClientData() {}
+		EElementType CClientData::getType() const
+		{
+			return OOX::et_v_ClientData;
+		}
+		void CClientData::getAnchorArray(std::vector<int>& aAnchor) const
+		{
+			aAnchor.clear();
+			if(m_oAnchor.IsInit())
+			{
+				std::vector<std::wstring> arSplit;
+				boost::algorithm::split(arSplit, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+				for (size_t i = 0 ; i < arSplit.size(); i++)
+				{
+					aAnchor.push_back(XmlUtils::GetInteger(arSplit[i]));
+				}
+			}
+		}
+		void CClientData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if ( oReader, _T("ObjectType"), m_oObjectType )
+			WritingElement_ReadAttributes_End( oReader )
+		}
 		void CClientData::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			// TO DO: Реализовать CShapeType::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1113,6 +1671,24 @@ namespace OOX
 			if (!pFormControlPr->m_oVerticalBar.IsInit())	pFormControlPr->m_oVerticalBar = m_oVScroll;
 			if (!pFormControlPr->m_oPasswordEdit.IsInit())	pFormControlPr->m_oPasswordEdit = m_oSecretEdit;
 		}		
+
+		//--------------------------------------------------------------------------------
+		// CTextbox 14.1.2.22 (Part4)
+		//--------------------------------------------------------------------------------
+		CTextbox::CTextbox(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CTextbox::~CTextbox()
+		{
+		}
+		void CTextbox::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CTextbox::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		EElementType CTextbox::getType() const
+		{
+			return OOX::et_v_textbox;
+		}
 		void CTextbox::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -1208,6 +1784,132 @@ namespace OOX
 			}
 			oReader.MoveToElement();
 		}
+
+		//--------------------------------------------------------------------------------
+		// CTextPath 14.1.2.23 (Part4)
+		//--------------------------------------------------------------------------------
+		CTextPath::CTextPath(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CTextPath::~CTextPath()
+		{
+		}
+		void CTextPath::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CTextPath::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CTextPath::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			m_sStringOriginal = oReader.GetText2();
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CTextPath::toXML() const
+		{
+			std::wstring sResult = _T("<v:textpath ");
+
+			ComplexTypes_WriteAttribute3( L"id=\"",    m_oId );
+			ComplexTypes_WriteAttribute ( L"style=\"", m_oStyle );
+
+			if ( (m_oOn.IsInit()) && (SimpleTypes::booleanFalse != m_oOn->GetValue()) )
+				sResult += _T("on=\"true\" ");
+
+			if ( (m_oFitShape.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitShape->GetValue()) )
+				sResult += _T("fitshape=\"true\" ");
+
+			if ( (m_oFitPath.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitPath->GetValue()) )
+				sResult += _T("fitpath=\"true\" ");
+
+			if ( (m_oTrim.IsInit()) && ( SimpleTypes::booleanFalse != m_oTrim->GetValue()) )
+				sResult += _T("trim=\"true\" ");
+
+			if ( (m_oXScale.IsInit()) && ( SimpleTypes::booleanFalse != m_oXScale->GetValue()) )
+				sResult += _T("xscale=\"true\" ");
+
+			ComplexTypes_WriteAttribute3( _T("string=\""), m_sString );
+
+			sResult += _T("/>");
+			return sResult;
+		}
+		EElementType CTextPath::getType() const
+		{
+			return OOX::et_v_textpath;
+		}
+		void CTextPath::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'f':
+						if      ( _T("fitpath")  == wsName ) m_oFitPath  = oReader.GetText();
+						else if ( _T("fitshape") == wsName ) m_oFitShape = oReader.GetText();
+						break;
+					case 'i':
+						if      ( _T("id")       == wsName ) m_oId       = oReader.GetText();
+						break;
+					case 'o':
+						if      ( _T("on")       == wsName ) m_oOn       = oReader.GetText();
+						break;
+					case 's':
+						if      ( _T("string")   == wsName ) m_sString   = oReader.GetText();
+						else if ( _T("style")    == wsName ) m_oStyle    = oReader.GetText();
+						break;
+					case 't':
+						if      ( _T("trim")     == wsName ) m_oTrim     = oReader.GetText();
+						break;
+					case 'x':
+						if      ( _T("xscale")   == wsName ) m_oXScale   = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		//--------------------------------------------------------------------------------
+		// CFill 14.1.2.5 (Part4)
+		//--------------------------------------------------------------------------------
+		CFill::CFill(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CFill::~CFill()
+		{
+		}
+		void CFill::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CFill::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( _T("o:fill") == sName )
+					m_oFill = oReader;
+			}
+		}
 		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sColors;
@@ -1293,9 +1995,6 @@ namespace OOX
 
 			// TO DO: сделать парсер цветов CFill::m_arrColors
 		}
-
-
-
 		std::wstring CFill::toXML() const
 		{
 			std::wstring sResult = L"<v:fill ";
@@ -1364,7 +2063,151 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CFill::getType() const
+		{
+			return OOX::et_v_fill;
+		}
 
+		//--------------------------------------------------------------------------------
+		// CBackground 14.1.2.2 (Part4)
+		//--------------------------------------------------------------------------------
+		CBackground::CBackground(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CBackground::~CBackground()
+		{
+		}
+		void CBackground::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CBackground::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CBackground::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+
+		}
+		std::wstring CBackground::toXML() const
+		{
+			std::wstring sResult = _T("<v:background ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			ComplexTypes_WriteAttribute ( _T("o:targetscreensize=\""),	m_oTargetScreenSize );
+
+			sResult += _T(">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:background>");
+
+			return sResult;
+		}
+		EElementType CBackground::getType() const
+		{
+			return OOX::et_v_background;
+		}
+		void CBackground::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("o:targetscreensize"), m_oTargetScreenSize)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// CFormulas 14.1.2.6 (Part4)
+		//--------------------------------------------------------------------------------
+		CFormulas::CFormulas(OOX::Document *pMain) : WritingElementWithChilds<OOX::Vml::CF>(pMain)
+		{
+		}
+		CFormulas::~CFormulas()
+		{
+		}
+		void CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CFormulas::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( _T("v:f") == sName )
+				{
+					OOX::Vml::CF *oF = new OOX::Vml::CF();
+					*oF = oReader;
+					if (oF) m_arrItems.push_back( oF );
+				}
+			}
+		}
+		std::wstring CFormulas::toXML() const
+		{
+			std::wstring sResult = _T("<v:formulas>");
+
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					sResult += m_arrItems[i]->toXML();
+				}
+			}
+
+			sResult += _T("</v:formulas>");
+
+			return sResult;
+		}
+		EElementType CFormulas::getType() const
+			{
+				return OOX::et_v_formulas;
+			}
+
+		//--------------------------------------------------------------------------------
+		// CStroke 14.1.2.21 (Part4)
+		//--------------------------------------------------------------------------------
+		CStroke::CStroke(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CStroke::~CStroke()
+		{
+		}
+		void CStroke::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CStroke::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CStroke::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( _T("o:left") == sName )
+					m_oLeft = oReader;
+				else if ( _T("o:top") == sName )
+					m_oTop = oReader;
+				else if ( _T("o:right") == sName )
+					m_oRight = oReader;
+				else if ( _T("o:bottom") == sName )
+					m_oBottom = oReader;
+				else if ( _T("o:column") == sName )
+					m_oColumn = oReader;
+			}
+		}
+		EElementType CStroke::getType() const
+		{
+			return OOX::et_v_stroke;
+		}
 		void CStroke::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{			
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -1444,7 +2287,6 @@ namespace OOX
 
 			// TO DO: Сделать парсер формул ( или использовать уже сделанный парсер в OfficeDrawing\Shapes)
 		}
-
 		std::wstring CStroke::toXML() const
 		{
 			std::wstring sResult = L"<v:stroke ";
@@ -1544,6 +2386,31 @@ namespace OOX
 
 			return sResult;
 		}
+
+		//--------------------------------------------------------------------------------
+		// CPath 14.1.2.14 (Part4)
+		//--------------------------------------------------------------------------------
+		CPath::CPath(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CPath::~CPath()
+		{
+		}
+		void CPath::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CPath::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CPath::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		EElementType CPath::getType() const
+		{
+			return OOX::et_v_path;
+		}
 		void CPath::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -1621,7 +2488,6 @@ namespace OOX
 
 			// TO DO: Сделать парсер параметров connectangles, connectlocs
 		}
-
 		std::wstring CPath::toXML() const
 		{
 			std::wstring sResult = L"<v:path ";
@@ -1668,7 +2534,29 @@ namespace OOX
 
 			return sResult;
 		}
-		void CImageData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+
+		//--------------------------------------------------------------------------------
+		// CImage 14.1.2.10 (Part4)
+		//--------------------------------------------------------------------------------
+		CImage::CImage(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		CImage::~CImage(){}
+		void CImage::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CImage::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CImage::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		EElementType CImage::getType() const
+		{
+			return OOX::et_v_image;
+		}
+		void CImage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
@@ -1676,6 +2564,120 @@ namespace OOX
 			if ( !oReader.MoveToFirstAttribute() )
 				return;
 			
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				wchar_t wsChar = wsName[0];
+				switch ( wsChar )
+				{
+				case 'b':
+					if      (L"bilevel"    == wsName ) m_pBiLevel    = oReader.GetText();
+					else if (L"blacklevel" == wsName ) m_pBlackLevel = oReader.GetText();
+					break;
+
+				case 'c':
+					if      (L"chromakey"  == wsName ) m_oChromaKey  = oReader.GetText();
+					else if (L"cropleft"   == wsName ) m_pCropLeft   = oReader.GetText();
+					else if (L"croptop"    == wsName ) m_pCropTop    = oReader.GetText();
+					else if (L"cropright"  == wsName ) m_pCropRight  = oReader.GetText();
+					else if (L"cropbottom" == wsName ) m_pCropBottom = oReader.GetText();
+					break;
+
+				case 'g':
+					if      (L"gain"       == wsName ) m_pGain       = oReader.GetText();
+					if      (L"gamma"      == wsName ) m_pGamma      = oReader.GetText();
+					if      (L"grayscale"  == wsName ) m_pGrayscale  = oReader.GetText();
+					break;
+
+				case 's':
+					if      (L"src" == wsName ) m_pSrc = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
+		}
+		std::wstring CImage::toXML() const
+		{
+			std::wstring sResult = L"<v:image";
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			if ( m_pSrc.IsInit())
+				sResult += L" src=\"" + XmlUtils::EncodeXmlString(*m_pSrc) + L"\"";
+
+			if ( m_pCropLeft.IsInit())
+				sResult += L" cropleft=\"" + m_pCropLeft->ToString() + L"\"";
+
+			if ( m_pCropTop.IsInit())
+				sResult += L" croptop=\"" + m_pCropTop->ToString() + L"\"";
+
+			if ( m_pCropRight.IsInit())
+				sResult += L"cropright=\"" + m_pCropRight->ToString() + L"\"";
+
+			if ( m_pCropBottom.IsInit())
+				sResult += L" cropbottom=\"" + m_pCropBottom->ToString() + L"\"";
+
+			if ( m_pGain.IsInit() )
+				sResult += L" gain=\"" + std::to_wstring(*m_pGain) + L"\"";
+
+			if ( m_pBlackLevel.IsInit() )
+				sResult += L" blacklevel=\"" + std::to_wstring(*m_pBlackLevel) + L"\"";
+
+			if ( m_pGamma.IsInit())
+				sResult += L" gamma=\"" + std::to_wstring(*m_pGamma) + L"\"";
+
+			if ( m_pGrayscale.IsInit() && m_pGrayscale->GetBool())
+				sResult += L" grayscale=\"t\"";
+
+			if (m_pBiLevel.IsInit() && m_pBiLevel->GetBool() )
+				sResult += L" bilevel=\"t\"";
+
+			sResult += L">";
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += L"</v:image>";
+
+			return sResult;
+		}
+
+		//--------------------------------------------------------------------------------
+		// CImageData 14.1.2.11 (Part4)
+		//--------------------------------------------------------------------------------
+		CImageData::CImageData(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CImageData::~CImageData()
+		{
+		}
+		void CImageData::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CImageData::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CImageData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		EElementType CImageData::getType() const
+		{
+			return OOX::et_v_imagedata;
+		}
+		void CImageData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
 			std::wstring wsName = oReader.GetName();
 			while( !wsName.empty() )
 			{
@@ -1759,7 +2761,7 @@ namespace OOX
 				wsName = oReader.GetName();
 			}
 			oReader.MoveToElement();
-			
+
 			CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(m_pMainDocument);
 			if (m_sSrc.IsInit())
 			{
@@ -1783,7 +2785,6 @@ namespace OOX
 				m_sSrc.reset();
 			}
 		}
-
 		std::wstring CImageData::toXML() const
 		{
 			std::wstring sResult = L"<v:imagedata ";
@@ -1833,95 +2834,139 @@ namespace OOX
 
 			return sResult;
 		}
-		void CImage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+
+		//--------------------------------------------------------------------------------
+		// CLine 14.1.2.12 (Part4)
+		//--------------------------------------------------------------------------------
+
+		CLine::CLine(OOX::Document *pMain) : CVmlCommonElements(pMain)
 		{
-			if ( oReader.GetAttributesCount() <= 0 )
-				return;
-			
-			if ( !oReader.MoveToFirstAttribute() )
-				return;
-			
-			std::wstring wsName = oReader.GetName();
-			while( !wsName.empty() )
-			{
-				wchar_t wsChar = wsName[0];
-				switch ( wsChar )
-				{
-				case 'b':
-					if      (L"bilevel"    == wsName ) m_pBiLevel    = oReader.GetText();
-					else if (L"blacklevel" == wsName ) m_pBlackLevel = oReader.GetText();
-					break;
-
-				case 'c':
-					if      (L"chromakey"  == wsName ) m_oChromaKey  = oReader.GetText();
-					else if (L"cropleft"   == wsName ) m_pCropLeft   = oReader.GetText();
-					else if (L"croptop"    == wsName ) m_pCropTop    = oReader.GetText();
-					else if (L"cropright"  == wsName ) m_pCropRight  = oReader.GetText();
-					else if (L"cropbottom" == wsName ) m_pCropBottom = oReader.GetText();
-					break;
-
-				case 'g':
-					if      (L"gain"       == wsName ) m_pGain       = oReader.GetText();
-					if      (L"gamma"      == wsName ) m_pGamma      = oReader.GetText();
-					if      (L"grayscale"  == wsName ) m_pGrayscale  = oReader.GetText();
-					break;
-
-				case 's':
-					if      (L"src" == wsName ) m_pSrc = oReader.GetText();
-					break;
-				}
-
-				if ( !oReader.MoveToNextAttribute() )
-					break;
-
-				wsName = oReader.GetName();
-			}
-			oReader.MoveToElement();
 		}
-
-		std::wstring CImage::toXML() const
+		CLine::~CLine(){}
+		void CLine::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			std::wstring sResult = L"<v:image";
+			// TO DO: Реализовать CLine::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CLine::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring CLine::toXML() const
+		{
+			std::wstring sResult = _T("<v:line ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
-			if ( m_pSrc.IsInit())
-				sResult += L" src=\"" + XmlUtils::EncodeXmlString(*m_pSrc) + L"\"";
-
-			if ( m_pCropLeft.IsInit())
-				sResult += L" cropleft=\"" + m_pCropLeft->ToString() + L"\"";
-
-			if ( m_pCropTop.IsInit())
-				sResult += L" croptop=\"" + m_pCropTop->ToString() + L"\"";
-
-			if ( m_pCropRight.IsInit())
-				sResult += L"cropright=\"" + m_pCropRight->ToString() + L"\"";
-
-			if ( m_pCropBottom.IsInit())
-				sResult += L" cropbottom=\"" + m_pCropBottom->ToString() + L"\"";
-
-			if ( m_pGain.IsInit() )
-				sResult += L" gain=\"" + std::to_wstring(*m_pGain) + L"\"";
-
-			if ( m_pBlackLevel.IsInit() )
-				sResult += L" blacklevel=\"" + std::to_wstring(*m_pBlackLevel) + L"\"";
-
-			if ( m_pGamma.IsInit())
-				sResult += L" gamma=\"" + std::to_wstring(*m_pGamma) + L"\"";
-
-			if ( m_pGrayscale.IsInit() && m_pGrayscale->GetBool())
-				sResult += L" grayscale=\"t\"";
-
-			if (m_pBiLevel.IsInit() && m_pBiLevel->GetBool() )
-				sResult += L" bilevel=\"t\"";
-
-			sResult += L">";
+			sResult += _T("from=\"") + m_oFrom.ToString() + _T("\" ");
+			sResult += _T("to=\"")   + m_oTo.ToString()   + _T("\">");
 
 			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += L"</v:image>";
+			sResult += _T("</v:line>");
 
 			return sResult;
+		}
+		EElementType CLine::getType() const
+		{
+			return OOX::et_v_line;
+		}
+		void CLine::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Выставляем значения по умолчанию
+				m_oFrom.SetValue( 0, 0 );
+				m_oTo.SetValue( 10, 10 );
+
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar = wsName[0];
+					switch ( wsChar )
+					{
+					case 'f':
+						if      ( _T("from") == wsName ) m_oFrom = oReader.GetText();
+						break;
+
+					case 't':
+						if      ( _T("to")   == wsName ) m_oTo   = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+			}
+
+		//--------------------------------------------------------------------------------
+		// COval 14.1.2.13 (Part4)
+		//--------------------------------------------------------------------------------
+
+		COval::COval(OOX::Document *pMain) : CVmlCommonElements(pMain)
+		{
+		}
+		COval::~COval(){}
+		void COval::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать COval::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void COval::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			CVmlCommonElements::ReadAttributes( oReader );
+			CVmlCommonElements::ReadElements( oReader );
+		}
+		std::wstring COval::toXML() const
+		{
+			std::wstring sResult = _T("<v:oval ");
+
+			sResult += CVmlCommonElements::WriteAttributes();
+
+			sResult += _T(">");
+
+			sResult += CVmlCommonElements::WriteElements();
+
+			sResult += _T("</v:oval>");
+
+			return sResult;
+		}
+		EElementType COval::getType() const
+			{
+				return OOX::et_v_oval;
+			}
+
+		//--------------------------------------------------------------------------------
+		// CH 14.1.2.8 (Part4)
+		//--------------------------------------------------------------------------------
+		CH::CH()
+		{
+		}
+		CH::~CH()
+		{
+		}
+		void CH::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CH::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CH::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		EElementType CH::getType() const
+		{
+			return OOX::et_v_h;
 		}
 		void CH::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1974,7 +3019,6 @@ namespace OOX
 			}
 			oReader.MoveToElement();
 		}
-
 		std::wstring CH::toXML() const
 		{
 			std::wstring sResult = L"<v:h ";
@@ -2010,11 +3054,69 @@ namespace OOX
 			return sResult;
 		}
 
+		//--------------------------------------------------------------------------------
+		// CHandles 14.1.2.9 (Part4)
+		//--------------------------------------------------------------------------------
+		CHandles::CHandles(OOX::Document *pMain) : WritingElementWithChilds<OOX::Vml::CH>(pMain)
+		{
+		}
+		CHandles::~CHandles()
+		{
+		}
+		void CHandles::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CHandles::fromXML(XmlUtils::CXmlNode& oNode)
+		}
+		void CHandles::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
+			int nCurDepth = oReader.GetDepth();
+			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( _T("v:h") == sName )
+				{
+					OOX::Vml::CH *oH = new OOX::Vml::CH();
+					*oH = oReader;
+					if (oH) m_arrItems.push_back( oH );
+				}
+			}
+		}
+		std::wstring CHandles::toXML() const
+		{
+			std::wstring sResult = _T("<v:handles>");
+
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					sResult += m_arrItems[i]->toXML();
+				}
+			}
+			sResult += _T("</v:handles>");
+
+			return sResult;
+		}
+		EElementType CHandles::getType() const
+			{
+				return OOX::et_v_handles;
+			}
 
 	} // Vml
 	namespace VmlOffice
 	{
+		CShapeDefaults::CShapeDefaults(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CShapeDefaults::~CShapeDefaults()
+		{
+		}
+		void CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			// TO DO: Реализовать CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
+		}
 		void CShapeDefaults::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -2087,9 +3189,6 @@ namespace OOX
 			}
 			oReader.MoveToElement();
 		}
-
-
-
 		std::wstring CShapeDefaults::toXML() const
 		{
 			std::wstring sResult = L"<o:shapedefaults ";
@@ -2151,5 +3250,10 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CShapeDefaults::getType() const
+		{
+			return OOX::et_o_shapedefaults;
+		}
+
 	}// VmlOffice
 } // OOX

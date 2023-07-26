@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,10 +36,124 @@
 #include "Pict.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
+#include "Vml.h"
+#include "VmlOfficeDrawing.h"
+
 namespace OOX
 {
 	namespace Logic
 	{
+		CBinData::CBinData(OOX::Document *pMain) : WritingElement(pMain) {}
+		CBinData::~CBinData() {}
+		
+		void CBinData::fromXML(XmlUtils::CXmlNode &oNode)
+		{
+			m_sName = oNode.GetAttribute(L"w:name");
+
+			m_sData = oNode.GetTextA();
+		}
+		
+		void CBinData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			m_sData = oReader.GetText2A();
+		}
+		std::wstring CBinData::toXML() const
+		{
+			std::wstring sResult = L"<w:binData ";
+
+			ComplexTypes_WriteAttribute2( L"w:name=\"", m_sName );
+
+			sResult += L">";
+
+			if (m_sData.IsInit())
+			{
+			}
+			sResult += L"</w:binData>";
+
+			return sResult;
+		}
+		EElementType CBinData::getType() const
+		{
+			return et_w_binData;
+		}
+		void CBinData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				if ( L"w:name" == wsName )
+					m_sName = oReader.GetText();
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+
+			oReader.MoveToElement();
+		}
+
+		CControl::CControl(OOX::Document *pMain) : WritingElement(pMain) {}
+		CControl::~CControl() {}
+		void CControl::fromXML(XmlUtils::CXmlNode &oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"r:id",      m_rId  );
+			XmlMacroReadAttributeBase( oNode, L"w:name",    m_sName );
+			XmlMacroReadAttributeBase( oNode, L"w:shapeid", m_sShapeId );
+
+			if (false == m_rId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_rId );
+			}
+		}
+		void CControl::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd( oReader.GetDepth() );
+		}
+		std::wstring CControl::toXML() const
+		{
+			std::wstring sResult = L"<w:control";
+
+			ComplexTypes_WriteAttribute ( L" r:id=\"",      m_rId );
+			ComplexTypes_WriteAttribute2( L" w:name=\"",    m_sName );
+			ComplexTypes_WriteAttribute2( L" w:shapeid=\"", m_sShapeId );
+
+			sResult += L"/>";
+
+			return sResult;
+		}
+		EElementType CControl::getType() const
+		{
+			return et_w_control;
+		}
+		void CControl::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"r:id",				m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"relationships:id",	m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",				m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shapeid",			m_sShapeId )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
+		CPicture::CPicture(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
+		CPicture::~CPicture()
+		{
+		}
 		void CPicture::fromXML(XmlUtils::CXmlNode &oNode)
 		{
 			if (oNode.IsValid() == false)
@@ -50,7 +164,6 @@ namespace OOX
 
 			fromStringXML(m_sXml.get());
 		}
-
 		void CPicture::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -354,7 +467,6 @@ namespace OOX
 				}
 			}
 		}
-
 		std::wstring CPicture::toXML() const
 		{
 			std::wstring sResult = _T("<w:pict>");
@@ -382,7 +494,18 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CPicture::getType() const
+		{
+			return et_w_pict;
+		}
 
+		CObject::CObject(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
+		CObject::~CObject()
+		{
+		}
+		void CObject::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
 		void CObject::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -421,52 +544,52 @@ namespace OOX
 					{
 					case 'b':
 						if (_T("o:bottom") == sName)
-							pItem = new OOX::VmlOffice::CStrokeChild(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 
 					case 'c':
 						if (_T("o:callout") == sName)
-							pItem = new OOX::VmlOffice::CCallout(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CCallout, oSubReader)
 						else if (_T("o:clippath") == sName)
-							pItem = new OOX::VmlOffice::CClipPath(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CClipPath, oSubReader)
 						else if (_T("o:column") == sName)
-							pItem = new OOX::VmlOffice::CStrokeChild(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						else if (_T("o:complex") == sName)
-							pItem = new OOX::VmlOffice::CComplex(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CComplex, oSubReader)
 
 						break;
 
 					case 'd':
 						if (_T("o:diagram") == sName)
-							pItem = new OOX::VmlOffice::CDiagram(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CDiagram, oSubReader)
 
 						break;
 
 					case 'e':
 						if (_T("o:equationxml") == sName)
-							pItem = new OOX::VmlOffice::CEquationXml(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CEquationXml, oSubReader)
 						else if (_T("o:extrusion") == sName)
-							pItem = new OOX::VmlOffice::CExtrusion(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CExtrusion, oSubReader)
 
 						break;
 
 					case 'f':
 						if (_T("o:fill") == sName)
-							pItem = new OOX::VmlOffice::CFill(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CFill, oSubReader)
 
 						break;
 
 					case 'i':
 						if (_T("o:ink") == sName)
-							pItem = new OOX::VmlOffice::CInk(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CInk, oSubReader)
 
 						break;
 
 					case 'l':
 						if (_T("o:left") == sName)
-							pItem = new OOX::VmlOffice::CStrokeChild(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						else if (_T("o:lock") == sName)
-							pItem = new OOX::VmlOffice::CLock(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CLock, oSubReader)
 
 						break;
 
@@ -477,23 +600,23 @@ namespace OOX
 
 					case 'r':
 						if (_T("o:right") == sName)
-							pItem = new OOX::VmlOffice::CStrokeChild(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 
 					case 's':
 						if (_T("o:shapedefaults") == sName)
-							pItem = new OOX::VmlOffice::CShapeDefaults(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeDefaults, oSubReader)
 						else if (_T("o:shapelayout") == sName)
-							pItem = new OOX::VmlOffice::CShapeLayout(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CShapeLayout, oSubReader)
 						else if (_T("o:signatureline") == sName)
-							pItem = new OOX::VmlOffice::CSignatureLine(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CSignatureLine, oSubReader)
 						else if (_T("o:skew") == sName)
-							pItem = new OOX::VmlOffice::CSkew(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CSkew, oSubReader)
 						break;
 
 					case 't':
 						if (_T("o:top") == sName)
-							pItem = new OOX::VmlOffice::CStrokeChild(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::VmlOffice::CStrokeChild, oSubReader)
 						break;
 					}
 
@@ -507,30 +630,30 @@ namespace OOX
 					{
 					case 'b':
 						if (_T("v:background") == sName)
-							pItem = new OOX::Vml::CBackground(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CBackground, oSubReader)
 						break;
 
 					case 'f':
 						if (_T("v:fill") == sName)
-							pItem = new OOX::Vml::CFill(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CFill, oSubReader)
 						else if (_T("v:formulas") == sName)
-							pItem = new OOX::Vml::CFormulas(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CFormulas, oSubReader)
 						break;
 
 					case 'h':
 						if (_T("v:handles") == sName)
-							pItem = new OOX::Vml::CHandles(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CHandles, oSubReader)
 						break;
 
 					case 'i':
 						if (_T("v:image") == sName)
-							pItem = new OOX::Vml::CImage(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CImage, oSubReader)
 						else if (_T("v:imagedata") == sName)
-							pItem = new OOX::Vml::CImageData(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CImageData, oSubReader)
 						break;
 					case 'p':
 						if (_T("v:path") == sName)
-							pItem = new OOX::Vml::CPath(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CPath, oSubReader)
 						break;
 					case 'r':
 						if (_T("v:rect") == sName)
@@ -538,20 +661,20 @@ namespace OOX
 						break;
 					case 's':
 						if (_T("v:shadow") == sName)
-							pItem = new OOX::Vml::CShadow(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CShadow, oSubReader)
 						else if (_T("v:shape") == sName)
 							m_oShape = oSubReader;
 						else if (_T("v:shapetype") == sName)
 							m_oShapeType = oSubReader;
 						else if (_T("v:stroke") == sName)
-							pItem = new OOX::Vml::CStroke(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CStroke, oSubReader)
 						break;
 
 					case 't':
 						if (_T("v:textbox") == sName)
-							pItem = new OOX::Vml::CTextbox(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CTextbox, oSubReader)
 						else if (_T("v:textpath") == sName)
-							pItem = new OOX::Vml::CTextPath(oSubReader);
+							AssignPtrXmlContent(pItem, OOX::Vml::CTextPath, oSubReader)
 						break;
 					}
 					break;
@@ -577,5 +700,17 @@ namespace OOX
 		{
 			return _T("<w:object/>");
 		}	
+		EElementType CObject::getType() const
+		{
+			return et_w_object;
+		}
+		void CObject::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"w:dxaOrig", m_oDxaOrig )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"w:dyaOrig", m_oDyaOrig )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
 	} // namespace Logic
 } // namespace OOX

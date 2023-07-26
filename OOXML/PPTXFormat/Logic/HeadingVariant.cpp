@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,9 +37,49 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void HeadingVariant::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(L"i4");
+			if (oNode.IsValid())
+			{
+				m_type		= L"i4";
+				m_iContent	= oNode.GetTextExt();
+			}
+			else
+			{
+				m_type		 = L"lpstr";
+				m_strContent =	 node.ReadNodeNoNS(L"lpstr").GetTextExt();
+			}
+		}
+		std::wstring HeadingVariant::toXML() const
+		{
+			if (m_type.IsInit() && (m_type->get() == L"i4"))
+			{
+				return L"<vt:variant><vt:i4>" + std::to_wstring(*m_iContent) + L"</vt:i4></vt:variant>";
+			}
+			return L"<vt:variant><vt:lpstr>" + *m_strContent + L"</vt:lpstr></vt:variant>";
+		}
+		void HeadingVariant::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"vt:variant");
+			pWriter->EndAttributes();
+
+			if (m_type.IsInit() && (m_type->get() == L"i4"))
+			{
+				pWriter->WriteNodeValue(L"vt:i4", *m_iContent);
+			}
+			else
+			{
+				pWriter->WriteNodeValue(L"vt:lpstr", *m_strContent);
+			}
+
+			pWriter->EndNode(L"vt:variant");
+		}
+		void HeadingVariant::FillParentPointersForChilds() {}
+
 		void CVariantVStream::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, _T("version"), m_strVersion);
+			XmlMacroReadAttributeBase(node, L"version", m_strVersion);
 			m_strContent = node.GetTextExt();
 		}
 		std::wstring CVariantVStream::toXML() const
@@ -48,14 +88,14 @@ namespace PPTX
 		}
 		void CVariantVStream::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("vt:vstream"));
+			pWriter->StartNode(L"vt:vstream");
 
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"version", m_strVersion);
 			pWriter->EndAttributes();
 
 			pWriter->WriteStringXML(*m_strContent);
-			pWriter->EndNode(_T("vt:vstream"));
+			pWriter->EndNode(L"vt:vstream");
 		}
 		void CVariantVStream::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -108,14 +148,13 @@ namespace PPTX
 				case vtNull: break;
 				case vtVariant:
 					{
-						XmlUtils::CXmlNodes oNodes;
-						if (node.GetNodes(_T("*"), oNodes))
+						std::vector<XmlUtils::CXmlNode> oNodes;
+						if (node.GetNodes(L"*", oNodes))
 						{
-							int nCount = oNodes.GetCount();
-							for (int i = 0; i < nCount; ++i)
+							size_t nCount = oNodes.size();
+							for (size_t i = 0; i < nCount; ++i)
 							{
-								XmlUtils::CXmlNode oNode;
-								oNodes.GetAt(i, oNode);
+								XmlUtils::CXmlNode& oNode = oNodes[i];
 
 								m_oVariant = oNode;
 							}
@@ -416,18 +455,17 @@ namespace PPTX
 		void CVariantVector::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring sBaseType;
-			XmlMacroReadAttributeBase(node, _T("baseType"), sBaseType);
+			XmlMacroReadAttributeBase(node, L"baseType", sBaseType);
 			m_eBaseType = CVariant::getTypeByString(sBaseType);
-			XmlMacroReadAttributeBase(node, _T("size"), m_nSize);
+			XmlMacroReadAttributeBase(node, L"size", m_nSize);
 
-			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					arrVariants.emplace_back();
 					arrVariants.back() = oNode;
@@ -440,7 +478,7 @@ namespace PPTX
 		}
 		void CVariantVector::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("vt:vector"));
+			pWriter->StartNode(L"vt:vector");
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(L"baseType", CVariant::getStringByType(getVariantType()));
 			pWriter->WriteAttribute(L"size", m_nSize);
@@ -451,7 +489,7 @@ namespace PPTX
 				arrVariants[i].toXmlWriterContent(pWriter);
 			}
 
-			pWriter->EndNode(_T("vt:vector"));
+			pWriter->EndNode(L"vt:vector");
 		}
 		void CVariantVector::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -511,19 +549,18 @@ namespace PPTX
 		void CVariantArray::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring sBaseType;
-			XmlMacroReadAttributeBase(node, _T("baseType"), sBaseType);
+			XmlMacroReadAttributeBase(node, L"baseType", sBaseType);
 			m_eBaseType = CVariant::getTypeByString(sBaseType);
-			XmlMacroReadAttributeBase(node, _T("lBounds"), m_strLBounds);
-			XmlMacroReadAttributeBase(node, _T("uBounds"), m_strUBounds);
+			XmlMacroReadAttributeBase(node, L"lBounds", m_strLBounds);
+			XmlMacroReadAttributeBase(node, L"uBounds", m_strUBounds);
 
-			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					arrVariants.emplace_back();
 					arrVariants.back() = oNode;
@@ -536,7 +573,7 @@ namespace PPTX
 		}
 		void CVariantArray::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("vt:array"));
+			pWriter->StartNode(L"vt:array");
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"lBounds", m_strLBounds);
 			pWriter->WriteAttribute2(L"uBounds", m_strUBounds);
@@ -548,7 +585,7 @@ namespace PPTX
 				arrVariants[i].toXmlWriterContent(pWriter);
 			}
 
-			pWriter->EndNode(_T("vt:array"));
+			pWriter->EndNode(L"vt:array");
 		}
 		void CVariantArray::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -607,23 +644,20 @@ namespace PPTX
 			return m_eBaseType.IsInit() ? m_eBaseType.get() : vtEmpty;
 		}
 
-
 		void CustomProperty::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, _T("fmtid"), m_strFmtid);
-			XmlMacroReadAttributeBase(node, _T("pid"), m_nPid);
-			XmlMacroReadAttributeBase(node, _T("name"), m_strName);
-			XmlMacroReadAttributeBase(node, _T("linkTarget"), m_strLinkTarget);
+			XmlMacroReadAttributeBase(node, L"fmtid", m_strFmtid);
+			XmlMacroReadAttributeBase(node, L"pid", m_nPid);
+			XmlMacroReadAttributeBase(node, L"name", m_strName);
+			XmlMacroReadAttributeBase(node, L"linkTarget", m_strLinkTarget);
 
-			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
-
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 					m_oContent = oNode;
 				}
 			}
@@ -634,7 +668,7 @@ namespace PPTX
 		}
 		void CustomProperty::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("property"));
+			pWriter->StartNode(L"property");
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"fmtid", m_strFmtid);
 			pWriter->WriteAttribute(L"pid", m_nPid);
@@ -647,7 +681,7 @@ namespace PPTX
 				m_oContent->toXmlWriterContent(pWriter);
 			}
 
-			pWriter->EndNode(_T("property"));
+			pWriter->EndNode(L"property");
 		}
 		void CustomProperty::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -717,16 +751,22 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		XmlUtils::CXmlNodes oNodes;
-		oNode.GetNodes(_T("property"), oNodes);
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		std::vector<XmlUtils::CXmlNode> oNodes;
+		if (oNode.GetNodes(L"*", oNodes))
 		{
-			XmlUtils::CXmlNode oProperty;
-			oNodes.GetAt(i, oProperty);
+			for (size_t i = 0; i < oNodes.size(); ++i)
+			{
+				XmlUtils::CXmlNode& oItem = oNodes[i];
 
-			m_arProperties.emplace_back();
-			m_arProperties.back().fromXML(oProperty);
+				std::wstring sName = XmlUtils::GetNameNoNS(oItem.GetName());
+				if (L"property" == sName)
+				{
+					XmlUtils::CXmlNode& oProperty = oNodes[i];
+
+					m_arProperties.emplace_back();
+					m_arProperties.back().fromXML(oProperty);
+				}
+			}
 		}
 	}
 	void CustomProperties::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -760,11 +800,11 @@ namespace PPTX
 
 	void CustomProperties::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(_T("Properties"));
+		pWriter->StartNode(L"Properties");
 
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute(_T("xmlns"), PPTX::g_Namespaces.cup.m_strLink);
-		pWriter->WriteAttribute(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
+		pWriter->WriteAttribute(L"xmlns", PPTX::g_Namespaces.cup.m_strLink);
+		pWriter->WriteAttribute(L"xmlns:vt", PPTX::g_Namespaces.vt.m_strLink);
 		pWriter->EndAttributes();
 
 		for (size_t i = 0; i < m_arProperties.size(); ++i)
@@ -772,7 +812,7 @@ namespace PPTX
 			m_arProperties[i].toXmlWriter(pWriter);
 		}
 
-		pWriter->EndNode(_T("Properties"));
+		pWriter->EndNode(L"Properties");
 	}
 
 	void CustomProperties::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

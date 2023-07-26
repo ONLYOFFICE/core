@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,6 +34,20 @@
 #include "RtfTable.h"
 #include "RtfDocument.h"
 
+int RtfTable::GetType( )
+{
+	return TYPE_RTF_TABLE;
+}
+RtfTable::RtfTable()
+{
+}
+RtfTable::RtfTable(const RtfTable& oTabl)
+{
+}
+RtfTable& RtfTable::operator=(const RtfTable& oTabl)
+{
+	return *this;
+}
 std::wstring RtfTable::RenderToOOX(RenderParameter oRenderParameter)
 {
 	bool bRowsBidi = false;
@@ -82,7 +96,6 @@ std::wstring RtfTable::RenderToRtf(RenderParameter oRenderParameter)
 	result += L"\n";
 	return result;
 }
-
 void RtfTable::CalculateGridProp()
 {
 	//массив всевозможных cellx
@@ -233,7 +246,6 @@ void RtfTable::CalculateGridProp()
 			m_aTableGrid.push_back(aCellx[i] - aCellx[i - 1]);
 	}
 }
-
 void RtfTable::CalculateCellx(RtfDocument& oDocument)//todo учитывать margin indent
 {
 	if (m_aTableGrid.size() == 0 && m_aArray.size() > 0)
@@ -348,7 +360,6 @@ void RtfTable::CalculateCellx(RtfDocument& oDocument)//todo учитывать m
 		}
 	}
 }
-
 void RtfTable::AddToArray(std::vector<int>& aArray, int nValue)//todo можно применить то что он упорядоченный
 {
 	bool bNeedAdd = true;

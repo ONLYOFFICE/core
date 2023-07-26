@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,54 +46,19 @@ namespace OOX
 		class CBdo : public WritingElementWithChilds<>
 		{
 		public:
-			CBdo(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CBdo(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CBdo(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CBdo()
-			{
-			}
+			CBdo(OOX::Document *pMain = NULL);			
+			virtual ~CBdo();
 
-		public:
+			const CBdo &operator =(const XmlUtils::CXmlNode& oNode);
+			const CBdo &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			const CBdo &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CBdo &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-		public:
+			virtual void			fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring	toXML() const;
+			virtual EElementType	getType() const;
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_bdo;
-			}
-
-		private: 
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 

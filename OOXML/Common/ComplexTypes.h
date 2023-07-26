@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -41,14 +41,6 @@
 namespace ComplexTypes
 {
 #define ComplexTypes_AdditionConstructors(Class) \
-	Class(XmlUtils::CXmlNode& oNode)\
-	{\
-		FromXML( oNode );\
-	}\
-	Class(XmlUtils::CXmlLiteReader& oReader)\
-	{\
-		FromXML( oReader );\
-	}\
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
 		FromXML( (XmlUtils::CXmlNode &)oNode );\
@@ -1169,19 +1161,7 @@ namespace ComplexTypes
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
 
-			static const CSpacing Merge(const CSpacing& oPrev, const CSpacing& oCurrent)
-			{
-				CSpacing oProperties;
-				oProperties.m_oAfter = Merge(oPrev.m_oAfter, oCurrent.m_oAfter);
-				oProperties.m_oAfterAutospacing = Merge(oPrev.m_oAfterAutospacing, oCurrent.m_oAfterAutospacing);
-				oProperties.m_oAfterLines = Merge(oPrev.m_oAfterLines, oCurrent.m_oAfterLines);
-				oProperties.m_oBefore = Merge(oPrev.m_oBefore, oCurrent.m_oBefore);
-				oProperties.m_oBeforeAutospacing = Merge(oPrev.m_oBeforeAutospacing, oCurrent.m_oBeforeAutospacing);
-				oProperties.m_oBeforeLines = Merge(oPrev.m_oBeforeLines, oCurrent.m_oBeforeLines);
-				oProperties.m_oLine = Merge(oPrev.m_oLine, oCurrent.m_oLine);
-				oProperties.m_oLineRule = Merge(oPrev.m_oLineRule, oCurrent.m_oLineRule);
-				return oProperties;
-			}
+			static const CSpacing Merge(const CSpacing& oPrev, const CSpacing& oCurrent);
 
 			template<typename Type>
 			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,13 +29,215 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../Document.h"
+
 #include "ParagraphProperty.h"
+
+#include "RunProperty.h"
+#include "SectionProperty.h"
+
+#include "../Document.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+		//--------------------------------------------------------------------------------
+		// NumPr 17.13.1.19 (Part 1)
+		//--------------------------------------------------------------------------------
+		CNumPr::CNumPr()
+		{
+		}
+		CNumPr::~CNumPr()
+		{
+		}
+		void CNumPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			if ( L"w:numPr" != oNode.GetName() && L"w:listPr" != oNode.GetName())
+				return;
+
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( L"w:ilvl", oChild ) )
+				m_oIlvl = oChild;
+
+			if ( oNode.GetNode( L"w:ins", oChild ) )
+				m_oIns = oChild;
+
+			if ( oNode.GetNode( L"w:numId", oChild ) )
+				m_oNumID = oChild;
+
+			if ( oNode.GetNode( L"w:ilfo", oChild ) )
+				m_oNumID = oChild;
+		}
+		void CNumPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				if ( L"w:ilvl" == sName )
+					m_oIlvl = oReader;
+				else if ( L"w:ins" == sName )
+					m_oIns = oReader;
+				else if ( L"w:numId" == sName || L"w:ilfo" == sName )
+					m_oNumID = oReader;
+			}
+		}
+		std::wstring CNumPr::toXML() const
+		{
+			std::wstring sResult = L"<w:numPr>";
+
+			if ( m_oIlvl.IsInit() )
+			{
+				sResult += L"<w:ilvl ";
+				sResult += m_oIlvl->ToString();
+				sResult += L"/>";
+			}
+
+			if ( m_oIns.IsInit() )
+			{
+				sResult += L"<w:ins ";
+				sResult += m_oIns->ToString();
+				sResult += L"/>";
+			}
+
+			if ( m_oNumID.IsInit() )
+			{
+				sResult += L"<w:numId ";
+				sResult += m_oNumID->ToString();
+				sResult += L"/>";
+			}
+
+			sResult += L"</w:numPr>";
+
+			return sResult;
+		}
+		EElementType CNumPr::getType() const
+		{
+			return et_w_numPr;
+		}
+
+		//--------------------------------------------------------------------------------
+		// PBdr 17.13.1.24 (Part 1)
+		//--------------------------------------------------------------------------------
+		CPBdr::CPBdr()
+		{
+		}
+		CPBdr::~CPBdr()
+		{
+		}
+		void CPBdr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			if ( L"w:pBdr" != oNode.GetName() )
+				return;
+
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( L"w:bar", oChild ) )
+				m_oBar = oChild;
+
+			if ( oNode.GetNode( L"w:between", oChild ) )
+				m_oBetween = oChild;
+
+			if ( oNode.GetNode( L"w:bottom", oChild ) )
+				m_oBottom = oChild;
+
+			if ( oNode.GetNode( L"w:left", oChild ) )
+				m_oLeft = oChild;
+
+			if ( oNode.GetNode( L"w:right", oChild ) )
+				m_oRight = oChild;
+
+			if ( oNode.GetNode( L"w:top", oChild ) )
+				m_oTop = oChild;
+
+		}
+		void CPBdr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:bar" == sName )
+					m_oBar = oReader;
+				else if ( L"w:between" == sName )
+					m_oBetween = oReader;
+				else if ( L"w:bottom" == sName )
+					m_oBottom = oReader;
+				else if ( L"w:left" == sName )
+					m_oLeft = oReader;
+				else if ( L"w:right" == sName )
+					m_oRight = oReader;
+				else if ( L"w:top" == sName )
+					m_oTop = oReader;
+			}
+		}
+		std::wstring CPBdr::toXML() const
+		{
+			std::wstring sResult = L"<w:pBdr>";
+			if (m_oTop.IsInit())
+			{
+				sResult += L"<w:top ";
+				sResult += m_oTop->ToString();
+				sResult += L"/>";
+			}
+			if (m_oLeft.IsInit())
+			{
+				sResult += L"<w:left ";
+				sResult += m_oLeft->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBottom.IsInit())
+			{
+				sResult += L"<w:bottom ";
+				sResult += m_oBottom->ToString();
+				sResult += L"/>";
+			}
+			if (m_oRight.IsInit())
+			{
+				sResult += L"<w:right ";
+				sResult += m_oRight->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBetween.IsInit())
+			{
+				sResult += L"<w:between ";
+				sResult += m_oBetween->ToString();
+				sResult += L"/>";
+			}
+			if ( m_oBar.IsInit() )
+			{
+				sResult += L"<w:bar ";
+				sResult += m_oBar->ToString();
+				sResult += L"/>";
+			}
+			sResult += L"</w:pBdr>";
+			return sResult;
+		}
+		EElementType CPBdr::getType() const
+		{
+			return et_w_pBdr;
+		}
+		const CPBdr CPBdr::Merge(const CPBdr& oPrev, const CPBdr& oCurrent)
+		{
+			CPBdr oProperties;
+			oProperties.m_oBar            = Merge( oPrev.m_oBar,            oCurrent.m_oBar );
+			oProperties.m_oBetween        = Merge( oPrev.m_oBetween,        oCurrent.m_oBetween );
+			oProperties.m_oBottom         = Merge( oPrev.m_oBottom,         oCurrent.m_oBottom );
+			oProperties.m_oLeft           = Merge( oPrev.m_oLeft,           oCurrent.m_oLeft );
+			oProperties.m_oRight          = Merge( oPrev.m_oRight,          oCurrent.m_oRight );
+			oProperties.m_oTop            = Merge( oPrev.m_oTop,            oCurrent.m_oTop );
+			return oProperties;
+		}
+
 		//--------------------------------------------------------------------------------
 		// PPrChange
 		//--------------------------------------------------------------------------------
@@ -71,7 +273,6 @@ namespace OOX
 		CPPrChange::~CPPrChange()
 		{
 		}
-
 		void CPPrChange::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( L"w:pPrChange" != oNode.GetName() )
@@ -87,7 +288,6 @@ namespace OOX
 			if ( m_pParPr.IsInit() && oNode.GetNode(L"w:pPr", oNode_pPr ) )
 				m_pParPr->fromXML( oNode_pPr );
 		}
-
 		void CPPrChange::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -103,7 +303,6 @@ namespace OOX
 					m_pParPr->fromXML( oReader );
 			}
 		}
-
 		std::wstring CPPrChange::toXML() const
 		{
 			std::wstring sResult = L"<w:pPrChange ";
@@ -158,20 +357,188 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
+
+		//--------------------------------------------------------------------------------
+		// Tabs 17.3.1.38 (Part 1)
+		//--------------------------------------------------------------------------------
+		CTabs::CTabs(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CTabs::~CTabs()
+		{
+			for ( unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
+			{
+				if ( m_arrTabs[nIndex] ) delete m_arrTabs[nIndex];
+				m_arrTabs[nIndex] = NULL;
+			}
+			m_arrTabs.clear();
+		}
+		CTabs::CTabs(const CTabs& oSrc)
+		{
+			*this = oSrc;
+		}
+		const CTabs& CTabs::operator =(const CTabs &oTabs)
+		{
+			for(size_t i = 0; i < oTabs.m_arrTabs.size(); ++i)
+			{
+				m_arrTabs.push_back(new ComplexTypes::Word::CTabStop(*oTabs.m_arrTabs[i]));
+			}
+			return *this;
+		}
+		void CTabs::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			if ( L"w:tabs" != oNode.GetName() )
+				return;
+
+			std::vector<XmlUtils::CXmlNode> oTabs;
+			if ( oNode.GetNodes( L"w:tab", oTabs ) )
+			{
+				for ( size_t nIndex = 0; nIndex < oTabs.size(); nIndex++ )
+				{
+					XmlUtils::CXmlNode & oTab = oTabs[nIndex];
+					if ( oTab.IsValid() )
+					{
+						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop();
+						*oTabStop = oTab;
+
+						if (oTabStop) m_arrTabs.push_back( oTabStop );
+					}
+				}
+			}
+		}
+		void CTabs::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:tab" == sName )
+				{
+					ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop();
+					*oTabStop = oReader;
+
+					if (oTabStop) m_arrTabs.push_back( oTabStop );
+				}
+			}
+		}
+		std::wstring CTabs::toXML() const
+		{
+			std::wstring sResult = L"<w:tabs>";
+
+			for (unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
+			{
+				sResult += L"<w:tab ";
+				if (m_arrTabs[nIndex])
+					sResult += m_arrTabs[nIndex]->ToString();
+				sResult += L"/>";
+			}
+
+			sResult += L"</w:tabs>";
+
+			return sResult;
+		}
+		EElementType CTabs::getType() const
+		{
+			return et_w_tabs;
+		}
+
+		//--------------------------------------------------------------------------------
+		// CParagraphProperty
+		//--------------------------------------------------------------------------------
+		CParagraphProperty::CParagraphProperty(OOX::Document *pMain) : WritingElement(pMain)
+		{
+			m_bPPrChange = false;
+		}
+		CParagraphProperty::CParagraphProperty(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
+		{
+			m_bPPrChange = false;
+			fromXML( oNode );
+		}
+		CParagraphProperty::CParagraphProperty(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
+		{
+			m_bPPrChange = false;
+			fromXML( oReader );
+		}
+		CParagraphProperty::~CParagraphProperty() {}
+		const CParagraphProperty& CParagraphProperty::operator =(const XmlUtils::CXmlNode &oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+			return *this;
+		}
+		const CParagraphProperty& CParagraphProperty::operator =(const XmlUtils::CXmlLiteReader &oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CParagraphProperty::Clear()
+		{
+			m_bPPrChange = false;
+
+			m_oAdjustRightInd.reset();
+			m_oAutoSpaceDE.reset();
+			m_oAutoSpaceDN.reset();
+			m_oBidi.reset();
+			m_oCnfStyle.reset();
+			m_oContextualSpacing.reset();
+			m_oDivID.reset();
+			m_oFramePr.reset();
+			m_oInd.reset();
+			m_oJc.reset();
+			m_oKeepLines.reset();
+			m_oKeepNext.reset();
+			m_oKinsoku.reset();
+			m_oMirrorIndents.reset();
+			m_oNumPr.reset();
+			m_oOutlineLvl.reset();
+			m_oOverflowPunct.reset();
+			m_oPageBreakBefore.reset();
+			m_oPBdr.reset();
+			m_oPPrChange.reset();
+			m_oPStyle.reset();
+			m_oRPr.reset();
+			m_oSectPr.reset();
+			m_oShd.reset();
+			m_oSnapToGrid.reset();
+			m_oSpacing.reset();
+			m_oSuppressAutoHyphens.reset();
+			m_oSuppressLineNumbers.reset();
+			m_oSuppressOverlap.reset();
+			m_oTabs.reset();
+			m_oTextAlignment.reset();
+			m_oTextboxTightWrap.reset();
+			m_oTextDirection.reset();
+			m_oTopLinePunct.reset();
+			m_oWidowControl.reset();
+			m_oWordWrap.reset();
+		}
+		bool CParagraphProperty::IsNoEmpty()
+		{
+			return (m_oAdjustRightInd.IsInit() ||  m_oAutoSpaceDE.IsInit() ||  m_oAutoSpaceDN.IsInit() ||  
+			m_oBidi.IsInit() ||  m_oCnfStyle.IsInit() ||  m_oContextualSpacing.IsInit() ||  m_oDivID.IsInit() ||  
+			m_oFramePr.IsInit() ||	m_oInd.IsInit() ||  m_oJc.IsInit() ||  m_oKeepLines.IsInit() ||  m_oKeepNext.IsInit() ||  
+			m_oKinsoku.IsInit() ||	m_oMirrorIndents.IsInit() ||  m_oNumPr.IsInit() ||  m_oOutlineLvl.IsInit() ||  
+			m_oOverflowPunct.IsInit() ||  m_oPageBreakBefore.IsInit() ||  m_oPBdr.IsInit() ||  m_oPPrChange.IsInit() ||  
+			m_oPStyle.IsInit() ||  m_oRPr.IsInit() ||  m_oSectPr.IsInit() ||  m_oShd.IsInit() ||  m_oSnapToGrid.IsInit() ||  
+			m_oSpacing.IsInit() ||	m_oSuppressAutoHyphens.IsInit() ||  m_oSuppressLineNumbers.IsInit() ||  m_oSuppressOverlap.IsInit() ||  m_oTabs.IsInit() ||  
+			m_oTextAlignment.IsInit() ||  m_oTextboxTightWrap.IsInit() ||  m_oTextDirection.IsInit() ||  m_oTopLinePunct.IsInit() ||  
+			m_oWidowControl.IsInit() ||  m_oWordWrap.IsInit() );
+		}
 		void CParagraphProperty::fromXML(XmlUtils::CXmlNode& oNode)
 		{//??? где используется ?
 			if ( L"w:pPr" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 
 			if (oNode.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oChild;
-					oNodes.GetAt(i, oChild);
+					XmlUtils::CXmlNode& oChild = oNodes[i];
 
 					std::wstring strName = oChild.GetName();
 
@@ -281,14 +648,16 @@ namespace OOX
 					{
 						OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
 
-						OOX::CDocument::_section section;
-						section.sect = m_oSectPr.GetPointer();
-						section.start_elm = doc->m_arrItems.size() + 1; // следующий после текущего
-
-						if (false == doc->m_arrSections.empty())
+						if (doc->m_arrSections.empty())
 						{
-							doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1; //активный рутовый еще не добавлен
+							OOX::CDocument::_section section;
+							doc->m_arrSections.push_back(section);
 						}
+						doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
+						doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); 
+						
+						OOX::CDocument::_section section;
+						section.start_elm = doc->m_arrItems.size(); 
 						doc->m_arrSections.push_back(section);
 					}
 //------------------------------------------------------------------------------------
@@ -325,237 +694,214 @@ namespace OOX
 		{
 			std::wstring sResult = L"<w:pPr>";
 
-			if ( m_oAdjustRightInd.IsInit() ) 
-			{
-				sResult += L"<w:adjustRightInd ";
-				sResult += m_oAdjustRightInd->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oAutoSpaceDE.IsInit() ) 
-			{ 
-				sResult += L"<w:autoSpaceDE ";
-				sResult += m_oAutoSpaceDE->ToString();
-				sResult += L"/>";				
-			}
-
-			if ( m_oAutoSpaceDN.IsInit() ) 
-			{ 
-				sResult += L"<w:autoSpaceDN ";
-				sResult += m_oAutoSpaceDN->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oBidi.IsInit() ) 
-			{ 
-				sResult += L"<w:bidi ";
-				sResult += m_oBidi->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oCnfStyle.IsInit() ) 
-			{ 
-				sResult += L"<w:cnfStyle "; 
-				sResult += m_oCnfStyle->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oContextualSpacing.IsInit() ) 
-			{ 
-				sResult += L"<w:contextualSpacing ";
-				sResult += m_oContextualSpacing->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oDivID.IsInit() ) 
-			{ 
-				sResult += L"<w:divId "; 
-				sResult += m_oDivID->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oFramePr.IsInit() )
-			{ 
-				sResult += L"<w:framePr "; 
-				sResult += m_oFramePr->ToString();	
-				sResult += L"/>";	
-			}
-
-			if ( m_oInd.IsInit() )
-			{ 
-				sResult += L"<w:ind "; 
-				sResult += m_oInd->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oJc.IsInit() ) 
-			{ 
-				sResult += L"<w:jc ";
-				sResult += m_oJc->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oKeepLines.IsInit() )
-			{ 
-				sResult += L"<w:keepLines ";
-				sResult += m_oKeepLines->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oKeepNext.IsInit() ) 
-			{ 
-				sResult += L"<w:keepNext "; 
-				sResult += m_oKeepNext->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oKinsoku.IsInit() )
-			{
-				sResult += L"<w:kinsoku "; 
-				sResult += m_oKinsoku->ToString();	
-				sResult += L"/>";	
-			}
-
-			if ( m_oMirrorIndents.IsInit() ) 
-			{ 
-				sResult += L"<w:mirrorIndents "; 
-				sResult += m_oMirrorIndents->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oNumPr.IsInit() ) 
-				sResult += m_oNumPr->toXML();	
-
-			if ( m_oOutlineLvl.IsInit() ) 
-			{ 
-				sResult += L"<w:outlineLvl ";
-				sResult += m_oOutlineLvl->ToString();		
-				sResult += L"/>";		
-			}
-
-			if ( m_oOverflowPunct.IsInit() ) 
-			{ 					
-				sResult += L"<w:overflowPunct "; 
-				sResult += m_oOverflowPunct->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oPageBreakBefore.IsInit() ) 
-			{ 
-				sResult += L"<w:pageBreakBefore "; 
-				sResult += m_oPageBreakBefore->ToString();
-				sResult += L"/>";		
-			}
-
-			if ( m_oPBdr.IsInit() )
-				sResult += m_oPBdr->toXML();	
-
-			if ( !m_bPPrChange && m_oPPrChange.IsInit() )
-				sResult += m_oPPrChange->toXML();	
-
-			if ( m_oPStyle.IsInit() )
+			if (m_oPStyle.IsInit())
 			{
 				sResult += L"<w:pStyle ";
 				sResult += m_oPStyle->ToString();
 				sResult += L"/>";
 			}
-
-			if ( !m_bPPrChange && m_oRPr.IsInit() )
-				sResult += m_oRPr->toXML();		
-
-			if ( !m_bPPrChange && m_oSectPr.IsInit() ) 
-				sResult += m_oSectPr->toXML();	
-
-			if ( m_oShd.IsInit() ) 
-			{ 
-				sResult += L"<w:shd "; 
-				sResult += m_oShd->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oSnapToGrid.IsInit() ) 
-			{ 
-				sResult += L"<w:snapToGrid ";
-				sResult += m_oSnapToGrid->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oSpacing.IsInit() ) 
+			if (m_oKeepNext.IsInit())
 			{
-				sResult += L"<w:spacing "; 
-				sResult += m_oSpacing->ToString();		
-				sResult += L"/>";		
+				sResult += L"<w:keepNext ";
+				sResult += m_oKeepNext->ToString();
+				sResult += L"/>";
 			}
-
+			if (m_oKeepLines.IsInit())
+			{
+				sResult += L"<w:keepLines ";
+				sResult += m_oKeepLines->ToString();
+				sResult += L"/>";
+			}
+			if (m_oPageBreakBefore.IsInit())
+			{
+				sResult += L"<w:pageBreakBefore ";
+				sResult += m_oPageBreakBefore->ToString();
+				sResult += L"/>";
+			}
+			if (m_oFramePr.IsInit())
+			{
+				sResult += L"<w:framePr ";
+				sResult += m_oFramePr->ToString();
+				sResult += L"/>";
+			}
+			if (m_oWidowControl.IsInit())
+			{
+				sResult += L"<w:widowControl ";
+				sResult += m_oWidowControl->ToString();
+				sResult += L"/>";
+			}
+			if (m_oNumPr.IsInit())
+			{
+				sResult += m_oNumPr->toXML();
+			}
+			if (m_oSuppressLineNumbers.IsInit())
+			{
+				sResult += L"<w:suppressLineNumbers ";
+				sResult += m_oSuppressLineNumbers->ToString();
+				sResult += L"/>";
+			}
+			if (m_oPBdr.IsInit())
+			{
+				sResult += m_oPBdr->toXML();
+			}
+			if (m_oShd.IsInit())
+			{
+				sResult += L"<w:shd ";
+				sResult += m_oShd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTabs.IsInit())
+			{
+				sResult += m_oTabs->toXML();
+			}
 			if ( m_oSuppressAutoHyphens.IsInit() ) 
 			{ 
 				sResult += L"<w:suppressAutoHyphens ";
 				sResult += m_oSuppressAutoHyphens->ToString();		
 				sResult += L"/>";		
 			}
-
-			if ( m_oSuppressLineNumbers.IsInit() ) 
-			{ 
-				sResult += L"<w:suppressLineNumbers "; 
-				sResult += m_oSuppressLineNumbers->ToString();		
-				sResult += L"/>";			
-			}
-
-			if ( m_oSuppressOverlap.IsInit() ) 
-			{ 
-				sResult += L"<w:suppressOverlap "; 
-				sResult += m_oSuppressOverlap->ToString();		
-				sResult += L"/>";			
-			}
-
-			if ( m_oTabs.IsInit() ) 
-				sResult += m_oTabs->toXML();	
-
-			if ( m_oTextAlignment.IsInit() ) 
+			if (m_oKinsoku.IsInit())
 			{
-				sResult += L"<w:textAlignment "; 
-				sResult += m_oTextAlignment->ToString();	
-				sResult += L"/>";		
+				sResult += L"<w:kinsoku ";
+				sResult += m_oKinsoku->ToString();
+				sResult += L"/>";
 			}
-
-			if ( m_oTextboxTightWrap.IsInit() ) 
+			if (m_oWordWrap.IsInit())
+			{
+				sResult += L"<w:wordWrap ";
+				sResult += m_oWordWrap->ToString();
+				sResult += L"/>";
+			}
+			if (m_oOverflowPunct.IsInit())
+			{
+				sResult += L"<w:overflowPunct ";
+				sResult += m_oOverflowPunct->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTopLinePunct.IsInit())
+			{
+				sResult += L"<w:topLinePunct ";
+				sResult += m_oTopLinePunct->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAutoSpaceDE.IsInit())
+			{
+				sResult += L"<w:autoSpaceDE ";
+				sResult += m_oAutoSpaceDE->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAutoSpaceDN.IsInit())
+			{
+				sResult += L"<w:autoSpaceDN ";
+				sResult += m_oAutoSpaceDN->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBidi.IsInit())
+			{
+				sResult += L"<w:bidi ";
+				sResult += m_oBidi->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAdjustRightInd.IsInit())
+			{
+				sResult += L"<w:adjustRightInd ";
+				sResult += m_oAdjustRightInd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSnapToGrid.IsInit())
+			{
+				sResult += L"<w:snapToGrid ";
+				sResult += m_oSnapToGrid->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSpacing.IsInit())
+			{
+				sResult += L"<w:spacing ";
+				sResult += m_oSpacing->ToString();
+				sResult += L"/>";
+			}
+			if (m_oInd.IsInit())
+			{
+				sResult += L"<w:ind ";
+				sResult += m_oInd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oContextualSpacing.IsInit())
+			{
+				sResult += L"<w:contextualSpacing ";
+				sResult += m_oContextualSpacing->ToString();
+				sResult += L"/>";
+			}
+			if (m_oMirrorIndents.IsInit())
+			{
+				sResult += L"<w:mirrorIndents ";
+				sResult += m_oMirrorIndents->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSuppressOverlap.IsInit())
+			{
+				sResult += L"<w:suppressOverlap ";
+				sResult += m_oSuppressOverlap->ToString();
+				sResult += L"/>";
+			}
+			if (m_oJc.IsInit())
+			{
+				sResult += L"<w:jc ";
+				sResult += m_oJc->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextDirection.IsInit())
+			{
+				sResult += L"<w:textDirection ";
+				sResult += m_oTextDirection->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextAlignment.IsInit())
+			{
+				sResult += L"<w:textAlignment ";
+				sResult += m_oTextAlignment->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextboxTightWrap.IsInit())
 			{
 				sResult += L"<w:textboxTightWrap ";
-				sResult += m_oTextboxTightWrap->ToString();	
-				sResult += L"/>";			
+				sResult += m_oTextboxTightWrap->ToString();
+				sResult += L"/>";
 			}
-
-			if ( m_oTextDirection.IsInit() )
-			{ 
-				sResult += L"<w:textDirection "; 
-				sResult += m_oTextDirection->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oTopLinePunct.IsInit() )
-			{ 
-				sResult += L"<w:topLinePunct ";
-				sResult += m_oTopLinePunct->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oWidowControl.IsInit() ) 
-			{ 
-				sResult += L"<w:widowControl "; 
-				sResult += m_oWidowControl->ToString();
-				sResult += L"/>";		
-			}
-
-			if ( m_oWordWrap.IsInit() ) 
+			if (m_oOutlineLvl.IsInit())
 			{
-				sResult += L"<w:wordWrap "; 
-				sResult += m_oWordWrap->ToString();	
-				sResult += L"/>";		
+				sResult += L"<w:outlineLvl ";
+				sResult += m_oOutlineLvl->ToString();
+				sResult += L"/>";
 			}
+			if (m_oDivID.IsInit())
+			{
+				sResult += L"<w:divId ";
+				sResult += m_oDivID->ToString();
+				sResult += L"/>";
+			}
+			if ( m_oCnfStyle.IsInit() ) 
+			{ 
+				sResult += L"<w:cnfStyle "; 
+				sResult += m_oCnfStyle->ToString();
+				sResult += L"/>";	
+			}
+			if ( !m_bPPrChange && m_oRPr.IsInit() )
+				sResult += m_oRPr->toXML();		
+			
+			if ( !m_bPPrChange && m_oSectPr.IsInit() ) 
+				sResult += m_oSectPr->toXML();	
+			
+			if ( !m_bPPrChange && m_oPPrChange.IsInit() )
+				sResult += m_oPPrChange->toXML();	
 
 			sResult += L"</w:pPr>";
 
 			return sResult;
+		}
+		EElementType CParagraphProperty::getType() const
+		{
+			return et_w_pPr;
 		}
 		const CParagraphProperty CParagraphProperty::Merge(const CParagraphProperty& oPrev, const CParagraphProperty& oCurrent)
 		{
@@ -615,7 +961,6 @@ namespace OOX
 
 			return oProperties;
 		}
-
 
 	} // Logic
 } // OOX

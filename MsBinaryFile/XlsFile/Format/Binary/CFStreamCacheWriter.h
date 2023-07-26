@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,8 @@
 
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
+#include "CFRecordType.h"
+#include "../../../../OOXML/Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace XLS
 {
@@ -42,25 +44,58 @@ namespace XLS
 // For example this is necessary in 'Index' record that shall reference DBCell records
 // appearing later in the stream. So, this class will increase performance much
 
-class CFStreamCacheWriter
+class StreamCacheWriter
 {
 public:
-	CFStreamCacheWriter(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info);
-	~CFStreamCacheWriter();
+        StreamCacheWriter(const GlobalWorkbookInfoPtr global_info);
+	virtual ~StreamCacheWriter();
 
-	// Saves the next CFRecord to the CFStream or caches for later saving. Returns whether the record was saved to file or stored for later saving
-	bool storeNextRecord(CFRecordPtr record);
+	// Return the next new CFRecord
+	virtual CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type);
+	// Saves the next CFRecord to the stream or caches for later saving. Returns whether the record was saved to file or stored for later saving
+	virtual bool storeNextRecord(CFRecordPtr record);
 
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 
 private:
+	// Actual transporting record to the stream
+	virtual const size_t writeToStream(const size_t num_of_records_min_necessary) = 0;
+
+protected:
+
+	CFRecordPtrList records_cache;
+	GlobalWorkbookInfoPtr global_info_;
+};
+
+class CFStreamCacheWriter : public StreamCacheWriter
+{
+public:
+        CFStreamCacheWriter(CFStreamPtr stream, const GlobalWorkbookInfoPtr global_info);
+	~CFStreamCacheWriter();
+
+	// Return the next new CFRecord
+	//CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type) override;
+	// Saves the next CFRecord to the CFStream or caches for later saving. Returns whether the record was saved to file or stored for later saving
+	bool storeNextRecord(CFRecordPtr record) override;
+
+private:
 	// Actual transporting record to the CFStream and then to IStream
-	const size_t writeToStream(const size_t num_of_records_min_necessary);
+	const size_t writeToStream(const size_t num_of_records_min_necessary) override;
 
 private:
 	CFStreamPtr stream_;
-	CFRecordPtrList records_cache;
-	GlobalWorkbookInfoPtr global_info_;
+};
+
+class BinaryStreamCacheWriter : public StreamCacheWriter
+{
+public:
+        BinaryStreamCacheWriter(boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream, const GlobalWorkbookInfoPtr global_info);
+        ~BinaryStreamCacheWriter();
+	
+private:
+	const size_t writeToStream(const size_t num_of_records_min_necessary) override;
+
+	boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream_;
 };
 
 } // namespace XLS

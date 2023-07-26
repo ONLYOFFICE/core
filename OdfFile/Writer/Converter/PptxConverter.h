@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -123,7 +123,7 @@ namespace Oox2Odf
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
        
-		virtual std::wstring							find_link_by_id (const std::wstring & sId, int t);
+		virtual std::wstring							find_link_by_id (const std::wstring & sId, int t, bool & bExternal);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id	(const std::wstring & sId);
 
 		void convert(OOX::WritingElement *oox_unknown);
@@ -155,9 +155,9 @@ namespace Oox2Odf
 		void convert(const std::wstring &id, PPTX::Logic::TableStyle *oox_table_style);
  		std::wstring convert(PPTX::Logic::TablePartStyle *oox_table_part_style, const std::wstring &base = L"");
 
-		void convert(PPTX::Logic::TcBdr *borders,	odf_writer::style_paragraph_properties	*para_properties);
+		void convert(PPTX::Logic::TcBdr *borders,	odf_writer::paragraph_format_properties	*para_properties);
 		void convert(PPTX::Logic::TcStyle* style,	odf_writer::graphic_format_properties	*graphic_properties);
-		void convert(PPTX::Logic::TcTxStyle* style,	odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::TcTxStyle* style,	odf_writer::text_format_properties		*text_properties);
 		
 		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
 private:

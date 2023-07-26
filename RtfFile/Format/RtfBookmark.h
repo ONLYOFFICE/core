@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,29 +38,20 @@ public:
 	int nFirstColumn;
 	int nLastColumn;
     std::wstring m_sName;
-	RtfBookmarkStart()
-	{
-		nFirstColumn = PROP_DEF;
-		nLastColumn = PROP_DEF;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_BOOKMARKSTART;
-	}
+
+	RtfBookmarkStart();
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfBookmarkEnd : public IDocumentElement
 {
 public: 
     std::wstring m_sName;
-	RtfBookmarkEnd()
-	{
-	}
-	int GetType()
-	{
-		return TYPE_RTF_BOOKMARKEND;
-	}
+
+	RtfBookmarkEnd();
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -71,16 +62,12 @@ public:
     std::wstring	m_sValue;	
 	int				m_nType;
 	
-	RtfAnnotElem(int type = 0) : m_nType (type)
-	{
-	}
-	int GetType()
-	{
-		return TYPE_RTF_ANNOTVALUE;
-	}
+	RtfAnnotElem(int type = 0);
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 typedef boost::shared_ptr<RtfAnnotElem>		RtfAnnotElemPtr;
 
 class RtfAnnotation : public IDocumentElement
@@ -93,17 +80,12 @@ public:
 	TextItemContainerPtr	m_oContent;
 	RtfCharProperty			m_oCharProp;
 	
-	RtfAnnotation()
-	{
-		m_oContent = TextItemContainerPtr( new TextItemContainer() );
-	}
-	int GetType()
-	{
-		return TYPE_RTF_ANNOTATION;
-	}
+	RtfAnnotation();
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 typedef boost::shared_ptr<RtfAnnotation> RtfAnnotationPtr;
 
 class RtfFootnote : public IDocumentElement
@@ -112,15 +94,9 @@ public:
 	bool m_bEndNote;
 	TextItemContainerPtr m_oContent;
 	RtfCharProperty m_oCharProp;
-	RtfFootnote()
-	{
-		m_bEndNote = false;
-		m_oContent = TextItemContainerPtr( new TextItemContainer() );
-	}
-	int GetType()
-	{
-		return TYPE_RTF_FOOTNOTE;
-	}
+
+	RtfFootnote();
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };

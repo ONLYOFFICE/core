@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,103 +40,30 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class AlphaInv : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaInv)
+			WritingElement_AdditionMethods(AlphaInv)
 			PPTX_LOGIC_BASE2(AlphaInv)
 
-			AlphaInv& operator=(const AlphaInv& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaInv& operator=(const AlphaInv& oSrc);
 
-				Color = oSrc.Color;
-				return *this;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaInv;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					Color.fromXML(oReader);
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Color.GetColorFrom(node);
-				FillParentPointersForChilds();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:alphaInv>") + Color.toXML() + _T("</a:alphaInv>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:alphaInv");
-				pWriter->EndAttributes();
-				Color.toXmlWriter(pWriter);
-				pWriter->EndNode(L"a:alphaInv");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHAINV);
-
-				pWriter->WriteRecord1(0, Color);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Color.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}					
 		public:
 			UniColor Color;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(Color.is_init())
-					Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

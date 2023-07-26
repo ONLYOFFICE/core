@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -45,87 +45,35 @@ namespace PPTX
 		class AhBase : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AhBase)
+			WritingElement_AdditionMethods(AhBase)
 			PPTX_LOGIC_BASE2(AhBase)
 
-			virtual OOX::EElementType getType() const
-			{
-				if (ah.IsInit())
-					return ah->getType();
-				return OOX::et_Unknown;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
+			virtual OOX::EElementType getType() const;
 
-				if (name == _T("ahXY"))
-					ah.reset(new Logic::AhXY(node));
-				else if (name == _T("ahPolar"))
-					ah.reset(new Logic::AhPolar(node));
-				else ah.reset();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if (sName == L"ahXY")
-					ah.reset(new Logic::AhXY(oReader));
-				else if(sName == L"ahPolar")
-					ah.reset(new Logic::AhPolar(oReader));
-				else ah.reset();
-			}
-			virtual void GetAdjustHandleFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (element.GetNode(_T("a:ahXY"), oNode))
-					ah.reset(new Logic::AhXY(oNode));
-				else if(element.GetNode(_T("a:ahPolar"), oNode))
-					ah.reset(new Logic::AhPolar(oNode));
-				else ah.reset();
-			}
+			virtual void GetAdjustHandleFrom(XmlUtils::CXmlNode& element);
 
-			virtual std::wstring toXML() const
-			{
-				if (ah.is_init())
-					return ah->toXML();
-
-				return _T("");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (ah.is_init())
-					ah->toPPTY(pWriter);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (ah.is_init())
-					ah->toXmlWriter(pWriter);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			
 			template<class T> const bool is() const { return (!ah.IsInit())?false:(typeid(*ah) == typeid(T));}
 			template<class T> T& as() {return static_cast<T&>(*ah);}
 			template<class T> const T& as() const {return static_cast<const T&>(*ah);}
 
-			virtual bool is_init()const{return (ah.is_init());};
+			virtual bool is_init()const;
 
 		public:
 			smart_ptr<Ah> ah;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					ah->SetParentPointer(pParent);
-			}
-			
-			std::wstring GetODString()const
-			{
-				if (!ah.IsInit())
-					return _T("");
-				return ah->GetODString();
-			}
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
+			std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,9 +30,7 @@
  *
  */
 
-#ifndef WORKBOOKSTREAM_H
-#define WORKBOOKSTREAM_H
-
+#pragma once
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../Base/Base.h"
@@ -41,11 +39,11 @@
 #include <memory.h>
 #include <iostream>
 #include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+
 typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class WorkBookStream;
     typedef boost::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
@@ -59,11 +57,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType type = XLS::typeWorkbookStreamObject;
 
-        XLS::BaseObjectPtr               m_BrtBeginBook;
+        bool							 m_bBeginBook;
         XLS::BaseObjectPtr               m_BrtFileVersion;
         XLS::BaseObjectPtr               m_BrtFileSharingIso;
         XLS::BaseObjectPtr               m_BrtFileSharing;
@@ -79,19 +78,17 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtOleSize;
         XLS::BaseObjectPtr               m_PIVOTCACHEIDS;
         XLS::BaseObjectPtr               m_BrtWebOpt;
-        XLS::BaseObjectPtr               m_BrtEndBook;
+		bool				             m_bEndBook;
         XLS::BaseObjectPtr               m_FRTWORKBOOK;
 
         std::vector<XLS::BaseObjectPtr>  m_arBrtName;
         std::vector<XLS::BaseObjectPtr>  m_arBrtUserBookView;
         std::vector<XLS::BaseObjectPtr>  m_arBrtFileRecover;
 
+		void UpdateXtiWrite(XLS::GlobalWorkbookInfo* xls_global_info);
         void UpdateXti(XLS::GlobalWorkbookInfo* xls_global_info);
         void UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_);
 
     };
 
 }
-
-#endif // WORKBOOKSTREAM_H
-

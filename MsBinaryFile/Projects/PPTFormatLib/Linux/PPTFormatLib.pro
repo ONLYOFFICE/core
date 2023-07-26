@@ -28,16 +28,26 @@ DEFINES +=  UNICODE \
 
 HEADERS += \
 	../../../PptFile/Main/PPTFormatLib.h \
+	../../../PptFile/Converter/Animation/AnimationParser.h \
+	../../../PptFile/Converter/Animation/Animation_1995.h \
+	../../../PptFile/Converter/Animation/TimingExeption.h \
+	../../../PptFile/Converter/Animation/TimingUtils.h \
+	../../../PptFile/Converter/Animation/Timing_1995.h \
+	../../../PptFile/Converter/Animation/Timing_2010.h \
+	../../../PptFile/Converter/Animation/hashcode10.h \
+	../../../PptFile/Converter/Animation/intermediate_anim.h \
+	../../../PptFile/Converter/timing.h \
 	../../../PptFile/Converter/transition.h \
 	../../../PptFile/Enums/RecordType.h \
 	../../../PptFile/Enums/_includer.h \
 	../../../PptFile/Enums/enums.h \
-	../../../PptFile/PPTXWriter/Animation.h \
+	../../../PptFile/PPTFormatLib.h \
 	../../../PptFile/PPTXWriter/BulletsConverter.h \
 	../../../PptFile/PPTXWriter/TableWriter.h \
 	../../../PptFile/PPTXWriter/TxBodyConverter.h \
 	../../../PptFile/Reader/ClassesAtom.h \
 	../../../PptFile/Reader/CommonZLib.h \
+	../../../PptFile/Reader/ExtXmlUtils.h \
 	../../../PptFile/Reader/PPTDocumentInfo.h \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.h \
 	../../../PptFile/Reader/PPTFileDefines.h \
@@ -45,13 +55,13 @@ HEADERS += \
 	../../../PptFile/Reader/ReadStructures.h \
 	../../../PptFile/Reader/Records.h \
 	../../../PptFile/Reader/RoundTripExtractor.h \
-	../../../PptFile/Reader/Slide.h \
 	../../../PptFile/Reader/SlideInfo.h \
 	../../../PptFile/Reader/SlidePersist.h \
 	../../../PptFile/Records/Animations/AnimationInfoAtom.h \
 	../../../PptFile/Records/Animations/AnimationInfoContainer.h \
 	../../../PptFile/Records/Animations/BuildAtom.h \
 	../../../PptFile/Records/Animations/BuildListContainer.h \
+	../../../PptFile/Records/Animations/BuildListSubContainer.h \
 	../../../PptFile/Records/Animations/ChartBuildAtom.h \
 	../../../PptFile/Records/Animations/ChartBuildContainer.h \
 	../../../PptFile/Records/Animations/ClientVisualElementContainer.h \
@@ -115,7 +125,7 @@ HEADERS += \
 	../../../PptFile/Records/BlipEntityAtom.h \
 	../../../PptFile/Records/BookmarkEntityAtom.h \
 	../../../PptFile/Records/BookmarkSeedAtom.h \
-	../../../PptFile/Records/BuildAtom.h \
+    ../../../PptFile/Records/CryptSession10Container.h \
 	../../../PptFile/Records/DocInfoListContainer.h \
 	../../../PptFile/Records/DocProgTagsContainer.h \
 	../../../PptFile/Records/MouseInteractiveInfoContainer.h \
@@ -123,6 +133,7 @@ HEADERS += \
 	../../../PptFile/Records/OfficeArtClientTextbox.h \
 	../../../PptFile/Records/PlaceHolderAtom.h \
 	../../../PptFile/Records/RoundTrip.h \
+    ../../../PptFile/Records/RoundTripNotesMasterTextStyles12Atom.h \
 	../../../PptFile/Records/ShapeProgBinaryTagSubContainerOrAtom.h \
 	../../../PptFile/Records/CFMasks.h \
 	../../../PptFile/Records/ColorSchemeAtom.h \
@@ -257,6 +268,7 @@ HEADERS += \
 	../../../PptFile/Structures/ColorIndexStruct.h \
 	../../../PptFile/Structures/ColorStruct.h \
 	../../../PptFile/Structures/DateTimeStruct.h \
+	../../../PptFile/Structures/FontCollectionEntry.h \
 	../../../PptFile/Structures/IStruct.h \
 	../../../PptFile/Structures/PointStruct.h \
 	../../../PptFile/Structures/RatioStruct.h \
@@ -265,8 +277,7 @@ HEADERS += \
 	../../../PptFile/Structures/SmallRectStruct.h \
 	../../../PptFile/Structures/TmsfTimeStruct.h \
 	../../../PptFile/Structures/WideColorStruct.h \
-	../../../PptFile/Structures/_includer.h \
-	../../../../Common/3dParty/pole/pole.h
+	../../../PptFile/Structures/_includer.h
 
 core_release {
 SOURCES += \
@@ -276,6 +287,7 @@ SOURCES += \
 core_debug {
 SOURCES += \
 	../../../PptFile/Enums/RecordType.cpp \
+	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Reader/ReadStructures.cpp \
 	../../../PptFile/Reader/RoundTripExtractor.cpp \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.cpp \
@@ -284,19 +296,221 @@ SOURCES += \
 	../../../PptFile/Reader/SlidePersist.cpp \
 	../../../PptFile/PPTXWriter/Converter.cpp \
 	../../../PptFile/PPTXWriter/ShapeWriter.cpp \
-	../../../PptFile/PPTXWriter/Animation.cpp \
 	../../../PptFile/PPTXWriter/TableWriter.cpp \
 	../../../PptFile/PPTXWriter/TxBodyConverter.cpp \
+	../../../PptFile/PPTXWriter/StylesWriter.cpp \
+	../../../PptFile/PPTXWriter/BulletsConverter.cpp \
+	../../../PptFile/PPTXWriter/ImageManager.cpp \
 	../../../PptFile/Records/Drawing/ArtBlip.cpp \
 	../../../PptFile/Records/Drawing/ShapeContainer.cpp \
 	../../../PptFile/Records/Animations/TimeVariant.cpp \
-	../../../PptFile/Records/BlipEntityAtom.cpp
-}
-
-SOURCES += \
-	../../../PptFile/Main/PPTFormatLib.cpp \
+	../../../PptFile/Records/BlipEntityAtom.cpp \
 	../../../PptFile/Drawing/Elements.cpp \
 	../../../PptFile/Drawing/TextAttributesEx.cpp \
+  	../../../PptFile/Converter/Animation/AnimationParser.cpp \
+	../../../PptFile/Converter/Animation/Animation_1995.cpp \
+	../../../PptFile/Converter/Animation/TimingUtils.cpp \
+	../../../PptFile/Converter/Animation/Timing_1995.cpp \
+	../../../PptFile/Converter/Animation/Timing_2010.cpp \
+	../../../PptFile/Converter/Animation/hashcode10.cpp \
+	../../../PptFile/Converter/Animation/intermediate_anim.cpp \
+	../../../PptFile/Converter/timing.cpp \
 	../../../PptFile/Converter/transition.cpp \
-	../../../PptFile/PPTXWriter/BulletsConverter.cpp \
-	../../../../Common/3dParty/pole/pole.cpp
+	../../../PptFile/Drawing/Element.cpp \
+	../../../PptFile/Drawing/Slide.cpp \
+	../../../PptFile/Drawing/Layout.cpp \
+	../../../PptFile/Drawing/TextStructures.cpp \
+	../../../PptFile/Drawing/Theme.cpp \
+	../../../PptFile/Main/PPTFormatLib.cpp \
+	../../../PptFile/Reader/ClassesAtom.cpp \
+	../../../PptFile/Reader/ExtXmlUtils.cpp \
+	../../../PptFile/Reader/PPTDocumentInfo.cpp \
+	../../../PptFile/Reader/SlideInfo.cpp \
+	../../../PptFile/Records/Animations/AnimationInfoAtom.cpp \
+	../../../PptFile/Records/Animations/AnimationInfoContainer.cpp \
+	../../../PptFile/Records/Animations/BuildAtom.cpp \
+	../../../PptFile/Records/Animations/BuildListSubContainer.cpp \
+	../../../PptFile/Records/Animations/ChartBuildAtom.cpp \
+	../../../PptFile/Records/Animations/ChartBuildContainer.cpp \
+	../../../PptFile/Records/Animations/ClientVisualElementContainer.cpp \
+	../../../PptFile/Records/Animations/DiagramBuildAtom.cpp \
+	../../../PptFile/Records/Animations/DiagramBuildContainer.cpp \
+	../../../PptFile/Records/Animations/ExtTimeNodeContainer.cpp \
+	../../../PptFile/Records/Animations/HashCode10Atom.cpp \
+	../../../PptFile/Records/Animations/LevelInfoAtom.cpp \
+	../../../PptFile/Records/Animations/ParaBuildAtom.cpp \
+	../../../PptFile/Records/Animations/ParaBuildContainer.cpp \
+	../../../PptFile/Records/Animations/ParaBuildLevel.cpp \
+	../../../PptFile/Records/Animations/SubEffectContainer.cpp \
+	../../../PptFile/Records/Animations/TimeAnimateBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeAnimateBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeAnimateColor.cpp \
+	../../../PptFile/Records/Animations/TimeAnimateColorBy.cpp \
+	../../../PptFile/Records/Animations/TimeAnimationValueAtom.cpp \
+	../../../PptFile/Records/Animations/TimeAnimationValueListContainer.cpp \
+	../../../PptFile/Records/Animations/TimeAnimationValueListEntry.cpp \
+	../../../PptFile/Records/Animations/TimeBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeColorBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeColorBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeCommandBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeCommandBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeConditionAtom.cpp \
+	../../../PptFile/Records/Animations/TimeConditionContainer.cpp \
+	../../../PptFile/Records/Animations/TimeEffectBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeEffectBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeIterateDataAtom.cpp \
+	../../../PptFile/Records/Animations/TimeModifierAtom.cpp \
+	../../../PptFile/Records/Animations/TimeMotionBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeMotionBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeNodeAtom.cpp \
+	../../../PptFile/Records/Animations/TimePropertyList4TimeBehavior.cpp \
+	../../../PptFile/Records/Animations/TimePropertyList4TimeNodeContainer.cpp \
+	../../../PptFile/Records/Animations/TimeRotationBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeRotationBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeScaleBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeScaleBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeSequenceDataAtom.cpp \
+	../../../PptFile/Records/Animations/TimeSetBehaviorAtom.cpp \
+	../../../PptFile/Records/Animations/TimeSetBehaviorContainer.cpp \
+	../../../PptFile/Records/Animations/TimeStringListContainer.cpp \
+	../../../PptFile/Records/Animations/TimeVariant4Behavior.cpp \
+	../../../PptFile/Records/Animations/VisualPageAtom.cpp \
+	../../../PptFile/Records/Animations/VisualShapeAtom.cpp \
+	../../../PptFile/Records/Animations/VisualShapeChartElementAtom.cpp \
+	../../../PptFile/Records/Animations/VisualShapeGeneralAtom.cpp \
+	../../../PptFile/Records/Animations/VisualSoundAtom.cpp \
+	../../../PptFile/Records/BlipCollection9Container.cpp \
+	../../../PptFile/Records/BookmarkEntityAtom.cpp \
+	../../../PptFile/Records/BookmarkSeedAtom.cpp \
+	../../../PptFile/Records/CFMasks.cpp \
+	../../../PptFile/Records/CString.cpp \
+	../../../PptFile/Records/ColorSchemeAtom.cpp \
+	../../../PptFile/Records/Comment10Container.cpp \
+	../../../PptFile/Records/CryptSession10Container.cpp \
+	../../../PptFile/Records/CurrentUserAtom.cpp \
+	../../../PptFile/Records/DocInfoListContainer.cpp \
+	../../../PptFile/Records/DocProgTagsContainer.cpp \
+	../../../PptFile/Records/DocRoutingSlipAtom.cpp \
+	../../../PptFile/Records/DocumentAtom.cpp \
+	../../../PptFile/Records/DocumentRecords.cpp \
+	../../../PptFile/Records/DocumentTextInfo.cpp \
+	../../../PptFile/Records/Drawing/BlipStoreContainer.cpp \
+	../../../PptFile/Records/Drawing/BlipStoreEntry.cpp \
+	../../../PptFile/Records/Drawing/ChildAnchor.cpp \
+	../../../PptFile/Records/Drawing/ClientAnchor.cpp \
+	../../../PptFile/Records/Drawing/DrawingContainer.cpp \
+	../../../PptFile/Records/Drawing/DrawingGroup.cpp \
+	../../../PptFile/Records/Drawing/DrawingRecord.cpp \
+	../../../PptFile/Records/Drawing/GroupShape.cpp \
+	../../../PptFile/Records/Drawing/RegGroupItems.cpp \
+	../../../PptFile/Records/Drawing/Shape.cpp \
+	../../../PptFile/Records/Drawing/ShapeProperties.cpp \
+	../../../PptFile/Records/Drawing/TextBox.cpp \
+	../../../PptFile/Records/EndDocument.cpp \
+	../../../PptFile/Records/ExCDAudioContainer.cpp \
+	../../../PptFile/Records/ExControlAtom.cpp \
+	../../../PptFile/Records/ExHyperlinkAtom.cpp \
+	../../../PptFile/Records/ExMIDIAudioContainer.cpp \
+	../../../PptFile/Records/ExMediaAtom.cpp \
+	../../../PptFile/Records/ExObjListAtom.cpp \
+	../../../PptFile/Records/ExObjListContainer.cpp \
+	../../../PptFile/Records/ExObjRefAtom.cpp \
+	../../../PptFile/Records/ExOleEmbedAtom.cpp \
+	../../../PptFile/Records/ExOleLinkAtom.cpp \
+	../../../PptFile/Records/ExOleObjAtom.cpp \
+	../../../PptFile/Records/ExVideoContainer.cpp \
+	../../../PptFile/Records/ExWAVAudioEmbeddedContainer.cpp \
+	../../../PptFile/Records/ExWAVAudioLinkContainer.cpp \
+	../../../PptFile/Records/FontCollection10Container.cpp \
+	../../../PptFile/Records/FontEmbedFlags10Atom.cpp \
+	../../../PptFile/Records/FontEntityAtom.cpp \
+	../../../PptFile/Records/GridSpacing10Atom.cpp \
+	../../../PptFile/Records/GuideAtom.cpp \
+	../../../PptFile/Records/HeadersFootersAtom.cpp \
+	../../../PptFile/Records/InteractiveInfoAtom.cpp \
+	../../../PptFile/Records/KinsokuAtom.cpp \
+	../../../PptFile/Records/KinsokuContainer.cpp \
+	../../../PptFile/Records/KinsokuFollowingAtom.cpp \
+	../../../PptFile/Records/KinsokuLeadingAtom.cpp \
+	../../../PptFile/Records/LinkedShape10Atom.cpp \
+	../../../PptFile/Records/LinkedSlide10Atom.cpp \
+	../../../PptFile/Records/MasterPersistAtom.cpp \
+	../../../PptFile/Records/MasterTextPropAtom.cpp \
+	../../../PptFile/Records/MetafileBlob.cpp \
+	../../../PptFile/Records/MouseInteractiveInfoContainer.cpp \
+	../../../PptFile/Records/MouseTextInteractiveInfoAtom.cpp \
+	../../../PptFile/Records/NamedShowSlidesAtom.cpp \
+	../../../PptFile/Records/NoZoomViewInfoAtom.cpp \
+	../../../PptFile/Records/NormalViewSetInfoAtom.cpp \
+	../../../PptFile/Records/NotesAtom.cpp \
+	../../../PptFile/Records/NotesPersistAtom.cpp \
+	../../../PptFile/Records/OfficeArtClientData.cpp \
+	../../../PptFile/Records/OutlineTextProps9Container.cpp \
+	../../../PptFile/Records/OutlineTextPropsHeaderExAtom.cpp \
+	../../../PptFile/Records/OutlineTextRefAtom.cpp \
+	../../../PptFile/Records/PFMasks.cpp \
+	../../../PptFile/Records/PersistDirectoryAtom.cpp \
+	../../../PptFile/Records/PlaceHolderAtom.cpp \
+	../../../PptFile/Records/ProgStringTagContainer.cpp \
+	../../../PptFile/Records/RoundTrip.cpp \
+	../../../PptFile/Records/RoundTripNotesMasterTextStyles12Atom.cpp \
+	../../../PptFile/Records/SSDocInfoAtom.cpp \
+	../../../PptFile/Records/SSSlideInfoAtom.cpp \
+	../../../PptFile/Records/SSlideLayoutAtom.cpp \
+	../../../PptFile/Records/ShapeFlags10Atom.cpp \
+	../../../PptFile/Records/ShapeFlagsAtom.cpp \
+	../../../PptFile/Records/ShapeProgBinaryTagSubContainerOrAtom.cpp \
+	../../../PptFile/Records/SlideAtom.cpp \
+	../../../PptFile/Records/SlideColorSchemeAtom.cpp \
+	../../../PptFile/Records/SlideContainer.cpp \
+	../../../PptFile/Records/SlideFlags10Atom.cpp \
+	../../../PptFile/Records/SlideListWithText.cpp \
+	../../../PptFile/Records/SlidePersistAtom.cpp \
+	../../../PptFile/Records/SlideProgTagsContainer.cpp \
+	../../../PptFile/Records/SlideTime10Atom.cpp \
+	../../../PptFile/Records/SlideViewInfoAtom.cpp \
+	../../../PptFile/Records/SoundCollAtom.cpp \
+	../../../PptFile/Records/SoundCollectionContainer.cpp \
+	../../../PptFile/Records/SoundContainer.cpp \
+	../../../PptFile/Records/SoundDataBlob.cpp \
+	../../../PptFile/Records/StyleTextProp10Atom.cpp \
+	../../../PptFile/Records/StyleTextProp11Atom.cpp \
+	../../../PptFile/Records/StyleTextProp9Atom.cpp \
+	../../../PptFile/Records/StyleTextPropAtom.cpp \
+	../../../PptFile/Records/TextBookmarkAtom.cpp \
+	../../../PptFile/Records/TextBytesAtom.cpp \
+	../../../PptFile/Records/TextCFException10.cpp \
+	../../../PptFile/Records/TextCFException9.cpp \
+	../../../PptFile/Records/TextCFExceptionAtom.cpp \
+	../../../PptFile/Records/TextCharsAtom.cpp \
+	../../../PptFile/Records/TextDefaults9Atom.cpp \
+	../../../PptFile/Records/TextFullSettings.cpp \
+	../../../PptFile/Records/TextHeaderAtom.cpp \
+	../../../PptFile/Records/TextInteractiveInfoAtom.cpp \
+	../../../PptFile/Records/TextMasterStyle9Atom.cpp \
+	../../../PptFile/Records/TextMasterStyle9Level.cpp \
+	../../../PptFile/Records/TextMasterStyleAtom.cpp \
+	../../../PptFile/Records/TextPFException9.cpp \
+	../../../PptFile/Records/TextPFExceptionAtom.cpp \
+	../../../PptFile/Records/TextRulerAtom.cpp \
+	../../../PptFile/Records/TextSIException.cpp \
+	../../../PptFile/Records/TextSIExceptionAtom.cpp \
+	../../../PptFile/Records/TextSpecInfoAtom.cpp \
+	../../../PptFile/Records/UserEditAtom.cpp \
+	../../../PptFile/Records/VBAInfoAtom.cpp \
+	../../../PptFile/Records/ViewInfoAtom.cpp \
+	../../../PptFile/Records/ZoomViewInfoAtom.cpp \
+	../../../PptFile/Structures/PointStruct.cpp \
+	../../../PptFile/Structures/ColorIndexStruct.cpp \
+	../../../PptFile/Structures/DateTimeStruct.cpp \
+	../../../PptFile/Structures/FontCollectionEntry.cpp \
+	../../../PptFile/Structures/ColorIndex.cpp \
+	../../../PptFile/Structures/ColorStruct.cpp \
+	../../../PptFile/Structures/RatioStruct.cpp \
+	../../../PptFile/Structures/RectStruct.cpp \
+	../../../PptFile/Structures/ScalingStruct.cpp \
+	../../../PptFile/Structures/SmallRectStruct.cpp \
+	../../../PptFile/Structures/TmsfTimeStruct.cpp \
+	../../../PptFile/Structures/WideColorStruct.cpp
+}

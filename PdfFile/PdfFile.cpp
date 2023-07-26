@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -396,7 +396,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
         return false;
     // Создание writer для редактирования
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
     if (!wsDstFile.empty())
         NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile);
 
@@ -674,6 +674,37 @@ int CPdfFile::GetError()
         return 1;
     return m_pInternal->pReader->GetError();
 }
+bool CPdfFile::IsNeedCMap()
+{
+    if (!m_pInternal->pReader)
+        return false;
+    return m_pInternal->pReader->IsNeedCMap();
+}
+void CPdfFile::SetCMapMemory(BYTE* pData, DWORD nSizeData)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapMemory(pData, nSizeData);
+}
+void CPdfFile::SetCMapFolder(const std::wstring& sFolder)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapFolder(sFolder);
+}
+void CPdfFile::SetCMapFile(const std::wstring& sFile)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapFile(sFile);
+}
+void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
+{
+	if (!m_pInternal->pReader)
+		return;
+	
+	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
+}
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
@@ -765,6 +796,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 {
     if (!m_pInternal->pReader)
         return;
+	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
     m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
 std::wstring CPdfFile::GetInfo()
@@ -791,12 +823,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 void CPdfFile::CreatePdf(bool isPDFA)
 {
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
     if (!m_pInternal->pWriter)
-        return 0;
+        return 1;
     return m_pInternal->pWriter->SaveToFile(wsPath);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
@@ -810,12 +842,6 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
     if (!m_pInternal->pWriter)
         return;
     m_pInternal->pWriter->SetDocumentID(wsDocumentID);
-}
-void CPdfFile::SetCore(const std::wstring& wsCoreXml)
-{
-    if (!m_pInternal->pWriter)
-        return;
-    m_pInternal->pWriter->SetCore(wsCoreXml);
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
@@ -1445,5 +1471,12 @@ HRESULT CPdfFile::AddFormField(IFormField* pFieldInfo)
 {
     if (!m_pInternal->pWriter)
         return S_FALSE;
-	return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
+    return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
+}
+HRESULT CPdfFile::DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
+{
+    if (!m_pInternal->pWriter)
+        return S_FALSE;
+    m_pInternal->pWriter->SetDocumentInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
+    return S_OK;
 }

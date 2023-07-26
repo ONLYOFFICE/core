@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -57,7 +57,7 @@ namespace XLSB
 
     // SPARKLINEGROUPS = BrtFRTBegin BrtBeginSparklineGroups 1*2147483647SPARKLINEGROUP
     //          BrtEndSparklineGroups BrtFRTEnd
-    const bool SPARKLINEGROUPS::loadContent(BinProcessor& proc)
+    const bool SPARKLINEGROUPS:: loadContent(BinProcessor& proc)
     {
         if (proc.optional<FRTBegin>())
         {
@@ -67,9 +67,11 @@ namespace XLSB
 
         if (proc.optional<BeginSparklineGroups>())
         {
-            m_BrtBeginSparklineGroups = elements_.back();
+            m_bBrtBeginSparklineGroups = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSparklineGroups = false;
 
         int count = proc.repeated<SPARKLINEGROUP>(0, 2147483647);
 
@@ -82,19 +84,44 @@ namespace XLSB
 
         if (proc.optional<EndSparklineGroups>())
         {
-            m_BrtEndSparklineGroups = elements_.back();
+            m_bBrtEndSparklineGroups = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSparklineGroups = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
 
-        return m_BrtBeginSparklineGroups && !m_arSPARKLINEGROUP.empty() && m_BrtEndSparklineGroups && m_BrtFRTEnd;
+        return m_bBrtBeginSparklineGroups && !m_arSPARKLINEGROUP.empty() && m_bBrtEndSparklineGroups && m_bBrtFRTEnd;
     }
+
+	const bool SPARKLINEGROUPS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginSparklineGroups>();
+
+		for (auto& item : m_arSPARKLINEGROUP)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSparklineGroups>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

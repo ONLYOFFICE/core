@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,7 +48,7 @@ namespace DocFileFormat
 		std::vector<ByteStructure*>	Elements;
 		bool						m_bIsValid;
 
-		std::map<int, int>			mapCP;
+		std::map<int, size_t>		mapCP;
 	public:
 		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, int nWordVersion) 
 			: m_bIsValid(false), CP_LENGTH(/*nWordVersion == 2 ? 2 :*/ 4)
@@ -80,7 +80,7 @@ namespace DocFileFormat
 				{
 					int val = reader.ReadInt32();
 
-					mapCP.insert(std::make_pair(val, (int)CharacterPositions.size()));
+					mapCP.insert(std::make_pair(val, CharacterPositions.size()));
 					CharacterPositions.push_back(val);
 				}
 
@@ -105,33 +105,29 @@ namespace DocFileFormat
 				RELEASEOBJECT(Elements[i]);
 			}
 		}
-
-
-		// Retruns the struct that matches the given character position.
-
-		inline ByteStructure* GetStruct(int cp)
+		inline ByteStructure* GetStruct(size_t index)
 		{
-			int index = -1;
-
-			std::map<int, int>::iterator pFind = mapCP.find(cp);
-
-			if (pFind != mapCP.end())
-			{
-				index = pFind->second;
-			}
-
-
 			if ((index >= 0) && (index < (int)Elements.size()))
 				return this->Elements[index];
 
 			return NULL;
+		}
+		inline ByteStructure* GetStructByCP(int cp)
+		{
+			std::map<int, size_t>::iterator pFind = mapCP.find(cp);
+
+			if (pFind != mapCP.end())
+			{
+				return GetStruct(pFind->second);
+			}
+			return NULL;			
 		}
 
 		inline bool IsCpExists(int cp) const
 		{
 			bool result = false;
 
-			std::map<int, int>::const_iterator pFind = mapCP.find(cp);
+			std::map<int, size_t>::const_iterator pFind = mapCP.find(cp);
 
 			if (pFind != mapCP.end())
 			{

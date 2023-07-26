@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "Media.h"
 
 namespace OOX
@@ -37,27 +38,13 @@ namespace OOX
 	class Image : public Media
 	{
 	public:
-		Image(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
-		{
-		}
-		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
-		{
-		}
-		virtual ~Image()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::Image;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
+		Image(OOX::Document* pMain, bool bDocument = true);
+		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false);
+		virtual ~Image();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 	};
 } // namespace OOX

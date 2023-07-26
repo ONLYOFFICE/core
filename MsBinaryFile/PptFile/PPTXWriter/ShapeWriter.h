@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,7 +35,7 @@
 
 #include "ImageManager.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
     static inline LONG GetPPTXPlaceHolderType(const int & lType)
 	{
@@ -134,15 +134,15 @@ namespace PPT_FORMAT
 	class CShapeWriter
 	{
 	private:
-		PPT_FORMAT::CStringWriter		m_oWriterPath;
-		PPT_FORMAT::CStringWriter		m_oWriterVML;
-		PPT_FORMAT::CStringWriter		m_oWriter;
+        PPT::CStringWriter		m_oWriterPath;
+        PPT::CStringWriter		m_oWriterVML;
+        PPT::CStringWriter		m_oWriter;
 
-		PPT_FORMAT::CElementPtr		m_pElement;
+        PPT::CElementPtr		m_pElement;
 		
-		PPT_FORMAT::CRelsGenerator*	m_pRels;
+		CRelsGenerator*	m_pRels;
 
-		PPT_FORMAT::CTheme*			m_pTheme;
+        PPT::CTheme*			m_pTheme;
 
         LONG									m_lNextShapeID;
 

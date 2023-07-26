@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -56,11 +56,13 @@ namespace XLSB
     //OLEOBJECTS = BrtBeginOleObjects 1*BrtOleObject BrtEndOleObjects
     const bool OLEOBJECTS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginOleObjects>())
-        {
-            m_BrtBeginOleObjects = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<BeginOleObjects>())
+		{
+			m_bBrtBeginOleObjects = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtBeginOleObjects = false;
 
         auto count = proc.repeated<OleObject>(0, 0);
         while(count > 0)
@@ -70,14 +72,30 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndOleObjects>())
-        {
-            m_BrtEndOleObjects = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndOleObjects>())
+		{
+			m_bBrtEndOleObjects = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndOleObjects = false;
 
-        return m_BrtBeginOleObjects && !m_arBrtOleObject.empty() && m_BrtEndOleObjects;
+        return m_bBrtBeginOleObjects && !m_arBrtOleObject.empty() && m_bBrtEndOleObjects;
     }
+
+	const bool OLEOBJECTS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginOleObjects>();
+
+		for(auto& item : m_arBrtOleObject)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndOleObjects>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

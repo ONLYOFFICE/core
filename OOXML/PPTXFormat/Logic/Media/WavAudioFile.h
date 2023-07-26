@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -43,67 +43,20 @@ namespace PPTX
 		class WavAudioFile : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(WavAudioFile)
+			WritingElement_AdditionMethods(WavAudioFile)
 			
-			WavAudioFile(const std::wstring & name = L"wavAudioFile")
-			{
-				m_name = name;
-			}
+			WavAudioFile(const std::wstring & name = L"wavAudioFile");
 
-			WavAudioFile& operator=(const WavAudioFile& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			WavAudioFile& operator=(const WavAudioFile& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				name  = oSrc.name;
-				embed = oSrc.embed;
-				m_name = oSrc.m_name;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_snd; //todooo расширить ...
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"name", name )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name	= XmlUtils::GetNameNoNS(node.GetName());
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				embed	= node.GetAttribute((L"r:embed"));
-				XmlMacroReadAttributeBase(node, L"name", name);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write((L"r:embed"), embed.ToString());
-				oAttr.Write((L"name"), name);
-
-				return XmlUtils::CreateNode((L"a:") + m_name, oAttr);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode((L"a:") + m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute((L"r:embed"), embed.ToString());
-                pWriter->WriteAttribute2((L"name"), name);
-				pWriter->EndAttributes();
-				
-				pWriter->EndNode((L"a:") + m_name);
-			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
@@ -111,8 +64,9 @@ namespace PPTX
 			OOX::RId				embed;
 
 			std::wstring			m_name; //node name
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 			
 			std::wstring GetPathFromId(OOX::IFileContainer* pRels, const std::wstring & rId) const;
 		};

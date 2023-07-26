@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheSiRange>())
         {
-            m_BrtEndSlicerCacheSiRange = elements_.back();
+            m_bBrtEndSlicerCacheSiRange = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheSiRange = false;
 
-        return m_BrtBeginSlicerCacheSiRange && !m_arBrtSlicerCacheOlapItem.empty() && m_BrtEndSlicerCacheSiRange;
+        return m_BrtBeginSlicerCacheSiRange && !m_arBrtSlicerCacheOlapItem.empty() && m_bBrtEndSlicerCacheSiRange;
     }
+
+	const bool SLICERCACHESIRANGE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheSiRange == nullptr)
+			m_BrtBeginSlicerCacheSiRange = XLS::BaseObjectPtr(new XLSB::BeginSlicerCacheSiRange());
+
+		if (m_BrtBeginSlicerCacheSiRange != nullptr)
+		{
+			auto ptrBrtBeginSlicerCacheSiRange = static_cast<XLSB::BeginSlicerCacheSiRange*>(m_BrtBeginSlicerCacheSiRange.get());
+
+			if (ptrBrtBeginSlicerCacheSiRange != nullptr)
+				ptrBrtBeginSlicerCacheSiRange->crange = m_arBrtSlicerCacheOlapItem.size();
+
+			proc.mandatory(*m_BrtBeginSlicerCacheSiRange);
+		}
+
+		for (auto &item : m_arBrtSlicerCacheOlapItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheSiRange>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

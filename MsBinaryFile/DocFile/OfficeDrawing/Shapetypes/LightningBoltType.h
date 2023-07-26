@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,9 +44,16 @@ namespace DocFileFormat
 			Joins				=	miter;
             Path				=	L"m8472,l,3890,7602,8382,5022,9705r7200,4192l10012,14915r11588,6685l14767,12877r1810,-870l11050,6797r1810,-717xe";
 
-            //AdjustmentValues	=	L"2700" );
             ConnectorLocations	=	L"8472,0;0,3890;5022,9705;10012,14915;21600,21600;16577,12007;12860,6080";
-            ConnectorAngles		=	L"270,270,180,180,90,0,0";
+			
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(270);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(180);
+			ConnectorAngles.push_back(90);
+			ConnectorAngles.push_back(0);
+			ConnectorAngles.push_back(0);
+
             TextBoxRectangle	=	L"8757,7437,13917,14277";
 		}
 	};

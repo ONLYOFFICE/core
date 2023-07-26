@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,8 +30,12 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordSlidePersistAtom : public CUnknownRecord
 {
 public:
@@ -43,31 +47,11 @@ public:
 	INT m_nNumberText;
 	_UINT32 m_nSlideID;
 
-	CRecordSlidePersistAtom()
-	{
-	}
+    CRecordSlidePersistAtom();
 
-	~CRecordSlidePersistAtom()
-	{
-	}
+    ~CRecordSlidePersistAtom();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nPsrRef = StreamUtils::ReadDWORD(pStream);
-
-		BYTE Mem = 0;
-		Mem = StreamUtils::ReadBYTE(pStream);
-		m_bShouldCollapse = ((Mem & 0x02) == 0x02);
-		m_bNonOutlineData = ((Mem & 0x04) == 0x04);
-
-		StreamUtils::StreamSkip(3, pStream);
-
-		m_nNumberText = (INT)StreamUtils::ReadLONG(pStream);
-		m_nSlideID = StreamUtils::ReadDWORD(pStream);
-
-		StreamUtils::StreamSkip(4, pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
 };
+}

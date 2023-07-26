@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "Run.h"
+
 #include "../DocxFlat.h"
 #include "../Docx.h"
 #include "../Document.h"
@@ -36,32 +38,48 @@
 #include "../Footnote.h"
 #include "../Comments.h"
 #include "../Settings/Settings.h"
+#include "../Drawing/Drawing.h"
+#include "../Comments.h"
 
-#include "Run.h"
+#include "Table.h"
+#include "Paragraph.h"
+#include "AlternateContent.h"
+#include "RunProperty.h"
+#include "RunContent.h"
+#include "FldChar.h"
+#include "FldSimple.h"
+#include "Pict.h"
+#include "Annotations.h"
+
+#include "../../Common/SimpleTypes_Word.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
-		void CContentPart::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		CRun::CRun(OOX::Document *pMain, WritingElement *parent) : WritingElementWithChilds<>(pMain)
 		{
-			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-			
-			ReadAttributes( oReader );
+			m_oRunProperty = NULL;
+			m_oParent = parent;
+		}
+		CRun::~CRun()
+		{
+			ClearItems();
+		}
+		const CRun& CRun::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
 
-			if ( oReader.IsEmptyNode() )
-				return;
-				
-			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CRun& CRun::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
 
-				if ( L"xfrm" == sName)
-					m_oXfrm = oReader;
-				//else if (L"nvContentPartPr" == sName)
-				//	m_oNvContentPartPr = oReader;
-			}
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
 		}
 		void CRun::ClearItems()
 		{
@@ -81,67 +99,67 @@ namespace OOX
 			XmlMacroReadAttributeBase( oNode, L"w:rsidR",   m_oRsidR );
 			XmlMacroReadAttributeBase( oNode, L"w:rsidRPr", m_oRsidRPr );
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						if ( L"w:annotationRef" == sName )
-							pItem = new CAnnotationRef( oItem );
+							AssignPtrXmlContent(pItem, CAnnotationRef, oItem)
 						else if ( L"w:br" == sName )
-							pItem = new CBr( oItem );
+							AssignPtrXmlContent(pItem, CBr, oItem)
 						else if ( L"w:commentReference" == sName )
-							pItem = new CCommentReference( oItem );
+							AssignPtrXmlContent(pItem, CCommentReference, oItem)
 						else if ( L"w:contentPart" == sName )
-							pItem = new CContentPart( oItem );
+							AssignPtrXmlContent(pItem, CContentPart, oItem)
 						else if ( L"w:continuationSeparator" == sName )
-							pItem = new CContinuationSeparator( oItem );
+							AssignPtrXmlContent(pItem, CContinuationSeparator, oItem)
 						else if ( L"w:cr" == sName )
-							pItem = new CCr( oItem );
+							AssignPtrXmlContent(pItem, CCr, oItem)
 						else if ( L"w:dayLong" == sName )
-							pItem = new CDayLong( oItem );
+							AssignPtrXmlContent(pItem, CDayLong, oItem)
 						else if ( L"w:dayShort" == sName )
-							pItem = new CDayShort( oItem );
+							AssignPtrXmlContent(pItem, CDayShort, oItem)
 						else if ( L"w:delInstrText" == sName )
-							pItem = new CDelInstrText( oItem );
+							AssignPtrXmlContent(pItem, CDelInstrText, oItem)
 						else if ( L"w:delText" == sName )
-							pItem = new CDelText( oItem );
+							AssignPtrXmlContent(pItem, CDelText, oItem)
 						else if ( L"w:drawing" == sName ) 
-							pItem = new CDrawing( oItem );
+							AssignPtrXmlContent(pItem, CDrawing, oItem)
 						else if ( L"w:endnoteRef" == sName )
-							pItem = new CEndnoteRef( oItem );
+							AssignPtrXmlContent(pItem, CEndnoteRef, oItem)
 						else if ( L"w:endnoteReference" == sName )
-							pItem = new CEndnoteReference( oItem );
+							AssignPtrXmlContent(pItem, CEndnoteReference, oItem)
 						else if ( L"w:fldChar" == sName )
-							pItem = new CFldChar( oItem );
+							AssignPtrXmlContent(pItem, CFldChar, oItem)
 						else if ( L"w:footnoteRef" == sName )
-							pItem = new CFootnoteRef( oItem );
+							AssignPtrXmlContent(pItem, CFootnoteRef, oItem)
 						else if ( L"w:footnoteReference" == sName )
-							pItem = new CFootnoteReference( oItem );
+							AssignPtrXmlContent(pItem, CFootnoteReference, oItem)
 						else if ( L"w:instrText" == sName )
-							pItem = new CInstrText( oItem );
+							AssignPtrXmlContent(pItem, CInstrText, oItem)
 						else if ( L"w:lastRenderedPageBreak" == sName )
-							pItem = new CLastRenderedPageBreak( oItem );
+							AssignPtrXmlContent(pItem, CLastRenderedPageBreak, oItem)
 						else if ( L"w:monthLong" == sName )
-							pItem = new CMonthLong( oItem );
+							AssignPtrXmlContent(pItem, CMonthLong, oItem)
 						else if ( L"w:monthShort" == sName )
-							pItem = new CMonthShort( oItem );
+							AssignPtrXmlContent(pItem, CMonthShort, oItem)
 						else if ( L"w:noBreakHyphen" == sName )
-							pItem = new CNoBreakHyphen( oItem );
+							AssignPtrXmlContent(pItem, CNoBreakHyphen, oItem)
 						else if ( L"w:object" == sName )
-							pItem = new CObject( oItem );
+							AssignPtrXmlContent(pItem, CObject, oItem)
 						else if ( L"w:pgNum" == sName )
-							pItem = new CPgNum( oItem );
+							AssignPtrXmlContent(pItem, CPgNum, oItem)
 						else if ( L"w:pict" == sName )
-							pItem = new CPicture( oItem );
+							AssignPtrXmlContent(pItem, CPicture, oItem)
 						else if ( L"w:ptab" == sName )
-							pItem = new CPTab( oItem );
+							AssignPtrXmlContent(pItem, CPTab, oItem)
 						else if ( L"w:rPr" == sName )
 						{								
 							if (m_oRunProperty)
@@ -157,21 +175,21 @@ namespace OOX
 							}
 						}
 						else if ( L"w:ruby" == sName )
-							pItem = new CRuby( oItem );
+							AssignPtrXmlContent(pItem, CRuby, oItem)
 						else if ( L"w:separator" == sName )
-							pItem = new CSeparator( oItem );
+							AssignPtrXmlContent(pItem, CSeparator, oItem)
 						else if ( L"w:softHyphen" == sName )
-							pItem = new CSoftHyphen( oItem );
+							AssignPtrXmlContent(pItem, CSoftHyphen, oItem)
 						else if ( L"w:sym" == sName )
-							pItem = new CSym( oItem );
+							AssignPtrXmlContent(pItem, CSym, oItem)
 						else if ( L"w:t" == sName )
-							pItem = new CText( oItem );
+							AssignPtrXmlContent(pItem, CText, oItem)
 						else if ( L"w:tab" == sName )
-							pItem = new CTab( oItem );
+							AssignPtrXmlContent(pItem, CTab, oItem)
 						else if ( L"w:yearLong" == sName )
-							pItem = new CYearLong( oItem );
+							AssignPtrXmlContent(pItem, CYearLong, oItem)
 						else if ( L"w:yearShort" == sName )
-							pItem = new CYearShort( oItem );
+							AssignPtrXmlContent(pItem, CYearShort, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -212,7 +230,6 @@ namespace OOX
 				}
 			}
 		}
-
 		WritingElement* CRun::fromXMLElem(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
@@ -265,6 +282,26 @@ namespace OOX
 						docx_flat->m_pSettings->m_oEndnotePr.Init();
 				}
 				pItem = pEndRef;
+			}
+			else if (L"r" == sName)
+			{
+				fromXMLElems(oReader);
+			}
+			else if (L"tbl" == sName)
+			{//ERP
+				CParagraph *paragraph = dynamic_cast<CParagraph*>(m_oParent);
+				WritingElementWithChilds *parent = paragraph ? dynamic_cast<WritingElementWithChilds*>(paragraph->m_oParent) : NULL;
+
+				if (!parent) parent = dynamic_cast<WritingElementWithChilds*>(m_oParent);
+				if (parent)
+				{
+					WritingElement *pItemUpper = new CTbl(document);
+					if (pItemUpper)
+					{
+						pItemUpper->fromXML(oReader);
+						parent->m_arrItems.push_back(pItemUpper);
+					}
+				}
 			}
 			else if ( L"endnoteRef" == sName )
 				pItem = new CEndnoteRef( document );
@@ -353,16 +390,17 @@ namespace OOX
 				WritingElement_ReadAttributes_ReadSingle2(oReader, L"w:type", sType);
 				
 				if (sType.IsInit() && std::wstring::npos != sType->find(L"Bookmark.Start"))
-					pItem = new CBookmarkStart( oReader );
+					AssignPtrXmlContent(pItem, CBookmarkStart, oReader)
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Bookmark.End"))
-					pItem = new CBookmarkEnd( oReader );
+					AssignPtrXmlContent(pItem, CBookmarkEnd, oReader)
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.Start"))
-					pItem = new CCommentRangeStart( oReader );
+					AssignPtrXmlContent(pItem, CCommentRangeStart, oReader)
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment.End"))
-					pItem = new CCommentRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, CCommentRangeEnd, oReader)
 				else if (sType.IsInit()  && std::wstring::npos != sType->find(L"Comment"))
 				{
-					pItem = new CComment( oReader );
+					//pItem = new CComment( oReader );
+					AssignPtrXmlContent(pItem, CComment, oReader)
 					
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 					if (docx_flat)
@@ -475,6 +513,10 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CRun::getType() const
+		{
+			return et_w_r;
+		}
 		void CRun::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -501,6 +543,7 @@ namespace OOX
 
 			oReader.MoveToElement();
 		}
+
 	} // namespace Logic
 } // namespace OOX
 

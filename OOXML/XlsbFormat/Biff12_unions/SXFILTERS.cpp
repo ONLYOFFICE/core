@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXFilters>())
         {
-            m_BrtEndSXFilters = elements_.back();
+            m_bBrtEndSXFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXFilters = false;
 
-        return m_BrtBeginSXFilters && !m_arSXFILTER.empty() && m_BrtEndSXFilters;
+        return m_BrtBeginSXFilters && !m_arSXFILTER.empty() && m_bBrtEndSXFilters;
     }
+
+	const bool SXFILTERS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXFilters == nullptr)
+			m_BrtBeginSXFilters = XLS::BaseObjectPtr(new XLSB::BeginSXFilters());
+
+		if (m_BrtBeginSXFilters != nullptr)
+		{
+			auto ptrBrtBeginSXFilters = static_cast<XLSB::BeginSXFilters*>(m_BrtBeginSXFilters.get());
+
+			if (ptrBrtBeginSXFilters != nullptr)
+				ptrBrtBeginSXFilters->csxfilter = m_arSXFILTER.size();
+
+			proc.mandatory(*m_BrtBeginSXFilters);
+		}
+
+		for (auto &item : m_arSXFILTER)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXFilters>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

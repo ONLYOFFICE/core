@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,6 +39,11 @@ DVParsedFormula::DVParsedFormula() : cce(0), ParsedFormula(CellRef())
 {
 }
 
+DVParsedFormula& DVParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr DVParsedFormula::clone()
 {
@@ -49,7 +54,7 @@ void DVParsedFormula::load(CFRecord& record, bool bLoad)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce_;
+        _UINT16 cce_;
         record >> cce_;
         cce = cce_;
         record.skipNunBytes(2); // unused
@@ -73,12 +78,48 @@ void DVParsedFormula::load(CFRecord& record)
 
     if (record.getGlobalWorkbookInfo()->Version == 0x0800)
     {
-        unsigned int cb;
+        _UINT32 cb;
         record >> cb;
         record.skipNunBytes(cb);
 
         //rgcb.load(record, rgce.getPtgs(), true);
     }
+}
+
+void DVParsedFormula::save(CFRecord& record, bool bSave)
+{
+	if (bSave)
+		return save(record);
+	else
+	{
+		cce = 0;
+		record << cce;
+	}
+}
+
+void DVParsedFormula::save(CFRecord& record)
+{
+	auto saving = [&](BiffStructure& rgceORrgb)
+	{
+		record << cce;
+
+		auto rdPtr = record.getRdPtr();
+
+		rgceORrgb.save(record);
+
+		cce = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(cce + 4);
+		record << cce;
+		record.skipNunBytes(cce);
+	};
+
+	saving(rgce);
+
+	if (record.getGlobalWorkbookInfo()->Version == 0x0800)
+	{
+		saving(rgcb);
+	}
 }
 
 

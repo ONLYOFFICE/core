@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,41 +30,13 @@
  *
  */
 #pragma once
+
 #include "BaseLimit.h"
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class Conformance : public BaseLimit
-		{
-		public:
-			Conformance()
-			{
-				m_strValue = L"transitional";
-			}
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"strict" == strValue) ||	(L"transitional" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"strict" == m_strValue)		return 0;
-				if (L"transitional" == m_strValue)	return 1;
-				return 1;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				if (src == 0) m_strValue = L"strict";
-				else if (src == 1) m_strValue = L"transitional";
-			}
-
-		};
+		DEFINE_LIMIT_BASE(Conformance)
 	} // namespace Limit
 } // namespace PPTX

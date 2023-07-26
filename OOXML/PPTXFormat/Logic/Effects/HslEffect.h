@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,118 +39,33 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class HslEffect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(HslEffect)
+			WritingElement_AdditionMethods(HslEffect)
 			PPTX_LOGIC_BASE2(HslEffect)
 
-			HslEffect& operator=(const HslEffect& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			HslEffect& operator=(const HslEffect& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				hue = oSrc.hue;
-				lum = oSrc.lum;
-				sat = oSrc.sat;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_hsl;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hue"), hue)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sat"), sat)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lum"), lum)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"hue", hue);
-                XmlMacroReadAttributeBase(node, L"sat", sat);
-                XmlMacroReadAttributeBase(node, L"lum", lum);
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				Normalize();
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("hue"), hue);
-				oAttr.Write(_T("sat"), sat);
-				oAttr.Write(_T("lum"), lum);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				return XmlUtils::CreateNode(_T("a:hsl"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:hsl");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"hue", hue);
-				pWriter->WriteAttribute(L"sat", sat);
-				pWriter->WriteAttribute(L"lum", lum);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:hsl");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_HSL);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, hue);
-				pWriter->WriteInt2(1, lum);
-				pWriter->WriteInt2(2, sat);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-							hue = pReader->GetLong(); break;
-						case 1:
-							lum = pReader->GetLong(); break;
-						case 2:
-							sat = pReader->GetLong(); break;
-					}
-				}
-				pReader->Seek(_e);
-			}
 		public:
 			nullable_int hue;
 			nullable_int lum;
-			nullable_int sat;			
-		protected:
-			virtual void FillParentPointersForChilds(){};
+			nullable_int sat;
 
-			AVSINLINE void Normalize()
-			{
-				hue.normalize(0, 21600000);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

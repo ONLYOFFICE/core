@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,19 +37,18 @@
 #include "../Biff12_unions/TABLECELL.h"
 #include "../Biff12_unions/CELLMETA.h"
 #include "../Biff12_unions/FRT.h"
-
 #include "../Biff12_records/ACBegin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    CELL::CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    CELL::CELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
-
     CELL::~CELL()
     {
     }
@@ -116,6 +115,17 @@ namespace XLSB
 
         return m_source != nullptr;
     }
+
+	const bool CELL::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source->get_type() != typeTABLECELL && m_CELLMETA != nullptr)
+			proc.mandatory(*m_CELLMETA);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

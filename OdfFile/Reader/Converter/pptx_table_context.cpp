@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -53,8 +53,7 @@ pptx_table_state::pptx_table_state(pptx_conversion_context & Context,
     const std::wstring & StyleName) : context_(Context),
     table_style_(StyleName),
     current_table_column_(-1),
-    columns_spanned_num_(0),
-    close_table_covered_cell_(false)
+    columns_spanned_num_(0)
 {        
 }
 
@@ -81,7 +80,6 @@ void pptx_table_state::start_row(const std::wstring & StyleName, const std::wstr
 {
     current_table_column_ = -1;
     columns_spanned_style_ = L"";
-    close_table_covered_cell_ = false;
     table_row_style_stack_.push_back(StyleName);
     default_row_cell_style_name_ = defaultCellStyleName;
 }
@@ -122,22 +120,23 @@ bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
     if (current_table_column_ >= (int)(rows_spanned_.size()))
         rows_spanned_.push_back(table_row_spanned());
 
-    bool closeTag = false;
+	_Wostream << L"<a:tc";
     if (columns_spanned_num_ == 0 && rows_spanned_[current_table_column_].num() > 0)
     {
-        closeTag = true;
-        _Wostream << L"<a:tc";
 		_Wostream << L" vMerge=\"1\"";
 
 		if (rows_spanned_[current_table_column_].column_spanned() > 0)
             _Wostream << L" gridSpan=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\"";
 
 		_Wostream << L">";
-        odf_reader::style_instance * inst = 
-            context_.root()->odf_context().styleContainer().style_by_name( 
-					rows_spanned_[current_table_column_].style() , odf_types::style_family::TableCell,false);
-
     }
+	else
+	{
+		_Wostream << L" hMerge=\"1\">";
+	}
+	odf_reader::style_instance* inst =
+		context_.root()->odf_context().styleContainer().style_by_name(
+			rows_spanned_[current_table_column_].style(), odf_types::style_family::TableCell, false);
 
     // использовали текущую ячейку, уменьшаем счетчики оставшихся объединенных ячеек
     // для столбцов и строк
@@ -148,39 +147,35 @@ bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
     if (rows_spanned_[current_table_column_].num() > 0)
         rows_spanned_[current_table_column_].decrease();                                
 
-    // устанавливаем флаг что ячейка была открыта, записан тег <w:tc>
-    close_table_covered_cell_ = closeTag;
-    return closeTag;
+    return true;
 }
 
 void pptx_table_state::end_covered_cell()
 {
     std::wostream & _Wostream = context_.get_table_context().tableData();
-    if (close_table_covered_cell_)
-    {
-		std::vector<const odf_reader::style_instance *> style_instances;
 
-		std::wstring				style_name;
-		odf_reader::style_instance *style_inst = context_.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+	std::vector<const odf_reader::style_instance*> style_instances;
+
+	std::wstring				style_name;
+	odf_reader::style_instance* style_inst = context_.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+	if (style_inst) style_instances.push_back(style_inst);
+
+	if (!default_cell_style_name_.empty())//template
+	{
+		style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_cell_style_name_, odf_types::style_family::TableCell, false);
 		if (style_inst) style_instances.push_back(style_inst);
+	}
+	if (!default_row_cell_style_name_.empty())
+	{
+		style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_row_cell_style_name_, odf_types::style_family::TableCell, false);
+		if (style_inst) style_instances.push_back(style_inst);
+	}
 
-		if (!default_cell_style_name_.empty())//template
-		{
-			style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_cell_style_name_, odf_types::style_family::TableCell,false);
-			if (style_inst) style_instances.push_back(style_inst);
-		}
-		if (!default_row_cell_style_name_.empty())
-		{
-			style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_row_cell_style_name_, odf_types::style_family::TableCell,false);
-			if (style_inst) style_instances.push_back(style_inst);
-		}
+	oox::oox_serialize_tcPr(_Wostream, style_instances, context_);
 
-		oox::oox_serialize_tcPr(_Wostream, style_instances, context_);
-
-        // закрываем открытую ячейку
-        _Wostream << L"</a:tc>";
-        close_table_covered_cell_ = false;
-    }
+	// закрываем открытую ячейку
+	_Wostream << L"</a:tc>";
+    
 }
 
 int pptx_table_state::current_column() const
@@ -368,24 +363,26 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 
 				pptx_border_edge left, top, bottom, right;
 				
-				process_border(left,	style_paragraph.fo_border_left_);
-				process_border(top,		style_paragraph.fo_border_top_);
-				process_border(right,	style_paragraph.fo_border_right_);
-				process_border(bottom,	style_paragraph.fo_border_bottom_);
+				process_border(left,	style_paragraph.fo_border_left_		? style_paragraph.fo_border_left_	: style_paragraph.fo_border_);
+				process_border(top,		style_paragraph.fo_border_top_		? style_paragraph.fo_border_top_	: style_paragraph.fo_border_);
+				process_border(right,	style_paragraph.fo_border_right_	? style_paragraph.fo_border_right_	: style_paragraph.fo_border_);
+				process_border(bottom,	style_paragraph.fo_border_bottom_	? style_paragraph.fo_border_bottom_ : style_paragraph.fo_border_);
 
-				oox_serialize_border(CP_XML_STREAM(), L"a:lnL",left);
-				oox_serialize_border(CP_XML_STREAM(), L"a:lnR",right);
-				oox_serialize_border(CP_XML_STREAM(), L"a:lnT",top);
-				oox_serialize_border(CP_XML_STREAM(), L"a:lnB",bottom);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnL", left);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnR", right);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnT", top);
+				oox_serialize_border(CP_XML_STREAM(), L"a:lnB", bottom);
 				//диагональных в оо нет.
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
 
-				odf_reader::graphic_format_properties style_graphic = odf_reader::calc_graphic_properties_content(instances);
+				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 				
-				odf_reader::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, style_graphic.style_background_image_,
-																							Context.root()->odf_context().drawStyles() ,fill);	
-				
+				if (graphic_props)
+				{
+					odf_reader::Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, 
+													graphic_props->style_background_image_, Context.root(), fill);
+				}
 				if (fill.bitmap)
 				{
 					bool isMediaInternal = true;

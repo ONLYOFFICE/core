@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -30,38 +30,53 @@
  *
  */
 #include "ConditionalFormatting.h"
+
 #include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h"
+#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.h"
 #include "../../XlsbFormat/Biff12_unions/CFRULE.h"
+#include "../../XlsbFormat/Biff12_unions/CFRULE14.h"
+#include "../../XlsbFormat/Biff12_unions/uCFVO.h"
+#include "../../XlsbFormat/Biff12_unions/uCFVO14.h"
+#include "../../XlsbFormat/Biff12_unions/COLORSCALE14.h"
+#include "../../XlsbFormat/Biff12_unions/COLORSCALE.h"
+#include "../../XlsbFormat/Biff12_unions/DATABAR.h"
+#include "../../XlsbFormat/Biff12_unions/DATABAR14.h"
+#include "../../XlsbFormat/Biff12_unions/ICONSET.h"
+#include "../../XlsbFormat/Biff12_unions/ICONSET14.h"
+#include "../../XlsbFormat/Biff12_unions/FRTCFRULE.h"
+
 #include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting.h"
+#include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting14.h"
 #include "../../XlsbFormat/Biff12_records/BeginCFRule.h"
+#include "../../XlsbFormat/Biff12_records/BeginCFRule14.h"
+#include "../../XlsbFormat/Biff12_records/BeginDatabar.h"
+#include "../../XlsbFormat/Biff12_records/BeginDatabar14.h"
+#include "../../XlsbFormat/Biff12_records/BeginIconSet.h"
+#include "../../XlsbFormat/Biff12_records/BeginIconSet14.h"
+
 #include "../../XlsbFormat/Biff12_structures/CFOper.h"
 #include "../../XlsbFormat/Biff12_structures/CFTextOper.h"
 #include "../../XlsbFormat/Biff12_structures/CFDateOper.h"
 #include "../../XlsbFormat/Biff12_structures/CFVOtype.h"
-#include "../../XlsbFormat/Biff12_unions/COLORSCALE.h"
-#include "../../XlsbFormat/Biff12_unions/DATABAR.h"
-#include "../../XlsbFormat/Biff12_unions/ICONSET.h"
-#include "../../XlsbFormat/Biff12_unions/uCFVO.h"
-#include "../../XlsbFormat/Biff12_records/CFVO.h"
-#include "../../XlsbFormat/Biff12_records/BeginDatabar.h"
-#include "../../XlsbFormat/Biff12_records/BeginIconSet.h"
-#include "../../XlsbFormat/Biff12_unions/FRTCFRULE.h"
-#include "../../XlsbFormat/Biff12_records/CFRuleExt.h"
 
-#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.h"
-#include "../../XlsbFormat/Biff12_unions/CFRULE14.h"
-#include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting14.h"
-#include "../../XlsbFormat/Biff12_records/BeginCFRule14.h"
-#include "../../XlsbFormat/Biff12_structures/CFVOType14.h"
-#include "../../XlsbFormat/Biff12_unions/COLORSCALE14.h"
-#include "../../XlsbFormat/Biff12_records/Color14.h"
-#include "../../XlsbFormat/Biff12_unions/DATABAR14.h"
-#include "../../XlsbFormat/Biff12_unions/ICONSET14.h"
-#include "../../XlsbFormat/Biff12_records/CFIcon.h"
-#include "../../XlsbFormat/Biff12_unions/uCFVO14.h"
+#include "../../XlsbFormat/Biff12_records/CFVO.h"
+#include "../../XlsbFormat/Biff12_records/CFRuleExt.h"
 #include "../../XlsbFormat/Biff12_records/CFVO14.h"
-#include "../../XlsbFormat/Biff12_records/BeginDatabar14.h"
-#include "../../XlsbFormat/Biff12_records/BeginIconSet14.h"
+#include "../../XlsbFormat/Biff12_records/Color14.h"
+#include "../../XlsbFormat/Biff12_records/CFIcon.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+//#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
+#include "../Styles/dxf.h"
+#include "../Styles/Colors.h"
+#include "../Styles/Xfs.h"
+#include "../Styles/NumFmts.h"
+#include "../Styles/Fonts.h"
+#include "../Styles/Fills.h"
+#include "../Styles/Borders.h"
 
 using namespace XLS;
 
@@ -69,6 +84,27 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+CFormulaCF::CFormulaCF()
+{
+}
+CFormulaCF::~CFormulaCF()
+{
+}
+void CFormulaCF::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CFormulaCF::toXML() const
+{
+	return L"";
+}
+void CFormulaCF::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CFormulaCF::getType () const
+{
+	return et_x_FormulaCF;
+}
 void CFormulaCF::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
 	std::wstring node_name = bExtendedWrite ? L"xm:f" : L"formula";
@@ -108,6 +144,39 @@ bool CFormulaCF::isExtended ()
 	return (m_sNodeName == L"xm:f");
 }
 
+CConditionalFormatValueObject::CConditionalFormatValueObject()
+{
+}
+CConditionalFormatValueObject::~CConditionalFormatValueObject()
+{
+}
+void CConditionalFormatValueObject::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CConditionalFormatValueObject::toXML() const
+{
+	return L"";
+}
+void CConditionalFormatValueObject::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CConditionalFormatValueObject::getType () const
+{
+	return et_x_ConditionalFormatValueObject;
+}
+bool CConditionalFormatValueObject::isExtended ()
+{
+	return (m_oFormula.IsInit());
+}
+void CConditionalFormatValueObject::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+{
+	WritingElement_ReadAttributes_Start(oReader)
+		WritingElement_ReadAttributes_Read_if		(oReader, L"gte"	, m_oGte)
+		WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"	, m_oType)
+		WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
+	WritingElement_ReadAttributes_End(oReader)
+}
 void CConditionalFormatValueObject::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
 	if (false == m_oType.IsInit()) return;
@@ -267,6 +336,28 @@ void CConditionalFormatValueObject::ReadAttributes(XLS::BaseObjectPtr& obj)
 
         }
     }
+}
+
+CConditionalFormatIconSet::CConditionalFormatIconSet()
+{
+}
+CConditionalFormatIconSet::~CConditionalFormatIconSet()
+{
+}
+void CConditionalFormatIconSet::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CConditionalFormatIconSet::toXML() const
+{
+	return L"";
+}
+void CConditionalFormatIconSet::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CConditionalFormatIconSet::getType () const
+{
+	return et_x_ConditionalFormatIconSet;
 }
 void CConditionalFormatIconSet::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
@@ -465,6 +556,23 @@ void CColorScale::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	}
 }
 
+CColorScale::CColorScale()
+{
+}
+CColorScale::~CColorScale()
+{
+}
+void CColorScale::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CColorScale::toXML() const
+{
+	return L"";
+}
+void CColorScale::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
 void CColorScale::fromBin(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typeCOLORSCALE)
@@ -508,6 +616,10 @@ void CColorScale::fromBin(XLS::BaseObjectPtr& obj)
 
         }
     }
+}
+EElementType CColorScale::getType () const
+{
+	return et_x_ColorScale;
 }
 
 template<typename Type>
@@ -559,6 +671,27 @@ bool CDataBar::isExtended ()
 	return false;
 }
 
+CDataBar::CDataBar()
+{
+}
+CDataBar::~CDataBar()
+{
+}
+void CDataBar::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CDataBar::toXML() const
+{
+	return L"";
+}
+void CDataBar::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CDataBar::getType () const
+{
+	return et_x_DataBar;
+}
 void CDataBar::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
 	if (2 != m_arrValues.size() || false == m_oColor.IsInit()) return;
@@ -799,6 +932,27 @@ void CDataBar::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	WritingElement_ReadAttributes_End(oReader)
 }
 
+CIconSet::CIconSet()
+{
+}
+CIconSet::~CIconSet()
+{
+}
+void CIconSet::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CIconSet::toXML() const
+{
+	return L"";
+}
+void CIconSet::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CIconSet::getType () const
+{
+	return et_x_IconSet;
+}
 void CIconSet::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
 	if (m_arrValues.size() < 2) return;	// min value = 2
@@ -1195,6 +1349,31 @@ void CIconSet::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	WritingElement_ReadAttributes_End(oReader)
 }
 
+CConditionalFormattingRule::CConditionalFormattingRule() : bUsage (false)
+{
+}
+CConditionalFormattingRule::~CConditionalFormattingRule()
+{
+}
+void CConditionalFormattingRule::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CConditionalFormattingRule::toXML() const
+{
+	return L"";
+}
+void CConditionalFormattingRule::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	toXML2(writer, false);
+}
+EElementType CConditionalFormattingRule::getType () const
+{
+	return et_x_ConditionalFormattingRule;
+}
+bool CConditionalFormattingRule::isValid () const
+{
+	return m_oType.IsInit() && m_oPriority.IsInit();
+}
 bool CConditionalFormattingRule::isExtended()
 {
 	if (m_oDxf.IsInit())		return true;
@@ -1313,7 +1492,6 @@ void CConditionalFormattingRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 
 	}
 }
-
 void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
 {
     bUsage = false;
@@ -1344,9 +1522,9 @@ void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
                 }
             }
         }
-        if(ptr->m_FRTRULE != nullptr)
+        if(ptr->m_FRTCFRULE != nullptr)
         {
-            auto ptrFRTCFRULE = static_cast<XLSB::FRTCFRULE*>(ptr->m_FRTRULE.get());
+            auto ptrFRTCFRULE = static_cast<XLSB::FRTCFRULE*>(ptr->m_FRTCFRULE.get());
             m_oExtId = static_cast<XLSB::CFRuleExt*>(ptrFRTCFRULE->m_BrtCFRuleExt.get())->guid;
         }
     }
@@ -1379,7 +1557,6 @@ void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
         }
     }
 }
-
 template<typename Type>
 nullable<Type> CConditionalFormattingRule::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -1461,7 +1638,6 @@ void CConditionalFormattingRule::ReadAttributes(XmlUtils::CXmlLiteReader& oReade
 
 	WritingElement_ReadAttributes_End(oReader)
 }
-
 void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typeBeginCFRule)
@@ -1926,6 +2102,27 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
 
 }
 
+CConditionalFormatting::CConditionalFormatting(OOX::Document *pMain) : WritingElementWithChilds<CConditionalFormattingRule>(pMain), m_bIsExtended(false), m_bIsValid(false)
+{
+}
+void CConditionalFormatting::fromXML(XmlUtils::CXmlNode& node)
+{
+}
+std::wstring CConditionalFormatting::toXML() const
+{
+	return L"";
+}
+void CConditionalFormatting::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+	if (m_bIsValid == false) return;
+
+	if (m_bIsExtended == false)
+		toXML2(writer, false);
+}
+EElementType CConditionalFormatting::getType () const
+{
+	return et_x_ConditionalFormatting;
+}
 bool CConditionalFormatting::IsExtended()
 {
 	m_bIsExtended = false;
@@ -1978,7 +2175,6 @@ void CConditionalFormatting::toXML2(NSStringUtils::CStringBuilder& writer, bool 
 	}
 	writer.WriteString(L"</" + node_name + L">");
 }
-
 void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
 	ReadAttributes(oReader);
@@ -1992,12 +2188,15 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 		if (L"cfRule" == sName)
-			m_arrItems.push_back(new CConditionalFormattingRule(oReader));
+		{
+			CConditionalFormattingRule* pConditionalFormattingRule = new CConditionalFormattingRule();
+			*pConditionalFormattingRule = oReader;
+			m_arrItems.push_back(pConditionalFormattingRule);
+		}
 		if (L"sqref" == sName || L"Range" == sName)
 			m_oSqRef = oReader.GetText2();
 	}
 }
-
 void CConditionalFormatting::fromBin(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typeCONDITIONALFORMATTING)
@@ -2025,7 +2224,6 @@ void CConditionalFormatting::fromBin(XLS::BaseObjectPtr& obj)
             m_arrItems.push_back(new CConditionalFormattingRule(pCFRULE14));
     }
 }
-
 bool CConditionalFormatting::IsUsage()
 {
     for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -2034,7 +2232,6 @@ bool CConditionalFormatting::IsUsage()
     }
 	return false;
 }
-	
 void CConditionalFormatting::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_Start(oReader)
@@ -2044,7 +2241,6 @@ void CConditionalFormatting::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 
 	WritingElement_ReadAttributes_End(oReader)
 }
-
 void CConditionalFormatting::ReadAttributes(XLS::BaseObjectPtr& obj)
 {
     if(obj->get_type() == XLS::typeBeginConditionalFormatting)

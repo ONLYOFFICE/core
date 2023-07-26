@@ -1,43 +1,43 @@
 ﻿/*
-* (c) Copyright Ascensio System SIA 2010-2019
-*
-* This program is a free software product. You can redistribute it and/or
-* modify it under the terms of the GNU Affero General Public License (AGPL)
-* version 3 as published by the Free Software Foundation. In accordance with
-* Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
-* that Ascensio System SIA expressly excludes the warranty of non-infringement
-* of any third-party rights.
-*
-* This program is distributed WITHOUT ANY WARRANTY; without even the implied
-* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
-* details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
-*
-* You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
-* street, Riga, Latvia, EU, LV-1050.
-*
-* The  interactive user interfaces in modified source and object code versions
-* of the Program must display Appropriate Legal Notices, as required under
-* Section 5 of the GNU AGPL version 3.
-*
-* Pursuant to Section 7(b) of the License you must retain the original Product
-* logo when distributing the program. Pursuant to Section 7(e) we decline to
-* grant you any rights under trademark law for use of our trademarks.
-*
-* All the Product's GUI elements, including illustrations and icon sets, as
-* well as technical writing content are licensed under the terms of the
-* Creative Commons Attribution-ShareAlike 4.0 International. See the License
-* terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
-*
-*/
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "TableWriter.h"
 #include "TxBodyConverter.h"
-#include <iostream>
 #include <numeric>
 #include <algorithm>
 
 #define VECSUM(cont) \
     std::accumulate(cont.begin(), cont.end(), decltype(cont)::value_type(0))
 
+using namespace PPT;
 
 TableWriter::TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels) :
     m_pTableElement(pTableElement), m_pRels(pRels) {}
@@ -78,11 +78,11 @@ void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
     oXFRM.node_name = L"p:xfrm";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.5 : 1;
 
-    oXFRM.offX = round(m_pTableElement->m_rcAnchor.left * multip1);
-    oXFRM.offY = round(m_pTableElement->m_rcAnchor.top  * multip1);
+    oXFRM.offX = PPT::round(m_pTableElement->m_rcAnchor.left * multip1);
+    oXFRM.offY = PPT::round(m_pTableElement->m_rcAnchor.top  * multip1);
 
-    oXFRM.extX = round(m_pTableElement->m_rcAnchor.GetWidth()  * multip1);
-    oXFRM.extY = round(m_pTableElement->m_rcAnchor.GetHeight() * multip1);
+    oXFRM.extX = PPT::round(m_pTableElement->m_rcAnchor.GetWidth()  * multip1);
+    oXFRM.extY = PPT::round(m_pTableElement->m_rcAnchor.GetHeight() * multip1);
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
@@ -135,7 +135,7 @@ std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, 
     for (const auto& w : mapLeftWidth)
     {
         double value = isWidth ? w.second : w.first;
-        gridWidth.push_back(round(value * multip));
+        gridWidth.push_back(PPT::round(value * multip));
     }
     if (tableWidth != -1)
     {
@@ -175,7 +175,7 @@ std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells,
     for (const auto& h : mapTopHeight)
     {
         double value = isHeight ? h.second : h.first;
-        gridHeight.push_back(round(value * multip));
+        gridHeight.push_back(PPT::round(value * multip));
     }
     if (tableHeight != -1)
     {
@@ -519,7 +519,7 @@ int TCell::getHeight() const
     double multip = pShape->m_bAnchorEnabled ? 1587.5 : 1;
     double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
 
-    return round(height * multip);
+    return PPT::round(height * multip);
 }
 
 void TCell::setPParent(TCell *pParent)
@@ -588,10 +588,10 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.AnchorCtr = true;
     }
 
-    oTcPr.MarB = round(pShape->m_dTextMarginBottom); // 0
-    oTcPr.MarT = round(pShape->m_dTextMarginY); // 12512
-    oTcPr.MarL = round(pShape->m_dTextMarginX);
-    oTcPr.MarR = round(pShape->m_dTextMarginRight);
+    oTcPr.MarB = PPT::round(pShape->m_dTextMarginBottom); // 0
+    oTcPr.MarT = PPT::round(pShape->m_dTextMarginY); // 12512
+    oTcPr.MarL = PPT::round(pShape->m_dTextMarginX);
+    oTcPr.MarR = PPT::round(pShape->m_dTextMarginRight);
 
     if (true)
     {

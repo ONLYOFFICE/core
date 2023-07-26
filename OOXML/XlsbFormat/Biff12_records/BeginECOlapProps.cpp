@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -69,6 +69,26 @@ namespace XLSB
         if(bLoadConnLocal)
             record >> stConnLocal;
     }
+
+	void BeginECOlapProps::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags1 = 0, flags2 = 0;
+
+		SETBIT(flags1, 0, fLocalConn)
+		SETBIT(flags1, 1, fNoRefreshCube)
+		SETBIT(flags1, 2, fSrvFmtBack)
+		SETBIT(flags1, 3, fSrvFmtFore)
+		SETBIT(flags1, 4, fSrvFmtFlags)
+		SETBIT(flags1, 5, fSrvFmtNum)
+		SETBIT(flags1, 6, fUseOfficeLcid)
+
+		SETBIT(flags2, 0, bLoadConnLocal)
+
+		record << flags1 << nDrillthroughRows << flags2;
+
+		if (bLoadConnLocal)
+			record << stConnLocal;
+	}
 
 } // namespace XLSB
 

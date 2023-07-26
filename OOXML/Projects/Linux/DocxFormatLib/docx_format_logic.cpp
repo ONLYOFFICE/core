@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,6 +49,11 @@
 #include "../../../DocxFormat/Logic/TableProperty.cpp"
 #include "../../../DocxFormat/Logic/Vml.cpp"
 #include "../../../DocxFormat/Logic/Pict.cpp"
+#include "../../../DocxFormat/Logic/FldChar.cpp"
+#include "../../../DocxFormat/Logic/RunContent.cpp"
+#include "../../../DocxFormat/Logic/VmlOfficeDrawing.cpp"
+#include "../../../DocxFormat/Logic/VmlWord.cpp"
+#include "../../../DocxFormat/Logic/Shape.cpp"
 #include "../../../DocxFormat/Math/oMath.cpp"
 #include "../../../DocxFormat/Math/oMathContent.cpp"
 #include "../../../DocxFormat/Math/oMathPara.cpp"
@@ -56,16 +61,36 @@
 #include "../../../DocxFormat/Media/VbaProject.cpp"
 #include "../../../DocxFormat/Media/JsaProject.cpp"
 #include "../../../DocxFormat/Media/ActiveX.cpp"
+#include "../../../DocxFormat/Media/Audio.cpp"
+#include "../../../DocxFormat/Media/Video.cpp"
+#include "../../../DocxFormat/Media/Image.cpp"
+#include "../../../DocxFormat/Media/OleObject.cpp"
 #include "../../../DocxFormat/Docx.cpp"
 #include "../../../DocxFormat/DocxFlat.cpp"
 #include "../../../DocxFormat/Document.cpp"
 #include "../../../DocxFormat/Comments.cpp"
 #include "../../../DocxFormat/VmlDrawing.cpp"
+#include "../../../DocxFormat/Namespaces.cpp"
 #include "../../../DocxFormat/App.cpp"
 #include "../../../DocxFormat/Core.cpp"
+#include "../../../DocxFormat/Bibliography.cpp"
+#include "../../../DocxFormat/ContentTypes.cpp"
+#include "../../../DocxFormat/CustomXml.cpp"
+#include "../../../DocxFormat/File.cpp"
+#include "../../../DocxFormat/FileType.cpp"
+#include "../../../DocxFormat/Font.cpp"
+#include "../../../DocxFormat/FontTable.cpp"
+#include "../../../DocxFormat/Footnote.cpp"
+#include "../../../DocxFormat/FtnEdn.cpp"
 #include "../../../DocxFormat/Settings/Settings.cpp"
+#include "../../../DocxFormat/Settings/WebSettings.cpp"
 #include "../../../DocxFormat/FileFactory.cpp"
 #include "../../../DocxFormat/FileTypes.cpp"
+#include "../../../DocxFormat/Numbering.cpp"
+#include "../../../DocxFormat/Rels.cpp"
+#include "../../../DocxFormat/RId.cpp"
+#include "../../../DocxFormat/Styles.cpp"
+#include "../../../DocxFormat/UnknowTypeFile.cpp"
 #include "../../../DocxFormat/IFileContainer.cpp"
 #include "../../../DocxFormat/Document.cpp"
 #include "../../../DocxFormat/Drawing/Drawing.cpp"
@@ -75,6 +100,8 @@
 #include "../../../DocxFormat/Diagram/DiagramDrawing.cpp"
 #include "../../../DocxFormat/Diagram/DiagramLayout.cpp"
 #include "../../../DocxFormat/Diagram/DiagramQuickStyle.cpp"
+#include "../../../DocxFormat/External/External.cpp"
+#include "../../../DocxFormat/External/ExternalHyperLink.cpp"
 #include "../../../Binary/MathEquation/MathEquation.cpp"
 #include "../../../DocxFormat/Logic/DocParts.cpp"
 #include "../../../DocxFormat/WritingElement.cpp"

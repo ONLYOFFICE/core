@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,83 +44,21 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(Tav)
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"tm", tm);
-                XmlMacroReadAttributeBase(node, L"fmla", fmla);
-			
-				val		= node.ReadNodeNoNS(_T("val"));
 
-				FillParentPointersForChilds();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("tm"), tm);
-				oAttr.Write(_T("fmla"), fmla);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(val);
-
-				return XmlUtils::CreateNode(_T("p:tav"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, tm);
-				pWriter->WriteString2(1, fmla);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, val);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at) tm = pReader->GetString2();
-					else if (1 == _at) fmla = pReader->GetString2();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							val.Init(); 
-							val->fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable<AnimVariant>	val;
 			nullable_string			tm;
 			nullable_string			fmla;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(val.IsInit())
-					val->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

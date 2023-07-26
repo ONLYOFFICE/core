@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginPivotCacheIDs>())
         {
-            m_BrtBeginPivotCacheIDs = elements_.back();
+			m_bBrtBeginPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginPivotCacheIDs = false;
 
         auto count = proc.repeated<PIVOTCACHEID>(0, 0);
         while(count > 0)
@@ -72,12 +74,27 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheIDs>())
         {
-            m_BrtEndPivotCacheIDs = elements_.back();
+            m_bBrtEndPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheIDs = false;
 
-        return m_BrtBeginPivotCacheIDs && m_BrtEndPivotCacheIDs;
+        return m_bBrtBeginPivotCacheIDs && m_bBrtEndPivotCacheIDs;
     }
+
+	const bool PIVOTCACHEIDS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginPivotCacheIDs>();
+
+		for (auto &item : m_arPIVOTCACHEID)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndPivotCacheIDs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

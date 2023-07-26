@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -71,7 +71,6 @@ namespace PPTX
 		{
 			Effect.reset();
 		}
-
 		UniEffect::~UniEffect()
 		{
 		}
@@ -136,6 +135,37 @@ namespace PPTX
 			fromXML(node);
 		}
 
+		OOX::EElementType UniEffect::getType () const
+		{
+			if (Effect.is_init())
+				return Effect->getType();
+			else return OOX::et_Unknown;
+		}
+
+		std::wstring UniEffect::toXML() const
+		{
+			if (Effect.IsInit())
+				return Effect->toXML();
+			return _T("");
+		}
+		void UniEffect::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (Effect.is_init())
+				Effect->toXmlWriter(pWriter);
+		}
+		void UniEffect::InitPointer(WrapperWritingElement* pElem)
+		{
+			Effect = pElem;
+		}
+		void UniEffect::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				Effect->SetParentPointer(pParent);
+		}
+		void UniEffect::FillParentPointersForChilds()
+		{
+		}
+
 		const UniEffect& UniEffect::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -149,96 +179,96 @@ namespace PPTX
 			{
 			case 'a':
 				{
-					if (name == _T("alphaCeiling"))	{ Effect.reset(new Logic::AlphaCeiling(oReader)); break; }	//1
-					if (name == _T("alphaFloor"))	{ Effect.reset(new Logic::AlphaFloor(oReader)); break; }	//2
-					if (name == _T("alphaRepl"))	{ Effect.reset(new Logic::AlphaRepl(oReader)); break; }		//3
-					if (name == _T("alphaOutset"))	{ Effect.reset(new Logic::AlphaOutset(oReader)); break; }	//4
-					if (name == _T("alphaModFix"))	{ Effect.reset(new Logic::AlphaModFix(oReader)); break; }	//5
-					if (name == _T("alphaBiLevel"))	{ Effect.reset(new Logic::AlphaBiLevel(oReader)); break; }	//6
-					if (name == _T("alphaInv"))		{ Effect.reset(new Logic::AlphaInv(oReader)); break; }		//7
-					if (name == _T("alphaMod"))		{ Effect.reset(new Logic::AlphaMod(oReader)); break; }		//8
+					if (name == _T("alphaCeiling"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaCeiling>(oReader)); break; }	//1
+					if (name == _T("alphaFloor"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaFloor>(oReader)); break; }	//2
+					if (name == _T("alphaRepl"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaRepl>(oReader)); break; }		//3
+					if (name == _T("alphaOutset"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaOutset>(oReader)); break; }	//4
+					if (name == _T("alphaModFix"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaModFix>(oReader)); break; }	//5
+					if (name == _T("alphaBiLevel"))	{ Effect.reset(CreatePtrXmlContent<Logic::AlphaBiLevel>(oReader)); break; }	//6
+					if (name == _T("alphaInv"))		{ Effect.reset(CreatePtrXmlContent<Logic::AlphaInv>(oReader)); break; }		//7
+					if (name == _T("alphaMod"))		{ Effect.reset(CreatePtrXmlContent<Logic::AlphaMod>(oReader)); break; }		//8
 					break;
 				}
 			case 'b':
 				{
-					if (name == _T("blur"))		{ Effect.reset(new Logic::Blur(oReader)); break; }				//9
-					if (name == _T("biLevel"))	{ Effect.reset(new Logic::BiLevel(oReader)); break; }			//10
-					if (name == _T("blend"))	{ Effect.reset(new Logic::Blend(oReader)); break; }				//11
+					if (name == _T("blur"))		{ Effect.reset(CreatePtrXmlContent<Logic::Blur>(oReader)); break; }				//9
+					if (name == _T("biLevel"))	{ Effect.reset(CreatePtrXmlContent<Logic::BiLevel>(oReader)); break; }			//10
+					if (name == _T("blend"))	{ Effect.reset(CreatePtrXmlContent<Logic::Blend>(oReader)); break; }				//11
 					break;
 				}
 			case 'c':
 				{
-					if (name == _T("cont"))		{ Effect.reset(new Logic::EffectDag(oReader)); break; }			//12
-					if (name == _T("clrRepl"))	{ Effect.reset(new Logic::ClrRepl(oReader)); break; }			//13
-					if (name == _T("clrChange")){ Effect.reset(new Logic::ClrChange(oReader)); break; }			//14
+					if (name == _T("cont"))		{ Effect.reset(CreatePtrXmlContent<Logic::EffectDag>(oReader)); break; }			//12
+					if (name == _T("clrRepl"))	{ Effect.reset(CreatePtrXmlContent<Logic::ClrRepl>(oReader)); break; }			//13
+					if (name == _T("clrChange")){ Effect.reset(CreatePtrXmlContent<Logic::ClrChange>(oReader)); break; }			//14
 					break;
 				}
 			case 'd':
 				{
-					if (name == _T("duotone"))	{ Effect.reset(new Logic::Duotone(oReader)); break; }			//15
+					if (name == _T("duotone"))	{ Effect.reset(CreatePtrXmlContent<Logic::Duotone>(oReader)); break; }			//15
 					break;
 				}
 			case 'e':
 				{
-					if (name == _T("effect"))	{ Effect.reset(new Logic::EffectElement(oReader)); break; }		//16
+					if (name == _T("effect"))	{ Effect.reset(CreatePtrXmlContent<Logic::EffectElement>(oReader)); break; }		//16
 					break;
 				}
 			case 'f':
 				{
-					if (name == _T("fillOverlay")){ Effect.reset(new Logic::FillOverlay(oReader)); break; }		//17
-					if (name == _T("fill"))		{ Effect.reset(new Logic::FillEffect(oReader)); break; }		//18
+					if (name == _T("fillOverlay")){ Effect.reset(CreatePtrXmlContent<Logic::FillOverlay>(oReader)); break; }		//17
+					if (name == _T("fill"))		{ Effect.reset(CreatePtrXmlContent<Logic::FillEffect>(oReader)); break; }		//18
 					break;
 				}
 			case 'g':
 				{
-					if (name == _T("glow"))		{ Effect.reset(new Logic::Glow(oReader)); break; }				//19
-					if (name == _T("grayscl"))	{ Effect.reset(new Logic::Grayscl(oReader)); break; }			//20
+					if (name == _T("glow"))		{ Effect.reset(CreatePtrXmlContent<Logic::Glow>(oReader)); break; }				//19
+					if (name == _T("grayscl"))	{ Effect.reset(CreatePtrXmlContent<Logic::Grayscl>(oReader)); break; }			//20
 					break;
 				}
 			case 'h':
 				{
-					if (name == _T("hsl"))		{ Effect.reset(new Logic::HslEffect(oReader)); break; }			//21
+					if (name == _T("hsl"))		{ Effect.reset(CreatePtrXmlContent<Logic::HslEffect>(oReader)); break; }			//21
 					break;
 				}
 			case 'i':
 				{
-					if (name == _T("innerShdw")){ Effect.reset(new Logic::InnerShdw(oReader)); break; }		//22
+					if (name == _T("innerShdw")){ Effect.reset(CreatePtrXmlContent<Logic::InnerShdw>(oReader)); break; }		//22
 					break;
 				}
 			case 'l':
 				{
-					if (name == _T("lum"))	{ Effect.reset(new Logic::LumEffect(oReader)); break; }			//23
+					if (name == _T("lum"))	{ Effect.reset(CreatePtrXmlContent<Logic::LumEffect>(oReader)); break; }			//23
 					break;
 				}
 			case 'o':
 				{
-					if (name == _T("outerShdw")){ Effect.reset(new Logic::OuterShdw(oReader)); break; }		//24
+					if (name == _T("outerShdw")){ Effect.reset(CreatePtrXmlContent<Logic::OuterShdw>(oReader)); break; }		//24
 					break;
 				}
 			case 'p':
 				{
-					if (name == _T("prstShdw")){ Effect.reset(new Logic::PrstShdw(oReader)); break; }			//25
+					if (name == _T("prstShdw")){ Effect.reset(CreatePtrXmlContent<Logic::PrstShdw>(oReader)); break; }			//25
 					break;
 				}
 			case 'r':
 				{
-					if (name == _T("reflection"))	{ Effect.reset(new Logic::Reflection(oReader)); break; }	//26
-					if (name == _T("relOff"))		{ Effect.reset(new Logic::RelOff(oReader)); break; }		//27
+					if (name == _T("reflection"))	{ Effect.reset(CreatePtrXmlContent<Logic::Reflection>(oReader)); break; }	//26
+					if (name == _T("relOff"))		{ Effect.reset(CreatePtrXmlContent<Logic::RelOff>(oReader)); break; }		//27
 					break;
 				}
 			case 's':
 				{
-					if (name == _T("softEdge"))		{ Effect.reset(new Logic::SoftEdge(oReader)); break; }		//28
+					if (name == _T("softEdge"))		{ Effect.reset(CreatePtrXmlContent<Logic::SoftEdge>(oReader)); break; }		//28
 					break;
 				}
 			case 't':
 				{
-					if (name == _T("tint"))			{ Effect.reset(new Logic::TintEffect(oReader)); break; }	//29
+					if (name == _T("tint"))			{ Effect.reset(CreatePtrXmlContent<Logic::TintEffect>(oReader)); break; }	//29
 					break;
 				}
 			case 'x':
 				{
-					if (name == _T("xfrm"))			{ Effect.reset(new Logic::XfrmEffect(oReader)); break; }	//30
+					if (name == _T("xfrm"))			{ Effect.reset(CreatePtrXmlContent<Logic::XfrmEffect>(oReader)); break; }	//30
 					break;
 				}
 			}
@@ -253,96 +283,96 @@ namespace PPTX
 			{
 			case 'a':
 				{
-					if (name == _T("alphaCeiling")){ Effect.reset(new Logic::AlphaCeiling(node)); break; }	//1
-					if (name == _T("alphaFloor")){ Effect.reset(new Logic::AlphaFloor(node)); break; }		//2
-					if (name == _T("alphaRepl")){ Effect.reset(new Logic::AlphaRepl(node)); break; }		//3
-					if (name == _T("alphaOutset")){ Effect.reset(new Logic::AlphaOutset(node)); break; }	//4
-					if (name == _T("alphaModFix")){ Effect.reset(new Logic::AlphaModFix(node)); break; }	//5
-					if (name == _T("alphaBiLevel")){ Effect.reset(new Logic::AlphaBiLevel(node)); break; }	//6
-					if (name == _T("alphaInv")){ Effect.reset(new Logic::AlphaInv(node)); break; }			//7
-					if (name == _T("alphaMod")){ Effect.reset(new Logic::AlphaMod(node)); break; }			//8
+					if (name == _T("alphaCeiling")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaCeiling>(node)); break; }	//1
+					if (name == _T("alphaFloor")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaFloor>(node)); break; }		//2
+					if (name == _T("alphaRepl")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaRepl>(node)); break; }		//3
+					if (name == _T("alphaOutset")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaOutset>(node)); break; }	//4
+					if (name == _T("alphaModFix")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaModFix>(node)); break; }	//5
+					if (name == _T("alphaBiLevel")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaBiLevel>(node)); break; }	//6
+					if (name == _T("alphaInv")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaInv>(node)); break; }			//7
+					if (name == _T("alphaMod")){ Effect.reset(CreatePtrXmlContent<Logic::AlphaMod>(node)); break; }			//8
 					break;
 				}
 			case 'b':
 				{
-					if (name == _T("blur")){ Effect.reset(new Logic::Blur(node)); break; }					//9
-					if (name == _T("biLevel")){ Effect.reset(new Logic::BiLevel(node)); break; }			//10
-					if (name == _T("blend")){ Effect.reset(new Logic::Blend(node)); break; }				//11
+					if (name == _T("blur")){ Effect.reset(CreatePtrXmlContent<Logic::Blur>(node)); break; }					//9
+					if (name == _T("biLevel")){ Effect.reset(CreatePtrXmlContent<Logic::BiLevel>(node)); break; }			//10
+					if (name == _T("blend")){ Effect.reset(CreatePtrXmlContent<Logic::Blend>(node)); break; }				//11
 					break;
 				}
 			case 'c':
 				{
-					if (name == _T("cont")){ Effect.reset(new Logic::EffectDag(node)); break; }				//12
-					if (name == _T("clrRepl")){ Effect.reset(new Logic::ClrRepl(node)); break; }			//13
-					if (name == _T("clrChange")){ Effect.reset(new Logic::ClrChange(node)); break; }		//14
+					if (name == _T("cont")){ Effect.reset(CreatePtrXmlContent<Logic::EffectDag>(node)); break; }				//12
+					if (name == _T("clrRepl")){ Effect.reset(CreatePtrXmlContent<Logic::ClrRepl>(node)); break; }			//13
+					if (name == _T("clrChange")){ Effect.reset(CreatePtrXmlContent<Logic::ClrChange>(node)); break; }		//14
 					break;
 				}
 			case 'd':
 				{
-					if (name == _T("duotone")){ Effect.reset(new Logic::Duotone(node)); break; }			//15
+					if (name == _T("duotone")){ Effect.reset(CreatePtrXmlContent<Logic::Duotone>(node)); break; }			//15
 					break;
 				}
 			case 'e':
 				{
-					if (name == _T("effect")){ Effect.reset(new Logic::EffectElement(node)); break; }		//16
+					if (name == _T("effect")){ Effect.reset(CreatePtrXmlContent<Logic::EffectElement>(node)); break; }		//16
 					break;
 				}
 			case 'f':
 				{
-					if (name == _T("fillOverlay")){ Effect.reset(new Logic::FillOverlay(node)); break; }	//17
-					if (name == _T("fill")){ Effect.reset(new Logic::FillEffect(node)); break; }			//18
+					if (name == _T("fillOverlay")){ Effect.reset(CreatePtrXmlContent<Logic::FillOverlay>(node)); break; }	//17
+					if (name == _T("fill")){ Effect.reset(CreatePtrXmlContent<Logic::FillEffect>(node)); break; }			//18
 					break;
 				}
 			case 'g':
 				{
-					if (name == _T("glow")){ Effect.reset(new Logic::Glow(node)); break; }					//19
-					if (name == _T("grayscl")){ Effect.reset(new Logic::Grayscl(node)); break; }			//20
+					if (name == _T("glow")){ Effect.reset(CreatePtrXmlContent<Logic::Glow>(node)); break; }					//19
+					if (name == _T("grayscl")){ Effect.reset(CreatePtrXmlContent<Logic::Grayscl>(node)); break; }			//20
 					break;
 				}
 			case 'h':
 				{
-					if (name == _T("hsl")){ Effect.reset(new Logic::HslEffect(node)); break; }				//21
+					if (name == _T("hsl")){ Effect.reset(CreatePtrXmlContent<Logic::HslEffect>(node)); break; }				//21
 					break;
 				}
 			case 'i':
 				{
-					if (name == _T("innerShdw")){ Effect.reset(new Logic::InnerShdw(node)); break; }		//22
+					if (name == _T("innerShdw")){ Effect.reset(CreatePtrXmlContent<Logic::InnerShdw>(node)); break; }		//22
 					break;
 				}
 			case 'l':
 				{
-					if (name == _T("lum")){ Effect.reset(new Logic::LumEffect(node)); break; }				//23
+					if (name == _T("lum")){ Effect.reset(CreatePtrXmlContent<Logic::LumEffect>(node)); break; }				//23
 					break;
 				}
 			case 'o':
 				{
-					if (name == _T("outerShdw")){ Effect.reset(new Logic::OuterShdw(node)); break; }		//24
+					if (name == _T("outerShdw")){ Effect.reset(CreatePtrXmlContent<Logic::OuterShdw>(node)); break; }		//24
 					break;
 				}
 			case 'p':
 				{
-					if (name == _T("prstShdw")){ Effect.reset(new Logic::PrstShdw(node)); break; }			//25
+					if (name == _T("prstShdw")){ Effect.reset(CreatePtrXmlContent<Logic::PrstShdw>(node)); break; }			//25
 					break;
 				}
 			case 'r':
 				{
-					if (name == _T("reflection")){ Effect.reset(new Logic::Reflection(node)); break; }		//26
-					if (name == _T("relOff")){ Effect.reset(new Logic::RelOff(node)); break; }				//27
+					if (name == _T("reflection")){ Effect.reset(CreatePtrXmlContent<Logic::Reflection>(node)); break; }		//26
+					if (name == _T("relOff")){ Effect.reset(CreatePtrXmlContent<Logic::RelOff>(node)); break; }				//27
 					break;
 				}
 			case 's':
 				{
-					if (name == _T("softEdge")){ Effect.reset(new Logic::SoftEdge(node)); break; }			//28
+					if (name == _T("softEdge")){ Effect.reset(CreatePtrXmlContent<Logic::SoftEdge>(node)); break; }			//28
 					break;
 				}
 			case 't':
 				{
-					if (name == _T("tint")){ Effect.reset(new Logic::TintEffect(node)); break; }			//29
+					if (name == _T("tint")){ Effect.reset(CreatePtrXmlContent<Logic::TintEffect>(node)); break; }			//29
 					break;
 				}
 			case 'x':
 				{
-					if (name == _T("xfrm")){ Effect.reset(new Logic::XfrmEffect(node)); break; }			//30
+					if (name == _T("xfrm")){ Effect.reset(CreatePtrXmlContent<Logic::XfrmEffect>(node)); break; }			//30
 					break;
 				}
 			default:
@@ -358,65 +388,65 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			
 			if(element.GetNode(_T("a:outerShdw"), oNode))
-				Effect.reset(new Logic::OuterShdw(oNode));				//1
+				Effect.reset(CreatePtrXmlContent<Logic::OuterShdw>(oNode));				//1
 			else if(element.GetNode(_T("a:glow"), oNode))
-				Effect.reset(new Logic::Glow(oNode));					//2
+				Effect.reset(CreatePtrXmlContent<Logic::Glow>(oNode));					//2
 			else if(element.GetNode(_T("a:duotone"), oNode))
-				Effect.reset(new Logic::Duotone(oNode));				//3
+				Effect.reset(CreatePtrXmlContent<Logic::Duotone>(oNode));				//3
 			else if(element.GetNode(_T("a:xfrm"), oNode))
-				Effect.reset(new Logic::XfrmEffect(oNode));				//4
+				Effect.reset(CreatePtrXmlContent<Logic::XfrmEffect>(oNode));				//4
 			else if(element.GetNode(_T("a:blur"), oNode))
-				Effect.reset(new Logic::Blur(oNode));					//5
+				Effect.reset(CreatePtrXmlContent<Logic::Blur>(oNode));					//5
 			else if(element.GetNode(_T("a:prstShdw"), oNode))
-				Effect.reset(new Logic::PrstShdw(oNode));				//6
+				Effect.reset(CreatePtrXmlContent<Logic::PrstShdw>(oNode));				//6
 			else if(element.GetNode(_T("a:innerShdw"), oNode))
-				Effect.reset(new Logic::InnerShdw(oNode));				//7
+				Effect.reset(CreatePtrXmlContent<Logic::InnerShdw>(oNode));				//7
 			else if(element.GetNode(_T("a:reflection"), oNode))
-				Effect.reset(new Logic::Reflection(oNode));				//8
+				Effect.reset(CreatePtrXmlContent<Logic::Reflection>(oNode));				//8
 			else if(element.GetNode(_T("a:softEdge"), oNode))
-				Effect.reset(new Logic::SoftEdge(oNode));				//9
+				Effect.reset(CreatePtrXmlContent<Logic::SoftEdge>(oNode));				//9
 			else if(element.GetNode(_T("a:fillOverlay"), oNode))
-				Effect.reset(new Logic::FillOverlay(oNode));			//10
+				Effect.reset(CreatePtrXmlContent<Logic::FillOverlay>(oNode));			//10
 			else if(element.GetNode(_T("a:alphaCeiling"), oNode))
-				Effect.reset(new Logic::AlphaCeiling(oNode));			//11
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaCeiling>(oNode));			//11
 			else if(element.GetNode(_T("a:alphaFloor"), oNode))
-				Effect.reset(new Logic::AlphaFloor(oNode));				//12
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaFloor>(oNode));				//12
 			else if(element.GetNode(_T("a:tint"), oNode))
-				Effect.reset(new Logic::TintEffect(oNode));				//13
+				Effect.reset(CreatePtrXmlContent<Logic::TintEffect>(oNode));				//13
 			else if(element.GetNode(_T("a:relOff"), oNode))
-				Effect.reset(new Logic::RelOff(oNode));					//14
+				Effect.reset(CreatePtrXmlContent<Logic::RelOff>(oNode));					//14
 			else if(element.GetNode(_T("a:lum"), oNode))
-				Effect.reset(new Logic::LumEffect(oNode));				//15
+				Effect.reset(CreatePtrXmlContent<Logic::LumEffect>(oNode));				//15
 			else if(element.GetNode(_T("a:hsl"), oNode))
-				Effect.reset(new Logic::HslEffect(oNode));				//16
+				Effect.reset(CreatePtrXmlContent<Logic::HslEffect>(oNode));				//16
 			else if(element.GetNode(_T("a:grayscl"), oNode))
-				Effect.reset(new Logic::Grayscl(oNode));				//17
+				Effect.reset(CreatePtrXmlContent<Logic::Grayscl>(oNode));				//17
 			else if(element.GetNode(_T("a:effect"), oNode))
-				Effect.reset(new Logic::EffectElement(oNode));			//18
+				Effect.reset(CreatePtrXmlContent<Logic::EffectElement>(oNode));			//18
 			else if(element.GetNode(_T("a:alphaRepl"), oNode))
-				Effect.reset(new Logic::AlphaRepl(oNode));				//19
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaRepl>(oNode));				//19
 			else if(element.GetNode(_T("a:alphaOutset"), oNode))
-				Effect.reset(new Logic::AlphaOutset(oNode));			//20
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaOutset>(oNode));			//20
 			else if(element.GetNode(_T("a:alphaModFix"), oNode))
-				Effect.reset(new Logic::AlphaModFix(oNode));			//21
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaModFix>(oNode));			//21
 			else if(element.GetNode(_T("a:alphaBiLevel"), oNode))
-				Effect.reset(new Logic::AlphaBiLevel(oNode));			//22
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaBiLevel>(oNode));			//22
 			else if(element.GetNode(_T("a:biLevel"), oNode))
-				Effect.reset(new Logic::BiLevel(oNode));				//23
+				Effect.reset(CreatePtrXmlContent<Logic::BiLevel>(oNode));				//23
 			else if(element.GetNode(_T("a:cont"), oNode))
-				Effect.reset(new Logic::EffectDag(oNode));				//24
+				Effect.reset(CreatePtrXmlContent<Logic::EffectDag>(oNode));				//24
 			else if(element.GetNode(_T("a:fill"), oNode))
-				Effect.reset(new Logic::FillEffect(oNode));				//25
+				Effect.reset(CreatePtrXmlContent<Logic::FillEffect>(oNode));				//25
 			else if(element.GetNode(_T("a:clrRepl"), oNode))
-				Effect.reset(new Logic::ClrRepl(oNode));				//26
+				Effect.reset(CreatePtrXmlContent<Logic::ClrRepl>(oNode));				//26
 			else if(element.GetNode(_T("a:clrChange"), oNode))
-				Effect.reset(new Logic::ClrChange(oNode));				//27
+				Effect.reset(CreatePtrXmlContent<Logic::ClrChange>(oNode));				//27
 			else if(element.GetNode(_T("a:alphaInv"), oNode))
-				Effect.reset(new Logic::AlphaInv(oNode));				//28
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaInv>(oNode));				//28
 			else if(element.GetNode(_T("a:alphaMod"), oNode))
-				Effect.reset(new Logic::AlphaMod(oNode));				//29
+				Effect.reset(CreatePtrXmlContent<Logic::AlphaMod>(oNode));				//29
 			else if(element.GetNode(_T("a:blend"), oNode))
-				Effect.reset(new Logic::Blend(oNode));					//5
+				Effect.reset(CreatePtrXmlContent<Logic::Blend>(oNode));					//5
 			else Effect.reset();
 		}
 

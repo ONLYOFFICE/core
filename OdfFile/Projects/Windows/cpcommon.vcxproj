@@ -23,29 +23,29 @@
     <ProjectGuid>{609ED938-3CA8-4BED-B363-25096D4C4812}</ProjectGuid>
     <RootNamespace>cpcommon</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -74,16 +74,16 @@
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(Platform)\$(Configuration)\Common\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\Common\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -93,8 +93,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -114,8 +114,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
@@ -252,6 +252,7 @@
     <ClInclude Include="..\..\DataTypes\scripttype.h" />
     <ClInclude Include="..\..\DataTypes\shadowtype.h" />
     <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
+    <ClInclude Include="..\..\DataTypes\sparklines.h" />
     <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
     <ClInclude Include="..\..\DataTypes\stylefamily.h" />
     <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h" />
@@ -368,6 +369,7 @@
     <ClCompile Include="..\..\DataTypes\scripttype.cpp" />
     <ClCompile Include="..\..\DataTypes\shadowtype.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
+    <ClCompile Include="..\..\DataTypes\sparklines.cpp" />
     <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp" />
     <ClCompile Include="..\..\DataTypes\stylefamily.cpp" />
     <ClCompile Include="..\..\DataTypes\stylehorizontalpos.cpp" />

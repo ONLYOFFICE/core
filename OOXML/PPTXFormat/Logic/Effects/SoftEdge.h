@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -39,87 +39,30 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class SoftEdge : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SoftEdge)
+			WritingElement_AdditionMethods(SoftEdge)
 			PPTX_LOGIC_BASE2(SoftEdge)
 
-			SoftEdge& operator=(const SoftEdge& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			SoftEdge& operator=(const SoftEdge& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				rad = oSrc.rad;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_softEdge;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("rad"), rad)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"rad", rad);
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("rad"), rad);
-				return XmlUtils::CreateNode(_T("a:softEdge"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:softEdge");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"rad", rad);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:softEdge");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_SOFTEDGE);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteSize_t2(0, rad);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (_at == 0) rad = (size_t)pReader->GetULong(); 
-					else break;
-				}
-				pReader->Seek(_e);
-			}
 		public:
 			nullable_sizet	rad;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

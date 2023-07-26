@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -58,6 +58,8 @@ namespace XLSB
     // FRTSXDI = [BrtFRTBegin BrtSXDI14 BrtFRTEnd] [BrtFRTBegin BrtSXDI15 BrtFRTEnd] *FRT
     const bool FRTSXDI::loadContent(BinProcessor& proc)
     {
+		m_bBrtFRTEnd = false;
+
         if (proc.optional<FRTBegin>())
         {
             m_BrtFRTBegin = elements_.back();
@@ -72,7 +74,7 @@ namespace XLSB
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
 
@@ -90,7 +92,7 @@ namespace XLSB
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+			m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
 
@@ -103,8 +105,39 @@ namespace XLSB
             count--;
         }        
 
-        return m_BrtFRTBegin && (m_BrtSXDI14 || m_BrtSXDI15) && m_BrtFRTEnd;
+        return m_BrtFRTBegin && (m_BrtSXDI14 || m_BrtSXDI15) && m_bBrtFRTEnd;
     }
+
+	const bool FRTSXDI::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtSXDI14 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_BrtSXDI14 != nullptr)
+				proc.mandatory(*m_BrtSXDI14);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		if (m_BrtSXDI15 != nullptr)
+		{
+			if (m_BrtFRTBegin != nullptr)
+				proc.mandatory(*m_BrtFRTBegin);
+			else
+				proc.mandatory<FRTBegin>();
+
+			if (m_BrtSXDI15 != nullptr)
+				proc.mandatory(*m_BrtSXDI15);
+
+			proc.mandatory<FRTEnd>();
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -17,6 +17,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		\
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretator.h \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorBase.h \
+		$$METAFILE_PATH/Wmf/WmfInterpretator/CInterpretatorSvgBase.h \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorSvg.h \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorRender.h \
 		$$METAFILE_PATH/Wmf/WmfParser/CWmfParser.h \
@@ -42,6 +43,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Wmf/WmfObjects.cpp \
 		$$METAFILE_PATH/Wmf/WmfPlayer.cpp \
 		\
+		$$METAFILE_PATH/Wmf/WmfInterpretator/CInterpretatorSvgBase.cpp \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorSvg.cpp \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorRender.cpp \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretator.cpp \

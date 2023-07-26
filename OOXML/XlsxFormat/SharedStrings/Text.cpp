@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -29,7 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "Text.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../../DesktopEditor/common/StringExt.h"
+
+#include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX
 {
@@ -189,6 +194,100 @@ namespace OOX
 
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
+
+		CText::CText(OOX::Document *pMain) : WritingElement(pMain) {}
+		CText::~CText() {}
+		void CText::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CText::toXML() const
+		{
+			return _T("");
+		}
+		void CText::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<t"));
+			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+				writer.WriteString(_T(" xml:space=\"preserve\""));
+			writer.WriteString(_T(">"));
+			writer.WriteEncodeXmlStringHHHH(m_sText);
+			writer.WriteString(_T("</t>"));
+		}
+		void CText::toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
+		{
+			writer.WriteString(_T("<"));
+			writer.WriteString(name);
+			if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
+				writer.WriteString(_T(" xml:space=\"preserve\""));
+			writer.WriteString(_T(">"));
+			writer.WriteEncodeXmlStringHHHH(m_sText);
+			writer.WriteString(_T("</"));
+			writer.WriteString(name);
+			writer.WriteString(_T(">"));
+		}
+		void CText::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nDepth = oReader.GetDepth();
+			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+			{
+				if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+				{
+					std::string sTemp = oReader.GetTextA();
+					wchar_t* pUnicodes = NULL;
+					LONG lOutputCount = 0;
+					NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), (LONG)sTemp.length(), pUnicodes, lOutputCount);
+					m_sText.append(pUnicodes);
+					RELEASEARRAYOBJECTS(pUnicodes);
+				}
+			}
+
+			trimString(m_sText, GetSpace());
+		}
+		void CText::fromBin(std::wstring& str)
+		{
+			m_sText = str;
+			m_oSpace.Init();
+			m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
+		}
+		std::wstring CText::ToString() const
+		{
+			return m_sText;
+		}
+		EElementType CText::getType() const
+		{
+			return et_x_t;
+		}
+		void CText::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
+			std::wstring wsName = XmlUtils::GetNameNoNS(oReader.GetName());
+			while( !wsName.empty() )
+			{
+				if ( _T("space") == wsName )
+				{
+					m_oSpace = oReader.GetText();
+					break;
+				}
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = XmlUtils::GetNameNoNS(oReader.GetName());
+			}
+
+			oReader.MoveToElement();
+		}
 		void CText::trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace)
 		{
 			NSStringExt::Replace(sVal, L"\t", L"");
@@ -228,5 +327,6 @@ namespace OOX
 		{
 			return m_oSpace.IsInit() ? m_oSpace->GetValue() : SimpleTypes::xmlspaceDefault;
 		}
+
 	} //Spreadsheet
 } // OOX

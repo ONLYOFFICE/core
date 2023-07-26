@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,246 +44,34 @@ namespace PPTX
 		public:
 			enum eFit {FitEmpty = 0, FitNo = 1, FitSpAuto = 2, FitNormAuto = 3};
 
-			WritingElement_AdditionConstructors(TextFit)
-			TextFit()
-			{
-				type = FitEmpty;
-			}
+			WritingElement_AdditionMethods(TextFit)
+
+			TextFit();
 			
-			virtual bool is_init(){return (type != FitEmpty);};
+			virtual bool is_init();
+			void GetTextFitFrom(XmlUtils::CXmlNode& element);
+			virtual OOX::EElementType getType() const;
 
-			void GetTextFitFrom(XmlUtils::CXmlNode& element)
-			{
-				type = FitEmpty;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				XmlUtils::CXmlNode oNode;
-				if (element.GetNode(_T("a:noAutofit"), oNode))
-					type = FitNo;
-				else if (element.GetNode(_T("a:spAutoFit"), oNode))
-					type = FitSpAuto;
-				else if (element.GetNode(_T("a:normAutofit"), oNode))
-				{
-					type = FitNormAuto;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					nullable_string sFontScale;
-					nullable_string sLnSpcRed;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					XmlMacroReadAttributeBase(oNode, L"fontScale", sFontScale);
-					XmlMacroReadAttributeBase(oNode, L"lnSpcReduction", sLnSpcRed);
+			void Merge(TextFit& fit) const;
 
-					if (sFontScale.is_init())
-					{
-                        int nFound = (int)sFontScale->rfind(wchar_t('%'));
-						if (nFound < 0)
-							fontScale = *sFontScale;
-						else
-						{
-							std::wstring sRet = sFontScale->substr(0, nFound);
-							double dRet = XmlUtils::GetDouble(sRet);
-							int val = (int)(dRet * 1000);
-							fontScale = val;
-						}
-					}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-					if (sLnSpcRed.is_init())
-					{
-                        int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
-						if (nFound < 0)
-							lnSpcReduction = *sLnSpcRed;
-						else
-						{
-							std::wstring sRet = sLnSpcRed->substr(0, nFound);
-							double dRet = XmlUtils::GetDouble(sRet);
-							int val = (int)(dRet * 1000);
-							lnSpcReduction = val;
-						}
-					}
-				}
-			}
-
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_textFit;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring strName = oReader.GetName();
-
-				if (_T("a:noAutofit") == strName)
-					type = FitNo;
-				else if (_T("a:spAutoFit") == strName)
-					type = FitSpAuto;
-				else if (_T("a:normAutofit") == strName)
-				{
-					type = FitNormAuto;
-
-					ReadAttributes(oReader);
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string sFontScale;
-				nullable_string sLnSpcRed;
-
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("fontScale"),			sFontScale)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lnSpcReduction"),	sLnSpcRed)
-				WritingElement_ReadAttributes_End( oReader )
-				
-				Normalize(sFontScale, sLnSpcRed);
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				type = FitEmpty;
-
-				std::wstring strName = node.GetName();
-
-				if (_T("a:noAutofit") == strName)
-					type = FitNo;
-				else if (_T("a:spAutoFit") == strName)
-					type = FitSpAuto;
-				else if (_T("a:normAutofit") == strName)
-				{
-					type = FitNormAuto;
-
-					nullable_string sFontScale;
-					nullable_string sLnSpcRed;
-
-					XmlMacroReadAttributeBase(node, L"fontScale", sFontScale);
-					XmlMacroReadAttributeBase(node, L"lnSpcReduction", sLnSpcRed);
-
-					Normalize(sFontScale, sLnSpcRed);
-				}
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (type == FitNo)
-				{
-					pWriter->WriteString(_T("<a:noAutofit/>"));
-					return;
-				}
-
-				if (type == FitSpAuto)
-				{
-					pWriter->WriteString(_T("<a:spAutoFit/>"));
-					return;
-				}
-
-				if (type == FitNormAuto)
-				{
-					pWriter->StartNode(_T("a:normAutofit"));
-
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("fontScale"), fontScale);
-					pWriter->WriteAttribute(_T("lnSpcReduction"), lnSpcReduction);
-					pWriter->EndAttributes();
-
-					pWriter->EndNode(_T("a:normAutofit"));
-				}				
-			}
-
-			void Merge(TextFit& fit)const
-			{
-				if(type != FitEmpty)
-				{
-					if((type == FitNo) || (type == FitSpAuto))
-					{
-						fit.type = type;
-						fit.fontScale.reset();
-						fit.lnSpcReduction.reset();
-					}
-					else if(type == FitNormAuto)
-					{
-						fit.type = type;
-						if(fontScale.is_init())
-							fit.fontScale = *fontScale;
-						if(lnSpcReduction.is_init())
-							fit.lnSpcReduction = *lnSpcReduction;
-					}
-				}
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, type);
-				pWriter->WriteInt2(1, fontScale);
-				pWriter->WriteInt2(2, lnSpcReduction);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-					case 0:
-					{
-						type = (eFit)pReader->GetLong();
-						break;
-					}
-					case 1:
-					{
-						fontScale = pReader->GetLong();
-						break;
-					}
-					case 2:
-					{
-						lnSpcReduction = pReader->GetLong();
-						break;
-					}
-					default:
-						break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 		public:
 			eFit			type;
 			nullable_int	fontScale;
 			nullable_int	lnSpcReduction;
+
 		protected:
-            virtual void FillParentPointersForChilds(){}
-
-			void Normalize(nullable_string & sFontScale, nullable_string & sLnSpcRed)
-			{
-				if (sFontScale.is_init())
-				{
-                    int nFound = (int)sFontScale->rfind(wchar_t('%'));
-					if (nFound < 0)
-						fontScale = *sFontScale;
-					else
-					{
-						std::wstring sRet = sFontScale->substr(0, nFound);
-						double dRet = XmlUtils::GetDouble(sRet);
-						int val = (int)(dRet * 1000);
-						fontScale = val;
-					}
-				}
-
-				if (sLnSpcRed.is_init())
-				{
-                    int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
-					if (nFound < 0)
-						lnSpcReduction = *sLnSpcRed;
-					else
-					{
-						std::wstring sRet = sLnSpcRed->substr(0, nFound);
-						double dRet = XmlUtils::GetDouble(sRet);
-						int val = (int)(dRet * 1000);
-						lnSpcReduction = val;
-					}
-				}
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize(nullable_string & sFontScale, nullable_string & sLnSpcRed);
 		};
 	} // namespace Logic
 } // namespace PPTX

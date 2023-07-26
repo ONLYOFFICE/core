@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -118,58 +118,58 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if ( m_oColor.IsInit() )
 		{
 			sResult += L"w:color=\"";
 			sResult += m_oColor->ToStringNoAlpha();
 			sResult += L"\" ";
 		}
-		if ( m_oFrame.IsInit() )
-		{
-			sResult += L"w:frame=\"";
-			sResult += m_oFrame->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oShadow.IsInit() )
-		{
-			sResult += L"w:shadow=\"";
-			sResult += m_oShadow->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSpace.IsInit() )
-		{
-			sResult += L"w:space=\"";
-			sResult += m_oSpace->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oSz.IsInit() )
-		{
-			sResult += L"w:sz=\"";
-			sResult += m_oSz->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeColor.IsInit() )
+		if (m_oThemeColor.IsInit())
 		{
 			sResult += L"w:themeColor=\"";
 			sResult += m_oThemeColor->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oThemeShade.IsInit() )
-		{
-			sResult += L"w:themeShade=\"";
-			sResult += m_oThemeShade->ToString();
-			sResult += L"\" ";
-		}
-		if ( m_oThemeTint.IsInit() )
+		if (m_oThemeTint.IsInit())
 		{
 			sResult += L"w:themeTint=\"";
 			sResult += m_oThemeTint->ToString();
 			sResult += L"\" ";
 		}
-		if ( m_oVal.IsInit() )
+		if (m_oThemeShade.IsInit())
 		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
+			sResult += L"w:themeShade=\"";
+			sResult += m_oThemeShade->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSz.IsInit())
+		{
+			sResult += L"w:sz=\"";
+			sResult += m_oSz->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oSpace.IsInit())
+		{
+			sResult += L"w:space=\"";
+			sResult += m_oSpace->ToString();
+			sResult += L"\" ";
+		}
+		if (m_oShadow.IsInit())
+		{
+			sResult += L"w:shadow=\"";
+			sResult += m_oShadow->ToString();
+			sResult += L"\" ";
+		}
+		if ( m_oFrame.IsInit() )
+		{
+			sResult += L"w:frame=\"";
+			sResult += m_oFrame->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;
@@ -301,7 +301,7 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hAnsiTheme", m_oHAnsiTheme)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hint", m_oHint)
 		//2003
-		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_oHint)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_sHAnsi)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:fareast", m_sEastAsia)
 		WritingElement_ReadAttributes_End(oReader)
 	}
@@ -1278,81 +1278,55 @@ namespace Word
 
 		if ( m_oEvenHBand.IsInit() )
 		{
-			sResult += L"w:evenHBand=\"";
-			sResult += m_oEvenHBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:evenHBand=\"" + m_oEvenHBand->ToString() + L"\"";
 		}
 		if ( m_oEvenVBand.IsInit() )
 		{
-			sResult += L"w:evenVBand=\"";
-			sResult += m_oEvenVBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:evenVBand=\"" + m_oEvenVBand->ToString() + L"\"";
 		}
 		if ( m_oFirstColumn.IsInit() )
 		{
-			sResult += L"w:firstColumn=\"";
-			sResult += m_oFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstColumn=\"" + m_oFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oFirstRow.IsInit() )
 		{
-			sResult += L"w:firstRow=\"";
-			sResult += m_oFirstRow->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRow=\"" + m_oFirstRow->ToString() + L"\"";
 		}
 		if ( m_oFirstRowFirstColumn.IsInit() )
 		{
-			sResult += L"w:firstRowFirstColumn=\"";
-			sResult += m_oFirstRowFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRowFirstColumn=\"" + m_oFirstRowFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oFirstRowLastColumn.IsInit() )
 		{
-			sResult += L"w:firstRowLastColumn=\"";
-			sResult += m_oFirstRowLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRowLastColumn=\"" + m_oFirstRowLastColumn->ToString() + L"\"";
 		}
 		if ( m_oLastColumn.IsInit() )
 		{
-			sResult += L"w:lastColumn=\"";
-			sResult += m_oLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastColumn=\"" + m_oLastColumn->ToString() + L"\"";
 		}
 		if ( m_oLastRow.IsInit() )
 		{
-			sResult += L"w:lastRow=\"";
-			sResult += m_oLastRow->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRow=\"" + m_oLastRow->ToString() + L"\"";
 		}
 		if ( m_oLastRowFirstColumn.IsInit() )
 		{
-			sResult += L"w:lastRowFirstColumn=\"";
-			sResult += m_oLastRowFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRowFirstColumn=\"" + m_oLastRowFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oLastRowLastColumn.IsInit() )
 		{
-			sResult += L"w:lastRowLastColumn=\"";
-			sResult += m_oLastRowLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRowLastColumn=\"" + m_oLastRowLastColumn->ToString() + L"\"";
 		}
 		if ( m_oOddHBand.IsInit() )
 		{
-			sResult += L"w:oddHBand=\"";
-			sResult += m_oOddHBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:oddHBand=\"" + m_oOddHBand->ToString() + L"\"";
 		}
 		if ( m_oOddVBand.IsInit() )
 		{
-			sResult += L"w:oddVBand=\"";
-			sResult += m_oOddVBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:oddVBand=\"" + m_oOddVBand->ToString() + L"\"";
 		}
 		if ( m_oVal.IsInit() )
 		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
-			sResult += L"\" ";
+			sResult += L" w:val=\"" + m_oVal->ToString() + L"\"";
 		}
 		return sResult;
 	}
@@ -2439,14 +2413,16 @@ namespace Word
 
 		if (m_oEnd.IsInit())
 		{
-			sResult += L"w:end=\"";
+			//sResult += L"w:end=\""; 
+			sResult += L"w:right=\""; // Transitional Migration Features
 			sResult += m_oEnd->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oEndChars.IsInit())
 		{
-			sResult += L"w:endChars=\"";
+//			sResult += L"w:endChars=\"";
+			sResult += L"w:rightChars=\""; // Transitional Migration Features
 			sResult += m_oEndChars->ToString();
 			sResult += L"\" ";
 		}
@@ -2481,14 +2457,16 @@ namespace Word
 
 		if (m_oStart.IsInit())
 		{
-			sResult += L"w:start=\"";
+//			sResult += L"w:start=\"";
+			sResult += L"w:left=\""; // Transitional Migration Features
 			sResult += m_oStart->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oStartChars.IsInit())
 		{
-			sResult += L"w:startChars=\"";
+//			sResult += L"w:startChars=\"";
+			sResult += L"w:leftChars=\""; // Transitional Migration Features
 			sResult += m_oStartChars->ToString();
 			sResult += L"\" ";
 		}
@@ -2608,6 +2586,20 @@ namespace Word
 		return sResult;
 	}	
 
+	const CSpacing CSpacing::Merge(const CSpacing& oPrev, const CSpacing& oCurrent)
+	{
+		CSpacing oProperties;
+		oProperties.m_oAfter = Merge(oPrev.m_oAfter, oCurrent.m_oAfter);
+		oProperties.m_oAfterAutospacing = Merge(oPrev.m_oAfterAutospacing, oCurrent.m_oAfterAutospacing);
+		oProperties.m_oAfterLines = Merge(oPrev.m_oAfterLines, oCurrent.m_oAfterLines);
+		oProperties.m_oBefore = Merge(oPrev.m_oBefore, oCurrent.m_oBefore);
+		oProperties.m_oBeforeAutospacing = Merge(oPrev.m_oBeforeAutospacing, oCurrent.m_oBeforeAutospacing);
+		oProperties.m_oBeforeLines = Merge(oPrev.m_oBeforeLines, oCurrent.m_oBeforeLines);
+		oProperties.m_oLine = Merge(oPrev.m_oLine, oCurrent.m_oLine);
+		oProperties.m_oLineRule = Merge(oPrev.m_oLineRule, oCurrent.m_oLineRule);
+		return oProperties;
+	}
+
 	void CSpacing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
@@ -2652,6 +2644,12 @@ namespace Word
 	{
 		std::wstring sResult;
 
+		if (m_oVal.IsInit())
+		{
+			sResult += L"w:val=\"";
+			sResult += m_oVal->ToString();
+			sResult += L"\" ";
+		}
 		if (m_oLeader.IsInit())
 		{
 			sResult += L"w:leader=\"";
@@ -2662,12 +2660,6 @@ namespace Word
 		{
 			sResult += L"w:pos=\"";
 			sResult += m_oPos->ToString();
-			sResult += L"\" ";
-		}
-		if (m_oVal.IsInit())
-		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
 			sResult += L"\" ";
 		}
 		return sResult;

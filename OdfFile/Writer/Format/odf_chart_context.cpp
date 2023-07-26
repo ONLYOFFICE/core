@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -89,7 +89,7 @@ namespace odf_writer
 		bool categories;
 		bool label;
 
-		std::vector<std::wstring>	data_str;
+		std::vector<std::wstring> data_str;
 	};
 	struct 	odf_chart_state
 	{
@@ -107,13 +107,21 @@ namespace odf_writer
 
 	struct odf_chart_level_state
 	{
-		style_text_properties		*text_properties_;
-		graphic_format_properties	*graphic_properties_;
-		style_paragraph_properties	*paragraph_properties_;
-		style_chart_properties		*chart_properties_;
+		text_format_properties* text_properties;
+		graphic_format_properties*	graphic_properties;
+		paragraph_format_properties* paragraph_properties;
+		chart_format_properties* chart_properties;
 		
-		office_element_ptr	elm;
-	};	
+		office_element_ptr elm;		
+		odf_chart_level_state(office_element_ptr &elm_) : elm(elm_), graphic_properties(NULL), paragraph_properties(NULL), text_properties(NULL), chart_properties (NULL) {}
+		~odf_chart_level_state()
+		{
+			graphic_properties = NULL;
+			paragraph_properties = NULL;
+			text_properties = NULL;
+			chart_properties = NULL;
+		}
+	};
 	struct _cell_cash
 	{
 		int				col;
@@ -155,6 +163,9 @@ public:
 	
 	std::vector<odf_category_state>			categories_;
 	std::vector<odf_axis_state>				axis_;
+	std::vector<office_element_ptr>			series_;
+	office_element_ptr						plot_area_;
+
 	std::vector<office_element_ptr>			group_series_;
 	std::vector<unsigned int>				axis_group_series_;
 
@@ -187,7 +198,7 @@ public:
 ////////
 	void set_default_series_color();
 	void clear_current();
-	odf_style_context			*styles_context_;
+	odf_style_context_ptr		styles_context_;
 	odf_conversion_context		*odf_context_;
 
 	chart_chart					*get_current_chart();
@@ -286,18 +297,17 @@ odf_types::chart_class::type odf_chart_context::Impl::get_current_chart_class()
 }
 chart_series* odf_chart_context::Impl::get_current_series()
 {
-	for (long i = (long)current_level_.size() - 1; i >= 0; i--)
-	{
-		chart_series * chart = dynamic_cast<chart_series*>(current_level_[i].elm.get());
-		if (chart) return chart;
-	}
-	return NULL;
+	if (!series_.empty())
+		return dynamic_cast<chart_series*>(series_.back().get());
+	else
+		return NULL;
 }
 chart_axis * odf_chart_context::Impl::get_current_axis()
 {
-	if (axis_.size() > 0) return dynamic_cast<chart_axis*>(axis_.back().elm.get());
-
-	return NULL;
+	if (!axis_.empty()) 
+		return dynamic_cast<chart_axis*>(axis_.back().elm.get());
+	else
+		return NULL;
 }
 void odf_chart_context::Impl::clear_current()
 {
@@ -307,7 +317,10 @@ void odf_chart_context::Impl::clear_current()
 	group_series_.clear();
 	data_cell_ranges_.clear();
 	cash_.clear();
+	series_.clear();
 	
+	plot_area_ = office_element_ptr();
+
 	bar_gap_width	= boost::none;
 	bar_overlap		= boost::none;
 
@@ -325,12 +338,13 @@ void odf_chart_context::Impl::clear_current()
 }
 void odf_chart_context::Impl::set_default_series_color()
 {
-	if (!current_level_.back().graphic_properties_)return;
+	if (current_level_.empty()) return;
+	if (!current_level_.back().graphic_properties) return;
 
 	color col = color(default_MS_series_colors[current_series_count_]);
 	
-	current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_color_ = col;
-	current_level_.back().graphic_properties_->svg_stroke_color_ = col;
+	current_level_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = col;
+	current_level_.back().graphic_properties->svg_stroke_color_ = col;
 }
 ////////////////////////////////////////////////////////////////////////////
 
@@ -342,18 +356,17 @@ odf_chart_context::odf_chart_context(odf_conversion_context *odf_context)
 odf_chart_context::~odf_chart_context()
 {
 } 
-void odf_chart_context::set_styles_context(odf_style_context * style_context)
+void odf_chart_context::set_styles_context(odf_style_context_ptr style_context)
 {
 	impl_->styles_context_ = style_context;
 	
 	impl_->odf_context_->drawing_context()->set_styles_context(style_context);
 }
-
-odf_drawing_context * odf_chart_context::drawing_context()
+odf_drawing_context* odf_chart_context::drawing_context()
 {
 	return  impl_->odf_context_->drawing_context();
 }
-odf_text_context	* odf_chart_context::text_context()
+odf_text_context* odf_chart_context::text_context()
 {
 	return impl_->odf_context_->text_context();
 }
@@ -375,28 +388,20 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	size_t level = impl_->current_level_.size();
 	std::wstring style_name;
 	
-	odf_element_state		state(chart_elm, style_name, style_elm, level);
-	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, chart_elm};
+	odf_element_state state(chart_elm, style_name, style_elm, level);
 
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		level_state.chart_properties_ = style_->content_.get_style_chart_properties();
-		
 		chart->chart_chart_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();		
+		style_->content_.add_get_style_graphic_properties();
 	}
-
-	drawing_context()->start_element(chart_elm, style_elm);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//if (impl_->current_level_.size()>0)	impl_->current_level_.back()->add_child_element(chart_elm); не надо ... наследование через drawing
-
-	impl_->current_level_.push_back(level_state);
-
-
 	impl_->current_chart_state_.elements_.push_back(state);
+
+	start_element(chart_elm, style_elm, style_name);
 }
 void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt)
 {
@@ -421,39 +426,39 @@ void odf_chart_context::set_chart_type(odf_types::chart_class::type type)
 
 void odf_chart_context::set_chart_bar_type(int type)
 {	
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 	switch(type)
 	{
 		case 0:	//	st_shapeCONE = 0,
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::cone); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::cone); break;
 		case 1:	//	st_shapeCONETOMAX = 1,
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::cone); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::cone); break;
 		case 2:	//	st_shapeBOX = 2,
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::cuboid); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::cuboid); break;
 		case 3:	//	st_shapeCYLINDER = 3,
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::cylinder); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::cylinder); break;
 		case 4:	//	st_shapePYRAMID = 4,
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
 		case 5:	//	st_shapePYRAMIDTOMAX = 5
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
+			impl_->current_level_.back().chart_properties->solid_type_ = chart_solid_type(chart_solid_type::pyramid); break;
 	}
 	if (type == -1)
 	{
 		//нужно вытащить свойство с уровня выше.
 		size_t sz = impl_->current_level_.size();
 		if (sz > 1)
-			impl_->current_level_.back().chart_properties_->content_.solid_type_ = 
-					impl_->current_level_[sz-2].chart_properties_->content_.solid_type_;
+			impl_->current_level_.back().chart_properties->solid_type_ = 
+					impl_->current_level_[sz-2].chart_properties->solid_type_;
 	}
 }
 
 void odf_chart_context::set_chart_bar_direction(int type)
 {	
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 	switch(type)
 	{
 		case 0:	//	st_bardirBAR = 0,
-			impl_->current_level_.back().chart_properties_->content_.vertical_ = true; break;
+			impl_->current_level_.back().chart_properties->vertical_ = true; break;
 		case 1:	//	st_bardirCOL = 1
 			break;
 	}
@@ -489,9 +494,9 @@ void odf_chart_context::set_chart_bar_overlap(std::wstring val)
 
 void odf_chart_context::set_chart_stock_candle_stick(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
-	impl_->current_level_.back().chart_properties_->content_.japanese_candle_stick_ = val;
+	impl_->current_level_.back().chart_properties->japanese_candle_stick_ = val;
 
 }
 
@@ -514,49 +519,49 @@ void odf_chart_context::set_chart_radar_type(int type)
 }
 void odf_chart_context::set_chart_bar_grouping(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
 	switch(type)
 	{
 		case 0:	//	st_groupingPERCENTSTACKED = 0,
-			impl_->current_level_.back().chart_properties_->content_.percentage_ = true; break;
+			impl_->current_level_.back().chart_properties->percentage_ = true; break;
 		case 1:	//	st_bargroupingCLUSTERED = 1,
 		case 2:	//	st_bargroupingSTANDARD = 2,
 			break;
 		case 3:	//	st_bargroupingSTACKED = 3
-			impl_->current_level_.back().chart_properties_->content_.stacked_ = true; break;
+			impl_->current_level_.back().chart_properties->stacked_ = true; break;
 	}
 }
 void odf_chart_context::set_chart_grouping(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
 	switch(type)
 	{
 		case 0:	//	st_groupingPERCENTSTACKED = 0,
-			impl_->current_level_.back().chart_properties_->content_.percentage_ = true; break;
+			impl_->current_level_.back().chart_properties->percentage_ = true; break;
 		case 1:	//	st_groupingSTANDARD = 1,
 			break;
 		case 2:	//	st_groupingSTACKED = 2
-			impl_->current_level_.back().chart_properties_->content_.stacked_ = true; break;
+			impl_->current_level_.back().chart_properties->stacked_ = true; break;
 	}
 }
 void odf_chart_context::set_chart_3D(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
-	impl_->current_level_.back().chart_properties_->content_.three_dimensional_ = val;
+	if (!impl_->current_level_.back().chart_properties) return;
+	impl_->current_level_.back().chart_properties->three_dimensional_ = val;
 
-	impl_->current_level_.back().chart_properties_->content_.treat_empty_cells_ = boost::none;
-	//impl_->current_level_.back().chart_properties_->content_.series_source_ = chart_series_source(chart_series_source::rows);
+	impl_->current_level_.back().chart_properties->treat_empty_cells_ = boost::none;
+	//impl_->current_level_.back().chart_properties->series_source_ = chart_series_source(chart_series_source::rows);
 
-	//impl_->current_level_.back().chart_properties_->content_.
+	//impl_->current_level_.back().chart_properties->
 	//chart:treat-empty-cells="leave-gap" 
 	//chart:series-source="rows"
-		  //impl_->current_level_.back().chart_properties_->content_.deep_ = true;
+		  //impl_->current_level_.back().chart_properties->deep_ = true;
 	//if (!plot_area)return;
 
 	//plot_area->chart_plot_area_attlist_.dr3d_shade_mode=L"gouraud";
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->plot_area_.get());
 
 	if (val && plot_area)
 	{
@@ -629,90 +634,90 @@ void odf_chart_context::set_view3D(int rotX, int rotY, int depthPercent, int per
 
 	sTransform << L"matrix(" << left_x << L" " << up_x << L" " << forward_x << L" " << left_y << L" " << up_y << L" " << forward_y << L" " << left_z << L" " << up_z << L" " << forward_z << L" 0cm 0cm 0cm)";
 
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->plot_area_.get());
 	if (plot_area)
 	{
 		plot_area->chart_plot_area_attlist_.common_dr3d_attlist_.transform_ = sTransform.str();
 
-		if (impl_->current_level_.back().chart_properties_)
+		if (impl_->current_level_.back().chart_properties)
 		{
-			impl_->current_level_.back().chart_properties_->content_.right_angled_axes_ = angAx;
+			impl_->current_level_.back().chart_properties->right_angled_axes_ = angAx;
 		}
 	}
 }
 void odf_chart_context::set_chart_colored(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
-	impl_->current_level_.back().chart_properties_->content_.three_dimensional_ = val;
+	if (!impl_->current_level_.back().chart_properties) return;
+	impl_->current_level_.back().chart_properties->three_dimensional_ = val;
 }
 void odf_chart_context::set_marker_size(int size)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
-	impl_->current_level_.back().chart_properties_->content_.symbol_width_ = length(size,length::pt);
-	impl_->current_level_.back().chart_properties_->content_.symbol_height_ = length(size,length::pt);
+	impl_->current_level_.back().chart_properties->symbol_width_ = length(size,length::pt);
+	impl_->current_level_.back().chart_properties->symbol_height_ = length(size,length::pt);
 }
 void odf_chart_context::set_marker_type(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
-	impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::namedSymbol);
+	impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::namedSymbol);
 
 	switch(type)
 	{
 	case 0://st_markerstyleCIRCLE = 0,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
 	case 1://st_markerstyleDASH = 1,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::horizontal_barSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::horizontal_barSymbol);	break;
 	case 2://st_markerstyleDIAMOND = 2,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::diamondSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::diamondSymbol);	break;
 	case 3://st_markerstyleDOT = 3,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::circleSymbol);	break;
 	case 4://st_markerstyleNONE = 4,
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);	break;
 	case 5://st_markerstylePICTURE = 5,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::asteriskSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::asteriskSymbol);	break;
 	case 6://st_markerstylePLUS = 6,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::plusSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::plusSymbol);	break;
 	case 7://st_markerstyleSQUARE = 7,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::squareSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::squareSymbol);	break;
 	case 8://st_markerstyleSTAR = 8,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::starSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::starSymbol);	break;
 	case 9://st_markerstyleTRIANGLE = 9,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::arrow_upSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::arrow_upSymbol);	break;
 	case 10://st_markerstyleX = 10,
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::xSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::xSymbol);	break;
 	case 11://st_markerstyleAUTO = 11
-		impl_->current_level_.back().chart_properties_->content_.symbol_name_ = chart_symbol_name(chart_symbol_name::autoSymbol);	break;
+		impl_->current_level_.back().chart_properties->symbol_name_ = chart_symbol_name(chart_symbol_name::autoSymbol);	break;
 	default:
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
 	}
 
 }
 void odf_chart_context::set_chart_scatter_type(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
+	if (!impl_->current_level_.back().chart_properties) return;
 
 	switch(type)
 	{
 	case 0://st_scatterstyleNONE
 		break;
 	case 1://st_scatterstyleLINE
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
 		break;
 	case 2://st_scatterstyleLINEMARKER
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
 		break;
 	case 3://st_scatterstyleMARKER
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
 		break;	
 	case 4://st_scatterstyleSMOOTH
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
-		impl_->current_level_.back().chart_properties_->content_.interpolation_ = chart_interpolation(chart_interpolation::cubicSpline);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::noneSymbol);
+		impl_->current_level_.back().chart_properties->interpolation_ = chart_interpolation(chart_interpolation::cubicSpline);
 		break;	
 	case 5://st_scatterstyleSMOOTHMARKER
-		impl_->current_level_.back().chart_properties_->content_.interpolation_ = chart_interpolation(chart_interpolation::cubicSpline);
-		impl_->current_level_.back().chart_properties_->content_.symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
+		impl_->current_level_.back().chart_properties->interpolation_ = chart_interpolation(chart_interpolation::cubicSpline);
+		impl_->current_level_.back().chart_properties->symbol_type_ = chart_symbol_type(chart_symbol_type::autoSymbol);
 		break;	
 	}
 }
@@ -725,7 +730,7 @@ void odf_chart_context::start_series(odf_types::chart_class::type type)
 	create_element(L"chart", L"series", elm, impl_->odf_context_);
 	
 	chart_series *series = dynamic_cast<chart_series*>(elm.get());
-	if (series == NULL)return;
+	if (series == NULL) return;
 //////////	
 	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
@@ -740,24 +745,22 @@ void odf_chart_context::start_series(odf_types::chart_class::type type)
 		series->chart_series_attlist_.common_attlist_.chart_style_name_ = style_name;
 		series->chart_series_attlist_.chart_class_ = chart_class(type);
 
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
 
+	impl_->series_.push_back(elm);
 	impl_->group_series_.push_back(elm);
-//////////////////////////////////////////////////////////////
+
 	//может хранить отдельно общий класс чарта??
 	if (type == chart_class::radar || (impl_->get_current_chart_class() == chart_class::stock && type == chart_class::line))
 	{
 		series->chart_series_attlist_.chart_class_ = impl_->get_current_chart_class();
 	}
 
-	if (style_)
-	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
-		impl_->set_default_series_color();
-	}
-
-	impl_->current_series_count_ ++;
+	impl_->set_default_series_color();
+	impl_->current_series_count_++;
 }
 void odf_chart_context::end_series()
 {
@@ -769,8 +772,8 @@ void odf_chart_context::end_series()
 }
 void odf_chart_context::set_label_delete(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.display_label_ = !val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->display_label_ = !val;
 }
 void odf_chart_context::set_label_show_bubble_size(bool val)
 {
@@ -795,16 +798,16 @@ void odf_chart_context::set_label_formula(const std::wstring & oox_ref) //в odf
 
 void odf_chart_context::set_label_show_percent(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	//impl_->current_level_.back().chart_properties_->content_.percentage_ = val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	//impl_->current_level_.back().chart_properties->percentage_ = val;
 }
 void odf_chart_context::set_label_show_ser_name(bool val)
 {
 }
 void odf_chart_context::set_label_show_values(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_ || !val)return;
-	impl_->current_level_.back().chart_properties_->content_.data_label_number_=chart_data_label_number(chart_data_label_number::value);
+	if (!impl_->current_level_.back().chart_properties || !val)return;
+	impl_->current_level_.back().chart_properties->data_label_number_=chart_data_label_number(chart_data_label_number::value);
 }
 void odf_chart_context::add_axis_group_series(unsigned int id)
 {
@@ -879,7 +882,7 @@ void odf_chart_context::end_group_series()
 void odf_chart_context::add_domain(const std::wstring & odf_ref)
 {
 	size_t level = impl_->current_level_.size();
-	if (level == 0)return;
+	if (level == 0) return;
 
 	office_element_ptr elm;
 	create_element(L"chart", L"domain", elm, impl_->odf_context_);
@@ -933,7 +936,56 @@ void odf_chart_context::add_categories(const std::wstring & odf_ref, const std::
 	odf_element_state state(elm, L"", office_element_ptr(), level);
 	impl_->current_chart_state_.elements_.push_back(state);
 }
+void odf_chart_context::start_data_table()
+{
+	office_element_ptr elm;
+	create_element(L"loext", L"data-table", elm, impl_->odf_context_);
+	
+	chart_data_table *data_table = dynamic_cast<chart_data_table*>(elm.get());
+	if (data_table == NULL)return;
+//////////	
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);
 
+	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
+
+	std::wstring style_name;
+
+	style* style_ = dynamic_cast<style*>(style_elm.get());
+	if (style_)
+	{
+		style_name = style_->style_name_;
+		data_table->common_attlist_.chart_style_name_ = style_name;
+
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
+		style_->content_.add_get_style_text_properties();
+	}
+	start_element(elm, style_elm, style_name);
+}
+void odf_chart_context::set_showHorzBorder(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_horizontal_border_ = val;
+}
+void odf_chart_context::set_m_showVertBorder(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_vertical_border_ = val;
+}
+void odf_chart_context::set_showOutline(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_outline_ = val;
+}
+void odf_chart_context::set_showKeys(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties)return;
+
+	impl_->current_level_.back().chart_properties->show_keys_ = val;
+}
 void odf_chart_context::start_axis()
 {
 	office_element_ptr elm;
@@ -953,21 +1005,24 @@ void odf_chart_context::start_axis()
 	{
 		style_name = style_->style_name_;
 		axis->chart_axis_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
 
-	odf_axis_state axis_state={0, 0, L"", elm};
+	odf_axis_state axis_state = {0, 0, L"", elm};
 	impl_->axis_.push_back(axis_state);
 /////////////////////defaults
-	impl_->current_level_.back().chart_properties_->content_.reverse_direction_ = false;
+	impl_->current_level_.back().chart_properties->reverse_direction_ = false;
 	
 	if (impl_->bar_overlap)
 	{
-		impl_->current_level_.back().chart_properties_->content_.overlap_ = impl_->bar_overlap.get();
+		impl_->current_level_.back().chart_properties->overlap_ = impl_->bar_overlap.get();
 	}
 	if (impl_->bar_gap_width)
 	{
-		impl_->current_level_.back().chart_properties_->content_.gap_width_ = impl_->bar_gap_width.get();
+		impl_->current_level_.back().chart_properties->gap_width_ = impl_->bar_gap_width.get();
 	}
 }
 void odf_chart_context::start_grid(int type)
@@ -991,8 +1046,10 @@ void odf_chart_context::start_grid(int type)
 	if (style_)
 	{
 		style_name = style_->style_name_;
-
 		grid->chart_grid_attlist_.common_attlist_.chart_style_name_ = style_name;
+
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(chart_elm, style_elm, style_name);
 }
@@ -1016,16 +1073,19 @@ void odf_chart_context::start_title()
 	{
 		style_name = style_->style_name_;
 		title->chart_title_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
+		style_->content_.add_get_style_text_properties();
 	}
 	start_element(chart_elm, style_elm, style_name);
 }
 void odf_chart_context::start_plot_area()
 {
-	office_element_ptr chart_elm;
-	create_element(L"chart", L"plot-area", chart_elm, impl_->odf_context_);
+	create_element(L"chart", L"plot-area", impl_->plot_area_, impl_->odf_context_);
 	
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(chart_elm.get());
-	if (plot_area == NULL)return;
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->plot_area_.get());
+	if (plot_area == NULL) return;
 
 	plot_area->chart_plot_area_attlist_.chart_data_source_has_labels_ = L"both";
 //////////	
@@ -1040,16 +1100,17 @@ void odf_chart_context::start_plot_area()
 	{
 		style_name = style_->style_name_;
 		plot_area->chart_plot_area_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
-	start_element(chart_elm, style_elm, style_name);
+	start_element(impl_->plot_area_, style_elm, style_name);
 	
-	if (!impl_->current_level_.back().chart_properties_) return;
-	
-	impl_->current_level_.back().chart_properties_->content_.treat_empty_cells_ = true;
+	impl_->current_level_.back().chart_properties->treat_empty_cells_ = true;
 }
 void odf_chart_context::end_plot_area()
 {
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->plot_area_.get());
 	if (plot_area)
 	{
 		std::wstring cell_range;
@@ -1069,11 +1130,11 @@ void odf_chart_context::start_text()
 	style *style_ = dynamic_cast<style*>(impl_->current_chart_state_.elements_.back().style_elm.get());
 	if (style_)
 	{
-		impl_->current_level_.back().paragraph_properties_	= style_->content_.get_style_paragraph_properties();
-		impl_->current_level_.back().text_properties_		= style_->content_.get_style_text_properties();
+		impl_->current_level_.back().paragraph_properties	= style_->content_.add_get_style_paragraph_properties();
+		impl_->current_level_.back().text_properties		= style_->content_.add_get_style_text_properties();
 	}
 	
-	impl_->odf_context_->text_context()->set_single_object(true, impl_->current_level_.back().paragraph_properties_, impl_->current_level_.back().text_properties_);
+	impl_->odf_context_->text_context()->set_single_object(true, impl_->current_level_.back().paragraph_properties, impl_->current_level_.back().text_properties);
 }
 void odf_chart_context::end_text(bool only_properties)
 {
@@ -1116,7 +1177,7 @@ void odf_chart_context::add_text(const std::wstring & val)
 }
 void odf_chart_context::set_textarea_vertical_align(int align)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 	//switch(align)
 	//{
 	//case 0://SimpleTypes::textanchoringtypeB: 
@@ -1133,19 +1194,19 @@ void odf_chart_context::set_textarea_vertical_align(int align)
 }
 void odf_chart_context::set_textarea_rotation(double val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 	if (val < 0.001 && val > -0.001) return;
 	if (val < -360 || val > 360) return;
 
 	if (val < 0) val += 360;
 	val = 360 - val;
 
-	impl_->current_level_.back().chart_properties_->content_.common_rotation_angle_attlist_.style_rotation_angle_ = (unsigned int)val;
+	impl_->current_level_.back().chart_properties->common_rotation_angle_attlist_.style_rotation_angle_ = (unsigned int)val;
 }
 
 void odf_chart_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 
 	//if (left)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_left_		= length(*left,	length::pt);
 	//if (top)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_top_		= length(*top,	length::pt);
@@ -1157,26 +1218,24 @@ void odf_chart_context::start_floor()
 {
 	office_element_ptr elm;
 	create_element(L"chart", L"floor", elm, impl_->odf_context_);
-	
+
 	chart_floor *floor = dynamic_cast<chart_floor*>(elm.get());
-//////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
-	
+	//////////	
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);
+
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
-	
+
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_ && floor)
 	{
 		style_name = style_->style_name_;
 		floor->common_attlist_.chart_style_name_ = style_name;
+
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
-
-	if (style_)
-	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
-	}
 }
 void odf_chart_context::start_wall()
 {
@@ -1195,15 +1254,14 @@ void odf_chart_context::start_wall()
 	{
 		style_name = style_->style_name_;
 		wall->chart_wall_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
 
-	if (style_)
-	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
-		if (impl_->current_level_.back().graphic_properties_)
-			impl_->current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_color_ = color(L"#ffffff");
-	}
+	if (impl_->current_level_.back().graphic_properties)
+		impl_->current_level_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = color(L"#ffffff");
 }
 void odf_chart_context::start_legend()
 {
@@ -1222,6 +1280,10 @@ void odf_chart_context::start_legend()
 	{
 		style_name = style_->style_name_;
 		legend->chart_legend_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
+		style_->content_.add_get_style_text_properties();
 	}
 	start_element(elm, style_elm, style_name);
 }
@@ -1243,7 +1305,7 @@ void odf_chart_context::start_stock_range_line()
 		style_name = style_->style_name_;
 		line->common_attlist_.chart_style_name_ = style_name;
 		
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
+		impl_->current_level_.back().graphic_properties = style_->content_.get_graphic_properties();
 		impl_->set_default_series_color();
 	}
 	start_element(elm, style_elm, style_name);
@@ -1266,10 +1328,11 @@ void odf_chart_context::start_stock_gain_marker()
 		style_name = style_->style_name_;
 		marker->common_attlist_.chart_style_name_ = style_name;
 		
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
-		impl_->set_default_series_color();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
+	
+	impl_->set_default_series_color();
 }
 void odf_chart_context::start_stock_loss_marker()
 {
@@ -1289,10 +1352,12 @@ void odf_chart_context::start_stock_loss_marker()
 		style_name = style_->style_name_;
 		marker->common_attlist_.chart_style_name_ = style_name;
 	
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
-		impl_->set_default_series_color();	
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
 	}
 	start_element(elm, style_elm, style_name);
+
+	impl_->set_default_series_color();	
 }
 void odf_chart_context::set_stock_gain_marker_width(std::wstring val)
 {
@@ -1330,10 +1395,11 @@ void odf_chart_context::start_data_point_series(int count)
 	chart_data_point *data_point = dynamic_cast<chart_data_point*>(elm.get());
 	if (data_point == NULL)return;
 
-	if (count < 1) count = get_count_data_points_series();
+	if (count < 1) 
+		count = get_count_data_points_series();
 	data_point->chart_data_point_attlist_.chart_repeated_ = count;
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -1343,14 +1409,16 @@ void odf_chart_context::start_data_point_series(int count)
 	{
 		style_name = style_->style_name_;
 		data_point->chart_data_point_attlist_.common_attlist_.chart_style_name_ = style_name;
+		
+		style_->content_.add_get_style_chart_properties();
+		style_->content_.add_get_style_graphic_properties();
+		style_->content_.add_get_style_text_properties();
 	}
 	start_element(elm, style_elm, style_name);
-//defaults
-	chart_series * series = impl_->get_current_series();
 }
 void odf_chart_context::set_legend_position(int val)
 {
-	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_level_.back().elm.get());
 	if (legend == NULL)return;
 	switch(val)
 	{
@@ -1361,95 +1429,94 @@ void odf_chart_context::set_legend_position(int val)
 		case 4:	legend->chart_legend_attlist_.chart_legend_position_ = L"top";		break;//st_legendposT
 	}
 }
-void odf_chart_context::set_layout_x(double *val,int mode)//edge, factor
+void odf_chart_context::set_layout_x(double val, int mode)//edge, factor
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_width_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_width_pt * (val);
 
-	length x_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length x_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
-	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_level_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area*>(impl_->current_level_.back().elm.get());
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 	
-	chart_title *title = dynamic_cast<chart_title*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_title *title = dynamic_cast<chart_title*>(impl_->current_level_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
 }
 void odf_chart_context::set_display_label(bool Val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.display_label_ =  Val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->display_label_ =  Val;
 }
 void odf_chart_context::set_display_label_position(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	//impl_->current_level_.back().chart_properties_->content_.chart:label-arrangement_ =  Val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	//impl_->current_level_.back().chart_properties->chart:label-arrangement_ =  Val;
 }
 void odf_chart_context::set_axis_orientation(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	if (type == 0) impl_->current_level_.back().chart_properties_->content_.reverse_direction_ =  true;
+	if (!impl_->current_level_.back().chart_properties)return;
+	if (type == 0) impl_->current_level_.back().chart_properties->reverse_direction_ =  true;
 }
 void odf_chart_context::set_axis_max(double val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.maximum_ =  val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->maximum_ =  val;
 }
 void odf_chart_context::set_axis_min(double val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.minimum_ =  val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->minimum_ =  val;
 }
 void odf_chart_context::set_axis_tick_minor(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 
 	switch (type)
 	{
 		case 0: break;//		st_tickmarkCROSS = 0,		
 		case 1: //		st_tickmarkIN = 1,
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_inner_ = true;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_outer_ = false; break;
+		impl_->current_level_.back().chart_properties->tick_marks_minor_inner_ = true;	
+		impl_->current_level_.back().chart_properties->tick_marks_minor_outer_ = false; break;
 		case 2: //		st_tickmarkNONE = 2,
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_inner_ = false;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_outer_ = false; break;
+		impl_->current_level_.back().chart_properties->tick_marks_minor_inner_ = false;	
+		impl_->current_level_.back().chart_properties->tick_marks_minor_outer_ = false; break;
 		case 3: //		st_tickmarkOUT = 3
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_inner_ = false;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_minor_outer_ = true; break;
+		impl_->current_level_.back().chart_properties->tick_marks_minor_inner_ = false;	
+		impl_->current_level_.back().chart_properties->tick_marks_minor_outer_ = true; break;
 	}
 
 }
 void odf_chart_context::set_no_fill(bool Val)
 {
 	if (Val == false)return;
-	if (!impl_->current_level_.back().graphic_properties_)return;
+	if (!impl_->current_level_.back().graphic_properties)return;
 
-	impl_->current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
+	impl_->current_level_.back().graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
 
 }
 void odf_chart_context::set_axis_tick_major(int type)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 	switch (type)
 	{
 		case 0: break;//		st_tickmarkCROSS = 0,		
 		case 1: //		st_tickmarkIN = 1,
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_inner_ = true;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_outer_ = false; break;
+		impl_->current_level_.back().chart_properties->tick_marks_major_inner_ = true;	
+		impl_->current_level_.back().chart_properties->tick_marks_major_outer_ = false; break;
 		case 2: //		st_tickmarkNONE = 2,
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_inner_ = false;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_outer_ = false; break;
+		impl_->current_level_.back().chart_properties->tick_marks_major_inner_ = false;	
+		impl_->current_level_.back().chart_properties->tick_marks_major_outer_ = false; break;
 		case 3: //		st_tickmarkOUT = 3
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_inner_ = false;	
-		impl_->current_level_.back().chart_properties_->content_.tick_marks_major_outer_ = true; break;
+		impl_->current_level_.back().chart_properties->tick_marks_major_inner_ = false;	
+		impl_->current_level_.back().chart_properties->tick_marks_major_outer_ = true; break;
 	}
 }
 void odf_chart_context::set_axis_logarithmic(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.logarithmic_ =  val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->logarithmic_ =  val;
 }
 void odf_chart_context::set_axis_id(unsigned int id)
 {
@@ -1457,8 +1524,8 @@ void odf_chart_context::set_axis_id(unsigned int id)
 }
 void odf_chart_context::set_axis_visible(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
-	impl_->current_level_.back().chart_properties_->content_.visible_ =  val;
+	if (!impl_->current_level_.back().chart_properties)return;
+	impl_->current_level_.back().chart_properties->visible_ =  val;
 }
 void odf_chart_context::set_axis_dimension(int type)
 {
@@ -1481,73 +1548,70 @@ void odf_chart_context::set_axis_dimension(int type)
 }
 void odf_chart_context::set_axis_position(int type)
 {	
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 			//st_axposB = 0,
 			//st_axposL = 1,
 			//st_axposR = 2,
 			//st_axposT = 3
 	//if (type ==0 || type ==2)
-	//	impl_->current_level_.back().chart_properties_->content_.axis_position_ = L"end";
+	//	impl_->current_level_.back().chart_properties->axis_position_ = L"end";
 	//if (type ==1 || type ==3)
-	//	impl_->current_level_.back().chart_properties_->content_.axis_position_ = L"start";
+	//	impl_->current_level_.back().chart_properties->axis_position_ = L"start";
 //a value of type double – the axis line is placed at the given value on the crossing axis. 
 //If the crossing axis is an axis displaying categories rather than values, a value of 1 indicates that the axis should be placed at the first category, a value of 2 indicates that the axis should be placed at the second category and so forth.
 }
 void odf_chart_context::set_axis_label_position(int type)
 {	
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 			//st_ticklblposHIGH = 0,
 			//st_ticklblposLOW = 1,
 			//st_ticklblposNEXTTO = 2,
 			//st_ticklblposNONE = 3
-	if (type ==1)impl_->current_level_.back().chart_properties_->content_.axis_label_position_ = L"outside-start";
-	if (type ==0)impl_->current_level_.back().chart_properties_->content_.axis_label_position_ = L"outside-end";
-	if (type ==2)impl_->current_level_.back().chart_properties_->content_.axis_label_position_ = L"near-axis";
+	if (type ==1)impl_->current_level_.back().chart_properties->axis_label_position_ = L"outside-start";
+	if (type ==0)impl_->current_level_.back().chart_properties->axis_label_position_ = L"outside-end";
+	if (type ==2)impl_->current_level_.back().chart_properties->axis_label_position_ = L"near-axis";
 
 	//near-axis-other-side
 	//near-axis //default
 
 }
-void odf_chart_context::set_layout_y(double *val,int mode)
+void odf_chart_context::set_layout_y(double val,int mode)
 {
-	if (!val)return;
-	if (mode == 0)*val = impl_->current_chart_state_.chart_height_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_height_pt * (val);
 
-	length y_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length y_cm = length(length(val, length::pt).get_value_unit(length::cm),length::cm);
 
-	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_level_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 	
-	chart_title *title = dynamic_cast<chart_title*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_title *title = dynamic_cast<chart_title*>(impl_->current_level_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 }
-void odf_chart_context::set_layout_w(double *val,int mode)
+void odf_chart_context::set_layout_w(double val,int mode)
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_width_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_width_pt * (val);
 	
-	length width_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length width_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
-	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_level_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.chartooo_width_ = width_cm;
 
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_width_ = width_cm;
 }
-void odf_chart_context::set_layout_h(double *val,int mode)
+void odf_chart_context::set_layout_h(double val, int mode)
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_height_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_height_pt * (val);
 
-	length height_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length height_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
-	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_level_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.chartooo_height_ = height_cm;
 
-	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_level_.back().elm.get());
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_height_ = height_cm;
 }
 
@@ -1556,44 +1620,41 @@ void odf_chart_context::start_element(office_element_ptr & elm, office_element_p
 	size_t level = impl_->current_level_.size();
 	
 	drawing_context()->start_element(elm, style_elm);
-	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
+	//if (!impl_->current_level_.empty()) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
 	
-	odf_element_state		state={elm, style_name, style_elm, level, 0};
-	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, elm};
-	
+	odf_element_state state = {elm, style_name, style_elm, level, 0};	
 	impl_->current_chart_state_.elements_.push_back(state);
 	
+	odf_chart_level_state level_state(elm);
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_)
 	{
-		level_state.chart_properties_ = style_->content_.get_style_chart_properties();
+		level_state.chart_properties = style_->content_.get_chart_properties(); 
+		level_state.graphic_properties = style_->content_.get_graphic_properties();
+		level_state.paragraph_properties = style_->content_.get_paragraph_properties();
+		level_state.text_properties = style_->content_.get_text_properties();
 	}
-	impl_->current_level_.push_back(level_state);//стоит ли сюда перенести и current_chart_properties ????
-
+	impl_->current_level_.push_back(level_state);
 }
 
 void odf_chart_context::end_element()
 {
-	//допричесываение элемента
-	//if (impl_->current_level_.size()>0)
+	if (impl_->current_level_.back().paragraph_properties)
 	{
-		if (impl_->current_level_.back().paragraph_properties_)
+		if (impl_->current_level_.back().paragraph_properties->style_writing_mode_)
 		{
-			if (impl_->current_level_.back().paragraph_properties_->content_.style_writing_mode_)
+			switch (impl_->current_level_.back().paragraph_properties->style_writing_mode_->get_type())
 			{
-				switch(impl_->current_level_.back().paragraph_properties_->content_.style_writing_mode_->get_type())
-				{
-					case writing_mode::LrTb: 
-					case writing_mode::RlTb:
-					case writing_mode::Lr:
-						impl_->current_level_.back().chart_properties_->content_.style_direction_ = direction(direction::Ltr); break;
-					case writing_mode::TbRl:
-					case writing_mode::TbLr:
-					case writing_mode::Tb:
-						impl_->current_level_.back().chart_properties_->content_.style_direction_ = direction(direction::Ttb); break;
-				}
-				impl_->current_level_.back().chart_properties_->content_.common_rotation_angle_attlist_.style_rotation_angle_ =0;
+			case writing_mode::LrTb:
+			case writing_mode::RlTb:
+			case writing_mode::Lr:
+				impl_->current_level_.back().chart_properties->style_direction_ = direction(direction::Ltr); break;
+			case writing_mode::TbRl:
+			case writing_mode::TbLr:
+			case writing_mode::Tb:
+				impl_->current_level_.back().chart_properties->style_direction_ = direction(direction::Ttb); break;
 			}
+			impl_->current_level_.back().chart_properties->common_rotation_angle_attlist_.style_rotation_angle_ = 0;
 		}
 	}
 	impl_->current_level_.pop_back();
@@ -1602,7 +1663,7 @@ void odf_chart_context::end_element()
 
 void odf_chart_context::end_chart()
 {
-	if (impl_->current_chart_state_.elements_.size() < 1) return;
+	if (impl_->current_chart_state_.elements_.empty()) return;
 
 	impl_->create_local_table();
 	
@@ -1645,7 +1706,7 @@ void odf_chart_context::set_series_value_formula(const std::wstring & oox_ref, c
 {
 	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 
-	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
+	chart_series *series = impl_->get_current_series();
 	if (series == NULL)return;
 
 	Impl::_range r (odf_ref, format_code, false, series);
@@ -1662,8 +1723,8 @@ void odf_chart_context::set_series_label_formula(const std::wstring & oox_ref)
 {
 	std::wstring odf_ref = impl_->convert_formula(oox_ref);
 
-	chart_series *series = dynamic_cast<chart_series*>(impl_->current_chart_state_.elements_.back().elm.get());
-	if (series == NULL)return;	
+	chart_series *series = impl_->get_current_series();
+	if (series == NULL) return;	
 
 	Impl::_range r (odf_ref, L"", true, series);
 	impl_->data_cell_ranges_.push_back(r);
@@ -1687,15 +1748,15 @@ void odf_chart_context::set_category_axis_formula(const std::wstring & oox_ref, 
 
 void odf_chart_context::set_series_pie_explosion(int val)//или точка серии
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 
-	impl_->current_level_.back().chart_properties_->content_.pie_offset_ = val;	
+	impl_->current_level_.back().chart_properties->pie_offset_ = val;	
 }
 void odf_chart_context::set_series_pie_bubble(bool val)
 {
-	if (!impl_->current_level_.back().chart_properties_)return;
+	if (!impl_->current_level_.back().chart_properties)return;
 	
-	impl_->current_level_.back().chart_properties_->content_.pie_bubble_ = val;	
+	impl_->current_level_.back().chart_properties->pie_bubble_ = val;	
 	
 }
 //void odf_chart_context::set_cash(std::wstring format_code, std::vector<double> &data_double)
@@ -1827,11 +1888,23 @@ void odf_chart_context::set_cash(std::wstring format_code, std::vector<std::wstr
 		}
 	}
 }
+void odf_chart_context::set_local_table(office_element_ptr & table_elm)
+{
+	if (!table_elm) return;
 
+	impl_->current_level_[0].elm->add_child_element(table_elm);
+	size_t level = impl_->current_level_.size();
+
+	odf_element_state state(table_elm, L"", office_element_ptr(), level + 1);
+	impl_->current_chart_state_.elements_.push_back(state);
+
+	impl_->local_table_enabled_ = false;
+	impl_->local_table_reset_ref_ = false;
+}
 void odf_chart_context::set_local_table (bool Val, bool use_cash_only)
 {
-	impl_->local_table_enabled_		= Val;
-	impl_->local_table_reset_ref_	= use_cash_only;
+	impl_->local_table_enabled_ = Val;
+	impl_->local_table_reset_ref_ = use_cash_only;
 }
 
 struct _sort_cells
@@ -2015,7 +2088,7 @@ void odf_chart_context::Impl::create_local_table()
 	//create tables
 
 	office_element_ptr table_elm;
-	create_element(L"table", L"table",table_elm, odf_context_);
+	create_element(L"table", L"table", table_elm, odf_context_);
 	ods_table_state * table_state = new ods_table_state(odf_context_, table_elm);
 
 	if (table_state)
@@ -2088,7 +2161,7 @@ void odf_chart_context::Impl::create_local_table()
 		{
 			if (cells_cash_label.size() > 0 && row_header)
 			{
-				create_element(L"table", L"table-header-rows",row_headers_elm, odf_context_);
+				create_element(L"table", L"table-header-rows", row_headers_elm, odf_context_);
 				
 				table_state->start_headers(row_headers_elm);
 					current_row = create_local_table_rows(current_row, table_state, cells_cash_label, true);

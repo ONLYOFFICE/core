@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "../katana-parser/src/katana.h"
 
+#define TEST_DUMP_OUTPUT  0
 #define TEST_ERRORS_DEBUG 0
 
 struct CSSRule
@@ -72,6 +73,17 @@ std::vector<CSSStyle> ParseCSS(const char* CSS, bool bOnlyRules = true)
 {
 	KatanaOutput *pOutput = katana_parse(CSS, strlen(CSS), KatanaParserModeStylesheet);
 
+	#ifdef TEST_ERRORS_DEBUG
+	#if TEST_ERRORS_DEBUG
+	KatanaError *pError;
+	for (size_t unErrorIndex = 0; unErrorIndex < pOutput->errors.length; ++unErrorIndex)
+	{
+		pError = (KatanaError*)pOutput->errors.data[unErrorIndex];
+		printf("Error in %d.%d - %d.%d : %s\n", pError->first_line, pError->first_column, pError->last_line, pError->last_column, pError->message);
+	}
+	#endif
+	#endif
+
 	if (0 == pOutput->stylesheet->rules.length)
 		return {};
 
@@ -126,14 +138,9 @@ std::vector<CSSStyle> ParseCSS(const char* CSS, bool bOnlyRules = true)
 		arCSSStyles.push_back(oCSSStyle);
 	}
 
-	#ifdef TEST_ERRORS_DEBUG
-	#if TEST_ERRORS_DEBUG
-	KatanaError *pError;
-	for (size_t unErrorIndex = 0; unErrorIndex < pOutput->errors.length; ++unErrorIndex)
-	{
-		pError = (KatanaError*)pOutput->errors.data[unErrorIndex];
-		printf("Error in %d.%d - %d.%d : %s", pError->first_line, pError->first_column, pError->last_line, pError->last_column, pError->message);
-	}
+	#ifdef TEST_DUMP_OUTPUT
+	#if TEST_DUMP_OUTPUT
+	katana_dump_output(pOutput);
 	#endif
 	#endif
 

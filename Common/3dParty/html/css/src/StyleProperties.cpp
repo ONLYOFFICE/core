@@ -2,6 +2,8 @@
 
 #include "StaticFunctions.h"
 #include "ConstValues.h"
+#include <cfloat>
+#include <wchar.h>
 
 namespace NSCSS
 {
@@ -464,10 +466,10 @@ namespace NSCSS
 		TRGB oRGB;
 
 		if (wsValue.length() == 6)
-			swscanf_s(wsValue.c_str(), L"%2hhx%2hhx%2hhx", &oRGB.uchRed, &oRGB.uchGreen, &oRGB.uchBlue);
+			swscanf(wsValue.c_str(), L"%2hhx%2hhx%2hhx", &oRGB.uchRed, &oRGB.uchGreen, &oRGB.uchBlue);
 		else if (wsValue.length() == 3)
 		{
-			swscanf_s(wsValue.c_str(), L"%1hhx%1hhx%1hhx", &oRGB.uchRed, &oRGB.uchGreen, &oRGB.uchBlue);
+			swscanf(wsValue.c_str(), L"%1hhx%1hhx%1hhx", &oRGB.uchRed, &oRGB.uchGreen, &oRGB.uchBlue);
 			oRGB.uchRed   *= 17;
 			oRGB.uchGreen *= 17;
 			oRGB.uchBlue  *= 17;

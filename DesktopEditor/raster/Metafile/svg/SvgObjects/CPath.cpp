@@ -4,6 +4,7 @@
 #include "CMarker.h"
 #include "../CSvgFile.h"
 #include "../SvgUtils.h"
+#include <cfloat>
 
 namespace SVG
 {

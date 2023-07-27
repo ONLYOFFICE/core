@@ -2843,6 +2843,18 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
             oRes.AddInt(oObj.getRefNum());
         }
 
+#define DICT_LOOKUP_STRING(func, sName, byte) \
+{\
+if (func(sName, &oObj)->isString())\
+{\
+	TextString* s = new TextString(oObj.getString());\
+	std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
+	nFlags |= (1 << byte);\
+	oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());\
+	delete s;\
+}\
+oObj.free();\
+}
         // 2 - Текстовая метка пользователя - T
         DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1);
 

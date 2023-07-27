@@ -279,6 +279,7 @@ static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attri
 	case smil_attribute_name::charUnderline:	return L"";
 	case smil_attribute_name::charWeight:		return L"";
 	case smil_attribute_name::color:			return L"style.color";
+	case smil_attribute_name::fill:				return L"fill.type";
 	case smil_attribute_name::fillColor:		return L"fillcolor";
 	case smil_attribute_name::fillStyle:		return L"";
 	case smil_attribute_name::height:			return L"";
@@ -1024,6 +1025,8 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 			to_value = L"visible";
 		else if(set_attlist_.smil_to_.value() == L"hidden")
 			to_value = L"hidden";
+		else if (set_attlist_.smil_to_.value() == L"solid")
+			to_value = L"solid";
 	}
 
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();

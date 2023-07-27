@@ -45,6 +45,7 @@ namespace cpdoccore { namespace odf_types {
 		{ L"charUnderline"	, smil_attribute_name::charUnderline },
 		{ L"charWeight"		, smil_attribute_name::charWeight },
 		{ L"color"			, smil_attribute_name::color },
+		{ L"fill"			, smil_attribute_name::fill},
 		{ L"fillColor"		, smil_attribute_name::fillColor },
 		{ L"fillStyle"		, smil_attribute_name::fillStyle },
 		{ L"height"			, smil_attribute_name::height },
@@ -83,6 +84,7 @@ namespace cpdoccore { namespace odf_types {
 		case smil_attribute_name::charUnderline				: _Wostream << L"charUnderline"	; break;
 		case smil_attribute_name::charWeight				: _Wostream << L"charWeight"	; break;
 		case smil_attribute_name::color						: _Wostream << L"color"			; break;
+		case smil_attribute_name::fill						: _Wostream << L"fill"; break;
 		case smil_attribute_name::fillColor					: _Wostream << L"fillColor"		; break;
 		case smil_attribute_name::fillStyle					: _Wostream << L"fillStyle"		; break;
 		case smil_attribute_name::height					: _Wostream << L"height"		; break;

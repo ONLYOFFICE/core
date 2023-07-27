@@ -53,6 +53,7 @@ public:
 		charUnderline,
 		charWeight,
 		color,
+		fill,
 		fillColor,
 		fillStyle,
 		height,

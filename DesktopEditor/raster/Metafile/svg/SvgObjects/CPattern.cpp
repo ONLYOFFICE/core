@@ -11,8 +11,7 @@ namespace SVG
 
 	CPattern::~CPattern()
 	{
-		if (NULL != m_pImage)
-			delete m_pImage;
+		RELEASEINTERFACE(m_pImage);
 	}
 
 	void CPattern::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -31,7 +30,7 @@ namespace SVG
 	void CPattern::Update(const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (NULL != m_pImage)
-			delete m_pImage;
+			RELEASEINTERFACE(m_pImage);
 
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
@@ -103,7 +102,7 @@ namespace SVG
 		pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 		pRenderer->put_BrushTextureImage(m_pImage);
 
-		m_pImage->Release();
+		RELEASEINTERFACE(m_pImage);
 
 		return true;
 	}

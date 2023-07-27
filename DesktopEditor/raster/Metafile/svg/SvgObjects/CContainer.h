@@ -15,11 +15,11 @@ namespace SVG
 	class CContainer
 	{
 	public:
-		CContainer(){};
+		CContainer(){}
 		~CContainer()
 		{
 			Clear();
-		};
+		}
 
 		void Clear()
 		{
@@ -30,7 +30,7 @@ namespace SVG
 		bool Empty() const
 		{
 		return m_arObjects.empty();
-		};
+		}
 
 		virtual bool AddObject(TypeObject* pObject)
 		{
@@ -40,7 +40,7 @@ namespace SVG
 				return true;
 			}
 			return false;
-		};
+		}
 
 		virtual TypeObject* GetObject(const std::wstring& wsId) const
 		{
@@ -54,7 +54,7 @@ namespace SVG
 			if (std::wstring::npos != unFound)
 				wsNewId.erase(0, unFound + 1);
 
-			std::vector<TypeObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsNewId](TypeObject* pObject){ if (wsNewId == pObject->GetId()) return true; else return false;});
+			typename std::vector<TypeObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsNewId](TypeObject* pObject){ if (wsNewId == pObject->GetId()) return true; else return false;});
 
 			if (m_arObjects.end() != oFound)
 				return *oFound;

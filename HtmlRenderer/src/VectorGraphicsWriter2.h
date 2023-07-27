@@ -104,7 +104,7 @@ namespace NSHtmlRenderer
 			m_oSVG.WritePathEnd();
 			m_oVML.WritePathEnd();
 			//m_oCanvas.WritePathEnd();
-		}		
+		}
 		
 		inline void WritePathStart()
 		{
@@ -141,7 +141,7 @@ namespace NSHtmlRenderer
 		{
 			// вот мега заглушка под некоторые таблицы из pdf
 			// проблема в том, что приходит path нулевой толщины - а след-но он не рисуется.
-			// здесь это отслеживаем и правим пат. Не очень хорошо, так как всякие пунктирности 
+			// здесь это отслеживаем и правим пат. Не очень хорошо, так как всякие пунктирности
 			// в таких патах - теряются при таком подходе
 			if (0x00 == (lType & 0xFF))
 			{
@@ -157,7 +157,7 @@ namespace NSHtmlRenderer
 				if ((fabs(r - x) < 0.5) || (fabs(b - y) < 0.5))
 				{
 					m_pFullTransform->TransformPoint(x, y);
-					m_pFullTransform->TransformPoint(r, b);	
+					m_pFullTransform->TransformPoint(r, b);
 
 					int _x = round(x);
 					int _y = round(y);
@@ -228,11 +228,11 @@ namespace NSHtmlRenderer
 		inline bool IsGraphics()
 		{
 			// 10 цифр на номер страницы
-            // LEN(<xml xmlns:v=\"urn:schemas-microsoft-com:vml\">\n<v:group id=\"page%d\" style=\"position: absolute; width:1; height:1;\" coordsize=\"1 1\">\n) = 131
-            return ((131 + 10) < (int)m_oVML.m_oDocument.GetCurSize());
+			// LEN(<xml xmlns:v=\"urn:schemas-microsoft-com:vml\">\n<v:group id=\"page%d\" style=\"position: absolute; width:1; height:1;\" coordsize=\"1 1\">\n) = 131
+			return ((131 + 10) < (int)m_oVML.m_oDocument.GetCurSize());
 		}
 
-        inline void WriteToDocument(NSStringUtils::CStringBuilder* pDocument, const CDstInfo& oInfo)
+		inline void WriteToDocument(NSStringUtils::CStringBuilder* pDocument, const CDstInfo& oInfo)
 		{
 			m_oSVG.WriteToMainHtml_1(pDocument, oInfo);
 			m_oVML.WriteToMainHtml(pDocument, oInfo);
@@ -257,7 +257,7 @@ namespace NSHtmlRenderer
 	public:
 		CSVGGraphicsWriter()	: m_oSVG()
 		{
-			m_pSimpleConverter	= NULL;			
+			m_pSimpleConverter	= NULL;
 		}
 		~CSVGGraphicsWriter()
 		{
@@ -280,13 +280,13 @@ namespace NSHtmlRenderer
 		}
 		inline void EndPage()
 		{
-			m_oSVG.CloseFile();			
+			m_oSVG.CloseFile();
 		}
 		
 		inline void WriteEndPath()
 		{
 			m_oSVG.WritePathEnd();
-		}		
+		}
 		
 		inline void WritePathStart()
 		{
@@ -310,7 +310,7 @@ namespace NSHtmlRenderer
 			m_oSVG.WritePathCurveTo(x1, y1, x2, y2, x3, y3);
 		}
 		inline void WriteDrawPath(LONG lType)
-		{	
+		{
 			CImageInfo oInfo;
 			m_oSVG.WriteDrawPath(lType, m_pFullTransform, m_pSimpleConverter, oInfo, 0.0);
 			m_pSimpleConverter->PathCommandEnd();
@@ -340,8 +340,8 @@ namespace NSHtmlRenderer
 		inline bool IsGraphics()
 		{
 			// 10 цифр на номер страницы
-            // LEN(<xml xmlns:v=\"urn:schemas-microsoft-com:vml\">\n<v:group id=\"page%d\" style=\"position: absolute; width:1; height:1;\" coordsize=\"1 1\">\n) = 131
-            return ((131 + 10) < (int)m_oSVG.m_oDocument.GetCurSize());
+			// LEN(<xml xmlns:v=\"urn:schemas-microsoft-com:vml\">\n<v:group id=\"page%d\" style=\"position: absolute; width:1; height:1;\" coordsize=\"1 1\">\n) = 131
+			return ((131 + 10) < (int)m_oSVG.m_oDocument.GetCurSize());
 		}
 	};
 }

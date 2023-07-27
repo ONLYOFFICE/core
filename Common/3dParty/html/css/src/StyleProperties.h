@@ -26,7 +26,10 @@ namespace NSCSS
 		unsigned int m_unLevel;
 		bool         m_bImportant;
 	public:
-		CValue(const T& oValue, unsigned int unLevel, bool bImportant);
+		CValue(const T& oValue, unsigned int unLevel, bool bImportant) :
+		    m_oValue(oValue), m_unLevel(unLevel), m_bImportant(bImportant)
+		{
+		}
 
 		virtual bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) = 0;
 
@@ -36,19 +39,58 @@ namespace NSCSS
 		virtual double ToDouble() const = 0;
 		virtual std::wstring ToWString() const = 0;
 
-		static void Equation(CValue &oFirstValue, CValue &oSecondValue);
+		static void Equation(CValue &oFirstValue, CValue &oSecondValue)
+		{
+			if (oFirstValue.m_bImportant && !oSecondValue.m_bImportant && oFirstValue.Empty())
+				oSecondValue.Clear();
+			else if (oSecondValue.m_bImportant && !oFirstValue.m_bImportant && !oSecondValue.Empty())
+				oFirstValue.Clear();
+			else if (!oSecondValue.Empty())
+			{
+				if (oFirstValue.m_unLevel < oSecondValue.m_unLevel)
+					oFirstValue.Clear();
+				else
+					oSecondValue.Clear();
+			}
+		}
 
-		bool operator==(const T& oValue) const;
-		bool operator>=(const T& oValue) const;
-		bool operator<=(const T& oValue) const;
-		bool operator> (const T& oValue) const;
-		bool operator< (const T& oValue) const;
+		bool operator==(const T& oValue) const { return m_oValue == oValue; }
+		bool operator>=(const T& oValue) const { return m_oValue >= oValue; }
+		bool operator<=(const T& oValue) const { return m_oValue <= oValue; }
+		bool operator> (const T& oValue) const { return m_oValue > oValue; }
+		bool operator< (const T& oValue) const { return m_oValue < oValue; }
 
-		virtual CValue& operator =(const CValue& oValue);
-		CValue& operator =(const T& oValue);
+		virtual CValue& operator =(const CValue& oValue)
+		{
+			m_oValue     = oValue.m_oValue;
+			m_unLevel    = oValue.m_unLevel;
+			m_bImportant = oValue.m_bImportant;
 
-		CValue& operator+=(const CValue& oValue);
-		bool    operator==(const CValue& oValue) const;
+			return *this;
+		}
+
+		CValue& operator =(const T& oValue)
+		{
+			//m_oValue = oValue.m_oValue;
+			return *this;
+		}
+
+		CValue& operator+=(const CValue& oValue)
+		{
+			if (m_unLevel > oValue.m_unLevel || (m_bImportant && !oValue.m_bImportant) || oValue.Empty())
+				return *this;
+
+			m_oValue     = oValue.m_oValue;
+			m_unLevel    = std::max(m_unLevel, oValue.m_unLevel);
+			m_bImportant = std::max(m_bImportant, oValue.m_bImportant);
+
+			return *this;
+		}
+
+		bool    operator==(const CValue& oValue) const
+		{
+			return m_oValue == oValue.m_oValue;
+		}
 	};
 
 	class CString : public CValue<std::wstring>

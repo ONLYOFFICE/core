@@ -350,6 +350,432 @@ void ReadAction(BYTE* pWidgets, int& i)
 		ReadAction(pWidgets, i);
 }
 
+void ReadInteractiveForms(BYTE* pWidgets, int& i)
+{
+	DWORD nCOLength = READ_INT(pWidgets + i);
+	i += 4;
+	if (nCOLength > 0)
+		std::cout << "CO ";
+	for (DWORD j = 0; j < nCOLength; ++j)
+	{
+		DWORD nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	if (nCOLength > 0)
+		std::cout << std::endl;
+
+	// Parents
+
+	DWORD nParentsLength = READ_INT(pWidgets + i);
+	i += 4;
+	if (nParentsLength > 0)
+		std::cout << "Parents" << std::endl;
+	for (DWORD j = 0; j < nParentsLength; ++j)
+	{
+		DWORD nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "# " << nPathLength << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Flags " << nPathLength << ", ";
+		unsigned int nFlags = nPathLength;
+
+		if (nFlags & (1 << 0))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "T " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 1))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "V " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 2))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 3))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Parent " << nPathLength;
+		}
+
+		std::cout << std::endl;
+	}
+	if (nParentsLength > 0)
+		std::cout << std::endl;
+
+	DWORD nAnnots = READ_INT(pWidgets + i);
+	i += 4;
+
+	for (DWORD q = 0; q < nAnnots; ++q)
+	{
+		// Annot
+
+		DWORD nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Annot - AP " << nPathLength << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Flag " << nPathLength << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Page " << nPathLength << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Annot Flags " << nPathLength << ", ";
+		int nFlags = nPathLength;
+
+		if (nFlags & (1 << 2))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
+		}
+		if (nFlags & (1 << 4))
+		{
+			std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
+			BYTE nBorderType = READ_BYTE(pWidgets + i);
+			i += 1;
+			std::cout << "Border type " << arrBorder[nBorderType] << " ";
+
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "width " << (double)nPathLength / 100.0 << ", ";
+
+			if (nBorderType == 2)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
+
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << (double)nPathLength / 100.0 << ", ";
+			}
+		}
+		if (nFlags & (1 << 17))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Parent " << nPathLength << ", ";
+		}
+
+		// Widget
+
+		int nTCLength = READ_INT(pWidgets + i);
+		i += 4;
+		if (nTCLength)
+			std::cout << "Text Color: ";
+		for (int j = 0; j < nTCLength; ++j)
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << (double)nPathLength / 100.0 << " ";
+		}
+		if (nTCLength)
+			std::cout << ", ";
+
+		std::string arrQ[] = {"left-justified", "centered", "right-justified"};
+		nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::cout << "Q " << arrQ[nPathLength] << ", ";
+
+		std::string arrType[] = {"", "button", "radiobutton", "checkbox", "text", "combobox", "listbox", "signature"};
+		nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::string sType = arrType[nPathLength];
+		std::cout << "Widget type " << sType << ", ";
+
+		unsigned int unFieldFlag = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Field Flag " << unFieldFlag << ", ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Flags " << nPathLength << ", ";
+		nFlags = nPathLength;
+
+		if (nFlags & (1 << 0))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 1))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 3))
+		{
+			std::string arrHighlighting[] = {"none", "invert", "push", "outline"};
+			nPathLength = READ_BYTE(pWidgets + i);
+			i += 1;
+			std::cout << "Highlight " << arrHighlighting[nPathLength] << ", ";
+		}
+		if (nFlags & (1 << 5))
+		{
+			int nBCLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "BC ";
+
+			for (int j = 0; j < nBCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << (double)nPathLength / 100.0 << " ";
+			}
+			std::cout << ", ";
+		}
+		if (nFlags & (1 << 6))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "R " << nPathLength << ", ";
+		}
+		if (nFlags & (1 << 7))
+		{
+			int nBCLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "BG ";
+
+			for (int j = 0; j < nBCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << (double)nPathLength / 100.0 << " ";
+			}
+			std::cout << ", ";
+		}
+		if (nFlags & (1 << 8))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 15))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Contents " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+		if (nFlags & (1 << 16))
+		{
+			int nCLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "C ";
+
+			for (int j = 0; j < nCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << (double)nPathLength / 100.0 << " ";
+			}
+			std::cout << ", ";
+		}
+		if (nFlags & (1 << 18))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
+
+		//Action
+
+		int nActLength = READ_INT(pWidgets + i);
+		i += 4;
+		for (int j = 0; j < nActLength; ++j)
+		{
+			std::cout << std::endl;
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << std::to_string(j) << " Action " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+
+			ReadAction(pWidgets, i);
+		}
+		std::cout << std::endl;
+
+		// Widget types
+
+		if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
+		{
+			std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+
+			unsigned int nIFFlag = READ_INT(pWidgets + i);
+			i += 4;
+
+			if (sType == "button")
+			{
+				if (nFlags & (1 << 10))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 11))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 12))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
+			else
+			{
+				std::string arrStyle[] = {"check", "cross", "diamond", "circle", "star", "square"};
+				nPathLength = READ_BYTE(pWidgets + i);
+				i += 1;
+				std::cout << "Style " << arrStyle[nPathLength] << ", ";
+			}
+			if (nFlags & (1 << 13))
+			{
+				std::string arrTP[] = {"textOnly", "iconOnly", "iconTextV", "textIconV", "iconTextH", "textIconH", "overlay"};
+				nPathLength = READ_BYTE(pWidgets + i);
+				i += 1;
+				std::cout << "TP " << arrTP[nPathLength] << ", ";
+			}
+			if (nIFFlag & (1 << 0))
+			{
+				if (nIFFlag & (1 << 1))
+				{
+					std::string arrSW[] = {"A", "N", "B", "S"};
+					nPathLength = READ_BYTE(pWidgets + i);
+					i += 1;
+					std::cout << "SW " << arrSW[nPathLength] << ", ";
+				}
+				if (nIFFlag & (1 << 2))
+				{
+					std::string arrS[] = {"P", "A"};
+					nPathLength = READ_BYTE(pWidgets + i);
+					i += 1;
+					std::cout << "S " << arrS[nPathLength] << ", ";
+				}
+				if (nIFFlag & (1 << 3))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "A " << (double)nPathLength / 100.0 << " ";
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << (double)nPathLength / 100.0 << ", ";
+				}
+				std::cout << "FB " << (nIFFlag & (1 << 4)) << ", ";
+			}
+			if (nFlags & (1 << 14))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "AP.N.Yes " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+		}
+		else if (sType == "text")
+		{
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 10))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "MaxLen " << nPathLength << ", ";
+			}
+			if (unFieldFlag & (1 << 25))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "RichValue " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+		}
+		else if (sType == "combobox" || sType == "listbox")
+		{
+			if (nFlags & (1 << 9))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 10))
+			{
+				int nOptLength = READ_INT(pWidgets + i);
+				i += 4;
+				for (int j = 0; j < nOptLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
+			if (nFlags & (1 << 11))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "TI " << nPathLength << ", ";
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
 #include "../../../../../common/Directory.h"
 
@@ -552,6 +978,10 @@ int main(int argc, char* argv[])
 		int i = 4;
 		nLength -= 4;
 
+		if (i < nLength)
+			ReadInteractiveForms(pWidgets, i);
+
+		/*
 		DWORD nAnnots = 0;
 		if (i < nLength)
 		{
@@ -674,9 +1104,9 @@ int main(int argc, char* argv[])
 			std::string sType = arrType[nPathLength];
 			std::cout << "Type " << sType << ", ";
 
-			nPathLength = READ_INT(pWidgets + i);
+			unsigned int unFieldFlag = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Field Flag " << nPathLength << ", ";
+			std::cout << "Field Flag " << unFieldFlag << ", ";
 
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
@@ -868,7 +1298,7 @@ int main(int argc, char* argv[])
 					i += 4;
 					std::cout << "MaxLen " << nPathLength << ", ";
 				}
-				if (nFlags & (1 << 11))
+				if (unFieldFlag & (1 << 25))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
@@ -959,6 +1389,7 @@ int main(int argc, char* argv[])
 		}
 
 		std::cout << std::endl;
+		*/
 
 		if (pWidgets)
 			free(pWidgets);

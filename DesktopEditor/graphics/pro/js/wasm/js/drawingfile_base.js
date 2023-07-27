@@ -487,15 +487,27 @@
 
 		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
+		{
+			Module["_free"](ext);
 			return res;
+		}
 
 		var len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
+		{
+			Module["_free"](ext);
 			return res;
+		}
 
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
 		var reader = new CBinaryReader(buffer, 0, len);
+
+		if (!reader.isValid())
+		{
+			Module["_free"](ext);
+			return res;
+		}
 
 		let k = reader.readInt();
 		if (k > 0)
@@ -529,6 +541,7 @@
 		{
 			var rec = {};
 			rec["AP"] = {};
+			// Annot
 			// Номер для сопоставление с AP
 			rec["AP"]["i"] = reader.readInt();
 			rec["annotflag"] = reader.readInt();
@@ -540,7 +553,6 @@
 			let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
 			rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
 			rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
-
 			// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
 			rec["display"] = 0;
 			if (bHidden)
@@ -562,7 +574,6 @@
 						rec["display"] = 2;
 				}
 			}
-
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["rect"] = {};
@@ -570,36 +581,10 @@
 			rec["rect"]["y1"] = reader.readDouble2();
 			rec["rect"]["x2"] = reader.readDouble2();
 			rec["rect"]["y2"] = reader.readDouble2();
-			
-			let tc = reader.readInt();
-			if (tc)
-			{
-				rec["textColor"] = [];
-				for (let i = 0; i < tc; ++i)
-					rec["textColor"].push(reader.readDouble());
-			}
-			
-			rec["alignment"] = reader.readByte();
-			// Тип аннотации виджета - FT
-			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
-			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
-			rec["type"] = reader.readByte();
-			rec["flag"] = reader.readInt();
-			var flags = reader.readInt();
-
-			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-			if (flags & (1 << 0))
-				rec["userName"] = reader.readString();
-			// Строка стиля по умолчанию (в формате CSS2) - DS
-			if (flags & (1 << 1))
-				rec["defaultStyle"] = reader.readString();
+			let flags = reader.readInt();
 			// Эффекты границы - BE
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
-			// Режим выделения - H
-			// 0 - none, 1 - invert, 2 - push, 3 - outline
-			if (flags & (1 << 3))
-				rec["highlight"] = reader.readByte();
 			// Границы - Border/BS
 			if (flags & (1 << 4))
 			{
@@ -614,6 +599,37 @@
 					rec["dashed"].push(reader.readDouble());
 				}
 			}
+			if (flags & (1 << 17))
+			{
+				rec["Parent"] = reader.readInt();
+			}
+			// Widget
+			let tc = reader.readInt();
+			if (tc)
+			{
+				rec["textColor"] = [];
+				for (let i = 0; i < tc; ++i)
+					rec["textColor"].push(reader.readDouble());
+			}
+			// 0 - left-justified, 1 - centered, 2 - right-justified
+			rec["alignment"] = reader.readByte();
+			// Тип аннотации виджета - FT
+			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
+			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
+			rec["type"] = reader.readByte();
+			rec["flag"] = reader.readInt();
+			flags = reader.readInt();
+
+			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
+			if (flags & (1 << 0))
+				rec["userName"] = reader.readString();
+			// Строка стиля по умолчанию (в формате CSS2) - DS
+			if (flags & (1 << 1))
+				rec["defaultStyle"] = reader.readString();
+			// Режим выделения - H
+			// 0 - none, 1 - invert, 2 - push, 3 - outline
+			if (flags & (1 << 3))
+				rec["highlight"] = reader.readByte();
 			// Цвет границ - BC. Даже если граница не задана BS/Border, то при наличии BC предоставляется граница по-умолчанию (сплошная, толщиной 1)
 			// При наличии MaxLen у text-аннотации границы появляются у каждого символа
 			if (flags & (1 << 5))
@@ -637,7 +653,30 @@
 			// Значение по-умолчанию - DV
 			if (flags & (1 << 8))
 				rec["defaultValue"] = reader.readString();
-
+			// Альтернативный текст аннотации - Contents
+			if (flags & (1 << 15))
+				rec["Contents"] = reader.readString();
+			// Специальный цвет аннотации - С
+			if (flags & (1 << 16))
+			{
+				let n = reader.readInt();
+				rec["C"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["C"].push(reader.readDouble());
+			}
+			if (flags & (1 << 18))
+				rec["name"] = reader.readString();
+			// Action
+			let nAction = reader.readInt();
+			if (nAction > 0)
+				rec["AA"] = {};
+			for (let i = 0; i < nAction; ++i)
+			{
+				var AAType = reader.readString();
+				rec["AA"][AAType] = {};
+				readAction(reader, rec["AA"][AAType]);
+			}
+			// Widget types
 			if (rec["type"] == 3 || rec["type"] == 2 || rec["type"] == 1)
 			{
 				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
@@ -698,7 +737,7 @@
 					rec["value"] = reader.readString();
 				if (flags & (1 << 10))
 					rec["maxLen"] = reader.readInt();
-				if (flags & (1 << 11))
+				if (rec["flag"] & (1 << 25))
 					rec["richValue"] = reader.readString();
 				// 12.7.4.3
 				rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
@@ -739,34 +778,6 @@
 			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
 			rec["required"] = (rec["flag"] >> 1) & 1; // Required
 			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
-			// Альтернативный текст аннотации - Contents
-			if (flags & (1 << 15))
-				rec["Contents"] = reader.readString();
-			// Специальный цвет аннотации - С
-			if (flags & (1 << 16))
-			{
-				let n = reader.readInt();
-				rec["C"] = [];
-				for (let i = 0; i < n; ++i)
-					rec["C"].push(reader.readDouble());
-			}
-			if (flags & (1 << 17))
-			{
-				rec["Parent"] = reader.readInt();
-			}
-			if (flags & (1 << 18))
-			{
-				rec["name"] = reader.readString();
-			}
-			let nAction = reader.readInt();
-			if (nAction > 0)
-				rec["AA"] = {};
-			for (let i = 0; i < nAction; ++i)
-			{
-				var AAType = reader.readString();
-				rec["AA"][AAType] = {};
-				readAction(reader, rec["AA"][AAType]);
-			}
 
 			res["Fields"].push(rec);
 		}

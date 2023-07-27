@@ -304,7 +304,6 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
     RELEASEOBJECT(oAct);
     return pRes;
 };
-
 std::string getValue(Object* oV)
 {
     std::string sRes;
@@ -459,23 +458,6 @@ CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
     return pBorderType;
 }
 
-void CBorderType::ToWASM(NSWasm::CData& oRes)
-{
-    BYTE nBP = nType;
-    if (nBP == 1)
-        nBP = 2;
-    else if (nBP == 2)
-        nBP = 1;
-
-    oRes.WriteBYTE(nBP);
-    oRes.AddDouble(dWidth);
-    if (nType == annotBorderDashed)
-    {
-        oRes.AddDouble(dDashesAlternating);
-        oRes.AddDouble(dGaps);
-    }
-}
-
 #define DICT_LOOKUP_STRING(func, sName, byte, put) \
 {\
 if (func(sName, &oObj)->isString())\
@@ -488,152 +470,9 @@ if (func(sName, &oObj)->isString())\
 oObj.free();\
 }
 
-CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
-{
-    m_pBorder = NULL;
-
-    Object oObj, oField;
-    XRef* xref = pdfDoc->getXRef();
-    pField->getFieldRef(&oObj);
-    oObj.fetch(xref, &oField);
-    m_unRefNum = oObj.getRefNum();
-    oObj.free();
-
-    // Флаг аннотации - F
-    m_unAnnotFlag = 0;
-    if (pField->fieldLookup("F", &oObj)->isInt())
-        m_unAnnotFlag = oObj.getInt();
-    oObj.free();
-
-    // Номер страницы - P
-    m_unPage = pField->getPageNum() - 1;
-
-
-    // Координаты - Rect
-    pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
-    // TODO при записи передать dHeight
-    // double dTemp = m_pRect[1];
-    // m_pRect[1] = dHeight - m_pRect[3];
-    // m_pRect[3] = dHeight - dTemp;
-
-    m_unAFlags = 0;
-
-    // 3 - Эффекты границы - BE
-    Object oBorderBE, oBorderBEI;
-    if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
-    {
-        m_unAFlags |= (1 << 2);
-        m_dBE = oBorderBEI.getNum();
-    }
-    oObj.free(); oBorderBE.free(); oBorderBEI.free();
-
-
-    // 5 - Границы и Dash Pattern - Border/BS
-    Object oBorder;
-    m_pBorder = NULL;
-    if (pField->fieldLookup("BS", &oBorder)->isDict())
-        m_pBorder = getBorder(&oBorder, true);
-    else
-    {
-        oBorder.free();
-        if (pField->fieldLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
-            m_pBorder = getBorder(&oBorder, false);
-    }
-    oBorder.free();
-    if (m_pBorder && m_pBorder->nType != 5)
-        m_unAFlags |= (1 << 4);
-
-    // 18 - Родитель - Parent
-    if (oField.dictLookupNF("Parent", &oObj)->isRef())
-    {
-        m_unRefNumParent = oObj.getRefNum();
-        m_unAFlags |= (1 << 17);
-    }
-    oObj.free();
-}
-
-void CAnnot::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.AddInt(m_unRefNum);
-    oRes.AddInt(m_unAnnotFlag);
-    oRes.AddInt(m_unPage);
-    for (int i = 0; i < 4; ++i)
-        oRes.WriteDouble(m_pRect[i]);
-    oRes.AddInt(m_unAFlags);
-    if (m_unAFlags & (1 << 2))
-        oRes.AddDouble(m_dBE);
-    if (m_pBorder && (m_unAFlags & (1 << 4)))
-        m_pBorder->ToWASM(oRes);
-    if (m_unAFlags & (1 << 17))
-        oRes.AddInt(m_unRefNumParent);
-}
-
-void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
-{
-    CAnnotWidget::ToWASM(oRes);
-
-    oRes.AddInt(m_unIFFlag);
-    if (m_nType == 1)
-    {
-        if (m_unFlags & (1 << 10))
-            oRes.WriteString(m_sCA);
-        if (m_unFlags & (1 << 11))
-            oRes.WriteString(m_sRC);
-        if (m_unFlags & (1 << 12))
-            oRes.WriteString(m_sAC);
-    }
-    else
-        oRes.WriteBYTE(m_nStyle);
-    if (m_unFlags & (1 << 13))
-        oRes.WriteBYTE(m_nTP);
-    if (m_unIFFlag & (1 << 1))
-        oRes.WriteBYTE(m_nSW);
-    if (m_unIFFlag & (1 << 2))
-        oRes.WriteBYTE(m_nS);
-    if (m_unIFFlag & (1 << 3))
-    {
-        oRes.AddDouble(m_dA1);
-        oRes.AddDouble(m_dA2);
-    }
-    if (m_unFlags & (1 << 14))
-        oRes.WriteString(m_sAP_N_Yes);
-}
-
-void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)
-{
-    CAnnotWidget::ToWASM(oRes);
-
-    if (m_unFlags & (1 << 9))
-        oRes.WriteString(m_sV);
-    if (m_unFlags & (1 << 10))
-        oRes.AddInt(m_unMaxLen);
-    if (m_unFieldFlag & (1 << 25))
-        oRes.WriteString(m_sRV);
-}
-
-void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)
-{
-    CAnnotWidget::ToWASM(oRes);
-
-    if (m_unFlags & (1 << 9))
-        oRes.WriteString(m_sV);
-    if (m_unFlags & (1 << 10))
-    {
-        oRes.AddInt(m_arrOpt.size());
-        for (int i = 0; i < m_arrOpt.size(); ++i)
-        {
-            oRes.WriteString(m_arrOpt[i].first);
-            oRes.WriteString(m_arrOpt[i].second);
-        }
-    }
-    if (m_unFlags & (1 << 11))
-        oRes.AddInt(m_unTI);
-}
-
-void CAnnotWidgetSig::ToWASM(NSWasm::CData& oRes)
-{
-    CAnnotWidget::ToWASM(oRes);
-}
+//------------------------------------------------------------------------
+// Widget
+//------------------------------------------------------------------------
 
 CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
 {
@@ -886,11 +725,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
     oObj.fetch(xref, &oField);
     oObj.free();
 
-    // Цветовое пространство - из DA
+    // Цвет текста - из DA
     int nSpace;
     GList *arrColors = pField->getColorSpace(&nSpace);
     for (int j = 0; j < nSpace; ++j)
-        m_arrColorSpace.push_back(*(double*)arrColors->get(j));
+        m_arrTC.push_back(*(double*)arrColors->get(j));
     deleteGList(arrColors, double);
 
     // Выравнивание текста - Q
@@ -1025,169 +864,15 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
     oAction.free();
 }
 
-void CActionGoTo::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(1);
-    oRes.AddInt(unPage);
-    oRes.WriteBYTE(nKind);
-    switch (nKind)
-    {
-    case destXYZ:
-    case destFitH:
-    case destFitBH:
-    case destFitV:
-    case destFitBV:
-    {
-        oRes.WriteBYTE(unKindFlag);
-        if (unKindFlag & (1 << 0))
-            oRes.AddDouble(pRect[0]);
-        if (unKindFlag & (1 << 1))
-            oRes.AddDouble(pRect[1]);
-        if (unKindFlag & (1 << 2))
-            oRes.AddDouble(pRect[3]);
-        break;
-    }
-    case destFitR:
-    {
-        oRes.AddDouble(pRect[0]);
-        oRes.AddDouble(pRect[1]);
-        oRes.AddDouble(pRect[2]);
-        oRes.AddDouble(pRect[3]);
-        break;
-    }
-    case destFit:
-    case destFitB:
-    default:
-        break;
-    }
+//------------------------------------------------------------------------
+// Annots
+//------------------------------------------------------------------------
 
-    CAction::ToWASM(oRes);
-}
-
-void CActionURI::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(6);
-    oRes.WriteString(sURI);
-
-    CAction::ToWASM(oRes);
-}
-
-void CActionNamed::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(10);
-    oRes.WriteString(sNamed);
-
-    CAction::ToWASM(oRes);
-}
-
-void CActionJavaScript::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(14);
-    oRes.WriteString(sJavaScript);
-
-    CAction::ToWASM(oRes);
-}
-
-void CActionHide::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(9);
-    oRes.WriteBYTE(bHideFlag ? 1 : 0);
-    oRes.AddInt(arrAnnotName.size());
-    for (int i = 0; i < arrAnnotName.size(); ++i)
-        oRes.WriteString(arrAnnotName[i]);
-
-    CAction::ToWASM(oRes);
-}
-
-void CActionResetForm::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteBYTE(12);
-    oRes.AddInt(unFlags);
-    oRes.AddInt(arrAnnotName.size());
-    for (int i = 0; i < arrAnnotName.size(); ++i)
-        oRes.WriteString(arrAnnotName[i]);
-
-    CAction::ToWASM(oRes);
-}
-
-void CAction::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.WriteString(sType);
-    if (pNext)
-    {
-        oRes.WriteBYTE(1);
-        pNext->ToWASM(oRes);
-    }
-    else
-        oRes.WriteBYTE(0);
-}
-
-void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
-{
-    CAnnot::ToWASM(oRes);
-
-    oRes.AddInt(m_arrColorSpace.size());
-    for (int i = 0; i < m_arrColorSpace.size(); ++i)
-        oRes.AddDouble(m_arrColorSpace[i]);
-    oRes.WriteBYTE(m_nQ);
-    oRes.WriteBYTE(m_nType);
-    oRes.AddInt(m_unFieldFlag);
-    oRes.AddInt(m_unFlags);
-    if (m_unFlags & (1 << 0))
-        oRes.WriteString(m_sTU);
-    if (m_unFlags & (1 << 1))
-        oRes.WriteString(m_sDS);
-    if (m_unFlags & (1 << 3))
-        oRes.WriteBYTE(m_nH);
-    if (m_unFlags & (1 << 5))
-    {
-        oRes.AddInt(m_arrBC.size());
-        for (int i = 0; i < m_arrBC.size(); ++i)
-            oRes.AddDouble(m_arrBC[i]);
-    }
-    if (m_unFlags & (1 << 6))
-        oRes.AddInt(m_unR);
-    if (m_unFlags & (1 << 7))
-    {
-        oRes.AddInt(m_arrBG.size());
-        for (int i = 0; i < m_arrBG.size(); ++i)
-            oRes.AddDouble(m_arrBG[i]);
-    }
-    if (m_unFlags & (1 << 8))
-        oRes.WriteString(m_sDV);
-    if (m_unFlags & (1 << 15))
-        oRes.WriteString(m_sContents);
-    if (m_unFlags & (1 << 16))
-    {
-        oRes.AddInt(m_arrC.size());
-        for (int i = 0; i < m_arrC.size(); ++i)
-            oRes.AddDouble(m_arrC[i]);
-    }
-    if (m_unFlags & (1 << 18))
-        oRes.WriteString(m_sT);
-    oRes.AddInt(m_arrAction.size());
-    for (int i = 0; i < m_arrAction.size(); ++i)
-        m_arrAction[i]->ToWASM(oRes);
-}
-
-void CAnnotParent::ToWASM(NSWasm::CData& oRes)
-{
-    oRes.AddInt(unRefNum);
-    oRes.AddInt(unFlags);
-    if (unFlags & (1 << 0))
-        oRes.WriteString(sT);
-    if (unFlags & (1 << 1))
-        oRes.WriteString(sV);
-    if (unFlags & (1 << 2))
-        oRes.WriteString(sDV);
-    if (unFlags & (1 << 3))
-        oRes.AddInt(unRefNumParent);
-}
-
-CAnnots::CAnnots(PDFDoc* pdfDoc, AcroForm* pAcroForms)
+CAnnots::CAnnots(PDFDoc* pdfDoc)
 {
     Object oObj1, oObj2;
     XRef* xref = pdfDoc->getXRef();
+    AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
 
     // Порядок вычислений - CO
     Object* oAcroForm = pAcroForms->getAcroFormObj();
@@ -1268,11 +953,6 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, AcroForm* pAcroForms)
     }
 }
 
-CAnnot::~CAnnot()
-{
-    RELEASEOBJECT(m_pBorder);
-}
-
 CAnnots::~CAnnots()
 {
     for (int i = 0; i < m_arrParents.size(); ++i)
@@ -1281,6 +961,78 @@ CAnnots::~CAnnots()
     for (int i = 0; i < m_arrAnnots.size(); ++i)
         RELEASEOBJECT(m_arrAnnots[i]);
 }
+
+CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
+{
+    m_pBorder = NULL;
+
+    Object oObj, oField;
+    XRef* xref = pdfDoc->getXRef();
+    pField->getFieldRef(&oObj);
+    oObj.fetch(xref, &oField);
+    m_unRefNum = oObj.getRefNum();
+    oObj.free();
+
+    // Флаг аннотации - F
+    m_unAnnotFlag = 0;
+    if (pField->fieldLookup("F", &oObj)->isInt())
+        m_unAnnotFlag = oObj.getInt();
+    oObj.free();
+
+    // Номер страницы - P
+    m_unPage = pField->getPageNum() - 1;
+
+    // Координаты - Rect
+    pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
+    double dHeight = pdfDoc->getPageCropHeight(m_unPage + 1);
+    double dTemp = m_pRect[1];
+    m_pRect[1] = dHeight - m_pRect[3];
+    m_pRect[3] = dHeight - dTemp;
+
+    m_unAFlags = 0;
+
+    // 3 - Эффекты границы - BE
+    Object oBorderBE, oBorderBEI;
+    if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+    {
+        m_unAFlags |= (1 << 2);
+        m_dBE = oBorderBEI.getNum();
+    }
+    oObj.free(); oBorderBE.free(); oBorderBEI.free();
+
+
+    // 5 - Границы и Dash Pattern - Border/BS
+    Object oBorder;
+    m_pBorder = NULL;
+    if (pField->fieldLookup("BS", &oBorder)->isDict())
+        m_pBorder = getBorder(&oBorder, true);
+    else
+    {
+        oBorder.free();
+        if (pField->fieldLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
+            m_pBorder = getBorder(&oBorder, false);
+    }
+    oBorder.free();
+    if (m_pBorder && m_pBorder->nType != 5)
+        m_unAFlags |= (1 << 4);
+
+    // 18 - Родитель - Parent
+    if (oField.dictLookupNF("Parent", &oObj)->isRef())
+    {
+        m_unRefNumParent = oObj.getRefNum();
+        m_unAFlags |= (1 << 17);
+    }
+    oObj.free();
+}
+
+CAnnot::~CAnnot()
+{
+    RELEASEOBJECT(m_pBorder);
+}
+
+//------------------------------------------------------------------------
+// ToWASM
+//------------------------------------------------------------------------
 
 void CAnnots::ToWASM(NSWasm::CData& oRes)
 {
@@ -1297,6 +1049,270 @@ void CAnnots::ToWASM(NSWasm::CData& oRes)
     oRes.AddInt(m_arrAnnots.size());
     for (int i = 0; i < m_arrAnnots.size(); ++i)
         m_arrAnnots[i]->ToWASM(oRes);
+}
+
+void CAnnotParent::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.AddInt(unRefNum);
+    oRes.AddInt(unFlags);
+    if (unFlags & (1 << 0))
+        oRes.WriteString(sT);
+    if (unFlags & (1 << 1))
+        oRes.WriteString(sV);
+    if (unFlags & (1 << 2))
+        oRes.WriteString(sDV);
+    if (unFlags & (1 << 3))
+        oRes.AddInt(unRefNumParent);
+}
+
+void CAnnot::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.AddInt(m_unRefNum);
+    oRes.AddInt(m_unAnnotFlag);
+    oRes.AddInt(m_unPage);
+    for (int i = 0; i < 4; ++i)
+        oRes.WriteDouble(m_pRect[i]);
+    oRes.AddInt(m_unAFlags);
+    if (m_unAFlags & (1 << 2))
+        oRes.AddDouble(m_dBE);
+    if (m_pBorder && (m_unAFlags & (1 << 4)))
+        m_pBorder->ToWASM(oRes);
+    if (m_unAFlags & (1 << 17))
+        oRes.AddInt(m_unRefNumParent);
+}
+
+void CBorderType::ToWASM(NSWasm::CData& oRes)
+{
+    BYTE nBP = nType;
+    if (nBP == 1)
+        nBP = 2;
+    else if (nBP == 2)
+        nBP = 1;
+
+    oRes.WriteBYTE(nBP);
+    oRes.AddDouble(dWidth);
+    if (nType == annotBorderDashed)
+    {
+        oRes.AddDouble(dDashesAlternating);
+        oRes.AddDouble(dGaps);
+    }
+}
+
+void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
+{
+    CAnnot::ToWASM(oRes);
+
+    oRes.AddInt(m_arrTC.size());
+    for (int i = 0; i < m_arrTC.size(); ++i)
+        oRes.AddDouble(m_arrTC[i]);
+    oRes.WriteBYTE(m_nQ);
+    oRes.WriteBYTE(m_nType);
+    oRes.AddInt(m_unFieldFlag);
+    oRes.AddInt(m_unFlags);
+    if (m_unFlags & (1 << 0))
+        oRes.WriteString(m_sTU);
+    if (m_unFlags & (1 << 1))
+        oRes.WriteString(m_sDS);
+    if (m_unFlags & (1 << 3))
+        oRes.WriteBYTE(m_nH);
+    if (m_unFlags & (1 << 5))
+    {
+        oRes.AddInt(m_arrBC.size());
+        for (int i = 0; i < m_arrBC.size(); ++i)
+            oRes.AddDouble(m_arrBC[i]);
+    }
+    if (m_unFlags & (1 << 6))
+        oRes.AddInt(m_unR);
+    if (m_unFlags & (1 << 7))
+    {
+        oRes.AddInt(m_arrBG.size());
+        for (int i = 0; i < m_arrBG.size(); ++i)
+            oRes.AddDouble(m_arrBG[i]);
+    }
+    if (m_unFlags & (1 << 8))
+        oRes.WriteString(m_sDV);
+    if (m_unFlags & (1 << 15))
+        oRes.WriteString(m_sContents);
+    if (m_unFlags & (1 << 16))
+    {
+        oRes.AddInt(m_arrC.size());
+        for (int i = 0; i < m_arrC.size(); ++i)
+            oRes.AddDouble(m_arrC[i]);
+    }
+    if (m_unFlags & (1 << 18))
+        oRes.WriteString(m_sT);
+    oRes.AddInt(m_arrAction.size());
+    for (int i = 0; i < m_arrAction.size(); ++i)
+        m_arrAction[i]->ToWASM(oRes);
+}
+
+void CActionGoTo::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(1);
+    oRes.AddInt(unPage);
+    oRes.WriteBYTE(nKind);
+    switch (nKind)
+    {
+    case destXYZ:
+    case destFitH:
+    case destFitBH:
+    case destFitV:
+    case destFitBV:
+    {
+        oRes.WriteBYTE(unKindFlag);
+        if (unKindFlag & (1 << 0))
+            oRes.AddDouble(pRect[0]);
+        if (unKindFlag & (1 << 1))
+            oRes.AddDouble(pRect[1]);
+        if (unKindFlag & (1 << 2))
+            oRes.AddDouble(pRect[3]);
+        break;
+    }
+    case destFitR:
+    {
+        oRes.AddDouble(pRect[0]);
+        oRes.AddDouble(pRect[1]);
+        oRes.AddDouble(pRect[2]);
+        oRes.AddDouble(pRect[3]);
+        break;
+    }
+    case destFit:
+    case destFitB:
+    default:
+        break;
+    }
+
+    CAction::ToWASM(oRes);
+}
+
+void CActionURI::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(6);
+    oRes.WriteString(sURI);
+
+    CAction::ToWASM(oRes);
+}
+
+void CActionNamed::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(10);
+    oRes.WriteString(sNamed);
+
+    CAction::ToWASM(oRes);
+}
+
+void CActionJavaScript::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(14);
+    oRes.WriteString(sJavaScript);
+
+    CAction::ToWASM(oRes);
+}
+
+void CActionHide::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(9);
+    oRes.WriteBYTE(bHideFlag ? 1 : 0);
+    oRes.AddInt(arrAnnotName.size());
+    for (int i = 0; i < arrAnnotName.size(); ++i)
+        oRes.WriteString(arrAnnotName[i]);
+
+    CAction::ToWASM(oRes);
+}
+
+void CActionResetForm::ToWASM(NSWasm::CData& oRes)
+{
+    oRes.WriteString(sType);
+    oRes.WriteBYTE(12);
+    oRes.AddInt(unFlags);
+    oRes.AddInt(arrAnnotName.size());
+    for (int i = 0; i < arrAnnotName.size(); ++i)
+        oRes.WriteString(arrAnnotName[i]);
+
+    CAction::ToWASM(oRes);
+}
+
+void CAction::ToWASM(NSWasm::CData& oRes)
+{
+    if (pNext)
+    {
+        oRes.WriteBYTE(1);
+        pNext->ToWASM(oRes);
+    }
+    else
+        oRes.WriteBYTE(0);
+}
+
+void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
+{
+    CAnnotWidget::ToWASM(oRes);
+
+    oRes.AddInt(m_unIFFlag);
+    if (m_nType == 1)
+    {
+        if (m_unFlags & (1 << 10))
+            oRes.WriteString(m_sCA);
+        if (m_unFlags & (1 << 11))
+            oRes.WriteString(m_sRC);
+        if (m_unFlags & (1 << 12))
+            oRes.WriteString(m_sAC);
+    }
+    else
+        oRes.WriteBYTE(m_nStyle);
+    if (m_unFlags & (1 << 13))
+        oRes.WriteBYTE(m_nTP);
+    if (m_unIFFlag & (1 << 1))
+        oRes.WriteBYTE(m_nSW);
+    if (m_unIFFlag & (1 << 2))
+        oRes.WriteBYTE(m_nS);
+    if (m_unIFFlag & (1 << 3))
+    {
+        oRes.AddDouble(m_dA1);
+        oRes.AddDouble(m_dA2);
+    }
+    if (m_unFlags & (1 << 14))
+        oRes.WriteString(m_sAP_N_Yes);
+}
+
+void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)
+{
+    CAnnotWidget::ToWASM(oRes);
+
+    if (m_unFlags & (1 << 9))
+        oRes.WriteString(m_sV);
+    if (m_unFlags & (1 << 10))
+        oRes.AddInt(m_unMaxLen);
+    if (m_unFieldFlag & (1 << 25))
+        oRes.WriteString(m_sRV);
+}
+
+void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)
+{
+    CAnnotWidget::ToWASM(oRes);
+
+    if (m_unFlags & (1 << 9))
+        oRes.WriteString(m_sV);
+    if (m_unFlags & (1 << 10))
+    {
+        oRes.AddInt(m_arrOpt.size());
+        for (int i = 0; i < m_arrOpt.size(); ++i)
+        {
+            oRes.WriteString(m_arrOpt[i].first);
+            oRes.WriteString(m_arrOpt[i].second);
+        }
+    }
+    if (m_unFlags & (1 << 11))
+        oRes.AddInt(m_unTI);
+}
+
+void CAnnotWidgetSig::ToWASM(NSWasm::CData& oRes)
+{
+    CAnnotWidget::ToWASM(oRes);
 }
 
 }

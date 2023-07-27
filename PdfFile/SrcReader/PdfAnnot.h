@@ -190,7 +190,7 @@ public:
 
 private:
     unsigned int m_unR; // Поворот аннотации относительно страницы - R
-    std::vector<double> m_arrColorSpace; // Цветовое пространство - из DA
+    std::vector<double> m_arrTC; // Цветовое текста - из DA
     std::vector<double> m_arrBC; // Цвет границ - BC
     std::vector<double> m_arrBG; // Цвет фона - BG
     std::vector<double> m_arrC; // Специальный цвет для аннотации - C
@@ -262,7 +262,7 @@ public:
 class CAnnots
 {
 public:
-    CAnnots(PDFDoc* pdfDoc, AcroForm* pAcroForms);
+    CAnnots(PDFDoc* pdfDoc);
     ~CAnnots();
 
     void ToWASM(NSWasm::CData& oRes);

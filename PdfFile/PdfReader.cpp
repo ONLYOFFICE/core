@@ -39,6 +39,9 @@
 #include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
+#include "SrcReader/Adaptors.h"
+#include "SrcReader/PdfAnnot.h"
+
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/PDFCore.h"
 #include "lib/xpdf/GlobalParams.h"
@@ -46,7 +49,6 @@
 #include "lib/xpdf/TextString.h"
 #include "lib/xpdf/Lexer.h"
 #include "lib/xpdf/Parser.h"
-#include "SrcReader/Adaptors.h"
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
@@ -1242,6 +1244,17 @@ BYTE* CPdfReader::GetWidgets()
     NSWasm::CData oRes;
     oRes.SkipLen();
 
+    PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument);
+    if (pAnnots)
+        pAnnots->ToWASM(oRes);
+    RELEASEOBJECT(pAnnots);
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
+
+    /*
     // Порядок вычислений - CO
     Object* oAcroForm = pAcroForms->getAcroFormObj();
     Object oCO;
@@ -1357,17 +1370,17 @@ BYTE* CPdfReader::GetWidgets()
         int nType = 0; // Unknown
         switch (oType)
         {
-        case acroFormFieldPushbutton:    nType = 1;/*sType = "button";*/             break;
-        case acroFormFieldRadioButton:   nType = 2;/*sType = "radiobutton";*/        break;
-        case acroFormFieldCheckbox:      nType = 3;/*sType = "checkbox";*/           break;
-        case acroFormFieldFileSelect:    nType = 4;/*sType = "text""fileselect"*/    break;
-        case acroFormFieldMultilineText: nType = 4;/*sType = "text""multilinetext"*/ break;
-        case acroFormFieldText:          nType = 4;/*sType = "text";*/               break;
-        case acroFormFieldBarcode:       nType = 4;/*sType = "text""barcode"*/       break;
-        case acroFormFieldComboBox:      nType = 5;/*sType = "combobox";*/           break;
-        case acroFormFieldListBox:       nType = 6;/*sType = "listbox";*/            break;
-        case acroFormFieldSignature:     nType = 7;/*sType = "signature";*/          break;
-        default:                         nType = 0;/*sType = "";*/                   break;
+        case acroFormFieldPushbutton:    nType = 1; break;
+        case acroFormFieldRadioButton:   nType = 2; break;
+        case acroFormFieldCheckbox:      nType = 3; break;
+        case acroFormFieldFileSelect:    nType = 4; break;
+        case acroFormFieldMultilineText: nType = 4; break;
+        case acroFormFieldText:          nType = 4; break;
+        case acroFormFieldBarcode:       nType = 4; break;
+        case acroFormFieldComboBox:      nType = 5; break;
+        case acroFormFieldListBox:       nType = 6; break;
+        case acroFormFieldSignature:     nType = 7; break;
+        default:                         nType = 0; break;
         }
         oRes.WriteBYTE(nType);
 
@@ -1634,8 +1647,6 @@ oObj.free();\
         case acroFormFieldBarcode:
         {
             // 10 - Значение
-            // 11 - Максимальное количество символов
-            // 12 - Расширенный текст RV
             if (oField.dictLookup("V", &oObj))
             {
                 if (getValue(&oObj, oRes))
@@ -1643,7 +1654,7 @@ oObj.free();\
             }
             oObj.free();
 
-            // Максимальное количество символов в Tx - MaxLen
+            // 11 - Максимальное количество символов в Tx - MaxLen
             int nMaxLen = pField->getMaxLen();
             if (nMaxLen > 0)
             {
@@ -1651,7 +1662,7 @@ oObj.free();\
                 oRes.AddInt(nMaxLen);
             }
 
-            // RichText
+            // 25 FieldFlag - Расширенный текст RV - RichText
             if (nFieldFlag & (1 << 25))
             {
                 DICT_LOOKUP_STRING(pField->fieldLookup, "RV", 11);
@@ -2097,6 +2108,7 @@ oObj.free();\
     BYTE* bRes = oRes.GetBuffer();
     oRes.ClearWithoutAttack();
     return bRes;
+    */
 }
 BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {

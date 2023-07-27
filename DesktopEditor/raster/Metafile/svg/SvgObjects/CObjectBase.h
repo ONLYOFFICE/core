@@ -1,10 +1,10 @@
 #ifndef COBJECTBASE_H
 #define COBJECTBASE_H
 
-#include "../../../../Common/3dParty/html/css/src/CNode.h"
-#include "../../../../Common/3dParty/html/css/src/StaticFunctions.h"
-#include "../../../xml/include/xmlutils.h"
-#include "../../IRenderer.h"
+#include "../../../../../Common/3dParty/html/css/src/CNode.h"
+#include "../../../../../Common/3dParty/html/css/src/StaticFunctions.h"
+#include "../../../../xml/include/xmlutils.h"
+#include "../../../../graphics/IRenderer.h"
 #include "../SvgTypes.h"
 
 class CSvgFile;

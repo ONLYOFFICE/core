@@ -114,10 +114,10 @@ namespace NSHtmlRenderer
 
 		HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
-		virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
-		virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
-		virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
-		virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
+		HRESULT get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
+		HRESULT put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
+		HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
+		HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
 	// font -------------------------------------------------------------------------------------
 		HRESULT get_FontName(std::wstring* bsName);
 		HRESULT put_FontName(const std::wstring& bsName);

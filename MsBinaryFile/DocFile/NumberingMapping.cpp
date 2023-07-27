@@ -646,7 +646,7 @@ namespace DocFileFormat
 
 			if (fc < 0 || fcEnd < 0 ) break;
 
-			std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
+			std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
 
 			if ((chpxs != NULL) && (!chpxs->empty()))
 			{
@@ -690,7 +690,7 @@ namespace DocFileFormat
 			unsigned int index = 0;
 			bool isPictureBullet = false;
 
-			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
+			for (std::vector<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
 			{
 				switch(iter->OpCode)
 				{

@@ -158,7 +158,7 @@ namespace PPTX
 		else if (relation.Type() == OOX::FileTypes::VbaProject)
 			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, filename, filename ));
 		else if (relation.Type() == OOX::FileTypes::JsaProject)
-			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, filename ));
+			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::CustomXml)
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ActiveX_xml)

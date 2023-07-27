@@ -41,9 +41,9 @@ namespace DocFileFormat
 
 	TableCell::TableCell( const TableCell& _tableCell ) : cp(_tableCell.cp), depth(_tableCell.depth), documentMapping(_tableCell.documentMapping)
 	{
-		for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+		for ( size_t i = 0; i < _tableCell.cellElements.size(); ++i)
 		{
-			AddItem( **iter );
+			AddItem(*_tableCell.cellElements[i]);
 		}
 	}
 
@@ -59,9 +59,9 @@ namespace DocFileFormat
 			depth = _tableCell.depth;
 			cellElements.clear();
 
-			for ( std::list<ITableCellElementPtr>::const_iterator iter = _tableCell.cellElements.begin(); iter != _tableCell.cellElements.end(); iter++ )
+			for ( size_t i = 0; i < _tableCell.cellElements.size(); ++i)
 			{
-				AddItem( **iter );
+				AddItem( *_tableCell.cellElements[i]);
 			}
 
 			documentMapping = _tableCell.documentMapping;
@@ -142,9 +142,9 @@ namespace DocFileFormat
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;
 
-		for (std::list<ITableCellElementPtr>::iterator iter = cellElements.begin(); iter != cellElements.end(); ++iter)
+		for ( size_t i = 0; i < cellElements.size(); ++i)
 		{
-			(*iter)->Convert( mapping );
+			cellElements[i]->Convert( mapping );
 		}
 
 	//end w:tc
@@ -223,7 +223,7 @@ namespace DocFileFormat
 											documentMapping->m_document->DataStream,
 											documentMapping->m_document->nWordVersion);
 			
-			std::list<CharacterPropertyExceptions*>* chpxs = documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+			std::vector<CharacterPropertyExceptions*>* chpxs = documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 			if (chpxs)
 			{
 				TableRowPropertiesMapping trpMapping( documentMapping->GetXMLWriter(), *(chpxs->begin()) );
@@ -241,9 +241,9 @@ namespace DocFileFormat
 			}
 			else
 			{
-				for ( std::list<TableCell>::iterator iter = cells.begin(); iter != cells.end(); iter++ )
+				for ( size_t i = 0; i < cells.size(); ++i)
 				{
-					iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++);
+					cells[i].Convert( mapping, &tapx, grid, gridIndex, nCellIndex++);
 				}
 			}
 
@@ -620,9 +620,9 @@ namespace DocFileFormat
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;
 
-		for ( std::list<TableRow>::iterator iter = rows.begin(); iter != rows.end(); iter++ )
+		for ( size_t i = 0; i < rows.size(); ++i)
 		{
-			iter->Convert( mapping, &grid );  
+			rows[i].Convert( mapping, &grid );
 		}
 
 		//close w:tbl

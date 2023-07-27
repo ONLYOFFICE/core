@@ -2143,13 +2143,27 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 //Write JsaProject
 	if (m_pXlsx && NULL != m_pXlsx->m_pJsaProject)
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(m_pXlsx->m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
+		if (m_pXlsx->m_pJsaProject->IsExist() && !m_pXlsx->m_pJsaProject->IsExternal())
 		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
-			m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			std::wstring pathJsa = m_pXlsx->m_pJsaProject->filename().GetPath();
+			if (std::wstring::npos != pathJsa.find(m_pXlsx->m_sDocumentPath))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(m_pXlsx->m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemEnd(nCurPos);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
+		if (m_pXlsx->m_pJsaProject->IsExternal())
+		{
+			//nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProjectExternal);
+			//m_oBcw.m_oStream.WriteStringW3(m_pXlsx->m_pJsaProject->filename().GetPath());
+			//m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
 //Workbook Comments

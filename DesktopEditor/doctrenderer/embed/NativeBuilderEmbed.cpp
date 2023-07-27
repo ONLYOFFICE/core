@@ -47,7 +47,8 @@ JSSmart<CJSValue> CBuilderEmbed::SaveFile(JSSmart<CJSValue> type, JSSmart<CJSVal
 
 JSSmart<CJSValue> CBuilderEmbed::CloseFile()
 {
-	m_pBuilder->CloseFile();
+	std::cout << "Warning: use builderJS.CloseFile(); separately!";
+	m_pBuilder->GetPrivate()->CloseFile(false);
 	return NULL;
 }
 

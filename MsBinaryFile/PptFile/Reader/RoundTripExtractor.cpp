@@ -36,15 +36,15 @@
 
 using namespace PPT;
 
-RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt) :
-    m_roundTripRecord(rt), m_hasError(false)
+RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt, const std::wstring& tempPath) : m_roundTripRecord(rt), m_hasError(false)
 {
+    m_tempPath = NSDirectory::CreateDirectoryWithUniqueName(tempPath) + FILE_SEPARATOR_STR;
     m_hasError = !extract();
 }
 
 RoundTripExtractor::~RoundTripExtractor()
 {
-    NSDirectory::DeleteDirectory(m_extractedFolderPath);
+    NSDirectory::DeleteDirectory(m_tempPath);
 }
 
 vector_string RoundTripExtractor::find(const std::wstring& strRegEx) const
@@ -77,12 +77,7 @@ bool RoundTripExtractor::extract()
     if (!m_roundTripRecord)
         return false;
 
-
-    std::wstring tempRootPath = NSDirectory::GetTempPath();
-    if (false == NSDirectory::Exists(tempRootPath))
-        return false;
-    std::wstring tempZipPath = tempRootPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
-
+    std::wstring tempZipPath = m_tempPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
 
     BYTE* zipData = m_roundTripRecord->data.first.get();
     ULONG zipDataLen = m_roundTripRecord->data.second;
@@ -93,11 +88,11 @@ bool RoundTripExtractor::extract()
     binFile.CloseFile();
 
     COfficeUtils officeUtils(NULL);
-    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(tempRootPath);
+    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
     if(S_FALSE == officeUtils.ExtractToDirectory(tempZipPath, m_extractedFolderPath, NULL, 0))
         return false;
+   
     NSFile::CFileBinary::Remove(tempZipPath);
-
     return true;
 }
 

@@ -36,9 +36,9 @@ int g_zlib_addon_flag = ZLIB_ADDON_FLAG_ZERO;
 
 void zlip_set_addition_flag(int flag)
 {
-    g_zlib_addon_flag = flag;
+	g_zlib_addon_flag = flag;
 }
 int zlip_get_addition_flag()
 {
-    return g_zlib_addon_flag;
+	return g_zlib_addon_flag;
 }

@@ -16,14 +16,6 @@
 #ifndef AGG_SPAN_GRADIENT_INCLUDED
 #define AGG_SPAN_GRADIENT_INCLUDED
 
-#include <stdlib.h>
-#include <string.h>
-#include "../../graphics/structures.h"
-#include "agg_math.h"
-#include "agg_array.h"
-#include "agg_trans_affine.h"
-#include <iostream>
-#include <cmath>
 #include "./test_grads/custom_gradients.h"
 namespace agg
 {

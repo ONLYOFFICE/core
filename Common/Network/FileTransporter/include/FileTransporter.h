@@ -49,7 +49,7 @@ namespace NSNetwork
 			void SetProperty(const std::string& name, const std::string& value);
 			void Initialize();
 
-		private:
+		public:
 			CSession_private* m_pInternal;
 		};
 

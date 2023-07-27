@@ -123,9 +123,9 @@ namespace DocFileFormat
 	/*========================================================================================================*/
 
 	/// Parses the 0Table (or 1Table) for FKP _entries containing CHPX
-	std::list<FormattedDiskPageCHPX*>* FormattedDiskPageCHPX::GetAllCHPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream )
+	std::vector<FormattedDiskPageCHPX*>* FormattedDiskPageCHPX::GetAllCHPXFKPs( FileInformationBlock* fib, POLE::Stream* wordStream, POLE::Stream* tableStream )
 	{
-		std::list<FormattedDiskPageCHPX*>* CHPXlist = new std::list<FormattedDiskPageCHPX*>();
+		std::vector<FormattedDiskPageCHPX*>* CHPXlist = new std::vector<FormattedDiskPageCHPX*>();
 
 		//get bintable for CHPX
 		unsigned char* binTableChpx = new unsigned char[fib->m_FibWord97.lcbPlcfBteChpx];

@@ -40,8 +40,7 @@ public:
 
 	UINT m_nObjStgDataRef;
 	UINT m_nHasMacros;
-	UINT m_nVersion;
-	
+	UINT m_nVersion;	
 
     CRecordVBAInfoAtom();
     ~CRecordVBAInfoAtom();

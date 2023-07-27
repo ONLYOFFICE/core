@@ -60,6 +60,7 @@ namespace NExtractTools
     {
         TCD_ERROR,
         TCD_AUTO,
+		TCD_NON_AUTO,
 
         TCD_DOCX2DOCT,
         TCD_DOCT2DOCX,
@@ -921,6 +922,8 @@ namespace NExtractTools
 
                 if (NULL != m_oMailMergeSend)
                     eRes = TCD_MAILMERGE;
+				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
+					eRes = TCD_NON_AUTO; // параметры требуют уточнений
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
@@ -1105,17 +1108,17 @@ namespace NExtractTools
 			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
             }
-			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			else if (	AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } 
 		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 		  {
-            if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+            if (		AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{
@@ -1133,9 +1136,9 @@ namespace NExtractTools
 					}
 				}
 			} 
-			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
+			else if (	AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{
@@ -1153,9 +1156,13 @@ namespace NExtractTools
 					}
 				}
 			} 
-			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == formatFrom)
+			{
+				return;
+			}
+			else if (	AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom ||
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{

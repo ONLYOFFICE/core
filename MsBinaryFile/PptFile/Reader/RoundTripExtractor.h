@@ -37,7 +37,7 @@ namespace PPT
 class RoundTripExtractor
 {
 public:
-    RoundTripExtractor(const CUnknownRoundTrip *rt);
+    RoundTripExtractor(const CUnknownRoundTrip *rt, const std::wstring& tempPath);
     ~RoundTripExtractor();
 
     vector_string find(const std::wstring& strRegEx) const;
@@ -52,11 +52,10 @@ public:
 private:
     bool extract();
 
-private:
     std::wstring m_extractedFolderPath;
     const CUnknownRoundTrip *m_roundTripRecord;
     bool m_hasError;
-
+    std::wstring m_tempPath;
 };
 
 }

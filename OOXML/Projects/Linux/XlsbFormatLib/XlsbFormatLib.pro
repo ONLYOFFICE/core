@@ -123,7 +123,6 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/EndIconSet.cpp \
 	../../../XlsbFormat/Biff12_records/BeginDatabar.cpp \
 	../../../XlsbFormat/Biff12_records/EndDatabar.cpp \
-	../../../XlsbFormat/Biff12_records/Color.cpp \
 	../../../XlsbFormat/Biff12_records/BeginColorScale.cpp \
 	../../../XlsbFormat/Biff12_records/EndColorScale.cpp \
 	../../../XlsbFormat/Biff12_records/CFRuleExt.cpp \
@@ -692,14 +691,11 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_structures/CodeName.cpp \
 	../../../XlsbFormat/Biff12_structures/ACProductVersion.cpp \
 	../../../XlsbFormat/Biff12_structures/FRTProductVersion.cpp \
-	../../../XlsbFormat/Biff12_structures/RelID.cpp \
 	../../../XlsbFormat/Biff12_structures/BookProtectionFlags.cpp \
-	../../../XlsbFormat/Biff12_structures/ColSpan.cpp \
 	../../../XlsbFormat/Biff12_structures/Cell.cpp \
 	../../../XlsbFormat/Biff12_structures/GrbitFmla.cpp \
 	../../../XlsbFormat/Biff12_structures/SxOs.cpp \
 	../../../XlsbFormat/Biff12_structures/SxSu.cpp \
-	../../../XlsbFormat/Biff12_structures/UncheckedSqRfX.cpp \
 	../../../XlsbFormat/Biff12_structures/CFType.cpp \
 	../../../XlsbFormat/Biff12_structures/CFTemp.cpp \
 	../../../XlsbFormat/Biff12_structures/CFOper.cpp \
@@ -713,19 +709,9 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_structures/PhRun.cpp \
 	../../../XlsbFormat/Biff12_structures/GradientStop.cpp \
 	../../../XlsbFormat/Biff12_structures/Blxf.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTHeader.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTRefs.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTRef.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTSqrefs.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTSqref.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTFormulas.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTFormula.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTParsedFormula.cpp \
-	../../../XlsbFormat/Biff12_structures/FRTRelID.cpp \
 	../../../XlsbFormat/Biff12_structures/ListType.cpp \
 	../../../XlsbFormat/Biff12_structures/XmlDataType.cpp \
 	../../../XlsbFormat/Biff12_structures/ListTotalRowFunction.cpp \
-	../../../XlsbFormat/Biff12_structures/DValStrings.cpp \
 	../../../XlsbFormat/Biff12_structures/DBType.cpp \
 	../../../XlsbFormat/Biff12_structures/CmdType.cpp \
 	../../../XlsbFormat/Biff12_structures/PCDISrvFmt.cpp \

@@ -160,6 +160,7 @@ namespace OOX
 
 			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDataLabel;
 			nullable<OOX::Spreadsheet::CSeriesFiltering> m_oChartFiltering;
+			nullable_bool m_oDataDisplayNaAsBlank;
 
 			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
 

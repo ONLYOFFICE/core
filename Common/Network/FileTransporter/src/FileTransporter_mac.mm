@@ -81,7 +81,7 @@ namespace NSNetwork
 				if (iter != m_props.end())
 					configuration.allowsCellularAccess = (std::stoi(iter->second) == 1) ? YES : NO;
 
-				iter = m_props.find("allowsCellularAccess");
+				iter = m_props.find("requestCachePolicy");
 				if (iter != m_props.end())
 				{
 					if ("NSURLRequestUseProtocolCachePolicy" == iter->second)
@@ -157,7 +157,11 @@ namespace NSNetwork
 					__block NSData* result = nil;
 					dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
-					[[((CSessionMAC*)m_pSession)->m_session dataTaskWithRequest:urlRequest
+					NSURLSession* _session = ((CSessionMAC*)m_pSession->m_pInternal)->m_session;
+					if (nil == _session)
+						_session = [NSURLSession sharedSession];
+
+					[[_session dataTaskWithRequest:urlRequest
 											completionHandler:^(NSData *data, NSURLResponse* response, NSError *error) {
 						if (error == nil)
 							result = data;
@@ -174,8 +178,10 @@ namespace NSNetwork
 
 						nResult = 0;
 					}
-
-					nResult = 1;
+					else
+					{
+						nResult = 1;
+					}
 
 					return nResult;
 				}

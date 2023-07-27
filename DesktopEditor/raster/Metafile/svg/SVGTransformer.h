@@ -27,6 +27,8 @@ public:
 	int get_Height();
 	int get_Metrics();
 
+	bool GetBounds(double &dX, double &dY, double &dWidth, double &dHeight);
+
 private:
 	CSVGTransformer_private* m_internal;
 };

@@ -2158,7 +2158,8 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
     {
         oWriter.WriteStringUTF8(oRes.GetData());
         oWriter.CloseFile();
+        return S_OK;
     }
-    return S_OK;
+    return S_FALSE;
 
 }

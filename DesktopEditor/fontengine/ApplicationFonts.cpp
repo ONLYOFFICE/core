@@ -1649,7 +1649,7 @@ static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring
         if (hkey)
             RegCloseKey(hkey);
         hkey = NULL;
-        return ERROR_SUCCESS;
+		return ERROR_SUCCESS + 1;
     }
 
     // if subkey is specified then open key (first time)
@@ -1749,6 +1749,10 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
         }
     }
 
+	sName = L"";
+	sData = L"";
+	GetNextNameValue(0, L"", sName, sData);
+
     if (true)
     {
         std::vector<std::wstring> oArray2 = NSDirectory::GetFiles(L"C:\\Windows\\Fonts", true);
@@ -1794,8 +1798,10 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #endif
     
 #ifdef _IOS
-    // own realization (objective c code)
-    return GetSetupFontFiles_ios();
+	std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/System/Library/Fonts", true);
+	if (_array.empty())
+		NSDirectory::GetFiles2(L"/Library/Fonts", _array, true);
+	return _array;
 #endif
 
 #ifdef __ANDROID__

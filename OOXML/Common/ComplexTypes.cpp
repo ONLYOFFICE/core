@@ -1278,81 +1278,55 @@ namespace Word
 
 		if ( m_oEvenHBand.IsInit() )
 		{
-			sResult += L"w:evenHBand=\"";
-			sResult += m_oEvenHBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:evenHBand=\"" + m_oEvenHBand->ToString() + L"\"";
 		}
 		if ( m_oEvenVBand.IsInit() )
 		{
-			sResult += L"w:evenVBand=\"";
-			sResult += m_oEvenVBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:evenVBand=\"" + m_oEvenVBand->ToString() + L"\"";
 		}
 		if ( m_oFirstColumn.IsInit() )
 		{
-			sResult += L"w:firstColumn=\"";
-			sResult += m_oFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstColumn=\"" + m_oFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oFirstRow.IsInit() )
 		{
-			sResult += L"w:firstRow=\"";
-			sResult += m_oFirstRow->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRow=\"" + m_oFirstRow->ToString() + L"\"";
 		}
 		if ( m_oFirstRowFirstColumn.IsInit() )
 		{
-			sResult += L"w:firstRowFirstColumn=\"";
-			sResult += m_oFirstRowFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRowFirstColumn=\"" + m_oFirstRowFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oFirstRowLastColumn.IsInit() )
 		{
-			sResult += L"w:firstRowLastColumn=\"";
-			sResult += m_oFirstRowLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:firstRowLastColumn=\"" + m_oFirstRowLastColumn->ToString() + L"\"";
 		}
 		if ( m_oLastColumn.IsInit() )
 		{
-			sResult += L"w:lastColumn=\"";
-			sResult += m_oLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastColumn=\"" + m_oLastColumn->ToString() + L"\"";
 		}
 		if ( m_oLastRow.IsInit() )
 		{
-			sResult += L"w:lastRow=\"";
-			sResult += m_oLastRow->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRow=\"" + m_oLastRow->ToString() + L"\"";
 		}
 		if ( m_oLastRowFirstColumn.IsInit() )
 		{
-			sResult += L"w:lastRowFirstColumn=\"";
-			sResult += m_oLastRowFirstColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRowFirstColumn=\"" + m_oLastRowFirstColumn->ToString() + L"\"";
 		}
 		if ( m_oLastRowLastColumn.IsInit() )
 		{
-			sResult += L"w:lastRowLastColumn=\"";
-			sResult += m_oLastRowLastColumn->ToString();
-			sResult += L"\" ";
+			sResult += L" w:lastRowLastColumn=\"" + m_oLastRowLastColumn->ToString() + L"\"";
 		}
 		if ( m_oOddHBand.IsInit() )
 		{
-			sResult += L"w:oddHBand=\"";
-			sResult += m_oOddHBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:oddHBand=\"" + m_oOddHBand->ToString() + L"\"";
 		}
 		if ( m_oOddVBand.IsInit() )
 		{
-			sResult += L"w:oddVBand=\"";
-			sResult += m_oOddVBand->ToString();
-			sResult += L"\" ";
+			sResult += L" w:oddVBand=\"" + m_oOddVBand->ToString() + L"\"";
 		}
 		if ( m_oVal.IsInit() )
 		{
-			sResult += L"w:val=\"";
-			sResult += m_oVal->ToString();
-			sResult += L"\" ";
+			sResult += L" w:val=\"" + m_oVal->ToString() + L"\"";
 		}
 		return sResult;
 	}
@@ -2439,14 +2413,16 @@ namespace Word
 
 		if (m_oEnd.IsInit())
 		{
-			sResult += L"w:end=\"";
+			//sResult += L"w:end=\""; 
+			sResult += L"w:right=\""; // Transitional Migration Features
 			sResult += m_oEnd->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oEndChars.IsInit())
 		{
-			sResult += L"w:endChars=\"";
+//			sResult += L"w:endChars=\"";
+			sResult += L"w:rightChars=\""; // Transitional Migration Features
 			sResult += m_oEndChars->ToString();
 			sResult += L"\" ";
 		}
@@ -2481,14 +2457,16 @@ namespace Word
 
 		if (m_oStart.IsInit())
 		{
-			sResult += L"w:start=\"";
+//			sResult += L"w:start=\"";
+			sResult += L"w:left=\""; // Transitional Migration Features
 			sResult += m_oStart->ToString();
 			sResult += L"\" ";
 		}
 
 		if (m_oStartChars.IsInit())
 		{
-			sResult += L"w:startChars=\"";
+//			sResult += L"w:startChars=\"";
+			sResult += L"w:leftChars=\""; // Transitional Migration Features
 			sResult += m_oStartChars->ToString();
 			sResult += L"\" ";
 		}

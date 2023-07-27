@@ -355,6 +355,7 @@ namespace MetaFile
 			m_lType = c_lMetaSvg;
 			return true;
 		}
+
 	#endif
 
 		return false;
@@ -563,10 +564,7 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-				*pdX = 0;
-				*pdY = 0;
-				*pdW = m_oSvgFile.get_Width();
-				*pdH = m_oSvgFile.get_Height();
+				m_oSvgFile.GetBounds(*pdX, *pdY, *pdW, *pdH);
 				break;
 			}
 		#endif

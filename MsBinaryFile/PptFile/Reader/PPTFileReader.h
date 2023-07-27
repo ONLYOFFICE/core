@@ -38,7 +38,7 @@ namespace PPT
 class CPPTFileReader
 {
 public: 
-    CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp);
+    CPPTFileReader(POLE::Storage *pStorage, const std::wstring &strTempPath);
 	~CPPTFileReader();
     bool IsPowerPoint();
     bool IsEncrypted();
@@ -71,10 +71,10 @@ private:
 	bool						m_bIsPPTFile;
 
 public:	
+	int							m_nPresentationCodePage;
 	POLE::Storage*				m_pStorage; 
-    std::wstring				m_strTmpDirectory;
     std::vector<bool>			m_arLoadImageFlags;
 	CPPTDocumentInfo			m_oDocumentInfo;
-	int							m_nPresentationCodePage;
+	_commonInfo					m_oCommonInfo;
 };
 }

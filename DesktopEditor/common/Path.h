@@ -38,10 +38,11 @@
 
 namespace NSSystemPath
 {
-    KERNEL_DECL std::wstring GetDirectoryName(const std::wstring& strFileName);
-    KERNEL_DECL std::wstring GetFileName(const std::wstring& strFileName);
-    KERNEL_DECL std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight);
-    KERNEL_DECL std::string NormalizePath(const std::string& strFileName);
+	KERNEL_DECL std::wstring GetDirectoryName(const std::wstring& strFileName);
+	KERNEL_DECL std::wstring GetFileName(const std::wstring& strFileName);
+	KERNEL_DECL std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight);
+	KERNEL_DECL std::string NormalizePath(const std::string& strFileName);
+	KERNEL_DECL std::wstring NormalizePath(const std::wstring& strFileName);
 }
 
 #endif //_BUILD_PATH_CROSSPLATFORM_H_

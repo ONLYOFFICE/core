@@ -75,9 +75,8 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
     m_pReader = new PPT::CPPTFileReader(pStgFrom, m_strTempDirectory);
     PPT::CPPTFileReader* pptReader = (PPT::CPPTFileReader*)m_pReader;
     
-	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
-	pptReader->m_oDocumentInfo.m_strPassword		= password;
-	pptReader->m_oDocumentInfo.m_bMacros			= bMacros;
+	pptReader->m_oDocumentInfo.m_strPassword = password;
+	pptReader->m_oDocumentInfo.m_bMacros = bMacros;
 		
 	if	(pptReader->IsPowerPoint() == false) 
 	{ 
@@ -129,9 +128,8 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	}
     if (!((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		PPT::CPPTXWriter oPPTXWriter;
-        oPPTXWriter.m_strTempDirectory = sDstPath;
-		
+		PPT::CPPTXWriter oPPTXWriter(sDstPath);
+
         oPPTXWriter.m_xmlApp  = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
         oPPTXWriter.m_xmlCore = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
 

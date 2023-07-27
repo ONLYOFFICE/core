@@ -5761,11 +5761,11 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 			oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+			oWriter.m_strId = oVmlShape.sXml;
 
 			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
 			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
-			
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}

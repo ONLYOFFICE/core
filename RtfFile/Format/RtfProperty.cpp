@@ -38,7 +38,6 @@
 #include "../../OOXML/DocxFormat/App.h"
 #include "../../OOXML/DocxFormat/Core.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../Common/MS-LCID.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -1763,8 +1762,10 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 			if (ccBuf > 0) str_lang_asian.append(buf);
 		}
 #else
-		str_lang		= (m_nLanguage != PROP_DEF)			? msLCID2wstring(m_nLanguage)		: L"";
-		str_lang_asian	= (m_nLanguageAsian != PROP_DEF)	? msLCID2wstring(m_nLanguageAsian)	: L"";
+		MS_LCID_converter lcidConverter;
+		
+		str_lang		= (m_nLanguage != PROP_DEF)			? lcidConverter.get_wstring(m_nLanguage)		: L"";
+		str_lang_asian	= (m_nLanguageAsian != PROP_DEF)	? lcidConverter.get_wstring(m_nLanguageAsian)	: L"";
 #endif
         if (false == str_lang.empty() || false == str_lang_asian.empty() )
 		{

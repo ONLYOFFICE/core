@@ -5070,7 +5070,7 @@ namespace NExtractTools
 	   {
 		   hRes = dir2zipMscrypt(sResultDocxDir, sTo, sTemp, params);
 	   }
-       return AVS_FILEUTILS_ERROR_CONVERT;
+       return hRes;
    }
 	_UINT32 xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{

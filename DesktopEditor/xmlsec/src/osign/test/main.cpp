@@ -22,6 +22,7 @@ TEST_F(COSignTest, crypt_storage_aes_gcm_random_password)
 {
 	// создаем случайный пароль длиной 100 символов
 	OSign::CStorageBuffer oPassword = OSign::Crypt::GeneratePassword(100);
+	EXPECT_EQ(100, oPassword.GetLength());
 
 	// буфер для шифрования
 	std::string sDataCrypt = "Hello, world!";

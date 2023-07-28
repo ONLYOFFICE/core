@@ -450,6 +450,7 @@ namespace OSign
 			CStorageBuffer buffer;
 			buffer.Alloc(size);
 			RAND_priv_bytes(buffer.GetData(), (int)size);
+			buffer.AddSkip(size);
 			buffer.Skip(size);
 			return buffer;
 		}

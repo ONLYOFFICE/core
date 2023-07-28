@@ -317,6 +317,21 @@ namespace NSCertificate
 
 		return NULL;
 	}
+
+	ICertificate* GenerateByAlg(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props)
+	{
+#ifdef SUPPORT_OPENSSL
+		CCertificate_openssl* pCert = new CCertificate_openssl();
+		bool bIsGenerated = pCert->Generate(key_alg, props);
+		if (!bIsGenerated)
+		{
+			delete pCert;
+			return NULL;
+		}
+		return pCert;
+#endif
+		return NULL;
+	}
 };
 
 #ifdef SUPPORT_OPENSSL

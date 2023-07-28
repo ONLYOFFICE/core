@@ -928,11 +928,8 @@ namespace oox {
 			{
 				CP_XML_NODE(L"p:cTn")
 				{
-					if (PresentationNodeType && PresentationNodeType.value() == L"main-sequence")
-					{
-						CP_XML_ATTR(L"dur", L"indefinite");
-						CP_XML_ATTR(L"nodeType", L"mainSeq");
-					}
+					if (PresentationNodeType)		CP_XML_ATTR(L"nodeType",	PresentationNodeType.value());
+					if (Duration)					CP_XML_ATTR(L"dur",			Duration.value());
 
 					if (AnimParArray.size())
 					{
@@ -942,6 +939,28 @@ namespace oox {
 							{
 								AnimParArray[i]->serialize(CP_XML_STREAM());
 							}
+						}
+					}
+				}
+				CP_XML_NODE(L"p:prevCondLst")
+				{
+					CP_XML_NODE(L"p:cond")
+					{
+						CP_XML_ATTR(L"evt", L"onPrev");
+						CP_XML_NODE(L"p:tgtEl")
+						{
+							CP_XML_NODE(L"p:sldTgt");
+						}
+					}
+				}
+				CP_XML_NODE(L"p:nextCondLst")
+				{
+					CP_XML_NODE(L"p:cond")
+					{
+						CP_XML_ATTR(L"evt", L"onNext");
+						CP_XML_NODE(L"p:tgtEl")
+						{
+							CP_XML_NODE(L"p:sldTgt");
 						}
 					}
 				}
@@ -990,7 +1009,8 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								CP_XML_STREAM() << AttributeName.value();
+								std::wstring attibuteName = L"\b" + AttributeName.value();
+								CP_XML_STREAM() << attibuteName;
 							}
 						}
 					}
@@ -1124,7 +1144,8 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								CP_XML_STREAM() << AttributeName;
+								std::wstring attibuteName = L"\b" + AttributeName.value();
+								CP_XML_STREAM() << attibuteName;
 							}
 						}
 					}
@@ -1198,7 +1219,8 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								CP_XML_STREAM() << AttributeName.value();
+								std::wstring attributeName = L"\b" + AttributeName.value();
+								CP_XML_STREAM() << attributeName;
 							}
 						}
 					}

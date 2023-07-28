@@ -282,7 +282,7 @@ static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attri
 	case smil_attribute_name::fill:				return L"fill.type";
 	case smil_attribute_name::fillColor:		return L"fillcolor";
 	case smil_attribute_name::fillStyle:		return L"";
-	case smil_attribute_name::height:			return L"";
+	case smil_attribute_name::height:			return L"ppt_h";
 	case smil_attribute_name::lineColor:		return L"";
 	case smil_attribute_name::lineStyle:		return L"";
 	case smil_attribute_name::opacity:			return L"style.opacity";
@@ -298,6 +298,24 @@ static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attri
 	return L"";
 }
 
+static std::wstring pptx_convert_presentation_node_type(const odf_types::presentation_node_type& presentation_node_type_)
+{
+	using namespace odf_types;
+
+	switch (presentation_node_type_.get_type())
+	{
+	case presentation_node_type::default				: return L"clickEffect";
+	case presentation_node_type::after_previous			: return L"afterEffect";
+	case presentation_node_type::interactive_sequence	: return L"interactiveSeq";
+	case presentation_node_type::main_sequence			: return L"mainSeq";
+	case presentation_node_type::on_click				: return L"clickEffect";
+	case presentation_node_type::timing_root			: return L"tmRoot";
+	case presentation_node_type::with_previous			: return L"withEffect";
+	}
+
+	return L"clickEffect";
+}
+
 static std::wstring pptx_convert_animation_function(std::wstring animation_function)
 {
 	boost::replace_all(animation_function, L"x", L"#ppt_x");
@@ -310,12 +328,13 @@ static std::wstring pptx_convert_animation_function(std::wstring animation_funct
 
 static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
 {
+	if(smil_begin == L"next")
+		return L"indefinite";
+
 	std::wstring delay;
 	clockvalue delayClockvalue = clockvalue::parse(smil_begin);
 	if (delayClockvalue.get_value() != -1)
 		delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
-	else
-		delay = L"indefinite";
 
 	return delay;
 }
@@ -360,10 +379,23 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	
 	if (common_attlist_.presentation_node_type_)
 	{
-			 if (common_attlist_.presentation_node_type_.value() == L"timing-root")			presentationNodeType = L"tmRoot";
-		else if (common_attlist_.presentation_node_type_.value() == L"on-click")				presentationNodeType = L"clickEffect";
-		else if (common_attlist_.presentation_node_type_.value() == L"after-previous")			presentationNodeType = L"afterEffect";
-		else if (common_attlist_.presentation_node_type_.value() == L"with-previous")			presentationNodeType = L"withEffect";
+		switch (common_attlist_.presentation_node_type_.value().get_type())
+		{
+		case odf_types::presentation_node_type::timing_root:
+			presentationNodeType = L"tmRoot";
+			break;
+		case odf_types::presentation_node_type::on_click:
+			presentationNodeType = L"clickEffect";
+			break;
+		case odf_types::presentation_node_type::after_previous:
+			presentationNodeType = L"afterEffect";
+			break;
+		case odf_types::presentation_node_type::with_previous:
+			presentationNodeType = L"withEffect";
+			break;
+		}
+
+		presentationNodeType = pptx_convert_presentation_node_type(common_attlist_.presentation_node_type_.value());
 	}
 
 	if (common_attlist_.smil_direction_)
@@ -494,14 +526,23 @@ void anim_seq::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	_CP_OPT(std::wstring)	presentationNodeType;
+	_CP_OPT(int)			duration;
+
+	if (attlist_.presentation_node_type_)
+		presentationNodeType = pptx_convert_presentation_node_type(attlist_.presentation_node_type_.value());
+
+	if (attlist_.smil_dur_)
+		duration = attlist_.smil_dur_->get_value();
+
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
 	animationContext.start_seq_animation();
 
-	if (attlist_.presentation_node_type_)	animationContext.set_seq_animation_presentation_node_type(attlist_.presentation_node_type_.value());
+	if (presentationNodeType)				animationContext.set_seq_animation_presentation_node_type(presentationNodeType.value());
 	if (attlist_.smil_direction_)			animationContext.set_seq_animation_direction(attlist_.smil_direction_.value());
 	if (attlist_.smil_restart_)				animationContext.set_seq_animation_restart(attlist_.smil_restart_.value());
-	if (attlist_.smil_dur_)					animationContext.set_seq_animation_dur(attlist_.smil_dur_.value().get_value());
+	if (duration)							animationContext.set_seq_animation_dur(duration.value());
 	if (attlist_.smil_begin_)				animationContext.set_seq_animation_delay(attlist_.smil_begin_.value());
 	if (attlist_.smil_end_)					animationContext.set_seq_animation_end(attlist_.smil_end_.value());
 

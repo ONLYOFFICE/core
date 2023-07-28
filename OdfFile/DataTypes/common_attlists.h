@@ -52,6 +52,7 @@
 #include "anchortype.h"
 #include "linewidth.h"
 #include "presentationclass.h"
+#include "presentationnodetype.h"
 #include "xlink.h"
 #include "drawfill.h"
 #include "clockvalue.h"
@@ -592,14 +593,14 @@ public:
     void apply_from		(const common_anim_smil_attlist & Other);
 	void serialize		(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)			presentation_node_type_;
+	_CP_OPT(odf_types::presentation_node_type)		presentation_node_type_;
 
-	_CP_OPT(std::wstring)			smil_direction_;
-	_CP_OPT(std::wstring)			smil_restart_;
-	_CP_OPT(odf_types::clockvalue)	smil_dur_;
+	_CP_OPT(std::wstring)			                smil_direction_;
+	_CP_OPT(std::wstring)			                smil_restart_;
+	_CP_OPT(odf_types::clockvalue)	                smil_dur_;
 
-	_CP_OPT(std::wstring)			smil_begin_;
-	_CP_OPT(std::wstring)			smil_end_;
+	_CP_OPT(std::wstring)			                smil_begin_;
+	_CP_OPT(std::wstring)			                smil_end_;
 };
 
 class section_attlists

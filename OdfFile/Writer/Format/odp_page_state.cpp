@@ -180,7 +180,7 @@ void odp_page_state::set_anim_type(std::wstring val)
 	
 	if (val == L"tmRoot")
 	{
-		anim_levels.back().attlist->presentation_node_type_ = L"timing-root";
+		anim_levels.back().attlist->presentation_node_type_ = presentation_node_type::timing_root;
 		if (transactions.empty() == false)
 		{
 			std::wstring slide_id = L"slide" + std::to_wstring(page_id_) + L"id";

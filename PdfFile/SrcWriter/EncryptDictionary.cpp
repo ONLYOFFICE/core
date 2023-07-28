@@ -218,7 +218,8 @@ namespace PdfWriter
 
         Add("Type", "Sig");
         Add("Filter", "Adobe.PPKLite");
-        Add("SubFilter", "adbe.pkcs7.detached");
+		Add("SubFilter", "adbe.pkcs7.detached");
+		//Add("SubFilter", "ETSI.CAdES.detached");
 
         unsigned int unDigestLength = 15000;
         BYTE* pDigest = new BYTE[unDigestLength];

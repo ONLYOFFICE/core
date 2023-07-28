@@ -131,6 +131,64 @@ public:
 		}
 	}
 
+	bool Generate2(const std::string& key_alg)
+	{
+		EVP_PKEY* pubkeyEd25519=EVP_PKEY_new();
+		EVP_PKEY* privkeyEd25519=EVP_PKEY_new();
+
+		unsigned char sPublicK[32] = {1,1,1,1,1,1,1,1,1,1,
+										1,1,1,1,1,1,1,1,1,1,
+										1,1,1,1,1,1,1,1,1,1,
+										1,1};
+		unsigned char sPrivateK[32] = {2,1,1,1,1,1,1,1,1,1,
+										1,1,1,1,1,1,1,1,1,1,
+										1,1,1,1,1,1,1,1,1,1,
+										1,1};
+
+		pubkeyEd25519 = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL, sPublicK, 32);
+		privkeyEd25519 = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, NULL, sPrivateK, 32);
+
+		if ((m_cert=X509_new()) == NULL)
+			return false;
+
+		X509_set_version(m_cert,2);
+		X509_gmtime_adj(X509_get_notBefore(m_cert),(long)0);
+		X509_gmtime_adj(X509_get_notAfter(m_cert), 31536000L);
+		X509_set_pubkey(m_cert,privkeyEd25519);
+
+		 X509_NAME *subjectName=X509_get_subject_name(m_cert);
+
+		X509_NAME_add_entry_by_txt(subjectName, "C",  MBSTRING_ASC,
+								(unsigned char *)"US", -1, -1, 0);
+		X509_NAME_add_entry_by_txt(subjectName, "O",  MBSTRING_ASC,
+								(unsigned char *)"Organization", -1, -1, 0);
+		X509_NAME_add_entry_by_txt(subjectName, "CN", MBSTRING_ASC,
+								(unsigned char *)"CNwho", -1, -1, 0);
+
+		X509_set_issuer_name(m_cert,subjectName);
+
+		EVP_PKEY *pkey = X509_get_pubkey(m_cert);
+
+		if (!X509_sign(m_cert,privkeyEd25519,EVP_md_null()))
+				return false;
+
+			int resultverifyx509 = X509_verify(m_cert, pkey);
+			std::string sErr = ERR_error_string(ERR_get_error(),NULL);
+
+			BIO* inputbio = BIO_new(BIO_s_mem());
+			BIO_write(inputbio, sPublicK, 322);
+			PKCS7* pkcs7 = PKCS7_sign(m_cert, privkeyEd25519, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
+			BIO_free(inputbio);
+			sErr = ERR_error_string(ERR_get_error(), NULL);
+
+			EVP_PKEY_free(pubkeyEd25519);
+			EVP_PKEY_free(privkeyEd25519);
+			//EVP_PKEY_free(pkey);
+			X509_free(m_cert);
+
+			return true;
+	}
+
 	bool Generate(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>())
 	{
 		EVP_PKEY_CTX* pctx = nullptr;
@@ -520,12 +578,33 @@ public:
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
+		if (m_alg == OOXML_HASH_ALG_ED25519)
+		{
+			EVP_PKEY_CTX* pkctx = nullptr;
+			EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
+			EVP_DigestSignInit(pCtx, &pkctx, NULL, NULL, m_key);
+
+			size_t nSignatureLen = 0;
+			unsigned char* pSignature = NULL;
+			EVP_DigestSign(pCtx, NULL, &nSignatureLen, pData, (size_t)nSize);
+			pSignature = (unsigned char*)OPENSSL_zalloc(nSignatureLen);
+			size_t nSignatureLen2 = EVP_PKEY_size(m_key);
+			EVP_DigestSign(pCtx, pSignature, &nSignatureLen,  pData, (size_t)nSize);
+
+			pDataDst = pSignature;
+			nSizeDst = nSignatureLen;
+
+			return true;
+		}
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
 		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
 		BIO_free(inputbio);
 		if (!pkcs7)
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
 			return false;
+		}
 
 		BIO* outputbio = BIO_new(BIO_s_mem());
 		i2d_PKCS7_bio(outputbio, pkcs7);

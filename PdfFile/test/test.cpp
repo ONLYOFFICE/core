@@ -97,7 +97,16 @@ int main()
         std::string sCertificateFilePassword = "123456";
         std::string sPrivateFilePassword = "";
 
-        pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+
+		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
+		properties.insert(std::make_pair(L"phone", L"+00000000000"));
+		std::wstring sNameTest = L"NameTest";
+		std::wstring sValueTest = L"ValueTest";
+		properties.insert(std::make_pair(sNameTest, sValueTest));
+
+		pCertificate = NSCertificate::GenerateByAlg("ed25519", properties);
     }
 
     if (false)
@@ -110,7 +119,7 @@ int main()
         return 0;
     }
 
-    if (true)
+	if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 0;
@@ -131,7 +140,7 @@ int main()
         return 0;
     }
 
-    if (false)
+	if (true)
     {
         pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;

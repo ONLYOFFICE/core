@@ -10,3 +10,7 @@ core_windows:vs2019 {
     QMAKE_CXXFLAGS_RELEASE += -permissive-
     QMAKE_CXXFLAGS += -permissive-
 }
+
+apple_silicon:greaterThan(QT_MAJOR_VERSION, 5) {
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
+}

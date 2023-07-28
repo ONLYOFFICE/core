@@ -12,37 +12,37 @@ typedef long int ssize_t;
 
 class Mwindow : public QMainWindow
 {
-       Q_OBJECT
+	Q_OBJECT
 
 public:
-       Mwindow();
-       virtual ~Mwindow();
+	Mwindow();
+	virtual ~Mwindow();
 
 private slots:
-       void openFile();
-       void play();
-       void stop();
-       void mute();
-       void about();
-       void fullscreen();
+	void openFile();
+	void play();
+	void stop();
+	void mute();
+	void about();
+	void fullscreen();
 
-       int changeVolume(int);
-       void changePosition(int);
-       void updateInterface();
+	int changeVolume(int);
+	void changePosition(int);
+	void updateInterface();
 
 protected:
-       virtual void closeEvent(QCloseEvent *);
+	virtual void closeEvent(QCloseEvent *);
 
 private:
-       QPushButton *playBut;
-       QSlider *volumeSlider;
-       QSlider *slider;
-       QWidget *videoWidget;
+	QPushButton *playBut;
+	QSlider *volumeSlider;
+	QSlider *slider;
+	QWidget *videoWidget;
 
-       libvlc_instance_t *vlcInstance;
-       libvlc_media_player_t *vlcPlayer;
+	libvlc_instance_t *vlcInstance;
+	libvlc_media_player_t *vlcPlayer;
 
-       void initUI();
+	void initUI();
 };
 
 #endif

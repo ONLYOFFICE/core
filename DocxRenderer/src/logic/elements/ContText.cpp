@@ -525,12 +525,12 @@ namespace NSDocxRenderer
 	double CContText::CalculateWideSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 2.5;
+		return m_dSpaceWidthMM * 3;
 	}
 
 	double CContText::CalculateThinSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 0.25;
+		return m_dSpaceWidthMM * 0.2;
 	}
 }

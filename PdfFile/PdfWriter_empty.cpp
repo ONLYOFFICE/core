@@ -84,6 +84,10 @@ HRESULT CPdfWriter::get_BrushLinearAngle(double* dAngle) { return 0; }
 HRESULT CPdfWriter::put_BrushLinearAngle(const double& dAngle) { return 0; }
 HRESULT CPdfWriter::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight) { return 0; }
 HRESULT CPdfWriter::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount) { return 0; }
+HRESULT CPdfWriter::get_BrushTextureImage(Aggplus::CImage** pImage) { return 0; }
+HRESULT CPdfWriter::put_BrushTextureImage(Aggplus::CImage* pImage) { return 0; }
+HRESULT CPdfWriter::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return 0; }
+HRESULT CPdfWriter::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return 0; }
 HRESULT CPdfWriter::get_FontName(std::wstring* wsName) { return 0; }
 HRESULT CPdfWriter::put_FontName(const std::wstring& wsName) { return 0; }
 HRESULT CPdfWriter::get_FontPath(std::wstring* wsPath) { return 0; }

@@ -1009,8 +1009,7 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								std::wstring attibuteName = L"\b" + AttributeName.value();
-								CP_XML_STREAM() << attibuteName;
+								CP_XML_STREAM() << AttributeName.value();
 							}
 						}
 					}
@@ -1144,8 +1143,7 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								std::wstring attibuteName = L"\b" + AttributeName.value();
-								CP_XML_STREAM() << attibuteName;
+								CP_XML_STREAM() << AttributeName.value();
 							}
 						}
 					}
@@ -1219,8 +1217,7 @@ namespace oox {
 						{
 							CP_XML_NODE(L"p:attrName")
 							{
-								std::wstring attributeName = L"\b" + AttributeName.value();
-								CP_XML_STREAM() << attributeName;
+								CP_XML_STREAM() << AttributeName.value();
 							}
 						}
 					}

@@ -44,6 +44,8 @@
 
 #include "drawing_object_description.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace cpdoccore {
 namespace oox {
 
@@ -900,6 +902,23 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 		# else
 		pptx_animation_context_.serialize(strm);
 		#endif
+
+		{
+			// NOTE: При использовании operator<< потока буст пушит туда лишний пробел перед значением.
+			//		С этим пробелом наш редактор onlyoffice на распознает значение.
+			// Example: 
+			// <p:attrName> ppt_y</p:attrName>
+			// <p:attrName>ppt_y</p:attrName>
+			// TODO: Figure out how to push value without redundant space character
+			std::wstringstream ss;
+			ss << strm.rdbuf();
+			std::wstring str = ss.str();
+			boost::replace_all(str, L"> ", L">");
+			strm.clear();
+			strm << str;
+		}
+		
+
 	}
 }
 

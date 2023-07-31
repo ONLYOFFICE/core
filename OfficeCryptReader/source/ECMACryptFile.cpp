@@ -942,9 +942,10 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		}
 	}
 //-------------------------------------------------------------------
+	bool result = true;
 	if (bLargeFile)
 	{
-		pStorageNew->Save(file_name_out);
+		result = pStorageNew->Save(file_name_out);
 		pStorageNew->Close();
 		delete pStorageNew;
 	}
@@ -974,7 +975,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	}
 ////test back---------------------------------------------------------------------------------test back
 
-	return true;
+	return result;
 }
 bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity)
 {
@@ -1094,7 +1095,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 		{
 			NSFile::CFileBinary f;
             f.CreateFileW(file_name_out);
-			f.WriteFile(data_out, lengthData);
+			f.WriteFile(data_out, (std::min)((int)lengthData, readData));
 			f.CloseFile();
 
 			delete []data_out;

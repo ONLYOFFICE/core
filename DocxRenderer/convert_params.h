@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,53 +31,14 @@
  */
 #pragma once
 
-#include "cfstorage.h"
-#include "idirectoryentry.h"
-
-namespace CFCPP
+namespace NSDocxRenderer
 {
-
-enum CFSConfiguration
-{
-    Default = 1,                // No other flags
-    SectorRecycle = 2,          // Rewrite unused sectors
-    EraseFreeSectors = 4,       // Free sectors are erased to avoid information leakage
-    NoValidationException = 8,  // Ignore some file reading errors to read broken files
-    LeaveOpen = 16              // file will not be closed
-};
-
-enum CFSUpdateMode
-{
-    ReadOnly,
-    Update
-};
-
-class CompoundFile_impl;
-class CompoundFile
-{
-public:
-    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters = Default);
-    CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags);
-    CompoundFile(const std::wstring &fileName);
-    CompoundFile(Stream stream);
-    CompoundFile();
-
-    std::shared_ptr<CFStorage> RootStorage();
-
-    bool Save(std::wstring wFileName);
-    void Save(Stream stream);
-
-    void Commit(bool releaseMemory = false);
-    bool HasSourceStream() const;
-    bool ValidationExceptionEnabled() const;
-    bool IsClosed()const;
-    void Close();
-
-    std::vector<BYTE> GetDataBySID(_INT32 sid);
-    _GUID_ getGuidBySID(_INT32 sid);
-    _GUID_ getGuidForStream(_INT32 sid);
-
-private:
-    std::shared_ptr<CompoundFile_impl> _impl;
-};
+    enum TextAssociationType
+    {
+        tatBlockChar        = 0, // Каждый символ во фрейме
+        tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
+        tatPlainLine        = 2, // Каждая линия - параграф обычный
+        tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
+        tatPlainParagraph   = 4  // Линии объединяются в параграфы
+    };
 }

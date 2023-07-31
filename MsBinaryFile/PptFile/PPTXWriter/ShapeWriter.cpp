@@ -1430,7 +1430,7 @@ std::wstring CShapeWriter::WriteBullets(CTextPFRun *pPF, CRelsGenerator* pRels)
 
                 if ( pPF->bulletFontProperties->PitchFamily > 0)
                 {
-                    buWrt.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->PitchFamily) + L"\"");
+                    buWrt.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring((char)pPF->bulletFontProperties->PitchFamily) + L"\"");
                 }
                 if ( pPF->bulletFontProperties->Charset > 0)
                 {

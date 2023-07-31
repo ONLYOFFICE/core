@@ -128,6 +128,69 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 	return L"jsValue(" + sParam + L")";
 }
 
+std::string GetCorrectArgument(const std::string& sInput)
+{
+	if (sInput.empty())
+		return "{}";
+
+	const char* input = sInput.c_str();
+	std::string::size_type len = sInput.length();
+
+	std::string sResult;
+	sResult.reserve(len);
+
+	bool bIsInsideString = false;
+	int nQouteMarkCounter = 0;
+	for (std::string::size_type pos = 0; pos < len; ++pos)
+	{
+		char cur = input[pos];
+		if (bIsInsideString)
+		{
+			if ('\\' == cur)
+				++nQouteMarkCounter;
+			else if ('\"' == cur)
+			{
+				if (nQouteMarkCounter & 1)
+				{
+					// внутренняя кавычка - ничего не делаем
+				}
+				else
+				{
+					bIsInsideString = false;
+					nQouteMarkCounter = 0;
+				}
+			}
+			else
+			{
+				nQouteMarkCounter = 0;
+			}
+			sResult += cur;
+		}
+		else
+		{
+			switch (cur)
+			{
+			case '\\':
+			{
+				while (pos < (len - 1) && isalpha(input[pos + 1]))
+					++pos;
+				break;
+			}
+			case '\n':
+			case '\r':
+			case '\t':
+				break;
+			case '\"':
+				bIsInsideString = true;
+			default:
+				sResult += cur;
+			}
+		}
+	}
+
+	return sResult;
+}
+
 bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
 	LOGGER_SPEED_START();
@@ -145,9 +208,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	if (true)
 	{
-		std::string sArg = m_sUtf8ArgumentJSON;
-		if (sArg.empty())
-			sArg = "{}";
+		std::string sArg = GetCorrectArgument(m_sUtf8ArgumentJSON);
+
 		NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
 		NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
 		std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
@@ -257,7 +319,18 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
+	{
 		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
+		// не поддерживает x2т прямую конвертацию. делаем ***T format
+		switch (m_nFileType)
+		{
+		case 0: { _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT; break; }
+		case 1: { _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT; break; }
+		case 2: { _formatDst = NSDoctRenderer::DoctRendererFormat::XLST; break; }
+		default:
+			break;
+		}
+	}
 
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
@@ -1250,6 +1323,15 @@ namespace NSDoctRenderer
 			size_t _len = command.length();
 
 			bool bIsBuilder = false;
+			bool bIsBuilderJSCloseFile = false;
+			while (_len > 0)
+			{
+				if (' ' != *_data && '\t' != *_data)
+					break;
+				++_data;
+				--_len;
+			}
+
 			if (_len > 8)
 			{
 				if (_data[0] == 'b' &&
@@ -1258,9 +1340,32 @@ namespace NSDoctRenderer
 						_data[3] == 'l' &&
 						_data[4] == 'd' &&
 						_data[5] == 'e' &&
-						_data[6] == 'r' &&
-						_data[7] == '.')
-					bIsBuilder = true;
+						_data[6] == 'r')
+				{
+					if (_data[7] == '.')
+						bIsBuilder = true;
+					else if (_len > 20)
+					{
+						if (_data[7] == 'J' &&
+								_data[8] == 'S' &&
+								_data[9] == '.' &&
+								_data[10] == 'C' &&
+								_data[11] == 'l' &&
+								_data[12] == 'o' &&
+								_data[13] == 's' &&
+								_data[14] == 'e' &&
+								_data[15] == 'F' &&
+								_data[16] == 'i' &&
+								_data[17] == 'l' &&
+								_data[18] == 'e' &&
+								_data[19] == '(' &&
+								_data[20] == ')')
+						{
+							bIsBuilder = true;
+							bIsBuilderJSCloseFile = true;
+						}
+					}
+				}
 			}
 
 			bool bIsNoError = true;
@@ -1280,6 +1385,9 @@ namespace NSDoctRenderer
 					++_pos;
 
 				std::string sFuncNum(_data + 8, _pos - 8);
+				if (bIsBuilderJSCloseFile)
+					sFuncNum = "CloseFile";
+
 				int nCountParameters = 0;
 				ParceParameters(command, _builder_params, nCountParameters);
 

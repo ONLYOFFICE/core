@@ -94,11 +94,11 @@ namespace NSDoctRenderer
 		else if (L"pdf" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 		else if (L"image" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
 		else if (L"jpg" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
 		return nFormat;
 	}
 }
@@ -452,6 +452,7 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+		bool m_bJavascriptBeforeEditor;
 
 		std::wstring m_sX2tPath;
 
@@ -476,7 +477,7 @@ namespace NSDoctRenderer
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
-			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
+			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
 		{
 		}
 
@@ -623,6 +624,9 @@ namespace NSDoctRenderer
 				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
 				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 			}
+
+			if (m_bJavascriptBeforeEditor)
+				CheckWorkerAfterOpen();
 
 			return bRet;
 #else
@@ -912,7 +916,11 @@ namespace NSDoctRenderer
 			LOGGER_SPEED_LAP("open_convert");
 
 			if (0 == nReturnCode)
+			{
+				if (m_bJavascriptBeforeEditor)
+					CheckWorkerAfterOpen();
 				return 0;
+			}
 
 			NSDirectory::DeleteDirectory(m_sFileDir);
 			m_sFileDir = L"";
@@ -923,7 +931,7 @@ namespace NSDoctRenderer
 			return nReturnCode;
 		}
 
-		void CloseFile()
+		void CloseFile(bool bIsDestroyJS = true)
 		{
 			Init();
 
@@ -935,7 +943,9 @@ namespace NSDoctRenderer
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
-			RELEASEOBJECT(m_pWorker);
+
+			if (bIsDestroyJS)
+				RELEASEOBJECT(m_pWorker);
 		}
 
 		std::wstring GetSaveFilePath(const std::wstring& path)
@@ -989,6 +999,9 @@ namespace NSDoctRenderer
 					{
 						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
 						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+
+						if (0 != sJsonParams.find(L"{"))
+							sJsonParams = L"";
 					}
 					else
 					{
@@ -1196,32 +1209,39 @@ namespace NSDoctRenderer
 
 		bool CheckWorker()
 		{
-			if (-1 == m_nFileType)
-			{
-				CV8RealTimeWorker::_LOGGING_ERROR_(L"error (command)", L"file not opened!");
-				return false;
-			}
-
 			if (NULL == m_pWorker)
 			{
 				m_pWorker = new CV8RealTimeWorker(m_pParent);
-				m_pWorker->m_nFileType = m_nFileType;
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 
-				std::wstring sCachePath = L"";
-				if (m_bIsCacheScript)
-					sCachePath = GetScriptCache();
-
-				CV8Params oParams;
-				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
-				oParams.DocumentDirectory = m_sFileDir;
-
-				bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
-				if (!bOpen)
-					return false;
+				return CheckWorkerAfterOpen();
 			}
 			return true;
+		}
+
+		bool CheckWorkerAfterOpen()
+		{
+			if (!m_pWorker)
+				return false;
+
+			m_pWorker->m_nFileType = m_nFileType;
+			if (-1 == m_nFileType)
+			{
+				m_bJavascriptBeforeEditor = true;
+				return false;
+			}
+
+			m_bJavascriptBeforeEditor = false;
+			std::wstring sCachePath = L"";
+			if (m_bIsCacheScript)
+				sCachePath = GetScriptCache();
+
+			CV8Params oParams;
+			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+			oParams.DocumentDirectory = m_sFileDir;
+
+			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
 		}
 
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
@@ -1270,9 +1290,7 @@ namespace NSDoctRenderer
 
 			Init();
 
-			if (!CheckWorker())
-				return false;
-
+			CheckWorker();
 			return m_pWorker->ExecuteCommand(command, retValue);
 		}
 
@@ -1280,8 +1298,7 @@ namespace NSDoctRenderer
 		{
 			CDocBuilderContext ctx;
 
-			if (!CheckWorker())
-				return ctx;
+			CheckWorker();
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;

@@ -77,12 +77,12 @@ bool RoundTripExtractor::extract()
     if (!m_roundTripRecord)
         return false;
 
-
     std::wstring tempRootPath = NSDirectory::GetTempPath();
     if (false == NSDirectory::Exists(tempRootPath))
         return false;
-    std::wstring tempZipPath = tempRootPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
 
+    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(tempRootPath);
+    std::wstring tempZipPath = m_extractedFolderPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
 
     BYTE* zipData = m_roundTripRecord->data.first.get();
     ULONG zipDataLen = m_roundTripRecord->data.second;
@@ -93,9 +93,9 @@ bool RoundTripExtractor::extract()
     binFile.CloseFile();
 
     COfficeUtils officeUtils(NULL);
-    m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(tempRootPath);
     if(S_FALSE == officeUtils.ExtractToDirectory(tempZipPath, m_extractedFolderPath, NULL, 0))
         return false;
+
     NSFile::CFileBinary::Remove(tempZipPath);
 
     return true;

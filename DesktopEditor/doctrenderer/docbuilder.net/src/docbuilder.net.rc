@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "Document Builder .NET"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "docbuilder.net"
-            VALUE "LegalCopyright", "Copyright (C) 2023"
+            VALUE "LegalCopyright", "Copyright (C) Ascensio System SIA 2023. All rights reserved."
             VALUE "OriginalFilename", "docbuilder.net"
             VALUE "ProductName", "docbuilder.net"
             VALUE "ProductVersion", "1.0.0.1"

@@ -1414,6 +1414,12 @@ namespace NSFile
 		close(dst);
 		return (-1 != read_size_marker) ? true : false;
 #else
+
+#ifdef _WIN32
+		if (0 != ::CopyFileW(strSrc.c_str(), strDst.c_str(), 1))
+			return true;
+#endif
+
 		std::ifstream src;
 		std::ofstream dst;
 

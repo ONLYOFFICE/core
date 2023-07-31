@@ -317,6 +317,7 @@ namespace PPTX
 									std::wstring strTempFile ;
 
 									bool bIsUrl = false;
+									bool bIsTheme = false;
 
 									if (!blip.is_init())
 										blip = new PPTX::Logic::Blip();
@@ -404,6 +405,7 @@ namespace PPTX
 											if (0 == strImagePath.find(_T("theme")))
 											{
 												strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
+												bIsTheme = true;
 											}
 											else
 											{
@@ -415,12 +417,16 @@ namespace PPTX
 									}
 									// -------------------
 									//в случае url не надо нормализовать путь
-									if(!bIsUrl)
+									if(!bIsUrl && !bIsTheme)
 									{
 										OOX::CPath pathUrl = strImagePath;
 										strImagePath = pathUrl.GetPath();
+										
+										if (std::wstring::npos == strImagePath.find(pReader->m_strFolder))
+										{
+											strImagePath.clear();
+										}				
 									}
-
 									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
 
 									// -------------------

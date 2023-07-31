@@ -921,9 +921,9 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     {
         NSFile::CFileBinary file;
 
-        std::wstring temp = NSDirectory::GetTempPath();
-
-        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+        std::wstring tempFileName = NSDirectory::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"MB");
+        if (NSFile::CFileBinary::Exists(tempFileName))
+            NSFile::CFileBinary::Remove(tempFileName);
 
         if (file.CreateFileW(tempFileName))
         {
@@ -2145,8 +2145,9 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
         if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
         {
-            std::wstring temp = NSDirectory::GetTempPath();
-            std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+            std::wstring tempFileName = NSDirectory::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"MB");
+            if (NSFile::CFileBinary::Exists(tempFileName))
+                NSFile::CFileBinary::Remove(tempFileName);
 
             NSFile::CFileBinary file;
             if (file.CreateFileW(tempFileName))

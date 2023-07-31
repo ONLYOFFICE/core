@@ -43,7 +43,7 @@ namespace OOX
 	{
 	public:
 		JsaProject( OOX::Document *pMain );
-		JsaProject(OOX::Document *pMain, const CPath& filename);
+		JsaProject(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
 		virtual ~JsaProject();
 
 		virtual const FileType type() const;

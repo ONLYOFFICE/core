@@ -101,7 +101,7 @@ std::wstring PPT::CFontProperty::getXmlArgsStr() const
 {
     std::wstring str = L" typeface=\"" + Name + L"\"";
     if (IsValidPitchFamily(PitchFamily))
-        str += L" pitchFamily=\"" + std::to_wstring(PitchFamily) + L"\"";
+        str += L" pitchFamily=\"" + std::to_wstring((char)PitchFamily) + L"\"";
     if (IsValidCharset(Charset))
         str += L" charset=\"" + std::to_wstring((char)Charset) + L"\"";
 

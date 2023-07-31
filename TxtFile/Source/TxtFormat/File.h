@@ -45,13 +45,13 @@ namespace Txt
 		void read			(const std::wstring& filename);
 		void read			(const std::wstring& filename, int code_page);
 		
-		void write			(const std::wstring& filename) const;
+		bool write			(const std::wstring& filename) const;
 		
-		void writeCodePage	(const std::wstring& filename, int code_page) const;
-		void writeUtf8		(const std::wstring& filename) const;
-		void writeUnicode	(const std::wstring& filename) const;
-		void writeBigEndian	(const std::wstring& filename) const;
-		void writeAnsi		(const std::wstring& filename) const;
+		bool writeCodePage	(const std::wstring& filename, int code_page) const;
+		bool writeUtf8		(const std::wstring& filename) const;
+		bool writeUnicode	(const std::wstring& filename) const;
+		bool writeBigEndian	(const std::wstring& filename) const;
+		bool writeAnsi		(const std::wstring& filename) const;
 		
 		const bool isValid	(const std::wstring& filename) const;
 		

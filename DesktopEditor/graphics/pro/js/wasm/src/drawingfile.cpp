@@ -462,6 +462,20 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 4;
 			std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
 		}
+		if (nFlags & (1 << 3))
+		{
+			int nCLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "C ";
+
+			for (int j = 0; j < nCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << (double)nPathLength / 100.0 << " ";
+			}
+			std::cout << ", ";
+		}
 		if (nFlags & (1 << 4))
 		{
 			std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
@@ -594,20 +608,6 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 4;
 			std::cout << "Contents " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
-		}
-		if (nFlags & (1 << 16))
-		{
-			int nCLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "C ";
-
-			for (int j = 0; j < nCLength; ++j)
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
-			}
-			std::cout << ", ";
 		}
 		if (nFlags & (1 << 18))
 		{

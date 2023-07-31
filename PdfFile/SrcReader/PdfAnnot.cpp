@@ -469,6 +469,12 @@ if (func(sName, &oObj)->isString())\
 }\
 oObj.free();\
 }
+#define ARR_GET_NUM(take, get, put) \
+{\
+	if (take.arrayGet(get, &oObj2)->isNum())\
+		put = oObj2.getNum();\
+	oObj2.free();\
+}
 
 //------------------------------------------------------------------------
 // Widget
@@ -836,20 +842,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
     // 16 - Альтернативный текст - Contents
     DICT_LOOKUP_STRING(pField->fieldLookup, "Contents", 15, m_sContents);
 
-    // 17 - Специальный цвет для аннотации - C
-    if (pField->fieldLookup("C", &oObj)->isArray())
-    {
-        m_unFlags |= (1 << 16);
-        int nCLength = oObj.arrayGetLength();
-        for (int j = 0; j < nCLength; ++j)
-        {
-            Object oCj;
-            m_arrC.push_back(oObj.arrayGet(j, &oCj)->isNum() ? oCj.getNum() : 0.0);
-            oCj.free();
-        }
-    }
-    oObj.free();
-
     // 19 - Частичное имя поля - T
     DICT_LOOKUP_STRING(oField.dictLookup, "T", 18, m_sT);
 
@@ -862,6 +854,15 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
         pA->sType = sAA;
     }
     oAction.free();
+}
+
+//------------------------------------------------------------------------
+// Text
+//------------------------------------------------------------------------
+
+CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+
 }
 
 //------------------------------------------------------------------------
@@ -893,63 +894,57 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
     }
     oObj1.free();
 
-    // Родительские Fields
+	// Fields
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
-        if (!pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
+		if (!pField || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
         {
             oFieldRef.free();
             continue;
         }
+		// Родители
         Object oParentRefObj;
         if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
             getParents(xref, &oParentRefObj, m_arrParents);
         oParentRefObj.free();
-    }
 
-    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
-    {
-        AcroFormField* pField = pAcroForms->getField(i);
-        if (!pField)
-            continue;
-
-        CAnnot* pAnnot = NULL;
-        AcroFormFieldType oType = pField->getAcroFormFieldType();
-        switch (oType)
-        {
-        case acroFormFieldPushbutton:
-        case acroFormFieldRadioButton:
-        case acroFormFieldCheckbox:
-        {
-            pAnnot = new CAnnotWidgetBtn(pdfDoc, pField);
-            break;
-        }
-        case acroFormFieldFileSelect:
-        case acroFormFieldMultilineText:
-        case acroFormFieldText:
-        case acroFormFieldBarcode:
-        {
-            pAnnot = new CAnnotWidgetTx(pdfDoc, pField);
-            break;
-        }
-        case acroFormFieldComboBox:
-        case acroFormFieldListBox:
-        {
-            pAnnot = new CAnnotWidgetCh(pdfDoc, pField);
-            break;
-        }
-        case acroFormFieldSignature:
-        {
-            pAnnot = new CAnnotWidgetSig(pdfDoc, pField);
-            break;
-        }
-        default:
-            break;
-        }
-        if (pAnnot)
-            m_arrAnnots.push_back(pAnnot);
+		CAnnot* pAnnot = NULL;
+		AcroFormFieldType oType = pField->getAcroFormFieldType();
+		switch (oType)
+		{
+		case acroFormFieldPushbutton:
+		case acroFormFieldRadioButton:
+		case acroFormFieldCheckbox:
+		{
+			pAnnot = new CAnnotWidgetBtn(pdfDoc, pField);
+			break;
+		}
+		case acroFormFieldFileSelect:
+		case acroFormFieldMultilineText:
+		case acroFormFieldText:
+		case acroFormFieldBarcode:
+		{
+			pAnnot = new CAnnotWidgetTx(pdfDoc, pField);
+			break;
+		}
+		case acroFormFieldComboBox:
+		case acroFormFieldListBox:
+		{
+			pAnnot = new CAnnotWidgetCh(pdfDoc, pField);
+			break;
+		}
+		case acroFormFieldSignature:
+		{
+			pAnnot = new CAnnotWidgetSig(pdfDoc, pField);
+			break;
+		}
+		default:
+			break;
+		}
+		if (pAnnot)
+			m_arrAnnots.push_back(pAnnot);
     }
 }
 
@@ -962,9 +957,42 @@ CAnnots::~CAnnots()
         RELEASEOBJECT(m_arrAnnots[i]);
 }
 
+//------------------------------------------------------------------------
+// Annot
+//------------------------------------------------------------------------
+
+CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	m_unFlags = 0;
+
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 1 - Всплывающая аннотация - Popup
+	if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
+	{
+		m_unFlags |= (1 << 0);
+		m_unRefNumPopup = oObj.getRefNum();
+	}
+
+	// 2 - Текстовая метка пользователя - T
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1, m_sT);
+
+	// 3 - Значение непрозрачности - CA
+	if (oAnnot.dictLookup("CA", &oObj)->isNum())
+	{
+		m_unFlags |= (1 << 2);
+		m_dCA = oObj.getNum();
+	}
+	oObj.free();
+}
+
 CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 {
     m_pBorder = NULL;
+	m_unAnnotFlag = 0;
+	m_unAFlags = 0;
 
     Object oObj, oField;
     XRef* xref = pdfDoc->getXRef();
@@ -974,7 +1002,6 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
     oObj.free();
 
     // Флаг аннотации - F
-    m_unAnnotFlag = 0;
     if (pField->fieldLookup("F", &oObj)->isInt())
         m_unAnnotFlag = oObj.getInt();
     oObj.free();
@@ -989,8 +1016,6 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
     m_pRect[1] = dHeight - m_pRect[3];
     m_pRect[3] = dHeight - dTemp;
 
-    m_unAFlags = 0;
-
     // 3 - Эффекты границы - BE
     Object oBorderBE, oBorderBEI;
     if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
@@ -1000,6 +1025,19 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
     }
     oObj.free(); oBorderBE.free(); oBorderBEI.free();
 
+	// 4 - Специальный цвет для аннотации - C
+	if (pField->fieldLookup("C", &oObj)->isArray())
+	{
+		m_unAFlags |= (1 << 3);
+		int nCLength = oObj.arrayGetLength();
+		for (int j = 0; j < nCLength; ++j)
+		{
+			Object oCj;
+			m_arrC.push_back(oObj.arrayGet(j, &oCj)->isNum() ? oCj.getNum() : 0.0);
+			oCj.free();
+		}
+	}
+	oObj.free();
 
     // 5 - Границы и Dash Pattern - Border/BS
     Object oBorder;
@@ -1023,6 +1061,89 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
         m_unAFlags |= (1 << 17);
     }
     oObj.free();
+}
+
+CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
+{
+	m_pBorder = NULL;
+	m_unAnnotFlag = 0;
+	m_unAFlags = 0;
+
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Номер объекта аннотации
+	m_unRefNum = oAnnotRef->getRefNum();
+
+	// Флаг аннотации - F
+	if (oAnnot.dictLookup("F", &oObj)->isInt())
+		m_unAnnotFlag = oObj.getInt();
+	oObj.free();
+
+	// Номер страницы - P
+	m_unPage = nPageIndex;
+
+	// Координаты - Rect
+	m_pRect[0] = 0.0, m_pRect[1] = 0.0, m_pRect[2] = 0.0, m_pRect[3] = 0.0;
+	if (oAnnot.dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+	{
+		ARR_GET_NUM(oObj, 0, m_pRect[0]);
+		ARR_GET_NUM(oObj, 1, m_pRect[1]);
+		ARR_GET_NUM(oObj, 2, m_pRect[2]);
+		ARR_GET_NUM(oObj, 3, m_pRect[3]);
+
+		double dTemp;
+		double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
+		if (m_pRect[0] > m_pRect[2])
+		{
+			dTemp = m_pRect[0]; m_pRect[0] = m_pRect[2]; m_pRect[2] = dTemp;
+		}
+		if (m_pRect[1] > m_pRect[3])
+		{
+			dTemp = m_pRect[1]; m_pRect[1] = m_pRect[3]; m_pRect[3] = dTemp;
+		}
+		dTemp = m_pRect[1]; m_pRect[1] = dHeight - m_pRect[3]; m_pRect[3] = dHeight - dTemp;
+	}
+	oObj.free();
+
+	// 3 - Эффекты границы - BE
+	Object oBorderBEI;
+	if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj2)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	{
+		m_unAFlags |= (1 << 2);
+		m_dBE = oBorderBEI.getNum();
+	}
+	oObj.free(); oObj2.free(); oBorderBEI.free();
+
+	// 4 - Цвет - C
+	if (oAnnot.dictLookup("C", &oObj)->isArray())
+	{
+		m_unAFlags |= (1 << 3);
+		int nBCLength = oObj.arrayGetLength();
+		for (int j = 0; j < nBCLength; ++j)
+		{
+			m_arrC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 5 - Границы и Dash Pattern - Border/BS
+	m_pBorder = NULL;
+	if (oAnnot.dictLookup("BS", &oObj)->isDict())
+		m_pBorder = getBorder(&oObj, true);
+	else
+	{
+		oObj.free();
+		if (oAnnot.dictLookup("Border", &oObj)->isArray() && oObj.arrayGetLength() > 2)
+			m_pBorder = getBorder(&oObj, false);
+	}
+	oObj.free();
+	if (m_pBorder && m_pBorder->nType != 5)
+		m_unAFlags |= (1 << 4);
+
+	oAnnot.free();
 }
 
 CAnnot::~CAnnot()
@@ -1075,6 +1196,12 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
     oRes.AddInt(m_unAFlags);
     if (m_unAFlags & (1 << 2))
         oRes.AddDouble(m_dBE);
+	if (m_unAFlags & (1 << 3))
+	{
+		oRes.AddInt(m_arrC.size());
+		for (int i = 0; i < m_arrC.size(); ++i)
+			oRes.AddDouble(m_arrC[i]);
+	}
     if (m_pBorder && (m_unAFlags & (1 << 4)))
         m_pBorder->ToWASM(oRes);
     if (m_unAFlags & (1 << 17))
@@ -1133,12 +1260,6 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
         oRes.WriteString(m_sDV);
     if (m_unFlags & (1 << 15))
         oRes.WriteString(m_sContents);
-    if (m_unFlags & (1 << 16))
-    {
-        oRes.AddInt(m_arrC.size());
-        for (int i = 0; i < m_arrC.size(); ++i)
-            oRes.AddDouble(m_arrC[i]);
-    }
     if (m_unFlags & (1 << 18))
         oRes.WriteString(m_sT);
     oRes.AddInt(m_arrAction.size());

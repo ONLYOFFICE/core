@@ -2776,140 +2776,22 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		// Ходовые объекты
 		Object oObj, oObj2;
 
-		Object oAnnot;
+		Object oAnnot, oAnnotRef;
 		if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
 		{
 			oAnnot.free();
 			continue;
 		}
 
-		// Номер объекта аннотации
-		int nAnnotRef = 0;
-		if (oAnnots.arrayGetNF(i, &oObj)->isRef())
-			nAnnotRef = oObj.getRefNum();
-		oObj.free();
-		oRes.AddInt(nAnnotRef);
-
-		// Флаг аннотации - F
-		int nAnnotFlag = 0;
-		if (oAnnot.dictLookup("F", &oObj)->isInt())
-			nAnnotFlag = oObj.getInt();
-		oObj.free();
-		oRes.AddInt(nAnnotFlag);
-
-		// Номер страницы - P
-		oRes.AddInt(nPageIndex);
-
-#define ARR_GET_NUM(take, get, put) \
-{\
-	if (take.arrayGet(get, &oObj2)->isNum())\
-		put = oObj2.getNum();\
-	oObj2.free();\
-}
-		// Координаты - Rect
-		double dx1 = 0.0, dy1 = 0.0, dx2 = 0.0, dy2 = 0.0;
-		if (oAnnot.dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
-		{
-			ARR_GET_NUM(oObj, 0, dx1);
-			ARR_GET_NUM(oObj, 1, dy1);
-			ARR_GET_NUM(oObj, 2, dx2);
-			ARR_GET_NUM(oObj, 3, dy2);
-
-			double dTemp;
-			if (dx1 > dx2)
-			{
-				dTemp = dx1; dx1 = dx2; dx2 = dTemp;
-			}
-			if (dy1 > dy2)
-			{
-				dTemp = dy1; dy1 = dy2; dy2 = dTemp;
-			}
-			dTemp = dy1; dy1 = dHeight - dy2; dy2 = dHeight - dTemp;
-		}
-		oObj.free();
-		oRes.AddDouble(dx1);
-		oRes.AddDouble(dy1);
-		oRes.AddDouble(dx2);
-		oRes.AddDouble(dy2);
-
-		int nFlags = 0;
-		unsigned int nFlagPos = oRes.GetSize();
-		oRes.AddInt(nFlags);
-
-		// 1 - Всплывающая аннотация - Popup
-		if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
-		{
-			nFlags |= (1 << 0);
-			oRes.AddInt(oObj.getRefNum());
-		}
-
-#define DICT_LOOKUP_STRING(func, sName, byte) \
-{\
-if (func(sName, &oObj)->isString())\
-{\
-	TextString* s = new TextString(oObj.getString());\
-	std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
-	nFlags |= (1 << byte);\
-	oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());\
-	delete s;\
-}\
-oObj.free();\
-}
-		// 2 - Текстовая метка пользователя - T
-		DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1);
-
-		// 3 - Эффекты границы - BE
-		Object oBorderBE, oBorderBEI;
-		if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
-		{
-			nFlags |= (1 << 2);
-			oRes.AddDouble(oBorderBEI.getNum());
-		}
-		oObj.free(); oBorderBE.free(); oBorderBEI.free();
-
-		// 4 - Цвет - C
-		if (oAnnot.dictLookup("C", &oObj)->isArray())
-		{
-			nFlags |= (1 << 3);
-			int nBCLength = oObj.arrayGetLength();
-			oRes.AddInt(nBCLength);
-			for (int j = 0; j < nBCLength; ++j)
-			{
-				oRes.AddDouble(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
-				oObj2.free();
-			}
-		}
-		oObj.free();
-
-		// 5 - Границы и Dash Pattern - Border/BS
-		unsigned int nBorderType = 5;
-		if (oAnnot.dictLookup("BS", &oObj)->isDict())
-			nBorderType = getBorder(&oObj, true, oRes);
-		else
-		{
-			oObj.free();
-			if (oAnnot.dictLookup("Border", &oObj)->isArray() && oObj.arrayGetLength() > 2)
-				nBorderType = getBorder(&oObj, false, oRes);
-		}
-		oObj.free();
-		if (nBorderType != 5)
-			nFlags |= (1 << 4);
-
-		// 6 - Значение непрозрачности - CA
-		if (oAnnot.dictLookup("CA", &oObj)->isNum())
-		{
-			nFlags |= (1 << 5);
-			oRes.AddDouble(oObj.getNum());
-		}
-		oObj.free();
-
 		std::string sType;
 		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
 			sType = oObj.getName();
-		oObj.free();
+		oObj.free(); oAnnot.free();
+
+		PdfReader::CAnnot* pAnnot = NULL;
 		if (sType == "Text")
 		{
-			oRes.WriteBYTE(0);
+			pAnnot = new PdfReader::CAnnotText(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Link")
 		{
@@ -2970,9 +2852,9 @@ oObj.free();\
 		}
 		// TODO Все аннотации
 
-		oRes.AddInt(nFlags, nFlagPos);
-
-		oAnnot.free();
+		if (pAnnot)
+			pAnnot->ToWASM(oRes);
+		RELEASEOBJECT(pAnnot);
 	}
 
 	oAnnots.free();

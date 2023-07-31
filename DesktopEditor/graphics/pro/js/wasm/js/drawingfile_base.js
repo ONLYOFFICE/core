@@ -585,6 +585,14 @@
 			// Эффекты границы - BE
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
+			// Специальный цвет аннотации - С
+			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["C"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["C"].push(reader.readDouble());
+			}
 			// Границы - Border/BS
 			if (flags & (1 << 4))
 			{
@@ -619,7 +627,6 @@
 			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
 			flags = reader.readInt();
-
 			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 			if (flags & (1 << 0))
 				rec["userName"] = reader.readString();
@@ -656,14 +663,6 @@
 			// Альтернативный текст аннотации - Contents
 			if (flags & (1 << 15))
 				rec["Contents"] = reader.readString();
-			// Специальный цвет аннотации - С
-			if (flags & (1 << 16))
-			{
-				let n = reader.readInt();
-				rec["C"] = [];
-				for (let i = 0; i < n; ++i)
-					rec["C"].push(reader.readDouble());
-			}
 			if (flags & (1 << 18))
 				rec["name"] = reader.readString();
 			// Action

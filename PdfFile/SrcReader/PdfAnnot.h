@@ -158,6 +158,7 @@ class CAnnot
 {
 public:
     CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
+	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
     virtual ~CAnnot();
 
     virtual void ToWASM(NSWasm::CData& oRes);
@@ -168,9 +169,10 @@ private:
     unsigned int m_unRefNum; // Номер ссылки на объект
     unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
     unsigned int m_unPage; // Страница
-    double m_pRect[4]; // Координаты - Rect
+	double m_pRect[4]; // Координаты
+	double m_dBE; // Эффекты границы
+	std::vector<double> m_arrC; // Специальный цвет
     CBorderType* m_pBorder; // Граница
-    double m_dBE; // Эффекты границы - BE
 };
 
 //------------------------------------------------------------------------
@@ -190,10 +192,9 @@ public:
 
 private:
     unsigned int m_unR; // Поворот аннотации относительно страницы - R
-    std::vector<double> m_arrTC; // Цветовое текста - из DA
+	std::vector<double> m_arrTC; // Цвет текста - из DA
     std::vector<double> m_arrBC; // Цвет границ - BC
-    std::vector<double> m_arrBG; // Цвет фона - BG
-    std::vector<double> m_arrC; // Специальный цвет для аннотации - C
+	std::vector<double> m_arrBG; // Цвет фона - BG
     std::vector<CAction*> m_arrAction; // Действия
     BYTE m_nQ; // Выравнивание текста - Q
     BYTE m_nH; // Режим выделения - H
@@ -253,6 +254,43 @@ public:
     CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField);
 
     void ToWASM(NSWasm::CData& oRes) override;
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CMarkupAnnot
+//------------------------------------------------------------------------
+
+class CMarkupAnnot : public CAnnot
+{
+public:
+	CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	virtual void ToWASM(NSWasm::CData& oRes) override;
+
+	unsigned int m_unFlags;
+
+private:
+	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
+	double m_dCA; // Значение непрозрачности
+	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
+	std::string m_sRC; // Форматированный текст для отображения во всплывающем окне
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CMarkupAnnot
+//------------------------------------------------------------------------
+
+class CAnnotText final : public CMarkupAnnot
+{
+public:
+	CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+private:
+	bool m_bOpen; // Отображаться открытой?
+	BYTE m_nName; // Иконка
+	BYTE m_nState; // Состояние
+	BYTE m_nStateModel; // Модель состояния
 };
 
 //------------------------------------------------------------------------

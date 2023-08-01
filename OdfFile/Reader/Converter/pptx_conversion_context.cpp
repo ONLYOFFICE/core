@@ -578,6 +578,16 @@ void pptx_conversion_context::end_page()
 	get_slide_context().serialize_background(current_slide().Background());
 	get_slide_context().serialize_objects	(current_slide().Data());
 	get_slide_context().serialize_animations(current_slide().Timing());
+
+	{
+		// NOTE: При использовании operator<< потока буст пушит туда лишний пробел перед значением.
+		//		С этим пробелом наш редактор onlyoffice на распознает значение.
+		// Example: 
+		// <p:attrName> ppt_y</p:attrName>
+		// <p:attrName>ppt_y</p:attrName>
+		// TODO: Figure out how to push value without redundant space character
+		current_slide().remove_timing_redundant_space();
+	}
 	
 	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
 

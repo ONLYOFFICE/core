@@ -10,7 +10,7 @@
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../simple_xml_writer.h"
-#include "../../simple_xml_writer2.h"
+#include "../../simple_xml_writer3.h"
 
 using namespace cpdoccore;
 
@@ -91,18 +91,18 @@ public:
 	XmlUtils::CXmlLiteReader& oReader;
 };
 
-class ReadAndWrite2
+class ReadAndWrite3
 {
 public:
-	ReadAndWrite2(xml_writer2& _xml_wr_2, XmlUtils::CXmlLiteReader& oReader) :  _xml_wr_2(_xml_wr_2), oReader(oReader) {};
-	~ReadAndWrite2() {};
+	ReadAndWrite3(xml_writer3& _xml_wr_3, XmlUtils::CXmlLiteReader& oReader) :  _xml_wr_3(_xml_wr_3), oReader(oReader) {};
+	~ReadAndWrite3() {};
 	void AddNode(int depth)
 	{
 		while (oReader.ReadNextSiblingNode(depth))
 		{
 			int tmp = oReader.GetDepth();
 			std::wstring sName = oReader.GetName();
-			CP_XML_NODE_2(sName)
+			CP_XML_NODE_3(sName)
 			{
 				int na = oReader.GetAttributesCount();
 				if (na > 0)
@@ -111,14 +111,14 @@ public:
 					{
 						std::wstring sNameAttr = oReader.GetName();
 						std::wstring sAttr = oReader.GetText();
-						CP_XML_ATTR2_2(sNameAttr, sAttr);
+						CP_XML_ATTR2_3(sNameAttr, sAttr);
 						for (int i = 1; i < na; i++)
 						{
 							if (oReader.MoveToNextAttribute())
 							{
 								sNameAttr = oReader.GetName();
 								sAttr = oReader.GetText();
-								CP_XML_ATTR2_2(sNameAttr, sAttr);
+								CP_XML_ATTR2_3(sNameAttr, sAttr);
 							}	
 						}	
 						oReader.MoveToElement();
@@ -127,14 +127,14 @@ public:
 				if ((sName == L"w:t" || sName == L"w:instrText" || sName == L"m:t" || sName == L"wp:posOffset" || sName == L"w14:pctHeight" || sName == L"w14:pctWidth" || sName == L"wp:align") && !oReader.IsEmptyNode())
 				{
 					std::wstring sVal = oReader.GetText2();
-					CP_XML_CONTENT_2(sVal);
+					CP_XML_CONTENT_3(sVal);
 				}
 				else if (!oReader.IsEmptyNode()) this->AddNode(tmp);
 			}
 		}
 	}
 public:
-	xml_writer2& _xml_wr_2;
+	xml_writer3& _xml_wr_3;
 	XmlUtils::CXmlLiteReader& oReader;
 };
 
@@ -217,24 +217,24 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	
 	//Reading and writing an XML doc via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml<wchar_t> outputbuffer;
-	CP_XML_WRITER_2(outputbuffer)
+	xml::CBufferXml2 outputbuffer;
+	CP_XML_WRITER_3(outputbuffer)
 	{
-		CP_XML_NODE_2(sName)
+		CP_XML_NODE_3(sName)
 		{
 			int na = oReader.GetAttributesCount();
 			if (na > 0)
 			{
 				if (oReader.MoveToFirstAttribute())
 				{
-					CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+					CP_XML_ATTR2_3(oReader.GetName(), oReader.GetText());
 					for (int i = 1; i < na; i++)
 						if (oReader.MoveToNextAttribute())
-							CP_XML_ATTR2_2(oReader.GetName(), oReader.GetText());
+							CP_XML_ATTR2_3(oReader.GetName(), oReader.GetText());
 					oReader.MoveToElement();
 				}
 			}
-			ReadAndWrite2 rnw(_xml_wr_2, oReader);
+			ReadAndWrite3 rnw(_xml_wr_3, oReader);
 			rnw.AddNode(n);
 		}
 	}
@@ -363,12 +363,12 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_node)
 {
 	//Writing an XML node via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml<wchar_t> outputbuffer;
-	CP_XML_WRITER_2(outputbuffer)
+	xml::CBufferXml2 outputbuffer;
+	CP_XML_WRITER_3(outputbuffer)
 	{
-		CP_XML_NODE_2(L"NameNode")
+		CP_XML_NODE_3(L"NameNode")
 		{
-			CP_XML_ATTR_2(L"NameString", data);
+			CP_XML_ATTR_3(L"NameString", data);
 		}
 	}
 	auto end1 = std::chrono::steady_clock::now();
@@ -396,18 +396,18 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_two_nodes_whith_content)
 {
 	//Writing an two XML node whith content via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml<wchar_t> outputbuffer;
-	CP_XML_WRITER_2(outputbuffer)
+	xml::CBufferXml2 outputbuffer;
+	CP_XML_WRITER_3(outputbuffer)
 	{
-		CP_XML_NODE_2(L"NameNode")
+		CP_XML_NODE_3(L"NameNode")
 		{
-			CP_XML_ATTR_2(L"NameString", L"data");
+			CP_XML_ATTR_3(L"NameString", L"data");
 
-			CP_XML_NODE_2(L"NameNodeTwo")
+			CP_XML_NODE_3(L"NameNodeTwo")
 			{
 				for (size_t i = 0; i < 100; i++)
 				{
-					CP_XML_CONTENT_2(static_cast<wchar_t>(i));
+					CP_XML_CONTENT_3(static_cast<wchar_t>(i));
 				}
 			}
 		}
@@ -444,32 +444,32 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_some_node_with_some_content)
 {
 	//Writing an some XML node whith some content via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml<wchar_t> outputbuffer;
-	CP_XML_WRITER_2(outputbuffer)
+	xml::CBufferXml2 outputbuffer;
+	CP_XML_WRITER_3(outputbuffer)
 	{
-		CP_XML_NODE_2(L"NameNode")
+		CP_XML_NODE_3(L"NameNode")
 		{
-			CP_XML_ATTR_2(L"NameString", data);
+			CP_XML_ATTR_3(L"NameString", data);
 
-			CP_XML_NODE_2(L"NameNodeTwo")
+			CP_XML_NODE_3(L"NameNodeTwo")
 			{
 				for (size_t i = 0; i < 100; i++)
 				{
-					CP_XML_CONTENT_2(static_cast<wchar_t>(i));
+					CP_XML_CONTENT_3(static_cast<wchar_t>(i));
 				}
 			}
 		}
-		CP_XML_NODE_2(L"NameNewNode")
+		CP_XML_NODE_3(L"NameNewNode")
 		{
-			CP_XML_ATTR_2(L"NameString1", data1);
+			CP_XML_ATTR_3(L"NameString1", data1);
 
-			CP_XML_NODE_2(L"NameNextNode")
+			CP_XML_NODE_3(L"NameNextNode")
 			{
-				CP_XML_ATTR_2(L"NameString2", data2);
+				CP_XML_ATTR_3(L"NameString2", data2);
 			}
-			CP_XML_NODE_2(L"NameTwoNextNode")
+			CP_XML_NODE_3(L"NameTwoNextNode")
 			{
-				CP_XML_CONTENT_2(L"1234567890");
+				CP_XML_CONTENT_3(L"1234567890");
 			}
 		}
 	}
@@ -518,22 +518,22 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_some_node_with_some_content)
 TEST_F(BufferTest, test_buffer_and_sstream_write_xml)
 {
 	//Writing an some XML node whith some content via buffer
-	xml::CBufferXml<wchar_t> outputbuffer;
+	xml::CBufferXml2 outputbuffer;
 	auto begin1 = std::chrono::steady_clock::now();
-	CP_XML_WRITER_2(outputbuffer)
+	CP_XML_WRITER_3(outputbuffer)
 	{
-		CP_XML_NODE_2(L"vt:vector")
+		CP_XML_NODE_3(L"vt:vector")
 		{
-			CP_XML_ATTR_2(L"size", L"200");
-			CP_XML_ATTR_2(L"baseType", L"variant");
+			CP_XML_ATTR_3(L"size", L"200");
+			CP_XML_ATTR_3(L"baseType", L"variant");
 
 			for (size_t i = 0; i < data2.size(); ++i)
 			{
-				CP_XML_NODE_2(L"vt:variant")
+				CP_XML_NODE_3(L"vt:variant")
 				{
-					CP_XML_NODE_2(L"vt:lpstr")
+					CP_XML_NODE_3(L"vt:lpstr")
 					{
-						CP_XML_CONTENT_2(data2[i]);
+						CP_XML_CONTENT_3(data2[i]);
 					}
 				}
 			}

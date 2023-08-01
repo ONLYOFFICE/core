@@ -35,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\simple_xml_writer.h" />
     <ClInclude Include="..\..\simple_xml_writer2.h" />
+    <ClInclude Include="..\..\simple_xml_writer3.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

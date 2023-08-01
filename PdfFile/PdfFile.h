@@ -127,6 +127,7 @@ public:
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL);
 	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget = -1, const char* sIconView = NULL);
+	BYTE* GetAnnots    (int nPageIndex = -1);
 
 	// --- WRITER ---
 

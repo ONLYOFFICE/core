@@ -842,6 +842,12 @@ BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, 
 		return NULL;
 	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
 }
+BYTE* CPdfFile::GetAnnots(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAnnotations(nPageIndex);
+}
 
 // ------------------------------------------------------------------------
 

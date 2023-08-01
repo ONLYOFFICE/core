@@ -128,6 +128,12 @@ public:
             return ((CPdfFile*)pReader)->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
         return NULL;
     }
+	BYTE* GetAnnots(int nPageIndex = -1)
+	{
+		if (nType == 0)
+			return ((CPdfFile*)pReader)->GetAnnots(nPageIndex);
+		return NULL;
+	}
     std::wstring GetInfo()
     {
         return pReader->GetInfo();

@@ -2758,7 +2758,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 
 void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 {
-	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 	if (!pPage)
 		return;
@@ -2826,6 +2825,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 				 sType == "Squiggly"  ||
 				 sType == "StrikeOut")
 		{
+			/*
 			double x1 = 0.0, x2 = 0.0, x3 = 0.0, x4 = 0.0;
 			double y1 = 0.0, y2 = 0.0, y3 = 0.0, y4 = 0.0;
 			if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray() && oObj.arrayGetLength() == 8)
@@ -2849,6 +2849,23 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 			oRes.AddDouble(y2);
 			oRes.AddDouble(y3);
 			oRes.AddDouble(y4);
+			*/
+		}
+		else if (sType == "Stamp")
+		{
+
+		}
+		else if (sType == "Caret")
+		{
+
+		}
+		else if (sType == "Ink")
+		{
+
+		}
+		else if (sType == "Popup")
+		{
+			pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		// TODO Все аннотации
 

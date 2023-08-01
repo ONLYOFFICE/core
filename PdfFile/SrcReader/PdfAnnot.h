@@ -167,10 +167,12 @@ private:
     unsigned int m_unAFlags;
     unsigned int m_unAnnotFlag; // Флаг аннотации - F
     unsigned int m_unRefNum; // Номер ссылки на объект
-    unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
     unsigned int m_unPage; // Страница
 	double m_pRect[4]; // Координаты
 	double m_dBE; // Эффекты границы
+	std::string m_sContents; // Отображаемый текст
+	std::string m_sNM; // Уникальное имя
+	std::string m_sM; // Дата последнего изменения
 	std::vector<double> m_arrC; // Специальный цвет
     CBorderType* m_pBorder; // Граница
 };
@@ -192,6 +194,7 @@ public:
 
 private:
     unsigned int m_unR; // Поворот аннотации относительно страницы - R
+	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
 	std::vector<double> m_arrTC; // Цвет текста - из DA
     std::vector<double> m_arrBC; // Цвет границ - BC
 	std::vector<double> m_arrBG; // Цвет фона - BG
@@ -200,8 +203,7 @@ private:
     BYTE m_nH; // Режим выделения - H
     std::string m_sTU; // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
     std::string m_sDS; // Строка стиля по умолчанию - DS
-    std::string m_sDV; // Значение по-умолчанию - DV
-    std::string m_sContents; // Альтернативный текст - Contents
+	std::string m_sDV; // Значение по-умолчанию - DV
     std::string m_sT; // Частичное имя поля - T
 };
 
@@ -257,6 +259,22 @@ public:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotPopup
+//------------------------------------------------------------------------
+
+class CAnnotPopup final : public CAnnot
+{
+public:
+	CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	unsigned int m_unFlags;
+	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CMarkupAnnot
 //------------------------------------------------------------------------
 
@@ -267,17 +285,23 @@ public:
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
+	BYTE m_nIT; // Назначение аннотации
 	unsigned int m_unFlags;
 
 private:
+	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
+	unsigned int m_unRefNumIRT; // Номер ссылки на аннотацию-ответ
 	double m_dCA; // Значение непрозрачности
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
 	std::string m_sRC; // Форматированный текст для отображения во всплывающем окне
+	std::string m_sCreationDate; // Дата создания
+	std::string m_sSubj; // Краткое описание
+	// TODO ExData Внешние данные, используется только для Markup3D
 };
 
 //------------------------------------------------------------------------
-// PdfReader::CMarkupAnnot
+// PdfReader::CAnnotText
 //------------------------------------------------------------------------
 
 class CAnnotText final : public CMarkupAnnot
@@ -287,7 +311,6 @@ public:
 
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
-	bool m_bOpen; // Отображаться открытой?
 	BYTE m_nName; // Иконка
 	BYTE m_nState; // Состояние
 	BYTE m_nStateModel; // Модель состояния

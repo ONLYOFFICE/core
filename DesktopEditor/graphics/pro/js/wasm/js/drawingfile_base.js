@@ -582,6 +582,12 @@
 			rec["rect"]["x2"] = reader.readDouble2();
 			rec["rect"]["y2"] = reader.readDouble2();
 			let flags = reader.readInt();
+			// Уникальное имя - NM
+			if (flags & (1 << 0))
+				rec["UniqueName"] = reader.readString();
+			// Альтернативный текст аннотации - Contents
+			if (flags & (1 << 1))
+				rec["Contents"] = reader.readString();
 			// Эффекты границы - BE
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
@@ -607,10 +613,9 @@
 					rec["dashed"].push(reader.readDouble());
 				}
 			}
-			if (flags & (1 << 17))
-			{
-				rec["Parent"] = reader.readInt();
-			}
+			// Дата последнего изменения - M
+			if (flags & (1 << 5))
+				rec["LastModified"] = reader.readString();
 			// Widget
 			let tc = reader.readInt();
 			if (tc)
@@ -660,9 +665,8 @@
 			// Значение по-умолчанию - DV
 			if (flags & (1 << 8))
 				rec["defaultValue"] = reader.readString();
-			// Альтернативный текст аннотации - Contents
-			if (flags & (1 << 15))
-				rec["Contents"] = reader.readString();
+			if (flags & (1 << 17))
+				rec["Parent"] = reader.readInt();
 			if (flags & (1 << 18))
 				rec["name"] = reader.readString();
 			// Action

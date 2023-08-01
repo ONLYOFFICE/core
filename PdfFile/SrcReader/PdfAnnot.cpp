@@ -839,8 +839,13 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
     }
     oObj.free();
 
-    // 16 - Альтернативный текст - Contents
-    DICT_LOOKUP_STRING(pField->fieldLookup, "Contents", 15, m_sContents);
+	// 18 - Родитель - Parent
+	if (oField.dictLookupNF("Parent", &oObj)->isRef())
+	{
+		m_unRefNumParent = oObj.getRefNum();
+		m_unFlags |= (1 << 17);
+	}
+	oObj.free();
 
     // 19 - Частичное имя поля - T
     DICT_LOOKUP_STRING(oField.dictLookup, "T", 18, m_sT);
@@ -857,12 +862,108 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 }
 
 //------------------------------------------------------------------------
+// Popup
+//------------------------------------------------------------------------
+
+CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	m_unFlags = 0;
+
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 1 - Отображаться открытой - Open
+	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool() == gTrue)
+		m_unFlags |= (1 << 0);
+	oObj.free();
+
+	// 2 - Родитель - Parent
+	if (oAnnot.dictLookupNF("Parent", &oObj)->isRef())
+	{
+		m_unFlags |= (1 << 1);
+		m_unRefNumParent = oObj.getRefNum();
+	}
+	oObj.free();
+}
+
+//------------------------------------------------------------------------
 // Text
 //------------------------------------------------------------------------
 
 CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
 {
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
 
+	// 16 - Отображаться открытой - Open
+	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool() == gTrue)
+		m_unFlags |= (1 << 15);
+	oObj.free();
+
+	// 17 - Иконка - Name
+	if (oAnnot.dictLookup("Name", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 16);
+		std::string sName(oObj.getName());
+		m_nName = 2; // Default: Note
+		if (sName == "Comment")
+			m_nName = 0;
+		else if (sName == "Key")
+			m_nName = 1;
+		else if (sName == "Help")
+			m_nName = 3;
+		else if (sName == "NewParagraph")
+			m_nName = 4;
+		else if (sName == "Paragraph")
+			m_nName = 5;
+		else if (sName == "Insert")
+			m_nName = 6;
+	}
+	oObj.free();
+
+	// 18 - Состояние - State
+	if (oAnnot.dictLookup("State", &oObj)->isString())
+	{
+		m_unFlags |= (1 << 17);
+		TextString* s = new TextString(oObj.getString());
+		std::string sState = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+		if (sState == "Marked")
+			m_nState = 0;
+		else if (sState == "Unmarked")
+			m_nState = 1;
+		else if (sState == "Accepted")
+			m_nState = 0;
+		else if (sState == "Rejected")
+			m_nState = 1;
+		else if (sState == "Cancelled")
+			m_nState = 2;
+		else if (sState == "Completed")
+			m_nState = 3;
+		else if (sState == "None")
+			m_nState = 4;
+		else
+			m_nState = 5;
+	}
+	oObj.free();
+
+	// 19 - Модель состояния - StateModel
+	if (oAnnot.dictLookup("StateModel", &oObj)->isString())
+	{
+		m_unFlags |= (1 << 18);
+		TextString* s = new TextString(oObj.getString());
+		std::string sStateModel = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+		if (sStateModel == "Marked")
+			m_nStateModel = 0;
+		else if (sStateModel == "Review")
+			m_nStateModel = 1;
+		else
+			m_nStateModel = 2;
+	}
+	oObj.free();
 }
 
 //------------------------------------------------------------------------
@@ -986,6 +1087,37 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 		m_dCA = oObj.getNum();
 	}
 	oObj.free();
+
+	// 4 - Форматированный текст - RC
+	if (oAnnot.dictLookup("RC", &oObj)->isStream())
+	{
+		// TODO streamGetBlock
+	}
+	else
+	{
+		oObj.free();
+		DICT_LOOKUP_STRING(oAnnot.dictLookup, "RC", 3, m_sRC);
+	}
+
+	// 5 - Дата создания - CreationDate
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "CreationDate", 4, m_sCreationDate);
+
+	// 6 - Ссылка на аннотацию ответ - IRT
+	if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
+	{
+		m_unFlags |= (1 << 5);
+		m_unRefNumIRT = oObj.getRefNum();
+	}
+	oObj.free();
+
+	// 7 - Тип аннотации ответа - RT
+	// TODO m_nRT
+
+	// 8 - Краткое описание - Subj
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "Subj", 7, m_sSubj);
+
+	// XXX - Назначение аннотации - IT
+	// TODO m_nIT записывается аннотациями которым это необходимо
 }
 
 CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
@@ -1016,14 +1148,34 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
     m_pRect[1] = dHeight - m_pRect[3];
     m_pRect[3] = dHeight - dTemp;
 
+	// 1 - Уникальное имя - NM
+	if (pField->fieldLookup("NM", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 0);
+		TextString* s = new TextString(oObj.getString());
+		m_sNM = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
+
+	// 2 - Альтернативный текст - Contents
+	if (pField->fieldLookup("Contents", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 1);
+		TextString* s = new TextString(oObj.getString());
+		m_sContents = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
+
     // 3 - Эффекты границы - BE
-    Object oBorderBE, oBorderBEI;
-    if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	Object oBorderBEI;
+	if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
     {
         m_unAFlags |= (1 << 2);
         m_dBE = oBorderBEI.getNum();
     }
-    oObj.free(); oBorderBE.free(); oBorderBEI.free();
+	oObj.free(); oObj.free(); oBorderBEI.free();
 
 	// 4 - Специальный цвет для аннотации - C
 	if (pField->fieldLookup("C", &oObj)->isArray())
@@ -1040,27 +1192,28 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
     // 5 - Границы и Dash Pattern - Border/BS
-    Object oBorder;
     m_pBorder = NULL;
-    if (pField->fieldLookup("BS", &oBorder)->isDict())
-        m_pBorder = getBorder(&oBorder, true);
+	if (pField->fieldLookup("BS", &oObj)->isDict())
+		m_pBorder = getBorder(&oObj, true);
     else
     {
-        oBorder.free();
-        if (pField->fieldLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
-            m_pBorder = getBorder(&oBorder, false);
+		oObj.free();
+		if (pField->fieldLookup("Border", &oObj)->isArray() && oObj.arrayGetLength() > 2)
+			m_pBorder = getBorder(&oObj, false);
     }
-    oBorder.free();
+	oObj.free();
     if (m_pBorder && m_pBorder->nType != 5)
         m_unAFlags |= (1 << 4);
 
-    // 18 - Родитель - Parent
-    if (oField.dictLookupNF("Parent", &oObj)->isRef())
-    {
-        m_unRefNumParent = oObj.getRefNum();
-        m_unAFlags |= (1 << 17);
-    }
-    oObj.free();
+	// 6 - Дата последнего изменения - M
+	if (pField->fieldLookup("M", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 5);
+		TextString* s = new TextString(oObj.getString());
+		m_sM = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
 }
 
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
@@ -1107,6 +1260,26 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	}
 	oObj.free();
 
+	// 1 - Уникальное имя - NM
+	if (oAnnot.dictLookup("NM", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 0);
+		TextString* s = new TextString(oObj.getString());
+		m_sNM = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
+
+	// 2 - Альтернативный текст - Contents
+	if (oAnnot.dictLookup("Contents", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 1);
+		TextString* s = new TextString(oObj.getString());
+		m_sContents = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
+
 	// 3 - Эффекты границы - BE
 	Object oBorderBEI;
 	if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj2)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
@@ -1142,6 +1315,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	oObj.free();
 	if (m_pBorder && m_pBorder->nType != 5)
 		m_unAFlags |= (1 << 4);
+
+	// 6 - Дата последнего изменения - M
+	if (oAnnot.dictLookup("M", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 5);
+		TextString* s = new TextString(oObj.getString());
+		m_sM = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
 
 	oAnnot.free();
 }
@@ -1194,6 +1377,10 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
     for (int i = 0; i < 4; ++i)
         oRes.WriteDouble(m_pRect[i]);
     oRes.AddInt(m_unAFlags);
+	if (m_unAFlags & (1 << 0))
+		oRes.WriteString(m_sNM);
+	if (m_unAFlags & (1 << 1))
+		oRes.WriteString(m_sContents);
     if (m_unAFlags & (1 << 2))
         oRes.AddDouble(m_dBE);
 	if (m_unAFlags & (1 << 3))
@@ -1204,8 +1391,8 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	}
     if (m_pBorder && (m_unAFlags & (1 << 4)))
         m_pBorder->ToWASM(oRes);
-    if (m_unAFlags & (1 << 17))
-        oRes.AddInt(m_unRefNumParent);
+	if (m_unAFlags & (1 << 5))
+		oRes.WriteString(m_sM);
 }
 
 void CBorderType::ToWASM(NSWasm::CData& oRes)
@@ -1258,8 +1445,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
     }
     if (m_unFlags & (1 << 8))
         oRes.WriteString(m_sDV);
-    if (m_unFlags & (1 << 15))
-        oRes.WriteString(m_sContents);
+	if (m_unFlags & (1 << 17))
+		oRes.AddInt(m_unRefNumParent);
     if (m_unFlags & (1 << 18))
         oRes.WriteString(m_sT);
     oRes.AddInt(m_arrAction.size());
@@ -1434,6 +1621,54 @@ void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)
 void CAnnotWidgetSig::ToWASM(NSWasm::CData& oRes)
 {
     CAnnotWidget::ToWASM(oRes);
+}
+
+void CMarkupAnnot::ToWASM(NSWasm::CData& oRes)
+{
+	CAnnot::ToWASM(oRes);
+
+	oRes.AddInt(m_unFlags);
+	if (m_unFlags & (1 << 0))
+		oRes.AddInt(m_unRefNumPopup);
+	if (m_unFlags & (1 << 1))
+		oRes.WriteString(m_sT);
+	if (m_unFlags & (1 << 2))
+		oRes.AddDouble(m_dCA);
+	if (m_unFlags & (1 << 3))
+		oRes.WriteString(m_sRC);
+	if (m_unFlags & (1 << 4))
+		oRes.WriteString(m_sCreationDate);
+	if (m_unFlags & (1 << 5))
+		oRes.AddInt(m_unRefNumIRT);
+	if (m_unFlags & (1 << 6))
+		oRes.WriteBYTE(m_nRT);
+	if (m_unFlags & (1 << 7))
+		oRes.WriteString(m_sSubj);
+}
+
+void CAnnotText::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(0); // Text
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 16))
+		oRes.WriteBYTE(m_nName);
+	if (m_unFlags & (1 << 17))
+		oRes.WriteBYTE(m_nState);
+	if (m_unFlags & (1 << 18))
+		oRes.WriteBYTE(m_nStateModel);
+}
+
+void CAnnotPopup::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(15); // Popup
+
+	CAnnot::ToWASM(oRes);
+
+	oRes.AddInt(m_unFlags);
+	if (m_unFlags & (1 << 1))
+		oRes.AddInt(m_unRefNumParent);
 }
 
 }

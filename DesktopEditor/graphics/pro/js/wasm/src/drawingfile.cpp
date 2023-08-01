@@ -150,7 +150,7 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
-WASM_EXPORT BYTE* GetInteractiveFormsInfo (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetInteractiveFormsInfo();
 }
@@ -183,6 +183,10 @@ WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, 
 		sIconView = "IX";
 
 	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
+}
+WASM_EXPORT BYTE* GetAnnotationsInfo(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+{
+	return pGraphics->GetAnnots(nPageIndex);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -350,6 +354,106 @@ void ReadAction(BYTE* pWidgets, int& i)
 		ReadAction(pWidgets, i);
 }
 
+void ReadAnnot(BYTE* pWidgets, int& i)
+{
+	DWORD nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Annot - AP " << nPathLength << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Flag " << nPathLength << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Page " << nPathLength << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
+
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
+	std::cout << "Annot Flags " << nPathLength << ", ";
+	int nFlags = nPathLength;
+
+	if (nFlags & (1 << 0))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Unique name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	if (nFlags & (1 << 1))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Contents " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+	if (nFlags & (1 << 2))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
+	}
+	if (nFlags & (1 << 3))
+	{
+		int nCLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "C ";
+
+		for (int j = 0; j < nCLength; ++j)
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << (double)nPathLength / 100.0 << " ";
+		}
+		std::cout << ", ";
+	}
+	if (nFlags & (1 << 4))
+	{
+		std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
+		BYTE nBorderType = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::cout << "Border type " << arrBorder[nBorderType] << " ";
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "width " << (double)nPathLength / 100.0 << ", ";
+
+		if (nBorderType == 2)
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
+
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << (double)nPathLength / 100.0 << ", ";
+		}
+	}
+	if (nFlags & (1 << 5))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Last modified " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
+}
+
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
 {
 	DWORD nCOLength = READ_INT(pWidgets + i);
@@ -423,90 +527,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 	{
 		// Annot
 
-		DWORD nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Annot - AP " << nPathLength << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Flag " << nPathLength << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Page " << nPathLength << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
-
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "Annot Flags " << nPathLength << ", ";
-		int nFlags = nPathLength;
-
-		if (nFlags & (1 << 2))
-		{
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
-		}
-		if (nFlags & (1 << 3))
-		{
-			int nCLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "C ";
-
-			for (int j = 0; j < nCLength; ++j)
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << (double)nPathLength / 100.0 << " ";
-			}
-			std::cout << ", ";
-		}
-		if (nFlags & (1 << 4))
-		{
-			std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
-			BYTE nBorderType = READ_BYTE(pWidgets + i);
-			i += 1;
-			std::cout << "Border type " << arrBorder[nBorderType] << " ";
-
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "width " << (double)nPathLength / 100.0 << ", ";
-
-			if (nBorderType == 2)
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
-
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << (double)nPathLength / 100.0 << ", ";
-			}
-		}
-		if (nFlags & (1 << 17))
-		{
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "Parent " << nPathLength << ", ";
-		}
+		ReadAnnot(pWidgets, i);
 
 		// Widget
 
+		DWORD nPathLength;
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
@@ -538,7 +563,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
 		std::cout << "Flags " << nPathLength << ", ";
-		nFlags = nPathLength;
+		DWORD nFlags = nPathLength;
 
 		if (nFlags & (1 << 0))
 		{
@@ -602,12 +627,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
-		if (nFlags & (1 << 15))
+		if (nFlags & (1 << 17))
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Contents " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-			i += nPathLength;
+			std::cout << "Parent " << nPathLength << ", ";
 		}
 		if (nFlags & (1 << 18))
 		{
@@ -1529,6 +1553,120 @@ int main(int argc, char* argv[])
 
 		if (pWidgetsMK)
 			free(pWidgetsMK);
+	}
+
+	// Annots
+
+	if (true)
+	{
+		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
+		nLength = READ_INT(pAnnots);
+		int i = 4;
+		nLength -= 4;
+
+		std::cout << std::endl;
+
+		while (i < nLength)
+		{
+			DWORD nPathLength = READ_BYTE(pAnnots + i);
+			i += 1;
+			std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine",
+									   "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink",
+									   "Popup", "FileAttachment", "Sound", "Movie", "Widget", "Screen", "PrinterMark",
+									   "TrapNet", "Watermark", "3D", "Redact"};
+			std::string sType = arrAnnots[nPathLength];
+			std::cout << "Type " << sType << ", ";
+
+			ReadAnnot(pAnnots, i);
+
+			// Markup
+
+			DWORD nFlags = 0;
+			if ((nPathLength < 18 && nPathLength != 1 && nPathLength != 15) || nPathLength == 25)
+			{
+				nFlags = READ_INT(pAnnots + i);
+				i += 4;
+
+				if (nFlags & (1 << 0))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Popup " << nPathLength << ", ";
+				}
+				if (nFlags & (1 << 1))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "User " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 2))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "CA " << (double)nPathLength / 100.0 << ", ";
+				}
+				if (nFlags & (1 << 3))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "RC " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 4))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "CreationDate " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 5))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Ref to " << nPathLength << ", ";
+				}
+				if (nFlags & (1 << 6))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::cout << "Reason " << nPathLength << ", ";
+				}
+				if (nFlags & (1 << 7))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Subj " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+			}
+
+			if (sType == "Text")
+			{
+				if (nFlags & (1 << 15))
+					std::cout << "Open true, ";
+				else
+					std::cout << "Open false, ";
+				if (nFlags & (1 << 16))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert", "Unknown"};
+					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
+				}
+				// TODO
+			}
+			// TODO
+			else if (sType == "Popup")
+			{
+
+			}
+
+			std::cout << std::endl;
+		}
+
+		if (pAnnots)
+			free(pAnnots);
 	}
 
 	Close(pGrFile);

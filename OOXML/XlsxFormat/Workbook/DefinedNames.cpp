@@ -77,24 +77,37 @@ namespace OOX
 			auto ptr(new XLSB::Name);
 			XLS::BaseObjectPtr objectPtr(ptr);
 
+			if(m_oComment.IsInit())
 			ptr->comment = m_oComment.get();
 
+			if(m_oDescription.IsInit())
 			ptr->description = m_oDescription.get();
+			if(m_oFunction.IsInit())
 			ptr->fFunc = m_oFunction->GetValue();
+			if(m_oFunctionGroupId.IsInit())
 			ptr->fGrp = m_oFunctionGroupId->GetValue();
+			if(m_oHelp.IsInit())
 			ptr->helpTopic = m_oHelp.get();
+			if(m_oHidden.IsInit())
 			ptr->fHidden = m_oHidden->GetValue();
 
 			if (m_oLocalSheetId.IsInit())
 				ptr->itab = m_oLocalSheetId->GetValue();
 
+			if (m_oName.IsInit())
 			ptr->name = m_oName.get();
+			if (m_oPublishToServer.IsInit())
 			ptr->fPublished = m_oPublishToServer->GetValue();
+			if (m_oShortcutKey.IsInit())
 			ptr->chKey = std::stoi(m_oShortcutKey.get());
 
+			if (m_oVbProcedure.IsInit())
 			ptr->fOB = m_oVbProcedure->GetValue();
+			if (m_oWorkbookParameter.IsInit())
 			ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
+			if (m_oXlm.IsInit())
 			ptr->fFutureFunction = m_oXlm->GetValue();
+			if (m_oRef.IsInit())
 			ptr->rgce = m_oRef.get();
 
 			return objectPtr;

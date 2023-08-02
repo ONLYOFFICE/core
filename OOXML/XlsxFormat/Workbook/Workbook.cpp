@@ -91,7 +91,8 @@ namespace OOX
 			auto ptr1(new XLSB::BeginPivotCacheID);
 			ptr->m_BrtBeginPivotCacheID = XLS::BaseObjectPtr{ptr1};
 
-			ptr1->idSx = m_oCacheId->GetValue();
+			if(m_oCacheId.IsInit())
+				ptr1->idSx = m_oCacheId->GetValue();
 			if(m_oRid.IsInit())
 				ptr1->irstcacheRelID.value = m_oRid->GetValue();
 			return objectPtr;

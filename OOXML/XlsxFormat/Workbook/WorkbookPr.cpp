@@ -94,23 +94,43 @@ namespace OOX
 			auto ptr(new XLSB::WbProp);
 			XLS::BaseObjectPtr objectPtr(ptr);
 
-			ptr->fNoSaveSup = m_oAllowRefreshQuery->GetValue();
+			if(m_oAllowRefreshQuery.IsInit())
+				ptr->fNoSaveSup = m_oAllowRefreshQuery->GetValue();
+			if(m_oAutoCompressPictures.IsInit())
 			ptr->fAutoCompressPictures = m_oAutoCompressPictures->GetValue();
+			if(m_oBackupFile.IsInit())
 			ptr->fBackup = m_oBackupFile->GetValue();
+			if(m_oCheckCompatibility.IsInit())
 			ptr->fCheckCompat = m_oCheckCompatibility->GetValue();
-			ptr->strName.value= m_oCodeName->GetValue();
+			if(m_oCodeName.IsInit())
+			ptr->strName.value = m_oCodeName->GetValue();
+			else
+			ptr->strName.value = false;
+			if(m_oDate1904.IsInit())
 			ptr->f1904 = m_oDate1904->GetValue();
+			if(m_oDateCompatibility.IsInit())
 			ptr->fNoSaveSup = m_oDateCompatibility->GetValue();
+			if(m_oDefaultThemeVersion.IsInit())
 			ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
+			if(m_oFilterPrivacy.IsInit())
 			ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
+			if(m_oHidePivotFieldList.IsInit())
 			ptr->fHidePivotTableFList = m_oHidePivotFieldList->GetValue();
+			if(m_oPromptedSolutions.IsInit())
 			ptr->fBuggedUserAboutSolution = m_oPromptedSolutions->GetValue();
+			if(m_oPublishItems.IsInit())
 			ptr->fPublishedBookItems = m_oPublishItems->GetValue();
+			if(m_oRefreshAllConnections.IsInit())
 			ptr->fRefreshAll = m_oRefreshAllConnections->GetValue();
+			if(m_oShowBorderUnselectedTables.IsInit())
 			ptr->fHideBorderUnselLists = m_oShowBorderUnselectedTables->GetValue();
+			if(m_oShowInkAnnotation.IsInit())
 			ptr->fShowInkAnnotation = m_oShowInkAnnotation->GetValue();
+			if(m_oShowObjects.IsInit())
 			ptr->mdDspObj = m_oShowObjects->GetValue() ? 1 : 2;
+			if(m_oShowPivotChartFilter.IsInit())
 			ptr->fShowPivotChartFilter = m_oShowPivotChartFilter->GetValue();
+			if(m_oUpdateLinks.IsInit())
 			ptr->grbitUpdateLinks = m_oUpdateLinks->GetValue();
 
 			return objectPtr;
@@ -218,44 +238,58 @@ namespace OOX
 				ptr->ipdBookPasswordData.szAlgName = m_oWorkbookAlgorithmName->GetValue();
 				ptr->dwBookSpinCount = m_oWorkbookSpinCount->GetValue();
 
-				auto len = 0;
-				auto bytes = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
-				std::string strData = {m_oWorkbookHashValue.get().begin(), m_oWorkbookHashValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
-					bytes, len);
-				ptr->ipdBookPasswordData.rgbHash.cbLength = len;
+				if(m_oWorkbookHashValue.IsInit())
+				{
+					auto len = 0;
+					auto bytes = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
+					std::string strData = {m_oWorkbookHashValue.get().begin(), m_oWorkbookHashValue.get().end()};
+					NSFile::CBase64Converter::Decode(strData.c_str(), strData.size(),
+						bytes, len);
+					ptr->ipdBookPasswordData.rgbHash.cbLength = len;
+				}
 
+				if(m_oWorkbookSaltValue.IsInit())
+				{
+					auto len1 = 0;
+					auto bytes1 = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
+					std::string strData1 = {m_oWorkbookSaltValue.get().begin(), m_oWorkbookSaltValue.get().end()};
+					NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
+						bytes1, len1);
+					ptr->ipdBookPasswordData.rgbSalt.cbLength = len1;
+				}
+				if(m_oRevisionsAlgorithmName.IsInit())
+					ptr->ipdRevPasswordData.szAlgName = m_oRevisionsAlgorithmName->GetValue();
+				if(m_oRevisionsSpinCount.IsInit())
+					ptr->dwRevSpinCount = m_oRevisionsSpinCount->GetValue();
 
-				auto len1 = 0;
-				auto bytes1 = ptr->ipdBookPasswordData.rgbHash.rgbData.data();
-				std::string strData1 = {m_oWorkbookSaltValue.get().begin(), m_oWorkbookSaltValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData1.c_str(), strData1.size(),
-					bytes1, len1);
-				ptr->ipdBookPasswordData.rgbSalt.cbLength = len1;
-
-				ptr->ipdRevPasswordData.szAlgName = m_oRevisionsAlgorithmName->GetValue();
-				ptr->dwRevSpinCount = m_oRevisionsSpinCount->GetValue();
-
-				auto len2 = 0;
-				auto bytes2 = ptr->ipdRevPasswordData.rgbHash.rgbData.data();
-				std::string strData2 = {m_oRevisionsHashValue.get().begin(), m_oRevisionsHashValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData2.c_str(), strData2.size(),
-					bytes2, len2);
-				ptr->ipdRevPasswordData.rgbHash.cbLength = len2;
-
-				auto len3 = 0;
-				auto bytes3 = ptr->ipdRevPasswordData.rgbSalt.rgbData.data();
-				std::string strData3 = {m_oRevisionsSaltValue.get().begin(), m_oRevisionsSaltValue.get().end()};
-				NSFile::CBase64Converter::Decode(strData3.c_str(), strData3.size(),
-					bytes3, len3);
-				ptr->ipdRevPasswordData.rgbSalt.cbLength = len3;
+				if(m_oRevisionsHashValue.IsInit())
+				{
+					auto len2 = 0;
+					auto bytes2 = ptr->ipdRevPasswordData.rgbHash.rgbData.data();
+					std::string strData2 = {m_oRevisionsHashValue.get().begin(), m_oRevisionsHashValue.get().end()};
+					NSFile::CBase64Converter::Decode(strData2.c_str(), strData2.size(),
+						bytes2, len2);
+					ptr->ipdRevPasswordData.rgbHash.cbLength = len2;
+				}
+				if(m_oRevisionsSaltValue.IsInit())
+				{
+					auto len3 = 0;
+					auto bytes3 = ptr->ipdRevPasswordData.rgbSalt.rgbData.data();
+					std::string strData3 = {m_oRevisionsSaltValue.get().begin(), m_oRevisionsSaltValue.get().end()};
+					NSFile::CBase64Converter::Decode(strData3.c_str(), strData3.size(),
+						bytes3, len3);
+					ptr->ipdRevPasswordData.rgbSalt.cbLength = len3;
+				}
 			}
 			else
 			{
 				auto ptr(new XLSB::BookProtection);
 				objectPtr = XLS::BaseObjectPtr{ptr};
+				if(m_oLockRevision.IsInit())
 				ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+				if(m_oLockStructure.IsInit())
 				ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+				if(m_oLockWindows.IsInit())
 				ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
 			}
 			return objectPtr;

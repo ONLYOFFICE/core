@@ -87,19 +87,32 @@ namespace OOX
 			auto ptr(new XLSB::CalcProp);
 			XLS::BaseObjectPtr objectPtr(ptr);
 
-			ptr->recalcID = m_oCalcId->GetValue();
-			ptr->fAutoRecalc = m_oCalcMode->GetValue();
-			ptr->fFullCalcOnLoad = m_oFullCalcOnLoad->GetValue();
-			ptr->fRefA1 = !m_oRefMode->GetValue();
-			ptr->fIter = m_oIterate->GetValue();
-			ptr->cCalcCount = m_oIterateCount->GetValue();
-			ptr->xnumDelta.data.value = m_oIterateDelta->GetValue();
-			ptr->fFullPrec = m_oFullPrecision->GetValue();
-			ptr->fSomeUncalced = m_oCalcCompleted->GetValue();
-			ptr->fSaveRecalc = m_oCalcOnSave->GetValue();
-			ptr->fMTREnabled = m_oConcurrentCalc->GetValue();
-			ptr->cUserThreadCount = m_oConcurrentManualCount->GetValue();
-			ptr->fNoDeps = m_oForceFullCalc->GetValue();
+            if(m_oCalcId.IsInit())
+                ptr->recalcID = m_oCalcId->GetValue();
+            if(m_oCalcMode.IsInit())
+                ptr->fAutoRecalc = m_oCalcMode->GetValue();
+            if(m_oFullCalcOnLoad.IsInit())
+                ptr->fFullCalcOnLoad = m_oFullCalcOnLoad->GetValue();
+            if(m_oRefMode.IsInit())
+                ptr->fRefA1 = !m_oRefMode->GetValue();
+            if(m_oIterate.IsInit())
+                ptr->fIter = m_oIterate->GetValue();
+            if(m_oIterateCount.IsInit())
+                ptr->cCalcCount = m_oIterateCount->GetValue();
+            if(m_oIterateDelta.IsInit())
+                ptr->xnumDelta.data.value = m_oIterateDelta->GetValue();
+            if(m_oFullPrecision.IsInit())
+                ptr->fFullPrec = m_oFullPrecision->GetValue();
+            if(m_oCalcCompleted.IsInit())
+                ptr->fSomeUncalced = m_oCalcCompleted->GetValue();
+            if(m_oCalcOnSave.IsInit())
+                ptr->fSaveRecalc = m_oCalcOnSave->GetValue();
+            if(m_oConcurrentCalc.IsInit())
+                ptr->fMTREnabled = m_oConcurrentCalc->GetValue();
+            if(m_oConcurrentManualCount.IsInit())
+                ptr->cUserThreadCount = m_oConcurrentManualCount->GetValue();
+            if(m_oForceFullCalc.IsInit())
+                ptr->fNoDeps = m_oForceFullCalc->GetValue();
 
 			return objectPtr;
 		}

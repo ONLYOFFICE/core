@@ -337,6 +337,8 @@ namespace PPTX
 
 						pDiagramData->fromPPTY(pReader);	
 
+						pReader->SaveDstContentRels(strDstDiagram + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename + L".rels");
+						// !!! id_drawing что в data пишется относительно контейнера выше
 						if (pDiagramDrawing.IsInit())
 						{
 							unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramDrawing->type().RelationType(), pDiagramDrawing->m_sOutputFilename, L"");
@@ -351,16 +353,10 @@ namespace PPTX
 						}
 						pDiagramData->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
-						pReader->SaveDstContentRels(strDstDiagram + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename + L".rels");
 						pDiagramData->m_sOutputFilename = rels_path + pDiagramData->m_sOutputFilename;
 
 						unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramData->type().RelationType(), pDiagramData->m_sOutputFilename, L"");
 						id_data = new OOX::RId(nRId);		
-
-						if (pDiagramDrawing.IsInit())
-						{
-							nRId = pReader->m_pRels->WriteRels(pDiagramDrawing->type().RelationType(), pDiagramDrawing->m_sOutputFilename, L"");
-						}
 					}break;
 					case 2:
 					{

@@ -52,8 +52,11 @@ RUN rm -rf /build/
 
 RUN apt-get build-dep -y vlc
 
+USER jenkins
+
 # build libvlc
 CMD cd /vlc && \
+    (patch -p1 --forward src/modules/bank.c ignore-cache-time.patch || :) && \
     ./bootstrap && \
     cd contrib && \
     mkdir -p native && \
@@ -65,12 +68,11 @@ CMD cd /vlc && \
     ./configure --prefix=/vlc/build/linux_64 --disable-vlc --disable-qt --disable-skins2 --disable-chromecast && \
     make && \
     make -j$CORES install-strip && \
-# form build directory
-    cd /build && \
-    mkdir -p linux_64 && cd linux_64 && \
-    cp -r /vlc/build/linux_64/lib . && \
-    cp -r /vlc/build/linux_64/include . && \
-    find . -name "*.la" -type f -delete && \
-    rm -rf lib/pkgconfig && \
-    rm -rf lib/vlc/lua && \
+# correct build files
+    cd build/linux_64 && \
+# convert all symlinks to files
+    (for f in $(find . -type l); do cp --remove-destination $(readlink -f $f) $f; done;) && \
+# delete all .la files
+    find lib -name "*.la" -type f -delete && \
+# generate plugins.dat
     lib/vlc/vlc-cache-gen lib/vlc/plugins

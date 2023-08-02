@@ -59,6 +59,7 @@ namespace cpdoccore { namespace odf_types {
 		{ L"width"			, smil_attribute_name::width },
 		{ L"x"				, smil_attribute_name::x },
 		{ L"y"				, smil_attribute_name::y },
+		{ L"dim"			, smil_attribute_name::dim },
 			
 		{ L"char-color"		, smil_attribute_name::charColor },
 		{ L"char-font-name"	, smil_attribute_name::charFontName },
@@ -98,6 +99,7 @@ namespace cpdoccore { namespace odf_types {
 		case smil_attribute_name::width						: _Wostream << L"width"			; break;
 		case smil_attribute_name::x							: _Wostream << L"x"				; break;
 		case smil_attribute_name::y							: _Wostream << L"y"				; break;
+		case smil_attribute_name::dim						: _Wostream << L"dim"			; break;
 		}
 		return _Wostream;
 	}
@@ -138,6 +140,7 @@ namespace cpdoccore { namespace odf_types {
 		else if (Str == L"width")				result = smil_attribute_name(width);
 		else if (Str == L"x")					result = smil_attribute_name(x);
 		else if (Str == L"y")					result = smil_attribute_name(y);
+		else if (Str == L"dim")					result = smil_attribute_name(dim);
 
 		else if (Str == L"char-color")			result = smil_attribute_name(charColor);
 		else if (Str == L"char-font-name")		result = smil_attribute_name(charFontName);

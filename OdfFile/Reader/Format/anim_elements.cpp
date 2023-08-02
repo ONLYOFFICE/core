@@ -293,6 +293,7 @@ static std::wstring pptx_convert_smil_attribute_name(const odf_types::smil_attri
 	case smil_attribute_name::width:			return L"ppt_w";
 	case smil_attribute_name::x:				return L"ppt_x";
 	case smil_attribute_name::y:				return L"ppt_y";
+	case smil_attribute_name::dim:				return L"ppt_c";
 	}
 
 	return L"";

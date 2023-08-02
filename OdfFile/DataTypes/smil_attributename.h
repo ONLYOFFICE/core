@@ -66,7 +66,8 @@ public:
 		visibility,
 		width,
 		x,
-		y
+		y,
+		dim
 	};
 
 	smil_attribute_name() {}

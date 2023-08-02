@@ -38,7 +38,11 @@
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/AcroForm.h"
 
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+
+#include "RendererOutputDev.h"
 
 namespace PdfReader
 {
@@ -78,6 +82,14 @@ struct CBorderType final
     double dWidth;
     double dDashesAlternating;
     double dGaps;
+};
+
+struct CAnnotAPView
+{
+	std::string sAPName;
+	std::string sASName;
+	BYTE* pAP;
+	BYTE* pText;
 };
 
 //------------------------------------------------------------------------
@@ -147,7 +159,34 @@ struct CActionResetForm  final : public CAction
 
 class CAnnotAP final
 {
+public:
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField);
+	CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef);
+	~CAnnotAP();
 
+	void ToWASM(NSWasm::CData& oRes);
+
+private:
+	unsigned int m_unRefNum; // Номер ссылки на объект
+	double m_dx1, m_dy1, m_dx2, m_dy2;
+	double m_dWScale, m_dHScale;
+	double m_dWTale;
+	double m_dHTale;
+	int m_nRx1, m_nRy1, m_nWidth, m_nHeight;
+	std::vector<CAnnotAPView*> m_arrAP;
+
+	Gfx* m_gfx;
+	CBgraFrame* m_pFrame;
+	RendererOutputDev* m_pRendererOut;
+	NSGraphics::IGraphicsRenderer* m_pRenderer;
+
+	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
+	void Init(AcroFormField* pField);
+	void Init(PDFDoc* pdfDoc, Object* oAnnotRef);
+	void Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
+	void Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
+
+	void Clear();
 };
 
 //------------------------------------------------------------------------

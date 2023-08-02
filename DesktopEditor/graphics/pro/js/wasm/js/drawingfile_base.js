@@ -477,6 +477,123 @@
 			readAction(reader, rec["Next"]);
 		}
 	}
+	function readAnnot(reader, rec)
+	{
+		rec["AP"] = {};
+		// Annot
+		// Номер для сопоставление с AP
+		rec["AP"]["i"] = reader.readInt();
+		rec["annotflag"] = reader.readInt();
+		// 12.5.3
+		let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
+		let bPrint = (rec["annotflag"] >> 2) & 1; // Print
+		rec["noZoom"] = (rec["annotflag"] >> 3) & 1; // NoZoom
+		rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
+		let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
+		rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+		rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
+		// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
+		rec["display"] = 0;
+		if (bHidden)
+			rec["display"] = 1;
+		else
+		{
+			if (bPrint)
+			{
+				if (bNoView)
+					rec["display"] = 3;
+				else
+					rec["display"] = 0;
+			}
+			else
+			{
+				if (bNoView)
+					rec["display"] = 0; // ??? no hidden, but noView and no print
+				else
+					rec["display"] = 2;
+			}
+		}
+		rec["page"] = reader.readInt();
+		// Необходимо смещение полученных координат как у getStructure и viewer.navigate
+		rec["rect"] = {};
+		rec["rect"]["x1"] = reader.readDouble2();
+		rec["rect"]["y1"] = reader.readDouble2();
+		rec["rect"]["x2"] = reader.readDouble2();
+		rec["rect"]["y2"] = reader.readDouble2();
+		let flags = reader.readInt();
+		// Уникальное имя - NM
+		if (flags & (1 << 0))
+			rec["UniqueName"] = reader.readString();
+		// Альтернативный текст аннотации - Contents
+		if (flags & (1 << 1))
+			rec["Contents"] = reader.readString();
+		// Эффекты границы - BE
+		if (flags & (1 << 2))
+			rec["borderCloudy"] = reader.readDouble();
+		// Специальный цвет аннотации - С
+		if (flags & (1 << 3))
+		{
+			let n = reader.readInt();
+			rec["C"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["C"].push(reader.readDouble());
+		}
+		// Границы - Border/BS
+		if (flags & (1 << 4))
+		{
+			// 0 - solid, 1 - beveled, 2 - dashed, 3 - inset, 4 - underline
+			rec["border"] = reader.readByte();
+			rec["borderWidth"] = reader.readDouble();
+			// Dash Pattern границы
+			if (rec["border"] == 2)
+			{
+				rec["dashed"] = [];
+				rec["dashed"].push(reader.readDouble());
+				rec["dashed"].push(reader.readDouble());
+			}
+		}
+		// Дата последнего изменения - M
+		if (flags & (1 << 5))
+			rec["LastModified"] = reader.readString();
+	}
+	function readAnnotAP(reader, AP)
+	{
+		// Номер для сопоставление с AP
+		AP["i"] = reader.readInt();
+		AP["x"] = reader.readInt();
+		AP["y"] = reader.readInt();
+		AP["w"] = reader.readInt();
+		AP["h"] = reader.readInt();
+		let n = reader.readInt();
+		for (let i = 0; i < n; ++i)
+		{
+			var APType = reader.readString();
+			if (!AP[APType])
+				AP[APType] = {};
+			var APi = AP[APType];
+			var ASType = reader.readString();
+			if (ASType)
+			{
+				AP[APType][ASType] = {};
+				APi = AP[APType][ASType];
+			}
+			let np1 = reader.readInt();
+			let np2 = reader.readInt();
+			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+			APi["retValue"] = np2 << 32 | np1;
+			let k = reader.readInt();
+			if (k != 0)
+				APi["fontInfo"] = [];
+			for (let j = 0; j < k; ++j)
+			{
+				let fontInfo = {};
+				fontInfo["text"] = reader.readString();
+				fontInfo["fontName"] = reader.readString();
+				fontInfo["fontSize"] = reader.readDouble();
+				APi["fontInfo"].push(fontInfo);
+			}
+		}
+	}
 
 	CFile.prototype["getInteractiveFormsInfo"] = function()
 	{
@@ -540,82 +657,8 @@
 		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
 			var rec = {};
-			rec["AP"] = {};
 			// Annot
-			// Номер для сопоставление с AP
-			rec["AP"]["i"] = reader.readInt();
-			rec["annotflag"] = reader.readInt();
-			// 12.5.3
-			let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
-			let bPrint = (rec["annotflag"] >> 2) & 1; // Print
-			rec["noZoom"] = (rec["annotflag"] >> 3) & 1; // NoZoom
-			rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
-			let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
-			rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
-			rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
-			// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
-			rec["display"] = 0;
-			if (bHidden)
-				rec["display"] = 1;
-			else
-			{
-				if (bPrint)
-				{
-					if (bNoView)
-						rec["display"] = 3;
-					else
-						rec["display"] = 0;
-				}
-				else
-				{
-					if (bNoView)
-						rec["display"] = 0; // ??? no hidden, but noView and no print
-					else
-						rec["display"] = 2;
-				}
-			}
-			rec["page"] = reader.readInt();
-			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
-			rec["rect"] = {};
-			rec["rect"]["x1"] = reader.readDouble2();
-			rec["rect"]["y1"] = reader.readDouble2();
-			rec["rect"]["x2"] = reader.readDouble2();
-			rec["rect"]["y2"] = reader.readDouble2();
-			let flags = reader.readInt();
-			// Уникальное имя - NM
-			if (flags & (1 << 0))
-				rec["UniqueName"] = reader.readString();
-			// Альтернативный текст аннотации - Contents
-			if (flags & (1 << 1))
-				rec["Contents"] = reader.readString();
-			// Эффекты границы - BE
-			if (flags & (1 << 2))
-				rec["borderCloudy"] = reader.readDouble();
-			// Специальный цвет аннотации - С
-			if (flags & (1 << 3))
-			{
-				let n = reader.readInt();
-				rec["C"] = [];
-				for (let i = 0; i < n; ++i)
-					rec["C"].push(reader.readDouble());
-			}
-			// Границы - Border/BS
-			if (flags & (1 << 4))
-			{
-				// 0 - solid, 1 - beveled, 2 - dashed, 3 - inset, 4 - underline
-				rec["border"] = reader.readByte();
-				rec["borderWidth"] = reader.readDouble();
-				// Dash Pattern границы
-				if (rec["border"] == 2)
-				{
-					rec["dashed"] = [];
-					rec["dashed"].push(reader.readDouble());
-					rec["dashed"].push(reader.readDouble());
-				}
-			}
-			// Дата последнего изменения - M
-			if (flags & (1 << 5))
-				rec["LastModified"] = reader.readString();
+			readAnnot(reader, rec);
 			// Widget
 			let tc = reader.readInt();
 			if (tc)
@@ -828,40 +871,7 @@
 		{
 			// Внешний вид аннотации
 			var AP = {};
-			// Номер для сопоставление с AP
-			AP["i"] = reader.readInt();
-			AP["x"] = reader.readInt();
-			AP["y"] = reader.readInt();
-			AP["w"] = reader.readInt();
-			AP["h"] = reader.readInt();
-			let n = reader.readInt();
-			for (let i = 0; i < n; ++i)
-			{
-				var APType = reader.readString();
-				if (!AP[APType])
-					AP[APType] = {};
-				var APi = AP[APType];
-				var ASType = reader.readString();
-				if (ASType)
-				{
-					AP[APType][ASType] = {};
-					APi = AP[APType][ASType];
-				}
-				let np1 = reader.readInt();
-				let np2 = reader.readInt();
-				// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-				APi["retValue"] = np2 << 32 | np1;
-				let k = reader.readInt();
-				APi["fontInfo"] = [];
-				for (let j = 0; j < k; ++j)
-				{
-					let fontInfo = {};
-					fontInfo["text"] = reader.readString();
-					fontInfo["fontName"] = reader.readString();
-					fontInfo["fontSize"] = reader.readDouble();
-					APi["fontInfo"].push(fontInfo);
-				}
-			}
+			readAnnotAP(reader, AP);
 			res.push(AP);
 		}
 
@@ -929,6 +939,153 @@
 				}
 			}
 			res["MK"].push(MK);
+		}
+
+		Module["_free"](ext);
+		return res;
+	};
+	CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
+	{
+		var res = [];
+		var ext = Module["_GetAnnotationsInfo"](this.nativeFile, pageIndex ? pageIndex : -1);
+		if (ext == 0)
+			return res;
+
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		var len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+		{
+			Module["_free"](ext);
+			return res;
+		}
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+
+		if (!reader.isValid())
+		{
+			Module["_free"](ext);
+			return res;
+		}
+		
+		while (reader.isValid())
+		{
+			var rec = {};
+			// Тип аннотации
+			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+			// 11 - StrikeOut, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+			rec["Type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec);
+			// Markup
+			let flags = 0;
+			if ((rec["Type"] < 18 && rec["Type"] != 1 && rec["Type"] != 15) || rec["Type"] == 25)
+			{
+				flags = reader.readInt();
+				// Номер AP popup аннотации для сопоставления
+				if (flags & (1 << 0))
+					rec["Popup"] = reader.readInt();
+				// Текстовая метка пользователя - T
+				if (flags & (1 << 1))
+					rec["User"] = reader.readString();
+				// Значение непрозрачности - CA
+				if (flags & (1 << 2))
+					rec["CA"] = reader.readDouble();
+				// Форматированный текст - RC
+				if (flags & (1 << 3))
+					rec["RC"] = reader.readString();
+				// Дата создания - CreationDate
+				if (flags & (1 << 4))
+					rec["CreationDate"] = reader.readString();
+				// Ссылка на аннотацию ответ - IRT
+				if (flags & (1 << 5))
+					rec["RefTo"] = reader.readInt();
+				// Тип аннотации ответа - RT
+				if (flags & (1 << 6))
+					rec["RefToReason"] = reader.readByte();
+				// Краткое описание - Subj
+				if (flags & (1 << 7))
+					rec["Subj"] = reader.readString();
+			}
+			// Text
+			if (rec["Type"] == 0)
+			{
+				rec["Open"] = (flags >> 15) & 1;
+				// иконка - Name
+				// 0 - Comment, 1 - Key, 2 - Note, 3 - Help, 4 - NewParagraph, 5 - Paragraph, 6 - Insert, 7 - Unknown
+				if (flags & (1 << 16))
+					rec["Icon"] = reader.readByte();
+				// Модель состояния - StateModel
+				// 0 - Marked, 1 - Review, 2 - Unknown
+				if (flags & (1 << 17))
+					rec["StateModel"] = reader.readByte();
+				// Состояние - State
+				// 0 - Marked, 1 - Unmarked, 2 - Accepted, 3 - Rejected, 4 - Cancelled, 5 - Completed, 6 - None, 7 - Unknown
+				if (flags & (1 << 18))
+					rec["State"] = reader.readByte();
+				
+			}
+			// Popup
+			else if (rec["Type"] == 15)
+			{
+				flags = reader.readInt();
+				rec["Open"] = (flags >> 0) & 1;
+				// Ссылка на аннотацию-родителя
+				if (flags & (1 << 0))
+					rec["PopupParent"] = reader.readInt();
+			}
+			res.push(rec);
+		}
+		
+		Module["_free"](ext);
+		return res;
+	};
+	CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgroundColor, nAnnot, sView)
+	{
+		var nView = -1;
+		if (sView)
+		{
+			if (sView == "N")
+				nView = 0;
+			else if (sView == "D")
+				nView = 1;
+			else if (sView == "R")
+				nView = 2;
+		}
+
+		var res = [];
+		var ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
+		if (ext == 0)
+			return res;
+
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+			return res;
+
+		var len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+			return res;
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			// Внешний вид аннотации
+			var AP = {};
+			readAnnotAP(reader, AP);
+			res.push(AP);
 		}
 
 		Module["_free"](ext);

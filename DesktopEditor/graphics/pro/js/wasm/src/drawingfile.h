@@ -134,6 +134,12 @@ public:
 			return ((CPdfFile*)pReader)->GetAnnots(nPageIndex);
 		return NULL;
 	}
+	BYTE* GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot = -1, const char* sView = NULL)
+	{
+		if (nType == 0)
+			return ((CPdfFile*)pReader)->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
+		return NULL;
+	}
     std::wstring GetInfo()
     {
         return pReader->GetInfo();

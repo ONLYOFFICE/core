@@ -188,6 +188,18 @@ WASM_EXPORT BYTE* GetAnnotationsInfo(CGraphicsFileDrawing* pGraphics, int nPageI
 {
 	return pGraphics->GetAnnots(nPageIndex);
 }
+WASM_EXPORT BYTE* GetAnnotationsAP(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, int nView)
+{
+	const char* sView = NULL;
+	if (nView == 0)
+		sView = "N";
+	else if (nView == 1)
+		sView = "D";
+	else if (nView == 2)
+		sView = "R";
+
+	return pGraphics->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
+}
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->DestroyText();
@@ -798,6 +810,83 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		}
 		std::cout << std::endl;
 	}
+}
+
+void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
+{
+	DWORD nAP = READ_INT(pWidgetsAP + i);
+	i += 4;
+	std::cout << "AP " << nAP << ", ";
+
+	DWORD nPathLength = READ_INT(pWidgetsAP + i);
+	i += 4;
+	std::cout << "X " << nPathLength << ", ";
+
+	nPathLength = READ_INT(pWidgetsAP + i);
+	i += 4;
+	std::cout << "Y " << nPathLength << ", ";
+
+	unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
+	i += 4;
+	std::cout << "W " << nWidgetWidth << ", ";
+
+	unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
+	i += 4;
+	std::cout << "H " << nWidgetHeight << ", ";
+
+	unsigned int nAPLength = READ_INT(pWidgetsAP + i);
+	i += 4;
+
+	for (unsigned int j = 0; j < nAPLength; ++j)
+	{
+		std::cout << std::endl;
+		nPathLength = READ_INT(pWidgetsAP + i);
+		i += 4;
+		std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
+		i += nPathLength;
+
+		nPathLength = READ_INT(pWidgetsAP + i);
+		i += 4;
+		sAPName += nPathLength ? ("." + std::string((char*)(pWidgetsAP + i), nPathLength)) : "";
+		i += nPathLength;
+
+		std::cout << "APName " << sAPName << ", ";
+		unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
+		i += 4;
+		unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
+		i += 4;
+
+		BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+		CBgraFrame oFrame;
+		oFrame.put_Data(res);
+		oFrame.put_Width(nWidgetWidth);
+		oFrame.put_Height(nWidgetHeight);
+		oFrame.put_Stride(4 * nWidgetWidth);
+		oFrame.put_IsRGBA(true);
+		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
+		oFrame.ClearNoAttack();
+		RELEASEARRAYOBJECTS(res);
+
+		unsigned int nTextSize = READ_INT(pWidgetsAP + i);
+		i += 4;
+		for (unsigned int k = 0; k < nTextSize; ++k)
+		{
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+			i += nPathLength;
+
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+			i += nPathLength;
+
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
+		}
+	}
+	std::cout << std::endl;
 }
 
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
@@ -1425,73 +1514,7 @@ int main(int argc, char* argv[])
 
 		while (i < nLength)
 		{
-			DWORD nAP = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "AP " << nAP << ", ";
-			DWORD nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "X " << nPathLength << ", ";
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Y " << nPathLength << ", ";
-			unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "W " << nWidgetWidth << ", ";
-			unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "H " << nWidgetHeight << ", ";
-			unsigned int nAPLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			for (unsigned int j = 0; j < nAPLength; ++j)
-			{
-				std::cout << std::endl;
-				nPathLength = READ_INT(pWidgetsAP + i);
-				i += 4;
-				std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
-				i += nPathLength;
-
-				nPathLength = READ_INT(pWidgetsAP + i);
-				i += 4;
-				sAPName += nPathLength ? ("." + std::string((char*)(pWidgetsAP + i), nPathLength)) : "";
-				i += nPathLength;
-
-				std::cout << "APName " << sAPName << ", ";
-				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
-				i += 4;
-				unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
-				i += 4;
-
-				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-				CBgraFrame oFrame;
-				oFrame.put_Data(res);
-				oFrame.put_Width(nWidgetWidth);
-				oFrame.put_Height(nWidgetHeight);
-				oFrame.put_Stride(4 * nWidgetWidth);
-				oFrame.put_IsRGBA(true);
-				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
-				oFrame.ClearNoAttack();
-				RELEASEARRAYOBJECTS(res);
-
-				unsigned int nTextSize = READ_INT(pWidgetsAP + i);
-				i += 4;
-				for (unsigned int k = 0; k < nTextSize; ++k)
-				{
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-					i += nPathLength;
-
-					nPathLength = READ_INT(pWidgetsAP + i);
-					i += 4;
-					std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
-				}
-			}
-			std::cout << std::endl;
+			ReadAnnotAP(pWidgetsAP, i);
 		}
 
 		if (pWidgetsAP)
@@ -1654,12 +1677,36 @@ int main(int argc, char* argv[])
 					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert", "Unknown"};
 					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
 				}
-				// TODO
+				if (nFlags & (1 << 17))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrStateModel[] = {"Marked", "Review", "Unknown"};
+					std::cout << "State model " << arrStateModel[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 18))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrState[] = {"Marked", "Unmarked", "Accepted", "Rejected", "Cancelled", "Completed", "None", "Unknown"};
+					std::cout << "State " << arrState[nPathLength] << ", ";
+				}
 			}
 			// TODO
 			else if (sType == "Popup")
 			{
-
+				nFlags = READ_INT(pAnnots + i);
+				i += 4;
+				if (nFlags & (1 << 0))
+					std::cout << "Open true, ";
+				else
+					std::cout << "Open false, ";
+				if (nFlags & (1 << 1))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "Popup parent " << nPathLength << ", ";
+				}
 			}
 
 			std::cout << std::endl;
@@ -1667,6 +1714,19 @@ int main(int argc, char* argv[])
 
 		if (pAnnots)
 			free(pAnnots);
+
+		BYTE* pAnnotAP = GetAnnotationsAP(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, -1, -1);
+		nLength = READ_INT(pAnnotAP);
+		i = 4;
+		nLength -= 4;
+
+		while (i < nLength)
+		{
+			ReadAnnotAP(pAnnotAP, i);
+		}
+
+		if (pAnnotAP)
+			free(pAnnotAP);
 	}
 
 	Close(pGrFile);

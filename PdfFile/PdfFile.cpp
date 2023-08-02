@@ -846,7 +846,13 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetAnnotations(nPageIndex);
+	return m_pInternal->pReader->GetAnnots(nPageIndex);
+}
+BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
 }
 
 // ------------------------------------------------------------------------

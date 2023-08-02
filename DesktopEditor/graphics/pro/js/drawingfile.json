@@ -33,6 +33,8 @@
 		"_GetInteractiveFormsInfo",
 		"_GetInteractiveFormsAP",
 		"_GetButtonIcons",
+		"_GetAnnotationsInfo",
+		"_GetAnnotationsAP",
 		"_InitializeFontsBin",
 		"_InitializeFontsBase64",
 		"_InitializeFontsRanges",

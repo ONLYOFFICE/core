@@ -84,6 +84,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts, IOfficeDrawingFile
 	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
 #else
 	globalParams->setDrawFormFields(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
 	SetCMapMemory(NULL, 0);
 #endif
 
@@ -736,501 +737,6 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
 	return oLinks.Serialize();
 }
-
-TextString* getName(Object* oField)
-{
-	TextString* sResName = NULL;
-
-	if (!oField->isDict())
-		return sResName;
-
-	Object oName;
-	if (oField->dictLookup("T", &oName)->isString())
-		sResName = new TextString(oName.getString());
-	else
-	{
-		oName.free();
-		return sResName;
-	}
-	oName.free();
-
-	Object oParent, oParent2;
-	oField->dictLookup("Parent", &oParent);
-	int nDepth = 0;
-	while (oParent.isDict() && nDepth < 50)
-	{
-		if (oParent.dictLookup("T", &oName)->isString())
-		{
-			if (sResName->getLength())
-				sResName->insert(0, (Unicode)'.');
-			sResName->insert(0, oName.getString());
-		}
-		oName.free();
-
-		oParent.dictLookup("Parent", &oParent2);
-		oParent.free();
-		oParent = oParent2;
-
-		++nDepth;
-	}
-	oParent.free();
-
-	return sResName;
-}
-void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction)
-{
-	Object oActType;
-	std::string sSName;
-	if (oAction->dictLookup("S", &oActType)->isName())
-	{
-		sSName = oActType.getName();
-		BYTE nA = 0; // Default: Unknown
-		{
-		if (sSName == "GoTo")
-			nA = 1;
-		else if (sSName == "GoToR")
-			nA = 2;
-		else if (sSName == "GoToE")
-			nA = 3;
-		else if (sSName == "Launch")
-			nA = 4;
-		else if (sSName == "Thread")
-			nA = 5;
-		else if (sSName == "URI")
-			nA = 6;
-		else if (sSName == "Sound")
-			nA = 7;
-		else if (sSName == "Movie")
-			nA = 8;
-		else if (sSName == "Hide")
-			nA = 9;
-		else if (sSName == "Named")
-			nA = 10;
-		else if (sSName == "SubmitForm")
-			nA = 11;
-		else if (sSName == "ResetForm")
-			nA = 12;
-		else if (sSName == "ImportData")
-			nA = 13;
-		else if (sSName == "JavaScript")
-			nA = 14;
-		else if (sSName == "SetOCGState")
-			nA = 15;
-		else if (sSName == "Rendition")
-			nA = 16;
-		else if (sSName == "Trans")
-			nA = 17;
-		else if (sSName == "GoTo3DView")
-			nA = 18;
-		}
-		oRes.WriteBYTE(nA);
-	}
-	else
-		oRes.WriteBYTE(0);
-	oActType.free();
-
-	LinkAction* oAct = LinkAction::parseAction(oAction);
-	if (!oAct)
-		return;
-
-	LinkActionKind kind = oAct->getKind();
-	switch (kind)
-	{
-	// Переход внутри файла
-	case actionGoTo:
-	{
-		GString* str = ((LinkGoTo*)oAct)->getNamedDest();
-		LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
-		if (!pLinkDest)
-		{
-			oRes.AddInt(0);
-			oRes.WriteBYTE(8);
-			break;
-		}
-		int pg;
-		if (pLinkDest->isPageRef())
-		{
-			Ref pageRef = pLinkDest->getPageRef();
-			pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
-		}
-		else
-			pg = pLinkDest->getPageNum();
-		LinkDestKind nKind = pLinkDest->getKind();
-		oRes.AddInt(pg - 1);
-		oRes.WriteBYTE(nKind);
-		switch (nKind)
-		{
-		case destXYZ:
-		case destFitH:
-		case destFitBH:
-		case destFitV:
-		case destFitBV:
-		{
-			size_t nKindPos = oRes.GetSize();
-			int nKindFlag = 0;
-			oRes.WriteBYTE(nKindFlag);
-			// 1 - left
-			if (pLinkDest->getChangeLeft())
-			{
-				nKindFlag |= (1 << 0);
-				oRes.AddDouble(pLinkDest->getLeft());
-			}
-			// 2 - top
-			if (pLinkDest->getChangeTop())
-			{
-				nKindFlag |= (1 << 1);
-				double dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
-				oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
-			}
-			// 3 - zoom
-			if (pLinkDest->getChangeZoom() && pLinkDest->getZoom())
-			{
-				nKindFlag |= (1 << 2);
-				oRes.AddDouble(pLinkDest->getZoom());
-			}
-			oRes.WriteBYTE(nKindFlag, nKindPos);
-			break;
-		}
-		case destFitR:
-		{
-			oRes.AddDouble(pLinkDest->getLeft());
-			double dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
-			oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
-			oRes.AddDouble(pLinkDest->getRight());
-			dTop = pdfDoc->getPageCropHeight(pg) - pLinkDest->getBottom();
-			oRes.AddDouble(dTop < 0 ? 0.0 : dTop);
-			break;
-		}
-		case destFit:
-		case destFitB:
-		default:
-			break;
-		}
-		if (str)
-			RELEASEOBJECT(pLinkDest);
-		break;
-	}
-	// Переход к внешнему файлу
-	case actionGoToR:
-	{
-		break;
-	}
-	// Запуск стороннего приложения
-	case actionLaunch:
-	{
-		break;
-	}
-	// Внешняя ссылка
-	case actionURI:
-	{
-		TextString* s = new TextString(((LinkURI*)oAct)->getURI());
-		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-		oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-		delete s;
-		break;
-	}
-	// Нестандартно именованные действия
-	case actionNamed:
-	{
-		TextString* s = new TextString(((LinkNamed*)oAct)->getName());
-		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-		oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-		delete s;
-		break;
-	}
-	// Воспроизведение фильма
-	case actionMovie:
-	{
-		break;
-	}
-	// JavaScript
-	case actionJavaScript:
-	{
-		TextString* s = new TextString(((LinkJavaScript*)oAct)->getJS());
-		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-		oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-		delete s;
-		break;
-	}
-	// Отправка формы
-	case actionSubmitForm:
-	{
-		break;
-	}
-	// Скрытие аннотаций
-	case actionHide:
-	{
-		oRes.WriteBYTE(((LinkHide*)oAct)->getHideFlag());
-		Object* oHideObj = ((LinkHide*)oAct)->getFields();
-		int nHide = 1, k = 0;
-		if (oHideObj->isArray())
-			nHide = oHideObj->arrayGetLength();
-		int nFieldsPos = oRes.GetSize();
-		int nFields = 0;
-		oRes.AddInt(nFields);
-
-		Object oHide;
-		oHideObj->copy(&oHide);
-		do
-		{
-			TextString* s = NULL;
-			if (oHideObj->isArray())
-			{
-				oHide.free();
-				oHideObj->arrayGet(k, &oHide);
-			}
-			if (oHide.isString())
-				s = new TextString(oHide.getString());
-			else if (oHide.isDict())
-				s = getName(&oHide);
-
-			if (s)
-			{
-				nFields++;
-				std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-				oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-				delete s;
-			}
-			k++;
-		} while (k < nHide);
-		oHide.free();
-
-		oRes.AddInt(nFields, nFieldsPos);
-		break;
-	}
-	// Неизвестное действие
-	case actionUnknown:
-	default:
-	{
-		if (sSName == "ResetForm")
-		{
-			Object oObj;
-			if (oAction->dictLookup("Flags", &oObj)->isInt())
-				oRes.AddInt(oObj.getInt());
-			else
-				oRes.AddInt(0);
-			oObj.free();
-
-			if (oAction->dictLookup("Fields", &oObj)->isArray())
-			{
-				int nFieldsPos = oRes.GetSize();
-				int nFields = 0;
-				oRes.AddInt(nFields);
-				for (int j = 0; j < oObj.arrayGetLength(); ++j)
-				{
-					Object oField;
-					oObj.arrayGet(j, &oField);
-					TextString* s = NULL;
-					if (oField.isString())
-						s = new TextString(oField.getString());
-					else if (oField.isDict())
-						s = getName(&oField);
-
-					if (s)
-					{
-						nFields++;
-						std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-						oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-						delete s;
-					}
-					oField.free();
-				}
-				oRes.AddInt(nFields, nFieldsPos);
-			}
-			else
-				oRes.AddInt(0);
-			oObj.free();
-		}
-		break;
-	}
-	}
-
-	Object oNextAction;
-	if (oAction->dictLookup("Next", &oNextAction)->isDict())
-	{
-		oRes.WriteBYTE(1);
-		getAction(pdfDoc, oRes, &oNextAction);
-	}
-	else
-		oRes.WriteBYTE(0);
-
-	RELEASEOBJECT(oAct);
-};
-bool getValue(Object* oV, NSWasm::CData& oRes)
-{
-	bool bRes = false;
-	if (oV->isName())
-	{
-		std::string sStr(oV->getName());
-		bRes = true;
-		oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-	}
-	else if (oV->isString() || oV->isDict())
-	{
-		TextString* s = NULL;
-		if (oV->isString())
-			s = new TextString(oV->getString());
-		else if (oV->isDict())
-		{
-			Object oContents;
-			if (oV->dictLookup("Contents", &oContents)->isString())
-			{
-				s = new TextString(oContents.getString());
-			}
-			oContents.free();
-		}
-		if (s)
-		{
-			std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			bRes = true;
-			oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-			delete s;
-		}
-	}
-	return bRes;
-}
-void getParents(PDFDoc* pdfDoc, Object* oFieldRef, NSWasm::CData& oRes, std::vector<int>& arrParents)
-{
-	if (!pdfDoc)
-		return;
-	XRef* xref = pdfDoc->getXRef();
-	if (!oFieldRef || !xref)
-		return;
-
-	Object oField;
-	if (!oFieldRef->isRef() || std::find(arrParents.begin(), arrParents.end(), oFieldRef->getRefNum()) != arrParents.end() || !oFieldRef->fetch(xref, &oField)->isDict())
-	{
-		oField.free();
-		return;
-	}
-	int nRefNum = oFieldRef->getRefNum();
-	arrParents.push_back(nRefNum);
-	oRes.AddInt(nRefNum);
-
-	int nFlags = 0;
-	int nFlagPos = oRes.GetSize();
-	oRes.AddInt(nFlags);
-
-	Object oT;
-	if (oField.dictLookup("T", &oT)->isString())
-	{
-		TextString* s = new TextString(oT.getString());
-		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-		nFlags |= (1 << 0);
-		oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-		delete s;
-	}
-	oT.free();
-
-	Object oV;
-	if (oField.dictLookup("V", &oV))
-	{
-		if (getValue(&oV, oRes))
-			nFlags |= (1 << 1);
-	}
-	oV.free();
-
-	Object oDV;
-	if (oField.dictLookup("DV", &oDV))
-	{
-		if (getValue(&oDV, oRes))
-			nFlags |= (1 << 2);
-	}
-	oDV.free();
-
-	Object oParentRefObj;
-	if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-	{
-		oRes.AddInt(oParentRefObj.getRefNum());
-		nFlags |= (1 << 3);
-		getParents(pdfDoc, &oParentRefObj, oRes, arrParents);
-	}
-	oParentRefObj.free();
-	oRes.AddInt(nFlags, nFlagPos);
-}
-unsigned int getBorder(Object* oBorder, bool bBSorBorder, NSWasm::CData& oRes)
-{
-	// Границы и Dash Pattern - Border/BS
-	unsigned int nBorderType = 5;
-	if (!oBorder)
-		return nBorderType;
-	double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
-	if (bBSorBorder)
-	{
-		nBorderType = annotBorderSolid;
-		Object oV;
-		if (oBorder->dictLookup("S", &oV)->isName())
-		{
-			if (oV.isName("S"))
-				nBorderType = annotBorderSolid;
-			else if (oV.isName("D"))
-				nBorderType = annotBorderDashed;
-			else if (oV.isName("B"))
-				nBorderType = annotBorderBeveled;
-			else if (oV.isName("I"))
-				nBorderType = annotBorderInset;
-			else if (oV.isName("U"))
-				nBorderType = annotBorderUnderlined;
-		}
-		oV.free();
-		if (oBorder->dictLookup("W", &oV)->isNum())
-			dBorderWidth = oV.getNum();
-		oV.free();
-		if (oBorder->dictLookup("D", &oV)->isArray())
-		{
-			Object oV1;
-			if (oV.arrayGet(0, &oV1)->isNum())
-				dDashesAlternating = oV1.getNum();
-			oV1.free();
-			if (oV.arrayGet(1, &oV1)->isNum())
-				dGaps = oV1.getNum();
-			else
-				dGaps = dDashesAlternating;
-			oV1.free();
-		}
-		oV.free();
-	}
-	else
-	{
-		nBorderType = annotBorderSolid;
-		Object oV;
-		if (oBorder->arrayGet(2, &oV) && oV.isNum())
-			dBorderWidth = oV.getNum();
-		oV.free();
-
-		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oV)->isArray() && oV.arrayGetLength() > 1)
-		{
-			nBorderType = annotBorderDashed;
-			Object oV1;
-			if (oV.arrayGet(0, &oV1)->isNum())
-				dDashesAlternating = oV1.getNum();
-			oV1.free();
-			if (oV.arrayGet(1, &oV1)->isNum())
-				dGaps = oV1.getNum();
-			oV1.free();
-		}
-		oV.free();
-	}
-
-	if (nBorderType != 5)
-	{
-		BYTE nBP = nBorderType;
-		if (nBP == 1)
-			nBP = 2;
-		else if (nBP == 2)
-			nBP = 1;
-
-		oRes.WriteBYTE(nBP);
-		oRes.AddDouble(dBorderWidth);
-		if (nBorderType == annotBorderDashed)
-		{
-			oRes.AddDouble(dDashesAlternating);
-			oRes.AddDouble(dGaps);
-		}
-	}
-	return nBorderType;
-}
-
 BYTE* CPdfReader::GetWidgets()
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -2191,58 +1697,6 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void WriteAppearance(int nWidth, int nHeight, BYTE* pBgraData, unsigned int nColor, NSWasm::CData& oRes)
-{
-	BYTE* pSubMatrix = new BYTE[nWidth * nHeight * 4];
-	int p = 0;
-	unsigned int* pTemp = (unsigned int*)pBgraData;
-	unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
-	for (int y = 0; y < nHeight; ++y)
-	{
-		for (int x = 0; x < nWidth; ++x)
-		{
-			pSubTemp[p++] = pTemp[y * nWidth + x];
-			pTemp[y * nWidth + x] = /*0xFF000000 | */nColor;
-		}
-	}
-
-	unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
-	unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-	oRes.AddInt(npSubMatrix1);
-	oRes.AddInt(npSubMatrix >> 32);
-
-	BYTE* pTextFormField = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
-	BYTE* x = pTextFormField;
-	unsigned int nLength = x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
-	nLength -= 4;
-	oRes.Write(pTextFormField + 4, nLength);
-	RELEASEARRAYOBJECTS(pTextFormField);
-}
-void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, const char* sAPName, const char* sASName)
-{
-	XRef* xref = pdfDoc->getXRef();
-	Object oFieldRef, oField;
-	pField->getFieldRef(&oFieldRef);
-	oFieldRef.fetch(xref, &oField);
-
-	Object kidsObj, annotRef, annotObj;
-	if (oField.dictLookup("Kids", &kidsObj)->isArray())
-	{
-		for (int j = 0; j < kidsObj.arrayGetLength(); ++j)
-		{
-			kidsObj.arrayGetNF(j, &annotRef);
-			annotRef.fetch(xref, &annotObj);
-			pField->drawAnnot(nPage, gfx, gFalse, &annotRef, &annotObj, sAPName, sASName, gFalse);
-			annotObj.free();
-			annotRef.free();
-		}
-	}
-	else
-		pField->drawAnnot(nPage, gfx, gFalse, &oFieldRef, &oField, sAPName, sASName, gFalse);
-	kidsObj.free();
-
-	oFieldRef.free(); oField.free();
-}
 BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -2266,135 +1720,10 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && i != nWidget))
 			continue;
 
-		// Номер аннотации для сопоставления с AP
-		Object oRef;
-		pField->getFieldRef(&oRef);
-		oRes.AddInt(oRef.getRefNum());
-		oRef.free();
-
-		// Координаты - BBox
-		double dx1, dy1, dx2, dy2;
-		pField->getBBox(&dx1, &dy1, &dx2, &dy2);
-
-		int nWidth  = (int)round((dx2 - dx1) * (double)nRasterW / dWidth);
-		int nHeight = (int)round((dy2 - dy1) * (double)nRasterH / dHeight);
-
-		double dWTale = nWidth  - (dx2 - dx1) * (double)nRasterW / dWidth;
-		double dHTale = nHeight - (dy2 - dy1) * (double)nRasterH / dHeight;
-
-		nWidth  += 2;
-		nHeight += 2;
-
-		// Отрисовка на прозрачном холсте с заданым цветом фона
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-		unsigned int nColor = (unsigned int)nBackgroundColor;
-		unsigned int nSize = (unsigned int)(nWidth * nHeight);
-		unsigned int* pTemp = (unsigned int*)pBgraData;
-		for (unsigned int i = 0; i < nSize; ++i)
-			*pTemp++ = nColor;
-
-		CBgraFrame* pFrame = new CBgraFrame();
-		pFrame->put_Data(pBgraData);
-		pFrame->put_Width(nWidth);
-		pFrame->put_Height(nHeight);
-		pFrame->put_Stride(4 * nWidth);
-
-		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-		pRenderer->SetFontManager(m_pFontManager);
-		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->SetSwapRGB(true);
-		pRenderer->put_Width ((dx2 - dx1 + (2 + dWTale) * dWidth / (double)nRasterW) * 25.4 / dPageDpiX);
-		pRenderer->put_Height((dy2 - dy1 + (2 + dHTale) * dWidth / (double)nRasterW) * 25.4 / dPageDpiX);
-		if (nBackgroundColor != 0xFFFFFF)
-			pRenderer->CommandLong(c_nDarkMode, 1);
-
-		PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
-
-		// Создание Gfx
-		GBool crop = gTrue;
-		PDFRectangle box;
-		int rotate = pPage->getRotate();
-		if (rotate >= 360)
-			rotate -= 360;
-		else if (rotate < 0)
-			rotate += 360;
-		pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
-		PDFRectangle* cropBox = pPage->getCropBox();
-
-		Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
-
-		// Координаты и размеры внешнего вида
-		int nRx1 = (int)round(dx1 * (double)nRasterW / dWidth) - 1;
-		int nRy2 = nRasterH - (int)round(dy2 * (double)nRasterH / dHeight) - 1;
-		oRes.AddInt(nRx1 < 0 ? 0 : nRx1);
-		oRes.AddInt(nRy2 < 0 ? 0 : nRy2);
-		oRes.AddInt(nWidth);
-		oRes.AddInt(nHeight);
-
-		int nAPPos = oRes.GetSize();
-		unsigned int nAPLength = 0;
-		oRes.AddInt(nAPLength);
-
-		// Отрисовка внешних видов аннотации
-		Object oAP;
-		AcroFormFieldType oType = pField->getAcroFormFieldType();
-		((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
-
-		if (pField->fieldLookup("AP", &oAP)->isDict())
-		{
-			std::vector<const char*> arrAPName { "N", "D", "R" };
-			for (unsigned int j = 0; j < arrAPName.size(); ++j)
-			{
-				if (sView && strcmp(sView, arrAPName[j]) != 0)
-					continue;
-				std::string sAPName(arrAPName[j]);
-				Object oObj;
-				if (oAP.dictLookup(sAPName.c_str(), &oObj)->isDict())
-				{
-					for (int k = 0; k < oObj.dictGetLength(); ++k)
-					{
-						if (sButtonView)
-						{
-							if (strcmp(sButtonView, "Off") == 0 && strcmp(oObj.dictGetKey(k), "Off") != 0)
-								continue;
-							if (strcmp(sButtonView, "Yes") == 0 && strcmp(oObj.dictGetKey(k), "Off") == 0)
-								continue;
-						}
-						std::string sASName(oObj.dictGetKey(k));
-						oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
-						if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && sASName != "Off")
-						{
-							std::string sYes = "Yes";
-							oRes.WriteString((BYTE*)sYes.c_str(), sYes.length());
-						}
-						else
-							oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
-						pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth + 1 + dWTale / 2, dy2 * (double)nRasterH / dHeight - nRasterH + 1 + dHTale / 2);
-						DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), sASName.c_str());
-						nAPLength++;
-						WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);
-					}
-				}
-				else if (!oObj.isNull())
-				{
-					oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
-					oRes.WriteString(NULL, 0);
-					pRenderer->SetCoordTransformOffset(-dx1 * (double)nRasterW / dWidth + 1 + dWTale / 2, dy2 * (double)nRasterH / dHeight - nRasterH + 1 + dHTale / 2);
-					DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), NULL);
-					nAPLength++;
-					WriteAppearance(nWidth, nHeight, pBgraData, nColor, oRes);
-				}
-				oObj.free();
-			}
-		}
-		oAP.free();
-		((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
-		oRes.AddInt(nAPLength, nAPPos);
-
-		delete gfx;
-		RELEASEOBJECT(pFrame);
-		RELEASEOBJECT(pRenderer);
+		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, sButtonView, pField);
+		if (pAP)
+			pAP->ToWASM(oRes);
+		RELEASEOBJECT(pAP);
 	}
 
 	oRes.WriteLen();
@@ -2755,7 +2084,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-
 void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
@@ -2770,7 +2098,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		return;
 	}
 
-	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+	for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 	{
 		// Ходовые объекты
 		Object oObj, oObj2;
@@ -2788,6 +2116,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		oObj.free(); oAnnot.free();
 
 		PdfReader::CAnnot* pAnnot = NULL;
+		oAnnots.arrayGetNF(i, &oAnnotRef);
 		if (sType == "Text")
 		{
 			pAnnot = new PdfReader::CAnnotText(pdfDoc, &oAnnotRef, nPageIndex);
@@ -2868,6 +2197,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 			pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		// TODO Все аннотации
+		oAnnotRef.free();
 
 		if (pAnnot)
 			pAnnot->ToWASM(oRes);
@@ -2876,8 +2206,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 
 	oAnnots.free();
 }
-
-BYTE* CPdfReader::GetAnnotations(int nPageIndex)
+BYTE* CPdfReader::GetAnnots(int nPageIndex)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -2894,6 +2223,65 @@ BYTE* CPdfReader::GetAnnotations(int nPageIndex)
 			GetPageAnnots(m_pPDFDocument, oRes, nPage);
 		}
 	}
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
+BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+
+	Object oAnnots;
+	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1);
+	if (!pPage || !pPage->getAnnots(&oAnnots)->isArray())
+	{
+		oAnnots.free();
+		return NULL;
+	}
+
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+	{
+		Object oAnnotRef;
+		if (!oAnnots.arrayGetNF(i, &oAnnotRef)->isRef())
+		{
+			oAnnotRef.free();
+			continue;
+		}
+
+		if (nAnnot >= 0 && i != nAnnot)
+		{
+			oAnnotRef.free();
+			continue;
+		}
+
+		Object oAnnot, oObj;
+		std::string sType;
+		oAnnots.arrayGet(i, &oAnnot);
+		if (oAnnot.dictLookup("Subtype", &oObj)->isName())
+			sType = oObj.getName();
+		oObj.free(); oAnnot.free();
+
+		if (sType == "Widget")
+		{
+			oAnnotRef.free();
+			continue;
+		}
+
+		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef);
+		if (pAP)
+			pAP->ToWASM(oRes);
+		RELEASEOBJECT(pAP);
+
+		oAnnotRef.free();
+	}
+
+	oAnnots.free();
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();

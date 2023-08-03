@@ -51,6 +51,8 @@ void CRecordBlipCollection9Container::ReadFromStream(SRecordHeader &oHeader, POL
         lCurLen += 8 + ReadHeader.RecLen;
 
         std::shared_ptr<CRecordBlipEntityAtom> pRec(new CRecordBlipEntityAtom);
+        pRec->m_pCommonInfo = m_pCommonInfo;
+
         pRec->ReadFromStream(ReadHeader, pStream);
         m_rgBlipEntityAtom.push_back(pRec);
     }

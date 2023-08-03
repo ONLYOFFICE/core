@@ -1033,6 +1033,38 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 }
 
 //------------------------------------------------------------------------
+// Ink
+//------------------------------------------------------------------------
+
+CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	if (oAnnot.dictLookup("InkList", &oObj)->isArray())
+	{
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			if (oObj.arrayGet(j, &oObj2)->isArray())
+			{
+				std::vector<double> arrLine;
+				for (int k = 0; k < oObj2.arrayGetLength(); ++k)
+				{
+					Object oObj1;
+					if (oObj2.arrayGet(k, &oObj1)->isNum())
+						arrLine.push_back(oObj1.getNum());
+					oObj1.free();
+				}
+				if (!arrLine.empty())
+					m_arrInkList.push_back(arrLine);
+			}
+		}
+	}
+	oObj.free();
+}
+
+//------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
 
@@ -1125,7 +1157,7 @@ CAnnots::~CAnnots()
 }
 
 //------------------------------------------------------------------------
-// Annot
+// Markup
 //------------------------------------------------------------------------
 
 CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
@@ -1185,6 +1217,10 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	// XXX - Назначение аннотации - IT
 	// TODO m_nIT записывается аннотациями которым это необходимо
 }
+
+//------------------------------------------------------------------------
+// Annot
+//------------------------------------------------------------------------
 
 CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 {
@@ -1411,9 +1447,14 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	Init(pField);
-	Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-	Draw(pdfDoc, nRasterH, nBackgroundColor, nPageIndex, pField, sView, sButtonView);
+	Object oAP;
+	if (pField->fieldLookup("AP", &oAP)->isDict())
+	{
+		Init(pField);
+		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, nPageIndex, pField, sView, sButtonView);
+	}
+	oAP.free();
 
 	Clear();
 }
@@ -1425,9 +1466,18 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	Init(pdfDoc, oAnnotRef);
-	Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
-	Draw(pdfDoc, nRasterH, nBackgroundColor, oAnnotRef, sView);
+	Object oAnnot, oAP;
+	XRef* xref = pdfDoc->getXRef();
+	oAnnotRef->fetch(xref, &oAnnot);
+	if (oAnnot.dictLookup("AP", &oAP)->isDict())
+	{
+		m_unRefNum = oAnnotRef->getRefNum();
+
+		Init(&oAnnot);
+		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
+		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, oAnnotRef, sView);
+	}
+	oAP.free(); oAnnot.free();
 
 	Clear();
 }
@@ -1536,16 +1586,10 @@ void CAnnotAP::Init(AcroFormField* pField)
 	pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
 }
 
-void CAnnotAP::Init(PDFDoc* pdfDoc, Object* oAnnotRef)
+void CAnnotAP::Init(Object* oAnnot)
 {
-	m_unRefNum = oAnnotRef->getRefNum();
-
-	Object oAnnot;
-	XRef* xref = pdfDoc->getXRef();
-	oAnnotRef->fetch(xref, &oAnnot);
-
 	Object oObj, oObj2;
-	if (oAnnot.dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
+	if (oAnnot->dictLookup("Rect", &oObj)->isArray() && oObj.arrayGetLength() == 4)
 	{
 		ARR_GET_NUM(oObj, 0, m_dx1);
 		ARR_GET_NUM(oObj, 1, m_dy1);
@@ -1563,105 +1607,97 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, Object* oAnnotRef)
 		}
 	}
 	oObj.free();
-
-	oAnnot.free();
 }
 
-void CAnnotAP::Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView)
+void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView)
 {
 	// Отрисовка внешних видов аннотации
-	Object oAP;
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
 
-	if (pField->fieldLookup("AP", &oAP)->isDict())
+	std::vector<const char*> arrAPName { "N", "D", "R" };
+	for (unsigned int j = 0; j < arrAPName.size(); ++j)
 	{
-		std::vector<const char*> arrAPName { "N", "D", "R" };
-		for (unsigned int j = 0; j < arrAPName.size(); ++j)
+		if (sView && strcmp(sView, arrAPName[j]) != 0)
+			continue;
+		CAnnotAPView* pView = NULL;
+		Object oObj;
+		if (oAP->dictLookup(arrAPName[j], &oObj)->isDict())
 		{
-			if (sView && strcmp(sView, arrAPName[j]) != 0)
-				continue;
-			CAnnotAPView* pView = NULL;
-			Object oObj;
-			if (oAP.dictLookup(arrAPName[j], &oObj)->isDict())
+			for (int k = 0; k < oObj.dictGetLength(); ++k)
 			{
-				for (int k = 0; k < oObj.dictGetLength(); ++k)
+				if (sButtonView)
 				{
-					if (sButtonView)
-					{
-						if (strcmp(sButtonView, "Off") == 0 && strcmp(oObj.dictGetKey(k), "Off") != 0)
-							continue;
-						if (strcmp(sButtonView, "Yes") == 0 && strcmp(oObj.dictGetKey(k), "Off") == 0)
-							continue;
-					}
-					pView = new CAnnotAPView();
-					pView->sAPName = arrAPName[j];
-					pView->sASName = oObj.dictGetKey(k);
-					if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && pView->sASName != "Off")
-						pView->sASName = "Yes";
-					m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
-					DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], pView->sASName.c_str());
-					WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+					if (strcmp(sButtonView, "Off") == 0 && strcmp(oObj.dictGetKey(k), "Off") != 0)
+						continue;
+					if (strcmp(sButtonView, "Yes") == 0 && strcmp(oObj.dictGetKey(k), "Off") == 0)
+						continue;
 				}
-			}
-			else if (!oObj.isNull())
-			{
 				pView = new CAnnotAPView();
 				pView->sAPName = arrAPName[j];
+				pView->sASName = oObj.dictGetKey(k);
+				if ((oType == acroFormFieldRadioButton || oType == acroFormFieldCheckbox) && pView->sASName != "Off")
+					pView->sASName = "Yes";
 				m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
-				DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], NULL);
+				DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], pView->sASName.c_str());
 				WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
 			}
-			oObj.free();
-
-			if (pView)
-				m_arrAP.push_back(pView);
 		}
+		else if (!oObj.isNull())
+		{
+			pView = new CAnnotAPView();
+			pView->sAPName = arrAPName[j];
+			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+			DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], NULL);
+			WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+		}
+		oObj.free();
+
+		if (pView)
+			m_arrAP.push_back(pView);
 	}
-	oAP.free();
+
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 }
 
-void CAnnotAP::Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
+void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
 	// Отрисовка внешних видов аннотации
-	Object oAP, oAnnot;
+	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
 	oAnnotRef->fetch(xref, &oAnnot);
-	if (oAnnot.dictLookup("AP", &oAP)->isDict())
+
+	std::vector<const char*> arrAPName { "N", "D", "R" };
+	for (unsigned int j = 0; j < arrAPName.size(); ++j)
 	{
-		std::vector<const char*> arrAPName { "N", "D", "R" };
-		for (unsigned int j = 0; j < arrAPName.size(); ++j)
+		if (sView && strcmp(sView, arrAPName[j]) != 0)
+			continue;
+		CAnnotAPView* pView = NULL;
+		Object oObj;
+		if (oAP->dictLookup(arrAPName[j], &oObj)->isStream())
 		{
-			if (sView && strcmp(sView, arrAPName[j]) != 0)
-				continue;
-			CAnnotAPView* pView = NULL;
-			Object oObj;
-			if (oAP.dictLookup(arrAPName[j], &oObj)->isStream())
+			pView = new CAnnotAPView();
+			pView->sAPName = arrAPName[j];
+
+			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
+
+			Ref ref = oAnnotRef->getRef();
+			Annot* annot = new Annot(pdfDoc, oAnnot.getDict(), &ref, arrAPName[j]);
+			if (annot)
 			{
-				pView = new CAnnotAPView();
-				pView->sAPName = arrAPName[j];
-
-				m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
-
-				Ref ref = oAnnotRef->getRef();
-				Annot* annot = new Annot(pdfDoc, oAnnot.getDict(), &ref, arrAPName[j]);
-				if (annot)
-				{
-					annot->generateAnnotAppearance();
-					annot->draw(m_gfx, gFalse);
-				}
-				RELEASEOBJECT(annot);
-
-				WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+				annot->generateAnnotAppearance();
+				annot->draw(m_gfx, gFalse);
 			}
-			oObj.free();
+			RELEASEOBJECT(annot);
 
-			if (pView)
-				m_arrAP.push_back(pView);
+			WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
 		}
+		oObj.free();
+
+		if (pView)
+			m_arrAP.push_back(pView);
 	}
-	oAP.free(); oAnnot.free();
+	oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -1670,6 +1706,9 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, Object* 
 
 void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 {
+	if (m_arrAP.empty())
+		return;
+
 	oRes.AddInt(m_unRefNum);
 	oRes.AddInt(m_nRx1);
 	oRes.AddInt(m_nRy1);
@@ -2032,6 +2071,21 @@ void CAnnotPopup::ToWASM(NSWasm::CData& oRes)
 	oRes.AddInt(m_unFlags);
 	if (m_unFlags & (1 << 1))
 		oRes.AddInt(m_unRefNumParent);
+}
+
+void CAnnotInk::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(14); // Ink
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	oRes.AddInt(m_arrInkList.size());
+	for (int i = 0; i < m_arrInkList.size(); ++i)
+	{
+		oRes.AddInt(m_arrInkList[i].size());
+		for (int j = 0; j < m_arrInkList[i].size(); ++j)
+			oRes.AddDouble(m_arrInkList[i][j]);
+	}
 }
 
 }

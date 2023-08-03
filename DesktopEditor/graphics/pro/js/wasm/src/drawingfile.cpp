@@ -1692,6 +1692,28 @@ int main(int argc, char* argv[])
 					std::cout << "State " << arrState[nPathLength] << ", ";
 				}
 			}
+			else if (sType == "Ink")
+			{
+				int nInkLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "InkList ";
+
+				for (int j = 0; j < nInkLength; ++j)
+				{
+					int nInkJLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "[ ";
+
+					for (int k = 0; k < nInkJLength; ++k)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << " ";
+					}
+					std::cout << "] ";
+				}
+				std::cout << ", ";
+			}
 			// TODO
 			else if (sType == "Popup")
 			{

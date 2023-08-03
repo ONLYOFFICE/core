@@ -562,7 +562,6 @@ obj1.free();
 
 	return sRes;
 }
-
 void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	int nLengthTitle = pOutlineItem->getTitleLength();
@@ -2193,7 +2192,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "Ink")
 		{
-
+			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Popup")
 		{

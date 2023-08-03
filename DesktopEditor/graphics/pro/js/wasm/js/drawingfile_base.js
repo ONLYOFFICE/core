@@ -1036,6 +1036,21 @@
 					rec["State"] = reader.readByte();
 				
 			}
+			// Ink
+			else if (rec["Type"] == 14)
+			{
+				let n = reader.readInt();
+				rec["InkList"] = [];
+				for (let i = 0; i < n; ++i)
+				{
+					rec["InkList"][i] = [];
+					let m = reader.readInt();
+					for (let j = 0; j < m; ++j)
+					{
+						rec["InkList"][i].push(reader.readDouble());
+					}
+				}
+			}
 			// Popup
 			else if (rec["Type"] == 15)
 			{

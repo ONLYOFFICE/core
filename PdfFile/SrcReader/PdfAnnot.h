@@ -182,9 +182,9 @@ private:
 
 	void Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex);
 	void Init(AcroFormField* pField);
-	void Init(PDFDoc* pdfDoc, Object* oAnnotRef);
-	void Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
-	void Draw(PDFDoc* pdfDoc, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
+	void Init(Object* oAnnot);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, int nPageIndex, AcroFormField* pField, const char* sView, const char* sButtonView);
+	void Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView);
 
 	void Clear();
 };
@@ -354,6 +354,21 @@ private:
 	BYTE m_nName; // Иконка
 	BYTE m_nState; // Состояние
 	BYTE m_nStateModel; // Модель состояния
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotInk
+//------------------------------------------------------------------------
+
+class CAnnotInk final : public CMarkupAnnot
+{
+public:
+	CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	std::vector< std::vector<double> > m_arrInkList; // Путь
 };
 
 //------------------------------------------------------------------------

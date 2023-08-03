@@ -46,41 +46,45 @@
 #include "File.h"
 
 #ifndef FILE_SEPARATOR
-	#if defined(_WIN32) || defined(_WIN64)
-		#define FILE_SEPARATOR
-		#define FILE_SEPARATOR_CHAR '\\'
-        #define FILE_SEPARATOR_STR L"\\"
-        #define FILE_SEPARATOR_STRA "\\"
-    #else
-		#define FILE_SEPARATOR
-		#define FILE_SEPARATOR_CHAR '/'
-        #define FILE_SEPARATOR_STR L"/"
-        #define FILE_SEPARATOR_STRA "/"
-    #endif
+#if defined(_WIN32) || defined(_WIN64)
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '\\'
+#define FILE_SEPARATOR_STR L"\\"
+#define FILE_SEPARATOR_STRA "\\"
+#else
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '/'
+#define FILE_SEPARATOR_STR L"/"
+#define FILE_SEPARATOR_STRA "/"
+#endif
 #endif
 
 #include "../../Common/kernel_config.h"
 namespace NSDirectory
 {
+	KERNEL_DECL std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false);
+	KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
+
+	KERNEL_DECL std::vector<std::wstring> GetDirectories(std::wstring strDirectory);
+	KERNEL_DECL bool Exists(const std::wstring& strDirectory);
+	KERNEL_DECL bool CreateDirectory(const std::wstring& strDirectory);
+	KERNEL_DECL bool CreateDirectories(const std::wstring& strDirectory);
+	KERNEL_DECL bool CopyDirectory(const std::wstring& strSrc, const std::wstring& strDst, bool bIsRecursion = true);
+	KERNEL_DECL void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true);
+	KERNEL_DECL std::wstring GetFolderPath(const std::wstring& wsFolderPath);
+	KERNEL_DECL std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);
+	KERNEL_DECL std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
+	KERNEL_DECL std::wstring GetTempPath();
+
+	KERNEL_DECL int GetFilesCount(const std::wstring& path, const bool& recursive);
+	KERNEL_DECL bool PathIsDirectory(const std::wstring& pathName);
+
 #ifdef _IOS
-    KERNEL_DECL void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion);
+	namespace NSIOS
+	{
+		KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
+	}
 #endif
-    KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
-
-    KERNEL_DECL std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false);
-    KERNEL_DECL std::vector<std::wstring> GetDirectories(std::wstring strDirectory);
-    KERNEL_DECL bool Exists(const std::wstring& strDirectory);
-    KERNEL_DECL bool CreateDirectory(const std::wstring& strDirectory);
-    KERNEL_DECL bool CreateDirectories(const std::wstring& strDirectory);
-    KERNEL_DECL bool CopyDirectory(const std::wstring& strSrc, const std::wstring& strDst, bool bIsRecursion = true);
-    KERNEL_DECL void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true);
-    KERNEL_DECL std::wstring GetFolderPath(const std::wstring& wsFolderPath);
-    KERNEL_DECL std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);
-    KERNEL_DECL std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
-    KERNEL_DECL std::wstring GetTempPath();
-
-    KERNEL_DECL int GetFilesCount(const std::wstring& path, const bool& recursive);
-    KERNEL_DECL bool PathIsDirectory(const std::wstring& pathName);
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

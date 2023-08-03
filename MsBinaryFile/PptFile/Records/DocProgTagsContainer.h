@@ -51,11 +51,10 @@ namespace PPT
 class CRecordPP9DocBinaryTagExtension : public CRecordsContainer
 {
 public:
-    std::vector<CRecordTextMasterStyle9Atom*>       m_rgTextMasterStyleAtom;
-    nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
-    nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
-    nullable<CRecordBlipCollection9Container>      m_blipCollectionContainer;
-
+    std::vector<CRecordTextMasterStyle9Atom*>   m_rgTextMasterStyleAtom;
+    nullable<CRecordTextDefaults9Atom>          m_textDefaultsAtom;
+    nullable<CRecordOutlineTextProps9Container> m_outlineTextPropsContainer;
+    nullable<CRecordBlipCollection9Container>   m_blipCollectionContainer;
 
     ~CRecordPP9DocBinaryTagExtension();
     virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
@@ -98,17 +97,14 @@ public:
 class CRecordDocProgTagsContainer : public CUnknownRecord
 {
 public:
-
     CRecordDocProgTagsContainer ();
     ~CRecordDocProgTagsContainer();
-
 
     virtual void ReadFromStream (SRecordHeader & oHeader, POLE::Stream* pStream)override;
 
     CRecordPP9DocBinaryTagExtension* getPP9DocBinaryTagExtension();
     IRecord* getDocBinaryTagExtension(const std::wstring& extVersion);
 
-public:
     std::vector<CRecordDocProgBinaryTagSubContainerOrAtom*> m_arrRgChildRec;
 };
 

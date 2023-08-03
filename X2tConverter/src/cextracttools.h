@@ -60,6 +60,7 @@ namespace NExtractTools
     {
         TCD_ERROR,
         TCD_AUTO,
+		TCD_NON_AUTO,
 
         TCD_DOCX2DOCT,
         TCD_DOCT2DOCX,
@@ -297,41 +298,41 @@ namespace NExtractTools
         bool FromXmlNode(XmlUtils::CXmlNode& oNode)
         {
                 std::vector<XmlUtils::CXmlNode> oXmlNodes;
-                if(TRUE == oNode.GetChilds(oXmlNodes))
+                if (TRUE == oNode.GetChilds(oXmlNodes))
                 {
                     for(size_t i = 0; i < oXmlNodes.size(); ++i)
                     {
                         XmlUtils::CXmlNode & oXmlNode = oXmlNodes[i];
-                        if(oXmlNode.IsValid())
+                        if (oXmlNode.IsValid())
                         {
                             std::wstring sValue;
-                            if(oXmlNode.GetTextIfExist(sValue))
+                            if (oXmlNode.GetTextIfExist(sValue))
                             {
                                 std::wstring sName = oXmlNode.GetName();
 
-                                if(_T("fileName") == sName)
+                                if (_T("fileName") == sName)
                                     fileName = new std::wstring(sValue);
-                                else if(_T("from") == sName)
+                                else if (_T("from") == sName)
                                     from = new std::wstring(sValue);
-                                else if(_T("jsonKey") == sName)
+                                else if (_T("jsonKey") == sName)
                                     jsonKey = new std::wstring(sValue);
-                                else if(_T("mailFormat") == sName)
+                                else if (_T("mailFormat") == sName)
                                     mailFormat = new int(XmlUtils::GetInteger(sValue));
-                                else if(_T("message") == sName)
+                                else if (_T("message") == sName)
                                     message = new std::wstring(sValue);
-                                else if(_T("recordCount") == sName)
+                                else if (_T("recordCount") == sName)
                                     recordCount = new int(XmlUtils::GetInteger(sValue));
-                                else if(_T("recordFrom") == sName)
+                                else if (_T("recordFrom") == sName)
                                     recordFrom = new int(XmlUtils::GetInteger(sValue));
-                                else if(_T("recordTo") == sName)
+                                else if (_T("recordTo") == sName)
                                     recordTo = new int(XmlUtils::GetInteger(sValue));
-                                else if(_T("subject") == sName)
+                                else if (_T("subject") == sName)
                                     subject = new std::wstring(sValue);
-                                else if(_T("to") == sName)
+                                else if (_T("to") == sName)
                                     to = new std::wstring(sValue);
-                                else if(_T("url") == sName)
+                                else if (_T("url") == sName)
                                     url = new std::wstring(sValue);
-                                else if(_T("userid") == sName)
+                                else if (_T("userid") == sName)
                                     userid = new std::wstring(sValue);
                             }
                         }
@@ -372,7 +373,7 @@ namespace NExtractTools
 		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
 		{
 			std::vector<XmlUtils::CXmlNode> oXmlNodes;
-			if(TRUE == oNode.GetChilds(oXmlNodes))
+			if (TRUE == oNode.GetChilds(oXmlNodes))
 			{
 				for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
@@ -380,20 +381,20 @@ namespace NExtractTools
 					if (oXmlNode.IsValid())
 					{
                         std::wstring sValue;
-						if(oXmlNode.GetTextIfExist(sValue))
+						if (oXmlNode.GetTextIfExist(sValue))
 						{
 							std::wstring sName = oXmlNode.GetName();
-							if(_T("format") == sName)
+							if (_T("format") == sName)
 								format = new int(XmlUtils::GetInteger(sValue));
-							else if(_T("aspect") == sName)
+							else if (_T("aspect") == sName)
 								aspect = new int(XmlUtils::GetInteger(sValue));
-							else if(_T("first") == sName)
+							else if (_T("first") == sName)
 								first = new bool(XmlUtils::GetBoolean2(sValue));
-							else if(_T("zip") == sName)
+							else if (_T("zip") == sName)
 								zip = new bool(XmlUtils::GetBoolean2(sValue));
-							else if(_T("width") == sName)
+							else if (_T("width") == sName)
 								width = new int(XmlUtils::GetInteger(sValue));
-							else if(_T("height") == sName)
+							else if (_T("height") == sName)
 								height = new int(XmlUtils::GetInteger(sValue));
 						}
 					}
@@ -559,7 +560,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-            if(TRUE == oRoot.FromXmlFile(sFilename))
+            if (TRUE == oRoot.FromXmlFile(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -571,7 +572,7 @@ namespace NExtractTools
 		bool FromXml(const std::wstring& sXml)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlString(sXml))
+			if (TRUE == oRoot.FromXmlString(sXml))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -583,7 +584,7 @@ namespace NExtractTools
 		bool FromXmlNode(XmlUtils::CXmlNode& oRoot)
 		{
 			std::vector<XmlUtils::CXmlNode> oXmlNodes;
-			if(TRUE == oRoot.GetChilds(oXmlNodes))
+			if (TRUE == oRoot.GetChilds(oXmlNodes))
 			{
 				for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
@@ -591,149 +592,149 @@ namespace NExtractTools
 					if (oXmlNode.IsValid())
 					{
 						std::wstring sName = oXmlNode.GetName();
-						if(_T("m_oMailMergeSend") == sName)
+						if (_T("m_oMailMergeSend") == sName)
 						{
 							RELEASEOBJECT(m_oMailMergeSend);
 							m_oMailMergeSend = new InputParamsMailMerge();
 							m_oMailMergeSend->FromXmlNode(oXmlNode);
 						}
-						else if(_T("m_oThumbnail") == sName)
+						else if (_T("m_oThumbnail") == sName)
 						{
 							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
 						}
-						else if(_T("m_oTextParams") == sName)
+						else if (_T("m_oTextParams") == sName)
 						{
 							RELEASEOBJECT(m_oTextParams);
 							m_oTextParams = new InputParamsText();
 							m_oTextParams->FromXmlNode(oXmlNode);
 						}
-						else if(_T("m_oInputLimits") == sName)
+						else if (_T("m_oInputLimits") == sName)
 						{
 							FromLimitsNode(oXmlNode);
 						}
 						else
 						{
                             std::wstring sValue;
-							if(oXmlNode.GetTextIfExist(sValue))
+							if (oXmlNode.GetTextIfExist(sValue))
 							{
-								if(_T("m_sKey") == sName)
+								if (_T("m_sKey") == sName)
 								{
 									RELEASEOBJECT(m_sKey);
 									m_sKey = new std::wstring(sValue);
 								}
-								else if(_T("m_sFileFrom") == sName)
+								else if (_T("m_sFileFrom") == sName)
 								{
 									RELEASEOBJECT(m_sFileFrom);
 									m_sFileFrom = new std::wstring(sValue);
 								}
-								else if(_T("m_sFileTo") == sName)
+								else if (_T("m_sFileTo") == sName)
 								{
 									RELEASEOBJECT(m_sFileTo);
 									m_sFileTo = new std::wstring(sValue);
 								}
-								else if(_T("m_sTitle") == sName)
+								else if (_T("m_sTitle") == sName)
 								{
 									RELEASEOBJECT(m_sTitle);
 									m_sTitle = new std::wstring(sValue);
 								}
-								else if(_T("m_nFormatFrom") == sName)
+								else if (_T("m_nFormatFrom") == sName)
 								{
 									RELEASEOBJECT(m_nFormatFrom);
 									m_nFormatFrom = new int(XmlUtils::GetInteger(sValue));
 								}
-								else if(_T("m_nFormatTo") == sName)
+								else if (_T("m_nFormatTo") == sName)
 								{
 									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
 								}
-								else if(_T("m_nCsvTxtEncoding") == sName)
+								else if (_T("m_nCsvTxtEncoding") == sName)
 								{
 									RELEASEOBJECT(m_nCsvTxtEncoding);
 									m_nCsvTxtEncoding = new int(XmlUtils::GetInteger(sValue));
 								}
-								else if(_T("m_nCsvDelimiter") == sName)
+								else if (_T("m_nCsvDelimiter") == sName)
 								{
 									RELEASEOBJECT(m_nCsvDelimiter);
 									m_nCsvDelimiter = new int(XmlUtils::GetInteger(sValue));
 								}
-								else if(_T("m_nCsvDelimiterChar") == sName)
+								else if (_T("m_nCsvDelimiterChar") == sName)
 								{
 									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(sValue);
 								}
-								else if(_T("m_nLcid") == sName)
+								else if (_T("m_nLcid") == sName)
 								{
 									RELEASEOBJECT(m_nLcid);
 									m_nLcid = new int(XmlUtils::GetInteger(sValue));
 								}
-								else if(_T("m_bPaid") == sName)
+								else if (_T("m_bPaid") == sName)
 								{
 									RELEASEOBJECT(m_bPaid);
 									m_bPaid = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_bFromChanges") == sName)
+								else if (_T("m_bFromChanges") == sName)
 								{
 									RELEASEOBJECT(m_bFromChanges);
 									m_bFromChanges = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_sAllFontsPath") == sName)
+								else if (_T("m_sAllFontsPath") == sName)
 								{
 									RELEASEOBJECT(m_sAllFontsPath);
 									m_sAllFontsPath = new std::wstring(sValue);
 								}
-								else if(_T("m_sFontDir") == sName)
+								else if (_T("m_sFontDir") == sName)
 								{
 									RELEASEOBJECT(m_sFontDir);
 									m_sFontDir = new std::wstring(sValue);
 								}
-								else if(_T("m_sThemeDir") == sName)
+								else if (_T("m_sThemeDir") == sName)
 								{
 									RELEASEOBJECT(m_sThemeDir);
 									m_sThemeDir = new std::wstring(sValue);
 								}
-								else if(_T("m_bDontSaveAdditional") == sName)
+								else if (_T("m_bDontSaveAdditional") == sName)
 								{
 									RELEASEOBJECT(m_bDontSaveAdditional);
 									m_bDontSaveAdditional = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_sJsonParams") == sName)
+								else if (_T("m_sJsonParams") == sName)
 								{
 									RELEASEOBJECT(m_sJsonParams);
 									m_sJsonParams = new std::wstring(sValue);
 								}
-								else if(_T("m_sPassword") == sName)
+								else if (_T("m_sPassword") == sName)
 								{
 									RELEASEOBJECT(m_sPassword);
 									m_sPassword = new std::wstring(sValue);
 								}
-								else if(_T("m_sSavePassword") == sName)
+								else if (_T("m_sSavePassword") == sName)
 								{
 									RELEASEOBJECT(m_sSavePassword);
 									m_sSavePassword = new std::wstring(sValue);
 								}
-								else if(_T("m_sDocumentID") == sName)
+								else if (_T("m_sDocumentID") == sName)
 								{
 									RELEASEOBJECT(m_sDocumentID);
 									m_sDocumentID = new std::wstring(sValue);
 								}
-								else if(_T("m_sTempDir") == sName)
+								else if (_T("m_sTempDir") == sName)
 								{
 									RELEASEOBJECT(m_sTempDir);
 									m_sTempDir = new std::wstring(sValue);
 								}
-								else if(_T("m_bIsNoBase64") == sName)
+								else if (_T("m_bIsNoBase64") == sName)
 								{
 									RELEASEOBJECT(m_bIsNoBase64);
 									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_bIsPDFA") == sName)
+								else if (_T("m_bIsPDFA") == sName)
 								{
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_sConvertToOrigin") == sName)
+								else if (_T("m_sConvertToOrigin") == sName)
 								{
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
@@ -744,7 +745,7 @@ namespace NExtractTools
 									m_sScriptsCacheDirectory = new std::wstring(sValue);
 								}
 							}
-							else if(_T("m_nCsvDelimiterChar") == sName)
+							else if (_T("m_nCsvDelimiterChar") == sName)
 							{
 								std::wstring sNil;
 								if (!oXmlNode.GetAttributeIfExist(L"xsi:nil", sNil))
@@ -768,7 +769,7 @@ namespace NExtractTools
 				for(size_t i = 0; i < oLimitsNode.size(); ++i)
 				{
 					XmlUtils::CXmlNode & oLimitNode = oLimitsNode[i];
-					if(oLimitNode.IsValid())
+					if (oLimitNode.IsValid())
 					{
 						std::wstring sType;
 						if (oLimitNode.GetAttributeIfExist(L"type", sType))
@@ -844,9 +845,9 @@ namespace NExtractTools
 			int nCsvEncoding = 46;//65001 utf8
 			std::wstring cDelimiter = L",";
 
-            if(NULL != m_nCsvTxtEncoding)
+            if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
-			if(NULL != m_nCsvDelimiter)
+			if (NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)
 				{
@@ -857,22 +858,22 @@ namespace NExtractTools
 				case TCSVD_SPACE:       cDelimiter = L" ";   break;
 				}
 			}
-			if(NULL != m_sCsvDelimiterChar)
+			if (NULL != m_sCsvDelimiterChar)
 			{
 				cDelimiter = *m_sCsvDelimiterChar;
 			}
             int nFileType = 1;
-            if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
+            if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
-            else if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
+            else if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
                 nFileType = 4;
 
             std::wstring sSaveType;
-            if(NULL != m_nFormatTo)
+            if (NULL != m_nFormatTo)
             {
-                if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
+                if (AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
                     sSaveType = _T(" saveFileType='3'");
-                else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
+                else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
                     nFileType = 2;
             }
             sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
@@ -887,7 +888,7 @@ namespace NExtractTools
 		TConversionDirection getConversionDirection()
 		{
 			TConversionDirection eRes = TCD_AUTO;
-			if((NULL == m_nFormatFrom || AVS_OFFICESTUDIO_FILE_UNKNOWN == *m_nFormatFrom) && NULL == m_nFormatTo && NULL != m_sFileFrom && NULL != m_sFileTo)
+			if ((NULL == m_nFormatFrom || AVS_OFFICESTUDIO_FILE_UNKNOWN == *m_nFormatFrom) && NULL == m_nFormatTo && NULL != m_sFileFrom && NULL != m_sFileTo)
 			{
 				eRes = getConversionDirectionFromExt (*m_sFileFrom, *m_sFileTo);
 				if (TCD_ERROR != eRes)
@@ -899,7 +900,7 @@ namespace NExtractTools
 				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
 			}
 
-			if(NULL != m_nFormatFrom && NULL != m_nFormatTo)
+			if (NULL != m_nFormatFrom && NULL != m_nFormatTo)
 			{
 				int nFormatFrom	= *m_nFormatFrom;
 				int nFormatTo	= *m_nFormatTo;
@@ -916,40 +917,42 @@ namespace NExtractTools
                     }
                 }
                 eRes = processDownloadFile();
-                if(TCD_AUTO != eRes)
+                if (TCD_AUTO != eRes)
                     return eRes;
 
-                if(NULL != m_oMailMergeSend)
+                if (NULL != m_oMailMergeSend)
                     eRes = TCD_MAILMERGE;
+				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
+					eRes = TCD_NON_AUTO; // параметры требуют уточнений
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
 					eRes = TCD_SPREADSHEET2;
-				else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
+				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
                     eRes = TCD_DOCUMENT2;
-                else if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
+                else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
                     eRes = TCD_SPREADSHEET2;
-                else if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
+                else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
                     eRes = TCD_PRESENTATION2;
-                else if(0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
+                else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
                     eRes = TCD_T2;
-                else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
+                else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
                     eRes = TCD_DOCT_BIN2;
-                else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
+                else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
                     eRes = TCD_XLST_BIN2;
-                else if(AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
+                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
                     eRes = TCD_PPTT_BIN2;
-                else if(0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
+                else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
                     eRes = TCD_CROSSPLATFORM2;
-                else if(AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
+                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
                     eRes = TCD_CANVAS_PDF2;
-				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
-				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
 					eRes = TCD_MITCRYPT2;
-                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
+                else if (AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
 					eRes = TCD_VBAPROJECT2XML;
-				else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
+				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else
@@ -960,12 +963,12 @@ namespace NExtractTools
         {
             TConversionDirection eRes = TCD_AUTO;
             int nFormatFrom	= *m_nFormatFrom;
-			if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncoding)
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom && NULL == m_nCsvTxtEncoding)
             {
                 int nCodePage = getEncodingByContent();
-                if(nCodePage < 0)
+                if (nCodePage < 0)
                 {
-                    if(!getDontSaveAdditional())
+                    if (!getDontSaveAdditional())
                     {
                         copyOrigin(*m_sFileFrom, *m_sFileTo);
                     }
@@ -976,19 +979,19 @@ namespace NExtractTools
                     m_nCsvTxtEncoding = new int(nCodePage);
                 }
             }
-			else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom && (NULL == m_nCsvTxtEncoding || (NULL == m_nCsvDelimiter && NULL == m_sCsvDelimiterChar)))
+			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom && (NULL == m_nCsvTxtEncoding || (NULL == m_nCsvDelimiter && NULL == m_sCsvDelimiterChar)))
             {
-                if(isEmptyFile())
+                if (isEmptyFile())
                 {
                     m_nCsvTxtEncoding = new int(getEncodingByContent());
                     m_sCsvDelimiterChar = new std::wstring(L",");
                 }
                 else
                 {
-                    if(!getDontSaveAdditional())
+                    if (!getDontSaveAdditional())
                     {
                         int nCodePage = getEncodingByContent();
-                        if(nCodePage < 0)
+                        if (nCodePage < 0)
                             nCodePage = 46;//65001 Unicode (UTF-8)
                         int nDelimiter = getDelimiterByContent();
                         NSStringUtils::CStringBuilder oBuilder;
@@ -1016,24 +1019,24 @@ namespace NExtractTools
             int nRes = -1;
             //todo использовать codepage
             NSFile::CFileBinary file;
-            if(file.OpenFile(*m_sFileFrom))
+            if (file.OpenFile(*m_sFileFrom))
             {
                 DWORD dwBytesRead = 0;
                 BYTE pBuffer[3];
                 file.ReadFile(pBuffer, 3, dwBytesRead);
-                if(dwBytesRead == 0)
+                if (dwBytesRead == 0)
                 {
                     //empty file
                     nRes = 46;//65001 Unicode (UTF-8)
                 }
-                if(dwBytesRead >= 2)
+                if (dwBytesRead >= 2)
                 {
                     if (pBuffer[0] == 0xFF && pBuffer[1] == 0xFE)
                         nRes = 48;//1200 Unicode (UTF-16)
                     else if (pBuffer[0] == 0xFE && pBuffer[1] == 0xFF)
                         nRes = 49;//1201 Unicode (UTF-16 Big Endian)
                 }
-                if(dwBytesRead >= 3)
+                if (dwBytesRead >= 3)
                 {
                     if (pBuffer[0] == 0xEF && pBuffer[1] == 0xBB && pBuffer[2] == 0xBF)
                         nRes = 46;//65001 Unicode (UTF-8)
@@ -1046,7 +1049,7 @@ namespace NExtractTools
         {
             int nRes = TCSVD_NONE;
             NSFile::CFileBinary file;
-            if(file.OpenFile(*m_sFileFrom))
+            if (file.OpenFile(*m_sFileFrom))
             {
                 DWORD dwBytesRead = 0;
                 BYTE pBuffer[1000];
@@ -1076,7 +1079,7 @@ namespace NExtractTools
                 int nMaxIndex = 0;
                 for(int i = 0; i < nDelimitersCount; ++i)
                 {
-                    if(nMaxVal < aDelimiters[i])
+                    if (nMaxVal < aDelimiters[i])
                     {
                         nMaxVal = aDelimiters[i];
                         nMaxIndex = i;
@@ -1105,17 +1108,17 @@ namespace NExtractTools
 			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
             }
-			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			else if (	AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } 
 		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 		  {
-            if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+            if (		AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{
@@ -1133,9 +1136,9 @@ namespace NExtractTools
 					}
 				}
 			} 
-			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
+			else if (	AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{
@@ -1153,9 +1156,13 @@ namespace NExtractTools
 					}
 				}
 			} 
-			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
-				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
-				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == formatFrom)
+			{
+				return;
+			}
+			else if (	AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom ||
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != (	AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
 				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 				{
@@ -1175,7 +1182,7 @@ namespace NExtractTools
 			}
             size_t nIndex = m_sFileTo->rfind('.');
             COfficeFileFormatChecker FileFormatChecker;
-            if(-1 != nIndex)
+            if (-1 != nIndex)
                 m_sFileTo->replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(toFormat));
             else
                 m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));

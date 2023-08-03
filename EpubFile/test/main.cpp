@@ -18,7 +18,7 @@ int main()
     bool bFromHtml = false;
     if (bFromHtml)
     {
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../Files/test.html";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/test.html";
         CEpubFile oEpub;
         oEpub.SetTempDirectory(sTmp);
         oEpub.FromHtml(sFile, sOutputDirectory + L"/res.epub", L"");

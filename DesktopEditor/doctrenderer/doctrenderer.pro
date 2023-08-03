@@ -13,9 +13,11 @@ PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
 DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
+DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
+#CONFIG += v8_version_60
 core_android:DEFINES += DISABLE_MEMORY_LIMITATION
 
 HEADERS += \
@@ -49,6 +51,7 @@ HEADERS += \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
+    embed/NativeBuilderDocumentEmbed.h \
     embed/TextMeasurerEmbed.h \
     embed/HashEmbed.h \
     embed/Default.h \
@@ -61,6 +64,7 @@ SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp \
+    embed/NativeBuilderDocumentEmbed.cpp \
     embed/TextMeasurerEmbed.cpp \
     embed/HashEmbed.cpp \
     embed/Default.cpp
@@ -68,31 +72,23 @@ SOURCES += \
 include($$PWD/js_internal/js_base.pri)
 
 !use_javascript_core {
-    SOURCES += \
-        embed/v8/v8_MemoryStream.cpp \
-        embed/v8/v8_NativeControl.cpp \
-        embed/v8/v8_NativeBuilder.cpp \
-        embed/v8/v8_Graphics.cpp \
-        embed/v8/v8_Zip.cpp \
-        embed/v8/v8_Pointer.cpp \
-        embed/v8/v8_TextMeasurer.cpp \
-        embed/v8/v8_Hash.cpp
-
     build_xp:DESTDIR=$$DESTDIR/xp
-} else {
-    OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
-    OBJECTIVE_SOURCES += \
-        embed/jsc/jsc_Graphics.mm \
-        embed/jsc/jsc_MemoryStream.mm \
-        embed/jsc/jsc_NativeControl.mm \
-        embed/jsc/jsc_NativeBuilder.mm \
-        embed/jsc/jsc_Zip.mm \
-        embed/jsc/jsc_Pointer.mm \
-        embed/jsc/jsc_TextMeasurer.mm \
-        embed/jsc/jsc_Hash.mm
-
-    LIBS += -framework Foundation
 }
+
+use_javascript_core {
+    OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
+}
+
+# files for embedded classes
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/GraphicsEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/HashEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/MemoryStreamEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeBuilderEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeBuilderDocumentEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/NativeControlEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/PointerEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/TextMeasurerEmbed.h)
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/ZipEmbed.h)
 
 include(../graphics/pro/textshaper.pri)
 include(../../Common/3dParty/openssl/openssl.pri)

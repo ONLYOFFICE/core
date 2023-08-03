@@ -32,7 +32,7 @@
 
 #include "RevLblName.h"
 #include "../../Binary/CFRecord.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "BIFF12/XLWideString.h"
 
 namespace XLS
 {

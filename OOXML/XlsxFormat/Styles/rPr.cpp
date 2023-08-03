@@ -34,7 +34,7 @@
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "Fonts.h"
 
-#include "../../XlsbFormat/Biff12_records/Color.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 #include "../../XlsbFormat/Biff12_records/IndexedColor.h"
 #include "../../XlsbFormat/Biff12_records/MRUColor.h"
 

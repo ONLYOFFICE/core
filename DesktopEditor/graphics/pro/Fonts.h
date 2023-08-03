@@ -764,10 +764,6 @@ namespace NSFonts
         virtual void InitFromReg() = 0;
     #endif
 
-    #ifdef _IOS
-        virtual std::vector<std::wstring> GetSetupFontFiles_ios() = 0;
-    #endif
-
         virtual IFontManager* GenerateFontManager() = 0;
 
         virtual std::wstring GetFontBySymbol(int symbol) = 0;

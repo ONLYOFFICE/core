@@ -29,8 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../../../Common/MS-LCID.h"
-
 #include "GlobalsSubstream.h"
 #include "AnyObject.h"
 
@@ -621,7 +619,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}
 	if (global_info_->CodePage == 0 && global_info_->lcid_user > 0)
 	{
-		global_info_->CodePage = msLCID2DefCodePage(global_info_->lcid_user);
+		global_info_->CodePage = global_info_->lcid_converter.get_codepage(global_info_->lcid_user);
 	}
 	
 	UpdateXFC();
@@ -811,8 +809,11 @@ void GlobalsSubstream::UpdateDefineNames()
 		{
 			if (lbl->fFunc)
 			{
-				if (name == L"FORMULA") //"general_formulas.xls"
-						name = L"_xludf." + name;
+				if (name != L"CHISQDIST" &&
+					name != L"CHISQINV" &&
+					name != L"CURRENT" &&
+					name != L"EFFECTIVE")
+				name = L"_xludf." + name;
 			}
 		}
 		global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!

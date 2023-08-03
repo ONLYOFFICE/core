@@ -100,14 +100,9 @@ void CRecordSlide::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
             continue;
         }
 
-
-        IRecord* pRecord	=	CreateByType ( oRec );
-
-
-
+        IRecord* pRecord = CreateByType ( oRec, m_pCommonInfo );
         pRecord->ReadFromStream(oRec, pStream);
         m_arRecords.push_back(pRecord);
-
 
         lCurLen += (8 + oRec.RecLen);
     }

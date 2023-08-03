@@ -5,7 +5,9 @@
 #include "inspector/inspector_pool.h"
 #endif
 
+#include "../js_embed.h"
 #include "../js_base.h"
+#include "../js_base_p.h"
 #include "../js_logger.h"
 #include <iostream>
 #include <stack>
@@ -74,44 +76,6 @@ public:
 	}
 };
 #endif
-
-class CIsolateAdditionalData
-{
-public:
-	enum IsolateAdditionlDataType {
-		iadtSingletonNative = 0,
-		iadtUndefined = 255
-	};
-
-	IsolateAdditionlDataType m_eType;
-public:
-	CIsolateAdditionalData(const IsolateAdditionlDataType& type = iadtUndefined) { m_eType = type; }
-	virtual ~CIsolateAdditionalData() {}
-
-	static bool CheckSingletonType(v8::Isolate* isolate, const IsolateAdditionlDataType& type, const bool& isAdd = true)
-	{
-		unsigned int nCount = isolate->GetNumberOfDataSlots();
-		if (nCount == 0)
-			return false;
-
-		void* pSingletonData = isolate->GetData(0);
-		if (NULL != pSingletonData)
-		{
-			CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
-			if (pData->m_eType == type)
-				return true;
-
-			return false;
-		}
-
-		if (isAdd)
-		{
-			isolate->SetData(0, (void*)(new CIsolateAdditionalData(type)));
-		}
-
-		return false;
-	}
-};
 
 class CV8Initializer
 {
@@ -359,10 +323,10 @@ namespace NSJSBase
 			return L"";
 		}
 
-		virtual CJSObject* toObject();
-		virtual CJSArray* toArray();
-		virtual CJSTypedArray* toTypedArray();
-		virtual CJSFunction* toFunction();
+		virtual JSSmart<CJSObject> toObject();
+		virtual JSSmart<CJSArray> toArray();
+		virtual JSSmart<CJSTypedArray> toTypedArray();
+		virtual JSSmart<CJSFunction> toFunction();
 	};
 
 	class CJSValueV8TemplatePrimitive : public CJSValueV8Template<v8::Value, CJSValue>
@@ -453,7 +417,7 @@ namespace NSJSBase
 			value.Clear();
 		}
 
-		virtual CJSValue* get(const char* name)
+		virtual JSSmart<CJSValue> get(const char* name)
 		{
 			CJSValueV8* _value = new CJSValueV8();
 			v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
@@ -719,7 +683,7 @@ namespace NSJSBase
 			value.Clear();
 		}
 
-		virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
+		virtual JSSmart<CJSValue> Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
 		{
 			CJSValueV8* _value = static_cast<CJSValueV8*>(recv);
 			CJSValueV8* _return = new CJSValueV8();
@@ -743,7 +707,7 @@ namespace NSJSBase
 	};
 
 	template<typename V, typename B>
-	CJSObject* CJSValueV8Template<V, B>::toObject()
+	JSSmart<CJSObject> CJSValueV8Template<V, B>::toObject()
 	{
 		CJSObjectV8* _value = new CJSObjectV8();
 		_value->value = value->ToObject(V8ContextOneArg).ToLocalChecked();
@@ -751,7 +715,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSArray* CJSValueV8Template<V, B>::toArray()
+	JSSmart<CJSArray> CJSValueV8Template<V, B>::toArray()
 	{
 		CJSArrayV8* _value = new CJSArrayV8();
 		_value->value = v8::Local<v8::Array>::Cast(value);
@@ -759,7 +723,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSTypedArray* CJSValueV8Template<V, B>::toTypedArray()
+	JSSmart<CJSTypedArray> CJSValueV8Template<V, B>::toTypedArray()
 	{
 		CJSTypedArrayV8* _value = new CJSTypedArrayV8();
 		_value->value = v8::Local<v8::Uint8Array>::Cast(value);
@@ -767,7 +731,7 @@ namespace NSJSBase
 	}
 
 	template<typename V, typename B>
-	CJSFunction* CJSValueV8Template<V, B>::toFunction()
+	JSSmart<CJSFunction> CJSValueV8Template<V, B>::toFunction()
 	{
 		CJSFunctionV8* _value = new CJSFunctionV8();
 		_value->value = v8::Local<v8::Function>::Cast(value);
@@ -840,7 +804,6 @@ namespace NSJSBase
 	class CJSContextPrivate
 	{
 	public:
-		CV8Worker m_oWorker;
 		v8::Isolate* m_isolate;
 		std::stack<CJSLocalScope*> m_scope;
 
@@ -848,9 +811,28 @@ namespace NSJSBase
 		v8::Local<v8::Context>			m_context;
 
 	public:
-		CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
+		CJSContextPrivate() : m_isolate(NULL)
 		{
 		}
+
+		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)
+		{
+			v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(m_isolate, creator);
+			v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(m_context);
+			m_context->Global()->Set(m_context, CreateV8String(m_isolate, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
+		}
+	};
+
+	// embed
+	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+	class CJSEmbedObjectAdapterV8Template : public CJSEmbedObjectAdapterBase
+	{
+	public:
+		CJSEmbedObjectAdapterV8Template() = default;
+		virtual ~CJSEmbedObjectAdapterV8Template() = default;
+
+		virtual v8::Local<v8::ObjectTemplate> getTemplate(v8::Isolate* isolate) = 0;
 	};
 }
 
@@ -919,6 +901,7 @@ inline NSJSBase::CJSEmbedObject* unwrap_native(const v8::Local<v8::Object>& valu
 	v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
 	return (NSJSBase::CJSEmbedObject*)field->Value();
 }
+
 inline NSJSBase::CJSEmbedObject* unwrap_native2(const v8::Local<v8::Value>& value)
 {
 	v8::Local<v8::Object> _obj = value->ToObject(V8ContextOneArg).ToLocalChecked();
@@ -961,13 +944,15 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_return(info, ret);                                                                   \
 	}
 
-#define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED)                                       \
+#define FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)										\
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \
 {                                                                                   \
 	CURRENTWRAPPER* _this = (CURRENTWRAPPER*)unwrap_native(args.Holder());          \
 	JSSmart<CJSValue> ret = _this->NAME_EMBED();                                    \
 	js_return(args, ret);                                                           \
 	}
+
+#define FUNCTION_WRAPPER_V8(NAME, NAME_EMBED) FUNCTION_WRAPPER_V8_0(NAME, NAME_EMBED)
 
 #define FUNCTION_WRAPPER_V8_1(NAME, NAME_EMBED)                                     \
 	void NAME(const v8::FunctionCallbackInfo<v8::Value>& args)                      \
@@ -1052,39 +1037,5 @@ inline void js_return(const v8::PropertyCallbackInfo<v8::Value>& info, JSSmart<N
 	js_value(args[12]));                                                                                                                                        \
 	js_return(args, ret);                                                                                                                                       \
 	}
-
-static void InsertToGlobal(const std::string& name, JSSmart<NSJSBase::CJSContext>& context, v8::FunctionCallback creator)
-{
-	v8::Isolate* current = CV8Worker::GetCurrent();
-	v8::Local<v8::Context> localContext = context->m_internal->m_context;
-	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, creator);
-	v8::MaybeLocal<v8::Function> oFuncMaybeLocal = templ->GetFunction(localContext);
-	v8::Maybe<bool> oResultMayBe = localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), oFuncMaybeLocal.ToLocalChecked());
-}
-
-using FunctionCreateTemplate = v8::Handle<v8::ObjectTemplate> (*)(v8::Isolate* isolate);
-static void CreateNativeInternalField(void* native, FunctionCreateTemplate creator, const v8::FunctionCallbackInfo<v8::Value>& args,
-									  const CIsolateAdditionalData::IsolateAdditionlDataType& type = CIsolateAdditionalData::iadtUndefined)
-{
-	v8::Isolate* isolate = args.GetIsolate();
-	v8::HandleScope scope(isolate);
-
-	if (CIsolateAdditionalData::iadtUndefined != type)
-	{
-		if (CIsolateAdditionalData::CheckSingletonType(isolate, type))
-		{
-			args.GetReturnValue().Set(v8::Undefined(isolate));
-			return;
-		}
-	}
-
-	v8::Handle<v8::ObjectTemplate> oCurTemplate = creator(isolate);
-	v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
-	v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
-	obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), native));
-
-	NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
-	args.GetReturnValue().Set(obj);
-}
 
 #endif // _BUILD_NATIVE_CONTROL_V8_BASE_H_

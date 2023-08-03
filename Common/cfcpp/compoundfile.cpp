@@ -67,9 +67,9 @@ std::shared_ptr<CFStorage> CompoundFile::RootStorage()
 {
     return _impl->RootStorage();
 }
-void CompoundFile::Save(std::wstring wFileName)
+bool CompoundFile::Save(std::wstring wFileName)
 {
-    _impl->Save(wFileName);
+    return _impl->Save(wFileName);
 }
 void CompoundFile::Save(Stream stream)
 {
@@ -316,15 +316,23 @@ void CompoundFile_impl::Load(Stream stream)
     }
 }
 
-void CompoundFile_impl::Save(std::wstring wFileName)
-{
-    if (isDisposed)
-        throw CFException("Compound File closed: cannot save data");
+bool CompoundFile_impl::Save(std::wstring wFileName)
+{	
+	if (isDisposed)
+	{
+		//throw CFException("Compound File closed: cannot save data");
+		return false;
+	}
 
     Stream file = OpenFileStream(wFileName, true, true);
-    file->seek(0, std::ios::beg);
 
-    try
+	if (!file) return false;
+	if (file->isError()) return false;
+    
+	file->seek(0, std::ios::beg);
+
+	bool result = true;
+	try
     {
         Save(file);
 
@@ -343,7 +351,9 @@ void CompoundFile_impl::Save(std::wstring wFileName)
             file->close();
 
         throw CFException("Error saving file [" + fileName + "]", ex);
+		result = false;
     }
+	return result;
 }
 
 

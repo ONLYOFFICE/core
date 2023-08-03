@@ -5,7 +5,7 @@
 #include "../js_internal/js_base.h"
 
 using namespace NSJSBase;
-class CZipEmbed : public CJSEmbedObject
+class JS_DECL CZipEmbed : public CJSEmbedObject
 {
 public:
 	IFolder* m_pFolder;
@@ -37,7 +37,7 @@ public:
 	JSSmart<CJSValue> encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> format);
 	JSSmart<CJSValue> getImageType(JSSmart<CJSValue> typedArray);
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_ZIP_EMBED_H_

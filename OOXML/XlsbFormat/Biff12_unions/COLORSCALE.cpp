@@ -35,8 +35,8 @@
 #include "ACFILTERS.h"
 #include "../Biff12_records/BeginColorScale.h"
 #include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
 #include "../Biff12_records/EndColorScale.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 using namespace XLS;
 

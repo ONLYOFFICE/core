@@ -44,6 +44,8 @@
 
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../../../Common/MS-LCID.h"
+
 class XlsConverter;
 
 namespace PPTX
@@ -222,6 +224,7 @@ public:
     int currentPivotCacheRecord;
 
 	XlsConverter *xls_converter;
+	MS_LCID_converter lcid_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

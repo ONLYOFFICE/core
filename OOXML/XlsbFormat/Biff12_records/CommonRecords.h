@@ -58,7 +58,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Qsi.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Qsir.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Qsif.h"
-#include "../Biff12_structures/FRTHeader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/FRTHeader.h"
 
 #include "../../XlsxFormat/WritingElement.h"
 

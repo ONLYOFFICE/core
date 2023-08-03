@@ -97,7 +97,7 @@ namespace DocFileFormat
 		void writeField			(const std::wstring& sFieldString, int cpFieldStart, int cpFieldEnd);		
 	
 		ParagraphPropertyExceptions* findValidPapx( int fc );
-		std::list<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
+		std::vector<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
 		int writeTable		( int initialCp, unsigned int nestingLevel );
 		bool buildTableGrid( int initialCp, unsigned int nestingLevel, std::vector<short>& grid);
 		int findRowEndFc		( int initialCp, int& rowEndCp, unsigned int nestingLevel );

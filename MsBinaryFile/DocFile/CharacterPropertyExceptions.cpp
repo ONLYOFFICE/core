@@ -45,7 +45,7 @@ namespace DocFileFormat
 		if (nWordVersion > 1)
 		{
 			RELEASEOBJECT( grpprl );
-			grpprl = new std::list<SinglePropertyModifier>();
+			grpprl = new std::vector<SinglePropertyModifier>();
 
 			MemoryStream oStream(bytes, size);
 			int pos = 0;

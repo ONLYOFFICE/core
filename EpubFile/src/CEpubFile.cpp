@@ -167,7 +167,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     NSDirectory::CreateDirectory(sOutputDir);
     HRESULT hRes = oFile.OpenBatchHtml(arFiles, sOutputDir, &oFileParams);
     if (bIsOutCompress && S_OK == hRes)
-        oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
+        hRes = oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
 
 #ifdef _DEBUG
     std::wcout << L"---" << (S_OK == hRes ? L"Successful" : L"Failed") << L" conversion of Epub to Docx---" << std::endl;
@@ -544,6 +544,17 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         }
         // spine & guide
         std::wstring sItemRef;
+        if (!nFile)
+        {
+            nFile = 1;
+            // write index.html
+            NSFile::CFileBinary oIndexHtml;
+            if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
+            {
+                oIndexHtml.WriteStringUTF8(sIndexHtml);
+                oIndexHtml.CloseFile();
+            }
+        }
         for (int i = 0; i < nFile; ++i)
         {
             std::wstring sI = std::to_wstring(i);
@@ -566,17 +577,6 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oTocNcx.WriteStringUTF8(sTitle);
         oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index0.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
-    }
-
-    // write index.html
-    if (!nFile)
-    {
-        NSFile::CFileBinary oIndexHtml;
-        if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
-        {
-            oIndexHtml.WriteStringUTF8(sIndexHtml);
-            oIndexHtml.CloseFile();
-        }
     }
 
     // compress

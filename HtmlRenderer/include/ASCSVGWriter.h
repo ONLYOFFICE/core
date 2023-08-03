@@ -56,9 +56,9 @@ namespace NSHtmlRenderer
 
 		void Reset();
 
-		// тип рендерера-----------------------------------------------------------------------------
+	// тип рендерера-----------------------------------------------------------------------------
 		HRESULT get_Type(LONG* lType);
-		//-------- Функции для работы со страницей --------------------------------------------------
+	//-------- Функции для работы со страницей --------------------------------------------------
 		HRESULT NewPage();
 		HRESULT get_Height(double* dHeight);
 		HRESULT put_Height(const double& dHeight);
@@ -67,7 +67,7 @@ namespace NSHtmlRenderer
 		HRESULT get_DpiX(double* dDpiX);
 		HRESULT get_DpiY(double* dDpiY);
 
-		// pen --------------------------------------------------------------------------------------
+	// pen --------------------------------------------------------------------------------------
 		HRESULT get_PenColor(LONG* lColor);
 		HRESULT put_PenColor(const LONG& lColor);
 		HRESULT get_PenAlpha(LONG* lAlpha);
@@ -90,7 +90,7 @@ namespace NSHtmlRenderer
 		HRESULT put_PenMiterLimit(const double& dOffset);
 		HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
-		// brush ------------------------------------------------------------------------------------
+	// brush ------------------------------------------------------------------------------------
 		HRESULT get_BrushType(LONG* lType);
 		HRESULT put_BrushType(const LONG& lType);
 		HRESULT get_BrushColor1(LONG* lColor);
@@ -114,7 +114,11 @@ namespace NSHtmlRenderer
 
 		HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
-		// font -------------------------------------------------------------------------------------
+		HRESULT get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
+		HRESULT put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
+		HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
+		HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
+	// font -------------------------------------------------------------------------------------
 		HRESULT get_FontName(std::wstring* bsName);
 		HRESULT put_FontName(const std::wstring& bsName);
 		HRESULT get_FontPath(std::wstring* bsName);
@@ -130,18 +134,18 @@ namespace NSHtmlRenderer
 		HRESULT get_FontFaceIndex(int* lFaceIndex);
 		HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
-		//-------- Функции для вывода текста --------------------------------------------------------
+	//-------- Функции для вывода текста --------------------------------------------------------
 		HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h);
 		HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h);
 
 		HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h);
 		HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
-		//-------- Маркеры для команд ---------------------------------------------------------------
+	//-------- Маркеры для команд ---------------------------------------------------------------
 		HRESULT BeginCommand(const DWORD& lType);
 		HRESULT EndCommand(const DWORD& lType);
 
-		//-------- Функции для работы с Graphics Path -----------------------------------------------
+	//-------- Функции для работы с Graphics Path -----------------------------------------------
 		HRESULT PathCommandMoveTo(const double& x, const double& y);
 		HRESULT PathCommandLineTo(const double& x, const double& y);
 		HRESULT PathCommandLinesTo(double* points, const int& count);
@@ -160,11 +164,11 @@ namespace NSHtmlRenderer
 		HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h);
 		HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
-		//-------- Функции для вывода изображений ---------------------------------------------------
+	//-------- Функции для вывода изображений ---------------------------------------------------
 		HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
 		HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha);
 
-		// transform --------------------------------------------------------------------------------
+	// transform --------------------------------------------------------------------------------
 		HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6);
 		HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
 		HRESULT ResetTransform();
@@ -172,12 +176,12 @@ namespace NSHtmlRenderer
 		// -----------------------------------------------------------------------------------------
 		HRESULT get_ClipMode(LONG* plMode);
 		HRESULT put_ClipMode(const LONG& lMode);
-		// additiaonal params ----------------------------------------------------------------------
+	// additiaonal params ----------------------------------------------------------------------
 		HRESULT SaveFile(const std::wstring& strFileSave);
 		HRESULT ReInit();
 		HRESULT IsRaster(bool* bVal);
 		HRESULT GetSVGDataSize(LONG* lVal);
-		// additiaonal params ----------------------------------------------------------------------
+	// additiaonal params ----------------------------------------------------------------------
 		HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 		HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 		HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);

@@ -48,6 +48,7 @@ namespace CFCPP
         virtual void write (const char* buffer, _INT64 len) = 0;
         virtual void flush() = 0;
         virtual void close() = 0;
+		virtual bool isError() = 0;
     };
 
     using Stream = std::shared_ptr<IStream>;

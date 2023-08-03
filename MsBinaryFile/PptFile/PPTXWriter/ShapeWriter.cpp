@@ -36,7 +36,6 @@
 #include "../Drawing/Theme.h"
 
 #include "../../XlsFile/Converter/ShapeType.h"
-#include "../../../Common/MS-LCID.h"
 #include "../../../OOXML/Base/Unit.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
@@ -48,7 +47,6 @@
 using namespace PPT;
 
 static UINT nRTCounter = 1;
-
 
 CStylesWriter::CStylesWriter() : m_pTheme(NULL) {}
 CStylesWriter::CStylesWriter(PPT::CTheme* pTheme) : m_pTheme(pTheme) {}
@@ -65,7 +63,6 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
 
     oWriter.WriteString(str1);
 
-
     // <a:pPr>
     auto pPPr = new PPTX::Logic::TextParagraphPr;
     BulletsConverter buConverter;
@@ -74,8 +71,8 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
     std::wstring strPPr = pPPr->toXML().substr(6); // remove <a:pPr
     strPPr = strPPr.substr(0, strPPr.size() - 8);  // remove </a:pPr>
     delete pPPr;
+  
     oWriter.WriteString(strPPr);
-
 
     oWriter.WriteString(L"<a:defRPr");
 
@@ -83,7 +80,7 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
 
     if (pCF->Language.is_init())
     {
-        std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+        std::wstring str_lang = m_lcidConverter.get_wstring(pCF->Language.get());
 
         if (str_lang.length() > 0)
             oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
@@ -1250,7 +1247,7 @@ void PPT::CShapeWriter::WriteTextInfo(PPT::CTextCFRun* pLastCF)
             }
             if (pCF->Language.is_init())
             {
-                std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+                std::wstring str_lang = m_lcidConverter.get_wstring(pCF->Language.get());
 
                 if (str_lang.length() > 0)
                     m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
@@ -1430,7 +1427,7 @@ std::wstring CShapeWriter::WriteBullets(CTextPFRun *pPF, CRelsGenerator* pRels)
 
                 if ( pPF->bulletFontProperties->PitchFamily > 0)
                 {
-                    buWrt.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring(pPF->bulletFontProperties->PitchFamily) + L"\"");
+                    buWrt.WriteString(std::wstring(L" pitchFamily=\"") + std::to_wstring((char)pPF->bulletFontProperties->PitchFamily) + L"\"");
                 }
                 if ( pPF->bulletFontProperties->Charset > 0)
                 {

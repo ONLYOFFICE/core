@@ -37,23 +37,15 @@ namespace PPT
 {
 class CRecordBlipEntityAtom : public CUnknownRecord
 {
-public:
-	
+public:	
     CRecordBlipEntityAtom();
     const std::wstring getTmpImgPath() const;
     const std::wstring getImgExtention() const;
     ~CRecordBlipEntityAtom();
 
     void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
-
-
-private:
-    bool writeImage();
-    std::wstring getTempFolder()const;
-
 private:
     BYTE m_nWinBlipType;
     CRecordOfficeArtBlip m_oBlip;
-    std::wstring m_tmpFolder;
 };
 }

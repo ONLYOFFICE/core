@@ -2138,6 +2138,18 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.m_oFileSharing.Init();
 		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
 	}
+	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
+	{	
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oExternalLinksAutoRefresh = m_oBufferedStream.GetBool();
+
+		pOfficeArtExtension->m_sUri = L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:xxlnp=\"http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_bMacroRead = true;
@@ -2718,6 +2730,11 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else if (c_oSerWorkbookPrTypes::UpdateLinks == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5744,11 +5761,11 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 			oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+			oWriter.m_strId = oVmlShape.sXml;
 
 			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
 			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
-			
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -7745,7 +7762,10 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
-				oCSVWriter.Start(sDstPathCSV);
+				
+				bResultOk = oCSVWriter.Start(sDstPathCSV);
+				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
+
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try

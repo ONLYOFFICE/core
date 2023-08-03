@@ -106,10 +106,8 @@ mc:Ignorable=\"w14 w15 wp14\">"));
 			oFile.WriteStringUTF8(std::wstring(L"<w:body>"));
 			oFile.WriteStringUTF8(m_oContent.GetData());
 
-			oFile.WriteStringUTF8(std::wstring(L"<w:sectPr>"));
-			oFile.WriteStringUTF8(WriteSectPrHdrFtr());
+			//oFile.WriteStringUTF8(WriteSectPrHdrFtr());
 			oFile.WriteStringUTF8(m_oSecPr.GetData());
-			oFile.WriteStringUTF8(std::wstring(L"</w:sectPr>"));
 
 			oFile.WriteStringUTF8(std::wstring(L"</w:body>"));
 

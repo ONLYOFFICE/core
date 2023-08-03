@@ -383,7 +383,12 @@ namespace OOX
 						}
 					}
 				}
+				else if (L"p" == sName)
+				{
+					int nDepthChild = oReader.GetDepth();
 
+					fromXML(nDepthChild, oReader);
+				}
 				if ( pItem )
 				{
 					pItem->fromXML(oReader);

@@ -525,6 +525,7 @@ public:
 		bool						active = false;
 		bool						in_drawing = false;
 		bool						out_active = false;
+		bool						in_para = false;
 		_UINT32						oox_id = 0;
 
 		void clear()
@@ -986,8 +987,8 @@ public:
 	bool		delayed_converting_;
 	bool		convert_delayed_enabled_;
 
-	void		start_changes();
-	void		end_changes();
+	void		start_changes(bool in_para);
+	void		end_changes(bool in_para);
 
 	void		add_jsaProject(const std::string &content);
 

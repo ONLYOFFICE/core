@@ -252,7 +252,7 @@ void styles_context::docx_serialize_table_style(std::wostream & strm, std::wstri
 }
 
 math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :
-						base_font_size_(12), fonts_container_(fonts), is_need_e_(false)
+						base_font_size_(12), fonts_container_(fonts)
 {
 	graphRPR_ = graphic;
 
@@ -263,11 +263,29 @@ void math_context::start()
 {
 	text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
-	text_properties_->content_.style_font_name_ = L"Cambria Math";
+	text_properties_->content_.fo_font_family_ = base_font_name_.empty() ? L"Cambria Math" : base_font_name_;
 	text_properties_->content_.fo_font_size_ = odf_types::length(base_font_size_, odf_types::length::pt);
+
+	math_stream_ << L"<m:oMathParaPr><m:jc m:val=\"";
+	switch (base_alignment_)
+	{
+		case 0: math_stream_ << L"left"; break;
+		case 2: math_stream_ << L"right"; break;
+		case 1:
+		default:
+			math_stream_ << L"center"; break;
+	}
+	math_stream_ << L"\"/></m:oMathParaPr>";
+
+	math_stream_ << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+	
+	start_level();
 }
 std::wstring math_context::end()
 {
+	end_level();
+	
+	math_stream_ << L"</m:oMath>";
 	std::wstring math = math_stream_.str();
 	
 	math_stream_.str( std::wstring() );

@@ -32,8 +32,6 @@
 
 #include "BOF.h"
 
-#include "../../../../../Common/MS-LCID.h"
-
 namespace XLS
 {
 
@@ -68,6 +66,8 @@ BaseObjectPtr BOF::clone()
 
 void BOF::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	type_id_ = record.getTypeId();
 
 	record >> vers >> dt;
@@ -104,9 +104,9 @@ void BOF::readFields(CFRecord& record)
 		}
 		else
 		{ //ts_2500_06_gruzi 05 06 вып.xls
-			if (record.getGlobalWorkbookInfo()->CodePage == 0 && record.getGlobalWorkbookInfo()->lcid_user > 0)
+			if (global_info->CodePage == 0 && global_info->lcid_user > 0)
 			{
-				record.getGlobalWorkbookInfo()->CodePage = msLCID2DefCodePage(record.getGlobalWorkbookInfo()->lcid_user);
+				record.getGlobalWorkbookInfo()->CodePage = global_info->lcid_converter.get_codepage(record.getGlobalWorkbookInfo()->lcid_user);
 			}
 		}
 	}

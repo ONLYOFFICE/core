@@ -92,7 +92,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oShowInkAnnotation;
 			nullable<SimpleTypes::COnOff>						m_oShowObjects;
 			nullable<SimpleTypes::COnOff>						m_oShowPivotChartFilter;
-			nullable<SimpleTypes::Spreadsheet::CUpdateLinksType>						m_oUpdateLinks;
+			nullable<SimpleTypes::Spreadsheet::CUpdateLinksType> m_oUpdateLinks;
 		};
 		class CWorkbookProtection : public WritingElement
 		{

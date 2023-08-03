@@ -84,28 +84,31 @@ void CRecordOfficeArtClientData::ReadFromStream(SRecordHeader &oHeader, POLE::St
 
         switch (ReadHeader.RecType)
         {
-        case RT_ProgTags:
-        {
-            // ShapeProgBinaryTagContainer
-            ReadHeader.ReadFromStream(pStream);
+            case RT_ProgTags:
+            {
+                // ShapeProgBinaryTagContainer
+                ReadHeader.ReadFromStream(pStream);
 
-            auto pRec = new CRecordShapeProgBinaryTagSubContainerOrAtom;
-            pRec->ReadFromStream(ReadHeader, pStream);
-            m_rgShapeClientRoundtripData.push_back(pRec);
-            break;
-        }
-        case RT_VbaInfo:
-        {
-            auto pRec = new CRecordsContainer;
-            pRec->ReadFromStream(ReadHeader, pStream);
-            break;
-        }
-        default:
-            IRecord* pRecord = CreateByType(ReadHeader);
-            pRecord->ReadFromStream(ReadHeader, pStream);
+                auto pRec = new CRecordShapeProgBinaryTagSubContainerOrAtom;
+                pRec->m_pCommonInfo = m_pCommonInfo;
+                pRec->ReadFromStream(ReadHeader, pStream);
 
-            m_arRecords.push_back(pRecord);
-            break;
+                m_rgShapeClientRoundtripData.push_back(pRec);
+            }break;
+            case RT_VbaInfo:
+            {
+                auto pRec = new CRecordsContainer;
+                pRec->m_pCommonInfo = m_pCommonInfo;
+                pRec->ReadFromStream(ReadHeader, pStream);                
+            }break;
+            default:
+            {
+                IRecord* pRecord = CreateByType(ReadHeader, m_pCommonInfo);
+                pRecord->ReadFromStream(ReadHeader, pStream);
+
+                m_arRecords.push_back(pRecord);
+
+            }break;
         }
 
     }

@@ -36,16 +36,17 @@
 namespace XLS
 {
 
-class ChartNumNillable : public BiffAttribute
+class ChartNumNillable : public BiffStructure
 {
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ChartNumNillable)
 public:
+	static const ElementType type = typeChartNumNillable;
 
 	ChartNumNillable(const unsigned short nil_type);
 
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-
 
 	void setNilType(const unsigned short type);
 	const bool isNil();

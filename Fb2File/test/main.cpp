@@ -16,7 +16,7 @@ void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& a
 int main()
 {
     bool bBatchMode = false;
-    bool bFromHtml  = true;
+    bool bFromHtml  = false;
     if (bBatchMode)
     {
         // Директория файлов
@@ -91,7 +91,7 @@ int main()
         CFb2File oFile;
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/res.fb2";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/res.fb2";
 
         // Директория, где будем создавать docx
         std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
@@ -100,7 +100,7 @@ int main()
 
         if (bFromHtml)
         {
-            sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.html";
+            sFile = NSFile::GetProcessDirectory() + L"/test.html";
             oFile.FromHtml(sFile, sOutputDirectory + L"/res.fb2", L"Test Title");
             return 0;
         }

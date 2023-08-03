@@ -40,11 +40,14 @@
 #include "draw_common.h"
 
 #include "../Converter/pptx_animation_context.h"
+#include "svg_parser.h"
+#include "../Converter/oox_drawing.h"
 
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 #include <boost/algorithm/string.hpp>
 #include <unordered_map>
+#include <vector>
 
 namespace cpdoccore { 
 
@@ -338,6 +341,39 @@ static std::wstring pptx_convert_smil_begin(const std::wstring& smil_begin)
 		delay = boost::lexical_cast<std::wstring>(delayClockvalue.get_value());
 
 	return delay;
+}
+
+static std::wstring pptx_convert_svg_path(const std::vector<::svg_path::_polyline>& polylines)
+{
+	using namespace ::svg_path;
+
+	std::wstringstream result;
+
+	for (size_t i = 0; i < polylines.size(); i++)
+	{
+		const _polyline& polyline = polylines[i];
+		
+		if (polyline.command == L"a:close")
+			result << L"Z ";
+		else if (polyline.command == L"a:moveTo")
+			result << L"M ";
+		else if (polyline.command == L"a:lnTo")
+			result << L"L ";
+		else if (polyline.command == L"a:cubicBezTo")
+			result << L"C ";
+		else if (polyline.command == L"a:ArcTo")
+			result << L"G ";
+
+		for (size_t pointIndex = 0; pointIndex < polyline.points.size(); pointIndex++)
+		{
+			if (polyline.points[pointIndex].x)
+				result << polyline.points[pointIndex].x << L" ";
+			if (polyline.points[pointIndex].y)
+				result << polyline.points[pointIndex].y << L" "; 
+		}
+	}
+
+	return result.str();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1108,9 +1144,20 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
 
 	size_t shapeID = 0;
+	_CP_OPT(std::wstring) path;
 
 	if (animate_motion_attlist_.smil_target_element_)
 		shapeID = Context.get_slide_context().get_id(animate_motion_attlist_.smil_target_element_.value());
+
+	if (animate_motion_attlist_.svg_path_)
+	{
+		std::vector<::svg_path::_polyline> polylines;
+		bool closed, stroked;
+		::svg_path::parseSvgD(polylines, animate_motion_attlist_.svg_path_.value(), false, closed, stroked);
+
+		path = pptx_convert_svg_path(polylines);
+	}
+	
 
 	animationContext.start_animate_motion();
 
@@ -1122,7 +1169,7 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 //	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
 
 	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(animate_motion_attlist_.smil_fill_.value());
-	if (animate_motion_attlist_.svg_path_)					animationContext.set_animate_motion_svg_path(animate_motion_attlist_.svg_path_.value());
+	if (path)												animationContext.set_animate_motion_svg_path(path.value());
 
 	animationContext.set_animate_motion_shape_id(shapeID);
 	

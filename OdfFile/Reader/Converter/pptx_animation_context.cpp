@@ -928,8 +928,13 @@ namespace oox {
 			{
 				CP_XML_NODE(L"p:cTn")
 				{
-					if (PresentationNodeType)		CP_XML_ATTR(L"nodeType",	PresentationNodeType.value());
-					if (Duration)					CP_XML_ATTR(L"dur",			Duration.value());
+					if (PresentationNodeType)
+					{
+						CP_XML_ATTR(L"nodeType", PresentationNodeType.value());
+						CP_XML_ATTR(L"dur", L"indefinite");
+					}
+					else if (Duration)		
+						CP_XML_ATTR(L"dur",	Duration.value());
 
 					if (AnimParArray.size())
 					{

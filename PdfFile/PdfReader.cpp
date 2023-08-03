@@ -1780,8 +1780,11 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 
 			if (bFirst)
 			{
+				Object oFieldRef;
+				pField->getFieldRef(&oFieldRef);
 				// Номер аннотации для сопоставления с AP
-				oRes.AddInt(i);
+				oRes.AddInt(oFieldRef.getRefNum());
+				oFieldRef.free();
 				nMKPos = oRes.GetSize();
 				// Количество иконок 1-3
 				oRes.AddInt(nMKLength);

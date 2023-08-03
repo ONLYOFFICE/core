@@ -944,10 +944,11 @@
 		Module["_free"](ext);
 		return res;
 	};
+	// необязательный pageIndex - получить данные для аннотаций на конкретной странице
 	CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 	{
 		var res = [];
-		var ext = Module["_GetAnnotationsInfo"](this.nativeFile, pageIndex ? pageIndex : -1);
+		var ext = Module["_GetAnnotationsInfo"](this.nativeFile, pageIndex === undefined ? -1 : pageIndex);
 		if (ext == 0)
 			return res;
 
@@ -1041,7 +1042,7 @@
 				flags = reader.readInt();
 				rec["Open"] = (flags >> 0) & 1;
 				// Ссылка на аннотацию-родителя
-				if (flags & (1 << 0))
+				if (flags & (1 << 1))
 					rec["PopupParent"] = reader.readInt();
 			}
 			res.push(rec);
@@ -1050,6 +1051,8 @@
 		Module["_free"](ext);
 		return res;
 	};
+	// необязательный nAnnot ...
+	// необязательный sView ...
 	CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgroundColor, nAnnot, sView)
 	{
 		var nView = -1;

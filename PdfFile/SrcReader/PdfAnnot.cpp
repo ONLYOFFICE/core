@@ -900,8 +900,33 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
 		pA->sType = sAA;
+		m_arrAction.push_back(pA);
 	}
 	oAction.free();
+
+	// Actions - AA
+	Object oAA;
+	if (pField->fieldLookup("AA", &oAA)->isDict())
+	{
+		for (int j = 0; j < oAA.dictGetLength(); ++j)
+		{
+			if (oAA.dictGetVal(j, &oAction)->isDict())
+			{
+				std::string sAA(oAA.dictGetKey(j));
+				CAction* pA = getAction(pdfDoc, &oAction);
+				pA->sType = sAA;
+				m_arrAction.push_back(pA);
+			}
+			oAction.free();
+		}
+	}
+	oAA.free();
+}
+
+CAnnotWidget::~CAnnotWidget()
+{
+	for (int i = 0; i < m_arrAction.size(); ++i)
+		RELEASEOBJECT(m_arrAction[i]);
 }
 
 //------------------------------------------------------------------------
@@ -1410,6 +1435,12 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 CAnnotAP::~CAnnotAP()
 {
 	Clear();
+
+	for (int i = 0; i < m_arrAP.size(); ++i)
+	{
+		RELEASEOBJECT(m_arrAP[i]->pText);
+		RELEASEOBJECT(m_arrAP[i]);
+	}
 }
 
 void CAnnotAP::Clear()
@@ -1666,6 +1697,7 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		else
 			oRes.AddInt(0);
 		RELEASEARRAYOBJECTS(pTextFormField);
+		m_arrAP[i]->pText = NULL;
 	}
 }
 

@@ -224,6 +224,7 @@ class CAnnotWidget : public CAnnot
 {
 public:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
+	virtual ~CAnnotWidget();
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 

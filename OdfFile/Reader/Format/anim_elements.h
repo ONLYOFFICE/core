@@ -41,6 +41,8 @@
 #include "../../DataTypes/svg_type.h"
 #include "../../DataTypes/presetclass.h"
 #include "../../DataTypes/presetid.h"
+#include "../../DataTypes/smil_values.h"
+#include "../../DataTypes/smil_keytimes.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -282,8 +284,9 @@ public:
 
 	_CP_OPT(std::wstring)						smil_target_element_;
 	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
-	_CP_OPT(std::wstring)						smil_values_;
-	_CP_OPT(std::wstring)						smil_key_times_;
+	_CP_OPT(odf_types::smil_values)				smil_values_;
+	_CP_OPT(odf_types::smil_key_times)			smil_key_times_;
+	_CP_OPT(std::wstring)						anim_formula_;
 	_CP_OPT(std::wstring)						smil_calc_mode_;
 	_CP_OPT(std::wstring)						smil_from_;
 	_CP_OPT(std::wstring)						smil_to_;

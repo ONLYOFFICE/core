@@ -34,7 +34,6 @@
 
 #include <vector>
 #include <xml/simple_xml_writer.h>
-#include <CPOptional.h>
 
 #include "../../DataTypes/clockvalue.h"
 
@@ -169,11 +168,12 @@ namespace oox {
 		{
 			struct _keypoint
 			{
-				int				Time;
-				std::wstring	Value;
+				int						Time;
+				std::wstring			Value;
+				_CP_OPT(std::wstring)	Fmla; // Formula
 
-				_keypoint(int time, const std::wstring& value)
-					: Time(time), Value(value)
+				_keypoint(int time, const std::wstring& value, _CP_OPT(std::wstring) formula)
+					: Time(time), Value(value), Fmla(formula)
 				{}
 			};
 
@@ -682,9 +682,9 @@ namespace oox {
 		impl_->anim_description_->Delay = value;
 	}
 
-	void pptx_animation_context::add_animate_keypoint(int time, const std::wstring& value)
+	void pptx_animation_context::add_animate_keypoint(int time, const std::wstring& value, _CP_OPT(std::wstring) formula)
 	{
-		impl_->anim_description_->KeypointArray->push_back(Impl::_anim::_keypoint(time, value));
+		impl_->anim_description_->KeypointArray->push_back(Impl::_anim::_keypoint(time, value, formula));
 	}
 
 	void pptx_animation_context::end_animate()
@@ -1161,9 +1161,12 @@ namespace oox {
 						{
 							const int& time = (*KeypointArray)[i].Time;
 							const std::wstring& value = (*KeypointArray)[i].Value;
+							const _CP_OPT(std::wstring) formula = (*KeypointArray)[i].Fmla;
 
 							CP_XML_NODE(L"p:tav")
 							{
+								if (formula) 
+									CP_XML_ATTR(L"fmla", formula.value());
 								CP_XML_ATTR(L"tm", time);
 								
 								CP_XML_NODE(L"p:val")

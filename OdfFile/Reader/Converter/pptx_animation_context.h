@@ -33,6 +33,7 @@
 
 #include <string>
 #include <CPSharedPtr.h>
+#include <CPOptional.h>
 
 namespace cpdoccore {
 namespace oox {
@@ -105,7 +106,7 @@ namespace oox {
 			void set_animate_additive(const std::wstring& value);
 			void set_animate_auto_reverse(bool value);
 			void set_animate_delay(const std::wstring& value);
-			void add_animate_keypoint(int time, const std::wstring& value);
+			void add_animate_keypoint(int time, const std::wstring& value, _CP_OPT(std::wstring) formula);
 		void end_animate();
 		
 		void start_animate_color();

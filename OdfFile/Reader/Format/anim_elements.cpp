@@ -376,6 +376,42 @@ static std::wstring pptx_convert_svg_path(const std::vector<::svg_path::_polylin
 	return result.str();
 }
 
+static std::vector<int> pptx_convert_smil_key_times(const odf_types::smil_key_times& key_times)
+{
+	std::vector<int> result;
+
+	const int pptx_key_time_multiplier = 100000;
+	const std::vector<float> values = key_times.get_values();
+
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		result.push_back(values[i] * pptx_key_time_multiplier);
+	}
+
+	return result;
+}
+
+static std::vector<std::wstring> pptx_convert_smil_values(const odf_types::smil_values& smil_values_)
+{
+	std::vector<std::wstring> result;
+
+	const std::vector<std::wstring>& values = smil_values_.get_values();
+
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		std::wstring value = values[i];
+		
+		boost::replace_all(value, L"x", L"#ppt_x");
+		boost::replace_all(value, L"y", L"#ppt_y");
+		boost::replace_all(value, L"width", L"#ppt_w");
+		boost::replace_all(value, L"height", L"#ppt_h");
+
+		result.push_back(value);
+	}
+
+	return result;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t* anim_par::ns = L"anim";
 const wchar_t* anim_par::name = L"par";
@@ -1189,7 +1225,7 @@ void anim_animate_color_attlist::add_attributes(const xml::attributes_wc_ptr& At
 	CP_APPLY_ATTR(L"smil:targetElement",					smil_target_element_);
 	CP_APPLY_ATTR(L"smil:attributeName",					smil_attribute_name_);
 	CP_APPLY_ATTR(L"smil:to",								smil_to_);
-	CP_APPLY_ATTR(L"presentation:master-elemen",			presentation_master_element_);
+	CP_APPLY_ATTR(L"presentation:master-element",			presentation_master_element_);
 	CP_APPLY_ATTR(L"anim:color-interpolation",				anim_color_interpolation_);
 	CP_APPLY_ATTR(L"anim:color-interpolation-direction",	anim_color_interpolation_direction);
 }
@@ -1262,6 +1298,7 @@ void anim_animate_attlist::add_attributes(const xml::attributes_wc_ptr& Attribut
 	CP_APPLY_ATTR(L"smil:by",					smil_by_);
 	CP_APPLY_ATTR(L"smil:autoReverse",			smil_auto_reverse_);
 	CP_APPLY_ATTR(L"smil:additive",				smil_additive_);
+	CP_APPLY_ATTR(L"anim:formula",				anim_formula_);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1283,6 +1320,9 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	_CP_OPT(std::wstring)						additive;
 	_CP_OPT(bool)								autoRev;
 	_CP_OPT(std::wstring)						delay;
+	_CP_OPT(std::wstring)						formula;
+	std::vector<std::wstring>					values;
+	std::vector<int>							keyTimes;
 
 	if (animate_attlist_.smil_calc_mode_)
 	{
@@ -1303,50 +1343,23 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	if (animate_attlist_.smil_target_element_)
 		shapeID = Context.get_slide_context().get_id(animate_attlist_.smil_target_element_.value());
 	
-	std::vector<std::wstring>	timesOdp;
-	std::vector<int>			timesPptx;
-	std::vector<std::wstring>	valuesOdp;
-	std::vector<std::wstring>	valuesPptx;
+	if (animate_attlist_.smil_values_)
+		values = pptx_convert_smil_values(animate_attlist_.smil_values_.value());
 
 	if (animate_attlist_.smil_key_times_)
-		boost::split(timesOdp, animate_attlist_.smil_key_times_.value(), boost::is_any_of(";"));
-	if (animate_attlist_.smil_values_)
-		boost::split(valuesOdp, animate_attlist_.smil_values_.value(), boost::is_any_of(";"));
+		keyTimes = pptx_convert_smil_key_times(animate_attlist_.smil_key_times_.value());
 
-	for (size_t i = 0; i < timesOdp.size(); i++)
-	{
-		int keyTime = 0;
-		const int pptx_time_mulipier = 100000;
-		try
-		{
-			keyTime = boost::lexical_cast<double>(timesOdp[i]) * pptx_time_mulipier;
-		}
-		catch (...)
-		{
-			continue;
-		}
-		timesPptx.push_back(keyTime);
-	}
-
-	for (size_t i = 0; i < valuesOdp.size(); i++)
-	{
-		valuesPptx.push_back(pptx_convert_animation_function(valuesOdp[i]));
-	}
+	if (animate_attlist_.anim_formula_)
+		formula = animate_attlist_.anim_formula_.value();
 
 	if (animate_attlist_.smil_from_)
-	{
 		from = pptx_convert_animation_function(animate_attlist_.smil_from_.value());
-	}
 
 	if (animate_attlist_.smil_to_)
-	{
 		to = pptx_convert_animation_function(animate_attlist_.smil_to_.value());
-	}
 
 	if (animate_attlist_.smil_by_)
-	{
 		by = pptx_convert_animation_function(animate_attlist_.smil_by_.value());
-	}
 
 	if (animate_attlist_.smil_additive_)
 	{
@@ -1384,13 +1397,13 @@ void anim_animate::pptx_convert(oox::pptx_conversion_context& Context)
 	if (delay)				animationContext.set_animate_delay(delay.value());
 	animationContext.set_animate_shape_id(shapeID);
 
-	if (timesPptx.size() == valuesPptx.size())
+	if (keyTimes.size() == values.size())
 	{
-		size_t size = timesPptx.size();
+		size_t size = keyTimes.size();
 
 		for (size_t i = 0; i < size; i++)
 		{
-			animationContext.add_animate_keypoint(timesPptx[i], valuesPptx[i]);
+			animationContext.add_animate_keypoint(keyTimes[i], values[i], formula);
 		}
 	}
 

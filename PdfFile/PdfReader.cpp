@@ -2133,7 +2133,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "Line")
 		{
-
+			pAnnot = new PdfReader::CAnnotLine(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Square")
 		{

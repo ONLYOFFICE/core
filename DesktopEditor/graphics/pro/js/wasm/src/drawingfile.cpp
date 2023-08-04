@@ -1674,22 +1674,106 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert", "Unknown"};
+					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert"};
 					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 17))
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrStateModel[] = {"Marked", "Review", "Unknown"};
+					std::string arrStateModel[] = {"Marked", "Review"};
 					std::cout << "State model " << arrStateModel[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 18))
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrState[] = {"Marked", "Unmarked", "Accepted", "Rejected", "Cancelled", "Completed", "None", "Unknown"};
+					std::string arrState[] = {"Marked", "Unmarked", "Accepted", "Rejected", "Cancelled", "Completed", "None"};
 					std::cout << "State " << arrState[nPathLength] << ", ";
+				}
+			}
+			else if (sType == "Line")
+			{
+				std::cout << "L ";
+				for (int j = 0; j < 4; ++j)
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << (double)nPathLength / 100.0 << " ";
+				}
+				std::cout << ", ";
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "LE ";
+					for (int j = 0; j < 2; ++j)
+					{
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::string arrLE[] = {"Square", "Circle", "Diamond", "OpenArrow", "ClosedArrow", "None", "Butt", "ROpenArrow", "RClosedArrow", "Slash"};
+						std::cout << arrLE[nPathLength] << " ";
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					int nICLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "IC ";
+
+					for (int j = 0; j < nICLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << " ";
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 17))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "LL " << (double)nPathLength / 100.0 << ", ";
+				}
+				if (nFlags & (1 << 18))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "LLE " << (double)nPathLength / 100.0 << ", ";
+				}
+				if (nFlags & (1 << 19))
+					std::cout << "Cap true, ";
+				else
+					std::cout << "Cap false, ";
+				if (nFlags & (1 << 20))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrIT[] = {"LineDimension", "LineArrow"};
+					std::cout << "IT " << arrIT[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 21))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "LLO " << (double)nPathLength / 100.0 << ", ";
+				}
+				if (nFlags & (1 << 22))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrCP[] = {"Inline", "Top"};
+					std::cout << "CP " << arrCP[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 23))
+				{
+					std::cout << "CO ";
+					for (int j = 0; j < 2; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << " ";
+					}
+					std::cout << ", ";
 				}
 			}
 			else if (sType == "Ink")

@@ -202,6 +202,7 @@ public:
 
 	virtual void ToWASM(NSWasm::CData& oRes);
 
+	double m_dHeight; // Высота холста, для Y трансормации
 private:
 	unsigned int m_unAFlags;
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
@@ -325,7 +326,6 @@ public:
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
-	BYTE m_nIT; // Назначение аннотации
 	unsigned int m_unFlags;
 
 private:
@@ -369,6 +369,30 @@ public:
 
 private:
 	std::vector< std::vector<double> > m_arrInkList; // Путь
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotLine
+//------------------------------------------------------------------------
+
+class CAnnotLine final : public CMarkupAnnot
+{
+public:
+	CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nIT; // Назначение аннотации
+	BYTE m_nCP; // Расположение заголовка аннотации
+	double m_dLL; // Длина линий выноски
+	double m_dLLE; // Продолжение линий выноски
+	double m_dLLO; // Длина смещения выноски
+	BYTE m_nLE[2]; // Стили окончания линии
+	double m_pL[4]; // Координаты линии
+	double m_pCO[2]; // Смещение текста подписи
+	std::vector<double> m_arrIC; // Цвет окончаний линии
+	// TODO Measure Показатели масштаба, единиц измерения
 };
 
 //------------------------------------------------------------------------

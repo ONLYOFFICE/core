@@ -1023,18 +1023,68 @@
 			{
 				rec["Open"] = (flags >> 15) & 1;
 				// иконка - Name
-				// 0 - Comment, 1 - Key, 2 - Note, 3 - Help, 4 - NewParagraph, 5 - Paragraph, 6 - Insert, 7 - Unknown
+				// 0 - Comment, 1 - Key, 2 - Note, 3 - Help, 4 - NewParagraph, 5 - Paragraph, 6 - Insert
 				if (flags & (1 << 16))
 					rec["Icon"] = reader.readByte();
 				// Модель состояния - StateModel
-				// 0 - Marked, 1 - Review, 2 - Unknown
+				// 0 - Marked, 1 - Review
 				if (flags & (1 << 17))
 					rec["StateModel"] = reader.readByte();
 				// Состояние - State
-				// 0 - Marked, 1 - Unmarked, 2 - Accepted, 3 - Rejected, 4 - Cancelled, 5 - Completed, 6 - None, 7 - Unknown
+				// 0 - Marked, 1 - Unmarked, 2 - Accepted, 3 - Rejected, 4 - Cancelled, 5 - Completed, 6 - None
 				if (flags & (1 << 18))
 					rec["State"] = reader.readByte();
 				
+			}
+			// Line
+			else if (rec["Type"] == 3)
+			{
+				// Координаты линии - L
+				rec["L"] = [];
+				for (let i = 0; i < 4; ++i)
+					rec["L"].push(reader.readDouble());
+				// Стили окончания линии - LE
+				// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+				if (flags & (1 << 15))
+				{
+					rec["LE"] = [];
+					rec["LE"].push(reader.readByte());
+					rec["LE"].push(reader.readByte());
+				}
+				// Цвет окончаний линии - IC
+				if (flags & (1 << 16))
+				{
+					let n = reader.readInt();
+					rec["IC"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["IC"].push(reader.readDouble());
+				}
+				// Длина линий выноски - LL
+				if (flags & (1 << 17))
+					rec["LL"] = reader.readDouble();
+				// Продолжение линий выноски - LLE
+				if (flags & (1 << 18))
+					rec["LLE"] = reader.readDouble();
+				// Местоположение заголовка - Cap
+				rec["Cap"] = (flags >> 19) & 1;
+				// Назначение аннотации - IT
+				// 0 - LineDimension, 1 - LineArrow
+				if (flags & (1 << 20))
+					rec["IT"] = reader.readByte();
+				// Длина смещения выноски - LLO
+				if (flags & (1 << 21))
+					rec["LLO"] = reader.readDouble();
+				// Расположение заголовка аннотации - CP
+				// 0 - Inline, 1 - Top
+				if (flags & (1 << 22))
+					rec["CP"] = reader.readByte();
+				// Смещение текста подписи - CO
+				if (flags & (1 << 23))
+				{
+					rec["CO"] = [];
+					rec["CO"].push(reader.readDouble());
+					rec["CO"].push(reader.readDouble());
+				}
 			}
 			// Ink
 			else if (rec["Type"] == 14)

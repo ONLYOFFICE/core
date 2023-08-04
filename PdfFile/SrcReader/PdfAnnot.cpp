@@ -42,6 +42,24 @@
 namespace PdfReader
 {
 
+#define DICT_LOOKUP_STRING(func, sName, byte, put) \
+{\
+if (func(sName, &oObj)->isString())\
+{\
+	m_unFlags |= (1 << byte);\
+	TextString* s = new TextString(oObj.getString());\
+	put = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
+	delete s;\
+}\
+oObj.free();\
+}
+#define ARR_GET_NUM(take, get, put) \
+{\
+	if (take.arrayGet(get, &oObj2)->isNum())\
+		put = oObj2.getNum();\
+	oObj2.free();\
+}
+
 TextString* getName(Object* oField)
 {
 	TextString* sResName = NULL;
@@ -114,6 +132,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 		else
 			ppRes->unPage = pLinkDest->getPageNum() - 1;
 		ppRes->nKind = pLinkDest->getKind();
+		double dHeight = pdfDoc->getPageCropHeight(ppRes->unPage + 1);
 		switch (ppRes->nKind)
 		{
 		case destXYZ:
@@ -133,7 +152,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 			if (pLinkDest->getChangeTop())
 			{
 				ppRes->unKindFlag |= (1 << 1);
-				double dTop = pdfDoc->getPageCropHeight(ppRes->unPage + 1) - pLinkDest->getTop();
+				double dTop = dHeight - pLinkDest->getTop();
 				ppRes->pRect[1] = (dTop < 0 ? 0.0 : dTop);
 			}
 			// 3 - zoom
@@ -146,11 +165,12 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 		}
 		case destFitR:
 		{
+
 			ppRes->pRect[0] = pLinkDest->getLeft();
-			double dTop = pdfDoc->getPageCropHeight(ppRes->unPage + 1) - pLinkDest->getTop();
+			double dTop = dHeight - pLinkDest->getTop();
 			ppRes->pRect[1] = (dTop < 0 ? 0.0 : dTop);
 			ppRes->pRect[2] = pLinkDest->getRight();
-			dTop = pdfDoc->getPageCropHeight(ppRes->unPage + 1) - pLinkDest->getBottom();
+			dTop = dHeight - pLinkDest->getBottom();
 			ppRes->pRect[3] = (dTop < 0 ? 0.0 : dTop);
 			break;
 		}
@@ -297,7 +317,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 	}
 
 	Object oNextAction;
-	if (oAction->dictLookup("Next", &oNextAction)->isDict())
+	if (pRes && oAction->dictLookup("Next", &oNextAction)->isDict())
 		pRes->pNext = getAction(pdfDoc, &oNextAction);
 	oNextAction.free();
 
@@ -421,38 +441,28 @@ CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 		oV.free();
 		if (oBorder->dictLookup("D", &oV)->isArray())
 		{
-			Object oV1;
-			if (oV.arrayGet(0, &oV1)->isNum())
-				pBorderType->dDashesAlternating = oV1.getNum();
-			oV1.free();
-			if (oV.arrayGet(1, &oV1)->isNum())
-				pBorderType->dGaps = oV1.getNum();
-			else
-				pBorderType->dGaps = pBorderType->dDashesAlternating;
-			oV1.free();
+			Object oObj2;
+			ARR_GET_NUM(oV, 0, pBorderType->dDashesAlternating);
+			pBorderType->dGaps = pBorderType->dDashesAlternating;
+			ARR_GET_NUM(oV, 1, pBorderType->dGaps);
 		}
 		oV.free();
 	}
 	else
 	{
 		pBorderType->nType = annotBorderSolid;
-		Object oV;
-		if (oBorder->arrayGet(2, &oV) && oV.isNum())
-			pBorderType->dWidth = oV.getNum();
-		oV.free();
+		Object oObj2;
+		pBorderType->dWidth = 1.0;
+		ARR_GET_NUM((*oBorder), 2, pBorderType->dWidth);
 
-		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oV)->isArray() && oV.arrayGetLength() > 1)
+		Object oObj;
+		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
 		{
 			pBorderType->nType = annotBorderDashed;
-			Object oV1;
-			if (oV.arrayGet(0, &oV1)->isNum())
-				pBorderType->dDashesAlternating = oV1.getNum();
-			oV1.free();
-			if (oV.arrayGet(1, &oV1)->isNum())
-				pBorderType->dGaps = oV1.getNum();
-			oV1.free();
+			ARR_GET_NUM(oObj, 0, pBorderType->dDashesAlternating);
+			ARR_GET_NUM(oObj, 1, pBorderType->dGaps);
 		}
-		oV.free();
+		oObj.free();
 	}
 
 	return pBorderType;
@@ -499,24 +509,6 @@ void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, 
 	kidsObj.free();
 
 	oFieldRef.free(); oField.free();
-}
-
-#define DICT_LOOKUP_STRING(func, sName, byte, put) \
-{\
-if (func(sName, &oObj)->isString())\
-{\
-	m_unFlags |= (1 << byte);\
-	TextString* s = new TextString(oObj.getString());\
-	put = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
-	delete s;\
-}\
-oObj.free();\
-}
-#define ARR_GET_NUM(take, get, put) \
-{\
-	if (take.arrayGet(get, &oObj2)->isNum())\
-		put = oObj2.getNum();\
-	oObj2.free();\
 }
 
 //------------------------------------------------------------------------
@@ -618,12 +610,11 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 			// 4 - Смещение - A
 			if (oIF.dictLookup("A", &oObj)->isArray())
 			{
-				Object oObj1;
+				Object oObj2;
 				m_unIFFlag |= (1 << 3);
-				m_dA1 = oObj.arrayGet(0, &oObj1)->isNum() ? oObj1.getNum() : 0.5;
-				oObj1.free();
-				m_dA2 = oObj.arrayGet(1, &oObj1)->isNum() ? oObj1.getNum() : 0.5;
-				oObj1.free();
+				m_dA1 = 0.5; m_dA2 = 0.5;
+				ARR_GET_NUM(oObj, 0, m_dA1);
+				ARR_GET_NUM(oObj, 1, m_dA2);
 			}
 			oObj.free();
 			// 5 - Полное соответствие - FB
@@ -921,6 +912,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		}
 	}
 	oAA.free();
+	oField.free();
 }
 
 CAnnotWidget::~CAnnotWidget()
@@ -942,7 +934,7 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// 1 - Отображаться открытой - Open
-	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool() == gTrue)
+	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool())
 		m_unFlags |= (1 << 0);
 	oObj.free();
 
@@ -953,6 +945,7 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 		m_unRefNumParent = oObj.getRefNum();
 	}
 	oObj.free();
+	oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -966,7 +959,7 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// 16 - Отображаться открытой - Open
-	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool() == gTrue)
+	if (oAnnot.dictLookup("Open", &oObj)->isBool() && oObj.getBool())
 		m_unFlags |= (1 << 15);
 	oObj.free();
 
@@ -998,11 +991,9 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 		TextString* s = new TextString(oObj.getString());
 		std::string sStateModel = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		delete s;
-		m_nStateModel = 2;
+		m_nStateModel = 1; // Review
 		if (sStateModel == "Marked")
 			m_nStateModel = 0;
-		else if (sStateModel == "Review")
-			m_nStateModel = 1;
 	}
 	oObj.free();
 
@@ -1013,7 +1004,7 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 		TextString* s = new TextString(oObj.getString());
 		std::string sState = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		delete s;
-		m_nState = 7;
+		m_nState = 6; // None
 		if (sState == "Marked")
 			m_nState = 0;
 		else if (sState == "Unmarked")
@@ -1026,10 +1017,9 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 			m_nState = 4;
 		else if (sState == "Completed")
 			m_nState = 5;
-		else if (sState == "None")
-			m_nState = 6;
 	}
 	oObj.free();
+	oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -1042,6 +1032,7 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarku
 	XRef* pXref = pdfDoc->getXRef();
 	oAnnotRef->fetch(pXref, &oAnnot);
 
+	// Путь - InkList
 	if (oAnnot.dictLookup("InkList", &oObj)->isArray())
 	{
 		for (int j = 0; j < oObj.arrayGetLength(); ++j)
@@ -1053,7 +1044,7 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarku
 				{
 					Object oObj1;
 					if (oObj2.arrayGet(k, &oObj1)->isNum())
-						arrLine.push_back(oObj1.getNum());
+						arrLine.push_back(k % 2 == 0 ? oObj1.getNum() : m_dHeight - oObj1.getNum());
 					oObj1.free();
 				}
 				if (!arrLine.empty())
@@ -1062,6 +1053,141 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarku
 		}
 	}
 	oObj.free();
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// Line
+//------------------------------------------------------------------------
+
+CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Координаты линии - L
+	m_pL[0] = 0.0; m_pL[1] = 0.0; m_pL[2] = 0.0; m_pL[3] = 0.0;
+	if (oAnnot.dictLookup("L", &oObj)->isArray())
+	{
+		ARR_GET_NUM(oObj, 0, m_pL[0]);
+		ARR_GET_NUM(oObj, 1, m_pL[1]);
+		ARR_GET_NUM(oObj, 2, m_pL[2]);
+		ARR_GET_NUM(oObj, 3, m_pL[3]);
+		m_pL[1] = m_dHeight - m_pL[1];
+		m_pL[3] = m_dHeight - m_pL[3];
+	}
+	oObj.free();
+
+	// 16 - Стили окончания линии - LE
+	if (oAnnot.dictLookup("LE", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		m_nLE[0] = 5; m_nLE[1] = 5; // None
+		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
+		{
+			if (!oObj.arrayGet(i, &oObj2)->isName())
+			{
+				oObj2.free();
+				continue;
+			}
+
+			if (oObj2.isName("Square"))
+				m_nLE[i] = 0;
+			else if (oObj2.isName("Circle"))
+				m_nLE[i] = 1;
+			else if (oObj2.isName("Diamond"))
+				m_nLE[i] = 2;
+			else if (oObj2.isName("OpenArrow"))
+				m_nLE[i] = 3;
+			else if (oObj2.isName("ClosedArrow"))
+				m_nLE[i] = 4;
+			else if (oObj2.isName("Butt"))
+				m_nLE[i] = 6;
+			else if (oObj2.isName("ROpenArrow"))
+				m_nLE[i] = 7;
+			else if (oObj2.isName("RClosedArrow"))
+				m_nLE[i] = 8;
+			else if (oObj2.isName("Slash"))
+				m_nLE[i] = 9;
+
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 17 - Цвет окончаний линии - IC
+	if (oAnnot.dictLookup("IC", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			m_arrIC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 18 - Длина линий выноски - LL
+	if (oAnnot.dictLookup("LL", &oObj)->isNum())
+	{
+		m_unFlags |= (1 << 17);
+		m_dLL = oObj.getNum();
+	}
+	oObj.free();
+
+	// 19 - Продолжение линий выноски - LLE
+	if (oAnnot.dictLookup("LLE", &oObj)->isNum())
+	{
+		m_unFlags |= (1 << 18);
+		m_dLLE = oObj.getNum();
+	}
+	oObj.free();
+
+	// 20 - Местоположение заголовка - Cap
+	if (oAnnot.dictLookup("Cap", &oObj)->isBool())
+		m_unFlags |= (1 << 19);
+	oObj.free();
+
+	// 21 - Назначение аннотации - IT
+	if (oAnnot.dictLookup("IT", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 20);
+		m_nIT = 0; // LineDimension
+		if (oObj.isName("LineArrow"))
+			m_nIT = 1;
+	}
+	oObj.free();
+
+	// 22 - Длина смещения выноски - LLO
+	if (oAnnot.dictLookup("LLO", &oObj)->isNum())
+	{
+		m_unFlags |= (1 << 21);
+		m_dLLO = oObj.getNum();
+	}
+	oObj.free();
+
+	// 23 - Расположение заголовка аннотации - CP
+	if (oAnnot.dictLookup("CP", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 22);
+		m_nCP = 0; // Inline
+		if (oObj.isName("Top"))
+			m_nCP = 1;
+	}
+	oObj.free();
+
+	// 24 - Смещение текста подписи - CO
+	m_pCO[0] = 0.0; m_pCO[1] = 0.0;
+	if (oAnnot.dictLookup("CO", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 23);
+		ARR_GET_NUM(oObj, 0, m_pCO[0]);
+		ARR_GET_NUM(oObj, 1, m_pCO[1]);
+	}
+	oObj.free();
+
+	oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -1100,7 +1226,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 		Object oFieldRef, oField;
 		if (!pField || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
 		{
-			oFieldRef.free();
+			oField.free(); oFieldRef.free();
 			continue;
 		}
 		// Родители
@@ -1108,6 +1234,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
 			getParents(xref, &oParentRefObj, m_arrParents);
 		oParentRefObj.free();
+		oField.free(); oFieldRef.free();
 
 		CAnnot* pAnnot = NULL;
 		AcroFormFieldType oType = pField->getAcroFormFieldType();
@@ -1214,8 +1341,7 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	// 8 - Краткое описание - Subj
 	DICT_LOOKUP_STRING(oAnnot.dictLookup, "Subj", 7, m_sSubj);
 
-	// XXX - Назначение аннотации - IT
-	// TODO m_nIT записывается аннотациями которым это необходимо
+	oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -1228,10 +1354,8 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	m_unAnnotFlag = 0;
 	m_unAFlags = 0;
 
-	Object oObj, oField;
-	XRef* xref = pdfDoc->getXRef();
+	Object oObj;
 	pField->getFieldRef(&oObj);
-	oObj.fetch(xref, &oField);
 	m_unRefNum = oObj.getRefNum();
 	oObj.free();
 
@@ -1245,10 +1369,10 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 
 	// Координаты - Rect
 	pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
-	double dHeight = pdfDoc->getPageCropHeight(m_unPage + 1);
+	m_dHeight = pdfDoc->getPageCropHeight(m_unPage + 1);
 	double dTemp = m_pRect[1];
-	m_pRect[1] = dHeight - m_pRect[3];
-	m_pRect[3] = dHeight - dTemp;
+	m_pRect[1] = m_dHeight - m_pRect[3];
+	m_pRect[3] = m_dHeight - dTemp;
 
 	// 1 - Уникальное имя - NM
 	if (pField->fieldLookup("NM", &oObj)->isString())
@@ -1349,7 +1473,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 		ARR_GET_NUM(oObj, 3, m_pRect[3]);
 
 		double dTemp;
-		double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
+		m_dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
 		if (m_pRect[0] > m_pRect[2])
 		{
 			dTemp = m_pRect[0]; m_pRect[0] = m_pRect[2]; m_pRect[2] = dTemp;
@@ -1358,7 +1482,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 		{
 			dTemp = m_pRect[1]; m_pRect[1] = m_pRect[3]; m_pRect[3] = dTemp;
 		}
-		dTemp = m_pRect[1]; m_pRect[1] = dHeight - m_pRect[3]; m_pRect[3] = dHeight - dTemp;
+		dTemp = m_pRect[1]; m_pRect[1] = m_dHeight - m_pRect[3]; m_pRect[3] = m_dHeight - dTemp;
 	}
 	oObj.free();
 
@@ -1787,7 +1911,7 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		oRes.AddDouble(m_dBE);
 	if (m_unAFlags & (1 << 3))
 	{
-		oRes.AddInt(m_arrC.size());
+		oRes.AddInt((unsigned int)m_arrC.size());
 		for (int i = 0; i < m_arrC.size(); ++i)
 			oRes.AddDouble(m_arrC[i]);
 	}
@@ -2085,6 +2209,43 @@ void CAnnotInk::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(m_arrInkList[i].size());
 		for (int j = 0; j < m_arrInkList[i].size(); ++j)
 			oRes.AddDouble(m_arrInkList[i][j]);
+	}
+}
+
+void CAnnotLine::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(3); // Line
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	for (int i = 0; i < 4; ++i)
+		oRes.AddDouble(m_pL[i]);
+
+	if (m_unFlags & (1 << 15))
+	{
+		oRes.WriteBYTE(m_nLE[0]);
+		oRes.WriteBYTE(m_nLE[1]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrIC.size());
+		for (int i = 0; i < m_arrIC.size(); ++i)
+			oRes.AddDouble(m_arrIC[i]);
+	}
+	if (m_unFlags & (1 << 17))
+		oRes.AddDouble(m_dLL);
+	if (m_unFlags & (1 << 18))
+		oRes.AddDouble(m_dLLE);
+	if (m_unFlags & (1 << 20))
+		oRes.WriteBYTE(m_nIT);
+	if (m_unFlags & (1 << 21))
+		oRes.AddDouble(m_dLLO);
+	if (m_unFlags & (1 << 22))
+		oRes.WriteBYTE(m_nCP);
+	if (m_unFlags & (1 << 23))
+	{
+		oRes.AddDouble(m_pCO[0]);
+		oRes.AddDouble(m_pCO[1]);
 	}
 }
 

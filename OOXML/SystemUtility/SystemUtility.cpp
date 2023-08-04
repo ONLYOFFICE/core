@@ -260,7 +260,7 @@ namespace OOX
 		}
 		else
 		{
-			m_strFilename = m_strFilename.substr(nFind + 1) + ext;
+			m_strFilename = m_strFilename.substr(0, nFind + 1) + ext;
 		}
 
 	}

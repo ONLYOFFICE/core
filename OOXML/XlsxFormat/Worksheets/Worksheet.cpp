@@ -229,7 +229,7 @@ namespace OOX
 
             }
         }
-		XLS::BaseObjectPtr CWorksheet::writeBin()
+		XLS::BaseObjectPtr CWorksheet::WriteBin() const
 		{
 			if(m_bIsChartSheet)
 			{
@@ -254,6 +254,9 @@ namespace OOX
 					workSheetStream->m_HLINKS = m_oHyperlinks->toBin();
 				if (m_oMergeCells.IsInit())
 					workSheetStream->m_MERGECELLS = m_oMergeCells->toBin();
+
+				if ( m_oSheetData.IsInit())
+					workSheetStream->m_CELLTABLE = m_oSheetData->toBin();
 
 				if (m_oSheetFormatPr.IsInit())
 					workSheetStream->m_BrtWsFmtInfo = m_oSheetFormatPr->toBin();
@@ -674,52 +677,61 @@ namespace OOX
             if (bIsWritten) return;
 
             bIsWritten = true;
+
 			if (!m_bWriteDirectlyToFile)
 			{
-				NSStringUtils::CStringBuilder sXml;
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if ((xlsb) && (xlsb->m_bWriteToXlsb))
+				{
+					XLS::BaseObjectPtr object = WriteBin();
+					xlsb->WriteBin(oPath, object.get());
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
 
-				toXMLStart(sXml);
-					toXML(sXml);
-				toXMLEnd(sXml);
+					toXMLStart(sXml);
+						toXML(sXml);
+					toXMLEnd(sXml);
 
-                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
-                //for memory optimization for large files
+					//NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+					//for memory optimization for large files
 
-                wchar_t* pXmlData = sXml.GetBuffer();
-                LONG lwcharLen = (LONG)sXml.GetCurSize();
-                const LONG lcurrentLen = 10485760; //10 Mbyte
-                LONG nCycles = lwcharLen / lcurrentLen;
+					wchar_t* pXmlData = sXml.GetBuffer();
+					LONG lwcharLen = (LONG)sXml.GetCurSize();
+					const LONG lcurrentLen = 10485760; //10 Mbyte
+					LONG nCycles = lwcharLen / lcurrentLen;
 
-                LONG lLen = 0;
-                BYTE* pData = NULL;
-                NSFile::CFileBinary oFile;
-                oFile.CreateFileW(oPath.GetPath());
+					LONG lLen = 0;
+					BYTE* pData = NULL;
+					NSFile::CFileBinary oFile;
+					oFile.CreateFileW(oPath.GetPath());
 
-                while(nCycles--)
-                {
-                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+					while(nCycles--)
+					{
+						NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
 
-                    oFile.WriteFile(pData, lLen);
+						oFile.WriteFile(pData, lLen);
 
-                    pXmlData += lcurrentLen;
+						pXmlData += lcurrentLen;
 
-                    RELEASEARRAYOBJECTS(pData);
-                }
+						RELEASEARRAYOBJECTS(pData);
+					}
 
-                if(lwcharLen % lcurrentLen > 0)
-                {
-                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+					if(lwcharLen % lcurrentLen > 0)
+					{
+						NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
 
-                    oFile.WriteFile(pData, lLen);
+						oFile.WriteFile(pData, lLen);
 
-                    RELEASEARRAYOBJECTS(pData);
-                }
+						RELEASEARRAYOBJECTS(pData);
+					}
 
-                oFile.CloseFile();
-
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				IFileContainer::Write( oPath, oDirectory, oContent );
-			}
+					oFile.CloseFile();
+				}
+					oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+					IFileContainer::Write( oPath, oDirectory, oContent );
+				}
 			else
 			{
 				CPath oRealPath(oPath.GetDirectory() + FILE_SEPARATOR_STR + m_sOutputFilename);
@@ -819,7 +831,18 @@ mc:Ignorable=\"x14ac\">");
 		}
 		const CPath CWorksheet::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		const CPath& CWorksheet::GetReadPath() const
 		{

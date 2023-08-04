@@ -216,6 +216,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
 
@@ -237,7 +238,7 @@ namespace OOX
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
 			void AfterRead();
-	//----------- 2003			
+	//----------- 2003
 			void After2003Read();
 
 			nullable<CCommentItem> pCommentItem;
@@ -260,7 +261,7 @@ namespace OOX
 			nullable<CFormula>		m_oFormula;
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
-//-----------------------------			
+//-----------------------------
 			nullable_string			m_oCacheValue;
 		};
 
@@ -282,8 +283,9 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
-			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
+			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
                         void fromBin(XLS::BaseObjectPtr& obj);
+						XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
 
@@ -325,11 +327,12 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
-		
+
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXlsbPos;
-		
+
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 			void AfterRead();

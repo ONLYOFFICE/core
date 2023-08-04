@@ -1155,11 +1155,12 @@ namespace NExtractTools
 //---------------------------------------------------------------------
 		const OOX::CPath oox_path(sFrom);
 
-		OOX::Spreadsheet::CXlsx xlsx(oox_path);
-		OOX::Spreadsheet::CXlsb xlsb;
+		OOX::Spreadsheet::CXlsb oXlsb;
+		oXlsb.Read(oox_path);
+	
+		OOX::CContentTypes oContentTypes;
+		nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
-		//XLS::BaseObjectPtr object = xlsx.toBin();
-		//xlsb.WriteBin(sTempUnpackedXLSB, object.get());
 //---------------------------------------------------------------------
 		if (SUCCEEDED_X2T(nRes))
 		{

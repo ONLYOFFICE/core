@@ -30,6 +30,8 @@
  *
  */
 #include "Xlsb.h"
+#include "../DocxFormat/App.h"
+#include "../DocxFormat/Core.h"
 
 #include "../XlsxFormat/Workbook/Workbook.h"
 #include "../XlsxFormat/SharedStrings/SharedStrings.h"
@@ -93,7 +95,17 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
+{
+    if (NULL == m_pWorkbook)
+        return false;
 
+    m_bWriteToXlsb = true;
+    IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
+
+    oContentTypes.Write(oDirPath);
+    return true;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
 	if (m_binaryWriter->CreateFileW(oFilePath.GetPath()) == false)
@@ -102,7 +114,8 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
 	XLS::BinWriterProcessor proc(writer, objStream);
 	proc.mandatory(*objStream);
-	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
+	
+    m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
 	m_binaryWriter->CloseFile();
 
 	return true;

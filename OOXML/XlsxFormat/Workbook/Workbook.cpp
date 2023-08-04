@@ -32,6 +32,7 @@
 #pragma once
 
 #include "Workbook.h"
+#include "../../XlsbFormat/Xlsb.h"
 
 #include "../../XlsbFormat/WorkBookStream.h"
 
@@ -273,7 +274,7 @@ namespace OOX
 			}
 		}
 
-		XLS::BaseObjectPtr CWorkbook::WriteBin()
+		XLS::BaseObjectPtr CWorkbook::WriteBin() const
 		{
 			XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);
 
@@ -464,15 +465,23 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 		}
 		void CWorkbook::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSStringUtils::CStringBuilder sXml;
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				XLS::BaseObjectPtr object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
+			}
+			else
+			{
+				NSStringUtils::CStringBuilder sXml;
 
-			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-			toXML(sXml);
+				toXML(sXml);
 
-			std::wstring sPath = oPath.GetPath();
-			NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
-
+				std::wstring sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+			}
 			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 			IFileContainer::Write(oPath, oDirectory, oContent);
 		}
@@ -487,7 +496,17 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 		}
 		const CPath CWorkbook::DefaultFileName() const
 		{
-			return type().DefaultFileName();
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				CPath name = type().DefaultFileName();
+				name.SetExtention(L"bin");
+				return name;
+			}
+			else
+			{
+				return type().DefaultFileName();
+			}
 		}
 		EElementType CWorkbook::getType () const
 		{

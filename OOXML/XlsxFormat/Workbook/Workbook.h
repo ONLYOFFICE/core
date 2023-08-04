@@ -122,7 +122,7 @@ namespace OOX
 			virtual ~CWorkbook();
 
 			void readBin(const CPath& oPath);
-			XLS::BaseObjectPtr WriteBin();
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void fromXML(XmlUtils::CXmlNode& node);

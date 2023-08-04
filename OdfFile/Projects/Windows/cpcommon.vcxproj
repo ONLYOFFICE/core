@@ -247,6 +247,7 @@
     <ClInclude Include="..\..\DataTypes\percent.h" />
     <ClInclude Include="..\..\DataTypes\percentorscale.h" />
     <ClInclude Include="..\..\DataTypes\presentationclass.h" />
+    <ClInclude Include="..\..\DataTypes\presentationnodetype.h" />
     <ClInclude Include="..\..\DataTypes\presetclass.h" />
     <ClInclude Include="..\..\DataTypes\presetid.h" />
     <ClInclude Include="..\..\DataTypes\punctuationwrap.h" />
@@ -256,7 +257,9 @@
     <ClInclude Include="..\..\DataTypes\shadowtype.h" />
     <ClInclude Include="..\..\DataTypes\smil_additive.h" />
     <ClInclude Include="..\..\DataTypes\smil_attributename.h" />
+    <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
     <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_values.h" />
     <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
     <ClInclude Include="..\..\DataTypes\stylefamily.h" />
     <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h" />
@@ -368,6 +371,7 @@
     <ClCompile Include="..\..\DataTypes\percent.cpp" />
     <ClCompile Include="..\..\DataTypes\percentorscale.cpp" />
     <ClCompile Include="..\..\DataTypes\presentationclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationnodetype.cpp" />
     <ClCompile Include="..\..\DataTypes\presetclass.cpp" />
     <ClCompile Include="..\..\DataTypes\presetid.cpp" />
     <ClCompile Include="..\..\DataTypes\punctuationwrap.cpp" />
@@ -377,7 +381,9 @@
     <ClCompile Include="..\..\DataTypes\shadowtype.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_additive.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_attributename.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_keytimes.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_values.cpp" />
     <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp" />
     <ClCompile Include="..\..\DataTypes\stylefamily.cpp" />
     <ClCompile Include="..\..\DataTypes\stylehorizontalpos.cpp" />

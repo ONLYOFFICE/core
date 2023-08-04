@@ -1159,7 +1159,7 @@ namespace NExtractTools
 		oXlsb.Read(oox_path);
 	
 		OOX::CContentTypes oContentTypes;
-		nRes = oXlsb.WriteBin(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+		nRes = oXlsb.WriteBin(sTempUnpackedXLSB, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
 //---------------------------------------------------------------------
 		if (SUCCEEDED_X2T(nRes))

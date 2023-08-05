@@ -173,7 +173,7 @@ namespace PPTX
 			{
 				std::wstring namespace_link = L"asvg";
 
-				pWriter->StartNode(namespace_ext + L":ext");
+				pWriter->StartNode(L"a:ext");
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(L"uri", std::wstring(L"{96DAC541-7B7A-43D3-8B79-37D633B846F1}"));
 				pWriter->EndAttributes();
@@ -184,7 +184,7 @@ namespace PPTX
 					pWriter->WriteAttribute(L"r:embed", link_svg->get());
 				pWriter->EndAttributes();
 				pWriter->EndNode(namespace_link + L":svgBlip");
-				pWriter->EndNode(namespace_ext + L":ext");
+				pWriter->EndNode(L"a:ext");
 			}
 			if (sectionLst.IsInit())
 			{

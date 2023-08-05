@@ -1232,7 +1232,7 @@ namespace NExtractTools
     _UINT32 pptx2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // unzip pptx to temp folder
-        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");  // leading slash is very important! - нихуя (unzip отвалился)
+        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
 
         NSDirectory::CreateDirectory(sTempUnpackedPPTX);
 

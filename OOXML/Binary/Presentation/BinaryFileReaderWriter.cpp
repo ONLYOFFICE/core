@@ -52,6 +52,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
 
 #include "../../PPTXFormat/FileContainer.h"
 #include <iostream>
@@ -137,8 +138,8 @@ namespace NSBinPptxRW
 	void CImageManager2::SetDstFolder(const std::wstring& strDst)
 	{
 		m_strDstFolder = strDst;
-		m_strDstMedia = m_strDstFolder + FILE_SEPARATOR_STR + _T("media");
-		m_strDstEmbed = m_strDstFolder + FILE_SEPARATOR_STR + _T("embeddings");
+		m_strDstMedia = m_strDstFolder + FILE_SEPARATOR_STR + L"media";
+		m_strDstEmbed = m_strDstFolder + FILE_SEPARATOR_STR + L"embeddings";
 
 		NSDirectory::CreateDirectory(m_strDstMedia);
 		NSDirectory::CreateDirectory(m_strDstEmbed);
@@ -183,7 +184,7 @@ namespace NSBinPptxRW
 	{
 		int nRes = 0;
 		//шаблон display[N]image.ext
-		std::wstring sFind1 = _T("display");
+		std::wstring sFind1 = L"display";
 		int nIndex1 = (int)strInput.find(sFind1);
 		if (-1 != nIndex1)
 		{
@@ -195,7 +196,7 @@ namespace NSBinPptxRW
 					wchar_t cRes2 = strInput[nIndex1 + sFind1.length() + 1];
 	
 					int nImageIndex = nIndex1 + (int)sFind1.length() + 1;
-					if (std::wstring::npos != strInput.find(_T("image"), nImageIndex))
+					if (std::wstring::npos != strInput.find(L"image", nImageIndex))
 					{
 						nRes = cRes1 - '0';
 						if ('0' <= cRes2 && cRes2 <= '9')
@@ -241,7 +242,7 @@ namespace NSBinPptxRW
 			return pPair->second;
 		}
 
-		std::wstring strExts = _T(".jpg");
+		std::wstring strExts = L".jpg";
 		//use GetFileName to avoid defining '.' in the directory as extension
 		std::wstring strFileName = NSFile::GetFileName(strInput);
 		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
@@ -270,11 +271,11 @@ namespace NSBinPptxRW
 
 			if (0 != (nDisplayType & 1))
 			{
-				std::wstring strVector = strFolder + strFileName + _T(".wmf");
+				std::wstring strVector = strFolder + strFileName + L".wmf";
 				if (OOX::CSystemUtility::IsFileExist(strVector))
 				{
 					strImage = strVector;
-					strExts = _T(".wmf");
+					strExts = L".wmf";
 				}
 			}
 			if (0 != (nDisplayType & 2))
@@ -435,8 +436,8 @@ namespace NSBinPptxRW
 		std::wstring strExts;
         std::wstring strMedia = L"media" + std::to_wstring(++m_lIndexNextImage);
 		
-		int pos = (int)strInput.rfind(L".");
-		if (pos >= 0) 
+		size_t pos = (int)strInput.rfind(L".");
+		if (pos != std::wstring::npos)
 		{
 			strExts = strInput.substr(pos);
 			m_pContentTypes->AddDefault(strExts.substr(1));
@@ -462,33 +463,54 @@ namespace NSBinPptxRW
 		CImageFileFormatChecker checker(strInput);
 		switch (checker.eFileType)
 		{
-		case _CXIMAGE_FORMAT_JPG:
-		case _CXIMAGE_FORMAT_PNG:
-		case _CXIMAGE_FORMAT_WMF:
-		case _CXIMAGE_FORMAT_EMF:
-		{
-			oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-
-			if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
+			case _CXIMAGE_FORMAT_JPG:
+			case _CXIMAGE_FORMAT_PNG:
+			case _CXIMAGE_FORMAT_WMF:
+			case _CXIMAGE_FORMAT_EMF:
 			{
-				NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
+				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+
+				if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
+				{
+					NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
+					oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+				}
+			}break;
+			case _CXIMAGE_FORMAT_SVG:
+			{
+				strExts = L".png";
+				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+				
+				NSFonts::IApplicationFonts* appFonts = NSFonts::NSApplication::Create();
+				appFonts->Initialize();
+
+				MetaFile::IMetaFile* pSvg= MetaFile::Create(appFonts);
+				if (pSvg->LoadFromFile(strInput.c_str()))
+				{
+					double x = 0, y = 0, w = 0, h = 0;
+					pSvg->GetBounds(&x, &y, &w, &h);
+					pSvg->ConvertToRaster(oPathOutput.GetPath().c_str(), _CXIMAGE_FORMAT_PNG, w, h);
+				}
+				RELEASEOBJECT(pSvg);
+				RELEASEOBJECT(appFonts);
+
 				oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
-			}
-		}break;
-		default:
-// content types!!! ?
-			strExts = _T(".png");
-			oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-			SaveImageAsPng(strInput, oPathOutput.GetPath());
-			oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+			}break;
+			default:
+			{
+				strExts = L".png";
+				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+				SaveImageAsPng(strInput, oPathOutput.GetPath());
+				oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+			}break;
 		}
 
 		if ((!strAdditionalImage.empty() || !oleData.empty() ) && (nAdditionalType == 1))
 		{
 			std::wstring strAdditionalExt  = L".bin";
 
-			int pos = (int)strAdditionalImage.rfind(L".");
-			if (pos >= 0) strAdditionalExt = strAdditionalImage.substr(pos);
+			size_t pos = strAdditionalImage.rfind(L".");
+			if (pos != std::wstring::npos) strAdditionalExt = strAdditionalImage.substr(pos);
 
 			std::wstring strImageAdditional = L"oleObject" + std::to_wstring(++m_lIndexCounter) + strAdditionalExt;
 			
@@ -512,8 +534,8 @@ namespace NSBinPptxRW
 		{			
 			std::wstring strAdditionalExt;
 
-			int pos = (int)strAdditionalImage.rfind(L".");
-			if (pos >= 0) strAdditionalExt = strAdditionalImage.substr(pos);
+			size_t pos = (int)strAdditionalImage.rfind(L".");
+			if (pos != std::wstring::npos) strAdditionalExt = strAdditionalImage.substr(pos);
 
 			std::wstring strImageAdditional = L"media" + std::to_wstring(++m_lIndexCounter) + strAdditionalExt;
 			
@@ -530,26 +552,32 @@ namespace NSBinPptxRW
 
 		return oImageManagerInfo;
 	}
-	void CImageManager2::SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst)
+	bool CImageManager2::SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
 		if (oBgraFrame.OpenFile(strFileSrc))
-			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_PNG);
+		{
+			return oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_PNG);
+		}
+		return false;
 	}
 
-	void CImageManager2::SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst)
+	bool CImageManager2::SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
 		if (oBgraFrame.OpenFile(strFileSrc))
-			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_JPG);
+		{
+			return oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_JPG);
+		}
+		return false;
 	}
 
 	bool CImageManager2::IsNeedDownload(const std::wstring& strFile)
 	{
-		size_t n1 = strFile.find(_T("www"));
-		size_t n2 = strFile.find(_T("http"));
-		size_t n3 = strFile.find(_T("ftp"));
-		size_t n4 = strFile.find(_T("https://"));
+		size_t n1 = strFile.find(L"www");
+		size_t n2 = strFile.find(L"http");
+		size_t n3 = strFile.find(L"ftp");
+		size_t n4 = strFile.find(L"https://");
 
         //если nI сранивать не с 0, то будут проблемы
         //потому что в инсталяции мы кладем файлы в /var/www...
@@ -564,9 +592,9 @@ namespace NSBinPptxRW
 		if (pPair != m_mapImages.end())
 			return pPair->second;
 
-		std::wstring strExts = _T(".jpg");
-        int nIndexExt = (int)strUrl.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
+		std::wstring strExts = L".jpg";
+        size_t nIndexExt = strUrl.rfind(wchar_t('.'));
+		if (nIndexExt!= std::wstring::npos)
 			strExts = strUrl.substr(nIndexExt);
 
 		std::wstring strImage;
@@ -580,13 +608,13 @@ namespace NSBinPptxRW
 
 			if (0 != (nDisplayType & 1))
 			{
-				strImage = DownloadImageExec(strInputMetafile + _T(".wmf"));
-				strExts = _T(".wmf");
+				strImage = DownloadImageExec(strInputMetafile + L".wmf");
+				strExts = L".wmf";
 			}
 			else if (0 != (nDisplayType & 2))
 			{
-				strImage = DownloadImageExec(strInputMetafile + _T(".emf"));
-				strExts = _T(".emf");
+				strImage = DownloadImageExec(strInputMetafile + L".emf");
+				strExts = L".emf";
 			}
 			else
 			{
@@ -1183,7 +1211,7 @@ namespace NSBinPptxRW
 
 	std::wstring CBinaryFileWriter::GetFolderForGenerateImages()
 	{
-		return m_strMainFolder + _T("\\extract_themes");
+		return m_strMainFolder + L"\\extract_themes";
 	}
 
 	// embedded fonts
@@ -1198,9 +1226,9 @@ namespace NSBinPptxRW
 		StartMainRecord(NSBinPptxRW::NSMainTables::FontsEmbedded);
 
 		// добавим мега шрифт
-		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(_T(".)abcdefghijklmnopqrstuvwxyz"));
-		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(_T("Wingdings 3"), m_pCommon->m_pNativePicker->m_pFontManager);
-		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(_T("Arial"), m_pCommon->m_pNativePicker->m_pFontManager);
+		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(L".)abcdefghijklmnopqrstuvwxyz");
+		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(L"Wingdings 3", m_pCommon->m_pNativePicker->m_pFontManager);
+		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(L"Arial", m_pCommon->m_pNativePicker->m_pFontManager);
 
 		StartRecord(NSBinPptxRW::NSMainTables::FontsEmbedded);
 		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.WriteEmbeddedFonts(this);
@@ -1380,20 +1408,20 @@ namespace NSBinPptxRW
 
 	void CRelsGenerator::StartRels()
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 	}
 
 	void CRelsGenerator::StartTheme()
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 	}
 
 	void CRelsGenerator::StartMaster(int nIndexTheme, const _slideMasterInfo& oInfo)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
 		int nCountLayouts = (int)oInfo.m_arLayouts.size();
 		for (int i = 0; i < nCountLayouts; ++i)
@@ -1413,8 +1441,8 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::StartThemeNotesMaster(int nIndexTheme)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
         std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme" +
@@ -1423,8 +1451,8 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::StartLayout(int nIndexTheme)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
         std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster" +
@@ -1433,8 +1461,8 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::StartSlide(int nIndexSlide, int nIndexLayout, int nIndexNotes)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
         std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout" +
@@ -1558,7 +1586,7 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::CloseRels()
 	{
-		m_pWriter->WriteString(_T("</Relationships>"));
+		m_pWriter->WriteString(L"</Relationships>");
 	}
 	void CRelsGenerator::AddRels(const std::wstring& strRels)
 	{
@@ -1602,14 +1630,12 @@ namespace NSBinPptxRW
 			if (type == 0)
 			{
 				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
-					L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" + strImageRelsPath +
-					L"\"/>");
+					L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" + strImageRelsPath + L"\"/>");
 			}
 			else if (type == 1)
 			{
 				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
-					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio\" Target=\"" + strImageRelsPath +
-					L"\"/>");
+					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio\" Target=\"" + strImageRelsPath + L"\"/>");
 			}		
 		}
 
@@ -1617,7 +1643,7 @@ namespace NSBinPptxRW
 		return oRelsGeneratorInfo;
 	}
 
-	_relsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImage, smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image = _T(""))
+	_relsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImage, smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image = L"")
 	{
 		_imageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImage, additionalFile, oleData, strBase64Image);
 		
@@ -1645,8 +1671,7 @@ namespace NSBinPptxRW
 			std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nImageRId);
 
 			m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"" + strImageRelsPath +
-				L"\"/>");
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"" + strImageRelsPath +	L"\"/>");
 		}
 
 		if (additionalFile.is<OOX::OleObject>())
@@ -1670,12 +1695,10 @@ namespace NSBinPptxRW
 				if (oleFile->isMsPackage())
 				{
 					m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
-						+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package\" Target=\"" +
-						strOleRelsPath + L"\"/>");
+						+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package\" Target=\"" + strOleRelsPath + L"\"/>");
 				}else{
 					m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
-						+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject\" Target=\"" +
-						strOleRelsPath + L"\"/>");
+						+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject\" Target=\"" + strOleRelsPath + L"\"/>");
 				}
 			}
 		}
@@ -1717,11 +1740,11 @@ namespace NSBinPptxRW
 	{
 		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
-		std::wstring strType = _T("Type=\"") + bsType + _T("\" ");
-		std::wstring strTarget = _T("Target=\"") + bsTarget + _T("\" ");
-		std::wstring strTargetMode = bsTargetMode.empty() ? _T("") : (_T("TargetMode=\"") + bsTargetMode + _T("\""));
+		std::wstring strType = L"Type=\"" + bsType + L"\" ";
+		std::wstring strTarget = L"Target=\"" + bsTarget + L"\" ";
+		std::wstring strTargetMode = bsTargetMode.empty() ? L"" : L"TargetMode=\"" + bsTargetMode + L"\"";
 
-		std::wstring strRels = _T("<Relationship Id=\"") + strRid + _T("\" ") + strType + strTarget + strTargetMode + _T("/>");
+		std::wstring strRels = L"<Relationship Id=\"" + strRid + L"\" " + strType + strTarget + strTargetMode + L"/>";
 		m_pWriter->WriteString(strRels);
 		return m_lNextRelsID - 1;
 	}
@@ -1740,7 +1763,7 @@ namespace NSBinPptxRW
 
 		std::wstring sLink = XmlUtils::EncodeXmlString(strLink);
 
-		bool bIsSlide = (0 == sLink.find(_T("slide")));
+		bool bIsSlide = (0 == sLink.find(L"slide"));
 		if (!bIsActionInit)
 			bIsSlide = false;
 
@@ -1749,14 +1772,12 @@ namespace NSBinPptxRW
 		if (!bIsSlide)
 		{
 			strRels = L"<Relationship Id=\"" + strRid
-				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"" + sLink
-				+ L"\" TargetMode=\"External\"/>";
+				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"" + sLink + L"\" TargetMode=\"External\"/>";
 		}
 		else
 		{
 			strRels = L"<Relationship Id=\"" + strRid
-				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"" + sLink 
-				+ L"\"/>"; 
+				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"" + sLink + L"\"/>"; 
 		}
 
 		m_pWriter->WriteString(strRels);
@@ -2066,7 +2087,7 @@ namespace NSBinPptxRW
 	std::wstring CBinaryFileReader::GetString4(_INT32 len)//len in byte for utf16
 	{
 		if (len < 1)
-			return _T("");
+			return L"";
 		if (m_lPos + len > m_lSize)
 		{
 			throw;

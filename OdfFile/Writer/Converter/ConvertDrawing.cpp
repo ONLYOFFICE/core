@@ -281,7 +281,7 @@ std::wstring OoxConverter::GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* 
 }
 void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 {
-	if (!oox_picture)return;
+	if (!oox_picture) return;
 
 	if (oox_picture->spPr.Geometry.is_init())
 	{
@@ -325,6 +325,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
 			pathImage = find_link_by_id(sID, 1, bExternal);
 			
+			if (false == NSFile::CFileBinary::Exists(pathImage))
+			{
+				pathImage.clear();
+			}
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
@@ -486,6 +490,23 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);
 		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
+	}
+	if (oox_picture->blipFill.blip.IsInit())
+	{
+		for (size_t i = 0; i < oox_picture->blipFill.blip->ExtLst.size(); ++i)
+		{
+			if (oox_picture->blipFill.blip->ExtLst[i].link_svg.IsInit())
+			{
+				std::wstring sID = oox_picture->blipFill.blip->ExtLst[i].link_svg->get();
+				pathImage = find_link_by_id(sID, 1, bExternal);
+				if (NSFile::CFileBinary::Exists(pathImage))
+				{
+					odf_ref_image = odf_context()->add_image(pathImage);
+					odf_context()->drawing_context()->start_image2(odf_ref_image);
+				}
+				break;
+			}
+		}
 	}
 	odf_context()->drawing_context()->end_image();
 }

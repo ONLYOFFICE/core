@@ -68,8 +68,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeDrawImage;
-    
+    static const ElementType type = typeDrawImage;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -77,6 +76,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	draw_image_attlist draw_image_attlist_;
+    _CP_OPT(std::wstring) draw_mime_type_;
     odf_types::common_xlink_attlist common_xlink_attlist_;
     
 	office_element_ptr office_binary_data_;

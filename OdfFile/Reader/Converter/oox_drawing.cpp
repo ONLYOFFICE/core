@@ -264,7 +264,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			if ((dStrokeWidth) && (*dStrokeWidth >= 0) && fill != ns + L":noFill")
 			{
 				int val = dStrokeWidth.get() * 12700;	//in emu (1 pt = 12700)
-				if (val < 10)	val = 12700;
+				if (val < 10)	val = 0;
 				
 				CP_XML_ATTR2(ns_att + L"w", val);
 				if (color.length()<1)color = L"729FCF";

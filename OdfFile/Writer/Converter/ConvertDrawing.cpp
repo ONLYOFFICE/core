@@ -351,9 +351,9 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			for (size_t i = 0; i < oox_picture->nvPicPr.nvPr.extLst.size(); i++)
 			{
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
-				if (pathMedia.empty() && ext.link.IsInit())
+				if (pathMedia.empty() && ext.link_media.IsInit())
 				{
-					pathMedia = find_link_by_id(ext.link->get(), 3, bExternal);
+					pathMedia = find_link_by_id(ext.link_media->get(), 3, bExternal);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;

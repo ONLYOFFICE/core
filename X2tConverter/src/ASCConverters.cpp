@@ -1232,12 +1232,12 @@ namespace NExtractTools
     _UINT32 pptx2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // unzip pptx to temp folder
-        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked")+ FILE_SEPARATOR_STR;  // leading slash is very important!
+        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");  // leading slash is very important! - нихуя (unzip отвалился)
 
         NSDirectory::CreateDirectory(sTempUnpackedPPTX);
 
         // unzip pptx to folder
-        COfficeUtils oCOfficeUtils(NULL);
+		COfficeUtils oCOfficeUtils(NULL);
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedPPTX, NULL, 0))
 		{
 			//check crypt

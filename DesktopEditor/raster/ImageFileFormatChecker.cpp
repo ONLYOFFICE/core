@@ -31,6 +31,7 @@
  */
 #include "ImageFileFormatChecker.h"
 #include "../common/File.h"
+#include "../xml/include/xmlutils.h"
 
 #include "../cximage/CxImage/ximacfg.h"
 
@@ -718,51 +719,16 @@ bool CImageFileFormatChecker::isRawFile(BYTE* pBuffer, DWORD dwBytes)
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {
-	NSFile::CFileBinary file;
-	if (!file.OpenFile(fileName))
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(fileName))
+		return false;
+	if (!oReader.ReadNextNode())
 		return false;
 
-	DWORD nSize = (DWORD)file.GetFileSize();
-	if (nSize > 100)
-		nSize = 100;
-
-	BYTE* buffer = new BYTE[nSize];
-	if (!buffer)
-		return false;
-
-	DWORD sizeRead = 0;
-	if (!file.ReadFile(buffer, nSize, sizeRead))
-	{
-		delete []buffer;
-		return false;
-	}
-	file.CloseFile();
-
-	if ('<' == buffer[0] &&
-			's' == buffer[1] &&
-			'v' == buffer[2] &&
-			'g' == buffer[3])
-	{
-		delete [] buffer;
+	if (L"svg" == oReader.GetNameNoNS())
 		return true;
-	}
-
-	if ('<' == buffer[0] &&
-			'?' == buffer[1] &&
-			'x' == buffer[2] &&
-			'm' == buffer[3] &&
-			'l' == buffer[4])
-	{
-		std::string test((char*)buffer, nSize);
-		if (std::string::npos != test.find("<svg"))
-		{
-			delete [] buffer;
-			return true;
-		}
-	}
-
-	delete [] buffer;
-	return false;
+	else
+		return false;
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)

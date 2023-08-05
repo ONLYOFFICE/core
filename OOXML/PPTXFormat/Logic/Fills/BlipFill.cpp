@@ -275,16 +275,14 @@ namespace PPTX
 								case 1:
 								{
 									// id. embed / link
-									pReader->Skip(4);
-									break;
-								}
+									pReader->Skip(4);									
+								}break;
 								case 10:
 								case 11:
 								{
 									// id. embed / link
-									pReader->GetString2();
-									break;
-								}
+									pReader->GetString2();									
+								}break;
 								case 2:
 								{
 									if (!blip.is_init())
@@ -420,19 +418,17 @@ namespace PPTX
 									}
 								// -------------------
 									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
-
-									// -------------------
+								// -------------------
 									if (!strTempFile.empty())
 									{
 										CDirectory::DeleteFile(strTempFile);
 									}
-									// -------------------
+								// -------------------
 									if (oRelsGeneratorInfo.nImageRId > 0)
 									{
 										blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
 										blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
 									}
-
 									if(oRelsGeneratorInfo.nOleRId > 0)
 									{
 										blip->oleRid			= OOX::RId(oRelsGeneratorInfo.nOleRId).get();
@@ -444,9 +440,8 @@ namespace PPTX
 										blip->mediaRid		= OOX::RId(oRelsGeneratorInfo.nMediaRId).get();
 										blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
 									}
-									pReader->Skip(1); // end attribute
-									break;
-								}
+									pReader->Skip(1); // end attribute									
+								}break;
 								default:
 								{
 									pReader->SkipRecord();

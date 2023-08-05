@@ -91,13 +91,13 @@ namespace NSBinPptxRW
 	CCommonWriter::~CCommonWriter()
 	{
 		m_pNativePicker = NULL;
-		if(m_bDeleteFontPicker)
+		if (m_bDeleteFontPicker)
 			RELEASEOBJECT(m_pFontPicker);
 		RELEASEOBJECT(m_pMediaManager);
 	}
 	void CCommonWriter::CreateFontPicker(COfficeFontPicker* pPicker)
 	{
-		if(m_bDeleteFontPicker)
+		if (m_bDeleteFontPicker)
 			RELEASEOBJECT(m_pFontPicker);
 		m_pNativePicker = NULL;
 		if (pPicker != NULL)
@@ -185,12 +185,12 @@ namespace NSBinPptxRW
 		//шаблон display[N]image.ext
 		std::wstring sFind1 = _T("display");
 		int nIndex1 = (int)strInput.find(sFind1);
-		if(-1 != nIndex1)
+		if (-1 != nIndex1)
 		{
-			if(nIndex1 + sFind1.length() < strInput.length())
+			if (nIndex1 + sFind1.length() < strInput.length())
 			{
                 wchar_t cRes1 = strInput[nIndex1 + sFind1.length()];
-				if('1' <= cRes1 && cRes1 <= '9')
+				if ('1' <= cRes1 && cRes1 <= '9')
 				{
 					wchar_t cRes2 = strInput[nIndex1 + sFind1.length() + 1];
 	
@@ -198,7 +198,7 @@ namespace NSBinPptxRW
 					if (std::wstring::npos != strInput.find(_T("image"), nImageIndex))
 					{
 						nRes = cRes1 - '0';
-						if('0' <= cRes2 && cRes2 <= '9')
+						if ('0' <= cRes2 && cRes2 <= '9')
 						{
 							 nRes = nRes * 10 + (cRes2 - '0');
 						}	
@@ -258,6 +258,7 @@ namespace NSBinPptxRW
 
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
+		
 		if (0 != nDisplayType && nFileNameLength > sizeExt)
 		{
 			OOX::CPath oPath = strInput;
@@ -267,7 +268,7 @@ namespace NSBinPptxRW
 
 			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
-			if(0 != (nDisplayType & 1))
+			if (0 != (nDisplayType & 1))
 			{
 				std::wstring strVector = strFolder + strFileName + _T(".wmf");
 				if (OOX::CSystemUtility::IsFileExist(strVector))
@@ -276,7 +277,7 @@ namespace NSBinPptxRW
 					strExts = _T(".wmf");
 				}
 			}
-			if(0 != (nDisplayType & 2))
+			if (0 != (nDisplayType & 2))
 			{
 				std::wstring strVector = strFolder + strFileName + L".emf";
 				if (OOX::CSystemUtility::IsFileExist(strVector))
@@ -286,7 +287,7 @@ namespace NSBinPptxRW
 					strExts = L".emf";
 				}
 			}
-			if(0 != (nDisplayType & 4))
+			if (0 != (nDisplayType & 4))
 			{
 				smart_ptr<OOX::OleObject> oleFile = additionalFile.smart_dynamic_cast<OOX::OleObject>();
 				if (oleFile.IsInit())
@@ -310,7 +311,7 @@ namespace NSBinPptxRW
 					}
 				}
 			}
-			if(0 != (nDisplayType & 8))
+			if (0 != (nDisplayType & 8))
 			{
 				smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
 				if (mediaFile.IsInit())
@@ -342,7 +343,21 @@ namespace NSBinPptxRW
 				}
 			}
 		}
-		if (!strExts.empty())
+
+		if (strExts == L".svg")
+		{
+			additionalFile = new OOX::SvgBlip(NULL);
+
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			if (mediaFile.IsInit())
+			{
+				mediaFile->set_filename(strImage, false);
+				typeAdditional = 3;
+				strAdditional = strImage;
+			}
+		}
+		
+		if (false == strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}
@@ -358,6 +373,11 @@ namespace NSBinPptxRW
 		if (!oImageManagerInfo.sFilepathAdditional.empty()) 
 		{
 			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			if (false == mediaFile.IsInit()) //???
+			{
+				mediaFile = new OOX::Media(NULL);
+				additionalFile = mediaFile.smart_dynamic_cast<OOX::File>();
+			}
 			if (mediaFile.IsInit())
 			{
 				mediaFile->set_filename(oImageManagerInfo.sFilepathAdditional, false);
@@ -375,7 +395,7 @@ namespace NSBinPptxRW
 		bool bRes = false;
 		//EncodingMode.unparsed https://github.com/tonyqus/npoi/blob/master/main/POIFS/FileSystem/Ole10Native.cs
 		POLE::Storage oStorage(sFilePath.c_str());
-		if(oStorage.open(true, true))
+		if (oStorage.open(true, true))
 		{
 			//CompObj Stream
 			BYTE dataCompObj[] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0c,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46,0x0c,0x00,0x00,0x00,0x4f,0x4c,0x45,0x20,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0xf4,0x39,0xb2,0x71,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -431,7 +451,7 @@ namespace NSBinPptxRW
 		}
 		return oImageManagerInfo;
 	}
-	_imageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData)
+	_imageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strAdditionalImage, int &nAdditionalType, const std::wstring& oleData)
 	{
 		OOX::CPath			oPathOutput;
 		_imageManager2Info	oImageManagerInfo;
@@ -439,25 +459,30 @@ namespace NSBinPptxRW
 		std::wstring strExts	= sExts;
         std::wstring strImage	= L"image" + std::to_wstring(++m_lIndexNextImage);
 		
-		if ((_T(".jpg") == strExts) || (_T(".jpeg") == strExts) || (_T(".png") == strExts) || (_T(".emf") == strExts) || (_T(".wmf") == strExts))
+		CImageFileFormatChecker checker(strInput);
+		switch (checker.eFileType)
+		{
+		case _CXIMAGE_FORMAT_JPG:
+		case _CXIMAGE_FORMAT_PNG:
+		case _CXIMAGE_FORMAT_WMF:
+		case _CXIMAGE_FORMAT_EMF:
 		{
 			oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
 			if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
 			{
-                NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
+				NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
 				oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
 			}
-		}
-		else
-		{
-	// content types!!!
+		}break;
+		default:
+// content types!!! ?
 			strExts = _T(".png");
 			oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-            SaveImageAsPng(strInput, oPathOutput.GetPath());
+			SaveImageAsPng(strInput, oPathOutput.GetPath());
 			oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
-		}		
-		
+		}
+
 		if ((!strAdditionalImage.empty() || !oleData.empty() ) && (nAdditionalType == 1))
 		{
 			std::wstring strAdditionalExt  = L".bin";
@@ -471,7 +496,7 @@ namespace NSBinPptxRW
 			
 			std::wstring strAdditionalImageOut = pathOutput.GetPath();
 			
-			if(!oleData.empty())
+			if (!oleData.empty())
 			{
 				WriteOleData(strAdditionalImageOut, oleData);
 				oImageManagerInfo.sFilepathAdditional = strAdditionalImageOut;
@@ -483,7 +508,7 @@ namespace NSBinPptxRW
 			}
 
 		}
-		else if (!strAdditionalImage.empty() && nAdditionalType == 2)
+		else if (!strAdditionalImage.empty() && (nAdditionalType == 2 || nAdditionalType == 3)) //nAdditionalType -> enum
 		{			
 			std::wstring strAdditionalExt;
 
@@ -508,14 +533,14 @@ namespace NSBinPptxRW
 	void CImageManager2::SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(strFileSrc))
+		if (oBgraFrame.OpenFile(strFileSrc))
 			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_PNG);
 	}
 
 	void CImageManager2::SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(strFileSrc))
+		if (oBgraFrame.OpenFile(strFileSrc))
 			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_JPG);
 	}
 
@@ -548,17 +573,17 @@ namespace NSBinPptxRW
 		
 		int nDisplayType = IsDisplayedImage(strUrl);
 		
-		if(0 != nDisplayType)
+		if (0 != nDisplayType)
 		{
 			std::wstring strInputMetafile = strUrl.substr(0, strUrl.length() - strExts.length());
 			std::wstring sDownloadRes;
 
-			if(0 != (nDisplayType & 1))
+			if (0 != (nDisplayType & 1))
 			{
 				strImage = DownloadImageExec(strInputMetafile + _T(".wmf"));
 				strExts = _T(".wmf");
 			}
-			else if(0 != (nDisplayType & 2))
+			else if (0 != (nDisplayType & 2))
 			{
 				strImage = DownloadImageExec(strInputMetafile + _T(".emf"));
 				strExts = _T(".emf");
@@ -581,7 +606,8 @@ namespace NSBinPptxRW
 		_imageManager2Info oImageManagerInfo;
 		if (!strImage.empty())
 		{
-			oImageManagerInfo = GenerateImageExec(strImage, strExts, L"", 0, L"");
+			int nAdditionalType = 0;
+			oImageManagerInfo = GenerateImageExec(strImage, strExts, L"", nAdditionalType, L"");
 			CDirectory::DeleteFile(strImage);
 		}
 
@@ -1319,7 +1345,7 @@ namespace NSBinPptxRW
 		{
 			BYTE nPart = nLen & 0x7F;
 			nLen = nLen >> 7;
-			if(nLen == 0)
+			if (nLen == 0)
 			{
 				WriteBYTE(nPart);
 				break;
@@ -1623,7 +1649,7 @@ namespace NSBinPptxRW
 				L"\"/>");
 		}
 
-		if(additionalFile.is<OOX::OleObject>())
+		if (additionalFile.is<OOX::OleObject>())
 		{
 			smart_ptr<OOX::OleObject> oleFile = additionalFile.smart_dynamic_cast<OOX::OleObject>();
 			
@@ -1653,7 +1679,7 @@ namespace NSBinPptxRW
 				}
 			}
 		}
-		else if(additionalFile.is<OOX::Media>())
+		else if (additionalFile.is<OOX::Media>())
 		{
 			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
 			
@@ -1662,7 +1688,7 @@ namespace NSBinPptxRW
 			oRelsGeneratorInfo.nMediaRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.sFilepathMedia	= mediaFile->filename().GetPath();
 
-			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
+			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX || additionalFile.is<OOX::SvgBlip>())
 			{
 				std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nMediaRId);
 
@@ -1677,8 +1703,8 @@ namespace NSBinPptxRW
 					
 					strMediaRelsPath += mediaFile->filename().GetFilename();				
 
-					m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
-						+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+					m_pWriter->WriteString(L"<Relationship Id=\"" + strRid
+						+ L"\" Type=\"" + additionalFile->type().RelationType() + L"\" Target=\"" +
 						strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
 				}
 			}
@@ -2133,7 +2159,7 @@ namespace NSBinPptxRW
 	_UINT16 CBinaryFileReader::XlsbReadRecordType()
 	{
 		_UINT16 nValue = GetUChar();
-		if(0 != (nValue & 0x80))
+		if (0 != (nValue & 0x80))
                 {
 			BYTE nPart = GetUChar();
                         nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
@@ -2151,7 +2177,7 @@ namespace NSBinPptxRW
 		{
 			BYTE nPart = GetUChar();
 			nValue |= (nPart & 0x7F) << (7 * i);
-			if(0 == (nPart & 0x80))
+			if (0 == (nPart & 0x80))
 			{
 				break;
 			}

@@ -142,11 +142,20 @@ public:
 	}
 	size_t get_id(const std::wstring& id)
 	{
+		if (id == L"")
+			return next_rId();
+
 		id_map::iterator it = id_map_.find(id);
 		if (it == id_map_.end())
-		{
 			return generate_id(id);
-		}
+
+		return it->second;
+	}
+	size_t find_id(const std::wstring& id)
+	{
+		id_map::iterator it = id_map_.find(id);
+		if (it == id_map_.end())
+			return 0;
 
 		return it->second;
 	}
@@ -187,14 +196,25 @@ void pptx_slide_context::Impl::process_drawings()
 		
 		switch(objects_[i].type_)
 		{
-			case typeImage:		process_image(objects_[i], drawing);	break;
-			case typeChart:		process_chart(objects_[i], drawing);	break;
-			case typeShape:		process_shape(objects_[i], drawing);	break;
-			case typeTable:		process_table(objects_[i], drawing);	break;
-			case typeMedia:		process_media(objects_[i], drawing);	break;
+			case typeImage:			process_image(objects_[i], drawing);	break;
+			case typeChart:			process_chart(objects_[i], drawing);	break;
+			case typeShape:			process_shape(objects_[i], drawing);	break;
+			case typeTable:			process_table(objects_[i], drawing);	break;
+			case typeMedia:			process_media(objects_[i], drawing);	break;
 			case typeMsObject:	
-			case typeOleObject:	process_object(objects_[i], drawing);	break;
+			case typeOleObject:		process_object(objects_[i], drawing);	break;
 		}
+	}
+
+	for (size_t i = 0; i < pptx_drawings_->get_drawings().size(); i++)
+	{
+		_pptx_drawing& drawing = pptx_drawings_->get_drawings()[i];
+
+		if(!drawing.connector)
+			continue;
+
+		drawing.start_connection_shape_id = std::to_wstring(find_id(drawing.start_connection_shape_id));
+		drawing.end_connection_shape_id = std::to_wstring(find_id(drawing.end_connection_shape_id));
 	}
 }
 
@@ -368,6 +388,27 @@ void pptx_slide_context::set_is_connector_shape(bool val)
 {
 	impl_->object_description_.connector_ = val;
 }
+
+void pptx_slide_context::set_connector_start_shape(const std::wstring& startShape)
+{
+	impl_->object_description_.start_shape_id = startShape;
+}
+
+void pptx_slide_context::set_connector_end_shape(const std::wstring& endShape)
+{
+	impl_->object_description_.end_shape_id = endShape;
+}
+
+void pptx_slide_context::set_connector_start_glue_point(int gluePoint)
+{
+	impl_->object_description_.start_shape_glue_point = gluePoint;
+}
+
+void pptx_slide_context::set_connector_end_glue_point(int gluePoint)
+{
+	impl_->object_description_.end_shape_glue_point = gluePoint;
+}
+
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
@@ -412,6 +453,7 @@ void pptx_slide_context::start_shape(int type)
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= type; //2,3... 
 }
+
 void pptx_slide_context::start_action(std::wstring action)
 {
 	impl_->object_description_.action_.enabled	= true;
@@ -695,6 +737,15 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 
 	drawing.sub_type = obj.shape_type_;
 
+	// NOTE: Все идентификаторы объектов могут быть неивестны на момент обрабоки коннектора.
+	// Идентификаторы начального и конечного объекта коннектора будут обновлены после обработки всех объектов на слайде.
+	drawing.start_connection_shape_id = obj.start_shape_id.get_value_or(L"");
+	drawing.end_connection_shape_id = obj.end_shape_id.get_value_or(L"");
+	
+	// TODO: convert connection indices
+	drawing.start_connection_index = 0;
+	drawing.end_connection_index = 0;
+	
 	add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
 }
 void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _pptx_drawing & drawing)

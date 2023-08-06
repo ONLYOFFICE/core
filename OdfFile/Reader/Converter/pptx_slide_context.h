@@ -77,6 +77,11 @@ public:
 	void set_is_line_shape(bool val);
 	void set_is_connector_shape(bool val);
 
+	void set_connector_start_shape			(const std::wstring& startShape);
+	void set_connector_end_shape			(const std::wstring& endShape);
+	void set_connector_start_glue_point		(int gluePoint);
+	void set_connector_end_glue_point		(int gluePoint);
+
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
 

@@ -87,6 +87,10 @@ struct drawing_object_description
 	bool									lined_;
 	bool									connector_;
 	int										shape_type_;	//default - frame
+	_CP_OPT(std::wstring)					start_shape_id;
+	_CP_OPT(int)							start_shape_glue_point;
+	_CP_OPT(std::wstring)					end_shape_id;
+	_CP_OPT(int)							end_shape_glue_point;
 
 	std::vector<drawing_object_description>	child_objects_;
 };

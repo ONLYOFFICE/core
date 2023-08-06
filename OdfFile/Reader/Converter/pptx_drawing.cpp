@@ -280,6 +280,18 @@ void pptx_serialize_connector(std::wostream & strm, _pptx_drawing & val)
 					//{
 					//	CP_XML_ATTR(L"noGrp", 1);
 					//}
+
+					CP_XML_NODE(L"a:stCxn")
+					{
+						CP_XML_ATTR(L"id", val.start_connection_shape_id);
+						CP_XML_ATTR(L"idx", val.start_connection_index);
+					}
+
+					CP_XML_NODE(L"a:endCxn")
+					{
+						CP_XML_ATTR(L"id", val.end_connection_shape_id);
+						CP_XML_ATTR(L"idx", val.end_connection_index);
+					}	
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{
@@ -444,9 +456,9 @@ void _pptx_drawing::serialize(std::wostream & strm)
 {
 	if (type == typeShape)
 	{
-		//if (connector) only for ms prst connectors, but not custom!!
-		//	pptx_serialize_connector(strm, *this);
-		//else			
+		if (connector) // only for ms prst connectors, but not custom!!
+			pptx_serialize_connector(strm, *this);
+		else			
 			pptx_serialize_shape(strm, *this);
 	}
 	else if (type == typeImage)

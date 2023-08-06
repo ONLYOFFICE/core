@@ -329,6 +329,15 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_shape(sub_type_);
 
 	common_pptx_convert(Context);
+
+	if(draw_connector_attlist_.draw_start_shape_)
+		Context.get_slide_context().set_connector_start_shape(draw_connector_attlist_.draw_start_shape_.value());
+	if (draw_connector_attlist_.draw_end_shape_)
+		Context.get_slide_context().set_connector_end_shape(draw_connector_attlist_.draw_end_shape_.value());
+	if(draw_connector_attlist_.draw_start_glue_point_)
+		Context.get_slide_context().set_connector_start_glue_point(draw_connector_attlist_.draw_start_glue_point_.value());
+	if (draw_connector_attlist_.draw_end_glue_point_)
+		Context.get_slide_context().set_connector_end_glue_point(draw_connector_attlist_.draw_end_glue_point_.value());
 	
 //перебъем заливку .. 
 	oox::_oox_fill fill;

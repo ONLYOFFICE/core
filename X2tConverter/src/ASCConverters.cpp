@@ -1156,6 +1156,7 @@ namespace NExtractTools
 		const OOX::CPath oox_path(sFrom);
 
 		OOX::Spreadsheet::CXlsb oXlsb;
+		oXlsb.m_bWriteToXlsb = true;
 		oXlsb.Read(oox_path);
 	
 		OOX::CContentTypes oContentTypes;

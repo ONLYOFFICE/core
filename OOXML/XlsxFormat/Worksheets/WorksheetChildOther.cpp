@@ -1924,16 +1924,28 @@ namespace OOX
 
 			if(m_oOddHeader.IsInit())
 				castedBegin->stHeader = m_oOddHeader->m_sText;
+			else 
+				castedBegin->stHeader = false;
 			if(m_oOddFooter.IsInit())
 				castedBegin->stFooter = m_oOddFooter->m_sText;
+			else 
+				castedBegin->stFooter = false;
 			if(m_oEvenHeader.IsInit())
 				castedBegin->stHeaderEven = m_oEvenHeader->m_sText;
+			else 
+				castedBegin->stHeaderEven = false;
 			if(m_oEvenFooter.IsInit())
 				castedBegin->stFooterEven = m_oEvenFooter->m_sText;
+			else 
+				castedBegin->stFooterEven = false;
 			if(m_oFirstHeader.IsInit())
 				castedBegin->stHeaderFirst = m_oFirstHeader->m_sText;
+			else 
+				castedBegin->stHeaderFirst = false;
 			if(m_oFirstFooter.IsInit())
 			 	castedBegin->stFooterFirst = m_oFirstFooter->m_sText;
+			else 
+				castedBegin->stFooterFirst = false;
 			return objectPtr;
 		}
 		EElementType CHeaderFooter::getType() const

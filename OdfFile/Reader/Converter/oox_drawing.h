@@ -107,6 +107,7 @@ namespace oox
 		std::wstring	end_connection_shape_id;
 		size_t			start_connection_index;
 		size_t			end_connection_index;
+		std::wstring	connector_prst;
 
         std::wstring	name;
         int				sub_type; //odf

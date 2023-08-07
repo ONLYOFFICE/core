@@ -313,6 +313,15 @@ void draw_connector::reset_svg_attributes()
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y2-y1, length::pt);
 	}
 }
+
+int pptx_convert_glue_point(int gluePoint)
+{
+	if (gluePoint < 4)
+		return gluePoint;
+
+	return gluePoint - 4;
+}
+
 void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	if (draw_connector_attlist_.draw_type_)
@@ -335,10 +344,24 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 	if (draw_connector_attlist_.draw_end_shape_)
 		Context.get_slide_context().set_connector_end_shape(draw_connector_attlist_.draw_end_shape_.value());
 	if(draw_connector_attlist_.draw_start_glue_point_)
-		Context.get_slide_context().set_connector_start_glue_point(draw_connector_attlist_.draw_start_glue_point_.value());
+		Context.get_slide_context().set_connector_start_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_start_glue_point_.value()));
 	if (draw_connector_attlist_.draw_end_glue_point_)
-		Context.get_slide_context().set_connector_end_glue_point(draw_connector_attlist_.draw_end_glue_point_.value());
-	
+		Context.get_slide_context().set_connector_end_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_end_glue_point_.value()));
+	if (draw_connector_attlist_.draw_type_)
+	{
+		std::wstring pptx_prst;
+
+		if(draw_connector_attlist_.draw_type_.value() == L"curve")
+			pptx_prst = L"curvedConnector3";
+		else if (draw_connector_attlist_.draw_type_.value() == L"lines")
+			pptx_prst = L"bentConnector3";
+		else
+			pptx_prst = L"line";
+
+		Context.get_slide_context().set_connector_draw_type(pptx_prst);
+	}
+		
+
 //перебъем заливку .. 
 	oox::_oox_fill fill;
 	fill.type = 0;

@@ -285,6 +285,12 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.connector_	= false;
 	impl_->object_description_.lined_		= false;
 
+	impl_->object_description_.start_shape_id			= boost::none;
+	impl_->object_description_.start_shape_glue_point	= boost::none;
+	impl_->object_description_.end_shape_id				= boost::none;
+	impl_->object_description_.end_shape_glue_point		= boost::none;
+	impl_->object_description_.draw_type_				= boost::none;
+
 	impl_->object_description_.hlinks_.clear();
 	impl_->object_description_.action_.clear();
 
@@ -407,6 +413,11 @@ void pptx_slide_context::set_connector_start_glue_point(int gluePoint)
 void pptx_slide_context::set_connector_end_glue_point(int gluePoint)
 {
 	impl_->object_description_.end_shape_glue_point = gluePoint;
+}
+
+void pptx_slide_context::set_connector_draw_type(const std::wstring& drawType)
+{
+	impl_->object_description_.draw_type_ = drawType;
 }
 
 std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
@@ -742,9 +753,10 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 	drawing.start_connection_shape_id = obj.start_shape_id.get_value_or(L"");
 	drawing.end_connection_shape_id = obj.end_shape_id.get_value_or(L"");
 	
-	// TODO: convert connection indices
-	drawing.start_connection_index = 0;
-	drawing.end_connection_index = 0;
+	drawing.start_connection_index = obj.start_shape_glue_point.get_value_or(0);
+	drawing.end_connection_index = obj.end_shape_glue_point.get_value_or(0);
+
+	drawing.connector_prst = obj.draw_type_.get_value_or(L"line");
 	
 	add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
 }

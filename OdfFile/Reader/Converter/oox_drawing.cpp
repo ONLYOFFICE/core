@@ -627,7 +627,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
     {
-		if (sub_type == 6 || sub_type == 8 || sub_type == 14)
+		if ((sub_type == 6 || sub_type == 8 || sub_type == 14) && !connector)
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
@@ -682,9 +682,15 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 		{
 			if (shapeGeomPreset.empty())
 			{
-				shapeGeomPreset	= L"rect";
-				sub_type	= 2;
+				shapeGeomPreset = L"rect";
+				sub_type = 2;
 			}
+
+			if (connector)
+			{
+				shapeGeomPreset = connector_prst;
+			}
+
 			CP_XML_NODE(L"a:prstGeom")//автофигура
 			{        
 				CP_XML_ATTR(L"prst", shapeGeomPreset);

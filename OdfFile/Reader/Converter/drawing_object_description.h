@@ -91,6 +91,7 @@ struct drawing_object_description
 	_CP_OPT(int)							start_shape_glue_point;
 	_CP_OPT(std::wstring)					end_shape_id;
 	_CP_OPT(int)							end_shape_glue_point;
+	_CP_OPT(std::wstring)					draw_type_;
 
 	std::vector<drawing_object_description>	child_objects_;
 };

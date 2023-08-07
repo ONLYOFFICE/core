@@ -42,13 +42,10 @@ namespace XmlUtils
 
     CXmlWriter::CXmlWriter() : impl_(NULL)
     {
-        impl_ = new CXmlWriter::Impl();
+        impl_ = std::make_shared<CXmlWriter::Impl>();
     }
     CXmlWriter::~CXmlWriter()
     {
-        if (impl_)
-            delete impl_;
-        impl_ = NULL;
     }
 
     std::wstring CXmlWriter::GetXmlString()

@@ -487,6 +487,13 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 		}
 		const OOX::FileType CWorkbook::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::FileType(L"xl", L"workbook.bin",
+												L"application/vnd.ms-excel.sheet.binary.macroEnabled.main",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+			}
 			if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
 			else					return OOX::Spreadsheet::FileTypes::Workbook;
 		}

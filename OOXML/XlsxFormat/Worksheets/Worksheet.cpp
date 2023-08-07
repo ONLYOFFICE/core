@@ -823,6 +823,14 @@ mc:Ignorable=\"x14ac\">");
 		}
 		const OOX::FileType CWorksheet::type() const
 		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
+			{
+				return OOX::FileType(L"worksheets", L"sheet.bin",
+												L"application/vnd.ms-excel.worksheet",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
+												L"worksheets/sheet", true);
+			}
 			return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
 		}
 		const CPath CWorksheet::DefaultDirectory() const

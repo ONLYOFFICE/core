@@ -1234,6 +1234,18 @@ namespace NSOnlineOfficeBinToPdf
 
 				break;
 			}
+			case ctAnnotField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
+
+				break;
+			}
 			case ctDocInfo:
 			{
 				int nFlags = ReadInt(current, curindex);
@@ -1566,6 +1578,18 @@ namespace NSOnlineOfficeBinToPdf
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
+				break;
+			}
+			case ctAnnotField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
+				break;
 				break;
 			}
 			case ctDocInfo:

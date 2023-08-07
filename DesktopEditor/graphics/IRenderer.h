@@ -140,6 +140,13 @@ public:
     virtual ~IFormField() {}
 };
 
+class IAnnotField
+{
+public:
+	IAnnotField() {}
+	virtual ~IAnnotField() {}
+};
+
 namespace Aggplus { class CImage; }
 
 // IRenderer

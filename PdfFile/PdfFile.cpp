@@ -1533,11 +1533,11 @@ HRESULT CPdfFile::AddLink(const double& dX, const double& dY, const double& dW, 
 		return S_FALSE;
 	return m_pInternal->pWriter->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 }
-HRESULT CPdfFile::AddFormField(IFormField* pFieldInfo)
+HRESULT CPdfFile::AddAnnotField(IAnnotField* pFieldInfo)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
+	return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pFieldInfo);
 }
 HRESULT CPdfFile::DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
 {

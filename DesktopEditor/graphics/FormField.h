@@ -33,9 +33,9 @@
 #define _BUILD_FORMFIELD_H_
 
 #include "config.h"
-#include "IRenderer.h"
+#include "AnnotField.h"
 
-class GRAPHICS_DECL CFormFieldInfo : public IFormField
+class GRAPHICS_DECL CFormFieldInfo : public CAnnotFieldInfo
 {
 public:
 	enum EScaleType
@@ -266,16 +266,7 @@ public:
 	CFormFieldInfo();
 	virtual ~CFormFieldInfo();
 
-	void SetType(int nType);
-	bool IsValid() const;
-
 	// Common
-	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
-	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
-
-	void SetBaseLineOffset(const double& dOffset);
-	double GetBaseLineOffset() const;
-
 	void SetKey(const std::wstring& wsKey);
 	const std::wstring& GetKey() const;
 
@@ -326,12 +317,6 @@ public:
 	const CDateTimeFormPr* GetDateTimePr() const;
 	
 private:
-	int          m_nType;
-	double       m_dX;
-	double       m_dY;
-	double       m_dW;
-	double       m_dH;
-	double       m_dBaseLineOffset;
 	std::wstring m_wsKey;
 	std::wstring m_wsHelpText;
 	bool         m_bRequired;

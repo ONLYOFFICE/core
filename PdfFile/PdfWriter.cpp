@@ -52,6 +52,7 @@
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/FormField.h"
+#include "../../DesktopEditor/graphics/AnnotField.h"
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
@@ -1077,7 +1078,7 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pFieldInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
@@ -1666,6 +1667,14 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 			pFieldBase->SetFieldName("F" + std::to_string(++m_unFieldsCounter));
 	}
 
+	return S_OK;
+}
+HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo)
+{
+	CAnnotFieldInfo& oInfo = *((CAnnotFieldInfo*)pFieldInfo);
+
+	if (oInfo.isWidget())
+		return AddFormField(pAppFonts, pFieldInfo);
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

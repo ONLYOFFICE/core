@@ -133,13 +133,6 @@ const int c_nAdditionalParamBreak = 0x00;
 // типы команд
 const long c_nCommandLongTypeOnlyText = 0x1000;
 
-class IFormField
-{
-public:
-    IFormField() {}
-    virtual ~IFormField() {}
-};
-
 class IAnnotField
 {
 public:
@@ -342,7 +335,7 @@ public:
 	}
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;}
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;}
-	virtual HRESULT AddFormField(IFormField* pField) {return S_OK;}
+	virtual HRESULT AddAnnotField(IAnnotField* pField) {return S_OK;}
 	virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords) {return S_OK;}
 
 	virtual HRESULT IsExistAdditionalParam(const int& type) {return S_FALSE;}

@@ -414,15 +414,6 @@ const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetFormat() const
 //
 CFormFieldInfo::CFormFieldInfo()
 {
-	m_nType = 0;
-
-	m_dX = 0;
-	m_dY = 0;
-	m_dW = 0;
-	m_dH = 0;
-
-	m_dBaseLineOffset = 0;
-
 	m_bRequired    = false;
 	m_bPlaceHolder = false;
 
@@ -441,38 +432,7 @@ CFormFieldInfo::~CFormFieldInfo()
 {
 }
 
-void CFormFieldInfo::SetType(int nType)
-{
-	m_nType = nType;
-}
-bool CFormFieldInfo::IsValid() const
-{
-	return 0 != m_nType;
-}
-
 // Common
-void CFormFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
-{
-	m_dX = dX;
-	m_dY = dY;
-	m_dW = dW;
-	m_dH = dH;
-}
-void CFormFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
-{
-	dX = m_dX;
-	dY = m_dY;
-	dW = m_dW;
-	dH = m_dH;
-}
-void CFormFieldInfo::SetBaseLineOffset(const double& dOffset)
-{
-	m_dBaseLineOffset = dOffset;
-}
-double CFormFieldInfo::GetBaseLineOffset() const
-{
-	return m_dBaseLineOffset;
-}
 void CFormFieldInfo::SetKey(const std::wstring& wsKey)
 {
 	m_wsKey = wsKey;

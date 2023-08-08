@@ -37,6 +37,7 @@
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
 #include "./FormField.h"
+#include "./AnnotField.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include "../common/StringExt.h"
@@ -1065,14 +1066,14 @@ namespace NSOnlineOfficeBinToPdf
 
 				int nFlags = ReadInt(current, curindex);
 
-				if (nFlags & 1)
+				if (nFlags & (1 << 0))
 					oInfo.SetKey(ReadString(current, curindex));
 
-				if (nFlags & 2)
+				if (nFlags & (1 << 1))
 					oInfo.SetHelpText(ReadString(current, curindex));
 
-				oInfo.SetRequired(nFlags & 4);
-				oInfo.SetPlaceHolder(nFlags & 8);
+				oInfo.SetRequired(nFlags & (1 << 2));
+				oInfo.SetPlaceHolder(nFlags & (1 << 3));
 
 				if (nFlags & (1 << 6))
 				{
@@ -1240,6 +1241,26 @@ namespace NSOnlineOfficeBinToPdf
 				int   nStartIndex = curindex;
 
 				int nLen = ReadInt(current, curindex);
+
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				CAnnotFieldInfo oInfo;
+				oInfo.SetBounds(dX, dY, dW, dH);
+				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
+
+				int nFlags = ReadInt(current, curindex);
+
+				// TODO
+
+				oInfo.SetType(ReadInt(current, curindex));
+
+				// TODO
+
+				if (oInfo.IsValid())
+					pRenderer->AddAnnotField(&oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;

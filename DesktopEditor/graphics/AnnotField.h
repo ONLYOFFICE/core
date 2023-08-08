@@ -43,6 +43,25 @@ public:
 
 	void SetType(int nType);
 	bool IsValid() const;
+
+	// Common
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
+
+	void SetBaseLineOffset(const double& dOffset);
+	double GetBaseLineOffset() const;
+
+	bool isWidget() const;
+
+protected:
+	int          m_nType;
+
+private:
+	double       m_dX;
+	double       m_dY;
+	double       m_dW;
+	double       m_dH;
+	double       m_dBaseLineOffset;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

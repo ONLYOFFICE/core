@@ -31,3 +31,57 @@
  */
 
 #include "./AnnotField.h"
+
+
+CAnnotFieldInfo::CAnnotFieldInfo()
+{
+	m_nType = 0;
+
+	m_dX = 0;
+	m_dY = 0;
+	m_dW = 0;
+	m_dH = 0;
+
+	m_dBaseLineOffset = 0;
+}
+CAnnotFieldInfo::~CAnnotFieldInfo()
+{
+}
+
+void CAnnotFieldInfo::SetType(int nType)
+{
+	m_nType = nType;
+}
+bool CAnnotFieldInfo::IsValid() const
+{
+	return (m_nType != 0);
+}
+
+// Common
+void CAnnotFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	m_dX = dX;
+	m_dY = dY;
+	m_dW = dW;
+	m_dH = dH;
+}
+void CAnnotFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
+{
+	dX = m_dX;
+	dY = m_dY;
+	dW = m_dW;
+	dH = m_dH;
+}
+void CAnnotFieldInfo::SetBaseLineOffset(const double& dOffset)
+{
+	m_dBaseLineOffset = dOffset;
+}
+double CAnnotFieldInfo::GetBaseLineOffset() const
+{
+	return m_dBaseLineOffset;
+}
+
+bool CAnnotFieldInfo::isWidget() const
+{
+	return (m_nType != 0 && m_nType < 7);
+}

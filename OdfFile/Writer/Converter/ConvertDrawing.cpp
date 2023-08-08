@@ -1393,6 +1393,10 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")) / 1000.,
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")) / 1000.,
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")) / 1000.);			
+			}	
+			else if (grad_style == odf_types::gradient_style::radial)
+			{
+				odf_context()->drawing_context()->set_gradient_center(0.5, 0.5);
 			}
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);

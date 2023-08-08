@@ -24,9 +24,9 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
 	{
-		m_oXmlWriter.WriteNodeBegin(L"svg", true);
-		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
-		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
+		m_pXmlWriter->WriteNodeBegin(L"svg", true);
+		m_pXmlWriter->WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
+		m_pXmlWriter->WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
 		TRect *pBounds = m_pParser->GetDCBounds();
 
@@ -38,10 +38,10 @@ namespace MetaFile
 		UpdateSize();
 
 		if (m_oViewport.GetWidth() != 0)
-			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
@@ -64,17 +64,17 @@ namespace MetaFile
 		}
 
 		if (1 != dXScale || 1 != dYScale)
-			m_oXmlWriter.WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
 
-		m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
+		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
 		ResetClip();
 		if (!m_wsDefs.empty())
-			m_oXmlWriter.WriteString(L"<defs>" + m_wsDefs + L"</defs>");
-		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
+			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft)

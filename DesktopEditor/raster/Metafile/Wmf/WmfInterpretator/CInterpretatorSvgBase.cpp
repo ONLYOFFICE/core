@@ -74,11 +74,14 @@ namespace MetaFile
 	};
 
 	CInterpretatorSvgBase::CInterpretatorSvgBase(IMetaFileBase *pParser, double dWidth, double dHeight)
-	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser)
+	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser), m_pXmlWriter(new XmlUtils::CXmlWriter()), m_bExternXmlWriter(false)
 	{}
 
 	CInterpretatorSvgBase::~CInterpretatorSvgBase()
-	{}
+	{
+		if (!m_bExternXmlWriter)
+			RELEASEOBJECT(m_pXmlWriter);
+	}
 
 	void CInterpretatorSvgBase::SetSize(double dWidth, double dHeight)
 	{
@@ -103,17 +106,23 @@ namespace MetaFile
 	void CInterpretatorSvgBase::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
 	{
 		if (NULL != pXmlWriter)
-			m_oXmlWriter = *pXmlWriter;
+		{
+			if (!m_bExternXmlWriter)
+				RELEASEOBJECT(m_pXmlWriter);
+
+			m_pXmlWriter = pXmlWriter;
+			m_bExternXmlWriter = true;
+		}
 	}
 
 	XmlUtils::CXmlWriter *CInterpretatorSvgBase::GetXmlWriter()
 	{
-		return &m_oXmlWriter;
+		return m_pXmlWriter;
 	}
 
 	std::wstring CInterpretatorSvgBase::GetFile()
 	{
-		return m_oXmlWriter.GetXmlString();
+		return m_pXmlWriter->GetXmlString();
 	}
 
 	void CInterpretatorSvgBase::IncludeSvg(const std::wstring &wsSvg, const TRectD &oRect, const TRectD &oClipRect, TXForm *pTransform)
@@ -151,46 +160,46 @@ namespace MetaFile
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
-		m_oXmlWriter.WriteString(wsNewSvg);
+		m_pXmlWriter->WriteString(wsNewSvg);
 
 		WriteNodeEnd(L"g");
 	}
 
 	void CInterpretatorSvgBase::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
 	{
-		m_oXmlWriter.WriteNodeBegin(wsNodeName, true);
+		m_pXmlWriter->WriteNodeBegin(wsNodeName, true);
 
 		for (const NodeAttribute& oAttribute : arAttributes)
-		m_oXmlWriter.WriteAttribute(oAttribute.first, oAttribute.second);
+		m_pXmlWriter->WriteAttribute(oAttribute.first, oAttribute.second);
 
 		if (wsValueNode.empty())
 		{
-			m_oXmlWriter.WriteNodeEnd(wsNodeName, true, true);
+			m_pXmlWriter->WriteNodeEnd(wsNodeName, true, true);
 		}
 		else
 		{
-			m_oXmlWriter.WriteNodeEnd(wsNodeName, true, false);
-			m_oXmlWriter.WriteString (wsValueNode);
-			m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
+			m_pXmlWriter->WriteNodeEnd(wsNodeName, true, false);
+			m_pXmlWriter->WriteString (wsValueNode);
+			m_pXmlWriter->WriteNodeEnd(wsNodeName, false, false);
 		}
 	}
 
 	void CInterpretatorSvgBase::WriteNodeBegin(const std::wstring &wsNodeName, const NodeAttributes &arAttributes)
 	{
-		m_oXmlWriter.WriteNodeBegin(wsNodeName, !arAttributes.empty());
+		m_pXmlWriter->WriteNodeBegin(wsNodeName, !arAttributes.empty());
 
 		if (!arAttributes.empty())
 		{
 			for (const NodeAttribute& oAttribute : arAttributes)
-				m_oXmlWriter.WriteAttribute(oAttribute.first, oAttribute.second);
+				m_pXmlWriter->WriteAttribute(oAttribute.first, oAttribute.second);
 
-			m_oXmlWriter.WriteNodeEnd(wsNodeName, true, false);
+			m_pXmlWriter->WriteNodeEnd(wsNodeName, true, false);
 		}
 	}
 
 	void CInterpretatorSvgBase::WriteNodeEnd(const std::wstring &wsNodeName)
 	{
-		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
+		m_pXmlWriter->WriteNodeEnd(wsNodeName, false, false);
 	}
 
 	static void EraseWords(std::wstring& wsString, const std::vector<std::wstring>& arWords)
@@ -425,7 +434,7 @@ namespace MetaFile
 		}
 
 		if (bWriteG)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			m_pXmlWriter->WriteNodeEnd(L"g");
 	}
 
 	void CInterpretatorSvgBase::ResetClip()

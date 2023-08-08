@@ -1521,7 +1521,7 @@ namespace MetaFile
 
 						oWmfParser.PlayFile();
 
-						m_bEof = true;
+						HANDLE_EMR_EOF();
 					}
 					else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
 					{
@@ -1531,11 +1531,25 @@ namespace MetaFile
 
 						((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
 
+						XmlUtils::CXmlWriter *pXmlWriter = ((CEmfInterpretatorSvg*)m_pInterpretator)->GetXmlWriter();
+
+						TRectD oWmfRect = oWmfParser.GetBounds();
+						TEmfRectL *pCuurentRect = GetBounds();
+
+						double dScaleX = std::abs((pCuurentRect->lRight - pCuurentRect->lLeft) / (oWmfRect.dRight - oWmfRect.dLeft));
+						double dScaleY = std::abs((pCuurentRect->lBottom - pCuurentRect->lTop) / (oWmfRect.dBottom - oWmfRect.dTop));
+
+						pXmlWriter->WriteNodeBegin(L"g", true);
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+						pXmlWriter->WriteNodeEnd(L"g", true, false);
+
+						((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
+
 						oWmfParser.PlayFile();
 
-						((CEmfInterpretatorSvg*)m_pInterpretator)->SetXmlWriter(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetXmlWriter());
+						pXmlWriter->WriteNodeEnd(L"g", false, false);
 
-						m_bEof = true;
+						HANDLE_EMR_EOF();
 					}
 				}
 

@@ -1736,11 +1736,25 @@ namespace MetaFile
 
 						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
 
+						XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
+
+						TRectD oCurrentRect = GetBounds();
+						TEmfRectL* pEmfRect =  oEmfParser.GetBounds();
+
+						double dScaleX = std::abs((oCurrentRect.dRight - oCurrentRect.dLeft) / (pEmfRect->lRight - pEmfRect->lLeft));
+						double dScaleY = std::abs((oCurrentRect.dBottom - oCurrentRect.dTop) / (pEmfRect->lBottom - pEmfRect->lTop));
+
+						pXmlWriter->WriteNodeBegin(L"g", true);
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+						pXmlWriter->WriteNodeEnd(L"g", true, false);
+
+						((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
+
 						oEmfParser.PlayFile();
 
-						((CWmfInterpretatorSvg*)m_pInterpretator)->SetXmlWriter(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetXmlWriter());
+						pXmlWriter->WriteNodeEnd(L"g", false, false);
 
-						m_bEof = true;
+						HANDLE_META_EOF();
 					}
 				}
 			}

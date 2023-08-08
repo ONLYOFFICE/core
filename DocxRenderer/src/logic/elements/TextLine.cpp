@@ -111,14 +111,14 @@ namespace NSDocxRenderer
 						if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
 						{
 							pFirst->m_oText += L" ";
-							pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
+							pFirst->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
 						}
 						else
 						{
 							NSStringUtils::CStringUTF32 oNewText = L" ";
 							oNewText += pCurrent->m_oText;
 							pCurrent->m_oText = oNewText;
-							pCurrent->m_dWidth += pCurrent->m_dSpaceWidthMM;
+							pCurrent->m_dWidth += (pCurrent->m_dLeft - pFirst->m_dRight);
 						}
 					}
 

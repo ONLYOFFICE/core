@@ -49,6 +49,8 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
+#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -490,9 +492,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
-				return OOX::FileType(L"xl", L"workbook.bin",
-												L"application/vnd.ms-excel.sheet.binary.macroEnabled.main",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+				return OOX::SpreadsheetBin::FileTypes::WorkbookBin;
 			}
 			if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
 			else					return OOX::Spreadsheet::FileTypes::Workbook;

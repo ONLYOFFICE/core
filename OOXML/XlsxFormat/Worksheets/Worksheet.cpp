@@ -49,6 +49,8 @@
 #include "../../XlsbFormat/Biff12_unions/HLINKS.h"
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
+#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -826,10 +828,7 @@ mc:Ignorable=\"x14ac\">");
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
-				return OOX::FileType(L"worksheets", L"sheet.bin",
-												L"application/vnd.ms-excel.worksheet",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
-												L"worksheets/sheet", true);
+				return OOX::SpreadsheetBin::FileTypes::WorksheetBin;
 			}
 			return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
 		}

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../DocxFormat/FileType.h"
+#include "../../DocxFormat/FileType.h"
 
 
 namespace OOX

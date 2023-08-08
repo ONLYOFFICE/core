@@ -13,7 +13,7 @@
 #endif
 
 namespace MetaFile
-{               
+{
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, double dWidth, double dHeight)
 	    : CInterpretatorSvgBase(pParser, dWidth, dHeight)
 	{}
@@ -161,12 +161,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(dStartX) + L' ' + ConvertToWString(dStartY);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				ConvertToWString(dYRadius) + L' ' +
-				L"0 " +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				ConvertToWString(dEndX) + L' ' +
-				ConvertToWString(dEndY);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 " +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(dEndX) + L' ' +
+		           ConvertToWString(dEndY);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -224,12 +224,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(oStartPoint.x) + L' ' + ConvertToWString(oStartPoint.y);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				ConvertToWString(dYRadius) + L' ' +
-				L"0 " +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				ConvertToWString(dEndX) + L' ' +
-				ConvertToWString(dEndY);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 " +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(dEndX) + L' ' +
+		           ConvertToWString(dEndY);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -278,12 +278,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(dStartX) + L' ' + ConvertToWString(dStartY);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				ConvertToWString(dYRadius) + L' ' +
-				L"0 " +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				ConvertToWString(dEndX) + L' ' +
-				ConvertToWString(dEndY);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 " +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(dEndX) + L' ' +
+		           ConvertToWString(dEndY);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -317,9 +317,9 @@ namespace MetaFile
 		TRectD oNewRect = TranslateRect(oBox);
 
 		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.dLeft   + oNewRect.dRight)  / 2)},
-									   {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
-									   {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
-									   {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
+		                               {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
+		                               {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
+		                               {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
@@ -357,9 +357,9 @@ namespace MetaFile
 		TPointD oCurPos = GetCutPos();
 
 		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.x)},
-									   {L"y1", ConvertToWString(oCurPos.y)},
-									   {L"x2", ConvertToWString(oPoint.x)},
-									   {L"y2", ConvertToWString(oPoint.y)}};
+		                               {L"y1", ConvertToWString(oCurPos.y)},
+		                               {L"x2", ConvertToWString(oPoint.x)},
+		                               {L"y2", ConvertToWString(oPoint.y)}};
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
@@ -400,8 +400,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+			            ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+			            ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -422,8 +422,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+			            ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+			            ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -444,8 +444,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+			            ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+			            ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -466,8 +466,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+			            ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+			            ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -507,8 +507,8 @@ namespace MetaFile
 					oLastType = 0x04;
 				}
 				wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L',' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-							ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-							ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+				            ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+				            ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 				unIndex += 3;
 			}
@@ -557,8 +557,8 @@ namespace MetaFile
 					oLastType = 0x04;
 				}
 				wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L',' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-							ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-							ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
+				            ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+				            ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 				unIndex += 3;
 			}
@@ -826,9 +826,9 @@ namespace MetaFile
 		TRectD oNewRect = TranslateRect(oBox);
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes, oNewRect.dRight - oNewRect.dLeft, oNewRect.dBottom - oNewRect.dTop);
@@ -843,9 +843,9 @@ namespace MetaFile
 		TRectD oNewRect = TranslateRect(oBox);
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
 		                               {L"rx",		ConvertToWString((double)oCorner.cx / 2.)},
 		                               {L"ry",		ConvertToWString((double)oCorner.cy / 2.)}};
 
@@ -1056,12 +1056,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(oNewRect.dLeft) + L' ' + ConvertToWString(oNewRect.dTop);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-		        ConvertToWString(dYRadius) + L' ' +
-		        L"0 " +
-		        ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-		        ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-		        ConvertToWString(oNewRect.dRight) + L' ' +
-		        ConvertToWString(oNewRect.dBottom);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 " +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(oNewRect.dRight) + L' ' +
+		           ConvertToWString(oNewRect.dBottom);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -1606,12 +1606,12 @@ namespace MetaFile
 					double dEndY = (oPoint2.y + oPoint1.x) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
 
 					wsValue += L"A " + ConvertToWString(dXRadius) + L' ' +
-					        ConvertToWString(dYRadius) + L' ' +
-					        L"0 " +
-					        ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
-					        ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
-					        ConvertToWString(dEndX) + L' ' +
-					        ConvertToWString(dEndY) + L' ';
+					           ConvertToWString(dYRadius) + L' ' +
+					           L"0 " +
+					           ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
+					           ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
+					           ConvertToWString(dEndX) + L' ' +
+					           ConvertToWString(dEndY) + L' ';
 
 					oLastType = EMF_PATHCOMMAND_ARCTO;
 

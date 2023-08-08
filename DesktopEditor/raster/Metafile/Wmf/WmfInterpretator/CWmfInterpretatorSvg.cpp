@@ -100,12 +100,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(dX1 + (shRight + shLeft) / 2.) + L' ' + ConvertToWString(dY1 + (shBottom + shTop) / 2.);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				   ConvertToWString(dYRadius) + L' ' +
-				   L"0 0 0 " +
-				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				   ConvertToWString(dX2 + (shRight + shLeft) / 2.) + L' ' +
-				   ConvertToWString(dY2 + (shBottom + shTop) / 2.);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 0 0 " +
+		           //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(dX2 + (shRight + shLeft) / 2.) + L' ' +
+		           ConvertToWString(dY2 + (shBottom + shTop) / 2.);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -132,9 +132,9 @@ namespace MetaFile
 		oNewRect.dBottom = shBottom;
 
 		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.dLeft   + oNewRect.dRight)  / 2)},
-									   {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
-									   {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
-									   {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
+		                               {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
+		                               {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
+		                               {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
@@ -261,9 +261,9 @@ namespace MetaFile
 		TPointD oCurPos = GetCutPos();
 
 		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.x)},
-									   {L"y1", ConvertToWString(oCurPos.y)},
-									   {L"x2", ConvertToWString(shX)},
-									   {L"y2", ConvertToWString(shY)}};
+		                               {L"y1", ConvertToWString(oCurPos.y)},
+		                               {L"x2", ConvertToWString(shX)},
+		                               {L"y2", ConvertToWString(shY)}};
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
@@ -396,9 +396,9 @@ namespace MetaFile
 		oNewRect.dBottom = shB;
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
@@ -418,9 +418,9 @@ namespace MetaFile
 		oNewRect.dBottom = shB;
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
 		                               {L"rx",		ConvertToWString((double)shW / 2.)},
 		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
 

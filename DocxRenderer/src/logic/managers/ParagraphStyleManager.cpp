@@ -34,7 +34,7 @@ namespace NSDocxRenderer
 
 		bool isHeading = true;
 		for(auto& val : oParagraph.m_arLines[0]->m_arConts)
-			if(val->m_pFontStyle->dFontSize <= m_dAvgFontSize && !val->m_pFontStyle->bBold)
+			if(val->m_pFontStyle->dFontSize <= m_dAvgFontSize + 1 && !val->m_pFontStyle->bBold)
 				isHeading = false;
 
 		return isHeading ? L"Heading1" : L"Normal";

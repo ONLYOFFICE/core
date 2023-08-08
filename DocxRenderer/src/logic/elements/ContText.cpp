@@ -133,7 +133,7 @@ namespace NSDocxRenderer
 		}
 
 		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-		lCalculatedSpacing -= 6;
+		lCalculatedSpacing -= 2;
 
 		if (lCalculatedSpacing != 0)
 		{

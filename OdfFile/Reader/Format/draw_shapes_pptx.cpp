@@ -296,6 +296,8 @@ void draw_connector::reset_svg_attributes()
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
+
+		additional_.push_back(_property(L"flipH", true));
 		
 	}else
 	{
@@ -307,6 +309,8 @@ void draw_connector::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
 
+		additional_.push_back(_property(L"flipV", true));
+
 	}else
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y1_;
@@ -317,7 +321,7 @@ void draw_connector::reset_svg_attributes()
 int pptx_convert_glue_point(int gluePoint)
 {
 	if (gluePoint < 4)
-		return gluePoint;
+		return 4 - gluePoint;
 
 	return gluePoint - 4;
 }
@@ -347,19 +351,22 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_slide_context().set_connector_start_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_start_glue_point_.value()));
 	if (draw_connector_attlist_.draw_end_glue_point_)
 		Context.get_slide_context().set_connector_end_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_end_glue_point_.value()));
-	if (draw_connector_attlist_.draw_type_)
-	{
-		std::wstring pptx_prst;
 
-		if(draw_connector_attlist_.draw_type_.value() == L"curve")
-			pptx_prst = L"curvedConnector3";
-		else if (draw_connector_attlist_.draw_type_.value() == L"lines")
-			pptx_prst = L"bentConnector3";
-		else
-			pptx_prst = L"line";
+	std::wstring drawType = draw_connector_attlist_.draw_type_.get_value_or(L"standart");
+	std::wstring pptx_prst;
 
-		Context.get_slide_context().set_connector_draw_type(pptx_prst);
-	}
+	if (drawType == L"curve")
+		pptx_prst = L"curvedConnector3";
+	else if (drawType == L"lines")
+		pptx_prst = L"bentConnector5";
+	else if (drawType == L"line")
+		pptx_prst = L"line";
+	else if (drawType == L"standart")
+		pptx_prst = L"bentConnector3";
+	else
+		pptx_prst = L"bentConnector5";
+
+	Context.get_slide_context().set_connector_draw_type(pptx_prst);
 		
 
 //перебъем заливку .. 

@@ -263,9 +263,6 @@ public:
 private:
 	type type_;
 
-	typedef std::unordered_map<std::wstring, type> id_map;
-	static id_map preset_maping_;
-
 };
 std::wostream& operator << (std::wostream& _Wostream, const preset_id& _Val);
 

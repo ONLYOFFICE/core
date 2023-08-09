@@ -36,43 +36,6 @@
 #include <ostream>
 
 namespace cpdoccore { namespace odf_types {
-#if USE_MAP
-	smil_attribute_name::attibute_name_map smil_attribute_name::attribute_name_mapping_ = {
-		{ L"charColor"		, smil_attribute_name::charColor },
-		{ L"charFontName"	, smil_attribute_name::charFontName },
-		{ L"charHeight"		, smil_attribute_name::charHeight },
-		{ L"charPosture"	, smil_attribute_name::charPosture },
-		{ L"charUnderline"	, smil_attribute_name::charUnderline },
-		{ L"charWeight"		, smil_attribute_name::charWeight },
-		{ L"color"			, smil_attribute_name::color },
-		{ L"fill"			, smil_attribute_name::fill},
-		{ L"fillColor"		, smil_attribute_name::fillColor },
-		{ L"fillStyle"		, smil_attribute_name::fillStyle },
-		{ L"height"			, smil_attribute_name::height },
-		{ L"lineColor"		, smil_attribute_name::lineColor },
-		{ L"lineStyle"		, smil_attribute_name::lineStyle },
-		{ L"opacity"		, smil_attribute_name::opacity },
-		{ L"rotate"			, smil_attribute_name::rotate },
-		{ L"skewX"			, smil_attribute_name::skewX },
-		{ L"skewY"			, smil_attribute_name::skewY },
-		{ L"visibility"		, smil_attribute_name::visibility },
-		{ L"width"			, smil_attribute_name::width },
-		{ L"x"				, smil_attribute_name::x },
-		{ L"y"				, smil_attribute_name::y },
-		{ L"dim"			, smil_attribute_name::dim },
-			
-		{ L"char-color"		, smil_attribute_name::charColor },
-		{ L"char-font-name"	, smil_attribute_name::charFontName },
-		{ L"char-height"	, smil_attribute_name::charHeight },
-		{ L"char-posture"	, smil_attribute_name::charPosture },
-		{ L"char-underline"	, smil_attribute_name::charUnderline },
-		{ L"char-weight"	, smil_attribute_name::charWeight },
-		{ L"fill-color"		, smil_attribute_name::fillColor },
-		{ L"fill-style"		, smil_attribute_name::fillStyle },
-		{ L"line-color"		, smil_attribute_name::lineColor },
-		{ L"line-style"		, smil_attribute_name::lineStyle },
-	};
-#endif
 
 	std::wostream& operator << (std::wostream& _Wostream, const smil_attribute_name& _Val)
 	{
@@ -106,55 +69,32 @@ namespace cpdoccore { namespace odf_types {
 
 	smil_attribute_name smil_attribute_name::parse(const std::wstring& Str)
 	{
-		smil_attribute_name result;
-		const size_t repeats = 10000000;
+		std::wstring tmp = boost::algorithm::to_lower_copy(Str);
+		boost::algorithm::erase_all(tmp, L"-");
 
-#if USE_MAP
+		if (tmp == L"charcolor")				return smil_attribute_name(charColor);
+		else if (Str == L"charfontname")		return smil_attribute_name(charFontName);
+		else if (Str == L"charheight")			return smil_attribute_name(charHeight);
+		else if (Str == L"charposture")			return smil_attribute_name(charPosture);
+		else if (Str == L"charunderline")		return smil_attribute_name(charUnderline);
+		else if (Str == L"charweight")			return smil_attribute_name(charWeight);
+		else if (Str == L"color")				return smil_attribute_name(color);
+		else if (Str == L"fillcolor")			return smil_attribute_name(fillColor);
+		else if (Str == L"fillstyle")			return smil_attribute_name(fillStyle);
+		else if (Str == L"height")				return smil_attribute_name(height);
+		else if (Str == L"linecolor")			return smil_attribute_name(lineColor);
+		else if (Str == L"linestyle")			return smil_attribute_name(lineStyle);
+		else if (Str == L"opacity")				return smil_attribute_name(opacity);
+		else if (Str == L"rotate")				return smil_attribute_name(rotate);
+		else if (Str == L"skewx")				return smil_attribute_name(skewX);
+		else if (Str == L"skewx")				return smil_attribute_name(skewY);
+		else if (Str == L"visibility")			return smil_attribute_name(visibility);
+		else if (Str == L"width")				return smil_attribute_name(width);
+		else if (Str == L"x")					return smil_attribute_name(x);
+		else if (Str == L"y")					return smil_attribute_name(y);
+		else if (Str == L"dim")					return smil_attribute_name(dim);
 
-		attibute_name_map::const_iterator it = attribute_name_mapping_.find(Str);
-		if (it == attribute_name_mapping_.end())
-			result = smil_attribute_name::none;
-		else
-			result = it->second;
-
-		return result;
-#else
-
-		if (Str == L"charColor")				result = smil_attribute_name(charColor);
-		else if (Str == L"charFontName")		result = smil_attribute_name(charFontName);
-		else if (Str == L"charHeight")			result = smil_attribute_name(charHeight);
-		else if (Str == L"charPosture")			result = smil_attribute_name(charPosture);
-		else if (Str == L"charUnderline")		result = smil_attribute_name(charUnderline);
-		else if (Str == L"charWeight")			result = smil_attribute_name(charWeight);
-		else if (Str == L"color")				result = smil_attribute_name(color);
-		else if (Str == L"fillColor")			result = smil_attribute_name(fillColor);
-		else if (Str == L"fillStyle")			result = smil_attribute_name(fillStyle);
-		else if (Str == L"height")				result = smil_attribute_name(height);
-		else if (Str == L"lineColor")			result = smil_attribute_name(lineColor);
-		else if (Str == L"lineStyle")			result = smil_attribute_name(lineStyle);
-		else if (Str == L"opacity")				result = smil_attribute_name(opacity);
-		else if (Str == L"rotate")				result = smil_attribute_name(rotate);
-		else if (Str == L"skewX")				result = smil_attribute_name(skewX);
-		else if (Str == L"skewY")				result = smil_attribute_name(skewY);
-		else if (Str == L"visibility")			result = smil_attribute_name(visibility);
-		else if (Str == L"width")				result = smil_attribute_name(width);
-		else if (Str == L"x")					result = smil_attribute_name(x);
-		else if (Str == L"y")					result = smil_attribute_name(y);
-		else if (Str == L"dim")					result = smil_attribute_name(dim);
-
-		else if (Str == L"char-color")			result = smil_attribute_name(charColor);
-		else if (Str == L"char-font-name")		result = smil_attribute_name(charFontName);
-		else if (Str == L"char-height")			result = smil_attribute_name(charHeight);
-		else if (Str == L"char-posture")		result = smil_attribute_name(charPosture);
-		else if (Str == L"char-underline")		result = smil_attribute_name(charUnderline);
-		else if (Str == L"char-weight")			result = smil_attribute_name(charWeight);
-		else if (Str == L"fill-color")			result = smil_attribute_name(fillColor);
-		else if (Str == L"fill-style")			result = smil_attribute_name(fillStyle);
-		else if (Str == L"line-color")			result = smil_attribute_name(lineColor);
-		else if (Str == L"line-style")			result = smil_attribute_name(lineStyle);
-
-		return result;
-#endif
+		return smil_attribute_name(none);
 	}
 
 }

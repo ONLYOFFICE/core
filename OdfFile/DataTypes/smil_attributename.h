@@ -35,8 +35,6 @@
 #include <unordered_map>
 #include "odfattributes.h"
 
-#define USE_MAP 1
-
 namespace cpdoccore { namespace odf_types {
 
 class smil_attribute_name
@@ -84,10 +82,6 @@ public:
 
 private:
 	type type_;
-#if USE_MAP
-	typedef std::unordered_map<std::wstring, type> attibute_name_map;
-	static attibute_name_map attribute_name_mapping_;
-#endif
 };
 std::wostream& operator << (std::wostream& _Wostream, const smil_attribute_name& _Val);
 

@@ -38,222 +38,232 @@
 
 namespace cpdoccore { namespace odf_types {
 
-	preset_id::id_map preset_id::preset_maping_ = {
-		{ L"ooo-entrance-appear",				preset_id::type::ooo_entrance_appear },
-		{ L"ooo-entrance-fly-in",				preset_id::type::ooo_entrance_fly_in },
-		{ L"ooo-entrance-venetian-blinds",		preset_id::type::ooo_entrance_venetian_blinds },
-		{ L"ooo-entrance-box",					preset_id::type::ooo_entrance_box },
-		{ L"ooo-entrance-checkerboard",			preset_id::type::ooo_entrance_checkerboard },
-		{ L"ooo-entrance-circle",				preset_id::type::ooo_entrance_circle },
-		{ L"ooo-entrance-fly-in-slow",			preset_id::type::ooo_entrance_fly_in_slow },
-		{ L"ooo-entrance-diamond",				preset_id::type::ooo_entrance_diamond },
-		{ L"ooo-entrance-dissolve-in",			preset_id::type::ooo_entrance_dissolve_in },
-		{ L"ooo-entrance-fade-in",				preset_id::type::ooo_entrance_fade_in },
-		{ L"ooo-entrance-flash-once",			preset_id::type::ooo_entrance_flash_once },
-		{ L"ooo-entrance-peek-in",				preset_id::type::ooo_entrance_peek_in },
-		{ L"ooo-entrance-plus",					preset_id::type::ooo_entrance_plus },
-		{ L"ooo-entrance-random-bars",			preset_id::type::ooo_entrance_random_bars },
-		{ L"ooo-entrance-spiral-in",			preset_id::type::ooo_entrance_spiral_in },
-		{ L"ooo-entrance-split",				preset_id::type::ooo_entrance_split },
-		{ L"ooo-entrance-stretchy",				preset_id::type::ooo_entrance_stretchy },
-		{ L"ooo-entrance-diagonal-squares",		preset_id::type::ooo_entrance_diagonal_squares },
-		{ L"ooo-entrance-swivel",				preset_id::type::ooo_entrance_swivel },
-		{ L"ooo-entrance-wedge",				preset_id::type::ooo_entrance_wedge },
-		{ L"ooo-entrance-wheel",				preset_id::type::ooo_entrance_wheel },
-		{ L"ooo-entrance-wipe",					preset_id::type::ooo_entrance_wipe },
-		{ L"ooo-entrance-zoom",					preset_id::type::ooo_entrance_zoom },
-		{ L"ooo-entrance-random",				preset_id::type::ooo_entrance_random },
-		{ L"ooo-entrance-boomerang",			preset_id::type::ooo_entrance_boomerang },
-		{ L"ooo-entrance-bounce",				preset_id::type::ooo_entrance_bounce },
-		{ L"ooo-entrance-colored-lettering",	preset_id::type::ooo_entrance_colored_lettering },
-		{ L"ooo-entrance-movie-credits",		preset_id::type::ooo_entrance_movie_credits },
-		{ L"ooo-entrance-ease-in",				preset_id::type::ooo_entrance_ease_in },
-		{ L"ooo-entrance-float",				preset_id::type::ooo_entrance_float },
-		{ L"ooo-entrance-turn-and-grow",		preset_id::type::ooo_entrance_turn_and_grow },
-		{ L"ooo-entrance-breaks",				preset_id::type::ooo_entrance_breaks },
-		{ L"ooo-entrance-pinwheel",				preset_id::type::ooo_entrance_pinwheel },
-		{ L"ooo-entrance-rise-up",				preset_id::type::ooo_entrance_rise_up },
-		{ L"ooo-entrance-falling-in",			preset_id::type::ooo_entrance_falling_in },
-		{ L"ooo-entrance-thread",				preset_id::type::ooo_entrance_thread },
-		{ L"ooo-entrance-unfold",				preset_id::type::ooo_entrance_unfold },
-		{ L"ooo-entrance-whip",					preset_id::type::ooo_entrance_whip },
-		{ L"ooo-entrance-ascend",				preset_id::type::ooo_entrance_ascend },
-		{ L"ooo-entrance-center-revolve",		preset_id::type::ooo_entrance_center_revolve },
-		{ L"ooo-entrance-fade-in-and-swivel",	preset_id::type::ooo_entrance_fade_in_and_swivel },
-		{ L"ooo-entrance-descend",				preset_id::type::ooo_entrance_descend },
-		{ L"ooo-entrance-sling",				preset_id::type::ooo_entrance_sling },
-		{ L"ooo-entrance-spin-in",				preset_id::type::ooo_entrance_spin_in },
-		{ L"ooo-entrance-compress",				preset_id::type::ooo_entrance_compress },
-		{ L"ooo-entrance-magnify",				preset_id::type::ooo_entrance_magnify },
-		{ L"ooo-entrance-curve-up",				preset_id::type::ooo_entrance_curve_up },
-		{ L"ooo-entrance-fade-in-and-zoom",		preset_id::type::ooo_entrance_fade_in_and_zoom },
-		{ L"ooo-entrance-glide",				preset_id::type::ooo_entrance_glide },
-		{ L"ooo-entrance-expand",				preset_id::type::ooo_entrance_expand },
-		{ L"ooo-entrance-flip",					preset_id::type::ooo_entrance_flip },
-		{ L"ooo-entrance-fold",					preset_id::type::ooo_entrance_fold },
-
-		{ L"ooo-emphasis-fill-color",			preset_id::type::ooo_emphasis_fill_color },
-		{ L"ooo-emphasis-font",					preset_id::type::ooo_emphasis_font },
-		{ L"ooo-emphasis-font-color",			preset_id::type::ooo_emphasis_font_color },
-		{ L"ooo-emphasis-font-size",			preset_id::type::ooo_emphasis_font_size },
-		{ L"ooo-emphasis-font-style",			preset_id::type::ooo_emphasis_font_style },
-		{ L"ooo-emphasis-grow-and-shrink",		preset_id::type::ooo_emphasis_grow_and_shrink },
-		{ L"ooo-emphasis-line-color",			preset_id::type::ooo_emphasis_line_color },
-		{ L"ooo-emphasis-spin",					preset_id::type::ooo_emphasis_spin },
-		{ L"ooo-emphasis-transparency",			preset_id::type::ooo_emphasis_transparency },
-		{ L"ooo-emphasis-bold-flash",			preset_id::type::ooo_emphasis_bold_flash },
-		{ L"ooo-emphasis-blast",				preset_id::type::ooo_emphasis_blast },
-		{ L"ooo-emphasis-bold-reveal",			preset_id::type::ooo_emphasis_bold_reveal },
-		{ L"ooo-emphasis-color-over-by-word",	preset_id::type::ooo_emphasis_color_over_by_word },
-		{ L"ooo-emphasis-reveal-underline",		preset_id::type::ooo_emphasis_reveal_underline },
-		{ L"ooo-emphasis-color-blend",			preset_id::type::ooo_emphasis_color_blend },
-		{ L"ooo-emphasis-color-over-by-letter", preset_id::type::ooo_emphasis_color_over_by_letter },
-		{ L"ooo-emphasis-complementary-color",	preset_id::type::ooo_emphasis_complementary_color },
-		{ L"ooo-emphasis-complementary-color-2", preset_id::type::ooo_emphasis_complementary_color_2 },
-		{ L"ooo-emphasis-contrasting-color",	preset_id::type::ooo_emphasis_contrasting_color },
-		{ L"ooo-emphasis-darken",				preset_id::type::ooo_emphasis_darken },
-		{ L"ooo-emphasis-desaturate",			preset_id::type::ooo_emphasis_desaturate },
-		{ L"ooo-emphasis-flash-bulb",			preset_id::type::ooo_emphasis_flash_bulb },
-		{ L"ooo-emphasis-flicker",				preset_id::type::ooo_emphasis_flicker },
-		{ L"ooo-emphasis-grow-with-color",		preset_id::type::ooo_emphasis_grow_with_color },
-		{ L"ooo-emphasis-lighten",				preset_id::type::ooo_emphasis_lighten },
-		{ L"ooo-emphasis-style-emphasis",		preset_id::type::ooo_emphasis_style_emphasis },
-		{ L"ooo-emphasis-teeter",				preset_id::type::ooo_emphasis_teeter },
-		{ L"ooo-emphasis-vertical-highlight",	preset_id::type::ooo_emphasis_vertical_highlight },
-		{ L"ooo-emphasis-wave",					preset_id::type::ooo_emphasis_wave },
-		{ L"ooo-emphasis-blink",				preset_id::type::ooo_emphasis_blink },
-		{ L"ooo-emphasis-shimmer",				preset_id::type::ooo_emphasis_shimmer },
-
-		{ L"ooo-exit-disappear",				preset_id::type::ooo_exit_disappear },
-		{ L"ooo-exit-fly-out",					preset_id::type::ooo_exit_fly_out },
-		{ L"ooo-exit-venetian-blinds",			preset_id::type::ooo_exit_venetian_blinds },
-		{ L"ooo-exit-box",						preset_id::type::ooo_exit_box },
-		{ L"ooo-exit-checkerboard",				preset_id::type::ooo_exit_checkerboard },
-		{ L"ooo-exit-circle",					preset_id::type::ooo_exit_circle },
-		{ L"ooo-exit-crawl-out",				preset_id::type::ooo_exit_crawl_out },
-		{ L"ooo-exit-diamond",					preset_id::type::ooo_exit_diamond },
-		{ L"ooo-exit-dissolve",					preset_id::type::ooo_exit_dissolve },
-		{ L"ooo-exit-fade-out",					preset_id::type::ooo_exit_fade_out },
-		{ L"ooo-exit-flash-once",				preset_id::type::ooo_exit_flash_once },
-		{ L"ooo-exit-peek-out",					preset_id::type::ooo_exit_peek_out },
-		{ L"ooo-exit-plus",						preset_id::type::ooo_exit_plus },
-		{ L"ooo-exit-random-bars",				preset_id::type::ooo_exit_random_bars },
-		{ L"ooo-exit-spiral-out",				preset_id::type::ooo_exit_spiral_out },
-		{ L"ooo-exit-split",					preset_id::type::ooo_exit_split },
-		{ L"ooo-exit-collapse",					preset_id::type::ooo_exit_collapse },
-		{ L"ooo-exit-diagonal-squares",			preset_id::type::ooo_exit_diagonal_squares },
-		{ L"ooo-exit-swivel",					preset_id::type::ooo_exit_swivel },
-		{ L"ooo-exit-wedge",					preset_id::type::ooo_exit_wedge },
-		{ L"ooo-exit-wheel",					preset_id::type::ooo_exit_wheel },
-		{ L"ooo-exit-wipe",						preset_id::type::ooo_exit_wipe },
-		{ L"ooo-exit-zoom",						preset_id::type::ooo_exit_zoom },
-		{ L"ooo-exit-random",					preset_id::type::ooo_exit_random },
-		{ L"ooo-exit-boomerang",				preset_id::type::ooo_exit_boomerang },
-		{ L"ooo-exit-bounce",					preset_id::type::ooo_exit_bounce },
-		{ L"ooo-exit-colored-lettering",		preset_id::type::ooo_exit_colored_lettering },
-		{ L"ooo-exit-movie-credits",			preset_id::type::ooo_exit_movie_credits },
-		{ L"ooo-exit-ease-out",					preset_id::type::ooo_exit_ease_out },
-		{ L"ooo-exit-float",					preset_id::type::ooo_exit_float },
-		{ L"ooo-exit-turn-and-grow",			preset_id::type::ooo_exit_turn_and_grow },
-		{ L"ooo-exit-breaks",					preset_id::type::ooo_exit_breaks },
-		{ L"ooo-exit-pinwheel",					preset_id::type::ooo_exit_pinwheel },
-		{ L"ooo-exit-sink-down",				preset_id::type::ooo_exit_sink_down },
-		{ L"ooo-exit-swish",					preset_id::type::ooo_exit_swish },
-		{ L"ooo-exit-thread",					preset_id::type::ooo_exit_thread },
-		{ L"ooo-exit-unfold",					preset_id::type::ooo_exit_unfold },
-		{ L"ooo-exit-whip",						preset_id::type::ooo_exit_whip },
-		{ L"ooo-exit-descend",					preset_id::type::ooo_exit_descend },
-		{ L"ooo-exit-center-revolve",			preset_id::type::ooo_exit_center_revolve },
-		{ L"ooo-exit-fade-out-and-swivel",		preset_id::type::ooo_exit_fade_out_and_swivel },
-		{ L"ooo-exit-ascend",					preset_id::type::ooo_exit_ascend },
-		{ L"ooo-exit-sling",					preset_id::type::ooo_exit_sling },
-		{ L"ooo-exit-fade-out-and-zoom",		preset_id::type::ooo_exit_fade_out_and_zoom },
-		{ L"ooo-exit-contract",					preset_id::type::ooo_exit_contract },
-		{ L"ooo-exit-spin-out",					preset_id::type::ooo_exit_spin_out },
-		{ L"ooo-exit-stretchy",					preset_id::type::ooo_exit_stretchy },
-		{ L"ooo-exit-magnify",					preset_id::type::ooo_exit_magnify },
-		{ L"ooo-exit-curve-down",				preset_id::type::ooo_exit_curve_down },
-		{ L"ooo-exit-glide",					preset_id::type::ooo_exit_glide },
-		{ L"ooo-exit-flip",						preset_id::type::ooo_exit_flip },
-		{ L"ooo-exit-fold",						preset_id::type::ooo_exit_fold },
-
-		{ L"ooo-motionpath-4-point-star",		preset_id::type::ooo_motionpath_4_point_star },
-		{ L"ooo-motionpath-5-point-star",		preset_id::type::ooo_motionpath_5_point_star },
-		{ L"ooo-motionpath-6-point-star",		preset_id::type::ooo_motionpath_6_point_star },
-		{ L"ooo-motionpath-8-point-star",		preset_id::type::ooo_motionpath_8_point_star },
-		{ L"ooo-motionpath-circle",				preset_id::type::ooo_motionpath_circle },
-		{ L"ooo-motionpath-crescent-moon",		preset_id::type::ooo_motionpath_crescent_moon },
-		{ L"ooo-motionpath-diamond",			preset_id::type::ooo_motionpath_diamond },
-		{ L"ooo-motionpath-equal-triangle",		preset_id::type::ooo_motionpath_equal_triangle },
-		{ L"ooo-motionpath-oval",				preset_id::type::ooo_motionpath_oval },
-		{ L"ooo-motionpath-heart",				preset_id::type::ooo_motionpath_heart },
-		{ L"ooo-motionpath-hexagon",			preset_id::type::ooo_motionpath_hexagon },
-		{ L"ooo-motionpath-octagon",			preset_id::type::ooo_motionpath_octagon },
-		{ L"ooo-motionpath-parallelogram",		preset_id::type::ooo_motionpath_parallelogram },
-		{ L"ooo-motionpath-pentagon",			preset_id::type::ooo_motionpath_pentagon },
-		{ L"ooo-motionpath-right-triangle",		preset_id::type::ooo_motionpath_right_triangle },
-		{ L"ooo-motionpath-square",				preset_id::type::ooo_motionpath_square },
-		{ L"ooo-motionpath-teardrop",			preset_id::type::ooo_motionpath_teardrop },
-		{ L"ooo-motionpath-trapezoid",			preset_id::type::ooo_motionpath_trapezoid },
-		{ L"ooo-motionpath-arc-down",			preset_id::type::ooo_motionpath_arc_down },
-		{ L"ooo-motionpath-arc-left",			preset_id::type::ooo_motionpath_arc_left },
-		{ L"ooo-motionpath-arc-right",			preset_id::type::ooo_motionpath_arc_right },
-		{ L"ooo-motionpath-arc-up",				preset_id::type::ooo_motionpath_arc_up },
-		{ L"ooo-motionpath-bounce-left",		preset_id::type::ooo_motionpath_bounce_left },
-		{ L"ooo-motionpath-bounce-right",		preset_id::type::ooo_motionpath_bounce_right },
-		{ L"ooo-motionpath-curvy-left",			preset_id::type::ooo_motionpath_curvy_left },
-		{ L"ooo-motionpath-curvy-right",		preset_id::type::ooo_motionpath_curvy_right },
-		{ L"ooo-motionpath-decaying-wave",		preset_id::type::ooo_motionpath_decaying_wave },
-		{ L"ooo-motionpath-diagonal-down-right", preset_id::type::ooo_motionpath_diagonal_down_right },
-		{ L"ooo-motionpath-diagonal-up-right",	preset_id::type::ooo_motionpath_diagonal_up_right },
-		{ L"ooo-motionpath-down",				preset_id::type::ooo_motionpath_down },
-		{ L"ooo-motionpath-funnel",				preset_id::type::ooo_motionpath_funnel },
-		{ L"ooo-motionpath-spring",				preset_id::type::ooo_motionpath_spring },
-		{ L"ooo-motionpath-stairs-down",		preset_id::type::ooo_motionpath_stairs_down },
-		{ L"ooo-motionpath-turn-down",			preset_id::type::ooo_motionpath_turn_down },
-		{ L"ooo-motionpath-turn-down-right",	preset_id::type::ooo_motionpath_turn_down_right },
-		{ L"ooo-motionpath-turn-up",			preset_id::type::ooo_motionpath_turn_up },
-		{ L"ooo-motionpath-turn-up-right",		preset_id::type::ooo_motionpath_turn_up_right },
-		{ L"ooo-motionpath-up",					preset_id::type::ooo_motionpath_up },
-		{ L"ooo-motionpath-wave",				preset_id::type::ooo_motionpath_wave },
-		{ L"ooo-motionpath-zigzag",				preset_id::type::ooo_motionpath_zigzag },
-		{ L"ooo-motionpath-bean",				preset_id::type::ooo_motionpath_bean },
-		{ L"ooo-motionpath-buzz-saw",			preset_id::type::ooo_motionpath_buzz_saw },
-		{ L"ooo-motionpath-curved-square",		preset_id::type::ooo_motionpath_curved_square },
-		{ L"ooo-motionpath-curved-x",			preset_id::type::ooo_motionpath_curved_x },
-		{ L"ooo-motionpath-curvy-star",			preset_id::type::ooo_motionpath_curvy_star },
-		{ L"ooo-motionpath-figure-8-four",		preset_id::type::ooo_motionpath_figure_8_four },
-		{ L"ooo-motionpath-horizontal-figure-8", preset_id::type::ooo_motionpath_horizontal_figure_8 },
-		{ L"ooo-motionpath-inverted-square",	preset_id::type::ooo_motionpath_inverted_square },
-		{ L"ooo-motionpath-inverted-triangle",	preset_id::type::ooo_motionpath_inverted_triangle },
-		{ L"ooo-motionpath-loop-de-loop",		preset_id::type::ooo_motionpath_loop_de_loop },
-		{ L"ooo-motionpath-neutron",			preset_id::type::ooo_motionpath_neutron },
-		{ L"ooo-motionpath-peanut",				preset_id::type::ooo_motionpath_peanut },
-		{ L"ooo-motionpath-clover",				preset_id::type::ooo_motionpath_clover },
-		{ L"ooo-motionpath-pointy-star",		preset_id::type::ooo_motionpath_pointy_star },
-		{ L"ooo-motionpath-swoosh",				preset_id::type::ooo_motionpath_swoosh },
-		{ L"ooo-motionpath-vertical-figure-8",	preset_id::type::ooo_motionpath_vertical_figure_8 },
-		{ L"ooo-motionpath-left",				preset_id::type::ooo_motionpath_left },
-		{ L"ooo-motionpath-right",				preset_id::type::ooo_motionpath_right },
-		{ L"ooo-motionpath-spiral-left",		preset_id::type::ooo_motionpath_spiral_left },
-		{ L"ooo-motionpath-spiral-right",		preset_id::type::ooo_motionpath_spiral_right },
-		{ L"ooo-motionpath-sine-wave",			preset_id::type::ooo_motionpath_sine_wave },
-		{ L"ooo-motionpath-s-curve-1",			preset_id::type::ooo_motionpath_s_curve_1 },
-		{ L"ooo-motionpath-s-curve-2",			preset_id::type::ooo_motionpath_s_curve_2 },
-		{ L"ooo-motionpath-heartbeat",			preset_id::type::ooo_motionpath_heartbeat },
-
-	};
-
 	preset_id preset_id::parse(const std::wstring& Str)
 	{
 		std::wstring tmp = Str;
 		boost::algorithm::to_lower(tmp);
 
-		id_map::const_iterator id = preset_maping_.find(tmp);
-		if (id == preset_maping_.end())
-			return preset_id::type::none;
+		if (boost::algorithm::starts_with(tmp, L"ooo-entrance-"))
+		{
+			std::wstring preset = tmp.substr(std::wstring(L"ooo-entrance-").size());
 
-		return id->second;
+			if (preset == L"appear") 					return preset_id::type::ooo_entrance_appear;
+			else if (preset == L"fly-in")				return preset_id::type::ooo_entrance_fly_in;
+			else if (preset == L"venetian-blinds")		return preset_id::type::ooo_entrance_venetian_blinds;
+			else if (preset == L"box")					return preset_id::type::ooo_entrance_box;
+			else if (preset == L"checkerboard")			return preset_id::type::ooo_entrance_checkerboard;
+			else if (preset == L"circle")				return preset_id::type::ooo_entrance_circle;
+			else if (preset == L"fly-in-slow")			return preset_id::type::ooo_entrance_fly_in_slow;
+			else if (preset == L"diamond")				return preset_id::type::ooo_entrance_diamond;
+			else if (preset == L"dissolve-in")			return preset_id::type::ooo_entrance_dissolve_in;
+			else if (preset == L"fade-in")				return preset_id::type::ooo_entrance_fade_in;
+			else if (preset == L"flash-once")			return preset_id::type::ooo_entrance_flash_once;
+			else if (preset == L"peek-in")				return preset_id::type::ooo_entrance_peek_in;
+			else if (preset == L"plus")					return preset_id::type::ooo_entrance_plus;
+			else if (preset == L"random-bars")			return preset_id::type::ooo_entrance_random_bars;
+			else if (preset == L"spiral-in")			return preset_id::type::ooo_entrance_spiral_in;
+			else if (preset == L"split")				return preset_id::type::ooo_entrance_split;
+			else if (preset == L"stretchy")				return preset_id::type::ooo_entrance_stretchy;
+			else if (preset == L"diagonal-squares")		return preset_id::type::ooo_entrance_diagonal_squares;
+			else if (preset == L"swivel")				return preset_id::type::ooo_entrance_swivel;
+			else if (preset == L"wedge")				return preset_id::type::ooo_entrance_wedge;
+			else if (preset == L"wheel")				return preset_id::type::ooo_entrance_wheel;
+			else if (preset == L"wipe")					return preset_id::type::ooo_entrance_wipe;
+			else if (preset == L"zoom")					return preset_id::type::ooo_entrance_zoom;
+			else if (preset == L"random")				return preset_id::type::ooo_entrance_random;
+			else if (preset == L"boomerang")			return preset_id::type::ooo_entrance_boomerang;
+			else if (preset == L"bounce")				return preset_id::type::ooo_entrance_bounce;
+			else if (preset == L"colored-lettering")	return preset_id::type::ooo_entrance_colored_lettering;
+			else if (preset == L"movie-credits")		return preset_id::type::ooo_entrance_movie_credits;
+			else if (preset == L"ease-in")				return preset_id::type::ooo_entrance_ease_in;
+			else if (preset == L"float")				return preset_id::type::ooo_entrance_float;
+			else if (preset == L"turn-and-grow")		return preset_id::type::ooo_entrance_turn_and_grow;
+			else if (preset == L"breaks")				return preset_id::type::ooo_entrance_breaks;
+			else if (preset == L"pinwheel")				return preset_id::type::ooo_entrance_pinwheel;
+			else if (preset == L"rise-up")				return preset_id::type::ooo_entrance_rise_up;
+			else if (preset == L"falling-in")			return preset_id::type::ooo_entrance_falling_in;
+			else if (preset == L"thread")				return preset_id::type::ooo_entrance_thread;
+			else if (preset == L"unfold")				return preset_id::type::ooo_entrance_unfold;
+			else if (preset == L"whip")					return preset_id::type::ooo_entrance_whip;
+			else if (preset == L"ascend")				return preset_id::type::ooo_entrance_ascend;
+			else if (preset == L"center-revolve")		return preset_id::type::ooo_entrance_center_revolve;
+			else if (preset == L"fade-in-and-swivel")	return preset_id::type::ooo_entrance_fade_in_and_swivel;
+			else if (preset == L"descend")				return preset_id::type::ooo_entrance_descend;
+			else if (preset == L"sling")				return preset_id::type::ooo_entrance_sling;
+			else if (preset == L"spin-in")				return preset_id::type::ooo_entrance_spin_in;
+			else if (preset == L"compress")				return preset_id::type::ooo_entrance_compress;
+			else if (preset == L"magnify")				return preset_id::type::ooo_entrance_magnify;
+			else if (preset == L"curve-up")				return preset_id::type::ooo_entrance_curve_up;
+			else if (preset == L"fade-in-and-zoom")		return preset_id::type::ooo_entrance_fade_in_and_zoom;
+			else if (preset == L"glide")				return preset_id::type::ooo_entrance_glide;
+			else if (preset == L"expand")				return preset_id::type::ooo_entrance_expand;
+			else if (preset == L"flip")					return preset_id::type::ooo_entrance_flip;
+			else if (preset == L"fold")					return preset_id::type::ooo_entrance_fold;
+		}
+		else if (boost::algorithm::starts_with(tmp, L"ooo-emphasis-"))
+		{
+			std::wstring preset = tmp.substr(std::wstring(L"ooo-emphasis-").size());
+
+			if (L"fill-color")							return preset_id::type::ooo_emphasis_fill_color;
+			else if (L"font")							return preset_id::type::ooo_emphasis_font;
+			else if (L"font-size")						return preset_id::type::ooo_emphasis_font_size;
+			else if (L"font-style")						return preset_id::type::ooo_emphasis_font_style;
+			else if (L"grow-and-shrink")				return preset_id::type::ooo_emphasis_grow_and_shrink;
+			else if (L"line-color")						return preset_id::type::ooo_emphasis_line_color;
+			else if (L"spin")							return preset_id::type::ooo_emphasis_spin;
+			else if (L"transparency")					return preset_id::type::ooo_emphasis_transparency;
+			else if (L"bold-flash")						return preset_id::type::ooo_emphasis_bold_flash;
+			else if (L"blast")							return preset_id::type::ooo_emphasis_blast;
+			else if (L"bold-reveal")					return preset_id::type::ooo_emphasis_bold_reveal;
+			else if (L"color-over-by-word")				return preset_id::type::ooo_emphasis_color_over_by_word;
+			else if (L"reveal-underline")				return preset_id::type::ooo_emphasis_reveal_underline;
+			else if (L"color-blend")					return preset_id::type::ooo_emphasis_color_blend;
+			else if (L"color-over-by-letter")			return preset_id::type::ooo_emphasis_color_over_by_letter;
+			else if (L"complementary-color")			return preset_id::type::ooo_emphasis_complementary_color;
+			else if (L"complementary-color-2")			return preset_id::type::ooo_emphasis_complementary_color_2;
+			else if (L"contrasting-color")				return preset_id::type::ooo_emphasis_contrasting_color;
+			else if (L"darken")							return preset_id::type::ooo_emphasis_darken;
+			else if (L"desaturate")						return preset_id::type::ooo_emphasis_desaturate;
+			else if (L"flash-bulb")						return preset_id::type::ooo_emphasis_flash_bulb;
+			else if (L"flicker")						return preset_id::type::ooo_emphasis_flicker;
+			else if (L"grow-with-color")				return preset_id::type::ooo_emphasis_grow_with_color;
+			else if (L"lighten")						return preset_id::type::ooo_emphasis_lighten;
+			else if (L"style-emphasis")					return preset_id::type::ooo_emphasis_style_emphasis;
+			else if (L"teeter")							return preset_id::type::ooo_emphasis_teeter;
+			else if (L"vertical-highlight")				return preset_id::type::ooo_emphasis_vertical_highlight;
+			else if (L"wave")							return preset_id::type::ooo_emphasis_wave;
+			else if (L"blink")							return preset_id::type::ooo_emphasis_blink;
+			else if (L"shimmer")						return preset_id::type::ooo_emphasis_shimmer;
+		}
+		else if (boost::algorithm::starts_with(tmp, L"ooo-exit-"))
+		{
+			std::wstring preset = tmp.substr(std::wstring(L"ooo-exit-").size());
+
+			if (preset == L"disappear")						return preset_id::type::ooo_exit_disappear;
+			else if (preset == L"fly-out")					return preset_id::type::ooo_exit_fly_out;
+			else if (preset == L"venetian-blinds")			return preset_id::type::ooo_exit_venetian_blinds;
+			else if (preset == L"box")						return preset_id::type::ooo_exit_box;
+			else if (preset == L"checkerboard")				return preset_id::type::ooo_exit_checkerboard;
+			else if (preset == L"circle")					return preset_id::type::ooo_exit_circle;
+			else if (preset == L"crawl-out")				return preset_id::type::ooo_exit_crawl_out;
+			else if (preset == L"diamond")					return preset_id::type::ooo_exit_diamond;
+			else if (preset == L"dissolve")					return preset_id::type::ooo_exit_dissolve;
+			else if (preset == L"fade-out")					return preset_id::type::ooo_exit_fade_out;
+			else if (preset == L"flash-once")				return preset_id::type::ooo_exit_flash_once;
+			else if (preset == L"peek-out")					return preset_id::type::ooo_exit_peek_out;
+			else if (preset == L"plus")						return preset_id::type::ooo_exit_plus;
+			else if (preset == L"random-bars")				return preset_id::type::ooo_exit_random_bars;
+			else if (preset == L"spiral-out")				return preset_id::type::ooo_exit_spiral_out;
+			else if (preset == L"split")					return preset_id::type::ooo_exit_split;
+			else if (preset == L"collapse")					return preset_id::type::ooo_exit_collapse;
+			else if (preset == L"diagonal-squares")			return preset_id::type::ooo_exit_diagonal_squares;
+			else if (preset == L"swivel")					return preset_id::type::ooo_exit_swivel;
+			else if (preset == L"wedge")					return preset_id::type::ooo_exit_wedge;
+			else if (preset == L"wheel")					return preset_id::type::ooo_exit_wheel;
+			else if (preset == L"wipe")						return preset_id::type::ooo_exit_wipe;
+			else if (preset == L"zoom")						return preset_id::type::ooo_exit_zoom;
+			else if (preset == L"random")					return preset_id::type::ooo_exit_random;
+			else if (preset == L"boomerang")				return preset_id::type::ooo_exit_boomerang;
+			else if (preset == L"bounce")					return preset_id::type::ooo_exit_bounce;
+			else if (preset == L"colored-lettering")		return preset_id::type::ooo_exit_colored_lettering;
+			else if (preset == L"movie-credits")			return preset_id::type::ooo_exit_movie_credits;
+			else if (preset == L"ease-out")					return preset_id::type::ooo_exit_ease_out;
+			else if (preset == L"float")					return preset_id::type::ooo_exit_float;
+			else if (preset == L"turn-and-grow")			return preset_id::type::ooo_exit_turn_and_grow;
+			else if (preset == L"breaks")					return preset_id::type::ooo_exit_breaks;
+			else if (preset == L"pinwheel")					return preset_id::type::ooo_exit_pinwheel;
+			else if (preset == L"sink-down")				return preset_id::type::ooo_exit_sink_down;
+			else if (preset == L"swish")					return preset_id::type::ooo_exit_swish;
+			else if (preset == L"thread")					return preset_id::type::ooo_exit_thread;
+			else if (preset == L"unfold")					return preset_id::type::ooo_exit_unfold;
+			else if (preset == L"whip")						return preset_id::type::ooo_exit_whip;
+			else if (preset == L"descend")					return preset_id::type::ooo_exit_descend;
+			else if (preset == L"center-revolve")			return preset_id::type::ooo_exit_center_revolve;
+			else if (preset == L"fade-out-and-swivel")		return preset_id::type::ooo_exit_fade_out_and_swivel;
+			else if (preset == L"ascend")					return preset_id::type::ooo_exit_ascend;
+			else if (preset == L"sling")					return preset_id::type::ooo_exit_sling;
+			else if (preset == L"fade-out-and-zoom")		return preset_id::type::ooo_exit_fade_out_and_zoom;
+			else if (preset == L"contract")					return preset_id::type::ooo_exit_contract;
+			else if (preset == L"spin-out")					return preset_id::type::ooo_exit_spin_out;
+			else if (preset == L"stretchy")					return preset_id::type::ooo_exit_stretchy;
+			else if (preset == L"magnify")					return preset_id::type::ooo_exit_magnify;
+			else if (preset == L"curve-down")				return preset_id::type::ooo_exit_curve_down;
+			else if (preset == L"glide")					return preset_id::type::ooo_exit_glide;
+			else if (preset == L"flip")						return preset_id::type::ooo_exit_flip;
+			else if (preset == L"fold")						return preset_id::type::ooo_exit_fold;
+		}
+		else if (boost::algorithm::starts_with(tmp, L"ooo-motionpath-"))
+		{
+			std::wstring preset = tmp.substr(std::wstring(L"ooo-motionpath-").size());
+
+			if (preset == L"4-point-star")					return preset_id::type::ooo_motionpath_4_point_star;
+			else if (preset == L"5-point-star")				return preset_id::type::ooo_motionpath_5_point_star;
+			else if (preset == L"6-point-star")				return preset_id::type::ooo_motionpath_6_point_star;
+			else if (preset == L"8-point-star")				return preset_id::type::ooo_motionpath_8_point_star;
+			else if (preset == L"circle")					return preset_id::type::ooo_motionpath_circle;
+			else if (preset == L"crescent-moon")			return preset_id::type::ooo_motionpath_crescent_moon;
+			else if (preset == L"diamond")					return preset_id::type::ooo_motionpath_diamond;
+			else if (preset == L"equal-triangle")			return preset_id::type::ooo_motionpath_equal_triangle;
+			else if (preset == L"oval")						return preset_id::type::ooo_motionpath_oval;
+			else if (preset == L"heart")					return preset_id::type::ooo_motionpath_heart;
+			else if (preset == L"hexagon")					return preset_id::type::ooo_motionpath_hexagon;
+			else if (preset == L"octagon")					return preset_id::type::ooo_motionpath_octagon;
+			else if (preset == L"parallelogram")			return preset_id::type::ooo_motionpath_parallelogram;
+			else if (preset == L"pentagon")					return preset_id::type::ooo_motionpath_pentagon;
+			else if (preset == L"right-triangle")			return preset_id::type::ooo_motionpath_right_triangle;
+			else if (preset == L"square")					return preset_id::type::ooo_motionpath_square;
+			else if (preset == L"teardrop")					return preset_id::type::ooo_motionpath_teardrop;
+			else if (preset == L"trapezoid")				return preset_id::type::ooo_motionpath_trapezoid;
+			else if (preset == L"arc-down")					return preset_id::type::ooo_motionpath_arc_down;
+			else if (preset == L"arc-left")					return preset_id::type::ooo_motionpath_arc_left;
+			else if (preset == L"arc-right")				return preset_id::type::ooo_motionpath_arc_right;
+			else if (preset == L"arc-up")					return preset_id::type::ooo_motionpath_arc_up;
+			else if (preset == L"bounce-left")				return preset_id::type::ooo_motionpath_bounce_left;
+			else if (preset == L"bounce-right")				return preset_id::type::ooo_motionpath_bounce_right;
+			else if (preset == L"curvy-left")				return preset_id::type::ooo_motionpath_curvy_left;
+			else if (preset == L"curvy-right")				return preset_id::type::ooo_motionpath_curvy_right;
+			else if (preset == L"decaying-wave")			return preset_id::type::ooo_motionpath_decaying_wave;
+			else if (preset == L"diagonal-down-right")		return preset_id::type::ooo_motionpath_diagonal_down_right;
+			else if (preset == L"diagonal-up-right")		return preset_id::type::ooo_motionpath_diagonal_up_right;
+			else if (preset == L"down")						return preset_id::type::ooo_motionpath_down;
+			else if (preset == L"funnel")					return preset_id::type::ooo_motionpath_funnel;
+			else if (preset == L"spring")					return preset_id::type::ooo_motionpath_spring;
+			else if (preset == L"stairs-down")				return preset_id::type::ooo_motionpath_stairs_down;
+			else if (preset == L"turn-down")				return preset_id::type::ooo_motionpath_turn_down;
+			else if (preset == L"turn-down-right")			return preset_id::type::ooo_motionpath_turn_down_right;
+			else if (preset == L"turn-up")					return preset_id::type::ooo_motionpath_turn_up;
+			else if (preset == L"turn-up-right")			return preset_id::type::ooo_motionpath_turn_up_right;
+			else if (preset == L"up")						return preset_id::type::ooo_motionpath_up;
+			else if (preset == L"wave")						return preset_id::type::ooo_motionpath_wave;
+			else if (preset == L"zigzag")					return preset_id::type::ooo_motionpath_zigzag;
+			else if (preset == L"bean")						return preset_id::type::ooo_motionpath_bean;
+			else if (preset == L"buzz-saw")					return preset_id::type::ooo_motionpath_buzz_saw;
+			else if (preset == L"curved-square")			return preset_id::type::ooo_motionpath_curved_square;
+			else if (preset == L"curved-x")					return preset_id::type::ooo_motionpath_curved_x;
+			else if (preset == L"curvy-star")				return preset_id::type::ooo_motionpath_curvy_star;
+			else if (preset == L"figure-8-four")			return preset_id::type::ooo_motionpath_figure_8_four;
+			else if (preset == L"horizontal-figure-8")		return preset_id::type::ooo_motionpath_horizontal_figure_8;
+			else if (preset == L"inverted-square")			return preset_id::type::ooo_motionpath_inverted_square;
+			else if (preset == L"inverted-triangle")		return preset_id::type::ooo_motionpath_inverted_triangle;
+			else if (preset == L"loop-de-loop")				return preset_id::type::ooo_motionpath_loop_de_loop;
+			else if (preset == L"neutron")					return preset_id::type::ooo_motionpath_neutron;
+			else if (preset == L"peanut")					return preset_id::type::ooo_motionpath_peanut;
+			else if (preset == L"clover")					return preset_id::type::ooo_motionpath_clover;
+			else if (preset == L"pointy-star")				return preset_id::type::ooo_motionpath_pointy_star;
+			else if (preset == L"swoosh")					return preset_id::type::ooo_motionpath_swoosh;
+			else if (preset == L"vertical-figure-8")		return preset_id::type::ooo_motionpath_vertical_figure_8;
+			else if (preset == L"left")						return preset_id::type::ooo_motionpath_left;
+			else if (preset == L"right")					return preset_id::type::ooo_motionpath_right;
+			else if (preset == L"spiral-left")				return preset_id::type::ooo_motionpath_spiral_left;
+			else if (preset == L"spiral-right")				return preset_id::type::ooo_motionpath_spiral_right;
+			else if (preset == L"sine-wave")				return preset_id::type::ooo_motionpath_sine_wave;
+			else if (preset == L"s-curve-1")				return preset_id::type::ooo_motionpath_s_curve_1;
+			else if (preset == L"s-curve-2")				return preset_id::type::ooo_motionpath_s_curve_2;
+			else if (preset == L"heartbeat")				return preset_id::type::ooo_motionpath_heartbeat;
+		}
+		
+
+		return preset_id::type::none;
 	}
 
 	std::wostream& operator << (std::wostream& _Wostream, const preset_id& _Val)

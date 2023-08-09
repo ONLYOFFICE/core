@@ -2506,7 +2506,7 @@ namespace NExtractTools
 		   nRes = dir2zipMscrypt(sResultDocxDir, sTo, sTemp, params);
 	   }
 
-       return AVS_FILEUTILS_ERROR_CONVERT;
+       return nRes;
    }
 	_UINT32 rtf2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
@@ -2609,13 +2609,13 @@ namespace NExtractTools
            {
                copyOrigin(sFrom, *params.m_sFileTo);
            }
-           return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		   hRes = AVS_FILEUTILS_ERROR_CONVERT_DRM;
        }
        else if (AVS_ERROR_PASSWORD == hRes)
        {
-           return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		   hRes = AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
        }
-       return AVS_FILEUTILS_ERROR_CONVERT;
+       return hRes;
 	}
 	_UINT32 doc2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{

@@ -1187,7 +1187,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotFi
 
 	if (oInfo.IsTextField())
 	{
-		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextPr();
+		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
@@ -1671,10 +1671,53 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotFi
 }
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo)
 {
+	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
+	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
+		return S_OK;
+
 	CAnnotFieldInfo& oInfo = *((CAnnotFieldInfo*)pFieldInfo);
 
 	if (oInfo.isWidget())
 		return AddFormField(pAppFonts, pFieldInfo);
+
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_OK;
+
+	// TODO нам это нужно? Всегда иметь шрифт?
+	// PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+	// if (!pFontTT)
+	// 	return S_OK;
+
+	double dX, dY, dW, dH;
+	oInfo.GetBounds(dX, dY, dW, dH);
+	PdfWriter::TRect oRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH));
+
+	PdfWriter::CAnnotation* pAnnot = NULL;
+
+	if (oInfo.IsText())
+	{
+		pAnnot = m_pDocument->CreateTextAnnot(m_pPage, oRect, "TEST");
+	}
+	else if (oInfo.IsInk())
+	{
+
+	}
+	else if (oInfo.IsLine())
+	{
+
+	}
+
+	if (!pAnnot)
+		return S_FALSE;
+
+	if (oInfo.IsText())
+	{
+		CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
+	}
+
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -2345,7 +2388,7 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 		return;
 
 	pDestination->SetXYZ(MM_2_PT(dDestX), pDestPage->GetHeight() - MM_2_PT(dDestY), 0);
-	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, PdfWriter::TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
+	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, PdfWriter::TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), pCurPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
 	pAnnot->SetBorderStyle(PdfWriter::EBorderSubtype::border_subtype_Solid, 0);
 }
 bool CPdfWriter::IsValid()

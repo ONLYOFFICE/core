@@ -1228,7 +1228,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				if (oInfo.IsValid())
-					pRenderer->AddFormField(&oInfo);
+					pRenderer->AddAnnotField(&oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;

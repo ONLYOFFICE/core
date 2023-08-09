@@ -37,6 +37,24 @@
 
 class GRAPHICS_DECL CAnnotFieldInfo : public IAnnotField
 {
+protected:
+	class CMarkupAnnot
+	{
+		CMarkupAnnot();
+	};
+public:
+	class GRAPHICS_DECL CTextAnnotPr : public CMarkupAnnot
+	{
+	public:
+		CTextAnnotPr();
+
+	private:
+		bool m_bOpen;
+		BYTE m_nName;
+		BYTE m_nState;
+		BYTE m_nStateModel;
+	};
+
 public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
@@ -52,6 +70,11 @@ public:
 	double GetBaseLineOffset() const;
 
 	bool isWidget() const;
+	bool IsText()   const;
+	bool IsInk()    const;
+	bool IsLine()   const;
+
+	CTextAnnotPr* GetTextAnnotPr();
 
 protected:
 	int          m_nType;
@@ -62,6 +85,8 @@ private:
 	double       m_dW;
 	double       m_dH;
 	double       m_dBaseLineOffset;
+
+	CTextAnnotPr* m_oTextPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

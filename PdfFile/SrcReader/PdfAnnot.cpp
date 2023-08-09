@@ -351,140 +351,6 @@ std::string getValue(Object* oV)
 	}
 	return sRes;
 }
-void getParents(XRef* xref, Object* oFieldRef, std::vector<CAnnotParent*>& arrParents)
-{
-	if (!oFieldRef || !xref)
-		return;
-
-	Object oField;
-	if (!oFieldRef->isRef() || std::find_if(arrParents.begin(), arrParents.end(), [oFieldRef] (CAnnotParent* pAP) { return oFieldRef->getRefNum() == pAP->unRefNum; }) != arrParents.end() || !oFieldRef->fetch(xref, &oField)->isDict())
-	{
-		oField.free();
-		return;
-	}
-
-	CAnnotParent* pAnnotParent = new CAnnotParent();
-	if (!pAnnotParent)
-	{
-		oField.free();
-		return;
-	}
-
-	pAnnotParent->unRefNum = oFieldRef->getRefNum();
-
-	Object oT;
-	if (oField.dictLookup("T", &oT)->isString())
-	{
-		TextString* s = new TextString(oT.getString());
-		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-		pAnnotParent->unFlags |= (1 << 0);
-		pAnnotParent->sT = sStr;
-		delete s;
-	}
-	oT.free();
-
-	Object oV;
-	if (oField.dictLookup("V", &oV))
-	{
-		pAnnotParent->sV = getValue(&oV);
-		if (!pAnnotParent->sV.empty())
-			pAnnotParent->unFlags |= (1 << 1);
-	}
-	oV.free();
-
-	Object oDV;
-	if (oField.dictLookup("DV", &oDV))
-	{
-		pAnnotParent->sDV = getValue(&oDV);
-		if (!pAnnotParent->sDV.empty())
-			pAnnotParent->unFlags |= (1 << 2);
-	}
-	oDV.free();
-
-	arrParents.push_back(pAnnotParent);
-
-	Object oParentRefObj;
-	if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-	{
-		pAnnotParent->unFlags |= (1 << 3);
-		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum();
-		getParents(xref, &oParentRefObj, arrParents);
-	}
-	oParentRefObj.free();
-}
-CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
-{
-	// Границы и Dash Pattern - Border/BS
-	CBorderType* pBorderType = new CBorderType();
-	if (!oBorder)
-		return pBorderType;
-	if (bBSorBorder)
-	{
-		pBorderType->nType = annotBorderSolid;
-		Object oV;
-		if (oBorder->dictLookup("S", &oV)->isName())
-		{
-			if (oV.isName("S"))
-				pBorderType->nType = annotBorderSolid;
-			else if (oV.isName("D"))
-				pBorderType->nType = annotBorderDashed;
-			else if (oV.isName("B"))
-				pBorderType->nType = annotBorderBeveled;
-			else if (oV.isName("I"))
-				pBorderType->nType = annotBorderInset;
-			else if (oV.isName("U"))
-				pBorderType->nType = annotBorderUnderlined;
-		}
-		oV.free();
-		if (oBorder->dictLookup("W", &oV)->isNum())
-			pBorderType->dWidth = oV.getNum();
-		oV.free();
-		if (oBorder->dictLookup("D", &oV)->isArray())
-		{
-			Object oObj2;
-			ARR_GET_NUM(oV, 0, pBorderType->dDashesAlternating);
-			pBorderType->dGaps = pBorderType->dDashesAlternating;
-			ARR_GET_NUM(oV, 1, pBorderType->dGaps);
-		}
-		oV.free();
-	}
-	else
-	{
-		pBorderType->nType = annotBorderSolid;
-		Object oObj2;
-		pBorderType->dWidth = 1.0;
-		ARR_GET_NUM((*oBorder), 2, pBorderType->dWidth);
-
-		Object oObj;
-		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
-		{
-			pBorderType->nType = annotBorderDashed;
-			ARR_GET_NUM(oObj, 0, pBorderType->dDashesAlternating);
-			ARR_GET_NUM(oObj, 1, pBorderType->dGaps);
-		}
-		oObj.free();
-	}
-
-	return pBorderType;
-}
-void WriteAppearance(int nWidth, int nHeight, BYTE* pBgraData, unsigned int nColor, CAnnotAPView* pView)
-{
-	BYTE* pSubMatrix = new BYTE[nWidth * nHeight * 4];
-	int p = 0;
-	unsigned int* pTemp = (unsigned int*)pBgraData;
-	unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
-	for (int y = 0; y < nHeight; ++y)
-	{
-		for (int x = 0; x < nWidth; ++x)
-		{
-			pSubTemp[p++] = pTemp[y * nWidth + x];
-			pTemp[y * nWidth + x] = nColor;
-		}
-	}
-
-	pView->pAP = pSubMatrix;
-	pView->pText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
-}
 void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, const char* sAPName, const char* sASName)
 {
 	XRef* xref = pdfDoc->getXRef();
@@ -1232,7 +1098,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 		// Родители
 		Object oParentRefObj;
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-			getParents(xref, &oParentRefObj, m_arrParents);
+			getParents(xref, &oParentRefObj);
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
@@ -1281,6 +1147,63 @@ CAnnots::~CAnnots()
 
 	for (int i = 0; i < m_arrAnnots.size(); ++i)
 		RELEASEOBJECT(m_arrAnnots[i]);
+}
+
+void CAnnots::getParents(XRef* xref, Object* oFieldRef)
+{
+	if (!oFieldRef || !xref || !oFieldRef->isRef() ||
+		std::find_if(m_arrParents.begin(), m_arrParents.end(), [oFieldRef] (CAnnotParent* pAP) { return oFieldRef->getRefNum() == pAP->unRefNum; }) != m_arrParents.end())
+		return;
+
+	Object oField;
+	CAnnotParent* pAnnotParent = new CAnnotParent();
+	if (!pAnnotParent || !oFieldRef->fetch(xref, &oField)->isDict())
+	{
+		oField.free();
+		return;
+	}
+
+	pAnnotParent->unRefNum = oFieldRef->getRefNum();
+
+	Object oT;
+	if (oField.dictLookup("T", &oT)->isString())
+	{
+		TextString* s = new TextString(oT.getString());
+		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		pAnnotParent->unFlags |= (1 << 0);
+		pAnnotParent->sT = sStr;
+		delete s;
+	}
+	oT.free();
+
+	Object oV;
+	if (oField.dictLookup("V", &oV))
+	{
+		pAnnotParent->sV = getValue(&oV);
+		if (!pAnnotParent->sV.empty())
+			pAnnotParent->unFlags |= (1 << 1);
+	}
+	oV.free();
+
+	Object oDV;
+	if (oField.dictLookup("DV", &oDV))
+	{
+		pAnnotParent->sDV = getValue(&oDV);
+		if (!pAnnotParent->sDV.empty())
+			pAnnotParent->unFlags |= (1 << 2);
+	}
+	oDV.free();
+
+	m_arrParents.push_back(pAnnotParent);
+
+	Object oParentRefObj;
+	if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
+	{
+		pAnnotParent->unFlags |= (1 << 3);
+		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum();
+		getParents(xref, &oParentRefObj);
+	}
+	oParentRefObj.free();
 }
 
 //------------------------------------------------------------------------
@@ -1560,6 +1483,62 @@ CAnnot::~CAnnot()
 	RELEASEOBJECT(m_pBorder);
 }
 
+CAnnot::CBorderType* CAnnot::getBorder(Object* oBorder, bool bBSorBorder)
+{
+	// Границы и Dash Pattern - Border/BS
+	CBorderType* pBorderType = new CBorderType();
+	if (!oBorder)
+		return pBorderType;
+	if (bBSorBorder)
+	{
+		pBorderType->nType = annotBorderSolid;
+		Object oV;
+		if (oBorder->dictLookup("S", &oV)->isName())
+		{
+			if (oV.isName("S"))
+				pBorderType->nType = annotBorderSolid;
+			else if (oV.isName("D"))
+				pBorderType->nType = annotBorderDashed;
+			else if (oV.isName("B"))
+				pBorderType->nType = annotBorderBeveled;
+			else if (oV.isName("I"))
+				pBorderType->nType = annotBorderInset;
+			else if (oV.isName("U"))
+				pBorderType->nType = annotBorderUnderlined;
+		}
+		oV.free();
+		if (oBorder->dictLookup("W", &oV)->isNum())
+			pBorderType->dWidth = oV.getNum();
+		oV.free();
+		if (oBorder->dictLookup("D", &oV)->isArray())
+		{
+			Object oObj2;
+			ARR_GET_NUM(oV, 0, pBorderType->dDashesAlternating);
+			pBorderType->dGaps = pBorderType->dDashesAlternating;
+			ARR_GET_NUM(oV, 1, pBorderType->dGaps);
+		}
+		oV.free();
+	}
+	else
+	{
+		pBorderType->nType = annotBorderSolid;
+		Object oObj2;
+		pBorderType->dWidth = 1.0;
+		ARR_GET_NUM((*oBorder), 2, pBorderType->dWidth);
+
+		Object oObj;
+		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
+		{
+			pBorderType->nType = annotBorderDashed;
+			ARR_GET_NUM(oObj, 0, pBorderType->dDashesAlternating);
+			ARR_GET_NUM(oObj, 1, pBorderType->dGaps);
+		}
+		oObj.free();
+	}
+
+	return pBorderType;
+}
+
 //------------------------------------------------------------------------
 // AP
 //------------------------------------------------------------------------
@@ -1764,7 +1743,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 					pView->sASName = "Yes";
 				m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 				DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], pView->sASName.c_str());
-				WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+				WriteAppearance(nBackgroundColor, pView);
 			}
 		}
 		else if (!oObj.isNull())
@@ -1773,7 +1752,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			pView->sAPName = arrAPName[j];
 			m_pRenderer->SetCoordTransformOffset(-m_dx1 * m_dWScale + 1 + m_dWTale / 2, m_dy2 * m_dHScale - nRasterH + 1 + m_dHTale / 2);
 			DrawAppearance(pdfDoc, nPageIndex + 1, pField, m_gfx, arrAPName[j], NULL);
-			WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+			WriteAppearance(nBackgroundColor, pView);
 		}
 		oObj.free();
 
@@ -1814,7 +1793,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			}
 			RELEASEOBJECT(annot);
 
-			WriteAppearance(m_nWidth, m_nHeight, m_pFrame->get_Data(), nBackgroundColor, pView);
+			WriteAppearance(nBackgroundColor, pView);
 		}
 		oObj.free();
 
@@ -1822,6 +1801,25 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
+}
+
+void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
+{
+	BYTE* pSubMatrix = new BYTE[m_nWidth * m_nHeight * 4];
+	int p = 0;
+	unsigned int* pTemp = (unsigned int*)m_pFrame->get_Data();
+	unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
+	for (int y = 0; y < m_nHeight; ++y)
+	{
+		for (int x = 0; x < m_nWidth; ++x)
+		{
+			pSubTemp[p++] = pTemp[y * m_nWidth + x];
+			pTemp[y * m_nWidth + x] = nColor;
+		}
+	}
+
+	pView->pAP = pSubMatrix;
+	pView->pText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 
 //------------------------------------------------------------------------
@@ -1881,7 +1879,7 @@ void CAnnots::ToWASM(NSWasm::CData& oRes)
 		m_arrAnnots[i]->ToWASM(oRes);
 }
 
-void CAnnotParent::ToWASM(NSWasm::CData& oRes)
+void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.AddInt(unRefNum);
 	oRes.AddInt(unFlags);
@@ -1921,7 +1919,7 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sM);
 }
 
-void CBorderType::ToWASM(NSWasm::CData& oRes)
+void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {
 	BYTE nBP = nType;
 	if (nBP == 1)

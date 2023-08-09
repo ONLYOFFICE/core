@@ -541,50 +541,21 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-    CAnnotation* CDocument::CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText)
+	CAnnotation* CDocument::CreateTextAnnot(CPage* pPage, const TRect& oRect, const char* sText)
 	{
 		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
-		if (pAnnot)
-		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
-		}
 
-		return pAnnot;
-	}
-	CAnnotation* CDocument::CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest)
-	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-
-		if (pAnnot)
-		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
-		}
-
-		return pAnnot;
-	}	
-	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
-	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-
-		if (pAnnot)
+		if (pAnnot && pPage)
 			pPage->AddAnnotation(pAnnot);
 
 		return pAnnot;
 	}
-	CAnnotation* CDocument::CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri)
+	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
 	{
-		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUri);
-	
-		if (pAnnot)
-		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
-		}
+		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
+
+		if (pAnnot && pPage)
+			pPage->AddAnnotation(pAnnot);
 
 		return pAnnot;
 	}
@@ -592,7 +563,25 @@ namespace PdfWriter
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUrl);
 
-		if (pAnnot)
+		if (pAnnot && pPage)
+			pPage->AddAnnotation(pAnnot);
+
+		return pAnnot;
+	}
+	CAnnotation* CDocument::CreateInkAnnot(CPage* pPage, const TRect& oRect)
+	{
+		CAnnotation* pAnnot = new CInkAnnotation(m_pXref, oRect);
+
+		if (pAnnot && pPage)
+			pPage->AddAnnotation(pAnnot);
+
+		return pAnnot;
+	}
+	CAnnotation* CDocument::CreateLineAnnot(CPage* pPage, const TRect& oRect)
+	{
+		CAnnotation* pAnnot = new CLineAnnotation(m_pXref, oRect);
+
+		if (pAnnot && pPage)
 			pPage->AddAnnotation(pAnnot);
 
 		return pAnnot;

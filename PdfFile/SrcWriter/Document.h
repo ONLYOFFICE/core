@@ -129,11 +129,11 @@ namespace PdfWriter
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 					      
-		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
-		CAnnotation*      CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
+		CAnnotation*      CreateTextAnnot   (CPage* pPage, const TRect& oRect, const char* sText);
+		CAnnotation*      CreateLinkAnnot   (CPage* pPage, const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
+		CAnnotation*      CreateInkAnnot    (CPage* pPage, const TRect& oRect);
+		CAnnotation*      CreateLineAnnot   (CPage* pPage, const TRect& oRect);
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);

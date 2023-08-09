@@ -212,4 +212,18 @@ namespace PdfWriter
 		pAction->Add("S", "URI");
 		pAction->Add("URI", new CStringObject(sUri));
 	}
+	//----------------------------------------------------------------------------------------
+	// CInkAnnotation
+	//----------------------------------------------------------------------------------------
+	CInkAnnotation::CInkAnnotation(CXref* pXref, const TRect& oRect) : CAnnotation(pXref, AnnotInk, oRect)
+	{
+
+	}
+	//----------------------------------------------------------------------------------------
+	// CLineAnnotation
+	//----------------------------------------------------------------------------------------
+	CLineAnnotation::CLineAnnotation(CXref* pXref, const TRect& oRect) : CAnnotation(pXref, AnnotLine, oRect)
+	{
+
+	}
 }

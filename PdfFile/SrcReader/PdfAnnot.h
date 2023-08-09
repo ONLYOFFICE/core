@@ -47,64 +47,21 @@
 namespace PdfReader
 {
 
-struct CAnnotParent final
-{
-	CAnnotParent()
-	{
-		unFlags = 0;
-		unRefNum = 0;
-		unRefNumParent = 0;
-	}
-
-	void ToWASM(NSWasm::CData& oRes);
-
-	unsigned int unFlags;
-	unsigned int unRefNum; // Номер ссылки на объект
-	unsigned int unRefNumParent; // Номер ссылки на объект родителя
-	std::string sT;
-	std::string sV;
-	std::string sDV;
-};
-
-struct CBorderType final
-{
-	CBorderType()
-	{
-		nType = 5;
-		dWidth = 1;
-		dDashesAlternating = 3;
-		dGaps = 3;
-	}
-
-	void ToWASM(NSWasm::CData& oRes);
-
-	BYTE nType;
-	double dWidth;
-	double dDashesAlternating;
-	double dGaps;
-};
-
-struct CAnnotAPView
-{
-	std::string sAPName;
-	std::string sASName;
-	BYTE* pAP;
-	BYTE* pText;
-};
-
 //------------------------------------------------------------------------
 // PdfReader::CAction
 //------------------------------------------------------------------------
 
-struct CAction
+class CAction
 {
-	virtual void ToWASM(NSWasm::CData& oRes);
-
-	CAction() : pNext(NULL) {}
+public:
 	virtual ~CAction() { RELEASEOBJECT(pNext); }
+
+	virtual void ToWASM(NSWasm::CData& oRes);
 
 	std::string sType;
 	CAction* pNext;
+protected:
+	CAction() : pNext(NULL) {}
 };
 struct CActionGoTo       final : public CAction
 {
@@ -167,6 +124,15 @@ public:
 	void ToWASM(NSWasm::CData& oRes);
 
 private:
+	struct CAnnotAPView final
+	{
+		std::string sAPName;
+		std::string sASName;
+		BYTE* pAP;
+		BYTE* pText;
+	};
+	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
+
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	double m_dx1, m_dy1, m_dx2, m_dy2;
 	double m_dWScale, m_dHScale;
@@ -196,14 +162,36 @@ private:
 class CAnnot
 {
 public:
-	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
-	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 	virtual ~CAnnot();
 
 	virtual void ToWASM(NSWasm::CData& oRes);
 
+protected:
+	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
+	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
 	double m_dHeight; // Высота холста, для Y трансормации
+
 private:
+	struct CBorderType final
+	{
+		CBorderType()
+		{
+			nType = 5;
+			dWidth = 1;
+			dDashesAlternating = 3;
+			dGaps = 3;
+		}
+
+		void ToWASM(NSWasm::CData& oRes);
+
+		BYTE nType;
+		double dWidth;
+		double dDashesAlternating;
+		double dGaps;
+	};
+	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
+
 	unsigned int m_unAFlags;
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
@@ -224,8 +212,10 @@ private:
 class CAnnotWidget : public CAnnot
 {
 public:
-	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 	virtual ~CAnnotWidget();
+
+protected:
+	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
@@ -321,7 +311,7 @@ private:
 
 class CMarkupAnnot : public CAnnot
 {
-public:
+protected:
 	CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
@@ -408,6 +398,27 @@ public:
 	void ToWASM(NSWasm::CData& oRes);
 
 private:
+	struct CAnnotParent final
+	{
+		CAnnotParent()
+		{
+			unFlags = 0;
+			unRefNum = 0;
+			unRefNumParent = 0;
+		}
+
+		void ToWASM(NSWasm::CData& oRes);
+
+		unsigned int unFlags;
+		unsigned int unRefNum; // Номер ссылки на объект
+		unsigned int unRefNumParent; // Номер ссылки на объект родителя
+		std::string sT;
+		std::string sV;
+		std::string sDV;
+	};
+
+	void getParents(XRef* xref, Object* oFieldRef);
+
 	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
 	std::vector<CAnnot*> m_arrAnnots;

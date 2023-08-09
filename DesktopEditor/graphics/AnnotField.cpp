@@ -43,9 +43,12 @@ CAnnotFieldInfo::CAnnotFieldInfo()
 	m_dH = 0;
 
 	m_dBaseLineOffset = 0;
+
+	m_oTextPr = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
+	RELEASEOBJECT(m_oTextPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
@@ -84,4 +87,20 @@ double CAnnotFieldInfo::GetBaseLineOffset() const
 bool CAnnotFieldInfo::isWidget() const
 {
 	return (m_nType != 0 && m_nType < 7);
+}
+bool CAnnotFieldInfo::IsText() const
+{
+	return (m_nType == 7);
+}
+bool CAnnotFieldInfo::IsInk() const
+{
+	return (m_nType == 8);
+}
+bool CAnnotFieldInfo::IsLine() const
+{
+	return (m_nType == 9);
+}
+CAnnotFieldInfo::CTextAnnotPr* CAnnotFieldInfo::GetTextAnnotPr()
+{
+	return m_oTextPr;
 }

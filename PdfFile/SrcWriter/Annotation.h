@@ -62,7 +62,8 @@ namespace PdfWriter
 		AnnotUnderline      = 9,
 		AnnotInk            = 10,
 		AnnotFileAttachment = 11,
-		AnnotPopup          = 12
+		AnnotPopup          = 12,
+		AnnotLine           = 13
 	};
 	enum EAnnotHighlightMode
 	{
@@ -129,6 +130,24 @@ namespace PdfWriter
 		EAnnotType GetAnnotationType() const
 		{
 			return AnnotLink;
+		}
+	};
+	class CInkAnnotation : public CAnnotation
+	{
+	public:
+		CInkAnnotation(CXref* pXref, const TRect& oRect);
+		EAnnotType GetAnnotationType() const
+		{
+			return AnnotInk;
+		}
+	};
+	class CLineAnnotation : public CAnnotation
+	{
+	public:
+		CLineAnnotation(CXref* pXref, const TRect& oRect);
+		EAnnotType GetAnnotationType() const
+		{
+			return AnnotLine;
 		}
 	};
 }

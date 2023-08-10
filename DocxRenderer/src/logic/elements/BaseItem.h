@@ -49,6 +49,7 @@ namespace NSDocxRenderer
 			etCell      = 5,
 			etRow       = 6,
 			etTable     = 7,
+			etDropCap	= 8,
 		};
 
 		ElemType m_eType;

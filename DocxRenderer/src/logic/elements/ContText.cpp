@@ -531,6 +531,6 @@ namespace NSDocxRenderer
 	double CContText::CalculateThinSpace()
 	{
 		//note подобранное условие - не везде хорошо работает
-		return m_dSpaceWidthMM * 0.2;
+		return m_dSpaceWidthMM * 0.3;
 	}
 }

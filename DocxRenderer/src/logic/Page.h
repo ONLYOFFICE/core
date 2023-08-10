@@ -6,6 +6,7 @@
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
 #include "styles/ParagraphStyle.h"
+#include "elements/DropCap.h"
 
 
 namespace NSDocxRenderer
@@ -37,6 +38,7 @@ namespace NSDocxRenderer
 		std::vector<CContText*>  m_arDiacriticalSymbol;
 		std::vector<CTextLine*>  m_arTextLine;
 		std::vector<CShape*>     m_arShapes;
+		std::vector<CDropCap*>   m_arDropCaps;
 
 		std::vector<CBaseItem*>  m_arOutputObjects;
 
@@ -116,6 +118,7 @@ namespace NSDocxRenderer
 		void DetermineDominantGraphics();
 
 		void TryMergeShapes();
+		void AnalyzeDropCaps();
 
 		//конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);

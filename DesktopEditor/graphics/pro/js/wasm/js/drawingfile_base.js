@@ -63,13 +63,13 @@
 	}
 	CBinaryReader.prototype.readByte = function()
 	{
-		var val = this.data[this.pos];
+		let val = this.data[this.pos];
 		this.pos += 1;
 		return val;
 	};
 	CBinaryReader.prototype.readInt = function()
 	{
-		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
+		let val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
 		this.pos += 4;
 		return val;
 	};
@@ -83,15 +83,15 @@
 	};
 	CBinaryReader.prototype.readString = function()
 	{
-		var len = this.readInt();
-		var val = String.prototype.fromUtf8(this.data, this.pos, len);
+		let len = this.readInt();
+		let val = String.prototype.fromUtf8(this.data, this.pos, len);
 		this.pos += len;
 		return val;
 	};
 	CBinaryReader.prototype.readData = function()
 	{
-		var len = this.readInt();
-		var val = this.data.slice(this.pos, this.pos + len);
+		let len = this.readInt();
+		let val = this.data.slice(this.pos, this.pos + len);
 		this.pos += len;
 		return val;
 	};
@@ -152,11 +152,11 @@
 
 	CFile.prototype["loadFromData"] = function(arrayBuffer)
 	{
-		var data = new Uint8Array(arrayBuffer);
-		var _stream = Module["_malloc"](data.length);
+		let data = new Uint8Array(arrayBuffer);
+		let _stream = Module["_malloc"](data.length);
 		Module["HEAP8"].set(data, _stream);
 		this.nativeFile = Module["_Open"](_stream, data.length, 0);
-		var error = Module["_GetErrorCode"](this.nativeFile);
+		let error = Module["_GetErrorCode"](this.nativeFile);
 		this.stream = _stream;
 		this.stream_size = data.length;
 		this.type = Module["_GetType"](_stream, data.length);
@@ -174,12 +174,12 @@
 		if (0 != this.nativeFile)
 			Module["_Close"](this.nativeFile);
 
-		var passBuffer = password.toUtf8();
-		var passPointer = Module["_malloc"](passBuffer.length);
+		let passBuffer = password.toUtf8();
+		let passPointer = Module["_malloc"](passBuffer.length);
 		Module["HEAP8"].set(passBuffer, passPointer);
 		this.nativeFile = Module["_Open"](this.stream, this.stream_size, passPointer);
 		Module["_free"](passPointer);
-		var error = Module["_GetErrorCode"](this.nativeFile);
+		let error = Module["_GetErrorCode"](this.nativeFile);
 		this.type = Module["_GetType"](this.stream, this.stream_size);
 		self.drawingFile = this;
 		this.getInfo();
@@ -206,7 +206,7 @@
 		if (!this.nativeFile)
 			return false;
 
-		var isNeed = Module["_IsNeedCMap"](this.nativeFile);
+		let isNeed = Module["_IsNeedCMap"](this.nativeFile);
 		return (isNeed === 1) ? true : false;
 	};
 	CFile.prototype["setCMap"] = function(memoryBuffer)
@@ -214,7 +214,7 @@
 		if (!this.nativeFile)
 			return;
 
-		var pointer = Module["_malloc"](memoryBuffer.length);
+		let pointer = Module["_malloc"](memoryBuffer.length);
 		Module.HEAP8.set(memoryBuffer, pointer);
 		Module["_SetCMapData"](this.nativeFile, pointer, memoryBuffer.length);
 	};
@@ -223,26 +223,26 @@
 		if (!this.nativeFile)
 			return false;
 
-		var _info = Module["_GetInfo"](this.nativeFile);
+		let _info = Module["_GetInfo"](this.nativeFile);
 		if (_info == 0)
 			return false;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, _info, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, _info, 4);
 		if (lenArray == null)
 			return false;
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return false;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
-		var _pages = reader.readInt();
-		for (var i = 0; i < _pages; i++)
+		let _pages = reader.readInt();
+		for (let i = 0; i < _pages; i++)
 		{
-			var rec = {};
+			let rec = {};
 			rec["W"] = reader.readInt();
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
@@ -250,7 +250,7 @@
 			rec.text = null;
 			this.pages.push(rec);
 		}
-		var json_info = reader.readString();
+		let json_info = reader.readString();
 		try
 		{
 			this.info = JSON.parse(json_info);
@@ -295,7 +295,7 @@
 		}
 
 		self.drawingFileCurrentPageIndex = pageIndex;
-		var retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
+		let retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
 		self.drawingFileCurrentPageIndex = -1;
 
 		if (this.pages[pageIndex].fonts.length > 0)
@@ -315,7 +315,7 @@
 		}
 
 		self.drawingFileCurrentPageIndex = pageIndex;
-		var retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+		let retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
 		// удалять результат не надо, этот буфер используется в качестве текстового буфера 
 		// для текстовых команд других страниц. После получения ВСЕХ текстовых страниц - 
 		// нужно вызвать destroyTextInfo()
@@ -330,8 +330,8 @@
 		if (null == retValue)
 			return null;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 5);
-		var len = lenArray[0];
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 5);
+		let len = lenArray[0];
 		len -= 20;
 
 		if (self.drawingFile.onUpdateStatistics)
@@ -342,8 +342,8 @@
 			return [];
 		}
 
-		var textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 20, len);
-		var textCommands = new Uint8Array(len);
+		let textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 20, len);
+		let textCommands = new Uint8Array(len);
 		textCommands.set(textCommandsSrc);
 
 		textCommandsSrc = null;
@@ -355,26 +355,26 @@
 	};
 	CFile.prototype["getLinks"] = function(pageIndex)
 	{
-		var res = [];
-		var ext = Module["_GetLinks"](this.nativeFile, pageIndex);
+		let res = [];
+		let ext = Module["_GetLinks"](this.nativeFile, pageIndex);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 			return res;
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return res;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
 		while (reader.isValid())
 		{
-			var rec = {};
+			let rec = {};
 			rec["link"] = reader.readString();
 			rec["dest"] = reader.readDouble();
 			rec["x"] = reader.readDouble();
@@ -390,7 +390,7 @@
 
 	function readAction(reader, rec)
 	{
-		var SType = reader.readByte();
+		let SType = reader.readByte();
 		// 0 - Unknown, 1 - GoTo, 2 - GoToR, 3 - GoToE, 4 - Launch
 		// 5 - Thread, 6 - URI, 7 - Sound, 8 - Movie, 9 - Hide
 		// 10 - Named, 11 - SubmitForm, 12 - ResetForm, 13 - ImportData
@@ -567,11 +567,11 @@
 		let n = reader.readInt();
 		for (let i = 0; i < n; ++i)
 		{
-			var APType = reader.readString();
+			let APType = reader.readString();
 			if (!AP[APType])
 				AP[APType] = {};
-			var APi = AP[APType];
-			var ASType = reader.readString();
+			let APi = AP[APType];
+			let ASType = reader.readString();
 			if (ASType)
 			{
 				AP[APType][ASType] = {};
@@ -597,19 +597,19 @@
 
 	CFile.prototype["getInteractiveFormsInfo"] = function()
 	{
-		var res = {};
-		var ext = Module["_GetInteractiveFormsInfo"](this.nativeFile);
+		let res = {};
+		let ext = Module["_GetInteractiveFormsInfo"](this.nativeFile);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 		{
 			Module["_free"](ext);
 			return res;
 		}
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 		{
@@ -617,8 +617,8 @@
 			return res;
 		}
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
 		if (!reader.isValid())
 		{
@@ -638,9 +638,9 @@
 			res["Parents"] = [];
 		for (let i = 0; i < k; ++i)
 		{
-			var rec = {};
+			let rec = {};
 			rec["i"] = reader.readInt();
-			var flags = reader.readInt();
+			let flags = reader.readInt();
 			if (flags & (1 << 0))
 				rec["name"] = reader.readString();
 			if (flags & (1 << 1))
@@ -656,7 +656,7 @@
 		k = reader.readInt();
 		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
-			var rec = {};
+			let rec = {};
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
@@ -674,7 +674,7 @@
 			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
 			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
-			flags = reader.readInt();
+			let flags = reader.readInt();
 			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 			if (flags & (1 << 0))
 				rec["userName"] = reader.readString();
@@ -718,7 +718,7 @@
 				rec["AA"] = {};
 			for (let i = 0; i < nAction; ++i)
 			{
-				var AAType = reader.readString();
+				let AAType = reader.readString();
 				rec["AA"][AAType] = {};
 				readAction(reader, rec["AA"][AAType]);
 			}
@@ -804,8 +804,8 @@
 					rec["opt"] = [];
 					for (let i = 0; i < n; ++i)
 					{
-						var opt1 = reader.readString();
-						var opt2 = reader.readString();
+						let opt1 = reader.readString();
+						let opt2 = reader.readString();
 						if (opt1 == "")
 							rec["opt"].push(opt2);
 						else
@@ -836,7 +836,7 @@
 	// необязательный sButtonView - состояние pushbutton-аннотации - Off/Yes(или rec["NameOfYes"])
 	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 	{
-		var nView = -1;
+		let nView = -1;
 		if (sView)
 		{
 			if (sView == "N")
@@ -846,31 +846,31 @@
 			else if (sView == "R")
 				nView = 2;
 		}
-		var nButtonView = -1;
+		let nButtonView = -1;
 		if (sButtonView)
 			nButtonView = (sButtonView == "Off" ? 0 : 1);
 
-		var res = [];
-		var ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
+		let res = [];
+		let ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 			return res;
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return res;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
 		while (reader.isValid())
 		{
 			// Внешний вид аннотации
-			var AP = {};
+			let AP = {};
 			readAnnotAP(reader, AP);
 			res.push(AP);
 		}
@@ -882,7 +882,7 @@
 	// необязательный sIconView - определенная иконка - I/RI/IX
 	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, sIconView)
 	{
-		var nView = -1;
+		let nView = -1;
 		if (sIconView)
 		{
 			if (sIconView == "I")
@@ -893,22 +893,22 @@
 				nView = 2;
 		}
 
-		var res = {};
-		var ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
+		let res = {};
+		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 			return res;
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return res;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 		
 		res["MK"] = [];
 		res["View"] = [];
@@ -916,18 +916,18 @@
 		while (reader.isValid())
 		{
 			// Внешний вид pushbutton аннотации
-			var MK = {};
+			let MK = {};
 			// Номер для сопоставление с AP
 			MK["i"] = reader.readInt();
 			let n = reader.readInt();
 			for (let i = 0; i < n; ++i)
 			{
-				var MKType = reader.readString();
+				let MKType = reader.readString();
 				MK[MKType] = reader.readInt();
 				let unique = reader.readByte();
 				if (unique)
 				{
-					var ViewMK = {};
+					let ViewMK = {};
 					ViewMK["j"] = MK[MKType];
 					ViewMK["w"] = reader.readInt();
 					ViewMK["h"] = reader.readInt();
@@ -947,19 +947,19 @@
 	// необязательный pageIndex - получить данные для аннотаций на конкретной странице
 	CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 	{
-		var res = [];
-		var ext = Module["_GetAnnotationsInfo"](this.nativeFile, pageIndex === undefined ? -1 : pageIndex);
+		let res = [];
+		let ext = Module["_GetAnnotationsInfo"](this.nativeFile, pageIndex === undefined ? -1 : pageIndex);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 		{
 			Module["_free"](ext);
 			return res;
 		}
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 		{
@@ -967,8 +967,8 @@
 			return res;
 		}
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
 		if (!reader.isValid())
 		{
@@ -978,7 +978,7 @@
 		
 		while (reader.isValid())
 		{
-			var rec = {};
+			let rec = {};
 			// Тип аннотации
 			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
 			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
@@ -1120,7 +1120,7 @@
 	// необязательный sView ...
 	CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgroundColor, nAnnot, sView)
 	{
-		var nView = -1;
+		let nView = -1;
 		if (sView)
 		{
 			if (sView == "N")
@@ -1131,27 +1131,27 @@
 				nView = 2;
 		}
 
-		var res = [];
-		var ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
+		let res = [];
+		let ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
 		if (ext == 0)
 			return res;
 
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 			return res;
 
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return res;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 		
 		while (reader.isValid())
 		{
 			// Внешний вид аннотации
-			var AP = {};
+			let AP = {};
 			readAnnotAP(reader, AP);
 			res.push(AP);
 		}
@@ -1161,24 +1161,24 @@
 	};
 	CFile.prototype["getStructure"] = function()
 	{
-		var res = [];
-		var str = Module["_GetStructure"](this.nativeFile);
+		let res = [];
+		let str = Module["_GetStructure"](this.nativeFile);
 		if (str == 0)
 			return res;
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, str, 4);
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, str, 4);
 		if (lenArray == null)
 			return res;
-		var len = lenArray[0];
+		let len = lenArray[0];
 		len -= 4;
 		if (len <= 0)
 			return res;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, str + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, str + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
 		while (reader.isValid())
 		{
-			var rec = {};
+			let rec = {};
 			rec["page"]  = reader.readInt();
 			rec["level"] = reader.readInt();
 			rec["y"]  = reader.readDouble();
@@ -1205,8 +1205,8 @@
 			baseFontsPath = basePath;
 		if (!window["g_fonts_selection_bin"])
 			return;
-		var memoryBuffer = window["g_fonts_selection_bin"].toUtf8();
-		var pointer = Module["_malloc"](memoryBuffer.length);
+		let memoryBuffer = window["g_fonts_selection_bin"].toUtf8();
+		let pointer = Module["_malloc"](memoryBuffer.length);
 		Module.HEAP8.set(memoryBuffer, pointer);
 		Module["_InitializeFontsBase64"](pointer, memoryBuffer.length);
 		Module["_free"](pointer);
@@ -1238,8 +1238,8 @@
 	
 	function addToArrayAsDictionary(arr, value)
 	{
-		var isFound = false;
-		for (var i = 0, len = arr.length; i < len; i++)
+		let isFound = false;
+		for (let i = 0, len = arr.length; i < len; i++)
 		{
 			if (arr[i] == value)
 			{
@@ -1253,23 +1253,23 @@
 	}
 
 	self["AscViewer"]["CheckStreamId"] = function(data, status) {
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
-		var len = lenArray[0];
+		let lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+		let len = lenArray[0];
 		len -= 4;
 
-		var buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
-		var reader = new CBinaryReader(buffer, 0, len);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
+		let reader = new CBinaryReader(buffer, 0, len);
 
-		var name = reader.readString();
-		var style = 0;
+		let name = reader.readString();
+		let style = 0;
 		if (reader.readInt() != 0)
 			style |= 1;//AscFonts.FontStyle.FontStyleBold;
 		if (reader.readInt() != 0)
 			style |= 2;//AscFonts.FontStyle.FontStyleItalic;
 
-		var file = AscFonts.pickFont(name, style);
-		var fileId = file.GetID();
-		var fileStatus = file.GetStatus();
+		let file = AscFonts.pickFont(name, style);
+		let fileId = file.GetID();
+		let fileStatus = file.GetStatus();
 
 		if (fileStatus == 0)
 		{
@@ -1290,19 +1290,19 @@
 			if (fileStatus != 2)
 			{
 				// шрифт не грузится - надо загрузить
-				var _t = file;
+				let _t = file;
 				file.LoadFontAsync(baseFontsPath, function(){
 					fontToMemory(_t, true);
 
-					var pages = self.fontStreams[fileId].pages;
+					let pages = self.fontStreams[fileId].pages;
 					delete self.fontStreams[fileId];
-					var pagesRepaint = [];
-					for (var i = 0, len = pages.length; i < len; i++)
+					let pagesRepaint = [];
+					for (let i = 0, len = pages.length; i < len; i++)
 					{
-						var pageObj = self.drawingFile.pages[pages[i]];
-						var fonts = pageObj.fonts;
+						let pageObj = self.drawingFile.pages[pages[i]];
+						let fonts = pageObj.fonts;
 						
-						for (var j = 0, len_fonts = fonts.length; j < len_fonts; j++)
+						for (let j = 0, len_fonts = fonts.length; j < len_fonts; j++)
 						{
 							if (fonts[j] == fileId)
 							{
@@ -1323,8 +1323,8 @@
 			}
 		}
 
-		var memoryBuffer = fileId.toUtf8();
-		var pointer = Module["_malloc"](memoryBuffer.length);
+		let memoryBuffer = fileId.toUtf8();
+		let pointer = Module["_malloc"](memoryBuffer.length);
 		Module.HEAP8.set(memoryBuffer, pointer);
 		Module["HEAP8"][status] = (fileStatus == 0) ? 1 : 0;
 		return pointer;
@@ -1332,13 +1332,13 @@
 
 	function fontToMemory(file, isCheck)
 	{
-		var idBuffer = file.GetID().toUtf8();
-		var idPointer = Module["_malloc"](idBuffer.length);
+		let idBuffer = file.GetID().toUtf8();
+		let idPointer = Module["_malloc"](idBuffer.length);
 		Module["HEAP8"].set(idBuffer, idPointer);
 
 		if (isCheck)
 		{
-			var nExist = Module["_IsFontBinaryExist"](idPointer);
+			let nExist = Module["_IsFontBinaryExist"](idPointer);
 			if (nExist != 0)
 			{
 				Module["_free"](idPointer);
@@ -1346,14 +1346,14 @@
 			}
 		}
 
-		var stream_index = file.GetStreamIndex();
+		let stream_index = file.GetStreamIndex();
 		
-		var stream = AscFonts.getFontStream(stream_index);
-		var streamPointer = Module["_malloc"](stream.size);
+		let stream = AscFonts.getFontStream(stream_index);
+		let streamPointer = Module["_malloc"](stream.size);
 		Module["HEAP8"].set(stream.data, streamPointer);
 
 		// не скидываем стрим, чтобы можно было использовать его а fonts.js
-		//var streams = AscFonts.getFontStreams();
+		//let streams = AscFonts.getFontStreams();
 		//streams[stream_index] = null;
 		//streams[stream_index] = AscFonts.updateFontStreamNative(streamPointer, stream.size);
 

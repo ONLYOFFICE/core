@@ -10,7 +10,7 @@
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../simple_xml_writer.h"
-#include "../../simple_xml_writer3.h"
+#include "../../simple_xml_writer4.h"
 
 using namespace cpdoccore;
 
@@ -91,18 +91,18 @@ public:
 	XmlUtils::CXmlLiteReader& oReader;
 };
 
-class ReadAndWrite3
+class ReadAndWrite4
 {
 public:
-	ReadAndWrite3(xml_writer3& _xml_wr_3, XmlUtils::CXmlLiteReader& oReader) :  _xml_wr_3(_xml_wr_3), oReader(oReader) {};
-	~ReadAndWrite3() {};
+	ReadAndWrite4(xml_writer4& _xml_wr_4, XmlUtils::CXmlLiteReader& oReader) : _xml_wr_4(_xml_wr_4), oReader(oReader) {};
+	~ReadAndWrite4() {};
 	void AddNode(int depth)
 	{
 		while (oReader.ReadNextSiblingNode(depth))
 		{
 			int tmp = oReader.GetDepth();
 			std::wstring sName = oReader.GetName();
-			CP_XML_NODE_3(sName)
+			CP_XML_NODE_4(sName)
 			{
 				int na = oReader.GetAttributesCount();
 				if (na > 0)
@@ -111,30 +111,30 @@ public:
 					{
 						std::wstring sNameAttr = oReader.GetName();
 						std::wstring sAttr = oReader.GetText();
-						CP_XML_ATTR2_3(sNameAttr, sAttr);
+						CP_XML_ATTR2_4(sNameAttr, sAttr);
 						for (int i = 1; i < na; i++)
 						{
 							if (oReader.MoveToNextAttribute())
 							{
 								sNameAttr = oReader.GetName();
 								sAttr = oReader.GetText();
-								CP_XML_ATTR2_3(sNameAttr, sAttr);
-							}	
-						}	
+								CP_XML_ATTR2_4(sNameAttr, sAttr);
+							}
+						}
 						oReader.MoveToElement();
 					}
 				}
 				if ((sName == L"w:t" || sName == L"w:instrText" || sName == L"m:t" || sName == L"wp:posOffset" || sName == L"w14:pctHeight" || sName == L"w14:pctWidth" || sName == L"wp:align") && !oReader.IsEmptyNode())
 				{
 					std::wstring sVal = oReader.GetText2();
-					CP_XML_CONTENT_3(sVal);
+					CP_XML_CONTENT_4(sVal);
 				}
 				else if (!oReader.IsEmptyNode()) this->AddNode(tmp);
 			}
 		}
 	}
 public:
-	xml_writer3& _xml_wr_3;
+	xml_writer4& _xml_wr_4;
 	XmlUtils::CXmlLiteReader& oReader;
 };
 
@@ -217,24 +217,24 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	
 	//Reading and writing an XML doc via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml2 outputbuffer;
-	CP_XML_WRITER_3(outputbuffer)
+	xml::CBufferXml3 outputbuffer;
+	CP_XML_WRITER_4(outputbuffer)
 	{
-		CP_XML_NODE_3(sName)
+		CP_XML_NODE_4(sName)
 		{
 			int na = oReader.GetAttributesCount();
 			if (na > 0)
 			{
 				if (oReader.MoveToFirstAttribute())
 				{
-					CP_XML_ATTR2_3(oReader.GetName(), oReader.GetText());
+					CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
 					for (int i = 1; i < na; i++)
 						if (oReader.MoveToNextAttribute())
-							CP_XML_ATTR2_3(oReader.GetName(), oReader.GetText());
+							CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
 					oReader.MoveToElement();
 				}
 			}
-			ReadAndWrite3 rnw(_xml_wr_3, oReader);
+			ReadAndWrite4 rnw(_xml_wr_4, oReader);
 			rnw.AddNode(n);
 		}
 	}
@@ -279,7 +279,7 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	std::wstring out = outputstream.str();
 	utf8::utf16to8(out.begin(), out.end(), std::back_inserter(res));
 	NSFile::CFileBinary file;
-	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[2])) == true)
+	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[3])) == true)
 	{
 		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 		file.WriteFile((BYTE*)root.c_str(), root.length());
@@ -288,6 +288,178 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	}
 	
 	std::cout << '\n' << "Reading and writing an XML doc via buffer time - "  << elapsed_ms1.count() / 1000 / 60 << "(min)" << elapsed_ms1.count() / 1000 % 60 << "(s)" << elapsed_ms1.count() % 1000 << "(ms)" << '\n' << "Reading and writing an XML doc via sstream time - " << elapsed_ms2.count() / 1000 / 60 << "(min)" << elapsed_ms2.count() / 1000 % 60 << "(s)" << elapsed_ms2.count() % 1000 << "(ms)" << '\n';
+}
+
+TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
+{
+	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(filename))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	int n = oReader.GetDepth();
+	std::wstring sName = oReader.GetName();
+
+	//Reading and writing an XML doc via buffer
+	xml::CBufferXml3 outputbuffer1;
+	CP_XML_WRITER_4(outputbuffer1)
+	{
+		CP_XML_NODE_4(sName)
+		{
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite4 rnw(_xml_wr_4, oReader);
+			rnw.AddNode(n);
+		}
+	}
+
+	std::wstring filename1(__argv[2], __argv[2] + strlen(__argv[2]));
+	if (!oReader.FromFile(filename1))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	n = oReader.GetDepth();
+	sName = oReader.GetName();
+
+	//Reading and writing an XML doc via buffer
+	xml::CBufferXml3 outputbuffer2;
+	CP_XML_WRITER_4(outputbuffer2)
+	{
+		CP_XML_NODE_4(sName)
+		{
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite4 rnw(_xml_wr_4, oReader);
+			rnw.AddNode(n);
+		}
+	}
+
+	auto begin1 = std::chrono::steady_clock::now();
+	xml::CBufferXml3 outputbuffer3(outputbuffer1.cur_buf + outputbuffer2.cur_buf + 2);
+	outputbuffer3 = outputbuffer1 + outputbuffer2;
+	auto end1 = std::chrono::steady_clock::now();
+	auto elapsed_mcs1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1);
+
+	std::string res = outputbuffer3.utf8();
+	NSFile::CFileBinary file;
+	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[4])) == true)
+	{
+		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+		file.WriteFile((BYTE*)root.c_str(), root.length());
+		file.WriteFile((BYTE*)res.c_str(), res.length());
+		file.CloseFile();
+	}
+
+	std::cout << "Time of adding two buffers into one " << elapsed_mcs1.count() << "(mcs)" << '\n';
+}
+
+TEST_F(BufferTest, test_buffer_operator_add)
+{
+	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(filename))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	int n = oReader.GetDepth();
+	std::wstring sName = oReader.GetName();
+
+	//Reading and writing an XML doc via buffer
+	xml::CBufferXml3 outputbuffer1;
+	CP_XML_WRITER_4(outputbuffer1)
+	{
+		CP_XML_NODE_4(sName)
+		{
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite4 rnw(_xml_wr_4, oReader);
+			rnw.AddNode(n);
+		}
+	}
+
+	std::wstring filename1(__argv[2], __argv[2] + strlen(__argv[2]));
+	if (!oReader.FromFile(filename1))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	n = oReader.GetDepth();
+	sName = oReader.GetName();
+
+	//Reading and writing an XML doc via buffer
+	xml::CBufferXml3 outputbuffer2;
+	CP_XML_WRITER_4(outputbuffer2)
+	{
+		CP_XML_NODE_4(sName)
+		{
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2_4(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite4 rnw(_xml_wr_4, oReader);
+			rnw.AddNode(n);
+		}
+	}
+
+	auto begin2 = std::chrono::steady_clock::now();
+	outputbuffer1 += outputbuffer2;
+	auto end2 = std::chrono::steady_clock::now();
+	auto elapsed_mcs2 = std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2);
+
+	NSFile::CFileBinary file;
+	std::string res = outputbuffer1.utf8();
+	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[5])) == true)
+	{
+		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+		file.WriteFile((BYTE*)root.c_str(), root.length());
+		file.WriteFile((BYTE*)res.c_str(), res.length());
+		file.CloseFile();
+	}
+
+	std::cout << "Time of adding the second buffer to the first one " << elapsed_mcs2.count() << "(mcs)" << '\n';
+
 }
 
 TEST_F(BufferTest, test_StringBuild_time)
@@ -348,7 +520,7 @@ TEST_F(BufferTest, test_StringBuild_time)
 	std::wstring out = oBuilder.GetData();
 	utf8::utf16to8(out.begin(), out.end(), std::back_inserter(res));
 	NSFile::CFileBinary file;
-	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[3])) == true)
+	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[6])) == true)
 	{
 		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 		file.WriteFile((BYTE*)root.c_str(), root.length());
@@ -363,12 +535,12 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_node)
 {
 	//Writing an XML node via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml2 outputbuffer;
-	CP_XML_WRITER_3(outputbuffer)
+	xml::CBufferXml3 outputbuffer;
+	CP_XML_WRITER_4(outputbuffer)
 	{
-		CP_XML_NODE_3(L"NameNode")
+		CP_XML_NODE_4(L"NameNode")
 		{
-			CP_XML_ATTR_3(L"NameString", data);
+			CP_XML_ATTR_4(L"NameString", data);
 		}
 	}
 	auto end1 = std::chrono::steady_clock::now();
@@ -396,18 +568,18 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_two_nodes_whith_content)
 {
 	//Writing an two XML node whith content via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml2 outputbuffer;
-	CP_XML_WRITER_3(outputbuffer)
+	xml::CBufferXml3 outputbuffer;
+	CP_XML_WRITER_4(outputbuffer)
 	{
-		CP_XML_NODE_3(L"NameNode")
+		CP_XML_NODE_4(L"NameNode")
 		{
-			CP_XML_ATTR_3(L"NameString", L"data");
+			CP_XML_ATTR_4(L"NameString", L"data");
 
-			CP_XML_NODE_3(L"NameNodeTwo")
+			CP_XML_NODE_4(L"NameNodeTwo")
 			{
 				for (size_t i = 0; i < 100; i++)
 				{
-					CP_XML_CONTENT_3(static_cast<wchar_t>(i));
+					CP_XML_CONTENT_4(static_cast<wchar_t>(i));
 				}
 			}
 		}
@@ -444,32 +616,32 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_some_node_with_some_content)
 {
 	//Writing an some XML node whith some content via buffer
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml2 outputbuffer;
-	CP_XML_WRITER_3(outputbuffer)
+	xml::CBufferXml3 outputbuffer;
+	CP_XML_WRITER_4(outputbuffer)
 	{
-		CP_XML_NODE_3(L"NameNode")
+		CP_XML_NODE_4(L"NameNode")
 		{
-			CP_XML_ATTR_3(L"NameString", data);
+			CP_XML_ATTR_4(L"NameString", data);
 
-			CP_XML_NODE_3(L"NameNodeTwo")
+			CP_XML_NODE_4(L"NameNodeTwo")
 			{
 				for (size_t i = 0; i < 100; i++)
 				{
-					CP_XML_CONTENT_3(static_cast<wchar_t>(i));
+					CP_XML_CONTENT_4(static_cast<wchar_t>(i));
 				}
 			}
 		}
-		CP_XML_NODE_3(L"NameNewNode")
+		CP_XML_NODE_4(L"NameNewNode")
 		{
-			CP_XML_ATTR_3(L"NameString1", data1);
+			CP_XML_ATTR_4(L"NameString1", data1);
 
-			CP_XML_NODE_3(L"NameNextNode")
+			CP_XML_NODE_4(L"NameNextNode")
 			{
-				CP_XML_ATTR_3(L"NameString2", data2);
+				CP_XML_ATTR_4(L"NameString2", data2);
 			}
-			CP_XML_NODE_3(L"NameTwoNextNode")
+			CP_XML_NODE_4(L"NameTwoNextNode")
 			{
-				CP_XML_CONTENT_3(L"1234567890");
+				CP_XML_CONTENT_4(L"1234567890");
 			}
 		}
 	}
@@ -518,22 +690,22 @@ TEST_F(BufferTest, test_buffer_and_sstream_write_some_node_with_some_content)
 TEST_F(BufferTest, test_buffer_and_sstream_write_xml)
 {
 	//Writing an some XML node whith some content via buffer
-	xml::CBufferXml2 outputbuffer;
+	xml::CBufferXml3 outputbuffer;
 	auto begin1 = std::chrono::steady_clock::now();
-	CP_XML_WRITER_3(outputbuffer)
+	CP_XML_WRITER_4(outputbuffer)
 	{
-		CP_XML_NODE_3(L"vt:vector")
+		CP_XML_NODE_4(L"vt:vector")
 		{
-			CP_XML_ATTR_3(L"size", L"200");
-			CP_XML_ATTR_3(L"baseType", L"variant");
+			CP_XML_ATTR_4(L"size", L"200");
+			CP_XML_ATTR_4(L"baseType", L"variant");
 
 			for (size_t i = 0; i < data2.size(); ++i)
 			{
-				CP_XML_NODE_3(L"vt:variant")
+				CP_XML_NODE_4(L"vt:variant")
 				{
-					CP_XML_NODE_3(L"vt:lpstr")
+					CP_XML_NODE_4(L"vt:lpstr")
 					{
-						CP_XML_CONTENT_3(data2[i]);
+						CP_XML_CONTENT_4(data2[i]);
 					}
 				}
 			}

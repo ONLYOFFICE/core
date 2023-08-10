@@ -83,6 +83,7 @@ namespace cpdoccore
                 else return false;
             }
             const wchar_t* Get_Buffer() { return buf; }
+            size_t Get_Buf_Size() { return cbs; }
         private:
             wchar_t* buf;
             wchar_t* tmp;
@@ -96,6 +97,10 @@ namespace cpdoccore
             {
                 std::shared_ptr<buffer> ptr = std::make_shared<buffer>();
                 All_Buffer.emplace_back(ptr);
+            }
+            CBufferXml3(size_t buf_count) : cur_buf(-1), buffer_size(0)
+            {
+                All_Buffer.reserve(buf_count);
             }
             ~CBufferXml3() { All_Buffer.clear(); }
 
@@ -158,6 +163,66 @@ namespace cpdoccore
                     utf8::utf16to8(tmp.begin(), tmp.end(), std::back_inserter(res));
                 }
                 return res;
+            }
+
+            CBufferXml3 operator+(const CBufferXml3& other)
+            {
+                CBufferXml3 result(cur_buf + other.cur_buf + 2);
+                if (All_Buffer[cur_buf]->Get_Buf_Size() > 0)
+                {
+                    All_Buffer[cur_buf]->AddData(L'\0');
+                }
+                for (const auto& c : All_Buffer)
+                {
+                    result.All_Buffer.emplace_back(c);
+                    cur_buf++;
+                }
+                for (const auto& c : other.All_Buffer)
+                {
+                    result.All_Buffer.emplace_back(c);
+                    cur_buf++;
+                }
+                result.buffer_size = buffer_size + other.buffer_size;
+                return result;
+            }
+
+            CBufferXml3& operator=(const CBufferXml3& other)
+            {
+                for (const auto& c : other.All_Buffer)
+                {
+                    All_Buffer.emplace_back(c);
+                    cur_buf++;
+                }
+                buffer_size = other.buffer_size;
+                return *this;
+            }
+
+            CBufferXml3& operator+=(const CBufferXml3& other)
+            {
+                if (All_Buffer[cur_buf]->Get_Buf_Size() > 0)
+                {
+                    All_Buffer[cur_buf]->AddData(L'\0');
+                }
+                for (const auto& c : other.All_Buffer)
+                {
+                    All_Buffer.emplace_back(c);
+                    cur_buf++;
+                }
+                buffer_size += other.buffer_size;
+                return *this;
+            }
+
+            friend std::wostream& operator<<(std::wostream& os, const CBufferXml3& other)
+            {
+                if (other.All_Buffer[other.cur_buf]->Get_Buf_Size() > 0)
+                {
+                    other.All_Buffer[other.cur_buf]->AddData(L'\0');
+                }
+                for (const auto& c : other.All_Buffer)
+                {
+                    os << c->Get_Buffer();
+                }
+                return os;
             }
 
         public:
@@ -287,13 +352,13 @@ namespace cpdoccore
                     {
                         wr_.elements_.pop();
                         if (tagopen_)
-                            wr_.putc(chars3<T>::slash)
-                            .putc(chars3<T>::right_brocket);
+                            wr_.putc(chars4<T>::slash)
+                            .putc(chars4<T>::right_brocket);
                         else
-                            wr_.putc(chars3<T>::left_brocket)
-                            .putc(chars3<T>::slash)
+                            wr_.putc(chars4<T>::left_brocket)
+                            .putc(chars4<T>::slash)
                             .puts(name_.c_str())
-                            .putc(chars3<T>::right_brocket);
+                            .putc(chars4<T>::right_brocket);
                     }
                     wr_.level_--;
                 }

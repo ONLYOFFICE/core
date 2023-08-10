@@ -317,6 +317,9 @@ namespace OOX
 			{
 				auto ptr(new XLSB::FileVersion);
 				ptr->stAppName = m_oAppName.get();
+				ptr->stLastEdited = L"";
+				ptr->stLowestEdited = L"";
+				ptr->stRupBuild = L"";
 				workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr{ptr};
 			}
 

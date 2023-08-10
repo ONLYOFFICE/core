@@ -1,5 +1,4 @@
 #include "player.h"
-#include <vlc/vlc.h>
 
 #define qtu(i) ((i).toUtf8().constData())
 
@@ -14,17 +13,8 @@
 
 Mwindow::Mwindow()
 {
-	vlcPlayer = NULL;
-
-	/* Initialize libVLC */
-	vlcInstance = libvlc_new(0, NULL);
-
-	/* Complain in case of broken installation */
-	if (vlcInstance == NULL)
-	{
-		QMessageBox::critical(this, "Qt libVLC player", "Could not init libVLC");
-		exit(1);
-	}
+	// create vlc player
+	vlcPlayer = new CVlcPlayer();
 
 	/* Interface initialization */
 	initUI();
@@ -32,9 +22,7 @@ Mwindow::Mwindow()
 
 Mwindow::~Mwindow()
 {
-	/* Release libVLC instance on quit */
-	if (vlcInstance)
-		libvlc_release(vlcInstance);
+	delete vlcPlayer;
 }
 
 void Mwindow::initUI()
@@ -118,6 +106,9 @@ void Mwindow::initUI()
 	centralWidget->setLayout(layout2);
 	setCentralWidget(centralWidget);
 	resize(600, 400);
+
+	/* Integrate the video in the interface */
+	vlcPlayer->integrateIntoWidget(videoWidget);
 }
 
 void Mwindow::openFile()
@@ -126,32 +117,18 @@ void Mwindow::openFile()
 	/* The basic file-select box */
 	QUrl url = QFileDialog::getOpenFileUrl(this, tr("Load a file"));
 
-	/* Stop if something is playing */
-	if (vlcPlayer && libvlc_media_player_is_playing(vlcPlayer))
-		stop();
-
 	/* Create a new Media */
-	libvlc_media_t *vlcMedia = libvlc_media_new_location(vlcInstance, qtu(url.toString(QUrl::FullyEncoded)));
+	libvlc_media_t *vlcMedia = libvlc_media_new_location(vlcPlayer->getVlcInstance(), qtu(url.toString(QUrl::FullyEncoded)));
 	if (!vlcMedia)
 		return;
 
-	/* Create a new libvlc player */
-	vlcPlayer = libvlc_media_player_new_from_media(vlcMedia);
+	vlcPlayer->open(vlcMedia);
 
 	/* Release the media */
 	libvlc_media_release(vlcMedia);
 
-	/* Integrate the video in the interface */
-#if defined(Q_OS_MAC)
-	libvlc_media_player_set_nsobject(vlcPlayer, (void *)videoWidget->winId());
-#elif defined(Q_OS_UNIX)
-	libvlc_media_player_set_xwindow(vlcPlayer, videoWidget->winId());
-#elif defined(Q_OS_WIN)
-	libvlc_media_player_set_hwnd(vlcPlayer, (HWND)videoWidget->winId());
-#endif
-
 	/* And start playback */
-	libvlc_media_player_play(vlcPlayer);
+	vlcPlayer->play();
 
 	/* Update playback button */
 	playBut->setText("Pause");
@@ -162,16 +139,16 @@ void Mwindow::play()
 	if (!vlcPlayer)
 		return;
 
-	if (libvlc_media_player_is_playing(vlcPlayer))
+	if (libvlc_media_player_is_playing(vlcPlayer->m_pVlcPlayer))
 	{
 		/* Pause */
-		libvlc_media_player_pause(vlcPlayer);
+		libvlc_media_player_pause(vlcPlayer->m_pVlcPlayer);
 		playBut->setText("Play");
 	}
 	else
 	{
 		/* Play again */
-		libvlc_media_player_play(vlcPlayer);
+		libvlc_media_player_play(vlcPlayer->m_pVlcPlayer);
 		playBut->setText("Pause");
 	}
 }
@@ -179,17 +156,14 @@ void Mwindow::play()
 int Mwindow::changeVolume(int vol)
 { /* Called on volume slider change */
 
-	if (vlcPlayer)
-		return libvlc_audio_set_volume(vlcPlayer, vol);
-
+	vlcPlayer->setVolume(vol);
 	return 0;
 }
 
 void Mwindow::changePosition(int pos)
 { /* Called on position slider change */
 
-	if (vlcPlayer)
-		libvlc_media_player_set_position(vlcPlayer, (float)pos / 1000.0);
+	libvlc_media_player_set_position(vlcPlayer->m_pVlcPlayer, (float)pos / 1000.0);
 }
 
 void Mwindow::updateInterface()
@@ -199,11 +173,11 @@ void Mwindow::updateInterface()
 		return;
 
 	/* update the timeline */
-	float pos = libvlc_media_player_get_position(vlcPlayer);
+	float pos = libvlc_media_player_get_position(vlcPlayer->m_pVlcPlayer);
 	slider->setValue((int)(pos * 1000.0));
 
 	/* Stop the media */
-	if (libvlc_media_player_get_state(vlcPlayer) == libvlc_Ended)
+	if (vlcPlayer->getState() == libvlc_Ended)
 		this->stop();
 }
 
@@ -212,13 +186,9 @@ void Mwindow::stop()
 	if (vlcPlayer)
 	{
 		/* stop the media player */
-		libvlc_media_player_stop(vlcPlayer);
-
-		/* release the media player */
-		libvlc_media_player_release(vlcPlayer);
+		vlcPlayer->stop();
 
 		/* Reset application values */
-		vlcPlayer = NULL;
 		slider->setValue(0);
 		playBut->setText("Play");
 	}

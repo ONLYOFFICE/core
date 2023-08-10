@@ -1,14 +1,12 @@
 #ifndef PLAYER
 #define PLAYER
 
-typedef long int ssize_t;
+#include "../vlcplayer.h"
 
-#include <QtGui>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSlider>
 #include <QWidget>
-#include <vlc/vlc.h>
 
 class Mwindow : public QMainWindow
 {
@@ -39,8 +37,7 @@ private:
 	QSlider *slider;
 	QWidget *videoWidget;
 
-	libvlc_instance_t *vlcInstance;
-	libvlc_media_player_t *vlcPlayer;
+	CVlcPlayer* vlcPlayer;
 
 	void initUI();
 };

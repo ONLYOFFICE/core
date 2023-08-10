@@ -14,3 +14,10 @@ core_windows:vs2019 {
 apple_silicon:greaterThan(QT_MAJOR_VERSION, 5) {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 }
+
+INCLUDEPATH += $$PWD
+
+HEADERS += $$PWD/vlcplayer.h \
+    $$PWD/libvlc_base.h
+
+SOURCES += $$PWD/vlcplayer.cpp

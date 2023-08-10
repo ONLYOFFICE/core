@@ -37,16 +37,34 @@
 
 class GRAPHICS_DECL CAnnotFieldInfo : public IAnnotField
 {
-protected:
-	class CMarkupAnnot
-	{
-		CMarkupAnnot();
-	};
 public:
-	class GRAPHICS_DECL CTextAnnotPr : public CMarkupAnnot
+	class GRAPHICS_DECL CMarkupAnnotPr
 	{
 	public:
-		CTextAnnotPr();
+		CMarkupAnnotPr();
+
+	private:
+		BYTE m_nRT;
+		double m_dCA;
+		std::wstring m_wsT;
+		std::wstring m_wsRC;
+		std::wstring m_wsSubj;
+	};
+
+	class GRAPHICS_DECL CTextAnnotPr
+	{
+	public:
+		CTextAnnotPr() : m_bOpen(false), m_nName(2), m_nState(7), m_nStateModel(2) {}
+
+		void SetOpen(bool bOpen)             { m_bOpen = bOpen; }
+		void SetName(BYTE nName)             { m_nName = nName; }
+		void SetState(BYTE nState)           { m_nState = nState; }
+		void SetStateModel(BYTE nStateModel) { m_nStateModel = nStateModel; }
+
+		bool IsOpen()        const { return m_bOpen; }
+		BYTE GetName()       const { return m_nName; }
+		BYTE GetState()      const { return m_nState; }
+		BYTE GetStateModel() const { return m_nStateModel; }
 
 	private:
 		bool m_bOpen;
@@ -70,6 +88,7 @@ public:
 	double GetBaseLineOffset() const;
 
 	bool isWidget() const;
+	bool isMarkup() const;
 	bool IsText()   const;
 	bool IsInk()    const;
 	bool IsLine()   const;
@@ -86,7 +105,8 @@ private:
 	double       m_dH;
 	double       m_dBaseLineOffset;
 
-	CTextAnnotPr* m_oTextPr;
+	CMarkupAnnotPr* m_pMarkupPr;
+	CTextAnnotPr* m_pTextPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

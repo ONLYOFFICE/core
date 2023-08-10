@@ -1055,6 +1055,9 @@ HRESULT CPdfWriter::ResetTransform()
 //----------------------------------------------------------------------------------------
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
 {
+	PdfWriter::CAnnotation* psAnnot = m_pDocument->CreateTextAnnot(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), "TEST");
+	return S_OK;
+
 	NSUnicodeConverter::CUnicodeConverter conv;
 	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
 	pAnnot->SetBorderStyle(PdfWriter::EBorderSubtype::border_subtype_Solid, 0);

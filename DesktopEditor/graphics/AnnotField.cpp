@@ -44,16 +44,28 @@ CAnnotFieldInfo::CAnnotFieldInfo()
 
 	m_dBaseLineOffset = 0;
 
-	m_oTextPr = NULL;
+	m_pMarkupPr = NULL;
+	m_pTextPr = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
-	RELEASEOBJECT(m_oTextPr);
+	RELEASEOBJECT(m_pMarkupPr);
+	RELEASEOBJECT(m_pTextPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
 {
-	m_nType = nType;
+
+	switch (nType)
+	{
+	case 0:
+	{
+		m_nType = 7;
+		RELEASEOBJECT(m_pTextPr);
+		m_pTextPr = new CAnnotFieldInfo::CTextAnnotPr();
+		break;
+	}
+	}
 }
 bool CAnnotFieldInfo::IsValid() const
 {
@@ -88,6 +100,10 @@ bool CAnnotFieldInfo::isWidget() const
 {
 	return (m_nType != 0 && m_nType < 7);
 }
+bool CAnnotFieldInfo::isMarkup() const
+{
+	return (m_nType > 6 && m_nType < 24);
+}
 bool CAnnotFieldInfo::IsText() const
 {
 	return (m_nType == 7);
@@ -102,5 +118,7 @@ bool CAnnotFieldInfo::IsLine() const
 }
 CAnnotFieldInfo::CTextAnnotPr* CAnnotFieldInfo::GetTextAnnotPr()
 {
-	return m_oTextPr;
+	if (!m_pTextPr)
+		m_pTextPr = new CAnnotFieldInfo::CTextAnnotPr();
+	return m_pTextPr;
 }

@@ -1242,6 +1242,8 @@ namespace NSOnlineOfficeBinToPdf
 
 				int nLen = ReadInt(current, curindex);
 
+				// TODO read Annot
+
 				double dX = ReadDouble(current, curindex);
 				double dY = ReadDouble(current, curindex);
 				double dW = ReadDouble(current, curindex);
@@ -1257,7 +1259,30 @@ namespace NSOnlineOfficeBinToPdf
 
 				oInfo.SetType(ReadInt(current, curindex));
 
-				// TODO
+				if (oInfo.isMarkup())
+				{
+					nFlags = ReadInt(current, curindex);
+					if (nFlags & (1 << 0))
+					{
+
+					}
+				}
+
+				if (oInfo.IsText())
+				{
+					CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
+
+					pPr->SetOpen(nFlags & (1 << 15));
+
+					if (nFlags & (1 << 16))
+						pPr->SetName(ReadByte(current, curindex));
+
+					if (nFlags & (1 << 17))
+						pPr->SetStateModel(ReadByte(current, curindex));
+
+					if (nFlags & (1 << 18))
+						pPr->SetState(ReadByte(current, curindex));
+				}
 
 				if (oInfo.IsValid())
 					pRenderer->AddAnnotField(&oInfo);

@@ -1085,6 +1085,92 @@ namespace OOX
 
             }
         }
+		XLS::BaseObjectPtr CFormula::toBin()
+		{
+			XLS::BaseObjectPtr objectPtr;
+			switch(m_oT->GetValue())
+			{
+				 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal:
+                    {
+                        auto formula(new XLSB::FmlaBase(false));
+                        formula->formula = m_sText;
+						objectPtr = XLS::BaseObjectPtr{dynamic_cast<XLS::BiffRecord*>(formula)};
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
+                    {
+						if(m_oRef.IsInit())
+						{
+						 	auto formula(new XLSB::ShrFmla(m_oRef.get()));
+                       		formula->formula = m_sText;
+							objectPtr = XLS::BaseObjectPtr{formula};
+						}
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
+                    {
+						if(m_oRef.IsInit())
+						{
+							auto formula(new XLSB::ArrFmla(m_oRef.get()));
+
+							formula->formula = m_sText;
+							if(m_oAca.IsInit())
+							{
+								formula->fAlwaysCalc = m_oAca->GetValue();
+							}
+							objectPtr = XLS::BaseObjectPtr{formula};
+						}
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
+                    {
+
+						auto dataTable(new XLSB::Table);
+
+                        if(m_oCa.IsInit())
+                        {
+
+                            dataTable->fAlwaysCalc = m_oCa->GetValue();
+                        }
+						if(m_oRef.IsInit())
+                        {
+                        	dataTable->rfx = m_oRef.get();
+						}
+
+                        if(m_oDtr.IsInit())
+                        {
+                            dataTable->fRw = m_oDtr->GetValue();
+                        }
+
+                        if(m_oDt2D.IsInit())
+                        {
+                            dataTable->fTbl2 = m_oDt2D->GetValue();
+                        }
+
+                        if(m_oDel1.IsInit())
+                        {
+                            dataTable->fDeleted1 = m_oDel1->GetValue();
+                        }
+
+                        if(m_oDel2.IsInit())
+                        {
+                           dataTable->fDeleted2 = m_oDel2->GetValue();
+                        }
+
+						if(m_oR1.IsInit())
+                        {
+                        	dataTable->r1 = m_oR1.get();
+						}
+
+						if(m_oR2.IsInit())
+                        {
+                        	dataTable->r2 = m_oR2.get();
+						}
+                    }
+                    break;
+			}
+			return objectPtr;
+		}
 		EElementType CFormula::getType () const
 		{
 			return et_x_Formula;
@@ -1898,7 +1984,7 @@ namespace OOX
 			{
 				pTABLECELL = new(XLSB::TABLECELL);
 				ptr->m_source = XLS::BaseObjectPtr{pTABLECELL};
-				//pFMLACELL->m_source = m_oFormula->toBin();
+				pFMLACELL->m_source = m_oFormula->toBin();
 				pTABLECELL->m_source = XLS::BaseObjectPtr{pSource};
 			}
 			else
@@ -1917,7 +2003,7 @@ namespace OOX
 
 					if(!m_oRef.IsInit())
 					{
-						//pFMLACELL->m_source = m_oFormula->toBin();
+						pFMLACELL->m_source = m_oFormula->toBin();
 						if(m_oFormula->m_oSi.IsInit())
 							pFMLACELL->m_sharedIndex = m_oFormula->m_oSi->GetValue();
 						pFMLACELL->isShared = true;
@@ -1926,8 +2012,10 @@ namespace OOX
 					else
 					{
 						if(m_oFormula->m_oSi.IsInit())
+						{
 							pSHRFMLACELL->m_sharedIndex = m_oFormula->m_oSi->GetValue();
-						//pSHRFMLACELL->m_source = m_oFormula->toBin();
+							pSHRFMLACELL->m_source = m_oFormula->toBin();
+						}
 					}
 				}
 				else if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeNormal)
@@ -1935,12 +2023,12 @@ namespace OOX
 					std::vector<XLS::CellRangeRef> ref;
 					pFMLACELL = new XLSB::FMLACELL(0, ref);
 					ptr->m_source = XLS::BaseObjectPtr{pFMLACELL};
-					//pFMLACELL->m_source = m_oFormula->toBin();
+					pFMLACELL->m_source = m_oFormula->toBin();
 				}
 
 				else if(m_oFormula->getType() == SimpleTypes::Spreadsheet::cellformulatypeArray)
 				{
-					//pSHRFMLACELL->m_source = m_oFormula->toBin();
+					pSHRFMLACELL->m_source = m_oFormula->toBin();
 				}
 			}
 

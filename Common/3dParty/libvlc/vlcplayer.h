@@ -2,8 +2,9 @@
 #define VLC_PLAYER_H
 
 #include "libvlc_base.h"
+#include "vlcmedia.h"
 
-#include "QWidget"
+#include <QWidget>
 
 class CVlcPlayer : public QWidget
 {
@@ -14,22 +15,20 @@ public:
 	virtual ~CVlcPlayer();
 
 public:
+	// libvlc event callbacks
 	static void onStateChanged(const libvlc_event_t *pEvent, void *pData);
 	static void onTimeChanged(const libvlc_event_t *pEvent, void *pData);
 
 public:
 	void integrateIntoWidget(QWidget* pWidget);
-	void open(libvlc_media_t* pMedia);
+	void open(CVlcMedia* pMedia);
 	void pause();
 	void play();
 	void stop();
-
 	void setVolume(int nVolume);
 	void setTime(int nTime);
-
 	bool isAudio();
 	libvlc_state_t getState();
-	libvlc_instance_t* getVlcInstance();
 
 signals:
 	void stateChanged(libvlc_state_t newState);

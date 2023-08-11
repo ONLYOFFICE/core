@@ -115,17 +115,14 @@ void Mwindow::openFile()
 {
 
 	/* The basic file-select box */
-	QUrl url = QFileDialog::getOpenFileUrl(this, tr("Load a file"));
+	QString sFile = QFileDialog::getOpenFileName(this, tr("Load a file"));
 
 	/* Create a new Media */
-	libvlc_media_t *vlcMedia = libvlc_media_new_location(vlcPlayer->getVlcInstance(), qtu(url.toString(QUrl::FullyEncoded)));
-	if (!vlcMedia)
-		return;
-
-	vlcPlayer->open(vlcMedia);
+	CVlcMedia* pMedia = new CVlcMedia(vlcPlayer->m_pVlcInstance, sFile, false);
+	vlcPlayer->open(pMedia);
 
 	/* Release the media */
-	libvlc_media_release(vlcMedia);
+	delete pMedia;
 
 	/* And start playback */
 	vlcPlayer->play();
@@ -234,6 +231,6 @@ void Mwindow::fullscreen()
 
 void Mwindow::closeEvent(QCloseEvent *event)
 {
-	stop();
+	vlcPlayer->stop();
 	event->accept();
 }

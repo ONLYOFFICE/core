@@ -17,7 +17,7 @@ CVlcPlayer::CVlcPlayer()
 	// get event manager
 	m_pEventManager = libvlc_media_player_event_manager(m_pVlcPlayer);
 
-	// attach event listeners
+	// attach event callbacks
 	for (int nEvent = static_cast<int>(libvlc_MediaPlayerNothingSpecial); nEvent <= static_cast<int>(libvlc_MediaPlayerEncounteredError); nEvent++)
 	{
 		libvlc_event_attach(m_pEventManager, nEvent, onStateChanged, this);
@@ -56,14 +56,14 @@ void CVlcPlayer::integrateIntoWidget(QWidget* pWidget)
 #endif
 }
 
-void CVlcPlayer::open(libvlc_media_t* pMedia)
+void CVlcPlayer::open(CVlcMedia* pMedia)
 {
 	// stop playing old media
 	if (libvlc_media_player_is_playing(m_pVlcPlayer))
 		stop();
 
 	// set new media
-	libvlc_media_player_set_media(m_pVlcPlayer, pMedia);
+	libvlc_media_player_set_media(m_pVlcPlayer, pMedia->m_pMedia);
 }
 
 void CVlcPlayer::pause()
@@ -102,11 +102,6 @@ bool CVlcPlayer::isAudio()
 libvlc_state_t CVlcPlayer::getState()
 {
 	return libvlc_media_player_get_state(m_pVlcPlayer);
-}
-
-libvlc_instance_t* CVlcPlayer::getVlcInstance()
-{
-	return m_pVlcInstance;
 }
 
 void CVlcPlayer::stop()

@@ -15,24 +15,23 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_3DPARTY_DIR/googletest/googletest.pri)
+include($$CORE_3DPARTY_DIR/boost/boost.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
+
 
 DESTDIR = $$PWD/build
 
 INCLUDEPATH += ../
+#INCLUDEPATH += $$CORE_3DPARTY_DIR/boost/build/win_64/include/
+INCLUDEPATH += $$CORE_ROOT_DIR/OdfFile/Common/
 
-ADD_DEPENDENCY(doctrenderer)
-ADD_DEPENDENCY(HtmlRenderer)
-ADD_DEPENDENCY(DocxRenderer)
-ADD_DEPENDENCY(PdfFile)
-ADD_DEPENDENCY(XpsFile)
-ADD_DEPENDENCY(EpubFile)
-ADD_DEPENDENCY(DjVuFile)
-ADD_DEPENDENCY(Fb2File)
-ADD_DEPENDENCY(HtmlFile2)
-ADD_DEPENDENCY(graphics)
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+LIBS += -L$$CORE_3DPARTY_DIR/boost/build/win_64/lib/
+
 ADD_DEPENDENCY(kernel)
-ADD_DEPENDENCY(kernel_network)
-ADD_DEPENDENCY(UnicodeConverter)
+ADD_DEPENDENCY(graphics)
+ADD_DEPENDENCY(DocxFormatLib)
+ADD_DEPENDENCY(OdfFormatLib)
 
 core_linux {
     LIBS += -Wl,-unresolved-symbols=ignore-in-shared-libs
@@ -40,5 +39,6 @@ core_linux {
 }
 
 SOURCES += \
-    test.cpp
+    test.cpp\
+    $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp
 

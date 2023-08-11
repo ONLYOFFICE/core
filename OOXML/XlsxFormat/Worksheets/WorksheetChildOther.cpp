@@ -952,8 +952,13 @@ namespace OOX
 			if(m_oBaseColWidth.IsInit())
 				ptr->dxGCol = m_oBaseColWidth.get() * 256.;
 			if(m_oDefaultColWidth.IsInit())
+			{
 				ptr->cchDefColWidth = m_oDefaultColWidth.get();
-
+				if(!m_oBaseColWidth.IsInit())
+				{
+					ptr->dxGCol = m_oDefaultColWidth.get();
+				}
+			}
 				if (m_oDefaultRowHeight.IsInit())
 					ptr->miyDefRwHeight = m_oDefaultRowHeight.get();
 				else
@@ -963,8 +968,11 @@ namespace OOX
 				if (m_oOutlineLevelRow.IsInit()) ptr->iOutLevelRw = m_oOutlineLevelRow.get();
 
 				if (m_oThickBottom.IsInit()) ptr->fExDesc = m_oThickBottom.get();
+				else  ptr->fExDesc = false;
 				if (m_oThickTop.IsInit()) ptr->fExAsc = m_oThickTop.get();
+				else ptr->fExAsc = false;
 				if (m_oZeroHeight.IsInit()) ptr->fDyZero = m_oZeroHeight.get();
+				else ptr->fDyZero = false;
 			return Castedptr;
 		}
 		EElementType CSheetFormatPr::getType() const
@@ -1924,27 +1932,27 @@ namespace OOX
 
 			if(m_oOddHeader.IsInit())
 				castedBegin->stHeader = m_oOddHeader->m_sText;
-			else 
+			else
 				castedBegin->stHeader = false;
 			if(m_oOddFooter.IsInit())
 				castedBegin->stFooter = m_oOddFooter->m_sText;
-			else 
+			else
 				castedBegin->stFooter = false;
 			if(m_oEvenHeader.IsInit())
 				castedBegin->stHeaderEven = m_oEvenHeader->m_sText;
-			else 
+			else
 				castedBegin->stHeaderEven = false;
 			if(m_oEvenFooter.IsInit())
 				castedBegin->stFooterEven = m_oEvenFooter->m_sText;
-			else 
+			else
 				castedBegin->stFooterEven = false;
 			if(m_oFirstHeader.IsInit())
 				castedBegin->stHeaderFirst = m_oFirstHeader->m_sText;
-			else 
+			else
 				castedBegin->stHeaderFirst = false;
 			if(m_oFirstFooter.IsInit())
 			 	castedBegin->stFooterFirst = m_oFirstFooter->m_sText;
-			else 
+			else
 				castedBegin->stFooterFirst = false;
 			return objectPtr;
 		}

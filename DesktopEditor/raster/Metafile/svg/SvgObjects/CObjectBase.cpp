@@ -243,6 +243,9 @@ namespace SVG
 		pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 	}
 
+	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	{}
+
 	bool CRenderedObject::Apply(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
 	{
 		if (NULL == pRenderer || NULL == pStroke || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType() || (!bUseDefault && ((pStroke->m_oWidth.Empty() || pStroke->m_oWidth.Zero()) && pStroke->m_oColor.Empty())))

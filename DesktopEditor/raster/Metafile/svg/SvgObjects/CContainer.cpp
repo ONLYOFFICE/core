@@ -66,9 +66,6 @@ namespace SVG
 		return m_oViewBox;
 	}
 
-	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{}
-
 	TBounds CGraphicsContainer::GetBounds() const
 	{
 		TBounds oBounds, oTempBounds;

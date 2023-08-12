@@ -292,7 +292,7 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 
 TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
 {
-	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	std::wstring filename(__argv[2], __argv[2] + strlen(__argv[2]));
 	XmlUtils::CXmlLiteReader oReader;
 	if (!oReader.FromFile(filename))
 		return;
@@ -325,7 +325,7 @@ TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
 		}
 	}
 
-	std::wstring filename1(__argv[2], __argv[2] + strlen(__argv[2]));
+	std::wstring filename1(__argv[1], __argv[1] + strlen(__argv[1]));
 	if (!oReader.FromFile(filename1))
 		return;
 	if (!oReader.ReadNextNode())
@@ -358,12 +358,14 @@ TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
 	}
 
 	auto begin1 = std::chrono::steady_clock::now();
-	xml::CBufferXml3 outputbuffer3(outputbuffer1.cur_buf + outputbuffer2.cur_buf + 2);
-	outputbuffer3 = outputbuffer1 + outputbuffer2;
+	for (size_t i = 0; i < 10; i++)
+	{
+		outputbuffer1 = outputbuffer1 + outputbuffer2;
+	}
 	auto end1 = std::chrono::steady_clock::now();
 	auto elapsed_mcs1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1);
-
-	std::string res = outputbuffer3.utf8();
+	
+	std::string res = outputbuffer1.utf8();
 	NSFile::CFileBinary file;
 	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[4])) == true)
 	{
@@ -372,13 +374,13 @@ TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
 		file.WriteFile((BYTE*)res.c_str(), res.length());
 		file.CloseFile();
 	}
-
+	
 	std::cout << "Time of adding two buffers into one " << elapsed_mcs1.count() << "(mcs)" << '\n';
 }
 
 TEST_F(BufferTest, test_buffer_operator_add)
 {
-	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	std::wstring filename(__argv[2], __argv[2] + strlen(__argv[2]));
 	XmlUtils::CXmlLiteReader oReader;
 	if (!oReader.FromFile(filename))
 		return;
@@ -411,7 +413,7 @@ TEST_F(BufferTest, test_buffer_operator_add)
 		}
 	}
 
-	std::wstring filename1(__argv[2], __argv[2] + strlen(__argv[2]));
+	std::wstring filename1(__argv[1], __argv[1] + strlen(__argv[1]));
 	if (!oReader.FromFile(filename1))
 		return;
 	if (!oReader.ReadNextNode())
@@ -444,10 +446,13 @@ TEST_F(BufferTest, test_buffer_operator_add)
 	}
 
 	auto begin2 = std::chrono::steady_clock::now();
-	outputbuffer1 += outputbuffer2;
+	for (size_t i = 0; i < 10; i++)
+	{
+		outputbuffer1 += outputbuffer2;
+	}
 	auto end2 = std::chrono::steady_clock::now();
 	auto elapsed_mcs2 = std::chrono::duration_cast<std::chrono::microseconds>(end2 - begin2);
-
+	
 	NSFile::CFileBinary file;
 	std::string res = outputbuffer1.utf8();
 	if (file.CreateFileW(std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(__argv[5])) == true)
@@ -457,7 +462,7 @@ TEST_F(BufferTest, test_buffer_operator_add)
 		file.WriteFile((BYTE*)res.c_str(), res.length());
 		file.CloseFile();
 	}
-
+	
 	std::cout << "Time of adding the second buffer to the first one " << elapsed_mcs2.count() << "(mcs)" << '\n';
 
 }
@@ -515,7 +520,7 @@ TEST_F(BufferTest, test_StringBuild_time)
 	oBuilder.WriteString(L">");
 	auto end1 = std::chrono::steady_clock::now();
 	auto elapsed_ms1 = std::chrono::duration_cast<std::chrono::milliseconds>(end1 - begin1);
-
+	
 	std::string res;
 	std::wstring out = oBuilder.GetData();
 	utf8::utf16to8(out.begin(), out.end(), std::back_inserter(res));
@@ -527,7 +532,7 @@ TEST_F(BufferTest, test_StringBuild_time)
 		file.WriteFile((BYTE*)res.c_str(), res.length());
 		file.CloseFile();
 	}
-
+	
 	std::cout << '\n' << "Reading and writing an XML doc via StringBuild - " << elapsed_ms1.count() / 1000 / 60 << "(min)" << elapsed_ms1.count() / 1000 % 60 << "(s)" << elapsed_ms1.count() % 1000 << "(ms)" << '\n';
 }
 

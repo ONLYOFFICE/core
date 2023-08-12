@@ -41,7 +41,7 @@
 
 #include "../../../OOXML/Base/Unit.h"
 
-#define BufferMax 10485760
+#define BufferMax 104857600
 
 namespace cpdoccore
 {
@@ -188,6 +188,8 @@ namespace cpdoccore
 
             CBufferXml3& operator=(const CBufferXml3& other)
             {
+                All_Buffer.clear();
+                cur_buf = -1;
                 for (const auto& c : other.All_Buffer)
                 {
                     All_Buffer.emplace_back(c);

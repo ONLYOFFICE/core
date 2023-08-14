@@ -36,7 +36,9 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+
 #include "../Biff12_unions/CELLSTYLEXFS.h"
+#include "../Biff12_unions/CELLXFS.h"
 
 namespace OOX
 {
@@ -383,8 +385,10 @@ namespace OOX
 			ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
 			ptr->fAtrProt = m_oApplyProtection->GetValue();
 
-			m_oAligment->toBin(objectPtr);
-			m_oProtection->toBin(objectPtr);
+			if(m_oAligment.IsInit())
+				m_oAligment->toBin(objectPtr);
+			if(m_oProtection.IsInit())
+				m_oProtection->toBin(objectPtr);
 
 			return objectPtr;
 		}
@@ -487,6 +491,14 @@ namespace OOX
 				CXfs *pXfs = new CXfs(xfs);
 				m_arrItems.push_back(pXfs);
 			}
+		}
+		XLS::BaseObjectPtr CCellXfs::toBin()
+		{
+			auto ptr(new XLSB::CELLXFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtXF.push_back(i->toBin());
+			return objectPtr;
 		}
 		EElementType CCellXfs::getType () const
 		{

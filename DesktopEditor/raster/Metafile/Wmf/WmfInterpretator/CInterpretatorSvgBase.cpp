@@ -170,7 +170,7 @@ namespace MetaFile
 		m_pXmlWriter->WriteNodeBegin(wsNodeName, true);
 
 		for (const NodeAttribute& oAttribute : arAttributes)
-		m_pXmlWriter->WriteAttribute(oAttribute.first, oAttribute.second);
+			m_pXmlWriter->WriteAttribute(oAttribute.first, oAttribute.second);
 
 		if (wsValueNode.empty())
 		{

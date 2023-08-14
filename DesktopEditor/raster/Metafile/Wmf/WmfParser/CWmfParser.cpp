@@ -63,13 +63,13 @@ namespace MetaFile
 				case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
 				case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
 				case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
-					//-----------------------------------------------------------
-					// 2.3.2 Control records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.2 Control records
+				//-----------------------------------------------------------
 				case META_EOF: Read_META_EOF(); break;
-					//-----------------------------------------------------------
-					// 2.3.3 Drawing records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.3 Drawing records
+				//-----------------------------------------------------------
 				case META_ARC: Read_META_ARC(); break;
 				case META_CHORD: Read_META_CHORD(); break;
 				case META_ELLIPSE: Read_META_ELLIPSE(); break;
@@ -90,9 +90,9 @@ namespace MetaFile
 				case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
 				case META_SETPIXEL: Read_META_SETPIXEL(); break;
 				case META_TEXTOUT: Read_META_TEXTOUT(); break;
-					//-----------------------------------------------------------
-					// 2.3.4 Object records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.4 Object records
+				//-----------------------------------------------------------
 				case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
 				case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
 				case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
@@ -104,9 +104,9 @@ namespace MetaFile
 				case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
 				case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
 				case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
-					//-----------------------------------------------------------
-					// 2.3.5 State records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.5 State records
+				//-----------------------------------------------------------
 				case META_ANIMATEPALETTE: Read_META_UNKNOWN(); break;
 				case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
 				case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
@@ -138,13 +138,13 @@ namespace MetaFile
 				case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
 				case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
 				case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
-					//-----------------------------------------------------------
-					// 2.3.6 State records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.6 State records
+				//-----------------------------------------------------------
 				case META_ESCAPE: Read_META_ESCAPE(); break;
-					//-----------------------------------------------------------
-					// Неизвестные записи
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// Неизвестные записи
+				//-----------------------------------------------------------
 				default:
 				{
 					//std::cout << ushType << " ";

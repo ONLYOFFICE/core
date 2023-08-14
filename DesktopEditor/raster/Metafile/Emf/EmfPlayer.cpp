@@ -37,15 +37,15 @@
 namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)
+	    : m_pParser(pParser)
 	{
 		m_pDC = new CEmfDC(this);
+
 		if (!m_pDC)
 		{
-			pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
-
-		m_pParser = pParser;
 
 		InitStockObjects();
 	};
@@ -88,7 +88,7 @@ namespace MetaFile
 		m_pDC = new CEmfDC(this);
 		if (!m_pDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
@@ -102,14 +102,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
 		CEmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
@@ -140,7 +140,7 @@ namespace MetaFile
 		{
 			if (m_mDCs.empty() || m_mDCs.begin()->first > nIndex)
 			{
-				m_pParser->SetError();
+				if (NULL != m_pParser) m_pParser->SetError();
 				return;
 			}
 
@@ -161,7 +161,7 @@ namespace MetaFile
 				m_pDC = oFound->second;
 				m_mDCs.erase(oFound);
 			}
-			else
+			else if (NULL != m_pParser)
 				m_pParser->SetError();
 		}
 	}

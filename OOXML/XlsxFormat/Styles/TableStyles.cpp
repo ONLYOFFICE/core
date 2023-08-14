@@ -80,6 +80,78 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CTableStyleElement::toBin()
+		{
+			auto ptr(new XLSB::TableStyleElement);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->index = m_oDxfId->GetValue();
+			ptr->size = m_oSize->GetValue();
+
+			if(m_oType.IsInit())
+			{
+				if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeWholeTable)
+					ptr->tseType = 0;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeHeaderRow)
+					ptr->tseType = 1;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeTotalRow)
+					ptr->tseType = 2;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumn)
+					ptr->tseType = 3;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastColumn)
+					ptr->tseType = 4;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowStripe)
+					ptr->tseType = 5;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowStripe)
+					ptr->tseType = 6;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnStripe)
+					ptr->tseType = 7;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnStripe)
+					ptr->tseType = 8;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstHeaderCell)
+					ptr->tseType = 9;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastHeaderCell)
+					ptr->tseType = 10;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstTotalCell)
+					ptr->tseType = 11;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastTotalCell)
+					ptr->tseType = 12;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalColumn)
+					ptr->tseType = 13;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalColumn)
+					ptr->tseType = 14;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalColumn)
+					ptr->tseType = 15;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalRow)
+					ptr->tseType = 16;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalRow)
+					ptr->tseType = 17;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalRow)
+					ptr->tseType = 18;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeBlankRow)
+					ptr->tseType = 19;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnSubheading)
+					ptr->tseType = 20;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnSubheading)
+					ptr->tseType = 21;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdColumnSubheading)
+					ptr->tseType = 22;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowSubheading)
+					ptr->tseType = 23;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowSubheading)
+					ptr->tseType = 24;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdRowSubheading)
+					ptr->tseType = 25;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldLabels)
+					ptr->tseType = 26;
+				else if (m_oType == SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldValues)
+					ptr->tseType = 27;
+				else
+					ptr->tseType = 19;
+			}
+
+			return objectPtr;
+		}
 		EElementType CTableStyleElement::getType () const
 		{
 			return et_x_TableStyleElement;
@@ -236,6 +308,23 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CTableStyle::toBin()
+		{
+			auto ptr(new XLSB::TABLESTYLE);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto beginStyle(new XLSB::BeginTableStyle);
+			ptr->m_BrtBeginTableStyle = XLS::BaseObjectPtr{beginStyle};
+
+			beginStyle->ctse = m_oCount->GetValue();
+			beginStyle->fIsPivot =	m_oPivot->GetValue();
+			beginStyle->fIsTable =	m_oTable->GetValue();
+			beginStyle->rgchName =	m_oName.get();
+			beginStyle->rgchName =	m_oDisplayName.get();
+
+			for(auto i:m_arrItems)
+				ptr->m_arBrtTableStyleElement.push_back(i->toBin());
+			return objectPtr;
+		}
 		EElementType CTableStyle::getType () const
 		{
 			return et_x_TableStyle;
@@ -332,6 +421,14 @@ namespace OOX
 				m_arrItems.push_back(new CTableStyle(tableStyle));
 			}
 
+		}
+		XLS::BaseObjectPtr CTableStyles::toBin()
+		{
+			auto ptr(new XLSB::TABLESTYLES);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				 ptr->m_arTABLESTYLE.push_back(i->toBin());
+			return objectPtr;
 		}
 		EElementType CTableStyles::getType () const
 		{

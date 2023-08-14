@@ -37,8 +37,8 @@
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
-#include "../Biff12_unions/CELLSTYLEXFS.h"
-#include "../Biff12_unions/CELLXFS.h"
+#include "../../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
+#include "../../../XlsbFormat/Biff12_unions/CELLXFS.h"
 
 namespace OOX
 {

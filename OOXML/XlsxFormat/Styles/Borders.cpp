@@ -38,7 +38,7 @@
 #include "../../XlsbFormat/Biff12_records/Border.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
-#include "../Biff12_unions/BORDERS.h"
+#include "../../../XlsbFormat/Biff12_unions/BORDERS.h"
 
 namespace OOX
 {

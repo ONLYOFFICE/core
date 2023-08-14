@@ -35,7 +35,7 @@
 #include "../ComplexTypes_Spreadsheet.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
-#include "../Biff12_unions/FONTS.h"
+#include "../../../XlsbFormat/Biff12_unions/FONTS.h"
 
 namespace OOX
 {

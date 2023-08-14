@@ -35,7 +35,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/Style.h"
 
-#include "../Biff12_unions/STYLES.h"
+#include "../../XlsbFormat/Biff12_unions/STYLES.h"
 
 namespace OOX
 {

@@ -38,7 +38,7 @@
 #include "../../XlsbFormat/Biff12_records/Fill.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
-#include "../Biff12_unions/FILLS.h"
+#include "../../../XlsbFormat/Biff12_unions/FILLS.h"
 
 namespace OOX
 {

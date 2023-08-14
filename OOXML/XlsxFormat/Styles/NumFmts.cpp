@@ -36,7 +36,7 @@
 #include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../Biff12_unions/FMTS.h"
+#include "../../../XlsbFormat/Biff12_unions/FMTS.h"
 
 namespace OOX
 {
@@ -206,7 +206,7 @@ namespace OOX
 			std::vector<XLS::BaseObjectPtr> objectVector;
 			for(auto i:m_arrItems)
 			{
-				fmts->m_arBrtFmt.push_back(i->toBin())
+                fmts->m_arBrtFmt.push_back(i->toBin());
 			}
 			return objectPtr;
 		}

@@ -36,6 +36,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../Biff12_unions/CELLSTYLEXFS.h"
 
 namespace OOX
 {
@@ -83,6 +84,46 @@ namespace OOX
 		void CAligment::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		void CAligment::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLS::XF*>(obj.get());
+			ptr->cIndent = m_oIndent.get();
+			ptr->fJustLast = m_oJustifyLastLine->GetValue();
+			ptr->iReadOrder = m_oReadingOrder.get();
+			ptr->iReadOrder = m_oRelativeIndent.get();
+			ptr->fShrinkToFit = m_oShrinkToFit->GetValue();
+			ptr->trot = m_oTextRotation.get();
+			ptr->fWrap = m_oWrapText->GetValue();
+
+			if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral)
+				ptr->alc = 0;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentLeft)
+				ptr->alc = 1;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenter)
+				ptr->alc = 2;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentRight)
+				ptr->alc = 3;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentFill)
+				ptr->alc = 4;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentJustify)
+				ptr->alc = 5;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenterContinuous)
+				ptr->alc = 6;
+			else if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentDistributed)
+				ptr->alc = 7;
+
+			if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentTop)
+				ptr->alcV = 0;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentCenter)
+				ptr->alcV = 1;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentBottom)
+				ptr->alcV = 2;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentJustify)
+				ptr->alcV = 3;
+			else if (m_oVertical == SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentDistributed)
+				ptr->alcV = 4;
+
 		}
 		EElementType CAligment::getType () const
 		{
@@ -220,6 +261,14 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CProtection::toBin(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLSB::XF*>(obj.get());
+			if(m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+			if(m_oLocked.IsInit())
+				ptr->fLocked = m_oLocked->GetValue();
+		}
 		EElementType CProtection::getType () const
 		{
 			return et_x_Protection;
@@ -309,6 +358,35 @@ namespace OOX
 
 			m_oAligment     = obj;
 			m_oProtection   = obj;
+		}
+		XLS::BaseObjectPtr CXfs::toBin()
+		{
+			size_t id = 1;
+			auto ptr(new XLSB::XF(id, id));
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			ptr->ixBorder = m_oBorderId->GetValue();
+			m_oBorderId = ptr->ixBorder;
+			ptr->iFill = m_oFillId->GetValue();
+			ptr->font_index = m_oFontId->GetValue();
+			ptr->ifmt = m_oNumFmtId->GetValue();
+			ptr->fsxButton = m_oPivotButton->GetValue();
+			ptr->f123Prefix = m_oQuotePrefix->GetValue();
+
+			if (m_oXfId.IsInit())
+				ptr->ixfParent = m_oXfId->GetValue();
+
+			ptr->fAtrAlc = m_oApplyAlignment->GetValue();
+			ptr->fAtrBdr = m_oApplyBorder->GetValue();
+			ptr->fAtrPat = m_oApplyFill->GetValue();
+			ptr->fAtrFnt = m_oApplyFont->GetValue();
+			ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
+			ptr->fAtrProt = m_oApplyProtection->GetValue();
+
+			m_oAligment->toBin(objectPtr);
+			m_oProtection->toBin(objectPtr);
+
+			return objectPtr;
 		}
 		void CXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -490,6 +568,14 @@ namespace OOX
 				CXfs *pXfs = new CXfs(xfs);
 				m_arrItems.push_back(pXfs);
 			}
+		}
+		XLS::BaseObjectPtr CCellStyleXfs::toBin()
+		{
+			auto ptr(new XLSB::CELLSTYLEXFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtXF.push_back(i->toBin());
+			return objectPtr;
 		}
 		void CCellStyleXfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

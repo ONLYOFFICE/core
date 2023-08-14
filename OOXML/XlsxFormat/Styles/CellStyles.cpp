@@ -35,6 +35,8 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/Style.h"
 
+#include "../Biff12_unions/STYLES.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -71,6 +73,25 @@ namespace OOX
 		 {
 			 ReadAttributes(obj);
 		 }
+		XLS::BaseObjectPtr CCellStyle::toBin()
+		{
+			auto ptr(new XLSB::Style);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oBuiltinId.IsInit())
+				ptr->fBuiltIn = m_oBuiltinId->GetValue();
+			if (m_oCustomBuiltin.IsInit())
+				ptr->fCustom = m_oCustomBuiltin->GetValue();
+			if (m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+			if (m_oILevel.IsInit())
+				ptr->iLevel = m_oILevel->GetValue();
+			if (m_oName.IsInit())
+				ptr->stName = m_oName.get();
+			if (m_oXfId.IsInit())
+				ptr->ixf = m_oXfId->GetValue();
+
+			return objectPtr;
+		}
 		EElementType CCellStyle::getType () const
 		{
 			return et_x_CellStyle;
@@ -159,6 +180,14 @@ namespace OOX
 				 m_arrItems.push_back(pXfs);
 			 }
 		 }
+		XLS::BaseObjectPtr CCellStyles::toBin()
+		{
+			auto ptr(new XLSB::STYLES);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtStyle.push_back(i->toBin());
+			return objectPtr;
+		}
 		EElementType CCellStyles::getType () const
 		{
 			return et_x_CellStyles;

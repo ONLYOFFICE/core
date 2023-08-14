@@ -392,11 +392,11 @@ namespace NSCSS
 
 	std::wstring CColor::ConvertRGBtoHEX(const TRGB &oValue)
 	{
-		wchar_t arTemp[6];
+		wchar_t arTemp[7];
 
-		swprintf(arTemp, sizeof(arTemp), L"%2hhX%2hhX%2hhX", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
+		swprintf(arTemp, sizeof(arTemp), L"%02X%02X%02X", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
 
-		return std::wstring(arTemp);
+		return std::wstring(arTemp, 6);
 	}
 
 	std::wstring CColor::CutURL(const std::wstring &wsValue)

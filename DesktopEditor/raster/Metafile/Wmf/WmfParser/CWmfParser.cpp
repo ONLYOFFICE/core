@@ -44,6 +44,10 @@ namespace MetaFile
 			m_unRecordPos = m_oStream.Tell();
 
 			m_oStream >> unSize;
+
+			if (unSize > m_oStream.CanRead())
+				SetError();
+
 			m_oStream >> ushType;
 
 			m_unRecordSize = unSize * 2; // Размер указан в WORD

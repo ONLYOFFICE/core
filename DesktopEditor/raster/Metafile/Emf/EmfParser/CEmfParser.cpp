@@ -57,6 +57,9 @@ namespace MetaFile
 			if (ulSize < 1)
 				continue;
 
+			if (ulSize - 8 > m_oStream.CanRead())
+				return SetError();
+
 			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordSize	= ulSize - 8;
 

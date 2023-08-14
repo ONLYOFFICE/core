@@ -38,6 +38,8 @@
 #include "../../XlsbFormat/Biff12_records/Border.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
+#include "../Biff12_unions/BORDERS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -133,6 +135,43 @@ namespace OOX
 				}
 
 			}
+		}
+		void CBorderProp::toBin(XLS::BiffStructure* obj)
+		{
+			auto ptr = static_cast<XLSB::Blxf*>(obj);
+			if(m_oColor.IsInit())
+				ptr->brtColor = m_oColor->toColor();
+			if(!m_oStyle.IsInit())
+				return;
+
+			if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone)
+				ptr->dg = 0x00;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin)
+				ptr->dg = 0x01;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium)
+				ptr->dg = 0x02;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed)
+				ptr->dg = 0x03;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted)
+				ptr->dg = 0x04;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick)
+				ptr->dg = 0x05;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble)
+				ptr->dg = 0x06;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair)
+				ptr->dg = 0x07;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed)
+				ptr->dg = 0x08;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot)
+				ptr->dg = 0x09;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot)
+				ptr->dg = 0x0A;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot)
+				ptr->dg = 0x0B;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDotDot)
+				ptr->dg = 0x0C;
+			else if (m_oStyle == SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot)
+				ptr->dg = 0x0D;
 		}
 		bool CBorderProp::IsEmpty()
 		{
@@ -302,6 +341,23 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CBorder::toBin()
+		{
+			auto ptr(new XLSB::Border);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oBottom.IsInit())
+				m_oBottom->toBin(&ptr->blxfBottom);
+			if(m_oDiagonal.IsInit())
+				m_oDiagonal->toBin(&ptr->blxfDiag);
+			if(m_oTop.IsInit())
+				m_oTop->toBin(&ptr->blxfTop);
+			if(m_oStart.IsInit())
+				m_oStart->toBin(&ptr->blxfLeft);
+			if(m_oEnd.IsInit())
+				m_oEnd->toBin(&ptr->blxfRight);
+
+			return objectPtr;
+		}
 		EElementType CBorder::getType () const
 		{
 			return et_x_Border;
@@ -400,6 +456,14 @@ namespace OOX
 				m_arrItems.push_back(pBorder);
 				m_mapBorders.insert(std::make_pair(index++, pBorder));
 			}
+		}
+		XLS::BaseObjectPtr CBorders::toBin()
+		{
+			auto ptr(new XLSB::BORDERS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+				ptr->m_arBrtBorder.push_back(i->toBin());
+			return objectPtr;
 		}
 		EElementType CBorders::getType () const
 		{

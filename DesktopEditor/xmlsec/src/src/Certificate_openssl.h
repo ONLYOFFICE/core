@@ -317,6 +317,7 @@ public:
 
 		if (X509_sign(m_cert, m_key, pDigest) == 0)
 		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
 			if (NULL != m_cert)
 				X509_free(m_cert);
 			m_cert = NULL;
@@ -576,24 +577,6 @@ public:
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
-		if (m_alg == OOXML_HASH_ALG_ED25519)
-		{
-			EVP_PKEY_CTX* pkctx = nullptr;
-			EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
-			EVP_DigestSignInit(pCtx, &pkctx, NULL, NULL, m_key);
-
-			size_t nSignatureLen = 0;
-			unsigned char* pSignature = NULL;
-			EVP_DigestSign(pCtx, NULL, &nSignatureLen, pData, (size_t)nSize);
-			pSignature = (unsigned char*)OPENSSL_zalloc(nSignatureLen);
-			size_t nSignatureLen2 = EVP_PKEY_size(m_key);
-			EVP_DigestSign(pCtx, pSignature, &nSignatureLen,  pData, (size_t)nSize);
-
-			pDataDst = pSignature;
-			nSizeDst = nSignatureLen;
-
-			return true;
-		}
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
 		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
@@ -890,6 +873,7 @@ public:
 			algs.push_back(OOXML_HASH_ALG_SHA512);
 			break;
 		case NID_ED25519:
+		case NID_ecdsa_with_SHA256:
 			algs.push_back(OOXML_HASH_ALG_ED25519);
 			break;
 		case NID_ED448:

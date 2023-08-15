@@ -90,14 +90,14 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-	if (false)
+	if (true)
     {
-        std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
-        std::wstring wsPrivateKeyFile = L"";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsPrivateKeyFile = L"";
         std::string sCertificateFilePassword = "123456";
-        std::string sPrivateFilePassword = "";
+		std::string sPrivateFilePassword = "";
 
-		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
 
 		std::map<std::wstring, std::wstring> properties;
 		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
@@ -106,10 +106,11 @@ int main()
 		std::wstring sValueTest = L"ValueTest";
 		properties.insert(std::make_pair(sNameTest, sValueTest));
 
-		pCertificate = NSCertificate::GenerateByAlg("ed25519", properties);
+		//pCertificate = NSCertificate::GenerateByAlg("ed25519", properties);
+		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-	if (true)
+	if (false)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
@@ -159,7 +160,7 @@ int main()
         pdfFile.EndCommand(c_nPageType);
 
         if (pCertificate)
-            pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+			pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
         int nRes = pdfFile.SaveToFile(wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);

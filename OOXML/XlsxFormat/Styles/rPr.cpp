@@ -68,6 +68,18 @@ namespace OOX
 				 m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue);
 			}
 		}
+		XLS::BaseObjectPtr CRgbColor::toBin()
+		{
+			auto ptr(new XLSB::IndexedColor);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oRgb.IsInit())
+			{
+				ptr->bRed = m_oRgb->Get_R();
+				ptr->bGreen = m_oRgb->Get_G();
+				ptr->bBlue = m_oRgb->Get_B();
+			}
+			return objectPtr;
+		}
 		EElementType CRgbColor::getType () const
 		{
 			return et_x_RgbColor;
@@ -135,6 +147,13 @@ namespace OOX
 				mapIndexedColors.insert(std::make_pair(index++, pRgbColor));
 				m_arrItems.push_back(pRgbColor);
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CIndexedColors::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i : m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
 		}
 		EElementType CIndexedColors::getType () const
 		{
@@ -634,6 +653,13 @@ namespace OOX
 				color->fromBin(dynamic_cast<XLS::BaseObject*>(&(static_cast<XLSB::MRUColor*>(MRUColor.get())->colorMRU)));
 				m_arrItems.push_back(color);
 			}
+		}
+		std::vector<XLS::BaseObjectPtr> CMruColors::toBin()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+				objectVector.push_back(i->toBin());
+			return objectVector;
 		}
 		EElementType CMruColors::getType () const
 		{

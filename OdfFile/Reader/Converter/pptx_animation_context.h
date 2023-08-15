@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <CPSharedPtr.h>
 #include <CPOptional.h>
 
@@ -40,6 +41,214 @@ namespace oox {
 
 	class pptx_animation_context
 	{
+	public:
+		class Impl
+		{
+		public:
+			struct _animation_element;
+			typedef shared_ptr<_animation_element>::Type	_animation_element_ptr;
+			typedef std::vector<_animation_element_ptr>		_animation_element_array;
+			struct _animation_element
+			{
+				virtual void serialize(std::wostream& strm) = 0;
+			};
+
+			struct _par_animation;
+			typedef shared_ptr<_par_animation>::Type		_par_animation_ptr;
+			typedef std::vector<_par_animation_ptr>			_par_animation_array;
+
+			struct _seq_animation;
+			typedef shared_ptr<_seq_animation>::Type		_seq_animation_ptr;
+			typedef std::vector<_seq_animation_ptr>			_seq_animation_array;
+
+			struct _par_animation : _animation_element
+			{
+				_CP_OPT(std::wstring)						NodeType;
+				_CP_OPT(std::wstring)						Direction;
+				_CP_OPT(std::wstring)						Restart;
+				_CP_OPT(int)								Duration; // in ms
+				_CP_OPT(std::wstring)						Delay;
+				_CP_OPT(std::wstring)						End;
+				_CP_OPT(std::wstring)						PresetClass;
+				_CP_OPT(int)								PresetID;
+
+				_par_animation_array						AnimParArray;
+				_seq_animation_ptr							AnimSeq;
+				_animation_element_array					AnimationActionArray;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _seq_animation : _animation_element
+			{
+				_CP_OPT(std::wstring)							PresentationNodeType;
+				_CP_OPT(std::wstring)							Direction;
+				_CP_OPT(std::wstring)							Restart;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(std::wstring)							End;
+
+				_par_animation_array							AnimParArray;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _set;
+			typedef shared_ptr<_set>::Type						_set_ptr;
+			struct _set : _animation_element
+			{
+				_CP_OPT(std::wstring)							Direction;
+				_CP_OPT(std::wstring)							Restart;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(std::wstring)							End;
+				_CP_OPT(std::wstring)							Fill;
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(std::wstring)							AttributeName;
+				_CP_OPT(std::wstring)							ToValue;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _anim_effect;
+			typedef shared_ptr<_anim_effect>::Type				_anim_effect_ptr;
+			struct _anim_effect : _animation_element
+			{
+				_CP_OPT(std::wstring)							Filter;
+				_CP_OPT(std::wstring)							Transition;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(size_t)									ShapeID;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _animate_motion;
+			typedef shared_ptr<_animate_motion>::Type			_animate_motion_ptr;
+			typedef std::vector<_animate_motion_ptr>			_animate_motion_array;
+			struct _animate_motion : _animation_element
+			{
+				_CP_OPT(std::wstring)							PresentationNodeType;
+				_CP_OPT(std::wstring)							SmilDirection;
+				_CP_OPT(std::wstring)							SmilRestart;
+				_CP_OPT(int)									SmilDurMs;
+				_CP_OPT(std::wstring)							SmilBegin;
+				_CP_OPT(std::wstring)							SmilEnd;
+
+				_CP_OPT(std::wstring)							SmilFill;
+				_CP_OPT(std::wstring)							AnimSubItem;
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(std::wstring)							SvgPath;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _anim_clr;
+			typedef shared_ptr<_anim_clr>::Type					_anim_clr_ptr;
+			struct _anim_clr : _animation_element
+			{
+				_CP_OPT(std::wstring)							PresentationNodeType;
+				_CP_OPT(std::wstring)							Direction;
+				_CP_OPT(std::wstring)							Restart;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							Begin;
+				_CP_OPT(std::wstring)							End;
+
+				_CP_OPT(std::wstring)							Fill;
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(std::wstring)							AttributeName;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(std::wstring)							ToValue;
+				_CP_OPT(std::wstring)							ColorSpace;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _anim;
+			typedef shared_ptr<_anim>::Type						_anim_ptr;
+			struct _anim : _animation_element
+			{
+				struct _keypoint
+				{
+					int						Time;
+					std::wstring			Value;
+					_CP_OPT(std::wstring)	Fmla; // Formula
+
+					_keypoint(int time, const std::wstring& value, _CP_OPT(std::wstring) formula)
+						: Time(time), Value(value), Fmla(formula)
+					{}
+				};
+
+				_CP_OPT(std::wstring)							CalcMode;
+				_CP_OPT(std::wstring)							ValueType;
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							AttributeName;
+				_CP_OPT(std::wstring)							From;
+				_CP_OPT(std::wstring)							To;
+				_CP_OPT(std::wstring)							By;
+				_CP_OPT(std::wstring)							Additive;
+				_CP_OPT(bool)									AutoReverse;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(std::vector<_keypoint>)					KeypointArray;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _anim_scale;
+			typedef shared_ptr<_anim_scale>::Type					_anim_scale_ptr;
+			struct _anim_scale : _animation_element
+			{
+				struct vec2
+				{
+					int x, y;
+
+					vec2(int x, int y)
+						: x(x), y(y)
+					{}
+				};
+
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							Fill;
+				_CP_OPT(vec2)									From;
+				_CP_OPT(vec2)									To;
+				//_CP_OPT(std::wstring)							By;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(bool)									AutoReverse;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			struct _anim_rotate;
+			typedef shared_ptr<_anim_rotate>::Type					_anim_rotate_ptr;
+			struct _anim_rotate : _animation_element
+			{
+				_CP_OPT(size_t)									ShapeID;
+				_CP_OPT(int)									Duration; // in ms
+				_CP_OPT(std::wstring)							Fill;
+				_CP_OPT(int)									By;
+				_CP_OPT(std::wstring)							Delay;
+				_CP_OPT(bool)									AutoReverse;
+
+				void serialize(std::wostream& strm) override;
+			};
+
+			_par_animation_ptr							root_animation_element_;
+			_par_animation_array						par_animation_levels_;
+
+			_animate_motion_ptr							animate_motion_description_;
+			_set_ptr									set_description_;
+			_anim_effect_ptr							anim_effect_description_;
+			_anim_ptr									anim_description_;
+			_anim_clr_ptr								anim_clr_description_;
+			_anim_scale_ptr								anim_scale_description_;
+			_anim_rotate_ptr							anim_rotate_description_;
+
+			void clear();
+
+			Impl();
+		};
+
 	public:
 		pptx_animation_context();
 
@@ -140,8 +349,9 @@ namespace oox {
 		void serialize(std::wostream & strm);
 		void clear();
 
+		const Impl::_par_animation_ptr& get_root_par_animation() const;
+
 	private:
-		class Impl;
 		_CP_PTR(Impl) impl_;
 	};
 

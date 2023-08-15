@@ -687,8 +687,6 @@
 	#include "../../../XlsbFormat/Biff12_structures/BookProtectionFlags.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/Cell.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/GrbitFmla.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/SxOs.cpp"
-	#include "../../../XlsbFormat/Biff12_structures/SxSu.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFType.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFTemp.cpp"
 	#include "../../../XlsbFormat/Biff12_structures/CFOper.cpp"

@@ -8,6 +8,10 @@
 
 namespace SVG
 {
+	IPathElement::~IPathElement()
+	{
+	}
+
 	#define ISPATHCOMMAND(wchar) L'M' == wchar || L'm' == wchar || L'Z' == wchar || L'z' == wchar || L'L' == wchar || L'l' == wchar || L'H' == wchar || L'h' == wchar || L'V' == wchar || L'v' == wchar || L'C' == wchar || L'c' == wchar || L'S' == wchar || L's' == wchar || L'Q' == wchar || L'q' == wchar || L'T' == wchar || L't' == wchar || L'A' == wchar || L'a' == wchar
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
@@ -37,6 +41,10 @@ namespace SVG
 	CMoveElement::CMoveElement(const Point &oPoint)
 	{
 		m_arPoints.push_back(oPoint);
+	}
+
+	CMoveElement::~CMoveElement()
+	{
 	}
 
 	EPathElement CMoveElement::GetType() const
@@ -149,6 +157,9 @@ namespace SVG
 		m_arPoints.push_back(oPoint1);
 		m_arPoints.push_back(oPoint2);
 		m_arPoints.push_back(oPointE);
+	}
+	CCBezierElement::~CCBezierElement()
+	{
 	}
 
 	EPathElement CCBezierElement::GetType() const
@@ -385,6 +396,10 @@ namespace SVG
 	//CCloseElement
 	CCloseElement::CCloseElement()
 	{}
+
+	CCloseElement::~CCloseElement()
+	{
+	}
 
 	EPathElement CCloseElement::GetType() const
 	{

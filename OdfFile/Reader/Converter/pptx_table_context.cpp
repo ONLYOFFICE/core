@@ -227,9 +227,10 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
 
 struct pptx_border_edge
 {
-	bool present;
+	bool present = false;
+	bool none = false;
 	std::wstring color;
-	int width;
+	int width = 0;
 	std::wstring cmpd;
 	std::wstring prstDash;
 };
@@ -241,11 +242,13 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
     
 	if (borderStyle.initialized())
     {
-        if (borderStyle.is_none()) border.present = false;
+		border.present = true;
+
+        if (borderStyle.is_none()) border.none = true;
 
         switch(borderStyle.get_style())
         {
-            case odf_types::border_style::none:              border.present = false;            break;
+            case odf_types::border_style::none:              border.none = true;				break;
             case odf_types::border_style::double_:           border.cmpd = L"dbl";              break;
             case odf_types::border_style::dotted:            border.prstDash = L"dot";          break;
             case odf_types::border_style::dashed:            border.prstDash = L"dash";         break;
@@ -279,23 +282,30 @@ void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_e
 	if (content.present == false) return;
 
 	CP_XML_WRITER(strm)
-    {
+	{
 		CP_XML_NODE(Node)
-		{	
-			CP_XML_ATTR(L"w", content.width);
-			//CP_XML_ATTR(L"cap", L"flat");
-			CP_XML_ATTR(L"cmpd", content.cmpd);
-			//CP_XML_ATTR(L"algn", L"ctr");
-			
-			CP_XML_NODE(L"a:solidFill")
+		{
+			if (content.none)
 			{
-				_CP_OPT(double) opacity;
-				oox_serialize_srgb(CP_XML_STREAM(),content.color,opacity);
+				CP_XML_NODE(L"a:noFill") {}
 			}
-			
-			CP_XML_NODE(L"a:prstDash")
+			else
 			{
-				CP_XML_ATTR(L"val", content.prstDash);
+				CP_XML_ATTR(L"w", content.width);
+				//CP_XML_ATTR(L"cap", L"flat");
+				CP_XML_ATTR(L"cmpd", content.cmpd);
+				//CP_XML_ATTR(L"algn", L"ctr");
+
+				CP_XML_NODE(L"a:solidFill")
+				{
+					_CP_OPT(double) opacity;
+					oox_serialize_srgb(CP_XML_STREAM(), content.color, opacity);
+				}
+
+				CP_XML_NODE(L"a:prstDash")
+				{
+					CP_XML_ATTR(L"val", content.prstDash);
+				}
 			}
 		}
 	}

@@ -1706,9 +1706,12 @@ namespace MetaFile
 			if (m_oEscapeBuffer.Empty())
 				m_oEscapeBuffer.SetSize(unEnhancedMetafileDataSize);
 
-			m_oStream.ReadBytes(m_oEscapeBuffer.GetCurPtr(), unCurrentRecordSize);
+			unsigned int nEscapeRecordSize = m_oEscapeBuffer.GetTileSize();
+			if (nEscapeRecordSize > unCurrentRecordSize)
+				nEscapeRecordSize = unCurrentRecordSize;
 
-			m_oEscapeBuffer.IncreasePosition(unCurrentRecordSize);
+			m_oStream.ReadBytes(m_oEscapeBuffer.GetCurPtr(), nEscapeRecordSize);
+			m_oEscapeBuffer.IncreasePosition(nEscapeRecordSize);
 
 			if (0 == unRemainingBytes)
 			{
@@ -1719,10 +1722,14 @@ namespace MetaFile
 				oEmfParser.Scan();
 
 				if (oEmfParser.CheckError())
+				{
+					m_oEscapeBuffer.Clear();
 					return;
+				}
 
 				if (NULL == m_pInterpretator)
 				{
+					m_oEscapeBuffer.Clear();
 					return HANDLE_META_EOF();
 				}
 				else if (InterpretatorType::Render == m_pInterpretator->GetType())
@@ -1762,6 +1769,8 @@ namespace MetaFile
 
 					HANDLE_META_EOF();
 				}
+
+				m_oEscapeBuffer.Clear();
 			}
 		}
 		// TODO: Реализовать

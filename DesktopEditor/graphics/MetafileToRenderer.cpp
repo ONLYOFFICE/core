@@ -1242,22 +1242,44 @@ namespace NSOnlineOfficeBinToPdf
 
 				int nLen = ReadInt(current, curindex);
 
-				// TODO read Annot
+				CAnnotFieldInfo oInfo;
+				oInfo.SetType(ReadByte(current, curindex));
+				oInfo.SetID(ReadInt(current, curindex));
+				oInfo.SetAnnotFlag(ReadInt(current, curindex));
+				oInfo.SetPage(ReadInt(current, curindex));
 
 				double dX = ReadDouble(current, curindex);
 				double dY = ReadDouble(current, curindex);
 				double dW = ReadDouble(current, curindex);
 				double dH = ReadDouble(current, curindex);
 
-				CAnnotFieldInfo oInfo;
 				oInfo.SetBounds(dX, dY, dW, dH);
-				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
 
 				int nFlags = ReadInt(current, curindex);
 
-				// TODO
-
-				oInfo.SetType(ReadInt(current, curindex));
+				if (nFlags & (1 << 1))
+					oInfo.SetContents(ReadString(current, curindex));
+				if (nFlags & (1 << 2)) {} // Эффекты границы - BE borderCloudy
+				if (nFlags & (1 << 3))
+				{
+					int n = ReadInt(current, curindex);
+					std::vector<double> arrC;
+					for (int i = 0; i < n; ++i)
+						arrC.push_back(ReadDouble(current, curindex));
+					oInfo.SetC(arrC);
+				}
+				if (nFlags & (1 << 4))
+				{
+					BYTE nType = ReadByte(current, curindex);
+					double dWidth = ReadDouble(current, curindex);
+					double d1 = 0.0, d2 = 0.0;
+					if (nType == 2)
+					{
+						d1 = ReadDouble(current, curindex);
+						d2 = ReadDouble(current, curindex);
+					}
+					oInfo.SetBorder(nType, dWidth, d1, d2);
+				}
 
 				if (oInfo.isMarkup())
 				{

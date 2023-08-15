@@ -266,6 +266,8 @@ public:
 	CFormFieldInfo();
 	virtual ~CFormFieldInfo();
 
+	void SetType(int nType) override;
+
 	// Common
 	void SetKey(const std::wstring& wsKey);
 	const std::wstring& GetKey() const;

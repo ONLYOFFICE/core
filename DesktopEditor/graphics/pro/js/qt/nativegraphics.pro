@@ -79,6 +79,7 @@ HEADERS += \
     ../../../MetafileToRendererCheck.h \
     ../../../MetafileToGraphicsRenderer.h \
     ../../../FormField.h \
+	../../../AnnotField.h \
     ../../../structures.h \
 	../../../shading_info.h \
     ../../../GraphicsRenderer.h \
@@ -114,6 +115,7 @@ SOURCES += \
     ../../../MetafileToRenderer.cpp \
     ../../../MetafileToGraphicsRenderer.cpp \
     ../../../FormField.cpp \
+	../../../AnnotField.cpp \
     \
     ../../../../fontengine/ApplicationFonts.cpp \
     ../../../../fontengine/FontFile.cpp \

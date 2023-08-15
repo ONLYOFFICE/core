@@ -432,6 +432,10 @@ CFormFieldInfo::~CFormFieldInfo()
 {
 }
 
+void CFormFieldInfo::SetType(int nType)
+{
+	m_nType = nType;
+}
 // Common
 void CFormFieldInfo::SetKey(const std::wstring& wsKey)
 {

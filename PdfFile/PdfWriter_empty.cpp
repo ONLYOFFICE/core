@@ -131,6 +131,7 @@ HRESULT CPdfWriter::ResetTransform() { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pInfo) { return 0; }
+HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo) { return 0; }
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::EnableBrushRect(const LONG& lEnable) { return 0; }
 HRESULT CPdfWriter::SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2) { return 0; }

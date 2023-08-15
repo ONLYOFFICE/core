@@ -77,15 +77,35 @@ public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
-	void SetType(int nType);
+	virtual void SetType(int nType);
 	bool IsValid() const;
 
 	// Common
 	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
 	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
 
-	void SetBaseLineOffset(const double& dOffset);
-	double GetBaseLineOffset() const;
+	void SetBaseLineOffset(const double& dOffset) { m_dBaseLineOffset = dOffset; }
+	double GetBaseLineOffset() const { return m_dBaseLineOffset; }
+
+	void SetID(const int& nID) { m_nID = nID; }
+	int GetID() const { return m_nID; }
+
+	void SetAnnotFlag(const int& nAnnotFlag) { m_nAnnotFlag = nAnnotFlag; }
+	int GetAnnotFlag() const { return m_nAnnotFlag; }
+
+	void SetPage(const int& nPage) { m_nPage = nPage; }
+	int GetPage() const { return m_nPage; }
+
+	// void Set(const int& n) { m_n = n; }
+	// int Get() const { return m_n; }
+
+	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
+	const std::wstring& GetContents() const { return m_wsContents; }
+
+	void SetC(const std::vector<double>& arrC) { m_arrC = arrC; }
+	const std::vector<double>& GetC() const { return m_arrC; }
+
+	void SetBorder(BYTE nType, double dWidth, double dGasp1, double dGasp2);
 
 	bool isWidget() const;
 	bool isMarkup() const;
@@ -93,17 +113,23 @@ public:
 	bool IsInk()    const;
 	bool IsLine()   const;
 
-	CTextAnnotPr* GetTextAnnotPr();
+	CMarkupAnnotPr* GetMarkupAnnotPr();
+	CTextAnnotPr*   GetTextAnnotPr();
 
 protected:
 	int          m_nType;
 
 private:
+	int          m_nID;
+	int          m_nAnnotFlag;
+	int          m_nPage;
 	double       m_dX;
 	double       m_dY;
 	double       m_dW;
 	double       m_dH;
 	double       m_dBaseLineOffset;
+	std::wstring m_wsContents;
+	std::vector<double> m_arrC;
 
 	CMarkupAnnotPr* m_pMarkupPr;
 	CTextAnnotPr* m_pTextPr;

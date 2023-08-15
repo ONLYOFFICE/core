@@ -16,6 +16,7 @@
 #include <openssl/pem.h>
 #include <openssl/x509.h>
 #include <openssl/pkcs12.h>
+#include <openssl/cms.h>
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
@@ -25,6 +26,7 @@
 #include <openssl/conf.h>
 
 #include <map>
+#include <memory>
 
 const EVP_MD* Get_EVP_MD(int nAlg)
 {
@@ -517,7 +519,7 @@ public:
 	}
 
 public:
-	std::string Sign(unsigned char* pData, unsigned int nSize)
+	virtual bool Sign(unsigned char* pData, unsigned int nSize, unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
 		int nHashAlg = this->GetHashAlg();
 		if (OOXML_HASH_ALG_ED25519 == nHashAlg ||
@@ -531,20 +533,21 @@ public:
 
 			/* Calculate the requires size for the signature by passing a NULL buffer */
 			EVP_DigestSign(pCtx, NULL, &nSignatureLen, pData, (size_t)nSize);
-			pSignature = (unsigned char*)OPENSSL_zalloc(nSignatureLen);
-			EVP_DigestSign(pCtx, pSignature, &nSignatureLen,  pData, (size_t)nSize);
 
-			char* pBase64 = NULL;
-			int nBase64Len = 0;
-			NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+			if (nSignatureLen <= 0)
+			{
+				EVP_MD_CTX_free(pCtx);
+				return false;
+			}
 
-			std::string sReturn(pBase64, nBase64Len);
-			delete[] pBase64;
+			pSignature = new BYTE[nSignatureLen];
+			EVP_DigestSign(pCtx, pSignature, &nSignatureLen, pData, (size_t)nSize);
 
-			OPENSSL_free(pSignature);
+			pDataDst = pSignature;
+			nSizeDst = (int)nSignatureLen;
+
 			EVP_MD_CTX_free(pCtx);
-
-			return sReturn;
+			return true;
 		}
 
 		EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
@@ -560,19 +563,14 @@ public:
 
 		EVP_MD_CTX_destroy(pCtx);
 
-		char* pBase64 = NULL;
-		int nBase64Len = 0;
-		NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+		if (nSignatureLen > 0)
+		{
+			nSizeDst = (int)nSignatureLen;
+			pDataDst = new BYTE[nSignatureLen];
+			memcpy(pDataDst, pSignature, nSignatureLen);
+		}
 
-		std::string sReturn(pBase64, nBase64Len);
-		delete[] pBase64;
-
-		return sReturn;
-	}
-
-	virtual std::string Sign(const std::string& sXml)
-	{
-		return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+		return (nSignatureLen > 0) ? true : false;
 	}
 
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,

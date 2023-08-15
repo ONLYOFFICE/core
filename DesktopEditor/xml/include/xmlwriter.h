@@ -35,6 +35,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <memory>
 
 #ifdef _MSC_VER
    #pragma warning (disable: 4100 4189)
@@ -52,7 +53,7 @@ namespace XmlUtils
 	{
 	private:
         class Impl;
-        Impl *impl_;
+        std::shared_ptr<Impl> impl_;
 	
 	public:
 

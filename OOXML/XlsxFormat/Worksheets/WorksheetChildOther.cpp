@@ -601,12 +601,14 @@ namespace OOX
 		}
 		void CPrintOptions::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			if (m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit())
+			if (m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit() || m_oHorizontalCentered.IsInit() || m_oVerticalCentered.IsInit())
 			{
 				writer.WriteString(L"<printOptions");
 				WritingStringNullableAttrBool(L"headings", m_oHeadings);
 				WritingStringNullableAttrBool(L"gridLines", m_oGridLines);
 				WritingStringNullableAttrBool(L"gridLinesSet", m_oGridLinesSet);
+				WritingStringNullableAttrBool(L"horizontalCentered", m_oHorizontalCentered);
+				WritingStringNullableAttrBool(L"verticalCentered", m_oVerticalCentered);
 				writer.WriteString(L"/>");
 			}
 		}
@@ -633,7 +635,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"headings"), m_oHeadings)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"horizontalCentered"), m_oHorizontalCentered)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"verticalCentered"), m_oVerticalCentered)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CPrintOptions::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{

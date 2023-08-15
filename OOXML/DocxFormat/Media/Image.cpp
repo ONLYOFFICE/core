@@ -56,4 +56,28 @@ namespace OOX
 	{
 		return m_filename.GetFilename();
 	}
+//--------------------------------------------------------------------------------------
+	SvgBlip::SvgBlip(OOX::Document* pMain, bool bDocument) : Image(pMain, bDocument)
+	{
+	}
+	SvgBlip::SvgBlip(OOX::Document* pMain, const CPath& filename, bool bExternal) : Image(pMain, filename, bExternal)
+	{
+	}
+	SvgBlip::~SvgBlip()
+	{
+	}
+	const FileType SvgBlip::type() const
+	{
+		return FileTypes::SvgBlip;
+	}
+	const CPath SvgBlip::DefaultDirectory() const
+	{
+		if (m_bDocument) return type().DefaultDirectory();
+		else	return L"../" + type().DefaultDirectory();
+	}
+	const CPath SvgBlip::DefaultFileName() const
+	{
+		return m_filename.GetFilename();
+	}
+
 } // namespace OOX

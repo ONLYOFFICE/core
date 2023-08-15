@@ -2066,7 +2066,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotTableFormat::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<pivotTableFormat");
+		writer.WriteString(L"<format");
 			WritingStringNullableAttrString(L"action", m_oAction, m_oAction->ToString());
 			WritingStringNullableAttrString(L"dxfId", m_oDxfId, m_oDxfId->ToString());
 		writer.WriteString(L">");
@@ -2076,7 +2076,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oPivotArea->toXML(writer);
 		}
 
-		writer.WriteString(L"</pivotTableFormat>");
+		writer.WriteString(L"</format>");
 	}
 	void CPivotTableFormat::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{

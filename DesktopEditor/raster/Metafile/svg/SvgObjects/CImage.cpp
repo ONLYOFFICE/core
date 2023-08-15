@@ -101,9 +101,6 @@ namespace SVG
 		return true;
 	}
 
-	void CImage::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{}
-
 	TBounds CImage::GetBounds() const
 	{
 		TBounds oBounds;

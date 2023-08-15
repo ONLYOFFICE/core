@@ -53,9 +53,6 @@ namespace SVG
 		return true;
 	}
 
-	void CUse::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
-	{}
-
 	TBounds CUse::GetBounds() const
 	{
 		return TBounds{0., 0., 0., 0.};

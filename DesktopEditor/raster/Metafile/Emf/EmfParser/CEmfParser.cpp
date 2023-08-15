@@ -57,6 +57,9 @@ namespace MetaFile
 			if (ulSize < 1)
 				continue;
 
+			if (ulSize - 8 > m_oStream.CanRead())
+				return SetError();
+
 			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordSize	= ulSize - 8;
 
@@ -1512,33 +1515,48 @@ namespace MetaFile
 				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);
 				oWmfParser.Scan();
 
-				if (!oWmfParser.CheckError())
+				if (oWmfParser.CheckError())
+					return;
+
+				if (NULL == m_pInterpretator)
+					HANDLE_EMR_EOF();
+				else if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
-					if (NULL != m_pInterpretator && InterpretatorType::Render == m_pInterpretator->GetType())
-					{
 						CMetaFileRenderer oWmfOut(&oWmfParser, ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
 						oWmfParser.SetInterpretator(&oWmfOut);
 
 						oWmfParser.PlayFile();
 
-						m_bEof = true;
-					}
-					else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
-					{
-						double dWidth, dHeight;
-
-						((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
-
-						((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
-
-						oWmfParser.PlayFile();
-
-						((CEmfInterpretatorSvg*)m_pInterpretator)->SetXmlWriter(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetXmlWriter());
-
-						m_bEof = true;
-					}
+						HANDLE_EMR_EOF();
 				}
+				else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
+				{
+					double dWidth, dHeight;
 
+					((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
+
+					((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
+
+					XmlUtils::CXmlWriter *pXmlWriter = ((CEmfInterpretatorSvg*)m_pInterpretator)->GetXmlWriter();
+
+					TRectD oWmfRect = oWmfParser.GetBounds();
+					TEmfRectL *pCuurentRect = GetBounds();
+
+					double dScaleX = std::abs((pCuurentRect->lRight - pCuurentRect->lLeft) / (oWmfRect.dRight - oWmfRect.dLeft));
+					double dScaleY = std::abs((pCuurentRect->lBottom - pCuurentRect->lTop) / (oWmfRect.dBottom - oWmfRect.dTop));
+
+					pXmlWriter->WriteNodeBegin(L"g", true);
+					pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+					pXmlWriter->WriteNodeEnd(L"g", true, false);
+
+					((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
+
+					oWmfParser.PlayFile();
+
+					pXmlWriter->WriteNodeEnd(L"g", false, false);
+
+					HANDLE_EMR_EOF();
+				}
 
 				m_oStream.Skip(unWinMetafileSize);
 			}

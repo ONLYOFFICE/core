@@ -290,6 +290,53 @@ TEST_F(BufferTest, main_test_read_and_write_xml_with_buffer_and_sstream)
 	std::cout << '\n' << "Reading and writing an XML doc via buffer time - "  << elapsed_ms1.count() / 1000 / 60 << "(min)" << elapsed_ms1.count() / 1000 % 60 << "(s)" << elapsed_ms1.count() % 1000 << "(ms)" << '\n' << "Reading and writing an XML doc via sstream time - " << elapsed_ms2.count() / 1000 / 60 << "(min)" << elapsed_ms2.count() / 1000 % 60 << "(s)" << elapsed_ms2.count() % 1000 << "(ms)" << '\n';
 }
 
+TEST_F(BufferTest, test_stringstream_operator)
+{
+	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(filename))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	int n = oReader.GetDepth();
+	std::wstring sName = oReader.GetName();
+
+	//Reading and writing an XML doc via sstream
+	std::wstringstream outputstream;
+	CP_XML_WRITER(outputstream)
+	{
+		CP_XML_NODE(sName)
+		{
+			int na = oReader.GetAttributesCount();
+			if (na > 0)
+			{
+				if (oReader.MoveToFirstAttribute())
+				{
+					CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+					for (int i = 1; i < na; i++)
+						if (oReader.MoveToNextAttribute())
+							CP_XML_ATTR2(oReader.GetName(), oReader.GetText());
+					oReader.MoveToElement();
+				}
+			}
+			ReadAndWrite rnw(_xml_wr_, oReader);
+			rnw.AddNode(n);
+		}
+	}
+
+	auto begin1 = std::chrono::steady_clock::now();
+	std::wstringstream outputstream1;
+	for (size_t i = 0; i < 10; i++)
+	{
+		outputstream1 << outputstream.str();
+	}
+	auto end1 = std::chrono::steady_clock::now();
+	auto elapsed_mcs1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1);
+
+	std::cout << "Time of adding two streams into one " << elapsed_mcs1.count() << "(mcs)" << '\n';
+}
+
 TEST_F(BufferTest, test_buffer_operators_sum_and_eq)
 {
 	std::wstring filename(__argv[2], __argv[2] + strlen(__argv[2]));
@@ -534,6 +581,69 @@ TEST_F(BufferTest, test_StringBuild_time)
 	}
 	
 	std::cout << '\n' << "Reading and writing an XML doc via StringBuild - " << elapsed_ms1.count() / 1000 / 60 << "(min)" << elapsed_ms1.count() / 1000 % 60 << "(s)" << elapsed_ms1.count() % 1000 << "(ms)" << '\n';
+}
+
+TEST_F(BufferTest, test_stringbuild_operator)
+{
+	//Reading and writing an XML doc via StringBuild
+	std::wstring filename(__argv[1], __argv[1] + strlen(__argv[1]));
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(filename))
+		return;
+	if (!oReader.ReadNextNode())
+		return;
+
+	int n = oReader.GetDepth();
+	std::wstring sName = oReader.GetName();
+	NSStringUtils::CStringBuilder oBuilder;
+	oBuilder.WriteString(L"<");
+	oBuilder.WriteEncodeXmlString(sName);
+	int na = oReader.GetAttributesCount();
+	if (na > 0)
+	{
+		if (oReader.MoveToFirstAttribute())
+		{
+			std::wstring sNameAttr = oReader.GetName();
+			std::wstring sAttr = oReader.GetText();
+			oBuilder.WriteString(L" ");
+			oBuilder.WriteEncodeXmlString(sNameAttr);
+			oBuilder.WriteString(L"=\"");
+			oBuilder.WriteEncodeXmlString(sAttr);
+			oBuilder.WriteString(L"\"");
+			for (int i = 1; i < na; i++)
+			{
+				if (oReader.MoveToNextAttribute())
+				{
+					sNameAttr = oReader.GetName();
+					sAttr = oReader.GetText();
+					oBuilder.WriteString(L" ");
+					oBuilder.WriteEncodeXmlString(sNameAttr);
+					oBuilder.WriteString(L"=\"");
+					oBuilder.WriteEncodeXmlString(sAttr);
+					oBuilder.WriteString(L"\"");
+				}
+			}
+			oReader.MoveToElement();
+		}
+	}
+	if (oReader.IsEmptyNode()) oBuilder.WriteString(L"/>");
+	else oBuilder.WriteString(L">");
+	ReadAndStringBuild abc(oReader, oBuilder);
+	abc.AddNode(n);
+	oBuilder.WriteString(L"</");
+	oBuilder.WriteEncodeXmlString(sName);
+	oBuilder.WriteString(L">");
+
+	NSStringUtils::CStringBuilder oBuilder1;
+	auto begin1 = std::chrono::steady_clock::now();
+	for (size_t i = 0; i < 10; i++)
+	{
+		oBuilder1.Write(oBuilder);
+	}
+	auto end1 = std::chrono::steady_clock::now();
+	auto elapsed_mcs1 = std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1);
+
+	std::cout << "Time of adding two StringBuild into one " << elapsed_mcs1.count() << "(mcs)" << '\n';
 }
 
 TEST_F(BufferTest, test_buffer_and_sstream_write_node)

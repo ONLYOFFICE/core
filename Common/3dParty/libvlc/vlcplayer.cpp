@@ -64,6 +64,9 @@ void CVlcPlayer::open(CVlcMedia* pMedia)
 
 	// set new media
 	libvlc_media_player_set_media(m_pVlcPlayer, pMedia->m_pMedia);
+
+	// start playback
+	libvlc_media_player_play(m_pVlcPlayer);
 }
 
 void CVlcPlayer::pause()

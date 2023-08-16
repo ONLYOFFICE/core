@@ -119,13 +119,12 @@ void Mwindow::openFile()
 
 	/* Create a new Media */
 	CVlcMedia* pMedia = new CVlcMedia(vlcPlayer->m_pVlcInstance, sFile, false);
+
+	/* Open media and start playback */
 	vlcPlayer->open(pMedia);
 
 	/* Release the media */
 	delete pMedia;
-
-	/* And start playback */
-	vlcPlayer->play();
 
 	/* Update playback button */
 	playBut->setText("Pause");

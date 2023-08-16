@@ -31,8 +31,8 @@ public:
 	libvlc_state_t getState();
 
 signals:
-	void stateChanged(libvlc_state_t newState);
-	void timeChanged(libvlc_time_t nNewTime);
+	void stateChanged(int newState);
+	void timeChanged(qint64 nNewTime);
 
 public:
 	libvlc_instance_t* m_pVlcInstance;

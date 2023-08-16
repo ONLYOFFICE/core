@@ -55,7 +55,7 @@ const EVP_MD* Get_EVP_MD(int nAlg)
 	case OOXML_HASH_ALG_ED25519:
 	case OOXML_HASH_ALG_ED448:
 	{
-		return NULL;
+		return EVP_sha256();
 	}
 	default:
 		break;
@@ -205,6 +205,31 @@ public:
 		{
 			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, NULL);
 			m_alg = OOXML_HASH_ALG_ED448;
+		}
+		else if (key_alg == "ecdsa")
+		{
+			int crypto_nid = NID_X9_62_prime256v1;
+			EC_GROUP* group = EC_GROUP_new_by_curve_name(crypto_nid);
+			if (!group)
+				return false;
+
+			EC_GROUP_set_asn1_flag(group, OPENSSL_EC_NAMED_CURVE);
+			EC_GROUP_set_point_conversion_form(group, POINT_CONVERSION_UNCOMPRESSED);
+
+			EC_KEY* ec = EC_KEY_new();
+			EC_KEY_set_group(ec, group);
+			EC_KEY_generate_key(ec);
+
+			EVP_PKEY* tmp = EVP_PKEY_new();
+			if (!tmp)
+				return false;
+
+			EVP_PKEY_assign(tmp, EVP_PKEY_EC, ec);
+			pctx = EVP_PKEY_CTX_new(tmp, NULL);
+			m_alg = OOXML_HASH_ALG_ED25519;
+
+			EVP_PKEY_free(tmp);
+			EC_GROUP_free(group);
 		}
 		else if (0 == key_alg.find("rsa"))
 		{

@@ -90,12 +90,19 @@ namespace OOX
 		void CAligment::toBin(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLS::XF*>(obj.get());
-			ptr->cIndent = m_oIndent.get();
+            if(m_oIndent.IsInit())
+                ptr->cIndent = m_oIndent.get();
+            if(m_oJustifyLastLine.IsInit())
 			ptr->fJustLast = m_oJustifyLastLine->GetValue();
+            if(m_oReadingOrder.IsInit())
 			ptr->iReadOrder = m_oReadingOrder.get();
+            if(m_oRelativeIndent.IsInit())
 			ptr->iReadOrder = m_oRelativeIndent.get();
+            if(m_oShrinkToFit.IsInit())
 			ptr->fShrinkToFit = m_oShrinkToFit->GetValue();
+            if(m_oTextRotation.IsInit())
 			ptr->trot = m_oTextRotation.get();
+            if(m_oWrapText.IsInit())
 			ptr->fWrap = m_oWrapText->GetValue();
 
 			if (m_oHorizontal == SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral)
@@ -366,24 +373,33 @@ namespace OOX
 			size_t id = 1;
 			auto ptr(new XLSB::XF(id, id));
 			XLS::BaseObjectPtr objectPtr(ptr);
-
-			ptr->ixBorder = m_oBorderId->GetValue();
-			m_oBorderId = ptr->ixBorder;
-			ptr->iFill = m_oFillId->GetValue();
-			ptr->font_index = m_oFontId->GetValue();
-			ptr->ifmt = m_oNumFmtId->GetValue();
-			ptr->fsxButton = m_oPivotButton->GetValue();
-			ptr->f123Prefix = m_oQuotePrefix->GetValue();
+            if(m_oBorderId.IsInit())
+                ptr->ixBorder = m_oBorderId->GetValue();
+            if(m_oFillId.IsInit())
+                ptr->iFill = m_oFillId->GetValue();
+            if(m_oFontId.IsInit())
+                ptr->font_index = m_oFontId->GetValue();
+            if(m_oNumFmtId.IsInit())
+                ptr->ifmt = m_oNumFmtId->GetValue();
+            if(m_oPivotButton.IsInit())
+                ptr->fsxButton = m_oPivotButton->GetValue();
+            if(m_oQuotePrefix.IsInit())
+                ptr->f123Prefix = m_oQuotePrefix->GetValue();
 
 			if (m_oXfId.IsInit())
 				ptr->ixfParent = m_oXfId->GetValue();
-
-			ptr->fAtrAlc = m_oApplyAlignment->GetValue();
-			ptr->fAtrBdr = m_oApplyBorder->GetValue();
-			ptr->fAtrPat = m_oApplyFill->GetValue();
-			ptr->fAtrFnt = m_oApplyFont->GetValue();
-			ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
-			ptr->fAtrProt = m_oApplyProtection->GetValue();
+            if(m_oApplyAlignment.IsInit())
+                ptr->fAtrAlc = m_oApplyAlignment->GetValue();
+            if(m_oApplyBorder.IsInit())
+                ptr->fAtrBdr = m_oApplyBorder->GetValue();
+            if(m_oApplyFill.IsInit())
+                ptr->fAtrPat = m_oApplyFill->GetValue();
+            if(m_oApplyFont.IsInit())
+                ptr->fAtrFnt = m_oApplyFont->GetValue();
+            if(m_oApplyNumberFormat.IsInit())
+                ptr->fAtrNum = m_oApplyNumberFormat->GetValue();
+            if(m_oApplyProtection.IsInit())
+                ptr->fAtrProt = m_oApplyProtection->GetValue();
 
 			if(m_oAligment.IsInit())
 				m_oAligment->toBin(objectPtr);

@@ -38,12 +38,16 @@ namespace SVG
 		: CAppliedObject(oNode)
 	{
 		m_wsXlinkHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
+		m_oTransform.SetMatrix(oNode.GetAttribute(L"gradientTransform"), 0, true);
+
+		if (L"userSpaceOnUse" == oNode.GetAttribute(L"gradientUnits"))
+			m_enGradientUnits = GradU_UserSpaceOnUse;
+		else
+			m_enGradientUnits = GradU_ObjectBoundingBox;
 	}
 
 	void CGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (mAttributes.end() != mAttributes.find(L"transform"))
-			m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
 	}
 
 	bool CGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
@@ -58,20 +62,27 @@ namespace SVG
 
 			CGradient *pGradiend = dynamic_cast<CGradient*>(pFile->GetMarkedObject(m_wsXlinkHref));
 
-			return (NULL == pGradiend) ? false : pGradiend->Apply(pRenderer, pFile, oObjectBounds);
+			if (NULL == pGradiend)
+				return false;
+			
+			pGradiend->Apply(pRenderer, pFile, oObjectBounds);
 		}
-
-		std::vector<LONG> arColors;
-		std::vector<double> arPositions;
-
-		for (const CStopElement* pStopElement : m_arObjects)
+		else
 		{
-			arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
-			arPositions.push_back(pStopElement->GetOffset().ToDouble());
+			std::vector<LONG> arColors;
+			std::vector<double> arPositions;
+	
+			for (const CStopElement* pStopElement : m_arObjects)
+			{
+				arColors.push_back(((unsigned int)(pStopElement->GetColor().ToInt() | ((unsigned char)(255. * pStopElement->GetColor().GetOpacity()) << 24))));
+				arPositions.push_back(pStopElement->GetOffset().ToDouble());
+			}
+	
+			pRenderer->put_BrushGradientColors(arColors.data(), arPositions.data(), arColors.size());
 		}
-
-		pRenderer->put_BrushGradientColors(arColors.data(), arPositions.data(), arColors.size());
-
+		
+		pRenderer->put_BrushTransform(m_oTransform.GetMatrix().GetFinalValue());
+		
 		return true;
 	}
 

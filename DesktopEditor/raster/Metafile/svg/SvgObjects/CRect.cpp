@@ -15,6 +15,11 @@ namespace SVG
 
 		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
 		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+
+		if (m_oRx.Empty() && !m_oRy.Empty())
+			m_oRx = m_oRy;
+		else if (!m_oRx.Empty() && m_oRy.Empty())
+			m_oRy = m_oRx;
 	}
 
 	CRect::~CRect()

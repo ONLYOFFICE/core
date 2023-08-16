@@ -8,8 +8,8 @@ namespace SVG
 {
 	typedef enum
 	{
-		ObjectBoundingBox,
-		UserSpaceOnUse
+		GradU_ObjectBoundingBox,
+		GradU_UserSpaceOnUse
 	}GradientUnits;
 
 	typedef enum

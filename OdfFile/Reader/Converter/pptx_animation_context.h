@@ -71,6 +71,7 @@ namespace oox {
 				_CP_OPT(std::wstring)						End;
 				_CP_OPT(std::wstring)						PresetClass;
 				_CP_OPT(int)								PresetID;
+				_CP_OPT(std::wstring)						Fill;
 
 				_par_animation_array						AnimParArray;
 				_seq_animation_ptr							AnimSeq;
@@ -261,6 +262,7 @@ namespace oox {
 			void set_par_animation_end(const std::wstring& value);
 			void set_par_animation_preset_class(const std::wstring& value);
 			void set_par_animation_preset_id(int value);
+			void set_par_animation_fill(const std::wstring& value);
 		void end_par_animation();
 
 		void start_seq_animation();

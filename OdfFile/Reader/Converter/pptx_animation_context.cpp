@@ -148,6 +148,15 @@ namespace oox {
 		}
 	}
 
+	void pptx_animation_context::set_par_animation_fill(const std::wstring& value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Fill = value;
+		}
+	}
+
 	void pptx_animation_context::end_par_animation()
 	{
 		if (impl_->par_animation_levels_.size())
@@ -677,6 +686,9 @@ namespace oox {
 						CP_XML_ATTR(L"presetClass", PresetClass.value());
 					if (PresetID)
 						CP_XML_ATTR(L"presetID", PresetID.value());
+					if (Fill)
+						CP_XML_ATTR(L"fill", Fill.value());
+					
 
 					if (NodeType)
 					{
@@ -688,7 +700,6 @@ namespace oox {
 						}
 						else
 						{
-							CP_XML_ATTR(L"fill", L"hold");
 							CP_XML_ATTR(L"nodeType", NodeType.value());
 						}
 					}

@@ -412,6 +412,18 @@ static std::vector<std::wstring> pptx_convert_smil_values(const odf_types::smil_
 	return result;
 }
 
+static std::wstring pptx_convert_smil_fill(const odf_types::smil_fill& smil_fill_, bool durationSpecified)
+{
+	switch (smil_fill_.get_type())
+	{
+		case smil_fill::type::_remove:		return L"remove";
+		case smil_fill::type::_freeze:		return L"freeze";
+		case smil_fill::type::_hold:		return L"hold";
+		case smil_fill::type::_transition:	return L"transition";
+		case smil_fill::type::_auto:		return durationSpecified ? L"remove" : L"freeze";
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t* anim_par::ns = L"anim";
 const wchar_t* anim_par::name = L"par";
@@ -423,6 +435,7 @@ void anim_par_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
 	CP_APPLY_ATTR(L"presentation:preset-sub-type",	presentation_preset_sub_type_);
 	CP_APPLY_ATTR(L"smil:accelerate",				smil_accelerate_);
 	CP_APPLY_ATTR(L"smil:decelerate",				smil_decelerate_);
+	CP_APPLY_ATTR(L"smil:fill",						smil_fill_);
 }
 
 void anim_par::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -441,10 +454,12 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	_CP_OPT(int)			duration;
 	_CP_OPT(std::wstring)	delay;		// NOTE: Comes from smil:begin
 	_CP_OPT(std::wstring)	end;
+	_CP_OPT(std::wstring)	fill;
 
 	_CP_OPT(std::wstring)	presentationPresetClass;
 	_CP_OPT(int)			presentationPresetId;
 	_CP_OPT(std::wstring)	presentationPresetPresetSubType;
+
 
 	// NOTE: в pptx нет атрибутов accelerate/decelerate. Там надо менять svg path ???
 	//_CP_OPT(std::wstring)	accelerate; 
@@ -528,6 +543,15 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 			presentationPresetClass = L"custom";
 		}			
 	}
+
+	if (par_attlist_.smil_fill_)
+	{
+		bool durationSpecified = common_attlist_.smil_dur_.has_value() || common_attlist_.smil_end_.has_value();
+		fill = pptx_convert_smil_fill(par_attlist_.smil_fill_.value(), durationSpecified);
+	}
+	else 
+		fill = L"hold";
+		
 	
 	animationContext.start_par_animation();
 
@@ -539,7 +563,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	if (end)						animationContext.set_par_animation_end						(end.value());
 	if (presentationPresetClass)	animationContext.set_par_animation_preset_class				(presentationPresetClass.value());
 	if (presentationPresetId)		animationContext.set_par_animation_preset_id				(presentationPresetId.value());
-
+	if (fill)						animationContext.set_par_animation_fill						(fill.value());
 
 	if (anim_par_array_.size())
 	{
@@ -1120,7 +1144,7 @@ void anim_set::pptx_convert(oox::pptx_conversion_context& Context)
 
 	if (set_attlist_.smil_fill_)
 	{
-		fill = set_attlist_.smil_fill_.value();
+		fill = pptx_convert_smil_fill(set_attlist_.smil_fill_.value(), false);
 	}
 
 	if (set_attlist_.smil_target_element_)
@@ -1181,6 +1205,7 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 
 	size_t shapeID = 0;
 	_CP_OPT(std::wstring) path;
+	_CP_OPT(std::wstring) fill;
 
 	if (animate_motion_attlist_.smil_target_element_)
 		shapeID = Context.get_slide_context().get_id(animate_motion_attlist_.smil_target_element_.value());
@@ -1193,6 +1218,11 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 
 		path = pptx_convert_svg_path(polylines);
 	}
+
+	if (animate_motion_attlist_.smil_fill_)
+	{
+		fill = pptx_convert_smil_fill(animate_motion_attlist_.smil_fill_.value(), false);
+	}
 	
 
 	animationContext.start_animate_motion();
@@ -1204,7 +1234,7 @@ void anim_animate_motion::pptx_convert(oox::pptx_conversion_context& Context)
 //	if (common_attlist_.smil_begin_)						animationContext.set_animate_motion_delay(common_attlist_.smil_begin_.value());
 //	if (common_attlist_.smil_end_)							animationContext.set_animate_motion_end(common_attlist_.smil_end_.value());
 
-	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(animate_motion_attlist_.smil_fill_.value());
+	if (animate_motion_attlist_.smil_fill_)					animationContext.set_animate_motion_fill(fill.value());
 	if (path)												animationContext.set_animate_motion_svg_path(path.value());
 
 	animationContext.set_animate_motion_shape_id(shapeID);
@@ -1438,7 +1468,11 @@ void anim_animate_transform::pptx_convert(oox::pptx_conversion_context& Context)
 		duration = common_attlist_.smil_dur_.value().get_value();
 
 	if (animate_transform_attlist_.smil_fill_)
-		fill = animate_transform_attlist_.smil_fill_.value();
+	{
+		bool durationSpecified = common_attlist_.smil_dur_.has_value() || common_attlist_.smil_end_.has_value();
+		fill = pptx_convert_smil_fill(animate_transform_attlist_.smil_fill_.value(), durationSpecified);
+	}
+		
 
 	if (common_attlist_.smil_begin_)
 		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());

@@ -43,6 +43,7 @@
 #include "../../DataTypes/presetid.h"
 #include "../../DataTypes/smil_values.h"
 #include "../../DataTypes/smil_keytimes.h"
+#include "../../DataTypes/smil_fill.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -57,6 +58,7 @@ public:
 	_CP_OPT(std::wstring)						presentation_preset_sub_type_;
 	_CP_OPT(std::wstring)						smil_accelerate_;
 	_CP_OPT(std::wstring)						smil_decelerate_;
+	_CP_OPT(odf_types::smil_fill)				smil_fill_;
 };
 
 //anim:par
@@ -184,7 +186,7 @@ class anim_set_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)						smil_fill_;
+	_CP_OPT(odf_types::smil_fill)				smil_fill_;
 	_CP_OPT(std::wstring)						smil_target_element_;
 	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
 	_CP_OPT(std::wstring)						smil_to_;
@@ -216,7 +218,7 @@ class anim_animate_motion_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)				smil_fill_;
+	_CP_OPT(odf_types::smil_fill)		smil_fill_;
 	_CP_OPT(std::wstring)				smil_target_element_;
 	_CP_OPT(std::wstring)				svg_path_;
 };
@@ -247,7 +249,7 @@ class anim_animate_color_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)						smil_fill_;
+	_CP_OPT(odf_types::smil_fill)				smil_fill_;
 	_CP_OPT(std::wstring)						smil_target_element_;
 	_CP_OPT(odf_types::smil_attribute_name)		smil_attribute_name_;
 	_CP_OPT(std::wstring)						smil_to_;
@@ -322,7 +324,7 @@ class anim_animate_transform_attlist
 public:
 	void add_attributes(const xml::attributes_wc_ptr& Attributes);
 
-	_CP_OPT(std::wstring)			smil_fill_;
+	_CP_OPT(odf_types::smil_fill)	smil_fill_;
 	_CP_OPT(odf_types::Bool)		smil_auto_reverse_;
 	_CP_OPT(std::wstring)			smil_target_element_;
 	_CP_OPT(std::wstring)			smil_from_;

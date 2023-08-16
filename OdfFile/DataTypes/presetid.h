@@ -32,7 +32,6 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
 #include "odfattributes.h"
 
 namespace cpdoccore { namespace odf_types {

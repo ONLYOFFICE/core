@@ -97,7 +97,7 @@ int main()
         std::string sCertificateFilePassword = "123456";
 		std::string sPrivateFilePassword = "";
 
-		pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
 
 		std::map<std::wstring, std::wstring> properties;
 		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
@@ -106,7 +106,7 @@ int main()
 		std::wstring sValueTest = L"ValueTest";
 		properties.insert(std::make_pair(sNameTest, sValueTest));
 
-		//pCertificate = NSCertificate::GenerateByAlg("ed25519", properties);
+		pCertificate = NSCertificate::GenerateByAlg("ecdsa", properties);
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 

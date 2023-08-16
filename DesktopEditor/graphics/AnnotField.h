@@ -41,7 +41,7 @@ public:
 	class GRAPHICS_DECL CMarkupAnnotPr
 	{
 	public:
-		CMarkupAnnotPr();
+		CMarkupAnnotPr() {}
 
 	private:
 		BYTE m_nRT;
@@ -105,7 +105,7 @@ public:
 	void SetC(const std::vector<double>& arrC) { m_arrC = arrC; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
-	void SetBorder(BYTE nType, double dWidth, double dGasp1, double dGasp2);
+	void SetBorder(BYTE nType, double dWidth, double dGasp1, double dGasp2) {}
 
 	bool isWidget() const;
 	bool isMarkup() const;

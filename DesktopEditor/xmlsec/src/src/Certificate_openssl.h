@@ -55,7 +55,19 @@ const EVP_MD* Get_EVP_MD(int nAlg)
 	case OOXML_HASH_ALG_ED25519:
 	case OOXML_HASH_ALG_ED448:
 	{
+		return NULL;
+	}
+	case OOXML_HASH_ALG_ECDSA_256:
+	{
 		return EVP_sha256();
+	}
+	case OOXML_HASH_ALG_ECDSA_384:
+	{
+		return EVP_sha384();
+	}
+	case OOXML_HASH_ALG_ECDSA_512:
+	{
+		return EVP_sha512();
 	}
 	default:
 		break;
@@ -206,12 +218,28 @@ public:
 			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, NULL);
 			m_alg = OOXML_HASH_ALG_ED448;
 		}
-		else if (key_alg == "ecdsa")
+		else if (0 == key_alg.find("ecdsa"))
 		{
+			std::string sKeyLen = key_alg.substr(5);
+			int nKeyLen = 256;
+			if (!sKeyLen.empty())
+				nKeyLen = std::stoi(sKeyLen);
+
 			int crypto_nid = NID_X9_62_prime256v1;
+			m_alg = OOXML_HASH_ALG_ECDSA_256;
+
+			if (nKeyLen == 384)
+			{
+				crypto_nid = NID_secp384r1;
+				m_alg = OOXML_HASH_ALG_ECDSA_384;
+			}
+			else if (nKeyLen == 512)
+			{
+				crypto_nid = NID_secp521r1;
+				m_alg = OOXML_HASH_ALG_ECDSA_512;
+			}
+
 			EC_GROUP* group = EC_GROUP_new_by_curve_name(crypto_nid);
-			if (!group)
-				return false;
 
 			EC_GROUP_set_asn1_flag(group, OPENSSL_EC_NAMED_CURVE);
 			EC_GROUP_set_point_conversion_form(group, POINT_CONVERSION_UNCOMPRESSED);
@@ -221,12 +249,9 @@ public:
 			EC_KEY_generate_key(ec);
 
 			EVP_PKEY* tmp = EVP_PKEY_new();
-			if (!tmp)
-				return false;
 
 			EVP_PKEY_assign(tmp, EVP_PKEY_EC, ec);
 			pctx = EVP_PKEY_CTX_new(tmp, NULL);
-			m_alg = OOXML_HASH_ALG_ED25519;
 
 			EVP_PKEY_free(tmp);
 			EC_GROUP_free(group);
@@ -604,9 +629,27 @@ public:
 	{
 		BIO* inputbio = BIO_new(BIO_s_mem());
 		BIO_write(inputbio, pData, nSize);
-		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
-		BIO_free(inputbio);
+		PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY | PKCS7_PARTIAL);
+
 		if (!pkcs7)
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
+			return false;
+		}
+
+		const EVP_MD* evp = NULL;
+		if (m_alg == OOXML_HASH_ALG_ECDSA_512)
+			evp = EVP_sha512();
+		else if (m_alg == OOXML_HASH_ALG_ECDSA_384)
+			evp = EVP_sha384();
+
+		if (!PKCS7_sign_add_signer(pkcs7, m_cert, m_key, evp, 0))
+		{
+			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
+			return false;
+		}
+
+		if (PKCS7_final(pkcs7, inputbio, PKCS7_DETACHED | PKCS7_BINARY) <= 0)
 		{
 			std::string sErr(ERR_error_string(ERR_get_error(), NULL));
 			return false;
@@ -616,6 +659,7 @@ public:
 		i2d_PKCS7_bio(outputbio, pkcs7);
 		BUF_MEM* mem = NULL;
 		BIO_get_mem_ptr(outputbio, &mem);
+
 		if (mem && mem->data && mem->length)
 		{
 			nSizeDst = mem->length;
@@ -623,6 +667,8 @@ public:
 			pDataDst = new BYTE[nSizeDst];
 			memcpy(pDataDst, mem->data, nSizeDst);
 		}
+
+		BIO_free(inputbio);
 		BIO_free(outputbio);
 		PKCS7_free(pkcs7);
 
@@ -898,11 +944,19 @@ public:
 			algs.push_back(OOXML_HASH_ALG_SHA512);
 			break;
 		case NID_ED25519:
-		case NID_ecdsa_with_SHA256:
 			algs.push_back(OOXML_HASH_ALG_ED25519);
 			break;
 		case NID_ED448:
 			algs.push_back(OOXML_HASH_ALG_ED448);
+			break;
+		case NID_ecdsa_with_SHA256:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_256);
+			break;
+		case NID_ecdsa_with_SHA384:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_384);
+			break;
+		case NID_ecdsa_with_SHA512:
+			algs.push_back(OOXML_HASH_ALG_ECDSA_512);
 			break;
 		default:
 			break;

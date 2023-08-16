@@ -106,7 +106,7 @@ int main()
 		std::wstring sValueTest = L"ValueTest";
 		properties.insert(std::make_pair(sNameTest, sValueTest));
 
-		pCertificate = NSCertificate::GenerateByAlg("ecdsa", properties);
+		pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 

@@ -114,7 +114,7 @@ namespace OOX
 			{
 				auto mruColors(new XLSB::MRUCOLORS);
 				ptr->m_MRUCOLORS = XLS::BaseObjectPtr{mruColors};
-				mruColors->m_arMRUColor = m_oMruColors->toBin()
+                mruColors->m_arMRUColor = m_oMruColors->toBin();
 			}
 
 			return objectPtr;

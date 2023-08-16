@@ -159,6 +159,7 @@ namespace OOX
             virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
             virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyleElement;
@@ -237,6 +238,7 @@ namespace OOX
             virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
             virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyle;
@@ -311,6 +313,7 @@ namespace OOX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyles;

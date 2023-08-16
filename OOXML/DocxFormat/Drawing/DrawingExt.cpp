@@ -662,6 +662,30 @@ namespace OOX
 			}
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinStyles()
+		{
+			 auto ptr(new XLSB::FRTSTYLESHEET);
+			 XLS::BaseObjectPtr objectPtr(ptr);
+
+                if (!m_arrExt.empty())
+                {
+
+					for(auto i:m_arrExt)
+					{
+
+						if(i->m_sUri == L"{EB79DEF2-80B8-43E5-95BD-54CBDDF9020C}")
+						{
+							ptr->m_STYLESHEET14 = i->m_oSlicerStyles->toBin();
+						}
+						else if(i->m_sUri == L"{46F421CA-312F-682F-3DD2-61675219B42D}")
+						{
+							ptr->m_DXF14S = i->m_oDxfs->toBin();
+						}
+					}
+
+                }
+			return objectPtr;
+		}
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinWorksheet()
 		{
 			auto ptr(new XLSB::FRTWORKSHEET);

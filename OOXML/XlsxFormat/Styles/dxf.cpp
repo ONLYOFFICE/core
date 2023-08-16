@@ -44,6 +44,8 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 
+#include "../../../XlsbFormat/Biff12_unions/DXFS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -188,6 +190,21 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CDxf::toBin()
+		{
+			auto ptr(new XLSB::DXF);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			XmlUtils::CXmlLiteReader oReader;
+			auto stringData = writer.GetData();
+
+			if ( !oReader.FromString(stringData))
+                        return objectPtr;
+			ptr->deserialize(oReader);
+
+			return objectPtr;
+		}
 		EElementType CDxf::getType () const
 		{
 			return et_x_Dxf;
@@ -291,6 +308,16 @@ namespace OOX
 				else
 					m_arrItems.push_back(new CDxf(dxf));
 			}
+		}
+		XLS::BaseObjectPtr CDxfs::toBin()
+		{
+			auto ptr(new XLSB::DXFS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			for(auto i:m_arrItems)
+			{
+				ptr->m_aruDXF.push_back(i->toBin());
+			}
+			return objectPtr;
 		}
 		void CDxfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -77,7 +77,6 @@ SOURCES += \
 	../../../DocxFormat/Comments.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../DocxFormat/VmlDrawing.cpp \
-	../../../DocxFormat/Namespaces.cpp \
 	../../../XlsxFormat/CalcChain/CalcChain.cpp \
 	../../../XlsxFormat/Chart/Chart.cpp \
 	../../../XlsxFormat/Chart/ChartColors.cpp \
@@ -123,7 +122,6 @@ SOURCES += \
 	../../../DocxFormat/Styles.cpp \
 	../../../DocxFormat/UnknowTypeFile.cpp \
 	../../../DocxFormat/IFileContainer.cpp \
-	../../../DocxFormat/Document.cpp \
 	../../../XlsxFormat/FileFactory_Spreadsheet.cpp \
 	../../../XlsxFormat/ComplexTypes_Spreadsheet.cpp \
 	../../../DocxFormat/Drawing/Drawing.cpp \
@@ -277,8 +275,6 @@ HEADERS += \
 	../../../DocxFormat/HeaderFooter.h \
 	../../../DocxFormat/IFileBuilder.h \
 	../../../DocxFormat/IFileContainer.h \
-	../../../DocxFormat/NamespaceOwn.h \
-	../../../DocxFormat/Namespaces.h \
 	../../../DocxFormat/Numbering.h \
 	../../../DocxFormat/Rels.h \
 	../../../DocxFormat/RId.h \

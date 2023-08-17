@@ -116,7 +116,10 @@ public:
 		date_time	= false;
 		slideNum	= false;
 		
-		rId_ = 1;
+		// NOTE: In PowerPoint p:nvGrpSpPr MUST have id = 1
+		// Otherwise animation are still working correctly but other element's IDs don't match to its animations in animation editor of PowerPoint
+		// Reserve "id = 1" for p:nvGrpSpPr
+		rId_ = 2;
 
 		pptx_drawings_			= pptx_drawings::create();
 
@@ -983,7 +986,7 @@ void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
 }
 void pptx_slide_context::serialize_objects(std::wostream & strm)
 {
-	int next_id = impl_->next_rId();
+	const int nextnvGrpSpPrId = 1;
 
     CP_XML_WRITER(strm)
     {
@@ -993,7 +996,7 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 			CP_XML_NODE(L"p:cNvPr")
 			{
 				CP_XML_ATTR(L"name", L"noGroup");
-				CP_XML_ATTR(L"id", next_id);
+				CP_XML_ATTR(L"id", nextnvGrpSpPrId);
 			}
 			CP_XML_NODE(L"p:cNvGrpSpPr");
 			CP_XML_NODE(L"p:nvPr");	

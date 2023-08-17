@@ -37,24 +37,35 @@ CAnnotFieldInfo::CAnnotFieldInfo()
 {
 	m_nType = 0;
 
-	m_nID = 0;
+	m_nFlag      = 0;
+	m_nID        = 0;
 	m_nAnnotFlag = 0;
-	m_nPage = 0;
+	m_nPage      = 0;
 
-	m_dX = 0;
-	m_dY = 0;
-	m_dW = 0;
-	m_dH = 0;
+	m_dX  = 0.0;
+	m_dY  = 0.0;
+	m_dW  = 0.0;
+	m_dH  = 0.0;
+	m_dBE = 0.0;
 
-	m_dBaseLineOffset = 0;
+	m_oBorder.nType              = 0;
+	m_oBorder.dWidth             = 0.0;
+	m_oBorder.dDashesAlternating = 0.0;
+	m_oBorder.dGaps              = 0.0;
 
 	m_pMarkupPr = NULL;
-	m_pTextPr = NULL;
+	m_pTextPr   = NULL;
+	m_pInkPr    = NULL;
+	m_pLinePr   = NULL;
+	m_pPopupPr  = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
 	RELEASEOBJECT(m_pMarkupPr);
 	RELEASEOBJECT(m_pTextPr);
+	RELEASEOBJECT(m_pInkPr);
+	RELEASEOBJECT(m_pLinePr);
+	RELEASEOBJECT(m_pPopupPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
@@ -73,6 +84,36 @@ void CAnnotFieldInfo::SetType(int nType)
 		m_pTextPr = new CAnnotFieldInfo::CTextAnnotPr();
 		break;
 	}
+	case 3:
+	{
+		m_nType = 9;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pLinePr);
+		m_pLinePr = new CAnnotFieldInfo::CLineAnnotPr();
+		break;
+	}
+	case 14:
+	{
+		m_nType = 8;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pInkPr);
+		m_pInkPr = new CAnnotFieldInfo::CInkAnnotPr();
+		break;
+	}
+	case 15:
+	{
+		m_nType = 24;
+
+		RELEASEOBJECT(m_pPopupPr);
+		m_pPopupPr = new CAnnotFieldInfo::CPopupAnnotPr();
+		break;
+	}
 	}
 }
 bool CAnnotFieldInfo::IsValid() const
@@ -80,7 +121,6 @@ bool CAnnotFieldInfo::IsValid() const
 	return (m_nType != 0);
 }
 
-// Common
 void CAnnotFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_dX = dX;
@@ -95,7 +135,22 @@ void CAnnotFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) 
 	dW = m_dW;
 	dH = m_dH;
 }
+void CAnnotFieldInfo::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
+{
+	m_oBorder.nType = nType;
+	m_oBorder.dWidth = dWidth;
+	m_oBorder.dDashesAlternating = dDashesAlternating;
+	m_oBorder.dGaps = dGaps;
+}
+void CAnnotFieldInfo::GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps)
+{
+	nType = m_oBorder.nType;
+	dWidth = m_oBorder.dWidth;
+	dDashesAlternating = m_oBorder.dDashesAlternating;
+	dGaps = m_oBorder.dGaps;
+}
 
+// Common
 bool CAnnotFieldInfo::isWidget() const
 {
 	return (m_nType != 0 && m_nType < 7);
@@ -116,7 +171,7 @@ bool CAnnotFieldInfo::IsLine() const
 {
 	return (m_nType == 9);
 }
-CAnnotFieldInfo::CTextAnnotPr* CAnnotFieldInfo::GetTextAnnotPr()
+bool CAnnotFieldInfo::IsPopup() const
 {
-	return m_pTextPr;
+	return (m_nType == 24);
 }

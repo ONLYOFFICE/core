@@ -177,7 +177,7 @@ private:
 	{
 		CBorderType()
 		{
-			nType = 5;
+			nType = 0;
 			dWidth = 1;
 			dDashesAlternating = 3;
 			dGaps = 3;

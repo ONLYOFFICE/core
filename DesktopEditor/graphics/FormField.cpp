@@ -419,6 +419,8 @@ CFormFieldInfo::CFormFieldInfo()
 
 	m_nBorderType = 0;
 
+	m_dBaseLineOffset = 0;
+
 	// 0 - Right
 	// 1 - Left
 	// 2 - Center

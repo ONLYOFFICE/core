@@ -90,7 +90,7 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-	if (true)
+	if (false)
     {
 		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
 		std::wstring wsPrivateKeyFile = L"";
@@ -110,7 +110,7 @@ int main()
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-	if (false)
+	if (true)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);

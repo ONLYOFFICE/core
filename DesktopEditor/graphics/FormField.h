@@ -269,6 +269,9 @@ public:
 	void SetType(int nType) override;
 
 	// Common
+	void SetBaseLineOffset(const double& dOffset) { m_dBaseLineOffset = dOffset; }
+	double GetBaseLineOffset() const { return m_dBaseLineOffset; }
+
 	void SetKey(const std::wstring& wsKey);
 	const std::wstring& GetKey() const;
 
@@ -325,6 +328,7 @@ private:
 	bool         m_bPlaceHolder;
 	int          m_nBorderType;
 	double       m_dBorderSize;
+	double       m_dBaseLineOffset;
 	LONG         m_lBorderColor;
 	bool         m_bHaveShd;
 	LONG         m_lShdColor;

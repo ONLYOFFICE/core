@@ -35,30 +35,58 @@
 #include "config.h"
 #include "IRenderer.h"
 
+// void Set(const int& n) { m_n = n; }
+// int Get() const { return m_n; }
+
+// void Set(const double& d) { m_d = d; }
+// double Get() const { return m_d; }
+
+// void Set(const std::wstring& ws) { m_ws = ws; }
+// const std::wstring& Get() const { return m_ws; }
+
 class GRAPHICS_DECL CAnnotFieldInfo : public IAnnotField
 {
 public:
-	class GRAPHICS_DECL CMarkupAnnotPr
+	class CMarkupAnnotPr
 	{
 	public:
-		CMarkupAnnotPr() {}
+		void SetRT(const BYTE& nRT)              { m_nRT      = nRT; }
+		void SetFlag(const int& nFlag)           { m_nFlag    = nFlag; }
+		void SetPopupID(const int& nPopupID)     { m_nPopupID = nPopupID; }
+		void SetIRTID(const int& nIRTID)         { m_nIRTID   = nIRTID; }
+		void SetCA(const double& dCA)            { m_dCA      = dCA; }
+		void SetT(const std::wstring& wsT)       { m_wsT      = wsT; }
+		void SetRC(const std::wstring& wsRC)     { m_wsRC     = wsRC; }
+		void SetSubj(const std::wstring& wsSubj) { m_wsSubj   = wsSubj; }
+
+		BYTE   GetRT()      const { return m_nRT; }
+		int    GetFlag()    const { return m_nFlag; }
+		int    GetPopupID() const { return m_nPopupID; }
+		int    GetIRTID()   const { return m_nIRTID; }
+		double GetCA()      const { return m_dCA; }
+		const std::wstring& GetT()    const { return m_wsT; }
+		const std::wstring& GetRC()   const { return m_wsRC; }
+		const std::wstring& GetSubj() const { return m_wsSubj; }
 
 	private:
-		BYTE m_nRT;
-		double m_dCA;
+		BYTE         m_nRT;
+		int          m_nFlag;
+		int          m_nPopupID;
+		int          m_nIRTID;
+		double       m_dCA;
 		std::wstring m_wsT;
 		std::wstring m_wsRC;
 		std::wstring m_wsSubj;
 	};
 
-	class GRAPHICS_DECL CTextAnnotPr
+	class CTextAnnotPr
 	{
 	public:
 		CTextAnnotPr() : m_bOpen(false), m_nName(2), m_nState(7), m_nStateModel(2) {}
 
-		void SetOpen(bool bOpen)             { m_bOpen = bOpen; }
-		void SetName(BYTE nName)             { m_nName = nName; }
-		void SetState(BYTE nState)           { m_nState = nState; }
+		void SetOpen(bool bOpen)             { m_bOpen       = bOpen; }
+		void SetName(BYTE nName)             { m_nName       = nName; }
+		void SetState(BYTE nState)           { m_nState      = nState; }
 		void SetStateModel(BYTE nStateModel) { m_nStateModel = nStateModel; }
 
 		bool IsOpen()        const { return m_bOpen; }
@@ -73,6 +101,82 @@ public:
 		BYTE m_nStateModel;
 	};
 
+	class CInkAnnotPr
+	{
+	public:
+		void SetInkList(const std::vector< std::vector<double> >& arrInkList) { m_arrInkList = arrInkList; }
+
+		const std::vector< std::vector<double> >& GetInkList() const { return m_arrInkList; }
+
+	private:
+		std::vector< std::vector<double> > m_arrInkList;
+	};
+
+	class CLineAnnotPr
+	{
+	public:
+		void SetCap(bool bCap)          { m_bCap = bCap; }
+		void SetIT(const BYTE& nIT)     { m_nIT  = nIT; }
+		void SetCP(const BYTE& nCP)     { m_nCP  = nCP; }
+		void SetLL(const double& dLL)   { m_dLL  = dLL; }
+		void SetLLE(const double& dLLE) { m_dLLE = dLLE; }
+		void SetLLO(const double& dLLO) { m_dLLO = dLLO; }
+		void SetLE(const BYTE& nLE1, const BYTE& nLE2) { m_nLE[0] = nLE1; m_nLE[1] = nLE2; }
+		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4)
+		{ m_dL[0] = dL1; m_dL[1] = dL2; m_dL[2] = dL3; m_dL[3] = dL4; }
+		void SetCO(const double& dCO1, const double& dCO2) { m_dCO[0] = dCO1; m_dCO[1] = dCO2; }
+		void SetIC(const std::vector<double>& arrIC)       { m_arrIC = arrIC; }
+
+		bool IsCap()    const { return m_bCap; }
+		BYTE GetIT()    const { return m_nIT; }
+		BYTE GetCP()    const { return m_nCP; }
+		double GetLL()  const { return m_dLL; }
+		double GetLLE() const { return m_dLLE; }
+		double GetLLO() const { return m_dLLO; }
+		void GetLE(BYTE& nLE1, BYTE& nLE2) const { nLE1 = m_nLE[0]; nLE2 = m_nLE[1]; }
+		void GetL(double& dL1, double& dL2, double& dL3, double& dL4) const { dL1 = m_dL[0]; dL2 = m_dL[1]; dL3 = m_dL[2]; dL4 = m_dL[3]; }
+		void GetCO(double& dCO1, double& dCO2) const { dCO1 = m_dCO[0]; dCO2 = m_dCO[1]; }
+		const std::vector<double>& GetIC()     const { return m_arrIC; }
+
+	private:
+		bool   m_bCap;
+		BYTE   m_nIT;
+		BYTE   m_nCP;
+		double m_dLL;
+		double m_dLLE;
+		double m_dLLO;
+		BYTE   m_nLE[2];
+		double m_dL[4];
+		double m_dCO[2];
+		std::vector<double> m_arrIC;
+	};
+
+	class CPopupAnnotPr
+	{
+	public:
+		void SetOpen(bool bOpen)               { m_bOpen     = bOpen; }
+		void SetFlag(const int& nFlag)         { m_nFlag     = nFlag; }
+		void SetParentID(const int& nParentID) { m_nParentID = nParentID; }
+
+		bool IsOpen()      const { return m_bOpen; }
+		int  GetFlag()     const { return m_nFlag; }
+		int  GetParentID() const { return m_nParentID; }
+
+	private:
+		bool m_bOpen;
+		int  m_nFlag;
+		int  m_nParentID;
+	};
+
+private:
+	struct CBorder
+	{
+		BYTE   nType;
+		double dWidth;
+		double dDashesAlternating;
+		double dGaps;
+	};
+
 public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
@@ -80,46 +184,44 @@ public:
 	virtual void SetType(int nType);
 	bool IsValid() const;
 
-	// Common
 	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
-	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
-
-	void SetBaseLineOffset(const double& dOffset) { m_dBaseLineOffset = dOffset; }
-	double GetBaseLineOffset() const { return m_dBaseLineOffset; }
-
-	void SetID(const int& nID) { m_nID = nID; }
-	int GetID() const { return m_nID; }
-
+	void SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps);
+	void SetFlag(const int& nFlag)           { m_nFlag      = nFlag; }
+	void SetID(const int& nID)               { m_nID        = nID; }
 	void SetAnnotFlag(const int& nAnnotFlag) { m_nAnnotFlag = nAnnotFlag; }
-	int GetAnnotFlag() const { return m_nAnnotFlag; }
-
-	void SetPage(const int& nPage) { m_nPage = nPage; }
-	int GetPage() const { return m_nPage; }
-
-	// void Set(const int& n) { m_n = n; }
-	// int Get() const { return m_n; }
-
+	void SetPage(const int& nPage)           { m_nPage      = nPage; }
+	void SetBE(const double& dBE)            { m_dBE        = dBE; }
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
+	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
+
+	void   GetBounds(double& dX, double& dY, double& dW, double& dH) const;
+	void   GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps);
+	int    GetFlag()      const { return m_nFlag; }
+	int    GetID()        const { return m_nID; }
+	int    GetAnnotFlag() const { return m_nAnnotFlag; }
+	int    GetPage()      const { return m_nPage; }
+	double GetBE()        const { return m_dBE; }
 	const std::wstring& GetContents() const { return m_wsContents; }
-
-	void SetC(const std::vector<double>& arrC) { m_arrC = arrC; }
 	const std::vector<double>& GetC() const { return m_arrC; }
-
-	void SetBorder(BYTE nType, double dWidth, double dGasp1, double dGasp2) {}
 
 	bool isWidget() const;
 	bool isMarkup() const;
 	bool IsText()   const;
 	bool IsInk()    const;
 	bool IsLine()   const;
+	bool IsPopup()  const;
 
-	CMarkupAnnotPr* GetMarkupAnnotPr();
-	CTextAnnotPr*   GetTextAnnotPr();
+	CMarkupAnnotPr* GetMarkupAnnotPr() { return m_pMarkupPr; }
+	CTextAnnotPr*   GetTextAnnotPr()   { return m_pTextPr; }
+	CInkAnnotPr*    GetInkAnnotPr()    { return m_pInkPr; }
+	CLineAnnotPr*   GetLineAnnotPr()   { return m_pLinePr; }
+	CPopupAnnotPr*  GetPopupAnnotPr()  { return m_pPopupPr; }
 
 protected:
 	int          m_nType;
 
 private:
+	int          m_nFlag;
 	int          m_nID;
 	int          m_nAnnotFlag;
 	int          m_nPage;
@@ -127,12 +229,16 @@ private:
 	double       m_dY;
 	double       m_dW;
 	double       m_dH;
-	double       m_dBaseLineOffset;
+	double       m_dBE;
 	std::wstring m_wsContents;
 	std::vector<double> m_arrC;
+	CBorder      m_oBorder;
 
 	CMarkupAnnotPr* m_pMarkupPr;
-	CTextAnnotPr* m_pTextPr;
+	CTextAnnotPr*   m_pTextPr;
+	CInkAnnotPr*    m_pInkPr;
+	CLineAnnotPr*   m_pLinePr;
+	CPopupAnnotPr*  m_pPopupPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

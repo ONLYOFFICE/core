@@ -1248,18 +1248,20 @@ namespace NSOnlineOfficeBinToPdf
 				oInfo.SetAnnotFlag(ReadInt(current, curindex));
 				oInfo.SetPage(ReadInt(current, curindex));
 
-				double dX = ReadDouble(current, curindex);
-				double dY = ReadDouble(current, curindex);
-				double dW = ReadDouble(current, curindex);
-				double dH = ReadDouble(current, curindex);
+				double dX1 = ReadDouble(current, curindex);
+				double dY1 = ReadDouble(current, curindex);
+				double dX2 = ReadDouble(current, curindex);
+				double dY2 = ReadDouble(current, curindex);
 
-				oInfo.SetBounds(dX, dY, dW, dH);
+				oInfo.SetBounds(dX1, dY1, dX2, dY2);
 
 				int nFlags = ReadInt(current, curindex);
+				oInfo.SetFlag(nFlags);
 
 				if (nFlags & (1 << 1))
 					oInfo.SetContents(ReadString(current, curindex));
-				if (nFlags & (1 << 2)) {} // Эффекты границы - BE borderCloudy
+				if (nFlags & (1 << 2))
+					oInfo.SetBE(ReadDouble(current, curindex));
 				if (nFlags & (1 << 3))
 				{
 					int n = ReadInt(current, curindex);
@@ -1283,11 +1285,24 @@ namespace NSOnlineOfficeBinToPdf
 
 				if (oInfo.isMarkup())
 				{
-					nFlags = ReadInt(current, curindex);
-					if (nFlags & (1 << 0))
-					{
+					CAnnotFieldInfo::CMarkupAnnotPr* pPr = oInfo.GetMarkupAnnotPr();
 
-					}
+					nFlags = ReadInt(current, curindex);
+					pPr->SetFlag(nFlags);
+					if (nFlags & (1 << 0))
+						pPr->SetPopupID(ReadInt(current, curindex));
+					if (nFlags & (1 << 1))
+						pPr->SetT(ReadString(current, curindex));
+					if (nFlags & (1 << 2))
+						pPr->SetCA(ReadDouble(current, curindex));
+					if (nFlags & (1 << 3))
+						pPr->SetRC(ReadString(current, curindex));
+					if (nFlags & (1 << 5))
+						pPr->SetIRTID(ReadInt(current, curindex));
+					if (nFlags & (1 << 6))
+						pPr->SetRT(ReadByte(current, curindex));
+					if (nFlags & (1 << 7))
+						pPr->SetSubj(ReadString(current, curindex));
 				}
 
 				if (oInfo.IsText())
@@ -1295,15 +1310,81 @@ namespace NSOnlineOfficeBinToPdf
 					CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
 
 					pPr->SetOpen(nFlags & (1 << 15));
-
 					if (nFlags & (1 << 16))
 						pPr->SetName(ReadByte(current, curindex));
-
 					if (nFlags & (1 << 17))
 						pPr->SetStateModel(ReadByte(current, curindex));
-
 					if (nFlags & (1 << 18))
 						pPr->SetState(ReadByte(current, curindex));
+				}
+				else if (oInfo.IsInk())
+				{
+					CAnnotFieldInfo::CInkAnnotPr* pPr = oInfo.GetInkAnnotPr();
+
+					int n = ReadInt(current, curindex);
+					std::vector< std::vector<double> > arrInkList;
+					for (int i = 0; i < n; ++i)
+					{
+						std::vector<double> arrLine;
+						int m = ReadInt(current, curindex);
+						for (int j = 0; j < m; ++j)
+							arrLine.push_back(ReadDouble(current, curindex));
+						if (!arrLine.empty())
+							arrInkList.push_back(arrLine);
+					}
+					pPr->SetInkList(arrInkList);
+				}
+				else if (oInfo.IsLine())
+				{
+					CAnnotFieldInfo::CLineAnnotPr* pPr = oInfo.GetLineAnnotPr();
+
+					double dLX1 = ReadDouble(current, curindex);
+					double dLY1 = ReadDouble(current, curindex);
+					double dLX2 = ReadDouble(current, curindex);
+					double dLY2 = ReadDouble(current, curindex);
+					pPr->SetL(dLX1, dLY1, dLX2, dLY2);
+
+					if (nFlags & (1 << 15))
+					{
+						BYTE nLE1 = ReadByte(current, curindex);
+						BYTE nLE2 = ReadByte(current, curindex);
+						pPr->SetLE(nLE1, nLE2);
+					}
+					if (nFlags & (1 << 16))
+					{
+						int n = ReadInt(current, curindex);
+						std::vector<double> arrIC;
+						for (int i = 0; i < n; ++i)
+							arrIC.push_back(ReadDouble(current, curindex));
+						pPr->SetIC(arrIC);
+					}
+					if (nFlags & (1 << 17))
+						pPr->SetLL(ReadDouble(current, curindex));
+					if (nFlags & (1 << 18))
+						pPr->SetLLE(ReadDouble(current, curindex));
+					pPr->SetCap(nFlags & (1 << 19));
+					if (nFlags & (1 << 20))
+						pPr->SetIT(ReadByte(current, curindex));
+					if (nFlags & (1 << 21))
+						pPr->SetLLO(ReadDouble(current, curindex));
+					if (nFlags & (1 << 22))
+						pPr->SetCP(ReadByte(current, curindex));
+					if (nFlags & (1 << 23))
+					{
+						double dCO1 = ReadDouble(current, curindex);
+						double dCO2 = ReadDouble(current, curindex);
+						pPr->SetCO(dCO1, dCO2);
+					}
+				}
+				else if (oInfo.IsPopup())
+				{
+					CAnnotFieldInfo::CPopupAnnotPr* pPr = oInfo.GetPopupAnnotPr();
+
+					nFlags = ReadInt(current, curindex);
+					pPr->SetFlag(nFlags);
+					pPr->SetOpen(nFlags & (1 << 0));
+					if (nFlags & (1 << 1))
+						pPr->SetParentID(ReadInt(current, curindex));
 				}
 
 				if (oInfo.IsValid())

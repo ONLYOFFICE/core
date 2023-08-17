@@ -1089,6 +1089,7 @@
 			// Ink
 			else if (rec["Type"] == 14)
 			{
+				// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 				let n = reader.readInt();
 				rec["InkList"] = [];
 				for (let i = 0; i < n; ++i)
@@ -1096,9 +1097,7 @@
 					rec["InkList"][i] = [];
 					let m = reader.readInt();
 					for (let j = 0; j < m; ++j)
-					{
 						rec["InkList"][i].push(reader.readDouble());
-					}
 				}
 			}
 			// Popup

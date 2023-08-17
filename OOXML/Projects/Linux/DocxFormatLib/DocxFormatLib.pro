@@ -63,7 +63,6 @@ SOURCES += \
 	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
-	../../../DocxFormat/Media/ActiveX.cpp \
 	../../../DocxFormat/Media/Audio.cpp \
 	../../../DocxFormat/Media/Video.cpp \
 	../../../DocxFormat/Media/Image.cpp \
@@ -166,7 +165,6 @@ SOURCES += \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
-	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 	../../../XlsxFormat/Workbook/Workbook.cpp \

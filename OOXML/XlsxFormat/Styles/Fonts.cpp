@@ -191,22 +191,33 @@ namespace OOX
 
 			if(m_oItalic.IsInit())
 				ptr->fItalic = m_oItalic->ToBool();
+			else
+				ptr->fItalic = false;
 
 			if(m_oStrike.IsInit())
 				ptr->fStrikeOut = m_oStrike->ToBool();
+			else
+				ptr->fStrikeOut = false;
 
 			if(m_oOutline.IsInit())
-			ptr->fOutline = m_oOutline->ToBool();
+				ptr->fOutline = m_oOutline->ToBool();
+			else
+				ptr->fOutline = false;
 
 			if(m_oShadow.IsInit())
 				ptr->fShadow = m_oShadow->ToBool();
+			else
+				ptr->fShadow = false;
 
 			if(m_oCondense.IsInit())
 				ptr->fCondense = m_oCondense->ToBool();
+			else
+				ptr->fCondense = false;
 
 			if(m_oExtend.IsInit())
 				ptr->fExtend = m_oExtend->ToBool();
-
+			else
+				ptr->fExtend = false;
 			if(m_oBold.IsInit())
 			{
 				if(m_oBold->ToBool())

@@ -313,7 +313,6 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetData.cpp \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.cpp \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.cpp \
-	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.cpp \
 	../../../XlsbFormat/Biff12_records/SXTupleSetRowItem.cpp \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetRow.cpp \
 	../../../XlsbFormat/Biff12_records/PCDCalcMem15.cpp \
@@ -1337,7 +1336,6 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetData.h \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.h \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.h \
-	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.h \
 	../../../XlsbFormat/Biff12_records/SXTupleSetRowItem.h \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetRow.h \
 	../../../XlsbFormat/Biff12_records/PCDCalcMem15.h \

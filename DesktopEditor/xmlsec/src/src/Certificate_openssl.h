@@ -16,6 +16,7 @@
 #include <openssl/pem.h>
 #include <openssl/x509.h>
 #include <openssl/pkcs12.h>
+#include <openssl/cms.h>
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
@@ -23,6 +24,9 @@
 #include <openssl/engine.h>
 #include <openssl/evp.h>
 #include <openssl/conf.h>
+
+#include <map>
+#include <memory>
 
 const EVP_MD* Get_EVP_MD(int nAlg)
 {
@@ -119,6 +123,148 @@ public:
 			X509_FREE(m_cert);
 		if (NULL != m_key)
 			EVP_PKEY_FREE(m_key);
+	}
+
+	bool Generate(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>())
+	{
+		EVP_PKEY_CTX* pctx = nullptr;
+		int nRsaKeyLen = 0;
+
+		if (key_alg == "ed25519")
+		{
+			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, NULL);
+			m_alg = OOXML_HASH_ALG_ED25519;
+		}
+		else if (key_alg == "x25519")
+		{
+			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, NULL);
+			m_alg = OOXML_HASH_ALG_ED448;
+		}
+		else if (0 == key_alg.find("rsa"))
+		{
+			pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+			std::string sKeyLen = key_alg.substr(3);
+			nRsaKeyLen = 2048;
+			if (!sKeyLen.empty())
+				nRsaKeyLen = std::stoi(sKeyLen);
+
+			m_alg = OOXML_HASH_ALG_SHA256;
+		}
+		else
+			return false;
+
+		EVP_PKEY_keygen_init(pctx);
+
+		if (0 != nRsaKeyLen && EVP_PKEY_CTX_set_rsa_keygen_bits(pctx, nRsaKeyLen) <= 0)
+			return false;
+
+		EVP_PKEY_keygen(pctx, &m_key);
+
+		m_cert = X509_new();
+		X509_set_version(m_cert, 2);
+
+		ASN1_STRING* serialNumber = X509_get_serialNumber(m_cert);
+		if (serialNumber)
+		{
+			const int nBytesCount = 16;
+			unsigned char pSerialNumber[nBytesCount];
+			RAND_bytes(pSerialNumber, nBytesCount);
+
+			if (1 != ASN1_STRING_set(serialNumber, pSerialNumber, nBytesCount) == 1)
+				ASN1_INTEGER_set(serialNumber, 1);
+		}
+
+		X509_gmtime_adj(X509_get_notBefore(m_cert), 0);
+		X509_gmtime_adj(X509_get_notAfter(m_cert), 31536000L);
+
+		if (X509_set_pubkey(m_cert, m_key) == 0)
+		{
+			if (NULL != m_cert)
+				X509_free(m_cert);
+			m_cert = NULL;
+
+			if (NULL != m_key)
+				EVP_PKEY_free(m_key);
+			m_key = NULL;
+
+			EVP_PKEY_CTX_free(pctx);
+			return false;
+		}
+
+		X509_NAME* name_record = X509_get_subject_name(m_cert);
+
+		std::wstring sC = L"US";
+		std::wstring sO = L"Ascensio System SIA";
+		std::wstring sCN = L"AOSign Certificate";
+
+		std::map<std::wstring, std::wstring>::const_iterator iter_prop = props.find(L"C");
+		if (iter_prop != props.end())
+			sC = iter_prop->second;
+
+		iter_prop = props.find(L"O");
+		if (iter_prop != props.end())
+			sO = iter_prop->second;
+
+		iter_prop = props.find(L"CN");
+		if (iter_prop != props.end())
+			sCN = iter_prop->second;
+
+		std::string sC_A = U_TO_UTF8(sC);
+		std::string sO_A = U_TO_UTF8(sO);
+		std::string sCN_A = U_TO_UTF8(sCN);
+
+		X509_NAME_add_entry_by_txt(name_record, "C", MBSTRING_ASC, (unsigned char *)sC_A.c_str(), -1, -1, 0);
+		X509_NAME_add_entry_by_txt(name_record, "O",  MBSTRING_ASC, (unsigned char *)sO_A.c_str(), -1, -1, 0);
+		X509_NAME_add_entry_by_txt(name_record, "CN", MBSTRING_ASC, (unsigned char *)sCN_A.c_str(), -1, -1, 0);
+
+		X509_set_issuer_name(m_cert, name_record);
+
+		if (!props.empty())
+		{
+			std::string sAdditions = "";
+			for (std::map<std::wstring, std::wstring>::const_iterator iter = props.begin(); iter != props.end(); iter++)
+			{
+				std::string sKey = U_TO_UTF8(iter->first);
+				std::string sValue = U_TO_UTF8(iter->second);
+
+				string_replace(sKey, ";", "&#59;");
+				string_replace(sKey, "=", "&#61;");
+				string_replace(sValue, ";", "&#59;");
+
+				sAdditions += (sKey + "=" + sValue + ";");
+			}
+
+			if (!sAdditions.empty())
+			{
+				//const int nid_user = OBJ_create("1.2.3", "key", "value");
+				ASN1_OCTET_STRING* oDataAdditions = ASN1_OCTET_STRING_new();
+				int nError = ASN1_OCTET_STRING_set(oDataAdditions, (unsigned const char*)sAdditions.c_str(), (int)sAdditions.length());
+				X509_EXTENSION* ext = X509_EXTENSION_create_by_NID(nullptr, NID_subject_alt_name, false, oDataAdditions);
+				nError = X509_add_ext(m_cert, ext, -1);
+				X509_EXTENSION_free(ext);
+			}
+		}
+
+		const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
+		if (NULL == pDigest)
+			pDigest = EVP_md_null();
+
+		if (X509_sign(m_cert, m_key, pDigest) == 0)
+		{
+			if (NULL != m_cert)
+				X509_free(m_cert);
+			m_cert = NULL;
+
+			if (NULL != m_key)
+				EVP_PKEY_free(m_key);
+			m_key = NULL;
+
+			EVP_PKEY_CTX_free(pctx);
+			return false;
+		}
+
+		EVP_PKEY_CTX_free(pctx);
+		return true;
 	}
 
 	virtual int GetType()
@@ -307,7 +453,7 @@ public:
 	}
 
 public:
-	std::string Sign(unsigned char* pData, unsigned int nSize)
+	virtual bool Sign(unsigned char* pData, unsigned int nSize, unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
 		int nHashAlg = this->GetHashAlg();
 		if (OOXML_HASH_ALG_ED25519 == nHashAlg ||
@@ -321,20 +467,21 @@ public:
 
 			/* Calculate the requires size for the signature by passing a NULL buffer */
 			EVP_DigestSign(pCtx, NULL, &nSignatureLen, pData, (size_t)nSize);
-			pSignature = (unsigned char*)OPENSSL_zalloc(nSignatureLen);
-			EVP_DigestSign(pCtx, pSignature, &nSignatureLen,  pData, (size_t)nSize);
 
-			char* pBase64 = NULL;
-			int nBase64Len = 0;
-			NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+			if (nSignatureLen <= 0)
+			{
+				EVP_MD_CTX_free(pCtx);
+				return false;
+			}
 
-			std::string sReturn(pBase64, nBase64Len);
-			delete[] pBase64;
+			pSignature = new BYTE[nSignatureLen];
+			EVP_DigestSign(pCtx, pSignature, &nSignatureLen, pData, (size_t)nSize);
 
-			OPENSSL_free(pSignature);
+			pDataDst = pSignature;
+			nSizeDst = (int)nSignatureLen;
+
 			EVP_MD_CTX_free(pCtx);
-
-			return sReturn;
+			return true;
 		}
 
 		EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
@@ -350,19 +497,14 @@ public:
 
 		EVP_MD_CTX_destroy(pCtx);
 
-		char* pBase64 = NULL;
-		int nBase64Len = 0;
-		NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+		if (nSignatureLen > 0)
+		{
+			nSizeDst = (int)nSignatureLen;
+			pDataDst = new BYTE[nSignatureLen];
+			memcpy(pDataDst, pSignature, nSignatureLen);
+		}
 
-		std::string sReturn(pBase64, nBase64Len);
-		delete[] pBase64;
-
-		return sReturn;
-	}
-
-	virtual std::string Sign(const std::string& sXml)
-	{
-		return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+		return (nSignatureLen > 0) ? true : false;
 	}
 
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,

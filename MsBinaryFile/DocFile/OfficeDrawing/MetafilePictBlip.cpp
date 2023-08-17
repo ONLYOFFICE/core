@@ -196,10 +196,13 @@ namespace DocFileFormat
 		int sz = Reader->GetSize() - Reader->GetPosition();
 		m_pvBits = Reader->ReadBytes( sz/*m_cbSave*/, true );
 
+		m_cb = (std::min)(m_cb, sz);
+		m_cbSave = (std::min)(m_cbSave, sz);
+
 		oMetaHeader.rcBounds	= m_rcBounds;
 		oMetaHeader.cbSize		= m_cb;
 		oMetaHeader.ptSize		= m_ptSize;
-		oMetaHeader.cbSave		= m_cbSave ;
+		oMetaHeader.cbSave		= m_cbSave;
 		oMetaHeader.compression	= m_fCompression;
 		oMetaHeader.filter		= m_fFilter;
 

@@ -62,7 +62,7 @@ void CRecordSlideListWithText::ReadFromStream(SRecordHeader &oHeader, POLE::Stre
                 break;
             }
 
-            IRecord* pRecord = CreateByType(oRec);
+            IRecord* pRecord = CreateByType(oRec, m_pCommonInfo);
 
             if (RT_StyleTextPropAtom == oRec.RecType)
             {

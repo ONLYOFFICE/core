@@ -41,7 +41,7 @@ namespace DocFileFormat
 		{
 			ReadExceptions(bytes, size, nWordVersion);
 		}
-		for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
+		for ( std::vector<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
 		{
 			SinglePropertyModifier sprm( *iter );
 

@@ -121,7 +121,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-    void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
+    void CharacterPropertiesMapping::convertSprms( std::vector<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
 	{
         XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( L"w:rFonts" );
         XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( L"w:color" );
@@ -136,8 +136,8 @@ namespace DocFileFormat
 		}
 		if ((sprms) && (!sprms->empty()))
 		{
-			std::list<SinglePropertyModifier>::iterator end = sprms->end();
-			for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
+			std::vector<SinglePropertyModifier>::iterator end = sprms->end();
+			for (std::vector<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 			{
 				int nProperty = 0; //for unknown test
 
@@ -247,29 +247,25 @@ namespace DocFileFormat
 					{	//latin					
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
 
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Default);
-
-						langid.Convert(langIDMapping);
-
-						RELEASEOBJECT(langIDMapping);
+						std::wstring strLCID = _doc->m_lcidConverter.get_wstring(langid.Id);
+						LanguageIdMapping langIDMapping(lang, Default, strLCID);
+						langid.Convert(&langIDMapping);
 					}break;
 					case sprmOldCLid:
 					case sprmCRgLid1_80:
 					case sprmCRgLid1:
 					{	//east asia				
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
-
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, EastAsian);
-
-						langid.Convert(langIDMapping);
-
-						RELEASEOBJECT(langIDMapping);
+						std::wstring lang_code = _doc->m_lcidConverter.get_wstring(langid.Id);
+						LanguageIdMapping langIDMapping(lang, EastAsian, lang_code);
+						langid.Convert(&langIDMapping);
 					}break;
 					case sprmCLidBi:
 					{
 						LanguageId langid(FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize));
+						std::wstring lang_code = _doc->m_lcidConverter.get_wstring(langid.Id);
 
-						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Complex);
+						LanguageIdMapping* langIDMapping = new LanguageIdMapping(lang, Complex, lang_code);
 
 						langid.Convert(langIDMapping);
 
@@ -589,6 +585,7 @@ namespace DocFileFormat
 	std::list<CharacterPropertyExceptions*> CharacterPropertiesMapping::buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart )
 	{
 		std::list<CharacterPropertyExceptions*> hierarchy;
+	
 		unsigned int istd = (unsigned int)istdStart;
 		bool goOn = true;
 
@@ -637,15 +634,13 @@ namespace DocFileFormat
 	{
 		bool ret = false;
 
-		std::list<CharacterPropertyExceptions*>::const_iterator end = _hierarchy.end();
-		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = _hierarchy.begin(); iter != end; ++iter)        
+		for (auto& iter : _hierarchy)
 		{
-			std::list<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
-			for (std::list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)	 
+			for (auto& grpprlIter : *(iter->grpprl))
 			{
-				if (grpprlIter->OpCode == sprm.OpCode)
+				if (grpprlIter.OpCode == sprm.OpCode)
 				{
-					unsigned char ancient = grpprlIter->Arguments[0];
+					unsigned char ancient = grpprlIter.Arguments[0];
 					ret = toogleValue(ret, ancient);
 					break;
 				}

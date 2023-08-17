@@ -35,12 +35,14 @@
 
 namespace PPT
 {
+
 class CPPTDocumentInfo
 {
 public:
-	CCurrentUser					m_oCurrentUser;
+    _commonInfo*                    m_pCommonInfo = NULL;
+    
+    CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-    std::wstring					m_strTmpDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
 	bool							m_bMacros;
@@ -49,12 +51,11 @@ public:
 	std::wstring					m_core_xml;
 
     CPPTDocumentInfo();
-
     ~CPPTDocumentInfo();
 
     void Clear();
 
     bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream);
-    bool LoadDocument(std::wstring strFolderMem);
+    bool LoadDocument();
 };
 }

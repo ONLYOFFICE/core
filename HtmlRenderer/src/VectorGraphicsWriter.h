@@ -63,17 +63,17 @@ namespace NSHtmlRenderer
 		};
 
 	public:
-        NSStringUtils::CStringBuilder m_oWriterSimpleGraphics;
-        NSStringUtils::CStringBuilder m_oWriterVMLPath;
-        NSStringUtils::CStringBuilder m_oWriterCanvas;
-        NSStringUtils::CStringBuilder m_oWriterVML;
+		NSStringUtils::CStringBuilder m_oWriterSimpleGraphics;
+		NSStringUtils::CStringBuilder m_oWriterVMLPath;
+		NSStringUtils::CStringBuilder m_oWriterCanvas;
+		NSStringUtils::CStringBuilder m_oWriterVML;
 
-        Aggplus::CGraphicsPathSimpleConverter* m_pSimpleConverter;
+		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;
 
-        Aggplus::CMatrix*		m_pFullTransform;
+		Aggplus::CMatrix*		m_pFullTransform;
 
 		double					m_dCurrentMoveToX;
 		double					m_dCurrentMoveToY;
@@ -81,10 +81,10 @@ namespace NSHtmlRenderer
 		bool					m_bIsSimpleGraphics;
 
 	public:
-        bool m_bIsSimple;
+		bool m_bIsSimple;
 
-        bool m_bIsClip;
-        bool m_bIsClipping;
+		bool m_bIsClip;
+		bool m_bIsClipping;
 
 		CSimpleCommand* m_arSimpleCommands;
 		LONG m_lCountSC;
@@ -130,28 +130,28 @@ namespace NSHtmlRenderer
 		
 		inline void WriteBeginPath()
 		{
-            m_oWriterCanvas.WriteString(L"b(c);\n", 6);
+			m_oWriterCanvas.WriteString(L"b(c);\n", 6);
 		}
 
 		inline void WriteEndPath()
 		{
 			m_oWriterVMLPath.ClearNoAttack();
 			
-            m_bIsSimple = true;
+			m_bIsSimple = true;
 			m_lCountSC	= 0;
-		}		
+		}
 		
 		void WritePathStart()
 		{
-            m_oWriterCanvas.WriteString(L"b(c);\n", 6);
+			m_oWriterCanvas.WriteString(L"b(c);\n", 6);
 		}
 		void WritePathClose()
 		{
-            m_oWriterCanvas.WriteString(L"x(c);\n", 6);
+			m_oWriterCanvas.WriteString(L"x(c);\n", 6);
 			
 			if (!m_bIsClipping)
 			{
-                m_oWriterVMLPath.AddCharSafe('x');
+				m_oWriterVMLPath.AddCharSafe('x');
 			}
 
 			if (m_bIsSimple)
@@ -166,7 +166,7 @@ namespace NSHtmlRenderer
 					
 					if (m_lCountSC == g_lSimpleCommandsCountMax)
 					{
-                        m_bIsSimple = false;
+						m_bIsSimple = false;
 					}
 				}
 			}
@@ -174,15 +174,15 @@ namespace NSHtmlRenderer
 
 		void WritePathMoveTo(double& x, double& y)
 		{
-            m_oWriterCanvas.WriteString(L"m(c,", 4);
-            WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
-            m_oWriterCanvas.WriteString(L");\n", 3);
+			m_oWriterCanvas.WriteString(L"m(c,", 4);
+			WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
+			m_oWriterCanvas.WriteString(L");\n", 3);
 
 			if (!m_bIsClipping)
 			{
-                m_oWriterVMLPath.AddCharSafe('m');
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
-                m_oWriterVMLPath.AddCharSafe(' ');
+				m_oWriterVMLPath.AddCharSafe('m');
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
+				m_oWriterVMLPath.AddCharSafe(' ');
 			}
 
 			if (m_bIsSimple)
@@ -197,7 +197,7 @@ namespace NSHtmlRenderer
 				++m_lCountSC;
 				if (m_lCountSC == g_lSimpleCommandsCountMax)
 				{
-                    m_bIsSimple = false;
+					m_bIsSimple = false;
 				}
 			}
 		}
@@ -205,25 +205,25 @@ namespace NSHtmlRenderer
 		{
 			if (0 == m_oWriterVMLPath.GetCurSize())
 			{
-                m_oWriterCanvas.WriteString(L"m(c,", 4);
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
-                m_oWriterCanvas.WriteString(L");\n", 3);
+				m_oWriterCanvas.WriteString(L"m(c,", 4);
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
+				m_oWriterCanvas.WriteString(L");\n", 3);
 
-                m_oWriterVMLPath.AddCharSafe('m');
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
-                m_oWriterVMLPath.AddCharSafe(' ');
+				m_oWriterVMLPath.AddCharSafe('m');
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
+				m_oWriterVMLPath.AddCharSafe(' ');
 			}
 			
-            m_oWriterCanvas.WriteString(L"l(c,", 4);
-            WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
-            m_oWriterCanvas.WriteString(L");\n", 3);
+			m_oWriterCanvas.WriteString(L"l(c,", 4);
+			WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
+			m_oWriterCanvas.WriteString(L");\n", 3);
 
-            if (!m_bIsClipping)
-            {
-                m_oWriterVMLPath.AddCharSafe('l');
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
-                m_oWriterVMLPath.AddCharSafe(' ');
-            }
+			if (!m_bIsClipping)
+			{
+				m_oWriterVMLPath.AddCharSafe('l');
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
+				m_oWriterVMLPath.AddCharSafe(' ');
+			}
 
 			if (m_bIsSimple)
 			{
@@ -254,7 +254,7 @@ namespace NSHtmlRenderer
 
 						if (m_lCountSC == g_lSimpleCommandsCountMax)
 						{
-                            m_bIsSimple = false;
+							m_bIsSimple = false;
 						}
 					}
 				}
@@ -264,27 +264,27 @@ namespace NSHtmlRenderer
 		{
 			if (0 == m_oWriterVMLPath.GetCurSize())
 			{
-                m_oWriterCanvas.WriteString(L"m(c,", 4);
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
-                m_oWriterCanvas.WriteString(L");\n", 3);
+				m_oWriterCanvas.WriteString(L"m(c,", 4);
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterCanvas);
+				m_oWriterCanvas.WriteString(L");\n", 3);
 
-                m_oWriterVMLPath.AddCharSafe('m');
-                WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
-                m_oWriterVMLPath.AddCharSafe(' ');
+				m_oWriterVMLPath.AddCharSafe('m');
+				WriteIntsToStringBuilder(round(x), round(y), &m_oWriterVMLPath);
+				m_oWriterVMLPath.AddCharSafe(' ');
 			}
 			
-            m_oWriterCanvas.WriteString(L"cu(c,", 5);
-            WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oWriterCanvas);
-            m_oWriterCanvas.WriteString(L");\n", 3);
+			m_oWriterCanvas.WriteString(L"cu(c,", 5);
+			WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oWriterCanvas);
+			m_oWriterCanvas.WriteString(L");\n", 3);
 
-            if (!m_bIsClipping)
-            {
-                m_oWriterVMLPath.AddCharSafe('c');
-                WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oWriterVMLPath);
-                m_oWriterVMLPath.AddCharSafe(' ');
-            }
+			if (!m_bIsClipping)
+			{
+				m_oWriterVMLPath.AddCharSafe('c');
+				WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oWriterVMLPath);
+				m_oWriterVMLPath.AddCharSafe(' ');
+			}
 
-            m_bIsSimple = false;
+			m_bIsSimple = false;
 		}
 		void WriteDrawPath(LONG lType, LONG lIDTx, LONG& lCurTxNumber, LONG& lPageNumber)
 		{
@@ -306,7 +306,7 @@ namespace NSHtmlRenderer
 					w = max(1, w);
 					h = max(1, h);
 
-                    if (bIsRect)
+					if (bIsRect)
 					{
 						CString strLineColor = GetStringColor(m_pPen->Color);
 						CString strFillColor = GetStringColor(m_pBrush->Color1);
@@ -316,90 +316,90 @@ namespace NSHtmlRenderer
 						
 						if ((1 >= w) || (1 >= h) && (lType < 0xFF))
 						{
-                            m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 0px; background-color: ", 60);
-                            SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
-                            m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
-                            SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
-                            m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
-                            m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pPen->Alpha / 255);
-                            m_oWriterSimpleGraphics.AddSize(100);
-                            m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
-                            m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
-                            m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
-                            m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
-                            m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
-                            m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
-                            m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
-                            m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
-                            m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
+							m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 0px; background-color: ", 60);
+							SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
+							m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
+							SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
+							m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
+							m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pPen->Alpha / 255);
+							m_oWriterSimpleGraphics.AddSize(100);
+							m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
+							m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
+							m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
+							m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
+							m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
+							m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
+							m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
+							m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
+							m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
 						}
 						else
 						{
 							if (0x00 == (lType & 0xFF))
 							{
-                                m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 0px; background-color: ", 60);
-                                if (0 == m_pBrush->Alpha1)
-                                    m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
-                                else
-                                    SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
-                                SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
-                                m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pBrush->Alpha1 / 255);
-                                m_oWriterSimpleGraphics.AddSize(100);
-                                m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
-                                m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
-                                m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
-                                m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
-                                m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
+								m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 0px; background-color: ", 60);
+								if (0 == m_pBrush->Alpha1)
+									m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
+								else
+									SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
+								SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
+								m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pBrush->Alpha1 / 255);
+								m_oWriterSimpleGraphics.AddSize(100);
+								m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
+								m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
+								m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
+								m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
+								m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
 							}
 							else if (lType < 0xFF)
 							{
-                                m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 1px; background-color: ", 60);
-                                if (0 == m_pBrush->Alpha1)
-                                    m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
-                                else
-                                    SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
-                                SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
-                                m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pPen->Alpha / 255);
-                                m_oWriterSimpleGraphics.AddSize(100);
-                                m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
-                                m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
-                                m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
-                                m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
-                                m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
+								m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 1px; background-color: ", 60);
+								if (0 == m_pBrush->Alpha1)
+									m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
+								else
+									SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
+								SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
+								m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pPen->Alpha / 255);
+								m_oWriterSimpleGraphics.AddSize(100);
+								m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
+								m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
+								m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
+								m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
+								m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
 							}
 							else
 							{
-                                m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 1px; background-color: ", 60);
-                                if (0 == m_pBrush->Alpha1)
-                                    m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
-                                else
-                                    SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
-                                SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
-                                m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
-                                m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pBrush->Alpha1 / 255);
-                                m_oWriterSimpleGraphics.AddSize(100);
-                                m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
-                                m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
-                                m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
-                                m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
-                                m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
-                                m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
+								m_oWriterSimpleGraphics.WriteString(L"<div class=\"rt\" style=\"border-width: 1px; background-color: ", 60);
+								if (0 == m_pBrush->Alpha1)
+									m_oWriterSimpleGraphics.WriteString(L"transparent", 11);
+								else
+									SetStringColor(m_pBrush->Color1, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; border-color: ", 16);
+								SetStringColor(m_pPen->Color, &m_oWriterSimpleGraphics);
+								m_oWriterSimpleGraphics.WriteString(L"; opacity:", 10);
+								m_oWriterSimpleGraphics.AddIntNoCheckDel100(100 * m_pBrush->Alpha1 / 255);
+								m_oWriterSimpleGraphics.AddSize(100);
+								m_oWriterSimpleGraphics.WriteString(L"; left: ", 8);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(x));
+								m_oWriterSimpleGraphics.WriteString(L"px; top: ", 9);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(y));
+								m_oWriterSimpleGraphics.WriteString(L"px; width: ", 11);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(w));
+								m_oWriterSimpleGraphics.WriteString(L"px; height: ", 12);
+								m_oWriterSimpleGraphics.AddIntNoCheck(round(h));
+								m_oWriterSimpleGraphics.WriteString(L"px;\"></div>\n");
 							}
 						}
 					}
@@ -414,10 +414,10 @@ namespace NSHtmlRenderer
 				m_bIsSimpleGraphics = false;
 			}
 			
-            std::wstring strStroked	= L"false";
-            std::wstring strFilled	= L"false";
+			std::wstring strStroked	= L"false";
+			std::wstring strFilled	= L"false";
 
-            //if (0x00 != (0x02 & (lType >> 8)) && ((lType & 0xFF) == 0x00))
+			//if (0x00 != (0x02 & (lType >> 8)) && ((lType & 0xFF) == 0x00))
 			//{
 			//	lType = 1;
 			//	m_pPen->Color = m_pBrush->Color1;
@@ -435,13 +435,13 @@ namespace NSHtmlRenderer
 			// canvas
 			if ((lType & 0x01) == 0x01)
 			{
-                SetStrokeColor(m_pPen->Color, m_pPen->Alpha, &m_oWriterCanvas);
+				SetStrokeColor(m_pPen->Color, m_pPen->Alpha, &m_oWriterCanvas);
 
 				bStroke = true;
 
 				if (0x00 != m_pPen->Alpha)
 				{
-                    strStroked = L"true";
+					strStroked = L"true";
 				}
 			}
 			if (lType > 0x01)
@@ -464,84 +464,84 @@ namespace NSHtmlRenderer
 					w = r - x;
 					h = b - y;
 
-                    m_oWriterCanvas.WriteString(L"img", 3);
-                    m_oWriterCanvas.AddInt(lIDTx);
-                    m_oWriterCanvas.WriteString(L".src = \"media\\\\image", 20);
-                    m_oWriterCanvas.AddInt(lIDTx);
-                    m_oWriterCanvas.WriteString(L".jpg\";img", 9);
-                    m_oWriterCanvas.AddInt(lIDTx);
-                    m_oWriterCanvas.WriteString(L".onload = function(){c.drawImage(img", 36);
-                    WriteIntsToStringBuilder(lIDTx, round(x), round(y), round(w), round(h), &m_oWriterCanvas);
-                    m_oWriterCanvas.WriteString(L");drawpage", 10);
-                    m_oWriterCanvas.AddInt(lPageNumber);
-                    m_oWriterCanvas.AddCharSafe('_');
-                    m_oWriterCanvas.AddInt(lCurTxNumber);
-                    m_oWriterCanvas.WriteString(L"(c);};\n}\nfunction drawpage", 26);
-                    m_oWriterCanvas.AddInt(lPageNumber);
-                    m_oWriterCanvas.AddCharSafe('_');
-                    m_oWriterCanvas.AddInt(lCurTxNumber);
-                    m_oWriterCanvas.WriteString(L"(c)\n{\n", 6);
+					m_oWriterCanvas.WriteString(L"img", 3);
+					m_oWriterCanvas.AddInt(lIDTx);
+					m_oWriterCanvas.WriteString(L".src = \"media\\\\image", 20);
+					m_oWriterCanvas.AddInt(lIDTx);
+					m_oWriterCanvas.WriteString(L".jpg\";img", 9);
+					m_oWriterCanvas.AddInt(lIDTx);
+					m_oWriterCanvas.WriteString(L".onload = function(){c.drawImage(img", 36);
+					WriteIntsToStringBuilder(lIDTx, round(x), round(y), round(w), round(h), &m_oWriterCanvas);
+					m_oWriterCanvas.WriteString(L");drawpage", 10);
+					m_oWriterCanvas.AddInt(lPageNumber);
+					m_oWriterCanvas.AddCharSafe('_');
+					m_oWriterCanvas.AddInt(lCurTxNumber);
+					m_oWriterCanvas.WriteString(L"(c);};\n}\nfunction drawpage", 26);
+					m_oWriterCanvas.AddInt(lPageNumber);
+					m_oWriterCanvas.AddCharSafe('_');
+					m_oWriterCanvas.AddInt(lCurTxNumber);
+					m_oWriterCanvas.WriteString(L"(c)\n{\n", 6);
 				}
 				else
-				{		
-                    SetFillColor(m_pBrush->Color1, m_pBrush->Alpha1, &m_oWriterCanvas);
-                    m_oWriterCanvas.WriteString(L"f(c);\n", 6);
+				{
+					SetFillColor(m_pBrush->Color1, m_pBrush->Alpha1, &m_oWriterCanvas);
+					m_oWriterCanvas.WriteString(L"f(c);\n", 6);
 				}
 
-                strFilled = L"true";
+				strFilled = L"true";
 			}
 
 			if (bStroke)
 			{
-                m_oWriterCanvas.WriteString(L"s(c);\n", 6);
+				m_oWriterCanvas.WriteString(L"s(c);\n", 6);
 			}
 
-            if (-1 != lIDTx)
+			if (-1 != lIDTx)
 			{
-                m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
-                m_oWriterVML.WriteString(strStroked);
-                m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
-                m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
-                m_oWriterVML.WriteString(L"\" filled=\"", 10);
-                m_oWriterVML.WriteString(strFilled);
-                m_oWriterVML.WriteString(L"\" path=\"", 8);
-                m_oWriterVML.Write(m_oWriterVMLPath);
-                m_oWriterVML.WriteString(L"\"><v:fill src=\"media\\image", 26);
-                m_oWriterVML.AddInt(lIDTx);
-                m_oWriterVML.WriteString(L".jpg\" type=\"frame\" opacity=\"", 28);
-                m_oWriterVML.AddIntDel100(100 * m_pBrush->Alpha1 / 255);
-                m_oWriterVML.WriteString(L"\"/></v:shape>\n", 14);
+				m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
+				m_oWriterVML.WriteString(strStroked);
+				m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
+				m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
+				m_oWriterVML.WriteString(L"\" filled=\"", 10);
+				m_oWriterVML.WriteString(strFilled);
+				m_oWriterVML.WriteString(L"\" path=\"", 8);
+				m_oWriterVML.Write(m_oWriterVMLPath);
+				m_oWriterVML.WriteString(L"\"><v:fill src=\"media\\image", 26);
+				m_oWriterVML.AddInt(lIDTx);
+				m_oWriterVML.WriteString(L".jpg\" type=\"frame\" opacity=\"", 28);
+				m_oWriterVML.AddIntDel100(100 * m_pBrush->Alpha1 / 255);
+				m_oWriterVML.WriteString(L"\"/></v:shape>\n", 14);
 
 			}
 			else if (0xFF == m_pBrush->Alpha1)
 			{
-                m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
-                m_oWriterVML.WriteString(strStroked);
-                m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
-                m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
-                m_oWriterVML.WriteString(L"\" filled=\"", 10);
-                m_oWriterVML.WriteString(strFilled);
-                m_oWriterVML.WriteString(L"\" fillcolor=\"", 13);
-                m_oWriterVML.WriteHexColor3(ConvertColor(m_pBrush->Color1));
-                m_oWriterVML.WriteString(L"\" path=\"", 8);
-                m_oWriterVML.Write(m_oWriterVMLPath);
-                m_oWriterVML.WriteString(L"\" />\n", 5);
+				m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
+				m_oWriterVML.WriteString(strStroked);
+				m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
+				m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
+				m_oWriterVML.WriteString(L"\" filled=\"", 10);
+				m_oWriterVML.WriteString(strFilled);
+				m_oWriterVML.WriteString(L"\" fillcolor=\"", 13);
+				m_oWriterVML.WriteHexColor3(ConvertColor(m_pBrush->Color1));
+				m_oWriterVML.WriteString(L"\" path=\"", 8);
+				m_oWriterVML.Write(m_oWriterVMLPath);
+				m_oWriterVML.WriteString(L"\" />\n", 5);
 			}
 			else
 			{
-                m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
-                m_oWriterVML.WriteString(strStroked);
-                m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
-                m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
-                m_oWriterVML.WriteString(L"\" filled=\"", 10);
-                m_oWriterVML.WriteString(strFilled);
-                m_oWriterVML.WriteString(L"\" fillcolor=\"", 13);
-                m_oWriterVML.WriteHexColor3(ConvertColor(m_pBrush->Color1));
-                m_oWriterVML.WriteString(L"\" path=\"", 8);
-                m_oWriterVML.Write(m_oWriterVMLPath);
-                m_oWriterVML.WriteString(L"\"><v:fill opacity=\"", 19);
-                m_oWriterVML.AddIntDel100(100 * m_pBrush->Alpha1 / 255);
-                m_oWriterVML.WriteString(L"\"/></v:shape>\n", 14);
+				m_oWriterVML.WriteString(L"<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"", 79);
+				m_oWriterVML.WriteString(strStroked);
+				m_oWriterVML.WriteString(L"\" strokecolor=\"", 15);
+				m_oWriterVML.WriteHexColor3(ConvertColor(m_pPen->Color));
+				m_oWriterVML.WriteString(L"\" filled=\"", 10);
+				m_oWriterVML.WriteString(strFilled);
+				m_oWriterVML.WriteString(L"\" fillcolor=\"", 13);
+				m_oWriterVML.WriteHexColor3(ConvertColor(m_pBrush->Color1));
+				m_oWriterVML.WriteString(L"\" path=\"", 8);
+				m_oWriterVML.Write(m_oWriterVMLPath);
+				m_oWriterVML.WriteString(L"\"><v:fill opacity=\"", 19);
+				m_oWriterVML.AddIntDel100(100 * m_pBrush->Alpha1 / 255);
+				m_oWriterVML.WriteString(L"\"/></v:shape>\n", 14);
 			}
 			m_oWriterVML.WriteString(strVML);
 
@@ -553,11 +553,11 @@ namespace NSHtmlRenderer
 
 		void WritePathClip()
 		{
-            m_bIsClipping	= true;
+			m_bIsClipping	= true;
 		}
 		void WritePathClipEnd()
 		{
-            m_bIsClipping = false;
+			m_bIsClipping = false;
 
 			double x = 0;
 			double y = 0;
@@ -574,21 +574,21 @@ namespace NSHtmlRenderer
 			{
 				if (!m_bIsClip)
 				{
-                    m_oWriterCanvas.WriteString(L"c.save();\n", 10);
+					m_oWriterCanvas.WriteString(L"c.save();\n", 10);
 				}
-                m_bIsClip = true;
-                m_oWriterCanvas.WriteString(L"c.clip();\n", 10);
+				m_bIsClip = true;
+				m_oWriterCanvas.WriteString(L"c.clip();\n", 10);
 			}
 		}
 		void WritePathResetClip()
 		{
 			if (m_bIsClip)
 			{
-                m_oWriterCanvas.WriteString(L"c.restore();\n", 13);
+				m_oWriterCanvas.WriteString(L"c.restore();\n", 13);
 			}
 
-            m_bIsClip		= false;
-            m_bIsClipping	= false;
+			m_bIsClip		= false;
+			m_bIsClipping	= false;
 		}
 
 	protected:
@@ -603,11 +603,11 @@ namespace NSHtmlRenderer
 
 			long lCurDirection = 0;
 
-            std::vector<double> arX;
-            std::vector<double> arY;
+			std::vector<double> arX;
+			std::vector<double> arY;
 
-            arX.push_back(dPrevX);
-            arY.push_back(dPrevY);
+			arX.push_back(dPrevX);
+			arY.push_back(dPrevY);
 
 			double dXmin = dPrevX;
 			double dXmax = dPrevX;
@@ -635,7 +635,7 @@ namespace NSHtmlRenderer
 					dY = m_arSimpleCommands[i - 1].m_dY;
 				}
 				
-				if (dX > dXmax) 
+				if (dX > dXmax)
 					dXmax = dX;
 				else if (dX < dXmin)
 					dXmin = dX;
@@ -645,15 +645,15 @@ namespace NSHtmlRenderer
 				else if (dY < dYmin)
 					dYmin = dY;
 				
-                arX.push_back(dX);
-                arY.push_back(dY);
+				arX.push_back(dX);
+				arY.push_back(dY);
 
 				lCurDirection = lDir;
 			}
 
 			// все, массивы заполнены.
 			// теперь осталось определить, рект ли это
-			// должно: 
+			// должно:
 			// 1) кроме минимумов и максимумов ничего не может быть.
 			// 2) все точки ректа должны присутствовать
 
@@ -662,7 +662,7 @@ namespace NSHtmlRenderer
 			bool b3 = false;
 			bool b4 = false;
 
-            int lCount = (int)arX.size();
+			int lCount = (int)arX.size();
 			for (int i = 0; i < lCount; ++i)
 			{
 				double ___x = arX[i];
@@ -721,7 +721,7 @@ namespace NSHtmlRenderer
 		{
 			double x = m_arSimpleCommands[lIndex].m_dX;
 			double y = m_arSimpleCommands[lIndex].m_dY;
-						
+
 			if (FABS(y - dPrevY) < 0.01)
 			{
 				if (FABS(x - dPrevX) < 0.01)
@@ -731,7 +731,7 @@ namespace NSHtmlRenderer
 
 				return (x >= dPrevX) ? 0 : 2;
 			}
-			else 
+			else
 			{
 				return (y >= dPrevY) ? 1 : 3;
 			}

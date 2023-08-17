@@ -41,17 +41,14 @@ class CPPTDocumentInfo;
 class CRecordOfficeArtBlip  : public CUnknownRecord
 {
 public:
-	CPPTDocumentInfo *	m_oDocumentInfo;
+	CPPTDocumentInfo* m_pDocumentInfo = NULL;
 	
-	std::wstring		m_sFileName;
-	std::wstring		m_strTmpDirectory;
+	std::wstring m_fileName;
 
     CRecordOfficeArtBlip();
-
     ~CRecordOfficeArtBlip();
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
-
 };
 
 class CRecordBitmapBlip : public CUnknownRecord

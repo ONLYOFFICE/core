@@ -628,7 +628,23 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/FontInfo.cpp \
 	$$LOGIC_DIR/Biff_structures/CFDatabar.cpp \
 	$$LOGIC_DIR/Biff_structures/CFGradient.cpp \
-	\
+        $$LOGIC_DIR/Biff_structures/BIFF12/ColSpan.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/Color.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/DValStrings.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormula.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormulas.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader12.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTParsedFormula.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRef.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRefs.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRelID.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqref.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqrefs.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/RelID.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxOs.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxSu.cpp \
+        \
 	$$LOGIC_DIR/Biff_unions/AI.cpp \
 	$$LOGIC_DIR/Biff_unions/ATTACHEDLABEL_bu.cpp \
 	$$LOGIC_DIR/Biff_unions/AUTOFILTER_bu.cpp \
@@ -1096,7 +1112,26 @@ HEADERS +=  \
 	$$LOGIC_DIR/Biff_records/YMult.h \
 	$$LOGIC_DIR/Biff_records/IMDATA.h \
 	$$LOGIC_DIR/Biff_records/FrtWrapper.h \
-	\
+        \
+        $$LOGIC_DIR/Biff_structures/BIFF12/CellRangeRef.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/CellRef.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/ColSpan.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/Color.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/DValStrings.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormula.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormulas.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTParsedFormula.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRef.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRefs.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRelID.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqref.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqrefs.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/RelID.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/XLWideString.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxOs.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxSu.h \
 	$$LOGIC_DIR/Biff_structures/AddinUdf.h \
 	$$LOGIC_DIR/Biff_structures/AF12Criteria.h \
 	$$LOGIC_DIR/Biff_structures/AF12CellIcon.h \

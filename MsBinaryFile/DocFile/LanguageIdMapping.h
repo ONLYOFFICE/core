@@ -48,14 +48,12 @@ namespace DocFileFormat
 	class LanguageIdMapping : public PropertiesMapping, public IMapping
 	{
 	public: 
-		LanguageIdMapping( XMLTools::CStringXmlWriter* writer, LanguageType type );
-        LanguageIdMapping( XMLTools::XMLElement* parentElement, LanguageType type );
+		LanguageIdMapping( XMLTools::CStringXmlWriter* writer, LanguageType type, const std::wstring& langcode);
+        LanguageIdMapping( XMLTools::XMLElement* parentElement, LanguageType type, const std::wstring & langcode);
 		virtual ~LanguageIdMapping();
-		void Apply( IVisitable* lid );
-
-		static std::wstring getLanguageCode( LanguageId* lid );
-	
+		void Apply( IVisitable* lid );	
 	private: 
+		std::wstring			_langcode;
         LanguageType            _type;
         XMLTools::XMLElement*   _parent;
 	}; 

@@ -207,10 +207,10 @@ namespace DocFileFormat
 
 		// get all CHPX between these boundaries to determine the count of runs
 		
-		std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fc, fcEnd);
-		std::vector<int>* chpxFcs						= m_document->GetFileCharacterPositions(fc, fcEnd);
+		std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fc, fcEnd);
+		std::vector<int>* chpxFcs = m_document->GetFileCharacterPositions(fc, fcEnd);
 
-		CharacterPropertyExceptions* paraEndChpx		=	NULL;
+		CharacterPropertyExceptions* paraEndChpx = NULL;
 
 		if (chpxFcs)
 		{
@@ -271,22 +271,18 @@ namespace DocFileFormat
 
 		if ((chpxs != NULL) && (chpxFcs != NULL) && !chpxFcs->empty())//? второе
 		{
-			int i = 0;
+			size_t i = 0;
 
 			// write a runs for each CHPX
-			std::list<CharacterPropertyExceptions*>::iterator cpeIter_last = chpxs->end(); cpeIter_last--;
-
-			for (std::list<CharacterPropertyExceptions*>::iterator cpeIter = chpxs->begin(); cpeIter != chpxs->end(); ++cpeIter)
+			for (size_t it = 0; it < chpxs->size(); ++it)
 			{
 				//get the FC range for this run
 
-				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i)		: fc;
-				int fcChpxEnd	=	chpxFcs ? chpxFcs->at(i + 1)	: fcEnd;
-
-		//?		if (lastBad && cpeIter == cpeIter_last)
-		//?		{
-		//?			fcChpxEnd = fcEnd;
-		//?		}
+				int fcChpxStart	=	chpxFcs ? chpxFcs->at(i) : fc;
+				int fcChpxEnd	=	fcEnd;
+				
+				if ((chpxFcs) && ( i < chpxFcs->size() - 1))
+					fcChpxEnd = chpxFcs->at(i + 1);
 
 				//it's the first chpx and it starts before the paragraph
 
@@ -309,14 +305,14 @@ namespace DocFileFormat
 				std::vector<int> annot = searchAnnotation(chpxChars, cp);
 				if (false == annot.empty())
 				{
-					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &annot);
+					std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &annot);
 					if (runs) 
 					{
-						for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+						for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 						{
 							if (writeAnnotations(cp))
 							{
-								cp = writeRun(&(*iter), *cpeIter, cp);
+								cp = writeRun(&(*iter), chpxs->at(it), cp);
 							}
 						}
 
@@ -329,14 +325,14 @@ namespace DocFileFormat
 
 					if (false == bookmarks.empty())
 					{
-						std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
+						std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
 						if (runs) 
 						{
-							for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+							for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 							{
 								if (writeBookmarks(cp))
 								{
-									cp = writeRun(&(*iter), *cpeIter, cp);
+									cp = writeRun(&(*iter), chpxs->at(it), cp);
 								}
 							}
 
@@ -349,14 +345,14 @@ namespace DocFileFormat
 
 						if (false == permissions.empty())
 						{
-							std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &permissions);
+							std::vector<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &permissions);
 							if (runs)
 							{
-								for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+								for (std::vector<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 								{
 									if (writePermissions(cp))
 									{
-										cp = writeRun(&(*iter), *cpeIter, cp);
+										cp = writeRun(&(*iter), chpxs->at(it), cp);
 									}
 								}
 
@@ -365,7 +361,7 @@ namespace DocFileFormat
 						}
 						else
 						{
-							cp = writeRun(chpxChars, *cpeIter, cp);
+							cp = writeRun(chpxChars, chpxs->at(it), cp);
 						}
 					}
 				}
@@ -396,7 +392,7 @@ namespace DocFileFormat
 	{
 		if (papx)  
 		{
-			for (std::list<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); ++iter)
+			for (std::vector<SinglePropertyModifier>::const_iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); ++iter)
 			{
 				// rsid for paragraph property enditing (write to parent element)
 				
@@ -597,7 +593,7 @@ namespace DocFileFormat
 				if (cpPic < cpFieldEnd)
 				{
 					int fcPic = m_document->FindFileCharPos( cpPic );
-					std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+					std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 
 					if (chpxs)
 					{
@@ -680,7 +676,7 @@ namespace DocFileFormat
 			if (cpPic < cpFieldEnd)
 			{
 				int fcPic = m_document->FindFileCharPos( cpPic );
-				std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+				std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 				
 				CharacterPropertyExceptions* chpxObj =	chpxs->front();
 
@@ -733,7 +729,7 @@ namespace DocFileFormat
 						int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
 						int fcFieldSep1 = m_document->FindFileCharPos( cpFieldSep );
 						
-						std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+						std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) );
 						CharacterPropertyExceptions* chpxSep = chpxs->front();
 						
 						OleObject ole ( chpxSep, m_document);
@@ -1227,7 +1223,7 @@ namespace DocFileFormat
 			{
 				if ((m_document->BookmarkStartPlex->IsCpExists(cp)) ||	(m_document->BookmarkEndPlex->IsCpExists(cp)))
 				{
-					ret.push_back(i);
+					ret.push_back((int)i);
 				}
 
 				++cp;
@@ -1250,7 +1246,7 @@ namespace DocFileFormat
 			{
 				if ((m_document->AnnotStartPlex->IsCpExists(cp)) ||	(m_document->AnnotEndPlex->IsCpExists(cp)))
 				{
-					ret.push_back(i);
+					ret.push_back((int)i);
 				}
 
 				++cp;
@@ -1273,7 +1269,7 @@ namespace DocFileFormat
 			{
 				if ((m_document->BookmarkProtStartPlex->IsCpExists(cp)) || (m_document->BookmarkProtEndPlex->IsCpExists(cp)))
 				{
-					ret.push_back(i);
+					ret.push_back((int)i);
 				}
 				++cp;
 			}
@@ -1314,10 +1310,10 @@ namespace DocFileFormat
 		return ret;
 	}
 
-	std::list<std::vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
+	std::vector<std::vector<wchar_t> >* DocumentMapping::splitCharList(std::vector<wchar_t>* chars, std::vector<int>* splitIndices)
 	{
-		std::list<std::vector<wchar_t> >* ret = new std::list<std::vector<wchar_t> >();
-		std::vector<wchar_t>		wcharVector;
+		std::vector<std::vector<wchar_t> >* ret = new std::vector<std::vector<wchar_t> >();
+		std::vector<wchar_t> wcharVector;
 
 		int startIndex = 0;
 
@@ -1436,7 +1432,7 @@ namespace DocFileFormat
 		{
 			fEndNestingLevel = false;
 
-			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); !fEndNestingLevel && iter != papx->grpprl->end(); iter++ )
+			for ( std::vector<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); !fEndNestingLevel && iter != papx->grpprl->end(); iter++ )
 			{
 				DWORD code = iter->OpCode;
 
@@ -1460,7 +1456,8 @@ namespace DocFileFormat
 			if (nestingLevel == iTap_current)
 			{ 
 				bool bPresent = false; //118854.doc
-				for ( std::list<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
+				
+				for ( std::vector<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
 				{
 					//find the tDef SPRM
 					DWORD code = iter->OpCode;
@@ -1684,7 +1681,7 @@ namespace DocFileFormat
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
 		TablePropertyExceptions tapx( findValidPapx( fcRowEnd ), m_document->DataStream, m_document->nWordVersion);
 
-		std::list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
+		std::vector<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 		TableRowPropertiesMapping* trpMapping = new TableRowPropertiesMapping( m_pXmlWriter, *(chpxs->begin()) );
 		tapx.Convert( trpMapping );
 		
@@ -2076,7 +2073,7 @@ namespace DocFileFormat
 		if (!chpx) return false;
 		if (!chpx->grpprl)	 return false;
 
-		for (std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
+		for (std::vector<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{
 			if ((sprmCPicLocation == iter->OpCode) || (sprmCHsp == iter->OpCode))	//	PICTURE
 			{
@@ -2101,7 +2098,7 @@ namespace DocFileFormat
 	{
 		Symbol ret;
 
-		for (std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
+		for (std::vector<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{
 			if (DocFileFormat::sprmCSymbol == iter->OpCode)
 			{

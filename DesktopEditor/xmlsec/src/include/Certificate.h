@@ -49,10 +49,15 @@ public:
 	virtual int VerifySelf()                    = 0;
 
 public:
-	virtual std::string Sign(unsigned char* pData, unsigned int nSize)                  = 0;
-	virtual std::string Sign(const std::string& sXml)                                   = 0;
+
+	virtual bool Sign(unsigned char* pData, unsigned int nSize,
+					  unsigned char*& pDataDst, unsigned int& nSizeDst)                 = 0;
+
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)            = 0;
+
+	std::string Sign(unsigned char* pData, unsigned int nSize);
+	std::string Sign(const std::string& sXml);
 
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
 	virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;
@@ -65,6 +70,8 @@ public:
 	virtual int GetHashAlg()                                                            = 0;
 
 	virtual bool IsGOST()                                                               = 0;
+
+	static void FreeData(unsigned char* data);
 
 public:
 	virtual int ShowSelectDialog(void* parent = NULL)   = 0;

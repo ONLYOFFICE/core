@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 #include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/XLWideString.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLSB
 {

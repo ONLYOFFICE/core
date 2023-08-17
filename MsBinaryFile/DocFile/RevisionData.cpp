@@ -43,7 +43,7 @@ namespace DocFileFormat
 	RevisionData::RevisionData():
 	Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
 	{
-		this->Changes = new std::list<SinglePropertyModifier>();
+		this->Changes = new std::vector<SinglePropertyModifier>();
 	}
 
 	RevisionData::RevisionData( CharacterPropertyExceptions* chpx ) : Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
@@ -54,9 +54,9 @@ namespace DocFileFormat
 
 		bool collectRevisionData = true;
 		
-		Changes = new std::list<SinglePropertyModifier>();
+		Changes = new std::vector<SinglePropertyModifier>();
 
-		for ( std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+		for ( std::vector<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode)
 			{

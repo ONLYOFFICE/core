@@ -46,7 +46,13 @@ namespace OOX
 		class CBackground;
 	}
 }
-
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SchemeClr;
+	}
+}
 class OOXShapeReader
 {
 public: 
@@ -86,13 +92,13 @@ private:
 	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
 	
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::StyleRef	*style_ref, int type);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Ln		*oox_line_prop,		std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Ln		*oox_line_prop, PPTX::Logic::SchemeClr* change_color = NULL);
 
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill	*oox_fill,			std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill	*oox_fill, PPTX::Logic::SchemeClr* change_color = NULL);
 	
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::GradFill	*oox_grad_fill,		std::wstring *change_sheme_color = NULL);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::GradFill	*oox_grad_fill, PPTX::Logic::SchemeClr* change_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill, PPTX::Logic::SchemeClr* change_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill, PPTX::Logic::SchemeClr* change_color = NULL);
 //---------------------------------------------------------------------------
 	OOX::Vml::CVmlCommonElements						*m_vmlElement = NULL;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement = NULL;

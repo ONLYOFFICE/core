@@ -57,23 +57,23 @@ namespace NSDjvu
 {
 	static GUTF8String MakeUTF8String(const std::wstring& wsText)
 	{
-        std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
-        GUTF8String utf8String(sText.c_str());
-        return utf8String;
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+		GUTF8String utf8String(sText.c_str());
+		return utf8String;
 	}
-    static std::string MakeCString(GUTF8String& strText)
+	static std::string MakeCString(GUTF8String& strText)
 	{
 		std::string sString(strText.getbuf());
-        return sString;
+		return sString;
 	}
-    static int GetInteger(const std::wstring& wsString)
+	static int GetInteger(const std::wstring& wsString)
 	{
 		if (wsString.size() < 1)
 			return 0;
 
 		try
 		{
-            return std::stoi(wsString);
+			return std::stoi(wsString);
 		}
 		catch (...)
 		{
@@ -81,7 +81,7 @@ namespace NSDjvu
 
 		try
 		{
-            return static_cast<int>(std::stol(wsString));
+			return static_cast<int>(std::stol(wsString));
 		}
 		catch (...)
 		{
@@ -93,9 +93,9 @@ namespace NSDjvu
 CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
-    m_wsTempDirectory = L"";
-    SetTempDirectory(L"");
-    m_pApplicationFonts = pFonts;
+	m_wsTempDirectory = L"";
+	SetTempDirectory(L"");
+	m_pApplicationFonts = pFonts;
 }
 CDjVuFileImplementation::~CDjVuFileImplementation()
 {
@@ -105,7 +105,7 @@ CDjVuFileImplementation::~CDjVuFileImplementation()
 }
 NSFonts::IApplicationFonts* CDjVuFileImplementation::GetFonts()
 {
-    return m_pApplicationFonts;
+	return m_pApplicationFonts;
 }
 
 bool CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
@@ -127,19 +127,19 @@ bool CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, co
 }
 bool CDjVuFileImplementation::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions)
 {
-    m_pDoc = NULL;
-    try
-    {
-        GP<ByteStream> stream = ByteStream::create(data, (size_t)length);
-        m_pDoc = DjVuDocument::create(stream);
-        m_pDoc->wait_get_pages_num();
-    }
-    catch (...)
-    {
-        return false;
-    }
+	m_pDoc = NULL;
+	try
+	{
+		GP<ByteStream> stream = ByteStream::create(data, (size_t)length);
+		m_pDoc = DjVuDocument::create(stream);
+		m_pDoc->wait_get_pages_num();
+	}
+	catch (...)
+	{
+		return false;
+	}
 
-    return true;
+	return true;
 }
 void CDjVuFileImplementation::Close()
 {
@@ -151,14 +151,14 @@ std::wstring CDjVuFileImplementation::GetTempDirectory() const
 void CDjVuFileImplementation::SetTempDirectory(const std::wstring& wsDirectory)
 {
 #ifndef DISABLE_TEMP_DIRECTORY
-    if (!m_wsTempDirectory.empty())
-        NSDirectory::DeleteDirectory(m_wsTempDirectory);
+	if (!m_wsTempDirectory.empty())
+		NSDirectory::DeleteDirectory(m_wsTempDirectory);
 
-    m_wsTempDirectory = wsDirectory;
-    if (m_wsTempDirectory.empty())
-        m_wsTempDirectory = NSFile::CFileBinary::GetTempPath();
+	m_wsTempDirectory = wsDirectory;
+	if (m_wsTempDirectory.empty())
+		m_wsTempDirectory = NSFile::CFileBinary::GetTempPath();
 
-    m_wsTempDirectory += L"/DJVU/";
+	m_wsTempDirectory += L"/DJVU/";
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
 #endif
 }
@@ -193,14 +193,14 @@ void CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* pdWidth, doubl
 	*pdDpiX = pPage->get_dpi();
 	*pdDpiY = pPage->get_dpi();
 #endif
-    int nW = 0;
-    int nH = 0;
-    int nDpi = 0;
-    m_pDoc->ReadPageInfo(nPageIndex, nW, nH, nDpi);
-    *pdWidth = nW;
-    *pdHeight = nH;
-    *pdDpiX = nDpi;
-    *pdDpiY = nDpi;
+	int nW = 0;
+	int nH = 0;
+	int nDpi = 0;
+	m_pDoc->ReadPageInfo(nPageIndex, nW, nH, nDpi);
+	*pdWidth = nW;
+	*pdHeight = nH;
+	*pdDpiX = nDpi;
+	*pdDpiY = nDpi;
 }
 void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
@@ -217,14 +217,14 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 		pRenderer->get_Type(&lRendererType);
 
 #ifndef BUILDING_WASM_MODULE
-        if (c_nPDFWriter == lRendererType)
+		if (c_nPDFWriter == lRendererType)
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
 		}
-        else
+		else
 #endif
-        {
+		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreateFrame(pRenderer, pPage, nPageIndex, oText);
 		}
@@ -236,8 +236,8 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 }
 void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-    CPdfFile oPdf(m_pApplicationFonts);
-    oPdf.CreatePdf();
+	CPdfFile oPdf(m_pApplicationFonts);
+	oPdf.CreatePdf();
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)
@@ -262,84 +262,84 @@ void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 }
 std::wstring CDjVuFileImplementation::GetInfo()
 {
-    std::wstring sRes = L"{";
+	std::wstring sRes = L"{";
 
-    double nW = 0;
-    double nH = 0;
-    double nDpi = 0;
-    GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-    sRes += L"\"PageWidth\":";
-    sRes += std::to_wstring((int)(nW * 100));
-    sRes += L",\"PageHeight\":";
-    sRes += std::to_wstring((int)(nH * 100));
-    sRes += L",\"NumberOfPages\":";
-    sRes += std::to_wstring(GetPagesCount());
-    sRes += L"}";
+	double nW = 0;
+	double nH = 0;
+	double nDpi = 0;
+	GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+	sRes += L"\"PageWidth\":";
+	sRes += std::to_wstring((int)(nW * 100));
+	sRes += L",\"PageHeight\":";
+	sRes += std::to_wstring((int)(nH * 100));
+	sRes += L",\"NumberOfPages\":";
+	sRes += std::to_wstring(GetPagesCount());
+	sRes += L"}";
 
-    return sRes;
+	return sRes;
 }
 
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
-    while (count > 0 && pos < nav->getBookMarkCount())
-    {
-        GP<DjVmNav::DjVuBookMark> gpBookMark;
-        nav->getBookMark(gpBookMark, pos++);
+	while (count > 0 && pos < nav->getBookMarkCount())
+	{
+		GP<DjVmNav::DjVuBookMark> gpBookMark;
+		nav->getBookMark(gpBookMark, pos++);
 
-        GUTF8String str = gpBookMark->url;
-        int endpos;
-        DWORD nPage = str.toULong(1, endpos) - 1;
-        if (endpos == (int)str.length())
-        {
-            out.AddInt(nPage);
-            out.AddInt(level);
-            out.AddDouble(0.0);
-            GUTF8String description = gpBookMark->displayname;
-            out.WriteString((BYTE*)description.getbuf(), description.length());
-        }
+		GUTF8String str = gpBookMark->url;
+		int endpos;
+		DWORD nPage = str.toULong(1, endpos) - 1;
+		if (endpos == (int)str.length())
+		{
+			out.AddInt(nPage);
+			out.AddInt(level);
+			out.AddDouble(0.0);
+			GUTF8String description = gpBookMark->displayname;
+			out.WriteString((BYTE*)description.getbuf(), description.length());
+		}
 
-        getBookmars(nav, pos, gpBookMark->count, out, level + 1);
-        count--;
-    }
+		getBookmars(nav, pos, gpBookMark->count, out, level + 1);
+		count--;
+	}
 }
 BYTE* CDjVuFileImplementation::GetStructure()
 {
-    GP<DjVmNav> nav = m_pDoc->get_djvm_nav();
-    if (!nav)
-        return NULL;
+	GP<DjVmNav> nav = m_pDoc->get_djvm_nav();
+	if (!nav)
+		return NULL;
 
-    int pos = 0;
-    int count = nav->getBookMarkCount();
-    if (count <= 0)
-        return NULL;
+	int pos = 0;
+	int count = nav->getBookMarkCount();
+	if (count <= 0)
+		return NULL;
 
-    NSWasm::CData oRes;
-    oRes.SkipLen();
-    getBookmars(nav, pos, count, oRes, 1);
-    oRes.WriteLen();
-    BYTE* bRes = oRes.GetBuffer();
-    oRes.ClearWithoutAttack();
-    return bRes;
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+	getBookmars(nav, pos, count, oRes, 1);
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
 }
 BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 {
-    return NULL;
-    try
-    {
-        GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
-        const GP<DjVuText> text(DjVuText::create());
-        const GP<ByteStream> text_str(pPage->get_text());
-        if (!text_str)
-            return NULL;
-        text->decode(text_str);
+	return NULL;
+	try
+	{
+		GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+		const GP<DjVuText> text(DjVuText::create());
+		const GP<ByteStream> text_str(pPage->get_text());
+		if (!text_str)
+			return NULL;
+		text->decode(text_str);
 
-        GUTF8String pageText = text->get_xmlText(pPage->get_height());
-        XmlUtils::CXmlNode hiddenText;
-        XmlUtils::CXmlNode pageColumn;
-        XmlUtils::CXmlNode region;
-        hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
-        hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
-        pageColumn.GetNode(L"REGION", region);
+		GUTF8String pageText = text->get_xmlText(pPage->get_height());
+		XmlUtils::CXmlNode hiddenText;
+		XmlUtils::CXmlNode pageColumn;
+		XmlUtils::CXmlNode region;
+		hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+		hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
+		pageColumn.GetNode(L"REGION", region);
 
         NSWasm::CData oRes;
         oRes.SkipLen();
@@ -366,62 +366,62 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
                     double arrCoords[4];
                     ParseCoords(csCoords, arrCoords, 1);
 
-                    std::string sText = U_TO_UTF8(csWord);
-                    oRes.WriteString((BYTE*)sText.c_str(), sText.length());
-                    oRes.AddDouble(arrCoords[0]);
-                    oRes.AddDouble(arrCoords[3]);
-                    oRes.AddDouble(arrCoords[2] - arrCoords[0]);
-                    oRes.AddDouble(arrCoords[1] - arrCoords[3]);
-                }
-            }
-        }
-        oRes.WriteLen();
+					std::string sText = U_TO_UTF8(csWord);
+					oRes.WriteString((BYTE*)sText.c_str(), sText.length());
+					oRes.AddDouble(arrCoords[0]);
+					oRes.AddDouble(arrCoords[3]);
+					oRes.AddDouble(arrCoords[2] - arrCoords[0]);
+					oRes.AddDouble(arrCoords[1] - arrCoords[3]);
+				}
+			}
+		}
+		oRes.WriteLen();
 
-        BYTE* res = oRes.GetBuffer();
-        oRes.ClearWithoutAttack();
-        return res;
-    }
-    catch (...) {}
-    return NULL;
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
+	}
+	catch (...) {}
+	return NULL;
 }
 BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
 {
-    double dPageDpiX, dPageDpiY;
-    double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+	double dPageDpiX, dPageDpiY;
+	double dWidth, dHeight;
+	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
-    try
-    {
-        GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
-        pPage->wait_for_complete_decode();
-        GP<DjVuAnno> pAnno = pPage->get_decoded_anno();
-        if (!pAnno)
-            return NULL;
-        GPList<GMapArea> map_areas = pAnno->ant->map_areas;
+	try
+	{
+		GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+		pPage->wait_for_complete_decode();
+		GP<DjVuAnno> pAnno = pPage->get_decoded_anno();
+		if (!pAnno)
+			return NULL;
+		GPList<GMapArea> map_areas = pAnno->ant->map_areas;
 
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        for (GPosition pos(map_areas); pos; ++pos)
-        {
-            GUTF8String str = map_areas[pos]->url;
-            oRes.WriteString((BYTE*)str.getbuf(), str.length());
-            // Верхний левый угол
-            double x = map_areas[pos]->get_xmin();
-            double y = dHeight - map_areas[pos]->get_ymax();
-            oRes.AddDouble(0.0);
-            oRes.AddDouble(x);
-            oRes.AddDouble(y);
-            oRes.AddDouble(map_areas[pos]->get_xmax() - x);
-            oRes.AddDouble(map_areas[pos]->get_ymax() - map_areas[pos]->get_ymin());
-        }
-        oRes.WriteLen();
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		for (GPosition pos(map_areas); pos; ++pos)
+		{
+			GUTF8String str = map_areas[pos]->url;
+			oRes.WriteString((BYTE*)str.getbuf(), str.length());
+			// Верхний левый угол
+			double x = map_areas[pos]->get_xmin();
+			double y = dHeight - map_areas[pos]->get_ymax();
+			oRes.AddDouble(0.0);
+			oRes.AddDouble(x);
+			oRes.AddDouble(y);
+			oRes.AddDouble(map_areas[pos]->get_xmax() - x);
+			oRes.AddDouble(map_areas[pos]->get_ymax() - map_areas[pos]->get_ymin());
+		}
+		oRes.WriteLen();
 
-        BYTE* res = oRes.GetBuffer();
-        oRes.ClearWithoutAttack();
-        return res;
-    }
-    catch (...) {}
-    return NULL;
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
+	}
+	catch (...) {}
+	return NULL;
 }
 
 void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
@@ -467,7 +467,7 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 	}
 	else if (c_nHtmlRendrerer == lRendererType)
 	{
-		// TODO: Нужно реализовать функцию 
+		// TODO: Нужно реализовать функцию
 		// pRenderer->GetMaxImageSize();
 		//VARIANT var;
 		//renderer->GetAdditionalParam(L"MaxImageSize", &var);
@@ -492,10 +492,13 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 	if (!pBufferDst)
 		return;
 
+	bool bIsInit = false;
+
 	Aggplus::CImage oImage;
 	oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
 	if (pPage->is_legal_photo() || pPage->is_legal_compound())
 	{
+		bIsInit = true;
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
 
@@ -515,11 +518,12 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 	}
 	else if (pPage->is_legal_bilevel())
 	{
+		bIsInit = true;
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 		int nPaletteEntries = pBitmap->get_grays();
 
-        unsigned int* palette = new unsigned int[nPaletteEntries];
+		unsigned int* palette = new unsigned int[nPaletteEntries];
 
 		// Create palette for the bitmap
 		int color = 0xff0000;
@@ -531,7 +535,7 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 			color -= decrement;
 		}
 
-        unsigned int* pBuffer = (unsigned int*)pBufferDst;
+		unsigned int* pBuffer = (unsigned int*)pBufferDst;
 		for (int j = lImageHeight - 1; j >= 0; --j)
 		{
 			BYTE* pLine = pBitmap->operator [](j);
@@ -560,6 +564,7 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 
 		if (NULL != pImage)
 		{
+			bIsInit = true;
 			BYTE* pBuffer = pBufferDst;
 			for (int j = lImageHeight - 1; j >= 0; --j)
 			{
@@ -580,9 +585,10 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 
 			if (NULL != pBitmap)
 			{
+				bIsInit = true;
 				int nPaletteEntries = pBitmap->get_grays();
 
-                unsigned int* palette = new unsigned int[nPaletteEntries];
+				unsigned int* palette = new unsigned int[nPaletteEntries];
 
 				// Create palette for the bitmap
 				int color = 0xff0000;
@@ -594,7 +600,7 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 					color -= decrement;
 				}
 
-                unsigned int* pBuffer = (unsigned int*)pBufferDst;
+				unsigned int* pBuffer = (unsigned int*)pBufferDst;
 				for (int j = lImageHeight - 1; j >= 0; --j)
 				{
 					BYTE* pLine = pBitmap->operator [](j);
@@ -624,7 +630,8 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 		TextToRenderer(pRenderer, text, dPixToMM / nDpi);
 	}
 
-	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
+	if (bIsInit)
+		pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);
 }
 void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPageIndex, XmlUtils::CXmlNode& oText)
@@ -738,42 +745,42 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 
 			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 
-            NSImages::CPixJbig2 oPix;
-            if (oPix.Create(lImageWidth, lImageHeight, 1))
+			NSImages::CPixJbig2 oPix;
+			if (oPix.Create(lImageWidth, lImageHeight, 1))
 			{
 				for (int nY = 0; nY < lImageHeight; nY++)
 				{
 					BYTE* pLine = pBitmap->operator [](nY);
 					for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 					{
-                        oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
+						oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
 					}
 				}
 
-                pPdf->DrawImageWith1bppMask((IGrObject*)&oImage, &oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-                oPix.Destroy();
+				pPdf->DrawImageWith1bppMask((IGrObject*)&oImage, &oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+				oPix.Destroy();
 			}
-		}		
-	}	
+		}
+	}
 	else if (pPage->is_legal_bilevel())
 	{
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 
-        NSImages::CPixJbig2 oPix;
-        if (oPix.Create(lImageWidth, lImageHeight, 1))
+		NSImages::CPixJbig2 oPix;
+		if (oPix.Create(lImageWidth, lImageHeight, 1))
 		{
 			for (int nY = 0; nY < lImageHeight; nY++)
 			{
 				BYTE* pLine = pBitmap->operator [](nY);
 				for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 				{
-                    oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
+					oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
 				}
 			}
 
-            pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-            oPix.Destroy();
+			pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+			oPix.Destroy();
 		}
 	}
 	else
@@ -815,20 +822,20 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 				int nPaletteEntries = pBitmap->get_grays();
 				if (nPaletteEntries <= 2)
 				{
-                    NSImages::CPixJbig2 oPix;
-                    if (oPix.Create(lImageWidth, lImageHeight, 1))
+					NSImages::CPixJbig2 oPix;
+					if (oPix.Create(lImageWidth, lImageHeight, 1))
 					{
 						for (int nY = 0; nY < lImageHeight; nY++)
 						{
 							BYTE* pLine = pBitmap->operator [](nY);
 							for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 							{
-                                oPix.Create(nX, lImageHeight - 1 - nY, *pLine);
+								oPix.Create(nX, lImageHeight - 1 - nY, *pLine);
 							}
 						}
 
-                        pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-                        oPix.Destroy();
+						pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+						oPix.Destroy();
 					}
 				}
 				else
@@ -840,7 +847,7 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 					Aggplus::CImage oImage;
 					oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
 
-                    unsigned int* palette = new unsigned int[nPaletteEntries];
+					unsigned int* palette = new unsigned int[nPaletteEntries];
 
 					// Create palette for the bitmap
 					int color = 0xff0000;
@@ -852,7 +859,7 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 						color -= decrement;
 					}
 
-                    unsigned int* pBuffer = (unsigned int*)pBufferDst;
+					unsigned int* pBuffer = (unsigned int*)pBufferDst;
 					for (int j = lImageHeight - 1; j >= 0; --j)
 					{
 						BYTE* pLine = pBitmap->operator [](j);
@@ -892,10 +899,10 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 		XmlUtils::CXmlNode hiddenText;
 		XmlUtils::CXmlNode pageColumn;
 		XmlUtils::CXmlNode region;
-        hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
-        hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
-        pageColumn.GetNode(L"REGION", region);
-        region.GetNode(L"PARAGRAPH", paragraph);
+		hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+		hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
+		pageColumn.GetNode(L"REGION", region);
+		region.GetNode(L"PARAGRAPH", paragraph);
 	}
 	return paragraph;
 }
@@ -903,24 +910,24 @@ void CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXm
 {
 	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
 	pRenderer->put_FontName(L"DjvuEmptyFont");
-    //std::wstring csText = oTextNode.GetXml();
-    std::vector<XmlUtils::CXmlNode> oLinesNodes;
+	//std::wstring csText = oTextNode.GetXml();
+	std::vector<XmlUtils::CXmlNode> oLinesNodes = oTextNode.GetNodes(L"LINE");
 	oTextNode.GetNodes(L"LINE", oLinesNodes);
-    for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
+	for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
 	{
-        XmlUtils::CXmlNode & oLineNode = oLinesNodes[nLineIndex];
+		XmlUtils::CXmlNode& oLineNode = oLinesNodes[nLineIndex];
 
-        std::vector<XmlUtils::CXmlNode> oWordsNodes;
-		oLineNode.GetNodes(L"WORD", oWordsNodes);
-        for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); ++nWordIndex)
+		std::vector<XmlUtils::CXmlNode> oWordsNodes = oLineNode.GetNodes(L"WORD");
+		for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); ++nWordIndex)
 		{
-            XmlUtils::CXmlNode & oWordNode = oWordsNodes[nWordIndex];
+			XmlUtils::CXmlNode& oWordNode = oWordsNodes[nWordIndex];
 
-            std::wstring csWord   = oWordNode.GetText();
-            std::wstring csCoords = oWordNode.GetAttribute(L"coords");
+			std::wstring csWord   = oWordNode.GetText();
+			std::wstring csCoords = oWordNode.GetAttribute(L"coords");
+
 			double arrCoords[4];
-            ParseCoords(csCoords, arrCoords, dKoef);
-            DrawPageText(pRenderer, arrCoords, csWord);
+			ParseCoords(csCoords, arrCoords, dKoef);
+			DrawPageText(pRenderer, arrCoords, csWord);
 		}
 	}
 }
@@ -929,13 +936,13 @@ void CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, double* pdCoord
 	pRenderer->put_FontSize(pdCoords[1] - pdCoords[3]);
 	pRenderer->CommandDrawText(wsText,
 							   (float)(pdCoords[0]),
-							   (float)(pdCoords[3]),
-							   (float)(pdCoords[2] - pdCoords[0]),
-							   (float)(pdCoords[1] - pdCoords[3]));
+			(float)(pdCoords[3]),
+			(float)(pdCoords[2] - pdCoords[0]),
+			(float)(pdCoords[1] - pdCoords[3]));
 }
 void CDjVuFileImplementation::ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef)
 {
-    std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
+	std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
 	if (vCoords.size() >= 4)
 	{
 		for (int nIndex = 0; nIndex < 4; nIndex++)

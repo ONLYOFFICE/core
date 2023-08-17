@@ -34,6 +34,8 @@
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "./convert_params.h"
+
 #ifndef DOCXRENDERER_USE_DYNAMIC_LIBRARY
 #define DOCXRENDERER_DECL_EXPORT
 #else
@@ -116,6 +118,10 @@ public:
 	virtual HRESULT BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 	virtual HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 	virtual HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
+	virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage);
+	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
+	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
+	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
 	//----------------------------------------------------------------------------------------

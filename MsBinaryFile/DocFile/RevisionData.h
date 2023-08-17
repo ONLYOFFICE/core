@@ -62,7 +62,7 @@ namespace DocFileFormat
 		DateAndTime Dttm;
 		short Isbt;
 		RevisionType Type;
-		std::list<SinglePropertyModifier>* Changes;
+		std::vector<SinglePropertyModifier>* Changes;
 		int RsidDel;
 		int RsidProp;
 		int Rsid;

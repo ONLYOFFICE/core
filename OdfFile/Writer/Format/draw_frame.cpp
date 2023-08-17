@@ -85,6 +85,8 @@ void draw_image::serialize(std::wostream & _Wostream)
 			draw_image_attlist_.serialize(CP_GET_XML_NODE());
 			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 
+			CP_XML_ATTR_OPT(L"draw:mime-type", draw_mime_type_);
+
 			if (office_binary_data_)office_binary_data_->serialize(CP_XML_STREAM());
 
 			for (size_t i = 0; i < content_.size(); i++)

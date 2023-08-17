@@ -36,10 +36,10 @@
 
 #include "../Biff12_structures/CFType.h"
 #include "../Biff12_structures/CFTemp.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/DXFId.h"
-#include "../Biff12_structures/XLWideString.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFParsedFormula.h"
-#include "../Biff12_structures/FRTHeader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/DXFId.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFParsedFormula.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/FRTHeader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLSB
 {

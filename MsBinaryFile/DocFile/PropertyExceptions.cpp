@@ -43,12 +43,12 @@ namespace DocFileFormat
 
 	PropertyExceptions::PropertyExceptions() : grpprl(NULL)
 	{
-		grpprl = new std::list<SinglePropertyModifier>();
+		grpprl = new std::vector<SinglePropertyModifier>();
 	}
 
-	PropertyExceptions::PropertyExceptions( const std::list<SinglePropertyModifier>& _grpprl ) : grpprl(NULL)
+	PropertyExceptions::PropertyExceptions( const std::vector<SinglePropertyModifier>& _grpprl ) : grpprl(NULL)
 	{
-		grpprl = new std::list<SinglePropertyModifier>( _grpprl );
+		grpprl = new std::vector<SinglePropertyModifier>( _grpprl );
 	}
 
 	PropertyExceptions::PropertyExceptions( unsigned char* bytes, int size, int nWordVersion ) : grpprl(NULL)
@@ -62,7 +62,7 @@ namespace DocFileFormat
 	{
  		RELEASEOBJECT( grpprl );
 
-		grpprl = new std::list<SinglePropertyModifier>();
+		grpprl = new std::vector<SinglePropertyModifier>();
 
 		if ( ( bytes == NULL ) || ( size == 0 ) ) return;
 

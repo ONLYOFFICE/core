@@ -34,8 +34,6 @@
 
 #include "../OOXml/Writer/OOXWriter.h"
 
-#include "../../Common/MS-LCID.h"
-
 RtfAbsPosTab::RtfAbsPosTab()
 {
 }
@@ -278,7 +276,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
 	
 	if (nCodePage == CP_ACP && pDocument->m_nUserLCID > 0)
 	{
-		nCodePage = msLCID2DefCodePage(pDocument->m_nUserLCID);
+		nCodePage = pDocument->m_lcidConverter.get_codepage(pDocument->m_nUserLCID);
 	}
 
     std::wstring    unicodeStr (sText);

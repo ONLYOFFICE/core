@@ -31,7 +31,7 @@
  */
 
 #include "Qsif.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLS
 {

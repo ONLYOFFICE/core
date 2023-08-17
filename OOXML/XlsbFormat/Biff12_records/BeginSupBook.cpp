@@ -31,8 +31,8 @@
  */
 
 #include "BeginSupBook.h"
-#include "../Biff12_structures/RelID.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/RelID.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 

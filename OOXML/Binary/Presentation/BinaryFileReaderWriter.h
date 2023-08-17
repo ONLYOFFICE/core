@@ -222,10 +222,10 @@ namespace NSBinPptxRW
 		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
 		
 		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
-		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData);
+		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int & nAdditionalType, const std::wstring& oleData);
 
-		void SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
-		void SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
+		bool SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
+		bool SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 
 		bool IsNeedDownload(const std::wstring& strFile);
 		_imageManager2Info DownloadImage(const std::wstring& strFile);

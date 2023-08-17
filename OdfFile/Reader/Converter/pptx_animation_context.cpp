@@ -737,6 +737,9 @@ namespace oox {
 		{
 			CP_XML_NODE(L"p:seq")
 			{
+				CP_XML_ATTR(L"concurrent", 1);
+				CP_XML_ATTR(L"nextAc", L"seek");
+
 				CP_XML_NODE(L"p:cTn")
 				{
 					if (PresentationNodeType)

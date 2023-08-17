@@ -50,12 +50,12 @@ namespace cpdoccore
         class buffer
         {
         public:
-            buffer() : cbs(BufferMax)
+            buffer() : bs(BufferMax), cbs(BufferMax)
             { 
                 buf = (wchar_t*)malloc(BufferMax * sizeof(wchar_t));
                 tmp = buf;
             }
-            buffer(size_t size) : cbs(size)
+            buffer(size_t size) : bs(size), cbs(size)
             { 
                 buf = (wchar_t*)malloc(size * sizeof(wchar_t));
                 tmp = buf;
@@ -83,10 +83,11 @@ namespace cpdoccore
                 else return false;
             }
             const wchar_t* Get_Buffer() { return buf; }
-            size_t Get_Buf_Size() { return cbs; }
+            size_t Get_Buf_Size() { return bs - cbs; }
         private:
             wchar_t* buf;
             wchar_t* tmp;
+            size_t bs;
             size_t cbs;
         };
 
@@ -146,12 +147,15 @@ namespace cpdoccore
             std::wstring str()
             {
                 All_Buffer[cur_buf]->AddData(L'\0');
-                std::shared_ptr<buffer> str = std::make_shared<buffer>(buffer_size);
+                int cur_pos = 0;
+                std::wstring res;
+                res.reserve(buffer_size);
                 for (const auto& c : All_Buffer)
                 {
-                    str->AddData(const_cast<const wchar_t*>(c->Get_Buffer()));
+                    std::wstring str(c->Get_Buffer(), c->Get_Buf_Size());
+                    std::copy(str.begin(), str.end(), std::back_inserter(res));
                 }
-                return std::wstring(str->Get_Buffer(), buffer_size);
+                return res;
             }
             std::string utf8()
             {
@@ -185,7 +189,6 @@ namespace cpdoccore
                 result.buffer_size = buffer_size + other.buffer_size;
                 return result;
             }
-
             CBufferXml3& operator=(const CBufferXml3& other)
             {
                 All_Buffer.clear();
@@ -198,7 +201,6 @@ namespace cpdoccore
                 buffer_size = other.buffer_size;
                 return *this;
             }
-
             CBufferXml3& operator+=(const CBufferXml3& other)
             {
                 if (All_Buffer[cur_buf]->Get_Buf_Size() > 0)
@@ -213,7 +215,6 @@ namespace cpdoccore
                 buffer_size += other.buffer_size;
                 return *this;
             }
-
             friend std::wostream& operator<<(std::wostream& os, const CBufferXml3& other)
             {
                 if (other.All_Buffer[other.cur_buf]->Get_Buf_Size() > 0)
@@ -226,7 +227,6 @@ namespace cpdoccore
                 }
                 return os;
             }
-
         public:
             std::vector<std::shared_ptr<buffer>> All_Buffer;
             size_t cur_buf;

@@ -11,7 +11,7 @@ class CVlcPlayer : public QWidget
 	Q_OBJECT
 
 public:
-	CVlcPlayer();
+	CVlcPlayer(QWidget* parent = nullptr);
 	virtual ~CVlcPlayer();
 
 public:

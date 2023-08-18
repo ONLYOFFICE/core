@@ -964,8 +964,14 @@ namespace OOX
 				else
 					ptr->miyDefRwHeight = 14.4;
 
-				if (m_oOutlineLevelCol.IsInit()) ptr->iOutLevelCol =  m_oOutlineLevelCol.get();
-				if (m_oOutlineLevelRow.IsInit()) ptr->iOutLevelRw = m_oOutlineLevelRow.get();
+                if (m_oOutlineLevelCol.IsInit())
+                    ptr->iOutLevelCol =  m_oOutlineLevelCol.get();
+				else
+					ptr->iOutLevelCol =  1;
+                if (m_oOutlineLevelRow.IsInit())
+                    ptr->iOutLevelRw = m_oOutlineLevelRow.get();
+				else
+					 ptr->iOutLevelRw = 1;
 
 				if (m_oThickBottom.IsInit()) ptr->fExDesc = m_oThickBottom.get();
 				else  ptr->fExDesc = false;
@@ -1258,38 +1264,60 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr CSheetView::toBin()
 		{
-			if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
-			{
+            //if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
+            //{
 				auto pWsView(new XLSB::BeginWsView);
 				XLS::BaseObjectPtr castedPtr(pWsView);
 				if (m_oColorId.IsInit())
     				pWsView->icvHdr = m_oColorId->m_eValue;
 				if (m_oDefaultGridColor.IsInit())
 					pWsView->fDefaultHdr = m_oDefaultGridColor->m_eValue;
+				else
+					pWsView->fDefaultHdr = false;
 				if (m_oRightToLeft.IsInit())
 					pWsView->fRightToLeft = m_oRightToLeft->m_eValue;
+				else
+					pWsView->fRightToLeft = false;
 				if (m_oShowFormulas.IsInit())
 					pWsView->fDspFmlaRt = m_oShowFormulas->m_eValue;
+				else
+					pWsView->fDspFmlaRt = false;
 				if (m_oShowGridLines.IsInit())
 					pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
+				else
+					pWsView->fDspGridRt = false;
 				if (m_oShowOutlineSymbols.IsInit())
 					pWsView->fDspGuts = m_oShowOutlineSymbols->m_eValue;
+				else
+					pWsView->fDspGuts = false;
 				if (m_oShowRowColHeaders.IsInit())
 					pWsView->fDspRwColRt = m_oShowRowColHeaders->m_eValue;
+				else
+					pWsView->fDspRwColRt = false;
 				if (m_oShowRuler.IsInit())
 					pWsView->fDspRuler = m_oShowRuler->m_eValue;
+				else
+					pWsView->fDspRuler = false;
 				if (m_oShowWhiteSpace.IsInit())
 					pWsView->fWhitespaceHidden = m_oShowWhiteSpace->m_eValue;
+				else
+					pWsView->fWhitespaceHidden = false;
 				if (m_oShowZeros.IsInit())
 					pWsView->fDspZerosRt = m_oShowZeros->m_eValue;
+				else
+					pWsView->fDspZerosRt = false;
 				if (m_oTabSelected.IsInit())
 					pWsView->fSelected = m_oTabSelected->m_eValue;
+				else
+					pWsView->fSelected = false;
 				if(m_oTopLeftCell.IsInit())
 					pWsView->topLeftCell = m_oTopLeftCell.get();
 				if (m_oView.IsInit())
 					pWsView->xlView = m_oView->m_eValue;
 				if (m_oWindowProtection.IsInit())
 					pWsView->fWnProt = m_oWindowProtection->m_eValue;
+				else
+					pWsView->fWnProt = false;
 				if (m_oWorkbookViewId.IsInit())
 					pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
 				if (m_oZoomScale.IsInit())
@@ -1301,7 +1329,7 @@ namespace OOX
 				if (m_oZoomScaleSheetLayoutView.IsInit())
 					pWsView->wScaleSLV = m_oZoomScaleSheetLayoutView->m_eValue;
 				return castedPtr;
-			}
+            /*}
 			else
 			{
 				auto pWsView(new XLSB::BeginCsView);
@@ -1313,7 +1341,7 @@ namespace OOX
 				if(m_oZoomScale.IsInit())
 				pWsView->wScale = m_oZoomScale->m_eValue;
 				return castedPtr;
-			}
+            }*/
 		}
 		EElementType CSheetView::getType() const
 		{
@@ -1457,14 +1485,15 @@ namespace OOX
 		XLS::BaseObjectPtr CSheetViews::toBin()
 		{
 			auto view = m_arrItems.back();
-			if(view->m_oView.IsInit() || view->m_oTopLeftCell.IsInit() || view->m_oTopLeftCell.IsInit())
-			{
+            //if(view->m_oView.IsInit() || view->m_oTopLeftCell.IsInit() || view->m_oTopLeftCell.IsInit())
+            //{
 				auto castedPtr(new XLSB::WSVIEWS2);
 				XLS::BaseObjectPtr ptr(castedPtr);
 				for(auto i:m_arrItems)
 					castedPtr->m_arWSVIEW2.push_back(i->toBin());
 				return ptr;
-			}
+            //}
+            /*
 			else
 			{
 				auto castedPtr(new XLSB::CSVIEWS);
@@ -1472,7 +1501,7 @@ namespace OOX
 				for(auto i:m_arrItems)
 					castedPtr->m_arCSVIEW.push_back(i->toBin());
 				return ptr;
-			}
+            }*/
 		}
 		EElementType CSheetViews::getType() const
 		{

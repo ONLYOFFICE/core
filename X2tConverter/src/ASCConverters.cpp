@@ -1158,7 +1158,8 @@ namespace NExtractTools
 		OOX::Spreadsheet::CXlsb oXlsb;
 		oXlsb.m_bWriteToXlsb = true;
 		oXlsb.Read(oox_path);
-	
+		//oXlsb.ReadSheetData();
+
 		OOX::CContentTypes oContentTypes;
 		nRes = oXlsb.WriteBin(sTempUnpackedXLSB, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
@@ -3117,7 +3118,7 @@ namespace NExtractTools
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
        _UINT32 nRes = odf_flat2oox_dir(sFrom, sTempUnpackedOox, sTemp, params);
-	  
+
 	   if (SUCCEEDED_X2T(nRes))
 	   {
 		   nRes = dir2zipMscrypt(sTempUnpackedOox, sTo, sTemp, params);
@@ -3231,9 +3232,9 @@ namespace NExtractTools
    {
        std::wstring sTempUnpackedODS = sTemp + FILE_SEPARATOR_STR + L"ods_unpacked";
        NSDirectory::CreateDirectory(sTempUnpackedODS);
-	
+
 	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate, sTemp);
-     
+
 	   _UINT32 nRes = 0;
 
 		std::wstring password	= params.getSavePassword();

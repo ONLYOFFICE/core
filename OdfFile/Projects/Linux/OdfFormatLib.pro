@@ -96,12 +96,20 @@ SOURCES += \
 	../../DataTypes/percent.cpp \
 	../../DataTypes/percentorscale.cpp \
 	../../DataTypes/presentationclass.cpp \
+	../../DataTypes/presentationnodetype.cpp \
+	../../DataTypes/presetclass.cpp \
+	../../DataTypes/presetid.cpp \
 	../../DataTypes/punctuationwrap.cpp \
 	../../DataTypes/rotationalign.cpp \
 	../../DataTypes/runthrough.cpp \
 	../../DataTypes/scripttype.cpp \
 	../../DataTypes/shadowtype.cpp \
+	../../DataTypes/smil_additive.cpp \
+	../../DataTypes/smil_attributename.cpp \
+	../../DataTypes/smil_fill.cpp \
+	../../DataTypes/smil_keytimes.cpp \
 	../../DataTypes/smil_transitiontype.cpp \
+	../../DataTypes/smil_values.cpp \
 	../../DataTypes/stylefamily.cpp \
 	../../DataTypes/stylehorizontalpos.cpp \
 	../../DataTypes/stylehorizontalrel.cpp \
@@ -114,6 +122,7 @@ SOURCES += \
 	../../DataTypes/styleverticalrel.cpp \
 	../../DataTypes/stylewrap.cpp \
 	../../DataTypes/stylewrapcontourmode.cpp \
+	../../DataTypes/svg_type.cpp \
 	../../DataTypes/stylenumformat.cpp \
 	../../DataTypes/tablealign.cpp \
 	../../DataTypes/tablecentering.cpp \
@@ -256,6 +265,7 @@ SOURCES += \
 	../../Reader/Converter/oox_title.cpp \
 	../../Reader/Converter/oox_types_chart.cpp \
 	../../Reader/Converter/oox_rels.cpp \
+	../../Reader/Converter/pptx_animation_context.cpp \
 	../../Reader/Converter/pptx_comments.cpp \
 	../../Reader/Converter/pptx_comments_context.cpp \
 	../../Reader/Converter/pptx_conversion_context.cpp \
@@ -487,12 +497,20 @@ HEADERS += \
 	../../DataTypes/percent.h \
 	../../DataTypes/percentorscale.h \
 	../../DataTypes/presentationclass.h \
+	../../DataTypes/presentationnodetype.h \
+	../../DataTypes/presetclass.h \
+	../../DataTypes/presetid.h \
 	../../DataTypes/punctuationwrap.h \
 	../../DataTypes/rotationalign.h \
 	../../DataTypes/runthrough.h \
 	../../DataTypes/scripttype.h \
 	../../DataTypes/shadowtype.h \
+	../../DataTypes/smil_additive.h \
+	../../DataTypes/smil_attributename.h \
+	../../DataTypes/smil_fill.h \
+	../../DataTypes/smil_keytimes.h \
 	../../DataTypes/smil_transitiontype.h \
+	../../DataTypes/smil_values.h \
 	../../DataTypes/stylefamily.h \
 	../../DataTypes/stylehorizontalpos.h \
 	../../DataTypes/stylehorizontalrel.h \
@@ -506,6 +524,7 @@ HEADERS += \
 	../../DataTypes/stylewrap.h \
 	../../DataTypes/stylenumformat.h \
 	../../DataTypes/stylewrapcontourmode.h \
+	../../DataTypes/svg_type.h \
 	../../DataTypes/tablealign.h \
 	../../DataTypes/tablecentering.h \
 	../../DataTypes/tablemode.h \
@@ -634,6 +653,7 @@ HEADERS += \
 	../../Reader/Converter/oox_title.h \
 	../../Reader/Converter/oox_types_chart.h \
 	../../Reader/Converter/oox_rels.h \
+	../../Reader/Converter/pptx_animation_context.h \
 	../../Reader/Converter/pptx_comments.h \
 	../../Reader/Converter/pptx_comments_context.h \
 	../../Reader/Converter/pptx_conversion_context.h \

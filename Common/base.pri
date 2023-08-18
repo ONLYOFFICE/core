@@ -543,9 +543,8 @@ defineTest(ADD_DEPENDENCY) {
         CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
         
         isEqual(lib, videoplayer) {
-            BASE_VIDEO_PLAYER_VLC_DIR = $$(VIDEO_PLAYER_VLC_DIR)
-            !isEmpty(BASE_VIDEO_PLAYER_VLC_DIR) {
-                LIBS += -L$$BASE_VIDEO_PLAYER_VLC_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+		    libvlc {
+			    LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/libvlc/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
                 CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
             }
         }

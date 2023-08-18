@@ -18,15 +18,13 @@ include($$CORE_3DPARTY_DIR/googletest/googletest.pri)
 include($$CORE_3DPARTY_DIR/boost/boost.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-
 DESTDIR = $$PWD/build
 
 INCLUDEPATH += ../
-#INCLUDEPATH += $$CORE_3DPARTY_DIR/boost/build/win_64/include/
 INCLUDEPATH += $$CORE_ROOT_DIR/OdfFile/Common/
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
-LIBS += -L$$CORE_3DPARTY_DIR/boost/build/win_64/lib/
+LIBS += -L$$CORE_BOOST_LIBS
 
 ADD_DEPENDENCY(kernel)
 ADD_DEPENDENCY(graphics)
@@ -42,3 +40,4 @@ SOURCES += \
     test.cpp\
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp
 
+SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc

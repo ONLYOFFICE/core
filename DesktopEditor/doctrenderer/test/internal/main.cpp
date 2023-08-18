@@ -34,11 +34,12 @@
 
 #include "embed/Default.h"
 #include "js_internal/js_base.h"
+#include "Embed.h"
 
 using namespace NSJSBase;
 int main(int argc, char *argv[])
 {
-#if 1
+#if 0
 	// Primitives example
 
 	JSSmart<CJSContext> oContext1 = new CJSContext(false);
@@ -46,12 +47,6 @@ int main(int argc, char *argv[])
 
 	JSSmart<CJSContext> oContext2 = new CJSContext;
 //	oContext2->Initialize();
-
-	// Create first context
-	oContext1->CreateContext();
-
-	// Create second context
-	oContext2->CreateContext();
 
 	// Work with first context
 	oContext1->Enter();
@@ -102,33 +97,50 @@ int main(int argc, char *argv[])
 #endif
 
 #if 0
+	// External embed example
+
+	JSSmart<CJSContext> oContext1 = new CJSContext();
+
+	// Embedding
+	CJSContextScope scope(oContext1);
+	CJSContext::Embed<CTestEmbed>();
+
+	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
+	std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
+	std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
+	std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionGet(); })();");
+	std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+
+#endif
+
+#if 0
 	// CZipEmbed example
 
-	JSSmart<CJSContext> oContext1 = new CJSContext;
-	JSSmart<CJSContext> oContext2 = new CJSContext;
-
-	// Create first context
-	oContext1->CreateContext();
-
-	// Create second context
-	oContext2->CreateContext();
+	JSSmart<CJSContext> oContext1 = new CJSContext();
+	JSSmart<CJSContext> oContext2 = new CJSContext();
 
 	// Work with first context
 	oContext1->Enter();
-	CreateDefaults(oContext1);
+	CreateDefaults();
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
-		"var oZip = new CreateNativeZip;\n"
-		"var files = oZip.open('" CURR_DIR "/../v8');\n"
+		"var oZip = CreateEmbedObject('CZipEmbed');\n"
+		"var files = oZip.open('" CURR_DIR "');\n"
 		"oZip.close();");
 	oContext1->Exit();
 
 	// Work with second context
 	{
 		CJSContextScope scope(oContext2);
-		CreateDefaults(oContext2);
+//		CreateDefaults();
 		JSSmart<CJSValue> oRes2 = oContext2->runScript(
-			"var oZip = new CreateNativeZip;\n"
-			"var files = oZip.open('" CURR_DIR "/../jsc');\n"
+			"var oZip = CreateEmbedObject('CZipEmbed');\n"
+			"var files = oZip.open('" CURR_DIR "/../embed');\n"
 			"oZip.close();");
 	}
 
@@ -159,16 +171,13 @@ int main(int argc, char *argv[])
 #if 0
 	// CHashEmbed example
 
-	JSSmart<CJSContext> oContext1 = new CJSContext;
-
-	// Create first context
-	oContext1->CreateContext();
+	JSSmart<CJSContext> oContext1 = new CJSContext();
 
 	// Call hash() on first context
 	CJSContextScope scope(oContext1);
-	CreateDefaults(oContext1);
+	CreateDefaults();
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
-		"var oHash = new CreateNativeHash;\n"
+		"var oHash = CreateEmbedObject('CHashEmbed');\n"
 		"var str = 'test';\n"
 		"var hash = oHash.hash(str, str.length, 0);");
 
@@ -183,7 +192,6 @@ int main(int argc, char *argv[])
 	std::cout << std::endl;
 
 	// Call hash2() on first context
-	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes2 = oContext1->runScript(
 		"var str2 = 'test';\n"
 		"var hash2 = oHash.hash2(str2, 'yrGivlyCImiWnryRee1OJw==', 100000, 7);");
@@ -196,6 +204,73 @@ int main(int argc, char *argv[])
 		std::cout << std::hex << static_cast<unsigned>(oHash2->getData().Data[i]);
 	}
 	std::cout << std::endl;
+
+#endif
+
+#if 1
+	// Mixed embed example
+
+	JSSmart<CJSContext> oContext1 = new CJSContext();
+
+	// External CTestEmbed
+	CJSContextScope scope(oContext1);
+	CJSContext::Embed<CTestEmbed>(false);
+
+	JSSmart<CJSValue> oResTestEmbed1 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSum(10, 5); })();");
+	if (oResTestEmbed1->isNumber())
+		std::cout << "FunctionSum(10, 5) = " << oResTestEmbed1->toInt32() << std::endl;
+
+	JSSmart<CJSObject> oTestEmbed = CJSContext::createEmbedObject("CTestEmbed");
+
+//	JSSmart<CJSValue> oResTestEmbed2 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionSquare(4); })();");
+	JSSmart<CJSValue> args2[1];
+	args2[0] = CJSContext::createInt(4);
+	JSSmart<CJSValue> oResTestEmbed2 = oTestEmbed->call_func("FunctionSquare", 1, args2);
+	if (oResTestEmbed2->isNumber())
+		std::cout << "FunctionSquare(4) = " << oResTestEmbed2->toInt32() << std::endl;
+
+//	JSSmart<CJSValue> oResTestEmbed3 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionDel(30, 3); })();");
+	JSSmart<CJSValue> args3[2];
+	args3[0] = CJSContext::createInt(30);
+	args3[1] = CJSContext::createInt(3);
+	JSSmart<CJSValue> oResTestEmbed3 = oTestEmbed->call_func("FunctionDel", 2, args3);
+	if (oResTestEmbed3->isNumber())
+		std::cout << "FunctionDel(30, 3) = " << oResTestEmbed3->toInt32() << std::endl;
+
+	JSSmart<CJSValue> oResTestEmbed4 = oContext1->runScript("(function() { var value = CreateEmbedObject('CTestEmbed'); return value.FunctionGet(); })();");
+	if (oResTestEmbed4->isNumber())
+		std::cout << "FunctionGet() = " << oResTestEmbed4->toInt32() << std::endl;
+
+	// Internal CHashEmbed
+	CreateDefaults();
+	oContext1->runScript(
+		"var oHash = CreateEmbedObject('CHashEmbed');\n"
+		"var str = 'test';\n"
+		"var hash = oHash.hash(str, str.length, 0);");
+
+	// Print hash
+	JSSmart<CJSObject> oGlobal = oContext1->GetGlobal();
+	JSSmart<CJSTypedArray> oHash = oGlobal->get("hash")->toTypedArray();
+	std::cout << "\nRESULTED HASH:\n";
+	for (int i = 0; i < oHash->getCount(); i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(oHash->getData().Data[i]);
+	}
+	std::cout << std::endl;
+
+	// Internal CZipEmbed
+	oContext1->runScript(
+		"var oZip = CreateEmbedObject('CZipEmbed');\n"
+		"var files = oZip.open('" CURR_DIR "');\n"
+		"oZip.close();");
+
+	// Print files
+	JSSmart<CJSArray> oFiles1 = oGlobal->get("files")->toArray();
+	std::cout << "\nFILES IN CURRENT DIRECTORY:\n";
+	for (int i = 0; i < oFiles1->getCount(); i++)
+	{
+		std::cout << oFiles1->get(i)->toStringA() << std::endl;
+	}
 
 #endif
 

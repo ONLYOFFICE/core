@@ -128,7 +128,11 @@ public:
  	office_spreadsheet			*office_spreadsheet_;
 	table_table					*table_table_;
 
-	int							baseFontHeight_;
+	bool						baseFontItalic_ = false;
+	bool						baseFontBold_ = false;
+	int							baseFontHeight_ = 12;
+	int							baseAlignment_ = 1;
+	std::wstring				baseFontName_;
 	std::wstring				baseRef_; 
 //---------------------------------------------------------------
 	odf_types::chart_class::type class_;
@@ -251,7 +255,7 @@ class process_build_object
 {
 public:
 
-	process_build_object(object_odf_context & object_context, odf_read_context & context);
+	process_build_object(object_odf_context & object_context, odf_document *document);
 
 private:
 	void ApplyGraphicProperties(std::wstring style, graphic_format_properties_ptr & propertiesOut, oox::_oox_fill & fill);
@@ -318,13 +322,13 @@ public:
 
 private:
     bool stop_;
-    
+	odf_document* document_;
+
 	object_odf_context		& object_odf_context_;
 
 	styles_container		& styles_;
 	
 	settings_container		& settings_;
-	styles_lite_container	& draw_styles_;
 	styles_lite_container	& number_styles_;
 
 	oox::num_format_context num_format_context_;

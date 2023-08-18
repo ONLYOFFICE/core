@@ -51,17 +51,6 @@
 
 CPPTXFile::CPPTXFile()
 {
-#if defined(_WIN32) || defined (_WIN64)
-    WCHAR buffer[4096];
-    GetTempPathW(4096, buffer);
-    m_strTempDir = std::wstring(buffer);
-
-    GetLongPathName(m_strTempDir.c_str(), buffer, 4096);
-    m_strTempDir = std::wstring(buffer) + std::wstring(L"_PPTX\\");
-#else
-    m_strTempDir = NSDirectory::GetTempPath() + L"_PPTX/";
-#endif
-
     m_bIsUseSystemFonts = false;
 	m_bIsNoBase64 = false;
 	m_bIsMacro = false;
@@ -85,8 +74,10 @@ _UINT32 CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	}
 	else
 	{
-        bool res = NSDirectory::CreateDirectory(m_strTempDir);
-        if (res == false) return AVS_FILEUTILS_ERROR_CONVERT;
+		if (m_strTempDir.empty()) m_strTempDir = NSDirectory::GetTempPath();
+		m_strTempDir = NSDirectory::CreateDirectoryWithUniqueName(m_strTempDir);
+
+		if (m_strTempDir.empty()) return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	localTempDir = m_strTempDir;
 
@@ -187,22 +178,18 @@ void CPPTXFile::SetMacroEnabled(bool val)
 }
 _UINT32 CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
-    if (m_strTempDir.empty())
-	{
-        m_strTempDir = NSDirectory::GetTempPath();
-	}
+	if (m_strTempDir.empty()) m_strTempDir = NSDirectory::GetTempPath();
+	m_strTempDir = NSDirectory::CreateDirectoryWithUniqueName(m_strTempDir);
 
-	if (true == NSDirectory::CreateDirectory(m_strTempDir))
-	{
-		_UINT32 hr = OpenDirectoryToPPTY(bsInput, bsOutput);
+	if (m_strTempDir.empty()) return S_FALSE;
 
-		return hr;
-	}
-	else
-		return S_FALSE;
+	return OpenDirectoryToPPTY(bsInput, bsOutput);
 }
 _UINT32 CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
+	if (m_strTempDir.empty()) m_strTempDir = NSDirectory::GetTempPath();
+	m_strTempDir = NSDirectory::CreateDirectoryWithUniqueName(m_strTempDir);
+
 	OOX::CPath pathInputDirectory = bsInput;
 
 	RELEASEOBJECT(m_pPptxDocument);

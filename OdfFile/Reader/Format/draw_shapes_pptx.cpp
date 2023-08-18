@@ -136,8 +136,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	if (properties)
 	{
 		properties->apply_to(Context.get_slide_context().get_properties());
-		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-			Context.root()->odf_context().drawStyles(), fill);
+		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 	}
  	for (size_t i = 0; i < additional_.size(); i++)
 	{

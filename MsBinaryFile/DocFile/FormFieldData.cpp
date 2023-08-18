@@ -118,7 +118,7 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 	int fc = -1;
 	bool bNilPICFAndBinData = false;
 
-	for ( std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+	for ( std::vector<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 	{
 		switch ( iter->OpCode)
 		{

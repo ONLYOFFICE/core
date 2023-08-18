@@ -1207,7 +1207,7 @@ namespace OOX
 					if      ( _T("equationxml") == wsName ) m_sEquationXML = oReader.GetText();
 					break;
 				case 'o':
-					if      ( _T("o:gfxdata")   == wsName ) m_sGfxData       = oReader.GetText();
+					//if      ( _T("o:gfxdata")   == wsName ) m_sGfxData       = oReader.GetText();
 					break;
 				case 'p':
 					if      ( _T("path")        == wsName ) m_oPath        = oReader.GetText();

@@ -78,7 +78,7 @@ namespace DocFileFormat
 
 		unsigned int iTap_current = 1;
 
-		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
+		for ( std::vector<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			DWORD code = iter->OpCode;
 
@@ -94,7 +94,7 @@ namespace DocFileFormat
 		}
 
 		bool bPresentDefTable = false;
-		for (std::list<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
+		for (std::vector<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
 		{
 			switch (iter->OpCode)
 			{				
@@ -453,12 +453,12 @@ namespace DocFileFormat
 		}
 	}
 
-	bool TableCellPropertiesMapping::IsTableBordersDefined (const std::list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableBordersDefined (const std::vector<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{
-			std::list<SinglePropertyModifier>::const_iterator end = grpprl->end();
-			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
+			std::vector<SinglePropertyModifier>::const_iterator end = grpprl->end();
+			for (std::vector<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
 			{
 				if ((iter->OpCode == sprmTTableBorders) || (iter->OpCode == sprmTTableBorders80) || (iter->OpCode == sprmTSetBrc))
 					return true;
@@ -468,12 +468,12 @@ namespace DocFileFormat
 		return false;
 	}
 
-	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const std::list<SinglePropertyModifier>* grpprl) const
+	bool TableCellPropertiesMapping::IsTableCellWidthDefined (const std::vector<SinglePropertyModifier>* grpprl) const
 	{
 		if (grpprl)
 		{
-			std::list<SinglePropertyModifier>::const_iterator end = grpprl->end();
-			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
+			std::vector<SinglePropertyModifier>::const_iterator end = grpprl->end();
+			for (std::vector<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
 			{
 				if ( iter->OpCode == sprmTCellWidth )
 				{

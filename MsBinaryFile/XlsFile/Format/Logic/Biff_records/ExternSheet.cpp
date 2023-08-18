@@ -75,8 +75,10 @@ void ExternSheet::readFields(CFRecord& record)
 	{
         _UINT16 cXTI_2b;
         record >> cXTI_2b;
-        for(int i = 0; i < cXTI_2b; ++i)
+        for(_UINT16 i = 0; i < cXTI_2b; ++i)
 		{
+			if (record.getRdPtr() + 6 > record.getDataSize())
+				break;
 			XTIPtr xti(new XTI);
 			record >> *xti;
 			rgXTI.push_back(xti);
@@ -86,13 +88,44 @@ void ExternSheet::readFields(CFRecord& record)
     else
     {
         record >> cXTI;
-        for(int i = 0; i < cXTI; ++i)
+        for(_UINT32 i = 0; i < cXTI; ++i)
         {
             XTIPtr xti(new XTI);
             record >> *xti;
             rgXTI.push_back(xti);
         }
     }
+}
+
+void ExternSheet::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		LPAnsiStringNoCch stName(name);
+		unsigned char type = 0;
+		unsigned char size = stName.getSize();
+		
+		record << size << type;
+
+		record << stName;
+	}
+	else if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 cXTI_2b = cXTI;
+		record << cXTI_2b;
+		for (int i = 0; i < cXTI_2b; ++i)
+		{
+			record << *rgXTI[i];
+		}
+	}
+	else
+	{
+		record << cXTI;
+		for (int i = 0; i < cXTI; ++i)
+		{
+			record << *rgXTI[i];
+		}
+	}
 }
 
 } // namespace XLS

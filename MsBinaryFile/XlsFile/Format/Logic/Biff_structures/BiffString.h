@@ -55,9 +55,14 @@ typedef enum
 } CCH_SOURCE;
 
 
-class BiffString : public BiffAttribute
+class BiffString : public BiffStructure
 {
 public:
+	const std::string& getClassName() const { static std::string str("BiffString"); return str; }
+	virtual XLS::ElementType get_type() { return type; }
+
+	static const ElementType type = typeBiffString;
+
 	BiffString();
 	BiffString(const size_t size);
 	BiffString(const std::wstring & str);
@@ -77,6 +82,7 @@ public:
 	
 	void load(IBinaryReader* reader, const size_t cch1, const bool is_wide1);
 	void load(CFRecord& record, const size_t cch, const bool is_wide);
+	void save(CFRecord& record, const size_t cch, const bool is_wide);
 
 	void			setSize(const size_t size);		// Set cch for string that don't have own cch field
 	const size_t	getStructSize() const;		// Number of unsigned chars read while loading
@@ -128,13 +134,13 @@ public:
 		switch(cch_where)
 		{
 			case cch_READ_FROM_RECORD:
-				cchType cch_l; // Just to conform size read.
-				record >> cch_l;
-				cch = cch_l;
+                cchType cch_l; // Just to conform size read.
+                record >> cch_l;
+                cch = cch_l;
 				struct_size += sizeof(cchType);
 				break;
 			case cch_PASSED_AS_AN_ARGUMENT:
-				cch = getSize();
+                cch = getSize();
 				break;
 		}
 		switch(det_id)
@@ -142,11 +148,11 @@ public:
 			case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
 				if(0 == cch) break;
 			case aw_READ_FROM_RECORD:
-				unsigned char fHighByte;
-				record >> fHighByte;
-				fHighByte &= 1;
-				is_wide = fHighByte != 0;
-				struct_size += sizeof(fHighByte);
+                unsigned char fHighByte;
+                record >> fHighByte;
+                fHighByte &= 1;
+                is_wide = fHighByte != 0;
+                struct_size += sizeof(fHighByte);
 				break;
 			case aw_WIDE:
 				is_wide = true;
@@ -177,6 +183,63 @@ public:
 
 		load(record, cch, is_wide);
 		setStructSize(struct_size); 
+	}
+
+	void save_(CFRecord& record)
+	{
+        size_t cch = cch_.get();
+        size_t struct_size = 0;
+
+        bool is_wide = false;
+
+        switch(cch_where)
+        {
+            case cch_READ_FROM_RECORD:
+                cchType cch_l;
+                cch_l = cch; // Just to conform size read.
+                record << cch_l;
+                struct_size += sizeof(cchType);
+                break;
+            case cch_PASSED_AS_AN_ARGUMENT:
+                //stub
+                break;
+        }
+        switch(det_id)
+        {
+            case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
+                if(0 == cch) break;
+            case aw_READ_FROM_RECORD:
+                //stub
+                break;
+            case aw_WIDE:
+                is_wide = true;
+                break;
+            case aw_ANSI:
+                is_wide = false;
+                break;
+            case aw_READ_FROM_CCH:
+            {
+                cchType cch_real = static_cast<cchType>(cch);
+                is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
+                cch &= (static_cast<cchType>(-1) >> 1);
+                break;
+            }
+            case aw_NULLABLE_WIDE:
+                if(0xFFFFFFFF == cch)
+                    cch = 0;
+                is_wide = true;
+                break;
+            case aw_NAME_WIDE:
+                is_wide = true;
+                if(cch >= 255)
+                    break;
+        }
+
+
+        struct_size += (cch << (is_wide ? 1 : 0));
+
+        save(record, cch, is_wide);
+        setStructSize(struct_size);
 	}
 
 private:
@@ -225,9 +288,16 @@ typedef XLUnicodeString_T<unsigned short,	aw_ANSI,								cch_PASSED_AS_AN_ARGUM
 
 
 template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
-CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
+CFRecord& operator >> (CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
 {
 	val.load_(record);
+	return record;
+}
+
+template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
+CFRecord& operator << (CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
+{
+	val.save_(record);
 	return record;
 }
 

@@ -111,10 +111,9 @@ private:
 		}
 	};
 
-
 public:
 	COOXToVMLGeometry();
-	~COOXToVMLGeometry();
+	virtual ~COOXToVMLGeometry();
 // тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType){ return S_OK; }
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -188,6 +187,11 @@ public:
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height){ return S_OK; }
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount){ return S_OK; }
+
+	virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
+	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
+	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
+	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName){ return S_OK; }

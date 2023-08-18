@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
+#include "../Biff_structures/BIFF12/UncheckedSqRfX.h"
 #include "../Biff_structures/CellRangeRef.h"
 #include "../Biff_structures/PaneType.h"
 
@@ -50,7 +50,8 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeSelection;
 

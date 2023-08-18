@@ -341,7 +341,7 @@ namespace DocFileFormat
 	{
 		int ret = -1, ret1 = -1;
 
-		for ( std::list<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
+		for ( std::vector<SinglePropertyModifier>::const_iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )
 			{

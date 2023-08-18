@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,12 +52,22 @@ namespace XLSB
 
     void Qsi15::readFields(XLS::CFRecord& record)
     {
-        unsigned char flags;
+        BYTE flags;
         record >> FRTheader >> flags >> irstPPMConnectionName;
 
         fClipped         = GETBIT(flags, 0);
         fDrillThrough    = GETBIT(flags, 1);
     }
+
+	void Qsi15::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fClipped)
+		SETBIT(flags, 1, fDrillThrough)
+
+		record << FRTheader << flags << irstPPMConnectionName;
+	}
 
 } // namespace XLSB
 

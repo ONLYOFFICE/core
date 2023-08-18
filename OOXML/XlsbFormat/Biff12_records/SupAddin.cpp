@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,11 +46,6 @@ namespace XLSB
     XLS::BaseObjectPtr SupAddin::clone()
     {
         return XLS::BaseObjectPtr(new SupAddin(*this));
-    }
-
-    void SupAddin::readFields(XLS::CFRecord& record)
-    {
-       //empty data
     }
 
 } // namespace XLSB

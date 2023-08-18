@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXDIs>())
         {
-            m_BrtEndSXDIs = elements_.back();
+            m_bBrtEndSXDIs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXDIs = false;
 
-        return m_BrtBeginSXDIs && !m_arSXDI.empty() && m_BrtEndSXDIs;
+        return m_BrtBeginSXDIs && !m_arSXDI.empty() && m_bBrtEndSXDIs;
     }
+
+	const bool SXDIS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXDIs == nullptr)
+			m_BrtBeginSXDIs = XLS::BaseObjectPtr(new XLSB::BeginSXDIs());
+
+		if (m_BrtBeginSXDIs != nullptr)
+		{
+			auto ptrBrtBeginSXDIs = static_cast<XLSB::BeginSXDIs*>(m_BrtBeginSXDIs.get());
+
+			if (ptrBrtBeginSXDIs != nullptr)
+				ptrBrtBeginSXDIs->csxdis = m_arSXDI.size();
+
+			proc.mandatory(*m_BrtBeginSXDIs);
+		}
+
+		for (auto &item : m_arSXDI)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXDIs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

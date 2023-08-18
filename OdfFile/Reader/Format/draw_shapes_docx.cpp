@@ -96,8 +96,8 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 		if (graphicProp)
 		{
 			oox::_oox_fill fill;
-			Compute_GraphicFill(graphicProp->common_draw_fill_attlist_, graphicProp->style_background_image_,
-																	Context.root()->odf_context().drawStyles(), fill);	
+			Compute_GraphicFill(graphicProp->common_draw_fill_attlist_, graphicProp->style_background_image_, Context.root(), fill);	
+			
 			if ((fill.bitmap) && (fill.bitmap->rId.empty()))
 			{
 				std::wstring href = fill.bitmap->xlink_href_;

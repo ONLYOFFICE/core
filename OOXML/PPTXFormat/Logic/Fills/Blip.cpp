@@ -36,6 +36,7 @@
 #include "./../../SlideMaster.h"
 #include "./../../SlideLayout.h"
 #include "./../../Theme.h"
+
 #include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PPTX
@@ -77,8 +78,8 @@ namespace PPTX
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed)
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"link", link )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"cstate", cstate )
+				WritingElement_ReadAttributes_Read_else_if ( oReader, L"link", link )
+				WritingElement_ReadAttributes_Read_else_if ( oReader, L"cstate", cstate )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -94,11 +95,27 @@ namespace PPTX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				UniEffect uni;
-				Effects.push_back(uni);
-				Effects.back().fromXML(oReader);
+				if (strName == L"extLst")
+				{
+					if (oReader.IsEmptyNode())
+						continue;
+
+					int nParentDepth1 = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nParentDepth1))
+					{
+						Ext element;
+						ExtLst.push_back(element);
+						ExtLst.back().fromXML(oReader);
+					}
+				}
+				else
+				{
+					UniEffect uni;
+					Effects.push_back(uni);
+					Effects.back().fromXML(oReader);
+				}
 			}
 		
 			FillParentPointersForChilds();
@@ -111,9 +128,26 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"r:link", link);
             XmlMacroReadAttributeBase(node, L"cstate", cstate);
 
-			Effects.clear();
-            XmlMacroLoadArray(node, _T("*"), Effects, UniEffect);
+			XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
+			if (list.IsValid())
+			{
+				std::vector<XmlUtils::CXmlNode> oNodes;
+				if (list.GetNodes(L"*", oNodes))
+				{
+					size_t nCount = oNodes.size();
+					for (size_t i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode& oNode = oNodes[i];
 
+						Ext element;
+						element.fromXML(oNode);
+					
+						ExtLst.push_back(element);
+					}
+				}
+			}
+			Effects.clear();
+			XmlMacroLoadArray(node, L"*", Effects, UniEffect);
 			FillParentPointersForChilds();
 		}
 		std::wstring Blip::toXML() const
@@ -121,26 +155,48 @@ namespace PPTX
 			XmlUtils::CAttribute oAttr;
 
 			if (embed.IsInit())
-				oAttr.Write(_T("r:embed"), embed->ToString());
+				oAttr.Write(L"r:embed", embed->ToString());
 			if (link.IsInit())
-				oAttr.Write(_T("r:link"), link->ToString());
-			oAttr.WriteLimitNullable(_T("cstate"), cstate);
+				oAttr.Write(L"r:link", link->ToString());
+			oAttr.WriteLimitNullable(L"cstate", cstate);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteArray(Effects);
 
-			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			std::wstring strName = m_namespace.empty() ? L"blip" : m_namespace + L":blip";
 			return XmlUtils::CreateNode(strName, oAttr, oValue);
 		}
 		void Blip::FillParentPointersForChilds()
 		{
-			size_t count = Effects.size();
-			for(size_t i = 0; i < count; ++i)
+			for (size_t i = 0; i < Effects.size(); ++i)
+			{
 				Effects[i].SetParentPointer(this);
+			}
+
+			for (size_t i = 0; i < ExtLst.size(); ++i)
+			{
+				ExtLst[i].SetParentPointer(this);
+			}
+
 		}
 		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
-			if(embed.IsInit())
+			for (size_t i = 0; i < ExtLst.size(); ++i)
+			{
+				if (ExtLst[i].link_svg.IsInit())
+				{
+					if (pRels != NULL)
+					{
+						smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*ExtLst[i].link_svg);
+						if (p.is_init())
+							return p->filename().m_strFilename;
+					}
+
+					if (parentFileIs<FileContainer>())
+						return parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+				}
+			}
+			if (embed.IsInit())
 			{
 				if (pRels != NULL)
 				{
@@ -149,12 +205,12 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<FileContainer>())
+				if (parentFileIs<FileContainer>())
 					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*embed);
 
-				return _T("");
+				return L"";
 			}
-			else if(link.IsInit())
+			else if (link.IsInit())
 			{
 				if (pRels != NULL)
 				{
@@ -163,12 +219,12 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<FileContainer>())
+				if (parentFileIs<FileContainer>())
 					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*link);
 
-				return _T("");
+				return L"";
 			}
-			return _T("");
+			return L"";
 		}
 		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, OOX::IFileContainer* pRels)const
 		{
@@ -190,22 +246,22 @@ namespace PPTX
 		}
 		void Blip::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			std::wstring strName = m_namespace.empty() ? L"blip" : (m_namespace + L":blip");
 			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();
 			if (embed.IsInit())
-				pWriter->WriteAttribute(_T("r:embed"), embed->ToString());
+				pWriter->WriteAttribute(L"r:embed", embed->ToString());
 			if (link.IsInit())
-				pWriter->WriteAttribute(_T("r:link"), link->ToString());
-			pWriter->WriteAttribute(_T("cstate"), cstate);
+				pWriter->WriteAttribute(L"r:link", link->ToString());
+			pWriter->WriteAttribute(L"cstate", cstate);
 			pWriter->EndAttributes();
 
-			size_t nCount = Effects.size();
-			for (size_t i = 0; i < nCount; ++i)
+			for (size_t i = 0; i < Effects.size(); ++i)
 			{
 				Effects[i].toXmlWriter(pWriter);
 			}
+			pWriter->WriteArray(L"a:extLst", ExtLst);
 
 			pWriter->EndNode(strName);
 		}
@@ -241,28 +297,28 @@ namespace PPTX
 
 			std::wstring	additionalPath;
 			int				additionalType = 0;
-			if(!oleFilepathBin.empty())
+			if (!oleFilepathBin.empty())
 			{
 				additionalPath = oleFilepathBin;
 				additionalType = 1;
 			}
-			else if(!oleRid.empty())
+			else if (!oleRid.empty())
 			{
 				additionalPath	= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				additionalType	= 1;
 			}
-			else if(!mediaRid.empty())
+			else if (!mediaRid.empty())
 			{
 				additionalPath	= this->GetFullOleName(OOX::RId(mediaRid), pRels);
 				additionalType	= 2;
 			}
-			else if(!mediaFilepath.empty())
+			else if (!mediaFilepath.empty())
 			{
 				additionalPath	= mediaFilepath;
 				additionalType	= 2;
 			}
 			NSShapeImageGen::CMediaInfo oId;
-			if(!dataFilepathImageA.empty())
+			if (!dataFilepathImageA.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
 			}
@@ -270,7 +326,7 @@ namespace PPTX
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			else if(!oleFilepathImage.empty())
+			else if (!oleFilepathImage.empty())
 			{
 				std::wstring imagePath = oleFilepathImage;
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
@@ -349,20 +405,20 @@ namespace PPTX
 
 						std::wstring strImagePath = pReader->GetString2(true);
 
-						if (0 != strImagePath.find(_T("http:")) &&
-							0 != strImagePath.find(_T("https:")) &&
-							0 != strImagePath.find(_T("ftp:")) &&
-							0 != strImagePath.find(_T("file:")))
+						if (0 != strImagePath.find(L"http:") &&
+							0 != strImagePath.find(L"https:") &&
+							0 != strImagePath.find(L"ftp:") &&
+							0 != strImagePath.find(L"file:"))
 						{
 							OOX::CPath pathNormalizer;
 
-							if (0 == strImagePath.find(_T("theme")))
+							if (0 == strImagePath.find(L"theme"))
 							{
 								pathNormalizer = pReader->m_strFolderExternalThemes;
 							}
 							else
 							{
-								pathNormalizer = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media");
+								pathNormalizer = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media";
 							}
 							std::wstring strPath = pathNormalizer.GetPath();
 

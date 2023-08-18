@@ -32,19 +32,19 @@
 #pragma once
 
 #include "../Drawing/Drawing.h"
+#include "./Vml.h"
 
 namespace OOX
 {
-	namespace Vml
-	{
-		class CShape;
-		class CShapeType;
-		class CBackground;
-	}
-	namespace VmlOffice
-	{
-		class COLEObject;
-	}
+	//namespace Vml
+	//{
+	//	class CShape;
+	//	class CShapeType;
+	//}
+	//namespace VmlOffice
+	//{
+	//	class COLEObject;
+	//}
 
 	namespace Logic
 	{

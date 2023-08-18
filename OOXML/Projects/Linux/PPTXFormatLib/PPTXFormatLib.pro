@@ -42,7 +42,6 @@ INCLUDEPATH += \
 	../../../../../MsBinaryFile/Common/common_xls \
 	../../../XlsbFormat
 
-#!disable_precompiled_header:CONFIG += precompile_header
 #precompile_header {
 #    PRECOMPILED_HEADER = precompiled.h
 #    HEADERS += precompiled.h
@@ -75,7 +74,6 @@ SOURCES += \
 	../../../Binary/Presentation/XmlWriter.cpp \
 	../../../Binary/Presentation/FontPicker.cpp \
 	../../../Binary/Presentation/imagemanager.cpp \	
-	../../../Binary/Presentation/FontPicker.cpp \
 	../../../Binary/Presentation/PPTXWriter.cpp \
 	../../../Binary/Presentation/DefaultNotesTheme.cpp \
 	../../../Binary/Presentation/DefaultNotesMaster.cpp \

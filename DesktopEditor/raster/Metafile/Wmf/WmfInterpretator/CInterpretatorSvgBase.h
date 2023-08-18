@@ -120,8 +120,10 @@ namespace MetaFile
 		unsigned int         m_unNumberDefs;
 		std::wstring         m_wsDefs;
 
-		IMetaFileBase       *m_pParser;
-		XmlUtils::CXmlWriter m_oXmlWriter;
+		IMetaFileBase        *m_pParser;
+
+		XmlUtils::CXmlWriter *m_pXmlWriter;
+		bool                 m_bExternXmlWriter;
 
 		CSvgClip             m_oClip;
 

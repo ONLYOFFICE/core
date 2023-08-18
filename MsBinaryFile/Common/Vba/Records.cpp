@@ -1014,7 +1014,7 @@ namespace VBA
 	//}
 	//const bool PROJECTMODULES::loadContent(BinProcessor& proc)
 	//{
-	//	BiffAttributeSimple<unsigned short> nCount;
+	//	unsigned short nCount;
 
 	//	proc.nCount;
 

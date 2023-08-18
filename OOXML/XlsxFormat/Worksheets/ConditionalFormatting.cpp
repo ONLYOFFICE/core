@@ -1522,9 +1522,9 @@ void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
                 }
             }
         }
-        if(ptr->m_FRTRULE != nullptr)
+        if(ptr->m_FRTCFRULE != nullptr)
         {
-            auto ptrFRTCFRULE = static_cast<XLSB::FRTCFRULE*>(ptr->m_FRTRULE.get());
+            auto ptrFRTCFRULE = static_cast<XLSB::FRTCFRULE*>(ptr->m_FRTCFRULE.get());
             m_oExtId = static_cast<XLSB::CFRuleExt*>(ptrFRTCFRULE->m_BrtCFRuleExt.get())->guid;
         }
     }

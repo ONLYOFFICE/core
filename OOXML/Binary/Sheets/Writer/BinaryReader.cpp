@@ -121,26 +121,26 @@ int Binary_CommonReader2::ReadColor(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CColor* pColor = static_cast<OOX::Spreadsheet::CColor*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ColorObjectType::Type == type)
+	if (c_oSer_ColorObjectType::Type == type)
 	{
 		BYTE byteColorType = m_poBufferedStream.GetUChar();
-		if(c_oSer_ColorType::Auto == byteColorType)
+		if (c_oSer_ColorType::Auto == byteColorType)
 		{
 			pColor->m_oAuto.Init();
 			pColor->m_oAuto->SetValue(SimpleTypes::onoffTrue);
 		}
 	}
-	else if(c_oSer_ColorObjectType::Rgb == type)
+	else if (c_oSer_ColorObjectType::Rgb == type)
 	{
 		pColor->m_oRgb.Init();
 		pColor->m_oRgb->FromInt(m_poBufferedStream.GetLong());
 	}
-	else if(c_oSer_ColorObjectType::Theme == type)
+	else if (c_oSer_ColorObjectType::Theme == type)
 	{
 		pColor->m_oThemeColor.Init();
 		pColor->m_oThemeColor->SetValue((SimpleTypes::Spreadsheet::EThemeColor)m_poBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ColorObjectType::Tint == type)
+	else if (c_oSer_ColorObjectType::Tint == type)
 	{
 		pColor->m_oTint.Init();
 		pColor->m_oTint->SetValue(m_poBufferedStream.GetDoubleReal());
@@ -170,97 +170,97 @@ int BinaryTableReader::ReadQueryTableContent(BYTE type, long length, void* poRes
 	OOX::Spreadsheet::CQueryTable* pQueryTable = static_cast<OOX::Spreadsheet::CQueryTable*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTable::ConnectionId == type)
+	if (c_oSer_QueryTable::ConnectionId == type)
 	{
 		pQueryTable->m_oConnectionId.Init();
 		pQueryTable->m_oConnectionId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTable::Name == type)
+	else if (c_oSer_QueryTable::Name == type)
 	{
 		pQueryTable->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_QueryTable::AutoFormatId == type)
+	else if (c_oSer_QueryTable::AutoFormatId == type)
 	{
 		pQueryTable->m_oAutoFormatId.Init();
 		pQueryTable->m_oAutoFormatId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTable::GrowShrinkType == type)
+	else if (c_oSer_QueryTable::GrowShrinkType == type)
 	{
 		pQueryTable->m_oGrowShrinkType = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_QueryTable::AdjustColumnWidth == type)
+	else if (c_oSer_QueryTable::AdjustColumnWidth == type)
 	{
 		pQueryTable->m_oAdjustColumnWidth = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyAlignmentFormats == type)
+	else if (c_oSer_QueryTable::ApplyAlignmentFormats == type)
 	{
 		pQueryTable->m_oApplyAlignmentFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyBorderFormats == type)
+	else if (c_oSer_QueryTable::ApplyBorderFormats == type)
 	{
 		pQueryTable->m_oApplyBorderFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyFontFormats == type)
+	else if (c_oSer_QueryTable::ApplyFontFormats == type)
 	{
 		pQueryTable->m_oApplyFontFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyNumberFormats == type)
+	else if (c_oSer_QueryTable::ApplyNumberFormats == type)
 	{
 		pQueryTable->m_oApplyNumberFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyPatternFormats == type)
+	else if (c_oSer_QueryTable::ApplyPatternFormats == type)
 	{
 		pQueryTable->m_oApplyPatternFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::ApplyWidthHeightFormats == type)
+	else if (c_oSer_QueryTable::ApplyWidthHeightFormats == type)
 	{
 		pQueryTable->m_oApplyWidthHeightFormats = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::BackgroundRefresh == type)
+	else if (c_oSer_QueryTable::BackgroundRefresh == type)
 	{
 		pQueryTable->m_oBackgroundRefresh = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::DisableEdit == type)
+	else if (c_oSer_QueryTable::DisableEdit == type)
 	{
 		pQueryTable->m_oDisableEdit = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::DisableRefresh == type)
+	else if (c_oSer_QueryTable::DisableRefresh == type)
 	{
 		pQueryTable->m_oDisableRefresh = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::FillFormulas == type)
+	else if (c_oSer_QueryTable::FillFormulas == type)
 	{
 		pQueryTable->m_oFillFormulas = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::FirstBackgroundRefresh == type)
+	else if (c_oSer_QueryTable::FirstBackgroundRefresh == type)
 	{
 		pQueryTable->m_oFirstBackgroundRefresh = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::Headers == type)
+	else if (c_oSer_QueryTable::Headers == type)
 	{
 		pQueryTable->m_oHeaders = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::Intermediate == type)
+	else if (c_oSer_QueryTable::Intermediate == type)
 	{
 		pQueryTable->m_oIntermediate = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::PreserveFormatting == type)
+	else if (c_oSer_QueryTable::PreserveFormatting == type)
 	{
 		pQueryTable->m_oPreserveFormatting = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::RefreshOnLoad == type)
+	else if (c_oSer_QueryTable::RefreshOnLoad == type)
 	{
 		pQueryTable->m_oRefreshOnLoad = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::RemoveDataOnSave == type)
+	else if (c_oSer_QueryTable::RemoveDataOnSave == type)
 	{
 		pQueryTable->m_oRemoveDataOnSave = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::RowNumbers == type)
+	else if (c_oSer_QueryTable::RowNumbers == type)
 	{
 		pQueryTable->m_oRowNumbers = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTable::QueryTableRefresh == type)
+	else if (c_oSer_QueryTable::QueryTableRefresh == type)
 	{
 		pQueryTable->m_oQueryTableRefresh.Init();
 		READ1_DEF(length, res, this->ReadQueryTableRefresh, pQueryTable->m_oQueryTableRefresh.GetPointer());
@@ -274,49 +274,49 @@ int BinaryTableReader::ReadQueryTableRefresh(BYTE type, long length, void* poRes
 	OOX::Spreadsheet::CQueryTableRefresh* pQueryTableRefresh = static_cast<OOX::Spreadsheet::CQueryTableRefresh*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTableRefresh::NextId == type)
+	if (c_oSer_QueryTableRefresh::NextId == type)
 	{
 		pQueryTableRefresh->m_oNextId.Init();
 		pQueryTableRefresh->m_oNextId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableRefresh::MinimumVersion == type)
+	else if (c_oSer_QueryTableRefresh::MinimumVersion == type)
 	{
 		pQueryTableRefresh->m_oMinimumVersion.Init();
 		pQueryTableRefresh->m_oMinimumVersion->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableRefresh::UnboundColumnsLeft == type)
+	else if (c_oSer_QueryTableRefresh::UnboundColumnsLeft == type)
 	{
 		pQueryTableRefresh->m_UnboundColumnsLeft.Init();
 		pQueryTableRefresh->m_UnboundColumnsLeft->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableRefresh::UnboundColumnsRight == type)
+	else if (c_oSer_QueryTableRefresh::UnboundColumnsRight == type)
 	{
 		pQueryTableRefresh->m_UnboundColumnsRight.Init();
 		pQueryTableRefresh->m_UnboundColumnsRight->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableRefresh::FieldIdWrapped == type)
+	else if (c_oSer_QueryTableRefresh::FieldIdWrapped == type)
 	{
 		pQueryTableRefresh->m_FieldIdWrapped = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableRefresh::HeadersInLastRefresh == type)
+	else if (c_oSer_QueryTableRefresh::HeadersInLastRefresh == type)
 	{
 		pQueryTableRefresh->m_HeadersInLastRefresh = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableRefresh::PreserveSortFilterLayout == type)
+	else if (c_oSer_QueryTableRefresh::PreserveSortFilterLayout == type)
 	{
 		pQueryTableRefresh->m_PreserveSortFilterLayout = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableRefresh::SortState == type)
+	else if (c_oSer_QueryTableRefresh::SortState == type)
 	{
 		pQueryTableRefresh->m_oSortState.Init();
 		READ1_DEF(length, res, this->ReadSortState, pQueryTableRefresh->m_oSortState.GetPointer());
 	}
-	else if(c_oSer_QueryTableRefresh::QueryTableFields == type)
+	else if (c_oSer_QueryTableRefresh::QueryTableFields == type)
 	{
 		pQueryTableRefresh->m_oQueryTableFields.Init();
 		READ1_DEF(length, res, this->ReadQueryTableFields, pQueryTableRefresh->m_oQueryTableFields.GetPointer());
 	}
-	else if(c_oSer_QueryTableRefresh::QueryTableDeletedFields == type)
+	else if (c_oSer_QueryTableRefresh::QueryTableDeletedFields == type)
 	{
 		pQueryTableRefresh->m_oQueryTableDeletedFields.Init();
 		READ1_DEF(length, res, this->ReadQueryTableDeletedFields, pQueryTableRefresh->m_oQueryTableDeletedFields.GetPointer());
@@ -330,7 +330,7 @@ int BinaryTableReader::ReadQueryTableFields(BYTE type, long length, void* poResu
 	OOX::Spreadsheet::CQueryTableFields* pQueryTableFields = static_cast<OOX::Spreadsheet::CQueryTableFields*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTableField::QueryTableField == type)
+	if (c_oSer_QueryTableField::QueryTableField == type)
 	{
 		OOX::Spreadsheet::CQueryTableField* pQueryTableField = new OOX::Spreadsheet::CQueryTableField();
 		READ1_DEF(length, res, this->ReadQueryTableField, pQueryTableField);
@@ -346,7 +346,7 @@ int BinaryTableReader::ReadQueryTableDeletedField(BYTE type, long length, void* 
 	OOX::Spreadsheet::CQueryTableDeletedField* pQueryTableDeletedField = static_cast<OOX::Spreadsheet::CQueryTableDeletedField*>(poResult);
 
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTableDeletedField::Name == type)
+	if (c_oSer_QueryTableDeletedField::Name == type)
 	{
 		pQueryTableDeletedField->m_oName = m_oBufferedStream.GetString4(length);
 	}
@@ -359,7 +359,7 @@ int BinaryTableReader::ReadQueryTableDeletedFields(BYTE type, long length, void*
 	OOX::Spreadsheet::CQueryTableDeletedFields* pQueryTableDeletedFields = static_cast<OOX::Spreadsheet::CQueryTableDeletedFields*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTableDeletedField::QueryTableDeletedField == type)
+	if (c_oSer_QueryTableDeletedField::QueryTableDeletedField == type)
 	{
 		OOX::Spreadsheet::CQueryTableDeletedField* pQueryTableDeletedField = new OOX::Spreadsheet::CQueryTableDeletedField();
 		READ1_DEF(length, res, this->ReadQueryTableDeletedField, pQueryTableDeletedField);
@@ -375,33 +375,33 @@ int BinaryTableReader::ReadQueryTableField(BYTE type, long length, void* poResul
 	OOX::Spreadsheet::CQueryTableField* pQueryTableField = static_cast<OOX::Spreadsheet::CQueryTableField*>(poResult);
 
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_QueryTableField::Name == type)
+	if (c_oSer_QueryTableField::Name == type)
 	{
 		pQueryTableField->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_QueryTableField::Id == type)
+	else if (c_oSer_QueryTableField::Id == type)
 	{
 		pQueryTableField->m_oId.Init();
 		pQueryTableField->m_oId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableField::TableColumnId == type)
+	else if (c_oSer_QueryTableField::TableColumnId == type)
 	{
 		pQueryTableField->m_oTableColumnId.Init();
 		pQueryTableField->m_oTableColumnId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_QueryTableField::RowNumbers == type)
+	else if (c_oSer_QueryTableField::RowNumbers == type)
 	{
 		pQueryTableField->m_oRowNumbers = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableField::FillFormulas == type)
+	else if (c_oSer_QueryTableField::FillFormulas == type)
 	{
 		pQueryTableField->m_oFillFormulas = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableField::DataBound == type)
+	else if (c_oSer_QueryTableField::DataBound == type)
 	{
 		pQueryTableField->m_oDataBound = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_QueryTableField::Clipped == type)
+	else if (c_oSer_QueryTableField::Clipped == type)
 	{
 		pQueryTableField->m_oClipped = m_oBufferedStream.GetBool();
 	}
@@ -414,7 +414,7 @@ int BinaryTableReader::ReadTablePart(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableParts* pTableParts = static_cast<OOX::Spreadsheet::CTableParts*>(poResult);
-	if(c_oSer_TablePart::Table == type)
+	if (c_oSer_TablePart::Table == type)
 	{
 		OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile(NULL);
 		pTable->m_oTable.Init();
@@ -441,127 +441,127 @@ int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 	OOX::Spreadsheet::CTable* pTable = pTableFile->m_oTable.GetPointer();
 	if (!pTable) return c_oSerConstants::ReadUnknown;
 
-	if(c_oSer_TablePart::Ref == type)
+	if (c_oSer_TablePart::Ref == type)
 	{
 		pTable->m_oRef.Init();
 		pTable->m_oRef->SetValue(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_TablePart::HeaderRowCount == type)
+	else if (c_oSer_TablePart::HeaderRowCount == type)
 	{
 		pTable->m_oHeaderRowCount.Init();
 		pTable->m_oHeaderRowCount->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::TotalsRowCount == type)
+	else if (c_oSer_TablePart::TotalsRowCount == type)
 	{
 		pTable->m_oTotalsRowCount.Init();
 		pTable->m_oTotalsRowCount->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::DisplayName == type)
+	else if (c_oSer_TablePart::DisplayName == type)
 	{
 		pTable->m_oDisplayName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::Name == type)
+	else if (c_oSer_TablePart::Name == type)
 	{
 		pTable->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::Comment == type)
+	else if (c_oSer_TablePart::Comment == type)
 	{
 		pTable->m_oComment = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::ConnectionId == type)
+	else if (c_oSer_TablePart::ConnectionId == type)
 	{
 		pTable->m_oConnectionId.Init();
 		pTable->m_oConnectionId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::TableType == type)
+	else if (c_oSer_TablePart::TableType == type)
 	{
 		pTable->m_oTableType.Init();
 		pTable->m_oTableType->SetValue((SimpleTypes::Spreadsheet::ETableType)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::DataCellStyle == type)
+	else if (c_oSer_TablePart::DataCellStyle == type)
 	{
 		pTable->m_oDataCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::DataDxfId == type)
+	else if (c_oSer_TablePart::DataDxfId == type)
 	{
 		pTable->m_oDataDxfId.Init();
 		pTable->m_oDataDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::HeaderRowCellStyle == type)
+	else if (c_oSer_TablePart::HeaderRowCellStyle == type)
 	{
 		pTable->m_oHeaderRowCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::HeaderRowDxfId == type)
+	else if (c_oSer_TablePart::HeaderRowDxfId == type)
 	{
 		pTable->m_oHeaderRowDxfId.Init();
 		pTable->m_oHeaderRowDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::HeaderRowBorderDxfId == type)
+	else if (c_oSer_TablePart::HeaderRowBorderDxfId == type)
 	{
 		pTable->m_oHeaderRowBorderDxfId.Init();
 		pTable->m_oHeaderRowBorderDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::Id == type)
+	else if (c_oSer_TablePart::Id == type)
 	{
 		pTable->m_oId.Init();
 		pTable->m_oId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::InsertRow == type)
+	else if (c_oSer_TablePart::InsertRow == type)
 	{
 		pTable->m_oInsertRow = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_TablePart::InsertRowShift == type)
+	else if (c_oSer_TablePart::InsertRowShift == type)
 	{
 		pTable->m_oInsertRowShift = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_TablePart::Published == type)
+	else if (c_oSer_TablePart::Published == type)
 	{
 		pTable->m_oPublished = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_TablePart::TableBorderDxfId == type)
+	else if (c_oSer_TablePart::TableBorderDxfId == type)
 	{
 		pTable->m_oTableBorderDxfId.Init();
 		pTable->m_oTableBorderDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::TotalsRowBorderDxfId == type)
+	else if (c_oSer_TablePart::TotalsRowBorderDxfId == type)
 	{
 		pTable->m_oTotalsRowBorderDxfId.Init();
 		pTable->m_oTotalsRowBorderDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::TotalsRowCellStyle == type)
+	else if (c_oSer_TablePart::TotalsRowCellStyle == type)
 	{
 		pTable->m_oTotalsRowCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TablePart::TotalsRowDxfId == type)
+	else if (c_oSer_TablePart::TotalsRowDxfId == type)
 	{
 		pTable->m_oTotalsRowDxfId.Init();
 		pTable->m_oTotalsRowDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TablePart::TotalsRowShown == type)
+	else if (c_oSer_TablePart::TotalsRowShown == type)
 	{
 		pTable->m_oTotalsRowShown = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSer_TablePart::AutoFilter == type)
+	else if (c_oSer_TablePart::AutoFilter == type)
 	{
 		pTable->m_oAutoFilter.Init();
 		READ1_DEF(length, res, this->ReadAutoFilter, pTable->m_oAutoFilter.GetPointer());
 	}
-	else if(c_oSer_TablePart::SortState == type)
+	else if (c_oSer_TablePart::SortState == type)
 	{
 		pTable->m_oSortState.Init();
 		READ1_DEF(length, res, this->ReadSortState, pTable->m_oSortState.GetPointer());
 	}
-	else if(c_oSer_TablePart::TableColumns == type)
+	else if (c_oSer_TablePart::TableColumns == type)
 	{
 		pTable->m_oTableColumns.Init();
 		READ1_DEF(length, res, this->ReadTableColumns, pTable->m_oTableColumns.GetPointer());
 	}
-	else if(c_oSer_TablePart::TableStyleInfo == type)
+	else if (c_oSer_TablePart::TableStyleInfo == type)
 	{
 		pTable->m_oTableStyleInfo.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadTableStyleInfo, pTable->m_oTableStyleInfo.GetPointer());
 	}
-	else if(c_oSer_TablePart::AltTextTable == type)
+	else if (c_oSer_TablePart::AltTextTable == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
 		pOfficeArtExtension->m_oAltTextTable.Init();
@@ -573,7 +573,7 @@ int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 		pTable->m_oExtLst.Init();
 		pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
-	else if(c_oSer_TablePart::QueryTable == type)
+	else if (c_oSer_TablePart::QueryTable == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CQueryTableFile> pQueryTableFile(new OOX::Spreadsheet::CQueryTableFile(NULL));
 		pQueryTableFile->m_oQueryTable.Init();
@@ -590,12 +590,12 @@ int BinaryTableReader::ReadAltTextTable(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CAltTextTable* pAltTextTable = static_cast<OOX::Spreadsheet::CAltTextTable*>(poResult);
-	if(c_oSer_AltTextTable::AltText == type)
+	if (c_oSer_AltTextTable::AltText == type)
 	{
 		pAltTextTable->m_oAltText.Init();
 		pAltTextTable->m_oAltText->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_AltTextTable::AltTextSummary == type)
+	else if (c_oSer_AltTextTable::AltTextSummary == type)
 	{
 		pAltTextTable->m_oAltTextSummary.Init();
 		pAltTextTable->m_oAltTextSummary->append(m_oBufferedStream.GetString3(length));
@@ -608,16 +608,16 @@ int BinaryTableReader::ReadAutoFilter(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CAutofilter* pAutofilter = static_cast<OOX::Spreadsheet::CAutofilter*>(poResult);
-	if(c_oSer_AutoFilter::Ref == type)
+	if (c_oSer_AutoFilter::Ref == type)
 	{
 		pAutofilter->m_oRef.Init();
 		pAutofilter->m_oRef->SetValue(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_AutoFilter::FilterColumns == type)
+	else if (c_oSer_AutoFilter::FilterColumns == type)
 	{
 		READ1_DEF(length, res, this->ReadFilterColumns, poResult);
 	}
-	else if(c_oSer_AutoFilter::SortState == type)
+	else if (c_oSer_AutoFilter::SortState == type)
 	{
 		pAutofilter->m_oSortState.Init();
 		READ1_DEF(length, res, this->ReadSortState, pAutofilter->m_oSortState.GetPointer());
@@ -630,7 +630,7 @@ int BinaryTableReader::ReadFilterColumns(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CAutofilter* pAutofilter = static_cast<OOX::Spreadsheet::CAutofilter*>(poResult);
-	if(c_oSer_AutoFilter::FilterColumn == type)
+	if (c_oSer_AutoFilter::FilterColumn == type)
 	{
 		OOX::Spreadsheet::CFilterColumn* pFilterColumn = new OOX::Spreadsheet::CFilterColumn();
 		READ1_DEF(length, res, this->ReadFilterColumn, pFilterColumn);
@@ -651,42 +651,42 @@ int BinaryTableReader::ReadFilterColumn(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CFilterColumn* pFilterColumn = static_cast<OOX::Spreadsheet::CFilterColumn*>(poResult);
-	if(c_oSer_FilterColumn::ColId == type)
+	if (c_oSer_FilterColumn::ColId == type)
 	{
 		pFilterColumn->m_oColId.Init();
 		pFilterColumn->m_oColId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_FilterColumn::Filters == type)
+	else if (c_oSer_FilterColumn::Filters == type)
 	{
 		pFilterColumn->m_oFilters.Init();
 		READ1_DEF(length, res, this->ReadFilterFilters, pFilterColumn->m_oFilters.GetPointer());
 	}
-	else if(c_oSer_FilterColumn::CustomFilters == type)
+	else if (c_oSer_FilterColumn::CustomFilters == type)
 	{
 		pFilterColumn->m_oCustomFilters.Init();
 		READ1_DEF(length, res, this->ReadCustomFilters, pFilterColumn->m_oCustomFilters.GetPointer());
 	}
-	else if(c_oSer_FilterColumn::DynamicFilter == type)
+	else if (c_oSer_FilterColumn::DynamicFilter == type)
 	{
 		pFilterColumn->m_oDynamicFilter.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadDynamicFilter, pFilterColumn->m_oDynamicFilter.GetPointer());
 	}
-	else if(c_oSer_FilterColumn::ColorFilter == type)
+	else if (c_oSer_FilterColumn::ColorFilter == type)
 	{
 		pFilterColumn->m_oColorFilter.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColorFilter, pFilterColumn->m_oColorFilter.GetPointer());
 	}
-	else if(c_oSer_FilterColumn::Top10 == type)
+	else if (c_oSer_FilterColumn::Top10 == type)
 	{
 		pFilterColumn->m_oTop10.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadTop10, pFilterColumn->m_oTop10.GetPointer());
 	}
-	else if(c_oSer_FilterColumn::HiddenButton == type)
+	else if (c_oSer_FilterColumn::HiddenButton == type)
 	{
 		pFilterColumn->m_oHiddenButton.Init();
 		pFilterColumn->m_oHiddenButton->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_FilterColumn::ShowButton == type)
+	else if (c_oSer_FilterColumn::ShowButton == type)
 	{
 		pFilterColumn->m_oShowButton.Init();
 		pFilterColumn->m_oShowButton->FromBool(m_oBufferedStream.GetBool());
@@ -699,19 +699,19 @@ int BinaryTableReader::ReadFilterFilters(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CFilters* pFilters = static_cast<OOX::Spreadsheet::CFilters*>(poResult);
-	if(c_oSer_FilterColumn::Filter == type)
+	if (c_oSer_FilterColumn::Filter == type)
 	{
 		OOX::Spreadsheet::CFilter* pFilter = new OOX::Spreadsheet::CFilter();
 		READ1_DEF(length, res, this->ReadFilterFilter, pFilter);
 		pFilters->m_arrItems.push_back(pFilter);
 	}
-	else if(c_oSer_FilterColumn::DateGroupItem == type)
+	else if (c_oSer_FilterColumn::DateGroupItem == type)
 	{
 		OOX::Spreadsheet::CDateGroupItem* pDateGroupItem = new OOX::Spreadsheet::CDateGroupItem();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadDateGroupItem, pDateGroupItem);
 		pFilters->m_arrItems.push_back(pDateGroupItem);
 	}
-	else if(c_oSer_FilterColumn::FiltersBlank == type)
+	else if (c_oSer_FilterColumn::FiltersBlank == type)
 	{
 		pFilters->m_oBlank.Init();
 		pFilters->m_oBlank->FromBool(m_oBufferedStream.GetBool());
@@ -724,7 +724,7 @@ int BinaryTableReader::ReadFilterFilter(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CFilter* pFilters = static_cast<OOX::Spreadsheet::CFilter*>(poResult);
-	if(c_oSer_Filter::Val == type)
+	if (c_oSer_Filter::Val == type)
 	{
 		pFilters->m_oVal.Init();
 		pFilters->m_oVal->append(m_oBufferedStream.GetString4(length));
@@ -737,37 +737,37 @@ int BinaryTableReader::ReadDateGroupItem(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CDateGroupItem* pDateGroupItem = static_cast<OOX::Spreadsheet::CDateGroupItem*>(poResult);
-	if(c_oSer_DateGroupItem::DateTimeGrouping == type)
+	if (c_oSer_DateGroupItem::DateTimeGrouping == type)
 	{
 		pDateGroupItem->m_oDateTimeGrouping.Init();
 		pDateGroupItem->m_oDateTimeGrouping->SetValue((SimpleTypes::Spreadsheet::EDateTimeGroup)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_DateGroupItem::Day == type)
+	else if (c_oSer_DateGroupItem::Day == type)
 	{
 		pDateGroupItem->m_oDay.Init();
 		pDateGroupItem->m_oDay->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DateGroupItem::Hour == type)
+	else if (c_oSer_DateGroupItem::Hour == type)
 	{
 		pDateGroupItem->m_oHour.Init();
 		pDateGroupItem->m_oHour->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DateGroupItem::Minute == type)
+	else if (c_oSer_DateGroupItem::Minute == type)
 	{
 		pDateGroupItem->m_oMinute.Init();
 		pDateGroupItem->m_oMinute->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DateGroupItem::Month == type)
+	else if (c_oSer_DateGroupItem::Month == type)
 	{
 		pDateGroupItem->m_oMonth.Init();
 		pDateGroupItem->m_oMonth->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DateGroupItem::Second == type)
+	else if (c_oSer_DateGroupItem::Second == type)
 	{
 		pDateGroupItem->m_oSecond.Init();
 		pDateGroupItem->m_oSecond->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DateGroupItem::Year == type)
+	else if (c_oSer_DateGroupItem::Year == type)
 	{
 		pDateGroupItem->m_oYear.Init();
 		pDateGroupItem->m_oYear->SetValue(m_oBufferedStream.GetLong());
@@ -780,12 +780,12 @@ int BinaryTableReader::ReadCustomFilters(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CCustomFilters* pCustomFilters = static_cast<OOX::Spreadsheet::CCustomFilters*>(poResult);
-	if(c_oSer_CustomFilters::And == type)
+	if (c_oSer_CustomFilters::And == type)
 	{
 		pCustomFilters->m_oAnd.Init();
 		pCustomFilters->m_oAnd->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_CustomFilters::CustomFilters == type)
+	else if (c_oSer_CustomFilters::CustomFilters == type)
 	{
 		READ1_DEF(length, res, this->ReadCustomFilter, poResult);
 	}
@@ -797,7 +797,7 @@ int BinaryTableReader::ReadCustomFilter(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CCustomFilters* pCustomFilters = static_cast<OOX::Spreadsheet::CCustomFilters*>(poResult);
-	if(c_oSer_CustomFilters::CustomFilter == type)
+	if (c_oSer_CustomFilters::CustomFilter == type)
 	{
 		OOX::Spreadsheet::CCustomFilter* pCustomFilter = new OOX::Spreadsheet::CCustomFilter();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadCustomFiltersItem, pCustomFilter);
@@ -811,12 +811,12 @@ int BinaryTableReader::ReadCustomFiltersItem(BYTE type, long length, void* poRes
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CCustomFilter* pCustomFilter = static_cast<OOX::Spreadsheet::CCustomFilter*>(poResult);
-	if(c_oSer_CustomFilters::Operator == type)
+	if (c_oSer_CustomFilters::Operator == type)
 	{
 		pCustomFilter->m_oOperator.Init();
 		pCustomFilter->m_oOperator->SetValue((SimpleTypes::Spreadsheet::ECustomFilter)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_CustomFilters::Val == type)
+	else if (c_oSer_CustomFilters::Val == type)
 	{
 		pCustomFilter->m_oVal.Init();
 		pCustomFilter->m_oVal->append(m_oBufferedStream.GetString4(length));
@@ -829,17 +829,17 @@ int BinaryTableReader::ReadDynamicFilter(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CDynamicFilter* pDynamicFilter = static_cast<OOX::Spreadsheet::CDynamicFilter*>(poResult);
-	if(c_oSer_DynamicFilter::Type == type)
+	if (c_oSer_DynamicFilter::Type == type)
 	{
 		pDynamicFilter->m_oType.Init();
 		pDynamicFilter->m_oType->SetValue((SimpleTypes::Spreadsheet::EDynamicFilterType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_DynamicFilter::Val == type)
+	else if (c_oSer_DynamicFilter::Val == type)
 	{
 		pDynamicFilter->m_oVal.Init();
 		pDynamicFilter->m_oVal->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_DynamicFilter::MaxVal == type)
+	else if (c_oSer_DynamicFilter::MaxVal == type)
 	{
 		pDynamicFilter->m_oMaxVal.Init();
 		pDynamicFilter->m_oMaxVal->SetValue(m_oBufferedStream.GetDoubleReal());
@@ -852,12 +852,12 @@ int BinaryTableReader::ReadColorFilter(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CColorFilter* pColorFilter = static_cast<OOX::Spreadsheet::CColorFilter*>(poResult);
-	if(c_oSer_ColorFilter::CellColor == type)
+	if (c_oSer_ColorFilter::CellColor == type)
 	{
 		pColorFilter->m_oCellColor.Init();
 		pColorFilter->m_oCellColor->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ColorFilter::DxfId == type)
+	else if (c_oSer_ColorFilter::DxfId == type)
 	{
 		pColorFilter->m_oDxfId.Init();
 		pColorFilter->m_oDxfId->SetValue(m_oBufferedStream.GetLong());
@@ -870,22 +870,22 @@ int BinaryTableReader::ReadTop10(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTop10* pTop10 = static_cast<OOX::Spreadsheet::CTop10*>(poResult);
-	if(c_oSer_Top10::FilterVal == type)
+	if (c_oSer_Top10::FilterVal == type)
 	{
 		pTop10->m_oFilterVal.Init();
 		pTop10->m_oFilterVal->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_Top10::Percent == type)
+	else if (c_oSer_Top10::Percent == type)
 	{
 		pTop10->m_oPercent.Init();
 		pTop10->m_oPercent->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_Top10::Top == type)
+	else if (c_oSer_Top10::Top == type)
 	{
 		pTop10->m_oTop.Init();
 		pTop10->m_oTop->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_Top10::Val == type)
+	else if (c_oSer_Top10::Val == type)
 	{
 		pTop10->m_oVal.Init();
 		pTop10->m_oVal->SetValue(m_oBufferedStream.GetDoubleReal());
@@ -898,27 +898,27 @@ int BinaryTableReader::ReadSortState(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CSortState* pSortState = static_cast<OOX::Spreadsheet::CSortState*>(poResult);
-	if(c_oSer_SortState::Ref == type)
+	if (c_oSer_SortState::Ref == type)
 	{
 		pSortState->m_oRef.Init();
 		pSortState->m_oRef->SetValue(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_SortState::CaseSensitive == type)
+	else if (c_oSer_SortState::CaseSensitive == type)
 	{
 		pSortState->m_oCaseSensitive.Init();
 		pSortState->m_oCaseSensitive->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SortState::ColumnSort == type)
+	else if (c_oSer_SortState::ColumnSort == type)
 	{
 		pSortState->m_oColumnSort.Init();
 		pSortState->m_oColumnSort->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SortState::SortMethod == type)
+	else if (c_oSer_SortState::SortMethod == type)
 	{
 		pSortState->m_oSortMethod.Init();
 		pSortState->m_oSortMethod->SetValue((SimpleTypes::Spreadsheet::ESortMethod)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_SortState::SortConditions == type)
+	else if (c_oSer_SortState::SortConditions == type)
 	{
 		READ1_DEF(length, res, this->ReadSortConditions, pSortState);
 	}
@@ -930,7 +930,7 @@ int BinaryTableReader::ReadSortConditions(BYTE type, long length, void* poResult
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CSortState* pSortState = static_cast<OOX::Spreadsheet::CSortState*>(poResult);
-	if(c_oSer_SortState::SortCondition == type)
+	if (c_oSer_SortState::SortCondition == type)
 	{
 		OOX::Spreadsheet::CSortCondition* pSortCondition = new OOX::Spreadsheet::CSortCondition();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadSortCondition, pSortCondition);
@@ -951,22 +951,22 @@ int BinaryTableReader::ReadSortCondition(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CSortCondition* pSortCondition = static_cast<OOX::Spreadsheet::CSortCondition*>(poResult);
-	if(c_oSer_SortState::ConditionRef == type)
+	if (c_oSer_SortState::ConditionRef == type)
 	{
 		pSortCondition->m_oRef.Init();
 		pSortCondition->m_oRef->SetValue(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_SortState::ConditionSortBy == type)
+	else if (c_oSer_SortState::ConditionSortBy == type)
 	{
 		pSortCondition->m_oSortBy.Init();
 		pSortCondition->m_oSortBy->SetValue((SimpleTypes::Spreadsheet::ESortBy)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_SortState::ConditionDescending == type)
+	else if (c_oSer_SortState::ConditionDescending == type)
 	{
 		pSortCondition->m_oDescending.Init();
 		pSortCondition->m_oDescending->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SortState::ConditionDxfId == type)
+	else if (c_oSer_SortState::ConditionDxfId == type)
 	{
 		pSortCondition->m_oDxfId.Init();
 		pSortCondition->m_oDxfId->SetValue(m_oBufferedStream.GetLong());
@@ -979,7 +979,7 @@ int BinaryTableReader::ReadTableColumns(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableColumns* pTableColumns = static_cast<OOX::Spreadsheet::CTableColumns*>(poResult);
-	if(c_oSer_TableColumns::TableColumn == type)
+	if (c_oSer_TableColumns::TableColumn == type)
 	{
 		OOX::Spreadsheet::CTableColumn* pTableColumn = new OOX::Spreadsheet::CTableColumn();
 		READ1_DEF(length, res, this->ReadTableColumn, pTableColumn);
@@ -1000,65 +1000,65 @@ int BinaryTableReader::ReadTableColumn(BYTE type, long length, void* poResult)
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableColumn* pTableColumn = static_cast<OOX::Spreadsheet::CTableColumn*>(poResult);
 	
-	if(c_oSer_TableColumns::Name == type)
+	if (c_oSer_TableColumns::Name == type)
 	{
 		pTableColumn->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::TotalsRowLabel == type)
+	else if (c_oSer_TableColumns::TotalsRowLabel == type)
 	{
 		pTableColumn->m_oTotalsRowLabel = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::TotalsRowFunction == type)
+	else if (c_oSer_TableColumns::TotalsRowFunction == type)
 	{
 		pTableColumn->m_oTotalsRowFunction.Init();
 		pTableColumn->m_oTotalsRowFunction->SetValue((SimpleTypes::Spreadsheet::ETotalsRowFunction)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_TableColumns::TotalsRowFormula == type)
+	else if (c_oSer_TableColumns::TotalsRowFormula == type)
 	{
 		pTableColumn->m_oTotalsRowFormula = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::DataDxfId == type)
+	else if (c_oSer_TableColumns::DataDxfId == type)
 	{
 		pTableColumn->m_oDataDxfId.Init();
 		pTableColumn->m_oDataDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableColumns::CalculatedColumnFormula == type)
+	else if (c_oSer_TableColumns::CalculatedColumnFormula == type)
 	{
 		pTableColumn->m_oCalculatedColumnFormula = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::DataCellStyle == type)
+	else if (c_oSer_TableColumns::DataCellStyle == type)
 	{
 		pTableColumn->m_oDataCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::HeaderRowCellStyle == type)
+	else if (c_oSer_TableColumns::HeaderRowCellStyle == type)
 	{
 		pTableColumn->m_oHeaderRowCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::HeaderRowDxfId == type)
+	else if (c_oSer_TableColumns::HeaderRowDxfId == type)
 	{
 		pTableColumn->m_oHeaderRowDxfId.Init();
 		pTableColumn->m_oHeaderRowDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableColumns::Id == type)
+	else if (c_oSer_TableColumns::Id == type)
 	{
 		pTableColumn->m_oId.Init();
 		pTableColumn->m_oId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableColumns::QueryTableFieldId == type)
+	else if (c_oSer_TableColumns::QueryTableFieldId == type)
 	{
 		pTableColumn->m_oQueryTableFieldId.Init();
 		pTableColumn->m_oQueryTableFieldId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableColumns::TotalsRowCellStyle == type)
+	else if (c_oSer_TableColumns::TotalsRowCellStyle == type)
 	{
 		pTableColumn->m_oTotalsRowCellStyle = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_TableColumns::TotalsRowDxfId == type)
+	else if (c_oSer_TableColumns::TotalsRowDxfId == type)
 	{
 		pTableColumn->m_oTotalsRowDxfId.Init();
 		pTableColumn->m_oTotalsRowDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableColumns::UniqueName == type)
+	else if (c_oSer_TableColumns::UniqueName == type)
 	{
 		pTableColumn->m_oUniqueName = m_oBufferedStream.GetString4(length);
 	}
@@ -1070,27 +1070,27 @@ int BinaryTableReader::ReadTableStyleInfo(BYTE type, long length, void* poResult
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyleInfo* pTableStyleInfo = static_cast<OOX::Spreadsheet::CTableStyleInfo*>(poResult);
-	if(c_oSer_TableStyleInfo::Name == type)
+	if (c_oSer_TableStyleInfo::Name == type)
 	{
 		pTableStyleInfo->m_oName.Init();
 		pTableStyleInfo->m_oName->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_TableStyleInfo::ShowColumnStripes == type)
+	else if (c_oSer_TableStyleInfo::ShowColumnStripes == type)
 	{
 		pTableStyleInfo->m_oShowColumnStripes.Init();
 		pTableStyleInfo->m_oShowColumnStripes->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_TableStyleInfo::ShowRowStripes == type)
+	else if (c_oSer_TableStyleInfo::ShowRowStripes == type)
 	{
 		pTableStyleInfo->m_oShowRowStripes.Init();
 		pTableStyleInfo->m_oShowRowStripes->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_TableStyleInfo::ShowFirstColumn == type)
+	else if (c_oSer_TableStyleInfo::ShowFirstColumn == type)
 	{
 		pTableStyleInfo->m_oShowFirstColumn.Init();
 		pTableStyleInfo->m_oShowFirstColumn->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_TableStyleInfo::ShowLastColumn == type)
+	else if (c_oSer_TableStyleInfo::ShowLastColumn == type)
 	{
 		pTableStyleInfo->m_oShowLastColumn.Init();
 		pTableStyleInfo->m_oShowLastColumn->FromBool(m_oBufferedStream.GetBool());
@@ -1118,7 +1118,7 @@ int BinarySharedStringTableReader::Read()
 int BinarySharedStringTableReader::ReadSharedStringTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerSharedStringTypes::Si == type)
+	if (c_oSerSharedStringTypes::Si == type)
 	{
 		OOX::Spreadsheet::CSi* pSi = new OOX::Spreadsheet::CSi();
 		READ1_DEF(length, res, this->ReadSi, pSi);
@@ -1132,18 +1132,18 @@ int BinarySharedStringTableReader::ReadSi(BYTE type, long length, void* poResult
 {
 	OOX::Spreadsheet::CSi* pSi = static_cast<OOX::Spreadsheet::CSi*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerSharedStringTypes::Run == type)
+	if (c_oSerSharedStringTypes::Run == type)
 	{
 		OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 		READ1_DEF(length, res, this->ReadRun, pRun);
 		pSi->m_arrItems.push_back(pRun);
 	}
-	else if(c_oSerSharedStringTypes::Text == type)
+	else if (c_oSerSharedStringTypes::Text == type)
 	{
 		std::wstring sText(m_oBufferedStream.GetString4(length));
 		OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 		pText->m_sText = sText;
-		if(std::wstring::npos != sText.find(_T(" ")))
+		if (std::wstring::npos != sText.find(_T(" ")))
 		{
 			pText->m_oSpace.Init();
 			pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -1158,17 +1158,17 @@ int BinarySharedStringTableReader::ReadRun(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerSharedStringTypes::RPr == type)
+	if (c_oSerSharedStringTypes::RPr == type)
 	{
 		pRun->m_oRPr.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadRPr, pRun->m_oRPr.GetPointer());
 	}
-	else if(c_oSerSharedStringTypes::Text == type)
+	else if (c_oSerSharedStringTypes::Text == type)
 	{
 		std::wstring sText(m_oBufferedStream.GetString4(length));
 		OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 		pText->m_sText = sText;
-		if(std::wstring::npos != sText.find(_T(" ")))
+		if (std::wstring::npos != sText.find(_T(" ")))
 		{
 			pText->m_oSpace.Init();
 			pText->m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
@@ -1183,50 +1183,50 @@ int BinarySharedStringTableReader::ReadRPr(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CRPr* pFont = static_cast<OOX::Spreadsheet::CRPr* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFontTypes::Bold == type)
+	if (c_oSerFontTypes::Bold == type)
 	{
 		pFont->m_oBold.Init();
 		pFont->m_oBold->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::Color == type)
+	else if (c_oSerFontTypes::Color == type)
 	{
 		pFont->m_oColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
 	}
-	else if(c_oSerFontTypes::Italic == type)
+	else if (c_oSerFontTypes::Italic == type)
 	{
 		pFont->m_oItalic.Init();
 		pFont->m_oItalic->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::RFont == type)
+	else if (c_oSerFontTypes::RFont == type)
 	{
 		pFont->m_oRFont.Init();
 		pFont->m_oRFont->m_sVal = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerFontTypes::Scheme == type)
+	else if (c_oSerFontTypes::Scheme == type)
 	{
 		pFont->m_oScheme.Init();
 		pFont->m_oScheme->m_oFontScheme.Init();
 		pFont->m_oScheme->m_oFontScheme->SetValue((SimpleTypes::Spreadsheet::EFontScheme)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFontTypes::Strike == type)
+	else if (c_oSerFontTypes::Strike == type)
 	{
 		pFont->m_oStrike.Init();
 		pFont->m_oStrike->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::Sz == type)
+	else if (c_oSerFontTypes::Sz == type)
 	{
 		pFont->m_oSz.Init();
 		pFont->m_oSz->m_oVal.Init();
 		pFont->m_oSz->m_oVal->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFontTypes::Underline == type)
+	else if (c_oSerFontTypes::Underline == type)
 	{
 		pFont->m_oUnderline.Init();
 		pFont->m_oUnderline->m_oUnderline.Init();
 		pFont->m_oUnderline->m_oUnderline->SetValue((SimpleTypes::Spreadsheet::EUnderline)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFontTypes::VertAlign == type)
+	else if (c_oSerFontTypes::VertAlign == type)
 	{
 		pFont->m_oVertAlign.Init();
 		pFont->m_oVertAlign->m_oVerticalAlign.Init();
@@ -1253,7 +1253,7 @@ int BinaryStyleTableReader::Read()
 int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Borders == type)
+	if (c_oSerStylesTypes::Borders == type)
 	{
 		m_oStyles.m_oBorders.Init();
 		READ1_DEF(length, res, this->ReadBorders, poResult);
@@ -1261,7 +1261,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oBorders->m_oCount.Init();
 		m_oStyles.m_oBorders->m_oCount->SetValue((unsigned int)m_oStyles.m_oBorders->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::Fills == type)
+	else if (c_oSerStylesTypes::Fills == type)
 	{
 		m_oStyles.m_oFills.Init();
 		READ1_DEF(length, res, this->ReadFills, poResult);
@@ -1269,7 +1269,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oFills->m_oCount.Init();
 		m_oStyles.m_oFills->m_oCount->SetValue((unsigned int)m_oStyles.m_oFills->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::Fonts == type)
+	else if (c_oSerStylesTypes::Fonts == type)
 	{
 		m_oStyles.m_oFonts.Init();
 		READ1_DEF(length, res, this->ReadFonts, poResult);
@@ -1277,7 +1277,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oFonts->m_oCount.Init();
 		m_oStyles.m_oFonts->m_oCount->SetValue((unsigned int)m_oStyles.m_oFonts->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::NumFmts == type)
+	else if (c_oSerStylesTypes::NumFmts == type)
 	{
 		m_oStyles.m_oNumFmts.Init();
 		READ1_DEF(length, res, this->ReadNumFmts, poResult);
@@ -1285,7 +1285,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oNumFmts->m_oCount.Init();
 		m_oStyles.m_oNumFmts->m_oCount->SetValue((unsigned int)m_oStyles.m_oNumFmts->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::CellStyleXfs == type)
+	else if (c_oSerStylesTypes::CellStyleXfs == type)
 	{
 		m_oStyles.m_oCellStyleXfs.Init();
 		READ1_DEF(length, res, this->ReadCellStyleXfs, poResult);
@@ -1293,7 +1293,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oCellStyleXfs->m_oCount.Init();
 		m_oStyles.m_oCellStyleXfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellStyleXfs->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::CellXfs == type)
+	else if (c_oSerStylesTypes::CellXfs == type)
 	{
 		m_oStyles.m_oCellXfs.Init();
 		READ1_DEF(length, res, this->ReadCellXfs, poResult);
@@ -1301,7 +1301,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oCellXfs->m_oCount.Init();
 		m_oStyles.m_oCellXfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellXfs->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::CellStyles == type)
+	else if (c_oSerStylesTypes::CellStyles == type)
 	{
 		m_oStyles.m_oCellStyles.Init();
 		READ1_DEF(length, res, this->ReadCellStyles, poResult);
@@ -1309,7 +1309,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oCellStyles->m_oCount.Init();
 		m_oStyles.m_oCellStyles->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellStyles->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::Dxfs == type)
+	else if (c_oSerStylesTypes::Dxfs == type)
 	{
 		m_oStyles.m_oDxfs.Init();
 		READ1_DEF(length, res, this->ReadDxfs, m_oStyles.m_oDxfs.GetPointer());
@@ -1317,17 +1317,17 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 		m_oStyles.m_oDxfs->m_oCount.Init();
 		m_oStyles.m_oDxfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oDxfs->m_arrItems.size());
 	}
-	else if(c_oSerStylesTypes::TableStyles == type)
+	else if (c_oSerStylesTypes::TableStyles == type)
 	{
 		m_oStyles.m_oTableStyles.Init();
 		READ1_DEF(length, res, this->ReadTableStyles, m_oStyles.m_oTableStyles.GetPointer());
-		if(false == m_oStyles.m_oTableStyles->m_oCount.IsInit())
+		if (false == m_oStyles.m_oTableStyles->m_oCount.IsInit())
 		{
 			m_oStyles.m_oTableStyles->m_oCount.Init();
 			m_oStyles.m_oTableStyles->m_oCount->SetValue(0);
 		}
 	}
-	else if(c_oSerStylesTypes::ExtDxfs == type)
+	else if (c_oSerStylesTypes::ExtDxfs == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
 
@@ -1344,7 +1344,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 			m_oStyles.m_oExtLst.Init();
 		m_oStyles.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
-	else if(c_oSerStylesTypes::SlicerStyles == type)
+	else if (c_oSerStylesTypes::SlicerStyles == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
 		pOfficeArtExtension->m_oSlicerStyles.Init();
@@ -1366,7 +1366,7 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 int BinaryStyleTableReader::ReadBorders(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Border == type)
+	if (c_oSerStylesTypes::Border == type)
 	{
 		OOX::Spreadsheet::CBorder* pBorder = new OOX::Spreadsheet::CBorder();
 		READ1_DEF(length, res, this->ReadBorder, pBorder);
@@ -1380,48 +1380,48 @@ int BinaryStyleTableReader::ReadBorder(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CBorder* pBorder = static_cast<OOX::Spreadsheet::CBorder*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerBorderTypes::Bottom == type)
+	if (c_oSerBorderTypes::Bottom == type)
 	{
 		pBorder->m_oBottom.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oBottom.GetPointer());
 	}
-	else if(c_oSerBorderTypes::Diagonal == type)
+	else if (c_oSerBorderTypes::Diagonal == type)
 	{
 		pBorder->m_oDiagonal.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oDiagonal.GetPointer());
 	}
-	else if(c_oSerBorderTypes::End == type)
+	else if (c_oSerBorderTypes::End == type)
 	{
 		pBorder->m_oEnd.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oEnd.GetPointer());
 	}
-	else if(c_oSerBorderTypes::Horizontal == type)
+	else if (c_oSerBorderTypes::Horizontal == type)
 	{
 		pBorder->m_oHorizontal.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oHorizontal.GetPointer());
 	}
-	else if(c_oSerBorderTypes::Start == type)
+	else if (c_oSerBorderTypes::Start == type)
 	{
 		pBorder->m_oStart.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oStart.GetPointer());
 	}
-	else if(c_oSerBorderTypes::Top == type)
+	else if (c_oSerBorderTypes::Top == type)
 	{
 		pBorder->m_oTop.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oTop.GetPointer());
 	}
-	else if(c_oSerBorderTypes::Vertical == type)
+	else if (c_oSerBorderTypes::Vertical == type)
 	{
 		pBorder->m_oVertical.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadBorderProp, pBorder->m_oVertical.GetPointer());
 	}
-	else if(c_oSerBorderTypes::DiagonalDown == type)
+	else if (c_oSerBorderTypes::DiagonalDown == type)
 	{
 		pBorder->m_oDiagonalDown.Init();
 		bool bDD = m_oBufferedStream.GetBool();
 		pBorder->m_oDiagonalDown->SetValue((false != bDD) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerBorderTypes::DiagonalUp == type)
+	else if (c_oSerBorderTypes::DiagonalUp == type)
 	{
 		pBorder->m_oDiagonalUp.Init();
 		bool bDU = m_oBufferedStream.GetBool();
@@ -1435,12 +1435,12 @@ int BinaryStyleTableReader::ReadBorderProp(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CBorderProp* pBorderProp = static_cast<OOX::Spreadsheet::CBorderProp*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerBorderPropTypes::Style == type)
+	if (c_oSerBorderPropTypes::Style == type)
 	{
 		pBorderProp->m_oStyle.Init();
 		pBorderProp->m_oStyle->SetValue((SimpleTypes::Spreadsheet::EBorderStyle)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerBorderPropTypes::Color == type)
+	else if (c_oSerBorderPropTypes::Color == type)
 	{
 		pBorderProp->m_oColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pBorderProp->m_oColor.GetPointer());
@@ -1456,7 +1456,7 @@ int BinaryStyleTableReader::ReadColor(BYTE type, long length, void* poResult)
 int BinaryStyleTableReader::ReadFills(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Fill == type)
+	if (c_oSerStylesTypes::Fill == type)
 	{
 		OOX::Spreadsheet::CFill* pFill = new OOX::Spreadsheet::CFill();
 		READ1_DEF(length, res, this->ReadFill, pFill);
@@ -1470,12 +1470,12 @@ int BinaryStyleTableReader::ReadFill(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CFill* pFill = static_cast<OOX::Spreadsheet::CFill* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFillTypes::Pattern == type)
+	if (c_oSerFillTypes::Pattern == type)
 	{
 		pFill->m_oPatternFill.Init();
 		READ1_DEF(length, res, this->ReadPatternFill, pFill->m_oPatternFill.GetPointer());
 	}
-	else if(c_oSerFillTypes::Gradient == type)
+	else if (c_oSerFillTypes::Gradient == type)
 	{
 		pFill->m_oGradientFill.Init();
 		READ1_DEF(length, res, this->ReadGradientFill, pFill->m_oGradientFill.GetPointer());
@@ -1488,7 +1488,7 @@ int BinaryStyleTableReader::ReadPatternFill(BYTE type, long length, void* poResu
 {
 	OOX::Spreadsheet::CPatternFill* pPatternFill = static_cast<OOX::Spreadsheet::CPatternFill* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFillTypes::PatternBgColor_deprecated == type)
+	if (c_oSerFillTypes::PatternBgColor_deprecated == type)
 	{
 		pPatternFill->m_oPatternType.Init();
 		pPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeSolid);
@@ -1501,17 +1501,17 @@ int BinaryStyleTableReader::ReadPatternFill(BYTE type, long length, void* poResu
 		pPatternFill->m_oBgColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oBgColor.GetPointer());
 	}
-	else if(c_oSerFillTypes::PatternType == type)
+	else if (c_oSerFillTypes::PatternType == type)
 	{
 		pPatternFill->m_oPatternType.Init();
 		pPatternFill->m_oPatternType->SetValue((SimpleTypes::Spreadsheet::EPatternType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFillTypes::PatternFgColor == type)
+	else if (c_oSerFillTypes::PatternFgColor == type)
 	{
 		pPatternFill->m_oFgColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oFgColor.GetPointer());
 	}
-	else if(c_oSerFillTypes::PatternBgColor == type)
+	else if (c_oSerFillTypes::PatternBgColor == type)
 	{
 		pPatternFill->m_oBgColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pPatternFill->m_oBgColor.GetPointer());
@@ -1524,37 +1524,37 @@ int BinaryStyleTableReader::ReadGradientFill(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CGradientFill* pGradientFill = static_cast<OOX::Spreadsheet::CGradientFill* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFillTypes::GradientType == type)
+	if (c_oSerFillTypes::GradientType == type)
 	{
 		pGradientFill->m_oType.Init();
 		pGradientFill->m_oType->SetValue((SimpleTypes::Spreadsheet::EGradientType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFillTypes::GradientLeft == type)
+	else if (c_oSerFillTypes::GradientLeft == type)
 	{
 		pGradientFill->m_oLeft.Init();
 		pGradientFill->m_oLeft->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientTop == type)
+	else if (c_oSerFillTypes::GradientTop == type)
 	{
 		pGradientFill->m_oTop.Init();
 		pGradientFill->m_oTop->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientRight == type)
+	else if (c_oSerFillTypes::GradientRight == type)
 	{
 		pGradientFill->m_oRight.Init();
 		pGradientFill->m_oRight->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientBottom == type)
+	else if (c_oSerFillTypes::GradientBottom == type)
 	{
 		pGradientFill->m_oBottom.Init();
 		pGradientFill->m_oBottom->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientDegree == type)
+	else if (c_oSerFillTypes::GradientDegree == type)
 	{
 		pGradientFill->m_oDegree.Init();
 		pGradientFill->m_oDegree->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientStop == type)
+	else if (c_oSerFillTypes::GradientStop == type)
 	{
 		OOX::Spreadsheet::CGradientStop* pGradientStop = new OOX::Spreadsheet::CGradientStop();
 		READ1_DEF(length, res, this->ReadGradientFillStop, pGradientStop);
@@ -1568,12 +1568,12 @@ int BinaryStyleTableReader::ReadGradientFillStop(BYTE type, long length, void* p
 {
 	OOX::Spreadsheet::CGradientStop* pGradientStop = static_cast<OOX::Spreadsheet::CGradientStop* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFillTypes::GradientStopPosition == type)
+	if (c_oSerFillTypes::GradientStopPosition == type)
 	{
 		pGradientStop->m_oPosition.Init();
 		pGradientStop->m_oPosition->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFillTypes::GradientStopColor == type)
+	else if (c_oSerFillTypes::GradientStopColor == type)
 	{
 		pGradientStop->m_oColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pGradientStop->m_oColor.GetPointer());
@@ -1585,7 +1585,7 @@ int BinaryStyleTableReader::ReadGradientFillStop(BYTE type, long length, void* p
 int BinaryStyleTableReader::ReadFonts(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Font == type)
+	if (c_oSerStylesTypes::Font == type)
 	{
 		OOX::Spreadsheet::CFont* pFont = new OOX::Spreadsheet::CFont();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadFont, pFont);
@@ -1599,51 +1599,51 @@ int BinaryStyleTableReader::ReadFont(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CFont* pFont = static_cast<OOX::Spreadsheet::CFont* >(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFontTypes::Bold == type)
+	if (c_oSerFontTypes::Bold == type)
 	{
 		pFont->m_oBold.Init();
 		pFont->m_oBold->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::Color == type)
+	else if (c_oSerFontTypes::Color == type)
 	{
 		pFont->m_oColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pFont->m_oColor.GetPointer());
 	}
-	else if(c_oSerFontTypes::Italic == type)
+	else if (c_oSerFontTypes::Italic == type)
 	{
 		pFont->m_oItalic.Init();
 		pFont->m_oItalic->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::RFont == type)
+	else if (c_oSerFontTypes::RFont == type)
 	{
 		std::wstring sFontName(m_oBufferedStream.GetString4(length));
 		pFont->m_oRFont.Init();
 		pFont->m_oRFont->m_sVal = sFontName;
 	}
-	else if(c_oSerFontTypes::Scheme == type)
+	else if (c_oSerFontTypes::Scheme == type)
 	{
 		pFont->m_oScheme.Init();
 		pFont->m_oScheme->m_oFontScheme.Init();
 		pFont->m_oScheme->m_oFontScheme->SetValue((SimpleTypes::Spreadsheet::EFontScheme)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFontTypes::Strike == type)
+	else if (c_oSerFontTypes::Strike == type)
 	{
 		pFont->m_oStrike.Init();
 		pFont->m_oStrike->m_oVal.SetValue((false != m_oBufferedStream.GetBool()) ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFontTypes::Sz == type)
+	else if (c_oSerFontTypes::Sz == type)
 	{
 		pFont->m_oSz.Init();
 		pFont->m_oSz->m_oVal.Init();
 		pFont->m_oSz->m_oVal->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerFontTypes::Underline == type)
+	else if (c_oSerFontTypes::Underline == type)
 	{
 		pFont->m_oUnderline.Init();
 		pFont->m_oUnderline->m_oUnderline.Init();
 		pFont->m_oUnderline->m_oUnderline->SetValue((SimpleTypes::Spreadsheet::EUnderline)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFontTypes::VertAlign == type)
+	else if (c_oSerFontTypes::VertAlign == type)
 	{
 		pFont->m_oVertAlign.Init();
 		pFont->m_oVertAlign->m_oVerticalAlign.Init();
@@ -1656,7 +1656,7 @@ int BinaryStyleTableReader::ReadFont(BYTE type, long length, void* poResult)
 int BinaryStyleTableReader::ReadNumFmts(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::NumFmt == type)
+	if (c_oSerStylesTypes::NumFmt == type)
 	{
 		OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pNumFmt);
@@ -1676,15 +1676,15 @@ int BinaryStyleTableReader::ReadNumFmt(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CNumFmt* pNumFmt = static_cast<OOX::Spreadsheet::CNumFmt*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerNumFmtTypes::FormatCode == type)
+	if (c_oSerNumFmtTypes::FormatCode == type)
 	{
 		pNumFmt->m_oFormatCode = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerNumFmtTypes::FormatCode16 == type)
+	else if (c_oSerNumFmtTypes::FormatCode16 == type)
 	{
 		pNumFmt->m_oFormatCode16 = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerNumFmtTypes::NumFmtId == type)
+	else if (c_oSerNumFmtTypes::NumFmtId == type)
 	{
 		pNumFmt->m_oNumFmtId.Init();
 		pNumFmt->m_oNumFmtId->SetValue(m_oBufferedStream.GetLong());
@@ -1696,7 +1696,7 @@ int BinaryStyleTableReader::ReadNumFmt(BYTE type, long length, void* poResult)
 int BinaryStyleTableReader::ReadCellStyleXfs(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Xfs == type)
+	if (c_oSerStylesTypes::Xfs == type)
 	{
 		OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadXfs, pXfs);
@@ -1709,7 +1709,7 @@ int BinaryStyleTableReader::ReadCellStyleXfs(BYTE type, long length, void* poRes
 int BinaryStyleTableReader::ReadCellXfs(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::Xfs == type)
+	if (c_oSerStylesTypes::Xfs == type)
 	{
 		OOX::Spreadsheet::CXfs* pXfs = new OOX::Spreadsheet::CXfs();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadXfs, pXfs);
@@ -1723,27 +1723,27 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CXfs* pXfs = static_cast<OOX::Spreadsheet::CXfs*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerXfsTypes::ApplyAlignment == type)
+	if (c_oSerXfsTypes::ApplyAlignment == type)
 	{
 		pXfs->m_oApplyAlignment.Init();
 		pXfs->m_oApplyAlignment->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::ApplyBorder == type)
+	else if (c_oSerXfsTypes::ApplyBorder == type)
 	{
 		pXfs->m_oApplyBorder.Init();
 		pXfs->m_oApplyBorder->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::ApplyFill == type)
+	else if (c_oSerXfsTypes::ApplyFill == type)
 	{
 		pXfs->m_oApplyFill.Init();
 		pXfs->m_oApplyFill->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::ApplyFont == type)
+	else if (c_oSerXfsTypes::ApplyFont == type)
 	{
 		pXfs->m_oApplyFont.Init();
 		pXfs->m_oApplyFont->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::ApplyNumberFormat == type)
+	else if (c_oSerXfsTypes::ApplyNumberFormat == type)
 	{
 		pXfs->m_oApplyNumberFormat.Init();
 		pXfs->m_oApplyNumberFormat->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
@@ -1753,37 +1753,37 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oApplyProtection.Init();
 		pXfs->m_oApplyProtection->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::BorderId == type)
+	else if (c_oSerXfsTypes::BorderId == type)
 	{
 		pXfs->m_oBorderId.Init();
 		pXfs->m_oBorderId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerXfsTypes::FillId == type)
+	else if (c_oSerXfsTypes::FillId == type)
 	{
 		pXfs->m_oFillId.Init();
 		pXfs->m_oFillId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerXfsTypes::FontId == type)
+	else if (c_oSerXfsTypes::FontId == type)
 	{
 		pXfs->m_oFontId.Init();
 		pXfs->m_oFontId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerXfsTypes::NumFmtId == type)
+	else if (c_oSerXfsTypes::NumFmtId == type)
 	{
 		pXfs->m_oNumFmtId.Init();
 		pXfs->m_oNumFmtId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerXfsTypes::QuotePrefix == type)
+	else if (c_oSerXfsTypes::QuotePrefix == type)
 	{
 		pXfs->m_oQuotePrefix.Init();
 		pXfs->m_oQuotePrefix->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::PivotButton == type)
+	else if (c_oSerXfsTypes::PivotButton == type)
 	{
 		pXfs->m_oPivotButton.Init();
 		pXfs->m_oPivotButton->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerXfsTypes::Aligment == type)
+	else if (c_oSerXfsTypes::Aligment == type)
 	{
 		pXfs->m_oAligment.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pXfs->m_oAligment.GetPointer());
@@ -1824,34 +1824,34 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CAligment* pAligment = static_cast<OOX::Spreadsheet::CAligment*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerAligmentTypes::Horizontal == type)
+	if (c_oSerAligmentTypes::Horizontal == type)
 	{
 		pAligment->m_oHorizontal.Init();
 		pAligment->m_oHorizontal->SetValue((SimpleTypes::Spreadsheet::EHorizontalAlignment)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerAligmentTypes::Indent == type)
+	else if (c_oSerAligmentTypes::Indent == type)
 	{
 		pAligment->m_oIndent = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerAligmentTypes::RelativeIndent == type)
+	else if (c_oSerAligmentTypes::RelativeIndent == type)
 	{
 		pAligment->m_oRelativeIndent = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerAligmentTypes::ShrinkToFit == type)
+	else if (c_oSerAligmentTypes::ShrinkToFit == type)
 	{
 		pAligment->m_oShrinkToFit.Init();
 		pAligment->m_oShrinkToFit->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerAligmentTypes::TextRotation == type)
+	else if (c_oSerAligmentTypes::TextRotation == type)
 	{
 		pAligment->m_oTextRotation = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerAligmentTypes::Vertical == type)
+	else if (c_oSerAligmentTypes::Vertical == type)
 	{
 		pAligment->m_oVertical.Init();
 		pAligment->m_oVertical->SetValue((SimpleTypes::Spreadsheet::EVerticalAlignment)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerAligmentTypes::WrapText == type)
+	else if (c_oSerAligmentTypes::WrapText == type)
 	{
 		pAligment->m_oWrapText.Init();
 		pAligment->m_oWrapText->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
@@ -1864,7 +1864,7 @@ int BinaryStyleTableReader::ReadDxfs(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CDxfs* pDxfs = static_cast<OOX::Spreadsheet::CDxfs*>(poResult);
-	if(c_oSerStylesTypes::Dxf == type)
+	if (c_oSerStylesTypes::Dxf == type)
 	{
 		OOX::Spreadsheet::CDxf* pDxf = new OOX::Spreadsheet::CDxf();
 		READ1_DEF(length, res, this->ReadDxf, pDxf);
@@ -1885,27 +1885,27 @@ int BinaryStyleTableReader::ReadDxf(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CDxf* pDxf = static_cast<OOX::Spreadsheet::CDxf*>(poResult);
-	if(c_oSer_Dxf::Alignment == type)
+	if (c_oSer_Dxf::Alignment == type)
 	{
 		pDxf->m_oAlignment.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pDxf->m_oAlignment.GetPointer());
 	}
-	else if(c_oSer_Dxf::Border == type)
+	else if (c_oSer_Dxf::Border == type)
 	{
 		pDxf->m_oBorder.Init();
 		READ1_DEF(length, res, this->ReadBorder, pDxf->m_oBorder.GetPointer());
 	}
-	else if(c_oSer_Dxf::Fill == type)
+	else if (c_oSer_Dxf::Fill == type)
 	{
 		pDxf->m_oFill.Init();
 		READ1_DEF(length, res, this->ReadFill, pDxf->m_oFill.GetPointer());
 	}
-	else if(c_oSer_Dxf::Font == type)
+	else if (c_oSer_Dxf::Font == type)
 	{
 		pDxf->m_oFont.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadFont, pDxf->m_oFont.GetPointer());
 	}
-	else if(c_oSer_Dxf::NumFmt == type)
+	else if (c_oSer_Dxf::NumFmt == type)
 	{
 		pDxf->m_oNumFmt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pDxf->m_oNumFmt.GetPointer());
@@ -1918,7 +1918,7 @@ int BinaryStyleTableReader::ReadDxf(BYTE type, long length, void* poResult)
 int BinaryStyleTableReader::ReadCellStyles(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerStylesTypes::CellStyle == type)
+	if (c_oSerStylesTypes::CellStyle == type)
 	{
 		OOX::Spreadsheet::CCellStyle* pCellStyle = new OOX::Spreadsheet::CCellStyle();
 		READ1_DEF(length, res, this->ReadCellStyle, pCellStyle);
@@ -1932,31 +1932,31 @@ int BinaryStyleTableReader::ReadCellStyle(BYTE type, long length, void* poResult
 {
 	OOX::Spreadsheet::CCellStyle* pCellStyle = static_cast<OOX::Spreadsheet::CCellStyle*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_CellStyle::BuiltinId == type)
+	if (c_oSer_CellStyle::BuiltinId == type)
 	{
 		pCellStyle->m_oBuiltinId.Init();
 		pCellStyle->m_oBuiltinId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_CellStyle::CustomBuiltin == type)
+	else if (c_oSer_CellStyle::CustomBuiltin == type)
 	{
 		pCellStyle->m_oCustomBuiltin.Init();
 		pCellStyle->m_oCustomBuiltin->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_CellStyle::Hidden == type)
+	else if (c_oSer_CellStyle::Hidden == type)
 	{
 		pCellStyle->m_oHidden.Init();
 		pCellStyle->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_CellStyle::ILevel == type)
+	else if (c_oSer_CellStyle::ILevel == type)
 	{
 		pCellStyle->m_oILevel.Init();
 		pCellStyle->m_oILevel->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_CellStyle::Name == type)
+	else if (c_oSer_CellStyle::Name == type)
 	{
 		pCellStyle->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_CellStyle::XfId == type)
+	else if (c_oSer_CellStyle::XfId == type)
 	{
 		pCellStyle->m_oXfId.Init();
 		pCellStyle->m_oXfId->SetValue(m_oBufferedStream.GetLong());
@@ -1969,17 +1969,17 @@ int BinaryStyleTableReader::ReadTableStyles(BYTE type, long length, void* poResu
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyles* pTableStyles = static_cast<OOX::Spreadsheet::CTableStyles*>(poResult);
-	if(c_oSer_TableStyles::DefaultTableStyle == type)
+	if (c_oSer_TableStyles::DefaultTableStyle == type)
 	{
 		pTableStyles->m_oDefaultTableStyle.Init();
 		pTableStyles->m_oDefaultTableStyle->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_TableStyles::DefaultPivotStyle == type)
+	else if (c_oSer_TableStyles::DefaultPivotStyle == type)
 	{
 		pTableStyles->m_oDefaultPivotStyle.Init();
 		pTableStyles->m_oDefaultPivotStyle->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_TableStyles::TableStyles == type)
+	else if (c_oSer_TableStyles::TableStyles == type)
 	{
 		READ1_DEF(length, res, this->ReadTableCustomStyles, pTableStyles);
 		
@@ -1994,7 +1994,7 @@ int BinaryStyleTableReader::ReadTableCustomStyles(BYTE type, long length, void* 
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyles* pTableStyles = static_cast<OOX::Spreadsheet::CTableStyles*>(poResult);
-	if(c_oSer_TableStyles::TableStyle == type)
+	if (c_oSer_TableStyles::TableStyle == type)
 	{
 		OOX::Spreadsheet::CTableStyle* pTableStyle = new OOX::Spreadsheet::CTableStyle();
 		READ1_DEF(length, res, this->ReadTableCustomStyle, pTableStyle);
@@ -2008,22 +2008,22 @@ int BinaryStyleTableReader::ReadTableCustomStyle(BYTE type, long length, void* p
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyle* pTableStyle = static_cast<OOX::Spreadsheet::CTableStyle*>(poResult);
-	if(c_oSer_TableStyle::Name == type)
+	if (c_oSer_TableStyle::Name == type)
 	{
 		pTableStyle->m_oName.Init();
 		pTableStyle->m_oName->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_TableStyle::Pivot == type)
+	else if (c_oSer_TableStyle::Pivot == type)
 	{
 		pTableStyle->m_oPivot.Init();
 		pTableStyle->m_oPivot->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_TableStyle::Table == type)
+	else if (c_oSer_TableStyle::Table == type)
 	{
 		pTableStyle->m_oTable.Init();
 		pTableStyle->m_oTable->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_TableStyle::Elements == type)
+	else if (c_oSer_TableStyle::Elements == type)
 	{
 		READ1_DEF(length, res, this->ReadTableCustomStyleElements, pTableStyle);
 		
@@ -2038,7 +2038,7 @@ int BinaryStyleTableReader::ReadTableCustomStyleElements(BYTE type, long length,
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyle* pTableStyle = static_cast<OOX::Spreadsheet::CTableStyle*>(poResult);
-	if(c_oSer_TableStyle::Element == type)
+	if (c_oSer_TableStyle::Element == type)
 	{
 		OOX::Spreadsheet::CTableStyleElement* pTableStyleElement = new OOX::Spreadsheet::CTableStyleElement();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadTableCustomStyleElement, pTableStyleElement);
@@ -2052,17 +2052,17 @@ int BinaryStyleTableReader::ReadTableCustomStyleElement(BYTE type, long length, 
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Spreadsheet::CTableStyleElement* pTableStyleElement = static_cast<OOX::Spreadsheet::CTableStyleElement*>(poResult);
-	if(c_oSer_TableStyleElement::Type == type)
+	if (c_oSer_TableStyleElement::Type == type)
 	{
 		pTableStyleElement->m_oType.Init();
 		pTableStyleElement->m_oType->SetValue((SimpleTypes::Spreadsheet::ETableStyleType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_TableStyleElement::Size == type)
+	else if (c_oSer_TableStyleElement::Size == type)
 	{
 		pTableStyleElement->m_oSize.Init();
 		pTableStyleElement->m_oSize->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_TableStyleElement::DxfId == type)
+	else if (c_oSer_TableStyleElement::DxfId == type)
 	{
 		pTableStyleElement->m_oDxfId.Init();
 		pTableStyleElement->m_oDxfId->SetValue(m_oBufferedStream.GetLong());
@@ -2088,7 +2088,7 @@ int BinaryWorkbookTableReader::Read()
 int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::WorkbookPr == type)
+	if (c_oSerWorkbookTypes::WorkbookPr == type)
 	{
 		m_oWorkbook.m_oWorkbookPr.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookPr, poResult);
@@ -2098,27 +2098,27 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.m_oWorkbookProtection.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, poResult);
 	}
-	else if(c_oSerWorkbookTypes::BookViews == type)
+	else if (c_oSerWorkbookTypes::BookViews == type)
 	{
 		m_oWorkbook.m_oBookViews.Init();
 		READ1_DEF(length, res, this->ReadBookViews, poResult);
 	}
-	else if(c_oSerWorkbookTypes::DefinedNames == type)
+	else if (c_oSerWorkbookTypes::DefinedNames == type)
 	{
 		m_oWorkbook.m_oDefinedNames.Init();
 		READ1_DEF(length, res, this->ReadDefinedNames, poResult);
 	}
-	else if(c_oSerWorkbookTypes::CalcPr == type)
+	else if (c_oSerWorkbookTypes::CalcPr == type)
 	{
 		m_oWorkbook.m_oCalcPr.Init();
 		READ1_DEF(length, res, this->ReadCalcPr, m_oWorkbook.m_oCalcPr.GetPointer());
 	}
-	else if(c_oSerWorkbookTypes::ExternalReferences == type)
+	else if (c_oSerWorkbookTypes::ExternalReferences == type)
 	{
 		m_oWorkbook.m_oExternalReferences.Init();
 		READ1_DEF(length, res, this->ReadExternalReferences, poResult);
 	}
-	else if(c_oSerWorkbookTypes::PivotCaches == type)
+	else if (c_oSerWorkbookTypes::PivotCaches == type)
 	{
 		m_oWorkbook.m_oPivotCachesXml.Init();
 		m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCaches>");
@@ -2138,7 +2138,19 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.m_oFileSharing.Init();
 		READ1_DEF(length, res, this->ReadFileSharing, m_oWorkbook.m_oFileSharing.GetPointer());
 	}
-	else if(c_oSerWorkbookTypes::VbaProject == type)
+	else if (c_oSerWorkbookTypes::ExternalLinksAutoRefresh == type)
+	{	
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		pOfficeArtExtension->m_oExternalLinksAutoRefresh = m_oBufferedStream.GetBool();
+
+		pOfficeArtExtension->m_sUri = L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}";
+		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:xxlnp=\"http://schemas.microsoft.com/office/spreadsheetml/2019/extlinksprops\"";
+
+		if (m_oWorkbook.m_oExtLst.IsInit() == false)
+			m_oWorkbook.m_oExtLst.Init();
+		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else if (c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_bMacroRead = true;
 		m_oBufferedStream.Skip(1); //skip type
@@ -2157,7 +2169,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 			m_oBufferedStream.SkipRecord();
 		}
     }
-	else if(c_oSerWorkbookTypes::JsaProject == type)
+	else if (c_oSerWorkbookTypes::JsaProject == type)
 	{
 		BYTE* pData = m_oBufferedStream.GetPointer(length);
 		OOX::CPath oJsaProject = OOX::FileTypes::JsaProject.DefaultFileName();
@@ -2173,7 +2185,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.Add(oFileJsaProjectFile);
 		m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
 	}
-	else if(c_oSerWorkbookTypes::Comments == type)
+	else if (c_oSerWorkbookTypes::Comments == type)
 	{
 		BYTE* pData = m_oBufferedStream.GetPointer(length);
 		OOX::CPath oWorkbookComments = OOX::Spreadsheet::FileTypes::WorkbookComments.DefaultFileName();
@@ -2189,7 +2201,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.Add(oFileWorkbookCommentsFile);
 		m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oWorkbookComments.GetExtention(false));
 	}
-	else if(c_oSerWorkbookTypes::Connections == type)
+	else if (c_oSerWorkbookTypes::Connections == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CConnectionsFile> oConnection(new OOX::Spreadsheet::CConnectionsFile(NULL));
 		oConnection->m_oConnections.Init();
@@ -2198,7 +2210,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		smart_ptr<OOX::File> oFile = oConnection.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
-	else if(c_oSerWorkbookTypes::SlicerCaches == type)
+	else if (c_oSerWorkbookTypes::SlicerCaches == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
 		pOfficeArtExtension->m_oSlicerCaches.Init();
@@ -2212,7 +2224,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 			m_oWorkbook.m_oExtLst.Init();
 		m_oWorkbook.m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 	}
-	else if(c_oSerWorkbookTypes::SlicerCachesExt == type)
+	else if (c_oSerWorkbookTypes::SlicerCachesExt == type)
 	{
 		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
 		pOfficeArtExtension->m_oSlicerCachesExt.Init();
@@ -2235,7 +2247,7 @@ int BinaryWorkbookTableReader::ReadConnections(BYTE type, long length, void* poR
 	OOX::Spreadsheet::CConnections* pConnections = static_cast<OOX::Spreadsheet::CConnections*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerConnectionsTypes::Connection == type)
+	if (c_oSerConnectionsTypes::Connection == type)
 	{
 		OOX::Spreadsheet::CConnection* pConnection = new OOX::Spreadsheet::CConnection();
 		READ1_DEF(length, res, this->ReadConnection, pConnection);
@@ -2250,15 +2262,15 @@ int BinaryWorkbookTableReader::ReadConnection(BYTE type, long length, void* poRe
 	OOX::Spreadsheet::CConnection* pConnection = static_cast<OOX::Spreadsheet::CConnection*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerConnectionsTypes::Type == type)
+	if (c_oSerConnectionsTypes::Type == type)
 	{
 		pConnection->m_oType = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerConnectionsTypes::Name == type)
+	else if (c_oSerConnectionsTypes::Name == type)
 	{
 		pConnection->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::Id == type)
+	else if (c_oSerConnectionsTypes::Id == type)
 	{
 		pConnection->m_oId.Init();
 		pConnection->m_oId->SetValue(m_oBufferedStream.GetLong());
@@ -2267,100 +2279,100 @@ int BinaryWorkbookTableReader::ReadConnection(BYTE type, long length, void* poRe
 	{
 		pConnection->m_oUId = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::Credentials == type)
+	else if (c_oSerConnectionsTypes::Credentials == type)
 	{
 		pConnection->m_oCredentials.Init();
 		pConnection->m_oCredentials->SetValue((SimpleTypes::Spreadsheet::ECredMethod)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerConnectionsTypes::Background == type)
+	else if (c_oSerConnectionsTypes::Background == type)
 	{
 		pConnection->m_oBackground = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::Deleted == type)
+	else if (c_oSerConnectionsTypes::Deleted == type)
 	{
 		pConnection->m_oDeleted = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::Description == type)
+	else if (c_oSerConnectionsTypes::Description == type)
 	{
 		pConnection->m_oDescription = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::Interval == type)
+	else if (c_oSerConnectionsTypes::Interval == type)
 	{
 		pConnection->m_oInterval = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerConnectionsTypes::KeepAlive == type)
+	else if (c_oSerConnectionsTypes::KeepAlive == type)
 	{
 		pConnection->m_oKeepAlive = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::MinRefreshableVersion == type)
+	else if (c_oSerConnectionsTypes::MinRefreshableVersion == type)
 	{
 		pConnection->m_oMinRefreshableVersion = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerConnectionsTypes::New == type)
+	else if (c_oSerConnectionsTypes::New == type)
 	{
 		pConnection->m_oNew = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::OdcFile == type)
+	else if (c_oSerConnectionsTypes::OdcFile == type)
 	{
 		pConnection->m_oOdcFile = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::OnlyUseConnectionFile == type)
+	else if (c_oSerConnectionsTypes::OnlyUseConnectionFile == type)
 	{
 		pConnection->m_oOnlyUseConnectionFile = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::ReconnectionMethod == type)
+	else if (c_oSerConnectionsTypes::ReconnectionMethod == type)
 	{
 		pConnection->m_oReconnectionMethod = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerConnectionsTypes::RefreshedVersion == type)
+	else if (c_oSerConnectionsTypes::RefreshedVersion == type)
 	{
 		pConnection->m_oRefreshedVersion = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerConnectionsTypes::RefreshOnLoad == type)
+	else if (c_oSerConnectionsTypes::RefreshOnLoad == type)
 	{
 		pConnection->m_oRefreshOnLoad = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::SaveData == type)
+	else if (c_oSerConnectionsTypes::SaveData == type)
 	{
 		pConnection->m_oSaveData = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::SavePassword == type)
+	else if (c_oSerConnectionsTypes::SavePassword == type)
 	{
 		pConnection->m_oSavePassword = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerConnectionsTypes::SingleSignOnId == type)
+	else if (c_oSerConnectionsTypes::SingleSignOnId == type)
 	{
 		pConnection->m_oSingleSignOnId = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::SourceFile == type)
+	else if (c_oSerConnectionsTypes::SourceFile == type)
 	{
 		pConnection->m_oSourceFile = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::DbPr == type)
+	else if (c_oSerConnectionsTypes::DbPr == type)
 	{
 		pConnection->m_oDbPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionDbPr, pConnection->m_oDbPr.GetPointer());
 	}
-	else if(c_oSerConnectionsTypes::OlapPr == type)
+	else if (c_oSerConnectionsTypes::OlapPr == type)
 	{
 		pConnection->m_oOlapPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionOlapPr, pConnection->m_oOlapPr.GetPointer());
 	}
-	else if(c_oSerConnectionsTypes::TextPr == type)
+	else if (c_oSerConnectionsTypes::TextPr == type)
 	{
 		pConnection->m_oTextPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionTextPr, pConnection->m_oTextPr.GetPointer());
 	}
-	else if(c_oSerConnectionsTypes::WebPr == type)
+	else if (c_oSerConnectionsTypes::WebPr == type)
 	{
 		pConnection->m_oWebPr.Init();
 		READ1_DEF(length, res, this->ReadConnectionWebPr, pConnection->m_oWebPr.GetPointer());
 	}
-	else if(c_oSerConnectionsTypes::IdExt == type)
+	else if (c_oSerConnectionsTypes::IdExt == type)
 	{
 		pConnection->m_oIdExt = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerConnectionsTypes::RangePr == type)
+	else if (c_oSerConnectionsTypes::RangePr == type)
 	{
 		pConnection->m_oRangePr.Init();
 		READ1_DEF(length, res, this->ReadConnectionRangePr, pConnection->m_oRangePr.GetPointer());
@@ -2374,19 +2386,19 @@ int BinaryWorkbookTableReader::ReadConnectionDbPr(BYTE type, long length, void* 
 	OOX::Spreadsheet::CDbPr* pDbPr = static_cast<OOX::Spreadsheet::CDbPr*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerDbPrTypes::CommandType == type)
+	if (c_oSerDbPrTypes::CommandType == type)
 	{
 		pDbPr->m_oCommandType = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerDbPrTypes::Connection == type)
+	else if (c_oSerDbPrTypes::Connection == type)
 	{
 		pDbPr->m_oConnection = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerDbPrTypes::Command == type)
+	else if (c_oSerDbPrTypes::Command == type)
 	{
 		pDbPr->m_oCommand = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerDbPrTypes::ServerCommand == type)
+	else if (c_oSerDbPrTypes::ServerCommand == type)
 	{
 		pDbPr->m_oServerCommand = m_oBufferedStream.GetString4(length);
 	}
@@ -2399,35 +2411,35 @@ int BinaryWorkbookTableReader::ReadConnectionOlapPr(BYTE type, long length, void
 	OOX::Spreadsheet::COlapPr* pOlapPr = static_cast<OOX::Spreadsheet::COlapPr*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerOlapPrTypes::RowDrillCount == type)
+	if (c_oSerOlapPrTypes::RowDrillCount == type)
 	{
 		pOlapPr->m_oRowDrillCount = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerOlapPrTypes::LocalConnection == type)
+	else if (c_oSerOlapPrTypes::LocalConnection == type)
 	{
 		pOlapPr->m_oLocalConnection = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerOlapPrTypes::Local == type)
+	else if (c_oSerOlapPrTypes::Local == type)
 	{
 		pOlapPr->m_oLocal = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerOlapPrTypes::LocalRefresh == type)
+	else if (c_oSerOlapPrTypes::LocalRefresh == type)
 	{
 		pOlapPr->m_oLocalRefresh = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerOlapPrTypes::SendLocale == type)
+	else if (c_oSerOlapPrTypes::SendLocale == type)
 	{
 		pOlapPr->m_oSendLocale = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerOlapPrTypes::ServerNumberFormat == type)
+	else if (c_oSerOlapPrTypes::ServerNumberFormat == type)
 	{
 		pOlapPr->m_oServerNumberFormat = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerOlapPrTypes::ServerFont == type)
+	else if (c_oSerOlapPrTypes::ServerFont == type)
 	{
 		pOlapPr->m_oServerFont = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerOlapPrTypes::ServerFontColor == type)
+	else if (c_oSerOlapPrTypes::ServerFontColor == type)
 	{
 		pOlapPr->m_oServerFontColor = m_oBufferedStream.GetBool();
 	}
@@ -2440,7 +2452,7 @@ int BinaryWorkbookTableReader::ReadConnectionRangePr(BYTE type, long length, voi
 	OOX::Spreadsheet::CRangePr* pRangePr = static_cast<OOX::Spreadsheet::CRangePr*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerRangePrTypes::SourceName == type)
+	if (c_oSerRangePrTypes::SourceName == type)
 	{
 		pRangePr->m_oSourceName = m_oBufferedStream.GetString4(length);
 	}
@@ -2451,27 +2463,27 @@ int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void
 	OOX::Spreadsheet::CTextPr* pTextPr = static_cast<OOX::Spreadsheet::CTextPr*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerTextPrTypes::CharacterSet == type)
+	if (c_oSerTextPrTypes::CharacterSet == type)
 	{
 		pTextPr->m_oCharacterSet = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerTextPrTypes::SourceFile == type)
+	else if (c_oSerTextPrTypes::SourceFile == type)
 	{
 		pTextPr->m_oSourceFile = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerTextPrTypes::Decimal == type)
+	else if (c_oSerTextPrTypes::Decimal == type)
 	{
 		pTextPr->m_oDecimal = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerTextPrTypes::Delimiter == type)
+	else if (c_oSerTextPrTypes::Delimiter == type)
 	{
 		pTextPr->m_oDelimiter = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerTextPrTypes::Thousands == type)
+	else if (c_oSerTextPrTypes::Thousands == type)
 	{
 		pTextPr->m_oThousands = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerTextPrTypes::FirstRow == type)
+	else if (c_oSerTextPrTypes::FirstRow == type)
 	{
 		pTextPr->m_oFirstRow = m_oBufferedStream.GetLong();
 	}
@@ -2479,41 +2491,41 @@ int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void
 	{
 		pTextPr->m_oCodePage = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerTextPrTypes::Qualifier == type)
+	else if (c_oSerTextPrTypes::Qualifier == type)
 	{
 		pTextPr->m_oQualifier.Init();
 		pTextPr->m_oQualifier->SetValue((SimpleTypes::Spreadsheet::EQualifier)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerTextPrTypes::FileType == type)
+	else if (c_oSerTextPrTypes::FileType == type)
 	{
 		pTextPr->m_oFileType.Init();
 		pTextPr->m_oFileType->SetValue((SimpleTypes::Spreadsheet::EFileType)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerTextPrTypes::Prompt == type)
+	else if (c_oSerTextPrTypes::Prompt == type)
 	{
 		pTextPr->m_oPrompt = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Delimited == type)
+	else if (c_oSerTextPrTypes::Delimited == type)
 	{
 		pTextPr->m_oDelimited = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Tab == type)
+	else if (c_oSerTextPrTypes::Tab == type)
 	{
 		pTextPr->m_oTab = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Space == type)
+	else if (c_oSerTextPrTypes::Space == type)
 	{
 		pTextPr->m_oSpace = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Comma == type)
+	else if (c_oSerTextPrTypes::Comma == type)
 	{
 		pTextPr->m_oComma = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Semicolon == type)
+	else if (c_oSerTextPrTypes::Semicolon == type)
 	{
 		pTextPr->m_oSemicolon = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerTextPrTypes::Consecutive == type)
+	else if (c_oSerTextPrTypes::Consecutive == type)
 	{
 		pTextPr->m_oConsecutive = m_oBufferedStream.GetBool();
 	}
@@ -2565,52 +2577,52 @@ int BinaryWorkbookTableReader::ReadConnectionWebPr(BYTE type, long length, void*
 	OOX::Spreadsheet::CWebPr* pWebPr = static_cast<OOX::Spreadsheet::CWebPr*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWebPrTypes::Url == type)
+	if (c_oSerWebPrTypes::Url == type)
 	{
 		pWebPr->m_oUrl = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerWebPrTypes::Post == type)
+	else if (c_oSerWebPrTypes::Post == type)
 	{
 		pWebPr->m_oPost = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerWebPrTypes::EditPage == type)
+	else if (c_oSerWebPrTypes::EditPage == type)
 	{
 		pWebPr->m_oEditPage = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerWebPrTypes::HtmlFormat == type)
+	else if (c_oSerWebPrTypes::HtmlFormat == type)
 	{
 		pWebPr->m_oHtmlFormat.Init();
 		pWebPr->m_oHtmlFormat->SetValue((SimpleTypes::Spreadsheet::EHtmlFormat)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerWebPrTypes::Xml == type)
+	else if (c_oSerWebPrTypes::Xml == type)
 	{
 		pWebPr->m_oXml = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::SourceData == type)
+	else if (c_oSerWebPrTypes::SourceData == type)
 	{
 		pWebPr->m_oSourceData = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::Consecutive == type)
+	else if (c_oSerWebPrTypes::Consecutive == type)
 	{
 		pWebPr->m_oConsecutive = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::FirstRow == type)
+	else if (c_oSerWebPrTypes::FirstRow == type)
 	{
 		pWebPr->m_oFirstRow = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::Xl97 == type)
+	else if (c_oSerWebPrTypes::Xl97 == type)
 	{
 		pWebPr->m_oXl97 = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::TextDates == type)
+	else if (c_oSerWebPrTypes::TextDates == type)
 	{
 		pWebPr->m_oTextDates = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::Xl2000 == type)
+	else if (c_oSerWebPrTypes::Xl2000 == type)
 	{
 		pWebPr->m_oXl2000 = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerWebPrTypes::HtmlTables == type)
+	else if (c_oSerWebPrTypes::HtmlTables == type)
 	{
 		pWebPr->m_oHtmlTables = m_oBufferedStream.GetBool();
 	}
@@ -2699,25 +2711,30 @@ int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poRe
 int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookPrTypes::Date1904 == type)
+	if (c_oSerWorkbookPrTypes::Date1904 == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDate1904.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oDate1904->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerWorkbookPrTypes::DateCompatibility == type)
+	else if (c_oSerWorkbookPrTypes::DateCompatibility == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerWorkbookPrTypes::HidePivotFieldList == type)
+	else if (c_oSerWorkbookPrTypes::HidePivotFieldList == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oHidePivotFieldList.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oHidePivotFieldList->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerWorkbookPrTypes::ShowPivotChartFilter == type)
+	else if (c_oSerWorkbookPrTypes::ShowPivotChartFilter == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter.Init();
 		m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else if (c_oSerWorkbookPrTypes::UpdateLinks == type)
+	{
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks.Init();
+		m_oWorkbook.m_oWorkbookPr->m_oUpdateLinks->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2740,7 +2757,7 @@ int BinaryWorkbookTableReader::ReadWorkbookView(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CWorkbookView* pWorkbookView = static_cast<OOX::Spreadsheet::CWorkbookView*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookViewTypes::ActiveTab == type)
+	if (c_oSerWorkbookViewTypes::ActiveTab == type)
 	{
 		pWorkbookView->m_oActiveTab.Init();
 		pWorkbookView->m_oActiveTab->SetValue(m_oBufferedStream.GetLong());
@@ -2807,7 +2824,7 @@ int BinaryWorkbookTableReader::ReadExternalReferences(BYTE type, long length, vo
 int BinaryWorkbookTableReader::ReadDefinedNames(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::DefinedName == type)
+	if (c_oSerWorkbookTypes::DefinedName == type)
 	{
 		OOX::Spreadsheet::CDefinedName* pDefinedName = new OOX::Spreadsheet::CDefinedName();
 		READ1_DEF(length, res, this->ReadDefinedName, pDefinedName);
@@ -2821,25 +2838,25 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CDefinedName* pDefinedName = static_cast<OOX::Spreadsheet::CDefinedName*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerDefinedNameTypes::Name == type)
+	if (c_oSerDefinedNameTypes::Name == type)
 	{
 		pDefinedName->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerDefinedNameTypes::Ref == type)
+	else if (c_oSerDefinedNameTypes::Ref == type)
 	{
 		pDefinedName->m_oRef = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerDefinedNameTypes::LocalSheetId == type)
+	else if (c_oSerDefinedNameTypes::LocalSheetId == type)
 	{
 		pDefinedName->m_oLocalSheetId.Init();
 		pDefinedName->m_oLocalSheetId->SetValue(m_oBufferedStream.GetLong());
 	}
-    else if(c_oSerDefinedNameTypes::Hidden == type)
+    else if (c_oSerDefinedNameTypes::Hidden == type)
     {
          pDefinedName->m_oHidden.Init();
          pDefinedName->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
     }
-	else if(c_oSerDefinedNameTypes::Comment == type)
+	else if (c_oSerDefinedNameTypes::Comment == type)
     {
 		pDefinedName->m_oComment = m_oBufferedStream.GetString4(length);
 	}
@@ -2851,67 +2868,113 @@ int BinaryWorkbookTableReader::ReadCalcPr(BYTE type, long length, void* poResult
 {
 	int res = c_oSerConstants::ReadOk;
     OOX::Spreadsheet::CCalcPr* calcPr = static_cast<OOX::Spreadsheet::CCalcPr*>(poResult);
-	if(c_oSerCalcPrTypes::CalcId == type)
+	if (c_oSerCalcPrTypes::CalcId == type)
 	{
 		calcPr->m_oCalcId.Init();
 		calcPr->m_oCalcId->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSerCalcPrTypes::CalcMode == type)
+	else if (c_oSerCalcPrTypes::CalcMode == type)
 	{
 		calcPr->m_oCalcMode = (SimpleTypes::Spreadsheet::ECalcMode)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerCalcPrTypes::FullCalcOnLoad == type)
+	else if (c_oSerCalcPrTypes::FullCalcOnLoad == type)
 	{
 		calcPr->m_oFullCalcOnLoad = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerCalcPrTypes::RefMode == type)
+	else if (c_oSerCalcPrTypes::RefMode == type)
 	{
 		calcPr->m_oRefMode = (SimpleTypes::Spreadsheet::ERefMode)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerCalcPrTypes::Iterate == type)
+	else if (c_oSerCalcPrTypes::Iterate == type)
 	{
 		calcPr->m_oIterate.Init();
 		calcPr->m_oIterate->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerCalcPrTypes::IterateCount == type)
+	else if (c_oSerCalcPrTypes::IterateCount == type)
 	{
 		calcPr->m_oIterateCount.Init();
 		calcPr->m_oIterateCount->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSerCalcPrTypes::IterateDelta == type)
+	else if (c_oSerCalcPrTypes::IterateDelta == type)
 	{
 		calcPr->m_oIterateDelta.Init();
 		calcPr->m_oIterateDelta->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSerCalcPrTypes::FullPrecision == type)
+	else if (c_oSerCalcPrTypes::FullPrecision == type)
 	{
 		calcPr->m_oFullPrecision.Init();
 		calcPr->m_oFullPrecision->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerCalcPrTypes::CalcCompleted == type)
+	else if (c_oSerCalcPrTypes::CalcCompleted == type)
 	{
 		calcPr->m_oCalcCompleted.Init();
 		calcPr->m_oCalcCompleted->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerCalcPrTypes::CalcOnSave == type)
+	else if (c_oSerCalcPrTypes::CalcOnSave == type)
 	{
 		calcPr->m_oCalcOnSave.Init();
 		calcPr->m_oCalcOnSave->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerCalcPrTypes::ConcurrentCalc == type)
+	else if (c_oSerCalcPrTypes::ConcurrentCalc == type)
 	{
 		calcPr->m_oConcurrentCalc.Init();
 		calcPr->m_oConcurrentCalc->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSerCalcPrTypes::ConcurrentManualCount == type)
+	else if (c_oSerCalcPrTypes::ConcurrentManualCount == type)
 	{
 		calcPr->m_oConcurrentManualCount.Init();
 		calcPr->m_oConcurrentManualCount->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSerCalcPrTypes::ForceFullCalc == type)
+	else if (c_oSerCalcPrTypes::ForceFullCalc == type)
 	{
 		calcPr->m_oForceFullCalc.Init();
 		calcPr->m_oForceFullCalc->FromBool(m_oBufferedStream.GetBool());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadExternalAlternateUrls(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+	if (!extLink) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+	if (!pExternalBook) return c_oSerConstants::ReadUnknown;
+
+	OOX::Spreadsheet::CAlternateUrls* altUrls = pExternalBook->m_oAlternateUrls.GetPointer();
+	if (!altUrls) return c_oSerConstants::ReadUnknown;
+
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_ExternalLinkTypes::AbsoluteUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+		
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oAbsoluteUrlRid.Init();
+		altUrls->m_oAbsoluteUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::RelativeUrl == type)
+	{
+		std::wstring sName(m_oBufferedStream.GetString3(length));
+
+		OOX::Spreadsheet::ExternalLinkPath* link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
+		smart_ptr<OOX::File> oLinkFile(link);
+		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+		altUrls->m_oRelativeUrlRid.Init();
+		altUrls->m_oRelativeUrlRid->SetValue(oRIdLink.get());
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsDriveId == type)
+	{
+		altUrls->m_oDriveId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSer_ExternalLinkTypes::ExternalAlternateUrlsItemId == type)
+	{
+		altUrls->m_oItemId = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2923,7 +2986,7 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::Id == type)
+	if (c_oSer_ExternalLinkTypes::Id == type)
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
@@ -2934,20 +2997,25 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 		pExternalBook->m_oRid.Init();
 		pExternalBook->m_oRid->SetValue(oRIdLink.get());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetNames == type)
+	else if (c_oSer_ExternalLinkTypes::SheetNames == type)
 	{
 		pExternalBook->m_oSheetNames.Init();
 		READ1_DEF(length, res, this->ReadExternalSheetNames, pExternalBook->m_oSheetNames.GetPointer());
 	}
-	else if(c_oSer_ExternalLinkTypes::DefinedNames == type)
+	else if (c_oSer_ExternalLinkTypes::DefinedNames == type)
 	{
 		pExternalBook->m_oDefinedNames.Init();
 		READ1_DEF(length, res, this->ReadExternalDefinedNames, pExternalBook->m_oDefinedNames.GetPointer());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataSet == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataSet == type)
 	{
 		pExternalBook->m_oSheetDataSet.Init();
 		READ1_DEF(length, res, this->ReadExternalSheetDataSet, pExternalBook->m_oSheetDataSet.GetPointer());
+	}
+	else if (c_oSer_ExternalLinkTypes::AlternateUrls == type)
+	{
+		pExternalBook->m_oAlternateUrls.Init();
+		READ1_DEF(length, res, this->ReadExternalAlternateUrls, extLink);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2957,7 +3025,7 @@ int BinaryWorkbookTableReader::ReadExternalSheetNames(BYTE type, long length, vo
 {
 	OOX::Spreadsheet::CExternalSheetNames* pSheetNames = static_cast<OOX::Spreadsheet::CExternalSheetNames*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::SheetName == type)
+	if (c_oSer_ExternalLinkTypes::SheetName == type)
 	{
 		ComplexTypes::Spreadsheet::String* pSheetName = new ComplexTypes::Spreadsheet::String();
 		pSheetName->m_sVal = m_oBufferedStream.GetString4(length);
@@ -2971,7 +3039,7 @@ int BinaryWorkbookTableReader::ReadExternalDefinedNames(BYTE type, long length, 
 {
 	OOX::Spreadsheet::CExternalDefinedNames* pDefinedNames = static_cast<OOX::Spreadsheet::CExternalDefinedNames*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::DefinedName == type)
+	if (c_oSer_ExternalLinkTypes::DefinedName == type)
 	{
 		OOX::Spreadsheet::CExternalDefinedName* pDefinedName = new OOX::Spreadsheet::CExternalDefinedName();
 		READ1_DEF(length, res, this->ReadExternalDefinedName, pDefinedName);
@@ -2985,17 +3053,17 @@ int BinaryWorkbookTableReader::ReadExternalDefinedName(BYTE type, long length, v
 {
 	OOX::Spreadsheet::CExternalDefinedName* pDefinedName = static_cast<OOX::Spreadsheet::CExternalDefinedName*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::DefinedNameName == type)
+	if (c_oSer_ExternalLinkTypes::DefinedNameName == type)
 	{
 		pDefinedName->m_oName.Init();
 		pDefinedName->m_oName->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_ExternalLinkTypes::DefinedNameRefersTo == type)
+	else if (c_oSer_ExternalLinkTypes::DefinedNameRefersTo == type)
 	{
 		pDefinedName->m_oRefersTo.Init();
 		pDefinedName->m_oRefersTo->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_ExternalLinkTypes::DefinedNameSheetId == type)
+	else if (c_oSer_ExternalLinkTypes::DefinedNameSheetId == type)
 	{
 		pDefinedName->m_oSheetId.Init();
 		pDefinedName->m_oSheetId->SetValue(m_oBufferedStream.GetULong());
@@ -3008,7 +3076,7 @@ int BinaryWorkbookTableReader::ReadExternalSheetDataSet(BYTE type, long length, 
 {
 	OOX::Spreadsheet::CExternalSheetDataSet* pSheetDataSet = static_cast<OOX::Spreadsheet::CExternalSheetDataSet*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::SheetData == type)
+	if (c_oSer_ExternalLinkTypes::SheetData == type)
 	{
 		OOX::Spreadsheet::CExternalSheetData* pSheetData = new OOX::Spreadsheet::CExternalSheetData();
 		READ1_DEF(length, res, this->ReadExternalSheetData, pSheetData);
@@ -3022,17 +3090,17 @@ int BinaryWorkbookTableReader::ReadExternalSheetData(BYTE type, long length, voi
 {
 	OOX::Spreadsheet::CExternalSheetData* pSheetData = static_cast<OOX::Spreadsheet::CExternalSheetData*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::SheetDataSheetId == type)
+	if (c_oSer_ExternalLinkTypes::SheetDataSheetId == type)
 	{
 		pSheetData->m_oSheetId.Init();
 		pSheetData->m_oSheetId->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataRefreshError == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataRefreshError == type)
 	{
 		pSheetData->m_oRefreshError.Init();
 		pSheetData->m_oRefreshError->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataRow == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataRow == type)
 	{
 		OOX::Spreadsheet::CExternalRow* pRow = new OOX::Spreadsheet::CExternalRow();
 		READ1_DEF(length, res, this->ReadExternalRow, pRow);
@@ -3046,12 +3114,12 @@ int BinaryWorkbookTableReader::ReadExternalRow(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CExternalRow* pRow = static_cast<OOX::Spreadsheet::CExternalRow*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::SheetDataRowR == type)
+	if (c_oSer_ExternalLinkTypes::SheetDataRowR == type)
 	{
 		pRow->m_oR.Init();
 		pRow->m_oR->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataRowCell == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataRowCell == type)
 	{
 		OOX::Spreadsheet::CExternalCell* pCell = new OOX::Spreadsheet::CExternalCell();
 		READ1_DEF(length, res, this->ReadExternalCell, pCell);
@@ -3065,17 +3133,17 @@ int BinaryWorkbookTableReader::ReadExternalCell(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CExternalCell* pCell = static_cast<OOX::Spreadsheet::CExternalCell*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ExternalLinkTypes::SheetDataRowCellRef == type)
+	if (c_oSer_ExternalLinkTypes::SheetDataRowCellRef == type)
 	{
 		pCell->m_oRef.Init();
 		pCell->m_oRef->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataRowCellType == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataRowCellType == type)
 	{
 		pCell->m_oType.Init();
 		pCell->m_oType->SetValue((SimpleTypes::Spreadsheet::ECellTypeType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ExternalLinkTypes::SheetDataRowCellValue == type)
+	else if (c_oSer_ExternalLinkTypes::SheetDataRowCellValue == type)
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText.append(m_oBufferedStream.GetString3(length));
@@ -3089,7 +3157,7 @@ int BinaryWorkbookTableReader::ReadOleLink(BYTE type, long length, void* poResul
 	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
 	OOX::Spreadsheet::COleLink* oleLink = extLink->m_oOleLink.GetPointer();
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_OleLinkTypes::Id == type)
+	if (c_oSer_OleLinkTypes::Id == type)
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
@@ -3100,12 +3168,12 @@ int BinaryWorkbookTableReader::ReadOleLink(BYTE type, long length, void* poResul
 		oleLink->m_oRid.Init();
 		oleLink->m_oRid->SetValue(oRIdLink.get());
 	}
-	else if(c_oSer_OleLinkTypes::ProgId == type)
+	else if (c_oSer_OleLinkTypes::ProgId == type)
 	{
 		oleLink->m_oProgId.Init();
 		oleLink->m_oProgId->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_OleLinkTypes::OleItem == type)
+	else if (c_oSer_OleLinkTypes::OleItem == type)
 	{
 		if (!oleLink->m_oOleItems.IsInit())
 		{
@@ -3123,22 +3191,22 @@ int BinaryWorkbookTableReader::ReadOleItem(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::COleItem* pOleItem = static_cast<OOX::Spreadsheet::COleItem*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_OleLinkTypes::Name == type)
+	if (c_oSer_OleLinkTypes::Name == type)
 	{
 		pOleItem->m_oName.Init();
 		pOleItem->m_oName->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_OleLinkTypes::Icon == type)
+	else if (c_oSer_OleLinkTypes::Icon == type)
 	{
 		pOleItem->m_oIcon.Init();
 		pOleItem->m_oIcon->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_OleLinkTypes::Advise == type)
+	else if (c_oSer_OleLinkTypes::Advise == type)
 	{
 		pOleItem->m_oAdvise.Init();
 		pOleItem->m_oAdvise->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_OleLinkTypes::PreferPic == type)
+	else if (c_oSer_OleLinkTypes::PreferPic == type)
 	{
 		pOleItem->m_oPreferPic.Init();
 		pOleItem->m_oPreferPic->FromBool(m_oBufferedStream.GetBool());
@@ -3152,17 +3220,17 @@ int BinaryWorkbookTableReader::ReadDdeLink(BYTE type, long length, void* poResul
 	OOX::Spreadsheet::CDdeLink* ddeLink = static_cast<OOX::Spreadsheet::CDdeLink*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DdeLinkTypes::DdeService == type)
+	if (c_oSer_DdeLinkTypes::DdeService == type)
 	{
 		ddeLink->m_oDdeService.Init();
 		ddeLink->m_oDdeService->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_DdeLinkTypes::DdeTopic == type)
+	else if (c_oSer_DdeLinkTypes::DdeTopic == type)
 	{
 		ddeLink->m_oDdeTopic.Init();
 		ddeLink->m_oDdeTopic->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_DdeLinkTypes::DdeItem == type)
+	else if (c_oSer_DdeLinkTypes::DdeItem == type)
 	{
 		if (!ddeLink->m_oDdeItems.IsInit())
 		{
@@ -3180,27 +3248,27 @@ int BinaryWorkbookTableReader::ReadDdeItem(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CDdeItem* pDdeItem = static_cast<OOX::Spreadsheet::CDdeItem*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DdeLinkTypes::Name == type)
+	if (c_oSer_DdeLinkTypes::Name == type)
 	{
 		pDdeItem->m_oName.Init();
 		pDdeItem->m_oName->append(m_oBufferedStream.GetString3(length));
 	}
-	else if(c_oSer_DdeLinkTypes::Ole == type)
+	else if (c_oSer_DdeLinkTypes::Ole == type)
 	{
 		pDdeItem->m_oOle.Init();
 		pDdeItem->m_oOle->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_DdeLinkTypes::Advise == type)
+	else if (c_oSer_DdeLinkTypes::Advise == type)
 	{
 		pDdeItem->m_oAdvise.Init();
 		pDdeItem->m_oAdvise->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_DdeLinkTypes::PreferPic == type)
+	else if (c_oSer_DdeLinkTypes::PreferPic == type)
 	{
 		pDdeItem->m_oPreferPic.Init();
 		pDdeItem->m_oPreferPic->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_DdeLinkTypes::DdeValues == type)
+	else if (c_oSer_DdeLinkTypes::DdeValues == type)
 	{
 		pDdeItem->m_oDdeValues.Init();
 		READ1_DEF(length, res, this->ReadDdeValues, pDdeItem->m_oDdeValues.GetPointer());
@@ -3213,17 +3281,17 @@ int BinaryWorkbookTableReader::ReadDdeValues(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CDdeValues* pDdeValues = static_cast<OOX::Spreadsheet::CDdeValues*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DdeLinkTypes::DdeValuesRows == type)
+	if (c_oSer_DdeLinkTypes::DdeValuesRows == type)
 	{
 		pDdeValues->m_oRows.Init();
 		pDdeValues->m_oRows->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_DdeLinkTypes::DdeValuesCols == type)
+	else if (c_oSer_DdeLinkTypes::DdeValuesCols == type)
 	{
 		pDdeValues->m_oCols.Init();
 		pDdeValues->m_oCols->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_DdeLinkTypes::DdeValue == type)
+	else if (c_oSer_DdeLinkTypes::DdeValue == type)
 	{
 		OOX::Spreadsheet::CDdeValue* pDdeValue = new OOX::Spreadsheet::CDdeValue();
 		READ1_DEF(length, res, this->ReadDdeValue, pDdeValue);
@@ -3237,12 +3305,12 @@ int BinaryWorkbookTableReader::ReadDdeValue(BYTE type, long length, void* poResu
 {
 	OOX::Spreadsheet::CDdeValue* pDdeValue = static_cast<OOX::Spreadsheet::CDdeValue*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DdeLinkTypes::DdeValueType == type)
+	if (c_oSer_DdeLinkTypes::DdeValueType == type)
 	{
 		pDdeValue->m_oType.Init();
 		pDdeValue->m_oType->SetValue((SimpleTypes::Spreadsheet::EDdeValueType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_DdeLinkTypes::DdeValueVal == type)
+	else if (c_oSer_DdeLinkTypes::DdeValueVal == type)
 	{
 		OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
 		pText->m_sText.append(m_oBufferedStream.GetString3(length));
@@ -3255,15 +3323,15 @@ int BinaryWorkbookTableReader::ReadDdeValue(BYTE type, long length, void* poResu
 int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::PivotCache == type)
+	if (c_oSerWorkbookTypes::PivotCache == type)
 	{
 		PivotCachesTemp oPivotCachesTemp;
 		READ1_DEF(length, res, this->ReadPivotCache, &oPivotCachesTemp);
-		if(-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
+		if (-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
 		{
 			OOX::Spreadsheet::CPivotCacheDefinitionFile* pDefinitionFile = new OOX::Spreadsheet::CPivotCacheDefinitionFile(NULL);
 			std::wstring srIdRecords;
-			if(NULL != oPivotCachesTemp.pRecords)
+			if (NULL != oPivotCachesTemp.pRecords)
 			{
 				NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
 				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
@@ -3294,16 +3362,16 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 {
 	PivotCachesTemp* pPivotCachesTemp = static_cast<PivotCachesTemp*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PivotTypes::id == type)
+	if (c_oSer_PivotTypes::id == type)
 	{
 		pPivotCachesTemp->nId = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSer_PivotTypes::cache == type)
+	else if (c_oSer_PivotTypes::cache == type)
 	{
 		pPivotCachesTemp->pDefinitionData = m_oBufferedStream.GetPointer(length);
 		pPivotCachesTemp->nDefinitionLength = length;
 	}
-	else if(c_oSer_PivotTypes::record == type)
+	else if (c_oSer_PivotTypes::record == type)
 	{
 		pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecordsFile(NULL);
 		pPivotCachesTemp->pRecords->setData(m_oBufferedStream.GetPointer(length), length);
@@ -3316,7 +3384,7 @@ int BinaryWorkbookTableReader::ReadSlicerCaches(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CSlicerCaches* pSlicerCaches = static_cast<OOX::Spreadsheet::CSlicerCaches*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::SlicerCache == type)
+	if (c_oSerWorkbookTypes::SlicerCache == type)
 	{
 		OOX::Spreadsheet::CSlicerCacheFile* pSlicerCache = new OOX::Spreadsheet::CSlicerCacheFile(NULL);
 		pSlicerCache->m_oSlicerCacheDefinition.Init();
@@ -3369,12 +3437,12 @@ int BinaryCommentReader::ReadCommentDatasExternal(BYTE type, long length, void* 
 int BinaryCommentReader::ReadComments(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::Comment == type)
+	if (c_oSerWorksheetsTypes::Comment == type)
 	{
 		OOX::Spreadsheet::CCommentItem* pNewComment = new OOX::Spreadsheet::CCommentItem();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadComment, pNewComment);
 
-		if(NULL != m_pCurWorksheet && pNewComment->IsValid())
+		if (NULL != m_pCurWorksheet && pNewComment->IsValid())
 		{
 			std::wstring sId = std::to_wstring(pNewComment->m_nRow.get()) + L"-" + std::to_wstring(pNewComment->m_nCol.get());
 			m_pCurWorksheet->m_mapComments [sId] = pNewComment;
@@ -3396,7 +3464,7 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 		pNewComment->m_nCol = m_oBufferedStream.GetLong();
 	else if ( c_oSer_Comments::CommentDatas == type )
 	{
-		if(!pNewComment->m_sGfxdata.IsInit())
+		if (!pNewComment->m_sGfxdata.IsInit())
 		{
 			int nStartPos = m_oBufferedStream.GetPos();
 			BYTE* pSourceBuffer = m_oBufferedStream.GetPointer(length);
@@ -3419,8 +3487,8 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
             BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
             std::wstring sGfxdata;
-//					if(true == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
-            if(true == Base64_1::Base64Encode(pWriteBuffer, nWriteBufferLength, pbBase64Buffer, &nBase64BufferLen))
+//					if (true == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
+            if (true == Base64_1::Base64Encode(pWriteBuffer, nWriteBufferLength, pbBase64Buffer, &nBase64BufferLen))
             {
 				std::wstring strGfxdata = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen);
                 sGfxdata = std::wstring(strGfxdata.c_str());
@@ -3430,7 +3498,7 @@ int BinaryCommentReader::ReadComment(BYTE type, long length, void* poResult)
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 			RELEASEARRAYOBJECTS(pWriteBuffer);
 
-            if(!sGfxdata.empty())
+            if (!sGfxdata.empty())
 			{
 				pNewComment->m_sGfxdata = sGfxdata;
 			}
@@ -3480,7 +3548,7 @@ int BinaryCommentReader::ReadCommentDatas(BYTE type, long length, void* poResult
 	OOX::Spreadsheet::CCommentItem* pNewComment = static_cast<OOX::Spreadsheet::CCommentItem*>(poResult);
 	if ( c_oSer_Comments::CommentData == type )
 	{
-		if(!pNewComment->m_oText.IsInit())
+		if (!pNewComment->m_oText.IsInit())
 		{
 			SerializeCommon::CommentData oCommentData;
 			READ1_DEF(length, res, this->ReadCommentData, &oCommentData);
@@ -3577,7 +3645,7 @@ int BinaryCommentReader::ReadThreadedComment(BYTE type, long length, void* poRes
 	{
 		OOX::Spreadsheet::CThreadedCommentMention* pMention = new OOX::Spreadsheet::CThreadedCommentMention();
 		READ1_DEF(length, res, this->ReadThreadedCommentMention, pMention);
-		if(!pThreadedComment->m_oMentions.IsInit())
+		if (!pThreadedComment->m_oMentions.IsInit())
 		{
 			pThreadedComment->m_oMentions.Init();
 		}
@@ -3621,7 +3689,7 @@ int BinaryCommentReader::ReadThreadedCommentMention(BYTE type, long length, void
 }
 void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi)
 {
-	if(NULL != pCommentData && false == pCommentData->sText.empty())
+	if (NULL != pCommentData && false == pCommentData->sText.empty())
 	{
 		int nLimit = OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN;
 		if (pCommentData->sUserName.empty())
@@ -3642,7 +3710,7 @@ int BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::ws
 	OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 	pRun->m_oRPr.Init();
 	OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
-	if(isBold)
+	if (isBold)
 	{
 		pRPr.m_oBold.Init();
 		pRPr.m_oBold->m_oVal.FromBool(true);
@@ -3665,7 +3733,7 @@ int BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::ws
 void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment, nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList)
 {
 	int nLimit = OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN;
-	if(pThreadedComment->m_oText.IsInit())
+	if (pThreadedComment->m_oText.IsInit())
 	{
 		std::wstring displayName = getThreadedCommentAuthor(mapPersonList, pThreadedComment->personId, L"Comment");
 		nLimit = addCommentRun(oSi, displayName + L":", true, nLimit);
@@ -3677,7 +3745,7 @@ void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Sp
 	}
 	for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
 	{
-		if(pThreadedComment->m_arrReplies[i]->m_oText.IsInit())
+		if (pThreadedComment->m_arrReplies[i]->m_oText.IsInit())
 		{
 			std::wstring displayName = getThreadedCommentAuthor(mapPersonList, pThreadedComment->m_arrReplies[i]->personId, L"Reply");
 			nLimit = addCommentRun(oSi, displayName + L":", true, nLimit);
@@ -3727,7 +3795,7 @@ int BinaryWorksheetsTableReader::Read()
 int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::Worksheet == type)
+	if (c_oSerWorksheetsTypes::Worksheet == type)
 	{
 		m_pCurWorksheet.reset( new OOX::Spreadsheet::CWorksheet(NULL) );
 		m_pCurSheet.reset(new OOX::Spreadsheet::CSheet());
@@ -3756,7 +3824,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 		res = ReadWorksheet(mapPos, oStreamWriter, poResult);
 		oStreamWriter.CloseFile();
 
-		if(m_pCurSheet->m_oName.IsInit())
+		if (m_pCurSheet->m_oName.IsInit())
 		{
 			const OOX::RId oRId = m_oWorkbook.Add(oCurWorksheetFile);
 			m_pCurSheet->m_oRid.Init();
@@ -3777,7 +3845,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetSeekPositions(BYTE type, long leng
 	boost::unordered_map<BYTE, std::vector<unsigned int>>* mapPos = static_cast<boost::unordered_map<BYTE, std::vector<unsigned int>>*>(poResult);
 	boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind = mapPos->find(type);
 	
-	if(pFind != mapPos->end())
+	if (pFind != mapPos->end())
 	{
 		pFind->second.push_back(m_oBufferedStream.GetPos());
 		pFind->second.push_back(length);
@@ -3810,10 +3878,10 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetViews);
 		READ1_DEF(length, res, this->ReadSheetViews, &oSheetViews);
 	SEEK_TO_POS_END2();
-	if(oSheetViews.m_arrItems.empty())
+	if (oSheetViews.m_arrItems.empty())
 		oSheetViews.m_arrItems.push_back(new OOX::Spreadsheet::CSheetView());
 	OOX::Spreadsheet::CSheetView* pSheetView = oSheetViews.m_arrItems.front();
-	if(false == pSheetView->m_oWorkbookViewId.IsInit())
+	if (false == pSheetView->m_oWorkbookViewId.IsInit())
 	{
 		pSheetView->m_oWorkbookViewId.Init();
 		pSheetView->m_oWorkbookViewId->SetValue(0);
@@ -3824,7 +3892,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetFormatPr);
 		READ2_DEF_SPREADSHEET(length, res, this->ReadSheetFormatPr, &oSheetFormatPr);
 	SEEK_TO_POS_END2();
-	if(!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
+	if (!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 	{
 		oSheetFormatPr.m_oDefaultRowHeight = 15.;
 	}
@@ -3843,7 +3911,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			oSheetData.toXMLEnd(oStreamWriter);
 		}
-		else if(m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
+		else if (m_arWorksheets.size() == m_oWorkbook.GetActiveSheetIndex())
 		{
 			m_oSaveParams.pCSVWriter->WriteSheetStart(m_pCurWorksheet.GetPointer());
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
@@ -4187,7 +4255,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadPivotTable, &oPivotCachesTemp);
 		boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
 
-		if(m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
+		if (m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
 		{
 			NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
 			oPivotCachesTemp.pTable->AddNoWrite(pair->second, L"../pivotCache");
@@ -4319,11 +4387,11 @@ int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* po
 {
 	PivotCachesTemp* pPivotCachesTemp = static_cast<PivotCachesTemp*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PivotTypes::cacheId == type)
+	if (c_oSer_PivotTypes::cacheId == type)
 	{
 		pPivotCachesTemp->nCacheId =m_oBufferedStream.GetLong();
 	}
-	else if(c_oSer_PivotTypes::table == type)
+	else if (c_oSer_PivotTypes::table == type)
 	{
 		OOX::Spreadsheet::CPivotTableFile* pPivotTable = new OOX::Spreadsheet::CPivotTableFile(NULL);
 		pPivotTable->setData(m_oBufferedStream.GetPointer(length), length);
@@ -4337,15 +4405,15 @@ int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* po
 int BinaryWorksheetsTableReader::ReadWorksheetProp(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetPropTypes::Name == type)
+	if (c_oSerWorksheetPropTypes::Name == type)
 	{
 		m_pCurSheet->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerWorksheetPropTypes::SheetId == type)
+	else if (c_oSerWorksheetPropTypes::SheetId == type)
 	{
 		m_pCurSheet->m_oSheetId = m_oBufferedStream.GetLong();
 	}
-	else if(c_oSerWorksheetPropTypes::State == type)
+	else if (c_oSerWorksheetPropTypes::State == type)
 	{
 		m_pCurSheet->m_oState = (SimpleTypes::Spreadsheet::EVisibleType)m_oBufferedStream.GetUChar();
 	}
@@ -4357,7 +4425,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetCols(BYTE type, long length, void*
 {
 	OOX::Spreadsheet::CCols* pCols = static_cast<OOX::Spreadsheet::CCols*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::Col == type)
+	if (c_oSerWorksheetsTypes::Col == type)
 	{
 		OOX::Spreadsheet::CCol* pCol = new OOX::Spreadsheet::CCol();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetCol, pCol);
@@ -4371,52 +4439,52 @@ int BinaryWorksheetsTableReader::ReadWorksheetCol(BYTE type, long length, void* 
 {
 	OOX::Spreadsheet::CCol* pCol = static_cast<OOX::Spreadsheet::CCol*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetColTypes::BestFit == type)
+	if (c_oSerWorksheetColTypes::BestFit == type)
 	{
 		pCol->m_oBestFit.Init();
 		pCol->m_oBestFit->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerWorksheetColTypes::Hidden == type)
+	else if (c_oSerWorksheetColTypes::Hidden == type)
 	{
 		pCol->m_oHidden.Init();
 		pCol->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerWorksheetColTypes::Max == type)
+	else if (c_oSerWorksheetColTypes::Max == type)
 	{
 		pCol->m_oMax.Init();
 		pCol->m_oMax->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerWorksheetColTypes::Min == type)
+	else if (c_oSerWorksheetColTypes::Min == type)
 	{
 		pCol->m_oMin.Init();
 		pCol->m_oMin->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerWorksheetColTypes::Style == type)
+	else if (c_oSerWorksheetColTypes::Style == type)
 	{
 		pCol->m_oStyle.Init();
 		pCol->m_oStyle->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerWorksheetColTypes::Width == type)
+	else if (c_oSerWorksheetColTypes::Width == type)
 	{
 		pCol->m_oWidth.Init();
 		pCol->m_oWidth->SetValue(m_oBufferedStream.GetDoubleReal());
-		if(g_nCurFormatVersion < 2)
+		if (g_nCurFormatVersion < 2)
 		{
 			pCol->m_oCustomWidth.Init();
 			pCol->m_oCustomWidth->SetValue(SimpleTypes::onoffTrue);
 		}
 	}
-	else if(c_oSerWorksheetColTypes::CustomWidth == type)
+	else if (c_oSerWorksheetColTypes::CustomWidth == type)
 	{
 		pCol->m_oCustomWidth.Init();
 		pCol->m_oCustomWidth->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerWorksheetColTypes::OutLevel == type)
+	else if (c_oSerWorksheetColTypes::OutLevel == type)
 	{
 		pCol->m_oOutlineLevel.Init();
 		pCol->m_oOutlineLevel->SetValue( m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerWorksheetColTypes::Collapsed == type)
+	else if (c_oSerWorksheetColTypes::Collapsed == type)
 	{
 		pCol->m_oCollapsed.Init();
 		pCol->m_oCollapsed->FromBool(m_oBufferedStream.GetBool());
@@ -4483,7 +4551,7 @@ int BinaryWorksheetsTableReader::ReadSheetViews(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CSheetViews* pSheetViews = static_cast<OOX::Spreadsheet::CSheetViews*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::SheetView == type)
+	if (c_oSerWorksheetsTypes::SheetView == type)
 	{
 		OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
 		READ1_DEF(length, res, this->ReadSheetView, pSheetView);
@@ -4497,96 +4565,96 @@ int BinaryWorksheetsTableReader::ReadSheetView(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CSheetView* pSheetView = static_cast<OOX::Spreadsheet::CSheetView*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_SheetView::ColorId == type)
+	if (c_oSer_SheetView::ColorId == type)
 	{
 		pSheetView->m_oColorId.Init();
 		pSheetView->m_oColorId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_SheetView::DefaultGridColor == type)
+	else if (c_oSer_SheetView::DefaultGridColor == type)
 	{
 		pSheetView->m_oDefaultGridColor.Init();
 		pSheetView->m_oDefaultGridColor->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::RightToLeft == type)
+	else if (c_oSer_SheetView::RightToLeft == type)
 	{
 		pSheetView->m_oRightToLeft.Init();
 		pSheetView->m_oRightToLeft->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowFormulas == type)
+	else if (c_oSer_SheetView::ShowFormulas == type)
 	{
 		pSheetView->m_oShowFormulas.Init();
 		pSheetView->m_oShowFormulas->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowGridLines == type)
+	else if (c_oSer_SheetView::ShowGridLines == type)
 	{
 		pSheetView->m_oShowGridLines.Init();
 		pSheetView->m_oShowGridLines->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowOutlineSymbols == type)
+	else if (c_oSer_SheetView::ShowOutlineSymbols == type)
 	{
 		pSheetView->m_oShowOutlineSymbols.Init();
 		pSheetView->m_oShowOutlineSymbols->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowRowColHeaders == type)
+	else if (c_oSer_SheetView::ShowRowColHeaders == type)
 	{
 		pSheetView->m_oShowRowColHeaders.Init();
 		pSheetView->m_oShowRowColHeaders->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowRuler == type)
+	else if (c_oSer_SheetView::ShowRuler == type)
 	{
 		pSheetView->m_oShowRuler.Init();
 		pSheetView->m_oShowRuler->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowWhiteSpace == type)
+	else if (c_oSer_SheetView::ShowWhiteSpace == type)
 	{
 		pSheetView->m_oShowWhiteSpace.Init();
 		pSheetView->m_oShowWhiteSpace->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::ShowZeros == type)
+	else if (c_oSer_SheetView::ShowZeros == type)
 	{
 		pSheetView->m_oShowZeros.Init();
 		pSheetView->m_oShowZeros->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::TabSelected == type)
+	else if (c_oSer_SheetView::TabSelected == type)
 	{
 		pSheetView->m_oTabSelected.Init();
 		pSheetView->m_oTabSelected->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::TopLeftCell == type)
+	else if (c_oSer_SheetView::TopLeftCell == type)
 	{
 		pSheetView->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_SheetView::View == type)
+	else if (c_oSer_SheetView::View == type)
 	{
 		pSheetView->m_oView.Init();
 		pSheetView->m_oView->SetValue((SimpleTypes::Spreadsheet::ESheetViewType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_SheetView::WindowProtection == type)
+	else if (c_oSer_SheetView::WindowProtection == type)
 	{
 		pSheetView->m_oWindowProtection.Init();
 		pSheetView->m_oWindowProtection->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetView::WorkbookViewId == type)
+	else if (c_oSer_SheetView::WorkbookViewId == type)
 	{
 		pSheetView->m_oWorkbookViewId.Init();
 		pSheetView->m_oWorkbookViewId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_SheetView::ZoomScale == type)
+	else if (c_oSer_SheetView::ZoomScale == type)
 	{
 		pSheetView->m_oZoomScale.Init();
 		pSheetView->m_oZoomScale->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_SheetView::ZoomScaleNormal == type)
+	else if (c_oSer_SheetView::ZoomScaleNormal == type)
 	{
 		pSheetView->m_oZoomScaleNormal.Init();
 		pSheetView->m_oZoomScaleNormal->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_SheetView::ZoomScalePageLayoutView == type)
+	else if (c_oSer_SheetView::ZoomScalePageLayoutView == type)
 	{
 		pSheetView->m_oZoomScalePageLayoutView.Init();
 		pSheetView->m_oZoomScalePageLayoutView->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_SheetView::ZoomScaleSheetLayoutView == type)
+	else if (c_oSer_SheetView::ZoomScaleSheetLayoutView == type)
 	{
 		pSheetView->m_oZoomScaleSheetLayoutView.Init();
 		pSheetView->m_oZoomScaleSheetLayoutView->SetValue(m_oBufferedStream.GetLong());
@@ -4610,27 +4678,27 @@ int BinaryWorksheetsTableReader::ReadPane(BYTE type, long length, void* poResult
 {
 	OOX::Spreadsheet::CPane* pPane = static_cast<OOX::Spreadsheet::CPane*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_Pane::ActivePane == type)
+	if (c_oSer_Pane::ActivePane == type)
 	{
 		pPane->m_oActivePane.Init();
 		pPane->m_oActivePane->SetValue((SimpleTypes::Spreadsheet::EActivePane)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_Pane::State == type)
+	else if (c_oSer_Pane::State == type)
 	{
 		pPane->m_oState.Init();
         std::wstring sVal = m_oBufferedStream.GetString4(length);
         pPane->m_oState->FromString(sVal.c_str());
 	}
-	else if(c_oSer_Pane::TopLeftCell == type)
+	else if (c_oSer_Pane::TopLeftCell == type)
 	{
 		pPane->m_oTopLeftCell = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_Pane::XSplit == type)
+	else if (c_oSer_Pane::XSplit == type)
 	{
 		pPane->m_oXSplit.Init();
 		pPane->m_oXSplit->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_Pane::YSplit == type)
+	else if (c_oSer_Pane::YSplit == type)
 	{
 		pPane->m_oYSplit.Init();
 		pPane->m_oYSplit->SetValue(m_oBufferedStream.GetDoubleReal());
@@ -4643,20 +4711,20 @@ int BinaryWorksheetsTableReader::ReadSelection(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CSelection* pSelection = static_cast<OOX::Spreadsheet::CSelection*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_Selection::ActiveCell == type)
+	if (c_oSer_Selection::ActiveCell == type)
 	{
 		pSelection->m_oActiveCell = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_Selection::ActiveCellId == type)
+	else if (c_oSer_Selection::ActiveCellId == type)
 	{
 		pSelection->m_oActiveCellId.Init();
 		pSelection->m_oActiveCellId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_Selection::Sqref == type)
+	else if (c_oSer_Selection::Sqref == type)
 	{
 		pSelection->m_oSqref = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_Selection::Pane == type)
+	else if (c_oSer_Selection::Pane == type)
 	{
 		pSelection->m_oPane.Init();
 		pSelection->m_oPane->SetValue((SimpleTypes::Spreadsheet::EActivePane)m_oBufferedStream.GetUChar());
@@ -4669,60 +4737,60 @@ int BinaryWorksheetsTableReader::ReadSheetPr(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CSheetPr* pSheetPr = static_cast<OOX::Spreadsheet::CSheetPr*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_SheetPr::CodeName == type)
+	if (c_oSer_SheetPr::CodeName == type)
 	{
 		pSheetPr->m_oCodeName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_SheetPr::EnableFormatConditionsCalculation == type)
+	else if (c_oSer_SheetPr::EnableFormatConditionsCalculation == type)
 	{
 		pSheetPr->m_oEnableFormatConditionsCalculation.Init();
 		pSheetPr->m_oEnableFormatConditionsCalculation->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::FilterMode == type)
+	else if (c_oSer_SheetPr::FilterMode == type)
 	{
 		pSheetPr->m_oFilterMode.Init();
 		pSheetPr->m_oFilterMode->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::Published == type)
+	else if (c_oSer_SheetPr::Published == type)
 	{
 		pSheetPr->m_oPublished.Init();
 		pSheetPr->m_oPublished->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::SyncHorizontal == type)
+	else if (c_oSer_SheetPr::SyncHorizontal == type)
 	{
 		pSheetPr->m_oSyncHorizontal.Init();
 		pSheetPr->m_oSyncHorizontal->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::SyncRef == type)
+	else if (c_oSer_SheetPr::SyncRef == type)
 	{
 		pSheetPr->m_oSyncRef = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_SheetPr::SyncVertical == type)
+	else if (c_oSer_SheetPr::SyncVertical == type)
 	{
 		pSheetPr->m_oSyncVertical.Init();
 		pSheetPr->m_oSyncVertical->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::TransitionEntry == type)
+	else if (c_oSer_SheetPr::TransitionEntry == type)
 	{
 		pSheetPr->m_oTransitionEntry.Init();
 		pSheetPr->m_oTransitionEntry->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::TransitionEvaluation == type)
+	else if (c_oSer_SheetPr::TransitionEvaluation == type)
 	{
 		pSheetPr->m_oTransitionEvaluation.Init();
 		pSheetPr->m_oTransitionEvaluation->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSer_SheetPr::TabColor == type)
+	else if (c_oSer_SheetPr::TabColor == type)
 	{
 		pSheetPr->m_oTabColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSheetPr->m_oTabColor.GetPointer());
 	}
-	else if(c_oSer_SheetPr::PageSetUpPr == type)
+	else if (c_oSer_SheetPr::PageSetUpPr == type)
 	{
 		pSheetPr->m_oPageSetUpPr.Init();
 		READ1_DEF(length, res, this->ReadPageSetUpPr, pSheetPr->m_oPageSetUpPr.GetPointer());
 	}
-	else if(c_oSer_SheetPr::OutlinePr == type)
+	else if (c_oSer_SheetPr::OutlinePr == type)
 	{
 		pSheetPr->m_oOutlinePr.Init();
 		READ1_DEF(length, res, this->ReadOutlinePr, pSheetPr->m_oOutlinePr.GetPointer());
@@ -4735,22 +4803,22 @@ int BinaryWorksheetsTableReader::ReadOutlinePr(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::COutlinePr* pOutlinePr = static_cast<OOX::Spreadsheet::COutlinePr*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_SheetPr::ApplyStyles == type)
+	if (c_oSer_SheetPr::ApplyStyles == type)
 	{
 		pOutlinePr->m_oApplyStyles.Init();
 		pOutlinePr->m_oApplyStyles->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetPr::ShowOutlineSymbols == type)
+	else if (c_oSer_SheetPr::ShowOutlineSymbols == type)
 	{
 		pOutlinePr->m_oShowOutlineSymbols.Init();
 		pOutlinePr->m_oShowOutlineSymbols->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetPr::SummaryBelow == type)
+	else if (c_oSer_SheetPr::SummaryBelow == type)
 	{
 		pOutlinePr->m_oSummaryBelow.Init();
 		pOutlinePr->m_oSummaryBelow->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetPr::SummaryRight == type)
+	else if (c_oSer_SheetPr::SummaryRight == type)
 	{
 		pOutlinePr->m_oSummaryRight.Init();
 		pOutlinePr->m_oSummaryRight->FromBool(m_oBufferedStream.GetBool());
@@ -4763,12 +4831,12 @@ int BinaryWorksheetsTableReader::ReadPageSetUpPr(BYTE type, long length, void* p
 {
 	OOX::Spreadsheet::CPageSetUpPr* pPageSetUpPr = static_cast<OOX::Spreadsheet::CPageSetUpPr*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_SheetPr::AutoPageBreaks == type)
+	if (c_oSer_SheetPr::AutoPageBreaks == type)
 	{
 		pPageSetUpPr->m_oAutoPageBreaks.Init();
 		pPageSetUpPr->m_oAutoPageBreaks->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_SheetPr::FitToPage == type)
+	else if (c_oSer_SheetPr::FitToPage == type)
 	{
 		pPageSetUpPr->m_oFitToPage.Init();
 		pPageSetUpPr->m_oFitToPage->FromBool(m_oBufferedStream.GetBool());
@@ -4785,11 +4853,11 @@ int BinaryWorksheetsTableReader::ReadSheetFormatPr(BYTE type, long length, void*
 {
 	OOX::Spreadsheet::CSheetFormatPr* pSheetFormatPr = static_cast<OOX::Spreadsheet::CSheetFormatPr*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerSheetFormatPrTypes::DefaultColWidth == type)
+	if (c_oSerSheetFormatPrTypes::DefaultColWidth == type)
 	{
 		pSheetFormatPr->m_oDefaultColWidth = m_oBufferedStream.GetDoubleReal();
 	}
-	else if(c_oSerSheetFormatPrTypes::DefaultRowHeight == type)
+	else if (c_oSerSheetFormatPrTypes::DefaultRowHeight == type)
 	{
 		pSheetFormatPr->m_oDefaultRowHeight = m_oBufferedStream.GetDoubleReal();
 	}
@@ -4821,32 +4889,32 @@ int BinaryWorksheetsTableReader::ReadPageMargins(BYTE type, long length, void* p
 {
 	OOX::Spreadsheet::CPageMargins* pPageMargins = static_cast<OOX::Spreadsheet::CPageMargins*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PageMargins::Left == type)
+	if (c_oSer_PageMargins::Left == type)
 	{
 		pPageMargins->m_oLeft.Init();
 		pPageMargins->m_oLeft->FromMm(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageMargins::Top == type)
+	else if (c_oSer_PageMargins::Top == type)
 	{
 		pPageMargins->m_oTop.Init();
 		pPageMargins->m_oTop->FromMm(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageMargins::Right == type)
+	else if (c_oSer_PageMargins::Right == type)
 	{
 		pPageMargins->m_oRight.Init();
 		pPageMargins->m_oRight->FromMm(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageMargins::Bottom == type)
+	else if (c_oSer_PageMargins::Bottom == type)
 	{
 		pPageMargins->m_oBottom.Init();
 		pPageMargins->m_oBottom->FromMm(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageMargins::Header == type)
+	else if (c_oSer_PageMargins::Header == type)
 	{
 		pPageMargins->m_oHeader.Init();
 		pPageMargins->m_oHeader->FromMm(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageMargins::Footer == type)
+	else if (c_oSer_PageMargins::Footer == type)
 	{
 		pPageMargins->m_oFooter.Init();
 		pPageMargins->m_oFooter->FromMm(m_oBufferedStream.GetDoubleReal());
@@ -4859,97 +4927,97 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CPageSetup* pPageSetup = static_cast<OOX::Spreadsheet::CPageSetup*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PageSetup::BlackAndWhite == type)
+	if (c_oSer_PageSetup::BlackAndWhite == type)
 	{
 		pPageSetup->m_oBlackAndWhite.Init();
 		pPageSetup->m_oBlackAndWhite->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_PageSetup::CellComments == type)
+	else if (c_oSer_PageSetup::CellComments == type)
 	{
 		pPageSetup->m_oCellComments.Init();
 		pPageSetup->m_oCellComments->SetValue((SimpleTypes::Spreadsheet::ECellComments)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::Copies == type)
+	else if (c_oSer_PageSetup::Copies == type)
 	{
 		pPageSetup->m_oCopies.Init();
 		pPageSetup->m_oCopies->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_PageSetup::Draft == type)
+	else if (c_oSer_PageSetup::Draft == type)
 	{
 		pPageSetup->m_oDraft.Init();
 		pPageSetup->m_oDraft->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_PageSetup::Errors == type)
+	else if (c_oSer_PageSetup::Errors == type)
 	{
 		pPageSetup->m_oErrors.Init();
 		pPageSetup->m_oErrors->SetValue((SimpleTypes::Spreadsheet::EPrintError)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::FirstPageNumber == type)
+	else if (c_oSer_PageSetup::FirstPageNumber == type)
 	{
 		pPageSetup->m_oFirstPageNumber.Init();
 		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_PageSetup::FitToHeight == type)
+	else if (c_oSer_PageSetup::FitToHeight == type)
 	{
 		pPageSetup->m_oFitToHeight.Init();
 		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_PageSetup::FitToWidth == type)
+	else if (c_oSer_PageSetup::FitToWidth == type)
 	{
 		pPageSetup->m_oFitToWidth.Init();
 		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_PageSetup::HorizontalDpi == type)
+	else if (c_oSer_PageSetup::HorizontalDpi == type)
 	{
 		pPageSetup->m_oHorizontalDpi.Init();
 		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_PageSetup::Orientation == type)
+	else if (c_oSer_PageSetup::Orientation == type)
 	{
 		pPageSetup->m_oOrientation.Init();
 		pPageSetup->m_oOrientation->SetValue((SimpleTypes::EPageOrientation)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::PageOrder == type)
+	else if (c_oSer_PageSetup::PageOrder == type)
 	{
 		pPageSetup->m_oPageOrder.Init();
 		pPageSetup->m_oPageOrder->SetValue((SimpleTypes::Spreadsheet::EPageOrder)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::PaperHeight == type)
+	else if (c_oSer_PageSetup::PaperHeight == type)
 	{
 		pPageSetup->m_oPaperHeight.Init();
 		pPageSetup->m_oPaperHeight->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageSetup::PaperSize == type)
+	else if (c_oSer_PageSetup::PaperSize == type)
 	{
 		pPageSetup->m_oPaperSize.Init();
 		pPageSetup->m_oPaperSize->SetValue((SimpleTypes::Spreadsheet::EPageSize)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::PaperWidth == type)
+	else if (c_oSer_PageSetup::PaperWidth == type)
 	{
 		pPageSetup->m_oPaperWidth.Init();
 		pPageSetup->m_oPaperWidth->SetValue(m_oBufferedStream.GetDoubleReal());
 	}
-	else if(c_oSer_PageSetup::PaperUnits == type)
+	else if (c_oSer_PageSetup::PaperUnits == type)
 	{
 		pPageSetup->m_oPaperUnits.Init();
 		pPageSetup->m_oPaperUnits->SetValue((SimpleTypes::Spreadsheet::EPageUnits)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_PageSetup::Scale == type)
+	else if (c_oSer_PageSetup::Scale == type)
 	{
 		pPageSetup->m_oScale.Init();
 		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetULong());
 	}
-	else if(c_oSer_PageSetup::UseFirstPageNumber == type)
+	else if (c_oSer_PageSetup::UseFirstPageNumber == type)
 	{
 		pPageSetup->m_oUseFirstPageNumber.Init();
 		pPageSetup->m_oUseFirstPageNumber->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_PageSetup::UsePrinterDefaults == type)
+	else if (c_oSer_PageSetup::UsePrinterDefaults == type)
 	{
 		pPageSetup->m_oUsePrinterDefaults.Init();
 		pPageSetup->m_oUsePrinterDefaults->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_PageSetup::VerticalDpi == type)
+	else if (c_oSer_PageSetup::VerticalDpi == type)
 	{
 		pPageSetup->m_oVerticalDpi.Init();
 		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetULong());
@@ -5078,52 +5146,52 @@ int BinaryWorksheetsTableReader::ReadHeaderFooter(BYTE type, long length, void* 
 {
 	OOX::Spreadsheet::CHeaderFooter* pHeaderFooter = static_cast<OOX::Spreadsheet::CHeaderFooter*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_HeaderFooter::AlignWithMargins == type)
+	if (c_oSer_HeaderFooter::AlignWithMargins == type)
 	{
 		pHeaderFooter->m_oAlignWithMargins.Init();
 		pHeaderFooter->m_oAlignWithMargins->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_HeaderFooter::DifferentFirst == type)
+	else if (c_oSer_HeaderFooter::DifferentFirst == type)
 	{
 		pHeaderFooter->m_oDifferentFirst.Init();
 		pHeaderFooter->m_oDifferentFirst->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_HeaderFooter::DifferentOddEven == type)
+	else if (c_oSer_HeaderFooter::DifferentOddEven == type)
 	{
 		pHeaderFooter->m_oDifferentOddEven.Init();
 		pHeaderFooter->m_oDifferentOddEven->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_HeaderFooter::ScaleWithDoc == type)
+	else if (c_oSer_HeaderFooter::ScaleWithDoc == type)
 	{
 		pHeaderFooter->m_oScaleWithDoc.Init();
 		pHeaderFooter->m_oScaleWithDoc->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_HeaderFooter::EvenFooter == type)
+	else if (c_oSer_HeaderFooter::EvenFooter == type)
 	{
 		pHeaderFooter->m_oEvenFooter.Init();
 		pHeaderFooter->m_oEvenFooter->m_sText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_HeaderFooter::EvenHeader == type)
+	else if (c_oSer_HeaderFooter::EvenHeader == type)
 	{
 		pHeaderFooter->m_oEvenHeader.Init();
 		pHeaderFooter->m_oEvenHeader->m_sText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_HeaderFooter::FirstFooter == type)
+	else if (c_oSer_HeaderFooter::FirstFooter == type)
 	{
 		pHeaderFooter->m_oFirstFooter.Init();
 		pHeaderFooter->m_oFirstFooter->m_sText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_HeaderFooter::FirstHeader == type)
+	else if (c_oSer_HeaderFooter::FirstHeader == type)
 	{
 		pHeaderFooter->m_oFirstHeader.Init();
 		pHeaderFooter->m_oFirstHeader->m_sText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_HeaderFooter::OddFooter == type)
+	else if (c_oSer_HeaderFooter::OddFooter == type)
 	{
 		pHeaderFooter->m_oOddFooter.Init();
 		pHeaderFooter->m_oOddFooter->m_sText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_HeaderFooter::OddHeader == type)
+	else if (c_oSer_HeaderFooter::OddHeader == type)
 	{
 		pHeaderFooter->m_oOddHeader.Init();
 		pHeaderFooter->m_oOddHeader->m_sText = m_oBufferedStream.GetString4(length);
@@ -5161,17 +5229,17 @@ int BinaryWorksheetsTableReader::ReadRowColBreaks(BYTE type, long length, void* 
 {
 	OOX::Spreadsheet::CRowColBreaks* pRowColBreaks = static_cast<OOX::Spreadsheet::CRowColBreaks*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_RowColBreaks::Count == type)
+	if (c_oSer_RowColBreaks::Count == type)
 	{
 		pRowColBreaks->m_oCount.Init();
 		pRowColBreaks->m_oCount->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_RowColBreaks::ManualBreakCount == type)
+	else if (c_oSer_RowColBreaks::ManualBreakCount == type)
 	{
 		pRowColBreaks->m_oManualBreakCount.Init();
 		pRowColBreaks->m_oManualBreakCount->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_RowColBreaks::Break == type)
+	else if (c_oSer_RowColBreaks::Break == type)
 	{
 		OOX::Spreadsheet::CBreak* pColBreaks = new OOX::Spreadsheet::CBreak();
 		READ1_DEF(length, res, this->ReadBreak, pColBreaks);
@@ -5185,27 +5253,27 @@ int BinaryWorksheetsTableReader::ReadBreak(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CBreak* pBreak = static_cast<OOX::Spreadsheet::CBreak*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_RowColBreaks::Id == type)
+	if (c_oSer_RowColBreaks::Id == type)
 	{
 		pBreak->m_oId.Init();
 		pBreak->m_oId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_RowColBreaks::Man == type)
+	else if (c_oSer_RowColBreaks::Man == type)
 	{
 		pBreak->m_oMan.Init();
 		pBreak->m_oMan->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_RowColBreaks::Max == type)
+	else if (c_oSer_RowColBreaks::Max == type)
 	{
 		pBreak->m_oMax.Init();
 		pBreak->m_oMax->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_RowColBreaks::Min == type)
+	else if (c_oSer_RowColBreaks::Min == type)
 	{
 		pBreak->m_oMin.Init();
 		pBreak->m_oMin->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_RowColBreaks::Pt == type)
+	else if (c_oSer_RowColBreaks::Pt == type)
 	{
 		pBreak->m_oPt.Init();
 		pBreak->m_oPt->FromBool(m_oBufferedStream.GetBool());
@@ -5218,15 +5286,30 @@ int BinaryWorksheetsTableReader::ReadPrintOptions(BYTE type, long length, void* 
 {
 	OOX::Spreadsheet::CPrintOptions* pPrintOptions = static_cast<OOX::Spreadsheet::CPrintOptions*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_PrintOptions::GridLines == type)
+	if (c_oSer_PrintOptions::GridLines == type)
 	{
 		pPrintOptions->m_oGridLines.Init();
 		pPrintOptions->m_oGridLines->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_PrintOptions::Headings == type)
+	else if (c_oSer_PrintOptions::Headings == type)
 	{
 		pPrintOptions->m_oHeadings.Init();
 		pPrintOptions->m_oHeadings->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_PrintOptions::GridLinesSet == type)
+	{
+		pPrintOptions->m_oGridLinesSet.Init();
+		pPrintOptions->m_oGridLinesSet->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_PrintOptions::HorizontalCentered == type)
+	{
+		pPrintOptions->m_oHorizontalCentered.Init();
+		pPrintOptions->m_oHorizontalCentered->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_PrintOptions::VerticalCentered == type)
+	{
+		pPrintOptions->m_oVerticalCentered.Init();
+		pPrintOptions->m_oVerticalCentered->FromBool(m_oBufferedStream.GetBool());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5236,7 +5319,7 @@ int BinaryWorksheetsTableReader::ReadHyperlinks(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CHyperlinks* pHyperlinks = static_cast<OOX::Spreadsheet::CHyperlinks*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::Hyperlink == type)
+	if (c_oSerWorksheetsTypes::Hyperlink == type)
 	{
 		OOX::Spreadsheet::CHyperlink* pHyperlink = new OOX::Spreadsheet::CHyperlink();
 		READ1_DEF(length, res, this->ReadHyperlink, pHyperlink);
@@ -5250,26 +5333,26 @@ int BinaryWorksheetsTableReader::ReadHyperlink(BYTE type, long length, void* poR
 {
 	OOX::Spreadsheet::CHyperlink* pHyperlink = static_cast<OOX::Spreadsheet::CHyperlink*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerHyperlinkTypes::Ref == type)
+	if (c_oSerHyperlinkTypes::Ref == type)
 	{
 		pHyperlink->m_oRef = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerHyperlinkTypes::Display == type)
+	else if (c_oSerHyperlinkTypes::Display == type)
 	{
 		pHyperlink->m_oDisplay = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerHyperlinkTypes::Hyperlink == type)
+	else if (c_oSerHyperlinkTypes::Hyperlink == type)
 	{
         std::wstring sHyperlink(m_oBufferedStream.GetString3(length));
 		const OOX::RId& rId = m_pCurWorksheet->AddHyperlink(sHyperlink);
 		pHyperlink->m_oRid.Init();
 		pHyperlink->m_oRid->SetValue(rId.get());
 	}
-	else if(c_oSerHyperlinkTypes::Location == type)
+	else if (c_oSerHyperlinkTypes::Location == type)
 	{
 		pHyperlink->m_oLocation = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerHyperlinkTypes::Tooltip == type)
+	else if (c_oSerHyperlinkTypes::Tooltip == type)
 	{
 		pHyperlink->m_oTooltip = m_oBufferedStream.GetString4(length);
 	}
@@ -5281,7 +5364,7 @@ int BinaryWorksheetsTableReader::ReadMergeCells(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CMergeCells* pMergeCells = static_cast<OOX::Spreadsheet::CMergeCells*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::MergeCell == type)
+	if (c_oSerWorksheetsTypes::MergeCell == type)
 	{
 		OOX::Spreadsheet::CMergeCell* pMergeCell = new OOX::Spreadsheet::CMergeCell();
 		pMergeCell->m_oRef = m_oBufferedStream.GetString4(length);
@@ -5296,7 +5379,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 	OOX::Spreadsheet::CDrawing* pDrawing = static_cast<OOX::Spreadsheet::CDrawing*>(poResult);
 	int res = c_oSerConstants::ReadOk;
 
-    if(c_oSerWorksheetsTypes::Drawing == type)
+    if (c_oSerWorksheetsTypes::Drawing == type)
 	{
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
@@ -5309,7 +5392,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 		if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Pic>())
 		{
 			PPTX::Logic::Pic& oPic = pCellAnchor->m_oElement->as<PPTX::Logic::Pic>();
-			if(oPic.oleObject.IsInit() && oPic.oleObject->m_OleObjectFile.IsInit())
+			if (oPic.oleObject.IsInit() && oPic.oleObject->m_OleObjectFile.IsInit())
 			{
 				pCellAnchor->m_bShapeOle = oPic.oleObject->isValid();
 				if (pCellAnchor->m_bShapeOle)
@@ -5320,12 +5403,12 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 					if (oPic.oleObject->m_oDrawAspect.IsInit())
 					{
 						std::wstring sDrawAspect;
-						if(0 == oPic.oleObject->m_oDrawAspect->GetBYTECode())	pOleObject->m_oDvAspect = L"DVASPECT_CONTENT";
+						if (0 == oPic.oleObject->m_oDrawAspect->GetBYTECode())	pOleObject->m_oDvAspect = L"DVASPECT_CONTENT";
 						else													pOleObject->m_oDvAspect = L"DVASPECT_ICON";
 					}
 					if (oPic.oleObject->m_oUpdateMode.IsInit())
 					{
-						if(0 == oPic.oleObject->m_oUpdateMode->GetBYTECode())	pOleObject->m_oOleUpdate = L"OLEUPDATE_ALWAYS";
+						if (0 == oPic.oleObject->m_oUpdateMode->GetBYTECode())	pOleObject->m_oOleUpdate = L"OLEUPDATE_ALWAYS";
 						else													pOleObject->m_oOleUpdate = L"OLEUPDATE_ONCALL";
 					}
 					pOleObject->m_oObjectPr.Init();
@@ -5336,7 +5419,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
 					pOleObject->m_OleObjectFile	= oPic.oleObject->m_OleObjectFile;
 
-					if(pOleObject->m_OleObjectFile.IsInit())
+					if (pOleObject->m_OleObjectFile.IsInit())
 					{
 				//generate ClientData						
 						OOX::Vml::CClientData oClientData;
@@ -5392,7 +5475,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
                         smart_ptr<OOX::File> pFileObject = pOleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>();
                         const OOX::RId oRIdBin = m_pCurWorksheet->Add(pFileObject);
 
-						if(!pOleObject->m_oRid.IsInit())
+						if (!pOleObject->m_oRid.IsInit())
 						{
 							pOleObject->m_oRid.Init();
 						}
@@ -5488,31 +5571,31 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 	OOX::Spreadsheet::CCellAnchor* pCellAnchor = static_cast<OOX::Spreadsheet::CCellAnchor*>(poResult);
 	int res = c_oSerConstants::ReadOk;
 
-	if(c_oSer_DrawingType::Type == type)
+	if (c_oSer_DrawingType::Type == type)
 	{
 		pCellAnchor->setAnchorType((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_DrawingType::EditAs == type)
+	else if (c_oSer_DrawingType::EditAs == type)
 	{
 		pCellAnchor->m_oEditAs.Init();
 		pCellAnchor->m_oEditAs->SetValue((SimpleTypes::Spreadsheet::ECellAnchorType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_DrawingType::From == type)
+	else if (c_oSer_DrawingType::From == type)
 	{
 		pCellAnchor->m_oFrom.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadFromTo, pCellAnchor->m_oFrom.GetPointer());
 	}
-	else if(c_oSer_DrawingType::To == type)
+	else if (c_oSer_DrawingType::To == type)
 	{
 		pCellAnchor->m_oTo.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadFromTo, pCellAnchor->m_oTo.GetPointer());
 	}
-	else if(c_oSer_DrawingType::Pos == type)
+	else if (c_oSer_DrawingType::Pos == type)
 	{
 		pCellAnchor->m_oPos.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadPos, pCellAnchor->m_oPos.GetPointer());
 	}
-	else if(c_oSer_DrawingType::Ext == type)
+	else if (c_oSer_DrawingType::Ext == type)
 	{
 		pCellAnchor->m_oExt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
@@ -5535,7 +5618,7 @@ int BinaryWorksheetsTableReader::ReadDrawing(BYTE type, long length, void* poRes
 	if (res != c_oSerConstants::ReadUnknown) return res;	
 	res = c_oSerConstants::ReadOk;
 
-	if(c_oSer_DrawingType::pptxDrawing == type)
+	if (c_oSer_DrawingType::pptxDrawing == type)
 	{
 		LONG nOldPos = m_oBufferedStream.GetPos();
 		pCellAnchor->m_oElement.Init();
@@ -5561,7 +5644,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHF(BYTE type, long length, voi
 {
 	OOX::Spreadsheet::CLegacyDrawingHFWorksheet* pLegacyDrawingHF = static_cast<OOX::Spreadsheet::CLegacyDrawingHFWorksheet*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_LegacyDrawingHF::Drawings == type)
+	if (c_oSer_LegacyDrawingHF::Drawings == type)
 	{
 		m_pOfficeDrawingConverter->SetDstContentRels();
 		OOX::CVmlDrawing* pVmlDrawing = new OOX::CVmlDrawing(NULL, false);
@@ -5580,92 +5663,92 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHF(BYTE type, long length, voi
 		OOX::CPath pathVmlRels = pathVmlsRelsDir.GetPath()  + FILE_SEPARATOR_STR + pVmlDrawingFile->m_sOutputFilename + _T(".rels");
 		m_pOfficeDrawingConverter->SaveDstContentRels(pathVmlRels.GetPath());
 	}
-	else if(c_oSer_LegacyDrawingHF::Cfe == type)
+	else if (c_oSer_LegacyDrawingHF::Cfe == type)
 	{
 		pLegacyDrawingHF->m_oCfe.Init();
 		pLegacyDrawingHF->m_oCfe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Cff == type)
+	else if (c_oSer_LegacyDrawingHF::Cff == type)
 	{
 		pLegacyDrawingHF->m_oCff.Init();
 		pLegacyDrawingHF->m_oCff->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Cfo == type)
+	else if (c_oSer_LegacyDrawingHF::Cfo == type)
 	{
 		pLegacyDrawingHF->m_oCfo.Init();
 		pLegacyDrawingHF->m_oCfo->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Che == type)
+	else if (c_oSer_LegacyDrawingHF::Che == type)
 	{
 		pLegacyDrawingHF->m_oChe.Init();
 		pLegacyDrawingHF->m_oChe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Chf == type)
+	else if (c_oSer_LegacyDrawingHF::Chf == type)
 	{
 		pLegacyDrawingHF->m_oChf.Init();
 		pLegacyDrawingHF->m_oChf->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Cho == type)
+	else if (c_oSer_LegacyDrawingHF::Cho == type)
 	{
 		pLegacyDrawingHF->m_oCho.Init();
 		pLegacyDrawingHF->m_oCho->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lfe == type)
+	else if (c_oSer_LegacyDrawingHF::Lfe == type)
 	{
 		pLegacyDrawingHF->m_oLfe.Init();
 		pLegacyDrawingHF->m_oLfe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lff == type)
+	else if (c_oSer_LegacyDrawingHF::Lff == type)
 	{
 		pLegacyDrawingHF->m_oLff.Init();
 		pLegacyDrawingHF->m_oLff->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lfo == type)
+	else if (c_oSer_LegacyDrawingHF::Lfo == type)
 	{
 		pLegacyDrawingHF->m_oLfo.Init();
 		pLegacyDrawingHF->m_oLfo->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lhe == type)
+	else if (c_oSer_LegacyDrawingHF::Lhe == type)
 	{
 		pLegacyDrawingHF->m_oLhe.Init();
 		pLegacyDrawingHF->m_oLhe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lhf == type)
+	else if (c_oSer_LegacyDrawingHF::Lhf == type)
 	{
 		pLegacyDrawingHF->m_oLhf.Init();
 		pLegacyDrawingHF->m_oLhf->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Lho == type)
+	else if (c_oSer_LegacyDrawingHF::Lho == type)
 	{
 		pLegacyDrawingHF->m_oLho.Init();
 		pLegacyDrawingHF->m_oLho->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rfe == type)
+	else if (c_oSer_LegacyDrawingHF::Rfe == type)
 	{
 		pLegacyDrawingHF->m_oRfe.Init();
 		pLegacyDrawingHF->m_oRfe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rff == type)
+	else if (c_oSer_LegacyDrawingHF::Rff == type)
 	{
 		pLegacyDrawingHF->m_oRff.Init();
 		pLegacyDrawingHF->m_oRff->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rfo == type)
+	else if (c_oSer_LegacyDrawingHF::Rfo == type)
 	{
 		pLegacyDrawingHF->m_oRfo.Init();
 		pLegacyDrawingHF->m_oRfo->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rhe == type)
+	else if (c_oSer_LegacyDrawingHF::Rhe == type)
 	{
 		pLegacyDrawingHF->m_oRhe.Init();
 		pLegacyDrawingHF->m_oRhe->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rhf == type)
+	else if (c_oSer_LegacyDrawingHF::Rhf == type)
 	{
 		pLegacyDrawingHF->m_oRhf.Init();
 		pLegacyDrawingHF->m_oRhf->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_LegacyDrawingHF::Rho == type)
+	else if (c_oSer_LegacyDrawingHF::Rho == type)
 	{
 		pLegacyDrawingHF->m_oRho.Init();
 		pLegacyDrawingHF->m_oRho->SetValue(m_oBufferedStream.GetLong());
@@ -5678,7 +5761,7 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 {
 	OOX::CVmlDrawing* pVmlDrawing = static_cast<OOX::CVmlDrawing*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_LegacyDrawingHF::Drawing == type)
+	if (c_oSer_LegacyDrawingHF::Drawing == type)
 	{
 		OOX::CVmlDrawing::_vml_shape oVmlShape;
 		READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawing, &oVmlShape);
@@ -5693,11 +5776,11 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 			oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+			oWriter.m_strId = oVmlShape.sXml;
 
 			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
 			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
-			
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -5711,11 +5794,11 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawing(BYTE type, long leng
 {
 	OOX::CVmlDrawing::_vml_shape* poVmlShape = static_cast<OOX::CVmlDrawing::_vml_shape*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_LegacyDrawingHF::DrawingId == type)
+	if (c_oSer_LegacyDrawingHF::DrawingId == type)
 	{
 		poVmlShape->sXml = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_LegacyDrawingHF::DrawingShape == type)
+	else if (c_oSer_LegacyDrawingHF::DrawingShape == type)
 	{
 		PPTX::Logic::SpTreeElem* pSpTree = new PPTX::Logic::SpTreeElem();
 		BYTE typeRec1   = m_oBufferedStream.GetUChar();    // must be 0;
@@ -5732,23 +5815,23 @@ int BinaryWorksheetsTableReader::ReadFromTo(BYTE type, long length, void* poResu
 {
 	OOX::Spreadsheet::CFromTo* pFromTo = static_cast<OOX::Spreadsheet::CFromTo*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DrawingFromToType::Col == type)
+	if (c_oSer_DrawingFromToType::Col == type)
 	{
 		pFromTo->m_oCol.Init();
 		pFromTo->m_oCol->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DrawingFromToType::ColOff == type)
+	else if (c_oSer_DrawingFromToType::ColOff == type)
 	{
 		double dColOffMm = m_oBufferedStream.GetDoubleReal();
 		pFromTo->m_oColOff.Init();
 		pFromTo->m_oColOff->FromMm(dColOffMm);
 	}
-	else if(c_oSer_DrawingFromToType::Row == type)
+	else if (c_oSer_DrawingFromToType::Row == type)
 	{
 		pFromTo->m_oRow.Init();
 		pFromTo->m_oRow->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_DrawingFromToType::RowOff == type)
+	else if (c_oSer_DrawingFromToType::RowOff == type)
 	{
 		double dRowOffMm = m_oBufferedStream.GetDoubleReal();
 		pFromTo->m_oRowOff.Init();
@@ -5778,13 +5861,13 @@ int BinaryWorksheetsTableReader::ReadExt(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CExt* pExt = static_cast<OOX::Spreadsheet::CExt*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DrawingExtType::Cx == type)
+	if (c_oSer_DrawingExtType::Cx == type)
 	{
 		double dCxMm = m_oBufferedStream.GetDoubleReal();
 		pExt->m_oCx.Init();
 		pExt->m_oCx->FromMm(dCxMm);
 	}
-	else if(c_oSer_DrawingExtType::Cy == type)
+	else if (c_oSer_DrawingExtType::Cy == type)
 	{
 		double dCyMm = m_oBufferedStream.GetDoubleReal();
 		pExt->m_oCy.Init();
@@ -5798,13 +5881,13 @@ int BinaryWorksheetsTableReader::ReadPos(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CPos* pPos = static_cast<OOX::Spreadsheet::CPos*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DrawingPosType::X == type)
+	if (c_oSer_DrawingPosType::X == type)
 	{
 		double dXMm = m_oBufferedStream.GetDoubleReal();
 		pPos->m_oX.Init();
 		pPos->m_oX->FromMm(dXMm);
 	}
-	else if(c_oSer_DrawingPosType::Y == type)
+	else if (c_oSer_DrawingPosType::Y == type)
 	{
 		double dYMm = m_oBufferedStream.GetDoubleReal();
 		pPos->m_oY.Init();
@@ -5817,7 +5900,7 @@ int BinaryWorksheetsTableReader::ReadPos(BYTE type, long length, void* poResult)
 int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorksheetsTypes::XlsbPos == type)
+	if (c_oSerWorksheetsTypes::XlsbPos == type)
 	{
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
@@ -5828,7 +5911,7 @@ int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poR
 		m_oBufferedStream.Seek(nOldPos);
 		res = c_oSerConstants::ReadUnknown;
 	}
-	else if(c_oSerWorksheetsTypes::Row == type)
+	else if (c_oSerWorksheetsTypes::Row == type)
 	{
 		OOX::Spreadsheet::CRow oRow;
 		READ2_DEF_SPREADSHEET(length, res, this->ReadRow, &oRow);
@@ -5841,46 +5924,46 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CRow* pRow = static_cast<OOX::Spreadsheet::CRow*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerRowTypes::Row == type)
+	if (c_oSerRowTypes::Row == type)
 	{
 		pRow->m_oR.Init();
 		pRow->m_oR->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerRowTypes::Style == type)
+	else if (c_oSerRowTypes::Style == type)
 	{
 		pRow->m_oS.Init();
 		pRow->m_oS->SetValue(m_oBufferedStream.GetLong());
 		pRow->m_oCustomFormat.Init();
 		pRow->m_oCustomFormat->FromBool(true);
 	}
-	else if(c_oSerRowTypes::Height == type)
+	else if (c_oSerRowTypes::Height == type)
 	{
 		pRow->m_oHt.Init();
 		pRow->m_oHt->SetValue(m_oBufferedStream.GetDoubleReal());
-		if(g_nCurFormatVersion < 2)
+		if (g_nCurFormatVersion < 2)
 		{
 			pRow->m_oCustomHeight.Init();
 			pRow->m_oCustomHeight->SetValue(SimpleTypes::onoffTrue);
 		}
 	}
-	else if(c_oSerRowTypes::Hidden == type)
+	else if (c_oSerRowTypes::Hidden == type)
 	{
 		pRow->m_oHidden = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerRowTypes::CustomHeight == type)
+	else if (c_oSerRowTypes::CustomHeight == type)
 	{
 		pRow->m_oCustomHeight = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerRowTypes::OutLevel == type)
+	else if (c_oSerRowTypes::OutLevel == type)
 	{
 		pRow->m_oOutlineLevel.Init();
 		pRow->m_oOutlineLevel->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerRowTypes::Collapsed == type)
+	else if (c_oSerRowTypes::Collapsed == type)
 	{
 		pRow->m_oCollapsed = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerRowTypes::Cells == type)
+	else if (c_oSerRowTypes::Cells == type)
 	{
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
@@ -5904,34 +5987,34 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
 {
 	OOX::Spreadsheet::CRow* pRow = static_cast<OOX::Spreadsheet::CRow*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerRowTypes::Cell == type)
+	if (c_oSerRowTypes::Cell == type)
 	{
 		OOX::Spreadsheet::CCell oCell;
 		READ1_DEF(length, res, this->ReadCell, &oCell);
 
 //текст error и формул пишем
-		if(NULL != m_pSharedStrings && oCell.m_oType.IsInit() && oCell.m_oValue.IsInit())
+		if (NULL != m_pSharedStrings && oCell.m_oType.IsInit() && oCell.m_oValue.IsInit())
 		{
 			SimpleTypes::Spreadsheet::ECellTypeType eCellType = oCell.m_oType->GetValue();
 			bool bMoveText = false;
-			if(SimpleTypes::Spreadsheet::celltypeError == eCellType)
+			if (SimpleTypes::Spreadsheet::celltypeError == eCellType)
 				bMoveText = true;
-			else if((SimpleTypes::Spreadsheet::celltypeSharedString == eCellType && oCell.m_oFormula.IsInit()))
+			else if ((SimpleTypes::Spreadsheet::celltypeSharedString == eCellType && oCell.m_oFormula.IsInit()))
 			{
 				bMoveText = true;
 				oCell.m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
 			}
-			if(bMoveText)
+			if (bMoveText)
 			{
                 int nValue = XmlUtils::GetInteger(oCell.m_oValue->ToString());
 
                 if (nValue >= 0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 				{
                     OOX::Spreadsheet::CSi *pSi = m_pSharedStrings->m_arrItems[nValue];
-					if(NULL != pSi && !pSi->m_arrItems.empty())
+					if (NULL != pSi && !pSi->m_arrItems.empty())
 					{
 						OOX::Spreadsheet::WritingElement* pWe = pSi->m_arrItems.front();
-						if(OOX::et_x_t == pWe->getType())
+						if (OOX::et_x_t == pWe->getType())
 						{
 							OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(pWe);
 							oCell.m_oValue->m_sText = pText->m_sText;
@@ -5960,36 +6043,36 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 {
 	OOX::Spreadsheet::CCell* pCell = static_cast<OOX::Spreadsheet::CCell*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerCellTypes::Ref == type)
+	if (c_oSerCellTypes::Ref == type)
 	{
 		pCell->setRef(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSerCellTypes::RefRowCol == type)
+	else if (c_oSerCellTypes::RefRowCol == type)
 	{
 		int nRow = m_oBufferedStream.GetLong();
 		int nCol = m_oBufferedStream.GetLong();
 		pCell->setRowCol(nRow - 1, nCol);
 	}
-	else if(c_oSerCellTypes::Style == type)
+	else if (c_oSerCellTypes::Style == type)
 	{
 		pCell->m_oStyle = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerCellTypes::Type == type)
+	else if (c_oSerCellTypes::Type == type)
 	{
 		pCell->m_oType = (SimpleTypes::Spreadsheet::ECellTypeType)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerCellTypes::Formula == type)
+	else if (c_oSerCellTypes::Formula == type)
 	{
 		pCell->m_oFormula.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadFormula, pCell->m_oFormula.GetPointer());
 	}
-	else if(c_oSerCellTypes::Value == type)
+	else if (c_oSerCellTypes::Value == type)
 	{
 		double dValue = m_oBufferedStream.GetDoubleReal();
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue);
 	}
-	else if(c_oSerCellTypes::ValueText == type)
+	else if (c_oSerCellTypes::ValueText == type)
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = m_oBufferedStream.GetString4(length);
@@ -6007,7 +6090,7 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 	OOX::Spreadsheet::CControls* pControls = static_cast<OOX::Spreadsheet::CControls*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerControlTypes::Control == type)
+	if (c_oSerControlTypes::Control == type)
 	{		
 		nullable<OOX::Spreadsheet::CControl> pControl; pControl.Init();
 		
@@ -6050,11 +6133,11 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 		pControl->m_oControlPr->m_oAnchor.Init();
 		
 		SimpleTypes::Spreadsheet::ECellAnchorType eAnchorType = pCellAnchor->m_oAnchorType.GetValue();
-		if(SimpleTypes::Spreadsheet::cellanchorOneCell == eAnchorType)
+		if (SimpleTypes::Spreadsheet::cellanchorOneCell == eAnchorType)
 		{
 			pControl->m_oControlPr->m_oAnchor->m_oMoveWithCells = true;
 		}
-		else if(SimpleTypes::Spreadsheet::cellanchorTwoCell == eAnchorType)
+		else if (SimpleTypes::Spreadsheet::cellanchorTwoCell == eAnchorType)
 		{
 			pControl->m_oControlPr->m_oAnchor->m_oSizeWithCells = true;
 		}
@@ -6063,179 +6146,179 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 
 		RELEASEOBJECT(pCellAnchor);
 	}
-	else if(c_oSerControlTypes::ObjectType == type)
+	else if (c_oSerControlTypes::ObjectType == type)
 	{	
 		pControl->m_oFormControlPr->m_oObjectType = (SimpleTypes::Spreadsheet::EObjectType)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::Name == type)
+	else if (c_oSerControlTypes::Name == type)
 	{
 		pControl->m_oName = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::AltText == type)
+	else if (c_oSerControlTypes::AltText == type)
 	{
 		pControl->m_oControlPr->m_oAltText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::AutoFill == type)
+	else if (c_oSerControlTypes::AutoFill == type)
 	{
 		pControl->m_oControlPr->m_oAutoFill = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::AutoLine == type)
+	else if (c_oSerControlTypes::AutoLine == type)
 	{
 		pControl->m_oControlPr->m_oAutoLine = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::AutoPict == type)
+	else if (c_oSerControlTypes::AutoPict == type)
 	{
 		pControl->m_oControlPr->m_oAutoPict = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::DefaultSize == type)
+	else if (c_oSerControlTypes::DefaultSize == type)
 	{
 		pControl->m_oControlPr->m_oDefaultSize = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Disabled == type)
+	else if (c_oSerControlTypes::Disabled == type)
 	{
 		pControl->m_oControlPr->m_oDisabled = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Locked == type)
+	else if (c_oSerControlTypes::Locked == type)
 	{
 		pControl->m_oControlPr->m_oLocked = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Macro == type)
+	else if (c_oSerControlTypes::Macro == type)
 	{
 		pControl->m_oControlPr->m_oMacro = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::Print == type)
+	else if (c_oSerControlTypes::Print == type)
 	{
 		pControl->m_oControlPr->m_oPrint = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::RecalcAlways == type)
+	else if (c_oSerControlTypes::RecalcAlways == type)
 	{
 		pControl->m_oControlPr->m_oRecalcAlways = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Checked == type)
+	else if (c_oSerControlTypes::Checked == type)
 	{
 		pControl->m_oFormControlPr->m_oChecked = (SimpleTypes::Spreadsheet::EChecked)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::Colored == type)
+	else if (c_oSerControlTypes::Colored == type)
 	{
 		pControl->m_oFormControlPr->m_oColored = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::DropLines == type)
+	else if (c_oSerControlTypes::DropLines == type)
 	{
 		pControl->m_oFormControlPr->m_oDropLines = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::DropStyle == type)
+	else if (c_oSerControlTypes::DropStyle == type)
 	{
 		pControl->m_oFormControlPr->m_oDropStyle = (SimpleTypes::Spreadsheet::EDropStyle)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::Dx == type)
+	else if (c_oSerControlTypes::Dx == type)
 	{
 		pControl->m_oFormControlPr->m_oDx = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::FirstButton == type)
+	else if (c_oSerControlTypes::FirstButton == type)
 	{
 		pControl->m_oFormControlPr->m_oFirstButton = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::FmlaGroup == type)
+	else if (c_oSerControlTypes::FmlaGroup == type)
 	{
 		pControl->m_oFormControlPr->m_oFmlaGroup = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::FmlaLink == type)
+	else if (c_oSerControlTypes::FmlaLink == type)
 	{
 		pControl->m_oFormControlPr->m_oFmlaLink = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::FmlaRange == type)
+	else if (c_oSerControlTypes::FmlaRange == type)
 	{
 		pControl->m_oFormControlPr->m_oFmlaRange = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::FmlaTxbx == type)
+	else if (c_oSerControlTypes::FmlaTxbx == type)
 	{
 		pControl->m_oFormControlPr->m_oFmlaTxbx = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::Horiz == type)
+	else if (c_oSerControlTypes::Horiz == type)
 	{
 		pControl->m_oFormControlPr->m_oHoriz = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Inc == type)
+	else if (c_oSerControlTypes::Inc == type)
 	{
 		pControl->m_oFormControlPr->m_oInc = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::JustLastX == type)
+	else if (c_oSerControlTypes::JustLastX == type)
 	{
 		pControl->m_oFormControlPr->m_oJustLastX = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::LockText == type)
+	else if (c_oSerControlTypes::LockText == type)
 	{
 		pControl->m_oFormControlPr->m_oLockText = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Max == type)
+	else if (c_oSerControlTypes::Max == type)
 	{
 		pControl->m_oFormControlPr->m_oMax = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::Min == type)
+	else if (c_oSerControlTypes::Min == type)
 	{
 		pControl->m_oFormControlPr->m_oMin = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::MultiSel == type)
+	else if (c_oSerControlTypes::MultiSel == type)
 	{
 		pControl->m_oFormControlPr->m_oMultiSel = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::NoThreeD == type)
+	else if (c_oSerControlTypes::NoThreeD == type)
 	{
 		pControl->m_oFormControlPr->m_oNoThreeD = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::NoThreeD2 == type)
+	else if (c_oSerControlTypes::NoThreeD2 == type)
 	{
 		pControl->m_oFormControlPr->m_oNoThreeD2 = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Page == type)
+	else if (c_oSerControlTypes::Page == type)
 	{
 		pControl->m_oFormControlPr->m_oPage = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::Sel == type)
+	else if (c_oSerControlTypes::Sel == type)
 	{
 		pControl->m_oFormControlPr->m_oSel = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::SelType == type)
+	else if (c_oSerControlTypes::SelType == type)
 	{
 		pControl->m_oFormControlPr->m_oSelType = (SimpleTypes::Spreadsheet::ESelType)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::TextHAlign == type)
+	else if (c_oSerControlTypes::TextHAlign == type)
 	{
 		pControl->m_oFormControlPr->m_oTextHAlign = (SimpleTypes::Spreadsheet::EHorizontalAlignment)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::TextVAlign == type)
+	else if (c_oSerControlTypes::TextVAlign == type)
 	{
 		pControl->m_oFormControlPr->m_oTextVAlign = (SimpleTypes::Spreadsheet::EVerticalAlignment)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::Val == type)
+	else if (c_oSerControlTypes::Val == type)
 	{
 		pControl->m_oFormControlPr->m_oVal = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::WidthMin == type)
+	else if (c_oSerControlTypes::WidthMin == type)
 	{
 		pControl->m_oFormControlPr->m_oWidthMin = m_oBufferedStream.GetULong();
 	}
-	else if(c_oSerControlTypes::EditVal == type)
+	else if (c_oSerControlTypes::EditVal == type)
 	{
 		pControl->m_oFormControlPr->m_oEditVal = (SimpleTypes::Spreadsheet::EEditValidation)m_oBufferedStream.GetUChar();
 	}
-	else if(c_oSerControlTypes::MultiLine == type)
+	else if (c_oSerControlTypes::MultiLine == type)
 	{
 		pControl->m_oFormControlPr->m_oMultiLine = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::VerticalBar == type)
+	else if (c_oSerControlTypes::VerticalBar == type)
 	{
 		pControl->m_oFormControlPr->m_oVerticalBar = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::PasswordEdit == type)
+	else if (c_oSerControlTypes::PasswordEdit == type)
 	{
 		pControl->m_oFormControlPr->m_oPasswordEdit = m_oBufferedStream.GetBool();
 	}
-	else if(c_oSerControlTypes::Text == type)
+	else if (c_oSerControlTypes::Text == type)
 	{
 		pControl->m_oFormControlPr->m_oText = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSerControlTypes::ItemLst == type)
+	else if (c_oSerControlTypes::ItemLst == type)
 	{
 		pControl->m_oFormControlPr->m_oItemLst.Init();
 		READ1_DEF(length, res, this->ReadControlItems, pControl->m_oFormControlPr->m_oItemLst.GetPointer());
@@ -6249,7 +6332,7 @@ int BinaryWorksheetsTableReader::ReadControlItems(BYTE type, long length, void* 
 	OOX::Spreadsheet::CListItems* pItems = static_cast<OOX::Spreadsheet::CListItems*>(poResult);
 
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerControlTypes::Item == type)
+	if (c_oSerControlTypes::Item == type)
 	{
 		nullable<OOX::Spreadsheet::CListItem> pItem; pItem.Init();
 		pItem->m_oVal = m_oBufferedStream.GetString4(length);
@@ -6371,67 +6454,67 @@ int BinaryWorksheetsTableReader::ReadFormula(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CFormula* pFormula = static_cast<OOX::Spreadsheet::CFormula*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerFormulaTypes::Aca == type)
+	if (c_oSerFormulaTypes::Aca == type)
 	{
 		pFormula->m_oAca.Init();
 		pFormula->m_oAca->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Bx == type)
+	else if (c_oSerFormulaTypes::Bx == type)
 	{
 		pFormula->m_oBx.Init();
 		pFormula->m_oBx->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Ca == type)
+	else if (c_oSerFormulaTypes::Ca == type)
 	{
 		pFormula->m_oCa.Init();
 		pFormula->m_oCa->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Del1 == type)
+	else if (c_oSerFormulaTypes::Del1 == type)
 	{
 		pFormula->m_oDel1.Init();
 		pFormula->m_oDel1->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Del2 == type)
+	else if (c_oSerFormulaTypes::Del2 == type)
 	{
 		pFormula->m_oDel2.Init();
 		pFormula->m_oDel2->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Dt2D == type)
+	else if (c_oSerFormulaTypes::Dt2D == type)
 	{
 		pFormula->m_oDt2D.Init();
 		pFormula->m_oDt2D->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::Dtr == type)
+	else if (c_oSerFormulaTypes::Dtr == type)
 	{
 		pFormula->m_oDtr.Init();
 		pFormula->m_oDtr->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
-	else if(c_oSerFormulaTypes::R1 == type)
+	else if (c_oSerFormulaTypes::R1 == type)
 	{
 		pFormula->m_oR1.Init();
 		pFormula->m_oR1->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSerFormulaTypes::R2 == type)
+	else if (c_oSerFormulaTypes::R2 == type)
 	{
 		pFormula->m_oR2.Init();
 		pFormula->m_oR2->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSerFormulaTypes::Ref == type)
+	else if (c_oSerFormulaTypes::Ref == type)
 	{
 		pFormula->m_oRef.Init();
 		pFormula->m_oRef->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSerFormulaTypes::Si == type)
+	else if (c_oSerFormulaTypes::Si == type)
 	{
 		pFormula->m_oSi.Init();
 		pFormula->m_oSi->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSerFormulaTypes::T == type)
+	else if (c_oSerFormulaTypes::T == type)
 	{
 		pFormula->m_oT.Init();
 		pFormula->m_oT->SetValue((SimpleTypes::Spreadsheet::ECellFormulaType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSerFormulaTypes::Text == type)
+	else if (c_oSerFormulaTypes::Text == type)
 	{
 		pFormula->m_sText = m_oBufferedStream.GetString4(length);
 	}
@@ -6507,17 +6590,17 @@ int BinaryWorksheetsTableReader::ReadConditionalFormatting(BYTE type, long lengt
 {
 	OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = static_cast<OOX::Spreadsheet::CConditionalFormatting*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormatting::Pivot == type)
+	if (c_oSer_ConditionalFormatting::Pivot == type)
 	{
 		pConditionalFormatting->m_oPivot.Init();
 		pConditionalFormatting->m_oPivot->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormatting::SqRef == type)
+	else if (c_oSer_ConditionalFormatting::SqRef == type)
 	{
 		pConditionalFormatting->m_oSqRef.Init();
 		pConditionalFormatting->m_oSqRef->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_ConditionalFormatting::ConditionalFormattingRule == type)
+	else if (c_oSer_ConditionalFormatting::ConditionalFormattingRule == type)
 	{
 		OOX::Spreadsheet::CConditionalFormattingRule* pConditionalFormattingRule = new OOX::Spreadsheet::CConditionalFormattingRule();
 		READ1_DEF(length, res, this->ReadConditionalFormattingRule, pConditionalFormattingRule);
@@ -6531,62 +6614,62 @@ int BinaryWorksheetsTableReader::ReadConditionalFormattingRule(BYTE type, long l
 {
 	OOX::Spreadsheet::CConditionalFormattingRule* pConditionalFormattingRule = static_cast<OOX::Spreadsheet::CConditionalFormattingRule*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingRule::AboveAverage == type)
+	if (c_oSer_ConditionalFormattingRule::AboveAverage == type)
 	{
 		pConditionalFormattingRule->m_oAboveAverage.Init();
 		pConditionalFormattingRule->m_oAboveAverage->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Bottom == type)
+	else if (c_oSer_ConditionalFormattingRule::Bottom == type)
 	{
 		pConditionalFormattingRule->m_oBottom.Init();
 		pConditionalFormattingRule->m_oBottom->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingRule::DxfId == type)
+	else if (c_oSer_ConditionalFormattingRule::DxfId == type)
 	{
 		pConditionalFormattingRule->m_oDxfId.Init();
 		pConditionalFormattingRule->m_oDxfId->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingRule::EqualAverage == type)
+	else if (c_oSer_ConditionalFormattingRule::EqualAverage == type)
 	{
 		pConditionalFormattingRule->m_oEqualAverage.Init();
 		pConditionalFormattingRule->m_oEqualAverage->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Operator == type)
+	else if (c_oSer_ConditionalFormattingRule::Operator == type)
 	{
 		pConditionalFormattingRule->m_oOperator.Init();
 		pConditionalFormattingRule->m_oOperator->SetValue((SimpleTypes::Spreadsheet::ECfOperator)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Percent == type)
+	else if (c_oSer_ConditionalFormattingRule::Percent == type)
 	{
 		pConditionalFormattingRule->m_oPercent.Init();
 		pConditionalFormattingRule->m_oPercent->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Priority == type)
+	else if (c_oSer_ConditionalFormattingRule::Priority == type)
 	{
 		pConditionalFormattingRule->m_oPriority.Init();
 		pConditionalFormattingRule->m_oPriority->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Rank == type)
+	else if (c_oSer_ConditionalFormattingRule::Rank == type)
 	{
 		pConditionalFormattingRule->m_oRank.Init();
 		pConditionalFormattingRule->m_oRank->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingRule::StdDev == type)
+	else if (c_oSer_ConditionalFormattingRule::StdDev == type)
 	{
 		pConditionalFormattingRule->m_oStdDev.Init();
 		pConditionalFormattingRule->m_oStdDev->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingRule::StopIfTrue == type)
+	else if (c_oSer_ConditionalFormattingRule::StopIfTrue == type)
 	{
 		pConditionalFormattingRule->m_oStopIfTrue.Init();
 		pConditionalFormattingRule->m_oStopIfTrue->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Text == type)
+	else if (c_oSer_ConditionalFormattingRule::Text == type)
 	{
 		pConditionalFormattingRule->m_oText.Init();
 		pConditionalFormattingRule->m_oText->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_ConditionalFormattingRule::strTimePeriod == type)
+	else if (c_oSer_ConditionalFormattingRule::strTimePeriod == type)
 	{
 		pConditionalFormattingRule->m_oTimePeriod = m_oBufferedStream.GetString4(length);
 	}
@@ -6595,12 +6678,12 @@ int BinaryWorksheetsTableReader::ReadConditionalFormattingRule(BYTE type, long l
 		pConditionalFormattingRule->m_oTimePeriod.Init();
 		pConditionalFormattingRule->m_oTimePeriod->SetValue((SimpleTypes::Spreadsheet::ETimePeriod)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Type == type)
+	else if (c_oSer_ConditionalFormattingRule::Type == type)
 	{
 		pConditionalFormattingRule->m_oType.Init();
 		pConditionalFormattingRule->m_oType->SetValue((SimpleTypes::Spreadsheet::ECfType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ConditionalFormattingRule::Dxf == type)
+	else if (c_oSer_ConditionalFormattingRule::Dxf == type)
 	{
 		OOX::Spreadsheet::CStyles oStyles(NULL);
 		BinaryStyleTableReader style_reader(m_oBufferedStream, oStyles);
@@ -6610,28 +6693,28 @@ int BinaryWorksheetsTableReader::ReadConditionalFormattingRule(BYTE type, long l
 
 		pConditionalFormattingRule->m_oDxf = pDxf;
 	}
-	else if(c_oSer_ConditionalFormattingRule::ColorScale == type)
+	else if (c_oSer_ConditionalFormattingRule::ColorScale == type)
 	{
 		OOX::Spreadsheet::CColorScale* pColorScale = new OOX::Spreadsheet::CColorScale();
 		READ1_DEF(length, res, this->ReadColorScale, pColorScale);
 
 		pConditionalFormattingRule->m_oColorScale = pColorScale;
 	}
-	else if(c_oSer_ConditionalFormattingRule::DataBar == type)
+	else if (c_oSer_ConditionalFormattingRule::DataBar == type)
 	{
 		OOX::Spreadsheet::CDataBar* pDataBar = new OOX::Spreadsheet::CDataBar();
 		READ1_DEF(length, res, this->ReadDataBar, pDataBar);
 		
 		pConditionalFormattingRule->m_oDataBar = pDataBar;
 	}
-	else if(c_oSer_ConditionalFormattingRule::FormulaCF == type)
+	else if (c_oSer_ConditionalFormattingRule::FormulaCF == type)
 	{
 		nullable<OOX::Spreadsheet::CFormulaCF> pFormulaCF; pFormulaCF.Init();
 		pFormulaCF->m_sText = m_oBufferedStream.GetString4(length);
 		
 		pConditionalFormattingRule->m_arrFormula.push_back( pFormulaCF );
 	}
-	else if(c_oSer_ConditionalFormattingRule::IconSet == type)
+	else if (c_oSer_ConditionalFormattingRule::IconSet == type)
 	{
 		OOX::Spreadsheet::CIconSet* pIconSet = new OOX::Spreadsheet::CIconSet();
 		READ1_DEF(length, res, this->ReadIconSet, pIconSet);
@@ -6646,13 +6729,13 @@ int BinaryWorksheetsTableReader::ReadColorScale(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CColorScale* pColorScale = static_cast<OOX::Spreadsheet::CColorScale*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingRuleColorScale::CFVO == type)
+	if (c_oSer_ConditionalFormattingRuleColorScale::CFVO == type)
 	{
 		nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
 		READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
 		pColorScale->m_arrValues.push_back(pCFVO);
 	}
-	else if(c_oSer_ConditionalFormattingRuleColorScale::Color == type)
+	else if (c_oSer_ConditionalFormattingRuleColorScale::Color == type)
 	{
 		nullable<OOX::Spreadsheet::CColor> pColor; pColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pColor.GetPointer());
@@ -6666,72 +6749,72 @@ int BinaryWorksheetsTableReader::ReadDataBar(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CDataBar* pDataBar = static_cast<OOX::Spreadsheet::CDataBar*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingDataBar::MaxLength == type)
+	if (c_oSer_ConditionalFormattingDataBar::MaxLength == type)
 	{
 		pDataBar->m_oMaxLength.Init();
 		pDataBar->m_oMaxLength->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::MinLength == type)
+	else if (c_oSer_ConditionalFormattingDataBar::MinLength == type)
 	{
 		pDataBar->m_oMinLength.Init();
 		pDataBar->m_oMinLength->SetValue(m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::ShowValue == type)
+	else if (c_oSer_ConditionalFormattingDataBar::ShowValue == type)
 	{
 		pDataBar->m_oShowValue.Init();
 		pDataBar->m_oShowValue->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::GradientEnabled == type)
+	else if (c_oSer_ConditionalFormattingDataBar::GradientEnabled == type)
 	{
 		pDataBar->m_oGradient.Init();
 		pDataBar->m_oGradient->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::NegativeBarColorSameAsPositive == type)
+	else if (c_oSer_ConditionalFormattingDataBar::NegativeBarColorSameAsPositive == type)
 	{
 		pDataBar->m_oNegativeBarColorSameAsPositive.Init();
 		pDataBar->m_oNegativeBarColorSameAsPositive->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::NegativeBarBorderColorSameAsPositive == type)
+	else if (c_oSer_ConditionalFormattingDataBar::NegativeBarBorderColorSameAsPositive == type)
 	{
 		pDataBar->m_oNegativeBarBorderColorSameAsPositive.Init();
 		pDataBar->m_oNegativeBarBorderColorSameAsPositive->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::AxisPosition == type)
+	else if (c_oSer_ConditionalFormattingDataBar::AxisPosition == type)
 	{
 		pDataBar->m_oAxisPosition.Init();
 		pDataBar->m_oAxisPosition->SetValue((SimpleTypes::Spreadsheet::EDataBarAxisPosition)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::Direction == type)
+	else if (c_oSer_ConditionalFormattingDataBar::Direction == type)
 	{
 		pDataBar->m_oDirection.Init();
 		pDataBar->m_oDirection->SetValue((SimpleTypes::Spreadsheet::EDataBarDirection)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::Color == type)
+	else if (c_oSer_ConditionalFormattingDataBar::Color == type)
 	{
 		pDataBar->m_oColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oColor.GetPointer());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::AxisColor == type)
+	else if (c_oSer_ConditionalFormattingDataBar::AxisColor == type)
 	{
 		pDataBar->m_oAxisColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oAxisColor.GetPointer());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::BorderColor == type)
+	else if (c_oSer_ConditionalFormattingDataBar::BorderColor == type)
 	{
 		pDataBar->m_oBorderColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oBorderColor.GetPointer());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::NegativeColor == type)
+	else if (c_oSer_ConditionalFormattingDataBar::NegativeColor == type)
 	{
 		pDataBar->m_oNegativeFillColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oNegativeFillColor.GetPointer());
 	}	
-	else if(c_oSer_ConditionalFormattingDataBar::NegativeBorderColor == type)
+	else if (c_oSer_ConditionalFormattingDataBar::NegativeBorderColor == type)
 	{
 		pDataBar->m_oNegativeBorderColor.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pDataBar->m_oNegativeBorderColor.GetPointer());
 	}
-	else if(c_oSer_ConditionalFormattingDataBar::CFVO == type)
+	else if (c_oSer_ConditionalFormattingDataBar::CFVO == type)
 	{
 		nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
 		READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
@@ -6745,33 +6828,33 @@ int BinaryWorksheetsTableReader::ReadIconSet(BYTE type, long length, void* poRes
 {
 	OOX::Spreadsheet::CIconSet* pIconSet = static_cast<OOX::Spreadsheet::CIconSet*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingIconSet::IconSet == type)
+	if (c_oSer_ConditionalFormattingIconSet::IconSet == type)
 	{
 		pIconSet->m_oIconSet.Init();
 		pIconSet->m_oIconSet->SetValue((SimpleTypes::Spreadsheet::EIconSetType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ConditionalFormattingIconSet::Percent == type)
+	else if (c_oSer_ConditionalFormattingIconSet::Percent == type)
 	{
 		pIconSet->m_oPercent.Init();
 		pIconSet->m_oPercent->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingIconSet::Reverse == type)
+	else if (c_oSer_ConditionalFormattingIconSet::Reverse == type)
 	{
 		pIconSet->m_oReverse.Init();
 		pIconSet->m_oReverse->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingIconSet::ShowValue == type)
+	else if (c_oSer_ConditionalFormattingIconSet::ShowValue == type)
 	{
 		pIconSet->m_oShowValue.Init();
 		pIconSet->m_oShowValue->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingIconSet::CFVO == type)
+	else if (c_oSer_ConditionalFormattingIconSet::CFVO == type)
 	{
 		nullable<OOX::Spreadsheet::CConditionalFormatValueObject> pCFVO; pCFVO.Init();
 		READ1_DEF(length, res, this->ReadCFVO, pCFVO.GetPointer());
 		pIconSet->m_arrValues.push_back(pCFVO);
 	}
-	else if(c_oSer_ConditionalFormattingIconSet::CFIcon == type)
+	else if (c_oSer_ConditionalFormattingIconSet::CFIcon == type)
 	{
 		nullable<OOX::Spreadsheet::CConditionalFormatIconSet> pCFIcon; pCFIcon.Init();
 		READ1_DEF(length, res, this->ReadCFIcon, pCFIcon.GetPointer());
@@ -6785,12 +6868,12 @@ int BinaryWorksheetsTableReader::ReadCFIcon(BYTE type, long length, void* poResu
 {
 	OOX::Spreadsheet::CConditionalFormatIconSet* pCFIcon = static_cast<OOX::Spreadsheet::CConditionalFormatIconSet*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingIcon::iconSet == type)
+	if (c_oSer_ConditionalFormattingIcon::iconSet == type)
 	{
 		pCFIcon->m_oIconSet.Init();
 		pCFIcon->m_oIconSet->SetValue((SimpleTypes::Spreadsheet::EIconSetType)m_oBufferedStream.GetLong());
 	}
-	else if(c_oSer_ConditionalFormattingIcon::iconId == type)
+	else if (c_oSer_ConditionalFormattingIcon::iconId == type)
 	{
 		pCFIcon->m_oIconId.Init();
 		pCFIcon->m_oIconId->SetValue(m_oBufferedStream.GetLong());
@@ -6801,22 +6884,22 @@ int BinaryWorksheetsTableReader::ReadCFVO(BYTE type, long length, void* poResult
 {
 	OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = static_cast<OOX::Spreadsheet::CConditionalFormatValueObject*>(poResult);
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_ConditionalFormattingValueObject::Gte == type)
+	if (c_oSer_ConditionalFormattingValueObject::Gte == type)
 	{
 		pCFVO->m_oGte.Init();
 		pCFVO->m_oGte->FromBool(m_oBufferedStream.GetBool());
 	}
-	else if(c_oSer_ConditionalFormattingValueObject::Type == type)
+	else if (c_oSer_ConditionalFormattingValueObject::Type == type)
 	{
 		pCFVO->m_oType.Init();
 		pCFVO->m_oType->SetValue((SimpleTypes::Spreadsheet::ECfvoType)m_oBufferedStream.GetUChar());
 	}
-	else if(c_oSer_ConditionalFormattingValueObject::Val == type)
+	else if (c_oSer_ConditionalFormattingValueObject::Val == type)
 	{
 		pCFVO->m_oVal.Init();
 		pCFVO->m_oVal = m_oBufferedStream.GetString4(length);
 	}
-	else if(c_oSer_ConditionalFormattingValueObject::Formula == type)
+	else if (c_oSer_ConditionalFormattingValueObject::Formula == type)
 	{
 		pCFVO->m_oFormula.Init();
 		pCFVO->m_oFormula->m_sText = m_oBufferedStream.GetString4(length);
@@ -6830,7 +6913,7 @@ int BinaryWorksheetsTableReader::ReadSparklineGroups(BYTE type, long length, voi
     OOX::Spreadsheet::CSparklineGroups* pSparklineGroups = static_cast<OOX::Spreadsheet::CSparklineGroups*>(poResult);
     
 	int res = c_oSerConstants::ReadOk;
-    if(c_oSer_Sparkline::SparklineGroup == type)
+    if (c_oSer_Sparkline::SparklineGroup == type)
     {
         OOX::Spreadsheet::CSparklineGroup* pSparklineGroup = new OOX::Spreadsheet::CSparklineGroup();
 		READ1_DEF(length, res, this->ReadSparklineGroup, pSparklineGroup);
@@ -6844,137 +6927,137 @@ int BinaryWorksheetsTableReader::ReadSparklineGroup(BYTE type, long length, void
 {
     OOX::Spreadsheet::CSparklineGroup* pSparklineGroup = static_cast<OOX::Spreadsheet::CSparklineGroup*>(poResult);
     int res = c_oSerConstants::ReadOk;
-    if(c_oSer_Sparkline::ManualMax == type)
+    if (c_oSer_Sparkline::ManualMax == type)
     {
         pSparklineGroup->m_oManualMax.Init();
         pSparklineGroup->m_oManualMax->SetValue(m_oBufferedStream.GetDoubleReal());
     }
-    else if(c_oSer_Sparkline::ManualMin == type)
+    else if (c_oSer_Sparkline::ManualMin == type)
     {
         pSparklineGroup->m_oManualMin.Init();
         pSparklineGroup->m_oManualMin->SetValue(m_oBufferedStream.GetDoubleReal());
     }
-    else if(c_oSer_Sparkline::LineWeight == type)
+    else if (c_oSer_Sparkline::LineWeight == type)
     {
         pSparklineGroup->m_oLineWeight.Init();
         pSparklineGroup->m_oLineWeight->SetValue(m_oBufferedStream.GetDoubleReal());
     }
-    else if(c_oSer_Sparkline::Type == type)
+    else if (c_oSer_Sparkline::Type == type)
     {
         pSparklineGroup->m_oType.Init();
         pSparklineGroup->m_oType->SetValue((SimpleTypes::Spreadsheet::ESparklineType)m_oBufferedStream.GetChar());
     }
-    else if(c_oSer_Sparkline::DateAxis == type)
+    else if (c_oSer_Sparkline::DateAxis == type)
     {
         pSparklineGroup->m_oDateAxis.Init();
         pSparklineGroup->m_oDateAxis->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::DisplayEmptyCellsAs == type)
+    else if (c_oSer_Sparkline::DisplayEmptyCellsAs == type)
     {
         pSparklineGroup->m_oDisplayEmptyCellsAs.Init();
 		pSparklineGroup->m_oDisplayEmptyCellsAs.get2() = (OOX::Spreadsheet::ST_DispBlanksAs)m_oBufferedStream.GetChar();
     }
-    else if(c_oSer_Sparkline::Markers == type)
+    else if (c_oSer_Sparkline::Markers == type)
     {
         pSparklineGroup->m_oMarkers.Init();
         pSparklineGroup->m_oMarkers->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::High == type)
+    else if (c_oSer_Sparkline::High == type)
     {
         pSparklineGroup->m_oHigh.Init();
         pSparklineGroup->m_oHigh->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::Low == type)
+    else if (c_oSer_Sparkline::Low == type)
     {
         pSparklineGroup->m_oLow.Init();
         pSparklineGroup->m_oLow->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::First == type)
+    else if (c_oSer_Sparkline::First == type)
     {
         pSparklineGroup->m_oFirst.Init();
         pSparklineGroup->m_oFirst->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::Last == type)
+    else if (c_oSer_Sparkline::Last == type)
     {
         pSparklineGroup->m_oLast.Init();
         pSparklineGroup->m_oLast->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::Negative == type)
+    else if (c_oSer_Sparkline::Negative == type)
     {
         pSparklineGroup->m_oNegative.Init();
         pSparklineGroup->m_oNegative->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::DisplayXAxis == type)
+    else if (c_oSer_Sparkline::DisplayXAxis == type)
     {
         pSparklineGroup->m_oDisplayXAxis.Init();
         pSparklineGroup->m_oDisplayXAxis->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::DisplayHidden == type)
+    else if (c_oSer_Sparkline::DisplayHidden == type)
     {
         pSparklineGroup->m_oDisplayHidden.Init();
         pSparklineGroup->m_oDisplayHidden->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::MinAxisType == type)
+    else if (c_oSer_Sparkline::MinAxisType == type)
     {
         pSparklineGroup->m_oMinAxisType.Init();
         pSparklineGroup->m_oMinAxisType->SetValue((SimpleTypes::Spreadsheet::ESparklineAxisMinMax)m_oBufferedStream.GetChar());
     }
-    else if(c_oSer_Sparkline::MaxAxisType == type)
+    else if (c_oSer_Sparkline::MaxAxisType == type)
     {
         pSparklineGroup->m_oMaxAxisType.Init();
         pSparklineGroup->m_oMaxAxisType->SetValue((SimpleTypes::Spreadsheet::ESparklineAxisMinMax)m_oBufferedStream.GetChar());
     }
-    else if(c_oSer_Sparkline::RightToLeft == type)
+    else if (c_oSer_Sparkline::RightToLeft == type)
     {
         pSparklineGroup->m_oRightToLeft.Init();
         pSparklineGroup->m_oRightToLeft->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_Sparkline::ColorSeries == type)
+    else if (c_oSer_Sparkline::ColorSeries == type)
     {
         pSparklineGroup->m_oColorSeries.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorSeries.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorNegative == type)
+    else if (c_oSer_Sparkline::ColorNegative == type)
     {
         pSparklineGroup->m_oColorNegative.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorNegative.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorAxis == type)
+    else if (c_oSer_Sparkline::ColorAxis == type)
     {
         pSparklineGroup->m_oColorAxis.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorAxis.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorMarkers == type)
+    else if (c_oSer_Sparkline::ColorMarkers == type)
     {
         pSparklineGroup->m_oColorMarkers.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorMarkers.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorFirst == type)
+    else if (c_oSer_Sparkline::ColorFirst == type)
     {
         pSparklineGroup->m_oColorFirst.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorFirst.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorLast == type)
+    else if (c_oSer_Sparkline::ColorLast == type)
     {
         pSparklineGroup->m_oColorLast.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorLast.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorHigh == type)
+    else if (c_oSer_Sparkline::ColorHigh == type)
     {
         pSparklineGroup->m_oColorHigh.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorHigh.GetPointer());
     }
-    else if(c_oSer_Sparkline::ColorLow == type)
+    else if (c_oSer_Sparkline::ColorLow == type)
     {
         pSparklineGroup->m_oColorLow.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadColor, pSparklineGroup->m_oColorLow.GetPointer());
     }
-    else if(c_oSer_Sparkline::Ref == type)
+    else if (c_oSer_Sparkline::Ref == type)
     {
         pSparklineGroup->m_oRef.Init();
         pSparklineGroup->m_oRef->append(m_oBufferedStream.GetString4(length));
     }
-    else if(c_oSer_Sparkline::Sparklines == type)
+    else if (c_oSer_Sparkline::Sparklines == type)
     {
         pSparklineGroup->m_oSparklines.Init();
 		READ1_DEF(length, res, this->ReadSparklines, pSparklineGroup->m_oSparklines.GetPointer());
@@ -6988,7 +7071,7 @@ int BinaryWorksheetsTableReader::ReadDataValidationsContent(BYTE type, long leng
     OOX::Spreadsheet::CDataValidations* pDataValidations = static_cast<OOX::Spreadsheet::CDataValidations*>(poResult);
 	
 	int res = c_oSerConstants::ReadOk;
-    if(c_oSer_DataValidation::DataValidation == type)
+    if (c_oSer_DataValidation::DataValidation == type)
     {
         OOX::Spreadsheet::CDataValidation* pDataValidation = new OOX::Spreadsheet::CDataValidation();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadDataValidation, pDataValidation);
@@ -7003,22 +7086,22 @@ int BinaryWorksheetsTableReader::ReadDataValidations(BYTE type, long length, voi
     OOX::Spreadsheet::CDataValidations* pDataValidations = static_cast<OOX::Spreadsheet::CDataValidations*>(poResult);
     
 	int res = c_oSerConstants::ReadOk;
-    if(c_oSer_DataValidation::DataValidations == type)
+    if (c_oSer_DataValidation::DataValidations == type)
     {
 		READ1_DEF(length, res, this->ReadDataValidationsContent, pDataValidations);
     }
-    else if(c_oSer_DataValidation::DisablePrompts == type)
+    else if (c_oSer_DataValidation::DisablePrompts == type)
     {
         pDataValidations->m_oDisablePrompts.Init();
         pDataValidations->m_oDisablePrompts->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_DataValidation::XWindow == type)
+    else if (c_oSer_DataValidation::XWindow == type)
     {
 		if (!pDataValidations->m_oXWindow.IsInit())
 			pDataValidations->m_oXWindow.Init();
         pDataValidations->m_oXWindow->SetValue(m_oBufferedStream.GetLong());
     }
-    else if(c_oSer_DataValidation::YWindow == type)
+    else if (c_oSer_DataValidation::YWindow == type)
     {
 		if (!pDataValidations->m_oYWindow.IsInit())
 			pDataValidations->m_oYWindow.Init();
@@ -7033,72 +7116,72 @@ int BinaryWorksheetsTableReader::ReadDataValidation(BYTE type, long length, void
     OOX::Spreadsheet::CDataValidation* pDataValidation = static_cast<OOX::Spreadsheet::CDataValidation*>(poResult);
     
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_DataValidation::AllowBlank == type)
+	if (c_oSer_DataValidation::AllowBlank == type)
     {
         pDataValidation->m_oAllowBlank.Init();
         pDataValidation->m_oAllowBlank->FromBool(m_oBufferedStream.GetBool());
     }
-    else if(c_oSer_DataValidation::Type == type)
+    else if (c_oSer_DataValidation::Type == type)
     {
         pDataValidation->m_oType.Init();
         pDataValidation->m_oType->SetValue((SimpleTypes::Spreadsheet::EDataValidationType)m_oBufferedStream.GetChar());
     }
-	else if(c_oSer_DataValidation::Error == type)
+	else if (c_oSer_DataValidation::Error == type)
     {
         pDataValidation->m_oError = m_oBufferedStream.GetString4(length);
     }
-	else if(c_oSer_DataValidation::ErrorTitle == type)
+	else if (c_oSer_DataValidation::ErrorTitle == type)
     {
         pDataValidation->m_oErrorTitle = m_oBufferedStream.GetString4(length);
     }
-    else if(c_oSer_DataValidation::ErrorStyle == type)
+    else if (c_oSer_DataValidation::ErrorStyle == type)
     {
         pDataValidation->m_oErrorStyle.Init();
         pDataValidation->m_oErrorStyle->SetValue((SimpleTypes::Spreadsheet::EDataValidationErrorStyle)m_oBufferedStream.GetChar());
     }
-    else if(c_oSer_DataValidation::ImeMode == type)
+    else if (c_oSer_DataValidation::ImeMode == type)
     {
         pDataValidation->m_oImeMode.Init();
         pDataValidation->m_oImeMode->SetValue((SimpleTypes::Spreadsheet::EDataValidationImeMode)m_oBufferedStream.GetChar());
     }
-    else if(c_oSer_DataValidation::Operator == type)
+    else if (c_oSer_DataValidation::Operator == type)
     {
         pDataValidation->m_oOperator.Init();
         pDataValidation->m_oOperator->SetValue((SimpleTypes::Spreadsheet::EDataValidationOperator)m_oBufferedStream.GetChar());
     }
-	else if(c_oSer_DataValidation::Promt == type)
+	else if (c_oSer_DataValidation::Promt == type)
     {
         pDataValidation->m_oPrompt = m_oBufferedStream.GetString4(length);
     }
-	else if(c_oSer_DataValidation::PromptTitle == type)
+	else if (c_oSer_DataValidation::PromptTitle == type)
     {
         pDataValidation->m_oPromptTitle = m_oBufferedStream.GetString4(length);
     }
-	else if(c_oSer_DataValidation::ShowDropDown == type)
+	else if (c_oSer_DataValidation::ShowDropDown == type)
     {
         pDataValidation->m_oShowDropDown.Init();
         pDataValidation->m_oShowDropDown->FromBool(m_oBufferedStream.GetBool());
     }
-	else if(c_oSer_DataValidation::ShowErrorMessage == type)
+	else if (c_oSer_DataValidation::ShowErrorMessage == type)
     {
         pDataValidation->m_oShowErrorMessage.Init();
         pDataValidation->m_oShowErrorMessage->FromBool(m_oBufferedStream.GetBool());
     }
-	else if(c_oSer_DataValidation::ShowInputMessage == type)
+	else if (c_oSer_DataValidation::ShowInputMessage == type)
     {
         pDataValidation->m_oShowInputMessage.Init();
         pDataValidation->m_oShowInputMessage->FromBool(m_oBufferedStream.GetBool());
     }
-	else if(c_oSer_DataValidation::SqRef == type)
+	else if (c_oSer_DataValidation::SqRef == type)
     {
         pDataValidation->m_oSqRef = m_oBufferedStream.GetString4(length);
     }
-	else if(c_oSer_DataValidation::Formula1 == type)
+	else if (c_oSer_DataValidation::Formula1 == type)
     {
         pDataValidation->m_oFormula1.Init();
         pDataValidation->m_oFormula1->m_sText = m_oBufferedStream.GetString4(length);
     }
-	else if(c_oSer_DataValidation::Formula2 == type)
+	else if (c_oSer_DataValidation::Formula2 == type)
     {
         pDataValidation->m_oFormula2.Init();
         pDataValidation->m_oFormula2->m_sText = m_oBufferedStream.GetString4(length);
@@ -7111,7 +7194,7 @@ int BinaryWorksheetsTableReader::ReadSparklines(BYTE type, long length, void* po
 {
     OOX::Spreadsheet::CSparklines* pSparklines = static_cast<OOX::Spreadsheet::CSparklines*>(poResult);
     int res = c_oSerConstants::ReadOk;
-    if(c_oSer_Sparkline::Sparkline == type)
+    if (c_oSer_Sparkline::Sparkline == type)
     {
         OOX::Spreadsheet::CSparkline* pSparkline = new OOX::Spreadsheet::CSparkline();
 		READ1_DEF(length, res, this->ReadSparkline, pSparkline);
@@ -7125,12 +7208,12 @@ int BinaryWorksheetsTableReader::ReadSparkline(BYTE type, long length, void* poR
 {
     OOX::Spreadsheet::CSparkline* pSparkline = static_cast<OOX::Spreadsheet::CSparkline*>(poResult);
     int res = c_oSerConstants::ReadOk;
-    if(c_oSer_Sparkline::SparklineRef == type)
+    if (c_oSer_Sparkline::SparklineRef == type)
     {
         pSparkline->m_oRef.Init();
         pSparkline->m_oRef->append(m_oBufferedStream.GetString4(length));
     }
-    else if(c_oSer_Sparkline::SparklineSqRef == type)
+    else if (c_oSer_Sparkline::SparklineSqRef == type)
     {
         pSparkline->m_oSqRef.Init();
         pSparkline->m_oSqRef->append(m_oBufferedStream.GetString4(length));
@@ -7143,7 +7226,7 @@ int BinaryWorksheetsTableReader::ReadSlicers(BYTE type, long length, void* poRes
 {
     OOX::Spreadsheet::CSlicerRefs* pSlicerRefs = static_cast<OOX::Spreadsheet::CSlicerRefs*>(poResult);
     int res = c_oSerConstants::ReadOk;
-    if(c_oSerWorksheetsTypes::Slicer == type)
+    if (c_oSerWorksheetsTypes::Slicer == type)
     {
 		OOX::Spreadsheet::CSlicerFile* pSlicer = new OOX::Spreadsheet::CSlicerFile(NULL);
 		pSlicer->m_oSlicers.Init();
@@ -7202,11 +7285,11 @@ int BinaryOtherTableReader::Read()
 int BinaryOtherTableReader::ReadOtherTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_OtherType::Media == type)
+	if (c_oSer_OtherType::Media == type)
 	{
 		READ1_DEF(length, res, this->ReadMediaContent, poResult);
 	}
-	else if(c_oSer_OtherType::Theme == type)
+	else if (c_oSer_OtherType::Theme == type)
 	{
 		m_oSaveParams.pTheme = new PPTX::Theme(NULL);
 		m_oSaveParams.pTheme->fromPPTY(&m_oBufferedStream);
@@ -7218,12 +7301,12 @@ int BinaryOtherTableReader::ReadOtherTableContent(BYTE type, long length, void* 
 int BinaryOtherTableReader::ReadMediaContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_OtherType::MediaItem == type)
+	if (c_oSer_OtherType::MediaItem == type)
 	{
 		m_nCurId = -1;
         m_sCurSrc.clear();
 		READ1_DEF(length, res, this->ReadMediaItem, poResult);
-        if(-1 != m_nCurId && false == m_sCurSrc.empty())
+        if (-1 != m_nCurId && false == m_sCurSrc.empty())
 		{
 			m_mapMedia [m_nCurId] = new ImageObject(m_sCurSrc, m_nCurIndex);
 			m_nCurIndex++;
@@ -7236,19 +7319,19 @@ int BinaryOtherTableReader::ReadMediaContent(BYTE type, long length, void* poRes
 int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSer_OtherType::MediaSrc == type)
+	if (c_oSer_OtherType::MediaSrc == type)
 	{
         std::wstring sImage (m_oBufferedStream.GetString3(length));
         std::wstring sImageSrc;
 		bool bAddToDelete = false;
 		NSFile::CFileBinary oFile;
 
-        if(0 == sImage.find(L"data:"))
+        if (0 == sImage.find(L"data:"))
 		{
-			if(oFile.CreateTempFile())
+			if (oFile.CreateTempFile())
 				SerializeCommon::convertBase64ToImage(oFile, sImage);
 		}
-        else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
+        else if (0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
 		{
 			//url
 			sImageSrc = SerializeCommon::DownloadImage(sImage);
@@ -7272,18 +7355,18 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 		}
 		//Проверяем что файл существует
 		FILE* pFileNative = oFile.GetFileNative();
-		if(NULL != pFileNative)
+		if (NULL != pFileNative)
 		{
 			ReadMediaItemSaveFileFILE(pFileNative);
 		}
-		else if(NSFile::CFileBinary::Exists(sImageSrc))
+		else if (NSFile::CFileBinary::Exists(sImageSrc))
 		{
 			ReadMediaItemSaveFilePath(sImageSrc);
-			if(bAddToDelete)
+			if (bAddToDelete)
 				NSFile::CFileBinary::Remove(sImageSrc);
 		}
 	}
-	else if(c_oSer_OtherType::MediaId == type)
+	else if (c_oSer_OtherType::MediaId == type)
 	{
 		m_nCurId = m_oBufferedStream.GetLong();
 	}
@@ -7293,7 +7376,7 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 }
 std::wstring BinaryOtherTableReader::ReadMediaItemSaveFileGetNewPath(const std::wstring& sTempPath)
 {
-	if( !NSDirectory::Exists(m_sMediaDir) )
+	if ( !NSDirectory::Exists(m_sMediaDir) )
 		OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
     std::wstring sNewImageName = L"image" + std::to_wstring(m_nCurIndex);
     sNewImageName += OOX::CPath(sTempPath).GetExtention(true);
@@ -7304,12 +7387,12 @@ std::wstring BinaryOtherTableReader::ReadMediaItemSaveFileGetNewPath(const std::
 void BinaryOtherTableReader::ReadMediaItemSaveFileFILE(FILE* pFile)
 {
 	long size = ftell(pFile);
-	if(size > 0)
+	if (size > 0)
 	{
 		rewind(pFile);
 		BYTE* pData = new BYTE[size];
 		DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, size, pFile);
-		if(dwSizeRead > 0)
+		if (dwSizeRead > 0)
 		{
             std::wstring sNewImagePath = ReadMediaItemSaveFileGetNewPath(L"1.jpg");
 			NSFile::CFileBinary oFile;
@@ -7567,12 +7650,12 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 	bool bValidFormat = false;
 	std::wstring sSignature(g_sFormatSignature);
 	size_t nSigLength = sSignature.length();
-	if(nBase64DataSize > nSigLength)
+	if (nBase64DataSize > nSigLength)
 	{
 		std::string sCurSig((char*)pBase64Data, nSigLength);
 		std::wstring wsCurSig(sCurSig.begin(), sCurSig.end());
 
-		if(sSignature == wsCurSig)
+		if (sSignature == wsCurSig)
 		{
 			bValidFormat = true;
 		}
@@ -7592,7 +7675,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			if (_c == ';')
 			{
 
-				if(0 == nType)
+				if (0 == nType)
 				{
 					nType = 1;
 					continue;
@@ -7603,13 +7686,13 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 					break;
 				}
 			}
-			if(0 == nType)
+			if (0 == nType)
 				version += _c;
 			else
 				dst_len += _c;
 		}
 		int nVersion = g_nFormatVersion;
-		if(!version.empty())
+		if (!version.empty())
 		{
 			version = version.substr(1);
 			g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
@@ -7624,7 +7707,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 		{
 			nDataSize = atoi(dst_len.c_str());
 			pData = new BYTE[nDataSize];
-			if(Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+			if (Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 			{
 				oBufferedStream.Init(pData, 0, nDataSize);
 			}
@@ -7641,7 +7724,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			oBufferedStream.Seek(nIndex);
 		}
 
-		if(NULL != pData)
+		if (NULL != pData)
 		{
 	// File Type
 			std::wstring sDstPathCSV = sDstPath;
@@ -7673,7 +7756,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			
 			bResultOk = true;
 			
-			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
+			if (BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL, bMacro);
 				
@@ -7694,7 +7777,10 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				CSVWriter oCSVWriter;
 				
 				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
-				oCSVWriter.Start(sDstPathCSV);
+				
+				bResultOk = oCSVWriter.Start(sDstPathCSV);
+				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;
+
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
 				try
@@ -7726,7 +7812,7 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	long res = c_oSerConstants::ReadOk;
 	//mtLen
 	res = oBufferedStream.Peek(1) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-	if(c_oSerConstants::ReadOk != res)
+	if (c_oSerConstants::ReadOk != res)
 		return res;
 	
 	long nOtherOffset = -1;
@@ -7742,7 +7828,7 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	{
 		//mtItem
 		res = oBufferedStream.Peek(5) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 
 		BYTE mtiType = 0;
@@ -7750,13 +7836,13 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 			break;
 
 		long mtiOffBits = oBufferedStream.GetLong();
-		if(c_oSerTableTypes::Other == mtiType)
+		if (c_oSerTableTypes::Other == mtiType)
 			nOtherOffBits = mtiOffBits;
-		else if(c_oSerTableTypes::SharedStrings == mtiType)
+		else if (c_oSerTableTypes::SharedStrings == mtiType)
 			nSharedStringsOffBits = mtiOffBits;
-		else if(c_oSerTableTypes::Workbook == mtiType)
+		else if (c_oSerTableTypes::Workbook == mtiType)
 			nWorkbookOffBits = mtiOffBits;
-		else if(c_oSerTableTypes::PersonList == mtiType)
+		else if (c_oSerTableTypes::PersonList == mtiType)
 			nPersonListOffBits = mtiOffBits;
 		else
 		{
@@ -7768,41 +7854,41 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	std::wstring sMediaDir = pathMedia.GetPath();
 
 	boost::unordered_map<long, ImageObject*> mapMedia;
-	if(-1 != nOtherOffBits)
+	if (-1 != nOtherOffBits)
 	{
 		oBufferedStream.Seek(nOtherOffBits);
 		res = BinaryOtherTableReader(oBufferedStream, mapMedia, sFileInDir, oSaveParams, pOfficeDrawingConverter, sMediaDir).Read();
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 
 		oXlsx.m_pTheme = oSaveParams.pTheme;
 	}
-	if(-1 != nSharedStringsOffBits)
+	if (-1 != nSharedStringsOffBits)
 	{
 		oBufferedStream.Seek(nSharedStringsOffBits);
 		oXlsx.CreateSharedStrings();
 		res = BinarySharedStringTableReader(oBufferedStream, *oXlsx.m_pSharedStrings).Read();
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 	}
 	oXlsx.CreateWorkbook();
 
 	boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
-	if(-1 != nWorkbookOffBits)
+	if (-1 != nWorkbookOffBits)
 	{
 		oXlsx.m_pWorkbook->m_bMacroEnabled = oSaveParams.bMacroEnabled;
 
 		oBufferedStream.Seek(nWorkbookOffBits);
 		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 		oSaveParams.bMacroEnabled = oXlsx.m_pWorkbook->m_bMacroEnabled;
 	}
-	if(-1 != nPersonListOffBits)
+	if (-1 != nPersonListOffBits)
 	{
 		oBufferedStream.Seek(nPersonListOffBits);
 		res = BinaryPersonReader(oBufferedStream, *oXlsx.m_pWorkbook).Read();
-		if(c_oSerConstants::ReadOk != res)
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 	}
 

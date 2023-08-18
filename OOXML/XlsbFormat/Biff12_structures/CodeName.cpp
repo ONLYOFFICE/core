@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,6 +46,11 @@ namespace XLSB
         load(record);
     }
 
+	CodeName::CodeName(const std::wstring & str)
+	{
+		value = str;
+	}
+
     CodeName::~CodeName()
     {
     }
@@ -59,6 +64,11 @@ namespace XLSB
     {
         record >> value;
     }
+
+	void CodeName::save(XLS::CFRecord& record)
+	{
+		record << value;
+	}
 
 } // namespace XLSB
 

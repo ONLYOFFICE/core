@@ -43,16 +43,15 @@ namespace PPTX
                 XmlMacroReadAttributeBase(node, L"p14:dur",	dur);
                 XmlMacroReadAttributeBase(node, L"spd",		spd);
 
-				XmlUtils::CXmlNodes oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				
 				if (node.GetNodes(_T("*"), oNodes))
 				{
-					int count = oNodes.GetCount();
+					size_t count = oNodes.size();
 					
-					for (int i = 0; i < count; ++i)
+					for (size_t i = 0; i < count; ++i)
 					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
+						XmlUtils::CXmlNode& oNode = oNodes[i];
 
 						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -142,7 +141,10 @@ namespace PPTX
 			void Transition::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->WriteString(_T("<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">\
-<mc:Choice xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" Requires=\"p14\">"));
+<mc:Choice \
+xmlns:p159=\"http://schemas.microsoft.com/office/powerpoint/2015/09/main\" \
+xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" \
+Requires=\"p159\">"));
 
 				pWriter->StartNode(_T("p:transition"));
 				pWriter->StartAttributes();

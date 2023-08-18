@@ -67,6 +67,8 @@ void XMLCDECL xmlGenericErrorDefaultFunc	(void *ctx ATTRIBUTE_UNUSED,
  *
  * Default handler for out of context error messages.
  */
+
+#ifndef XML_ERROR_DISABLE_MODE
 void XMLCDECL
 xmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
     va_list args;
@@ -78,6 +80,12 @@ xmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
     vfprintf((FILE *)xmlGenericErrorContext, msg, args);
     va_end(args);
 }
+#else
+void XMLCDECL
+xmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
+	// NONE
+}
+#endif
 
 /**
  * initGenericErrorDefaultFunc:

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,7 +30,12 @@
  *
  */
 
+
+#include <boost/date_time/posix_time/conversion.hpp>
+
 #include "PCDIDateTime.h"
+#include "boost/date_time/posix_time/posix_time_types.hpp"
+#include <boost/date_time/posix_time/time_parsers.hpp>
 
 using namespace XLS;
 
@@ -60,6 +65,11 @@ namespace XLSB
         record >> yr >> mon >> dom >> hr >> min >> sec;
     }
 
+	void PCDIDateTime::save(XLS::CFRecord& record)
+	{
+		record << yr << mon << dom << hr << min << sec;
+	}
+
     std::wstring PCDIDateTime::value()
     {
         if (mon < 1 || mon > 12) mon = 1;
@@ -73,6 +83,22 @@ namespace XLSB
 
         return s.str();
     }
+
+	void PCDIDateTime::fromString(const std::wstring& str)
+    {
+		std::string ts(str.begin(), str.end());
+		boost::posix_time::ptime pt(boost::posix_time::time_from_string(ts));
+		tm pt_tm = boost::posix_time::to_tm(pt);
+
+		yr = pt_tm.tm_year;
+		mon = pt_tm.tm_mon;
+		dom = pt_tm.tm_mday;
+		hr = pt_tm.tm_hour;
+		min = pt_tm.tm_min;
+		sec = pt_tm.tm_sec;
+    }
+
+
 
 } // namespace XLSB
 

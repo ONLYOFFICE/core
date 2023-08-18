@@ -69,13 +69,73 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 !metafile_disable_svg {
     DEFINES += METAFILE_SUPPORT_SVG
 
-    HEADERS += \
-	    $$METAFILE_PATH/svg/SVGFramework.h \
-		$$METAFILE_PATH/svg/SVGTransformer.h
+    # DEPRECATED ENGINE. REMOVE IN 7.6+ VERSIONS
+	#CONFIG += svg_old_version
 
-    SOURCES += 	\
-	    $$METAFILE_PATH/svg/SVGFramework.cpp \
-		$$METAFILE_PATH/svg/SVGTransformer.cpp
+    svg_old_version {
+
+        DEFINES += SVG_OLD_ENGINE
+
+        HEADERS += \
+		    $$METAFILE_PATH/svg/SVGFramework.h \
+			$$METAFILE_PATH/svg/SVGTransformer.h
+
+        SOURCES += \
+		    $$METAFILE_PATH/svg/SVGFramework.cpp \
+			$$METAFILE_PATH/svg/SVGTransformer.cpp
+
+    } else {
+
+        HEADERS += \
+		    $$METAFILE_PATH/svg/SvgTypes.h \
+			$$METAFILE_PATH/svg/CSvgFile.h \
+			$$METAFILE_PATH/svg/CSvgParser.h \
+			$$METAFILE_PATH/svg/SvgObjects/CContainer.h \
+			$$METAFILE_PATH/svg/SvgObjects/CGradient.h \
+			$$METAFILE_PATH/svg/SvgObjects/CClipPath.h \
+			$$METAFILE_PATH/svg/SvgObjects/CMask.h \
+			$$METAFILE_PATH/svg/SvgObjects/CPattern.h \
+			$$METAFILE_PATH/svg/SvgObjects/CSymbol.h \
+			$$METAFILE_PATH/svg/SvgObjects/CMarker.h \
+			$$METAFILE_PATH/svg/SvgObjects/CImage.h \
+			$$METAFILE_PATH/svg/SvgObjects/CLine.h \
+			$$METAFILE_PATH/svg/SvgObjects/CRect.h \
+			$$METAFILE_PATH/svg/SvgObjects/CCircle.h \
+			$$METAFILE_PATH/svg/SvgObjects/CEllipse.h \
+			$$METAFILE_PATH/svg/SvgObjects/CPath.h \
+			$$METAFILE_PATH/svg/SvgObjects/CText.h \
+			$$METAFILE_PATH/svg/SvgObjects/CUse.h \
+			$$METAFILE_PATH/svg/SvgObjects/CPolyline.h \
+			$$METAFILE_PATH/svg/SvgObjects/CStyle.h \
+			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.h \
+			$$METAFILE_PATH/svg/SvgUtils.h
+
+        SOURCES += 	\
+		    $$METAFILE_PATH/svg/CSvgFile.cpp \
+			$$METAFILE_PATH/svg/CSvgParser.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CContainer.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CGradient.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CClipPath.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CMask.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CMarker.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CPattern.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CSymbol.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CImage.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CLine.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CRect.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CCircle.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CEllipse.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CPath.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CText.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CUse.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CPolyline.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.cpp \
+			$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
+
+		CONFIG += css_calculator_without_xhtml
+
+        include($$METAFILE_PATH/../../../Common/3dParty/html/css/CssCalculator.pri)
+    }
 }
 
 !metafile_disable_svm {

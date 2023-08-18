@@ -66,6 +66,26 @@ void PtgList::loadFields(CFRecord& record)
     record >> listIndex >> colFirst >> colLast;
 }
 
+void PtgList::writeFields(CFRecord& record)
+{
+	//record.skipNunBytes(1); // eptg Reserved
+	global_info = record.getGlobalWorkbookInfo();
+	record << ixti;
+
+	unsigned short flags = 0;
+
+	SETBITS(flags, 0, 1, columns)
+	SETBITS(flags, 2, 6, rowType)
+	SETBIT(flags, 7, squareBracketSpace)
+	SETBIT(flags, 8, commaSpace)
+	SETBITS(flags, 10, 11, type_)
+	SETBIT(flags, 12, invalid)
+	SETBIT(flags, 13, nonresident)
+
+	record << flags;
+	record << listIndex << colFirst << colLast;
+}
+
 void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
     //ptg_stack.push(L""); tblExpenses[[#This Row],[Hotel]:[Transport]]

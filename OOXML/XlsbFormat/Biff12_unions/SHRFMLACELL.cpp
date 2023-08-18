@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,8 @@
 
 #include "SHRFMLACELL.h"
 #include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
@@ -81,6 +82,17 @@ namespace XLSB
         elements_.pop_back();
         return true;
     }
+
+	const bool SHRFMLACELL::saveContent(BinProcessor& proc)
+	{
+		if(_fmlacell != nullptr)
+			proc.mandatory(*_fmlacell);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

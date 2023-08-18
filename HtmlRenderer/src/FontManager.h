@@ -43,10 +43,10 @@ namespace NSHtmlRenderer
 	class CFontManager : public CFontManagerBase
 	{
 	public:
-        NSStructures::CFont*	m_pFont;
-        Aggplus::CMatrix*		m_pTransform;
+		NSStructures::CFont*	m_pFont;
+		Aggplus::CMatrix*		m_pTransform;
 
-        double					m_dSpaceWidthMM;
+		double					m_dSpaceWidthMM;
 
 	public:
 		CFontManager() : m_pFont(NULL), CFontManagerBase()
@@ -65,11 +65,11 @@ namespace NSHtmlRenderer
 				return;
 
 			double dSize = m_pFont->Size;
-            double dSizeFont = dSize * ((m_pTransform->sx() + m_pTransform->sy()) / 2);
+			double dSizeFont = dSize * ((m_pTransform->sx() + m_pTransform->sy()) / 2);
 
 			m_pFont->Size = dSizeFont;
 
-            if (IsEqual2(m_pFont, &m_oFont.m_oFont))
+			if (IsEqual2(m_pFont, &m_oFont.m_oFont))
 			{
 				m_pFont->Size = dSize;
 				return;
@@ -80,7 +80,7 @@ namespace NSHtmlRenderer
 
 			bool bIsPath = false;
 
-            if (L"" == m_pFont->Path)
+			if (L"" == m_pFont->Path)
 			{
 				CFontManagerBase::LoadFontByName(m_oFont.m_oFont.Name, m_oFont.m_oFont.Size, m_oFont.m_oFont.GetStyle());
 			}
@@ -97,16 +97,16 @@ namespace NSHtmlRenderer
 			CalculateSpace();
 		}
 
-        inline void CalculateSpace()
+		inline void CalculateSpace()
 		{
-            LONG lGid = m_pManager->GetStringGID();
-            m_pManager->SetStringGID(FALSE);
+			LONG lGid = m_pManager->GetStringGID();
+			m_pManager->SetStringGID(FALSE);
 			
-            m_pManager->LoadString1(L" ", 0, 0);
+			m_pManager->LoadString1(L" ", 0, 0);
 
-            TBBox _box = m_pManager->MeasureString2();
+			TBBox _box = m_pManager->MeasureString2();
 
-            m_dSpaceWidthMM = (double)(_box.fMaxX - _box.fMinX) * c_dPixToMM;
+			m_dSpaceWidthMM = (double)(_box.fMaxX - _box.fMinX) * c_dPixToMM;
 			if (0 >= m_dSpaceWidthMM)
 			{
 				m_dSpaceWidthMM = 1.0;

@@ -74,9 +74,10 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
         oHeader.ReadFromStream(pStream);
         oUserAtom.ReadFromStream(oHeader, pStream);
 
-        CPPTUserInfo* pInfo			= new CPPTUserInfo();
+        CPPTUserInfo* pInfo = new CPPTUserInfo();
 
-        pInfo->m_strTmpDirectory	= m_strTmpDirectory;
+        pInfo->m_pDocumentInfo      = this;
+
         pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
         pInfo->m_strPassword		= m_strPassword;
         pInfo->m_bMacros			= m_bMacros;
@@ -100,7 +101,6 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
 
         m_arUsers.push_back(pInfo);
         // теперь нужно выставить у него параметры для других юзеров
-        pInfo->m_pDocumentInfo = this;
         pInfo->m_lIndexThisUser = m_arUsers.size() - 1;
 
         pInfo = NULL;
@@ -109,13 +109,13 @@ bool CPPTDocumentInfo::ReadFromStream(CRecordCurrentUserAtom *pCurrentUser, POLE
     return true;
 }
 
-bool CPPTDocumentInfo::LoadDocument(std::wstring strFolderMem)
+bool CPPTDocumentInfo::LoadDocument()
 {
     if (m_arUsers.empty()) return false;
 
     try
     {
-        m_arUsers[0]->ReadExtenalObjects(strFolderMem);
+        m_arUsers[0]->ReadExtenalObjects();
         m_arUsers[0]->FromDocument();
     }
     catch(int) //error code

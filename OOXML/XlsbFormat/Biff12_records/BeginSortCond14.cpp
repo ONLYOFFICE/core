@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace XLSB
 
     void BeginSortCond14::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+		_UINT16 flags;
         record >> flags;
 
         fSortDes	= GETBIT(flags, 0);
@@ -73,8 +73,33 @@ namespace XLSB
         }
 
         record >> stSslist;
-
     }
+
+	void BeginSortCond14::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fSortDes);
+		SETBITS(flags, 1, 4, sortOn);
+
+		record << flags;
+
+		record << rfx;
+
+		switch (sortOn)
+		{
+		case 0x00:
+		case 0x01:
+		case 0x02:
+			record << condDataValue;
+			break;
+		case 0x03:
+			record << cfflag14;
+			break;
+		}
+
+		record << stSslist;
+	}
 
 } // namespace XLSB
 

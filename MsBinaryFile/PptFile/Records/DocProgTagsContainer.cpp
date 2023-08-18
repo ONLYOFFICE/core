@@ -43,12 +43,11 @@ CRecordPP9DocBinaryTagExtension::~CRecordPP9DocBinaryTagExtension()
 
 void CRecordPP9DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
-    m_oHeader			=	oHeader;
-    LONG lPos			=	0;
+    m_oHeader =	oHeader;
+    LONG lPos =	0;
     StreamUtils::StreamPosition ( lPos, pStream );
 
-    UINT lCurLen		=	0;
-
+    UINT lCurLen =	0;
     SRecordHeader ReadHeader;
 
     while ( lCurLen < m_oHeader.RecLen )
@@ -59,49 +58,49 @@ void CRecordPP9DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POL
         lCurLen += 8 + ReadHeader.RecLen;
         switch (ReadHeader.RecType)
         {
-        case RT_TextMasterStyle9Atom:
-        {
-            auto pStyle = new CRecordTextMasterStyle9Atom;
-            pStyle->ReadFromStream(ReadHeader, pStream);
-            m_rgTextMasterStyleAtom.push_back(pStyle);
-            break;
-        }
-        case RT_TextDefaults9Atom:
-        {
-            m_textDefaultsAtom = new CRecordTextDefaults9Atom;
-            m_textDefaultsAtom->ReadFromStream(ReadHeader, pStream);
-            break;
-        }
-        case RT_OutlineTextProps9:
-        {
-            m_outlineTextPropsContainer = new CRecordOutlineTextProps9Container;
-            m_outlineTextPropsContainer->ReadFromStream(ReadHeader, pStream);
-            break;
-        }
-        case RT_BlipCollection9:
-        {
-            m_blipCollectionContainer = new CRecordBlipCollection9Container;
-            m_blipCollectionContainer->ReadFromStream(ReadHeader, pStream);
-            break;
-        }
-        default:
-            IRecord* pRecord = CreateByType(ReadHeader);
-            pRecord->ReadFromStream(ReadHeader, pStream);
+            case RT_TextMasterStyle9Atom:
+            {
+                auto pStyle = new CRecordTextMasterStyle9Atom;
+                pStyle->m_pCommonInfo = this->m_pCommonInfo;
+                pStyle->ReadFromStream(ReadHeader, pStream);
+                
+                m_rgTextMasterStyleAtom.push_back(pStyle);           
+            } break;
+            case RT_TextDefaults9Atom:
+            {
+                m_textDefaultsAtom = new CRecordTextDefaults9Atom;
+                m_textDefaultsAtom->m_pCommonInfo = this->m_pCommonInfo;
+                m_textDefaultsAtom->ReadFromStream(ReadHeader, pStream);
+            }break;
+            case RT_OutlineTextProps9:
+            {
+                m_outlineTextPropsContainer = new CRecordOutlineTextProps9Container;
+                m_outlineTextPropsContainer->m_pCommonInfo = this->m_pCommonInfo;
+                m_outlineTextPropsContainer->ReadFromStream(ReadHeader, pStream); ;
+            }break;
+            case RT_BlipCollection9:
+            {
+                m_blipCollectionContainer = new CRecordBlipCollection9Container;
+                m_blipCollectionContainer->m_pCommonInfo = this->m_pCommonInfo;
+                m_blipCollectionContainer->ReadFromStream(ReadHeader, pStream);
+            } break;
+            default:
+            {
+                IRecord* pRecord = CreateByType(ReadHeader, m_pCommonInfo);
+                pRecord->ReadFromStream(ReadHeader, pStream);
 
-            m_arRecords.push_back(pRecord);
-            break;
+                m_arRecords.push_back(pRecord);
+            }break;
         }
-
     }
-
     StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 }
 
 void CRecordPP10DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
-    m_oHeader			=	oHeader;
+    m_oHeader =	oHeader;
 
-    LONG lPos			=	0;
+    LONG lPos =	0;
     StreamUtils::StreamPosition ( lPos, pStream );
 
     StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -109,8 +108,8 @@ void CRecordPP10DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, PO
 
 void CRecordPP11DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
-    m_oHeader			=	oHeader;
-    LONG lPos			=	0;
+    m_oHeader =	oHeader;
+    LONG lPos =	0;
     StreamUtils::StreamPosition ( lPos, pStream );
 
     StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -118,8 +117,8 @@ void CRecordPP11DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, PO
 
 void CRecordPP12DocBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
-    m_oHeader			=	oHeader;
-    LONG lPos			=	0;
+    m_oHeader =	oHeader;
+    LONG lPos =	0;
     StreamUtils::StreamPosition ( lPos, pStream );
 
     StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
@@ -152,27 +151,39 @@ void CRecordDocProgBinaryTagSubContainerOrAtom::ReadFromStream(SRecordHeader &oH
         if (!childHeader.ReadFromStream(pStream))
             return;
 
-        if (m_pTagName->m_strText == ___PPT9) {
+        if (m_pTagName->m_strText == ___PPT9)
+        {
             m_pTagContainer = new CRecordPP9DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP9DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-        } else if (m_pTagName->m_strText == ___PPT10) {
+        } 
+        else if (m_pTagName->m_strText == ___PPT10) 
+        {
             m_pTagContainer = new CRecordPP10DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP10DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-        } else if (m_pTagName->m_strText == ___PPT11) {
+        } 
+        else if (m_pTagName->m_strText == ___PPT11) 
+        {
             m_pTagContainer = new CRecordPP11DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP11DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
-        } else if (m_pTagName->m_strText == ___PPT12) {
-        m_pTagContainer = new CRecordPP12DocBinaryTagExtension();
-        dynamic_cast<CRecordPP12DocBinaryTagExtension*>
+        }
+        else if (m_pTagName->m_strText == ___PPT12) 
+        {
+            m_pTagContainer = new CRecordPP12DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
+            dynamic_cast<CRecordPP12DocBinaryTagExtension*>
                 (m_pTagContainer)->ReadFromStream(childHeader, pStream);
+        }
     }
-
-    } else if (m_oHeader.RecType == RT_ProgStringTag)
+    else if (m_oHeader.RecType == RT_ProgStringTag)
     {
         m_pTagContainer = new CRecordProgStringTagContainer();
+        m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
         dynamic_cast<CRecordProgStringTagContainer*>
                 (m_pTagContainer)->ReadFromStream(ReadHeader, pStream);
     }
@@ -193,7 +204,7 @@ CRecordDocProgTagsContainer::~CRecordDocProgTagsContainer()
 
 void CRecordDocProgTagsContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
-    m_oHeader	=	oHeader;
+    m_oHeader =	oHeader;
 
     LONG lPos = 0;
     StreamUtils::StreamPosition ( lPos, pStream );
@@ -206,8 +217,9 @@ void CRecordDocProgTagsContainer::ReadFromStream(SRecordHeader &oHeader, POLE::S
         if ( ReadHeader.ReadFromStream(pStream) == false)
             break;
         lCurLen +=	8 + ReadHeader.RecLen;
-        CRecordDocProgBinaryTagSubContainerOrAtom* pRecord =
-                new CRecordDocProgBinaryTagSubContainerOrAtom();
+        CRecordDocProgBinaryTagSubContainerOrAtom* pRecord = new CRecordDocProgBinaryTagSubContainerOrAtom();
+        pRecord->m_pCommonInfo = m_pCommonInfo;
+
         pRecord->ReadFromStream(ReadHeader, pStream);
         m_arrRgChildRec.push_back(pRecord);
     }

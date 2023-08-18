@@ -74,8 +74,8 @@ namespace DocFileFormat
 	private:
 
 		void apppendCellShading (unsigned char* sprmArg, int size, int cellIndex);
-		bool IsTableBordersDefined (const std::list<SinglePropertyModifier>* grpprl) const;
-		bool IsTableCellWidthDefined (const std::list<SinglePropertyModifier>* grpprl) const;
+		bool IsTableBordersDefined (const std::vector<SinglePropertyModifier>* grpprl) const;
+		bool IsTableCellWidthDefined (const std::vector<SinglePropertyModifier>* grpprl) const;
 		
 		int _gridIndex;
 		int _cellIndex;

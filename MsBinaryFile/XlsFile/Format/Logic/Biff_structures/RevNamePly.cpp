@@ -57,6 +57,11 @@ void RevNamePly::load(CFRecord& record)
 	record >> sheet >> name;
 }
 
+void RevNamePly::save(CFRecord& record)
+{
+	record << sheet << name;
+}
+
 
 } // namespace XLS
 

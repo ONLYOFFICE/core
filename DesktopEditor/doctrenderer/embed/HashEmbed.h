@@ -5,7 +5,7 @@
 #include "../hash.h"
 
 using namespace NSJSBase;
-class CHashEmbed : public CJSEmbedObject
+class JS_DECL CHashEmbed : public CJSEmbedObject
 {
 public:
 	CHash* m_pHash;
@@ -24,8 +24,7 @@ public:
 	JSSmart<CJSValue> hash(JSSmart<CJSValue> data, JSSmart<CJSValue> size, JSSmart<CJSValue> alg);
 	JSSmart<CJSValue> hash2(JSSmart<CJSValue> password, JSSmart<CJSValue> salt, JSSmart<CJSValue> spinCount, JSSmart<CJSValue> alg);
 
-public:
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_HASH_EMBED_H_

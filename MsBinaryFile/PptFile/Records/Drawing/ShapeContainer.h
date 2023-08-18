@@ -63,6 +63,8 @@ namespace PPT
 class CPPTElement
 {
 public:
+    CPPTElement(const std::wstring& tempPath);
+
     bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2);
     CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme);
 
@@ -72,6 +74,8 @@ public:
     void SetUpPropertyAudio(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
     void SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
     void SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+
+    std::wstring m_tempPath;
 };
 
 class CRecordShapeContainer : public CRecordsContainer

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,11 +56,13 @@ namespace XLSB
     //ACTIVEXCONTROLS = BrtBeginActiveXControls 1*BrtActiveX BrtEndActiveXControls
     const bool ACTIVEXCONTROLS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginActiveXControls>())
-        {
-            m_BrtBeginActiveXControls = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<BeginActiveXControls>())
+		{
+			m_bBrtBeginActiveXControls = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtBeginActiveXControls = false;
 
         auto count = proc.repeated<ActiveX>(0, 0);
         while(count > 0)
@@ -72,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndActiveXControls>())
         {
-            m_BrtEndActiveXControls = elements_.back();
+            m_bBrtEndActiveXControls = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndActiveXControls = false;
 
-        return m_BrtBeginActiveXControls && !m_arBrtActiveX.empty() && m_BrtEndActiveXControls;
+        return m_bBrtBeginActiveXControls && !m_arBrtActiveX.empty() && m_bBrtEndActiveXControls;
     }
+
+	const bool ACTIVEXCONTROLS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginActiveXControls>();
+
+		for (auto& item : m_arBrtActiveX)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndActiveXControls>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

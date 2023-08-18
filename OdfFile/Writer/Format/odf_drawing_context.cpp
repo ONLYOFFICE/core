@@ -2723,17 +2723,37 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
 
 	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
-	if (image == NULL)return;
+	if (image == NULL) return;
 
 	image->common_xlink_attlist_.type_		= xlink_type::Simple;
 	image->common_xlink_attlist_.show_		= xlink_show::Embed;
 	image->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 
-	if (!odf_path.empty())   image->common_xlink_attlist_.href_= odf_path; //may be later set
+	if (!odf_path.empty()) image->common_xlink_attlist_.href_= odf_path; //may be later set
 	
 	start_element(image_elm);
 			
 	set_image_style_repeat(1);//default
+}
+void odf_drawing_context::start_image2(std::wstring odf_path)
+{
+	end_element();
+
+	office_element_ptr image_elm;
+	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
+
+	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
+	if (image == NULL) return;
+
+	image->common_xlink_attlist_.type_ = xlink_type::Simple;
+	image->common_xlink_attlist_.show_ = xlink_show::Embed;
+	image->common_xlink_attlist_.actuate_ = xlink_actuate::OnLoad;
+
+	image->draw_mime_type_ = L"image/svg+xml"; 
+
+	if (!odf_path.empty()) image->common_xlink_attlist_.href_ = odf_path; //may be later set
+
+	start_element(image_elm);
 }
 void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 {

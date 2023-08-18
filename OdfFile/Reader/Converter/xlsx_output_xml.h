@@ -71,6 +71,7 @@ public:
 	std::wostream & controls();
 	std::wostream & protection();
 	std::wostream & breaks();
+	std::wostream & sparklines();
 	
 	rels & sheet_rels();			//hyperlink, background image, external, media ...
 	

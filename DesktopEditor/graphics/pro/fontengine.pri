@@ -39,10 +39,6 @@ enable_support_shaper {
 # -------------------------------------------------
 
 core_ios {
-
-    OBJECTIVE_SOURCES += \
-	    $$FONT_ENGINE_PATH/ApplicationFonts_ios.mm \
-
     LIBS += -framework Foundation
 }
 

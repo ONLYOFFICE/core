@@ -43,9 +43,10 @@ class CellParsedFormula : public ParsedFormula
 		BASE_STRUCTURE_DEFINE_CLASS_NAME(CellParsedFormula)
 public:
 	CellParsedFormula(const bool is_part_of_a_revision);
+	CellParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
-	void load(CFRecord& record);
-
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	bool is_part_of_a_revision_;
 };

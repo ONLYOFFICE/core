@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,19 +37,18 @@
 #include "../Biff12_unions/TABLECELL.h"
 #include "../Biff12_unions/CELLMETA.h"
 #include "../Biff12_unions/FRT.h"
-
 #include "../Biff12_records/ACBegin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    CELL::CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    CELL::CELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
-
     CELL::~CELL()
     {
     }
@@ -116,6 +115,17 @@ namespace XLSB
 
         return m_source != nullptr;
     }
+
+	const bool CELL::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source->get_type() != typeTABLECELL && m_CELLMETA != nullptr)
+			proc.mandatory(*m_CELLMETA);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

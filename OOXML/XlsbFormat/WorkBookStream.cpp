@@ -69,7 +69,7 @@ WorkBookStream::~WorkBookStream()
 
 BaseObjectPtr WorkBookStream::clone()
 {
-        return BaseObjectPtr(new WorkBookStream(*this));
+	return BaseObjectPtr(new WorkBookStream(*this));
 }
 
 const bool WorkBookStream::loadContent(BinProcessor& proc)
@@ -88,9 +88,11 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<BeginBook>())
                 {
-                    m_BrtBeginBook = elements_.back();
+					m_bBeginBook = true;
                     elements_.pop_back();
                 }
+				else
+					m_bBeginBook = false;
             }break;
 
             case rt_FileVersion:
@@ -301,9 +303,11 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<EndBook>())
                 {
-                    m_BrtEndBook = elements_.back();
+					m_bEndBook = true;
                     elements_.pop_back();
                 }
+				else
+					m_bEndBook = false;
             }break;
 
 			default://skip					
@@ -316,6 +320,157 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool WorkBookStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginBook>();
+
+	if (m_BrtFileVersion != nullptr)
+		proc.mandatory(*m_BrtFileVersion);
+		
+	if (m_BrtFileSharingIso != nullptr)
+		proc.mandatory(*m_BrtFileSharingIso);
+
+	if (m_BrtFileSharing != nullptr)
+		proc.mandatory(*m_BrtFileSharing);
+
+	if (m_BrtWbProp != nullptr)
+		proc.mandatory(*m_BrtWbProp);
+
+	if (m_BrtBookProtectionIso != nullptr)
+		proc.mandatory(*m_BrtBookProtectionIso);
+
+	if (m_BrtBookProtection != nullptr)
+		proc.mandatory(*m_BrtBookProtection);
+
+	if (m_ACABSPATH != nullptr)
+		proc.mandatory(*m_ACABSPATH);
+
+	if (m_BOOKVIEWS != nullptr)
+		proc.mandatory(*m_BOOKVIEWS);
+
+	if (m_BUNDLESHS != nullptr)
+		proc.mandatory(*m_BUNDLESHS);
+
+	if (m_FNGROUP != nullptr)
+		proc.mandatory(*m_FNGROUP);
+
+	if (m_EXTERNALS != nullptr)
+		proc.mandatory(*m_EXTERNALS);
+
+	for(auto &item: m_arBrtName)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_BrtCalcProp != nullptr)
+		proc.mandatory(*m_BrtCalcProp);
+	
+	if (m_BrtOleSize != nullptr)
+		proc.mandatory(*m_BrtOleSize);
+
+	if (m_PIVOTCACHEIDS != nullptr)
+		proc.mandatory(*m_PIVOTCACHEIDS);
+	
+	for (auto &item : m_arBrtUserBookView)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_BrtWebOpt != nullptr)
+		proc.mandatory(*m_BrtWebOpt);
+	
+	for (auto &item : m_arBrtFileRecover)
+	{
+		proc.mandatory(*item);
+	}
+	
+	if (m_FRTWORKBOOK != nullptr)
+		proc.mandatory(*m_FRTWORKBOOK);
+
+	proc.mandatory<EndBook>();
+
+	return true;
+}
+void WorkBookStream::UpdateXtiWrite(XLS::GlobalWorkbookInfo* global_info_)
+{
+	EXTERNALS* externals = dynamic_cast<EXTERNALS*>(m_EXTERNALS.get());
+	if (externals && !externals->m_arSUP.empty())
+	{
+		if(externals->m_BrtExternSheet == nullptr)
+			externals->m_BrtExternSheet = XLS::BaseObjectPtr(new XLSB::ExternSheet());
+
+		XLSB::ExternSheet* extern_sheet = dynamic_cast<XLSB::ExternSheet*>(externals->m_BrtExternSheet.get());		
+
+		for (size_t i = 0; extern_sheet && i < externals->m_arSUP.size(); i++)
+		{
+			SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[i].get());
+			if (!index_book) continue;
+
+			if (index_book->m_source->get_type() == XLS::typeSupSelf)
+			{
+				XTIPtr xti(new XTI);
+				xti->iSupBook = i;
+				xti->itabFirst = 0;
+				xti->itabLast = 0;
+
+				extern_sheet->rgXTI.push_back(xti);
+			}
+
+		}
+		for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
+		{
+			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
+			if (!xti) continue;
+
+			SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
+			if (!index_book) continue;
+
+			//if (index_book->arNames.empty()) continue;
+
+			GlobalWorkbookInfo::_xti val_1;
+
+			val_1.iSup = xti->iSupBook;
+			val_1.pNames = &index_book->arNames;
+
+			if (index_book->m_source->get_type() == XLS::typeSupBookSrc)
+			{
+				val_1.link = dynamic_cast<XLSB::SupBookSrc*>(index_book->m_source.get())->strRelID.value.value();
+				val_1.itabFirst = xti->itabFirst;
+				val_1.itabLast = xti->itabLast;
+			}
+			else if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
+			{
+				std::wstring strRange;
+				if (-1 == xti->itabFirst)
+				{
+					strRange = L"#REF";
+				}
+				else if (xti->itabFirst < global_info_->sheets_info.size())
+				{
+					strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
+					if (xti->itabFirst != xti->itabLast)
+					{
+						strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
+					}
+				}
+				val_1.link = strRange;
+			}
+			else if (xti->itabFirst == -1)
+			{
+				//sheet not found
+			}
+			else if (xti->itabFirst == -2)
+			{
+				//Workbook-level
+			}
+			global_info_->arXti_External.push_back(val_1);
+			GlobalWorkbookInfo::arXti_External_static.push_back(val_1);
+		}
+
+		//global_info_->arXti.push_back(val);
+		//}
+	}
+}
 void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
 {
     EXTERNALS* externals = dynamic_cast<EXTERNALS*>(m_EXTERNALS.get());
@@ -444,8 +599,11 @@ void WorkBookStream::UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_)
         {
             if (lbl->fFunc)
             {
-                if (name == L"FORMULA") //"general_formulas.xls"
-                        name = L"_xludf." + name;
+                if (name != L"CHISQDIST" &&
+                    name != L"CHISQINV" &&
+                    name != L"CURRENT" &&
+                    name != L"EFFECTIVE")
+                name = L"_xludf." + name;
             }
         }
         global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!

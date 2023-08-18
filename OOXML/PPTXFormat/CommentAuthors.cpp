@@ -128,13 +128,12 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oNode.GetNodes(_T("p:cmAuthor"), oNodes);
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oCm;
-			oNodes.GetAt(i, oCm);
+			XmlUtils::CXmlNode & oCm = oNodes[i];
 
 			PPTX::Logic::CommentAuthor comm;
 

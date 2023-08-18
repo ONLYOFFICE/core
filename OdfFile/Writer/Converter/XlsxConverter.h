@@ -94,6 +94,9 @@ namespace OOX
 		class CPictureWorksheet;
 		class CHeaderFooter;		
 		class CSparklineGroups;
+		class CSparklineGroup;
+		class CSparklines;
+		class CSparkline;
 		class CAltTextTable;
 		class CExternalLink;
 		class CDataValidations;
@@ -242,6 +245,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CSi							*oox_rtf_text);
 
 		void convert(OOX::Spreadsheet::CSparklineGroups				*sparkline);
+		void convert(OOX::Spreadsheet::CSparklineGroup				*sparkline);
+		void convert(OOX::Spreadsheet::CSparklines					*sparkline);
+
 		void convert(OOX::Spreadsheet::CAltTextTable				*alt_text);
 
 		void convert(double oox_size,						_CP_OPT(odf_types::length) & odf_size);

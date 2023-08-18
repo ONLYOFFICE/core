@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,8 +59,17 @@ namespace XLSB
         fGroupLevel = GETBIT(flags, 0);
 
         record >> stUnique >> stLevelName;
-
     }
+
+	void BeginPCDHGLevel::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fGroupLevel)
+
+		record << flags;
+		record << stUnique << stLevelName;
+	}
 
 } // namespace XLSB
 

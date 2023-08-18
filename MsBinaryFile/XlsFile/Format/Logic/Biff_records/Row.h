@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/ColSpan.h"
+#include "../Biff_structures/BIFF12/ColSpan.h"
 
 namespace XLS
 {
@@ -46,7 +46,8 @@ namespace XLS
 
 		BaseObjectPtr clone();
 
-		void readFields(CFRecord& record);
+		void readFields(CFRecord& record) override;
+		void writeFields(CFRecord& record) override;
 
 		int serialize(std::wostream & stream);
 

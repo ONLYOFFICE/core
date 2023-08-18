@@ -78,9 +78,9 @@ namespace NSStringUtils
 		{
 			while ((m_lSizeCur + nSize) > m_lSize)
 			{
-                if (m_lSize > 10485760/*10 * 1024 * 1024*/)
+				if (m_lSize > 10485760/*10 * 1024 * 1024*/)
 				{
-                    m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
+					m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
 				}
 				else
 				{
@@ -218,9 +218,9 @@ namespace NSStringUtils
 		{
 			while ((m_lSizeCur + nSize) > m_lSize)
 			{
-                if (m_lSize > 10485760/*10 * 1024 * 1024*/)
+				if (m_lSize > 10485760/*10 * 1024 * 1024*/)
 				{
-                    m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
+					m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
 				}
 				else
 				{
@@ -252,17 +252,17 @@ namespace NSStringUtils
 		ClearNoAttack();
 		WriteString(bsText);
 
-					for (size_t i = 0; i < m_lSizeCur; ++i)
+		for (size_t i = 0; i < m_lSizeCur; ++i)
 		{
 			if (WCHAR(8233) == m_pData[i])
 				m_pData[i] = WCHAR(' ');
 		}
 	}
 
-    void CStringBuilder::operator+=(const std::wstring& oTemp)
-    {
-        WriteString(oTemp.c_str(), oTemp.length());
-    }
+	void CStringBuilder::operator+=(const std::wstring& oTemp)
+	{
+		WriteString(oTemp.c_str(), oTemp.length());
+	}
 
 	void CStringBuilder::WriteStringNoSafe(const wchar_t* pString, size_t nLen)
 	{
@@ -604,17 +604,17 @@ namespace NSStringUtils
 		std::wstring str(m_pData, (int)m_lSizeCur);
 		return str;
 	}
-    std::wstring CStringBuilder::GetSubData(const size_t& start, const size_t& count)
-    {
-        if (start >= m_lSizeCur)
-            return L"";
+	std::wstring CStringBuilder::GetSubData(const size_t& start, const size_t& count)
+	{
+		if (start >= m_lSizeCur)
+			return L"";
 
-        size_t nCountMax = m_lSizeCur - start;
-        if (count != std::wstring::npos && count <= nCountMax)
-            nCountMax = count;
+		size_t nCountMax = m_lSizeCur - start;
+		if (count != std::wstring::npos && count <= nCountMax)
+			nCountMax = count;
 
-        return std::wstring(m_pData + start, nCountMax);
-    }
+		return std::wstring(m_pData + start, nCountMax);
+	}
 
 	wchar_t* CStringBuilder::GetBuffer()
 	{
@@ -676,14 +676,14 @@ namespace NSStringUtils
 	{
 		if (0 == val)
 		{
-							*m_pDataCur++ = (wchar_t)'0';
+			*m_pDataCur++ = (wchar_t)'0';
 			++m_lSizeCur;
 			return;
 		}
 		if (val < 0)
 		{
 			val = -val;
-							*m_pDataCur++ = (wchar_t)'-';
+			*m_pDataCur++ = (wchar_t)'-';
 			++m_lSizeCur;
 		}
 
@@ -698,7 +698,7 @@ namespace NSStringUtils
 		oval = 1;
 		while (val > 0)
 		{
-							m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
+			m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
 			++oval;
 			val /= 10;
 		}
@@ -711,14 +711,14 @@ namespace NSStringUtils
 	{
 		if (0 == val)
 		{
-							*m_pDataCur++ = (wchar_t)'0';
+			*m_pDataCur++ = (wchar_t)'0';
 			++m_lSizeCur;
 			return;
 		}
 		if (val < 0)
 		{
 			val = -val;
-							*m_pDataCur++ = (wchar_t)'-';
+			*m_pDataCur++ = (wchar_t)'-';
 			++m_lSizeCur;
 		}
 
@@ -735,9 +735,9 @@ namespace NSStringUtils
 		if (0 != nLastS)
 		{
 			++len;
-							m_pDataCur[len - oval] = (wchar_t)('0' + nLastS);
+			m_pDataCur[len - oval] = (wchar_t)('0' + nLastS);
 			++oval;
-							m_pDataCur[len - oval] = (wchar_t)('.');
+			m_pDataCur[len - oval] = (wchar_t)('.');
 			++oval;
 			val /= 10;
 		}
@@ -749,7 +749,7 @@ namespace NSStringUtils
 
 		while (val > 0)
 		{
-							m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
+			m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
 			++oval;
 			val /= 10;
 		}
@@ -852,14 +852,14 @@ namespace NSStringUtils
 		WriteHexByteNoSafe((value >> 8) & 0xFF);
 		WriteHexByteNoSafe(value & 0xFF);
 	}
-    void CStringBuilder::WriteHexInt4(const unsigned int& value)
-    {
-        AddSize(8);
-        WriteHexByteNoSafe((value >> 24) & 0xFF);
-        WriteHexByteNoSafe((value >> 16) & 0xFF);
-        WriteHexByteNoSafe((value >> 8) & 0xFF);
-        WriteHexByteNoSafe(value & 0xFF);
-    }
+	void CStringBuilder::WriteHexInt4(const unsigned int& value)
+	{
+		AddSize(8);
+		WriteHexByteNoSafe((value >> 24) & 0xFF);
+		WriteHexByteNoSafe((value >> 16) & 0xFF);
+		WriteHexByteNoSafe((value >> 8) & 0xFF);
+		WriteHexByteNoSafe(value & 0xFF);
+	}
 	void CStringBuilder::WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b)
 	{
 		AddSize(7);
@@ -874,16 +874,16 @@ namespace NSStringUtils
 		AddSize(7);
 		*m_pDataCur++ = (wchar_t)'#';
 		++m_lSizeCur;
-					WriteHexByteNoSafe(value & 0xFF);
-					WriteHexByteNoSafe((value >> 8) & 0xFF);
-					WriteHexByteNoSafe((value >> 16) & 0xFF);
+		WriteHexByteNoSafe(value & 0xFF);
+		WriteHexByteNoSafe((value >> 8) & 0xFF);
+		WriteHexByteNoSafe((value >> 16) & 0xFF);
 	}
 
-    void CStringBuilder::Skip(int nSkip)
-    {
-        m_pDataCur += nSkip;
-        m_lSizeCur += nSkip;
-    }
+	void CStringBuilder::Skip(int nSkip)
+	{
+		m_pDataCur += nSkip;
+		m_lSizeCur += nSkip;
+	}
 	void CStringBuilder::StartNode(const std::wstring& name)
 	{
 		WriteString(g_bstr_nodeopen);
@@ -1121,22 +1121,22 @@ namespace NSStringUtils
 		return 0;
 	}
 
-    void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
-    {
-        size_t posn = 0;
-        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
-        {
-            text.replace(posn, replaceFrom.length(), replaceTo);
-            posn += replaceTo.length();
-        }
-    }
-    void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
-    {
-        size_t posn = 0;
-        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
-        {
-            text.replace(posn, replaceFrom.length(), replaceTo);
-            posn += replaceTo.length();
-        }
-    }
+	void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+	{
+		size_t posn = 0;
+		while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+		{
+			text.replace(posn, replaceFrom.length(), replaceTo);
+			posn += replaceTo.length();
+		}
+	}
+	void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+	{
+		size_t posn = 0;
+		while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+		{
+			text.replace(posn, replaceFrom.length(), replaceTo);
+			posn += replaceTo.length();
+		}
+	}
 }

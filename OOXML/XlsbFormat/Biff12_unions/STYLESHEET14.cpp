@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,9 +67,11 @@ namespace XLSB
 
         if (proc.optional<BeginStyleSheetExt14>())
         {
-            m_BrtBeginStyleSheetExt14 = elements_.back();
+            m_bBrtBeginStyleSheetExt14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginStyleSheetExt14 = false;
 
         if (proc.optional<SLICERSTYLES>())
         {
@@ -79,19 +81,42 @@ namespace XLSB
 
         if (proc.optional<EndStyleSheetExt14>())
         {
-            m_BrtEndStyleSheetExt14 = elements_.back();
+            m_bBrtEndStyleSheetExt14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndStyleSheetExt14 = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
 
-        return m_BrtFRTBegin && m_BrtBeginStyleSheetExt14 && m_BrtEndStyleSheetExt14 && m_BrtFRTEnd;
+        return m_BrtFRTBegin && m_bBrtBeginStyleSheetExt14 && m_bBrtEndStyleSheetExt14 && m_bBrtFRTEnd;
     }
+
+	const bool STYLESHEET14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<BeginStyleSheetExt14>();
+
+		if (m_SLICERSTYLES != nullptr)
+			proc.mandatory(*m_SLICERSTYLES);
+
+		proc.mandatory<EndStyleSheetExt14>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

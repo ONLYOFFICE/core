@@ -65,6 +65,7 @@
 #include "Color.h"
 #include "Matrix.h"
 #include "GraphicsPath.h"
+#include "AlphaMask.h"
 #include "Clip.h"
 #include "Brush.h"
 #include "Image.h"
@@ -127,10 +128,10 @@ namespace Aggplus
 typedef agg::rendering_buffer rendering_buffer_type;
 typedef agg::pixfmt_bgra32 pixformat_type;
 
-typedef agg::blender_rgba< agg::svg::color_type, agg::svg::component_order >						blender_type;
-typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >				blender_type_comp;
-typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >	pixfmt_type;
-typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>					pixfmt_type_comp;
+typedef agg::blender_rgba_unpre< agg::svg::color_type, agg::svg::component_order >                 blender_type;
+typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >               blender_type_comp;
+typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >  pixfmt_type;
+typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>                   pixfmt_type_comp;
 
 typedef agg::renderer_base<pixfmt_type> base_renderer_type;
 typedef agg::renderer_base<pixfmt_type_comp> comp_renderer_type;
@@ -278,8 +279,11 @@ protected:
 
 	CClipMulti  m_oClip;
 
-	agg::svg::frame_buffer_rgba       m_frame_buffer;
-	agg::svg::rasterizer              m_rasterizer;
+	CAlphaMask* m_pAlphaMask;
+
+	agg::svg::frame_buffer_rgba<blender_type>       m_frame_buffer;
+	agg::svg::rasterizer                            m_rasterizer;
+
 	
 #ifdef _WINDOW_GRAPHIS_USE_
 	// для отрисовки картинок - используем Gdiplus
@@ -292,8 +296,6 @@ protected:
     CDIB*					m_pDib;
 
 public:
-	agg::svg::frame_buffer_rgba&   get_frame_buffer();
-	agg::svg::rasterizer&          get_rasterizer();
 
 	bool	m_bIntegerGrid;
 	double	m_dGlobalAlpha;
@@ -394,6 +396,12 @@ public:
 	INT DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	INT DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 
+	//Работа с альфа-маской
+	Status SetAlphaMask(CAlphaMask* pAlphaMask);
+	Status CreateAlphaMask();
+	Status ResetAlphaMask();
+	Status StartApplyingAlphaMask();
+
 	void CalculateFullTransform();
 	bool IsClip();
 
@@ -411,6 +419,9 @@ protected:
 	void render_scanlines(Rasterizer& ras, Renderer& ren);
     template<class Renderer>
     void render_scanlines_alpha(Renderer& ren, BYTE Alpha);
+
+	agg::rendering_buffer& GetRenderingBuffer();
+	base_renderer_type&    GetRendererBase();
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);

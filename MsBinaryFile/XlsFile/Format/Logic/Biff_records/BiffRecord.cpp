@@ -33,7 +33,7 @@
 #include "BiffRecord.h"
 #include "../../Binary/CFStream.h"
 #include "../../Binary/CFStreamCacheReader.h"
-
+#include "../../Binary/CFStreamCacheWriter.h"
 
 namespace XLS
 {
@@ -84,7 +84,27 @@ const bool BiffRecord::read(StreamCacheReaderPtr reader, BaseObject* parent, con
 
 	return true; // Record reading OK
 }
+const bool BiffRecord::write(StreamCacheWriterPtr writer, BaseObject* parent)
+{
+	parent_ = parent;
 
+	if (!writer)
+		return false;
+
+	// Create and write the required record
+	CFRecordPtr record = writer->getNextRecord(getTypeId());
+	// Write fields data
+	writeFields(*record); // defined in derived classes
+
+	size_t dataSize = record->getDataSize();
+	size_t rdPtr = record->getRdPtr();
+	size_t typeId = getTypeId();
+
+	writer->storeNextRecord(record);
+	//parent->add_child(this->clone());
+
+	return true; // Record reading OK
+}
 void BiffRecord::readFollowingContinue(StreamCacheReaderPtr reader)
 {
 }

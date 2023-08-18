@@ -384,8 +384,10 @@ void Compute_GradientFill(draw_gradient *image_style, oox::oox_gradient_fill_ptr
 }
 
 
-void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx, bool reset_fill)
+void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, odf_document* document, oox::_oox_fill & fill, bool txbx, bool reset_fill)
 {
+	styles_lite_container& styles = document->odf_context().drawStyles();
+
 	if (fill.type < 1 && reset_fill) fill.type = 0; 
 
 	if (props.draw_opacity_) 
@@ -433,14 +435,27 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 			{			
 				fill.bitmap = oox::oox_bitmap_fill::create();
 				fill.bitmap->bTile = true;
-				fill.bitmap->xlink_href_ = fill_image->xlink_attlist_.href_.get_value_or(L"");
+				
+				std::wstring href = fill_image->xlink_attlist_.href_.get_value_or(L"");
+				if ( href.empty() )
+				{
+					office_binary_data* binary_data = dynamic_cast<office_binary_data*>(fill_image->office_binary_data_.get());
+					if (binary_data)
+					{
+						fill.bitmap->xlink_href_ = binary_data->write_to(document->get_folder());
+					}
+				}
+				else
+				{
+					fill.bitmap->xlink_href_ = href;
+				}
 			}
 		}
 	}
 
 	if (style_image)
 	{
-		if (style_background_image * image = dynamic_cast<style_background_image *>(style_image.get()))
+		if (style_background_image * image = dynamic_cast<style_background_image*>(style_image.get()))
 		{
 			if ((image) && (image->xlink_attlist_))
 			{

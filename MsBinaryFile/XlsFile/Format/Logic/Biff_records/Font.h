@@ -33,7 +33,7 @@
 
 #include "BiffRecord.h"
 #include "../Biff_structures/BorderFillInfo.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_records/Color.h"
+#include "../Biff_structures/BIFF12/Color.h"
 
 namespace XLS
 {
@@ -48,7 +48,8 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 	void set(FontInfo & info);
 
 	static const ElementType	type = typeFont;

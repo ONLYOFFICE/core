@@ -8,12 +8,12 @@ CONFIG += graphics_dynamic_library
 DEFINES += _QT
 graphics_dynamic_library {
     CONFIG += shared
-    CONFIG += plugin
+	CONFIG += plugin
 
     DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
 } else {
     DEFINES += GRAPHICS_NO_USE_DYNAMIC_LIBRARY
-    CONFIG += static
+	CONFIG += static
 }
 
 CORE_ROOT_DIR = $$PWD/../../..
@@ -36,6 +36,7 @@ INCLUDEPATH += \
 
 # matrix
 HEADERS += \
+    $$GRAPHICS_AGG_PATH/include/test_grads/custom_gradients.h \
     ./../Matrix_private.h \
 	./../Matrix.h
 
@@ -52,6 +53,15 @@ HEADERS += \
 
 SOURCES += \
     ./../GraphicsPath.cpp
+
+# alpha mask
+HEADERS += \
+    ./../AlphaMask_private.h \
+	./../AlphaMask.h
+
+SOURCES += \
+    ./../AlphaMask_private.cpp \
+	./../AlphaMask.cpp
 
 SOURCES += \
     $$GRAPHICS_AGG_PATH/src/agg_arc.cpp \
@@ -101,11 +111,12 @@ HEADERS += \
 	./../MetafileToGraphicsRenderer.h \
 	./../FormField.h \
 	./../structures.h \
+	./../shading_info.h \
 	./../Graphics.h \
 	./../GraphicsRenderer.h \
 	\
 	./Graphics.h \
-	./Image.h \
+	./Image.h
 
 SOURCES += \
     ./../ArrowHead.cpp \

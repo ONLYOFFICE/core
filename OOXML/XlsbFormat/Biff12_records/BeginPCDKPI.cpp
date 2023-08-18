@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -92,8 +92,50 @@ namespace XLSB
 
         if(fLoadCurTimeMbr)
             record >> stCurTimeMbr;
-
     }
+
+	void BeginPCDKPI::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fLoadDispFld)
+		SETBIT(flags, 1, fLoadMeasGrp)
+		SETBIT(flags, 2, fLoadParent)
+		SETBIT(flags, 3, fLoadGoal)
+		SETBIT(flags, 4, fLoadStatus)
+		SETBIT(flags, 5, fLoadTrend)
+		SETBIT(flags, 6, fLoadWeight)
+		SETBIT(flags, 7, fLoadCurTimeMbr)
+
+		record << flags;
+		record << stUnique << stCaption;
+
+		if (fLoadDispFld)
+			record << stDispFolder;
+
+		if (fLoadMeasGrp)
+			record << stMeasGrp;
+
+		if (fLoadParent)
+			record << stParent;
+
+		record << stValue;
+
+		if (fLoadGoal)
+			record << stGoal;
+
+		if (fLoadStatus)
+			record << stStatus;
+
+		if (fLoadTrend)
+			record << stTrend;
+
+		if (fLoadWeight)
+			record << stWeight;
+
+		if (fLoadCurTimeMbr)
+			record << stCurTimeMbr;
+	}
 
 } // namespace XLSB
 

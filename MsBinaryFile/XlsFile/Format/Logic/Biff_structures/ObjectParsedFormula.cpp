@@ -40,6 +40,11 @@ ObjectParsedFormula::ObjectParsedFormula() : ParsedFormula(CellRef())
 {
 }
 
+ObjectParsedFormula& ObjectParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr ObjectParsedFormula::clone()
 {
@@ -51,7 +56,7 @@ void ObjectParsedFormula::load(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce;
+        _UINT16 cce;
         record >> cce;
         cce = GETBITS(cce, 0, 14);
 
@@ -71,10 +76,58 @@ void ObjectParsedFormula::load(CFRecord& record)
         rgce.load(record, cce);
 
         record >> cb;
+
+		record.skipNunBytes(cb);
     }
 }
 
+void ObjectParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 size;
 
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+	}
+	else
+	{
+		_UINT32 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		saving(rgcb);
+	}
+	
+}
 
 } // namespace XLS
 

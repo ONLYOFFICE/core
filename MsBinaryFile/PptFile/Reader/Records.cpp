@@ -165,7 +165,7 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, const XLS::CFStr
             break;
         }
 
-        IRecord* pRecord = CreateByType(oRec);
+        IRecord* pRecord = CreateByType(oRec, m_pCommonInfo);
         pRecord->ReadFromStream(oRec, pStream);
 
         m_arRecords.push_back(pRecord);
@@ -199,7 +199,7 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pS
             break;
         }
 
-        IRecord* pRecord = CreateByType(oRec);
+        IRecord* pRecord = CreateByType(oRec, m_pCommonInfo);
         pRecord->ReadFromStream(oRec, pStream);
 
         m_arRecords.push_back(pRecord);
@@ -220,8 +220,9 @@ void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pS
 std::string GetRecordName(PPT::RecordType dwType)
 {
     std::string name;
-    switch (dwType) {
-    RECORDNAME_BY_TYPE(RT_Document, "DocumentContainer")
+    switch (dwType) 
+    {
+            RECORDNAME_BY_TYPE(RT_Document, "DocumentContainer")
             RECORDNAME_BY_TYPE(RT_DocumentAtom, "DocumentAtom")
             RECORDNAME_BY_TYPE(RT_EndDocumentAtom, "EndDocumentAtom")
             RECORDNAME_BY_TYPE(RT_Slide, "SlideContainer")
@@ -492,9 +493,8 @@ std::string GetRecordName(PPT::RecordType dwType)
 }
 
 
-IRecord* CreateByType(SRecordHeader oHeader)
+IRecord* CreateByType(SRecordHeader oHeader, _commonInfo* commonInfo)
 {
-
     IRecord* pRecord = NULL;
     switch (oHeader.RecType)
     {
@@ -720,6 +720,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     else
     {
     }
+    pRecord->m_pCommonInfo = commonInfo;
     return pRecord;
 }
 

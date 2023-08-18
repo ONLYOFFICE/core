@@ -295,6 +295,15 @@ namespace NSShapeImageGen
 
 				result = true;
 			}
+			else if (checker.eFileType == _CXIMAGE_FORMAT_SVG)
+			{
+				oInfo.m_eType = itSVG;
+					
+				OOX::CPath pathSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
+				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
+
+				result = true;
+			}
 			else
 			{
 				CBgraFrame oBgraFrame;

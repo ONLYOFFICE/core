@@ -60,11 +60,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Ascensio System SIA 2022"
+            VALUE "CompanyName", "Ascensio System SIA 2023"
             VALUE "FileDescription", "ONLYOFFICE docbuilder ActiveX DLL"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "docbuilder.com.dll"
-            VALUE "LegalCopyright", "Copyright (C) Ascensio System SIA 2022. All rights reserved."
+            VALUE "LegalCopyright", "Copyright (C) Ascensio System SIA 2023. All rights reserved."
             VALUE "OriginalFilename", "docbuilder.com.dll"
             VALUE "ProductName", "docbuilder.com"
             VALUE "ProductVersion", "1.0.0.1"

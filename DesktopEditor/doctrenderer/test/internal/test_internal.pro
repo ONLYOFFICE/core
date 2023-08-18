@@ -13,11 +13,14 @@ CORE_ROOT_DIR = $$PWD/../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base_embed.pri)
 
 ############### destination path ###############
 DESTDIR = $$PWD/build
 ################################################
 INCLUDEPATH += ../..
+
+DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
 
 ADD_DEPENDENCY(doctrenderer)
 
@@ -26,6 +29,10 @@ core_linux {
     LIBS += -ldl
 }
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    Embed.cpp
 
-DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
+HEADERS += \
+    Embed.h
+
+ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(Embed.h)

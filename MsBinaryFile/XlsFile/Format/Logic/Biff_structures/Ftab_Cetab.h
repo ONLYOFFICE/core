@@ -40,7 +40,7 @@ namespace XLS
 {
 
 #pragma pack(1)
-class Ftab_Cetab : public BiffStructure_NoVtbl
+class Ftab_Cetab
 {
 public:
 	Ftab_Cetab();

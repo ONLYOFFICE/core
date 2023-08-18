@@ -267,7 +267,7 @@ namespace PdfReader
 
 		//if ( _T("PDFFontList") == oMainNode.getName() )
 		//{
-		//    XmlUtils::CXmlNodes oFonts;
+		//    std::vector<XmlUtils::CXmlNode> oFonts;
 		//    oMainNode.GetNodes( _T("Font"), oFonts );
 		//    for ( int nIndex = 0; nIndex < oFonts.GetCount(); nIndex++ )
 		//    {
@@ -302,7 +302,7 @@ namespace PdfReader
 		//                if ( !pCodeToGid )
 		//                    return;
 
-		//                XmlUtils::CXmlNodes oArray;
+		//                std::vector<XmlUtils::CXmlNode> oArray;
 		//                oNode.GetNodes( _T("Entry"), oArray );
 		//                for ( int nCurIndex = 0; nCurIndex < oArray.GetCount() && nCurIndex < nLength; nCurIndex++ )
 		//                {
@@ -324,7 +324,7 @@ namespace PdfReader
 		//                if ( !pCodeToUnicode )
 		//                    return;
 
-		//                XmlUtils::CXmlNodes oArray;
+		//                std::vector<XmlUtils::CXmlNode> oArray;
 		//                oNode.GetNodes( _T("Entry"), oArray );
 		//                for ( int nCurIndex = 0; nCurIndex < oArray.GetCount() && nCurIndex < nLength; nCurIndex++ )
 		//                {

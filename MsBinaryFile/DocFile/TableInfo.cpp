@@ -39,7 +39,7 @@ namespace DocFileFormat
 	{
 		if ( papx != NULL )
 		{
-			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+			for ( std::vector<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 			{
 				switch(iter->OpCode)
 				{

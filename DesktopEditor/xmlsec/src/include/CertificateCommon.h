@@ -42,6 +42,8 @@ namespace NSCertificate
 	OPENSSL_DECL std::wstring GetSignatureMethod(const int& nAlg);
 
 	OPENSSL_DECL ICertificate* CreateInstance(const int& type = CERTIFICATE_ENGINE_TYPE_DEFAULT);
+
+	OPENSSL_DECL ICertificate* GenerateByAlg(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>());
 };
 
 #endif // _XML_CERTIFICATE_COMMON_H_

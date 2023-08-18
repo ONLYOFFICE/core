@@ -67,6 +67,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionMethods(CExternalSheetNames)
             WritingElement_XlsbConstructors(CExternalSheetNames)
+			
 			CExternalSheetNames();
 			virtual ~CExternalSheetNames();
 
@@ -79,7 +80,33 @@ namespace OOX
 			void fromBin(XLS::BaseObjectPtr& obj);			
 			virtual EElementType getType() const;
 		};
+		class CAlternateUrls : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CAlternateUrls)
+			WritingElement_XlsbConstructors(CAlternateUrls)
 
+			CAlternateUrls();
+			virtual ~CAlternateUrls();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BaseObjectPtr& obj) {}
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual std::wstring toXML() const;
+
+			virtual EElementType getType() const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CRelationshipId> & rid);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			nullable<SimpleTypes::CRelationshipId> m_oAbsoluteUrlRid;
+			nullable<SimpleTypes::CRelationshipId> m_oRelativeUrlRid;
+			
+			nullable_string m_oDriveId;
+			nullable_string m_oItemId;
+		};
 		class CExternalDefinedName : public WritingElement
 		{
 		public:
@@ -231,9 +258,10 @@ namespace OOX
 
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
 
-			nullable<CExternalSheetNames > m_oSheetNames;
-			nullable<CExternalDefinedNames > m_oDefinedNames;
-			nullable<CExternalSheetDataSet > m_oSheetDataSet;
+			nullable<CExternalSheetNames> m_oSheetNames;
+			nullable<CExternalDefinedNames> m_oDefinedNames;
+			nullable<CExternalSheetDataSet> m_oSheetDataSet;
+			nullable<CAlternateUrls> m_oAlternateUrls;
 		};
 
 		class CDdeValue : public WritingElementWithChilds<CText>

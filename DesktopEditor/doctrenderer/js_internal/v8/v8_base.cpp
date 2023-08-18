@@ -179,17 +179,15 @@ namespace NSJSBase
 		if (bIsInitialize)
 			Initialize();
 	}
+
 	CJSContext::~CJSContext()
 	{
-		if (m_internal->m_contextPersistent.IsEmpty())
-			return;
-
-		if (m_internal->m_isolate)
+		if (m_internal->m_isolate && !m_internal->m_contextPersistent.IsEmpty())
 			Dispose();
 		RELEASEOBJECT(m_internal);
 	}
 
-	CJSTryCatch* CJSContext::GetExceptions()
+	JSSmart<CJSTryCatch> CJSContext::GetExceptions()
 	{
 		return new CV8TryCatch();
 	}
@@ -198,10 +196,19 @@ namespace NSJSBase
 	{
 		if (m_internal->m_isolate == NULL)
 		{
+			// get new isolate
 			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
 			m_internal->m_isolate = isolate;
+			// get new context
 			v8::Isolate::Scope iscope(isolate);
 			v8::HandleScope scope(isolate);
+			m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
+			// create temporary local handle to context
+			m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
+			// insert CreateEmbedObject() function to global object of this context
+			m_internal->InsertToGlobal("CreateEmbedObject", CreateEmbedNativeObject);
+			// clear temporary local handle
+			m_internal->m_context.Clear();
 		}
 	}
 	void CJSContext::Dispose()
@@ -212,31 +219,11 @@ namespace NSJSBase
 #endif
 
 		m_internal->m_contextPersistent.Reset();
-
-		unsigned int nEmbedDataCount = m_internal->m_isolate->GetNumberOfDataSlots();
-		if (nEmbedDataCount > 0)
-		{
-			void* pSingletonData = m_internal->m_isolate->GetData(0);
-			if (NULL != pSingletonData)
-			{
-				CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
-				delete pData;
-			}
-		}
-
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}
 
-	void CJSContext::CreateContext()
-	{
-		v8::Isolate* isolate = m_internal->m_isolate;
-		v8::Isolate::Scope iscope(isolate);
-		v8::HandleScope scope(isolate);
-		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
-	}
-
-	CJSObject* CJSContext::GetGlobal()
+	JSSmart<CJSObject> CJSContext::GetGlobal()
 	{
 		CJSObjectV8* ret = new CJSObjectV8();
 		ret->value = m_internal->m_context->Global();
@@ -410,14 +397,13 @@ namespace NSJSBase
 
 	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
-		CJSContext* ret = new CJSContext();
+		CJSContext* ret = new CJSContext(false);
 		ret->m_internal->m_isolate = CV8Worker::GetCurrent();
 		ret->m_internal->m_context = ret->m_internal->m_isolate->GetCurrentContext();
-		// global???
 		return ret;
 	}
 
-	CJSValue* CJSContext::JSON_Parse(const char *sTmp)
+	JSSmart<CJSValue> CJSContext::JSON_Parse(const char *sTmp)
 	{
 		CJSValueV8* _value = new CJSValueV8();
 #ifndef V8_OS_XP
@@ -457,5 +443,116 @@ namespace NSJSBase
 	void NSAllocator::Free(unsigned char* data, const size_t& size)
 	{
 		CV8Worker::getInitializer().getAllocator()->Free(data, size);
+	}
+}
+
+// embed
+namespace NSJSBase
+{
+	class CJSFunctionArgumentsV8 : public CJSFunctionArguments
+	{
+		const v8::FunctionCallbackInfo<v8::Value>* m_args;
+		int m_count;
+		// TODO: do we actually need it?
+		int m_skip_count;
+	public:
+		CJSFunctionArgumentsV8(const v8::FunctionCallbackInfo<v8::Value>* args, const bool skip_count = 1)
+		{
+			m_args = args;
+			m_skip_count = skip_count;
+			m_count = m_args->Length() - m_skip_count;
+		}
+	public:
+		virtual int GetCount() override
+		{
+			return m_count;
+		}
+		virtual JSSmart<CJSValue> Get(const int& index) override
+		{
+			if (index < m_count)
+				return js_value(m_args->operator[](index + m_skip_count));
+			return js_value(v8::Undefined(m_args->GetIsolate()));
+		}
+	};
+
+	// this function is called when method from embedded object is called
+	void _Call(const v8::FunctionCallbackInfo<v8::Value>& args)
+	{
+		CJSEmbedObject* _this = (CJSEmbedObject*)unwrap_native(args.Holder());
+		CJSFunctionArgumentsV8 _args(&args, 0);
+		JSSmart<CJSValue> funcIndex = js_value(args.Data());
+		CJSEmbedObjectAdapterV8* _adapter = static_cast<CJSEmbedObjectAdapterV8*>(_this->getAdapter());
+		JSSmart<CJSValue> ret = _adapter->Call(funcIndex->toInt32(), &_args);
+		js_return(args, ret);
+	}
+
+	v8::Handle<v8::ObjectTemplate> CreateEmbedObjectTemplate(v8::Isolate* isolate, CJSEmbedObject* pNativeObj)
+	{
+		v8::EscapableHandleScope handle_scope(isolate);
+		CJSEmbedObjectAdapterV8* pAdapter = static_cast<CJSEmbedObjectAdapterV8*>(pNativeObj->getAdapter());
+
+		v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
+		result->SetInternalFieldCount(1);
+
+		pAdapter->initFunctions(pNativeObj);
+		std::vector<std::string> arNames = pAdapter->getMethodNames();
+		for (int i = 0, len = arNames.size(); i < len; ++i)
+		{
+			// associate all methods with corresponding Call() index
+			result->Set(CreateV8String(isolate, arNames[i].c_str()), v8::FunctionTemplate::New(isolate, _Call, v8::Integer::New(isolate, i)));
+		}
+
+		return handle_scope.Escape(result);
+	}
+
+	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
+	{
+		v8::Isolate* isolate = args.GetIsolate();
+		v8::HandleScope scope(isolate);
+
+		if (args.Length() != 1)
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+
+		std::string sName;
+		v8::String::Utf8Value data(V8IsolateFirstArg args[0]);
+		if (NULL != *data)
+			sName = std::string((char*)*data, data.length());
+
+		CEmbedObjectRegistrator& oRegistrator = CEmbedObjectRegistrator::getInstance();
+		CEmbedObjectRegistrator::store_t::iterator itFound = oRegistrator.m_infos.find(sName);
+		if (itFound == oRegistrator.m_infos.end())
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+
+		CEmbedObjectRegistrator::CEmdedClassInfo& oInfo = itFound->second;
+
+		if (oInfo.m_bIsCreationAllowed == false)
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+
+		CJSEmbedObject* pNativeObj = oInfo.m_creator();
+		v8::Local<v8::ObjectTemplate> oCurTemplate;
+		CJSEmbedObjectAdapterV8Template* pTemplateAdapter = dynamic_cast<CJSEmbedObjectAdapterV8Template*>(pNativeObj->getAdapter());
+		if (pTemplateAdapter)
+		{
+			oCurTemplate = pTemplateAdapter->getTemplate(isolate);
+		}
+		else
+		{
+			oCurTemplate = CreateEmbedObjectTemplate(isolate, pNativeObj);
+		}
+		v8::MaybeLocal<v8::Object> oTemplateMayBe = oCurTemplate->NewInstance(isolate->GetCurrentContext());
+		v8::Local<v8::Object> obj = oTemplateMayBe.ToLocalChecked();
+		obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pNativeObj));
+
+		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
+		args.GetReturnValue().Set(obj);
 	}
 }

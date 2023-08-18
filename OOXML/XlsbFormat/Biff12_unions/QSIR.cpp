@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -91,14 +91,35 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndQSIR>())
-        {
-            m_BrtEndQSIR = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndQSIR>())
+		{
+			m_bBrtEndQSIR = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndQSIR = false;
 
-        return m_BrtBeginQSIR && m_QSIFS && m_BrtEndQSIR;
+        return m_BrtBeginQSIR && m_QSIFS && m_bBrtEndQSIR;
     }
+
+	const bool QSIR::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginQSIR != nullptr)
+			proc.mandatory(*m_BrtBeginQSIR);
+
+		if (m_QSIFS != nullptr)
+			proc.mandatory(*m_QSIFS);
+
+		if (m_DELETEDNAMES != nullptr)
+			proc.mandatory(*m_DELETEDNAMES);
+
+		if (m_SORTSTATE != nullptr)
+			proc.mandatory(*m_SORTSTATE);
+
+		proc.mandatory<EndQSIR>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,10 +59,19 @@ namespace XLSB
         {
             record >> value;
             rgifdb.push_back(value);
-        }
-
-
+        }		
     }
+
+	void BeginPCDHFieldsUsage::writeFields(XLS::CFRecord& record)
+	{
+		cItems = rgifdb.size();
+		record << cItems;
+
+		for (auto& item : rgifdb)
+		{
+			record << item;
+		}
+	}
 
 } // namespace XLSB
 

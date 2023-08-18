@@ -31,7 +31,7 @@
  */
 
 #include "BiffString.h"
-#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../Common/Utils/OptPtr.h"
 
 namespace XLS
 {
@@ -205,6 +205,35 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 			str_ = STR::toStdWString(inp_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
 		}
 		record.skipNunBytes(raw_length);
+	}
+}
+
+void BiffString::save(CFRecord& record, const size_t cch1, const bool is_wide1)
+{
+	bool is_wide = is_wide1;
+
+	size_t cch = cch1;
+	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	{
+		cch = cch_.get();
+	}
+
+	if (is_wide)
+	{
+        unsigned char *out_str = nullptr;
+        int out_size = 0;
+
+#if defined(_WIN32) || defined(_WIN64)
+        record.appendRawDataToStatic(str_.c_str(), str_.size());
+#else            
+        convertWStringToUtf16(str_, out_str, out_size);
+        record.appendRawDataToStatic(out_str, out_size);
+#endif
+
+	}
+	else
+	{
+		//stub
 	}
 }
 

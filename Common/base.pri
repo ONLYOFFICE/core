@@ -544,8 +544,6 @@ defineTest(ADD_DEPENDENCY) {
         
 		isEqual(lib, videoplayer) {
 			libvlc {
-				LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/libvlc/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
-				core_linux: LIBS += -lvlc -lvlccore
 				CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
 			}
 		}

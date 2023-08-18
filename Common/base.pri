@@ -542,15 +542,16 @@ defineTest(ADD_DEPENDENCY) {
     for(lib, libs) {
         CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
         
-        isEqual(lib, videoplayer) {
-		    libvlc {
-			    LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/libvlc/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
-                CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
-            }
-        }
+		isEqual(lib, videoplayer) {
+			libvlc {
+				LIBS += -L$$CORE_ROOT_DIR/Common/3dParty/libvlc/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+				core_linux: LIBS += -lvlc -lvlccore
+				CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
+			}
+		}
 
         build_xp {
-		    isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, qtascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp

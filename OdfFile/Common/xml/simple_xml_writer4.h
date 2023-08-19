@@ -152,8 +152,7 @@ namespace cpdoccore
                 res.reserve(buffer_size);
                 for (const auto& c : All_Buffer)
                 {
-                    std::wstring str(c->Get_Buffer(), c->Get_Buf_Size());
-                    std::copy(str.begin(), str.end(), std::back_inserter(res));
+                    res.append(c->Get_Buffer());
                 }
                 return res;
             }

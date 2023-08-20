@@ -30,13 +30,29 @@
  *
  */
 
-#include "gtest/gtest.h"
+#include "common.h"
 
-#include "entrance.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "Reader/Converter/pptx_package.h"
 
-int main(int argc, char* argv[])
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> ReadOdfDocument(const std::wstring& from, const std::wstring& temp, const std::wstring& tempUnpackedOdf)
 {
-	::testing::InitGoogleTest(&argc, argv);
-	::testing::AddGlobalTestEnvironment(new EntranceTestEnvironment);
-	return RUN_ALL_TESTS();
+	COfficeUtils oCOfficeUtils(NULL);
+	if (S_OK == oCOfficeUtils.ExtractToDirectory(from, tempUnpackedOdf, NULL, 0))
+		return boost::make_shared<cpdoccore::odf_reader::odf_document>(tempUnpackedOdf, temp, L"");
+	else
+		return nullptr;
+}
+
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> Convert(boost::shared_ptr<cpdoccore::odf_reader::odf_document> inputOdf)
+{
+	cpdoccore::oox::package::pptx_document outputPptx;
+	boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> conversionContext = boost::make_shared<cpdoccore::oox::pptx_conversion_context>(inputOdf.get());
+
+	conversionContext->set_output_document(&outputPptx);
+	conversionContext->set_font_directory(L"");
+
+	inputOdf->pptx_convert(*conversionContext);
+
+	return conversionContext;
 }

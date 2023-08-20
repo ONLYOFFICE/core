@@ -30,13 +30,14 @@
  *
  */
 
-#include "gtest/gtest.h"
+#pragma once
 
-#include "entrance.h"
+#include <boost/shared_ptr.hpp>
 
-int main(int argc, char* argv[])
-{
-	::testing::InitGoogleTest(&argc, argv);
-	::testing::AddGlobalTestEnvironment(new EntranceTestEnvironment);
-	return RUN_ALL_TESTS();
-}
+#include "Reader/Converter/pptx_conversion_context.h"
+#include "Reader/Format/odf_document.h"
+
+#define CH_DIR(x) FILE_SEPARATOR_STR + _T(x)
+
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> ReadOdfDocument(const std::wstring& from, const std::wstring& temp, const std::wstring& tempUnpackedOdf);
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> Convert(boost::shared_ptr<cpdoccore::odf_reader::odf_document> inputOdf);

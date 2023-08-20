@@ -36,8 +36,14 @@ core_linux {
     LIBS += -ldl
 }
 
+HEADERS += \
+    common.h\
+    entrance.h
+
 SOURCES += \
     test.cpp\
+    common.cpp\
+    entrance.cpp\
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp
 
 SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc

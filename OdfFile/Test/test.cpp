@@ -1,3 +1,35 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+
 #include "gtest/gtest.h"
 
 #include <boost/shared_ptr.hpp>
@@ -98,7 +130,7 @@ boost::shared_ptr<cpdoccore::oox::package::pptx_document> TestEnvironment::mOutp
 boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> TestEnvironment::mConverionContext;
 boost::shared_ptr<cpdoccore::odf_reader::odf_document> TestEnvironment::mInputOdf;
 
-class ODP2OOX_EnterExitAnimationTest : public testing::Test
+class ODP2OOX_EnteanceAnimationTest : public testing::Test
 {
 public:
 	void SetUp() override
@@ -158,89 +190,7 @@ public:
 
 };
 
-void CompareAnimSet(const cpdoccore::oox::pptx_animation_context::Impl::_set& left, const cpdoccore::oox::pptx_animation_context::Impl::_set& right)
-{
-	EXPECT_EQ(left.Direction	.has_value()	, right.Direction		.has_value());
-	EXPECT_EQ(left.Restart		.has_value()	, right.Restart			.has_value());
-	EXPECT_EQ(left.Duration		.has_value()	, right.Duration		.has_value());
-	EXPECT_EQ(left.Delay		.has_value()	, right.Delay			.has_value());
-	EXPECT_EQ(left.End			.has_value()	, right.End				.has_value());
-	EXPECT_EQ(left.Fill			.has_value()	, right.Fill			.has_value());
-	EXPECT_EQ(left.ShapeID		.has_value()	, right.ShapeID			.has_value());
-	EXPECT_EQ(left.AttributeName.has_value()	, right.AttributeName	.has_value());
-	EXPECT_EQ(left.ToValue		.has_value()	, right.ToValue			.has_value());
-
-	const std::wstring emptyStr = std::wstring();
-	const int emptyInt			= 0;
-
-	EXPECT_EQ(left.Direction	.value_or(emptyStr), right.Direction	.value_or(emptyStr));
-	EXPECT_EQ(left.Restart		.value_or(emptyStr), right.Restart		.value_or(emptyStr));
-	EXPECT_EQ(left.Duration		.value_or(emptyInt), right.Duration		.value_or(emptyInt));
-	EXPECT_EQ(left.Delay		.value_or(emptyStr), right.Delay		.value_or(emptyStr));
-	EXPECT_EQ(left.End			.value_or(emptyStr), right.End			.value_or(emptyStr));
-	EXPECT_EQ(left.Fill			.value_or(emptyStr), right.Fill			.value_or(emptyStr));
-	EXPECT_EQ(left.ShapeID		.value_or(emptyInt), right.ShapeID		.value_or(emptyInt));
-	EXPECT_EQ(left.AttributeName.value_or(emptyStr), right.AttributeName.value_or(emptyStr));
-	EXPECT_EQ(left.ToValue		.value_or(emptyStr), right.ToValue		.value_or(emptyStr));
-}
-
-void CompareAnimAnimate(const cpdoccore::oox::pptx_animation_context::Impl::_anim& left, const cpdoccore::oox::pptx_animation_context::Impl::_anim& right)
-{
-	EXPECT_EQ(left.CalcMode		.has_value(), right.CalcMode		.has_value());
-	EXPECT_EQ(left.ValueType	.has_value(), right.ValueType		.has_value());
-	EXPECT_EQ(left.ShapeID		.has_value(), right.ShapeID			.has_value());
-	EXPECT_EQ(left.Duration		.has_value(), right.Duration		.has_value());
-	EXPECT_EQ(left.AttributeName.has_value(), right.AttributeName	.has_value());
-	EXPECT_EQ(left.From			.has_value(), right.From			.has_value());
-	EXPECT_EQ(left.To			.has_value(), right.To				.has_value());
-	EXPECT_EQ(left.By			.has_value(), right.By				.has_value());
-	EXPECT_EQ(left.Additive		.has_value(), right.Additive		.has_value());
-	EXPECT_EQ(left.AutoReverse	.has_value(), right.AutoReverse		.has_value());
-	EXPECT_EQ(left.Delay		.has_value(), right.Delay			.has_value());
-	EXPECT_EQ(left.KeypointArray.has_value(), right.KeypointArray	.has_value());
-
-	const std::wstring emptyStr = std::wstring();
-	const int emptyInt			= 0;
-
-	EXPECT_EQ(left.CalcMode		.value_or(emptyStr)	, right.CalcMode		.value_or(emptyStr));
-	EXPECT_EQ(left.ValueType	.value_or(emptyStr)	, right.ValueType		.value_or(emptyStr));
-	EXPECT_EQ(left.ShapeID		.value_or(emptyInt)	, right.ShapeID			.value_or(emptyInt));
-	EXPECT_EQ(left.Duration		.value_or(emptyInt)	, right.Duration		.value_or(emptyInt));
-	EXPECT_EQ(left.AttributeName.value_or(emptyStr)	, right.AttributeName	.value_or(emptyStr));
-	EXPECT_EQ(left.From			.value_or(emptyStr)	, right.From			.value_or(emptyStr));
-	EXPECT_EQ(left.To			.value_or(emptyStr)	, right.To				.value_or(emptyStr));
-	EXPECT_EQ(left.By			.value_or(emptyStr)	, right.By				.value_or(emptyStr));
-	EXPECT_EQ(left.Additive		.value_or(emptyStr)	, right.Additive		.value_or(emptyStr));
-	EXPECT_EQ(left.AutoReverse	.value_or(false)	, right.AutoReverse		.value_or(false));
-	EXPECT_EQ(left.Delay		.value_or(emptyStr)	, right.Delay			.value_or(emptyStr));
-	
-	EXPECT_EQ(left.KeypointArray->size(), right.KeypointArray->size());
-	for (size_t i = 0; i < left.KeypointArray->size(); i++)
-	{
-		EXPECT_EQ(left.KeypointArray->at(i).Time					, right.KeypointArray->at(i).Time);
-		EXPECT_EQ(left.KeypointArray->at(i).Value					, right.KeypointArray->at(i).Value);
-		EXPECT_EQ(left.KeypointArray->at(i).Fmla.has_value()		, right.KeypointArray->at(i).Fmla.has_value());
-		EXPECT_EQ(left.KeypointArray->at(i).Fmla.value_or(emptyStr)	, right.KeypointArray->at(i).Fmla.value_or(emptyStr));
-	}
-}
-
-void CompareAnimEffect(const cpdoccore::oox::pptx_animation_context::Impl::_anim_effect& left, const cpdoccore::oox::pptx_animation_context::Impl::_anim_effect& right)
-{
-	EXPECT_EQ(left.Filter		.has_value(), right.Filter		.has_value());
-	EXPECT_EQ(left.Transition	.has_value(), right.Transition	.has_value());
-	EXPECT_EQ(left.Duration		.has_value(), right.Duration	.has_value());
-	EXPECT_EQ(left.ShapeID		.has_value(), right.ShapeID		.has_value());
-
-	const std::wstring emptyStr = std::wstring();
-	const int emptyInt			= 0;
-
-	EXPECT_EQ(left.Filter		.value_or(emptyStr), right.Filter		.value_or(emptyStr));
-	EXPECT_EQ(left.Transition	.value_or(emptyStr), right.Transition	.value_or(emptyStr));
-	EXPECT_EQ(left.Duration		.value_or(emptyInt), right.Duration		.value_or(emptyInt));
-	EXPECT_EQ(left.ShapeID		.value_or(emptyInt), right.ShapeID		.value_or(emptyInt));
-}
-
-TEST_F(ODP2OOX_EnterExitAnimationTest, timing_root_par)
+TEST_F(ODP2OOX_EnteanceAnimationTest, timing_root_par)
 {
 	using namespace cpdoccore::oox;
 	const pptx_animation_context::Impl::_par_animation_ptr& root = mAnimationContext->get_root_par_animation();
@@ -250,7 +200,7 @@ TEST_F(ODP2OOX_EnterExitAnimationTest, timing_root_par)
 	EXPECT_EQ(root->NodeType.value(), nodeTypeExp);
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence)
+TEST_F(ODP2OOX_EnteanceAnimationTest, main_sequence)
 {
 	using namespace cpdoccore::oox;
 	const pptx_animation_context::Impl::_seq_animation_ptr& main_seq = GetMainSequence();
@@ -261,7 +211,7 @@ TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence)
 	EXPECT_FALSE(main_seq->Duration.has_value());
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_par_animations)
+TEST_F(ODP2OOX_EnteanceAnimationTest, main_sequence_par_animations)
 {
 	using namespace cpdoccore::oox;
 	const pptx_animation_context::Impl::_par_animation_array& par_animations = mAnimationContext->get_root_par_animation()->AnimSeq->AnimParArray;
@@ -274,7 +224,7 @@ TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_par_animations)
 	}
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_inner_par_animation)
+TEST_F(ODP2OOX_EnteanceAnimationTest, main_sequence_inner_par_animation)
 {
 	using namespace cpdoccore::oox; 
 	const pptx_animation_context::Impl::_par_animation_array& main_seq = GetMainSequenceArray();
@@ -289,7 +239,7 @@ TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_inner_par_animation)
 	}
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_innermost_par_animation)
+TEST_F(ODP2OOX_EnteanceAnimationTest, main_sequence_innermost_par_animation)
 {
 	using namespace cpdoccore::oox;
 	const pptx_animation_context::Impl::_par_animation_array& main_seq = GetMainSequenceArray();
@@ -310,116 +260,467 @@ TEST_F(ODP2OOX_EnterExitAnimationTest, main_sequence_innermost_par_animation)
 	}
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, entrance_appear)
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_appear_acitons_size)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const size_t actionsSizeExp = 1;
+
+	EXPECT_EQ(actions.size(), actionsSizeExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_actions_set)
 {
 	using namespace cpdoccore::oox;
 	const size_t animationIndex = 0;
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 
 	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
-	
-	const size_t actionsSizeExp = 1;
-	const int durationExp = 1;
-	const std::wstring fillExp = L"hold";
-	const std::wstring delayExp = L"0";
-	const size_t spidExp = 2;
-	const std::wstring attributeNameExp = L"style.visibility";
-	const std::wstring toValueExp = L"visible";
 
 	EXPECT_TRUE(set != nullptr);
-	EXPECT_EQ(actions.size(), actionsSizeExp);
-
-	EXPECT_EQ(set->Duration.value()		, durationExp);
-	EXPECT_EQ(set->Fill.value()			, fillExp);
-	EXPECT_EQ(set->Delay.value()		, delayExp);
-	EXPECT_EQ(set->ShapeID.value()		, spidExp);
-	EXPECT_EQ(set->AttributeName.value(), attributeNameExp);
-	EXPECT_EQ(set->ToValue.value()		, toValueExp);
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, entrance_fly_in)
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_action_set_duration)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	const int durationExp = 1;
+
+	EXPECT_EQ(set->Duration.value(), durationExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_action_set_fill)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	const std::wstring fillExp = L"hold";
+
+	EXPECT_EQ(set->Fill.value(), fillExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_action_set_delay)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	const std::wstring fillExp = L"hold";
+
+	EXPECT_EQ(set->Fill.value(), fillExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_action_set_attribute_name)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	const std::wstring attributeNameExp = L"style.visibility";
+
+	EXPECT_EQ(set->AttributeName.value(), attributeNameExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, enerance_appear_action_set_to_value)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 0;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	const std::wstring toValueExp = L"visible";
+
+	EXPECT_EQ(set->ToValue.value(), toValueExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_actions_size)
 {
 	using namespace cpdoccore::oox;
 	const size_t animationIndex = 1;
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 
-	const pptx_animation_context::Impl::_set* set		= dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
-	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
-	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const size_t actionsSizeExp = 3;
 
-	const size_t actionsSizeExp	= 3;
-
-	pptx_animation_context::Impl::_set setExp;
-	setExp.Duration				= 1;
-	setExp.Delay				= L"0";
-	setExp.Fill					= L"hold";
-	setExp.ShapeID				= 2;
-	setExp.AttributeName		= L"style.visibility";
-	setExp.ToValue				= L"visible";
-
-	pptx_animation_context::Impl::_anim animate1Exp;
-	animate1Exp.CalcMode		= L"lin";
-	animate1Exp.ValueType		= L"num";
-	animate1Exp.ShapeID			= 2;
-	animate1Exp.Duration		= 500;
-	animate1Exp.AttributeName	= L"ppt_x";
-	animate1Exp.Additive		= L"repl";
-	animate1Exp.KeypointArray = std::vector<pptx_animation_context::Impl::_anim::_keypoint>();
-	animate1Exp.KeypointArray->push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"#ppt_x", boost::none));
-	animate1Exp.KeypointArray->push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_x", boost::none));
-
-	pptx_animation_context::Impl::_anim animate2Exp;
-	animate2Exp.CalcMode		= L"lin";
-	animate2Exp.ValueType		= L"num";
-	animate2Exp.ShapeID			= 2;
-	animate2Exp.Duration		= 500;
-	animate2Exp.AttributeName	= L"ppt_y";
-	animate2Exp.Additive		= L"repl";
-	animate2Exp.KeypointArray = std::vector<pptx_animation_context::Impl::_anim::_keypoint>();
-	animate2Exp.KeypointArray->push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"1+#ppt_h/2", boost::none));
-	animate2Exp.KeypointArray->push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_y", boost::none));
-
-	EXPECT_TRUE(set != nullptr);
-	EXPECT_TRUE(animate1 != nullptr);
-	EXPECT_TRUE(animate2 != nullptr);
 	EXPECT_EQ(actions.size(), actionsSizeExp);
-
-	CompareAnimSet(*set, setExp);
-	CompareAnimAnimate(*animate1, animate1Exp);
-	CompareAnimAnimate(*animate2, animate2Exp);
 }
 
-TEST_F(ODP2OOX_EnterExitAnimationTest, entrance_venetian_blinds)
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+
+	EXPECT_TRUE(set != nullptr);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+
+	EXPECT_TRUE(animate1 != nullptr);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+
+	EXPECT_TRUE(animate2 != nullptr);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set_duration)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+	const int durationExp = 1;
+
+	EXPECT_EQ(set->Duration.value(), durationExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set_delay)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+	const std::wstring delayExp = L"0";
+
+	EXPECT_EQ(set->Delay.value(), delayExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set_fill)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+	const std::wstring fillExp = L"hold";
+
+	EXPECT_EQ(set->Fill.value(), fillExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set_attribute_name)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+	const std::wstring attributeNameExp = L"style.visibility";
+
+	EXPECT_EQ(set->AttributeName.value(), attributeNameExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_set_to_value)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
+	const std::wstring toValueExp = L"visible";
+
+	EXPECT_EQ(set->ToValue.value(), toValueExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_calc_mode)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	const std::wstring calcModeExp = L"lin";
+
+	EXPECT_EQ(animate1->CalcMode.value(), calcModeExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_value_type)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	const std::wstring valueTypeExp = L"num";
+
+	EXPECT_EQ(animate1->ValueType.value(), valueTypeExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_duration)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	const int durationExp = 500;
+
+	EXPECT_EQ(animate1->Duration.value(), durationExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_attribute_name)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	const std::wstring attributeNameExp = L"ppt_x";
+
+	EXPECT_EQ(animate1->AttributeName.value(), attributeNameExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_additive)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	const std::wstring additiveExp = L"repl";
+
+	EXPECT_EQ(animate1->Additive.value(), additiveExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_1_key_points)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate1 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[1].get());
+	std::vector<pptx_animation_context::Impl::_anim::_keypoint> keypointsExp;
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"#ppt_x", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_x", boost::none));
+
+	EXPECT_EQ(animate1->KeypointArray->size(), keypointsExp.size());
+	for (size_t i = 0; i < animate1->KeypointArray->size(); i++)
+	{
+		EXPECT_EQ(animate1->KeypointArray->at(i).Time					, keypointsExp[i].Time);
+		EXPECT_EQ(animate1->KeypointArray->at(i).Value					, keypointsExp[i].Value);
+		EXPECT_EQ(animate1->KeypointArray->at(i).Fmla.has_value()		, keypointsExp[i].Fmla.has_value());
+		EXPECT_EQ(animate1->KeypointArray->at(i).Fmla.value_or(L"")		, keypointsExp[i].Fmla.value_or(L""));
+	}
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_calc_mode)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const std::wstring calcModeExp = L"lin";
+
+	EXPECT_EQ(animate2->CalcMode.value(), calcModeExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_value_type)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const std::wstring valueTypeExp = L"num";
+
+	EXPECT_EQ(animate2->ValueType.value(), valueTypeExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_duration)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const int durationExp = 500;
+
+	EXPECT_EQ(animate2->Duration.value(), durationExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_attribute_name)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const std::wstring attributeNameExp = L"ppt_y";
+
+	EXPECT_EQ(animate2->AttributeName.value(), attributeNameExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_additive)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	const std::wstring additiveExp = L"repl";
+
+	EXPECT_EQ(animate2->Additive.value(), additiveExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_fly_in_action_animate_2_key_points)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 1;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+
+	const pptx_animation_context::Impl::_anim* animate2 = dynamic_cast<pptx_animation_context::Impl::_anim*>(actions[2].get());
+	std::vector<pptx_animation_context::Impl::_anim::_keypoint> keypointsExp;
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(0, L"1+#ppt_h/2", boost::none));
+	keypointsExp.push_back(pptx_animation_context::Impl::_anim::_keypoint(100000, L"#ppt_y", boost::none));
+
+	EXPECT_EQ(animate2->KeypointArray->size(), keypointsExp.size());
+	for (size_t i = 0; i < animate2->KeypointArray->size(); i++)
+	{
+		EXPECT_EQ(animate2->KeypointArray->at(i).Time				, keypointsExp[i].Time);
+		EXPECT_EQ(animate2->KeypointArray->at(i).Value				, keypointsExp[i].Value);
+		EXPECT_EQ(animate2->KeypointArray->at(i).Fmla.has_value()	, keypointsExp[i].Fmla.has_value());
+		EXPECT_EQ(animate2->KeypointArray->at(i).Fmla.value_or(L"")	, keypointsExp[i].Fmla.value_or(L""));
+	}
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_actions_size)
 {
 	using namespace cpdoccore::oox;
 	const size_t animationIndex = 2;
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 
-	const pptx_animation_context::Impl::_set* set					= dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
-	const pptx_animation_context::Impl::_anim_effect* animEffect	= dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
-
 	const size_t actionsSizeExp = 2;
 
-	pptx_animation_context::Impl::_set setExp;
-	setExp.Duration = 1;
-	setExp.Delay = L"0";
-	setExp.Fill = L"hold";
-	setExp.ShapeID = 2;
-	setExp.AttributeName = L"style.visibility";
-	setExp.ToValue = L"visible";
+	EXPECT_EQ(actions.size(), actionsSizeExp);
+}
 
-	pptx_animation_context::Impl::_anim_effect animEffectExp;
-	animEffectExp.Filter = L"blinds(horizontal)";
-	animEffectExp.Transition = L"in";
-	animEffectExp.Duration = 500;
-	animEffectExp.ShapeID = 2;
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_set)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_set* set = dynamic_cast<pptx_animation_context::Impl::_set*>(actions[0].get());
 
 	EXPECT_TRUE(set != nullptr);
-	EXPECT_TRUE(animEffect != nullptr);
-	EXPECT_EQ(actions.size(), actionsSizeExp);
+}
 
-	CompareAnimSet(*set, setExp);
-	CompareAnimEffect(*animEffect, animEffectExp);
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_anim_effect)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	EXPECT_TRUE(animEffect != nullptr);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_anim_effect_filter)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring filterExp = L"blinds(horizontal)";
+
+	EXPECT_EQ(animEffect->Filter.value(), filterExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_anim_effect_transition)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring transitionExp = L"in";
+
+	EXPECT_EQ(animEffect->Transition.value(), transitionExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_venetian_blinds_anim_effect_duration)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const int durationExp = 500;
+
+	EXPECT_EQ(animEffect->Duration.value(), durationExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_transition_filter_blinds_wipe_horizontal)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 2;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring filterExp = L"box(in)";
+
+	EXPECT_EQ(animEffect->Filter.value(), filterExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_transition_filter_iris_wipe_rectangle)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 3;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring filterExp = L"circle(in)";
+
+	EXPECT_EQ(animEffect->Filter.value(), filterExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_transition_filter_checker_board_wipe_across)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 4;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring filterExp = L"circle(in)";
+
+	EXPECT_EQ(animEffect->Filter.value(), filterExp);
+}
+
+TEST_F(ODP2OOX_EnteanceAnimationTest, entrance_transition_filter_checker_iris_wipe_diamond)
+{
+	using namespace cpdoccore::oox;
+	const size_t animationIndex = 8;
+	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
+	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
+
+	const std::wstring filterExp = L"diamond(in)";
+
+	EXPECT_EQ(animEffect->Filter.value(), filterExp);
 }
 
 int main(int argc, char* argv[])

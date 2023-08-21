@@ -669,6 +669,16 @@ namespace oox {
 		impl_->clear();
 	}
 
+	void pptx_animation_context::set_is_slide_animation(bool is_slide_animation)
+	{
+		impl_->IsSlideAnimation = is_slide_animation;
+	}
+
+	bool pptx_animation_context::get_is_slide_animation()
+	{
+		return impl_->IsSlideAnimation;
+	}
+
 	const pptx_animation_context::Impl::_par_animation_ptr& pptx_animation_context::get_root_par_animation() const
 	{
 		return impl_->root_animation_element_;

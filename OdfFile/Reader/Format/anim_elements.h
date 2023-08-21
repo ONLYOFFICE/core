@@ -151,7 +151,8 @@ private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	std::wstring convert_filter();
+	std::wstring	convert_filter();
+	void			convert_slide_transition_filter(oox::pptx_conversion_context& Context);
 
 
 };

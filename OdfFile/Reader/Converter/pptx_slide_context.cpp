@@ -904,9 +904,6 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
     {
-		// WTF: К слайду применяется анимация из последнего тэга "anim:transitionFilter" (неважно где он). 
-		// Анимации которые нельзя применить к слайду ломают всю презентацию.
-		// TODO: Implement slide animation
 		if (impl_->transition_.Enabled)
 		{
 			CP_XML_NODE(L"p:transition")
@@ -945,27 +942,8 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				//p:sndAc
 			}
 		}
-		
-		#if 0
-		CP_XML_NODE(L"p:timing")
-		{
-			CP_XML_NODE(L"p:tnLst")
-			{
-				CP_XML_NODE(L"p:par")
-				{
-					CP_XML_NODE(L"p:cTn")
-					{
-						CP_XML_ATTR(L"nodeType", L"tmRoot");
-						CP_XML_ATTR(L"id", 1);
-						CP_XML_ATTR(L"dur", L"indefinite");
-						CP_XML_ATTR(L"restart", L"never");
-					}
-				}
-			}
-		}
-		# else
+
 		pptx_animation_context_.serialize(strm);
-		#endif
 	}
 }
 

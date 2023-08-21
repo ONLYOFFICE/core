@@ -247,6 +247,8 @@ namespace oox {
 
 			void clear();
 
+			bool IsSlideAnimation;
+
 			Impl();
 		};
 
@@ -351,6 +353,8 @@ namespace oox {
 		void serialize(std::wostream & strm);
 		void clear();
 
+		void set_is_slide_animation(bool is_slide_animation);
+		bool get_is_slide_animation();
 		const Impl::_par_animation_ptr& get_root_par_animation() const;
 
 	private:

@@ -460,6 +460,7 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	_CP_OPT(int)			presentationPresetId;
 	_CP_OPT(std::wstring)	presentationPresetPresetSubType;
 
+	bool isSlideAnimation = false; // NOTE: Анимация применяется к самому слайду, а не элементу на слайде
 
 	// NOTE: в pptx нет атрибутов accelerate/decelerate. Там надо менять svg path ???
 	//_CP_OPT(std::wstring)	accelerate; 
@@ -507,7 +508,9 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (common_attlist_.smil_begin_)
 	{
-		delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
+		isSlideAnimation = boost::algorithm::ends_with(common_attlist_.smil_begin_.value(), L".begin");
+		if(!isSlideAnimation)
+			delay = pptx_convert_smil_begin(common_attlist_.smil_begin_.value());
 	}
 
 	// TODO: Figure out correct value
@@ -552,25 +555,27 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	else 
 		fill = L"hold";
 		
-	
-	animationContext.start_par_animation();
+	if (!isSlideAnimation)
+	{
+		animationContext.start_par_animation();
 
-	if (presentationNodeType)		animationContext.set_par_animation_presentation_node_type	(presentationNodeType.value());
-	if (direction)					animationContext.set_par_animation_direction				(direction.value());
-	if (restart)					animationContext.set_par_animation_restart					(restart.value());
-	if (duration)					animationContext.set_par_animation_duration					(duration.value());
-	if (delay)						animationContext.set_par_animation_delay					(delay.value());
-	if (end)						animationContext.set_par_animation_end						(end.value());
-	if (presentationPresetClass)	animationContext.set_par_animation_preset_class				(presentationPresetClass.value());
-	if (presentationPresetId)		animationContext.set_par_animation_preset_id				(presentationPresetId.value());
-	if (fill)						animationContext.set_par_animation_fill						(fill.value());
+		if (presentationNodeType)		animationContext.set_par_animation_presentation_node_type(presentationNodeType.value());
+		if (direction)					animationContext.set_par_animation_direction(direction.value());
+		if (restart)					animationContext.set_par_animation_restart(restart.value());
+		if (duration)					animationContext.set_par_animation_duration(duration.value());
+		if (delay)						animationContext.set_par_animation_delay(delay.value());
+		if (end)						animationContext.set_par_animation_end(end.value());
+		if (presentationPresetClass)	animationContext.set_par_animation_preset_class(presentationPresetClass.value());
+		if (presentationPresetId)		animationContext.set_par_animation_preset_id(presentationPresetId.value());
+		if (fill)						animationContext.set_par_animation_fill(fill.value());
+	}
+	
+	animationContext.set_is_slide_animation(isSlideAnimation);
 
 	if (anim_par_array_.size())
 	{
-		Context.get_slide_context().start_slide_animation();
 		for(size_t i = 0; i < anim_par_array_.size(); i++)
 			anim_par_array_[i]->pptx_convert(Context); // это для самого слайда (то что и нужно)
-		Context.get_slide_context().end_slide_animation();
 	}
 	for (size_t i = 0; i < anim_seq_array_.size(); i++)
     {
@@ -583,7 +588,8 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 		content_[i]->pptx_convert(Context);
 	}
 
-	animationContext.end_par_animation();
+	if(!isSlideAnimation)
+		animationContext.end_par_animation();
 }
 void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -874,7 +880,7 @@ std::wstring anim_transitionFilter::convert_filter()
 	return filter;
 }
 
-void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
+void anim_transitionFilter::convert_slide_transition_filter(oox::pptx_conversion_context& Context)
 {
 	_CP_OPT(std::wstring) color;
 	_CP_OPT(std::wstring) dir;
@@ -886,7 +892,7 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 	if (common_attlist_.smil_dur_)
 	{
 		time = common_attlist_.smil_dur_->get_value();
-	}	
+	}
 	if (filter_attlist_.smil_fadeColor_)
 	{
 		color = filter_attlist_.smil_fadeColor_->get_hex_value();
@@ -899,170 +905,187 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 		transition_type = filter_attlist_.smil_type_->get_type();
 	}
 
-	switch(transition_type)
+	switch (transition_type)
 	{
-		case smil_transition_type::barnVeeWipe: 
-			type = L"split";
-			break; 
-		case smil_transition_type::irisWipe: 
-			if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get()==L"diamond"))
-				type = L"diamond";
-			else
-				type = L"zoom";
-			break; 
-		case smil_transition_type::miscDiagonalWipe: 
-			if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get()==L"doubleDiamond"))
-				type = L"diamond";
-			else
-				type = L"zoom";
-			break; 
-		case smil_transition_type::ellipseWipe: 
-		case smil_transition_type::eyeWipe: 
-			type = L"circle";
-			break; 
-		case smil_transition_type::roundRectWipe: 
+	case smil_transition_type::barnVeeWipe:
+		type = L"split";
+		break;
+	case smil_transition_type::irisWipe:
+		if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"diamond"))
+			type = L"diamond";
+		else
 			type = L"zoom";
-			break; 
-		case smil_transition_type::fourBoxWipe: 
-		case smil_transition_type::triangleWipe: 
-		case smil_transition_type::arrowHeadWipe: 
-		case smil_transition_type::pentagonWipe: 
-		case smil_transition_type::hexagonWipe: 		
-		case smil_transition_type::starWipe: 
-		case smil_transition_type::miscShapeWipe: 
-			type = L"plus";
-			break; 
-		case smil_transition_type::pinWheelWipe: 
-			param = L"2";		
-		case smil_transition_type::clockWipe: 
-		case smil_transition_type::singleSweepWipe: //
-		case smil_transition_type::doubleFanWipe: //
-			type = L"wheel";
-				 if ((filter_attlist_.smil_subtype_)  && (filter_attlist_.smil_subtype_.get()==L"oneBlade"))	param = L"1";
-			else if ((filter_attlist_.smil_subtype_)  && (filter_attlist_.smil_subtype_.get()==L"threeBlade"))	param = L"3";
-			else if ((filter_attlist_.smil_subtype_)  && (filter_attlist_.smil_subtype_.get()==L"fourBlade"))	param = L"4";
-			else if ((filter_attlist_.smil_subtype_)  && (filter_attlist_.smil_subtype_.get()==L"eightBlade"))	param = L"8";
-			break; 
-		case smil_transition_type::fanWipe: 
-			type = L"wedge";
-			break;
-		case smil_transition_type::fade:
-			type = L"fade";
-			param = L"1";
-			break;
-		case smil_transition_type::checkerBoardWipe:
-			type = L"checker";
-			if (filter_attlist_.smil_subtype_.get()==L"across")	dir = L"horz";
-			if (filter_attlist_.smil_subtype_.get()==L"down")	dir = L"vert";
-			break;
-		case smil_transition_type::blindsWipe:
-			type = L"blinds";
-				 if (filter_attlist_.smil_subtype_.get()==L"vertical")		dir = L"vert";
-			else if (filter_attlist_.smil_subtype_.get()==L"horizontal")	dir = L"horz";
-			break;
-		case smil_transition_type::diagonalWipe:
-		case smil_transition_type::waterfallWipe:
-			type = L"strips";			
-			if (filter_attlist_.smil_subtype_)
-			{
-				if		(filter_attlist_.smil_subtype_.get() == L"horizontalLeft")		dir = L"rd";	
-				else if (filter_attlist_.smil_subtype_.get() == L"horizontalRight")		dir = L"lu";	
-				else if (filter_attlist_.smil_subtype_.get() == L"verticalRight")		dir = L"ld";
-				else dir = L"ru";	
-			}
-			break;
-		case smil_transition_type::dissolve:
-			type = L"dissolve";
-			break;		
-		case smil_transition_type::randomBarWipe:
-			type = L"randomBar";
-				 if (filter_attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
-			else if (filter_attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
-			break;	
-		case smil_transition_type::pushWipe: 
-			type = L"push";
-				 if (filter_attlist_.smil_subtype_.get() == L"combVertical")	{type = L"comb"; dir = L"vert";}
-			else if (filter_attlist_.smil_subtype_.get() == L"combHorizontal")	{type = L"comb"; dir = L"horz";}
-			break;	
-		case smil_transition_type::slideWipe: 
-			type = L"pull";
-			break;
-		case smil_transition_type::boxWipe: 
-			type = L"cover";
-			break;
-		case smil_transition_type::barnDoorWipe: 
-			type = L"split";
-			if (filter_attlist_.smil_subtype_.get() == L"vertical")		param = L"vert";
-			if (filter_attlist_.smil_subtype_.get() == L"horizontal")	param = L"horz";			
-			break;
-		case smil_transition_type::barWipe:
-			type = L"wipe";
-			if (filter_attlist_.smil_subtype_)
-			{
-					 if (filter_attlist_.smil_subtype_.get()==L"fromTopLeft")		{type = L"strips"; dir = L"rd";}
-				else if (filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")	{type = L"strips"; dir = L"ru";}
-				else if (filter_attlist_.smil_subtype_.get()==L"fromTopRight")		{type = L"strips"; dir = L"ld";}
-				else if (filter_attlist_.smil_subtype_.get()==L"fromBottomRight")	{type = L"strips"; dir = L"lu";}
-				
-				else if (filter_attlist_.smil_subtype_.get()==L"fadeOverColor")		{type = L"fade"; param = L"0";}
-			}
-			break;
-///////////////////////////////////////////////////////
-		case smil_transition_type::bowTieWipe:
-		case smil_transition_type::veeWipe: 
-		case smil_transition_type::zigZagWipe: 
-		case smil_transition_type::barnZigZagWipe: 
-		case smil_transition_type::doubleSweepWipe: 
-		case smil_transition_type::saloonDoorWipe: 
-		case smil_transition_type::windshieldWipe: 
-		case smil_transition_type::snakeWipe: 
-		case smil_transition_type::spiralWipe: 
-		case smil_transition_type::parallelSnakesWipe: 
-		case smil_transition_type::boxSnakesWipe: 
-			break;
-//////////////////////////////////////////////////////
+		break;
+	case smil_transition_type::miscDiagonalWipe:
+		if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"doubleDiamond"))
+			type = L"diamond";
+		else
+			type = L"zoom";
+		break;
+	case smil_transition_type::ellipseWipe:
+	case smil_transition_type::eyeWipe:
+		type = L"circle";
+		break;
+	case smil_transition_type::roundRectWipe:
+		type = L"zoom";
+		break;
+	case smil_transition_type::fourBoxWipe:
+	case smil_transition_type::triangleWipe:
+	case smil_transition_type::arrowHeadWipe:
+	case smil_transition_type::pentagonWipe:
+	case smil_transition_type::hexagonWipe:
+	case smil_transition_type::starWipe:
+	case smil_transition_type::miscShapeWipe:
+		type = L"plus";
+		break;
+	case smil_transition_type::pinWheelWipe:
+		param = L"2";
+	case smil_transition_type::clockWipe:
+	case smil_transition_type::singleSweepWipe: //
+	case smil_transition_type::doubleFanWipe: //
+		type = L"wheel";
+		if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"oneBlade"))	param = L"1";
+		else if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"threeBlade"))	param = L"3";
+		else if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"fourBlade"))	param = L"4";
+		else if ((filter_attlist_.smil_subtype_) && (filter_attlist_.smil_subtype_.get() == L"eightBlade"))	param = L"8";
+		break;
+	case smil_transition_type::fanWipe:
+		type = L"wedge";
+		break;
+	case smil_transition_type::fade:
+		type = L"fade";
+		param = L"1";
+		break;
+	case smil_transition_type::checkerBoardWipe:
+		type = L"checker";
+		if (filter_attlist_.smil_subtype_.get() == L"across")	dir = L"horz";
+		if (filter_attlist_.smil_subtype_.get() == L"down")	dir = L"vert";
+		break;
+	case smil_transition_type::blindsWipe:
+		type = L"blinds";
+		if (filter_attlist_.smil_subtype_.get() == L"vertical")		dir = L"vert";
+		else if (filter_attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
+		break;
+	case smil_transition_type::diagonalWipe:
+	case smil_transition_type::waterfallWipe:
+		type = L"strips";
+		if (filter_attlist_.smil_subtype_)
+		{
+			if (filter_attlist_.smil_subtype_.get() == L"horizontalLeft")		dir = L"rd";
+			else if (filter_attlist_.smil_subtype_.get() == L"horizontalRight")		dir = L"lu";
+			else if (filter_attlist_.smil_subtype_.get() == L"verticalRight")		dir = L"ld";
+			else dir = L"ru";
+		}
+		break;
+	case smil_transition_type::dissolve:
+		type = L"dissolve";
+		break;
+	case smil_transition_type::randomBarWipe:
+		type = L"randomBar";
+		if (filter_attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
+		else if (filter_attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
+		break;
+	case smil_transition_type::pushWipe:
+		type = L"push";
+		if (filter_attlist_.smil_subtype_.get() == L"combVertical") { type = L"comb"; dir = L"vert"; }
+		else if (filter_attlist_.smil_subtype_.get() == L"combHorizontal") { type = L"comb"; dir = L"horz"; }
+		break;
+	case smil_transition_type::slideWipe:
+		type = L"pull";
+		break;
+	case smil_transition_type::boxWipe:
+		type = L"cover";
+		break;
+	case smil_transition_type::barnDoorWipe:
+		type = L"split";
+		if (filter_attlist_.smil_subtype_.get() == L"vertical")		param = L"vert";
+		if (filter_attlist_.smil_subtype_.get() == L"horizontal")	param = L"horz";
+		break;
+	case smil_transition_type::barWipe:
+		type = L"wipe";
+		if (filter_attlist_.smil_subtype_)
+		{
+			if (filter_attlist_.smil_subtype_.get() == L"fromTopLeft") { type = L"strips"; dir = L"rd"; }
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomLeft") { type = L"strips"; dir = L"ru"; }
+			else if (filter_attlist_.smil_subtype_.get() == L"fromTopRight") { type = L"strips"; dir = L"ld"; }
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomRight") { type = L"strips"; dir = L"lu"; }
+
+			else if (filter_attlist_.smil_subtype_.get() == L"fadeOverColor") { type = L"fade"; param = L"0"; }
+		}
+		break;
+		///////////////////////////////////////////////////////
+	case smil_transition_type::bowTieWipe:
+	case smil_transition_type::veeWipe:
+	case smil_transition_type::zigZagWipe:
+	case smil_transition_type::barnZigZagWipe:
+	case smil_transition_type::doubleSweepWipe:
+	case smil_transition_type::saloonDoorWipe:
+	case smil_transition_type::windshieldWipe:
+	case smil_transition_type::snakeWipe:
+	case smil_transition_type::spiralWipe:
+	case smil_transition_type::parallelSnakesWipe:
+	case smil_transition_type::boxSnakesWipe:
+		break;
+		//////////////////////////////////////////////////////
 	}
 	if (filter_attlist_.smil_subtype_)
 	{
 		if (!dir)
 		{
-			if (filter_attlist_.smil_subtype_.get()==L"leftToRight")
+			if (filter_attlist_.smil_subtype_.get() == L"leftToRight")
 			{
-				if ((common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get()==L"reverse"))dir = L"l";
+				if ((common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get() == L"reverse"))dir = L"l";
 				else dir = L"r";
 			}
-			if (filter_attlist_.smil_subtype_.get()==L"topToBottom")
+			if (filter_attlist_.smil_subtype_.get() == L"topToBottom")
 			{
-				if ((common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get()==L"reverse"))dir = L"u";
-				else dir = L"d";	
+				if ((common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get() == L"reverse"))dir = L"u";
+				else dir = L"d";
 			}
 
-				 if (filter_attlist_.smil_subtype_.get()==L"fromTop")		dir = L"d";	
-			else if (filter_attlist_.smil_subtype_.get()==L"fromLeft")		dir = L"r";	
-			else if (filter_attlist_.smil_subtype_.get()==L"fromRight")		dir = L"l";			
-			else if (filter_attlist_.smil_subtype_.get()==L"fromBottom")	dir = L"u";	
-			
-			else if (filter_attlist_.smil_subtype_.get()==L"topRight")		dir = L"ld";	
-			else if (filter_attlist_.smil_subtype_.get()==L"bottomLeft")	dir = L"lu";	
-			else if (filter_attlist_.smil_subtype_.get()==L"bottomRight")	dir = L"ru";
-			else if (filter_attlist_.smil_subtype_.get()==L"topLeft")		dir = L"rd";	
-		
-			else if (filter_attlist_.smil_subtype_.get()==L"fromTopLeft")	dir = L"rd";
-			else if (filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")dir = L"ru";
-			else if (filter_attlist_.smil_subtype_.get()==L"fromTopRight")	dir = L"ld";
-			else if (filter_attlist_.smil_subtype_.get()==L"fromBottomRight")dir = L"lu";
+			if (filter_attlist_.smil_subtype_.get() == L"fromTop")		dir = L"d";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromLeft")		dir = L"r";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromRight")		dir = L"l";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottom")	dir = L"u";
+
+			else if (filter_attlist_.smil_subtype_.get() == L"topRight")		dir = L"ld";
+			else if (filter_attlist_.smil_subtype_.get() == L"bottomLeft")	dir = L"lu";
+			else if (filter_attlist_.smil_subtype_.get() == L"bottomRight")	dir = L"ru";
+			else if (filter_attlist_.smil_subtype_.get() == L"topLeft")		dir = L"rd";
+
+			else if (filter_attlist_.smil_subtype_.get() == L"fromTopLeft")	dir = L"rd";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomLeft")dir = L"ru";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromTopRight")	dir = L"ld";
+			else if (filter_attlist_.smil_subtype_.get() == L"fromBottomRight")dir = L"lu";
 
 		}
-		
-		if (!dir && (common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get()==L"reverse"))
+
+		if (!dir && (common_attlist_.smil_direction_) && (common_attlist_.smil_direction_.get() == L"reverse"))
 			dir = L"in";
 	}
 
-	Context.get_slide_context().set_transitionFilter(type , dir, param , time);
+	Context.get_slide_context().start_slide_animation();
+	Context.get_slide_context().set_transitionFilter(type, dir, param, time);
+	Context.get_slide_context().end_slide_animation();
+}
+
+void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	if (Context.get_slide_context().get_animation_context().get_is_slide_animation())
+	{
+		convert_slide_transition_filter(Context);
+		return;
+	}
 
 	std::wstring filter = convert_filter();
 	std::wstring transition = L"in";
+	_CP_OPT(int) time;
 	size_t shapeId = 0;
+
+	if (common_attlist_.smil_dur_)
+	{
+		time = common_attlist_.smil_dur_->get_value();
+	}
 
 	if (filter_attlist_.smil_mode_)
 	{

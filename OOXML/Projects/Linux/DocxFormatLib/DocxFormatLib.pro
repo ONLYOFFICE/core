@@ -63,7 +63,6 @@ SOURCES += \
 	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
-	../../../DocxFormat/Media/ActiveX.cpp \
 	../../../DocxFormat/Media/Audio.cpp \
 	../../../DocxFormat/Media/Video.cpp \
 	../../../DocxFormat/Media/Image.cpp \
@@ -77,7 +76,6 @@ SOURCES += \
 	../../../DocxFormat/Comments.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../DocxFormat/VmlDrawing.cpp \
-	../../../DocxFormat/Namespaces.cpp \
 	../../../XlsxFormat/CalcChain/CalcChain.cpp \
 	../../../XlsxFormat/Chart/Chart.cpp \
 	../../../XlsxFormat/Chart/ChartColors.cpp \
@@ -123,7 +121,6 @@ SOURCES += \
 	../../../DocxFormat/Styles.cpp \
 	../../../DocxFormat/UnknowTypeFile.cpp \
 	../../../DocxFormat/IFileContainer.cpp \
-	../../../DocxFormat/Document.cpp \
 	../../../XlsxFormat/FileFactory_Spreadsheet.cpp \
 	../../../XlsxFormat/ComplexTypes_Spreadsheet.cpp \
 	../../../DocxFormat/Drawing/Drawing.cpp \
@@ -168,7 +165,6 @@ SOURCES += \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
-	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 	../../../XlsxFormat/Workbook/Workbook.cpp \
@@ -277,8 +273,6 @@ HEADERS += \
 	../../../DocxFormat/HeaderFooter.h \
 	../../../DocxFormat/IFileBuilder.h \
 	../../../DocxFormat/IFileContainer.h \
-	../../../DocxFormat/NamespaceOwn.h \
-	../../../DocxFormat/Namespaces.h \
 	../../../DocxFormat/Numbering.h \
 	../../../DocxFormat/Rels.h \
 	../../../DocxFormat/RId.h \

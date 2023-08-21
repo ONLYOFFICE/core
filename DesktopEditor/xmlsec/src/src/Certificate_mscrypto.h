@@ -351,7 +351,7 @@ public:
 		return (PCRYPT_KEY_PROV_INFO)pInfoData;
 	}
 
-	virtual std::string Sign(unsigned char* pData, unsigned int nSize)
+	virtual bool Sign(unsigned char* pData, unsigned int nSize, unsigned char*& pDataDst, unsigned int& nSizeDst)
 	{
 		BOOL bResult = TRUE;
 		DWORD dwKeySpec = 0;
@@ -361,7 +361,7 @@ public:
 		bResult = CryptAcquireCertificatePrivateKey(m_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG, NULL, &hCryptProv, &dwKeySpec, NULL);
 
 		if (!bResult)
-			return "";
+			return false;
 
 		int nAlg = GetHashAlg();
 		bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
@@ -374,7 +374,7 @@ public:
 			{
 				CryptReleaseContext(hCryptProv, 0);
 				free(info);
-				return "";
+				return false;
 			}
 
 			bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
@@ -389,7 +389,7 @@ public:
 				{
 					CryptReleaseContext(hCryptProv, 0);
 					free(info);
-					return "";
+					return false;
 				}
 
 				bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
@@ -400,7 +400,7 @@ public:
 			if (!bResult)
 			{
 				CryptReleaseContext(hCryptProv, 0);
-				return "";
+				return false;
 			}
 		}
 
@@ -430,33 +430,23 @@ public:
 		{
 			CryptDestroyHash(hHash);
 			CryptReleaseContext(hCryptProv, 0);
-			return "";
+
+			delete[] pbSignature;
+			return false;
 		}
 
 		BYTE* pbSignatureMem = new BYTE[dwSigLen];
 		ConvertEndian(pbSignature, pbSignatureMem, dwSigLen);
 
-		char* pBase64 = NULL;
-		int nBase64Len = 0;
-		NSFile::CBase64Converter::Encode(pbSignatureMem, (int)dwSigLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+		pDataDst = pbSignatureMem;
+		nSizeDst = (int)dwSigLen;
 
 		delete[] pbSignature;
-		delete[] pbSignatureMem;
 
 		bResult = CryptDestroyHash(hHash);
-
-		std::string sReturn(pBase64, nBase64Len);
-
-		delete[] pBase64;
-
 		CryptReleaseContext(hCryptProv, 0);
 
-		return sReturn;
-	}
-
-	virtual std::string Sign(const std::string& sXml)
-	{
-		return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+		return true;
 	}
 
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,

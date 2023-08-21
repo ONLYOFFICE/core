@@ -1374,8 +1374,6 @@ private:
 			}
 			else
 			{
-				wsTable.insert(35, oStyle.GetId());
-
 				std::wstring sColorLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
 				std::wstring sSzLeftSide        = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
 				std::wstring sStyleLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();

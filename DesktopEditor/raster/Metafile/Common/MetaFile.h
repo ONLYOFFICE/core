@@ -120,7 +120,7 @@ namespace MetaFile
 
 			return true;
 		}
-		void          Close()
+		void Close()
 		{
 			if (!m_bIsExternalBuffer)
 				RELEASEARRAYOBJECTS(m_pBufferData);
@@ -131,7 +131,7 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		void          Scan()
+		void Scan()
 		{
 			IOutputDevice* pOutput = m_pOutput;
 			m_pOutput = NULL;
@@ -144,19 +144,19 @@ namespace MetaFile
 		{
 			return m_pFontManager;
 		}
-		void          SetFontManager(NSFonts::IFontManager* pFontManager)
+		void  SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
-		void          SetOutputDevice(IOutputDevice* pOutput)
+		void SetOutputDevice(IOutputDevice* pOutput)
 		{
 			m_pOutput = pOutput;
 		}
-		void          SetError()
+		void SetError()
 		{
 			m_bError = true;
 		}
-		bool          CheckError()
+		bool CheckError()
 		{
 			return m_bError;
 		}

@@ -701,8 +701,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\StrRun.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXET.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Tws.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_unions\ACABSPATH.cpp" />
@@ -1724,8 +1722,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\StrRun.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXET.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Tws.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_unions\ACABSPATH.h" />

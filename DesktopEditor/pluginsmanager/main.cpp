@@ -620,7 +620,7 @@ public:
 			if (DownloadFile(sConfigUrl, sTmpFile))
 			{
 				std::vector<std::wstring> arr;
-				if ( ReadConfigJson(sTmpFile, arr) )
+				if ( ReadStoreConfig(sTmpFile, arr) )
 				{
 					for (size_t i = 0; i < arr.size(); i++)
 					{
@@ -632,20 +632,16 @@ public:
 						{
 							pPluginInfo = FetchPluginInfo(sPluginName);
 							if ( pPluginInfo )
+							{
 								m_arrMarketplace.push_back(pPluginInfo);
+
+								if ( bPrint )
+									MessagePluginInfo(pPluginInfo->m_sNameConfig, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
+							}
 						}
 					}
 				}
 				NSFile::CFileBinary::Remove(sTmpFile);
-			}
-		}
-
-		if ( bPrint )
-		{
-			for (size_t i = 0; i < m_arrMarketplace.size(); i++)
-			{
-				CPluginInfo* pPluginInfo = m_arrMarketplace[i];
-				MessagePluginInfo(pPluginInfo->m_sNameConfig, pPluginInfo->m_pVersion->m_sVersion, pPluginInfo->m_sGuid);
 			}
 		}
 
@@ -1239,6 +1235,29 @@ private:
 
 				if (pos1 != std::wstring::npos && pos2 > pos1)
 					arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+
+				pos1 = sJson.find(sDelim, pos2 + 1);
+			}
+		}
+
+		return arrOutput.size() > 0;
+	}
+
+	bool ReadStoreConfig(const std::wstring& sFile, std::vector<std::wstring>& arrOutput)
+	{
+		// [ { "name": "", "discussion": "" }, ... ]
+		std::wstring sJson = L"";
+		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
+		{
+			std::wstring sDelim = L"\"name\": \"";
+			std::wstring::size_type pos1 = sJson.find(sDelim);
+
+			while ( pos1 != std::wstring::npos )
+			{
+				std::wstring::size_type pos2 = sJson.find(L"\"", pos1 + sDelim.length());
+
+				if (pos1 != std::wstring::npos && pos2 > pos1)
+					arrOutput.push_back(sJson.substr(pos1 + sDelim.length(), pos2 - pos1 - sDelim.length()));
 
 				pos1 = sJson.find(sDelim, pos2 + 1);
 			}

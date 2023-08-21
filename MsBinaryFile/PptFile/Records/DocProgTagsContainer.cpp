@@ -154,24 +154,28 @@ void CRecordDocProgBinaryTagSubContainerOrAtom::ReadFromStream(SRecordHeader &oH
         if (m_pTagName->m_strText == ___PPT9)
         {
             m_pTagContainer = new CRecordPP9DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP9DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
         } 
         else if (m_pTagName->m_strText == ___PPT10) 
         {
             m_pTagContainer = new CRecordPP10DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP10DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
         } 
         else if (m_pTagName->m_strText == ___PPT11) 
         {
             m_pTagContainer = new CRecordPP11DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP11DocBinaryTagExtension*>
                     (m_pTagContainer)->ReadFromStream(childHeader, pStream);
         }
         else if (m_pTagName->m_strText == ___PPT12) 
         {
             m_pTagContainer = new CRecordPP12DocBinaryTagExtension();
+            m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
             dynamic_cast<CRecordPP12DocBinaryTagExtension*>
                 (m_pTagContainer)->ReadFromStream(childHeader, pStream);
         }
@@ -179,6 +183,7 @@ void CRecordDocProgBinaryTagSubContainerOrAtom::ReadFromStream(SRecordHeader &oH
     else if (m_oHeader.RecType == RT_ProgStringTag)
     {
         m_pTagContainer = new CRecordProgStringTagContainer();
+        m_pTagContainer->m_pCommonInfo = m_pCommonInfo;
         dynamic_cast<CRecordProgStringTagContainer*>
                 (m_pTagContainer)->ReadFromStream(ReadHeader, pStream);
     }
@@ -212,8 +217,9 @@ void CRecordDocProgTagsContainer::ReadFromStream(SRecordHeader &oHeader, POLE::S
         if ( ReadHeader.ReadFromStream(pStream) == false)
             break;
         lCurLen +=	8 + ReadHeader.RecLen;
-        CRecordDocProgBinaryTagSubContainerOrAtom* pRecord =
-                new CRecordDocProgBinaryTagSubContainerOrAtom();
+        CRecordDocProgBinaryTagSubContainerOrAtom* pRecord = new CRecordDocProgBinaryTagSubContainerOrAtom();
+        pRecord->m_pCommonInfo = m_pCommonInfo;
+
         pRecord->ReadFromStream(ReadHeader, pStream);
         m_arrRgChildRec.push_back(pRecord);
     }

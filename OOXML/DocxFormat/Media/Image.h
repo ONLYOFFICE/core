@@ -47,4 +47,18 @@ namespace OOX
 		virtual const CPath DefaultDirectory() const;
 		virtual const CPath DefaultFileName() const;
 	};
+
+	class SvgBlip : public Image
+	{
+	public:
+		SvgBlip(OOX::Document* pMain, bool bDocument = true);
+		SvgBlip(OOX::Document* pMain, const CPath& filename, bool bExternal = false);
+		virtual ~SvgBlip();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+	};
+	
 } // namespace OOX

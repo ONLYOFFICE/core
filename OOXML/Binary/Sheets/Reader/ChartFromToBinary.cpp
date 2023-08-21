@@ -1005,6 +1005,9 @@ namespace BinXlsxRW
 	const BYTE c_oserct_dataLabel = 0x81;
 	const BYTE c_oserct_chartFiltering = 0x82;
 	const BYTE c_oserct_chartDataDisplayNaAsBlank = 0x83;
+	const BYTE c_oserct_chartExternalReference = 0x84;
+	const BYTE c_oserct_chartDataExternalFileKey = 0x85;
+	const BYTE c_oserct_chartDataExternalInstanceId = 0x86;
 
 	const BYTE c_oserct_dataLabelsRange = 0x90;
 	const BYTE c_oserct_filteredLineSeries = 0x91;
@@ -1050,6 +1053,11 @@ namespace BinXlsxRW
 		
 		OOX::Spreadsheet::CChartFile *pChart = static_cast<OOX::Spreadsheet::CChartFile*>(poResult);
 		
+		if (type > 0x80)
+		{
+			if (!pChart->m_oChartSpace.m_extLst.IsInit()) pChart->m_oChartSpace.m_extLst.Init();
+			return ReadExtensions(type, length, pChart->m_oChartSpace.m_extLst.GetPointer());
+		}
 		if (c_oserct_chartspaceDATE1904 == type)
 		{
 			bool pNewElem;
@@ -3201,6 +3209,30 @@ namespace BinXlsxRW
 			pVal->m_arrExt.back()->m_sAdditionalNamespace = L"xmlns:c16r3=\"http://schemas.microsoft.com/office/drawing/2017/03/chart\"";
 
 			pVal->m_arrExt.back()->m_oDataDisplayNaAsBlank = m_oBufferedStream.GetBool();
+		}
+		else if (type == c_oserct_chartExternalReference)
+		{
+			pVal->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+			pVal->m_arrExt.back()->m_sUri = L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}";
+
+			READ1_DEF(length, res, this->ReadCT_ChartExternalReference, pVal->m_arrExt.back());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int BinaryChartReader::ReadCT_ChartExternalReference(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::COfficeArtExtension* poVal = static_cast<OOX::Drawing::COfficeArtExtension*>(poResult);
+
+		if (type == c_oserct_chartDataExternalFileKey)
+		{
+			poVal->m_oFileKey = m_oBufferedStream.GetString4(length);
+		}
+		else if (type == c_oserct_chartDataExternalInstanceId)
+		{
+			poVal->m_oInstanceId = m_oBufferedStream.GetString4(length);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -8928,6 +8960,24 @@ namespace BinXlsxRW
 				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartDataDisplayNaAsBlank);
 					m_oBcw.m_oStream.WriteBOOL(*pVal->m_arrExt[i]->m_oDataDisplayNaAsBlank);
 				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if (pVal->m_arrExt[i]->m_oFileKey.IsInit() || pVal->m_arrExt[i]->m_oInstanceId.IsInit())
+			{
+				int nCurPos1 = m_oBcw.WriteItemStart(c_oserct_chartExternalReference);
+				
+				if (pVal->m_arrExt[i]->m_oFileKey.IsInit())
+				{
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartDataExternalFileKey);
+					m_oBcw.m_oStream.WriteStringW4(*pVal->m_arrExt[i]->m_oFileKey);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if (pVal->m_arrExt[i]->m_oInstanceId.IsInit())
+				{
+					int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartDataExternalInstanceId);
+					m_oBcw.m_oStream.WriteStringW4(*pVal->m_arrExt[i]->m_oInstanceId);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				m_oBcw.WriteItemEnd(nCurPos1);
 			}
 		}
 	}

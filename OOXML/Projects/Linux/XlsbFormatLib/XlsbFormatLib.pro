@@ -313,8 +313,6 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetData.cpp \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.cpp \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.cpp \
-	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.cpp \
-	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.cpp \
 	../../../XlsbFormat/Biff12_records/SXTupleSetRowItem.cpp \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetRow.cpp \
 	../../../XlsbFormat/Biff12_records/PCDCalcMem15.cpp \
@@ -694,8 +692,6 @@ SOURCES += \
 	../../../XlsbFormat/Biff12_structures/BookProtectionFlags.cpp \
 	../../../XlsbFormat/Biff12_structures/Cell.cpp \
 	../../../XlsbFormat/Biff12_structures/GrbitFmla.cpp \
-	../../../XlsbFormat/Biff12_structures/SxOs.cpp \
-	../../../XlsbFormat/Biff12_structures/SxSu.cpp \
 	../../../XlsbFormat/Biff12_structures/CFType.cpp \
 	../../../XlsbFormat/Biff12_structures/CFTemp.cpp \
 	../../../XlsbFormat/Biff12_structures/CFOper.cpp \
@@ -1142,7 +1138,6 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/CalcProp.h \
 	../../../XlsbFormat/Biff12_records/Cell.h \
 	../../../XlsbFormat/Biff12_records/CellMeta.h \
-	../../../XlsbFormat/Biff12_records/Color.h \
 	../../../XlsbFormat/Biff12_records/Color14.h \
 	../../../XlsbFormat/Biff12_records/CommentAuthor.h \
 	../../../XlsbFormat/Biff12_records/CommentText.h \
@@ -1339,8 +1334,6 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetHeader.h \
 	../../../XlsbFormat/Biff12_records/SXTupleSetHeaderItem.h \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetData.h \
-	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.h \
-	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.h \
 	../../../XlsbFormat/Biff12_records/EndSXTupleSetData.h \
 	../../../XlsbFormat/Biff12_records/BeginSXTupleSetRow.h \
 	../../../XlsbFormat/Biff12_records/SXTupleSetRowItem.h \
@@ -1727,37 +1720,19 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_structures/CFVOType14.h \
 	../../../XlsbFormat/Biff12_structures/CFVOtype.h \
 	../../../XlsbFormat/Biff12_structures/Cell.h \
-	../../../XlsbFormat/Biff12_structures/CellRangeRef.h \
-	../../../XlsbFormat/Biff12_structures/CellRef.h \
 	../../../XlsbFormat/Biff12_structures/CodeName.h \
-	../../../XlsbFormat/Biff12_structures/ColSpan.h \
 	../../../XlsbFormat/Biff12_structures/FRTBlank.h \
-	../../../XlsbFormat/Biff12_structures/FRTFormula.h \
-	../../../XlsbFormat/Biff12_structures/FRTFormulas.h \
-	../../../XlsbFormat/Biff12_structures/FRTHeader.h \
-	../../../XlsbFormat/Biff12_structures/FRTParsedFormula.h \
 	../../../XlsbFormat/Biff12_structures/FRTProductVersion.h \
-	../../../XlsbFormat/Biff12_structures/FRTRef.h \
-	../../../XlsbFormat/Biff12_structures/FRTRefs.h \
-	../../../XlsbFormat/Biff12_structures/FRTRelID.h \
-	../../../XlsbFormat/Biff12_structures/FRTSqref.h \
-	../../../XlsbFormat/Biff12_structures/FRTSqrefs.h \
 	../../../XlsbFormat/Biff12_structures/GradientStop.h \
 	../../../XlsbFormat/Biff12_structures/GrbitFmla.h \
 	../../../XlsbFormat/Biff12_structures/IsoPasswordData.h \
 	../../../XlsbFormat/Biff12_structures/LPByteBuf.h \
 	../../../XlsbFormat/Biff12_structures/PhRun.h \
-	../../../XlsbFormat/Biff12_structures/RelID.h \
 	../../../XlsbFormat/Biff12_structures/RichStr.h \
 	../../../XlsbFormat/Biff12_structures/StrRun.h \
-	../../../XlsbFormat/Biff12_structures/SxOs.h \
-	../../../XlsbFormat/Biff12_structures/SxSu.h \
-	../../../XlsbFormat/Biff12_structures/UncheckedSqRfX.h \
-	../../../XlsbFormat/Biff12_structures/XLWideString.h \
 	../../../XlsbFormat/Biff12_structures/ListType.h \
 	../../../XlsbFormat/Biff12_structures/XmlDataType.h \
 	../../../XlsbFormat/Biff12_structures/ListTotalRowFunction.h \
-	../../../XlsbFormat/Biff12_structures/DValStrings.h \
 	../../../XlsbFormat/Biff12_structures/DBType.h \
 	../../../XlsbFormat/Biff12_structures/CmdType.h \
 	../../../XlsbFormat/Biff12_structures/PCDISrvFmt.h \

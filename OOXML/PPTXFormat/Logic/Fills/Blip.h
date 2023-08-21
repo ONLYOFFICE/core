@@ -31,9 +31,10 @@
  */
 #pragma once
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/BlipCompression.h"
-#include "./../UniEffect.h"
+#include "../../WrapperWritingElement.h"
+#include "../../Limit/BlipCompression.h"
+#include "../UniEffect.h"
+#include "../ExtP.h"
 #include "../../../DocxFormat/RId.h"
 
 namespace PPTX
@@ -64,7 +65,8 @@ namespace PPTX
 			virtual std::wstring GetFullPicName(OOX::IFileContainer* pRels = NULL) const;
 			virtual std::wstring GetFullOleName(const OOX::RId& pRId, OOX::IFileContainer* pRels = NULL) const;
 
-			std::vector<UniEffect> Effects;
+			std::vector<UniEffect>	Effects;
+			std::vector<Ext>		ExtLst;
 
 			nullable_limit<Limit::BlipCompression> cstate;
 			nullable<OOX::RId>	embed;

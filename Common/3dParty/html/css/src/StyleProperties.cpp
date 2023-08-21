@@ -392,11 +392,12 @@ namespace NSCSS
 
 	std::wstring CColor::ConvertRGBtoHEX(const TRGB &oValue)
 	{
-		wchar_t arTemp[6];
+		const int tempLen = 7;
+		wchar_t arTemp[tempLen];
 
-		swprintf(arTemp, sizeof(arTemp), L"%2hhX%2hhX%2hhX", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
+		swprintf(arTemp, tempLen, L"%02X%02X%02X", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
 
-		return std::wstring(arTemp);
+		return std::wstring(arTemp, 6);
 	}
 
 	std::wstring CColor::CutURL(const std::wstring &wsValue)
@@ -2212,8 +2213,25 @@ namespace NSCSS
 
 	bool CColorValue::operator==(const CColorValue &oColorValue) const
 	{
-		return (m_enType == oColorValue.m_enType) && ((ColorEmpty == m_enType) || (ColorNone == m_enType) ||
-		                                              (ColorRGB == m_enType && *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor)) || ((ColorHEX == m_enType || ColorUrl == m_enType) && *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor)));
+		if (m_enType != oColorValue.m_enType)
+			return false;
+
+		if (ColorEmpty == m_enType ||
+		    ColorNone == m_enType)
+			return true;
+
+		switch (m_enType)
+		{
+		case ColorRGB:
+			return *static_cast<TRGB*>(m_pColor) == *static_cast<TRGB*>(oColorValue.m_pColor);
+		case ColorHEX:
+		case ColorUrl:
+			return *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor);
+		default:
+			break;
+		}
+
+		return false;
 	}
 
 	CColorValue &CColorValue::operator=(const CColorValue &oColorValue)

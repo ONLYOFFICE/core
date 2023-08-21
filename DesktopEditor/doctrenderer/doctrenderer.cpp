@@ -548,6 +548,8 @@ namespace NSDoctRenderer
 
 		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
 		{
+			if (strScript.empty() && sCachePath.empty()) return true;
+
 			LOGGER_SPEED_START();
 
 			bool bIsBreak = false;

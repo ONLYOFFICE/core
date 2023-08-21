@@ -924,7 +924,8 @@ namespace NExtractTools
                     eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
 					eRes = TCD_NON_AUTO; // параметры требуют уточнений
-				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
+				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && (0 !=	(AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) || 
+																						(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)))
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
                     eRes = TCD_DOCUMENT2;

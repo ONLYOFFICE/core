@@ -29,12 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//+	shapetypeLeftRightRibbon
-//+ shapetypeEllipseRibbon
-//+ shapetypEllipseRibbon2
-//+ shapetypEllipseRibbon
-//+ shapetypRibbon
-//+ shapetypRibbon2
 namespace cpdoccore 
 {
 class oox_shape_LeftRightRibbon : public oox_shape

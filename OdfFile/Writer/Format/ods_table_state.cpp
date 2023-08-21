@@ -1913,7 +1913,7 @@ void ods_table_state::end_conditional_formats()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_format(std::wstring ref)
+void ods_table_state::start_conditional_format(const std::wstring& ref)
 {
 	office_element_ptr elm;
 	create_element(L"calcext", L"conditional-format", elm, context_);
@@ -1926,7 +1926,7 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 	if (cond_format)
 	{
 		formulasconvert::oox2odf_converter converter;
-		std::wstring out = converter.convert_ref(ref);
+		std::wstring out = converter.convert_ref_distances(ref, L" ", L" ");
 
 		cond_format->calcext_target_range_address_ = out;
 		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
@@ -2020,7 +2020,7 @@ void ods_table_state::end_conditional_rule()
 	current_level_.pop_back();
 }
 
-void ods_table_state::set_conditional_formula(std::wstring formula)
+void ods_table_state::set_conditional_formula(const std::wstring& formula)
 {
 	calcext_condition* condition = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 
@@ -2134,7 +2134,7 @@ void ods_table_state::set_conditional_operator(int _operator)
 		}
 	}
 }
-void ods_table_state::set_conditional_value(int type, std::wstring value )
+void ods_table_state::set_conditional_value(int type, const std::wstring& value )
 {
 	calcext_icon_set* icon_set		 = dynamic_cast<calcext_icon_set*>	 (current_level_.back().get());
 	calcext_data_bar* data_bar		 = dynamic_cast<calcext_data_bar*>	 (current_level_.back().get());
@@ -2150,19 +2150,20 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 		calcext_formatting_entry * entry = dynamic_cast<calcext_formatting_entry*>(elm.get());
 		if (entry)
 		{
+			entry->show_value_ = icon_set ? icon_set->show_value_ : data_bar->show_value_;
 			switch(type)
 			{
-				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
-				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
-				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
-				case 5: entry->calcext_type_ = calcext_type(calcext_type::Percentile); break;
-				case 6: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
-				case 7: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
+				case 1: entry->type_ = calcext_type(calcext_type::Maximum); break;
+				case 2: entry->type_ = calcext_type(calcext_type::Minimum); break;
+				case 4: entry->type_ = calcext_type(calcext_type::Percent); break;
+				case 5: entry->type_ = calcext_type(calcext_type::Percentile); break;
+				case 6: entry->type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 7: entry->type_ = calcext_type(calcext_type::AutoMaximum); break;
 				case 0: //Formula	
 				case 3: //Number
-				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
+				default: entry->type_ = calcext_type(calcext_type::Number);
 			}
-			entry->calcext_value_ = value;
+			entry->value_ = value;
 		}
 	}
 
@@ -2190,7 +2191,19 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 		}
 		///color???? - прихоодят выше уровнем !!
 	}
-
+}
+void ods_table_state::set_conditional_show_value(bool value)
+{
+	calcext_icon_set* cond_format = dynamic_cast<calcext_icon_set*>(current_level_.back().get());
+	if (cond_format)
+	{
+		cond_format->show_value_ = value;
+	}
+	calcext_data_bar* cond_format2 = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+	if (cond_format2)
+	{
+		cond_format2->show_value_ = value;
+	}
 }
 void ods_table_state::set_conditional_iconset(int type_iconset)
 {
@@ -2201,7 +2214,7 @@ void ods_table_state::set_conditional_iconset(int type_iconset)
 		cond_format->attr_.calcext_icon_set_type_ = iconset_type((iconset_type::type)type_iconset);
 	}
 }
-void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color) color)
+void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color)& color)
 {
 	calcext_color_scale *scale = dynamic_cast<calcext_color_scale*>(current_level_.back().get());
 
@@ -2215,7 +2228,7 @@ void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color) color
 		color_scale_entry->calcext_color_ = color;
 	}
 }
-void ods_table_state::set_conditional_databar_color(_CP_OPT(color) color)
+void ods_table_state::set_conditional_databar_color(_CP_OPT(color)& color)
 {
 	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
 
@@ -2223,6 +2236,34 @@ void ods_table_state::set_conditional_databar_color(_CP_OPT(color) color)
 	{
 		cond_format->attr_.calcext_positive_color_ = color;
 	}
+}
+void ods_table_state::set_conditional_databar_axis_color(_CP_OPT(color)& color)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.calcext_axis_color_ = color;
+	}
+}
+void ods_table_state::set_conditional_databar_negative_color(_CP_OPT(color)& color)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.calcext_negative_color_ = color;
+	}
+}
+void ods_table_state::set_conditional_databar_axis_position(const std::wstring& type)
+{
+	calcext_data_bar* cond_format = dynamic_cast<calcext_data_bar*>(current_level_.back().get());
+
+	if (cond_format)
+	{
+		cond_format->attr_.calcext_axis_position_ = type;
+	}
+
 }
 
 }

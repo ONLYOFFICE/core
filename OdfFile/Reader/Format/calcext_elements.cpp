@@ -59,6 +59,7 @@ void calcext_data_bar_attr::add_attributes( const xml::attributes_wc_ptr & Attri
 	CP_APPLY_ATTR(L"calcext:negative-color",	negative_color_);
 	CP_APPLY_ATTR(L"calcext:min-length",		min_length_);
 	CP_APPLY_ATTR(L"calcext:max-length",		max_length_);
+	CP_APPLY_ATTR(L"calcext:axis-position",		axis_position_);
 }
 
 void calcext_icon_set_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -173,6 +174,11 @@ void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (attr_.positive_color_)
 		Context.get_conditionalFormatting_context().add_color(L"ff" + attr_.positive_color_->get_hex_value());
+	if (attr_.negative_color_)
+		Context.get_conditionalFormatting_context().set_negative_color(L"ff" + attr_.negative_color_->get_hex_value());
+
+	if (attr_.axis_position_)
+		Context.get_conditionalFormatting_context().set_axis_position(*attr_.axis_position_);
 
 	Context.get_conditionalFormatting_context().set_dataBar(attr_.min_length_, attr_.max_length_);
 
@@ -208,7 +214,6 @@ const wchar_t * calcext_icon_set::name	= L"icon-set";
 
 void calcext_icon_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"calcext:show-value", show_value_);
 	attr_.add_attributes(Attributes);
 }
 void calcext_icon_set::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -219,8 +224,8 @@ void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	Context.get_conditionalFormatting_context().add_rule(4);
 	
-	if (show_value_)
-		Context.get_conditionalFormatting_context().set_showVal(*show_value_);
+	if (attr_.icon_set_type_)
+		Context.get_conditionalFormatting_context().set_icon_set_type(attr_.icon_set_type_->get_type());
 	
 	for (size_t i = 0 ; i < content_.size(); i++)
 	{
@@ -237,6 +242,7 @@ void calcext_formatting_entry::add_attributes( const xml::attributes_wc_ptr & At
 {
 	CP_APPLY_ATTR(L"calcext:value", value_);
 	CP_APPLY_ATTR(L"calcext:type", type_);
+	CP_APPLY_ATTR(L"calcext:show-value", show_value_);
 }
 void calcext_formatting_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -246,6 +252,9 @@ void calcext_formatting_entry::xlsx_convert(oox::xlsx_conversion_context & Conte
 {
 	calcext_type::type t = type_.get_value_or(calcext_type::Number).get_type();
 	Context.get_conditionalFormatting_context().add_sfv((int)t, value_.get_value_or(L""));
+	
+	if (show_value_)
+		Context.get_conditionalFormatting_context().set_showVal(*show_value_);
 }
 
 // calcext_color_scale_entry

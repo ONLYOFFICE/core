@@ -45,7 +45,7 @@ boost::shared_ptr<cpdoccore::odf_reader::odf_document> EntranceTestEnvironment::
 
 void EntranceTestEnvironment::SetUp()
 {
-	sExampleFilename = L"enterence.odp";
+	sExampleFilename = L"entrance.odp";
 
 	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
 	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");

@@ -38,12 +38,14 @@ core_linux {
 
 HEADERS += \
     common.h\
-    entrance.h
+    entrance.h\
+    motion.h
 
 SOURCES += \
     test.cpp\
     common.cpp\
     entrance.cpp\
+    motion.cpp\
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp
 
 SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc

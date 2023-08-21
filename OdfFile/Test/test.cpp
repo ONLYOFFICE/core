@@ -33,10 +33,12 @@
 #include "gtest/gtest.h"
 
 #include "entrance.h"
+#include "motion.h"
 
 int main(int argc, char* argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);
 	::testing::AddGlobalTestEnvironment(new EntranceTestEnvironment);
+	::testing::AddGlobalTestEnvironment(new MotionTestEnvironment);
 	return RUN_ALL_TESTS();
 }

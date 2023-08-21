@@ -373,6 +373,8 @@ static std::wstring pptx_convert_svg_path(const std::vector<::svg_path::_polylin
 		}
 	}
 
+	result << L"E"; // end of svg path
+
 	return result.str();
 }
 

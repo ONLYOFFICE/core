@@ -99,6 +99,12 @@ void X509_FREE(X509*& cert)
 		cert = NULL;
 	}
 }
+void x509_add_ext(X509V3_CTX* ctx, X509* cert, int nid, const char* value)
+{
+	X509_EXTENSION* ext = X509V3_EXT_conf_nid(NULL, ctx, nid, value);
+	X509_add_ext(cert, ext, -1);
+	X509_EXTENSION_free(ext);
+}
 
 class CCertificate_openssl : public ICertificate
 {
@@ -143,64 +149,6 @@ public:
 			CRYPTO_cleanup_all_ex_data();
 			ERR_free_strings();
 		}
-	}
-
-	bool Generate2(const std::string& key_alg)
-	{
-		EVP_PKEY* pubkeyEd25519=EVP_PKEY_new();
-		EVP_PKEY* privkeyEd25519=EVP_PKEY_new();
-
-		unsigned char sPublicK[32] = {1,1,1,1,1,1,1,1,1,1,
-										1,1,1,1,1,1,1,1,1,1,
-										1,1,1,1,1,1,1,1,1,1,
-										1,1};
-		unsigned char sPrivateK[32] = {2,1,1,1,1,1,1,1,1,1,
-										1,1,1,1,1,1,1,1,1,1,
-										1,1,1,1,1,1,1,1,1,1,
-										1,1};
-
-		pubkeyEd25519 = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL, sPublicK, 32);
-		privkeyEd25519 = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, NULL, sPrivateK, 32);
-
-		if ((m_cert=X509_new()) == NULL)
-			return false;
-
-		X509_set_version(m_cert,2);
-		X509_gmtime_adj(X509_get_notBefore(m_cert),(long)0);
-		X509_gmtime_adj(X509_get_notAfter(m_cert), 31536000L);
-		X509_set_pubkey(m_cert,privkeyEd25519);
-
-		 X509_NAME *subjectName=X509_get_subject_name(m_cert);
-
-		X509_NAME_add_entry_by_txt(subjectName, "C",  MBSTRING_ASC,
-								(unsigned char *)"US", -1, -1, 0);
-		X509_NAME_add_entry_by_txt(subjectName, "O",  MBSTRING_ASC,
-								(unsigned char *)"Organization", -1, -1, 0);
-		X509_NAME_add_entry_by_txt(subjectName, "CN", MBSTRING_ASC,
-								(unsigned char *)"CNwho", -1, -1, 0);
-
-		X509_set_issuer_name(m_cert,subjectName);
-
-		EVP_PKEY *pkey = X509_get_pubkey(m_cert);
-
-		if (!X509_sign(m_cert,privkeyEd25519,EVP_md_null()))
-				return false;
-
-			int resultverifyx509 = X509_verify(m_cert, pkey);
-			std::string sErr = ERR_error_string(ERR_get_error(),NULL);
-
-			BIO* inputbio = BIO_new(BIO_s_mem());
-			BIO_write(inputbio, sPublicK, 322);
-			PKCS7* pkcs7 = PKCS7_sign(m_cert, privkeyEd25519, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
-			BIO_free(inputbio);
-			sErr = ERR_error_string(ERR_get_error(), NULL);
-
-			EVP_PKEY_free(pubkeyEd25519);
-			EVP_PKEY_free(privkeyEd25519);
-			//EVP_PKEY_free(pkey);
-			X509_free(m_cert);
-
-			return true;
 	}
 
 	bool Generate(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props = std::map<std::wstring, std::wstring>())
@@ -335,6 +283,17 @@ public:
 
 		X509_set_issuer_name(m_cert, name_record);
 
+		X509V3_CTX ctx;
+		X509V3_set_ctx_nodb(&ctx);
+		X509V3_set_ctx(&ctx, m_cert, m_cert, NULL, NULL, 0);
+
+		x509_add_ext(&ctx, m_cert, NID_basic_constraints, "critical,CA:FALSE");
+		x509_add_ext(&ctx, m_cert, NID_key_usage, "critical,digitalSignature");
+		// x509_add_ext(&ctx, m_cert, NID_ext_key_usage, "critical,serverAuth,clientAuth");
+		// x509_add_ext(&ctx, m_cert, NID_subject_key_identifier, "hash");
+		// x509_add_ext(&ctx, m_cert, NID_netscape_cert_type, "client,server");
+		// x509_add_ext(&ctx, m_cert, NID_netscape_comment, "Auto-Cert");
+
 		if (!props.empty())
 		{
 			std::string sAdditions = "";
@@ -347,18 +306,18 @@ public:
 				string_replace(sKey, "=", "&#61;");
 				string_replace(sValue, ";", "&#59;");
 
-				sAdditions += (sKey + "=" + sValue + ";");
+				sAdditions += (sKey + ":" + sValue + ",");
 			}
 
 			if (!sAdditions.empty())
 			{
-				//const int nid_user = OBJ_create("1.2.3", "key", "value");
-				ASN1_OCTET_STRING* oDataAdditions = ASN1_OCTET_STRING_new();
-				int nError = ASN1_OCTET_STRING_set(oDataAdditions, (unsigned const char*)sAdditions.c_str(), (int)sAdditions.length());
-				X509_EXTENSION* ext = X509_EXTENSION_create_by_NID(nullptr, NID_subject_alt_name, false, oDataAdditions);
-				nError = X509_add_ext(m_cert, ext, -1);
-				X509_EXTENSION_free(ext);
+				sAdditions.pop_back();
+				x509_add_ext(&ctx, m_cert, NID_subject_alt_name, sAdditions.c_str());
 			}
+
+			// int nid = OBJ_create("1.2.3.4", "short", "long");
+			// X509V3_EXT_add_alias(nid, NID_netscape_comment);
+			// x509_add_ext(&ctx, m_cert, nid, "value");
 		}
 
 		const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());

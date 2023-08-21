@@ -90,7 +90,7 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-	if (false)
+	if (true)
     {
 		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
 		std::wstring wsPrivateKeyFile = L"";
@@ -100,17 +100,19 @@ int main()
 		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
 
 		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
+		//properties.insert(std::make_pair(L"IP Address", L"127.0.0.1"));
 		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
-		properties.insert(std::make_pair(L"phone", L"+00000000000"));
-		std::wstring sNameTest = L"NameTest";
-		std::wstring sValueTest = L"ValueTest";
-		properties.insert(std::make_pair(sNameTest, sValueTest));
+		//properties.insert(std::make_pair(L"phone", L"+00000000000"));
+		//std::wstring sNameTest = L"NameTest";
+		//std::wstring sValueTest = L"ValueTest";
+		//properties.insert(std::make_pair(sNameTest, sValueTest));
 
 		pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-	if (true)
+	if (false)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);

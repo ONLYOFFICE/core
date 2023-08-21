@@ -102,6 +102,23 @@ namespace OOX
 			}
 
 		}
+		XLS::BaseObjectPtr CSharedStrings::WriteBin() const
+		{
+			XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
+			auto ptr(new XLSB::SHAREDSTRINGS);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			auto atribPtr(new XLSB::BeginSst);
+			if(m_oCount.IsInit())
+				atribPtr->cstTotal = m_oCount->GetValue();
+				atribPtr->cstUnique = m_oUniqueCount->GetValue();
+
+			for(auto i:m_arrItems)
+			{
+				ptr->m_BrtBeginSst = i->toBin();
+			}
+			return objectPtr;
+		}
 		void CSharedStrings::read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

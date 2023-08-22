@@ -29,44 +29,34 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-#ifndef FONTS_ASSISTANT_H
-#define FONTS_ASSISTANT_H
+#ifndef _BUILD_TEXT_HYPHEN_ENGINE_H_
+#define _BUILD_TEXT_HYPHEN_ENGINE_H_
 
 #include <string>
-#include <vector>
+#include "../config.h"
+#include "./languages.h"
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-
-#include "../../Common/kernel_config.h"
-
-namespace ASC
+namespace NSHyphen
 {
-	class GRAPHICS_DECL CFontsAssistant
+	class CEngine_private;
+	class GRAPHICS_DECL CEngine
 	{
 	public:
-		CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);
+		CEngine();
+		~CEngine();
 
-		void Check();
-		NSFonts::IApplicationFonts* Load();
+	public:
+		static void Init(const std::wstring& directory, const int cache_size = -1);
 
-		std::vector<std::wstring> GetAvailableFonts();
-		std::string GetScriptData();
+	public:
+		int LoadDictionary(const int& lang);
+		int LoadDictionary(const int& lang, const unsigned char* data, const unsigned int& data_len);
 
-		void AddExcludeFont(const std::wstring& sFontName);
+		char* Process(const int& lang, const char* word);
 
 	private:
-		static std::wstring GetSystemFontPath();
-
-	private:
-		std::vector<std::wstring> m_arFontsPaths;
-		std::wstring m_sDataFontsPath;
-
-		std::vector<std::wstring> m_arAvailableFonts;
-		std::string m_sScriptData;
-
-		std::vector<std::wstring> m_arExcludeFonts;
+		CEngine_private* m_internal;
 	};
 }
 
-#endif /* FONTS_ASSISTANT_H */
+#endif // _BUILD_TEXT_HYPHEN_ENGINE_H_

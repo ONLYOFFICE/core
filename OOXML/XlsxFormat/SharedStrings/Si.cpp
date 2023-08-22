@@ -135,7 +135,8 @@ namespace OOX
 			auto sString(new XLSB::SSTItem);
 			XLS::BaseObjectPtr objectPtr(sString);
 			auto ptr = &sString->richStr;
-
+			ptr->fExtStr = false;
+			ptr->fRichStr = false;
 			for(auto i = 0; i < m_arrItems.size(); i++)
 			{
 				auto text = static_cast<CText*>(m_arrItems[i]);
@@ -147,6 +148,7 @@ namespace OOX
 				auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
 				if(crunPtr)
 				{
+					ptr->fRichStr = true;
 					USHORT ind = 0;
 					ptr->str = ptr->str.value() + crunPtr->toBin(ind);
 					XLSB::StrRun run;
@@ -157,6 +159,7 @@ namespace OOX
 				auto phonPtr = static_cast<CPhonetic*>(m_arrItems[i]);
 				if(phonPtr)
 				{
+					ptr->fExtStr = true;
 					XLSB::PhRun phRun;
 					phonPtr->toBin(&phRun);
 					if(i < m_arrItems.size() - 1)

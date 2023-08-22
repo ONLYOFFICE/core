@@ -306,6 +306,9 @@ public:
 				string_replace(sKey, "=", "&#61;");
 				string_replace(sValue, ";", "&#59;");
 
+				if (sKey != "DNS" && sKey != "email")
+					continue;
+
 				sAdditions += (sKey + ":" + sValue + ",");
 			}
 

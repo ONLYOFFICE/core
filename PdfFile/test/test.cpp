@@ -143,7 +143,7 @@ int main()
         return 0;
     }
 
-	if (true)
+	if (false)
     {
         pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
@@ -173,12 +173,12 @@ int main()
     if (bResult && pdfFile.EditPdf(wsDstFile))
     {
         if (pCertificate)
-        {
-            if (pdfFile.EditPage(0))
-            {
-                TEST(&pdfFile);
-                pdfFile.Sign(10, 120, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-            }
+		{
+			if (pdfFile.EditPage(0))
+			{
+				TEST(&pdfFile);
+				pdfFile.Sign(10, 120, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+			}
         }
         else
         {

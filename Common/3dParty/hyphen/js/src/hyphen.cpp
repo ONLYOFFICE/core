@@ -29,35 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_TEXT_HYPHEN_ENGINE_H_
-#define _BUILD_TEXT_HYPHEN_ENGINE_H_
+#include "../../../../../DesktopEditor/fontengine/TextHyphen.h"
 
-#include <string>
-#include "../graphics/config.h"
-#include "./languages.h"
+#ifdef _WIN32
+#define WASM_EXPORT __declspec(dllexport)
+#else
+#define WASM_EXPORT __attribute__((visibility("default")))
+#endif
 
-namespace NSHyphen
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+WASM_EXPORT NSHyphen::CEngine* hyphenCreateApplication()
 {
-	class CEngine_private;
-	class GRAPHICS_DECL CEngine
-	{
-	public:
-		CEngine();
-		~CEngine();
-
-	public:
-		static void Init(const std::wstring& directory);
-
-	public:
-		void SetCacheSize(const int& size);
-		int LoadDictionary(const int& lang);
-		int LoadDictionary(const int& lang, const unsigned char* data, const unsigned int& data_len);
-
-		char* Process(const int& lang, const char* word, const int& len = -1);
-
-	private:
-		CEngine_private* m_internal;
-	};
+	return new NSHyphen::CEngine();
+}
+WASM_EXPORT void hyphenDestroyApplication(NSHyphen::CEngine* app)
+{
+	delete app;
 }
 
-#endif // _BUILD_TEXT_HYPHEN_ENGINE_H_
+WASM_EXPORT int hyphenLoadDictionary(NSHyphen::CEngine* app, const int lang, const char *dict, const unsigned int dict_size)
+{
+	return app->LoadDictionary(lang, (const unsigned char*)dict, dict_size);
+}
+WASM_EXPORT char* hyphenWord(NSHyphen::CEngine* app, const int lang, const char *word, const int word_len)
+{
+	return app->Process(lang, word, word_len);
+}
+
+#ifdef __cplusplus
+}
+#endif

@@ -33,10 +33,16 @@
 #include "./TextHyphen.h"
 
 #include <iostream>
+#include <map>
+#include <sstream>
+
 #include "../../Common/3dParty/hyphen/hyphen/hnjalloc.h"
 #include "../../Common/3dParty/hyphen/hyphen/hnjalloc.c"
-
 #include "../../Common/3dParty/hyphen/hyphen/hyphen.c"
+
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+#include "../common/Directory.h"
+#endif
 
 // function from hyphen.c using std::ifstream
 HyphenDict* hnj_hyphen_load_stream(std::istream &in)
@@ -134,20 +140,20 @@ HyphenDict* hnj_hyphen_load_stream(std::istream &in)
 	{
 		/* default first level: hyphen and ASCII apostrophe */
 		if (!dict[0]->utf8)
-			hnj_hyphen_load_line("NOHYPHEN ',-\n", dict[k], hashtab);
+			hnj_hyphen_load_line((char*)"NOHYPHEN ',-\n", dict[k], hashtab);
 
 		else
-			hnj_hyphen_load_line("NOHYPHEN ',\xe2\x80\x93,\xe2\x80\x99,-\n", dict[k], hashtab);
+			hnj_hyphen_load_line((char*)"NOHYPHEN ',\xe2\x80\x93,\xe2\x80\x99,-\n", dict[k], hashtab);
 
-		strncpy(buf, "1-1\n", MAX_CHARS - 1); /* buf rewritten by hnj_hyphen_load here */
+		strncpy(buf, (char*)"1-1\n", MAX_CHARS - 1); /* buf rewritten by hnj_hyphen_load here */
 		buf[MAX_CHARS-1] = '\0';
 		hnj_hyphen_load_line(buf, dict[k], hashtab); /* remove hyphen */
-		hnj_hyphen_load_line("1'1\n", dict[k], hashtab); /* ASCII apostrophe */
+		hnj_hyphen_load_line((char*)"1'1\n", dict[k], hashtab); /* ASCII apostrophe */
 
 		if (dict[0]->utf8)
 		{
-			hnj_hyphen_load_line("1\xe2\x80\x93" "1\n", dict[k], hashtab); /* endash */
-			hnj_hyphen_load_line("1\xe2\x80\x99" "1\n", dict[k], hashtab); /* apostrophe */
+			hnj_hyphen_load_line((char*)"1\xe2\x80\x93" "1\n", dict[k], hashtab); /* endash */
+			hnj_hyphen_load_line((char*)"1\xe2\x80\x99" "1\n", dict[k], hashtab); /* apostrophe */
 		}
 	}
 
@@ -226,31 +232,155 @@ namespace NSHyphen
 	{
 	public:
 		static std::wstring m_sDirectory;
-		static int m_nCacheSize;
 
-		int m_nLastLang;
+		int m_nCacheSize;
+		std::map<int, HyphenDict*> m_mapDicts;
 
+		int         m_nLastLang;
+		HyphenDict* m_pLastDict;
+
+		// работаем всегда в пределах одной памяти
+		char* m_pHyphenVector;
+		size_t m_nHyphenVectorSize;
 
 		CEngine_private()
 		{
+			m_nHyphenVectorSize = 100;
+
+			m_pHyphenVector = new char[m_nHyphenVectorSize];
+			memset(m_pHyphenVector, 0, m_nHyphenVectorSize);
+
+			m_nLastLang = 0;
+			m_pLastDict = NULL;
+
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+			m_nCacheSize = 5;
+#else
+			m_nCacheSize = -1;
+#endif
+		}
+
+		~CEngine_private()
+		{
+			delete [] m_pHyphenVector;
+		}
+
+		void AddLast()
+		{
+			if (m_pLastDict)
+			{
+				if (m_nCacheSize > 0 && m_mapDicts.size() == m_nCacheSize)
+				{
+					std::map<int, HyphenDict*>::iterator first = m_mapDicts.begin();
+					delete first->second;
+					m_mapDicts.erase(first);
+				}
+				m_mapDicts.insert(std::pair<int, HyphenDict*>{m_nLastLang, m_pLastDict});
+			}
 		}
 
 		int LoadDictionary(const int& lang)
 		{
-			return 0;
+			m_nLastLang = lang;
+			m_pLastDict = NULL;
+
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+			if (m_sDirectory.empty())
+				m_sDirectory = NSFile::GetProcessDirectory() + L"/dictionaries";
+
+			for (int i = 0; i < NSTextLanguages::DictionaryRec_count; ++i)
+			{
+				if (m_nLastLang == NSTextLanguages::Dictionaries[i].m_lang)
+				{
+					const char* sNameStr = NSTextLanguages::Dictionaries[i].m_name;
+					std::wstring sNameU = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sNameStr, (LONG)(strlen(sNameStr)));
+					std::wstring sFilePath = m_sDirectory + L"/" + sNameU + L"/hyph_" + sNameU + L".dic";
+
+					if (NSFile::CFileBinary::Exists(sFilePath))
+					{
+						FILE* f = NSFile::CFileBinary::OpenFileNative(sFilePath, L"r");
+						if (f == NULL)
+							return 1;
+
+						m_pLastDict = hnj_hyphen_load_file(f);
+						fclose(f);
+					}
+
+					break;
+				}
+			}
+#endif
+
+			AddLast();
+
+			return (NULL == m_pLastDict) ? 1 : 0;
 		}
 		int LoadDictionary(const int& lang, const unsigned char* data, const unsigned int& data_len)
 		{
-			return 0;
+			m_nLastLang = lang;
+			m_pLastDict = NULL;
+
+			std::stringstream ss;
+			ss.write((const char*)data, data_len);
+
+			m_pLastDict = hnj_hyphen_load_stream(ss);
+			AddLast();
+
+			return (NULL == m_pLastDict) ? 1 : 0;
 		}
-		char* Process(const int& lang, const char* word)
+		char* Process(const int& lang, const char* word, const int& len)
 		{
+			// resize 2x
+			if (len + 5 > m_nHyphenVectorSize)
+			{
+				delete[] m_pHyphenVector;
+				m_nHyphenVectorSize = 2 * (len + 5);
+				m_pHyphenVector = new char[m_nHyphenVectorSize];
+
+				memset(m_pHyphenVector, 0, m_nHyphenVectorSize);
+			}
+			else
+			{
+				// обнуляем после последнего использования
+				char* mem = m_pHyphenVector;
+				while (*mem)
+					*mem++ = 0;
+			}
+
+			if (m_nLastLang != lang)
+			{
+				std::map<int, HyphenDict*>::iterator find = m_mapDicts.find(lang);
+				if (find != m_mapDicts.end())
+				{
+					m_nLastLang = lang;
+					m_pLastDict = find->second;
+				}
+				else
+				{
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+					LoadDictionary(lang);
+#else
+					m_nLastLang = lang;
+					m_pLastDict = NULL;
+#endif
+				}
+			}
+
+			if (m_pLastDict)
+			{
+				char **rep = NULL;
+				int *pos = NULL;
+				int *cut = NULL;
+
+				hnj_hyphen_hyphenate2(m_pLastDict, word, len, m_pHyphenVector, NULL, &rep, &pos, &cut);
+				return m_pHyphenVector;
+			}
+
 			return NULL;
 		}
 	};
 
 	std::wstring CEngine_private::m_sDirectory = L"";
-	int CEngine_private::m_nCacheSize          = -1;
 
 	CEngine::CEngine()
 	{
@@ -261,10 +391,17 @@ namespace NSHyphen
 		delete m_internal;
 	}
 
-	void CEngine::Init(const std::wstring& directory, const int cache_size)
+	void CEngine::Init(const std::wstring& directory)
 	{
 		CEngine_private::m_sDirectory = directory;
-		CEngine_private::m_nCacheSize = cache_size;
+	}
+
+	void CEngine::SetCacheSize(const int& size)
+	{
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+		if (0 == m_internal->m_mapDicts.size())
+			m_internal->m_nCacheSize = size;
+#endif
 	}
 
 	int CEngine::LoadDictionary(const int& lang)
@@ -275,8 +412,8 @@ namespace NSHyphen
 	{
 		return m_internal->LoadDictionary(lang, data, data_len);
 	}
-	char* CEngine::Process(const int& lang, const char* word)
+	char* CEngine::Process(const int& lang, const char* word, const int& len)
 	{
-		return m_internal->Process(lang, word);
+		return m_internal->Process(lang, word, (len == -1) ? strlen(word) : len);
 	}
 }

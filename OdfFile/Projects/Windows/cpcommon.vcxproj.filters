@@ -362,6 +362,15 @@
     <ClInclude Include="..\..\DataTypes\presetid.h">
       <Filter>datatypes odf</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DataTypes\presentationnodetype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_additive.h" />
+    <ClInclude Include="..\..\DataTypes\smil_attributename.h" />
+    <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
+    <ClInclude Include="..\..\DataTypes\smil_values.h" />
+    <ClInclude Include="..\..\DataTypes\svg_type.h" />
+    <ClInclude Include="..\..\DataTypes\smil_fill.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
@@ -700,6 +709,15 @@
       <Filter>datatypes odf</Filter>
     </ClCompile>
     <ClCompile Include="..\..\DataTypes\presetid.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\presentationnodetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_additive.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_attributename.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_keytimes.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_values.cpp" />
+    <ClCompile Include="..\..\DataTypes\svg_type.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_fill.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

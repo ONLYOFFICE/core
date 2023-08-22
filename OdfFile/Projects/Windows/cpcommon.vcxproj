@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\DataTypes\shadowtype.h" />
     <ClInclude Include="..\..\DataTypes\smil_additive.h" />
     <ClInclude Include="..\..\DataTypes\smil_attributename.h" />
+    <ClInclude Include="..\..\DataTypes\smil_fill.h" />
     <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
     <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
     <ClInclude Include="..\..\DataTypes\smil_values.h" />
@@ -381,6 +382,7 @@
     <ClCompile Include="..\..\DataTypes\shadowtype.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_additive.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_attributename.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_fill.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_keytimes.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_values.cpp" />

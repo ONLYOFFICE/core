@@ -285,6 +285,9 @@ enum ElementType
     typeStyleMap,
 	typeStylePageMaster, // openoffice xml 1.0
 
+	typeStyleGradientStop,
+	typeStyleOpacityStop,
+
 	typeTableTemplate,
 	typeTableTemplateElement,
 	typeTableBodyTemplate,

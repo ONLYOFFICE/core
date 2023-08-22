@@ -332,9 +332,13 @@ void draw_marker::serialize(std::wostream & strm)
 const wchar_t * draw_gradient::ns = L"draw";
 const wchar_t * draw_gradient::name = L"gradient";
 
-void draw_gradient::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+void draw_gradient::add_child_element(const office_element_ptr& child)
 {
-    CP_NOT_APPLICABLE_ELM();
+	content_.push_back(child);
+}
+void draw_gradient::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
 }
 void draw_gradient::serialize(std::wostream & strm)
 {
@@ -357,6 +361,11 @@ void draw_gradient::serialize(std::wostream & strm)
 
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -389,9 +398,13 @@ void draw_hatch::serialize(std::wostream & strm)
 const wchar_t * draw_opacity::ns = L"draw";
 const wchar_t * draw_opacity::name = L"opacity";
 
-void draw_opacity::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+void draw_opacity::add_child_element(const office_element_ptr& child)
 {
-    CP_NOT_APPLICABLE_ELM();
+	content_.push_back(child);
+}
+void draw_opacity::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
 }
 void draw_opacity::serialize(std::wostream & strm)
 {
@@ -411,6 +424,11 @@ void draw_opacity::serialize(std::wostream & strm)
 
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",			draw_name_);
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name",	draw_display_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}
 }
@@ -1627,6 +1645,38 @@ void style_region_center::serialize(std::wostream & strm)
 		}
 	}
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_gradient_stop::ns = L"loext";
+const wchar_t* loext_gradient_stop::name = L"gradient-stop";
 
+void loext_gradient_stop::serialize(std::wostream& strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"loext:color-type", color_type_);
+			CP_XML_ATTR_OPT(L"loext:color-value", color_value_);
+			CP_XML_ATTR_OPT(L"svg:offset", svg_offset_);
+		}
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_opacity_stop::ns = L"loext";
+const wchar_t* loext_opacity_stop::name = L"opacity-stop";
+
+void loext_opacity_stop::serialize(std::wostream& strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"svg:stop-opacity", stop_opacity_);
+			CP_XML_ATTR_OPT(L"svg:offset", svg_offset_);
+
+			//CP_XML_ATTR_OPT(L"loext:stop-opacity", stop_opacity_); //?? 
+		}
+	}
+}
 }
 }

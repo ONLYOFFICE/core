@@ -3313,7 +3313,6 @@ void odf_drawing_context::start_gradient_style()
 	if (!impl_->current_graphic_properties) return;
 
 	odf_writer::office_element_ptr gradient_element;
-
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
@@ -3350,6 +3349,23 @@ void odf_drawing_context::set_gradient_type(gradient_style::type style)
 	if (!gradient) return;
 
 	gradient->draw_style_ = style;
+}
+void odf_drawing_context::set_gradient_stop(std::wstring hexColor, int pos)
+{
+	draw_gradient* gradient = dynamic_cast<draw_gradient*>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
+	if (!gradient) return;
+
+	odf_writer::office_element_ptr gradient_element;
+	odf_writer::create_element(L"loext", L"gradient-stop", gradient_element, impl_->odf_context_);
+	
+	loext_gradient_stop* gradient_stop = dynamic_cast<loext_gradient_stop*>(gradient_element.get());
+	if (!gradient_stop) return;
+
+	gradient->add_child_element(gradient_element);
+
+	gradient_stop->color_type_ = odf_types::color_type::rgb;
+	gradient_stop->color_value_ = hexColor;
+	gradient_stop->svg_offset_  = 1 - pos / 100000.;
 }
 void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
@@ -3433,6 +3449,23 @@ void odf_drawing_context::start_opacity_style()
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
 	
 	impl_->styles_context_->add_style(opacity_element, false, true, style_family::Opacity);
+}
+void odf_drawing_context::set_opacity_stop(_CP_OPT(double)& val, int pos)
+{
+	draw_opacity* opacity = dynamic_cast<draw_opacity*>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	odf_writer::office_element_ptr opacity_element;
+	odf_writer::create_element(L"loext", L"opacity-stop", opacity_element, impl_->odf_context_);
+
+	loext_opacity_stop* opacity_stop = dynamic_cast<loext_opacity_stop*>(opacity_element.get());
+	if (!opacity_stop) return;
+
+	opacity->add_child_element(opacity_element);
+
+	if (val)
+		opacity_stop->stop_opacity_ = *val /  100.;
+	opacity_stop->svg_offset_ = 1 - pos / 100000.;
 }
 void odf_drawing_context::set_opacity_start(double val)
 {

@@ -545,7 +545,7 @@ void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_gradient::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_hatch::ns = L"draw";
@@ -586,7 +586,7 @@ void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 // style:style
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2157,6 +2157,28 @@ void style_presentation_page_layout::pptx_convert(oox::pptx_conversion_context &
 		content_[i]->pptx_convert(Context);
 	}
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_gradient_stop::ns = L"loext";
+const wchar_t* loext_gradient_stop::name = L"gradient-stop";
+
+void loext_gradient_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"loext:color-type", color_type_);
+	CP_APPLY_ATTR(L"loext:color-value", color_value_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_opacity_stop::ns = L"loext";
+const wchar_t* loext_opacity_stop::name = L"opacity-stop";
+
+void loext_opacity_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"svg:stop-opacity", stop_opacity_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+	
+	//CP_APPLY_ATTR(L"loext:stop-opacity", stop_opacity_); //?? 
+}
+
 
 }
 }

@@ -121,35 +121,40 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions)
 {
+	bool result = true;
+
 	try
 	{
 		Docx2Txt::Converter converter;
-		converter.read(sSrcPath);
-		converter.convert();
-
-		int encoding  = ParseTxtOptions(sXMLOptions);
-		
-		if (encoding == EncodingType::Utf8)
-			converter.writeUtf8(sDstFileName);
-		else if (encoding == EncodingType::Unicode)
-			converter.writeUnicode(sDstFileName);
-		else if (encoding == EncodingType::Ansi)
-			converter.writeAnsi(sDstFileName);
-		else if (encoding == EncodingType::BigEndian)
-			converter.writeBigEndian(sDstFileName);
-		else if (encoding > 0) //code page
+		result = converter.read(sSrcPath);
+		if (result)
 		{
-			converter.write(sDstFileName);
+			converter.convert();
+
+			int encoding = ParseTxtOptions(sXMLOptions);
+
+			if (encoding == EncodingType::Utf8)
+				result = converter.writeUtf8(sDstFileName);
+			else if (encoding == EncodingType::Unicode)
+				result = converter.writeUnicode(sDstFileName);
+			else if (encoding == EncodingType::Ansi)
+				result = converter.writeAnsi(sDstFileName);
+			else if (encoding == EncodingType::BigEndian)
+				result = converter.writeBigEndian(sDstFileName);
+			else if (encoding > 0) //code page
+			{
+				result = converter.write(sDstFileName);
+			}
+			else //auto define
+				result = converter.write(sDstFileName);
 		}
-		else //auto define
-			converter.write(sDstFileName);
 	}
 	catch(...)
 	{
-		return AVS_FILEUTILS_ERROR_CONVERT;
+		result = false;
 	}
 
-	return 0;
+	return result ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 }
 
 

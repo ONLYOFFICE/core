@@ -69,7 +69,7 @@ int Compute_BorderWidth(const graphic_format_properties_ptr & graphicProperties,
 int GetMargin(const graphic_format_properties_ptr & graphicProperties, BorderSide borderSide);//emu
 
 void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, 
-						 const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);
+						 const office_element_ptr & style_image, odf_document *document, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);
 
 typedef double double_4[4];
 bool parse_clipping(std::wstring strClipping, std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts *appFonts);

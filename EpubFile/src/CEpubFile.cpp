@@ -167,7 +167,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     NSDirectory::CreateDirectory(sOutputDir);
     HRESULT hRes = oFile.OpenBatchHtml(arFiles, sOutputDir, &oFileParams);
     if (bIsOutCompress && S_OK == hRes)
-        oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
+        hRes = oOfficeUtils.CompressFileOrDirectory(sOutputDir, sOutputFile);
 
 #ifdef _DEBUG
     std::wcout << L"---" << (S_OK == hRes ? L"Successful" : L"Failed") << L" conversion of Epub to Docx---" << std::endl;
@@ -435,8 +435,14 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
 
     // title
     std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
-    if (sIndexHtml.find(L"<title>") == std::wstring::npos)
-        sIndexHtml.insert(sIndexHtml.find(L"</head>"), L"<title>" + sTitle + L"</title>");
+    replace_all(sTitle, L"&", L"&amp;");
+    replace_all(sTitle, L"<", L"&lt;");
+    replace_all(sTitle, L">", L"&gt;");
+    replace_all(sTitle, L"\"", L"&quot;");
+    replace_all(sTitle, L"\'", L"&#39;");
+    replace_all(sTitle, L"\n", L"&#xA;");
+    replace_all(sTitle, L"\r", L"&#xD;");
+    replace_all(sTitle, L"\t", L"&#x9;");
 
     // Разделение html по <br>
     int nFile = 0;
@@ -475,17 +481,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
 
     // content.opf
     NSFile::CFileBinary oContentOpf;
-    bool bWasLanguage = false, bWasTitle = false;
-
-    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
-    replace_all(sTitle, L"&", L"&amp;");
-    replace_all(sTitle, L"<", L"&lt;");
-    replace_all(sTitle, L">", L"&gt;");
-    replace_all(sTitle, L"\"", L"&quot;");
-    replace_all(sTitle, L"\'", L"&#39;");
-    replace_all(sTitle, L"\n", L"&#xA;");
-    replace_all(sTitle, L"\r", L"&#xD;");
-    replace_all(sTitle, L"\t", L"&#x9;");
+    bool bWasLanguage = false;
 
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
@@ -499,12 +495,10 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         {
             size_t nEnd = sIndexHtml.find(L"</title>", nFind);
             if (nEnd != std::wstring::npos)
-            {
-                bWasTitle = true;
                 sTitle = sIndexHtml.substr(nFind + 7, nEnd - nFind - 7);
-                oContentOpf.WriteStringUTF8(L"<dc:title>" + sTitle + L"</dc:title>");
-            }
         }
+        else
+            sIndexHtml.insert(sIndexHtml.find(L"</head>"), L"<title>" + sTitle + L"</title>");
 #define DocInfo(name, tag)\
 {\
     std::wstring sFind = L"<meta name=\""; sFind += name; sFind += L'\"';\
@@ -535,15 +529,12 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             oContentOpf.WriteStringUTF8(sUUID);
             oContentOpf.WriteStringUTF8(L"</dc:identifier>");
         }
-        if (!bWasTitle)
-        {
-            oContentOpf.WriteStringUTF8(L"<dc:title>");
-            oContentOpf.WriteStringUTF8(sTitle);
-            oContentOpf.WriteStringUTF8(L"</dc:title>");
-        }
         if (!bWasLanguage)
             oContentOpf.WriteStringUTF8(L"<dc:language>en-EN</dc:language>");
         // manifest
+        oContentOpf.WriteStringUTF8(L"<dc:title>");
+        oContentOpf.WriteStringUTF8(sTitle);
+        oContentOpf.WriteStringUTF8(L"</dc:title>");
         oContentOpf.WriteStringUTF8(L"</metadata><manifest><item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>");
         std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTempDir + L"/OEBPS/images");
         for (const std::wstring& sFileName : arFiles)
@@ -553,6 +544,17 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         }
         // spine & guide
         std::wstring sItemRef;
+        if (!nFile)
+        {
+            nFile = 1;
+            // write index.html
+            NSFile::CFileBinary oIndexHtml;
+            if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
+            {
+                oIndexHtml.WriteStringUTF8(sIndexHtml);
+                oIndexHtml.CloseFile();
+            }
+        }
         for (int i = 0; i < nFile; ++i)
         {
             std::wstring sI = std::to_wstring(i);
@@ -575,17 +577,6 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oTocNcx.WriteStringUTF8(sTitle);
         oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index0.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
-    }
-
-    // write index.html
-    if (!nFile)
-    {
-        NSFile::CFileBinary oIndexHtml;
-        if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index0.html"))
-        {
-            oIndexHtml.WriteStringUTF8(sIndexHtml);
-            oIndexHtml.CloseFile();
-        }
     }
 
     // compress

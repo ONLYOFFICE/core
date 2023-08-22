@@ -52,13 +52,11 @@ public:
 	static const ElementType type = typeIndex;
 
 //-----------------------------
-	BackwardOnlyParam<_UINT32>	rwMic;
-	BackwardOnlyParam<_UINT32>	rwMac;
-	ForwardOnlyParam<_UINT32>	ibXF;
-	BackwardOnlyParam<_UINT32>	num_pointers;
+	_UINT32	rwMic;
+	_UINT32	rwMac;
+	_UINT32	ibXF;
 
 	BiffStructurePtrVector rgibRw;
-
 };
 //000BH biff2
 } // namespace XLS

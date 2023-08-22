@@ -261,6 +261,7 @@
     <ClInclude Include="..\..\DataTypes\smil_keytimes.h" />
     <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
     <ClInclude Include="..\..\DataTypes\smil_values.h" />
+    <ClInclude Include="..\..\DataTypes\sparklines.h" />
     <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
     <ClInclude Include="..\..\DataTypes\stylefamily.h" />
     <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h" />
@@ -386,6 +387,7 @@
     <ClCompile Include="..\..\DataTypes\smil_keytimes.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_values.cpp" />
+    <ClCompile Include="..\..\DataTypes\sparklines.cpp" />
     <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp" />
     <ClCompile Include="..\..\DataTypes\stylefamily.cpp" />
     <ClCompile Include="..\..\DataTypes\stylehorizontalpos.cpp" />

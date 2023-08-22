@@ -36,12 +36,10 @@ using namespace PPT;
 
 CRecordBlipEntityAtom::CRecordBlipEntityAtom()
 {
-
 }
 
 CRecordBlipEntityAtom::~CRecordBlipEntityAtom()
 {
-    NSDirectory::DeleteDirectory(m_tmpFolder);
 }
 
 void CRecordBlipEntityAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
@@ -53,28 +51,13 @@ void CRecordBlipEntityAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream 
     SRecordHeader ReadHeader;
     ReadHeader.ReadFromStream(pStream);
 
-    m_tmpFolder = getTempFolder();
-    m_oBlip.m_strTmpDirectory = m_tmpFolder;
+    m_oBlip.m_pCommonInfo = m_pCommonInfo;
     m_oBlip.ReadFromStream(ReadHeader, pStream);
-}
-
-
-std::wstring CRecordBlipEntityAtom::getTempFolder() const
-{
-    std::wstring tempRootPath = NSDirectory::GetTempPath();
-    if (false == NSDirectory::Exists(tempRootPath))
-        return L"";
-    std::wstring tempFolder = NSDirectory::CreateDirectoryWithUniqueName(tempRootPath) + FILE_SEPARATOR_STR;
-    if (false == NSDirectory::Exists(tempFolder))
-        return L"";
-
-
-    return tempFolder;
 }
 
 const std::wstring CRecordBlipEntityAtom::getTmpImgPath() const
 {
-    return m_tmpFolder + m_oBlip.m_sFileName;
+    return m_pCommonInfo->tempPath + m_oBlip.m_fileName;
 }
 
 const std::wstring CRecordBlipEntityAtom::getImgExtention() const

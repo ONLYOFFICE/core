@@ -192,109 +192,109 @@ const std::vector<std::string> TxtFile::readUtf8()
 	return result;
 }
 
-void TxtFile::writeAnsiOrCodePage(const std::vector<std::string>& content) // === writeUtf8withoutPref также
+bool TxtFile::writeAnsiOrCodePage(const std::vector<std::string>& content) // === writeUtf8withoutPref также
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path))
-	{
-		BYTE endLine[2] = {0x0d, 0x0a};
-        for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
-		{
-			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
-			file.WriteFile(endLine, 2);
+	if (!file.CreateFileW(m_path)) return false;
 
-			m_linesCount++;
-		}
+	BYTE endLine[2] = {0x0d, 0x0a};
+	for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
+	{
+		file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
+		file.WriteFile(endLine, 2);
+
+		m_linesCount++;
 	}
+	return true;
 }
 
-void TxtFile::writeUnicode(const std::vector<std::wstring>& content)
+bool TxtFile::writeUnicode(const std::vector<std::wstring>& content)
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path))
+	if (!file.CreateFileW(m_path)) return false;
+
+	BYTE Header[2]	= {0xff, 0xfe};
+	BYTE EndLine[4] = { 0x0d, 0x00, 0x0a, 0x00 };
+
+	file.WriteFile(Header, 2);
+
+	for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 	{
-		BYTE Header[2]	= {0xff, 0xfe};
-		BYTE EndLine[4] = {0x0d, 0x00, 0x0a, 0x00};
-		
-		file.WriteFile(Header,2);
+		const wchar_t *	data = (*iter).c_str();
+		int				size = (*iter).length();
 
-        for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
+		if (sizeof(wchar_t) == 2)
 		{
-			const wchar_t *	data = (*iter).c_str();
-			int				size = (*iter).length();
-
-			if(sizeof(wchar_t) == 2)
-			{
-				file.WriteFile((BYTE*)data, size << 1);
-			}
-			else
-			{
-				//convert Utf 32 to Utf 16
-			}
-
-			file.WriteFile(EndLine, 4);
-			m_linesCount++;
+			file.WriteFile((BYTE*)data, size << 1);
 		}
-		file.CloseFile();
-	}	
-}
-
-void TxtFile::writeBigEndian(const std::vector<std::wstring>& content)
-{
-	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path))
-	{
-		BYTE Header[2]	= {0xfe,	0xff};
-		BYTE EndLine[4] = {0x00, 0x0d, 0x00, 0x0a};
-		
-		file.WriteFile(Header,2);
-
-        for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
+		else
 		{
-			if(sizeof(wchar_t) == 2)
-			{
-				BYTE*	data = (BYTE*)(*iter).c_str();
-				int		size = (*iter).length();
-				//swap bytes
-				for (long i = 0; i < size << 1; i+=2)
-				{
-					char v		= data[i];
-					data[i]		= data[i+1];
-					data[i+1]	= v;
-				}
-				file.WriteFile((BYTE*)(*iter).c_str(), size << 1);
-			}
-			else
-			{
-				//convert Utf 32 to Utf 16
-			}
-
-			file.WriteFile(EndLine, 4);
-			m_linesCount++;
+			//convert Utf 32 to Utf 16
 		}
-		file.CloseFile();
-	}	
-}
 
-void TxtFile::writeUtf8(const std::vector<std::string>& content)
-{
-	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path))
-	{
-		BYTE Header[3]	= {0xef ,0xbb , 0xbf};
-		BYTE EndLine[2]	= {0x0d ,0x0a};
-
-		file.WriteFile(Header,3);
-
-        for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
-		{
-			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
-			file.WriteFile((BYTE*)EndLine, 2);
-
-			m_linesCount++;
-		}
-		file.CloseFile();
+		file.WriteFile(EndLine, 4);
+		m_linesCount++;
 	}
+	file.CloseFile();
+	return true;
+}
+
+bool TxtFile::writeBigEndian(const std::vector<std::wstring>& content)
+{
+	NSFile::CFileBinary file;
+	if (!file.CreateFileW(m_path)) return false;
+
+	BYTE Header[2]	= {0xfe,	0xff};
+	BYTE EndLine[4] = { 0x00, 0x0d, 0x00, 0x0a };
+
+	file.WriteFile(Header, 2);
+
+	for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
+	{
+		if (sizeof(wchar_t) == 2)
+		{
+			BYTE*	data = (BYTE*)(*iter).c_str();
+			int		size = (*iter).length();
+			//swap bytes
+			for (long i = 0; i < size << 1; i += 2)
+			{
+				char v = data[i];
+				data[i] = data[i + 1];
+				data[i + 1] = v;
+			}
+			file.WriteFile((BYTE*)(*iter).c_str(), size << 1);
+		}
+		else
+		{
+			//convert Utf 32 to Utf 16
+		}
+
+		file.WriteFile(EndLine, 4);
+		m_linesCount++;
+	}
+	file.CloseFile();	
+	return true;
+}
+
+bool TxtFile::writeUtf8(const std::vector<std::string>& content)
+{
+	NSFile::CFileBinary file;
+	if (!file.CreateFileW(m_path)) return false;
+
+	BYTE Header[3] = { 0xef ,0xbb , 0xbf };
+	BYTE EndLine[2] = { 0x0d ,0x0a };
+
+	file.WriteFile(Header, 3);
+
+	for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
+	{
+		file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
+		file.WriteFile((BYTE*)EndLine, 2);
+
+		m_linesCount++;
+	}
+	file.CloseFile();
+	return true;
 }
 
 const bool TxtFile::isUnicode()

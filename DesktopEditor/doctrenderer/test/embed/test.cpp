@@ -26,12 +26,11 @@ public:
 	void SetUp() override
 	{
 		// create context
-		m_pContext = new CJSContext;
-		m_pContext->CreateContext();
+		m_pContext = new CJSContext();
 
 		m_pContext->Enter();
 		// create default embeded objects for context
-		CreateDefaults(m_pContext);
+		CreateDefaults();
 	}
 
 	void TearDown() override
@@ -43,7 +42,7 @@ public:
 	{
 		std::string sAlg = std::to_string(static_cast<int>(alg));
 		JSSmart<CJSValue> oRes1 = m_pContext->runScript(
-			"var oHash = new CreateNativeHash;\n"
+			"var oHash = CreateEmbedObject('CHashEmbed');\n"
 			"var str = '" + str + "';\n"
 			"var alg = " + sAlg + ";\n"
 			"var hash = oHash.hash(str, str.length, alg);");
@@ -59,7 +58,7 @@ public:
 		std::string sSpinCount = std::to_string(nSpinCount);
 		std::string sAlg = std::to_string(static_cast<int>(alg));
 		JSSmart<CJSValue> oRes1 = m_pContext->runScript(
-			"var oHash = new CreateNativeHash;\n"
+			"var oHash = CreateEmbedObject('CHashEmbed');\n"
 			"var sPassword = '" + sPassword + "';\n"
 			"var sSalt = '" + sSalt + "';\n"
 			"var nSpinCount = " + sSpinCount + ";\n"

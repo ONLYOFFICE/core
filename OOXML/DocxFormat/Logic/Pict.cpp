@@ -34,10 +34,10 @@
 #include "../Document.h"
 
 #include "Pict.h"
-#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
-
-#include "Vml.h"
+//#include "Vml.h"
 #include "VmlOfficeDrawing.h"
+
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace OOX
 {

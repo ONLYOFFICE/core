@@ -351,10 +351,6 @@ public:
 #if defined(_WIN32) || defined (_WIN64)
 	void InitFromReg();
 #endif
-    
-#ifdef _IOS
-    std::vector<std::wstring> GetSetupFontFiles_ios();
-#endif
 
     NSFonts::IFontManager* GenerateFontManager();
 

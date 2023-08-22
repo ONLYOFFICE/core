@@ -247,6 +247,8 @@ namespace BinXlsxRW
 		int ReadAlternateContentFallback(BYTE type, long length, void* poResult);
 		int ReadCT_PptxElement			(BYTE type, long length, void* poResult);
 
+		int ReadCT_ChartExternalReference(BYTE type, long length, void* poResult);
+
 		int ReadExtensions				(BYTE type, long length, void* poResult);
 
 		int ReadCT_ChartFiltering		(BYTE type, long length, void* poResult);

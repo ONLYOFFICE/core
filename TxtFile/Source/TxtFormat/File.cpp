@@ -189,40 +189,40 @@ namespace Txt
 		m_listContentSize = file.getLinesCount();
 	}
 
-	void File::write(const std::wstring& filename) const
+	bool File::write(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
+		return file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
 	}
 
-	void File::writeCodePage(const std::wstring& filename, int code_page) const
+	bool File::writeCodePage(const std::wstring& filename, int code_page) const
 	{
 		TxtFile file(filename);
-		file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, code_page));
+		return file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, code_page));
 	}
 
-	void File::writeUtf8(const std::wstring& filename) const
+	bool File::writeUtf8(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
+		return file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
 	}
 
-	void File::writeUnicode(const std::wstring& filename) const
+	bool File::writeUnicode(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUnicode(m_listContent);
+		return file.writeUnicode(m_listContent);
 	}
 
-	void File::writeBigEndian(const std::wstring& filename) const
+	bool File::writeBigEndian(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeBigEndian(m_listContent);
+		return file.writeBigEndian(m_listContent);
 	}
 
-	void File::writeAnsi(const std::wstring& filename) const
+	bool File::writeAnsi(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, -1));
+		return file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, -1));
 	}
 
 	const bool File::isValid(const std::wstring& filename) const

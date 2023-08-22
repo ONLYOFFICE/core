@@ -11,6 +11,9 @@ BUILD_NUMBER = $$(BUILD_NUMBER)
 
 DEFINES += INTVER=$$VERSION
 
+WIN_VERSION = $$replace(VERSION, \., ",")
+DEFINES += WIN_INTVER=$$WIN_VERSION
+
 PUBLISHER_NAME = $$(PUBLISHER_NAME)
 isEmpty(PUBLISHER_NAME){
     PUBLISHER_NAME = $$cat(copyright.txt)
@@ -35,6 +38,8 @@ win32 {
 !win32 {
     CURRENT_YEAR = $$system(date +%Y)
 }
+
+DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
 QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
@@ -537,13 +542,14 @@ defineTest(ADD_DEPENDENCY) {
     for(lib, libs) {
         CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
         
-        isEqual(lib, videoplayer) {
-            BASE_VIDEO_PLAYER_VLC_DIR = $$(VIDEO_PLAYER_VLC_DIR)
-            !isEmpty(BASE_VIDEO_PLAYER_VLC_DIR):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
-        }
+		isEqual(lib, videoplayer) {
+			libvlc {
+				CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
+			}
+		}
 
         build_xp {
-		    isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, qtascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
@@ -564,4 +570,8 @@ ADD_INC_PATH = $$(ADDITIONAL_INCLUDE_PATH)
 		QMAKE_CFLAGS_WARN_OFF = -w
 		CONFIG += warn_off
 	}
+}
+
+!disable_precompiled_header {
+    CONFIG += precompile_header
 }

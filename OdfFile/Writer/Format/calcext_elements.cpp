@@ -65,6 +65,33 @@ void calcext_date_is_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"calcext:style",	calcext_style_);
 	CP_XML_ATTR_OPT(L"calcext:date",	calcext_date_);
 }
+void calcext_sparkline_group_attr::serialize(CP_ATTR_NODE)
+{
+	CP_XML_ATTR_OPT(L"calcext:id", id_);
+	CP_XML_ATTR_OPT(L"calcext:type", type_);
+	CP_XML_ATTR_OPT(L"calcext:line-width", line_width_);
+	CP_XML_ATTR_OPT(L"calcext:first", first_);
+	CP_XML_ATTR_OPT(L"calcext:last", last_);
+	CP_XML_ATTR_OPT(L"calcext:markers", markers_);
+	CP_XML_ATTR_OPT(L"calcext:display-hidden", display_hidden_);
+	CP_XML_ATTR_OPT(L"calcext:right-to-left", right_to_left_);
+	CP_XML_ATTR_OPT(L"calcext:display-x-axis", display_x_axis_);
+	CP_XML_ATTR_OPT(L"calcext:display-empty-cells-as", display_empty_cells_as_);
+	CP_XML_ATTR_OPT(L"calcext:date-axis", date_axis_);
+	CP_XML_ATTR_OPT(L"calcext:min-axis-type", min_axis_type_);
+	CP_XML_ATTR_OPT(L"calcext:max-axis-type", max_axis_type_);
+	CP_XML_ATTR_OPT(L"calcext:manual-min", manual_min_);
+	CP_XML_ATTR_OPT(L"calcext:color-series", color_series_);
+	CP_XML_ATTR_OPT(L"calcext:color-negative", color_negative_);
+	CP_XML_ATTR_OPT(L"calcext:color-axis", color_axis_);
+	CP_XML_ATTR_OPT(L"calcext:color-markers", color_markers_);
+	CP_XML_ATTR_OPT(L"calcext:color-first", color_first_);
+	CP_XML_ATTR_OPT(L"calcext:color-last", color_last_);
+	CP_XML_ATTR_OPT(L"calcext:color-high", color_high_);
+	CP_XML_ATTR_OPT(L"calcext:color-low", color_low_);
+}
+
+
 // calcext_conditional_formats
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * calcext_conditional_formats::ns = L"calcext";
@@ -266,6 +293,99 @@ void calcext_date_is::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {   
 			attr_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+const wchar_t* calcext_sparkline_groups::ns = L"calcext";
+const wchar_t* calcext_sparkline_groups::name = L"sparkline-groups";
+
+void calcext_sparkline_groups::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void calcext_sparkline_groups::add_child_element(const office_element_ptr& child_element)
+{
+	content_.push_back(child_element);
+}
+void calcext_sparkline_groups::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+const wchar_t* calcext_sparkline_group::ns = L"calcext";
+const wchar_t* calcext_sparkline_group::name = L"sparkline-group";
+
+void calcext_sparkline_group::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void calcext_sparkline_group::add_child_element(const office_element_ptr& child_element)
+{
+	content_.push_back(child_element);
+}
+void calcext_sparkline_group::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			attr_.serialize(CP_GET_XML_NODE());
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+const wchar_t* calcext_sparklines::ns = L"calcext";
+const wchar_t* calcext_sparklines::name = L"sparklines";
+
+void calcext_sparklines::create_child_element(const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void calcext_sparklines::add_child_element(const office_element_ptr& child_element)
+{
+	content_.push_back(child_element);
+}
+void calcext_sparklines::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+const wchar_t* calcext_sparkline::ns = L"calcext";
+const wchar_t* calcext_sparkline::name = L"sparkline";
+
+void calcext_sparkline::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR_OPT(L"calcext:data-range", data_range_);
+			CP_XML_ATTR_OPT(L"calcext:cell-address", cell_address_);
+
 		}
 	}
 }

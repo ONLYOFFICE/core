@@ -25,7 +25,6 @@ DEFINES +=  UNICODE \
 
 INCLUDEPATH += ../../Common
 
-!disable_precompiled_header:CONFIG += precompile_header
 precompile_header {
     PRECOMPILED_HEADER = precompiled.h
     HEADERS += precompiled.h
@@ -159,7 +158,8 @@ SOURCES += \
 	../../DataTypes/timeperiod.cpp \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
-	\
+        ../../DataTypes/sparklines.cpp \
+        \
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \
 	../../Reader/Format/calcs_styles.cpp \

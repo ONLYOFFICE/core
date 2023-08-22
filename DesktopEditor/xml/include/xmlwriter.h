@@ -35,9 +35,10 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <memory>
 
 #ifdef _MSC_VER
-   #pragma warning (disable: 4100 4189)
+#pragma warning (disable: 4100 4189)
 #endif
 
 #include "../../common/StringBuilder.h"
@@ -51,13 +52,13 @@ namespace XmlUtils
 	class KERNEL_DECL CXmlWriter
 	{
 	private:
-        class Impl;
-        Impl *impl_;
-	
+		class Impl;
+		std::shared_ptr<Impl> impl_;
+
 	public:
 
 		CXmlWriter();
-        ~CXmlWriter();
+		~CXmlWriter();
 		
 		std::wstring GetXmlString();
 		void SetXmlString(const std::wstring& strValue);

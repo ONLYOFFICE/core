@@ -198,6 +198,7 @@ namespace PdfWriter
 		Remove("T");
 		Remove("FT");
 		Remove("Ff");
+		Remove("V");
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{

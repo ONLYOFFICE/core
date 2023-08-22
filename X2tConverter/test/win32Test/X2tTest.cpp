@@ -59,7 +59,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
 	#endif
-	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../../Common/3dParty/icu/win_64/build//icuuc.lib")
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/doctrenderer.lib")
@@ -90,7 +90,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
 	#endif
-		#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+		#pragma comment(lib, "../../../Common/3dParty/icu/win_32/build/icuuc.lib")
 #endif
 
 #include "../../src/main.cpp"

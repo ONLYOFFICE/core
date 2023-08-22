@@ -677,13 +677,13 @@ public:
 	}
 };
 
-static std::wstring msLCID2wstring(int id)
-{
-	MS_LCID_converter lcid;
-	return lcid.get_wstring(id);
-}
-static int msLCID2DefCodePage(int id)
-{
-	MS_LCID_converter lcid;
-	return lcid.get_codepage(id);
-}
+//static std::wstring msLCID2wstring(int id)
+//{
+//	MS_LCID_converter lcid;
+//	return lcid.get_wstring(id);
+//}
+//static int msLCID2DefCodePage(int id)
+//{
+//	MS_LCID_converter lcid;
+//	return lcid.get_codepage(id);
+//}

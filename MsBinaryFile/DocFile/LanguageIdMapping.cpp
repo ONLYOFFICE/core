@@ -31,19 +31,26 @@
  */
 
 #include "LanguageIdMapping.h"
-#include "../../Common/MS-LCID.h"
 
 namespace DocFileFormat
 {
-	LanguageIdMapping::LanguageIdMapping (XMLTools::CStringXmlWriter* pWriter, LanguageType type) : PropertiesMapping (pWriter)
+	LanguageIdMapping::LanguageIdMapping (XMLTools::CStringXmlWriter* pWriter, LanguageType type, const std::wstring& langcode) 
+		: PropertiesMapping (pWriter)
 	{
 		_type = type;
+		_langcode = langcode;
+		
+		if (_langcode.empty()) _langcode = L"en-US";
 	}
 
-    LanguageIdMapping::LanguageIdMapping (XMLTools::XMLElement* parentElement, LanguageType type) : PropertiesMapping(NULL)
+    LanguageIdMapping::LanguageIdMapping (XMLTools::XMLElement* parentElement, LanguageType type, const std::wstring& langcode) 
+		: PropertiesMapping(NULL)
 	{
 		_parent = parentElement;
 		_type = type;
+		_langcode = langcode;
+		
+		if (_langcode.empty()) _langcode = L"en-US";
 	}
 
 	LanguageIdMapping::~LanguageIdMapping()
@@ -57,33 +64,31 @@ namespace DocFileFormat
 	{
 		if ( dynamic_cast<LanguageId*>( lid )->Code != Nothing )
 		{
-			std::wstring langcode = getLanguageCode( dynamic_cast<LanguageId*>( lid ) );
-
             XMLTools::XMLAttribute* att = NULL;
 
 			switch ( _type )
 			{
 			case Default:
 				{
-                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
+                    att = new XMLTools::XMLAttribute( L"w:val", _langcode);
 				}
 				break;
 
 			case EastAsian:
 				{                    
-                    att = new XMLTools::XMLAttribute( L"w:eastAsia", langcode);
+                    att = new XMLTools::XMLAttribute( L"w:eastAsia", _langcode);
 				}
 				break;
 
 			case Complex:
 				{
-                    att = new XMLTools::XMLAttribute( L"w:bidi", langcode);
+                    att = new XMLTools::XMLAttribute( L"w:bidi", _langcode);
 				}
 				break;
 
 			default:
 				{    
-                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
+                    att = new XMLTools::XMLAttribute( L"w:val", _langcode);
 				}
 				break;
 			}
@@ -100,15 +105,5 @@ namespace DocFileFormat
 
 			RELEASEOBJECT( att );
 		}
-	}
-
-	std::wstring LanguageIdMapping::getLanguageCode( LanguageId* lid )
-	{
-		int intLCID				= lid->Code;
-		std::wstring strLCID	= msLCID2wstring(intLCID);
-
-		if (strLCID.empty()) strLCID = L"en-US";
-
-		return strLCID;
 	}
 }

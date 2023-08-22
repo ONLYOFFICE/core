@@ -31,8 +31,8 @@
  */
 
 #include "Setup.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/RelID.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
+#include "../Biff_structures/BIFF12/RelID.h"
 
 namespace XLS
 {

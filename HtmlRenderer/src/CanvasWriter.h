@@ -37,11 +37,11 @@
 
 namespace NSHtmlRenderer
 {
-    class CCanvasWriter
+	class CCanvasWriter
 	{
 	public:
-        NSStringUtils::CStringBuilder	m_oPath;
-        NSStringUtils::CStringBuilder	m_oDocument;
+		NSStringUtils::CStringBuilder	m_oPath;
+		NSStringUtils::CStringBuilder	m_oDocument;
 
 		LONG							m_lCurDocumentID;
 		LONG							m_lClippingPath;
@@ -83,11 +83,11 @@ namespace NSHtmlRenderer
 			m_pBrush				= pBrush;
 		}
 
-        void CloseFile(std::wstring strFile = L"")
+		void CloseFile(std::wstring strFile = L"")
 		{
-            if (!strFile.empty())
+			if (!strFile.empty())
 			{
-                NSFile::CFileBinary::SaveToFile(strFile, m_oDocument.GetData());
+				NSFile::CFileBinary::SaveToFile(strFile, m_oDocument.GetData());
 			}
 
 			m_oDocument.ClearNoAttack();
@@ -95,7 +95,7 @@ namespace NSHtmlRenderer
 		}
 		void NewDocument(double& dWidth, double& dHeigth)
 		{
-            CloseFile(L"");
+			CloseFile(L"");
 
 			m_lWidth  = (int)dWidth;
 			m_lHeight = (int)dHeigth;
@@ -105,22 +105,22 @@ namespace NSHtmlRenderer
 
 		inline void WritePathEnd()
 		{
-		}		
+		}
 		inline void WritePathStart()
 		{
 			m_bIsMoveTo = false;
-            m_oDocument.WriteString(L"b(c);\n", 6);
+			m_oDocument.WriteString(L"b(c);\n", 6);
 		}
 		void WritePathClose()
 		{
-            m_oDocument.WriteString(L"x(c);\n", 6);
+			m_oDocument.WriteString(L"x(c);\n", 6);
 		}
 
 		void WritePathMoveTo(double& x, double& y)
 		{
-            m_oDocument.WriteString(L"m(c,", 4);
-            WriteIntsToStringBuilder(round(x), round(y), &m_oDocument);
-            m_oDocument.WriteString(L");\n", 3);
+			m_oDocument.WriteString(L"m(c,", 4);
+			WriteIntsToStringBuilder(round(x), round(y), &m_oDocument);
+			m_oDocument.WriteString(L");\n", 3);
 
 			m_bIsMoveTo = true;
 		}
@@ -129,20 +129,20 @@ namespace NSHtmlRenderer
 			if (false == m_bIsMoveTo)
 				WritePathMoveTo(x, y);
 
-            m_oDocument.WriteString(L"l(c,", 4);
-            WriteIntsToStringBuilder(round(x), round(y), &m_oDocument);
-            m_oDocument.WriteString(L");\n", 3);
+			m_oDocument.WriteString(L"l(c,", 4);
+			WriteIntsToStringBuilder(round(x), round(y), &m_oDocument);
+			m_oDocument.WriteString(L");\n", 3);
 		}
 		void WritePathCurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
 		{
 			if (false == m_bIsMoveTo)
 				WritePathMoveTo(x1, y1);
 			
-            m_oDocument.WriteString(L"cu(c,", 5);
-            WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oDocument);
-            m_oDocument.WriteString(L");\n", 3);
+			m_oDocument.WriteString(L"cu(c,", 5);
+			WriteIntsToStringBuilder(round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), &m_oDocument);
+			m_oDocument.WriteString(L");\n", 3);
 		}
-        void WriteDrawPath(LONG lType, Aggplus::CMatrix* pTransform, Aggplus::CGraphicsPathSimpleConverter* pConverter, LONG lTxId)
+		void WriteDrawPath(LONG lType, Aggplus::CMatrix* pTransform, Aggplus::CGraphicsPathSimpleConverter* pConverter, LONG lTxId)
 		{
 			bool bStroke = false;
 
@@ -154,7 +154,7 @@ namespace NSHtmlRenderer
 			
 			if ((lType & 0x01) == 0x01)
 			{
-                SetStrokeColor(m_pPen->Color, m_pPen->Alpha, &m_oDocument);
+				SetStrokeColor(m_pPen->Color, m_pPen->Alpha, &m_oDocument);
 
 				bStroke = true;
 			}
@@ -168,7 +168,7 @@ namespace NSHtmlRenderer
 					double w = 0;
 					double h = 0;
 
-                    pConverter->PathCommandGetBounds(x, y, w, h);
+					pConverter->PathCommandGetBounds(x, y, w, h);
 
 					double r = x + w;
 					double b = y + h;
@@ -179,34 +179,34 @@ namespace NSHtmlRenderer
 					w = r - x;
 					h = b - y;
 
-                    m_oDocument.WriteString(L"img", 3);
-                    m_oDocument.AddInt(lTxId);
-                    m_oDocument.WriteString(L".src = \"media\\\\image", 20);
-                    m_oDocument.AddInt(lTxId);
-                    m_oDocument.WriteString(L".jpg\";img", 9);
-                    m_oDocument.AddInt(lTxId);
-                    m_oDocument.WriteString(L".onload = function(){c.drawImage(img", 36);
-                    WriteIntsToStringBuilder(lTxId, round(x), round(y), round(w), round(h), &m_oDocument);
-                    m_oDocument.WriteString(L");drawpage", 10);
-                    m_oDocument.AddInt(m_lCurDocumentID);
-                    m_oDocument.AddCharSafe('_');
-                    m_oDocument.AddInt(lTxId);
-                    m_oDocument.WriteString(L"(c);};\n}\nfunction drawpage", 26);
-                    m_oDocument.AddInt(m_lCurDocumentID);
-                    m_oDocument.AddCharSafe('_');
-                    m_oDocument.AddInt(lTxId);
-                    m_oDocument.WriteString(L"(c)\n{\n", 6);
+					m_oDocument.WriteString(L"img", 3);
+					m_oDocument.AddInt(lTxId);
+					m_oDocument.WriteString(L".src = \"media\\\\image", 20);
+					m_oDocument.AddInt(lTxId);
+					m_oDocument.WriteString(L".jpg\";img", 9);
+					m_oDocument.AddInt(lTxId);
+					m_oDocument.WriteString(L".onload = function(){c.drawImage(img", 36);
+					WriteIntsToStringBuilder(lTxId, round(x), round(y), round(w), round(h), &m_oDocument);
+					m_oDocument.WriteString(L");drawpage", 10);
+					m_oDocument.AddInt(m_lCurDocumentID);
+					m_oDocument.AddCharSafe('_');
+					m_oDocument.AddInt(lTxId);
+					m_oDocument.WriteString(L"(c);};\n}\nfunction drawpage", 26);
+					m_oDocument.AddInt(m_lCurDocumentID);
+					m_oDocument.AddCharSafe('_');
+					m_oDocument.AddInt(lTxId);
+					m_oDocument.WriteString(L"(c)\n{\n", 6);
 				}
 				else
-				{		
-                    SetFillColor(m_pBrush->Color1, m_pBrush->Alpha1, &m_oDocument);
-                    m_oDocument.WriteString(L"f(c);\n", 6);
+				{
+					SetFillColor(m_pBrush->Color1, m_pBrush->Alpha1, &m_oDocument);
+					m_oDocument.WriteString(L"f(c);\n", 6);
 				}
 			}
 
 			if (bStroke)
 			{
-                m_oDocument.WriteString(L"s(c);\n", 6);
+				m_oDocument.WriteString(L"s(c);\n", 6);
 			}
 		}
 
@@ -219,16 +219,16 @@ namespace NSHtmlRenderer
 		{
 			if (!m_bIsClipping)
 			{
-                m_oDocument.WriteString(L"c.save();\n", 10);
+				m_oDocument.WriteString(L"c.save();\n", 10);
 			}
-            m_bIsClipping = true;
-            m_oDocument.WriteString(L"c.clip();\n", 10);
+			m_bIsClipping = true;
+			m_oDocument.WriteString(L"c.clip();\n", 10);
 		}
 		void WritePathResetClip()
 		{
 			if (m_bIsClipping)
 			{
-                m_oDocument.WriteString(L"c.restore();\n", 13);
+				m_oDocument.WriteString(L"c.restore();\n", 13);
 			}
 
 			m_bIsClipping = false;

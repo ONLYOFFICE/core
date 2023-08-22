@@ -183,51 +183,43 @@ namespace OOX
 		std::wstring CPBdr::toXML() const
 		{
 			std::wstring sResult = L"<w:pBdr>";
-
+			if (m_oTop.IsInit())
+			{
+				sResult += L"<w:top ";
+				sResult += m_oTop->ToString();
+				sResult += L"/>";
+			}
+			if (m_oLeft.IsInit())
+			{
+				sResult += L"<w:left ";
+				sResult += m_oLeft->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBottom.IsInit())
+			{
+				sResult += L"<w:bottom ";
+				sResult += m_oBottom->ToString();
+				sResult += L"/>";
+			}
+			if (m_oRight.IsInit())
+			{
+				sResult += L"<w:right ";
+				sResult += m_oRight->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBetween.IsInit())
+			{
+				sResult += L"<w:between ";
+				sResult += m_oBetween->ToString();
+				sResult += L"/>";
+			}
 			if ( m_oBar.IsInit() )
 			{
 				sResult += L"<w:bar ";
 				sResult += m_oBar->ToString();
 				sResult += L"/>";
 			}
-
-			if ( m_oBetween.IsInit() )
-			{
-				sResult += L"<w:between ";
-				sResult += m_oBetween->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oBottom.IsInit() )
-			{
-				sResult += L"<w:bottom ";
-				sResult += m_oBottom->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oLeft.IsInit() )
-			{
-				sResult += L"<w:left ";
-				sResult += m_oLeft->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oRight.IsInit() )
-			{
-				sResult += L"<w:right ";
-				sResult += m_oRight->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oTop.IsInit() )
-			{
-				sResult += L"<w:top ";
-				sResult += m_oTop->ToString();
-				sResult += L"/>";
-			}
-
 			sResult += L"</w:pBdr>";
-
 			return sResult;
 		}
 		EElementType CPBdr::getType() const
@@ -481,6 +473,59 @@ namespace OOX
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;
 		}
+		void CParagraphProperty::Clear()
+		{
+			m_bPPrChange = false;
+
+			m_oAdjustRightInd.reset();
+			m_oAutoSpaceDE.reset();
+			m_oAutoSpaceDN.reset();
+			m_oBidi.reset();
+			m_oCnfStyle.reset();
+			m_oContextualSpacing.reset();
+			m_oDivID.reset();
+			m_oFramePr.reset();
+			m_oInd.reset();
+			m_oJc.reset();
+			m_oKeepLines.reset();
+			m_oKeepNext.reset();
+			m_oKinsoku.reset();
+			m_oMirrorIndents.reset();
+			m_oNumPr.reset();
+			m_oOutlineLvl.reset();
+			m_oOverflowPunct.reset();
+			m_oPageBreakBefore.reset();
+			m_oPBdr.reset();
+			m_oPPrChange.reset();
+			m_oPStyle.reset();
+			m_oRPr.reset();
+			m_oSectPr.reset();
+			m_oShd.reset();
+			m_oSnapToGrid.reset();
+			m_oSpacing.reset();
+			m_oSuppressAutoHyphens.reset();
+			m_oSuppressLineNumbers.reset();
+			m_oSuppressOverlap.reset();
+			m_oTabs.reset();
+			m_oTextAlignment.reset();
+			m_oTextboxTightWrap.reset();
+			m_oTextDirection.reset();
+			m_oTopLinePunct.reset();
+			m_oWidowControl.reset();
+			m_oWordWrap.reset();
+		}
+		bool CParagraphProperty::IsNoEmpty()
+		{
+			return (m_oAdjustRightInd.IsInit() ||  m_oAutoSpaceDE.IsInit() ||  m_oAutoSpaceDN.IsInit() ||  
+			m_oBidi.IsInit() ||  m_oCnfStyle.IsInit() ||  m_oContextualSpacing.IsInit() ||  m_oDivID.IsInit() ||  
+			m_oFramePr.IsInit() ||	m_oInd.IsInit() ||  m_oJc.IsInit() ||  m_oKeepLines.IsInit() ||  m_oKeepNext.IsInit() ||  
+			m_oKinsoku.IsInit() ||	m_oMirrorIndents.IsInit() ||  m_oNumPr.IsInit() ||  m_oOutlineLvl.IsInit() ||  
+			m_oOverflowPunct.IsInit() ||  m_oPageBreakBefore.IsInit() ||  m_oPBdr.IsInit() ||  m_oPPrChange.IsInit() ||  
+			m_oPStyle.IsInit() ||  m_oRPr.IsInit() ||  m_oSectPr.IsInit() ||  m_oShd.IsInit() ||  m_oSnapToGrid.IsInit() ||  
+			m_oSpacing.IsInit() ||	m_oSuppressAutoHyphens.IsInit() ||  m_oSuppressLineNumbers.IsInit() ||  m_oSuppressOverlap.IsInit() ||  m_oTabs.IsInit() ||  
+			m_oTextAlignment.IsInit() ||  m_oTextboxTightWrap.IsInit() ||  m_oTextDirection.IsInit() ||  m_oTopLinePunct.IsInit() ||  
+			m_oWidowControl.IsInit() ||  m_oWordWrap.IsInit() );
+		}
 		void CParagraphProperty::fromXML(XmlUtils::CXmlNode& oNode)
 		{//??? где используется ?
 			if ( L"w:pPr" != oNode.GetName() )
@@ -649,233 +694,206 @@ namespace OOX
 		{
 			std::wstring sResult = L"<w:pPr>";
 
-			if ( m_oAdjustRightInd.IsInit() ) 
-			{
-				sResult += L"<w:adjustRightInd ";
-				sResult += m_oAdjustRightInd->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oAutoSpaceDE.IsInit() ) 
-			{ 
-				sResult += L"<w:autoSpaceDE ";
-				sResult += m_oAutoSpaceDE->ToString();
-				sResult += L"/>";				
-			}
-
-			if ( m_oAutoSpaceDN.IsInit() ) 
-			{ 
-				sResult += L"<w:autoSpaceDN ";
-				sResult += m_oAutoSpaceDN->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oBidi.IsInit() ) 
-			{ 
-				sResult += L"<w:bidi ";
-				sResult += m_oBidi->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oCnfStyle.IsInit() ) 
-			{ 
-				sResult += L"<w:cnfStyle "; 
-				sResult += m_oCnfStyle->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oContextualSpacing.IsInit() ) 
-			{ 
-				sResult += L"<w:contextualSpacing ";
-				sResult += m_oContextualSpacing->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oDivID.IsInit() ) 
-			{ 
-				sResult += L"<w:divId "; 
-				sResult += m_oDivID->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oFramePr.IsInit() )
-			{ 
-				sResult += L"<w:framePr "; 
-				sResult += m_oFramePr->ToString();	
-				sResult += L"/>";	
-			}
-
-			if ( m_oInd.IsInit() )
-			{ 
-				sResult += L"<w:ind "; 
-				sResult += m_oInd->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oJc.IsInit() ) 
-			{ 
-				sResult += L"<w:jc ";
-				sResult += m_oJc->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oKeepLines.IsInit() )
-			{ 
-				sResult += L"<w:keepLines ";
-				sResult += m_oKeepLines->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oKeepNext.IsInit() ) 
-			{ 
-				sResult += L"<w:keepNext "; 
-				sResult += m_oKeepNext->ToString();
-				sResult += L"/>";	
-			}
-
-			if ( m_oKinsoku.IsInit() )
-			{
-				sResult += L"<w:kinsoku "; 
-				sResult += m_oKinsoku->ToString();	
-				sResult += L"/>";	
-			}
-
-			if ( m_oMirrorIndents.IsInit() ) 
-			{ 
-				sResult += L"<w:mirrorIndents "; 
-				sResult += m_oMirrorIndents->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oNumPr.IsInit() ) 
-				sResult += m_oNumPr->toXML();	
-
-			if ( m_oOutlineLvl.IsInit() ) 
-			{ 
-				sResult += L"<w:outlineLvl ";
-				sResult += m_oOutlineLvl->ToString();		
-				sResult += L"/>";		
-			}
-
-			if ( m_oOverflowPunct.IsInit() ) 
-			{ 					
-				sResult += L"<w:overflowPunct "; 
-				sResult += m_oOverflowPunct->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oPageBreakBefore.IsInit() ) 
-			{ 
-				sResult += L"<w:pageBreakBefore "; 
-				sResult += m_oPageBreakBefore->ToString();
-				sResult += L"/>";		
-			}
-
-			if ( m_oPBdr.IsInit() )
-				sResult += m_oPBdr->toXML();	
-
-			if ( !m_bPPrChange && m_oPPrChange.IsInit() )
-				sResult += m_oPPrChange->toXML();	
-
-			if ( m_oPStyle.IsInit() )
+			if (m_oPStyle.IsInit())
 			{
 				sResult += L"<w:pStyle ";
 				sResult += m_oPStyle->ToString();
 				sResult += L"/>";
 			}
-
-			if ( !m_bPPrChange && m_oRPr.IsInit() )
-				sResult += m_oRPr->toXML();		
-
-			if ( !m_bPPrChange && m_oSectPr.IsInit() ) 
-				sResult += m_oSectPr->toXML();	
-
-			if ( m_oShd.IsInit() ) 
-			{ 
-				sResult += L"<w:shd "; 
-				sResult += m_oShd->ToString();		
-				sResult += L"/>";	
-			}
-
-			if ( m_oSnapToGrid.IsInit() ) 
-			{ 
-				sResult += L"<w:snapToGrid ";
-				sResult += m_oSnapToGrid->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oSpacing.IsInit() ) 
+			if (m_oKeepNext.IsInit())
 			{
-				sResult += L"<w:spacing "; 
-				sResult += m_oSpacing->ToString();		
-				sResult += L"/>";		
+				sResult += L"<w:keepNext ";
+				sResult += m_oKeepNext->ToString();
+				sResult += L"/>";
 			}
-
+			if (m_oKeepLines.IsInit())
+			{
+				sResult += L"<w:keepLines ";
+				sResult += m_oKeepLines->ToString();
+				sResult += L"/>";
+			}
+			if (m_oPageBreakBefore.IsInit())
+			{
+				sResult += L"<w:pageBreakBefore ";
+				sResult += m_oPageBreakBefore->ToString();
+				sResult += L"/>";
+			}
+			if (m_oFramePr.IsInit())
+			{
+				sResult += L"<w:framePr ";
+				sResult += m_oFramePr->ToString();
+				sResult += L"/>";
+			}
+			if (m_oWidowControl.IsInit())
+			{
+				sResult += L"<w:widowControl ";
+				sResult += m_oWidowControl->ToString();
+				sResult += L"/>";
+			}
+			if (m_oNumPr.IsInit())
+			{
+				sResult += m_oNumPr->toXML();
+			}
+			if (m_oSuppressLineNumbers.IsInit())
+			{
+				sResult += L"<w:suppressLineNumbers ";
+				sResult += m_oSuppressLineNumbers->ToString();
+				sResult += L"/>";
+			}
+			if (m_oPBdr.IsInit())
+			{
+				sResult += m_oPBdr->toXML();
+			}
+			if (m_oShd.IsInit())
+			{
+				sResult += L"<w:shd ";
+				sResult += m_oShd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTabs.IsInit())
+			{
+				sResult += m_oTabs->toXML();
+			}
 			if ( m_oSuppressAutoHyphens.IsInit() ) 
 			{ 
 				sResult += L"<w:suppressAutoHyphens ";
 				sResult += m_oSuppressAutoHyphens->ToString();		
 				sResult += L"/>";		
 			}
-
-			if ( m_oSuppressLineNumbers.IsInit() ) 
-			{ 
-				sResult += L"<w:suppressLineNumbers "; 
-				sResult += m_oSuppressLineNumbers->ToString();		
-				sResult += L"/>";			
-			}
-
-			if ( m_oSuppressOverlap.IsInit() ) 
-			{ 
-				sResult += L"<w:suppressOverlap "; 
-				sResult += m_oSuppressOverlap->ToString();		
-				sResult += L"/>";			
-			}
-
-			if ( m_oTabs.IsInit() ) 
-				sResult += m_oTabs->toXML();	
-
-			if ( m_oTextAlignment.IsInit() ) 
+			if (m_oKinsoku.IsInit())
 			{
-				sResult += L"<w:textAlignment "; 
-				sResult += m_oTextAlignment->ToString();	
-				sResult += L"/>";		
+				sResult += L"<w:kinsoku ";
+				sResult += m_oKinsoku->ToString();
+				sResult += L"/>";
 			}
-
-			if ( m_oTextboxTightWrap.IsInit() ) 
+			if (m_oWordWrap.IsInit())
+			{
+				sResult += L"<w:wordWrap ";
+				sResult += m_oWordWrap->ToString();
+				sResult += L"/>";
+			}
+			if (m_oOverflowPunct.IsInit())
+			{
+				sResult += L"<w:overflowPunct ";
+				sResult += m_oOverflowPunct->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTopLinePunct.IsInit())
+			{
+				sResult += L"<w:topLinePunct ";
+				sResult += m_oTopLinePunct->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAutoSpaceDE.IsInit())
+			{
+				sResult += L"<w:autoSpaceDE ";
+				sResult += m_oAutoSpaceDE->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAutoSpaceDN.IsInit())
+			{
+				sResult += L"<w:autoSpaceDN ";
+				sResult += m_oAutoSpaceDN->ToString();
+				sResult += L"/>";
+			}
+			if (m_oBidi.IsInit())
+			{
+				sResult += L"<w:bidi ";
+				sResult += m_oBidi->ToString();
+				sResult += L"/>";
+			}
+			if (m_oAdjustRightInd.IsInit())
+			{
+				sResult += L"<w:adjustRightInd ";
+				sResult += m_oAdjustRightInd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSnapToGrid.IsInit())
+			{
+				sResult += L"<w:snapToGrid ";
+				sResult += m_oSnapToGrid->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSpacing.IsInit())
+			{
+				sResult += L"<w:spacing ";
+				sResult += m_oSpacing->ToString();
+				sResult += L"/>";
+			}
+			if (m_oInd.IsInit())
+			{
+				sResult += L"<w:ind ";
+				sResult += m_oInd->ToString();
+				sResult += L"/>";
+			}
+			if (m_oContextualSpacing.IsInit())
+			{
+				sResult += L"<w:contextualSpacing ";
+				sResult += m_oContextualSpacing->ToString();
+				sResult += L"/>";
+			}
+			if (m_oMirrorIndents.IsInit())
+			{
+				sResult += L"<w:mirrorIndents ";
+				sResult += m_oMirrorIndents->ToString();
+				sResult += L"/>";
+			}
+			if (m_oSuppressOverlap.IsInit())
+			{
+				sResult += L"<w:suppressOverlap ";
+				sResult += m_oSuppressOverlap->ToString();
+				sResult += L"/>";
+			}
+			if (m_oJc.IsInit())
+			{
+				sResult += L"<w:jc ";
+				sResult += m_oJc->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextDirection.IsInit())
+			{
+				sResult += L"<w:textDirection ";
+				sResult += m_oTextDirection->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextAlignment.IsInit())
+			{
+				sResult += L"<w:textAlignment ";
+				sResult += m_oTextAlignment->ToString();
+				sResult += L"/>";
+			}
+			if (m_oTextboxTightWrap.IsInit())
 			{
 				sResult += L"<w:textboxTightWrap ";
-				sResult += m_oTextboxTightWrap->ToString();	
-				sResult += L"/>";			
+				sResult += m_oTextboxTightWrap->ToString();
+				sResult += L"/>";
 			}
-
-			if ( m_oTextDirection.IsInit() )
-			{ 
-				sResult += L"<w:textDirection "; 
-				sResult += m_oTextDirection->ToString();	
-				sResult += L"/>";		
-			}
-
-			if ( m_oTopLinePunct.IsInit() )
-			{ 
-				sResult += L"<w:topLinePunct ";
-				sResult += m_oTopLinePunct->ToString();	
-				sResult += L"/>";			
-			}
-
-			if ( m_oWidowControl.IsInit() ) 
-			{ 
-				sResult += L"<w:widowControl "; 
-				sResult += m_oWidowControl->ToString();
-				sResult += L"/>";		
-			}
-
-			if ( m_oWordWrap.IsInit() ) 
+			if (m_oOutlineLvl.IsInit())
 			{
-				sResult += L"<w:wordWrap "; 
-				sResult += m_oWordWrap->ToString();	
-				sResult += L"/>";		
+				sResult += L"<w:outlineLvl ";
+				sResult += m_oOutlineLvl->ToString();
+				sResult += L"/>";
 			}
+			if (m_oDivID.IsInit())
+			{
+				sResult += L"<w:divId ";
+				sResult += m_oDivID->ToString();
+				sResult += L"/>";
+			}
+			if ( m_oCnfStyle.IsInit() ) 
+			{ 
+				sResult += L"<w:cnfStyle "; 
+				sResult += m_oCnfStyle->ToString();
+				sResult += L"/>";	
+			}
+			if ( !m_bPPrChange && m_oRPr.IsInit() )
+				sResult += m_oRPr->toXML();		
+			
+			if ( !m_bPPrChange && m_oSectPr.IsInit() ) 
+				sResult += m_oSectPr->toXML();	
+			
+			if ( !m_bPPrChange && m_oPPrChange.IsInit() )
+				sResult += m_oPPrChange->toXML();	
 
 			sResult += L"</w:pPr>";
 

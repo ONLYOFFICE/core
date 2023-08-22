@@ -2121,6 +2121,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 				WriteSlicerCaches(workbook, pExt->m_oSlicerCachesExt.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			else if (pExt->m_oExternalLinksAutoRefresh.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalLinksAutoRefresh);
+				m_oBcw.m_oStream.WriteBOOL(*pExt->m_oExternalLinksAutoRefresh);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 	}
 //Write VbaProject
@@ -2137,13 +2143,27 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 //Write JsaProject
 	if (m_pXlsx && NULL != m_pXlsx->m_pJsaProject)
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(m_pXlsx->m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
+		if (m_pXlsx->m_pJsaProject->IsExist() && !m_pXlsx->m_pJsaProject->IsExternal())
 		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
-			m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			std::wstring pathJsa = m_pXlsx->m_pJsaProject->filename().GetPath();
+			if (std::wstring::npos != pathJsa.find(m_pXlsx->m_sDocumentPath))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(m_pXlsx->m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemEnd(nCurPos);
+					RELEASEARRAYOBJECTS(pData);
+				}
+			}
+		}
+		if (m_pXlsx->m_pJsaProject->IsExternal())
+		{
+			//nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProjectExternal);
+			//m_oBcw.m_oStream.WriteStringW3(m_pXlsx->m_pJsaProject->filename().GetPath());
+			//m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
 //Workbook Comments
@@ -2296,6 +2316,12 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::ShowPivotChartFilter);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oShowPivotChartFilter->ToBool());
+	}
+	if (workbookPr.m_oUpdateLinks.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::UpdateLinks);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oUpdateLinks->GetValue());
 	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)
@@ -4509,6 +4535,24 @@ void BinaryWorksheetTableWriter::WritePrintOptions(const OOX::Spreadsheet::CPrin
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::Headings);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oHeadings->ToBool());
+	}
+	if (oPrintOptions.m_oGridLinesSet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::GridLinesSet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oGridLinesSet->ToBool());
+	}
+	if (oPrintOptions.m_oHorizontalCentered.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::HorizontalCentered);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oHorizontalCentered->ToBool());
+	}
+	if (oPrintOptions.m_oVerticalCentered.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::VerticalCentered);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oVerticalCentered->ToBool());
 	}
 }
 void BinaryWorksheetTableWriter::WriteHyperlinks(const OOX::Spreadsheet::CHyperlinks& oHyperlinks, OOX::Spreadsheet::CWorksheet& oWorksheet)

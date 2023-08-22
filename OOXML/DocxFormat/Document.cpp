@@ -223,8 +223,13 @@ namespace OOX
 	{
 		m_bMacroEnabled = false;
 
+		std::wstring fileName = XmlUtils::GetLower(oPath.GetFilename());
+		size_t pos = fileName.find(L".");
+	
+		if (pos != std::wstring::npos) fileName = fileName.substr(0, pos);
+
 		CDocx* docx = dynamic_cast<CDocx*>(pMain);
-		if (docx)
+		if (docx && fileName == L"document")
 		{
 			if (type == OOX::FileTypes::Document)
 			{

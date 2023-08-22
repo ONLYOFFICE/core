@@ -1,0 +1,51 @@
+diff --git a/extras/package/macosx/build.sh b/extras/package/macosx/build.sh
+index fa5a8ff3eb..3fbff53784 100755
+--- a/extras/package/macosx/build.sh
++++ b/extras/package/macosx/build.sh
+@@ -9,7 +9,7 @@ info()
+ }
+ 
+ ARCH="x86_64"
+-MINIMAL_OSX_VERSION="10.7"
++MINIMAL_OSX_VERSION="10.11"
+ OSX_KERNELVERSION=`uname -r | cut -d. -f1`
+ BUILD_ARCH=`uname -m | cut -d. -f1`
+ SDKROOT=$(xcrun --show-sdk-path)
+@@ -160,7 +160,7 @@ export RANLIB="`xcrun --find ranlib`"
+ export STRINGS="`xcrun --find strings`"
+ export STRIP="`xcrun --find strip`"
+ export SDKROOT
+-export PATH="${vlcroot}/extras/tools/build/bin:${vlcroot}/contrib/${BUILD_TRIPLET}/bin:$python3Path:${VLC_PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
++export PATH="${vlcroot}/extras/tools/build/bin:${vlcroot}/contrib/${HOST_TRIPLET}/bin:$python3Path:${VLC_PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
+ 
+ # Select avcodec flavor to compile contribs with
+ export USE_FFMPEG=1
+@@ -250,7 +250,7 @@ export XCODE_FLAGS="MACOSX_DEPLOYMENT_TARGET=$MINIMAL_OSX_VERSION -sdk macosx WA
+ info "Building contribs"
+ spushd "${vlcroot}/contrib"
+ mkdir -p contrib-$HOST_TRIPLET && cd contrib-$HOST_TRIPLET
+-../bootstrap --build=$BUILD_TRIPLET --host=$HOST_TRIPLET > $out
++../bootstrap --build=$BUILD_TRIPLET --host=$HOST_TRIPLET --disable-bluray --disable-breakpad --disable-growl > $out
+ if [ "$REBUILD" = "yes" ]; then
+     make clean
+ fi
+@@ -310,7 +310,7 @@ fi
+ # vlc/configure
+ #
+ 
+-CONFIGFLAGS=""
++CONFIGFLAGS="--disable-vlc --disable-qt --disable-chromecast --disable-bluray"
+ if [ ! -z "$BREAKPAD" ]; then
+      CONFIGFLAGS="$CONFIGFLAGS --with-breakpad=$BREAKPAD"
+ fi
+@@ -338,8 +338,8 @@ fi
+ info "Running make -j$JOBS"
+ make -j$JOBS
+ 
+-info "Preparing VLC.app"
+-make VLC.app
++info "Installing VLC"
++make install-strip
+ 
+ if [ "$PACKAGETYPE" = "u" ]; then
+     info "Copying app with debug symbols into VLC-debug.app and stripping"

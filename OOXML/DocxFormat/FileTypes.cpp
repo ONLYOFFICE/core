@@ -181,6 +181,11 @@ namespace OOX
 												L"", 
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true);
 
+		const FileType SvgBlip			(L"media", L"image",
+												L"",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true);
+		
+
 		const FileType DiagramData		(L"diagrams", L"data.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData", 

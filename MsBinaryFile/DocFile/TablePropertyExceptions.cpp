@@ -53,7 +53,7 @@ namespace DocFileFormat
 
 		m_bSkipShading97	=	FALSE;
 
-		for (std::list<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
+		for (std::vector<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
 		{
 			if (oSpmIter->OpCode == sprmTDefTableShd	||
 				oSpmIter->OpCode == sprmTDefTableShd2nd ||
@@ -82,7 +82,7 @@ namespace DocFileFormat
 				//parse the grpprl
 				PropertyExceptions externalPx(grpprlBytes, grpprlSize, nWordVersion);
 
-				for (std::list<SinglePropertyModifier>::iterator oIter = externalPx.grpprl->begin(); oIter != externalPx.grpprl->end(); ++oIter)
+				for (std::vector<SinglePropertyModifier>::iterator oIter = externalPx.grpprl->begin(); oIter != externalPx.grpprl->end(); ++oIter)
 				{
 					if (oIter->Type == TAP)
 					{

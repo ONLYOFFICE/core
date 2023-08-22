@@ -74,10 +74,10 @@ namespace MetaFile
 		typedef std::map < unsigned int, CEmfObjectBase* > CEmfObjectMap;
 		typedef std::map < int, CEmfDC* > EmfDCsMap;
 
-		CEmfDC*              m_pDC;
-		EmfDCsMap            m_mDCs;
-		CEmfParserBase*	     m_pParser;
-		CEmfObjectMap        m_mObjects;
+		CEmfDC*         m_pDC;
+		EmfDCsMap       m_mDCs;
+		CEmfParserBase* m_pParser;
+		CEmfObjectMap   m_mObjects;
 	};
 
 	class CEmfDC

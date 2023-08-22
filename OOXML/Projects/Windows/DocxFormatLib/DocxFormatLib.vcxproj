@@ -316,7 +316,6 @@
     <ClInclude Include="..\..\..\DocxFormat\Media\OleObject.h" />
     <ClInclude Include="..\..\..\DocxFormat\Media\VbaProject.h" />
     <ClInclude Include="..\..\..\DocxFormat\Media\Video.h" />
-    <ClInclude Include="..\..\..\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\..\DocxFormat\Numbering.h" />
     <ClInclude Include="..\..\..\DocxFormat\Rels.h" />
     <ClInclude Include="..\..\..\DocxFormat\RId.h" />
@@ -478,7 +477,6 @@
     <ClCompile Include="..\..\..\DocxFormat\Media\OleObject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\VbaProject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\Video.cpp" />
-    <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />

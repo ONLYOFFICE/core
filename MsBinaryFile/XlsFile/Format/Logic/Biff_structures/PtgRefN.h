@@ -32,7 +32,7 @@
 #pragma once
 
 #include "OperandPtg.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRef.h"
+#include "BIFF12/CellRef.h"
 
 namespace XLS
 {

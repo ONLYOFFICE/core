@@ -35,7 +35,7 @@
 #include "../../../../../OOXML/Base/Unit.h"
 #include <boost/algorithm/string.hpp>
 
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/DValStrings.h"
+#include "../Biff_structures/BIFF12/DValStrings.h"
 
 
 namespace XLS

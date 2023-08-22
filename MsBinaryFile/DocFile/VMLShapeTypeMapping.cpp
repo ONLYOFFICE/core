@@ -78,7 +78,6 @@ namespace DocFileFormat
 			else if (_isInlineShape)
                 m_pXmlWriter->WriteAttribute( L"path", L"m@4@5l@4@11@9@11@9@5xe");
 
-
 			//Default fill / stroke
 			if ( !pShape->Filled )
 			{

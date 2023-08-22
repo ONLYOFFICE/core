@@ -70,17 +70,22 @@ void math_msub::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSub>";
 
 		strm << L"<m:e>";
-			Context.is_need_e_ = false;
+
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
-			Context.is_need_e_ = false; //??
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sub>";
 
 	strm << L"</m:sSub>";
@@ -112,15 +117,21 @@ void math_msup::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSup>";
 
 		strm << L"<m:e>";
-			Context.is_need_e_ = false;
+			Context.start_level();
 
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sup>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSup>";
@@ -148,21 +159,31 @@ void math_msubsup::oox_convert(oox::math_context & Context)
 
 	strm << L"<m:sSubSup>";
 	
-	Context.is_need_e_ = false;
-
 		strm << L"<m:e>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
+		
+			Context.end_level();
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sub>";
 
 		strm << L"<m:sup>";
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[2].get());
 			math_element->oox_convert(Context);		
+			
+			Context.end_level();
 		strm << L"</m:sup>";
 
 	strm << L"</m:sSubSup>";
@@ -362,19 +383,24 @@ void math_mover::oox_convert(oox::math_context & Context)
 		strm << L"<m:limUppPr/>";
 		strm << L"<m:e>";
 	
-		Context.is_need_e_ = false;
-
 		if (content_.size() > index_e && index_e >= 0)
 		{
+			Context.start_level();
+			
 			math_element = dynamic_cast<office_math_element*>(content_[index_e].get());
 			math_element->oox_convert(Context);
+			
+			Context.end_level();
 		}
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
 		if (content_.size() > index_lim && index_lim >= 0)
 		{
+			Context.start_level();
+
 			math_element = dynamic_cast<office_math_element*>(content_[index_lim].get());
 			math_element->oox_convert(Context);
+			Context.end_level();
 		}
 		strm << L"</m:lim>";
 	strm << L"</m:limUpp>";
@@ -397,12 +423,11 @@ void math_munder::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
 
-	bool need_e = Context.is_need_e_;
-	if (need_e)
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"<m:e>";
 	}
-	Context.is_need_e_ = false;
+	Context.start_level();
 
 	int index_lim = content_.size() > 1 ? 1 : 0;
 	int index_e = content_.size() > 1 ? 0 : -1;
@@ -426,11 +451,12 @@ void math_munder::oox_convert(oox::math_context & Context)
 		strm << L"</m:lim>";
 	strm << L"</m:limLow>";
 
-	if (need_e)
+	Context.end_level();
+	
+	if (Context.levels.back().is_need_e_)
 	{
 		Context.output_stream() << L"</m:e>";
 	}
-	Context.is_need_e_ = need_e;
 }
 }
 }

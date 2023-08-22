@@ -942,9 +942,10 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 		}
 	}
 //-------------------------------------------------------------------
+	bool result = true;
 	if (bLargeFile)
 	{
-		pStorageNew->Save(file_name_out);
+		result = pStorageNew->Save(file_name_out);
 		pStorageNew->Close();
 		delete pStorageNew;
 	}
@@ -974,7 +975,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	}
 ////test back---------------------------------------------------------------------------------test back
 
-	return true;
+	return result;
 }
 bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const std::wstring &file_name_out, const std::wstring &password, bool & bDataIntegrity)
 {
@@ -1083,12 +1084,12 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 		unsigned char* data = new unsigned char[lengthRead];
 		unsigned char* data_out	= NULL;
 		
-		int readTrue = pStream->read(data, lengthRead); 
-		int readData = readTrue - 8; 
+		_UINT64 readTrue = pStream->read(data, lengthRead); 
+		_UINT64 readData = readTrue - 8;
 
-		lengthData = *((_UINT64*)data);
+		lengthData = (std::min)(*((_UINT64*)data), readData);
 
-		decryptor.Decrypt(data + 8, readData, data_out, 0);//todoo сделать покусочное чтение декриптование
+		decryptor.Decrypt(data + 8, (int)readData, data_out, 0);
 
 		if (data_out)
 		{

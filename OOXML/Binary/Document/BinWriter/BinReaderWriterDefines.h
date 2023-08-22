@@ -160,6 +160,22 @@ extern int g_nCurFormatVersion;
 		HdrFtr_Y2 = 6,//устарел
 		HdrFtr_Y = 7//устарел
 	};}
+	namespace c_oSerCnf {enum c_oSerCnf
+	{
+		Val = 0,
+		EvenHBand = 1,
+		EvenVBand = 2,
+		FirstColumn = 3,
+		FirstRow = 4,
+		FirstRowFirstColumn = 5,
+		FirstRowLastColumn = 6,
+		LastColumn = 7,
+		LastRow = 8,
+		LastRowFirstColumn = 9,
+		LastRowLastColumn = 10,
+		OddHBand = 11,
+		OddVBand = 12
+	};}
 	namespace c_oSerNumTypes{enum c_oSerNumTypes
 	{
 		AbstractNums = 0,
@@ -367,7 +383,8 @@ extern int g_nCurFormatVersion;
 		Spacing_AfterTwips = 41,
 		Tab_Item_PosTwips = 42,
 		Tab_Item_Val = 43,
-		SuppressLineNumbers = 44
+		SuppressLineNumbers = 44,
+		CnfStyle = 45
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -449,7 +466,8 @@ extern int g_nCurFormatVersion;
 		Ins = 16,
 		trPrChange = 17,
 		TableCellSpacingTwips = 18,
-		Height_ValueTwips = 19
+		Height_ValueTwips = 19,
+		CnfStyle = 20
 	};}
 	namespace c_oSerProp_cellPrType{enum c_oSerProp_cellPrType
 	{
@@ -468,7 +486,8 @@ extern int g_nCurFormatVersion;
 		hideMark = 12,
 		noWrap = 13,
 		tcFitText = 14,
-		HMerge = 15
+		HMerge = 15,
+		CnfStyle = 16
 	};}
 	namespace c_oSerProp_secPrType{enum c_oSerProp_secPrType
 	{
@@ -535,7 +554,8 @@ extern int g_nCurFormatVersion;
 		AltChunk = 26,
 		DocParts = 27,
 		PermStart = 28,
-		PermEnd = 29
+		PermEnd = 29,
+		JsaProjectExternal = 30
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary

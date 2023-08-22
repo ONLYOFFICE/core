@@ -130,12 +130,7 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
-    default_style() {};
-
     style_content content_;
-
-    friend class odf_document;
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -156,13 +151,10 @@ public:
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(std::wstring)		svg_d_; 
-	_CP_OPT(std::wstring)		svg_viewBox_; 
- 	_CP_OPT(std::wstring)		draw_name_;
-	_CP_OPT(std::wstring)		draw_display_name_;
-	
-    friend class odf_document;
-
+	_CP_OPT(std::wstring) svg_d_; 
+	_CP_OPT(std::wstring) svg_viewBox_; 
+ 	_CP_OPT(std::wstring) draw_name_;
+	_CP_OPT(std::wstring) draw_display_name_;
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -195,8 +187,6 @@ public:
  	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_display_name_;
 	
-    friend class odf_document;
-
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -231,11 +221,9 @@ public:
 	_CP_OPT(odf_types::gradient_style)		draw_style_;
 
 
- 	_CP_OPT(std::wstring)		draw_name_;
-	_CP_OPT(std::wstring)		draw_display_name_;
+ 	_CP_OPT(std::wstring) draw_name_;
+	_CP_OPT(std::wstring) draw_display_name_;
 	
-    friend class odf_document;
-
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -257,15 +245,13 @@ public:
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 	
 	_CP_OPT(odf_types::hatch_style)	draw_style_;
-	_CP_OPT(int)			draw_rotation_;
-	_CP_OPT(odf_types::length)			draw_distance_;	
-	_CP_OPT(odf_types::color)			draw_color_;
+	_CP_OPT(int) draw_rotation_;
+	_CP_OPT(odf_types::length) draw_distance_;	
+	_CP_OPT(odf_types::color) draw_color_;
 
- 	_CP_OPT(std::wstring)	draw_name_;
-	_CP_OPT(std::wstring)	draw_display_name_;
+ 	_CP_OPT(std::wstring) draw_name_;
+	_CP_OPT(std::wstring) draw_display_name_;
  
-	friend class odf_document;
-	
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -294,10 +280,8 @@ public:
 	
 	_CP_OPT(odf_types::percent)		draw_border_;
 
- 	_CP_OPT(std::wstring)	draw_name_;
-	_CP_OPT(std::wstring)	draw_display_name_;
-	
-    friend class odf_document;
+ 	_CP_OPT(std::wstring) draw_name_;
+	_CP_OPT(std::wstring) draw_display_name_;
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -319,11 +303,10 @@ public:
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
-	odf_types::common_xlink_attlist		xlink_attlist_;
+ 	_CP_OPT(std::wstring) draw_name_;
+	odf_types::common_xlink_attlist xlink_attlist_;
 
- 	_CP_OPT(std::wstring)		draw_name_;
-    friend class odf_document;
-
+    office_element_ptr office_binary_data_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -373,8 +356,6 @@ public:
     style_content content_;
 	
 	office_element_ptr_array style_map_;
-
-    friend class odf_document;
 };
 CP_REGISTER_OFFICE_ELEMENT2(style);
 
@@ -387,8 +368,6 @@ public:
     office_element_ptr_array style_style_;    
     office_element_ptr_array text_list_style_;  
     office_element_ptr_array number_styles_; 
-   
-	friend class odf_document;
 };
 
 class draw_styles
@@ -406,8 +385,6 @@ public:
 	
 	office_element_ptr_array svg_linearGradient_; 
     office_element_ptr_array svg_radialGradient_;
-
-    friend class odf_document;
 };
 
 class templates
@@ -416,8 +393,6 @@ public:
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
 
 	office_element_ptr_array table_templates_;    
-
-    friend class odf_document;
 };
 
 //  office:automatic-styles
@@ -434,9 +409,6 @@ public:
 
     styles						styles_; ///< styles
     office_element_ptr_array	style_page_layout_;
-
-    friend class odf_document;
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -461,9 +433,6 @@ public:
     office_element_ptr			draw_layer_set_;			// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
-
-    friend class odf_document;
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -551,10 +520,7 @@ public:
 	office_element_ptr			text_outline_style_;
     office_element_ptr_array	text_notes_configuration_; // < TODO
     office_element_ptr			text_bibliography_configuration_; // < TODO
-    office_element_ptr			text_linenumbering_configuration_; 
-
-    friend class odf_document;   
-   
+    office_element_ptr			text_linenumbering_configuration_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_styles);
@@ -570,7 +536,6 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 
 	CPDOCCORE_DEFINE_VISITABLE();
-	friend class odf_document;
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

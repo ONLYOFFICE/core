@@ -369,6 +369,7 @@
     <ClInclude Include="..\..\DataTypes\smil_values.h" />
     <ClInclude Include="..\..\DataTypes\svg_type.h" />
     <ClInclude Include="..\..\DataTypes\smil_fill.h">
+    <ClInclude Include="..\..\DataTypes\sparklines.h">
       <Filter>datatypes odf</Filter>
     </ClInclude>
   </ItemGroup>
@@ -718,6 +719,7 @@
     <ClCompile Include="..\..\DataTypes\smil_values.cpp" />
     <ClCompile Include="..\..\DataTypes\svg_type.cpp" />
     <ClCompile Include="..\..\DataTypes\smil_fill.cpp">
+    <ClCompile Include="..\..\DataTypes\sparklines.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

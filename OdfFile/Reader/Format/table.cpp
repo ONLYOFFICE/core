@@ -214,7 +214,11 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     {
         CP_CREATE_ELEMENT(office_forms_);    
     }
-	else 
+    else if CP_CHECK_NAME(L"calcext", L"sparkline-groups")
+    {
+        CP_CREATE_ELEMENT(sparkline_groups_);
+    }
+    else
         CP_NOT_APPLICABLE_ELM();
 }
 

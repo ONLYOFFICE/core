@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "../../../common/base_export.h"
 
 #ifdef COMMON_OPENSSL_BUILDING_INTERNAL

@@ -37,6 +37,7 @@
 
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Diagram/DiagramData.h"
 #include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
@@ -280,7 +281,7 @@ std::wstring OoxConverter::GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* 
 }
 void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 {
-	if (!oox_picture)return;
+	if (!oox_picture) return;
 
 	if (oox_picture->spPr.Geometry.is_init())
 	{
@@ -324,6 +325,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
 			pathImage = find_link_by_id(sID, 1, bExternal);
 			
+			if (false == NSFile::CFileBinary::Exists(pathImage))
+			{
+				pathImage.clear();
+			}
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
@@ -350,9 +355,9 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			for (size_t i = 0; i < oox_picture->nvPicPr.nvPr.extLst.size(); i++)
 			{
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
-				if (pathMedia.empty() && ext.link.IsInit())
+				if (pathMedia.empty() && ext.link_media.IsInit())
 				{
-					pathMedia = find_link_by_id(ext.link->get(), 3, bExternal);
+					pathMedia = find_link_by_id(ext.link_media->get(), 3, bExternal);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;
@@ -486,6 +491,23 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
 	}
+	if (oox_picture->blipFill.blip.IsInit())
+	{
+		for (size_t i = 0; i < oox_picture->blipFill.blip->ExtLst.size(); ++i)
+		{
+			if (oox_picture->blipFill.blip->ExtLst[i].link_svg.IsInit())
+			{
+				std::wstring sID = oox_picture->blipFill.blip->ExtLst[i].link_svg->get();
+				pathImage = find_link_by_id(sID, 1, bExternal);
+				if (NSFile::CFileBinary::Exists(pathImage))
+				{
+					odf_ref_image = odf_context()->add_image(pathImage);
+					odf_context()->drawing_context()->start_image2(odf_ref_image);
+				}
+				break;
+			}
+		}
+	}
 	odf_context()->drawing_context()->end_image();
 }
 
@@ -503,12 +525,35 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);
 
-		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
-
 		odf_context()->drawing_context()->start_group();
 
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
+
+		odf_context()->drawing_context()->start_drawing();
+		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
+		
+		odf_context()->drawing_context()->set_size( width, height);
+		odf_context()->drawing_context()->set_position(x, y);
+
+		if (oox_smart_art->m_oDataBg.IsInit())
+		{
+			oox_current_child_document = oox_smart_art->m_pDataContainer.GetPointer();
+			
+			if ((oox_smart_art->m_oDataBg->m_oFill.Fill.IsInit()) &&
+				(oox_smart_art->m_oDataBg->m_oFill.m_type != PPTX::Logic::UniFill::noFill))
+			{
+				odf_context()->drawing_context()->start_area_properties();
+				{
+					convert(&oox_smart_art->m_oDataBg->m_oFill);
+				}
+				odf_context()->drawing_context()->end_area_properties();
+			}
+		}
+		odf_context()->drawing_context()->end_shape();
+		odf_context()->drawing_context()->end_drawing();
+
+		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 
 		for (size_t i = 0; i < oox_smart_art->m_oDrawing->SpTreeElems.size(); i++)
 		{
@@ -1348,6 +1393,10 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")) / 1000.,
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")) / 1000.,
 																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")) / 1000.);			
+			}	
+			else if (grad_style == odf_types::gradient_style::radial)
+			{
+				odf_context()->drawing_context()->set_gradient_center(0.5, 0.5);
 			}
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);

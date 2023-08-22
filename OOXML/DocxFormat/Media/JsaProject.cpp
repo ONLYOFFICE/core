@@ -60,8 +60,9 @@ namespace OOX
 			}
 		}
 	}
-	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
+	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename, bool bExternal) : Media(pMain)
 	{
+		m_bExternal = bExternal;
 		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
 		if (docx)
 		{
@@ -96,11 +97,23 @@ namespace OOX
 
 	void JsaProject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
-		BYTE* pData = NULL;
-		DWORD nBytesCount;
-		if(NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+		if (m_bExist && !m_bExternal)
 		{
-			pWriter->WriteBYTEArray(pData, nBytesCount);
+			std::wstring pathMain = m_pMainDocument ? m_pMainDocument->m_sDocumentPath : L"";
+			std::wstring pathJsa = m_filename.GetPath();
+			if (pathMain.empty() || std::wstring::npos != pathJsa.find(pathMain))
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if (NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+				{
+					pWriter->WriteBYTEArray(pData, nBytesCount);
+				}
+			}
+		}
+		if (m_bExternal)
+		{
+
 		}
 	}
 	void JsaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

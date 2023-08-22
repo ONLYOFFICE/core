@@ -179,12 +179,16 @@ public:
 	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha);
 	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath);
 	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath);
+	virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage);
+	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	virtual HRESULT get_BrushTextureMode(LONG* lMode);
 	virtual HRESULT put_BrushTextureMode(const LONG& lMode);
 	virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha);
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
 	virtual HRESULT get_BrushLinearAngle(double* dAngle);
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
+	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
+	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
@@ -344,6 +348,9 @@ public:
 
 	inline double GetPixW() { return m_pRenderer->GetPixW(); }
 	inline double GetPixH() { return m_pRenderer->GetPixH(); }
+
+	// alpha mask methods
+	void SetAlphaMask(Aggplus::CAlphaMask* pAlphaMask);
 
 	// smart methods
 	void drawHorLine(BYTE align, double y, double x, double r, double penW)

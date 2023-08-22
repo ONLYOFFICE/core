@@ -24,9 +24,9 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
 	{
-		m_oXmlWriter.WriteNodeBegin(L"svg", true);
-		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
-		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
+		m_pXmlWriter->WriteNodeBegin(L"svg", true);
+		m_pXmlWriter->WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
+		m_pXmlWriter->WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
 		TRect *pBounds = m_pParser->GetDCBounds();
 
@@ -38,10 +38,10 @@ namespace MetaFile
 		UpdateSize();
 
 		if (m_oViewport.GetWidth() != 0)
-			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
+			m_pXmlWriter->WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
+			m_pXmlWriter->WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
@@ -64,17 +64,17 @@ namespace MetaFile
 		}
 
 		if (1 != dXScale || 1 != dYScale)
-			m_oXmlWriter.WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+			m_pXmlWriter->WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
 
-		m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
+		m_pXmlWriter->WriteNodeEnd(L"svg", true, false);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
 		ResetClip();
 		if (!m_wsDefs.empty())
-			m_oXmlWriter.WriteString(L"<defs>" + m_wsDefs + L"</defs>");
-		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
+			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
+		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft)
@@ -100,12 +100,12 @@ namespace MetaFile
 		std::wstring wsValue = L"M " + ConvertToWString(dX1 + (shRight + shLeft) / 2.) + L' ' + ConvertToWString(dY1 + (shBottom + shTop) / 2.);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-				   ConvertToWString(dYRadius) + L' ' +
-				   L"0 0 0 " +
-				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
-				   //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
-				   ConvertToWString(dX2 + (shRight + shLeft) / 2.) + L' ' +
-				   ConvertToWString(dY2 + (shBottom + shTop) / 2.);
+		           ConvertToWString(dYRadius) + L' ' +
+		           L"0 0 0 " +
+		           //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
+		           //                                    ((std::fabs(dSweepAngle - dStartAngle) <= 180) ? L"1" : L"0") + L' ' +
+		           ConvertToWString(dX2 + (shRight + shLeft) / 2.) + L' ' +
+		           ConvertToWString(dY2 + (shBottom + shTop) / 2.);
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -132,9 +132,9 @@ namespace MetaFile
 		oNewRect.dBottom = shBottom;
 
 		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.dLeft   + oNewRect.dRight)  / 2)},
-									   {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
-									   {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
-									   {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
+		                               {L"cy", ConvertToWString((oNewRect.dTop    + oNewRect.dBottom) / 2)},
+		                               {L"rx", ConvertToWString((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
+		                               {L"ry", ConvertToWString((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
@@ -261,9 +261,9 @@ namespace MetaFile
 		TPointD oCurPos = GetCutPos();
 
 		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.x)},
-									   {L"y1", ConvertToWString(oCurPos.y)},
-									   {L"x2", ConvertToWString(shX)},
-									   {L"y2", ConvertToWString(shY)}};
+		                               {L"y1", ConvertToWString(oCurPos.y)},
+		                               {L"x2", ConvertToWString(shX)},
+		                               {L"y2", ConvertToWString(shY)}};
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
@@ -396,9 +396,9 @@ namespace MetaFile
 		oNewRect.dBottom = shB;
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
@@ -418,9 +418,9 @@ namespace MetaFile
 		oNewRect.dBottom = shB;
 
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
-									   {L"y",		ConvertToWString(oNewRect.dTop)},
-									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
-									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
+		                               {L"y",		ConvertToWString(oNewRect.dTop)},
+		                               {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
+		                               {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
 		                               {L"rx",		ConvertToWString((double)shW / 2.)},
 		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
 

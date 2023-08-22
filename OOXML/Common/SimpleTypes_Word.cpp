@@ -2284,7 +2284,7 @@ namespace SimpleTypes
 		else if ( (L"thaiDistribute") == sValue ) this->m_eValue = jcThaiDistribute;
 		else if ( (L"left")           == sValue ) this->m_eValue = jcLeft;
 		else if ( (L"right")          == sValue ) this->m_eValue = jcRight;
-		else                                       this->m_eValue = jcLeft;
+		else									  this->m_eValue = jcLeft;
 
 		return this->m_eValue;
 	}
@@ -2296,12 +2296,12 @@ namespace SimpleTypes
 		case jcBoth            : return (L"both");
 		case jcCenter          : return (L"center");
 		case jcDistribute      : return (L"distribute");
-		case jcEnd             : return (L"end");
+		case jcEnd             : /*return (L"end");*/ return (L"right"); //Transitional Migration Features
 		case jcHighKashida     : return (L"highKashida");
 		case jcLowKashida      : return (L"lowKashida");
 		case jcMediumKashida   : return (L"mediumKashida");
 		case jcNumTab          : return (L"numTab");
-		case jcStart           : return (L"start");
+		case jcStart           : /*return (L"start");*/ return (L"left"); //Transitional Migration Features
 		case jcThaiDistribute  : return (L"thaiDistribute");
 		case jcLeft            : return (L"left");
 		case jcRight           : return (L"right");
@@ -2315,12 +2315,12 @@ namespace SimpleTypes
 
 	EJcTable CJcTable::FromString(const std::wstring &sValue)
 	{
-		if      ( (L"center")         == sValue ) this->m_eValue = jctableCenter;
-		else if ( (L"end")            == sValue ) this->m_eValue = jctableEnd;
-		else if ( (L"start")          == sValue ) this->m_eValue = jctableStart;
-		else if ( (L"left")           == sValue ) this->m_eValue = jctableLeft;
-		else if ( (L"right")          == sValue ) this->m_eValue = jctableRight;
-		else                                       this->m_eValue = jctableLeft;
+		if      ( (L"center")	== sValue ) this->m_eValue = jctableCenter;
+		else if ( (L"end")		== sValue ) this->m_eValue = jctableEnd;
+		else if ( (L"start")	== sValue ) this->m_eValue = jctableStart;
+		else if ( (L"left")		== sValue ) this->m_eValue = jctableLeft;
+		else if ( (L"right")	== sValue ) this->m_eValue = jctableRight;
+		else								this->m_eValue = jctableLeft;
 
 		return this->m_eValue;
 	}
@@ -2332,8 +2332,8 @@ namespace SimpleTypes
 		case jctableCenter : return (L"center");
 		case jctableEnd    : return (L"end");
 		case jctableStart  : return (L"start");
-		case jctableLeft   : return (L"left");
-		case jctableRight  : return (L"right");
+		case jctableLeft   : /*return (L"start");*/ return (L"left"); //Transitional Migration Features
+		case jctableRight  : /*return (L"end");*/ return (L"right"); //Transitional Migration Features
 		default            : return (L"left");
 		}
 	}

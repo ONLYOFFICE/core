@@ -1428,7 +1428,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	}
 
 	if( m_ooxParaProps->m_oRPr.IsInit() )
-	{
+	{// ??? todooo сохранять текстовые ствойсва и использовать там где в run нет этих свойств
 		OOXrPrReader orPrReader(m_ooxParaProps->m_oRPr.GetPointer());
 		orPrReader.Parse( oParam, oOutputProperty.m_oCharProperty );
 	}

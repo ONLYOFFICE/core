@@ -70,7 +70,7 @@ void TablePropertiesMapping::Apply(IVisitable* visited)
 
 	bool bTableW = false;
 
-	for (std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++)
+	for (std::vector<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++)
 	{
 		switch (iter->OpCode)
 		{

@@ -34,6 +34,7 @@
 #include "../Drawing/Document.h"
 
 #include "ImageManager.h"
+#include "../../../Common/MS-LCID.h"
 
 namespace PPT
 {
@@ -134,25 +135,27 @@ namespace PPT
 	class CShapeWriter
 	{
 	private:
-        PPT::CStringWriter		m_oWriterPath;
-        PPT::CStringWriter		m_oWriterVML;
-        PPT::CStringWriter		m_oWriter;
+        PPT::CStringWriter m_oWriterPath;
+        PPT::CStringWriter m_oWriterVML;
+        PPT::CStringWriter m_oWriter;
 
-        PPT::CElementPtr		m_pElement;
+        PPT::CElementPtr m_pElement;
 		
 		CRelsGenerator*	m_pRels;
 
-        PPT::CTheme*			m_pTheme;
+        PPT::CTheme* m_pTheme;
 
-        LONG									m_lNextShapeID;
+        LONG m_lNextShapeID;
 
-		bool									m_bWordArt;
-		bool									m_bTextBox;
+		bool m_bWordArt;
+		bool m_bTextBox;
 		
-		std::wstring							m_xmlGeomAlternative;
-		std::wstring							m_xmlTxBodyAlternative;
-		std::wstring							m_xmlAlternative;
-	public:	
+		std::wstring m_xmlGeomAlternative;
+		std::wstring m_xmlTxBodyAlternative;
+		std::wstring m_xmlAlternative;
+
+		MS_LCID_converter m_lcidConverter;
+	public:
 
 		CShapeWriter();
 		~CShapeWriter()

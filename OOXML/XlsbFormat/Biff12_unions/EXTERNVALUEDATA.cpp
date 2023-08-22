@@ -32,7 +32,7 @@
 
 #include "EXTERNVALUEDATA.h"
 #include "../Biff12_records/ExternCell.h"
-#include "../Biff12_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 
 using namespace XLS;
 

@@ -30,7 +30,6 @@
  *
  */
 #include "TxBodyConverter.h"
-#include "../../../Common/MS-LCID.h"
 #include "../../XlsFile/Converter/ShapeType.h"
 #include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "StylesWriter.h"

@@ -29,42 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//+	shapetypeArc,
-//+	shapetypeBevel,
-//+	shapetypeCan,
-//+	shapetypeChevron,
-//+	shapetypeChord,
-//+	shapetypeCorner,
-//	shapetypeCornerTabs,
-//+	shapetypeCube,
-//+	shapetypeDecagon,
-//	shapetypeDiagStripe,
-//+	shapetypeDiamond
-//+	shapetypeDodecagon,
-//+	shapetypeDoubleWave,
-//+	shapetypeFunnel,
-//+	shapetypeGear6,
-//+	shapetypeGear9,
-//	shapetypeHalfFrame,
-//+	shapetypeHeptagon,
-//+	shapetypeHexagon,
-//+ shapetypeHomePlate,
-//	shapetypeNonIsoscelesTrapezoid,
-//+	shapetypeOctagon,
-//+	shapetypeParallelogram
-//+	shapetypePentagon,
-//+	shapetypePie,
-//+	shapetypePieWedge,
-//+	shapetypePlaque,
-//	shapetypePlaqueTabs,
-//	shapetypeSquareTabs,
-//	shapetypeTeardrop
-//+ shapetypeTriangle
-//+	shapetypeTrapezoid
-//+ shapetypeBlockArc
-//+ shapetypeDonut
-//+ shapetypeFrame
-
 #include "../oox_shape_defines.h"
 
 namespace cpdoccore 
@@ -394,7 +358,6 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-
 class oox_shape_Gear6 : public oox_shape
 {
 public:
@@ -829,7 +792,6 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-
 class oox_shape_PieWedge : public oox_shape
 {
 public:
@@ -1112,8 +1074,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
-
 class oox_shape_Donut : public oox_shape
 {
 public:
@@ -1168,8 +1128,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
-
 class oox_shape_Chevron : public oox_shape
 {
 public:
@@ -1276,8 +1234,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
-
 class oox_shape_HomePlate : public oox_shape
 {
 public:
@@ -1310,7 +1266,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
 class oox_shape_Bevel : public oox_shape
 {
 public:
@@ -1349,8 +1304,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
-
 class oox_shape_Trapezoid : public oox_shape
 {
 public:
@@ -1389,8 +1342,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
-
 class oox_shape_Triangle : public oox_shape
 {
 public:
@@ -1421,7 +1372,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
 class oox_shape_Diamond : public oox_shape
 {
 public:
@@ -1443,7 +1393,6 @@ public:
 		add(L"f7", L"logheight/4");
 	}
 };
-
 class oox_shape_Parallelogram : public oox_shape
 {
 public:
@@ -1490,7 +1439,6 @@ public:
 		handles.push_back(h);
 	}
 };
-
 class oox_shape_RtTriangle : public oox_shape
 {
 public:
@@ -1512,8 +1460,6 @@ public:
 		add(L"f7", L"logwidth/12");
 	}
 };
-
-
 class oox_shape_Plus : public oox_shape
 {
 public:
@@ -1581,7 +1527,6 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-
 class oox_shape_Pentagon : public oox_shape
 {
 public:
@@ -1640,7 +1585,6 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-
 class oox_shape_Octagon : public oox_shape
 {
 public:
@@ -1725,7 +1669,6 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-
 class oox_shape_Heptagon : public oox_shape
 {
 public:
@@ -2067,6 +2010,139 @@ public:
 		add(L"f163", L"if(?f113, ?f85, ?f154)");
 		add(L"f164", L"if(?f113, ?f141, ?f156)");
 /////////////////////////////////////////////////////////
+	}
+};
+class oox_shape_Teardrop : public oox_shape
+{
+public:
+	oox_shape_Teardrop()
+	{
+		odf_type_name = L"ooxml-teardrop";
+
+		enhanced_path = L"M 0 ?f12 G ?f2 ?f4 ?f24 ?f25 Q ?f14 0 ?f11 ?f13 ?f22 ?f15 ?f22 ?f12 G ?f2 ?f4 ?f26 ?f27 ?f2 ?f4 ?f28 ?f29 Z N";
+		text_areas = L"?f18 ?f20 ?f19 ?f21";
+		view_box = L"0 0 0 0";
+		modifiers = L"100000";
+
+		add(L"f0", L"if(0-$0 ,0,if(200000-$0 ,$0 ,200000))");
+		add(L"f1", L"sqrt(2)");
+		add(L"f2", L"logwidth/2");
+		add(L"f3", L"?f2 *?f1 /1");
+		add(L"f4", L"logheight/2");
+		add(L"f5", L"?f4 *?f1 /1");
+		add(L"f6", L"?f3 *?f0 /100000");
+		add(L"f7", L"?f5 *?f0 /100000");
+		add(L"f8", L"?f6 *cos(pi*(2700000)/10800000)");
+		add(L"f9", L"?f7 *sin(pi*(2700000)/10800000)");
+		add(L"f10", L"logwidth/2");
+		add(L"f11", L"?f10 +?f8 -0");
+		add(L"f12", L"logheight/2");
+		add(L"f13", L"?f12 +0-?f9 ");
+		add(L"f14", L"(?f10 +?f11 )/2");
+		add(L"f15", L"(?f12 +?f13 )/2");
+		add(L"f16", L"?f2 *cos(pi*(2700000)/10800000)");
+		add(L"f17", L"?f4 *sin(pi*(2700000)/10800000)");
+		add(L"f18", L"?f10 +0-?f16 ");
+		add(L"f19", L"?f10 +?f16 -0");
+		add(L"f20", L"?f12 +0-?f17 ");
+		add(L"f21", L"?f12 +?f17 -0");
+		add(L"f22", L"logwidth");
+		add(L"f23", L"logheight");
+		add(L"f24", L"(10800000)/60000.0");
+		add(L"f25", L"(5400000)/60000.0");
+		add(L"f26", L"(0)/60000.0");
+		add(L"f27", L"(5400000)/60000.0");
+		add(L"f28", L"(5400000)/60000.0");
+		add(L"f29", L"(5400000)/60000.0");
+
+		/////////////////////////////////////////////////////////
+		_handle h;
+
+		h.position = L"?f11 0";
+		h.x_minimum = L"0";
+		h.x_maximum = L"200000";
+		handles.push_back(h);
+	}
+};
+class oox_shape_DiagStripe : public oox_shape
+{
+public:
+	oox_shape_DiagStripe()
+	{
+		odf_type_name = L"ooxml-diagStripe";
+
+		enhanced_path = L"M 0 ?f4 L ?f1 0 ?f9 0 0 ?f10 Z N";
+		text_areas = L"0 0 ?f3 ?f6";
+		view_box = L"0 0 0 0";
+		modifiers = L"50000";
+
+		add(L"f0", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
+		add(L"f1", L"logwidth*?f0 /100000");
+		add(L"f2", L"?f1 *1/2");
+		add(L"f3", L"(?f1 +logwidth)/2");
+		add(L"f4", L"logheight*?f0 /100000");
+		add(L"f5", L"?f4 *1/2");
+		add(L"f6", L"(?f4 +logheight)/2");
+		add(L"f7", L"logwidth/2");
+		add(L"f8", L"logheight/2");
+		add(L"f9", L"logwidth");
+		add(L"f10", L"logheight");
+
+		/////////////////////////////////////////////////////////
+		_handle h;
+
+		h.position = L"0 ?f4";
+		h.y_minimum = L"0";
+		h.y_maximum = L"100000";
+		handles.push_back(h);
+	}
+};
+class oox_shape_HalfFrame : public oox_shape
+{
+public:
+	oox_shape_HalfFrame()
+	{
+		odf_type_name = L"ooxml-halfFrame";
+
+		enhanced_path = L"M 0 0 L ?f19 0 ?f10 ?f8 ?f3 ?f8 ?f3 ?f12 0 ?f20 Z N";
+		text_areas = L"0 0 ?f19 ?f20";
+		view_box = L"0 0 0 0";
+		modifiers = L"33333 33333";
+
+		add(L"f0", L"min(logwidth,logheight)");
+		add(L"f1", L"100000*logwidth/?f0 ");
+		add(L"f2", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
+		add(L"f3", L"?f0 *?f2 /100000");
+		add(L"f4", L"logheight*?f3 /logwidth");
+		add(L"f5", L"logheight+0-?f4 ");
+		add(L"f6", L"100000*?f5 /?f0 ");
+		add(L"f7", L"if(0-$0 ,0,if(?f6 -$0 ,$0 ,?f6 ))");
+		add(L"f8", L"?f0 *?f7 /100000");
+		add(L"f9", L"?f8 *logwidth/logheight");
+		add(L"f10", L"logwidth+0-?f9 ");
+		add(L"f11", L"?f3 *logheight/logwidth");
+		add(L"f12", L"logheight+0-?f11 ");
+		add(L"f13", L"?f3 *1/2");
+		add(L"f14", L"(?f12 +logheight)/2");
+		add(L"f15", L"(?f10 +logwidth)/2");
+		add(L"f16", L"?f8 *1/2");
+		add(L"f17", L"logheight/2");
+		add(L"f18", L"logwidth/2");
+		add(L"f19", L"logwidth");
+		add(L"f20", L"logheight");
+
+		/////////////////////////////////////////////////////////
+		_handle h;
+
+		h.position = L"0 ?f8";
+		h.y_minimum = L"0";
+		h.y_maximum = L"?f6";
+		handles.push_back(h);
+		
+		h.position = L"?f3 0";
+		h.x_minimum = L"0";
+		h.x_maximum = L"?f1";
+		handles.push_back(h);
 	}
 };
 }

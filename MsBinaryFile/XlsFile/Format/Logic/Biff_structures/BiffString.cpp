@@ -31,7 +31,7 @@
  */
 
 #include "BiffString.h"
-#include "../../../Common/Utils/OptPtr.h"
+#include "../../../../Common/Utils/OptPtr.h"
 
 namespace XLS
 {

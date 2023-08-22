@@ -64,6 +64,3 @@ HEADERS +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapibuf.h
 
-core_ios {
-OBJECTIVE_SOURCES += $$PWD/src/ZipUtilsCP_ios.mm
-}

@@ -1262,8 +1262,10 @@ void CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument)
 
 void CDrawingConverter::SetSrcPath(const std::wstring& sPath, int nDocType)
 {
-    m_pReader->m_pRels->m_pManager  = m_pImageManager;
-    m_pReader->m_strFolder          = sPath;
+	OOX::CPath path(sPath);
+    
+	m_pReader->m_pRels->m_pManager  = m_pImageManager;
+    m_pReader->m_strFolder          = path.GetPath();
 
     m_pImageManager->m_nDocumentType = nDocType;
 }

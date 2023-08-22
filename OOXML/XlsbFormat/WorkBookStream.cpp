@@ -599,8 +599,11 @@ void WorkBookStream::UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_)
         {
             if (lbl->fFunc)
             {
-                if (name == L"FORMULA") //"general_formulas.xls"
-                        name = L"_xludf." + name;
+                if (name != L"CHISQDIST" &&
+                    name != L"CHISQINV" &&
+                    name != L"CURRENT" &&
+                    name != L"EFFECTIVE")
+                name = L"_xludf." + name;
             }
         }
         global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!

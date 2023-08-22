@@ -634,7 +634,11 @@ enum ElementType
 	typeCalcextDateIs,
 	typeCalcextCondition,
 	typeCalcextConditionalFormat,
-	typeCalcextConditionalFormats
+	typeCalcextConditionalFormats,
+	typeCalcextSparklineGroups,
+	typeCalcextSparklineGroup,
+	typeCalcextSparklines,
+	typeCalcextSparkline
 
 };
 

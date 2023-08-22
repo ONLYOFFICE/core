@@ -86,14 +86,14 @@ namespace DocFileFormat
 
 		WriteRelsFile( NumberingRelationshipsFile );
 
-		for ( std::list<RelationshipsFile>::const_iterator iter = HeaderRelationshipsFiles.begin(); iter != HeaderRelationshipsFiles.end(); iter++ )
+		for (auto& iter : HeaderRelationshipsFiles)
 		{
-			WriteRelsFile( *iter );
+			WriteRelsFile( iter );
 		}
 
-		for ( std::list<RelationshipsFile>::const_iterator iter = FooterRelationshipsFiles.begin(); iter != FooterRelationshipsFiles.end(); iter++ )
+		for (auto& iter : FooterRelationshipsFiles)
 		{
-			WriteRelsFile( *iter );
+			WriteRelsFile( iter );
 		}
 
 		WriteContentTypesFile( DocumentContentTypesFile );
@@ -406,7 +406,7 @@ namespace DocFileFormat
 
             writer.WriteNodeEnd( L"", TRUE, FALSE );
 
-			for ( std::list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
+			for ( std::vector<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
 			{
                 writer.WriteNodeBegin( L"Relationship", TRUE );
                 writer.WriteAttribute( L"Id", iter->Id );

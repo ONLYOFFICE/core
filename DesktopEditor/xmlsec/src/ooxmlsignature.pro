@@ -27,6 +27,7 @@ HEADERS += \
     src/XmlTransform.h
 
 SOURCES += \
+    src/common.h \
     src/XmlTransform.cpp \
 	src/CertificateCommon.cpp \
     src/OOXMLSigner.cpp \

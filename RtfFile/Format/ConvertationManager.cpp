@@ -94,19 +94,7 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     m_poRtfReader = &oReader;
     m_poOOXWriter = &oWriter;
 
-    //m_poRtfReader->m_convertationManager = this;
-
     if (false == oReader.Load( )) return AVS_FILEUTILS_ERROR_CONVERT;
-
-    //сохранение будет поэлементое в обработчике OnCompleteItemRtf
-    //надо только завершить
-    //if( true == m_bParseFirstItem )
-    //{
-    //    m_bParseFirstItem = false;
-    //    oWriter.SaveByItemStart( );
-    //}
-    //m_poOOXWriter->SaveByItem();
-    //oWriter.SaveByItemEnd( );
 
 	oWriter.Save();
 
@@ -146,17 +134,19 @@ _UINT32 RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
 
     m_poOOXReader->m_convertationManager = this;
 
-    bool succes = oReader.Parse( );
-    if( true == succes)
+    bool result = oReader.Parse( );
+    if( result )
     {
-        succes = oWriter.Save( );
+		result = oWriter.Save( );
     }
 
     NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
     NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
-    if( true == succes) return 0;
-    return AVS_FILEUTILS_ERROR_CONVERT;
+    if ( result ) 
+		return 0;
+    else 
+		return AVS_FILEUTILS_ERROR_CONVERT;
 }
 void RtfConvertationManager::OnCompleteItemRtf()
 {

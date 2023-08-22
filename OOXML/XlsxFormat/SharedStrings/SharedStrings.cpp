@@ -111,13 +111,15 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			auto atribPtr(new XLSB::BeginSst);
+			ptr->m_BrtBeginSst = XLS::BaseObjectPtr{atribPtr};
 			if(m_oCount.IsInit())
 				atribPtr->cstTotal = m_oCount->GetValue();
+			if(m_oUniqueCount.IsInit())
 				atribPtr->cstUnique = m_oUniqueCount->GetValue();
 
 			for(auto i:m_arrItems)
 			{
-				ptr->m_BrtBeginSst = i->toBin();
+				ptr->m_arBrtSSTItem.push_back(i->toBin());
 			}
 			return objectPtr;
 		}

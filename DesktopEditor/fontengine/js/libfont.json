@@ -44,7 +44,13 @@
 		
 		"_ASC_HB_LanguageFromString",
 		"_ASC_HB_ShapeText",
-		"_ASC_HB_FontFree"
+		"_ASC_HB_FontFree",
+
+		"_hyphenCreateApplication",
+		"_hyphenDestroyApplication",
+		"_hyphenLoadDictionary",
+		"_hyphenCheckDictionary",
+		"_hyphenWord"
 	],
 	"include_path": [
 		"./../../graphics/pro/js/freetype-2.10.4/include", 
@@ -55,7 +61,7 @@
 		"./../../../OfficeUtils/src",
 		"./../../../OfficeUtils/src/zlib-1.2.11"
 	],
-	"define": ["__linux__", "_LINUX", "UNIX", "NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS", "FT2_BUILD_LIBRARY", "HAVE_FREETYPE", "FT_CONFIG_OPTION_SYSTEM_ZLIB"],
+	"define": ["__linux__", "_LINUX", "UNIX", "NDEBUG", "_LIB", "_CRT_SECURE_NO_WARNINGS", "FT2_BUILD_LIBRARY", "HAVE_FREETYPE", "FT_CONFIG_OPTION_SYSTEM_ZLIB", "GRAPHICS_NO_USE_DYNAMIC_LIBRARY", "HYPHEN_ENGINE_DISABLE_FILESYSTEM"],
 	"compile_files_array": [
 	{
 		"name": "f",
@@ -186,6 +192,16 @@
 		"name": "w",
 		"folder": "./../../graphics/pro/js/wasm/src/lib",
 		"files": ["wasm_jmp.cpp"]
+	},
+	{
+		"name": "h_e",
+		"folder": "./..",
+		"files": ["TextHyphen.cpp"]
+	},
+	{
+		"name": "h_m",
+		"folder": "./../../../Common/3dParty/hyphen/js/src",
+		"files": ["hyphen.cpp"]
 	}
 	]
 }

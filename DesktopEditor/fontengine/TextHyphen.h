@@ -52,6 +52,7 @@ namespace NSHyphen
 		void SetCacheSize(const int& size);
 		int LoadDictionary(const int& lang);
 		int LoadDictionary(const int& lang, const unsigned char* data, const unsigned int& data_len);
+		bool IsDictionaryExist(const int& lang);
 
 		char* Process(const int& lang, const char* word, const int& len = -1);
 

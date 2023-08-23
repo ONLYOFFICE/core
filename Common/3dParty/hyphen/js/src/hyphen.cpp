@@ -54,6 +54,10 @@ WASM_EXPORT int hyphenLoadDictionary(NSHyphen::CEngine* app, const int lang, con
 {
 	return app->LoadDictionary(lang, (const unsigned char*)dict, dict_size);
 }
+WASM_EXPORT int hyphenCheckDictionary(NSHyphen::CEngine* app, const int lang)
+{
+	return app->IsDictionaryExist(lang) ? 1 : 0;
+}
 WASM_EXPORT char* hyphenWord(NSHyphen::CEngine* app, const int lang, const char *word, const int word_len)
 {
 	return app->Process(lang, word, word_len);

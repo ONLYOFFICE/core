@@ -35,7 +35,7 @@
 window['AscFonts'] = window['AscFonts'] || {};
 var AscFonts = window['AscFonts'];
 
-var g_native_engine = CreateNativeTextMeasurer();
+var g_native_engine = CreateEmbedObject("CTextMeasurerEmbed");
 
 function CReturnObject()
 {
@@ -204,6 +204,28 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 	g_return_obj_count.count = (len - 12) / 26;
 	g_return_obj_count.error = 0;
 	return g_return_obj_count;
+};
+
+AscFonts.Hyphen_Init = function()
+{
+	// none
+};
+AscFonts.Hyphen_Destroy = function()
+{
+	// GC
+};
+AscFonts.Hyphen_CheckDictionary = function(lang)
+{
+	return g_native_engine["Hyphen_IsDictionaryExist"](lang);
+};
+AscFonts.Hyphen_LoadDictionary = function(lang, data)
+{
+	return false;
+};
+AscFonts.Hyphen_Word = function(lang, word)
+{
+	let ret = g_native_engine["Hyphen_Word"](lang, word);
+	return ret ? ret : [];
 };
 
 AscFonts.onLoadModule();

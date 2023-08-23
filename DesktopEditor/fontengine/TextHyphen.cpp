@@ -285,29 +285,18 @@ namespace NSHyphen
 			m_pLastDict = NULL;
 
 #ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+			std::wstring sFilePath = GetDictionaryPath(m_nLastLang);
 			if (m_sDirectory.empty())
 				m_sDirectory = NSFile::GetProcessDirectory() + L"/dictionaries";
 
-			for (int i = 0; i < NSTextLanguages::DictionaryRec_count; ++i)
+			if (NSFile::CFileBinary::Exists(sFilePath))
 			{
-				if (m_nLastLang == NSTextLanguages::Dictionaries[i].m_lang)
-				{
-					const char* sNameStr = NSTextLanguages::Dictionaries[i].m_name;
-					std::wstring sNameU = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sNameStr, (LONG)(strlen(sNameStr)));
-					std::wstring sFilePath = m_sDirectory + L"/" + sNameU + L"/hyph_" + sNameU + L".dic";
+				FILE* f = NSFile::CFileBinary::OpenFileNative(sFilePath, L"r");
+				if (f == NULL)
+					return 1;
 
-					if (NSFile::CFileBinary::Exists(sFilePath))
-					{
-						FILE* f = NSFile::CFileBinary::OpenFileNative(sFilePath, L"r");
-						if (f == NULL)
-							return 1;
-
-						m_pLastDict = hnj_hyphen_load_file(f);
-						fclose(f);
-					}
-
-					break;
-				}
+				m_pLastDict = hnj_hyphen_load_file(f);
+				fclose(f);
 			}
 #endif
 
@@ -328,6 +317,26 @@ namespace NSHyphen
 
 			return (NULL == m_pLastDict) ? 1 : 0;
 		}
+#ifndef HYPHEN_ENGINE_DISABLE_FILESYSTEM
+		std::wstring GetDictionaryPath(const int& lang)
+		{
+			if (m_sDirectory.empty())
+				m_sDirectory = NSFile::GetProcessDirectory() + L"/dictionaries";
+
+			for (int i = 0; i < NSTextLanguages::DictionaryRec_count; ++i)
+			{
+				if (m_nLastLang == NSTextLanguages::Dictionaries[i].m_lang)
+				{
+					const char* sNameStr = NSTextLanguages::Dictionaries[i].m_name;
+					std::wstring sNameU = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sNameStr, (LONG)(strlen(sNameStr)));
+					std::wstring sFilePath = m_sDirectory + L"/" + sNameU + L"/hyph_" + sNameU + L".dic";
+					return sFilePath;
+				}
+			}
+
+			return L"";
+		}
+#endif
 		char* Process(const int& lang, const char* word, const int& len)
 		{
 			// resize 2x
@@ -415,5 +424,14 @@ namespace NSHyphen
 	char* CEngine::Process(const int& lang, const char* word, const int& len)
 	{
 		return m_internal->Process(lang, word, (len == -1) ? strlen(word) : len);
+	}
+	bool CEngine::IsDictionaryExist(const int& lang)
+	{
+		for (int i = 0; i < NSTextLanguages::DictionaryRec_count; ++i)
+		{
+			if (lang == NSTextLanguages::Dictionaries[i].m_lang)
+				return true;
+		}
+		return false;
 	}
 }

@@ -85,11 +85,12 @@
 	    request.onload = function ()
 	    {
 	        var dict = request.response;
-	        window.hyphen.loadDictionary(lang, dict);
+	        var langInt = langs[lang];
+	        window.hyphen.loadDictionary(langInt, dict);
 
 	        for (var i = 0; i < text.length; i++) 
 	        {
-	            var hyphens = window.hyphen.hyphenWord(lang, text[i].toLowerCase());
+	            var hyphens = window.hyphen.hyphenWord(langInt, text[i].toLowerCase());
 
 	            let itemUtf8 = text[i].toUtf8(true);
 	            let start = 0;

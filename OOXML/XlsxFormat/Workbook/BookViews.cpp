@@ -81,6 +81,8 @@ namespace OOX
 
 				if (m_oActiveTab.IsInit())
 					ptr->itabCur = m_oActiveTab->GetValue();
+				else
+					ptr->itabCur = 0;
 
 				if (m_oAutoFilterDateGrouping.IsInit())
 					ptr->fNoAFDateGroup = m_oAutoFilterDateGrouping->GetValue();
@@ -98,12 +100,20 @@ namespace OOX
 					ptr->wTabRatio = m_oTabRatio->GetValue();
 				if (m_oWindowHeight.IsInit())
 					ptr->dyWn = m_oWindowHeight->GetValue();
+				else
+					ptr->dyWn = 12750;
 				if (m_oWindowWidth.IsInit())
 					ptr->dxWn = m_oWindowWidth->GetValue();
+				else
+					ptr->dxWn = 21240;
 				if (m_oXWindow.IsInit())
 					ptr->xWn = m_oXWindow->GetValue();
+				else
+					ptr->xWn = 2280;
 				if (m_oYWindow.IsInit())
 					ptr->yWn = m_oYWindow->GetValue();
+				else
+					ptr->yWn = 1650;
 
 				if (m_oVisibility == SimpleTypes::Spreadsheet::EVisibleType::visibleHidden)
 				{

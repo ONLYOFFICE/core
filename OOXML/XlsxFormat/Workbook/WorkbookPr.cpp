@@ -111,7 +111,9 @@ namespace OOX
 			if(m_oDateCompatibility.IsInit())
 			ptr->fNoSaveSup = m_oDateCompatibility->GetValue();
 			if(m_oDefaultThemeVersion.IsInit())
-			ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
+				ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
+			else
+				ptr->dwThemeVersion = 0;
 			if(m_oFilterPrivacy.IsInit())
 			ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
 			if(m_oHidePivotFieldList.IsInit())

@@ -141,6 +141,13 @@ namespace OOX
 			auto ptr = static_cast<XLSB::Blxf*>(obj);
 			if(m_oColor.IsInit())
 				ptr->brtColor = m_oColor->toColor();
+			else
+			{
+				XLSB::Color col;
+				col.xColorType = 0;
+				ptr->brtColor = col;
+			}
+
 			if(!m_oStyle.IsInit())
 				return;
 

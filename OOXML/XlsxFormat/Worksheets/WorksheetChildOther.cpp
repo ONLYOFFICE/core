@@ -444,22 +444,22 @@ namespace OOX
 			XLS::BaseObjectPtr objPtr(ptr);
 
 			if(m_oLeft.IsInit())
-				ptr->xnumLeft.data.value = m_oLeft->GetValue();
+				ptr->xnumLeft.data.value = std::round(m_oLeft->GetValue() * 100) / 100;
 
 			if(m_oTop.IsInit())
-				ptr->xnumTop.data.value = m_oTop->GetValue();
+				ptr->xnumTop.data.value = std::round(m_oTop->GetValue() * 100) / 100;
 
 			if(m_oRight.IsInit())
-				ptr->xnumRight.data.value = m_oRight->GetValue();
+				ptr->xnumRight.data.value = std::round(m_oRight->GetValue() * 100) / 100;
 
 			if(m_oBottom.IsInit())
-				ptr->xnumBottom.data.value = m_oBottom->GetValue();
+				ptr->xnumBottom.data.value = std::round(m_oBottom->GetValue() * 100) / 100;
 
 			if(m_oHeader.IsInit())
-				ptr->xnumHeader.data.value = m_oHeader->GetValue();
+				ptr->xnumHeader.data.value = std::round(m_oHeader->GetValue() * 100) / 100;
 
 			if(m_oFooter.IsInit())
-				ptr->xnumFooter.data.value = m_oFooter->GetValue();
+				ptr->xnumFooter.data.value = std::round(m_oFooter->GetValue() * 100) / 100;
 
 			return objPtr;
 		}

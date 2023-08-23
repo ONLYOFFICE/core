@@ -1795,6 +1795,7 @@ namespace OOX
 			XLSB::FMLACELL* pFMLACELL = nullptr;
 			XLSB::SHRFMLACELL* pSHRFMLACELL = nullptr;
 			BiffRecord* pSource = nullptr;
+			XLSB::Cell* oCell;
 
 			if(!m_oType.IsInit())
 			{
@@ -1818,6 +1819,7 @@ namespace OOX
 							pCellRk->value.fX100 = 1;
 							pCellRk->value.num = std::stod(m_oValue->m_sText) * 100;
 						}
+						oCell = &pCellRk->cell;
 						pSource = pCellRk;
 					}
 					break;
@@ -1828,12 +1830,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x00;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x00;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1843,12 +1847,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x07;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x07;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1858,12 +1864,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x17;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x17;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1873,12 +1881,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x1D;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x1D;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1888,12 +1898,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x24;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x24;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1903,12 +1915,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x2A;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x2A;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1918,12 +1932,14 @@ namespace OOX
 						{
 							auto error = new XLSB::FmlaError;
 							error->value = 0x2B;
+							oCell = &error->cell;
 							pSource = error;
 						}
 						else
 						{
 							auto error = new XLSB::CellError;
 							error->value = 0x2B;
+							oCell = &error->cell;
 							pSource = error;
 						}
 					}
@@ -1934,14 +1950,16 @@ namespace OOX
 						if(m_oFormula.IsInit())
 						{
 							auto cellBool(new XLSB::FmlaBool);
-							pSource = cellBool;
 							cellBool->value = m_oValue->m_sText == L"1" ? true : false;
+							oCell = &cellBool->cell;
+							pSource = cellBool;
 						}
 						else
 						{
 							auto cellBool(new XLSB::CellBool);
-							pSource = cellBool;
 							cellBool->value = m_oValue->m_sText == L"1" ? true : false;
+							oCell = &cellBool->cell;
+							pSource = cellBool;
 						}
 					}
 					break;
@@ -1949,6 +1967,7 @@ namespace OOX
 					{
 						auto pCellIsst(new XLSB::CellIsst);
 						pCellIsst->value = std::stoi(m_oValue->m_sText);
+						oCell = &pCellIsst->cell;
 						pSource = pCellIsst;
 					}
 					break;
@@ -1960,6 +1979,8 @@ namespace OOX
 							auto str(new XLSB::FmlaString);
 							if(m_oValue.IsInit())
 								str->value = m_oValue->m_sText;
+							oCell = &str->cell;
+
 							pSource = str;
 
 						}
@@ -1968,6 +1989,7 @@ namespace OOX
 							auto str(new XLSB::CellSt);
 							if(m_oValue.IsInit())
 								str->value = m_oValue->m_sText;
+							oCell = &str->cell;
 							pSource = str;
 						}
 					}
@@ -2031,7 +2053,15 @@ namespace OOX
 					pSHRFMLACELL->m_source = m_oFormula->toBin();
 				}
 			}
-
+			oCell->column = m_oCol.get();
+			if(m_oShowPhonetic.IsInit())
+            	oCell->fPhShow =  m_oShowPhonetic->GetValue();
+			else
+				oCell->fPhShow = false;
+			if(m_oStyle.IsInit())
+				oCell->iStyleRef = m_oStyle.get();
+			else
+				oCell->iStyleRef = 0;
 			return objectPtr;
 		}
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
@@ -2686,6 +2716,8 @@ namespace OOX
 
 				if(m_oHt.IsInit())
 				hdrPtr->miyRw = m_oHt->GetValue() * 20.;
+                else
+                    hdrPtr->miyRw = 240;
 
 				if(m_oOutlineLevel.IsInit())
 				hdrPtr->iOutLevel = m_oOutlineLevel->GetValue();

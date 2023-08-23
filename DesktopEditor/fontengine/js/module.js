@@ -30,6 +30,8 @@
  *
  */
 
+// BASE FILE FOR GENERATION
+
 function onLoadFontsModule(window, undefined)
 {
 	var AscFonts = window['AscFonts'];
@@ -197,7 +199,7 @@ function onLoadFontsModule(window, undefined)
 		var c = READER.readInt();
 		while (c)
 		{
-			this.family_name += String.fromCharCode(c);
+			this.family_name += (c < 0x10000) ? String.fromCharCode(c) : (String.fromCharCode(0xD800 | (c >> 10)) + String.fromCharCode(0xDC00 | (c & 0x3FF)));
 			c = READER.readInt();
 		}
 
@@ -415,7 +417,7 @@ function onLoadFontsModule(window, undefined)
 		}
 	};
 
-	const FONTSIZE       = 72;
+	const FONTSIZE       = 576;
 	const STRING_MAX_LEN = 1024;
 	const COEF           = 25.4 / 72 / 64 / FONTSIZE;
 	let   STRING_POINTER = null;
@@ -429,6 +431,7 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.MEASURE_FONTSIZE        = FONTSIZE;
 	AscFonts.GRAPHEME_STRING_MAX_LEN = STRING_MAX_LEN;
 	AscFonts.GRAPHEME_COEF           = COEF;
+	AscFonts.HB_STRING_MAX_LEN       = STRING_MAX_LEN;
 
 	function CCodePointsCalculator(codePointsBuffer, clusterBuffer)
 	{

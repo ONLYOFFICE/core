@@ -94,7 +94,8 @@ namespace PPTX
 				m_node.reset(CreatePtrXmlContent<Logic::Cmd>(node));
 			else if(name == L"set")
 				m_node.reset(CreatePtrXmlContent<Logic::Set>(node));
-			else m_node.reset();
+			else 
+				m_node.reset();
 		}
 		void TimeNodeBase::GetTimeNodeFrom(XmlUtils::CXmlNode& element)
 		{
@@ -171,6 +172,8 @@ namespace PPTX
 		}
 		void TimeNodeBase::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
+			if (false == m_node.IsInit()) return;
+
 			switch (m_node->getType())
 			{
 				case OOX::et_p_par:			pWriter->StartRecord(1); break;

@@ -367,14 +367,14 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 			case gradient_style::rectangular:
 			{
 				point.pos = 0;
-				if (gradient_style->draw_start_color_)		point.color_ref = gradient_style->draw_start_color_->get_hex_value();
-				//if (gradient_style->draw_start_intensity_)	point.opacity	= gradient_style->draw_start_intensity_->get_value();
+				if (gradient_style->draw_start_color_)		point.color_ref = gradient_style->draw_end_color_->get_hex_value();
+				//if (gradient_style->draw_start_intensity_)	point.opacity	= gradient_style->draw_end_intensity_->get_value();
 
 				fill->colors.push_back(point);
 
 				point.pos = 100;
-				if (gradient_style->draw_end_color_)		point.color_ref = gradient_style->draw_end_color_->get_hex_value();
-				//if (gradient_style->draw_end_intensity_)	point.opacity	= gradient_style->draw_end_intensity_->get_value();
+				if (gradient_style->draw_end_color_)		point.color_ref = gradient_style->draw_start_color_->get_hex_value();
+				//if (gradient_style->draw_end_intensity_)	point.opacity	= gradient_style->draw_start_intensity_->get_value();
 
 				fill->colors.push_back(point);
 			}break;

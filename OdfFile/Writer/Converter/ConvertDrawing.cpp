@@ -1416,6 +1416,9 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 
 			odf_context()->drawing_context()->set_gradient_stop(hexColors.back(), oox_grad_fill->GsLst[i].pos);
 		}	
+		std::reverse(hexColors.begin(), hexColors.end());
+		std::reverse(opacities.begin(), opacities.end());
+
 		if (hexColors.size() > 0)
 			odf_context()->drawing_context()->set_gradient_start(hexColors[0], opacities[0]);
 		if (hexColors.size() > 1)

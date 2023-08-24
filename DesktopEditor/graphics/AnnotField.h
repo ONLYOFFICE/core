@@ -184,7 +184,7 @@ public:
 	virtual void SetType(int nType);
 	bool IsValid() const;
 
-	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual void SetBounds(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	void SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps);
 	void SetFlag(const int& nFlag)           { m_nFlag      = nFlag; }
 	void SetID(const int& nID)               { m_nID        = nID; }
@@ -194,7 +194,7 @@ public:
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
-	void   GetBounds(double& dX, double& dY, double& dW, double& dH) const;
+	virtual void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const;
 	void   GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps);
 	int    GetFlag()      const { return m_nFlag; }
 	int    GetID()        const { return m_nID; }
@@ -219,16 +219,16 @@ public:
 
 protected:
 	int          m_nType;
+	double       m_dX1;
+	double       m_dY1;
+	double       m_dX2;
+	double       m_dY2;
 
 private:
 	int          m_nFlag;
 	int          m_nID;
 	int          m_nAnnotFlag;
 	int          m_nPage;
-	double       m_dX;
-	double       m_dY;
-	double       m_dW;
-	double       m_dH;
 	double       m_dBE;
 	std::wstring m_wsContents;
 	std::vector<double> m_arrC;

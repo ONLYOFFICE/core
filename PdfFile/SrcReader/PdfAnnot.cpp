@@ -1259,7 +1259,14 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	oObj.free();
 
 	// 7 - Тип аннотации ответа - RT
-	// TODO m_nRT
+	if (oAnnot.dictLookup("RT", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 6);
+		m_nRT = 1; // Group
+		if (oObj.isName("R"))
+			m_nRT = 0;
+	}
+	oObj.free();
 
 	// 8 - Краткое описание - Subj
 	DICT_LOOKUP_STRING(oAnnot.dictLookup, "Subj", 7, m_sSubj);

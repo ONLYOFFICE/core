@@ -42,10 +42,10 @@ CAnnotFieldInfo::CAnnotFieldInfo()
 	m_nAnnotFlag = 0;
 	m_nPage      = 0;
 
-	m_dX  = 0.0;
-	m_dY  = 0.0;
-	m_dW  = 0.0;
-	m_dH  = 0.0;
+	m_dX1  = 0.0;
+	m_dY1  = 0.0;
+	m_dX2  = 0.0;
+	m_dY2  = 0.0;
 	m_dBE = 0.0;
 
 	m_oBorder.nType              = 0;
@@ -121,19 +121,19 @@ bool CAnnotFieldInfo::IsValid() const
 	return (m_nType != 0);
 }
 
-void CAnnotFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
+void CAnnotFieldInfo::SetBounds(const double& dX1, const double& dY1, const double& dX2, const double& dY2)
 {
-	m_dX = dX;
-	m_dY = dY;
-	m_dW = dW;
-	m_dH = dH;
+	m_dX1 = dX1;
+	m_dY1 = dY1;
+	m_dX2 = dX2;
+	m_dY2 = dY2;
 }
-void CAnnotFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
+void CAnnotFieldInfo::GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const
 {
-	dX = m_dX;
-	dY = m_dY;
-	dW = m_dW;
-	dH = m_dH;
+	dX1 = m_dX1;
+	dY1 = m_dY1;
+	dX2 = m_dX2;
+	dY2 = m_dY2;
 }
 void CAnnotFieldInfo::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
 {

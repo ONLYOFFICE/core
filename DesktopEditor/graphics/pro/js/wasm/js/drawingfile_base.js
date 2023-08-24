@@ -1012,6 +1012,7 @@
 				if (flags & (1 << 5))
 					rec["RefTo"] = reader.readInt();
 				// Тип аннотации ответа - RT
+				// 0 - R, 1 - Group
 				if (flags & (1 << 6))
 					rec["RefToReason"] = reader.readByte();
 				// Краткое описание - Subj

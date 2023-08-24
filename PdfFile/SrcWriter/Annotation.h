@@ -34,6 +34,7 @@
 
 #include "Objects.h"
 #include "Types.h"
+#include "Pages.h"
 
 namespace PdfWriter
 {
@@ -42,15 +43,15 @@ namespace PdfWriter
 	enum EBorderSubtype
 	{
 		border_subtype_Solid,
-		border_subtype_Dashed,
 		border_subtype_Beveled,
+		border_subtype_Dashed,
 		border_subtype_Inset,
 		border_subtype_Underlined
 	};
 	enum EAnnotType
 	{
 		AnnotUnknown        = -1,
-		AnnotTextNotes      = 0,
+		AnnotText           = 0,
 		AnnotLink           = 1,
 		AnnotSound          = 2,
 		AnnotFreeText       = 3,
@@ -89,9 +90,12 @@ namespace PdfWriter
 
 	class CAnnotation : public CDictObject
 	{
+	protected:
+		CAnnotation(CXref* pXref, EAnnotType eType);
+
+		int m_nID; // Идентификатор сопоставления
+
 	public:
-		CAnnotation(CXref* pXref, EAnnotType eType, const TRect& oRect);
-		void SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn = 0, unsigned short nDashOff = 0, unsigned short nDashPhase = 0);
 		EDictType GetDictType() const
 		{
 			return dict_type_ANNOTATION;
@@ -100,55 +104,115 @@ namespace PdfWriter
 		{
 			return AnnotUnknown;
 		}
+
+		void SetRect(const TRect& oRect);
+		void SetBorder(BYTE nType, double dWidth, double dDashesAlternating = 0.0, double dGaps = 0.0);
+		void SetID(const int& nID);
+		void SetAnnotFlag(const int& nAnnotFlag);
+		void SetPage(CPage* pPage);
+		void SetBE(const double& dBE);
+		void SetContents(const std::wstring& wsText);
+		void SetC(const std::vector<double>& arrC);
 	};
+	class CMarkupAnnotation : public CAnnotation
+	{
+	protected:
+		CMarkupAnnotation(CXref* pXref, EAnnotType eType);
+
+		// TODO необходимо разрешить идентификаторы сопопставления
+		int m_nPopupID;
+		int m_nIRTID;
+
+	public:
+		void SetRT(const BYTE& nRT);
+		void SetPopupID(const int& nPopupID);
+		void SetIRTID(const int& nIRTID);
+		void SetCA(const double& dCA);
+		void SetT(const std::wstring& wsT);
+		void SetRC(const std::wstring& wsRC);
+		void SetSubj(const std::wstring& wsSubj);
+	};
+
 	class CLinkAnnotation : public CAnnotation
 	{
 	public:
-		CLinkAnnotation(CXref* pXref, const TRect& oRect, CDestination* pDestination);
-		EAnnotType GetAnnotationType() const
+		CLinkAnnotation(CXref* pXref, CDestination* pDestination);
+		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotLink;
 		}
 		void SetBorderStyle  (float fWidth, unsigned short nDashOn, unsigned short nDashOff);
 		void SetHighlightMode(EAnnotHighlightMode eMode);
 	};
-	class CTextAnnotation : public CAnnotation
+	class CTextAnnotation : public CMarkupAnnotation
 	{
 	public:
-		CTextAnnotation(CXref* pXref, const TRect& oRect, const char* sText);
-		EAnnotType GetAnnotationType() const
+		CTextAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
 		{
-			return AnnotTextNotes;
+			return AnnotText;
 		}
-		void SetIcon(EAnnotIcon eIcon);
-		void SetOpened(bool bOpened);
+
+		void SetOpen(bool bOpen);
+		void SetName(BYTE nName);
+		void SetState(BYTE nState);
+		void SetStateModel(BYTE nStateModel);
 	};
 	class CUriLinkAnnotation : public CAnnotation
 	{
 	public:
-		CUriLinkAnnotation(CXref* pXref, const TRect& oRect, const char* sUri);
-		EAnnotType GetAnnotationType() const
+		CUriLinkAnnotation(CXref* pXref, const char* sUri);
+		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotLink;
 		}
 	};
-	class CInkAnnotation : public CAnnotation
+	class CInkAnnotation : public CMarkupAnnotation
 	{
 	public:
-		CInkAnnotation(CXref* pXref, const TRect& oRect);
-		EAnnotType GetAnnotationType() const
+		CInkAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotInk;
 		}
+
+		void SetInkList(const std::vector< std::vector<double> >& arrInkList);
 	};
-	class CLineAnnotation : public CAnnotation
+	class CLineAnnotation : public CMarkupAnnotation
 	{
 	public:
-		CLineAnnotation(CXref* pXref, const TRect& oRect);
-		EAnnotType GetAnnotationType() const
+		CLineAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotLine;
 		}
+
+		void SetCap(bool bCap);
+		void SetIT(const BYTE& nIT);
+		void SetCP(const BYTE& nCP);
+		void SetLL(const double& dLL);
+		void SetLLE(const double& dLLE);
+		void SetLLO(const double& dLLO);
+		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
+		void SetCO(const double& dCO1, const double& dCO2);
+		void SetIC(const std::vector<double>& arrIC);
+	};
+	class CPopupAnnotation : public CAnnotation
+	{
+	private:
+		// TODO необходимо разрешить идентификаторы сопопставления
+		int m_nParentID;
+
+	public:
+		CPopupAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotPopup;
+		}
+
+		void SetOpen(bool bOpen);
+		void SetParentID(const int& nParentID);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

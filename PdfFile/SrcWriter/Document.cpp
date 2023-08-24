@@ -541,50 +541,33 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-	CAnnotation* CDocument::CreateTextAnnot(CPage* pPage, const TRect& oRect, const char* sText)
+	CAnnotation* CDocument::CreateTextAnnot()
 	{
-		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
-
-		if (pAnnot && pPage)
-			pPage->AddAnnotation(pAnnot);
-
+		return new CTextAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
+	{
+		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
+		pAnnot->SetRect(oRect);
 		return pAnnot;
 	}
-	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
+	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
 	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-
-		if (pAnnot && pPage)
-			pPage->AddAnnotation(pAnnot);
-
+		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
+		pAnnot->SetRect(oRect);
 		return pAnnot;
 	}
-	CAnnotation* CDocument::CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl)
+	CAnnotation* CDocument::CreateInkAnnot()
 	{
-		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUrl);
-
-		if (pAnnot && pPage)
-			pPage->AddAnnotation(pAnnot);
-
-		return pAnnot;
+		return new CInkAnnotation(m_pXref);
 	}
-	CAnnotation* CDocument::CreateInkAnnot(CPage* pPage, const TRect& oRect)
+	CAnnotation* CDocument::CreateLineAnnot()
 	{
-		CAnnotation* pAnnot = new CInkAnnotation(m_pXref, oRect);
-
-		if (pAnnot && pPage)
-			pPage->AddAnnotation(pAnnot);
-
-		return pAnnot;
+		return new CLineAnnotation(m_pXref);
 	}
-	CAnnotation* CDocument::CreateLineAnnot(CPage* pPage, const TRect& oRect)
+	CAnnotation* CDocument::CreatePopupAnnot()
 	{
-		CAnnotation* pAnnot = new CLineAnnotation(m_pXref, oRect);
-
-		if (pAnnot && pPage)
-			pPage->AddAnnotation(pAnnot);
-
-		return pAnnot;
+		return new CPopupAnnotation(m_pXref);
 	}
     CImageDict* CDocument::CreateImage()
 	{

@@ -284,6 +284,9 @@ public:
 	void SetPlaceHolder(const bool& bPlaceHolder);
 	bool IsPlaceHolder() const;
 
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH) override;
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const override;
+
 	void SetBorder(const int& nType, const double& dSize, const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA);
 	bool HaveBorder() const;
 	double GetBorderSize() const;

@@ -569,6 +569,50 @@ namespace PdfWriter
 	{
 		return new CPopupAnnotation(m_pXref);
 	}
+	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
+	{
+		m_mAnnotations[nID] = pAnnot;
+	}
+	void CDocument::MatchAnnotation()
+	{
+		CArrayObject* pArray = (CArrayObject*)(m_pCurPage->Get("Annots"));
+		if (!pArray)
+			return;
+
+		for (int i = 0, count = pArray->GetCount(); i < count; ++i)
+		{
+			CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pArray->Get(i));
+			if (!pAnnot)
+				continue;
+
+			if (pAnnot->isMarkup())
+			{
+				CMarkupAnnotation* pMarkupAnnot = (CMarkupAnnotation*)pAnnot;
+
+				int nID = pMarkupAnnot->GetPopupID();
+				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pMarkupAnnot->SetPopupID(it->second);
+
+				nID = pMarkupAnnot->GetIRTID();
+				it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pMarkupAnnot->SetIRTID(it->second);
+			}
+
+			if (pAnnot->GetAnnotationType() == EAnnotType::AnnotPopup)
+			{
+				CPopupAnnotation* pPopupAnnot = (CPopupAnnotation*)pAnnot;
+
+				int nID = pPopupAnnot->GetParentID();
+				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pPopupAnnot->SetParentID(it->second);
+			}
+		}
+
+		m_mAnnotations.clear();
+	}
     CImageDict* CDocument::CreateImage()
 	{
 		return new CImageDict(m_pXref, this);

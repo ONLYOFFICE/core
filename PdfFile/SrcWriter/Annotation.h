@@ -105,6 +105,11 @@ namespace PdfWriter
 			return AnnotUnknown;
 		}
 
+		virtual bool isMarkup() const
+		{
+			return false;
+		}
+
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, double dDashesAlternating = 0.0, double dGaps = 0.0);
 		void SetID(const int& nID);
@@ -119,11 +124,15 @@ namespace PdfWriter
 	protected:
 		CMarkupAnnotation(CXref* pXref, EAnnotType eType);
 
-		// TODO необходимо разрешить идентификаторы сопопставления
 		int m_nPopupID;
 		int m_nIRTID;
 
 	public:
+		bool isMarkup() const override
+		{
+			return true;
+		}
+
 		void SetRT(const BYTE& nRT);
 		void SetPopupID(const int& nPopupID);
 		void SetIRTID(const int& nIRTID);
@@ -131,8 +140,18 @@ namespace PdfWriter
 		void SetT(const std::wstring& wsT);
 		void SetRC(const std::wstring& wsRC);
 		void SetSubj(const std::wstring& wsSubj);
-	};
 
+		int GetPopupID() const
+		{
+			return m_nPopupID;
+		}
+		int GetIRTID() const
+		{
+			return m_nIRTID;
+		}
+		void SetPopupID(CAnnotation* pAnnot);
+		void SetIRTID(CAnnotation* pAnnot);
+	};
 	class CLinkAnnotation : public CAnnotation
 	{
 	public:
@@ -201,7 +220,6 @@ namespace PdfWriter
 	class CPopupAnnotation : public CAnnotation
 	{
 	private:
-		// TODO необходимо разрешить идентификаторы сопопставления
 		int m_nParentID;
 
 	public:
@@ -213,6 +231,12 @@ namespace PdfWriter
 
 		void SetOpen(bool bOpen);
 		void SetParentID(const int& nParentID);
+
+		int GetParentID() const
+		{
+			return m_nParentID;
+		}
+		void SetParentID(CAnnotation* pAnnot);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

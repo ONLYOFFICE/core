@@ -748,6 +748,8 @@ HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
 				nCount--;
 			}
 		}
+
+		m_pDocument->MatchAnnotation();
 	}
 
 	return S_OK;
@@ -1712,7 +1714,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 	PdfWriter::CPage* pPage = m_pDocument->GetPage(oInfo.GetPage());
 	pPage->AddAnnotation(pAnnot);
 
-	pAnnot->SetID(oInfo.GetID());
+	int nID = oInfo.GetID();
+	pAnnot->SetID(nID);
+	m_pDocument->AddAnnotation(nID, pAnnot);
+
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
 	pAnnot->SetPage(pPage);
 

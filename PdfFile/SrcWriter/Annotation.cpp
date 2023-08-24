@@ -82,7 +82,6 @@ namespace PdfWriter
 
 		m_nID = 0;
 	}
-
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
 		CArrayObject* pArray = new CArrayObject();
@@ -183,7 +182,11 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
 	//----------------------------------------------------------------------------------------
-	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType) {}
+	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
+	{
+		m_nPopupID = 0;
+		m_nIRTID   = 0;
+	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
 		Add("RT", nRT ? "Group" : "R");
@@ -214,6 +217,14 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsSubj);
 		Add("Subj", new CStringObject(sValue.c_str()));
+	}
+	void CMarkupAnnotation::SetPopupID(CAnnotation* pAnnot)
+	{
+		Add("Popup", pAnnot);
+	}
+	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
+	{
+		Add("IRT", pAnnot);
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation
@@ -476,7 +487,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPopupAnnotation::CPopupAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotPopup)
 	{
-
+		m_nParentID = 0;
 	}
 	void CPopupAnnotation::SetOpen(bool bOpen)
 	{
@@ -485,5 +496,9 @@ namespace PdfWriter
 	void CPopupAnnotation::SetParentID(const int& nParentID)
 	{
 		m_nParentID = nParentID;
+	}
+	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
+	{
+		Add("Parent", pAnnot);
 	}
 }

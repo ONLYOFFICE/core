@@ -177,7 +177,7 @@ int main()
 			if (pdfFile.EditPage(0))
 			{
 				TEST(&pdfFile);
-				pdfFile.Sign(10, 120, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+				pdfFile.Sign(0, 0, 0, 0, L"", pCertificate);
 			}
         }
         else

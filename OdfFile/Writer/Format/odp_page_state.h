@@ -105,6 +105,7 @@ public:
 		void set_anim_type		(std::wstring val);
 		void set_anim_duration	(int val);
 		void set_anim_restart	(std::wstring val);
+		void set_anim_begin		(const std::wstring& val);
 	void end_timing();
 
 	void start_transition();

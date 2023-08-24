@@ -379,6 +379,7 @@ void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::text_form
 //nullable<FontRef> fontRef;
 //UniColor Color;
 }
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -518,7 +519,7 @@ void PptxConverter::convert_slides()
 		convert			(slide->Note.GetPointer());
 		
 		convert			(slide->transition.GetPointer());
-		//convert		(slide->timing.GetPointer());
+		convert			(slide->timing.GetPointer());
 
 
 		odp_context->end_slide();
@@ -943,15 +944,36 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//nullable<Iterate>			iterate;
 
     // TODO
-//    for (auto& child : oox_time_common->childTnLst)
-//    {
-//        for (size_t i = 0; i <child.m_node. .list.size(); i++)
-//        {
-//            if (tnLst.list[i].is_init() == false) continue;
+    //for (auto& child : oox_time_common->childTnLst)
+    //{
+    //    for (size_t i = 0; i <child.m_node. .list.size(); i++)
+    //    {
+    //        if (tnLst.list[i].is_init() == false) continue;
 
-//            convert(&oox_time_common->childTnLst->list[i]);
-//        }
-//    }
+    //        convert(&oox_time_common->childTnLst->list[i]);
+    //    }
+    //}
+	
+	if (oox_time_common->stCondLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->stCondLst->list.size(); i++)
+		{
+			PPTX::Logic::Cond& cond = oox_time_common->stCondLst->list[i];
+			convert(&cond);
+		}
+	}
+
+	if (oox_time_common->childTnLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+		{
+			PPTX::Logic::TimeNodeBase& child = oox_time_common->childTnLst->list[i];
+			if(child.is_init())
+				convert(&child);
+		}
+	}
+	
+
 //	if (oox_time_common->childTnLst.IsInit())
 //	{
 //		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
@@ -971,6 +993,33 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//	}
 	//}
 }
+
+
+void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
+{
+	if (!oox_condition)
+		return;
+
+	if (oox_condition->delay.IsInit())
+	{
+		std::wstring begin;
+		if (*oox_condition->delay == L"indefinite")
+			begin = L"0s";
+		else
+		{
+			int ms = XmlUtils::GetInteger(*oox_condition->delay);
+			std::wstringstream ss;
+			ss << ms / 1000.0 << L"s";
+			begin = ss.str();
+		}
+
+		odp_context->current_slide().set_anim_begin(begin);
+	}
+		
+	//else if(oox_condition->evt.IsInit())
+	//	odp_context->current_slide().set_anim_evt();
+}
+
 void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 {
 	if (!oox_table_pr) return;

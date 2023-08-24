@@ -201,6 +201,10 @@ void odp_page_state::set_anim_type(std::wstring val)
 			}
 		}
 	}
+	else if (val == L"mainSeq")
+	{
+		anim_levels.back().attlist->presentation_node_type_ = presentation_node_type::main_sequence;
+	}
 }
 void odp_page_state::set_anim_duration(int val)
 {
@@ -217,6 +221,15 @@ void odp_page_state::set_anim_restart(std::wstring val)
 	
 	anim_levels.back().attlist->smil_restart_ = val;
 }
+
+void odp_page_state::set_anim_begin(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+		
+	anim_levels.back().attlist->smil_begin_ = val;
+}
+
 void odp_page_state::start_transition()
 {
 	office_element_ptr elm;

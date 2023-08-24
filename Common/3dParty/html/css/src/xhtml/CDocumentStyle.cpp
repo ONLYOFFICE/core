@@ -301,19 +301,31 @@ namespace NSCSS
 			sSpacingValue += L"w:beforeAutospacing=\"1\" w:before=\"" + (oStyle.m_oMargin.GetTop()    + oStyle.m_oPadding.GetTop())   .ToWString() + L"\" ";
 		}
 		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
-			    sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
+			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
 
-		const std::wstring &sLineHeight = oStyle.m_oFont.GetLineHeight().ToWString();
-		if (!sLineHeight.empty())
+		std::wstring wsLineHeight;
+		
+		if (!oStyle.m_oFont.GetLineHeight().Empty())
 		{
-			    sSpacingValue += L" w:line=\"" + sLineHeight + L"\" w:lineRule=\"auto\"";
+			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble() * 10.;
+			NSCSS::UnitMeasure enUMLineHeight = oStyle.m_oFont.GetLineHeight().GetUnitMeasure();
+			
+			if (NSCSS::UnitMeasure::None == enUMLineHeight || NSCSS::UnitMeasure::Percent == enUMLineHeight)
+				dLineHeight *= 24.;
+			
+			wsLineHeight = std::to_wstring((int)dLineHeight);
+		}
+		
+		if (!wsLineHeight.empty())
+		{
+			sSpacingValue += L" w:line=\"" + wsLineHeight + L"\" w:lineRule=\"auto\"";
 		}
 		else if (!oStyle.m_oBorder.Empty())
 		{
-				sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
+			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
 		}
 		else if (!oStyle.m_oBorder.Empty())
-			    sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
+			sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
 
 		if (!sSpacingValue.empty())
 		{
@@ -337,7 +349,7 @@ namespace NSCSS
 				const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
 
 				const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"0\" w:sz=\"" +
-				        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+				                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
 				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
 				oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_LeftBorder, sBorder);
@@ -353,7 +365,7 @@ namespace NSCSS
 					const std::wstring sBorderWidth = oStyle.m_oBorder.GetTopBorder().GetWidth().ToWString();
 
 					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
 					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);
 				}
@@ -365,7 +377,7 @@ namespace NSCSS
 					const std::wstring sBorderWidth = oStyle.m_oBorder.GetRightBorder().GetWidth().ToWString();
 
 					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
 					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_RightBorder, sBorder);
 				}
@@ -377,7 +389,7 @@ namespace NSCSS
 					const std::wstring sBorderWidth = oStyle.m_oBorder.GetBottomBorder().GetWidth().ToWString();
 
 					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
 					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_BottomBorder, sBorder);
 				}
@@ -389,7 +401,7 @@ namespace NSCSS
 					const std::wstring sBorderWidth = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
 
 					const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
-					        sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
+					                                              sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
 					oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_LeftBorder, sBorder);
 				}

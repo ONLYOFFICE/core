@@ -154,6 +154,12 @@ namespace NSCSS
 				enUnitMeasure = Percent;
 				return true;
 			}
+			else if ((wsValue.end() - oFoundUM) >= 3 && L'r' == *oFoundUM && L'e' == *(oFoundUM + 1) && 'm' == *(oFoundUM + 2))
+			{
+				enUnitMeasure = Percent;
+				dValue *= 100.;
+				return true;
+			}
 
 			std::wstring wsUnitMeasure(oFoundUM, oFoundUM + 2);
 

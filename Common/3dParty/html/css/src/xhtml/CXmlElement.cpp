@@ -414,7 +414,7 @@ std::wstring CXmlElement::ConvertRStyle() const
 		{
 			case CSSProperties::RunnerProperties::R_RFonts:
 			{
-				std::wstring wsFontFamily = L"Times New Roman";
+				std::wstring wsFontFamily = (oItem.second.empty()) ?  L"Times New Roman" : oItem.second;
 
 				sRStyle += (oItem.second != L"\"inherit\"") ? L"<w:rFonts w:ascii=\"" + wsFontFamily + L'\"' +
 														  L" w:hAnsi=\"" + wsFontFamily + L'\"' +

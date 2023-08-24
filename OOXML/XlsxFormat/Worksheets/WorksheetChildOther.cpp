@@ -1057,6 +1057,43 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		XLS::BaseObjectPtr CPane::toBin()
+		{
+			auto ptr(new XLSB::Pane);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			if(m_oActivePane.IsInit())
+			{
+				if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+					ptr->pnnAcct_xlsb = 0;
+				else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+					ptr->pnnAcct_xlsb = 1;
+				else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+					ptr->pnnAcct_xlsb = 2;
+				else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+					ptr->pnnAcct_xlsb = 3;
+			}
+
+			if(m_oState.IsInit())
+			{
+				if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
+					ptr->fFrozen = true;
+				else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+					ptr->fFrozenNoSplit = true;
+			}
+			if(m_oTopLeftCell.IsInit())
+				ptr->topLeftCell = m_oTopLeftCell.get();
+			if(m_oXSplit.IsInit())
+				ptr->xnumXSplit.data.value = m_oXSplit->GetValue();
+			else
+				ptr->xnumXSplit.data.value = 0;
+			if(m_oYSplit.IsInit())
+				ptr->xnumYSplit.data.value = m_oYSplit->GetValue();
+			else
+				ptr->xnumYSplit.data.value = 0;
+
+			return objectPtr;
+		}
 		EElementType CPane::getType() const
 		{
 			return et_x_Pane;
@@ -1129,6 +1166,30 @@ namespace OOX
 		void CSelection::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CSelection::toBin()
+		{
+			auto ptr(new XLSB::Sel);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if(m_oActiveCell.IsInit())
+				ptr->activeCell = m_oActiveCell.get();
+			if(m_oActiveCellId.IsInit())
+				ptr->irefAct = m_oActiveCellId->GetValue();
+			if(m_oSqref.IsInit())
+				ptr->sqref = m_oSqref.get();
+			if(m_oPane.IsInit())
+			{
+				if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+					ptr->pnn_xlsb = 0;
+				else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+					ptr->pnn_xlsb = 1;
+				else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+					ptr->pnn_xlsb = 2;
+				else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+					ptr->pnn_xlsb = 3;
+			}
+
+			return objectPtr;
 		}
 		EElementType CSelection::getType() const
 		{
@@ -1266,14 +1327,19 @@ namespace OOX
 		{
             //if(m_oView.IsInit() || m_oTopLeftCell.IsInit() || m_oTopLeftCell.IsInit())
             //{
+				auto ptr(new XLSB::WSVIEW2);
+				XLS::BaseObjectPtr castedPtr(ptr);
 				auto pWsView(new XLSB::BeginWsView);
-				XLS::BaseObjectPtr castedPtr(pWsView);
+				ptr->m_BrtBeginWsView = XLS::BaseObjectPtr{pWsView};
+
 				if (m_oColorId.IsInit())
     				pWsView->icvHdr = m_oColorId->m_eValue;
+                else
+                    pWsView->icvHdr = 64;
 				if (m_oDefaultGridColor.IsInit())
 					pWsView->fDefaultHdr = m_oDefaultGridColor->m_eValue;
 				else
-					pWsView->fDefaultHdr = false;
+                    pWsView->fDefaultHdr = true;
 				if (m_oRightToLeft.IsInit())
 					pWsView->fRightToLeft = m_oRightToLeft->m_eValue;
 				else
@@ -1285,11 +1351,11 @@ namespace OOX
 				if (m_oShowGridLines.IsInit())
 					pWsView->fDspGridRt = m_oShowGridLines->m_eValue;
 				else
-					pWsView->fDspGridRt = false;
+                    pWsView->fDspGridRt = true;
 				if (m_oShowOutlineSymbols.IsInit())
 					pWsView->fDspGuts = m_oShowOutlineSymbols->m_eValue;
 				else
-					pWsView->fDspGuts = false;
+                    pWsView->fDspGuts = true;
 				if (m_oShowRowColHeaders.IsInit())
 					pWsView->fDspRwColRt = m_oShowRowColHeaders->m_eValue;
 				else
@@ -1322,12 +1388,27 @@ namespace OOX
 					pWsView->iWbkView = m_oWorkbookViewId->m_eValue;
 				if (m_oZoomScale.IsInit())
 					pWsView->wScale = m_oZoomScale->m_eValue;
+				else
+					pWsView->wScale = 100;
 				if (m_oZoomScaleNormal.IsInit())
 					pWsView->wScaleNormal = m_oZoomScaleNormal->m_eValue;
+				else
+					pWsView->wScaleNormal = 0;
 				if (m_oZoomScalePageLayoutView.IsInit())
 					pWsView->wScalePLV = m_oZoomScalePageLayoutView->m_eValue;
+				else
+					pWsView->wScalePLV = 0;
 				if (m_oZoomScaleSheetLayoutView.IsInit())
 					pWsView->wScaleSLV = m_oZoomScaleSheetLayoutView->m_eValue;
+				else
+					pWsView->wScaleSLV = 0;
+                if(m_oPane.IsInit())
+					ptr->m_BrtPane = m_oPane->toBin();
+
+				for(auto i:m_arrItems)
+				{
+					ptr->m_arBrtSel.push_back(i->toBin());
+				}
 				return castedPtr;
             /*}
 			else

@@ -2,7 +2,7 @@
 
 int main()
 {
-	std::wstring Temp = L"37 over 7 over 7";
+	std::wstring Temp = L"lim from color red bold {7 over 5 over 3} to 56 721 ";
 	StarMath::CStarMathPars TempO;
 	TempO.Pars(Temp);
 }

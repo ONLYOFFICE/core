@@ -13,9 +13,7 @@ namespace StarMath
 		Operator,
 		Bracket,
 		UnarSign,
-		Box,
-		SM_Index_from,
-		SM_Index_to,
+		Attribute,
 	};
 	enum TypeBinOperator
 	{
@@ -44,12 +42,61 @@ namespace StarMath
 	};
 	enum TypeBracket
 	{
-		brace_opening,
-		brace_closing,
-		round_opening,
-		round_closing,
-		square_opening,
-		square_closing,
+		brace,
+		round,
+		square,
+		ldbracket,
+		lbrace,
+		langle,
+		lceil,
+		lfloor,
+		lline,
+		ldline,
+	};
+	enum TypeAttribute
+	{
+		acute,
+		breve,
+		dot,
+		dddot,
+		vec,
+		tilde,
+		check,
+		grave,
+		circle,
+		ddot,
+		bar,
+		harpoon,
+		hat,
+		widevec,
+		widetilde,
+		overline,
+		overstrike,
+		wideharpoon,
+		widehat,
+		underline,//top elements
+		phantom,
+		bold,
+		ital,//properties (without a pin and headset)
+		black,
+		green,
+		aqua,
+		yellow,
+		lime,
+		navy,
+		purple,
+		teal,
+		blue,
+		red,
+		fuchsia,
+		gray,
+		maroon,
+		olive,
+		silver,
+		coral,
+		midnightblue,
+		crimson,
+		violet,//color(without rgb and hex)
 	};
 	class CElement
 	{
@@ -63,7 +110,7 @@ namespace StarMath
 	public:
 		CNumber();
 		CNumber(const std::wstring& wsValue);
-		~CNumber();
+		virtual ~CNumber();
 		std::wstring GetValue() override;
 		TypeElement GetType() override ;
 	private:
@@ -86,6 +133,7 @@ namespace StarMath
 	{
 	public:
 		CBinaryOperator();
+		CBinaryOperator(const TypeBinOperator& enType);
 		virtual ~CBinaryOperator();
 		std::wstring GetValue() override;
 		TypeElement GetType() override;
@@ -95,42 +143,54 @@ namespace StarMath
 		void SetRightArg(CElement* oRightArg);
 	private:
 		TypeBinOperator enTypeBinOp;
-		std::vector<CElement*> arLeftArg;
-		std::vector<CElement*> arRightArg;
+		CElement* arLeftArg;
+		CElement* arRightArg;
 	};
 	class COperator: public CElement
 	{
 	public:
 		COperator();
-		~COperator();
+		virtual ~COperator();
 		std::wstring GetValue() override;
 		TypeElement GetType() override;
-		COperator* GetOperator(const TypeElement& enTypeOper);
+		TypeOperator GetTypeOp();
+		void SetTypeOp(const TypeOperator& enType);
+		void SetFrom(CElement* oFrom);
+		void SetTo(CElement* oTo);
+		void SetValueOp(CElement* oValue);
+		void AvailabilityMline();
 	private:
-		TypeElement enType;
-	};
-	class CIndex: public CElement
-	{
-	public:
-		CIndex();
-		~CIndex();
-		std::wstring GetValue() override;
-		TypeElement GetType() override;
-		CIndex* GetIndex(const TypeElement& enTypeIndex);
-	private:
-		TypeElement enType;
+		TypeOperator enTypeOp;
+		CElement* oFromValue{nullptr};
+		CElement* oToValue{nullptr};
+		CElement* oValueOp{nullptr};
+		bool bMline{false};
 	};
 	class CBracket: public CElement
 	{
 	public:
 		CBracket();
-		~CBracket();
+		CBracket(const std::vector<CElement*>& arValue,const TypeBracket& enType);
+		virtual ~CBracket();
 		std::wstring GetValue() override;
 		TypeElement GetType() override;
-		CBracket* GetBracket(const TypeBracket& enTypeBracket);
 	private:
 		TypeBracket enTypeBracket;
-		TypeElement enTypeEl;
+		std::vector<CElement*> arBrecketVal;
+	};
+	class CAttribute: public CElement
+	{
+	public:
+		CAttribute();
+		CAttribute(CElement* oValue,const TypeAttribute& enType);
+		virtual ~CAttribute();
+		std::wstring GetValue() override;
+		TypeElement GetType() override;
+		void SetTypeAtt(const TypeAttribute& enType);
+		void SetValueAtt(CElement* oValue);
+	private:
+		TypeAttribute enTypeAtt;
+		CElement* oValueAtt;
 	};
 	class CStarMathPars
 	{
@@ -139,15 +199,18 @@ namespace StarMath
 		virtual ~CStarMathPars();
 		void Pars(std::wstring& wsStarMathLine);
 		std::wstring GetElement(std::wstring::iterator& itFirst,std::wstring::iterator& itEnd);
-		CElement* ParsElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd);
+		CElement* ParsElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd, std::vector<CElement*>& arParsLine);
 		bool CheckDigit(const std::wstring& wsCheckToken);
 		bool CheckUnarSign(std::wstring& wsCheckToken,CUnarySign& oUnarSign);
 		bool CheckBinOperator(const std::wstring& wsCheckToken,TypeBinOperator& enTypeBinOperator);
 		bool CheckOneElementBinOperator(const char& wsCheckToken, TypeBinOperator& enTypeBinOperator);
 		bool CheckOperator(const std::wstring& wsCheckToken,TypeOperator& enTypeOperator);
-		bool CheckIndex(const std::wstring& wsCheckToken, TypeElement& TypeIndex);
-		bool CheckBracket(const char& wsCheckToken,TypeBracket& TypeBracket);
-		bool CheckScalable_NotScalableBracket(const std::wstring& wsCheckToken, TypeElement& TypeBracket);
+		bool CheckIndex(const std::wstring& wsCheckToken);
+		bool CheckBracket(const char& wsCheckToken,TypeBracket& enTypeBracket);
+		bool CheckScalable_NotScalableBracket(const std::wstring& wsCheckToken, TypeBracket& enType);
+		bool CheckTopAttribute(const std::wstring& wsCheckToken,TypeAttribute& enTypeAtt);
+		bool CheckPropertiesAttribute(const std::wstring& wsCheckToken,TypeAttribute& enTypeAtt);
+		bool CheckColorAttribute(const std::wstring& wsCheckToken, TypeAttribute& enTypeAtt);
 		void PrintAr();
 	private:
 		std::vector<CElement*> m_arParsLine;

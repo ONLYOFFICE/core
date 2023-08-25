@@ -956,22 +956,22 @@ namespace OOX
 				ptr->cchDefColWidth = m_oDefaultColWidth.get();
 				if(!m_oBaseColWidth.IsInit())
 				{
-					ptr->dxGCol = m_oDefaultColWidth.get();
+                    ptr->dxGCol = m_oDefaultColWidth.get() * 256;
 				}
 			}
 				if (m_oDefaultRowHeight.IsInit())
-					ptr->miyDefRwHeight = m_oDefaultRowHeight.get();
+					ptr->miyDefRwHeight = m_oDefaultRowHeight.get() * 20;
 				else
-					ptr->miyDefRwHeight = 14.4;
+                    ptr->miyDefRwHeight = 290;
 
                 if (m_oOutlineLevelCol.IsInit())
                     ptr->iOutLevelCol =  m_oOutlineLevelCol.get();
 				else
-					ptr->iOutLevelCol =  1;
+                    ptr->iOutLevelCol = 0;
                 if (m_oOutlineLevelRow.IsInit())
                     ptr->iOutLevelRw = m_oOutlineLevelRow.get();
 				else
-					 ptr->iOutLevelRw = 1;
+                     ptr->iOutLevelRw = 0;
 
 				if (m_oThickBottom.IsInit()) ptr->fExDesc = m_oThickBottom.get();
 				else  ptr->fExDesc = false;
@@ -979,6 +979,7 @@ namespace OOX
 				else ptr->fExAsc = false;
 				if (m_oZeroHeight.IsInit()) ptr->fDyZero = m_oZeroHeight.get();
 				else ptr->fDyZero = false;
+                ptr->fUnsynced = false;
 			return Castedptr;
 		}
 		EElementType CSheetFormatPr::getType() const
@@ -1359,7 +1360,7 @@ namespace OOX
 				if (m_oShowRowColHeaders.IsInit())
 					pWsView->fDspRwColRt = m_oShowRowColHeaders->m_eValue;
 				else
-					pWsView->fDspRwColRt = false;
+					pWsView->fDspRwColRt = true;
 				if (m_oShowRuler.IsInit())
 					pWsView->fDspRuler = m_oShowRuler->m_eValue;
 				else

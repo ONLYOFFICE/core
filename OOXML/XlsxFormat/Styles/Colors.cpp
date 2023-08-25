@@ -105,9 +105,9 @@ namespace OOX
 
 			if(m_oIndexedColors.IsInit())
 			{
-				auto indexСolors(new XLSB::INDEXEDCOLORS);
-				ptr->m_INDEXEDCOLORS = XLS::BaseObjectPtr{indexСolors};
-				indexСolors->m_arIndexedColor = m_oIndexedColors->toBin();
+			auto indexColors(new XLSB::INDEXEDCOLORS);
+                ptr->m_INDEXEDCOLORS = XLS::BaseObjectPtr{indexColors};
+			indexColors->m_arIndexedColor =	m_oIndexedColors->toBin();
 			}
 
 			if(m_oMruColors.IsInit())

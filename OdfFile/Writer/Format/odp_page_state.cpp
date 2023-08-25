@@ -159,7 +159,7 @@ void odp_page_state::finalize_page()
 			start_timing_par();
 				set_anim_duration(-1);
 				set_anim_restart(L"never");
-				set_anim_type(L"tmRoot");
+				set_anim_type(odf_types::presentation_node_type::timing_root);
 			end_timing_par();
 		end_timing();
 	}
@@ -173,37 +173,33 @@ void odp_page_state::finalize_page()
 		page_elm_->add_child_element(forms_root_elm);
 	}
 }
-void odp_page_state::set_anim_type(std::wstring val)
+void odp_page_state::set_anim_type(const odf_types::presentation_node_type& val)
 {
 	if (anim_levels.empty())		return;
 	if (!anim_levels.back().attlist)return;
 	
-	if (val == L"tmRoot")
+	anim_levels.back().attlist->presentation_node_type_ = val;
+	if (val.get_type() == presentation_node_type::timing_root)
 	{
-		anim_levels.back().attlist->presentation_node_type_ = presentation_node_type::timing_root;
 		if (transactions.empty() == false)
 		{
 			std::wstring slide_id = L"slide" + std::to_wstring(page_id_) + L"id";
 
 			draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
-			if (page) 
+			if (page)
 			{
 				page->attlist_.draw_id_ = slide_id;
-				
+
 				start_timing_par();
-					anim_levels.back().attlist->smil_begin_ = slide_id + L".begin";
-					while(!transactions.empty())
-					{
-						anim_levels.back().elm->add_child_element(	transactions[0] );
-						transactions.erase(transactions.begin());
-					}
+				anim_levels.back().attlist->smil_begin_ = slide_id + L".begin";
+				while (!transactions.empty())
+				{
+					anim_levels.back().elm->add_child_element(transactions[0]);
+					transactions.erase(transactions.begin());
+				}
 				end_timing_par();
 			}
 		}
-	}
-	else if (val == L"mainSeq")
-	{
-		anim_levels.back().attlist->presentation_node_type_ = presentation_node_type::main_sequence;
 	}
 }
 void odp_page_state::set_anim_duration(int val)
@@ -222,12 +218,44 @@ void odp_page_state::set_anim_restart(std::wstring val)
 	anim_levels.back().attlist->smil_restart_ = val;
 }
 
+void odp_page_state::set_anim_fill(const odf_types::smil_fill& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().par_attlist->smil_fill_ = val;
+}
+
 void odp_page_state::set_anim_begin(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;
 	if (!anim_levels.back().attlist)return;
 		
 	anim_levels.back().attlist->smil_begin_ = val;
+}
+
+void odp_page_state::set_anim_node_type(const odf_types::presentation_node_type& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->presentation_node_type_ = val;
+}
+
+void odp_page_state::set_anim_preset_class(const odf_types::preset_class& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().par_attlist->presentation_preset_class_ = val;
+}
+
+void odp_page_state::set_anim_preset_id(const odf_types::preset_id& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().par_attlist->presentation_preset_id_ = val;
 }
 
 void odp_page_state::start_transition()
@@ -371,7 +399,11 @@ void odp_page_state::start_timing_par()
 	if (!anim.elm) return;
 
 	anim_par *par = dynamic_cast<anim_par*>(anim.elm.get());
-	if (par) anim.attlist = &par->attlist_;
+	if (par)
+	{
+		anim.attlist		= &par->attlist_;
+		anim.par_attlist	= &par->par_attlist_;
+	}
 
 	anim_levels.back().empty = false;
 	anim_levels.back().elm->add_child_element(anim.elm);

@@ -39,7 +39,7 @@
 #include "office_elements_create.h"
 
 #include "../../DataTypes/common_attlists.h"
-#include "../../DataTypes/smil_transitiontype.h"
+#include "../../DataTypes/animation_attlists.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -54,6 +54,7 @@ public:
     
 
 	odf_types::common_anim_smil_attlist		attlist_;
+	odf_types::anim_par_attlist				par_attlist_;
   	office_element_ptr						anim_par_;
 	office_element_ptr_array				anim_seq_array_;
 	office_element_ptr_array				content_;

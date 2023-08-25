@@ -40,6 +40,7 @@
 #include "anim_elements.h"
 
 #include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/animation_attlists.h"
 #include "../../DataTypes/presentationclass.h"
 #include "../../DataTypes/drawfill.h"
 

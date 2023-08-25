@@ -82,6 +82,12 @@ namespace PPTX
 		class SplitTransition;
 		class ZoomTransition;
 	}
+
+	namespace Limit
+	{
+		class TLNodeType;
+		class TLPresetClass;
+	}
 }
 
 namespace cpdoccore 
@@ -140,7 +146,7 @@ namespace Oox2Odf
 		void convert(PPTX::Logic::Transition			*oox_transition);
 		void convert(PPTX::Logic::TimeNodeBase			*oox_base_time);
 		void convert(PPTX::Logic::CTn					*oox_common_time);
-		void convert(PPTX::Logic::Cond					*oox_condition);
+		void convert(PPTX::Logic::Cond					*oox_condition); 
 		
 		void convert(PPTX::Logic::Table					*oox_table);
 		void convert(PPTX::Logic::TableRow				*oox_table_row);
@@ -172,6 +178,10 @@ private:
 		void convert(PPTX::Logic::WheelTransition			*oox_transition);
 		void convert(PPTX::Logic::SplitTransition			*oox_transition);
 		void convert(PPTX::Logic::ZoomTransition			*oox_transition);
+
+		void convert(const PPTX::Limit::TLNodeType&			oox_note_type);
+		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class);
+		void convert(const PPTX::Limit::TLPresetClass&		oox_preset_class, int preset_id);
 
 		PPTX::Document									*pptx_document;
 		PPTX::Presentation								*presentation;

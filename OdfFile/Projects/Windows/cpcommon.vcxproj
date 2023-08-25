@@ -181,6 +181,7 @@
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="..\..\Common\writedocelement.h" />
     <ClInclude Include="..\..\DataTypes\anchortype.h" />
+    <ClInclude Include="..\..\DataTypes\animation_attlists.h" />
     <ClInclude Include="..\..\DataTypes\backgroundcolor.h" />
     <ClInclude Include="..\..\DataTypes\bibliography.h" />
     <ClInclude Include="..\..\DataTypes\bool.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="..\..\Common\readdocelement.cpp" />
     <ClCompile Include="..\..\Common\utils.cpp" />
     <ClCompile Include="..\..\DataTypes\anchortype.cpp" />
+    <ClCompile Include="..\..\DataTypes\animation_attlists.cpp" />
     <ClCompile Include="..\..\DataTypes\backgroundcolor.cpp" />
     <ClCompile Include="..\..\DataTypes\bibliography.cpp" />
     <ClCompile Include="..\..\DataTypes\bool.cpp" />

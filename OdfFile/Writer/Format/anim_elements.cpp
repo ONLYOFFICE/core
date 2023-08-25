@@ -77,6 +77,7 @@ void anim_par::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {   
 			attlist_.serialize(CP_GET_XML_NODE());
+			par_attlist_.serialize(CP_GET_XML_NODE());
 
 			if (anim_par_)
 				anim_par_->serialize(CP_XML_STREAM());

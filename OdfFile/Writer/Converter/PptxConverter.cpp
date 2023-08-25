@@ -380,6 +380,292 @@ void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::text_form
 //UniColor Color;
 }
 
+void PptxConverter::convert(const PPTX::Limit::TLNodeType& oox_note_type)
+{
+	odf_types::presentation_node_type odfNodeType;
+
+	switch (oox_note_type.GetBYTECode())
+	{
+	case 0:
+	case 1: 
+		odfNodeType = odf_types::presentation_node_type::after_previous; 
+		break;
+	case 2:
+	case 3:
+		odfNodeType = odf_types::presentation_node_type::on_click;
+		break;
+	case 4:
+		odfNodeType = odf_types::presentation_node_type::interactive_sequence;
+		break;
+	case 5:
+		odfNodeType = odf_types::presentation_node_type::main_sequence;
+		break;
+	case 6:
+		odfNodeType = odf_types::presentation_node_type::timing_root;
+		break;
+	case 7:
+	case 8:
+		odfNodeType = odf_types::presentation_node_type::with_previous;
+		break;
+	default:
+		odfNodeType = odf_types::presentation_node_type::on_click;
+	}
+
+	odp_context->current_slide().set_anim_type(odfNodeType);
+}
+
+void PptxConverter::convert(const PPTX::Limit::TLPresetClass& oox_preset_class)
+{
+	odf_types::preset_class odfPresetClass;
+
+	switch (oox_preset_class.GetBYTECode())
+	{
+	case 0: odfPresetClass = odf_types::preset_class::emphasis; break;
+	case 1: odfPresetClass = odf_types::preset_class::entrance; break;
+	case 2: odfPresetClass = odf_types::preset_class::exit; break;
+	case 3: odfPresetClass = odf_types::preset_class::media_call; break;
+	case 4: odfPresetClass = odf_types::preset_class::motion_path; break;
+	default: odfPresetClass = odf_types::preset_class::custom; break;
+	}
+
+	odp_context->current_slide().set_anim_preset_class(odfPresetClass);
+}
+
+void PptxConverter::convert(const PPTX::Limit::TLPresetClass& oox_preset_class, int preset_id)
+{
+	odf_types::preset_id odfPresetId = preset_id::type::none;
+
+	switch (oox_preset_class.GetBYTECode())
+	{
+		case 0: // "emph"
+		{
+			switch (preset_id)
+			{
+			case 1: 	odfPresetId = preset_id::type::ooo_emphasis_fill_color				; break;
+			case 2: 	odfPresetId = preset_id::type::ooo_emphasis_font					; break;
+			case 3: 	odfPresetId = preset_id::type::ooo_emphasis_font_color				; break;
+			case 4: 	odfPresetId = preset_id::type::ooo_emphasis_font_size				; break;
+			case 5: 	odfPresetId = preset_id::type::ooo_emphasis_font_style				; break;
+			case 6: 	odfPresetId = preset_id::type::ooo_emphasis_grow_and_shrink			; break;
+			case 7: 	odfPresetId = preset_id::type::ooo_emphasis_line_color				; break;
+			case 8: 	odfPresetId = preset_id::type::ooo_emphasis_spin					; break;
+			case 9: 	odfPresetId = preset_id::type::ooo_emphasis_transparency			; break;
+			case 10: 	odfPresetId = preset_id::type::ooo_emphasis_bold_flash				; break;
+			case 14: 	odfPresetId = preset_id::type::ooo_emphasis_blast					; break;
+			case 15: 	odfPresetId = preset_id::type::ooo_emphasis_bold_reveal				; break;
+			case 16: 	odfPresetId = preset_id::type::ooo_emphasis_color_over_by_word		; break;
+			case 18: 	odfPresetId = preset_id::type::ooo_emphasis_reveal_underline		; break;
+			case 19: 	odfPresetId = preset_id::type::ooo_emphasis_color_blend				; break;
+			case 20: 	odfPresetId = preset_id::type::ooo_emphasis_color_over_by_letter	; break;
+			case 21: 	odfPresetId = preset_id::type::ooo_emphasis_complementary_color		; break;
+			case 22: 	odfPresetId = preset_id::type::ooo_emphasis_complementary_color_2	; break;
+			case 23: 	odfPresetId = preset_id::type::ooo_emphasis_contrasting_color		; break;
+			case 24: 	odfPresetId = preset_id::type::ooo_emphasis_darken					; break;
+			case 25: 	odfPresetId = preset_id::type::ooo_emphasis_desaturate				; break;
+			case 26: 	odfPresetId = preset_id::type::ooo_emphasis_flash_bulb				; break;
+			case 27: 	odfPresetId = preset_id::type::ooo_emphasis_flicker					; break;
+			case 28: 	odfPresetId = preset_id::type::ooo_emphasis_grow_with_color			; break;
+			case 30: 	odfPresetId = preset_id::type::ooo_emphasis_lighten					; break;
+			case 31: 	odfPresetId = preset_id::type::ooo_emphasis_style_emphasis			; break;
+			case 32: 	odfPresetId = preset_id::type::ooo_emphasis_teeter					; break;
+			case 33: 	odfPresetId = preset_id::type::ooo_emphasis_vertical_highlight		; break;
+			case 34: 	odfPresetId = preset_id::type::ooo_emphasis_wave					; break;
+			case 35: 	odfPresetId = preset_id::type::ooo_emphasis_blink					; break;
+			case 36: 	odfPresetId = preset_id::type::ooo_emphasis_shimmer					; break;
+			}
+		} break;
+		case 1: // "entrance"
+		{
+			switch (preset_id)
+			{
+			case 1:		odfPresetId = preset_id::type::ooo_entrance_appear			; break;
+			case 2:		odfPresetId = preset_id::type::ooo_entrance_fly_in			; break;
+			case 3:		odfPresetId = preset_id::type::ooo_entrance_venetian_blinds	; break;
+			case 4:		odfPresetId = preset_id::type::ooo_entrance_box				; break;
+			case 5:		odfPresetId = preset_id::type::ooo_entrance_checkerboard	; break;
+			case 6:		odfPresetId = preset_id::type::ooo_entrance_circle			; break;
+			case 7:		odfPresetId = preset_id::type::ooo_entrance_fly_in_slow		; break;
+			case 8:		odfPresetId = preset_id::type::ooo_entrance_diamond			; break;
+			case 9:		odfPresetId = preset_id::type::ooo_entrance_dissolve_in		; break;
+			case 10:	odfPresetId = preset_id::type::ooo_entrance_fade_in			; break;
+			case 11:	odfPresetId = preset_id::type::ooo_entrance_flash_once		; break;
+			case 12:	odfPresetId = preset_id::type::ooo_entrance_peek_in			; break;
+			case 13:	odfPresetId = preset_id::type::ooo_entrance_plus			; break;
+			case 14:	odfPresetId = preset_id::type::ooo_entrance_random_bars		; break;
+			case 15:	odfPresetId = preset_id::type::ooo_entrance_spiral_in		; break;
+			case 16:	odfPresetId = preset_id::type::ooo_entrance_split			; break;
+			case 17:	odfPresetId = preset_id::type::ooo_entrance_stretchy		; break;
+			case 18:	odfPresetId = preset_id::type::ooo_entrance_diagonal_squares; break;
+			case 19:	odfPresetId = preset_id::type::ooo_entrance_swivel			; break;
+			case 20:	odfPresetId = preset_id::type::ooo_entrance_wedge			; break;
+			case 21:	odfPresetId = preset_id::type::ooo_entrance_wheel			; break;
+			case 22:	odfPresetId = preset_id::type::ooo_entrance_wipe			; break;
+			case 23:	odfPresetId = preset_id::type::ooo_entrance_zoom			; break;
+			case 24:	odfPresetId = preset_id::type::ooo_entrance_random			; break;
+			case 25:	odfPresetId = preset_id::type::ooo_entrance_boomerang		; break;
+			case 26:	odfPresetId = preset_id::type::ooo_entrance_bounce			; break;
+			case 27:	odfPresetId = preset_id::type::ooo_entrance_colored_lettering; break;
+			case 28:	odfPresetId = preset_id::type::ooo_entrance_movie_credits	; break;
+			case 29:	odfPresetId = preset_id::type::ooo_entrance_ease_in			; break;
+			case 30:	odfPresetId = preset_id::type::ooo_entrance_float			; break;
+			case 31:	odfPresetId = preset_id::type::ooo_entrance_turn_and_grow	; break;
+			case 34:	odfPresetId = preset_id::type::ooo_entrance_breaks			; break;
+			case 35:	odfPresetId = preset_id::type::ooo_entrance_pinwheel		; break;
+			case 37:	odfPresetId = preset_id::type::ooo_entrance_rise_up			; break;
+			case 38:	odfPresetId = preset_id::type::ooo_entrance_falling_in		; break;
+			case 39:	odfPresetId = preset_id::type::ooo_entrance_thread			; break;
+			case 40:	odfPresetId = preset_id::type::ooo_entrance_unfold			; break;
+			case 41:	odfPresetId = preset_id::type::ooo_entrance_whip			; break;
+			case 42:	odfPresetId = preset_id::type::ooo_entrance_ascend			; break;
+			case 43:	odfPresetId = preset_id::type::ooo_entrance_center_revolve	; break;
+			case 45:	odfPresetId = preset_id::type::ooo_entrance_fade_in_and_swivel; break;
+			case 47:	odfPresetId = preset_id::type::ooo_entrance_descend			; break;
+			case 48:	odfPresetId = preset_id::type::ooo_entrance_sling			; break;
+			case 49:	odfPresetId = preset_id::type::ooo_entrance_spin_in			; break;
+			case 50:	odfPresetId = preset_id::type::ooo_entrance_compress		; break;
+			case 51:	odfPresetId = preset_id::type::ooo_entrance_magnify			; break;
+			case 52:	odfPresetId = preset_id::type::ooo_entrance_curve_up		; break;
+			case 53:	odfPresetId = preset_id::type::ooo_entrance_fade_in_and_zoom; break;
+			case 54:	odfPresetId = preset_id::type::ooo_entrance_glide			; break;
+			case 55:	odfPresetId = preset_id::type::ooo_entrance_expand			; break;
+			case 56:	odfPresetId = preset_id::type::ooo_entrance_flip			; break;
+			case 58:	odfPresetId = preset_id::type::ooo_entrance_fold			; break;
+			}
+		} break;
+		case 2: // "exit"
+		{
+			switch (preset_id)
+			{
+			case 1: odfPresetId = preset_id::type::ooo_exit_disappear			; break;
+			case 2: odfPresetId = preset_id::type::ooo_exit_fly_out				; break;
+			case 3: odfPresetId = preset_id::type::ooo_exit_venetian_blinds		; break;
+			case 4: odfPresetId = preset_id::type::ooo_exit_box					; break;
+			case 5: odfPresetId = preset_id::type::ooo_exit_checkerboard		; break;
+			case 6: odfPresetId = preset_id::type::ooo_exit_circle				; break;
+			case 7: odfPresetId = preset_id::type::ooo_exit_crawl_out			; break;
+			case 8: odfPresetId = preset_id::type::ooo_exit_diamond				; break;
+			case 9: odfPresetId = preset_id::type::ooo_exit_dissolve			; break;
+			case 10: odfPresetId = preset_id::type::ooo_exit_fade_out			; break;
+			case 11: odfPresetId = preset_id::type::ooo_exit_flash_once			; break;
+			case 12: odfPresetId = preset_id::type::ooo_exit_peek_out			; break;
+			case 13: odfPresetId = preset_id::type::ooo_exit_plus				; break;
+			case 14: odfPresetId = preset_id::type::ooo_exit_random_bars		; break;
+			case 15: odfPresetId = preset_id::type::ooo_exit_spiral_out			; break;
+			case 16: odfPresetId = preset_id::type::ooo_exit_split				; break;
+			case 17: odfPresetId = preset_id::type::ooo_exit_collapse			; break;
+			case 18: odfPresetId = preset_id::type::ooo_exit_diagonal_squares	; break;
+			case 19: odfPresetId = preset_id::type::ooo_exit_swivel				; break;
+			case 20: odfPresetId = preset_id::type::ooo_exit_wedge				; break;
+			case 21: odfPresetId = preset_id::type::ooo_exit_wheel				; break;
+			case 22: odfPresetId = preset_id::type::ooo_exit_wipe				; break;
+			case 23: odfPresetId = preset_id::type::ooo_exit_zoom				; break;
+			case 24: odfPresetId = preset_id::type::ooo_exit_random				; break;
+			case 25: odfPresetId = preset_id::type::ooo_exit_boomerang			; break;
+			case 26: odfPresetId = preset_id::type::ooo_exit_bounce				; break;
+			case 27: odfPresetId = preset_id::type::ooo_exit_colored_lettering	; break;
+			case 28: odfPresetId = preset_id::type::ooo_exit_movie_credits		; break;
+			case 29: odfPresetId = preset_id::type::ooo_exit_ease_out			; break;
+			case 30: odfPresetId = preset_id::type::ooo_exit_float				; break;
+			case 31: odfPresetId = preset_id::type::ooo_exit_turn_and_grow		; break;
+			case 34: odfPresetId = preset_id::type::ooo_exit_breaks				; break;
+			case 35: odfPresetId = preset_id::type::ooo_exit_pinwheel			; break;
+			case 37: odfPresetId = preset_id::type::ooo_exit_sink_down			; break;
+			case 38: odfPresetId = preset_id::type::ooo_exit_swish				; break;
+			case 39: odfPresetId = preset_id::type::ooo_exit_thread				; break;
+			case 40: odfPresetId = preset_id::type::ooo_exit_unfold				; break;
+			case 41: odfPresetId = preset_id::type::ooo_exit_whip				; break;
+			case 42: odfPresetId = preset_id::type::ooo_exit_descend			; break;
+			case 43: odfPresetId = preset_id::type::ooo_exit_center_revolve		; break;
+			case 45: odfPresetId = preset_id::type::ooo_exit_fade_out_and_swivel; break;
+			case 47: odfPresetId = preset_id::type::ooo_exit_ascend				; break;
+			case 48: odfPresetId = preset_id::type::ooo_exit_sling				; break;
+			case 53: odfPresetId = preset_id::type::ooo_exit_fade_out_and_zoom	; break;
+			case 55: odfPresetId = preset_id::type::ooo_exit_contract			; break;
+			case 49: odfPresetId = preset_id::type::ooo_exit_spin_out			; break;
+			case 50: odfPresetId = preset_id::type::ooo_exit_stretchy			; break;
+			case 51: odfPresetId = preset_id::type::ooo_exit_magnify			; break;
+			case 52: odfPresetId = preset_id::type::ooo_exit_curve_down			; break;
+			case 54: odfPresetId = preset_id::type::ooo_exit_glide				; break;
+			case 56: odfPresetId = preset_id::type::ooo_exit_flip				; break;
+			case 58: odfPresetId = preset_id::type::ooo_exit_fold				; break;
+			}
+		} break;
+		case 4: // motion-path
+		{
+			switch (preset_id)
+			{
+			case 16:	odfPresetId = preset_id::type::ooo_motionpath_4_point_star		; break;
+			case 5:		odfPresetId = preset_id::type::ooo_motionpath_5_point_star		; break;
+			case 11:	odfPresetId = preset_id::type::ooo_motionpath_6_point_star		; break;
+			case 17:	odfPresetId = preset_id::type::ooo_motionpath_8_point_star		; break;
+			case 1:		odfPresetId = preset_id::type::ooo_motionpath_circle			; break;
+			case 6:		odfPresetId = preset_id::type::ooo_motionpath_crescent_moon		; break;
+			case 3:		odfPresetId = preset_id::type::ooo_motionpath_diamond			; break;
+			case 13:	odfPresetId = preset_id::type::ooo_motionpath_equal_triangle	; break;
+			case 12:	odfPresetId = preset_id::type::ooo_motionpath_oval				; break;
+			case 9:		odfPresetId = preset_id::type::ooo_motionpath_heart				; break;
+			case 4:		odfPresetId = preset_id::type::ooo_motionpath_hexagon			; break;
+			case 10:	odfPresetId = preset_id::type::ooo_motionpath_octagon			; break;
+			case 14:	odfPresetId = preset_id::type::ooo_motionpath_parallelogram		; break;
+			case 15:	odfPresetId = preset_id::type::ooo_motionpath_pentagon			; break;
+			case 2:		odfPresetId = preset_id::type::ooo_motionpath_right_triangle	; break;
+			case 7:		odfPresetId = preset_id::type::ooo_motionpath_square			; break;
+			case 18:	odfPresetId = preset_id::type::ooo_motionpath_teardrop			; break;
+			case 8:		odfPresetId = preset_id::type::ooo_motionpath_trapezoid			; break;
+			case 37:	odfPresetId = preset_id::type::ooo_motionpath_arc_down			; break;
+			case 51:	odfPresetId = preset_id::type::ooo_motionpath_arc_left			; break;
+			case 58:	odfPresetId = preset_id::type::ooo_motionpath_arc_right			; break;
+			case 44:	odfPresetId = preset_id::type::ooo_motionpath_arc_up			; break;
+			case 41:	odfPresetId = preset_id::type::ooo_motionpath_bounce_left		; break;
+			case 54:	odfPresetId = preset_id::type::ooo_motionpath_bounce_right		; break;
+			case 48:	odfPresetId = preset_id::type::ooo_motionpath_curvy_left		; break;
+			case 61:	odfPresetId = preset_id::type::ooo_motionpath_curvy_right		; break;
+			case 60:	odfPresetId = preset_id::type::ooo_motionpath_decaying_wave		; break;
+			case 49:	odfPresetId = preset_id::type::ooo_motionpath_diagonal_down_right; break;
+			case 56:	odfPresetId = preset_id::type::ooo_motionpath_diagonal_up_right	; break;
+			case 42:	odfPresetId = preset_id::type::ooo_motionpath_down				; break;
+			case 52:	odfPresetId = preset_id::type::ooo_motionpath_funnel			; break;
+			case 53:	odfPresetId = preset_id::type::ooo_motionpath_spring			; break;
+			case 62:	odfPresetId = preset_id::type::ooo_motionpath_stairs_down		; break;
+			case 50:	odfPresetId = preset_id::type::ooo_motionpath_turn_down			; break;
+			case 36:	odfPresetId = preset_id::type::ooo_motionpath_turn_down_right	; break;
+			case 43:	odfPresetId = preset_id::type::ooo_motionpath_turn_up			; break;
+			case 57:	odfPresetId = preset_id::type::ooo_motionpath_turn_up_right		; break;
+			case 64:	odfPresetId = preset_id::type::ooo_motionpath_up				; break;
+			case 47:	odfPresetId = preset_id::type::ooo_motionpath_wave				; break;
+			case 38:	odfPresetId = preset_id::type::ooo_motionpath_zigzag			; break;
+			case 31:	odfPresetId = preset_id::type::ooo_motionpath_bean				; break;
+			case 25:	odfPresetId = preset_id::type::ooo_motionpath_buzz_saw			; break;
+			case 20:	odfPresetId = preset_id::type::ooo_motionpath_curved_square		; break;
+			case 21:	odfPresetId = preset_id::type::ooo_motionpath_curved_x			; break;
+			case 23:	odfPresetId = preset_id::type::ooo_motionpath_curvy_star		; break;
+			case 28:	odfPresetId = preset_id::type::ooo_motionpath_figure_8_four		; break;
+			case 26:	odfPresetId = preset_id::type::ooo_motionpath_horizontal_figure_8; break;
+			case 34:	odfPresetId = preset_id::type::ooo_motionpath_inverted_square	; break;
+			case 33:	odfPresetId = preset_id::type::ooo_motionpath_inverted_triangle	; break;
+			case 24:	odfPresetId = preset_id::type::ooo_motionpath_loop_de_loop		; break;
+			case 29:	odfPresetId = preset_id::type::ooo_motionpath_neutron			; break;
+			case 27:	odfPresetId = preset_id::type::ooo_motionpath_peanut			; break;
+			case 32:	odfPresetId = preset_id::type::ooo_motionpath_clover			; break;
+			case 19:	odfPresetId = preset_id::type::ooo_motionpath_pointy_star		; break;
+			case 30:	odfPresetId = preset_id::type::ooo_motionpath_swoosh			; break;
+			case 22:	odfPresetId = preset_id::type::ooo_motionpath_vertical_figure_8	; break;
+			case 35:	odfPresetId = preset_id::type::ooo_motionpath_left				; break;
+			case 63:	odfPresetId = preset_id::type::ooo_motionpath_right				; break;
+			case 55:	odfPresetId = preset_id::type::ooo_motionpath_spiral_left		; break;
+			case 46:	odfPresetId = preset_id::type::ooo_motionpath_spiral_right		; break;
+			case 40:	odfPresetId = preset_id::type::ooo_motionpath_sine_wave			; break;
+			case 59:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_1			; break;
+			case 39:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_2			; break;
+			case 45:	odfPresetId = preset_id::type::ooo_motionpath_heartbeat			; break;
+			}
+		} break;
+	}
+
+	if(odfPresetId.get_type() != preset_id::type::none)
+		odp_context->current_slide().set_anim_preset_id(odfPresetId);
+}
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -924,7 +1210,7 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	}
 	if (oox_time_common->nodeType.IsInit())
 	{
-		odp_context->current_slide().set_anim_type(oox_time_common->nodeType->get());
+		convert(*oox_time_common->nodeType);
 	}
 	if (oox_time_common->dur.IsInit())
 	{
@@ -936,7 +1222,17 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	if (oox_time_common->restart.IsInit())
 	{
 		odp_context->current_slide().set_anim_restart(oox_time_common->restart->get());
-	}	
+	}
+	if (oox_time_common->fill.IsInit())
+	{
+		odp_context->current_slide().set_anim_fill(odf_types::smil_fill::parse(oox_time_common->fill->get()));
+	}
+	if (oox_time_common->presetClass.IsInit())
+	{
+		convert(*oox_time_common->presetClass);
+		if(oox_time_common->presetID.IsInit())
+			convert(*oox_time_common->presetClass, *oox_time_common->presetID);
+	}
 
 	//nullable<CondLst>			stCondLst;
 	//nullable<CondLst>			endCondLst;
@@ -1004,7 +1300,7 @@ void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
 	{
 		std::wstring begin;
 		if (*oox_condition->delay == L"indefinite")
-			begin = L"0s";
+			begin = L"next";
 		else
 		{
 			int ms = XmlUtils::GetInteger(*oox_condition->delay);
@@ -1015,7 +1311,6 @@ void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
 
 		odp_context->current_slide().set_anim_begin(begin);
 	}
-		
 	//else if(oox_condition->evt.IsInit())
 	//	odp_context->current_slide().set_anim_evt();
 }

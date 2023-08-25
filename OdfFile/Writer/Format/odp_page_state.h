@@ -62,6 +62,7 @@ struct anim_state
 	int										id;
 	office_element_ptr						elm;	
 	odf_types::common_anim_smil_attlist*	attlist;
+	odf_types::anim_par_attlist*			par_attlist;
 
 	bool empty;
 };
@@ -101,11 +102,15 @@ public:
 		void start_timing_seq();
 		void end_timing_seq();
 
-		void set_anim_id		(int val);
-		void set_anim_type		(std::wstring val);
-		void set_anim_duration	(int val);
-		void set_anim_restart	(std::wstring val);
-		void set_anim_begin		(const std::wstring& val);
+		void set_anim_id			(int val);
+		void set_anim_type			(const odf_types::presentation_node_type& val);
+		void set_anim_duration		(int val);
+		void set_anim_restart		(std::wstring val);
+		void set_anim_fill			(const odf_types::smil_fill& val);
+		void set_anim_begin			(const std::wstring& val);
+		void set_anim_node_type		(const odf_types::presentation_node_type& val);
+		void set_anim_preset_class	(const odf_types::preset_class& val);
+		void set_anim_preset_id		(const odf_types::preset_id& val);
 	void end_timing();
 
 	void start_transition();

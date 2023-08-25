@@ -1578,8 +1578,7 @@ int main(int argc, char* argv[])
 			free(pWidgetsMK);
 	}
 
-	// Annots
-
+	// ANNOTS
 	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
@@ -1798,7 +1797,20 @@ int main(int argc, char* argv[])
 				}
 				std::cout << ", ";
 			}
-			// TODO
+			else if (sType == "Highlight" ||
+					 sType == "Underline" ||
+					 sType == "Squiggly"  ||
+					 sType == "StrikeOut")
+			{
+				std::cout << "QuadPoints";
+				for (int j = 0; j < 8; ++j)
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << " " << (double)nPathLength / 100.0;
+				}
+				std::cout << ", ";
+			}
 			else if (sType == "Popup")
 			{
 				nFlags = READ_INT(pAnnots + i);

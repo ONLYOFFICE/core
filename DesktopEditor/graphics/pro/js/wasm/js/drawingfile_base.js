@@ -1101,6 +1101,14 @@
 						rec["InkList"][i].push(reader.readDouble());
 				}
 			}
+			// Highlight, Underline, Squiggly, StrikeOut
+			else if (rec["Type"] > 7 && rec["Type"] < 12)
+			{
+				// Координаты - QuadPoints
+				rec["QuadPoints"] = [];
+				for (let i = 0; i < 8; ++i)
+					rec["QuadPoints"].push(reader.readDouble());
+			}
 			// Popup
 			else if (rec["Type"] == 15)
 			{

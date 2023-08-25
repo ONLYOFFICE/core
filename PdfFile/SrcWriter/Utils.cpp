@@ -31,6 +31,7 @@
  */
 #include "Utils.h"
 #include <vector>
+#include <ctime>
 
 namespace PdfWriter
 {
@@ -240,5 +241,33 @@ namespace PdfWriter
 			nValue ^= unBitNum;
 		else
 			nValue |= unBitNum;
+	}
+	std::string DateNow()
+	{
+		char sTemp[DATE_TIME_STR_LEN + 1];
+		char* pTemp = NULL;
+
+		MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
+		time_t oTime = time(0);
+		struct tm* oNow = gmtime(&oTime);
+
+		pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
+		*pTemp++;
+		*pTemp++;
+		pTemp = ItoA2(pTemp, oNow->tm_year + 1900, 5);
+		pTemp = ItoA2(pTemp, oNow->tm_mon + 1, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_mday, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_hour, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_min, 3);
+		pTemp = ItoA2(pTemp, oNow->tm_sec, 3);
+		*pTemp++ = '+';
+		pTemp = ItoA2(pTemp, 0, 3);
+		*pTemp++ = '\'';
+		pTemp = ItoA2(pTemp, 0, 3);
+		*pTemp++ = '\'';
+		*pTemp = 0;
+
+		std::string sRes(sTemp);
+		return sRes;
 	}
 }

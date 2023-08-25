@@ -1703,6 +1703,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 	{
 		pAnnot = m_pDocument->CreateLineAnnot();
 	}
+	else if (oInfo.IsTextMarkup())
+	{
+		pAnnot = m_pDocument->CreateTextMarkupAnnot();
+	}
 	else if (oInfo.IsPopup())
 	{
 		pAnnot = m_pDocument->CreatePopupAnnot();
@@ -1817,6 +1821,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 			pPr->GetCO(dCO1, dCO2);
 			pLineAnnot->SetCO(dCO1, dCO2);
 		}
+	}
+	else if (oInfo.IsTextMarkup())
+	{
+		CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+		PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
+
+		pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
+		pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
 	}
 	else if (oInfo.IsPopup())
 	{

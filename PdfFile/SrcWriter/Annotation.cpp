@@ -31,6 +31,7 @@
  */
 #include "Annotation.h"
 #include "Pages.h"
+#include "Utils.h"
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -54,7 +55,9 @@ namespace PdfWriter
 		"Underline",
 		"Ink",
 		"FileAttachment",
-		"Popup"
+		"Popup",
+		"Line",
+		"Squiggly"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -74,13 +77,15 @@ namespace PdfWriter
 	{
 		pXref->Add(this);
 
+		m_nID = 0;
+
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
 
-		m_nID = 0;
+		Add("M", new CStringObject(DateNow().c_str()));
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -186,6 +191,8 @@ namespace PdfWriter
 	{
 		m_nPopupID = 0;
 		m_nIRTID   = 0;
+
+		Add("CreationDate", new CStringObject(DateNow().c_str()));
 	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
@@ -500,5 +507,37 @@ namespace PdfWriter
 	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
 	{
 		Add("Parent", pAnnot);
+	}
+	//----------------------------------------------------------------------------------------
+	// CTextMarkupAnnotation
+	//----------------------------------------------------------------------------------------
+	CTextMarkupAnnotation::CTextMarkupAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotPopup)
+	{
+		m_nSubtype = AnnotHighLight;
+	}
+	void CTextMarkupAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 8:
+		{ m_nSubtype = AnnotHighLight; break; }
+		case 9:
+		{ m_nSubtype = AnnotUnderline; break; }
+		case 10:
+		{ m_nSubtype = AnnotSquiggly; break; }
+		case 11:
+		{ m_nSubtype = AnnotStrikeOut; break; }
+		}
+	}
+	void CTextMarkupAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (const double& dQuadPoints : arrQuadPoints)
+			pArray->Add(dQuadPoints);
 	}
 }

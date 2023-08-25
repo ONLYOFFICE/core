@@ -379,10 +379,26 @@ private:
 	double m_dLLE; // Продолжение линий выноски
 	double m_dLLO; // Длина смещения выноски
 	BYTE m_nLE[2]; // Стили окончания линии
-	double m_pL[4]; // Координаты линии
+	double m_pL[4]{}; // Координаты линии
 	double m_pCO[2]; // Смещение текста подписи
 	std::vector<double> m_arrIC; // Цвет окончаний линии
 	// TODO Measure Показатели масштаба, единиц измерения
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotTextMarkup
+//------------------------------------------------------------------------
+
+class CAnnotTextMarkup final : public CMarkupAnnot
+{
+public:
+	CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nSubtype; // Подтип TextMarkup аннотации
+	double m_dQuadPoints[8]{}; // Координаты
 };
 
 //------------------------------------------------------------------------

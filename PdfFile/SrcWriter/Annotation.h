@@ -64,7 +64,8 @@ namespace PdfWriter
 		AnnotInk            = 10,
 		AnnotFileAttachment = 11,
 		AnnotPopup          = 12,
-		AnnotLine           = 13
+		AnnotLine           = 13,
+		AnnotSquiggly       = 14
 	};
 	enum EAnnotHighlightMode
 	{
@@ -237,6 +238,20 @@ namespace PdfWriter
 			return m_nParentID;
 		}
 		void SetParentID(CAnnotation* pAnnot);
+	};
+	class CTextMarkupAnnotation : public CMarkupAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+	public:
+		CTextMarkupAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+
+		void SetSubtype(const BYTE& nSubtype);
+		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

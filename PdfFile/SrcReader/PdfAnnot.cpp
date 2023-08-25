@@ -933,7 +933,6 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// Координаты линии - L
-	m_pL[0] = 0.0; m_pL[1] = 0.0; m_pL[2] = 0.0; m_pL[3] = 0.0;
 	if (oAnnot.dictLookup("L", &oObj)->isArray())
 	{
 		ARR_GET_NUM(oObj, 0, m_pL[0]);
@@ -1052,6 +1051,46 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 		ARR_GET_NUM(oObj, 1, m_pCO[1]);
 	}
 	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// TextMarkup: Highlight, Underline, Squiggly, StrikeOut
+//------------------------------------------------------------------------
+
+CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Координаты - QuadPoints
+	if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray() && oObj.arrayGetLength() == 8)
+	{
+		for (int i = 0; i < 8; ++i)
+		{
+			ARR_GET_NUM(oObj, i, m_dQuadPoints[i]);
+			if (i % 2 == 1)
+				m_dQuadPoints[i] = m_dHeight - m_dQuadPoints[i];
+		}
+	}
+	oObj.free();
+
+	// Подтип - Subtype
+	std::string sType;
+	if (oAnnot.dictLookup("Subtype", &oObj)->isName())
+		sType = oObj.getName();
+	oObj.free();
+
+	if (sType == "Highlight")
+		m_nSubtype = 8;
+	else if (sType == "Underline")
+		m_nSubtype = 9;
+	else if (sType == "Squiggly")
+		m_nSubtype = 10;
+	else if (sType == "StrikeOut")
+		m_nSubtype = 11;
 
 	oAnnot.free();
 }
@@ -2254,4 +2293,13 @@ void CAnnotLine::ToWASM(NSWasm::CData& oRes)
 	}
 }
 
+void CAnnotTextMarkup::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(m_nSubtype); // Highlight, Underline, Squiggly, StrikeOut
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	for (int i = 0; i < 8; ++i)
+		oRes.AddDouble(m_dQuadPoints[i]);
+}
 }

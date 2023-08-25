@@ -1243,7 +1243,8 @@ namespace NSOnlineOfficeBinToPdf
 				int nLen = ReadInt(current, curindex);
 
 				CAnnotFieldInfo oInfo;
-				oInfo.SetType(ReadByte(current, curindex));
+				BYTE nType = ReadByte(current, curindex);
+				oInfo.SetType(nType);
 				oInfo.SetID(ReadInt(current, curindex));
 				oInfo.SetAnnotFlag(ReadInt(current, curindex));
 				oInfo.SetPage(ReadInt(current, curindex));
@@ -1375,6 +1376,16 @@ namespace NSOnlineOfficeBinToPdf
 						double dCO2 = ReadDouble(current, curindex);
 						pPr->SetCO(dCO1, dCO2);
 					}
+				}
+				else if (oInfo.IsTextMarkup())
+				{
+					CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+
+					pPr->SetSubtype(nType);
+					std::vector<double> arrQuadPoints;
+					for (int i = 0; i < 8; ++i)
+						arrQuadPoints.push_back(ReadDouble(current, curindex));
+					pPr->SetQuadPoints(arrQuadPoints);
 				}
 				else if (oInfo.IsPopup())
 				{

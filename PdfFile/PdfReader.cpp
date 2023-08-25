@@ -2156,31 +2156,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 				 sType == "Squiggly"  ||
 				 sType == "StrikeOut")
 		{
-			/*
-			double x1 = 0.0, x2 = 0.0, x3 = 0.0, x4 = 0.0;
-			double y1 = 0.0, y2 = 0.0, y3 = 0.0, y4 = 0.0;
-			if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray() && oObj.arrayGetLength() == 8)
-			{
-
-				ARR_GET_NUM(oObj, 0, x1);
-				ARR_GET_NUM(oObj, 1, y1);
-				ARR_GET_NUM(oObj, 2, x2);
-				ARR_GET_NUM(oObj, 3, y2);
-				ARR_GET_NUM(oObj, 4, x3);
-				ARR_GET_NUM(oObj, 5, y3);
-				ARR_GET_NUM(oObj, 6, x4);
-				ARR_GET_NUM(oObj, 7, y4);
-			}
-			oObj.free();
-			oRes.AddDouble(x1);
-			oRes.AddDouble(x2);
-			oRes.AddDouble(x3);
-			oRes.AddDouble(x4);
-			oRes.AddDouble(y1);
-			oRes.AddDouble(y2);
-			oRes.AddDouble(y3);
-			oRes.AddDouble(y4);
-			*/
+			pAnnot = new PdfReader::CAnnotTextMarkup(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Stamp")
 		{

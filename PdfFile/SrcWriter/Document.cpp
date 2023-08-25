@@ -565,6 +565,10 @@ namespace PdfWriter
 	{
 		return new CLineAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateTextMarkupAnnot()
+	{
+		return new CTextMarkupAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreatePopupAnnot()
 	{
 		return new CPopupAnnotation(m_pXref);

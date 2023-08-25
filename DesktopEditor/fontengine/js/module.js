@@ -664,4 +664,97 @@ function onLoadFontsModule(window, undefined)
 		retObj["free"]();
 		return glyphs;
 	};
+
+	// ZLIB
+	function ZLib()
+	{
+		/** @suppress {checkVars} */
+		this.engine = new AscCommon["CZLibEngineJS"]();
+		this.files = [];
+	}
+	/**
+	 * Open archive from bytes
+	 * @param {Uint8Array | ArrayBuffer} buf
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.open = function(buf)
+	{
+		if (this.engine.open(buf))
+			this.files = this.engine["getPaths"]();
+		return (this.files.length > 0) ? true : false;
+	};
+	/**
+	 * Create new archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.create = function()
+	{
+		return this.engine["create"]();
+	};
+	/**
+	 * Save archive from current files
+	 * @returns {Uint8Array | null} zip-archive bytes, or null if error
+	 */
+	ZLib.prototype.save = function()
+	{
+		return this.engine["save"]();
+	};
+	/**
+	 * Get uncomressed file from archive
+	 * @param {string} path
+	 * @returns {Uint8Array | null} bytes of uncompressed data, or null if error
+	 */
+	ZLib.prototype.getFile = function(path)
+	{
+		return this.engine["getFile"](path);
+	};
+	/**
+	 * Add uncomressed file to archive
+	 * @param {string} path
+	 * @param {Uint8Array | ArrayBuffer} new file in archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.addFile = function(path, data)
+	{
+		return this.engine["addFile"](path, (undefined !== data.byteLength) ? new Uint8Array(data) : data);
+	};
+	/**
+	 * Remove file from archive
+	 * @param {string} path
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.removeFile = function(path)
+	{
+		return this.engine["removeFile"](path);
+	};
+	/**
+	 * Close & remove all used memory in archive
+	 * @returns {undefined}
+	 */
+	ZLib.prototype.close = function()
+	{
+		return this.engine["close"]();
+	};
+	/**
+	 * Get image blob for browser
+	 * @returns {Blob}
+	 */
+	ZLib.prototype.getImageBlob = function(path)
+	{
+		return this.engine["getImageBlob"](path);
+	};
+	/**
+	 * Get all file paths in archive
+	 * @returns {Array}
+	 */
+	ZLib.prototype.getPaths = function()
+	{
+		return this.engine["getPaths"]();
+	};
+
+	AscCommon.ZLib = ZLib;
+	AscCommon.ZLib.prototype.isModuleInit = true;
+	window.AscCommon.CZLibEngineJS.prototype.isModuleInit = true;
+
+	window.nativeZlibEngine = new ZLib();
 }

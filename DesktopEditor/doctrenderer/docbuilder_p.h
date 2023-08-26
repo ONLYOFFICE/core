@@ -100,6 +100,8 @@ namespace NSDoctRenderer
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
 		else if (L"png" == sExt)
 			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		else if (L"vsdx" == sExt)
+			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
 		return nFormat;
 	}
 }
@@ -590,6 +592,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"xlsx.bin";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"vsdx.bin";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -616,6 +623,11 @@ namespace NSDoctRenderer
 				sEmptyPath = sEmptyPath + L"new.xlsx";
 				m_nFileType = 2;
 			}
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+			{
+				sEmptyPath = sEmptyPath + L"new.vsdx";
+				m_nFileType = 7;
+			}
 			else
 				return false;
 
@@ -638,6 +650,8 @@ namespace NSDoctRenderer
 				sPath += L"pptx";
 			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				sPath += L"xlsx";
+			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
+				sPath += L"vsdx";
 			return this->OpenFile(sPath, L"");
 #endif
 		}
@@ -911,6 +925,8 @@ namespace NSDoctRenderer
 				m_nFileType = 1;
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
 				m_nFileType = 2;
+			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
+				m_nFileType = 7;
 
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
@@ -1280,6 +1296,8 @@ namespace NSDoctRenderer
 				nType = AVS_OFFICESTUDIO_FILE_IMAGE;
 			else if (L"html" == ext)
 				nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+			else if (L"vsdx" == ext)
+				nType = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
 
 			return SaveFile(nType, path, params);
 		}
@@ -1327,6 +1345,11 @@ namespace NSDoctRenderer
 				arSdkFiles = &m_arXlstSDK;
 				break;
 			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
+				break;
+			}
 			default:
 				return "";
 			}
@@ -1371,6 +1394,11 @@ namespace NSDoctRenderer
 			case 2:
 			{
 				arSdkFiles = &m_arXlstSDK;
+				break;
+			}
+			case 7:
+			{
+				arSdkFiles = &m_arVsdtSDK;
 				break;
 			}
 			default:

@@ -901,8 +901,11 @@ extern int g_nCurFormatVersion;
 		BookFoldRevPrinting = 17,
 		SpecialFormsHighlight = 18,
 		DocumentProtection = 19,
-		WriteProtection = 20
-
+		WriteProtection = 20,
+		AutoHyphenation = 21,
+		HyphenationZone = 22,
+		DoNotHyphenateCaps = 23,
+		ConsecutiveHyphenLimit = 24
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{

@@ -8689,6 +8689,30 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		WriteWriteProtection(oSettings.m_oWriteProtection.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSettings.m_oAutoHyphenation.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::AutoHyphenation);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oAutoHyphenation->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSettings.m_oHyphenationZone.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::HyphenationZone);
+		m_oBcw.m_oStream.WriteDoubleReal(oSettings.m_oHyphenationZone->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSettings.m_oDoNotHyphenateCaps.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DoNotHyphenateCaps);
+		m_oBcw.m_oStream.WriteBOOL(oSettings.m_oDoNotHyphenateCaps->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if ((oSettings.m_oConsecutiveHyphenLimit.IsInit()) && (oSettings.m_oConsecutiveHyphenLimit->m_oVal.IsInit()))
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::ConsecutiveHyphenLimit);
+		m_oBcw.m_oStream.WriteLONG(*oSettings.m_oConsecutiveHyphenLimit->m_oVal);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 };
 void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 {

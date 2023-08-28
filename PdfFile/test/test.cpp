@@ -86,11 +86,11 @@ int main()
     if (!bResult)
     {
         wsPassword = L"123456";
-        bResult = pdfFile.LoadFromFile(wsSrcFile, wsPassword);
+		bResult = pdfFile.LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
     }
 
     ICertificate* pCertificate = NULL;
-	if (true)
+	if (false)
     {
 		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
 		std::wstring wsPrivateKeyFile = L"";
@@ -122,7 +122,7 @@ int main()
         return 0;
     }
 
-	if (false)
+	if (true)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 0;

@@ -161,7 +161,8 @@
 		this.stream_size = data.length;
 		this.type = Module["_GetType"](_stream, data.length);
 		self.drawingFile = this;
-		this.getInfo();
+		if (!error)
+			this.getInfo();
 		this._isNeedPassword = (4 === error) ? true : false;
 
 		// 0 - ok
@@ -182,7 +183,8 @@
 		let error = Module["_GetErrorCode"](this.nativeFile);
 		this.type = Module["_GetType"](this.stream, this.stream_size);
 		self.drawingFile = this;
-		this.getInfo();
+		if (!error)
+			this.getInfo();
 		this._isNeedPassword = (4 === error) ? true : false;
 
 		// 0 - ok

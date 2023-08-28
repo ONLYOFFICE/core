@@ -3983,7 +3983,7 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oHyphenationZone.Init();
 		pSettings->m_oHyphenationZone->m_oVal.Init();
-		pSettings->m_oHyphenationZone->m_oVal->FromPoints(m_oBufferedStream.GetDoubleReal());
+		pSettings->m_oHyphenationZone->m_oVal->FromTwips(m_oBufferedStream.GetLong());
 	}
 	else if (c_oSer_SettingsType::DoNotHyphenateCaps == type)
 	{

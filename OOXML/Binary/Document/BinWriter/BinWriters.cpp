@@ -8698,7 +8698,7 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 	if (oSettings.m_oHyphenationZone.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::HyphenationZone);
-		m_oBcw.m_oStream.WriteDoubleReal(oSettings.m_oHyphenationZone->m_oVal->GetValue());
+		m_oBcw.m_oStream.WriteLONG(oSettings.m_oHyphenationZone->m_oVal->ToTwips());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oSettings.m_oDoNotHyphenateCaps.IsInit())

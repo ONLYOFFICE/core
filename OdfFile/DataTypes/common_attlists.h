@@ -56,6 +56,8 @@
 #include "xlink.h"
 #include "drawfill.h"
 #include "clockvalue.h"
+#include "smil_attributename.h"
+#include "smil_fill.h"
 #include "stylerepeat.h"
 #include "officevaluetype.h"
 #include "fillimagerefpoint.h"
@@ -579,6 +581,7 @@ public:
 
 struct union_common_draw_attlists
 {
+    //_CP_OPT(std::wstring)                           xml_id_;
     common_draw_shape_with_text_and_styles_attlist	shape_with_text_and_styles_;
     common_draw_position_attlist					position_;
     common_draw_rel_size_attlist					rel_size_;
@@ -598,6 +601,9 @@ public:
 	_CP_OPT(std::wstring)			                smil_direction_;
 	_CP_OPT(std::wstring)			                smil_restart_;
 	_CP_OPT(odf_types::clockvalue)	                smil_dur_;
+    _CP_OPT(std::wstring)	                        smil_target_element_;
+    _CP_OPT(odf_types::smil_attribute_name)	        smil_attribute_name_;
+    _CP_OPT(odf_types::smil_fill)	                smil_fill_;
 
 	_CP_OPT(std::wstring)			                smil_begin_;
 	_CP_OPT(std::wstring)			                smil_end_;

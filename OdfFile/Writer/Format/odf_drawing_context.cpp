@@ -195,6 +195,7 @@ struct odf_drawing_state
 		fill_color_			= boost::none;
 		name_				= L"";
 		description_		= L"";
+		xml_id_				= L"";
 		hidden_				= false;
 		z_order_			= -1;
 		
@@ -234,6 +235,7 @@ struct odf_drawing_state
 
 	std::wstring	name_;
 	std::wstring	description_;
+	std::wstring	xml_id_;
 	int				z_order_;
 	bool			hidden_;
 
@@ -617,6 +619,8 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
 		if (impl_->current_drawing_state_.hidden_)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+		if (!impl_->current_drawing_state_.xml_id_.empty())
+			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
 
 		std::wstring strTransform;
 
@@ -1479,6 +1483,12 @@ void odf_drawing_context::set_placeholder_type (int val)
 	}
 	//todooo draw_layer for master for sldnum, datetime ...
 }
+
+void odf_drawing_context::set_xml_id(const std::wstring& xml_id)
+{
+	impl_->current_drawing_state_.xml_id_ = xml_id;
+}
+
 void odf_drawing_context::set_group_fill()
 {
 	if (!impl_->current_graphic_properties) return;

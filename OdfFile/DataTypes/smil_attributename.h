@@ -54,6 +54,7 @@ public:
 		fill,
 		fillColor,
 		fillStyle,
+		fillOn,
 		height,
 		lineColor,
 		lineStyle,

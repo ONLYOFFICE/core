@@ -62,10 +62,10 @@ public:
 
 	virtual void serialize(std::wostream & strm);
  
-	_CP_OPT(odf_types::length) svg_x_;
-    _CP_OPT(odf_types::length) svg_y_;
-    _CP_OPT(odf_types::length) svg_width_;
-    _CP_OPT(odf_types::length) svg_height_;
+	_CP_OPT(odf_types::length)	svg_x_;
+    _CP_OPT(odf_types::length)	svg_y_;
+    _CP_OPT(odf_types::length)	svg_width_;
+    _CP_OPT(odf_types::length)	svg_height_;
 
 	_CP_OPT(odf_types::presentation_class) presentation_object_;
 
@@ -102,8 +102,8 @@ public:
 	
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
 
-	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
+	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
+	odf_types::anim_transition_filter_attlist	anim_transition_filter_attlist_;
 
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;

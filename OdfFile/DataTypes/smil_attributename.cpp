@@ -41,16 +41,17 @@ namespace cpdoccore { namespace odf_types {
 	{
 		switch (_Val.get_type())
 		{
-		case smil_attribute_name::charColor					: _Wostream << L"charColor"		; break;
-		case smil_attribute_name::charFontName				: _Wostream << L"charFontName"	; break;
-		case smil_attribute_name::charHeight				: _Wostream << L"charHeight"	; break;
-		case smil_attribute_name::charPosture				: _Wostream << L"charPosture"	; break;
-		case smil_attribute_name::charUnderline				: _Wostream << L"charUnderline"	; break;
-		case smil_attribute_name::charWeight				: _Wostream << L"charWeight"	; break;
+		case smil_attribute_name::charColor					: _Wostream << L"char-color"	; break;
+		case smil_attribute_name::charFontName				: _Wostream << L"char-font-name"; break;
+		case smil_attribute_name::charHeight				: _Wostream << L"char-height"	; break;
+		case smil_attribute_name::charPosture				: _Wostream << L"char-posture"	; break;
+		case smil_attribute_name::charUnderline				: _Wostream << L"char-underline"; break;
+		case smil_attribute_name::charWeight				: _Wostream << L"char-weight"	; break;
 		case smil_attribute_name::color						: _Wostream << L"color"			; break;
 		case smil_attribute_name::fill						: _Wostream << L"fill"			; break;
-		case smil_attribute_name::fillColor					: _Wostream << L"fillColor"		; break;
-		case smil_attribute_name::fillStyle					: _Wostream << L"fillStyle"		; break;
+		case smil_attribute_name::fillColor					: _Wostream << L"fill-color"	; break;
+		case smil_attribute_name::fillStyle					: _Wostream << L"fill-style"	; break;
+		case smil_attribute_name::fillOn					: _Wostream << L"FillOn"		; break;
 		case smil_attribute_name::height					: _Wostream << L"height"		; break;
 		case smil_attribute_name::lineColor					: _Wostream << L"lineColor"		; break;
 		case smil_attribute_name::lineStyle					: _Wostream << L"lineStyle"		; break;
@@ -81,6 +82,7 @@ namespace cpdoccore { namespace odf_types {
 		else if (Str == L"color")				return smil_attribute_name(color);
 		else if (Str == L"fillcolor")			return smil_attribute_name(fillColor);
 		else if (Str == L"fillstyle")			return smil_attribute_name(fillStyle);
+		else if (Str == L"fillon")				return smil_attribute_name(fillOn);
 		else if (Str == L"height")				return smil_attribute_name(height);
 		else if (Str == L"linecolor")			return smil_attribute_name(lineColor);
 		else if (Str == L"linestyle")			return smil_attribute_name(lineStyle);

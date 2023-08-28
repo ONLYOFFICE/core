@@ -38,7 +38,6 @@
 #include "color.h"
 #include "bool.h"
 #include "svg_type.h"
-#include "smil_fill.h"
 #include "smil_transitiontype.h"
 #include "smil_attributename.h"
 #include "smil_additive.h"
@@ -60,7 +59,6 @@ public:
 	_CP_OPT(std::wstring)			presentation_preset_sub_type_;
 	_CP_OPT(std::wstring)			smil_accelerate_;
 	_CP_OPT(std::wstring)			smil_decelerate_;
-	_CP_OPT(smil_fill)				smil_fill_;
 };
 
 class anim_audio_attlist
@@ -85,7 +83,7 @@ public:
 	_CP_OPT(smil_transition_type)	smil_type_;
 	_CP_OPT(std::wstring)			smil_mode_;
 	_CP_OPT(color)					smil_fadeColor_;
-	_CP_OPT(std::wstring)			smil_target_element_;
+	_CP_OPT(std::wstring)			smil_direction_;
 };
 
 class anim_set_attlist
@@ -95,9 +93,6 @@ public:
 	void apply_from(const anim_set_attlist& Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(smil_fill)				smil_fill_;
-	_CP_OPT(std::wstring)			smil_target_element_;
-	_CP_OPT(smil_attribute_name)	smil_attribute_name_;
 	_CP_OPT(std::wstring)			smil_to_;
 };
 
@@ -108,8 +103,6 @@ public:
 	void apply_from(const anim_animate_motion_attlist& Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(smil_fill)				smil_fill_;
-	_CP_OPT(std::wstring)			smil_target_element_;
 	_CP_OPT(std::wstring)			svg_path_;
 };
 
@@ -120,9 +113,6 @@ public:
 	void apply_from(const anim_animate_color_attlist& Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(smil_fill)				smil_fill_;
-	_CP_OPT(std::wstring)			smil_target_element_;
-	_CP_OPT(smil_attribute_name)	smil_attribute_name_;
 	_CP_OPT(std::wstring)			smil_to_;
 	_CP_OPT(std::wstring)			presentation_master_element_;
 	_CP_OPT(std::wstring)			anim_color_interpolation_;
@@ -136,8 +126,6 @@ public:
 	void apply_from(const anim_animate_attlist& Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)			smil_target_element_;
-	_CP_OPT(smil_attribute_name)	smil_attribute_name_;
 	_CP_OPT(smil_values)			smil_values_;
 	_CP_OPT(smil_key_times)			smil_key_times_;
 	_CP_OPT(std::wstring)			anim_formula_;
@@ -157,9 +145,7 @@ public:
 	void apply_from(const anim_animate_transform_attlist& Other);
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(smil_fill)				smil_fill_;
 	_CP_OPT(Bool)					smil_auto_reverse_;
-	_CP_OPT(std::wstring)			smil_target_element_;
 	_CP_OPT(std::wstring)			smil_from_;
 	_CP_OPT(std::wstring)			smil_to_;
 	_CP_OPT(std::wstring)			smil_by_;

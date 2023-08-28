@@ -86,26 +86,6 @@ CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
-class anim_audio_attlist
-{
-public:
-	void serialize(CP_ATTR_NODE);
-	
-	_CP_OPT(std::wstring)			xlink_href_;
-	_CP_OPT(std::wstring)			anim_audio_level_; 
-};
-
-class anim_transition_filter_attlist
-{
-public:
-	void serialize(CP_ATTR_NODE);
-
-	_CP_OPT(std::wstring)						smil_subtype_; 
-	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
-	_CP_OPT(std::wstring)						smil_mode_;
-	_CP_OPT(odf_types::color)					smil_fadeColor_;
-};
-
 
 class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
 {
@@ -121,8 +101,8 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 ///////////////////////////////////////////////////////////	
-	odf_types::common_anim_smil_attlist		common_attlist_;
-	anim_transition_filter_attlist			filter_attlist_;
+	odf_types::common_anim_smil_attlist				common_attlist_;
+	odf_types::anim_transition_filter_attlist		filter_attlist_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_transitionFilter);
 
@@ -141,10 +121,90 @@ public:
 	virtual void serialize(std::wostream & strm);
 ///////////////////////////////////////////////////////////	
 	odf_types::common_anim_smil_attlist		common_attlist_;
-	anim_audio_attlist						audio_attlist_;
+	odf_types::anim_audio_attlist			audio_attlist_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_audio);
 //anim:command
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//anim:set
+class anim_set : public office_element_impl<anim_set>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeAnimSet;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_child_element(const office_element_ptr& child) {}
+
+	virtual void serialize(std::wostream& strm);
+///////////////////////////////////////////////////////////	
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	odf_types::anim_set_attlist				set_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_set);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//anim:animate
+class anim_animate : public office_element_impl<anim_animate>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeAnimAnimate;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_child_element(const office_element_ptr& child) {}
+
+	virtual void serialize(std::wostream& strm);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_attlist				animate_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// anim:animateMotion
+class anim_animate_motion : public office_element_impl<anim_animate_motion>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeAnimAnimateMotion;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_child_element(const office_element_ptr& child) {}
+
+	virtual void serialize(std::wostream& strm);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_motion_attlist		animate_motion_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_motion);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// anim:animateColor
+class anim_animate_color: public office_element_impl<anim_animate_motion>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeAnimAnimateColor;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_child_element(const office_element_ptr& child) {}
+
+	virtual void serialize(std::wostream& strm);
+
+	odf_types::common_anim_smil_attlist			common_attlist_;
+	odf_types::anim_animate_color_attlist		color_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_color);
 
 }
 }

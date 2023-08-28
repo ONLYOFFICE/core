@@ -63,9 +63,9 @@ namespace cpdoccore { namespace odf_types {
 		case preset_class::entrance:		_Wostream << L"entrance"; break;
 		case preset_class::exit:			_Wostream << L"exit"; break;
 		case preset_class::emphasis:		_Wostream << L"emphasis"; break;
-		case preset_class::motion_path:		_Wostream << L"motion_path"; break;
-		case preset_class::ole_action:		_Wostream << L"ole_action"; break;
-		case preset_class::media_call:		_Wostream << L"media_call"; break;
+		case preset_class::motion_path:		_Wostream << L"motion-path"; break;
+		case preset_class::ole_action:		_Wostream << L"ole-action"; break;
+		case preset_class::media_call:		_Wostream << L"media-call"; break;
 		}
 
 		return _Wostream;

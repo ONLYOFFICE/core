@@ -72,6 +72,21 @@ namespace PPTX
 		class TimeNodeBase;
 		class CTn;
 		class Cond;
+		class Anim;
+		class AnimClr;
+		class AnimEffect;
+		class AnimMotion;
+		class AnimRot;
+		class AnimScale;
+		class Audio;
+		class Cmd;
+		class Excl;
+		class Set;
+		class Video;
+		class CBhvr;
+		class TgtEl;
+		class AnimVariant;
+		class AttrName;
 		class EmptyTransition;
 		class OrientationTransition;
 		class EightDirectionTransition;
@@ -147,6 +162,21 @@ namespace Oox2Odf
 		void convert(PPTX::Logic::TimeNodeBase			*oox_base_time);
 		void convert(PPTX::Logic::CTn					*oox_common_time);
 		void convert(PPTX::Logic::Cond					*oox_condition); 
+		void convert(PPTX::Logic::Anim					*oox_anim);
+		void convert(PPTX::Logic::AnimClr				*oox_anim_color);
+		void convert(PPTX::Logic::AnimEffect			*oox_anim_effect);
+		void convert(PPTX::Logic::AnimMotion			*oox_anim_motion);
+		void convert(PPTX::Logic::AnimRot				*oox_anim_rot);
+		void convert(PPTX::Logic::AnimScale				*oox_anim_scale);
+		void convert(PPTX::Logic::Audio					*oox_audio);
+		void convert(PPTX::Logic::Cmd					*oox_cmd);
+		void convert(PPTX::Logic::Excl					*oox_excl);
+		void convert(PPTX::Logic::Set					*oox_set);
+		void convert(PPTX::Logic::Video					*oox_video);
+		void convert(PPTX::Logic::CBhvr					*oox_cbhvr);
+		void convert(PPTX::Logic::TgtEl					*oox_tgt_el);
+		void convert(PPTX::Logic::AnimVariant			*oox_anim_variant);	
+		void convert(PPTX::Logic::AttrName				*oox_attr_name);
 		
 		void convert(PPTX::Logic::Table					*oox_table);
 		void convert(PPTX::Logic::TableRow				*oox_table_row);
@@ -201,6 +231,8 @@ private:
 		void convert_settings	();
 		void convert_layouts	();
 		void convert_common		();
+
+		std::wstring convert_animation_formula(std::wstring formula);
 
 		
 //--------------------------------------------------------------------------------

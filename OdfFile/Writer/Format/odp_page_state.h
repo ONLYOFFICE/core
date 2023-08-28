@@ -61,8 +61,13 @@ struct anim_state
 	
 	int										id;
 	office_element_ptr						elm;	
-	odf_types::common_anim_smil_attlist*	attlist;
-	odf_types::anim_par_attlist*			par_attlist;
+	odf_types::common_anim_smil_attlist*		attlist;
+	odf_types::anim_par_attlist*				par_attlist;
+	odf_types::anim_set_attlist*				set_attlist;
+	odf_types::anim_transition_filter_attlist* 	transition_filter_attlist;
+	odf_types::anim_animate_attlist*			animate_attlist;
+	odf_types::anim_animate_motion_attlist*		motion_attlist;
+	odf_types::anim_animate_color_attlist*		color_attlist;
 
 	bool empty;
 };
@@ -102,6 +107,21 @@ public:
 		void start_timing_seq();
 		void end_timing_seq();
 
+		void start_timing_set();
+		void end_timing_set();
+
+		void start_timing_transition_filter();
+		void end_timing_transition_filter();
+
+		void start_timing_anim();
+		void end_timing_anim();
+
+		void start_timing_motion();
+		void end_timing_motion();
+
+		void start_timing_anim_clr();
+		void end_timing_anim_clr();
+
 		void set_anim_id			(int val);
 		void set_anim_type			(const odf_types::presentation_node_type& val);
 		void set_anim_duration		(int val);
@@ -111,6 +131,29 @@ public:
 		void set_anim_node_type		(const odf_types::presentation_node_type& val);
 		void set_anim_preset_class	(const odf_types::preset_class& val);
 		void set_anim_preset_id		(const odf_types::preset_id& val);
+		void set_anim_attribute_name(const odf_types::smil_attribute_name& val);
+		void set_anim_to			(const std::wstring& val);
+		void set_anim_target_element(const std::wstring& val);
+
+		void set_anim_animation_formula(const std::wstring& val);
+		void set_anim_animation_keytimes(const odf_types::smil_key_times& val);
+		void set_anim_animation_values(const odf_types::smil_values& val);
+		void set_anim_animation_by(const std::wstring& val);
+		void set_anim_animation_from(const std::wstring& val);
+		void set_anim_animation_to(const std::wstring& val);
+
+		void set_anim_transition_filter_mode(const std::wstring& val);
+		void set_anim_transition_filter_type(const odf_types::smil_transition_type& val);
+		void set_anim_transition_filter_subtype(const std::wstring& val);
+		void set_anim_transition_filter_direction(const std::wstring& val);
+
+		void set_anim_motion_path(const std::wstring& val);
+
+		void set_anim_color_to(const std::wstring& val);
+		void set_anim_color_interpolation(const std::wstring& val);
+		void set_anim_color_direction(const std::wstring& val);
+		
+
 	void end_timing();
 
 	void start_transition();

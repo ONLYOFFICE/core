@@ -267,6 +267,7 @@ public:
 
 	void set_placeholder_id			(std::wstring val);
 	void set_placeholder_type		(int val);
+	void set_xml_id					(const std::wstring& xml_id);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);

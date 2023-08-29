@@ -245,6 +245,10 @@ public:
 		ooo_motionpath_s_curve_1,
 		ooo_motionpath_s_curve_2,
 		ooo_motionpath_heartbeat,
+
+		libo_motionpath_curve,
+		libo_motionpath_polygon,
+		libo_motionpath_freeform_line
 	};
 
 	preset_id() {}

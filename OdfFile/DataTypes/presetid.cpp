@@ -261,6 +261,9 @@ namespace cpdoccore { namespace odf_types {
 			else if (preset == L"s-curve-2")				return preset_id::type::ooo_motionpath_s_curve_2;
 			else if (preset == L"heartbeat")				return preset_id::type::ooo_motionpath_heartbeat;
 		}
+		else if (tmp == L"libo-motionpath-curve")			return preset_id::type::libo_motionpath_curve;
+		else if (tmp == L"libo-motionpath-polygon")			return preset_id::type::libo_motionpath_polygon;
+		else if (tmp == L"libo-motionpath-freeform-line")	return preset_id::type::libo_motionpath_freeform_line;
 		
 
 		return preset_id::type::none;
@@ -469,6 +472,9 @@ namespace cpdoccore { namespace odf_types {
 		case preset_id::type::ooo_motionpath_s_curve_1			: _Wostream << L"ooo-motionpath-s-curve-1"			; break;
 		case preset_id::type::ooo_motionpath_s_curve_2			: _Wostream << L"ooo-motionpath-s-curve-2"			; break;
 		case preset_id::type::ooo_motionpath_heartbeat			: _Wostream << L"ooo-motionpath-heartbeat"			; break;
+		case preset_id::type::libo_motionpath_curve				: _Wostream << L"libo-motionpath-curve"				; break;
+		case preset_id::type::libo_motionpath_polygon			: _Wostream << L"libo-motionpath-polygon"			; break;
+		case preset_id::type::libo_motionpath_freeform_line		: _Wostream << L"libo-motionpath-freeform-line"		; break;
 		}
 
 		return _Wostream;

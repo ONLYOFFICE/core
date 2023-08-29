@@ -450,6 +450,54 @@ void odp_page_state::set_anim_color_direction(const std::wstring& val)
 	anim_levels.back().color_attlist->anim_color_interpolation_direction = val;
 }
 
+void odp_page_state::set_anim_transform_type(const odf_types::svg_type& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate_transform* transform = dynamic_cast<anim_animate_transform*>(anim_levels.back().elm.get());
+	if (!transform)
+		return;
+
+	anim_levels.back().transform_attlist->svg_type_ = val;
+}
+
+void odp_page_state::set_anim_transform_from(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate_transform* transform = dynamic_cast<anim_animate_transform*>(anim_levels.back().elm.get());
+	if (!transform)
+		return;
+
+	anim_levels.back().transform_attlist->smil_from_= val;
+}
+
+void odp_page_state::set_anim_transform_to(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate_transform* transform = dynamic_cast<anim_animate_transform*>(anim_levels.back().elm.get());
+	if (!transform)
+		return;
+
+	anim_levels.back().transform_attlist->smil_to_ = val;
+}
+
+void odp_page_state::set_anim_transform_by(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate_transform* transform = dynamic_cast<anim_animate_transform*>(anim_levels.back().elm.get());
+	if (!transform)
+		return;
+
+	anim_levels.back().transform_attlist->smil_by_ = val;
+}
+
 void odp_page_state::start_transition()
 {
 	office_element_ptr elm;
@@ -715,6 +763,33 @@ void odp_page_state::start_timing_anim_clr()
 }
 
 void odp_page_state::end_timing_anim_clr()
+{
+	if (anim_levels.empty())		return;
+	anim_levels.pop_back();
+}
+
+void odp_page_state::start_timing_transform()
+{
+	if (anim_levels.empty()) return;
+
+	anim_state anim;
+	create_element(L"anim", L"animateTransform", anim.elm, context_);
+	if (!anim.elm) return;
+
+	anim_animate_transform* transfrom = dynamic_cast<anim_animate_transform*>(anim.elm.get());
+	if (transfrom)
+	{
+		anim.attlist = &transfrom->common_attlist_;
+		anim.transform_attlist = &transfrom->animate_transform_attlist_;
+	}
+
+	anim_levels.back().empty = false;
+	anim_levels.back().elm->add_child_element(anim.elm);
+
+	anim_levels.push_back(anim);
+}
+
+void odp_page_state::end_timing_transform()
 {
 	if (anim_levels.empty())		return;
 	anim_levels.pop_back();

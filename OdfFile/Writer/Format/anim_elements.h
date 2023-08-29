@@ -206,5 +206,25 @@ public:
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_animate_color);
 
+//////////////////////////////////////////////////////////////////////////
+// anim:animateTransform
+class anim_animate_transform : public office_element_impl<anim_animate_transform>
+{
+public:
+	static const wchar_t* ns;
+	static const wchar_t* name;
+
+	static const ElementType type = typeAnimAnimateTransform;
+
+	virtual void create_child_element(const std::wstring& Ns, const std::wstring& Name) {}
+	virtual void add_child_element(const office_element_ptr& child) {}
+
+	virtual void serialize(std::wostream& strm);
+
+	odf_types::common_anim_smil_attlist				common_attlist_;
+	odf_types::anim_animate_transform_attlist		animate_transform_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_animate_transform);
+
 }
 }

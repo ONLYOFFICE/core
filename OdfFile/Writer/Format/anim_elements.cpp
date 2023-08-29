@@ -214,5 +214,21 @@ void anim_animate_color::serialize(std::wostream& _Wostream)
 	}
 }
 
+//------------------------------------------------------------------------------------------------
+const wchar_t* anim_animate_transform::ns = L"anim";
+const wchar_t* anim_animate_transform::name = L"animateTransform";
+
+void anim_animate_transform::serialize(std::wostream& _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			animate_transform_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+
 }
 }

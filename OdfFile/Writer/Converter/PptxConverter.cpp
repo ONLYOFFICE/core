@@ -52,6 +52,8 @@
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimEffect.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimMotion.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimClr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimRot.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimScale.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Anim.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
@@ -664,11 +666,14 @@ void PptxConverter::convert(const PPTX::Limit::TLPresetClass& oox_preset_class, 
 			case 59:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_1			; break;
 			case 39:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_2			; break;
 			case 45:	odfPresetId = preset_id::type::ooo_motionpath_heartbeat			; break;
+			default:	odfPresetId = preset_id::type::libo_motionpath_curve			; break;
 			}
 		} break;
 	}
 
 	if(odfPresetId.get_type() != preset_id::type::none)
+		odp_context->current_slide().set_anim_preset_id(odfPresetId);
+	else 
 		odp_context->current_slide().set_anim_preset_id(odfPresetId);
 }
 
@@ -776,49 +781,134 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 	}
 	if (oox_anim_effect->filter.IsInit())
 	{
-		const std::wstring& filter = *oox_anim_effect->filter;
+		std::wstring filter = *oox_anim_effect->filter;
+		std::wstring subtype = L"";
 
 		smil_transition_type odfType;
 		std::wstring odfSubtype = L"";
 		bool odfReversed = false;
 
-		if (filter == L"blinds(horizontal)")			{ odfType = smil_transition_type::blindsWipe		; odfSubtype = L"horizontal"	; odfReversed = false; }
-		else if (filter == L"blinds(vertical)")			{ odfType = smil_transition_type::blindsWipe		; odfSubtype = L"vertical"		; odfReversed = false; }
-		else if (filter == L"box(in)")					{ odfType = smil_transition_type::irisWipe			; odfSubtype = L"rectangle"		; odfReversed = true;  }
-		else if (filter == L"box(out)")					{ odfType = smil_transition_type::irisWipe			; odfSubtype = L"rectangle"		; odfReversed = false; }
-		else if (filter == L"checkerboard(across)")		{ odfType = smil_transition_type::checkerBoardWipe	; odfSubtype = L"across"		; odfReversed = false; }
-		else if (filter == L"checkerboard(down)")		{ odfType = smil_transition_type::checkerBoardWipe	; odfSubtype = L"down"			; odfReversed = false; }
-		else if (filter == L"circle")					{ odfType = smil_transition_type::ellipseWipe		; odfSubtype = L"circle"		; odfReversed = false; }
-		else if (filter == L"diamond")					{ odfType = smil_transition_type::irisWipe			; odfSubtype = L"diamond"		; odfReversed = false; }
-		else if (filter == L"dissolve")					{ odfType = smil_transition_type::dissolve			; odfSubtype = L""				; odfReversed = false; }
-		else if (filter == L"fade")						{ odfType = smil_transition_type::fade				; odfSubtype = L"crossfade"		; odfReversed = false; }
-		else if (filter == L"slide(fromTop)")			{ odfType = smil_transition_type::slideWipe			; odfSubtype = L"fromTop"		; odfReversed = false; }
-		else if (filter == L"slide(fromBottom)")		{ odfType = smil_transition_type::slideWipe			; odfSubtype = L"fromBottom"	; odfReversed = false; }
-		else if (filter == L"slide(fromLeft)")			{ odfType = smil_transition_type::slideWipe			; odfSubtype = L"fromLeft"		; odfReversed = false; }
-		else if (filter == L"slide(fromRight)")			{ odfType = smil_transition_type::slideWipe			; odfSubtype = L"fromRight"		; odfReversed = false; }
-		else if (filter == L"plus(in)")					{ odfType = smil_transition_type::fourBoxWipe		; odfSubtype = L"cornersIn"		; odfReversed = false; }
-		else if (filter == L"plus(out)")				{ odfType = smil_transition_type::fourBoxWipe		; odfSubtype = L"cornersIn"		; odfReversed = true;  }
-		else if (filter == L"barn(inVertical)")			{ odfType = smil_transition_type::barnDoorWipe		; odfSubtype = L"vertical"		; odfReversed = true;  }
-		else if (filter == L"barn(inHorizontal)")		{ odfType = smil_transition_type::barnDoorWipe		; odfSubtype = L"horizontal"	; odfReversed = true;  }
-		else if (filter == L"barn(outVertical)")		{ odfType = smil_transition_type::barnDoorWipe		; odfSubtype = L"vertical"		; odfReversed = false; }
-		else if (filter == L"barn(outHorizontal)")		{ odfType = smil_transition_type::barnDoorWipe		; odfSubtype = L"horizontal"	; odfReversed = false; }
-		else if (filter == L"randomBars(horizontal)")	{ odfType = smil_transition_type::randomBarWipe		; odfSubtype = L"horizontal"	; odfReversed = false; }
-		else if (filter == L"randomBars(vertical)")		{ odfType = smil_transition_type::randomBarWipe		; odfSubtype = L"vertical"		; odfReversed = false; }
-		else if (filter == L"strips(downLeft)")			{ odfType = smil_transition_type::waterfallWipe		; odfSubtype = L"horizontalRight"; odfReversed = false; }
-		else if (filter == L"strips(upLeft)")			{ odfType = smil_transition_type::waterfallWipe		; odfSubtype = L"horizontalLeft"; odfReversed = true;  }
-		else if (filter == L"strips(downRight)")		{ odfType = smil_transition_type::waterfallWipe		; odfSubtype = L"horizontalLeft"; odfReversed = false; }
-		else if (filter == L"strips(upRight)")			{ odfType = smil_transition_type::waterfallWipe		; odfSubtype = L"horizontalRight"; odfReversed = true; }
-		else if (filter == L"wedge")					{ odfType = smil_transition_type::fanWipe			; odfSubtype = L"centerTop"		; odfReversed = false; }
-		else if (filter == L"wheel(1)")					{ odfType = smil_transition_type::pinWheelWipe		; odfSubtype = L"oneBlade"		; odfReversed = false; }
-		else if (filter == L"wheel(2)")					{ odfType = smil_transition_type::pinWheelWipe		; odfSubtype = L"twoBladeVertical"; odfReversed = false; }
-		else if (filter == L"wheel(3)")					{ odfType = smil_transition_type::pinWheelWipe		; odfSubtype = L"threeBlade"	; odfReversed = false; }
-		else if (filter == L"wheel(4)")					{ odfType = smil_transition_type::pinWheelWipe		; odfSubtype = L"fourBlade"		; odfReversed = false; }
-		else if (filter == L"wheel(8)")					{ odfType = smil_transition_type::pinWheelWipe		; odfSubtype = L"eightBlade"	; odfReversed = false; }
-		else if (filter == L"wipe(right)")				{ odfType = smil_transition_type::barWipe			; odfSubtype = L"leftToRight"	; odfReversed = true; }
-		else if (filter == L"wipe(left)")				{ odfType = smil_transition_type::barWipe			; odfSubtype = L"leftToRight"	; odfReversed = false; }
-		else if (filter == L"wipe(down)")				{ odfType = smil_transition_type::barWipe			; odfSubtype = L"topToBottom"	; odfReversed = true; }
-		else if (filter == L"wipe(up)")					{ odfType = smil_transition_type::barWipe			; odfSubtype = L"topToBottom"	; odfReversed = false; }
-		else											{ odfType = smil_transition_type::fade				; odfSubtype = L"crossfade"		; odfReversed = false; }
+		std::string::size_type openBracket = filter.find('(');
+		std::string::size_type closeBracket = filter.find(')');
+
+		if (openBracket != std::wstring::npos &&
+			closeBracket != std::wstring::npos)
+		{
+			filter = oox_anim_effect->filter->substr(0, openBracket);
+			subtype = oox_anim_effect->filter->substr(openBracket + 1, closeBracket - openBracket - 1);
+		}
+
+		if (filter == L"blinds")
+		{
+			odfType = smil_transition_type::blindsWipe;
+			odfReversed = false;
+			if (subtype == L"horizontal")			odfSubtype = L"horizontal";
+			else if (subtype == L"vertical")		odfSubtype = L"vertical";
+		}
+		else if (filter == L"box")
+		{
+			odfType = smil_transition_type::irisWipe;
+			odfSubtype = L"rectangle";
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
+		}
+		else if (filter == L"checkerboard")
+		{
+			odfType = smil_transition_type::checkerBoardWipe;
+			odfReversed = false;
+			if (subtype == L"across")			odfSubtype = L"across";
+			else if (subtype == L"down")		odfSubtype = L"down";
+		}
+		else if (filter == L"circle")
+		{
+			odfType = smil_transition_type::ellipseWipe;
+			odfSubtype = L"circle";
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
+		}
+		else if (filter == L"diamond")
+		{
+			odfType = smil_transition_type::irisWipe;
+			odfSubtype = L"diamond";
+			odfReversed = false;
+		}
+		else if (filter == L"dissolve")
+		{
+			odfType = smil_transition_type::dissolve;
+			odfSubtype = L"";
+			odfReversed = false;
+		}
+		else if (filter == L"fade")
+		{
+			odfType = smil_transition_type::fade;
+			odfSubtype = L"crossfade";
+			odfReversed = false;
+		}
+		else if (filter == L"slide")
+		{
+			odfType = smil_transition_type::slideWipe;
+			odfReversed = false;
+			odfSubtype = subtype;
+		}
+		else if (filter == L"plus")
+		{
+			odfType = smil_transition_type::fourBoxWipe;
+			odfSubtype = L"cornersIn";
+			if (subtype == L"in")			odfReversed = false;
+			else if (subtype == L"out")		odfReversed = true;
+		}
+		else if (filter == L"barn")
+		{
+			odfType = smil_transition_type::barnDoorWipe;
+			if (subtype == L"inVertical")			{ odfReversed = true;	odfSubtype = L"vertical"; }
+			else if (subtype == L"inHorizontal")	{ odfReversed = true;	odfSubtype = L"horizontal"; }
+			else if (subtype == L"outVertical")		{ odfReversed = false;	odfSubtype = L"vertical"; }
+			else if (subtype == L"outHorizontal")	{ odfReversed = false;	odfSubtype = L"horizontal"; }
+		}
+		else if (filter == L"randomBars")
+		{
+			odfType = smil_transition_type::randomBarWipe;
+			odfReversed = false;
+			odfSubtype = subtype;
+		}
+		else if (filter == L"strips")
+		{
+			odfType = smil_transition_type::waterfallWipe;
+			if (subtype == L"downLeft")			{ odfReversed = false;	odfSubtype = L"horizontalRight"; }
+			else if (subtype == L"upLeft")		{ odfReversed = true;	odfSubtype = L"horizontalLeft"; }
+			else if (subtype == L"downRight")	{ odfReversed = false;	odfSubtype = L"horizontalLeft"; }
+			else if (subtype == L"upRight")		{ odfReversed = true;	odfSubtype = L"horizontalRight"; }
+		}
+		else if (filter == L"wedge")
+		{
+			odfType = smil_transition_type::fanWipe;
+			odfReversed = false;
+			odfSubtype = L"centerTop";
+		}
+		else if (filter == L"wheel")
+		{
+			odfType = smil_transition_type::pinWheelWipe;
+			odfReversed = false;
+			if (subtype == L"1")		odfSubtype = L"oneBlade";
+			else if (subtype == L"2")	odfSubtype = L"twoBladeVertical"; 
+			else if (subtype == L"3")	odfSubtype = L"threeBlade"; 
+			else if (subtype == L"4")	odfSubtype = L"fourBlade";
+			else if (subtype == L"8")	odfSubtype = L"eightBlade";
+		}
+		else if (filter == L"wipe")
+		{
+			odfType = smil_transition_type::slideWipe;
+			if (subtype == L"right")		{ odfReversed = true;	odfSubtype = L"fromRight"; }
+			else if (subtype == L"left")	{ odfReversed = false;	odfSubtype = L"fromLeft"; }
+			else if (subtype == L"down")	{ odfReversed = true;	odfSubtype = L"fromBottom"; }
+			else if (subtype == L"up")		{ odfReversed = false;	odfSubtype = L"fromTop"; }
+		}
+		else
+		{
+			odfType = smil_transition_type::fade;
+			odfSubtype = L"crossfade"; 
+			odfReversed = false;
+		}
 
 		odp_context->current_slide().set_anim_transition_filter_type(odfType);
 		if(!odfSubtype.empty())
@@ -829,7 +919,6 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 
 	convert(&oox_anim_effect->cBhvr);
 	
-
 	odp_context->current_slide().end_timing_transition_filter();
 }
 
@@ -916,6 +1005,9 @@ void PptxConverter::convert(PPTX::Logic::AnimMotion* oox_anim_motion)
 
 	if (oox_anim_motion->path.IsInit())
 		odp_context->current_slide().set_anim_motion_path(*oox_anim_motion->path);
+		
+	// TODO: Convert "from", "to", "by"
+	// TODO: Convert "rCtr"
 
 	odp_context->current_slide().end_timing_motion();
 }
@@ -953,6 +1045,76 @@ void PptxConverter::convert(PPTX::Logic::AnimClr* oox_anim_color)
 	}
 
 	odp_context->current_slide().end_timing_anim_clr();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimRot* oox_anim_rot)
+{
+	if (!oox_anim_rot)
+		return;
+
+	odp_context->current_slide().start_timing_transform();
+	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::rotate);
+
+	convert(&oox_anim_rot->cBhvr);
+
+	const double odp_mulipyer = 60000.0;
+	if (oox_anim_rot->from.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
+	}
+	if (oox_anim_rot->to.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
+	}
+	if (oox_anim_rot->by.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
+	}
+
+	odp_context->current_slide().end_timing_transform();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
+{
+	if (!oox_anim_scale)
+		return;
+
+	odp_context->current_slide().start_timing_transform();
+	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::scale);
+	
+	convert(&oox_anim_scale->cBhvr);
+
+	if (oox_anim_scale->fromX.IsInit() && oox_anim_scale->fromY.IsInit())
+	{
+		std::wstringstream ss;
+		const double odp_multipyer = 100000;
+		double x = *oox_anim_scale->fromX / odp_multipyer;
+		double y = *oox_anim_scale->fromY / odp_multipyer;
+		ss << int(x) << L"," << int(y);
+		odp_context->current_slide().set_anim_transform_from(ss.str());
+	}
+
+	if (oox_anim_scale->toX.IsInit() && oox_anim_scale->toY.IsInit())
+	{
+		std::wstringstream ss;
+		const double odp_multipyer = 100000;
+		double x = *oox_anim_scale->toX / odp_multipyer;
+		double y = *oox_anim_scale->toY / odp_multipyer;
+		ss << int(x) << L"," << int(y);
+		odp_context->current_slide().set_anim_transform_to(ss.str());
+	}
+
+	if (oox_anim_scale->byX.IsInit() && oox_anim_scale->byY.IsInit())
+	{
+		std::wstringstream ss;
+		const double odp_multipyer = 100000;
+		double x = *oox_anim_scale->byX / odp_multipyer;
+		double y = *oox_anim_scale->byY / odp_multipyer;
+		ss << int(x) << L"," << int(y);
+		odp_context->current_slide().set_anim_transform_by(ss.str());
+	}
+
+	odp_context->current_slide().end_timing_transform();
 }
 
 void PptxConverter::convert_common()
@@ -1345,6 +1507,11 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 	{
 		PPTX::Logic::AnimClr& color = oox_time_base->as<PPTX::Logic::AnimClr>();
 		convert(&color);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimRot>())
+	{
+		PPTX::Logic::AnimRot& rotate = oox_time_base->as<PPTX::Logic::AnimRot>();
+		convert(&rotate);
 	}
 }
 void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)

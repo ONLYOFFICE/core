@@ -969,18 +969,7 @@ namespace NSDocxRenderer
 			for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
 			{
 				auto pObj = m_arOutputObjects[i];
-
-				switch(pObj->m_eType)
-				{
-				case CBaseItem::ElemType::etParagraph:
-					dynamic_cast<CParagraph*>(pObj)->ToXml(oWriter);
-					break;
-				case CBaseItem::ElemType::etTable:
-					dynamic_cast<CTable*>(pObj)->ToXml(oWriter);
-					break;
-				default:
-					break;
-				}
+				pObj->ToXml(oWriter);
 			}
 			oWriter.WriteString(L"</w:txbxContent>");
 			oWriter.WriteString(L"</wps:txbx>");

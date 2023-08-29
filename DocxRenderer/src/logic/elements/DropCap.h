@@ -12,7 +12,8 @@ namespace NSDocxRenderer
 
 		std::wstring wsText;
 		std::wstring wsFont;
-		LONG nFontSize;
+		LONG nFontSize; // Pt * 2
+		LONG nOffset;
 
 		CDropCap() : CBaseItem(ElemType::etDropCap) {}
 		~CDropCap() = default;

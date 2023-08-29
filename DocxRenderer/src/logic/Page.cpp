@@ -64,11 +64,6 @@ namespace NSDocxRenderer
 			delete val;
 		m_arOutputObjects.clear();
 
-		for(auto& val : m_arDropCaps)
-			delete val;
-		m_arDropCaps.clear();
-
-
 		ClearTables();
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
@@ -366,7 +361,6 @@ namespace NSDocxRenderer
 		//}
 		dTextH = m_pFontManager->GetFontHeight();
 		double dBaseLinePos = dTextY + fBaseLineOffset;
-
 
 		auto pCont = new CContText(m_pFontManager);
 
@@ -921,7 +915,7 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arTextLine.size(); ++i)
 			CBaseItem::SortByLeft(m_arTextLine[i]->m_arConts);
 
-		//AnalyzeDropCaps();
+		AnalyzeDropCaps();
 		AnalyzeCollectedConts();
 		DetermineStrikeoutsUnderlinesHighlights();
 		AddDiacriticalSymbols();
@@ -941,64 +935,95 @@ namespace NSDocxRenderer
 	{
 		double avg_font_size = m_pParagraphStyleManager->GetAvgFontSize();
 
-		std::vector<CContText*> possible_caps;
+		std::vector<std::pair<CContText*, CTextLine*>> possible_caps;
+		std::vector<CDropCap*> drop_caps;
+
 		for(size_t i = 0; i < m_arTextLine.size(); i++)
 		{
 			auto& line = m_arTextLine[i];
 			for(auto& cont : line->m_arConts)
 				if(!cont->m_bIsNotNecessaryToUse && cont->m_pFontStyle->dFontSize > 2 * avg_font_size && cont->m_oText.length() == 1)
-					possible_caps.push_back(cont);
+					possible_caps.push_back({cont, line});
 		}
 
-		for(auto& cap : possible_caps)
+		for(auto& possible_cap : possible_caps)
 		{
+			auto& drop_cap_cont = possible_cap.first;
+			auto& drop_cap_line = possible_cap.second;
+
 			size_t num_of_lines = 0;
 
 			for(auto& line : m_arTextLine)
 			{
+				if(line == drop_cap_line)
+					continue;
+
 				// буквица должна быть левее
-				if(line->m_dLeft < cap->m_dLeft)
+				if(line->m_dLeft < drop_cap_cont->m_dLeft)
 					continue;
 
 				// если совпадает строка - берем ее и выходим
-				if(fabs(line->m_dBaselinePos - cap->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if(fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					num_of_lines++;
 					break;
 				}
 
-				if(line->m_dBaselinePos > cap->m_dBaselinePos)
+				if(line->m_dBaselinePos > drop_cap_cont->m_dBaselinePos)
 					break;
 
-				if(fabs(line->m_dTop - cap->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < cap->m_dTop)
-					continue;
-
-				bool skip = false;
-				for(auto& cont : line->m_arConts)
-					if(cont == cap)
-					{
-						skip = true;
-						continue;
-					}
-
-				if(skip)
+				if(fabs(line->m_dTop - drop_cap_cont->m_dTop) > c_dTHE_SAME_STRING_Y_PRECISION_MM && line->m_dTop < drop_cap_cont->m_dTop)
 					continue;
 
 				num_of_lines++;
 			}
 			if(num_of_lines)
 			{
-				cap->m_bIsNotNecessaryToUse = true;
-
 				CDropCap* drop_cap = new CDropCap();
-				*static_cast<CBaseItem*>(drop_cap) = *cap;
+				*static_cast<CBaseItem*>(drop_cap) = *drop_cap_cont;
 				drop_cap->nLines = num_of_lines;
-				drop_cap->wsFont = cap->m_pFontStyle->wsFontName;
-				drop_cap->wsText = cap->m_oText.ToStdWString();
+				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
+				drop_cap->wsText = drop_cap_cont->m_oText.ToStdWString();
 
-				drop_cap->nFontSize = static_cast<LONG>(cap->m_pFontStyle->dFontSize * 2);
-				m_arDropCaps.push_back(drop_cap);
+				drop_cap->nFontSize = static_cast<LONG>(drop_cap_cont->m_pFontStyle->dFontSize * 2);
+				drop_caps.push_back(drop_cap);
+
+				drop_cap_cont->m_bIsNotNecessaryToUse = true;
+				drop_cap_line->RecalcSizes();
 			}
+		}
+
+		// шейпы из буквиц
+		for(auto&& drop_cap : drop_caps)
+		{
+			auto shape = new CShape();
+			shape->m_eType = CShape::eShapeType::stTextBox;
+
+			// перемерим на подобранном шрифте
+			NSStructures::CFont oFont;
+			oFont.Name = drop_cap->wsFont;
+			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
+			m_pFontManager->LoadFontByName(oFont);
+
+			double box_X;
+			double box_Y;
+			double box_W;
+			double box_H;
+
+			m_pFontManager->SetStringGid(0);
+			m_pFontManager->MeasureString(drop_cap->wsText, 0, 0, box_X, box_Y, box_W, box_H, CFontManager::mtPosition);
+
+			shape->m_dBaselinePos = drop_cap->m_dBaselinePos;
+			shape->m_dHeight = box_H;
+			shape->m_dTop = drop_cap->m_dBaselinePos - shape->m_dHeight;
+
+			shape->m_dRight = drop_cap->m_dRight;
+			shape->m_dLeft = drop_cap->m_dLeft;
+			shape->m_dWidth = drop_cap->m_dWidth;
+
+			shape->m_arOutputObjects.push_back(drop_cap);
+			shape->m_bIsBehindDoc = false;
+			m_arShapes.push_back(shape);
 		}
 	}
 	void CPage::AnalyzeCollectedConts()
@@ -1665,11 +1690,6 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			m_arShapes[i]->ToXml(oWriter);
-		}
-
-		for (size_t i = 0; i < m_arDropCaps.size(); ++i)
-		{
-			m_arDropCaps[i]->ToXml(oWriter);
 		}
 
 		if (bIsTextShapePresent)

@@ -133,6 +133,20 @@ namespace NSDocxRenderer
 		}
 	}
 
+	void CTextLine::RecalcSizes()
+	{
+		m_dLeft = 0.0;
+		m_dTop = 0.0;
+		m_dWidth = 0.0;
+		m_dHeight = 0.0;
+		m_dBaselinePos = 0.0;
+		m_dRight = 0.0;
+
+		for(auto&& cont : m_arConts)
+			if(!cont->m_bIsNotNecessaryToUse)
+				CBaseItem::AddContent(cont);
+	}
+
 	void CTextLine::SetVertAlignType(const eVertAlignType& oType)
 	{
 		m_eVertAlignType = oType;

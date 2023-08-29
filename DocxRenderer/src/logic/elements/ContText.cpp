@@ -112,6 +112,7 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"<w:r>");
 		oWriter.WriteString(L"<w:rPr>");
+		//oWriter.WriteString(L"<w:noProof/>");
 
 		oWriter.WriteString(L"<w:rStyle w:val=\"");
 		oWriter.WriteString(m_pFontStyle->wsFontStyleId);

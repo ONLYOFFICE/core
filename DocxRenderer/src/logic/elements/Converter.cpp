@@ -460,7 +460,6 @@ namespace NSDocxRenderer
 				pParagraph->m_dSpaceBefore = fabs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
 
 				pParagraph->RemoveHighlightColor();
-				//
 				pParagraph->MergeLines();
 			}
 			else

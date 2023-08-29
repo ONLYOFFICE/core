@@ -567,7 +567,7 @@ namespace NSDocxRenderer
 
 	double CFontManager::GetFontHeight() const
 	{
-		return c_dPtToMM * (m_oFontMetrics.dLineSpacing * m_oFont.Size ) / m_oFontMetrics.dEmHeight;
+		return c_dPtToMM * (m_oFontMetrics.dLineSpacing * m_oFont.Size) / m_oFontMetrics.dEmHeight;
 	}
 	double CFontManager::GetSpaceWidthMM() const
 	{
@@ -770,6 +770,7 @@ namespace NSDocxRenderer
 
 	void CFontManager::ClearCache()
 	{
+		m_oFont = {};
 		if (nullptr == m_pManager)
 			return;
 		m_pManager->GetCache()->Clear();

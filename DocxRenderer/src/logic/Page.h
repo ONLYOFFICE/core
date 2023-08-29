@@ -38,7 +38,6 @@ namespace NSDocxRenderer
 		std::vector<CContText*>  m_arDiacriticalSymbol;
 		std::vector<CTextLine*>  m_arTextLine;
 		std::vector<CShape*>     m_arShapes;
-		std::vector<CDropCap*>   m_arDropCaps;
 
 		std::vector<CBaseItem*>  m_arOutputObjects;
 

@@ -2752,7 +2752,7 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	else if (c_oSerProp_cellPrType::CnfStyle == type)
 	{
 		ComplexTypes::Word::CCnf cnf;
-		READ2_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
+		READ1_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
 
 		pCStringWriter->WriteString(cnf.ToString());
 	}

@@ -45,8 +45,8 @@ namespace MetaFile
 
 			m_oStream >> unSize;
 
-			if (unSize > m_oStream.CanRead())
-				SetError();
+			if (unSize - 1 > m_oStream.CanRead())
+				return  SetError();
 
 			m_oStream >> ushType;
 

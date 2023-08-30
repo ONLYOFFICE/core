@@ -1232,6 +1232,9 @@ namespace NSCSS
 	{
 		if (wsValue.empty())
 			return false;
+			
+		if (L"none" == wsValue)
+			return true;
 
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)

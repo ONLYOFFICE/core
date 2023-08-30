@@ -8,7 +8,8 @@
 
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
 #define LINEHEIGHTCOEF  24 // Используется когда LineHeight указан в процентном соотношении
-#define SPACINGCOEF     12 // Используется для конвертации в OOXML значение интервала между абзацами
+#define SPACINGCOEF     20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
+#define FONTSCALE        2 // Значение шрифта при конвертации в OOXML необходимо увеличиыать в 2 рааз
 
 namespace NSCSS
 {
@@ -301,8 +302,11 @@ namespace NSCSS
 		//TODO:: проверить Permission в Margin
 		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
 		{
-			sSpacingValue += L"w:afterAutospacing=\"1\" w:after=\""   + (oStyle.m_oMargin.GetBottom() + oStyle.m_oPadding.GetBottom()).ToWString() + L"\" ";
-			sSpacingValue += L"w:beforeAutospacing=\"1\" w:before=\"" + (oStyle.m_oMargin.GetTop()    + oStyle.m_oPadding.GetTop())   .ToWString() + L"\" ";
+			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Point);
+			const double dSpacingTop    = oStyle.m_oMargin.GetTop().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Point);;
+			
+			sSpacingValue += L" w:after=\""  + std::to_wstring(dSpacingBottom * SPACINGCOEF) + L"\" ";
+			sSpacingValue += L" w:before=\"" + std::to_wstring(dSpacingTop * SPACINGCOEF) + L"\" ";
 		}
 		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
 			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
@@ -324,10 +328,10 @@ namespace NSCSS
 		{
 			sSpacingValue += L" w:line=\"" + wsLineHeight + L"\" w:lineRule=\"auto\"";
 		}
-		else if (!oStyle.m_oBorder.Empty())
-		{
-			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble() * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
-		}
+//		else if (!oStyle.m_oBorder.Empty())
+//		{
+//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2 * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
+//		}
 		else if (!oStyle.m_oBorder.Empty())
 			sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
 
@@ -422,7 +426,7 @@ namespace NSCSS
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
-		oXmlElement.AddPropertiesInR(RProperties::R_Sz, oStyle.m_oFont.GetSize().ToWString());
+		oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * FONTSCALE)); 
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());

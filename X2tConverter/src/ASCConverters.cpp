@@ -4724,6 +4724,25 @@ namespace NExtractTools
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
 	}
+	_UINT32 fromVsdxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params, const std::wstring &sPptxFile)
+	{
+		_UINT32 nRes = 0;
+		if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatTo))
+		{
+			if (AVS_OFFICESTUDIO_FILE_DRAW_VSDX == nFormatTo)
+			{
+				if (SUCCEEDED_X2T(nRes))
+				{
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
+				}
+			}
+			else
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		return nRes;
+	}
 	_UINT32 fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params)
 	{
        _UINT32 nRes = 0;
@@ -4860,6 +4879,46 @@ namespace NExtractTools
        }
        return nRes;
    }
+
+	_UINT32 fromDraw(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTo	= *params.m_sFileTo;
+		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		if (NULL != params.m_nFormatTo)
+			nFormatTo = *params.m_nFormatTo;
+		std::wstring sFontPath;
+		if (NULL != params.m_sFontDir)
+			sFontPath = *params.m_sFontDir;
+		std::wstring sThemeDir;
+		if (NULL != params.m_sThemeDir)
+			sThemeDir = *params.m_sThemeDir;
+		bool bPaid = true;
+		if (NULL != params.m_bPaid)
+			bPaid = *params.m_bPaid;
+
+		_UINT32 nRes = 0;
+		std::wstring sVsdxFile;
+		std::wstring sVsdxDir = sTemp + FILE_SEPARATOR_STR + _T("xsdx_unpacked");
+		NSDirectory::CreateDirectory(sVsdxDir);
+
+		if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom)
+		{
+			sVsdxFile = sFrom;
+			if (params.getFromChanges())
+			{
+				params.setFromChanges(false);
+				nRes = apply_changes(sFrom, sTo, NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT, sThemeDir, sVsdxFile, params);
+			}
+			nRes = zip2dir(sVsdxFile, sVsdxDir);
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = fromVsdxDir(sVsdxDir, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params, sVsdxFile);
+		}
+		return nRes;
+	}
 
 	_UINT32 fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params)
    {
@@ -5689,6 +5748,10 @@ namespace NExtractTools
 			case TCD_PRESENTATION2:
 			{
 				result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, oInputParams);
+			}break;
+			case TCD_DRAW2:
+			{
+				result = fromDraw(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 			}break;
 			case TCD_T2:
 			{

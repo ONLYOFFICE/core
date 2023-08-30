@@ -228,7 +228,8 @@ namespace NExtractTools
         TCD_SPREADSHEET2,
         TCD_PRESENTATION2,
         TCD_CROSSPLATFORM2,
-        TCD_CANVAS_PDF2
+        TCD_CANVAS_PDF2,
+        TCD_DRAW2
 	} TConversionDirection;
 
     typedef enum tagTCsvDelimiter
@@ -933,6 +934,8 @@ namespace NExtractTools
                     eRes = TCD_SPREADSHEET2;
                 else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
                     eRes = TCD_PRESENTATION2;
+                else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
+                    eRes = TCD_DRAW2;
                 else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
                     eRes = TCD_T2;
                 else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)

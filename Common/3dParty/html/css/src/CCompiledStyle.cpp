@@ -441,7 +441,7 @@ namespace NSCSS
 				sValue += *iWord;
 
 				if (L' ' == sValue.front())
-					    sValue.erase(0, 1);
+					sValue.erase(0, 1);
 
 				if (!sValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
 				{

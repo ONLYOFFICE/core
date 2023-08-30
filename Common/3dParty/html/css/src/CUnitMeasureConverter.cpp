@@ -138,47 +138,36 @@ namespace NSCSS
 	}
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
-		std::wstring::const_iterator oFoundDigit = std::find_if(wsValue.begin(), wsValue.end(), std::iswdigit);
+		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|rem)?)");
+		std::wsmatch oMatches;
 
-		if (wsValue.end() == oFoundDigit)
+		if(!std::regex_search(wsValue, oMatches, oRegex))
 			return false;
 
-		std::wistringstream(wsValue) >> dValue;
+		dValue = stod(oMatches[1]);
 
-		std::wstring::const_iterator oFoundUM = std::find_if(oFoundDigit, wsValue.end(), [](wchar_t wcSymbol){ return std::iswalpha(wcSymbol) || L'%' == wcSymbol; });
-
-		if (wsValue.end() != oFoundUM)
+		if (L"px" == oMatches[3])
+			enUnitMeasure = Pixel;
+		else if (L"pt" == oMatches[3])
+			enUnitMeasure = Point;
+		else if (L"cm" == oMatches[3])
+			enUnitMeasure = Cantimeter;
+		else if (L"mm" == oMatches[3])
+			enUnitMeasure = Millimeter;
+		else if (L"in" == oMatches[3])
+			enUnitMeasure = Inch;
+		else if (L"pc" == oMatches[3])
+			enUnitMeasure = Peak;
+		else if (L"%" == oMatches[3])
+			enUnitMeasure = Percent;
+		else if (L"rem" == oMatches[3])
 		{
-			if (L'%' == *oFoundUM)
-			{
-				enUnitMeasure = Percent;
-				return true;
-			}
-			else if ((wsValue.end() - oFoundUM) >= 3 && L'r' == *oFoundUM && L'e' == *(oFoundUM + 1) && 'm' == *(oFoundUM + 2))
-			{
-				enUnitMeasure = Percent;
-				dValue *= 100.;
-				return true;
-			}
-
-			std::wstring wsUnitMeasure(oFoundUM, oFoundUM + 2);
-
-			if (L"px" == wsUnitMeasure)
-				enUnitMeasure = Pixel;
-			else if (L"pt" == wsUnitMeasure)
-				enUnitMeasure = Point;
-			else if (L"cm" == wsUnitMeasure)
-				enUnitMeasure = Cantimeter;
-			else if (L"mm" == wsUnitMeasure)
-				enUnitMeasure = Millimeter;
-			else if (L"in" == wsUnitMeasure)
-				enUnitMeasure = Inch;
-			else if (L"pc" == wsUnitMeasure)
-				enUnitMeasure = Peak;
+			enUnitMeasure = Percent;
+			dValue *= 100.;
 		}
 		else
 			enUnitMeasure = None;
-
+		
 		return true;
 	}
 }

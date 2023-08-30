@@ -704,6 +704,9 @@ private:
 	void readBody()
 	{
 		std::vector<NSCSS::CNode> sSelectors;
+		
+		sSelectors.push_back(NSCSS::CNode(L"html", L"", L""));
+		
 		GetSubClass(&m_oDocXml, sSelectors);
 		/*
 		std::wstring sCrossId = std::to_wstring(m_nCrossId++);

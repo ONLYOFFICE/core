@@ -419,16 +419,12 @@ std::wstring CXmlElement::ConvertRStyle(bool bIsLite) const
 		{
 			case CSSProperties::RunnerProperties::R_RFonts:
 			{
-			    std::wstring wsFontFamily = (oItem.second.empty()) ?  DEFAULTFONTNAME : oItem.second;
+				std::wstring wsFontFamily = (oItem.second.empty() || L"\"inherit\"" == oItem.second) ?  DEFAULTFONTNAME : oItem.second;
 
-				sRStyle += (oItem.second != L"\"inherit\"") ? L"<w:rFonts w:ascii=\"" + wsFontFamily + L'\"' +
-				                                              L" w:hAnsi=\"" + wsFontFamily + L'\"' +
-				                                              L" w:cs=\"" + wsFontFamily + L'\"' +
-				                                              L" w:eastAsia=\"" + wsFontFamily + L"\"/>"
-				                                            : L"<w:rFonts w:ascii=\"" + DEFAULTFONTNAME + 
-				                                              L"\" w:hAnsi=\"" + DEFAULTFONTNAME +
-				                                              L"\" w:cs=\"" + DEFAULTFONTNAME + 
-				                                              L"\" w:eastAsia=\"" +  DEFAULTFONTNAME + L"\"/>";
+				sRStyle += L"<w:rFonts w:ascii=\"" + wsFontFamily + L'\"' +
+				           L" w:hAnsi=\"" + wsFontFamily + L'\"' +
+				           L" w:cs=\"" + wsFontFamily + L'\"' +
+				           L" w:eastAsia=\"" + wsFontFamily + L"\"/>";
 				break;
 			}
 			case CSSProperties::RunnerProperties::R_Sz:

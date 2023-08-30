@@ -1066,13 +1066,13 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// Координаты - QuadPoints
-	if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray() && oObj.arrayGetLength() == 8)
+	if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray())
 	{
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < oObj.arrayGetLength(); ++i)
 		{
-			ARR_GET_NUM(oObj, i, m_dQuadPoints[i]);
-			if (i % 2 == 1)
-				m_dQuadPoints[i] = m_dHeight - m_dQuadPoints[i];
+			if (oObj.arrayGet(i, &oObj2)->isNum())
+				m_arrQuadPoints.push_back(i % 2 == 1 ? m_dHeight - oObj2.getNum() : oObj2.getNum());
+			oObj2.free();
 		}
 	}
 	oObj.free();
@@ -2299,7 +2299,8 @@ void CAnnotTextMarkup::ToWASM(NSWasm::CData& oRes)
 
 	CMarkupAnnot::ToWASM(oRes);
 
-	for (int i = 0; i < 8; ++i)
-		oRes.AddDouble(m_dQuadPoints[i]);
+	oRes.AddInt((unsigned int)m_arrQuadPoints.size());
+	for (int i = 0; i < m_arrQuadPoints.size(); ++i)
+		oRes.AddDouble(m_arrQuadPoints[i]);
 }
 }

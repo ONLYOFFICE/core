@@ -398,7 +398,7 @@ public:
 
 private:
 	BYTE m_nSubtype; // Подтип TextMarkup аннотации
-	double m_dQuadPoints[8]{}; // Координаты
+	std::vector<double> m_arrQuadPoints; // Координаты
 };
 
 //------------------------------------------------------------------------

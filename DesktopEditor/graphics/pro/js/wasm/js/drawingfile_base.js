@@ -1107,8 +1107,9 @@
 			else if (rec["Type"] > 7 && rec["Type"] < 12)
 			{
 				// Координаты - QuadPoints
+				let n = reader.readInt();
 				rec["QuadPoints"] = [];
-				for (let i = 0; i < 8; ++i)
+				for (let i = 0; i < n; ++i)
 					rec["QuadPoints"].push(reader.readDouble());
 			}
 			// Popup

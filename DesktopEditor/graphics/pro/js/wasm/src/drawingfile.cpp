@@ -1803,7 +1803,10 @@ int main(int argc, char* argv[])
 					 sType == "StrikeOut")
 			{
 				std::cout << "QuadPoints";
-				for (int j = 0; j < 8; ++j)
+				int nQuadPointsLength = READ_INT(pAnnots + i);
+				i += 4;
+
+				for (int j = 0; j < nQuadPointsLength; ++j)
 				{
 					nPathLength = READ_INT(pAnnots + i);
 					i += 4;

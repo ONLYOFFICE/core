@@ -74,6 +74,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const
 			{
@@ -111,6 +112,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleInfo;
@@ -149,6 +151,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_TableColumn;
@@ -201,6 +204,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const
 			{
@@ -238,6 +242,7 @@ namespace OOX
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			XLS::BaseObjectPtr toBin();
 			virtual EElementType getType () const
 			{
 				return et_x_Table;
@@ -368,6 +373,7 @@ namespace OOX
 			{
 			}
             void readBin(const CPath& oPath);
+			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

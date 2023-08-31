@@ -1232,6 +1232,9 @@ namespace NSCSS
 	{
 		if (wsValue.empty())
 			return false;
+			
+		if (L"none" == wsValue)
+			return true;
 
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)
@@ -1966,13 +1969,7 @@ namespace NSCSS
 
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (m_oLineHeight.SetValue(wsValue, unLevel, bHardMode))
-		{
-			m_oLineHeight *= 10.;
-			return true;
-		}
-
-		return false;
+		return m_oLineHeight.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	bool CFont::SetFamily(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)

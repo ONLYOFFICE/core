@@ -4954,7 +4954,8 @@ namespace NExtractTools
        _UINT32 nRes = 0;
        NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
        initApplicationFonts(pApplicationFonts, params);
-       if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+      
+	   if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
 		   std::string sPages = checkPrintPages(params);
 
@@ -5014,6 +5015,12 @@ namespace NExtractTools
 	   }
        else
        {
+		   switch (nFormatTo)
+		   {
+		   case AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER: nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; break;
+		   case AVS_OFFICESTUDIO_FILE_OTHER_ODF: nFormatTo = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT; break;
+		   }
+
            IOfficeDrawingFile* pReader = NULL;
            switch (nFormatFrom)
            {

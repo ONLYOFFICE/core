@@ -29,47 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
-#include <string>
+#include "tabledatatype.h"
 
-namespace cpdoccore {
-namespace oox {
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-class xlsx_conditionalFormatting_context
+namespace cpdoccore { namespace odf_types { 
+
+std::wostream & operator << (std::wostream & _Wostream, const table_data_type& _Val)
 {
-public:
-    xlsx_conditionalFormatting_context();
-    ~xlsx_conditionalFormatting_context();
-
-	void start(std::wstring ref);
-	void end(){}
-
-	void add_rule(int type);
-
-	void set_formula(std::wstring f);
-	void set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max);
-
-	void set_dxf	(int dxf_id);
-	void set_showVal(bool val);
-	void set_time_period(int val);
-
-	void add_sfv	(int type, std::wstring value);
-	void add_color	(std::wstring col);
-	
-	void set_negative_color(std::wstring col);
-	
-	void set_axis_position(std::wstring val);
-	void set_axis_color(std::wstring val);
-	void set_icon_set_type(int type);
-
-    void serialize(std::wostream & _Wostream);
-private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-};
-
+    switch(_Val.get_type())
+    {
+    case table_data_type::automatic:
+        _Wostream << L"automatic";
+        break;
+    case table_data_type::text:
+        _Wostream << L"text";
+        break;
+    case table_data_type::number:
+        _Wostream << L"number";
+        break;
+    case table_data_type::background_color:
+        _Wostream << L"background_color";
+        break;
+    case table_data_type::text_color:
+        _Wostream << L"text_color";
+        break;
+    case table_data_type::user_defined:
+        _Wostream << _Val.get_user_defined();
+        break;
+    default:
+        _Wostream << L"text";
+        break;
+    }
+    return _Wostream;    
 }
+table_data_type table_data_type::parse(const std::wstring & Str)
+{
+    if (Str == L"automatic")
+        return table_data_type(automatic);
+    else if (Str == L"text")
+        return table_data_type(text);
+    else if (Str == L"number")
+        return table_data_type(number);
+    else if (Str == L"background-color")
+        return table_data_type(background_color);
+    else if (Str == L"text-color")
+        return table_data_type(text_color);
+	else
+    {
+        return table_data_type(user_defined, Str);
+    }
 }
+
+} }

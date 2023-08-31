@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-CVlcPlayer::CVlcPlayer()
+CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 {
 	// initialize libVLC
 	m_pVlcInstance = libvlc_new(0, NULL);
@@ -14,6 +14,9 @@ CVlcPlayer::CVlcPlayer()
 	}
 	// initialize vlc media player
 	m_pVlcPlayer = libvlc_media_player_new(m_pVlcInstance);
+	// disable event handling by vlc internals
+	libvlc_video_set_mouse_input(m_pVlcPlayer, false);
+	libvlc_video_set_key_input(m_pVlcPlayer, false);
 	// get event manager
 	m_pEventManager = libvlc_media_player_event_manager(m_pVlcPlayer);
 

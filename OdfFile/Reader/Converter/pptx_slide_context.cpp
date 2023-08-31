@@ -767,15 +767,22 @@ void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 {
 	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type == 0))) return;
   
+	std::wstring background_fill;
+	if (impl_->background_fill_)
+	{
+		std::wstringstream tmp_strm;
+		oox_serialize_fill(tmp_strm, impl_->background_fill_.get());
+		background_fill = tmp_strm.str();
+	}
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"p:bg")
 		{
 			CP_XML_NODE(L"p:bgPr")
 			{
-				if (impl_->background_fill_)
+				if (false == background_fill.empty())
 				{
-					oox_serialize_fill(CP_XML_STREAM(), impl_->background_fill_.get());
+					CP_XML_STREAM() << background_fill;
 				}
 				else
 				{

@@ -475,7 +475,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		{
 			for (size_t ext = 0; ext < oox_sheet->m_oExtLst->m_arrExt.size(); ext++)
 			{
-				for (size_t fmt = 0; (oox_sheet->m_oExtLst->m_arrExt[ext]) && (fmt < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size()); fmt++)
+				if (!oox_sheet->m_oExtLst->m_arrExt[ext]) continue;
+
+				for (size_t fmt = 0; fmt < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size(); fmt++)
 				{
 					OOX::Spreadsheet::CConditionalFormatting* cond_fmt = oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting[fmt];
 					if (cond_fmt)
@@ -3456,15 +3458,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 {
-	if (!oox_cond_databar)return;
+	if (!oox_cond_databar) return;
 	
 	_CP_OPT(odf_types::color) color;
-	convert(oox_cond_databar->m_oColor.GetPointer(), color);
+
+	if (oox_cond_databar->m_oBorderColor.IsInit())
+		convert(oox_cond_databar->m_oBorderColor.GetPointer(), color);
+	else
+		convert(oox_cond_databar->m_oColor.GetPointer(), color);
 
 	ods_context->current_table()->set_conditional_databar_color(color);
-			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
+
+	convert(oox_cond_databar->m_oAxisColor.GetPointer(), color);
+	ods_context->current_table()->set_conditional_databar_axis_color(color);
+
+	convert(oox_cond_databar->m_oNegativeBorderColor.GetPointer(), color);
+	ods_context->current_table()->set_conditional_databar_negative_color(color);
+
+	if (oox_cond_databar->m_oAxisPosition.IsInit())
+		ods_context->current_table()->set_conditional_databar_axis_position(oox_cond_databar->m_oAxisPosition->ToString());
+
+	if (oox_cond_databar->m_oShowValue.IsInit())
+		ods_context->current_table()->set_conditional_show_value(oox_cond_databar->m_oShowValue->ToBool());
+	//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
-			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
 	for (size_t i=0; i< oox_cond_databar->m_arrValues.size(); i++)
 		convert(oox_cond_databar->m_arrValues[i].GetPointer());
 }
@@ -3494,7 +3511,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 		ods_context->current_table()->set_conditional_iconset(oox_cond_iconset->m_oIconSet->GetValue());
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
-			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
+			//nullable<SimpleTypes::COnOff<>>					m_oc;
+	if (oox_cond_iconset->m_oShowValue.IsInit())
+		ods_context->current_table()->set_conditional_show_value(oox_cond_iconset->m_oShowValue->ToBool());
+
 	for (size_t i=0; i< oox_cond_iconset->m_arrValues.size(); i++)
 	{
 		convert(oox_cond_iconset->m_arrValues[i].GetPointer());

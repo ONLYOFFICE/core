@@ -268,7 +268,7 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_ref)
 			return L"";
 		}
 	}
-	std::wstring odf_ref = formulas_converter_chart.convert_chart_distance(oox_ref);
+	std::wstring odf_ref = formulas_converter_chart.convert_ref_distances(oox_ref, L",", L" ");
 	
 	//XmlUtils::replace_all( odf_ref, L"$", L"");
 	return odf_ref;

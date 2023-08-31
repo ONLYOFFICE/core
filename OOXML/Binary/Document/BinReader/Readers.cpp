@@ -2752,7 +2752,7 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	else if (c_oSerProp_cellPrType::CnfStyle == type)
 	{
 		ComplexTypes::Word::CCnf cnf;
-		READ2_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
+		READ1_DEF(length, res, this->oBinary_pPrReader.ReadCnfStyle, &cnf);
 
 		pCStringWriter->WriteString(cnf.ToString());
 	}
@@ -3968,6 +3968,32 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	{
 		pSettings->m_oWriteProtection.Init();
 		READ1_DEF(length, res, this->ReadWriteProtect, pSettings->m_oWriteProtection.GetPointer());
+	}
+	else if (c_oSer_SettingsType::SdtGlobalShowHighlight == type)
+	{
+		m_pSettingsCustom->m_oSdtGlobalShowHighlight.Init();
+		m_pSettingsCustom->m_oSdtGlobalShowHighlight->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::AutoHyphenation == type)
+	{
+		pSettings->m_oAutoHyphenation.Init();
+		pSettings->m_oAutoHyphenation->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::HyphenationZone == type)
+	{
+		pSettings->m_oHyphenationZone.Init();
+		pSettings->m_oHyphenationZone->m_oVal.Init();
+		pSettings->m_oHyphenationZone->m_oVal->FromTwips(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSer_SettingsType::DoNotHyphenateCaps == type)
+	{
+		pSettings->m_oDoNotHyphenateCaps.Init();
+		pSettings->m_oDoNotHyphenateCaps->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSer_SettingsType::ConsecutiveHyphenLimit == type)
+	{
+		pSettings->m_oConsecutiveHyphenLimit.Init();
+		pSettings->m_oConsecutiveHyphenLimit->m_oVal = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

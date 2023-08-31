@@ -94,7 +94,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			if		(0x0216 == oHeader.RecInstance)	lOffset = 16;
 			else if (0x0217 == oHeader.RecInstance)	lOffset = 32;
 
-			StreamUtils::StreamSkip(lOffset, pStream);
+			//StreamUtils::StreamSkip(lOffset, pStream);
 
 			lOffset += 34;
 
@@ -219,6 +219,17 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		{
 			pDecryptor->Decrypt((char*)pImage, oHeader.RecLen - lOffset, 0);
 		}
+		size_t lOffset2 = 0;
+		if (oHeader.RecType == RECORD_TYPE_ESCHER_BLIP_PNG)
+		{
+			std::string test((char*)pImage, (std::min)((int)oHeader.RecLen - lOffset, 4096));
+			if (std::string::npos != (lOffset2 = test.find("GIF89")))
+			{//gif in png chuncks - todooo from read header, chunks ....
+				sExt = L".gif";
+				lOffset -= lOffset2;
+			}			
+		}
+
 		std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;
 		
 		NSFile::CFileBinary fileImage;
@@ -236,7 +247,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				_UINT32 dwOffset = 2;
 				fileImage.WriteFile((BYTE*)&dwOffset, 4);
 			}
-			fileImage.WriteFile(pImage, oHeader.RecLen - lOffset);
+			fileImage.WriteFile(pImage + lOffset2, oHeader.RecLen - lOffset);
 			fileImage.CloseFile();
 		}
 		if (pImage)delete[] pImage;

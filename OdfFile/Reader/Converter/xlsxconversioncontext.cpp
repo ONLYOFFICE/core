@@ -724,6 +724,35 @@ int xlsx_conversion_context::get_current_cell_style_id()
 {
     return get_table_context().get_current_cell_style_id();
 }
+int xlsx_conversion_context::add_dxfId_style(const std::wstring& color, bool cellColor)
+{
+	int dxfId = -1;
+	odf_reader::style_instance* instStyle =
+		root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+
+	if (instStyle)
+	{
+		odf_reader::text_format_properties_ptr textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties_ptr graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
+
+		odf_types::color odf_color(color);
+		if (cellColor)
+		{
+			cellFormats.common_background_color_attlist_.fo_background_color_ = odf_color;
+		}
+		else
+		{
+			if (!textFormats)
+				textFormats = odf_reader::text_format_properties_ptr(new odf_reader::text_format_properties());
+
+			textFormats->fo_color_ = odf_color;
+		}
+
+		dxfId = get_style_manager().dxfId(textFormats, graphicFormats, &cellFormats);
+	}
+	return dxfId;
+}
 int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
 {
 	if (style_name.empty()) return -1;

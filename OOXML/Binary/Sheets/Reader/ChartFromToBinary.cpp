@@ -6646,15 +6646,15 @@ namespace BinXlsxRW
 			pLegend->m_spPr->m_namespace = L"cx";
 			res = ReadCT_PptxElement(0, length, pLegend->m_spPr.GetPointer());
 		}
-		else if (c_oserct_chartExTitlePOS == type)
+		else if (c_oserct_chartExLegendPOS == type)
 		{
 			pLegend->m_pos = (SimpleTypes::Spreadsheet::ESidePos)m_oBufferedStream.GetUChar();
 		}
-		else if (c_oserct_chartExTitleALIGN == type)
+		else if (c_oserct_chartExLegendALIGN == type)
 		{
 			pLegend->m_align = (SimpleTypes::Spreadsheet::EPosAlign)m_oBufferedStream.GetUChar();
 		}
-		else if (c_oserct_chartExTitleOVERLAY == type)
+		else if (c_oserct_chartExLegendOVERLAY == type)
 		{
 			pLegend->m_overlay = m_oBufferedStream.GetBool();
 		}
@@ -6877,7 +6877,7 @@ namespace BinXlsxRW
 			pDataLabel->m_spPr->m_namespace = L"cx";
 			res = ReadCT_PptxElement(0, length, pDataLabel->m_spPr.GetPointer());
 		}
-		else if (c_oserct_chartExDataLabelsVISABILITIES == type)
+		else if (c_oserct_chartExDataLabelVISABILITIES == type)
 		{
 			pDataLabel->m_visibility.Init();
 			READ1_DEF(length, res, this->ReadCT_ChartExDataLabelVisibilities, pDataLabel->m_visibility.GetPointer());
@@ -6895,7 +6895,7 @@ namespace BinXlsxRW
 		int res = c_oSerConstants::ReadOk;
 		OOX::Spreadsheet::ChartEx::CDataLabelHidden *pDataLabelHidden = static_cast<OOX::Spreadsheet::ChartEx::CDataLabelHidden*>(poResult);
 
-		if (c_oserct_chartExDATA == type)
+		if (c_oserct_chartExDataLabelHiddenIDX == type)
 		{
 			pDataLabelHidden->m_idx = m_oBufferedStream.GetLong();
 		}
@@ -7026,7 +7026,7 @@ namespace BinXlsxRW
 		int res = c_oSerConstants::ReadOk;
 		OOX::Spreadsheet::ChartEx::CStatistics *pStatistics = static_cast<OOX::Spreadsheet::ChartEx::CStatistics*>(poResult);
 
-		if (c_oserct_chartExDATA == type)
+		if (c_oserct_chartExStatisticsMETHOD == type)
 		{
 			pStatistics->m_quartileMethod = (SimpleTypes::Spreadsheet::EQuartileMethod)m_oBufferedStream.GetUChar();
 		}
@@ -7132,7 +7132,7 @@ namespace BinXlsxRW
 			pAxis->m_majorGridlines->m_name = L"cx:majorGridlines";
 			READ1_DEF(length, res, this->ReadCT_ChartExGridlines, pAxis->m_majorGridlines.GetPointer());
 		}
-		else if (c_oserct_chartExAxisMAJORGRID == type)
+		else if (c_oserct_chartExAxisMINORGRID == type)
 		{
 			pAxis->m_minorGridlines.Init();
 			pAxis->m_minorGridlines->m_name = L"cx:minorGridlines";
@@ -7148,7 +7148,7 @@ namespace BinXlsxRW
 			pAxis->m_txPr->m_name = L"cx:txPr";
 			res = ReadCT_PptxElement(0, length, pAxis->m_txPr.GetPointer());
 		}
-		else if (c_oserct_chartExDataLabelSPPR == type)
+		else if (c_oserct_chartExAxisSPPR == type)
 		{
 			pAxis->m_spPr = new PPTX::Logic::SpPr;
 			pAxis->m_spPr->m_namespace = L"cx";

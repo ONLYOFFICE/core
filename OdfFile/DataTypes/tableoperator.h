@@ -31,45 +31,59 @@
  */
 #pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+#include <iosfwd>
 #include <string>
+#include "odfattributes.h"
 
-namespace cpdoccore {
-namespace oox {
 
-class xlsx_conditionalFormatting_context
+namespace cpdoccore { namespace odf_types { 
+
+class table_operator
 {
 public:
-    xlsx_conditionalFormatting_context();
-    ~xlsx_conditionalFormatting_context();
+    enum type
+    {
+        Equal,
+        NotEqual,
+        LessThan,
+        GreaterThan,
+        LessThanOrEqual,
+        GreaterThanOrEqual,
+        BeginsWith,
+        Contains,
+        NotContains,
+        EndsWith,
+        NotBeginsWith,
+        NotEndsWith,
+        BottomPercent,
+        BottomValues,
+        Empty,
+        NonEmpty,
+        TopPercent,
+        TopValues,
+        UserDefined
+    };
 
-	void start(std::wstring ref);
-	void end(){}
+    table_operator() {}
 
-	void add_rule(int type);
+    table_operator(type _Type, const std::wstring &user = L"") : type_(_Type), user_defined_(user)
+    {}
 
-	void set_formula(std::wstring f);
-	void set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max);
-
-	void set_dxf	(int dxf_id);
-	void set_showVal(bool val);
-	void set_time_period(int val);
-
-	void add_sfv	(int type, std::wstring value);
-	void add_color	(std::wstring col);
-	
-	void set_negative_color(std::wstring col);
-	
-	void set_axis_position(std::wstring val);
-	void set_axis_color(std::wstring val);
-	void set_icon_set_type(int type);
-
-    void serialize(std::wostream & _Wostream);
+    type get_type() const
+    {
+        return type_;
+    };
+    std::wstring get_user_defined() const
+    {
+        return user_defined_;
+    };
+    static table_operator parse(const std::wstring & Str);
 private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
-};
+    type type_;
+    std::wstring user_defined_;
 
-}
+};
+std::wostream & operator << (std::wostream & _Wostream, const table_operator& _Val);
+} 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::table_operator);
 }

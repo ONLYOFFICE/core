@@ -93,6 +93,10 @@ void ods_conversion_context::start_conditional_formats()
 {
 	current_table()->start_conditional_formats();
 }
+void ods_conversion_context::end_conditional_formats()
+{
+	current_table()->end_conditional_formats();
+}
 void ods_conversion_context::start_table_part(std::wstring name, std::wstring ref)
 {
 	table_context_.start_table_part(name, ref);

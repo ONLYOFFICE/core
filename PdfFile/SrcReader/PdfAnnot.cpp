@@ -1096,6 +1096,53 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 }
 
 //------------------------------------------------------------------------
+// Square, Circle
+//------------------------------------------------------------------------
+
+CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Подтип - Subtype
+	std::string sType;
+	if (oAnnot.dictLookup("Subtype", &oObj)->isName())
+		sType = oObj.getName();
+	oObj.free();
+
+	if (sType == "Square")
+		m_nSubtype = 4;
+	else if (sType == "Circle")
+		m_nSubtype = 5;
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Цвет заполнения - IC
+	if (oAnnot.dictLookup("IC", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			m_arrIC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
 
@@ -1276,15 +1323,9 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	oObj.free();
 
 	// 4 - Форматированный текст - RC
-	if (oAnnot.dictLookup("RC", &oObj)->isStream())
-	{
-		// TODO streamGetBlock
-	}
-	else
-	{
-		oObj.free();
-		DICT_LOOKUP_STRING(oAnnot.dictLookup, "RC", 3, m_sRC);
-	}
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "RC", 3, m_sRC);
+	// if (oAnnot.dictLookup("RC", &oObj)->isStream())
+	// TODO streamGetBlock
 
 	// 5 - Дата создания - CreationDate
 	DICT_LOOKUP_STRING(oAnnot.dictLookup, "CreationDate", 4, m_sCreationDate);
@@ -2302,5 +2343,24 @@ void CAnnotTextMarkup::ToWASM(NSWasm::CData& oRes)
 	oRes.AddInt((unsigned int)m_arrQuadPoints.size());
 	for (int i = 0; i < m_arrQuadPoints.size(); ++i)
 		oRes.AddDouble(m_arrQuadPoints[i]);
+}
+
+void CAnnotSquareCircle::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(m_nSubtype); // Square, Circle
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrIC.size());
+		for (int i = 0; i < m_arrIC.size(); ++i)
+			oRes.AddDouble(m_arrIC[i]);
+	}
 }
 }

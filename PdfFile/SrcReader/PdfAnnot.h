@@ -327,7 +327,6 @@ private:
 	std::string m_sRC; // Форматированный текст для отображения во всплывающем окне
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
-	// TODO ExData Внешние данные, используется только для Markup3D
 };
 
 //------------------------------------------------------------------------
@@ -399,6 +398,23 @@ public:
 private:
 	BYTE m_nSubtype; // Подтип TextMarkup аннотации
 	std::vector<double> m_arrQuadPoints; // Координаты
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotSquareCircle
+//------------------------------------------------------------------------
+
+class CAnnotSquareCircle final : public CMarkupAnnot
+{
+public:
+	CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nSubtype; // Подтип Square или Circle аннотации
+	double m_pRD[4]{}; // Различия Rect и фактического размера
+	std::vector<double> m_arrIC; // Цвет заполнения
 };
 
 //------------------------------------------------------------------------

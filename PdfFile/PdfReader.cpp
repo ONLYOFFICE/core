@@ -2135,13 +2135,9 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		{
 			pAnnot = new PdfReader::CAnnotLine(pdfDoc, &oAnnotRef, nPageIndex);
 		}
-		else if (sType == "Square")
+		else if (sType == "Square" || sType == "Circle")
 		{
-
-		}
-		else if (sType == "Circle")
-		{
-
+			pAnnot = new PdfReader::CAnnotSquareCircle(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Polygon")
 		{

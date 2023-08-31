@@ -1112,6 +1112,25 @@
 				for (let i = 0; i < n; ++i)
 					rec["QuadPoints"].push(reader.readDouble());
 			}
+			// Square, Circle
+			else if (rec["Type"] == 4 || rec["Type"] == 5)
+			{
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Цвет заполнения - IC
+				if (flags & (1 << 16))
+				{
+					let n = reader.readInt();
+					rec["IC"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["IC"].push(reader.readDouble());
+				}
+			}
 			// Popup
 			else if (rec["Type"] == 15)
 			{

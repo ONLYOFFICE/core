@@ -165,6 +165,24 @@ public:
 		std::vector<double> m_arrQuadPoints;
 	};
 
+	class CSquareCircleAnnotPr
+	{
+	public:
+		void SetSubtype(const BYTE& nSubtype) { m_nSubtype = nSubtype; }
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+		{ m_dRD[0] = dRD1; m_dRD[1] = dRD2; m_dRD[2] = dRD3; m_dRD[3] = dRD4; }
+		void SetIC(const std::vector<double>& arrIC) { m_arrIC = arrIC; }
+
+		BYTE GetSubtype() const { return m_nSubtype; }
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+		const std::vector<double>& GetIC() const { return m_arrIC; }
+
+	private:
+		BYTE m_nSubtype;
+		double m_dRD[4];
+		std::vector<double> m_arrIC;
+	};
+
 	class CPopupAnnotPr
 	{
 	public:
@@ -218,20 +236,22 @@ public:
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
-	bool isWidget()     const;
-	bool isMarkup()     const;
-	bool IsText()       const;
-	bool IsInk()        const;
-	bool IsLine()       const;
-	bool IsTextMarkup() const;
-	bool IsPopup()      const;
+	bool isWidget()       const;
+	bool isMarkup()       const;
+	bool IsText()         const;
+	bool IsInk()          const;
+	bool IsLine()         const;
+	bool IsTextMarkup()   const;
+	bool IsSquareCircle() const;
+	bool IsPopup()        const;
 
-	CMarkupAnnotPr*     GetMarkupAnnotPr()     { return m_pMarkupPr; }
-	CTextAnnotPr*       GetTextAnnotPr()       { return m_pTextPr; }
-	CInkAnnotPr*        GetInkAnnotPr()        { return m_pInkPr; }
-	CLineAnnotPr*       GetLineAnnotPr()       { return m_pLinePr; }
-	CTextMarkupAnnotPr* GetTextMarkupAnnotPr() { return m_pTextMarkupPr; }
-	CPopupAnnotPr*      GetPopupAnnotPr()      { return m_pPopupPr; }
+	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
+	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
+	CInkAnnotPr*          GetInkAnnotPr()          { return m_pInkPr; }
+	CLineAnnotPr*         GetLineAnnotPr()         { return m_pLinePr; }
+	CTextMarkupAnnotPr*   GetTextMarkupAnnotPr()   { return m_pTextMarkupPr; }
+	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
+	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
 
 protected:
 	int          m_nType;
@@ -250,12 +270,13 @@ private:
 	std::vector<double> m_arrC;
 	CBorder      m_oBorder;
 
-	CMarkupAnnotPr*     m_pMarkupPr;
-	CTextAnnotPr*       m_pTextPr;
-	CInkAnnotPr*        m_pInkPr;
-	CLineAnnotPr*       m_pLinePr;
-	CTextMarkupAnnotPr* m_pTextMarkupPr;
-	CPopupAnnotPr*      m_pPopupPr;
+	CMarkupAnnotPr*       m_pMarkupPr;
+	CTextAnnotPr*         m_pTextPr;
+	CInkAnnotPr*          m_pInkPr;
+	CLineAnnotPr*         m_pLinePr;
+	CTextMarkupAnnotPr*   m_pTextMarkupPr;
+	CSquareCircleAnnotPr* m_pSquareCirclePr;
+	CPopupAnnotPr*        m_pPopupPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

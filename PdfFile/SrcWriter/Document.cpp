@@ -569,6 +569,10 @@ namespace PdfWriter
 	{
 		return new CTextMarkupAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateSquareCircleAnnot()
+	{
+		return new CSquareCircleAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreatePopupAnnot()
 	{
 		return new CPopupAnnotation(m_pXref);

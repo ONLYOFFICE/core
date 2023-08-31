@@ -253,5 +253,20 @@ namespace PdfWriter
 		void SetSubtype(const BYTE& nSubtype);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
 	};
+	class CSquareCircleAnnotation : public CMarkupAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+	public:
+		CSquareCircleAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+
+		void SetSubtype(const BYTE& nSubtype);
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
+		void SetIC(const std::vector<double>& arrIC);
+	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

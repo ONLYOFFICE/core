@@ -228,7 +228,6 @@ namespace PdfReader
 		virtual void tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
 		virtual void StartTilingFill(GfxState *pGState);
 		virtual void EndTilingFill();
-		//todo overide
 		virtual GBool shadedFill(GfxState *state, GfxShading *shading);
 		virtual bool FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading);
 		virtual bool AxialShadedFill(GfxState *pGState, GfxAxialShading    *pShading);

@@ -59,7 +59,7 @@
 	((PdfWriter::CDictObject*)pObj)->Add(sKey, oVal);\
 	else if (pObj->GetType() == PdfWriter::object_type_ARRAY)\
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
-	}
+}
 
 void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
 {

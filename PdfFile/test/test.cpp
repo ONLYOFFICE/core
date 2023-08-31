@@ -122,7 +122,7 @@ int main()
         return 0;
     }
 
-	if (true)
+	if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 0;

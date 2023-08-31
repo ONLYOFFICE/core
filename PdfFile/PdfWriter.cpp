@@ -1707,6 +1707,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 	{
 		pAnnot = m_pDocument->CreateTextMarkupAnnot();
 	}
+	else if (oInfo.IsSquareCircle())
+	{
+		pAnnot = m_pDocument->CreateSquareCircleAnnot();
+	}
 	else if (oInfo.IsPopup())
 	{
 		pAnnot = m_pDocument->CreatePopupAnnot();
@@ -1829,6 +1833,21 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 
 		pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
 		pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+	}
+	else if (oInfo.IsSquareCircle())
+	{
+		CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
+		PdfWriter::CSquareCircleAnnotation* pSquareCircleAnnot = (PdfWriter::CSquareCircleAnnotation*)pAnnot;
+
+		pSquareCircleAnnot->SetSubtype(pPr->GetSubtype());
+		if (nFlags & (1 << 15))
+		{
+			double dRD1, dRD2, dRD3, dRD4;
+			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+			pSquareCircleAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pSquareCircleAnnot->SetIC(pPr->GetIC());
 	}
 	else if (oInfo.IsPopup())
 	{

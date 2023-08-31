@@ -1387,6 +1387,28 @@ namespace NSOnlineOfficeBinToPdf
 						arrQuadPoints.push_back(ReadDouble(current, curindex));
 					pPr->SetQuadPoints(arrQuadPoints);
 				}
+				else if (oInfo.IsSquareCircle())
+				{
+					CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
+
+					pPr->SetSubtype(nType);
+					if (nFlags & (1 << 15))
+					{
+						double dRD1 = ReadDouble(current, curindex);
+						double dRD2 = ReadDouble(current, curindex);
+						double dRD3 = ReadDouble(current, curindex);
+						double dRD4 = ReadDouble(current, curindex);
+						pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+					}
+					if (nFlags & (1 << 16))
+					{
+						int n = ReadInt(current, curindex);
+						std::vector<double> arrIC;
+						for (int i = 0; i < n; ++i)
+							arrIC.push_back(ReadDouble(current, curindex));
+						pPr->SetIC(arrIC);
+					}
+				}
 				else if (oInfo.IsPopup())
 				{
 					CAnnotFieldInfo::CPopupAnnotPr* pPr = oInfo.GetPopupAnnotPr();

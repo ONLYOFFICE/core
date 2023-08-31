@@ -1693,12 +1693,12 @@ int main(int argc, char* argv[])
 			}
 			else if (sType == "Line")
 			{
-				std::cout << "L ";
+				std::cout << "L";
 				for (int j = 0; j < 4; ++j)
 				{
 					nPathLength = READ_INT(pAnnots + i);
 					i += 4;
-					std::cout << (double)nPathLength / 100.0 << " ";
+					std::cout << " " << (double)nPathLength / 100.0;
 				}
 				std::cout << ", ";
 				if (nFlags & (1 << 15))
@@ -1717,13 +1717,13 @@ int main(int argc, char* argv[])
 				{
 					int nICLength = READ_INT(pAnnots + i);
 					i += 4;
-					std::cout << "IC ";
+					std::cout << "IC";
 
 					for (int j = 0; j < nICLength; ++j)
 					{
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << (double)nPathLength / 100.0 << " ";
+						std::cout << " " << (double)nPathLength / 100.0;
 					}
 					std::cout << ", ";
 				}
@@ -1813,6 +1813,35 @@ int main(int argc, char* argv[])
 					std::cout << " " << (double)nPathLength / 100.0;
 				}
 				std::cout << ", ";
+			}
+			else if (sType == "Square" ||
+					 sType == "Circle")
+			{
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "RD";
+					for (int j = 0; j < 4; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					int nICLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "IC ";
+
+					for (int j = 0; j < nICLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << " ";
+					}
+					std::cout << ", ";
+				}
 			}
 			else if (sType == "Popup")
 			{

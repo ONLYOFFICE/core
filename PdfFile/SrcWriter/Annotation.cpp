@@ -478,16 +478,20 @@ namespace PdfWriter
 		pArray->Add(dCO1);
 		pArray->Add(dCO2);
 	}
-	void CLineAnnotation::SetIC(const std::vector<double>& arrIC)
+	void AddIC(CAnnotation* pAnnot, const std::vector<double>& arrIC)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("IC", pArray);
+		pAnnot->Add("IC", pArray);
 
 		for (const double& dIC : arrIC)
 			pArray->Add(dIC);
+	}
+	void CLineAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -511,7 +515,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
 	//----------------------------------------------------------------------------------------
-	CTextMarkupAnnotation::CTextMarkupAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotPopup)
+	CTextMarkupAnnotation::CTextMarkupAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotHighLight)
 	{
 		m_nSubtype = AnnotHighLight;
 	}
@@ -528,6 +532,8 @@ namespace PdfWriter
 		case 11:
 		{ m_nSubtype = AnnotStrikeOut; break; }
 		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
 	}
 	void CTextMarkupAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
 	{
@@ -539,5 +545,41 @@ namespace PdfWriter
 
 		for (const double& dQuadPoints : arrQuadPoints)
 			pArray->Add(dQuadPoints);
+	}
+	//----------------------------------------------------------------------------------------
+	// CSquareCircleAnnotation
+	//----------------------------------------------------------------------------------------
+	CSquareCircleAnnotation::CSquareCircleAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotSquare)
+	{
+		m_nSubtype = AnnotSquare;
+	}
+	void CSquareCircleAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 4:
+		{ m_nSubtype = AnnotSquare; break; }
+		case 5:
+		{ m_nSubtype = AnnotCircle; break; }
+		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
+	}
+	void CSquareCircleAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
+	}
+	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
 	}
 }

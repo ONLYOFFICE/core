@@ -270,8 +270,10 @@
     <ClInclude Include="..\..\DataTypes\style_ref.h" />
     <ClInclude Include="..\..\DataTypes\tablealign.h" />
     <ClInclude Include="..\..\DataTypes\tablecentering.h" />
+    <ClInclude Include="..\..\DataTypes\tabledatatype.h" />
     <ClInclude Include="..\..\DataTypes\tablefunction.h" />
     <ClInclude Include="..\..\DataTypes\tablemode.h" />
+    <ClInclude Include="..\..\DataTypes\tableoperator.h" />
     <ClInclude Include="..\..\DataTypes\tableorder.h" />
     <ClInclude Include="..\..\DataTypes\tableorientation.h" />
     <ClInclude Include="..\..\DataTypes\tabletype.h" />
@@ -387,8 +389,10 @@
     <ClCompile Include="..\..\DataTypes\style_ref.cpp" />
     <ClCompile Include="..\..\DataTypes\tablealign.cpp" />
     <ClCompile Include="..\..\DataTypes\tablecentering.cpp" />
+    <ClCompile Include="..\..\DataTypes\tabledatatype.cpp" />
     <ClCompile Include="..\..\DataTypes\tablefunction.cpp" />
     <ClCompile Include="..\..\DataTypes\tablemode.cpp" />
+    <ClCompile Include="..\..\DataTypes\tableoperator.cpp" />
     <ClCompile Include="..\..\DataTypes\tableorder.cpp" />
     <ClCompile Include="..\..\DataTypes\tableorientation.cpp" />
     <ClCompile Include="..\..\DataTypes\tabletype.cpp" />

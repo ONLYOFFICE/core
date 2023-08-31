@@ -165,6 +165,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	int row_current = Context.current_table_row() + 1;
 
     bool hidden = attlist_.table_visibility_.get_type() == table_visibility::Collapse;
+	bool filter = attlist_.table_visibility_.get_type() == table_visibility::Filter;
 
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
@@ -195,7 +196,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 						if (Context.get_table_context().state()->group_rows_.back()) hidden = false;
 					}					
 
-                    if (hidden)
+                    if (hidden || filter)
                     {
                         CP_XML_ATTR(L"hidden", 1);                        
                     }
@@ -527,7 +528,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
 
 							//if (set_default)
-								CP_XML_ATTR(L"style", style_ );
+							//	CP_XML_ATTR(L"style", style_ );
 						}
 					}
 				}

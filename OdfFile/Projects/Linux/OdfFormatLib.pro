@@ -137,6 +137,8 @@ SOURCES += \
 	../../DataTypes/grandtotal.cpp \
 	../../DataTypes/membertype.cpp \
 	../../DataTypes/tabletype.cpp \
+        ../../DataTypes/tabledatatype.cpp \
+        ../../DataTypes/tableoperator.cpp \
 	../../DataTypes/tableorientation.cpp \
 	../../DataTypes/tablefunction.cpp \
 	../../DataTypes/tableorder.cpp \
@@ -533,7 +535,9 @@ HEADERS += \
 	../../DataTypes/timeperiod.h \
 	../../DataTypes/messagetype.h \
 	../../DataTypes/stylecellprotect.h \
-	\
+        ../../DataTypes/tabledatatype.h \
+        ../../DataTypes/tableoperator.h \
+        \
 	../../Formulas/formulasconvert.h \
 	../../Reader/Format/odf_document.h \
 	../../Reader/Format/abstract_xml.h \

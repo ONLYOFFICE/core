@@ -139,6 +139,7 @@ namespace NExtractTools
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
 		TCD_DOC2DOCM,
+		TCD_COMPOUND2DOCX,
 //xls 2
         TCD_XLS2XLST,
         TCD_XLS2XLST_BIN,
@@ -920,41 +921,43 @@ namespace NExtractTools
                 if (TCD_AUTO != eRes)
                     return eRes;
 
-                if (NULL != m_oMailMergeSend)
-                    eRes = TCD_MAILMERGE;
+				if (NULL != m_oMailMergeSend)
+					eRes = TCD_MAILMERGE;
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && 0 != (AVS_OFFICESTUDIO_FILE_OTHER & nFormatTo))
 					eRes = TCD_NON_AUTO; // параметры требуют уточнений
-				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && (0 !=	(AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) || 
-																						(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)))
+				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) ||
+					(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)))
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
-                    eRes = TCD_DOCUMENT2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
-                    eRes = TCD_SPREADSHEET2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
-                    eRes = TCD_PRESENTATION2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
-                    eRes = TCD_T2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
-                    eRes = TCD_DOCT_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
-                    eRes = TCD_XLST_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
-                    eRes = TCD_PPTT_BIN2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
-                    eRes = TCD_CROSSPLATFORM2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
-                    eRes = TCD_CANVAS_PDF2;
+					eRes = TCD_DOCUMENT2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
+					eRes = TCD_SPREADSHEET2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
+					eRes = TCD_PRESENTATION2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
+					eRes = TCD_T2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
+					eRes = TCD_DOCT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
+					eRes = TCD_XLST_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
+					eRes = TCD_PPTT_BIN2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
+					eRes = TCD_CROSSPLATFORM2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
+					eRes = TCD_CANVAS_PDF2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
 					eRes = TCD_MITCRYPT2;
-                else if (AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
-                    eRes = TCD_UNZIPDIR;
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
+					eRes = TCD_UNZIPDIR;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
 					eRes = TCD_VBAPROJECT2XML;
 				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
-                    eRes = TCD_ZIPDIR;
+					eRes = TCD_ZIPDIR;
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+					eRes = TCD_COMPOUND2DOCX;
             }
 			else
 				eRes = TCD_ERROR;

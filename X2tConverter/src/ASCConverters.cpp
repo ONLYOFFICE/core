@@ -5223,6 +5223,38 @@ namespace NExtractTools
 		return nRes;
 	}
 
+	_UINT32 compound2docxdir(const std::wstring& sFrom, const std::wstring& sTo, const std::wstring& sTemp, InputParams& params)
+	{
+		POLE::Storage storage(sFrom.c_str());
+
+		if (storage.open())
+		{
+			POLE::Stream stream(&storage, storage.GetAllStreams(L"/").front());
+
+			POLE::uint64 stream_size = stream.size();
+
+			unsigned char* buffer = new unsigned char[stream_size];
+			if (buffer)
+			{
+				stream.read(buffer, stream_size);
+				std::wstring sTempDocxDir = sTemp + FILE_SEPARATOR_STR + L"tempdocx.docx";
+
+				NSFile::CFileBinary file;
+
+				if (file.CreateFileW(sTempDocxDir))
+				{
+					file.WriteFile(buffer, stream_size);
+					file.CloseFile();
+				}
+				delete[]buffer;
+
+				return 0;
+			}
+		}
+
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+
 //------------------------------------------------------------------------------------------------------------------
 	_UINT32 detectMacroInFile(InputParams& oInputParams)
 	{
@@ -5772,6 +5804,10 @@ namespace NExtractTools
 			{
 				result = msVbaProject2Xml(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+			case TCD_COMPOUND2DOCX:
+			{
+				result = compound2docxdir(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,
 

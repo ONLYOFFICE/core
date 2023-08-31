@@ -117,7 +117,7 @@ namespace odf_types {
 		CP_XML_ATTR_OPT(L"smil:subtype",			smil_subtype_);
 		CP_XML_ATTR_OPT(L"smil:type",				smil_type_);
 		CP_XML_ATTR_OPT(L"smil:mode",				smil_mode_);
-		CP_XML_ATTR_OPT(L"smil:fade-color",			smil_fadeColor_);
+		CP_XML_ATTR_OPT(L"smil:fadeColor",			smil_fadeColor_);
 		CP_XML_ATTR_OPT(L"smil:direction",			smil_direction_);
 	}
 
@@ -204,14 +204,14 @@ namespace odf_types {
 	void anim_animate_attlist::serialize(CP_ATTR_NODE)
 	{
 		CP_XML_ATTR_OPT(L"smil:values",					smil_values_);
-		CP_XML_ATTR_OPT(L"smil:key-times",				smil_key_times_);
+		CP_XML_ATTR_OPT(L"smil:keyTimes",				smil_key_times_);
 		CP_XML_ATTR_OPT(L"anim:formula",				anim_formula_);
-		CP_XML_ATTR_OPT(L"smil:calc-mode",				smil_calc_mode_);
+		CP_XML_ATTR_OPT(L"smil:calcMode",				smil_calc_mode_);
 		CP_XML_ATTR_OPT(L"smil:from",					smil_from_);
 		CP_XML_ATTR_OPT(L"smil:to",						smil_to_);
 		CP_XML_ATTR_OPT(L"smil:by",						smil_by_);
 		CP_XML_ATTR_OPT(L"smil:additive",				smil_additive_);
-		CP_XML_ATTR_OPT(L"smil:auto-reverse",			smil_auto_reverse_);
+		CP_XML_ATTR_OPT(L"smil:autoReverse",			smil_auto_reverse_);
 	}
 
 	void anim_animate_transform_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
@@ -235,7 +235,7 @@ namespace odf_types {
 
 	void anim_animate_transform_attlist::serialize(CP_ATTR_NODE)
 	{
-		CP_XML_ATTR_OPT(L"smil:auto-reverse",	smil_auto_reverse_);
+		CP_XML_ATTR_OPT(L"smil:autoReverse",	smil_auto_reverse_);
 		CP_XML_ATTR_OPT(L"smil:from",			smil_from_);
 		CP_XML_ATTR_OPT(L"smil:to",				smil_to_);
 		CP_XML_ATTR_OPT(L"smil:by",				smil_by_);

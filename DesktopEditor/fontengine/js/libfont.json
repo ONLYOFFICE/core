@@ -109,7 +109,8 @@
 		"_lseek=lseek",
 		"_getcwd=getcwd",
 		"NO_CONSOLE_IO",
-		"BUILD_ZLIB_AS_SOURCES"
+		"BUILD_ZLIB_AS_SOURCES",
+		"IMAGE_CHECKER_DISABLE_XML"
 	],
 	"compile_files_array": [
 	{

@@ -783,7 +783,7 @@ function onLoadFontsModule(window, undefined)
 		{
 			this._value = "";
 		};
-		this.setLang = function(langCode)
+		this.setLang = function(langCode, callback)
 		{
 			this._lang = langCode;
 
@@ -795,6 +795,14 @@ function onLoadFontsModule(window, undefined)
 			{
 				this._dictionaries[_langKey] = AscFonts.Hyphen_CheckDictionary(this._lang);
 				return this._dictionaries[_langKey];
+			}
+			else if (callback)
+			{
+				if (!this._mapToNames)
+					this._mapToNames = AscCommon.spellcheckGetLanguages();
+
+				if (undefined !== this._mapToNames["" + langCode])
+					this.loadDictionary(langCode, callback);
 			}
 
 			return false;

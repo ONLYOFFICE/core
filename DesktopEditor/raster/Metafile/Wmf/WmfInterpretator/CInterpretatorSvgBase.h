@@ -56,17 +56,22 @@ namespace MetaFile
 		void BeginClip();
 		void CloseClip();
 
-		bool StartClip() const;
-		bool EndClip()   const;
-		bool Empty()     const;
+		bool StartedClip() const;
+		bool Empty()       const;
 
 		void AddClipValue(const std::wstring& wsId, const std::wstring& wsValue, int nClipMode = RGN_AND);
 
-		std::wstring GetClip()   const;
-		std::wstring GetClipId() const;
+		inline std::wstring GetClip()   const;
+		inline std::wstring GetClipId() const;
 	private:
-		typedef std::vector< std::tuple<std::wstring, std::wstring, int> > ClipValue;
-		ClipValue m_arValues;
+		struct TClipValue
+		{
+			std::wstring m_wsId;
+			std::wstring m_wsValue;
+			int          m_nClipMode;
+		};
+
+		std::vector<TClipValue> m_arValues;
 
 		bool m_bStartClip;
 		bool m_bEndClip;
@@ -93,6 +98,7 @@ namespace MetaFile
 		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds = TRect(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
+		void CheckClip();
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
@@ -100,8 +106,7 @@ namespace MetaFile
 		void AddStroke(NodeAttributes &arAttributes) const;
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL) const;
-		void AddClip();
-		void UpdateClip();
+		inline void AddClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
 

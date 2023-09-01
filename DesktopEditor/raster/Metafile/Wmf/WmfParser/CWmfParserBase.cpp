@@ -134,15 +134,6 @@ namespace MetaFile
 		return (unsigned int)m_pDC->GetRop2Mode();
 	}
 
-	IClip *CWmfParserBase::GetClip()
-	{
-		CWmfClip* pClip = m_pDC->GetClip();
-		if (!pClip)
-			return NULL;
-
-		return (IClip*)pClip;
-	}
-
 	int CWmfParserBase::GetCharSpace()
 	{
 		return m_pDC->GetCharSpacing();

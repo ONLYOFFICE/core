@@ -222,7 +222,6 @@ namespace MetaFile
 			CheckEndPath();
 
 			UpdateTransform();
-			UpdateClip();
 
 			Aggplus::CImage oImage;
 			oImage.Create(pBuffer, unWidth, unHeight, 4 * unWidth, true);
@@ -272,7 +271,6 @@ namespace MetaFile
 				return;
 
 			UpdateTransform();
-			UpdateClip();
 
 			double dFontScale = 1.;
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
@@ -334,7 +332,6 @@ namespace MetaFile
 				return;
 
 			UpdateTransform(iGraphicsMode);
-			UpdateClip();
 
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
 
@@ -682,7 +679,6 @@ namespace MetaFile
 			CheckEndPath();
 
 			UpdateTransform();
-			UpdateClip();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -1304,16 +1300,6 @@ namespace MetaFile
 			case R2_COPYPEN: break;
 			case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
 			}
-
-			return true;
-		}
-		bool UpdateClip()
-		{
-			IClip* pClip = m_pFile->GetClip();
-			if (!pClip)
-				return false;
-
-			pClip->ClipOnRenderer(this);
 
 			return true;
 		}

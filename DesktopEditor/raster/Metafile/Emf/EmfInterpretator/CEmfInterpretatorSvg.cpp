@@ -121,27 +121,27 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)
@@ -1017,17 +1017,17 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPPATH(short unShFlags, const CEmfPlusPath *pPath)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPRECT(short shCM, const TEmfPlusRectF &oRect)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPREGION(short shObjectIndex, short shCM, const CEmfPlusRegion *pRegion)
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_ENDOFFILE()
@@ -1482,6 +1482,8 @@ namespace MetaFile
 
 		if (wsPath.empty())
 			return;
+
+		CheckClip();
 
 		const std::wstring wsClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 		const std::wstring wsValue  = L"<path d=\"" + wsPath + L"\"/>";

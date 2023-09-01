@@ -1175,7 +1175,7 @@ namespace MetaFile
 
 		unsigned int CanRead()
 		{
-			return (unsigned int)(pEnd - pCur);
+			return (unsigned int)(pEnd - pCur + 1);
 		}
 
 	private:

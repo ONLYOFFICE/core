@@ -1509,8 +1509,8 @@ namespace OOX
 				if(m_oRef.IsInit())
 				{
 					auto beginFilter(new XLSB::BeginAFilter);
+                    beginFilter->rfx = m_oRef->GetValue();
 					ptr->m_BrtBeginAFilter = XLS::BaseObjectPtr{beginFilter};
-					beginFilter->rfx = m_oRef->GetValue();
 				}
 				if(m_oSortState.IsInit())
 					 ptr->m_SORTSTATE = m_oSortState->toBin();

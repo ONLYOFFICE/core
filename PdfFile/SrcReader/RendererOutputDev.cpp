@@ -3889,7 +3889,7 @@ namespace PdfReader
 			}
 		}
 
-		if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
+		if (nRenderMode == 0 || nRenderMode == 4 || nRenderMode == 6)
 		{
 #ifdef BUILDING_WASM_MODULE
 			std::wstring sFontPath;
@@ -3947,8 +3947,7 @@ namespace PdfReader
 				((GlobalParamsAdaptor*)globalParams)->AddTextFormField(wsUnicodeText, sFontPath, dFontSize);
 			}
 #endif
-
-			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
 		}
 
 		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
@@ -3960,7 +3959,12 @@ namespace PdfReader
 				m_pRenderer->PathCommandTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
 			else
 				m_pRenderer->PathCommandText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
-			m_pRenderer->DrawPath(c_nStroke);
+
+			long lDrawPath = c_nStroke;
+			if (nRenderMode == 2)
+				lDrawPath |= c_nWindingFillMode;
+
+			m_pRenderer->DrawPath(lDrawPath);
 
 			m_pRenderer->EndCommand(c_nStrokeTextType);
 		}

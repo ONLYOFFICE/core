@@ -955,14 +955,14 @@ namespace NSDocxRenderer
 
 			for(auto& line : m_arTextLine)
 			{
-				if(line == drop_cap_line)
+				if(line == drop_cap_line || line->m_bIsNotNecessaryToUse)
 					continue;
 
 				// буквица должна быть левее
 				if(line->m_dLeft < drop_cap_cont->m_dLeft)
 					continue;
 
-				// если совпадает строка - берем ее и выходим
+				// если совпадает строка по высоте - берем ее и выходим
 				if(fabs(line->m_dBaselinePos - drop_cap_cont->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
 					num_of_lines++;

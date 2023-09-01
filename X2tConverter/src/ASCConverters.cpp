@@ -5247,6 +5247,10 @@ namespace NExtractTools
 					file.CloseFile();
 				}
 				delete[]buffer;
+				
+				InputParams newparams = params;
+				newparams.m_sFileFrom = &sTempDocxDir;
+				fromInputParams(params);
 
 				return 0;
 			}

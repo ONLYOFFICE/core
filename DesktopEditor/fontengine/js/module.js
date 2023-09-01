@@ -190,7 +190,7 @@ function onLoadFontsModule(window, undefined)
 		var c = READER.readInt();
 		while (c)
 		{
-			this.family_name += String.fromCharCode(c);
+			this.family_name += (c < 0x10000) ? String.fromCharCode(c) : (String.fromCharCode(0xD800 | (c >> 10)) + String.fromCharCode(0xDC00 | (c & 0x3FF)));
 			c = READER.readInt();
 		}
 
@@ -408,7 +408,7 @@ function onLoadFontsModule(window, undefined)
 		}
 	};
 
-	const FONTSIZE       = 72;
+	const FONTSIZE       = 576;
 	const STRING_MAX_LEN = 1024;
 	const COEF           = 25.4 / 72 / 64 / FONTSIZE;
 	let   STRING_POINTER = null;
@@ -422,6 +422,7 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.MEASURE_FONTSIZE        = FONTSIZE;
 	AscFonts.GRAPHEME_STRING_MAX_LEN = STRING_MAX_LEN;
 	AscFonts.GRAPHEME_COEF           = COEF;
+	AscFonts.HB_STRING_MAX_LEN       = STRING_MAX_LEN;
 
 	function CCodePointsCalculator(codePointsBuffer, clusterBuffer)
 	{
@@ -664,4 +665,97 @@ function onLoadFontsModule(window, undefined)
 		retObj["free"]();
 		return glyphs;
 	};
+
+	// ZLIB
+	function ZLib()
+	{
+		/** @suppress {checkVars} */
+		this.engine = new AscCommon["CZLibEngineJS"]();
+		this.files = [];
+	}
+	/**
+	 * Open archive from bytes
+	 * @param {Uint8Array | ArrayBuffer} buf
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.open = function(buf)
+	{
+		if (this.engine.open(buf))
+			this.files = this.engine["getPaths"]();
+		return (this.files.length > 0) ? true : false;
+	};
+	/**
+	 * Create new archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.create = function()
+	{
+		return this.engine["create"]();
+	};
+	/**
+	 * Save archive from current files
+	 * @returns {Uint8Array | null} zip-archive bytes, or null if error
+	 */
+	ZLib.prototype.save = function()
+	{
+		return this.engine["save"]();
+	};
+	/**
+	 * Get uncomressed file from archive
+	 * @param {string} path
+	 * @returns {Uint8Array | null} bytes of uncompressed data, or null if error
+	 */
+	ZLib.prototype.getFile = function(path)
+	{
+		return this.engine["getFile"](path);
+	};
+	/**
+	 * Add uncomressed file to archive
+	 * @param {string} path
+	 * @param {Uint8Array | ArrayBuffer} new file in archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.addFile = function(path, data)
+	{
+		return this.engine["addFile"](path, (undefined !== data.byteLength) ? new Uint8Array(data) : data);
+	};
+	/**
+	 * Remove file from archive
+	 * @param {string} path
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.removeFile = function(path)
+	{
+		return this.engine["removeFile"](path);
+	};
+	/**
+	 * Close & remove all used memory in archive
+	 * @returns {undefined}
+	 */
+	ZLib.prototype.close = function()
+	{
+		return this.engine["close"]();
+	};
+	/**
+	 * Get image blob for browser
+	 * @returns {Blob}
+	 */
+	ZLib.prototype.getImageBlob = function(path)
+	{
+		return this.engine["getImageBlob"](path);
+	};
+	/**
+	 * Get all file paths in archive
+	 * @returns {Array}
+	 */
+	ZLib.prototype.getPaths = function()
+	{
+		return this.engine["getPaths"]();
+	};
+
+	AscCommon.ZLib = ZLib;
+	AscCommon.ZLib.prototype.isModuleInit = true;
+	window.AscCommon.CZLibEngineJS.prototype.isModuleInit = true;
+
+	window.nativeZlibEngine = new ZLib();
 }

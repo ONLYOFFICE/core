@@ -38,6 +38,13 @@ enable_support_shaper {
 }
 # -------------------------------------------------
 
+# ------------------- hyphen ----------------------
+HEADERS += $$FONT_ENGINE_PATH/languages.h
+
+HEADERS += $$FONT_ENGINE_PATH/TextHyphen.h
+SOURCES += $$FONT_ENGINE_PATH/TextHyphen.cpp
+# -------------------------------------------------
+
 core_ios {
     LIBS += -framework Foundation
 }

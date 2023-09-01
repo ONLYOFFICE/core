@@ -540,6 +540,86 @@ ZLib.prototype.getImageBlob = function(path)
 window.AscCommon = window.AscCommon || {};
 window.AscCommon.CZLibEngineJS = ZLib;
 
+var hyphenApplication = 0;
+AscFonts.Hyphen_Init = function()
+{
+	hyphenApplication = Module["_hyphenCreateApplication"]();
+};
+AscFonts.Hyphen_Destroy = function()
+{
+	Module["_hyphenDestroyApplication"](hyphenApplication);
+};
+AscFonts.Hyphen_CheckDictionary = function(lang)
+{
+	return false;
+};
+AscFonts.Hyphen_LoadDictionary = function(lang, data)
+{
+	let dictSize = data.byteLength;
+	let dictPointer = Module["_malloc"](dictSize);
+	Module["HEAP8"].set(new Uint8ClampedArray(data), dictPointer);
+
+	let result = Module["_hyphenLoadDictionary"](hyphenApplication, lang, dictPointer, dictSize);
+
+	Module["_free"](dictPointer);
+		
+	return (result === 0) ? true : false;
+};
+
+function GetUtf8SymbolLen(c)
+{
+	if (0x00 == (c & 0x80))
+		return 1;
+	else if (0x00 == (c & 0x20))
+		return 2;
+	else if (0x00 == (c & 0x10))
+		return 3;
+	else if (0x00 == (c & 0x0F))
+		return 4;
+	else if (0x00 == (c & 0x08))
+		return 4;
+	else if (0x00 == (c & 0x04))
+		return 5;
+	return 6;
+}
+
+AscFonts.Hyphen_Word = function(lang, word)
+{
+	let wordPointer = word.toUtf8Pointer();
+	let wordLen = wordPointer.length;
+	let hyphens = [];
+
+	if (wordPointer) 
+	{
+		const ptr = Module._hyphenWord(hyphenApplication, lang, wordPointer.ptr, wordLen);
+		
+		let curUnicode = new Uint8ClampedArray(Module["HEAP8"].buffer, wordPointer.ptr, wordLen);
+		let posUnicode = 0;
+		let posUtf8 = 0;
+
+		let vector = new Uint8ClampedArray(Module["HEAP8"].buffer, ptr, wordLen + 5);
+
+		let pos = 0;
+		while (vector[pos] != 0)
+		{
+			if (1 === (vector[pos] & 1))
+			{
+				while (posUtf8 < pos)
+				{
+					++posUnicode;
+					posUtf8 += GetUtf8SymbolLen(curUnicode[posUtf8]);
+				}				
+				hyphens.push(posUnicode);
+			}
+
+			pos++;
+		}
+
+		wordPointer.free();
+	}
+	return hyphens;
+};
+
 AscFonts.onLoadModule();
 
 })(window, undefined);

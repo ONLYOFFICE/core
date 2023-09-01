@@ -10,13 +10,12 @@
 using namespace NSJSBase;
 class JS_DECL CTextMeasurerEmbed : public CJSEmbedObject
 {
+private:
+	void* m_hyphen_engine;
+
 public:
-	CTextMeasurerEmbed()
-	{
-	}
-	~CTextMeasurerEmbed()
-	{
-	}
+	CTextMeasurerEmbed();
+	~CTextMeasurerEmbed();
 
 public:
 	JSSmart<CJSValue> FT_Malloc(JSSmart<CJSValue> typed_array_or_len);
@@ -49,6 +48,10 @@ public:
 	JSSmart<CJSValue> HB_FontMalloc();
 	JSSmart<CJSValue> HB_FontFree(JSSmart<CJSValue> font);
 #endif
+
+	JSSmart<CJSValue> Hyphen_SetCacheSize(JSSmart<CJSValue> size);
+	JSSmart<CJSValue> Hyphen_Word(JSSmart<CJSValue> lang, JSSmart<CJSValue> word);
+	JSSmart<CJSValue> Hyphen_IsDictionaryExist(JSSmart<CJSValue> lang);
 
 	DECLARE_EMBED_METHODS
 };

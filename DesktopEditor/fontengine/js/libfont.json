@@ -45,6 +45,12 @@
 		"_ASC_HB_LanguageFromString",
 		"_ASC_HB_ShapeText",
 		"_ASC_HB_FontFree",
+		
+		"_hyphenCreateApplication",
+		"_hyphenDestroyApplication",
+		"_hyphenLoadDictionary",
+		"_hyphenCheckDictionary",
+		"_hyphenWord",
 
 		"_Zlib_Malloc",
 		"_Zlib_Free",
@@ -236,7 +242,6 @@
 		"folder": "./../../graphics/pro/js/wasm/src/lib",
 		"files": ["wasm_jmp.cpp"]
 	},
-
 	{
 		"name": "z1",
 		"folder": "../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/",
@@ -324,6 +329,16 @@
 			"StringBuilder.cpp",
 			"../xml/src/xmlwriter.cpp"
 		]
+	},
+	{
+		"name": "h_e",
+		"folder": "./..",
+		"files": ["TextHyphen.cpp"]
+	},
+	{
+		"name": "h_m",
+		"folder": "./../../../Common/3dParty/hyphen/js/src",
+		"files": ["hyphen.cpp"]
 	}
 	]
 }

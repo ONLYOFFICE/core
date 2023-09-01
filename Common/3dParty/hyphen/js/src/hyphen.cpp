@@ -29,44 +29,40 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../../../../../DesktopEditor/fontengine/TextHyphen.h"
 
-#ifndef FONTS_ASSISTANT_H
-#define FONTS_ASSISTANT_H
+#ifdef _WIN32
+#define WASM_EXPORT __declspec(dllexport)
+#else
+#define WASM_EXPORT __attribute__((visibility("default")))
+#endif
 
-#include <string>
-#include <vector>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-
-#include "../../Common/kernel_config.h"
-
-namespace ASC
+WASM_EXPORT NSHyphen::CEngine* hyphenCreateApplication()
 {
-	class GRAPHICS_DECL CFontsAssistant
-	{
-	public:
-		CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);
-
-		void Check();
-		NSFonts::IApplicationFonts* Load();
-
-		std::vector<std::wstring> GetAvailableFonts();
-		std::string GetScriptData();
-
-		void AddExcludeFont(const std::wstring& sFontName);
-
-	private:
-		static std::wstring GetSystemFontPath();
-
-	private:
-		std::vector<std::wstring> m_arFontsPaths;
-		std::wstring m_sDataFontsPath;
-
-		std::vector<std::wstring> m_arAvailableFonts;
-		std::string m_sScriptData;
-
-		std::vector<std::wstring> m_arExcludeFonts;
-	};
+	return new NSHyphen::CEngine();
+}
+WASM_EXPORT void hyphenDestroyApplication(NSHyphen::CEngine* app)
+{
+	delete app;
 }
 
-#endif /* FONTS_ASSISTANT_H */
+WASM_EXPORT int hyphenLoadDictionary(NSHyphen::CEngine* app, const int lang, const char *dict, const unsigned int dict_size)
+{
+	return app->LoadDictionary(lang, (const unsigned char*)dict, dict_size);
+}
+WASM_EXPORT int hyphenCheckDictionary(NSHyphen::CEngine* app, const int lang)
+{
+	return app->IsDictionaryExist(lang) ? 1 : 0;
+}
+WASM_EXPORT char* hyphenWord(NSHyphen::CEngine* app, const int lang, const char *word, const int word_len)
+{
+	return app->Process(lang, word, word_len);
+}
+
+#ifdef __cplusplus
+}
+#endif

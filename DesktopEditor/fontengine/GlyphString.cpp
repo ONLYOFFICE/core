@@ -51,14 +51,14 @@ TGlyphBitmap::TGlyphBitmap()
 	nHeight		= 0;
 	bAA			= FALSE;
 	pData		= NULL;
-    bFreeData	= TRUE;
+	bFreeData	= TRUE;
 }
 
 TGlyphBitmap::~TGlyphBitmap()
 {
 	if (bFreeData && pData != NULL)
 	{
-        free(pData);
+		free(pData);
 		pData = NULL;
 	}
 }
@@ -113,7 +113,7 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 			int nEmpty = 0;
 			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)
 			{
-                unsigned int code = (unsigned int)pWchars[nIndex];
+				unsigned int code = (unsigned int)pWchars[nIndex];
 				if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < m_nGlyphsCount)
 				{
 					++nIndex;
@@ -130,7 +130,7 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 		{
 			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
 			{
-                m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
+				m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
 				m_pGlyphsBuffer[nIndex].bBitmap  = false;
 			}
 		}
@@ -162,29 +162,29 @@ CGlyphString::~CGlyphString()
 
 void CGlyphString::SetString(const unsigned int* pGids, const unsigned int& nGidsCount, float fX, float fY)
 {
-    m_fX = fX + m_fTransX;
-    m_fY = fY + m_fTransY;
+	m_fX = fX + m_fTransX;
+	m_fY = fY + m_fTransY;
 
-    if ( m_pGlyphsBuffer )
-        delete []m_pGlyphsBuffer;
+	if ( m_pGlyphsBuffer )
+		delete []m_pGlyphsBuffer;
 
-    m_nGlyphIndex   = 0;
-    m_nGlyphsCount  = nGidsCount;
+	m_nGlyphIndex   = 0;
+	m_nGlyphsCount  = nGidsCount;
 
-    if ( m_nGlyphsCount > 0 )
-    {
-        m_pGlyphsBuffer = new TGlyph[m_nGlyphsCount];
+	if ( m_nGlyphsCount > 0 )
+	{
+		m_pGlyphsBuffer = new TGlyph[m_nGlyphsCount];
 
-        for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
-        {
-            m_pGlyphsBuffer[nIndex].lUnicode = pGids[nIndex];
-            m_pGlyphsBuffer[nIndex].bBitmap  = false;
-        }
-    }
-    else
-    {
-        m_pGlyphsBuffer = NULL;
-    }
+		for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
+		{
+			m_pGlyphsBuffer[nIndex].lUnicode = pGids[nIndex];
+			m_pGlyphsBuffer[nIndex].bBitmap  = false;
+		}
+	}
+	else
+	{
+		m_pGlyphsBuffer = NULL;
+	}
 }
 
 void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
@@ -207,7 +207,7 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 		if (sizeof(wchar_t) == 2)
 		{
 			int nEmpty = 0;
-			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)				 
+			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)
 			{
 				int code = (int)pWchars[nIndex];
 				if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < m_nGlyphsCount)
@@ -226,7 +226,7 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 		{
 			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
 			{
-                m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
+				m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
 				m_pGlyphsBuffer[nIndex].bBitmap  = false;
 			}
 		}
@@ -390,7 +390,7 @@ void CGlyphString::GetBBox(float *pfLeft, float *pfTop, float *pfRight, float *p
 	*pfLeft   = fLeft   + m_pGlyphsBuffer[nCurIndex].fX + m_fX;
 	*pfRight  = fRight  + m_pGlyphsBuffer[nCurIndex].fX + m_fX;
 	*pfTop    = fTop    + m_pGlyphsBuffer[nCurIndex].fY + m_fY;
-	*pfBottom = fBottom + m_pGlyphsBuffer[nCurIndex].fY + m_fY; 
+	*pfBottom = fBottom + m_pGlyphsBuffer[nCurIndex].fY + m_fY;
 }
 
 void CGlyphString::GetBBox2(float *pfLeft, float *pfTop, float *pfRight, float *pfBottom)
@@ -448,7 +448,7 @@ void CGlyphString::GetBBox2(float *pfLeft, float *pfTop, float *pfRight, float *
 	fLeft   += m_fX;
 	fRight  += m_fX;
 	fTop    += m_fY;
-	fBottom += m_fY; 
+	fBottom += m_fY;
 
 	*pfLeft  = min( fLeft, min(m_fX, m_fEndX) );
 	*pfRight = max( fRight, max(m_fX, m_fEndX) );

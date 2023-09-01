@@ -798,6 +798,7 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 			subtype = oox_anim_effect->filter->substr(openBracket + 1, closeBracket - openBracket - 1);
 		}
 
+		std::transform(filter.begin(), filter.end(), filter.begin(), ::towlower);
 		if (filter == L"blinds")
 		{
 			odfType = smil_transition_type::blindsWipe;
@@ -865,7 +866,7 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 			else if (subtype == L"outVertical")		{ odfReversed = false;	odfSubtype = L"vertical"; }
 			else if (subtype == L"outHorizontal")	{ odfReversed = false;	odfSubtype = L"horizontal"; }
 		}
-		else if (filter == L"randomBars")
+		else if (boost::starts_with(filter, L"randombar"))
 		{
 			odfType = smil_transition_type::randomBarWipe;
 			odfReversed = false;
@@ -1018,8 +1019,6 @@ void PptxConverter::convert(PPTX::Logic::AnimClr* oox_anim_color)
 		return;
 
 	odp_context->current_slide().start_timing_anim_clr();
-
-	// TODO: Implement theme colors (accent1, accent2...)
 
 	convert(&oox_anim_color->cBhvr);
 

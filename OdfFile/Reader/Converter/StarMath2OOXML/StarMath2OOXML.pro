@@ -8,9 +8,11 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 SOURCES += Test.cpp \
+    cconversionsmtoooxml.cpp \
     cstarmathpars.cpp
 
 HEADERS += \
+    cconversionsmtoooxml.h \
     cstarmathpars.h
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CIRE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

@@ -30,7 +30,8 @@ namespace StarMath
 		m_arParsLine.push_back(ParsElement(itFirst,itEnd,m_arParsLine));
 		//std::wcout << GetElement(itFirst,itEnd)<<std::endl;
 		}
-		PrintAr();
+
+		//PrintAr();
 	}
 	std::wstring CStarMathPars::GetElement(std::wstring::iterator& itFirst,std::wstring::iterator& itEnd)
 	{
@@ -43,11 +44,11 @@ namespace StarMath
 				itFirst++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || (iswalpha(*itFirst) && iswdigit(m_wsElement.back())) || (iswdigit(*itFirst) && iswalpha(m_wsElement.back()))))
+			else if(!m_wsElement.empty() && (*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst || (iswalpha(*itFirst) && iswdigit(m_wsElement.back())) || (iswdigit(*itFirst) && iswalpha(m_wsElement.back()))))
 			{
 				return m_wsElement;
 			}
-			else if((*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' ) && m_wsElement.empty() )
+			else if((*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst ) && m_wsElement.empty() )
 			{
 				m_wsElement.push_back(*itFirst);
 				itFirst++;
@@ -63,48 +64,68 @@ namespace StarMath
 	}
 	CElement* CStarMathPars::ParsElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd,std::vector<CElement*>& arParsLine)
 	{
-		TypeBinOperator enTypeBinOp;
-		TypeBracket enTypeBracket;
-		TypeOperator enTypeOp;
-		TypeAttribute enTypeAtt;
+		CAttribute* m_oAttribute = new CAttribute;
 		std::wstring wsOneElement = GetElement(itFirst,itEnd);
+		while((L"color" == wsOneElement && CheckingTheNextElement(itFirst,itEnd,CheckColorAttribute))|| CheckPropertiesAttribute(wsOneElement) || CheckTopAttribute(wsOneElement))
+		{
+			if(wsOneElement == L"color") wsOneElement = GetElement(itFirst,itEnd);
+			m_oAttribute->SetTypeAtt(wsOneElement);
+			wsOneElement = GetElement(itFirst,itEnd);
+		}
+
 		if(CheckDigit(wsOneElement))
 		{
-			return new CNumber(wsOneElement);
+			CNumber* m_oCNumber = new CNumber(wsOneElement);
+			m_oCNumber->SetAttribute(m_oAttribute);
+			return m_oCNumber;
 		}
-		else if(wsOneElement.size() == 1 && CheckOneElementBinOperator(wsOneElement[0],enTypeBinOp))
-		{
-			return new CBinaryOperator(enTypeBinOp);
-		}
-		else if(CheckBinOperator(wsOneElement,enTypeBinOp))
+		if(CheckSpecialCharacter(wsOneElement)) return new CSpecialCharacters(wsOneElement);
+		else if(CheckBinOperator(wsOneElement) || CheckPlusOrMinus(wsOneElement) || CheckBinOperatorLowPriority(wsOneElement))
 		{
 			if(!arParsLine.empty())
 			{
-				CBinaryOperator* m_pBinOp = new CBinaryOperator;
+				CBinaryOperator* m_pBinOp = new CBinaryOperator(wsOneElement);
+				CElement* m_oTempElement{ParsElement(itFirst,itEnd,arParsLine)};
 				m_pBinOp->SetLeftArg(arParsLine.back());
-				m_pBinOp->SetRightArg(ParsElement(itFirst,itEnd,arParsLine));
-				m_pBinOp->SetTypeBin(enTypeBinOp);
 				arParsLine.pop_back();
+				if(((CheckPlusOrMinus(wsOneElement) || CheckBinOperatorLowPriority(wsOneElement)) && (CheckingTheNextElement(itFirst, itEnd,CheckBinOperator)||CheckingTheNextElement(itFirst, itEnd, CheckIndex))) || (CheckBinOperator(wsOneElement) && CheckingTheNextElement(itFirst, itEnd,CheckIndex)))
+				{
+					arParsLine.push_back(m_oTempElement);
+					m_pBinOp->SetRightArg(ParsElement(itFirst,itEnd,arParsLine));
+				}
+				else m_pBinOp->SetRightArg(m_oTempElement);
+				m_pBinOp->SetAttribute(m_oAttribute);
 				return m_pBinOp;
 			}
 			return NULL;
 		}
-		else if(CheckBracket(wsOneElement[0],enTypeBracket))
+		else if(CheckBracketOpen(wsOneElement) || CheckScalable_NotScalableBracketLeft(wsOneElement) || (L"left" == wsOneElement && CheckingTheNextElement(itFirst,itEnd,CheckScalable_NotScalableBracketLeft)))
 		{
+			CBracket* m_oBracket = new CBracket;
+			std::wstring wsTypeBracket;
 			std::vector<CElement*> arValueBrecket;
-			std::wstring::iterator itTempIteratorforBacket = itFirst;
-			wsOneElement = GetElement(itFirst,itEnd);
-			while(wsOneElement[0] != L'}')
+			if(L"left" == wsOneElement)
 			{
-				arValueBrecket.push_back(ParsElement(itTempIteratorforBacket,itEnd,arValueBrecket));
-				itFirst = itTempIteratorforBacket;
+				m_oBracket->SetScalable();
 				wsOneElement = GetElement(itFirst,itEnd);
+				wsTypeBracket = wsOneElement;
 			}
-			return new CBracket(arValueBrecket,enTypeBracket);
+			else wsTypeBracket = wsOneElement;
+			while(!CheckingTheNextElement(itFirst,itEnd,CheckBracketClose) && !CheckingTheNextElement(itFirst,itEnd,CheckScalable_NotScalableBracketRight))
+			{
+				arValueBrecket.push_back(ParsElement(itFirst,itEnd,arValueBrecket));
+			}
+			wsOneElement = GetElement(itFirst,itEnd);
+			std::wcout << wsOneElement << std::endl;
+			if(L"right" == wsOneElement) wsOneElement = GetElement(itFirst,itEnd);
+			m_oBracket->SetBracketVal(arValueBrecket);
+			m_oBracket->SetTypeBracket(wsTypeBracket);
+			m_oBracket ->SetAttribute(m_oAttribute);
+			return m_oBracket;
 		}
-		else if(CheckOperator(wsOneElement,enTypeOp))
+		else if(CheckOperator(wsOneElement))
 		{
-			COperator* oTempOp = new COperator;
+			COperator* oTempOp = new COperator(wsOneElement);
 			std::vector<CElement*> arValueBrecket;
 			std::wstring::iterator itSavePos;
 			do
@@ -119,27 +140,9 @@ namespace StarMath
 					break;
 			}while(true);
 			oTempOp->SetValueOp(ParsElement(itSavePos,itEnd,arValueBrecket));
-			oTempOp->SetTypeOp(enTypeOp);
+			oTempOp->SetAttribute(m_oAttribute);
 			return oTempOp;
 		}
-		else if(CheckTopAttribute(wsOneElement,enTypeAtt) || CheckPropertiesAttribute(wsOneElement,enTypeAtt)|| (wsOneElement == L"color" && CheckColorAttribute(GetElement(itFirst,itEnd),enTypeAtt)))
-		{
-			return new CAttribute(ParsElement(itFirst,itEnd,arParsLine),enTypeAtt);
-		}
-//		else if(wsOneElement == L"left" && CheckScalable_NotScalableBracket(GetElement(itFirst,itEnd),enTypeBracket))
-//		{
-//			std::vector<CElement*> arValueBrecket;
-//			std::wstring::iterator itTempIteratorforBacket = itFirst;
-//			wsOneElement = GetElement(itFirst,itEnd);
-//			while(wsOneElement != L"right")
-//			{
-//				arValueBrecket.push_back(ParsElement(itTempIteratorforBacket,itEnd,arValueBrecket));
-//				itFirst = itTempIteratorforBacket;
-//				wsOneElement = GetElement(itFirst,itEnd);
-//			}
-//			wsOneElement = GetElement(itFirst,itEnd);
-//			return new CBracket(arValueBrecket,enTypeBracket);
-//		}
 	}
 
 	bool CStarMathPars::CheckDigit(const std::wstring &wsCheckToken)
@@ -150,43 +153,13 @@ namespace StarMath
 		}
 		return true;
 	}
-	bool CStarMathPars::CheckScalable_NotScalableBracket(const std::wstring &wsCheckToken, TypeBracket &enType)
+	bool CStarMathPars::CheckScalable_NotScalableBracketLeft(const std::wstring &wsCheckToken)
 	{
-		if(wsCheckToken == L"ldbracket")
-		{
-			enType = ldbracket;
-			return true;
-		}
-		else if(wsCheckToken == L"lbrace")
-		{
-			enType = lbrace;
-			return true;
-		}
-		else if(wsCheckToken == L"langle")
-		{
-			enType = langle;
-			return true;
-		}
-		else if(wsCheckToken == L"lceil")
-		{
-			enType = lceil;
-			return true;
-		}
-		else if(wsCheckToken == L"lfloor")
-		{
-			enType = lfloor;
-			return true;
-		}
-		else if(wsCheckToken == L"lline")
-		{
-			enType = lline;
-			return true;
-		}
-		else if(wsCheckToken == L"ldline")
-		{
-			enType = ldline;
-			return true;
-		}
+		return(L"ldbracket" == wsCheckToken || L"lbrace" == wsCheckToken || L"langle" == wsCheckToken || L"lceil" == wsCheckToken || L"lfloor" == wsCheckToken || L"lline" == wsCheckToken || L"ldline" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckScalable_NotScalableBracketRight(const std::wstring &wsCheckToken)
+	{
+		return(L"rdbracket" == wsCheckToken || L"rbrace" == wsCheckToken || L"rangle" == wsCheckToken || L"rceil" == wsCheckToken || L"rfloor" == wsCheckToken || L"rline" == wsCheckToken || L"rdline" == wsCheckToken || L"right" == wsCheckToken);
 	}
 ////////////////Requires improvement
 	/*bool CStarMathPars::CheckUnarSign(std::wstring &wsCheckToken,CUnarySign& m_oUnarSign)
@@ -208,361 +181,92 @@ namespace StarMath
 		}
 		return UnarSign;
 	}*/
-
-	bool CStarMathPars::CheckBinOperator(const std::wstring &wsCheckToken, TypeBinOperator& enTypeBinOperator)
+	bool CStarMathPars::CheckingTheNextElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd, bool (&func)(const std::wstring&))
 	{
-		if(wsCheckToken == L"over")
-		{
-			enTypeBinOperator = over;
-			return true;
-		}
-		else if(wsCheckToken == L"cdot")
-		{
-			enTypeBinOperator = cdot;
-			return true;
-		}
-		else if(wsCheckToken == L"times")
-		{
-			enTypeBinOperator = times;
-			return true;
-		}
-		else if(wsCheckToken == L"frac")
-		{
-			enTypeBinOperator = frac;
-			return true;
-		}
-		else if(wsCheckToken == L"div")
-		{
-			enTypeBinOperator = div;
-			return true;
-		}
-		else if(wsCheckToken == L"oplus")
-		{
-			enTypeBinOperator = oplus;
-			return true;
-		}
-		else if(wsCheckToken == L"ominus")
-		{
-			enTypeBinOperator = ominus;
-			return true;
-		}
-		else if(wsCheckToken == L"odot")
-		{
-			enTypeBinOperator = odot;
-			return true;
-		}
-		else if(wsCheckToken == L"otimes")
-		{
-			enTypeBinOperator = otimes;
-			return true;
-		}
-		else if(wsCheckToken == L"odivide")
-		{
-			enTypeBinOperator = odivide;
-			return true;
-		}
-		else if(wsCheckToken == L"circ")
-		{
-			enTypeBinOperator = circ;
-			return true;
-		}
-		else if(wsCheckToken == L"wideslash")
-		{
-			enTypeBinOperator = wideslash;
-			return true;
-		}
-		else if(wsCheckToken == L"widebslash")
-		{
-			enTypeBinOperator = widebslash;
-			return true;
-		}
-		else return false;
+		std::wstring::iterator itTempVal = itFirst;
+		bool bResult = func(GetElement(itFirst,itEnd));
+		itFirst = itTempVal;
+		return bResult;
 	}
-
-	bool CStarMathPars::CheckOneElementBinOperator(const char &wsCheckToken, TypeBinOperator &enTypeBinOperator)
+	bool CStarMathPars::CheckBinOperator(const std::wstring &wsCheckToken)
 	{
-		switch (wsCheckToken)
-		{
-		case '+':
-			enTypeBinOperator = plus;
-			return true;
-		case '-':
-			enTypeBinOperator = minus;
-			return true;
-
-		case '*':
-			enTypeBinOperator = multipl;
-			return true;
-		case '/':
-			enTypeBinOperator = division;
-			return true;
-		default:
-		return false;
-		}
+		return(L"*" ==wsCheckToken || L"/" == wsCheckToken || wsCheckToken == L"over" || wsCheckToken == L"cdot" || wsCheckToken == L"times" || wsCheckToken == L"frac" || wsCheckToken == L"div"  || wsCheckToken == L"odot" || wsCheckToken == L"otimes" || wsCheckToken == L"odivide"  || wsCheckToken == L"wideslash" || wsCheckToken == L"widebslash");
 	}
-	bool CStarMathPars::CheckOperator(const std::wstring &wsCheckToken, TypeOperator & enTypeOperator)
+	bool CStarMathPars::CheckBinOperatorLowPriority(const std::wstring &wsCheckToken)
 	{
-		if(wsCheckToken == L"lim")
-		{
-			 enTypeOperator = lim;
-			return true;
-		}
-		else if(wsCheckToken == L"sum")
-		{
-			 enTypeOperator = sum;
-			return true;
-		}
-		else return false;
+		return (wsCheckToken == L"oplus" || wsCheckToken == L"ominus"|| wsCheckToken == L"circ");
 	}
-	bool CStarMathPars::CheckIndex(const std::wstring &wsCheckToken)
+	bool CStarMathPars::CheckPlusOrMinus(const std::wstring &wsCheckToken)
 	{
-		if(wsCheckToken == L"from")
+		switch (wsCheckToken[0])
 		{
+		case L'+':
 			return true;
-		}
-		else if(wsCheckToken ==L"to")
-		{
-			return true;
-		}
-		else return false;
-	}
-	bool CStarMathPars::CheckBracket(const char &wsCheckToken, TypeBracket & enTypeBracket)
-	{
-		switch (wsCheckToken) {
-		case '{':
-			enTypeBracket = brace;
-			return true;
-		case '(':
-			enTypeBracket = round;
-			return true;
-		case '[':
-			enTypeBracket = square;
+		case L'-':
 			return true;
 		default:
 			return false;
 		}
 	}
-	bool CStarMathPars::CheckTopAttribute(const std::wstring& wsCheckToken,TypeAttribute& enTypeAtt)
+	bool CStarMathPars::CheckOperator(const std::wstring &wsCheckToken)
 	{
-		if(wsCheckToken == L"acute")
-		{
-			enTypeAtt = acute;
-			return true;
-		}
-		else if(wsCheckToken == L"breve")
-		{
-			enTypeAtt = breve;
-			return true;
-		}
-		else if(wsCheckToken == L"dot")
-		{
-			enTypeAtt = dot;
-			return true;
-		}
-		else if(wsCheckToken == L"dddot")
-		{
-			enTypeAtt = dddot;
-			return true;
-		}
-		else if(wsCheckToken == L"vec")
-		{
-			enTypeAtt = vec;
-			return true;
-		}
-		else if(wsCheckToken == L"tilde")
-		{
-			enTypeAtt = tilde;
-			return true;
-		}
-		else if(wsCheckToken == L"check")
-		{
-			enTypeAtt = check;
-			return true;
-		}
-		else if(wsCheckToken == L"grave")
-		{
-			enTypeAtt = grave;
-			return true;
-		}
-		else if(wsCheckToken == L"circle")
-		{
-			enTypeAtt = circle;
-			return true;
-		}
-		else if(wsCheckToken == L"ddot")
-		{
-			enTypeAtt = ddot;
-			return true;
-		}
-		else if(wsCheckToken == L"bar")
-		{
-			enTypeAtt = bar;
-			return true;
-		}
-		else if(wsCheckToken == L"harpoon")
-		{
-			enTypeAtt = harpoon;
-			return true;
-		}
-		else if(wsCheckToken == L"hat")
-		{
-			enTypeAtt = hat;
-			return true;
-		}
-		else if(wsCheckToken == L"widevec")
-		{
-			enTypeAtt = widevec;
-			return true;
-		}
-		else if(wsCheckToken == L"widetilde")
-		{
-			enTypeAtt = widetilde;
-			return true;
-		}
-		else if(wsCheckToken == L"overline")
-		{
-			enTypeAtt = overline;
-			return true;
-		}
-		else if(wsCheckToken == L"overstrike")
-		{
-			enTypeAtt = overstrike;
-			return true;
-		}
-		else if(wsCheckToken == L"wideharpoon")
-		{
-			enTypeAtt = wideharpoon;
-			return true;
-		}
-		else if(wsCheckToken == L"widehat")
-		{
-			enTypeAtt = widehat;
-			return true;
-		}
-		else if(wsCheckToken == L"underline")
-		{
-			enTypeAtt = underline;
-			return true;
-		}
-		else return false;
+		return(wsCheckToken == L"lim" || wsCheckToken == L"sum");
 	}
-	bool CStarMathPars::CheckPropertiesAttribute(const std::wstring& wsCheckToken,TypeAttribute& enTypeAtt)
+	bool CStarMathPars::CheckIndex(const std::wstring &wsCheckToken)
 	{
-		if(wsCheckToken == L"phantom")
-		{
-			enTypeAtt = phantom;
-			return true;
-		}
-		else if(wsCheckToken == L"bold")
-		{
-			enTypeAtt = bold;
-			return true;
-		}
-		else if(wsCheckToken == L"ital")
-		{
-			enTypeAtt = ital;
-			return true;
-		}
-		else return false;
+		return (wsCheckToken == L"from" || wsCheckToken == L"to" || wsCheckToken[0] == L'_' || wsCheckToken[0] == L'^' );
 	}
-	bool CStarMathPars::CheckColorAttribute(const std::wstring &wsCheckToken, TypeAttribute &enTypeAtt)
+	bool CStarMathPars::CheckBracketOpen(const std::wstring& wsCheckToken)
 	{
-		if(wsCheckToken == L"black")
-		{
-			enTypeAtt = black;
+		switch (wsCheckToken[0]) {
+		case '{':
 			return true;
-		}
-		else if(wsCheckToken == L"green")
-		{
-			enTypeAtt = green;
+		case '(':
 			return true;
-		}
-		else if(wsCheckToken == L"aqua")
-		{
-			enTypeAtt = aqua;
+		case '[':
 			return true;
-		}
-		else if(wsCheckToken == L"yellow")
-		{
-			enTypeAtt = yellow;
+		case '}':
 			return true;
-		}
-		else if(wsCheckToken == L"lime")
-		{
-			enTypeAtt = lime;
+		case ')':
 			return true;
-		}
-		else if(wsCheckToken == L"navy")
-		{
-			enTypeAtt = navy;
+		case ']':
 			return true;
+		default:
+			return false;
 		}
-		else if(wsCheckToken == L"purple")
-		{
-			enTypeAtt = purple;
+	}
+	bool CStarMathPars::CheckBracketClose(const std::wstring& wsCheckToken)
+	{
+		switch (wsCheckToken[0]) {;
+		case '}':
 			return true;
-		}
-		else if(wsCheckToken == L"teal")
-		{
-			enTypeAtt = teal;
+		case ')':
 			return true;
-		}
-		else if(wsCheckToken == L"blue")
-		{
-			enTypeAtt = blue;
+		case ']':
 			return true;
+		default:
+			return false;
 		}
-		else if(wsCheckToken == L"red")
-		{
-			enTypeAtt = red;
-			return true;
-		}
-		else if(wsCheckToken == L"fuchsia")
-		{
-			enTypeAtt = fuchsia;
-			return true;
-		}
-		else if(wsCheckToken == L"gray")
-		{
-			enTypeAtt = gray;
-			return true;
-		}
-		else if(wsCheckToken == L"maroon")
-		{
-			enTypeAtt = maroon;
-			return true;
-		}
-		else if(wsCheckToken == L"olive")
-		{
-			enTypeAtt = olive;
-			return true;
-		}
-		else if(wsCheckToken == L"silver")
-		{
-			enTypeAtt = silver;
-			return true;
-		}
-		else if(wsCheckToken == L"coral")
-		{
-			enTypeAtt = coral;
-			return true;
-		}
-		else if(wsCheckToken == L"midnightblue")
-		{
-			enTypeAtt = midnightblue;
-			return true;
-		}
-		else if(wsCheckToken == L"crimson")
-		{
-			enTypeAtt = crimson;
-			return true;
-		}
-		else if(wsCheckToken == L"violet")
-		{
-			enTypeAtt = violet;
-			return true;
-		}
-		else return false;
+	}
+	bool CStarMathPars::CheckTopAttribute(const std::wstring& wsCheckToken)
+	{
+		return(L"acute" == wsCheckToken || L"breve" == wsCheckToken || L"dot" == wsCheckToken || L"dddot" == wsCheckToken || L"vec" == wsCheckToken || L"tilde" == wsCheckToken || L"check" == wsCheckToken || L"grave" == wsCheckToken || L"circle" == wsCheckToken || L"ddot" == wsCheckToken || L"bar" == wsCheckToken || L"harpoon" == wsCheckToken || L"hat" == wsCheckToken || L"widevec" == wsCheckToken || L"widetilde" == wsCheckToken || L"overline" == wsCheckToken || L"overstrike" == wsCheckToken || L"wideharpoon" == wsCheckToken || L"widehat" == wsCheckToken || L"underline" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckPropertiesAttribute(const std::wstring& wsCheckToken)
+	{
+		return(L"ital" == wsCheckToken || L"bold" == wsCheckToken || L"phantom" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckColorAttribute(const std::wstring &wsCheckToken)
+	{
+		return (L"violet" == wsCheckToken || L"black" == wsCheckToken || L"green" == wsCheckToken || L"aqua" == wsCheckToken || L"yellow" == wsCheckToken || L"lime" == wsCheckToken || L"navy" == wsCheckToken || L"purple" == wsCheckToken || L"teal" == wsCheckToken || L"blue" == wsCheckToken || L"red" == wsCheckToken || L"fuchsia" == wsCheckToken || L"gray" == wsCheckToken || L"maroon" == wsCheckToken || L"olive" == wsCheckToken || L"silver" == wsCheckToken || L"coral" == wsCheckToken || L"midnightblue" == wsCheckToken || L"crimson" == wsCheckToken || L"violet" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckSpecialCharacter(const std::wstring &wsCheckToken)
+	{
+		return (L"mline" == wsCheckToken || L"grid" == wsCheckToken);
+	}
+	std::vector<CElement*> CStarMathPars::GetVector()
+	{
+		return m_arParsLine;
 	}
 //Class methods CNumber
 	CNumber::CNumber()
@@ -607,9 +311,76 @@ namespace StarMath
 //Class methods CBinaryOperator
 	CBinaryOperator::CBinaryOperator()
 	{}
-	CBinaryOperator::CBinaryOperator(const TypeBinOperator &enType)
+	CBinaryOperator::CBinaryOperator(const std::wstring& wsToken)
 	{
-		enTypeBinOp = enType;
+		if(wsToken == L"+")
+		{
+			enTypeBinOp = plus;
+		}
+		else if(wsToken == L"-")
+		{
+			enTypeBinOp = minus;
+		}
+		else if(wsToken == L"*")
+		{
+			enTypeBinOp = multipl;
+		}
+		else if(wsToken == L"/")
+		{
+			enTypeBinOp = division;
+		}
+		else if(wsToken == L"over")
+		{
+			enTypeBinOp = over;
+		}
+		else if(wsToken == L"cdot")
+		{
+			enTypeBinOp = cdot;
+		}
+		else if(wsToken == L"times")
+		{
+			enTypeBinOp = times;
+		}
+		else if(wsToken == L"frac")
+		{
+			enTypeBinOp = frac;
+		}
+		else if(wsToken == L"div")
+		{
+			enTypeBinOp = div;
+		}
+		else if(wsToken == L"oplus")
+		{
+			enTypeBinOp = oplus;
+		}
+		else if(wsToken == L"ominus")
+		{
+			enTypeBinOp = ominus;
+		}
+		else if(wsToken == L"odot")
+		{
+			enTypeBinOp = odot;
+		}
+		else if(wsToken == L"otimes")
+		{
+			enTypeBinOp = otimes;
+		}
+		else if(wsToken == L"odivide")
+		{
+			enTypeBinOp = odivide;
+		}
+		else if(wsToken == L"circ")
+		{
+			enTypeBinOp = circ;
+		}
+		else if(wsToken == L"wideslash")
+		{
+			enTypeBinOp = wideslash;
+		}
+		else if(wsToken == L"widebslash")
+		{
+			enTypeBinOp = widebslash;
+		}
 		arLeftArg = nullptr;
 		arRightArg = nullptr;
 	}
@@ -642,9 +413,32 @@ namespace StarMath
 	{
 		this->enTypeBinOp = enType;
 	}
+	CElement* CBinaryOperator::GetLeftArg()
+	{
+		return arLeftArg;
+	}
+	CElement* CBinaryOperator::GetRightArg()
+	{
+		return arRightArg;
+	}
+	TypeElement CBinaryOperator::GetTypeRight()
+	{
+		return arRightArg->GetType();
+	}
 //Class methods COperator
 	COperator::COperator(): oFromValue(NULL),oToValue(NULL),oValueOp(NULL)
 	{}
+	COperator::COperator(const std::wstring& wsToken): oFromValue(NULL), oToValue(NULL), oValueOp(NULL)
+	{
+		if(wsToken== L"lim")
+		{
+			 enTypeOp = lim;
+		}
+		else if(wsToken == L"sum")
+		{
+			 enTypeOp = sum;
+		}
+	}
 	COperator::~COperator()
 	{
 		delete oFromValue;
@@ -682,17 +476,43 @@ namespace StarMath
 	{
 		enTypeOp = enType;
 	}
-	void COperator::AvailabilityMline()
-	{
-		bMline = true;
-	}
 //Class methods CBracket
 	CBracket::CBracket()
 	{}
-	CBracket::CBracket(const std::vector<CElement*>& arValue,const TypeBracket& enType)
+	CBracket::CBracket(const std::vector<CElement*>& arValue,const std::wstring& wsCheckToken)
 	{
 		arBrecketVal = arValue;
-		enTypeBracket = enType;
+		if (L"{" == wsCheckToken) enTypeBracket =brace;
+		else if (L"(" == wsCheckToken) enTypeBracket = round;
+		else if (L"[" == wsCheckToken) enTypeBracket = square;
+		else if(wsCheckToken == L"ldbracket")
+		{
+			enTypeBracket = ldbracket;
+		}
+		else if(wsCheckToken == L"lbrace")
+		{
+			enTypeBracket = lbrace;
+		}
+		else if(wsCheckToken == L"langle")
+		{
+			enTypeBracket = langle;
+		}
+		else if(wsCheckToken == L"lceil")
+		{
+			enTypeBracket = lceil;
+		}
+		else if(wsCheckToken == L"lfloor")
+		{
+			enTypeBracket = lfloor;
+		}
+		else if(wsCheckToken == L"lline")
+		{
+			enTypeBracket = lline;
+		}
+		else if(wsCheckToken == L"ldline")
+		{
+			enTypeBracket = ldline;
+		}
 	}
 	CBracket::~CBracket()
 	{
@@ -713,33 +533,261 @@ namespace StarMath
 	{
 		return {};
 	}
+	void CBracket::SetScalable()
+	{
+		bScalable = true;
+	}
+	void CBracket::SetBracketVal(const std::vector<CElement *> &arBrecketValue)
+	{
+		arBrecketVal = arBrecketValue;
+	}
+	void CBracket::SetTypeBracket(const std::wstring& wsCheckToken)
+	{
+		if (L"{" == wsCheckToken) enTypeBracket =brace;
+		else if (L"(" == wsCheckToken) enTypeBracket = round;
+		else if (L"[" == wsCheckToken) enTypeBracket = square;
+		else if(wsCheckToken == L"ldbracket")
+		{
+			enTypeBracket = ldbracket;
+		}
+		else if(wsCheckToken == L"lbrace")
+		{
+			enTypeBracket = lbrace;
+		}
+		else if(wsCheckToken == L"langle")
+		{
+			enTypeBracket = langle;
+		}
+		else if(wsCheckToken == L"lceil")
+		{
+			enTypeBracket = lceil;
+		}
+		else if(wsCheckToken == L"lfloor")
+		{
+			enTypeBracket = lfloor;
+		}
+		else if(wsCheckToken == L"lline")
+		{
+			enTypeBracket = lline;
+		}
+		else if(wsCheckToken == L"ldline")
+		{
+			enTypeBracket = ldline;
+		}
+	}
 //Class methods CAttribute
 	CAttribute::CAttribute()
-	{}
-	CAttribute::CAttribute(CElement *oValue, const TypeAttribute &enType)
 	{
-		enTypeAtt = enType;
-		oValueAtt = oValue;
+	}
+	CAttribute::CAttribute(const TypeAttributeTop &enType)
+	{
+		enTypeTop = enType;
 	}
 	CAttribute::~CAttribute()
 	{
-		delete oValueAtt;
 	}
-	std::wstring CAttribute::GetValue()
+	void CAttribute::SetTypeAtt(const std::wstring& wsCheckToken)
+	{
+		if(wsCheckToken == L"phantom")
+		{
+			bPhantom = true;
+		}
+		else if(wsCheckToken == L"bold")
+		{
+			bBold = true;
+		}
+		else if(wsCheckToken == L"ital")
+		{
+			bItal = true;
+		}
+		else if(wsCheckToken == L"black")
+		{
+			enTypeColor = black;
+		}
+		else if(wsCheckToken == L"green")
+		{
+			enTypeColor = green;
+		}
+		else if(wsCheckToken == L"aqua")
+		{
+			enTypeColor = aqua;
+		}
+		else if(wsCheckToken == L"yellow")
+		{
+			enTypeColor = yellow;
+		}
+		else if(wsCheckToken == L"lime")
+		{
+			enTypeColor = lime;
+		}
+		else if(wsCheckToken == L"navy")
+		{
+			enTypeColor = navy;
+		}
+		else if(wsCheckToken == L"purple")
+		{
+			enTypeColor = purple;
+		}
+		else if(wsCheckToken == L"teal")
+		{
+			enTypeColor = teal;
+		}
+		else if(wsCheckToken == L"blue")
+		{
+			enTypeColor = blue;
+		}
+		else if(wsCheckToken == L"red")
+		{
+			enTypeColor = red;
+		}
+		else if(wsCheckToken == L"fuchsia")
+		{
+			enTypeColor = fuchsia;
+		}
+		else if(wsCheckToken == L"gray")
+		{
+			enTypeColor = gray;
+		}
+		else if(wsCheckToken == L"maroon")
+		{
+			enTypeColor = maroon;
+		}
+		else if(wsCheckToken == L"olive")
+		{
+			enTypeColor = olive;
+		}
+		else if(wsCheckToken == L"silver")
+		{
+			enTypeColor = silver;
+		}
+		else if(wsCheckToken == L"coral")
+		{
+			enTypeColor = coral;
+		}
+		else if(wsCheckToken == L"midnightblue")
+		{
+			enTypeColor = midnightblue;
+		}
+		else if(wsCheckToken == L"crimson")
+		{
+			enTypeColor = crimson;
+		}
+		else if(wsCheckToken == L"violet")
+		{
+			enTypeColor = violet;
+		}
+		else if(wsCheckToken == L"acute")
+		{
+			enTypeTop = acute;
+		}
+		else if(wsCheckToken == L"breve")
+		{
+			enTypeTop = breve;
+		}
+		else if(wsCheckToken == L"dot")
+		{
+			enTypeTop = dot;
+		}
+		else if(wsCheckToken == L"dddot")
+		{
+			enTypeTop = dddot;
+		}
+		else if(wsCheckToken == L"vec")
+		{
+			enTypeTop = vec;
+		}
+		else if(wsCheckToken == L"tilde")
+		{
+			enTypeTop = tilde;
+		}
+		else if(wsCheckToken == L"check")
+		{
+			enTypeTop = check;
+		}
+		else if(wsCheckToken == L"grave")
+		{
+			enTypeTop = grave;
+		}
+		else if(wsCheckToken == L"circle")
+		{
+			enTypeTop = circle;
+		}
+		else if(wsCheckToken == L"ddot")
+		{
+			enTypeTop = ddot;
+		}
+		else if(wsCheckToken == L"bar")
+		{
+			enTypeTop = bar;
+		}
+		else if(wsCheckToken == L"harpoon")
+		{
+			enTypeTop = harpoon;
+		}
+		else if(wsCheckToken == L"hat")
+		{
+			enTypeTop = hat;
+		}
+		else if(wsCheckToken == L"widevec")
+		{
+			enTypeTop = widevec;
+		}
+		else if(wsCheckToken == L"widetilde")
+		{
+			enTypeTop = widetilde;
+		}
+		else if(wsCheckToken == L"overline")
+		{
+			enTypeTop = overline;
+		}
+		else if(wsCheckToken == L"overstrike")
+		{
+			enTypeTop = overstrike;
+		}
+		else if(wsCheckToken == L"wideharpoon")
+		{
+			enTypeTop = wideharpoon;
+		}
+		else if(wsCheckToken == L"widehat")
+		{
+			enTypeTop = widehat;
+		}
+		else if(wsCheckToken == L"underline")
+		{
+			enTypeTop = underline;
+		}
+	}
+	TypeAttributeTop CAttribute::GetTypeAtt()
+	{
+		return enTypeTop;
+	}
+//Class methods CElement
+	CElement::~CElement()
+	{
+	}
+	void CElement::SetAttribute(CAttribute* m_oCAttribute)
+	{
+		oCAttribute = m_oCAttribute;
+	}
+	TypeAttributeTop CElement::GetTypeAttribute()
+	{
+		return oCAttribute->GetTypeAtt();
+	}
+//Class methods CSpecial
+	CSpecialCharacters::CSpecialCharacters(const std::wstring& wsToken)
+	{
+		if(L"mline" == wsToken) enTypeSpecial = mline;
+		else if(L"grid" == wsToken) enTypeSpecial = grid;
+	}
+	CSpecialCharacters::~CSpecialCharacters()
+	{}
+	std::wstring CSpecialCharacters::GetValue()
 	{
 		return {};
 	}
-	TypeElement CAttribute::GetType()
+	TypeElement CSpecialCharacters::GetType()
 	{
-		return Attribute;
-	}
-	void CAttribute::SetTypeAtt(const TypeAttribute &enType)
-	{
-		enTypeAtt = enType;
-	}
-	void CAttribute::SetValueAtt(CElement *oValue)
-	{
-		oValueAtt = oValue;
+		return SpecialCharacter;
 	}
 }
 

@@ -1532,7 +1532,7 @@ namespace MetaFile
 		if (NULL == pNewPath || pNewPath->m_pCommands.empty())
 			return std::wstring();
 
-		std::wstring wsValue;
+		std::wstring wsValue, wsMoveValue;
 		BYTE oLastType = 0x00;
 
 		TXForm oTransform;
@@ -1542,6 +1542,11 @@ namespace MetaFile
 
 		for (const CEmfPathCommandBase* pCommand : pNewPath->m_pCommands)
 		{
+			if (EMF_PATHCOMMAND_MOVETO != pCommand->GetType() && !wsMoveValue.empty())
+			{
+				wsValue += wsMoveValue;
+				wsMoveValue.clear();
+			}
 			switch ((unsigned int)pCommand->GetType())
 			{
 				case EMF_PATHCOMMAND_MOVETO:
@@ -1551,7 +1556,7 @@ namespace MetaFile
 					TPointD oPoint(pMoveTo->x, pMoveTo->y);
 					oTransform.Apply(oPoint.x, oPoint.y);
 
-					wsValue += L"M " + ConvertToWString(oPoint.x) + L',' +  ConvertToWString(oPoint.y) + L' ';
+					wsMoveValue = L"M " + ConvertToWString(oPoint.x) + L',' +  ConvertToWString(oPoint.y) + L' ';
 
 					oLastType = EMF_PATHCOMMAND_MOVETO;
 

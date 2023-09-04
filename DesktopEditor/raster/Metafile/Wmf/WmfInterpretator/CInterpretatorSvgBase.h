@@ -74,7 +74,6 @@ namespace MetaFile
 		std::vector<TClipValue> m_arValues;
 
 		bool m_bStartClip;
-		bool m_bEndClip;
 	};
 
 	class CInterpretatorSvgBase : public IOutputDevice
@@ -106,7 +105,7 @@ namespace MetaFile
 		void AddStroke(NodeAttributes &arAttributes) const;
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL) const;
-		inline void AddClip();
+		void AddClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
 

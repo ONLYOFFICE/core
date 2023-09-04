@@ -442,6 +442,7 @@ namespace MetaFile
 		if (m_oClip.StartedClip())
 		{
 			WriteNodeEnd(L"g");
+			m_wsDefs += m_oClip.GetClip();
 			m_oClip.CloseClip();
 		}
 	}
@@ -734,11 +735,10 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::AddClip()
 	{
-		if (NULL == m_pParser || m_oClip.StartedClip() || m_oClip.Empty())
+		if (m_oClip.Empty() || m_oClip.StartedClip())
 			return;
 			
 		WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + m_oClip.GetClipId() + L')'}});
-		m_wsDefs += m_oClip.GetClip();
 		m_oClip.BeginClip();
 	}
 
@@ -1644,6 +1644,7 @@ namespace MetaFile
 					wsClip += L"<clipPath id=\"" + oClipValue.m_wsId + L"\">" + oClipValue.m_wsValue + L"</clipPath>";
 				else
 					wsClip.insert(wsClip.length() - 11, oClipValue.m_wsValue);
+				break;
 			}
 			case RGN_COPY:
 			{
@@ -1661,9 +1662,9 @@ namespace MetaFile
 		if (m_arValues.empty())
 			return std::wstring();
 
-		std::vector<TClipValue>::const_reverse_iterator oFound = std::find_if(m_arValues.rbegin(), m_arValues.rend(), [](const TClipValue& oClipValue){ return RGN_COPY == oClipValue.m_nClipMode; });
+		const std::vector<TClipValue>::const_reverse_iterator oFound = std::find_if(m_arValues.rbegin(), m_arValues.rend(), [](const TClipValue& oClipValue){ return RGN_COPY == oClipValue.m_nClipMode; });
 
-		return (m_arValues.end() != oFound.base()) ? (*oFound).m_wsId : m_arValues.front().m_wsId;
+		return (m_arValues.rend() != oFound) ? (*oFound).m_wsId : m_arValues.front().m_wsId;
 	}
 
 }

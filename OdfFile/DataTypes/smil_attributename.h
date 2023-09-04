@@ -60,6 +60,8 @@ public:
 		lineStyle,
 		opacity,
 		rotate,
+		stroke,
+		strokeColor,
 		skewX,
 		skewY,
 		visibility,

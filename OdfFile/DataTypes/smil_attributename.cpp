@@ -56,6 +56,8 @@ namespace cpdoccore { namespace odf_types {
 		case smil_attribute_name::lineColor					: _Wostream << L"lineColor"		; break;
 		case smil_attribute_name::lineStyle					: _Wostream << L"lineStyle"		; break;
 		case smil_attribute_name::opacity					: _Wostream << L"opacity"		; break;
+		case smil_attribute_name::stroke					: _Wostream << L"stroke"		; break;
+		case smil_attribute_name::strokeColor				: _Wostream << L"stroke-color"	; break;
 		case smil_attribute_name::rotate					: _Wostream << L"rotate"		; break;
 		case smil_attribute_name::skewX						: _Wostream << L"skewX"			; break;
 		case smil_attribute_name::skewY						: _Wostream << L"skewY"			; break;
@@ -87,6 +89,8 @@ namespace cpdoccore { namespace odf_types {
 		else if (Str == L"linecolor")			return smil_attribute_name(lineColor);
 		else if (Str == L"linestyle")			return smil_attribute_name(lineStyle);
 		else if (Str == L"opacity")				return smil_attribute_name(opacity);
+		else if (Str == L"stroke")				return smil_attribute_name(stroke);
+		else if (Str == L"strokecolor")			return smil_attribute_name(strokeColor);
 		else if (Str == L"rotate")				return smil_attribute_name(rotate);
 		else if (Str == L"skewx")				return smil_attribute_name(skewX);
 		else if (Str == L"skewx")				return smil_attribute_name(skewY);

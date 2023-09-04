@@ -34,12 +34,10 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Emf/EmfParser/CEmfParserBase.cpp \
 		$$METAFILE_PATH/Emf/EmfParser/CEmfPlusParser.cpp \
 		\
-		$$METAFILE_PATH/Emf/EmfClip.cpp \
 		$$METAFILE_PATH/Emf/EmfObjects.cpp \
 		$$METAFILE_PATH/Emf/EmfPath.cpp \
 		$$METAFILE_PATH/Emf/EmfPlayer.cpp \
 		$$METAFILE_PATH/Emf/EmfFile.cpp \
-		$$METAFILE_PATH/Wmf/WmfClip.cpp \
 		$$METAFILE_PATH/Wmf/WmfObjects.cpp \
 		$$METAFILE_PATH/Wmf/WmfPlayer.cpp \
 		\

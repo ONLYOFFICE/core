@@ -37,7 +37,6 @@
 #include "EmfTypes.h"
 #include "EmfObjects.h"
 #include "EmfPlusObjects.h"
-#include "EmfClip.h"
 
 #include <vector>
 #include <map>

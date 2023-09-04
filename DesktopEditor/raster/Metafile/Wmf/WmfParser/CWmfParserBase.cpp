@@ -1356,12 +1356,13 @@ namespace MetaFile
 
 	void CWmfParserBase::HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_SELECTCLIPREGION(ushIndex);
-
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 		// текущим интерфейсом рендерера невозможно.
-		m_pDC->GetClip()->Reset();
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_META_SELECTCLIPREGION(ushIndex);
+			m_pInterpretator->ResetClip();
+		}
 		UpdateOutputDC();
 	}
 
@@ -1385,9 +1386,6 @@ namespace MetaFile
 
 	void CWmfParserBase::HANDLE_META_EXCLUDECLIPRECT(short shBottom, short shRight, short shTop, short shLeft)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_EXCLUDECLIPRECT(shBottom, shRight, shTop, shLeft);
-
 		// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
 		// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
 		if (shLeft < shRight)
@@ -1423,21 +1421,26 @@ namespace MetaFile
 		TranslatePoint(pWindow->x, pWindow->y, oBB.dLeft, oBB.dTop);
 		TranslatePoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h, oBB.dRight, oBB.dBottom);
 
-		m_pDC->GetClip()->Exclude(oClip, oBB);
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_META_EXCLUDECLIPRECT(shBottom, shRight, shTop, shLeft);
+			m_pInterpretator->ExcludeClip(oClip, oBB);
+		}
 		UpdateOutputDC();
 	}
 
 	void CWmfParserBase::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
-
 		TRectD oClip;
 
 		TranslatePoint(shLeft, shTop, oClip.dLeft, oClip.dTop);
 		TranslatePoint(shRight, shBottom, oClip.dRight, oClip.dBottom);
 
-		m_pDC->GetClip()->Intersect(oClip);
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
+			m_pInterpretator->IntersectClip(oClip);
+		}
 		UpdateOutputDC();
 	}
 

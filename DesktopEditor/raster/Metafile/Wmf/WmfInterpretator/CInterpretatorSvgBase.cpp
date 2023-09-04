@@ -723,7 +723,7 @@ namespace MetaFile
 			                        ConvertToWString(oOldTransform.M12) + L',' +
 			                        ConvertToWString(oOldTransform.M21) + L',' +
 			                        ConvertToWString(oOldTransform.M22) + L',' +
-			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
+			                        ConvertToWString(oOldTransform.Dx)  + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;
 
@@ -1601,6 +1601,9 @@ namespace MetaFile
 
 	void CSvgClip::AddClipValue(const std::wstring &wsId, const std::wstring &wsValue, int nClipMode)
 	{
+		if (RGN_COPY == nClipMode)
+			m_arValues.clear();
+			
 		m_arValues.push_back({wsId, wsValue, nClipMode});
 	}
 
@@ -1662,9 +1665,7 @@ namespace MetaFile
 		if (m_arValues.empty())
 			return std::wstring();
 
-		const std::vector<TClipValue>::const_reverse_iterator oFound = std::find_if(m_arValues.rbegin(), m_arValues.rend(), [](const TClipValue& oClipValue){ return RGN_COPY == oClipValue.m_nClipMode; });
-
-		return (m_arValues.rend() != oFound) ? (*oFound).m_wsId : m_arValues.front().m_wsId;
+		return m_arValues.front().m_wsId;
 	}
 
 }

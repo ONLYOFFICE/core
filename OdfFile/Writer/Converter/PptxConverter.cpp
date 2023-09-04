@@ -740,6 +740,8 @@ void PptxConverter::convert(PPTX::Logic::AttrName* oox_attr_name)
 
 	if (val == L"style.color")
 		attrName = smil_attribute_name::color;
+	else if(val == L"stroke.color")
+		attrName = smil_attribute_name::strokeColor;
 	else if (val == L"fill.type")
 		attrName = smil_attribute_name::fill;
 	else if (val == L"fillcolor")
@@ -748,7 +750,9 @@ void PptxConverter::convert(PPTX::Logic::AttrName* oox_attr_name)
 		attrName = smil_attribute_name::fillOn;
 	else if (val == L"style.opacity")
 		attrName = smil_attribute_name::opacity;
-	else if (val == L"r")
+	else if (val == L"stroke.on")
+		attrName = smil_attribute_name::stroke;
+	else if (val == L"r" || val == L"style.rotation")
 		attrName = smil_attribute_name::rotate;
 	else if (val == L"xshear")
 		attrName = smil_attribute_name::skewX;
@@ -831,7 +835,8 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 		{
 			odfType = smil_transition_type::irisWipe;
 			odfSubtype = L"diamond";
-			odfReversed = false;
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
 		}
 		else if (filter == L"dissolve")
 		{
@@ -907,7 +912,6 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 		else
 		{
 			odfType = smil_transition_type::fade;
-			odfSubtype = L"crossfade"; 
 			odfReversed = false;
 		}
 

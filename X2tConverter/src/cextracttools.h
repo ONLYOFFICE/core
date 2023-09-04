@@ -139,7 +139,7 @@ namespace NExtractTools
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
 		TCD_DOC2DOCM,
-		TCD_COMPOUND2DOCX,
+		TCD_COMPOUND2,
 //xls 2
         TCD_XLS2XLST,
         TCD_XLS2XLST_BIN,
@@ -957,7 +957,7 @@ namespace NExtractTools
 				else if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
 					eRes = TCD_ZIPDIR;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
-					eRes = TCD_COMPOUND2DOCX;
+					eRes = TCD_COMPOUND2;
             }
 			else
 				eRes = TCD_ERROR;

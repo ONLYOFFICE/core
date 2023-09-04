@@ -4310,7 +4310,10 @@ namespace NExtractTools
 		   {
 			   nRes = mht2docx_dir(sFrom, sDocxDir, sTemp, params);
 		   }
-		   else
+		   else if (AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND == nFormatFrom)
+		   {
+			   nRes = compound2(sFrom, sDocxDir, sTemp, params);
+		   }
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if (SUCCEEDED_X2T(nRes))
            {
@@ -5223,7 +5226,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	_UINT32 compound2docxdir(const std::wstring& sFrom, const std::wstring& sTo, const std::wstring& sTemp, InputParams& params)
+	_UINT32 compound2(const std::wstring& sFrom, const std::wstring& sTo, const std::wstring& sTemp, InputParams& params)
 	{
 		POLE::Storage storage(sFrom.c_str());
 
@@ -5250,9 +5253,8 @@ namespace NExtractTools
 				
 				InputParams newparams = params;
 				newparams.m_sFileFrom = &sTempDocxDir;
-				fromInputParams(params);
 
-				return 0;
+				return fromInputParams(params) && file.Remove(sTempDocxDir);
 			}
 		}
 
@@ -5808,9 +5810,9 @@ namespace NExtractTools
 			{
 				result = msVbaProject2Xml(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
-			case TCD_COMPOUND2DOCX:
+			case TCD_COMPOUND2:
 			{
-				result = compound2docxdir(sFileFrom, sFileTo, sTempDir, oInputParams);
+				result = compound2(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,

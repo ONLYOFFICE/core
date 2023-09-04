@@ -1512,6 +1512,11 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 		PPTX::Logic::AnimRot& rotate = oox_time_base->as<PPTX::Logic::AnimRot>();
 		convert(&rotate);
 	}
+	else if (oox_time_base->is<PPTX::Logic::AnimScale>())
+	{
+		PPTX::Logic::AnimScale& rotate = oox_time_base->as<PPTX::Logic::AnimScale>();
+		convert(&rotate);
+	}
 }
 void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 {

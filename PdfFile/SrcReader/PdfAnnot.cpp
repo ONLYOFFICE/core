@@ -2062,12 +2062,14 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sT);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
+	{
+		oRes.WriteString(m_arrAction[i]->sType);
 		m_arrAction[i]->ToWASM(oRes);
+	}
 }
 
 void CActionGoTo::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(1);
 	oRes.AddInt(unPage);
 	oRes.WriteBYTE(nKind);
@@ -2107,7 +2109,6 @@ void CActionGoTo::ToWASM(NSWasm::CData& oRes)
 
 void CActionURI::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(6);
 	oRes.WriteString(sURI);
 
@@ -2116,7 +2117,6 @@ void CActionURI::ToWASM(NSWasm::CData& oRes)
 
 void CActionNamed::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(10);
 	oRes.WriteString(sNamed);
 
@@ -2125,7 +2125,6 @@ void CActionNamed::ToWASM(NSWasm::CData& oRes)
 
 void CActionJavaScript::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(14);
 	oRes.WriteString(sJavaScript);
 
@@ -2134,7 +2133,6 @@ void CActionJavaScript::ToWASM(NSWasm::CData& oRes)
 
 void CActionHide::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(9);
 	oRes.WriteBYTE(bHideFlag ? 1 : 0);
 	oRes.AddInt(arrAnnotName.size());
@@ -2146,7 +2144,6 @@ void CActionHide::ToWASM(NSWasm::CData& oRes)
 
 void CActionResetForm::ToWASM(NSWasm::CData& oRes)
 {
-	oRes.WriteString(sType);
 	oRes.WriteBYTE(12);
 	oRes.AddInt(unFlags);
 	oRes.AddInt(arrAnnotName.size());

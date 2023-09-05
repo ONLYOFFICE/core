@@ -984,7 +984,7 @@
 			// Тип аннотации
 			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
 			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
-			// 11 - StrikeOut, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
 			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
 			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
 			rec["Type"] = reader.readByte();
@@ -1103,7 +1103,7 @@
 						rec["InkList"][i].push(reader.readDouble());
 				}
 			}
-			// Highlight, Underline, Squiggly, StrikeOut
+			// Highlight, Underline, Squiggly, Strikeout
 			else if (rec["Type"] > 7 && rec["Type"] < 12)
 			{
 				// Координаты - QuadPoints

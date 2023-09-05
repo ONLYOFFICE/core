@@ -763,10 +763,9 @@ function onLoadFontsModule(window, undefined)
 	};
 
 	AscCommon.ZLib = ZLib;
-	AscCommon.ZLib.prototype.isModuleInit = true;
-
+	
 	if (AscCommon["CZLibEngineJS"])
-		AscCommon["CZLibEngineJS"].prototype.isModuleInit = true;
+		AscCommon["CZLibEngineJS"].prototype["isModuleInit"] = true;
 
 	window.nativeZlibEngine = new ZLib();
 

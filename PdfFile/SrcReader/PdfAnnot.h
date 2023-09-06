@@ -418,6 +418,26 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotPolygonPolyline
+//------------------------------------------------------------------------
+
+class CAnnotPolygonLine final : public CMarkupAnnot
+{
+public:
+	CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nIT; // Назначение аннотации
+	BYTE m_nSubtype; // Подтип Polygon или Polyline аннотации
+	BYTE m_nLE[2]; // Стили окончания линии
+	std::vector<double> m_arrIC; // Цвет заполнения
+	std::vector<double> m_arrVertices; // Координаты вершин
+	// TODO Measure Показатели масштаба, единиц измерения
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 

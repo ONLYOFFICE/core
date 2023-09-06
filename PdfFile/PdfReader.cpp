@@ -2139,13 +2139,9 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		{
 			pAnnot = new PdfReader::CAnnotSquareCircle(pdfDoc, &oAnnotRef, nPageIndex);
 		}
-		else if (sType == "Polygon")
+		else if (sType == "Polygon" || sType == "PolyLine")
 		{
-
-		}
-		else if (sType == "PolyLine")
-		{
-
+			pAnnot = new PdfReader::CAnnotPolygonLine(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Highlight" ||
 				 sType == "Underline" ||

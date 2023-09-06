@@ -911,6 +911,8 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarku
 					Object oObj1;
 					if (oObj2.arrayGet(k, &oObj1)->isNum())
 						arrLine.push_back(k % 2 == 0 ? oObj1.getNum() : m_dHeight - oObj1.getNum());
+					else
+						arrLine.push_back(0.0);
 					oObj1.free();
 				}
 				if (!arrLine.empty())
@@ -1136,6 +1138,105 @@ CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nP
 			m_arrIC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
 			oObj2.free();
 		}
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// Polygon, PolyLine
+//------------------------------------------------------------------------
+
+CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Подтип - Subtype
+	std::string sType;
+	if (oAnnot.dictLookup("Subtype", &oObj)->isName())
+		sType = oObj.getName();
+	oObj.free();
+
+	if (sType == "Polygon")
+		m_nSubtype = 6;
+	else if (sType == "PolyLine")
+		m_nSubtype = 7;
+
+	// Координаты вершин - Vertices
+	if (oAnnot.dictLookup("Vertices", &oObj)->isArray())
+	{
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			if (oObj.arrayGet(j, &oObj2)->isNum())
+				m_arrVertices.push_back(j % 2 == 0 ? oObj2.getNum() : m_dHeight - oObj2.getNum());
+			else
+				m_arrVertices.push_back(0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 16 - Стили окончания линии - LE
+	if (oAnnot.dictLookup("LE", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		m_nLE[0] = 5; m_nLE[1] = 5; // None
+		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
+		{
+			if (!oObj.arrayGet(i, &oObj2)->isName())
+			{
+				oObj2.free();
+				continue;
+			}
+
+			if (oObj2.isName("Square"))
+				m_nLE[i] = 0;
+			else if (oObj2.isName("Circle"))
+				m_nLE[i] = 1;
+			else if (oObj2.isName("Diamond"))
+				m_nLE[i] = 2;
+			else if (oObj2.isName("OpenArrow"))
+				m_nLE[i] = 3;
+			else if (oObj2.isName("ClosedArrow"))
+				m_nLE[i] = 4;
+			else if (oObj2.isName("Butt"))
+				m_nLE[i] = 6;
+			else if (oObj2.isName("ROpenArrow"))
+				m_nLE[i] = 7;
+			else if (oObj2.isName("RClosedArrow"))
+				m_nLE[i] = 8;
+			else if (oObj2.isName("Slash"))
+				m_nLE[i] = 9;
+
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 17 - Цвет заполнения - IC
+	if (oAnnot.dictLookup("IC", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			m_arrIC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 21 - Назначение аннотации - IT
+	if (oAnnot.dictLookup("IT", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 20);
+		m_nIT = 0; // PolygonCloud
+		if (oObj.isName("PolyLineDimension"))
+			m_nIT = 1;
+		else if (oObj.isName("PolygonDimension"))
+			m_nIT = 2;
 	}
 	oObj.free();
 
@@ -2359,5 +2460,30 @@ void CAnnotSquareCircle::ToWASM(NSWasm::CData& oRes)
 		for (int i = 0; i < m_arrIC.size(); ++i)
 			oRes.AddDouble(m_arrIC[i]);
 	}
+}
+
+void CAnnotPolygonLine::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(m_nSubtype); // Polygon, PolyLine
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	oRes.AddInt((unsigned int)m_arrVertices.size());
+	for (int i = 0; i < m_arrVertices.size(); ++i)
+		oRes.AddDouble(m_arrVertices[i]);
+
+	if (m_unFlags & (1 << 15))
+	{
+		oRes.WriteBYTE(m_nLE[0]);
+		oRes.WriteBYTE(m_nLE[1]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrIC.size());
+		for (int i = 0; i < m_arrIC.size(); ++i)
+			oRes.AddDouble(m_arrIC[i]);
+	}
+	if (m_unFlags & (1 << 20))
+		oRes.WriteBYTE(m_nIT);
 }
 }

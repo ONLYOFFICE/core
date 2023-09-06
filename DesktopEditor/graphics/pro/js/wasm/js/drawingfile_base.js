@@ -1131,6 +1131,34 @@
 						rec["IC"].push(reader.readDouble());
 				}
 			}
+			// Polygon, PolyLine
+			else if (rec["Type"] == 6 || rec["Type"] == 7)
+			{
+				let nVertices = reader.readInt();
+				rec["Vertices"] = [];
+				for (let i = 0; i < nVertices; ++i)
+					rec["Vertices"].push(reader.readDouble());
+				// Стили окончания линии - LE
+				// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+				if (flags & (1 << 15))
+				{
+					rec["LE"] = [];
+					rec["LE"].push(reader.readByte());
+					rec["LE"].push(reader.readByte());
+				}
+				// Цвет окончаний линии - IC
+				if (flags & (1 << 16))
+				{
+					let n = reader.readInt();
+					rec["IC"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["IC"].push(reader.readDouble());
+				}
+				// Назначение аннотации - IT
+				// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
+				if (flags & (1 << 20))
+					rec["IT"] = reader.readByte();
+			}
 			// Popup
 			else if (rec["Type"] == 15)
 			{

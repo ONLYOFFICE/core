@@ -1843,6 +1843,55 @@ int main(int argc, char* argv[])
 					std::cout << ", ";
 				}
 			}
+			else if (sType == "Polygon" ||
+					 sType == "PolyLine")
+			{
+				int nVerticesLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Vertices";
+
+				for (int j = 0; j < nVerticesLength; ++j)
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << " " << (double)nPathLength / 100.0;
+				}
+				std::cout << ", ";
+
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "LE";
+					for (int j = 0; j < 2; ++j)
+					{
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::string arrLE[] = {"Square", "Circle", "Diamond", "OpenArrow", "ClosedArrow", "None", "Butt", "ROpenArrow", "RClosedArrow", "Slash"};
+						std::cout << " " << arrLE[nPathLength];
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					int nICLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "IC";
+
+					for (int j = 0; j < nICLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 20))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrIT[] = {"PolygonCloud", "PolyLineDimension", "PolygonDimension"};
+					std::cout << "IT " << arrIT[nPathLength] << ", ";
+				}
+			}
 			else if (sType == "Popup")
 			{
 				nFlags = READ_INT(pAnnots + i);

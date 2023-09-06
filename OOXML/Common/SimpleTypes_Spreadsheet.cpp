@@ -533,8 +533,8 @@ namespace SimpleTypes
 				case 5:this->m_eValue = fontfamilyDecorative; break;
 				default:this->m_eValue = fontfamilyNotApplicable;
 				}
-				return this->m_eValue;
 			}
+			return this->m_eValue;
 		}
 
 		std::wstring CFontFamily::ToString  () const
@@ -2409,9 +2409,9 @@ namespace SimpleTypes
 			switch(this->m_eValue)
 			{
 			case layoutNone_ :		return L"none";
-			case layoutOverlapping:	return L"banner";
+			case layoutOverlapping:	return L"overlapping";
 			case layoutBanner :
-			default :				return L"overlapping";
+			default :				return L"banner";
 			}
 		}
 

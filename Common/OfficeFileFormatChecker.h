@@ -72,6 +72,7 @@ public:
 	bool isDocFormatFile	(const std::wstring & fileName);
 	bool isXlsFormatFile	(const std::wstring & fileName);
 
+	bool isOleObjectFile	(POLE::Storage* storage);
 	bool isDocFormatFile	(POLE::Storage *storage);
 	bool isXlsFormatFile	(POLE::Storage *storage);
 	bool isPptFormatFile	(POLE::Storage *storage);

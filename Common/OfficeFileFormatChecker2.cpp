@@ -34,7 +34,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
-
+#include "../OOXML/Base/Base.h"
 //#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 //	#include "../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
 //#endif
@@ -45,6 +45,49 @@
 #define MIN_SIZE_BUFFER 4096
 #define MAX_SIZE_BUFFER 102400
 
+std::string ReadStringFromOle(POLE::Stream* stream, unsigned int max_size)
+{
+	std::string result;
+	
+	if (!stream) return result;
+
+	_UINT32 cch = 0;
+	if (4 != stream->read((BYTE*)&cch, 4)) return result;
+
+	unsigned char* stringBytes = new unsigned char[max_size];
+	if (!stringBytes) return result;
+
+	if (cch > max_size)
+	{
+		//error ... skip to 0
+		unsigned int pos_orinal = stream->tell();
+		unsigned int pos = 0;
+
+		stream->read(stringBytes, max_size);
+
+		while (pos < max_size)
+		{
+			if (stringBytes[pos] == 0)
+				break;
+			pos++;
+		}
+		stream->seek(pos_orinal + pos - 1);
+	}
+	else
+	{
+		if (cch > 0)
+		{
+			//dont read the terminating zero
+			cch = stream->read(stringBytes, cch);
+			result = std::string((char*)stringBytes, cch);
+		}
+	}
+	RELEASEARRAYOBJECTS(stringBytes);
+	//skip the terminating zero of the Unicode string
+	stream->seek(stream->tell() + 2);
+
+	return result;
+}
 bool COfficeFileFormatChecker::isRtfFormatFile(unsigned char* pBuffer,int dwBytes)
 {
 	if (pBuffer == NULL) return false;
@@ -182,7 +225,61 @@ bool COfficeFileFormatChecker::isPdfFormatFile	(unsigned char* pBuffer,int dwByt
 
 	return false;
 }
-bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
+bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage* storage)
+{
+	if (storage == NULL) return false;
+
+	POLE::Stream streamOle(storage, L"Ole");
+	
+	if (false == streamOle.fail())
+	{
+		std::string UserType, ClipboardFormat, Program;
+
+		POLE::Stream streamCompObject(storage, L"CompObj");
+		if (false == streamCompObject.fail())
+		{
+			streamCompObject.seek(28); // skip Header
+			
+			unsigned int sz_obj = streamCompObject.size() - streamCompObject.tell();
+
+			if (sz_obj > 4)
+			{
+				UserType = ReadStringFromOle(&streamCompObject, sz_obj);
+
+				sz_obj = streamCompObject.size() - streamCompObject.tell();
+				if (sz_obj > 4)
+					ClipboardFormat = ReadStringFromOle(&streamCompObject, sz_obj);
+
+				sz_obj = streamCompObject.size() - streamCompObject.tell();
+				if (sz_obj > 4)
+					Program = ReadStringFromOle(&streamCompObject, sz_obj);
+			}			
+			return true;
+		}
+		else
+		{
+			POLE::Stream streamLinkInfo(storage, L"LinkInfo");
+			if (false == streamLinkInfo.fail())
+			{
+				short cch = 0;
+				if (2 == streamLinkInfo.read((BYTE*)&cch, 2))
+				{
+					unsigned char* str = new unsigned char[cch]; 
+					cch = streamLinkInfo.read(str, cch);
+
+					ClipboardFormat = std::string((char*)str, cch);
+					RELEASEARRAYOBJECTS(str);
+
+					streamLinkInfo.seek(streamLinkInfo.tell() + 6);
+					//skip ...
+				}
+				return true;
+			}
+		}
+	}
+	return false;
+}
+bool COfficeFileFormatChecker::isDocFormatFile (POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
 
@@ -458,7 +555,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
     {
-        if ( isDocFormatFile(&storage) )
+		if (isOleObjectFile(&storage))
+		{
+			return false;
+		}
+		else if ( isDocFormatFile(&storage) )
         {
 			//nFileType внутри
 			return true;

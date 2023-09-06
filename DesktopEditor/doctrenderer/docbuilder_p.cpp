@@ -1512,6 +1512,10 @@ namespace NSDoctRenderer
 		{
 			m_pInternal->m_oParams.m_arFontDirs.push_back(std::wstring(value));
 		}
+		else if (sParam == "--options")
+		{
+			NSProcessEnv::Load(std::wstring(value));
+		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
 	{

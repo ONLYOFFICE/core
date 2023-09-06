@@ -423,10 +423,12 @@ namespace NSCSS
 		if (oStyle.Empty() && oXmlElement.Empty())
 			return;
 
+		if (!oStyle.m_oFont.GetSize().Empty())
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * FONTSCALE)); 
+
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
-		oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * FONTSCALE)); 
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());

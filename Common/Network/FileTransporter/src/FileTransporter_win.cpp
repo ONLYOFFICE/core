@@ -453,7 +453,7 @@ namespace NSNetwork
 				std::wstring sFileURL = sFileURLOriginal;
 
 				NSStringExt::Replace(sFileDst, L"\\", L"/");
-				NSStringExt::Replace(sFileURL, L"'", L"\\'");
+				NSStringExt::Replace(sFileURL, L"'", L"%27");
 
 				std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
 				wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];

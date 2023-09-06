@@ -67,6 +67,7 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 #include "../../XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h"
+#include "../../XlsbFormat/Biff12_records/FRTBegin.h"
 
 namespace OOX
 {
@@ -688,11 +689,12 @@ namespace OOX
 		}
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinTable()
 		{
-			 auto ptr(new XLSB::FRTTABLE);
-			 XLS::BaseObjectPtr objectPtr(ptr);
-			  if (!m_arrExt.empty())
-                {
-
+			auto ptr(new XLSB::FRTTABLE);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			auto frtBegin(new XLSB::FRTBegin);
+			ptr->m_BrtFRTBegin = XLS::BaseObjectPtr{frtBegin};
+				if (!m_arrExt.empty())
+				{
 					for(auto i:m_arrExt)
 					{
 
@@ -702,7 +704,6 @@ namespace OOX
 						}
 
 					}
-
                 }
 			return objectPtr;
 		}

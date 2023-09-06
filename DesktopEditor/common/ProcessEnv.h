@@ -40,6 +40,7 @@ namespace NSProcessEnv
 {
 	namespace Converter
 	{
+		static const char* gc_allowLocalRequest   = "allowNetworkRequest";
 		static const char* gc_allowNetworkRequest = "allowNetworkRequest";
 		static const char* gc_allowPrivateIP      = "allowPrivateIP";
 		static const char* gc_proxy               = "proxy";

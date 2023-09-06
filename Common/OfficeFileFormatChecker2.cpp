@@ -253,7 +253,14 @@ bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage* storage)
 				sz_obj = streamCompObject.size() - streamCompObject.tell();
 				if (sz_obj > 4)
 					Program = ReadStringFromOle(&streamCompObject, sz_obj);
-			}			
+			}
+			if (std::string::npos != Program.find("Excel") || std::string::npos != UserType.find("Excel"))
+			{
+				if (isXlsFormatFile(storage))
+				{
+					nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+				}
+			}
 			return true;
 		}
 		else
@@ -557,6 +564,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
     {
 		if (isOleObjectFile(&storage))
 		{
+			if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 			return false;
 		}
 		else if ( isDocFormatFile(&storage) )

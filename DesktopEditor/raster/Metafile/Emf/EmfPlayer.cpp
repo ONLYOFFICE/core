@@ -368,7 +368,6 @@ namespace MetaFile
 		pNewDC->m_oWindow.Copy(&m_oWindow);
 		pNewDC->m_oViewport.Copy(&m_oViewport);
 		pNewDC->m_oCurPos        = m_oCurPos;
-		pNewDC->m_oClip          = m_oClip;
 		pNewDC->m_unArcDirection = m_unArcDirection;
 
 		return pNewDC;
@@ -773,14 +772,6 @@ namespace MetaFile
 	TEmfPointL& CEmfDC::GetCurPos()
 	{
 		return m_oCurPos;
-	}
-	CEmfClip* CEmfDC::GetClip()
-	{
-		return &m_oClip;
-	}
-	void CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
-	{
-		m_oClip.SetPath(pPath, unMode, pTransform);
 	}
 	void CEmfDC::SetArcDirection(unsigned int unDirection)
 	{

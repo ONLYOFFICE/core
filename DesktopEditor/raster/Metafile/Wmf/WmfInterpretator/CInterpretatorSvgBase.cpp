@@ -436,23 +436,28 @@ namespace MetaFile
 		if (bWriteG)
 			m_pXmlWriter->WriteNodeEnd(L"g");
 	}
+	
+	void CInterpretatorSvgBase::CheckClip()
+	{
+		if (m_oClip.StartedClip())
+		{
+			WriteNodeEnd(L"g");
+			m_wsDefs += m_oClip.GetClip();
+			m_oClip.CloseClip();
+		}
+	}
 
 	void CInterpretatorSvgBase::ResetClip()
 	{
-		if (m_oClip.StartClip() && !m_oClip.EndClip())
-		{
-			WriteNodeEnd(L"g");
-			m_oClip.CloseClip();
-		}
-
+		CheckClip();
 		m_oClip.Reset();
 	}
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
 	{
-		TXForm *pTransform = m_pParser->GetTransform();
-
 		ResetClip();
+
+		TXForm *pTransform = m_pParser->GetTransform();
 
 		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>";
@@ -462,6 +467,8 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
+		CheckClip();
+	
 		TXForm *pTransform = m_pParser->GetTransform();
 
 		const std::wstring wsId    = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
@@ -716,7 +723,7 @@ namespace MetaFile
 			                        ConvertToWString(oOldTransform.M12) + L',' +
 			                        ConvertToWString(oOldTransform.M21) + L',' +
 			                        ConvertToWString(oOldTransform.M22) + L',' +
-			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
+			                        ConvertToWString(oOldTransform.Dx)  + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;
 
@@ -728,32 +735,11 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::AddClip()
 	{
-		if (NULL == m_pParser)
+		if (m_oClip.Empty() || m_oClip.StartedClip())
 			return;
-
-		if (!m_oClip.StartClip())
-		{
-			UpdateClip();
-
-			if (!m_oClip.Empty())
-			{
-				WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + m_oClip.GetClipId() + L')'}});
-				m_oClip.BeginClip();
-			}
-		}
-	}
-
-	void CInterpretatorSvgBase::UpdateClip()
-	{
-		IClip* pClip = m_pParser->GetClip();
-
-		if (NULL != pClip)
-		{
-			pClip->ClipOnRenderer((CInterpretatorSvgBase*)this);
-			m_wsDefs += m_oClip.GetClip();
-		}
-		else
-			ResetClip();
+			
+		WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + m_oClip.GetClipId() + L')'}});
+		m_oClip.BeginClip();
 	}
 
 	void CInterpretatorSvgBase::AddNoneFill(NodeAttributes &arAttributes) const
@@ -1584,16 +1570,12 @@ namespace MetaFile
 	}
 
 	CSvgClip::CSvgClip()
-        : m_bStartClip(false), m_bEndClip(false)
+        : m_bStartClip(false)
 	{}
 
 	void CSvgClip::Reset()
 	{
-		if (StartClip() && !EndClip())
-			CloseClip();
-
 		m_bStartClip = false;
-		m_bEndClip   = false;
 		m_arValues.clear();
 	}
 
@@ -1604,17 +1586,12 @@ namespace MetaFile
 
 	void CSvgClip::CloseClip()
 	{
-		m_bEndClip = true;
+		m_bStartClip = false;
 	}
 
-	bool CSvgClip::StartClip() const
+	bool CSvgClip::StartedClip() const
 	{
 		return m_bStartClip;
-	}
-
-	bool CSvgClip::EndClip() const
-	{
-		return m_bEndClip;
 	}
 
 	bool CSvgClip::Empty() const
@@ -1624,7 +1601,10 @@ namespace MetaFile
 
 	void CSvgClip::AddClipValue(const std::wstring &wsId, const std::wstring &wsValue, int nClipMode)
 	{
-		m_arValues.push_back(std::make_tuple(wsId, wsValue, nClipMode));
+		if (RGN_COPY == nClipMode)
+			m_arValues.clear();
+			
+		m_arValues.push_back({wsId, wsValue, nClipMode});
 	}
 
 	std::wstring CSvgClip::GetClip() const
@@ -1634,30 +1614,26 @@ namespace MetaFile
 
 		std::wstring wsClip;
 
-		std::wstring wsId;
-
-		for (ClipValue::const_iterator oIter = m_arValues.begin(); oIter != m_arValues.end(); ++oIter)
+		for (const TClipValue& oClipValue : m_arValues)
 		{
-			wsId = std::get<0>(*oIter);
-
-			switch (std::get<2>(*oIter))
+			switch (oClipValue.m_nClipMode)
 			{
 			case RGN_AND:
 			{
 				size_t unPosition = wsClip.find(L">", wsClip.rfind(L"<clipPath"));
 
 				if (std::wstring::npos != unPosition)
-					wsClip.insert(unPosition, L" clip-path=\"url(#" + wsId + L")\"");
+					wsClip.insert(unPosition, L" clip-path=\"url(#" + oClipValue.m_wsId + L")\"");
 
-				wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				wsClip += L"<clipPath id=\"" + oClipValue.m_wsId + L"\">" + oClipValue.m_wsValue + L"</clipPath>";
 				break;
 			}
 			case RGN_OR:
 			{
 				if (wsClip.empty())
-					wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+					wsClip += L"<clipPath id=\"" + oClipValue.m_wsId + L"\">" + oClipValue.m_wsValue + L"</clipPath>";
 				else
-					wsClip.insert(wsClip.length() - 11, std::get<1>(*oIter));
+					wsClip.insert(wsClip.length() - 11, oClipValue.m_wsValue);
 				break;
 			}
 			case RGN_XOR:
@@ -1668,13 +1644,14 @@ namespace MetaFile
 					wsClip.insert(unPosition, L" clip-rule=\"evenodd\"");
 
 				if (wsClip.empty())
-					wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+					wsClip += L"<clipPath id=\"" + oClipValue.m_wsId + L"\">" + oClipValue.m_wsValue + L"</clipPath>";
 				else
-					wsClip.insert(wsClip.length() - 11, std::get<1>(*oIter));
+					wsClip.insert(wsClip.length() - 11, oClipValue.m_wsValue);
+				break;
 			}
 			case RGN_COPY:
 			{
-				wsClip = L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				wsClip = L"<clipPath id=\"" + oClipValue.m_wsId + L"\">" + oClipValue.m_wsValue + L"</clipPath>";
 				break;
 			}
 			}
@@ -1688,15 +1665,7 @@ namespace MetaFile
 		if (m_arValues.empty())
 			return std::wstring();
 
-		std::wstring wsId = std::get<0>(m_arValues.front());
-
-		for (ClipValue::const_iterator oIter = m_arValues.begin() + 1; oIter != m_arValues.end(); ++oIter)
-		{
-			if (RGN_COPY == std::get<2>(*oIter))
-				wsId = std::get<0>(*oIter);
-		}
-
-		return wsId;
+		return m_arValues.front().m_wsId;
 	}
 
 }

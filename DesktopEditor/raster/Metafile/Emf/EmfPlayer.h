@@ -37,7 +37,6 @@
 #include "EmfTypes.h"
 #include "EmfObjects.h"
 #include "EmfPlusObjects.h"
-#include "EmfClip.h"
 
 #include <vector>
 #include <map>
@@ -136,8 +135,6 @@ namespace MetaFile
 		void            SetCurPos(TEmfPointL& oPoint);
 		void            SetCurPos(int lX, int lY);
 		TEmfPointL&     GetCurPos();
-		CEmfClip*       GetClip();
-		void            ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform);
 		void            SetArcDirection(unsigned int unDirection);
 		unsigned int    GetArcDirection();
 
@@ -175,7 +172,6 @@ namespace MetaFile
 		TEmfWindow      m_oWindow;
 		TEmfWindow      m_oViewport;
 		TEmfPointL      m_oCurPos;
-		CEmfClip        m_oClip;
 		unsigned int    m_unArcDirection;
 	};
 }

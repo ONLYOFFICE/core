@@ -1848,9 +1848,8 @@ private:
 					if (!bRes)
 						bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
 				}
-
 				// Предполагаем картинку в сети
-				if (!bRes)
+				else
 				{
 					// Проверка gc_allowNetworkRequest предполагается в kernel_network
 					NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);

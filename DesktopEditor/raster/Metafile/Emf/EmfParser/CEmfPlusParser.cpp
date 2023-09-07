@@ -318,7 +318,7 @@ namespace MetaFile
 			LOGGING(L"Skip: " << nNeedSkip)
 
 			m_ulRecordSize = 0;
-		}while(m_oStream.CanRead() > 12 && !m_bEof);
+		}while(m_oStream.CanRead() >= 12 && !m_bEof);
 
 		if (!CheckError())
 			m_oStream.SeekToStart();

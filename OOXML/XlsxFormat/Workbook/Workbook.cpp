@@ -280,11 +280,11 @@ namespace OOX
 		{
 			XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);
 
-			if (m_oBookViews.IsInit())
-			{	auto viewPtr(new XLSB::BOOKVIEWS);
+            if (m_oBookViews.IsInit())
+            {
+                auto viewPtr(new XLSB::BOOKVIEWS);
+                viewPtr->m_arBrtBookView = m_oBookViews->toBin();
 				workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr{viewPtr};
-
-				viewPtr->m_arBrtBookView = m_oBookViews->toBin();
 			}
 			if (m_oCalcPr.IsInit())
                 workBookStream->m_BrtCalcProp = m_oCalcPr->toBin();
@@ -295,9 +295,8 @@ namespace OOX
 			if (m_oSheets.IsInit())
 			{
 				auto ptr(new XLSB::BUNDLESHS);
-				XLS::BaseObjectPtr objectPtr(ptr);
 				ptr->m_arBrtBundleSh = m_oSheets->toBin();
-				workBookStream->m_BUNDLESHS = objectPtr;
+                workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr{ptr};
 			}
 			if (m_oWorkbookPr.IsInit())
 				workBookStream->m_BrtWbProp = m_oWorkbookPr->toBin();

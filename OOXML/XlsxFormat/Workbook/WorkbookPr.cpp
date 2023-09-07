@@ -96,44 +96,72 @@ namespace OOX
 
 			if(m_oAllowRefreshQuery.IsInit())
 				ptr->fNoSaveSup = m_oAllowRefreshQuery->GetValue();
+            else
+                ptr->fNoSaveSup = false;
 			if(m_oAutoCompressPictures.IsInit())
-			ptr->fAutoCompressPictures = m_oAutoCompressPictures->GetValue();
+                ptr->fAutoCompressPictures = m_oAutoCompressPictures->GetValue();
 			if(m_oBackupFile.IsInit())
-			ptr->fBackup = m_oBackupFile->GetValue();
+                ptr->fBackup = m_oBackupFile->GetValue();
+            else
+                ptr->fBackup = false;
 			if(m_oCheckCompatibility.IsInit())
-			ptr->fCheckCompat = m_oCheckCompatibility->GetValue();
+                ptr->fCheckCompat = m_oCheckCompatibility->GetValue();
+            else
+                ptr->fCheckCompat = false;
 			if(m_oCodeName.IsInit())
 			ptr->strName.value = m_oCodeName->GetValue();
 			else
 			ptr->strName.value = false;
 			if(m_oDate1904.IsInit())
-			ptr->f1904 = m_oDate1904->GetValue();
+                ptr->f1904 = m_oDate1904->GetValue();
+            else
+                ptr->f1904 = false;
 			if(m_oDateCompatibility.IsInit())
-			ptr->fNoSaveSup = m_oDateCompatibility->GetValue();
+                ptr->fNoSaveSup = m_oDateCompatibility->GetValue();
+            else
+                ptr->fNoSaveSup = false;
 			if(m_oDefaultThemeVersion.IsInit())
 				ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
 			else
 				ptr->dwThemeVersion = 0;
 			if(m_oFilterPrivacy.IsInit())
-			ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
+                ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
+            else
+                ptr->fFilterPrivacy = false;
 			if(m_oHidePivotFieldList.IsInit())
-			ptr->fHidePivotTableFList = m_oHidePivotFieldList->GetValue();
+                ptr->fHidePivotTableFList = m_oHidePivotFieldList->GetValue();
+            else
+                ptr->fHidePivotTableFList = false;
 			if(m_oPromptedSolutions.IsInit())
-			ptr->fBuggedUserAboutSolution = m_oPromptedSolutions->GetValue();
+                ptr->fBuggedUserAboutSolution = m_oPromptedSolutions->GetValue();
+            else
+                ptr->fBuggedUserAboutSolution = false;
 			if(m_oPublishItems.IsInit())
-			ptr->fPublishedBookItems = m_oPublishItems->GetValue();
+                ptr->fPublishedBookItems = m_oPublishItems->GetValue();
+            else
+                ptr->fPublishedBookItems = false;
 			if(m_oRefreshAllConnections.IsInit())
-			ptr->fRefreshAll = m_oRefreshAllConnections->GetValue();
+                ptr->fRefreshAll = m_oRefreshAllConnections->GetValue();
+            else
+                ptr->fRefreshAll = false;
 			if(m_oShowBorderUnselectedTables.IsInit())
-			ptr->fHideBorderUnselLists = m_oShowBorderUnselectedTables->GetValue();
+                ptr->fHideBorderUnselLists = m_oShowBorderUnselectedTables->GetValue();
+            else
+                ptr->fHideBorderUnselLists = false;
 			if(m_oShowInkAnnotation.IsInit())
-			ptr->fShowInkAnnotation = m_oShowInkAnnotation->GetValue();
+                ptr->fShowInkAnnotation = m_oShowInkAnnotation->GetValue();
 			if(m_oShowObjects.IsInit())
 			ptr->mdDspObj = m_oShowObjects->GetValue() ? 1 : 2;
+            else
+                ptr->mdDspObj = 0;
 			if(m_oShowPivotChartFilter.IsInit())
-			ptr->fShowPivotChartFilter = m_oShowPivotChartFilter->GetValue();
+                ptr->fShowPivotChartFilter = m_oShowPivotChartFilter->GetValue();
+            else
+                ptr->fShowPivotChartFilter = false;
 			if(m_oUpdateLinks.IsInit())
-			ptr->grbitUpdateLinks = m_oUpdateLinks->GetValue();
+                ptr->grbitUpdateLinks = m_oUpdateLinks->GetValue();
+            else
+                ptr->grbitUpdateLinks = 0;
 
 			return objectPtr;
 		}

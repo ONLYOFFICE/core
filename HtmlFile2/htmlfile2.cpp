@@ -1783,6 +1783,16 @@ private:
 		return bRes;
 	}
 
+	inline bool ValidExtension(const std::wstring& sSrc)
+	{
+		std::wstring sExtention = NSFile::GetFileExtention(sSrc);
+		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
+				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+	}
+
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		std::wstring wsAlt;
@@ -1816,12 +1826,7 @@ private:
 				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
 							(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
 
-				std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
-				std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-				if (sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
-					sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
-					sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
-					sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz" )
+				if (ValidExtension(sSrcM))
 					break;
 
 				std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;

@@ -50,10 +50,6 @@ ENV PATH=/opt/protobuf/bin:$PATH
 
 RUN rm -rf /build/
 
-RUN apt-get build-dep -y vlc
-
-USER jenkins
-
 # build libvlc
 CMD cd /vlc && \
     (patch -p1 --forward src/modules/bank.c ignore-cache-time.patch || :) && \
@@ -61,11 +57,14 @@ CMD cd /vlc && \
     cd contrib && \
     mkdir -p native && \
     cd native && \
-    ../bootstrap && \
-    make && \
+    ../bootstrap --disable-disc --disable-net --disable-sout && \
+# on WSL2 based docker containers the ffi build may fail, so some lines in ffi configs need to be changed
+    (make .ffi || (sed -i '/$(RECONF)/d' ../src/ffi/rules.mak && sed -i 's/mv $srcdir\/config.log/cp $srcdir\/config.log/' ffi/configure)) && \
+# build other contribs
+    (make -j$CORES || make) && \
     cd /vlc && \
     mkdir -p build/linux_64 && \
-    ./configure --prefix=/vlc/build/linux_64 --disable-vlc --disable-qt --disable-skins2 --disable-chromecast && \
+    ./configure --prefix=/vlc/build/linux_64 --disable-vlc --disable-qt --disable-skins2 --disable-sout --disable-lua --disable-vlm --disable-addonmanagermodules --disable-chromecast --disable-chromaprint --disable-zvbi --disable-telx --disable-linsys --disable-upnp && \
     make && \
     make -j$CORES install-strip && \
 # correct build files

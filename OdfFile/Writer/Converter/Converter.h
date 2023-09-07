@@ -651,7 +651,7 @@ public:
 		void convert(OOX::Spreadsheet::ChartEx::CPlotArea		*oox_plot_area);
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);
-		void convert(OOX::Vml::CShape					*vml_shape);
+		void convert(OOX::Vml::CShape					*vml_shape, OOX::VmlOffice::COLEObject* vml_object);
 		void convert(OOX::Vml::CImage					*vml_image);
 		void convert(OOX::Vml::CImageData				*vml_image_data);
 		void convert(OOX::Vml::CArc						*vml_arc);

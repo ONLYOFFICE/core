@@ -315,7 +315,7 @@ namespace Oox2Odf
 		//if (width_pt && height_pt)
 		//	odf_context()->drawing_context()->set_viewBox(width_pt.get(), height_pt.get());
 	}
-	void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
+	void OoxConverter::convert(OOX::Vml::CShape *vml_shape, OOX::VmlOffice::COLEObject* vml_object)
 	{
 		if (vml_shape == NULL) return;
 
@@ -337,6 +337,36 @@ namespace Oox2Odf
 
 		odf_context()->drawing_context()->set_overlap(vml_shape->m_oAllowOverlap.get_value_or(true));
 
+		if (vml_object)
+		{
+			std::wstring pathOle;
+			bool bExternal = false;
+
+			if (vml_object->m_oId.IsInit())
+			{
+				pathOle = find_link_by_id(vml_object->m_oId->GetValue(), 4, bExternal);
+			}
+			std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+
+			if (!odf_ref_ole.empty())
+			{
+				odf_context()->drawing_context()->start_object_ole(odf_ref_ole);
+
+				if (vml_object->m_sProgId.IsInit())
+				{
+					odf_context()->drawing_context()->set_program(*vml_object->m_sProgId);
+				}
+				std::wstring sIdImageFileCache = GetImageIdFromVmlShape(vml_shape);
+
+				std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
+				std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
+
+				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
+
+				odf_context()->drawing_context()->end_object_ole();
+			}
+		}
+//-----------------------------------------------------------------------------------------------------------------------		
 		if (vml_shape->m_oSpt.IsInit())
 		{
 			SimpleTypes::Vml::SptType sptType = static_cast<SimpleTypes::Vml::SptType>(vml_shape->m_oSpt->GetValue());

@@ -733,9 +733,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			//вставка знака абзаца - разделение текущего параграфа - в либре нету
 			//if (oox_paragraph->m_arrItems.size() < 2)//только для пустых 
 			{
-				id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
-				if (id >= 0)	
-					id_change_properties.push_back(std::pair<int, int> (1, id));
+				//id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
+				//if (id >= 0)	
+				//	id_change_properties.push_back(std::pair<int, int> (1, id));
 			}
 
 			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oRPrChange.GetPointer());
@@ -1480,10 +1480,10 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 			outline_level = *parent_paragraph_properties.content_.outline_level_;
 		}
 	}
-	if (!reDefine && oox_paragraph_pr->m_oRPr.IsInit())
-	{
-		convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties, true);
-	}	
+	//if (!reDefine && oox_paragraph_pr->m_oRPr.IsInit() && !odt_context->in_drop_cap())
+	//{
+	//	convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties, true);
+	//}	
 	
 	if (text_properties && text_properties->fo_font_size_)
 	{
@@ -2822,7 +2822,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		else
 			text_properties->fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	}
-	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
+	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit() && !odt_context->in_drop_cap())
 	{
 		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		current_font_size.push_back(font_size_pt);
@@ -2900,13 +2900,13 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		double spacing = oox_run_pr->m_oSpacing->m_oVal->ToPoints();
 		text_properties->fo_letter_spacing_ = odf_types::letter_spacing(odf_types::length(spacing, odf_types::length::pt));
 	}
-	if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
-	{
-		double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
-		double percent = current_font_size.empty() ? 0 : position_pt / current_font_size.back() * 100;
+	//if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
+	//{
+	//	double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
+	//	double percent = current_font_size.empty() ? 0 : position_pt / current_font_size.back() * 100;
 
-		text_properties->style_text_position_ = odf_types::text_position(percent, 100.);
-	}
+	//	text_properties->style_text_position_ = odf_types::text_position(percent, 100.);
+	//}
 	if (oox_run_pr->m_oBdr.IsInit())
 	{
 		std::wstring odf_border;
@@ -3039,10 +3039,23 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);
 		odf_context()->drawing_context()->set_object_background(true);
 	}
-		
 	OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
-	OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
 
+	OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(oox_pic->m_oShapeElement.GetPointer());
+
+	if (pShape)
+	{
+		OoxConverter::convert(pShape, oox_pic->m_oOLEObject.GetPointer());
+	}
+	else
+	{
+		OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
+	}
+
+	for (size_t i = 0; i < oox_pic->m_arrItems.size(); ++i)
+	{
+		OoxConverter::convert(oox_pic->m_arrItems[i]);
+	}
 	odt_context->end_drawing_context();
 }
 void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
@@ -3080,7 +3093,6 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		if (!odf_ref_ole.empty())
 		{
 			odf_context()->drawing_context()->start_object_ole(odf_ref_ole);
-			OoxConverter::convert(oox_obj->m_oShape.GetPointer());
 
 			if (oox_obj->m_oOleObject->m_sProgId.IsInit())
 			{
@@ -3092,6 +3104,8 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
 			
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
+			
+			OoxConverter::convert(oox_obj->m_oShape.GetPointer());
 
 			odf_context()->drawing_context()->end_object_ole();
 			

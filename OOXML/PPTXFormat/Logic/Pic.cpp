@@ -736,7 +736,7 @@ namespace PPTX
 		}
 		OOX::EElementType COLEObject::getType () const
 		{
-			return OOX::et_pic;
+			return OOX::et_oleobject;
 		}
 
 		Pic::Pic(std::wstring ns)

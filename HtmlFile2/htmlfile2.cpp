@@ -20,6 +20,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Path.h"
+#include "../DesktopEditor/common/ProcessEnv.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
@@ -688,13 +689,13 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return;
 		int nDeath = m_oLightReader.GetDepth();
-		while(m_oLightReader.ReadNextSiblingNode(nDeath))
+		while (m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			// Базовый адрес
-			if(m_oLightReader.GetName() == L"base")
+			if (m_oLightReader.GetName() == L"base")
 			{
-				while(m_oLightReader.MoveToNextAttribute())
-					if(m_oLightReader.GetName() == L"href")
+				while (m_oLightReader.MoveToNextAttribute())
+					if (m_oLightReader.GetName() == L"href")
 						m_sBase = m_oLightReader.GetText();
 				m_oLightReader.MoveToElement();
 			}
@@ -1722,93 +1723,143 @@ private:
 		sNote = L"";
 	}
 
+	bool readBase64 (const std::wstring& sSrcM, std::wstring& sImageName)
+	{
+		bool bRes = false;
+
+		size_t nBase = sSrcM.find(L"/", 4);
+		nBase++;
+
+		size_t nEndBase = sSrcM.find(L";", nBase);
+		if (nEndBase == std::wstring::npos)
+			return bRes;
+		std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
+		if (sType == L"octet-stream")
+			sType = L"jpg";
+		std::wstring sImageId = std::to_wstring(m_nImageId);
+		sImageName = sImageId + L"." + sType;
+
+		nBase = sSrcM.find(L"base64", nEndBase);
+		if (nBase == std::wstring::npos)
+			return bRes;
+
+		NSFile::CFileBinary oImageWriter;
+		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
+		{
+			std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
+			int nSrcLen = (int)sBase64.length();
+			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+			if (nDecodeLen != 0)
+			{
+				BYTE* pImageData = new BYTE[nDecodeLen];
+				if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+				{
+					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+					bRes = true;
+				}
+				RELEASEARRAYOBJECTS(pImageData);
+			}
+			oImageWriter.CloseFile();
+		}
+
+		return bRes;
+	}
+
+	bool CopyImage  (const std::wstring& wscSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles)
+	{
+		bool bRes = false;
+		bool bAllow = true;
+
+		std::wstring wsSrc = wscSrc;
+		if (!bIsAllowExternalLocalFiles)
+		{
+			wsSrc = NSSystemPath::NormalizePath(wsSrc);
+			std::wstring wsStartSrc = NSSystemPath::NormalizePath(m_sSrc);
+			bAllow = wsSrc.substr(0, wsStartSrc.length()) == wsStartSrc;
+		}
+		if (bAllow)
+			bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
+
+		return bRes;
+	}
+
+	inline bool ValidExtension(const std::wstring& sSrc)
+	{
+		std::wstring sExtention = NSFile::GetFileExtention(sSrc);
+		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
+				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+	}
+
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		std::wstring sAlt = L"";
+		std::wstring wsAlt;
 		bool bRes = false;
-		while(m_oLightReader.MoveToNextAttribute())
+		while (m_oLightReader.MoveToNextAttribute())
 		{
-			if(m_oLightReader.GetName() == L"alt")
+			std::wstring wsName = m_oLightReader.GetName();
+			if (wsName == L"alt")
 			{
-				sAlt = m_oLightReader.GetText();
+				wsAlt = m_oLightReader.GetText();
 				continue;
 			}
-			else if(m_oLightReader.GetName() != L"src")
+			else if (wsName != L"src")
 				continue;
+
+			bool bIsAllowExternalLocalFiles = true;
+			if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
 			std::wstring sSrcM = m_oLightReader.GetText();
 			std::wstring sImageName;
 			std::wstring sImageId = std::to_wstring(m_nImageId);
-			// Картинка Base64
-			if(sSrcM.substr(0, 4) == L"data")
-			{
-				size_t nBase = sSrcM.find(L"/", 4);
-				if(nBase == std::wstring::npos)
-					continue;
-				nBase++;
-				size_t nEndBase = sSrcM.find(L";", nBase);
-				if(nEndBase == std::wstring::npos)
-					continue;
-				std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
-				if(sType == L"octet-stream")
-					sType = L"jpg";
-				sImageName = sImageId + L"." + sType;
-				NSFile::CFileBinary oImageWriter;
-				if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
-				{
 
-					nBase = sSrcM.find(L"base64", 4);
-					if(nBase == std::wstring::npos)
-						continue;
-					std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
-					int nSrcLen = (int)sBase64.length();
-					int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-					if(nDecodeLen == 0)
-						continue;
-					BYTE* pImageData = new BYTE[nDecodeLen];
-					if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+			// Предполагаем картинку в Base64
+			if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+				bRes = readBase64(sSrcM, sImageName);
+
+			if (!bRes)
+			{
+				sImageName = NSFile::GetFileName(sSrcM);
+				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
+							(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
+
+				if (ValidExtension(sSrcM))
+					break;
+
+				std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;
+
+				// Предполагаем картинку по локальному пути
+				if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+				{
+					if (!m_sBase.empty())
 					{
-						oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-						bRes = true;
+						if (!bRes)
+							bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+						if (!bRes)
+							bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
 					}
-					RELEASEARRAYOBJECTS(pImageData);
-					oImageWriter.CloseFile();
+					if (!bRes)
+						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					if (!bRes)
+						bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					if (!bRes)
+						bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+				}
+
+				// Предполагаем картинку в сети
+				if (!bRes)
+				{
+					// Проверка gc_allowNetworkRequest предполагается в kernel_network
+					NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+					oDownloadImg.SetFilePath(wsDst);
+					bRes = oDownloadImg.DownloadSync();
 				}
 			}
-			// Картинка в сети
-			else if(sSrcM.substr(0, 4) == L"http" || !m_sBase.empty())
-			{
-				std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
-				std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-				if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
-				   sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
-					continue;
 
-				sImageName = NSFile::GetFileName(sSrcM);
-				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
-				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-				oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
-				bRes = oDownloadImg.DownloadSync();
-			}
-			// Картинка по относительному пути
-			else
-			{
-				sImageName = NSFile::GetFileName(sSrcM);
-				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
-
-				std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
-				std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-				if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
-				   sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
-					continue;
-
-				bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
-				if(!bRes)
-					bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), m_sDst + L"/word/media/i" + sImageName);
-				if(!bRes)
-					bRes = NSFile::CFileBinary::Copy(sSrcM, m_sDst + L"/word/media/i" + sImageName);
-			}
-			if(bRes)
+			if (bRes)
 			{
 				wrP(oXml, sSelectors, oTS);
 				bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
@@ -1822,7 +1873,7 @@ private:
 			oXml->WriteString(L"<w:r>");
 			wrR(oXml, sSelectors, oTS);
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-			oXml->WriteEncodeXmlString(sAlt);
+			oXml->WriteEncodeXmlString(wsAlt);
 			oXml->WriteString(L"</w:t></w:r>");
 		}
 	}

@@ -78,37 +78,58 @@ namespace OOX
 			XLS::BaseObjectPtr objectPtr(ptr);
 
 			if(m_oComment.IsInit())
-			ptr->comment = m_oComment.get();
+                ptr->comment = m_oComment.get();
+            else
+                ptr->comment = 0xFFFFFFFF;
 
 			if(m_oDescription.IsInit())
-			ptr->description = m_oDescription.get();
+                ptr->description = m_oDescription.get();
+            else
+                ptr->description = 0xFFFFFFFF;
 			if(m_oFunction.IsInit())
-			ptr->fFunc = m_oFunction->GetValue();
+                ptr->fFunc = m_oFunction->GetValue();
+            else
+                ptr->fFunc = 0xFFFFFFFF;
 			if(m_oFunctionGroupId.IsInit())
-			ptr->fGrp = m_oFunctionGroupId->GetValue();
+                ptr->fGrp = m_oFunctionGroupId->GetValue();
+
 			if(m_oHelp.IsInit())
-			ptr->helpTopic = m_oHelp.get();
+                ptr->helpTopic = m_oHelp.get();
+            else
+                ptr->helpTopic = 0xFFFFFFFF;
 			if(m_oHidden.IsInit())
-			ptr->fHidden = m_oHidden->GetValue();
+                ptr->fHidden = m_oHidden->GetValue();
 
 			if (m_oLocalSheetId.IsInit())
 				ptr->itab = m_oLocalSheetId->GetValue();
 
 			if (m_oName.IsInit())
-			ptr->name = m_oName.get();
+                ptr->name = m_oName.get();
+            else
+                ptr->name = 0xFFFFFFFF;
 			if (m_oPublishToServer.IsInit())
-			ptr->fPublished = m_oPublishToServer->GetValue();
+                ptr->fPublished = m_oPublishToServer->GetValue();
 			if (m_oShortcutKey.IsInit())
-			ptr->chKey = std::stoi(m_oShortcutKey.get());
+                ptr->chKey = std::stoi(m_oShortcutKey.get());
 
 			if (m_oVbProcedure.IsInit())
-			ptr->fOB = m_oVbProcedure->GetValue();
+                ptr->fOB = m_oVbProcedure->GetValue();
+            else
+                ptr->fOB = false;
+            if(!ptr->fOB)
+                ptr->fProc = false;
+            if(!ptr->fProc)
+            {
+                ptr->unusedstring1 = 0xFFFFFFFF;
+                ptr->unusedstring2 = 0xFFFFFFFF;
+            }
+
 			if (m_oWorkbookParameter.IsInit())
-			ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
+                ptr->fWorkbookParam = m_oWorkbookParameter->GetValue();
 			if (m_oXlm.IsInit())
-			ptr->fFutureFunction = m_oXlm->GetValue();
+                ptr->fFutureFunction = m_oXlm->GetValue();
 			if (m_oRef.IsInit())
-			ptr->rgce = m_oRef.get();
+                ptr->rgce = m_oRef.get();
 
 			return objectPtr;
 		}

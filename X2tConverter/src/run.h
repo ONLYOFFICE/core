@@ -155,14 +155,10 @@ namespace NSX2T
 			nargs[2] = NULL;
 
 #ifndef _MAC
-			const char* nenv[2];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = NULL;
+			putenv(&sLibraryDir[0]);
 #else
-			const char* nenv[3];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = sPATH.c_str();
-			nenv[2] = NULL;
+			putenv(&sLibraryDir[0]);
+			putenv(&sPATH[0]);
 #endif
 			if(nTimeout != 0)
 			{
@@ -173,7 +169,7 @@ namespace NSX2T
 
 			execve(sProgramm.c_str(),
 				   (char * const *)nargs,
-				   (char * const *)nenv);
+				   (char * const *)environ);
 			exit(EXIT_SUCCESS);
 			break;
 		}

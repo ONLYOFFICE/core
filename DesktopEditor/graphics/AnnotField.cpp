@@ -59,6 +59,7 @@ CAnnotFieldInfo::CAnnotFieldInfo()
 	m_pLinePr         = NULL;
 	m_pTextMarkupPr   = NULL;
 	m_pSquareCirclePr = NULL;
+	m_pPolygonLinePr  = NULL;
 	m_pPopupPr        = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
@@ -69,6 +70,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pLinePr);
 	RELEASEOBJECT(m_pTextMarkupPr);
 	RELEASEOBJECT(m_pSquareCirclePr);
+	RELEASEOBJECT(m_pPolygonLinePr);
 	RELEASEOBJECT(m_pPopupPr);
 }
 
@@ -109,6 +111,18 @@ void CAnnotFieldInfo::SetType(int nType)
 
 		RELEASEOBJECT(m_pSquareCirclePr);
 		m_pSquareCirclePr = new CAnnotFieldInfo::CSquareCircleAnnotPr();
+		break;
+	}
+	case 6:
+	case 7:
+	{
+		m_nType = 12;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pPolygonLinePr);
+		m_pPolygonLinePr = new CAnnotFieldInfo::CPolygonLineAnnotPr();
 		break;
 	}
 	case 8:
@@ -208,6 +222,10 @@ bool CAnnotFieldInfo::IsTextMarkup() const
 bool CAnnotFieldInfo::IsSquareCircle() const
 {
 	return (m_nType == 11);
+}
+bool CAnnotFieldInfo::IsPolygonLine() const
+{
+	return (m_nType == 12);
 }
 bool CAnnotFieldInfo::IsPopup() const
 {

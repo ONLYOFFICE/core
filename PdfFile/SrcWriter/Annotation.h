@@ -65,7 +65,9 @@ namespace PdfWriter
 		AnnotFileAttachment = 11,
 		AnnotPopup          = 12,
 		AnnotLine           = 13,
-		AnnotSquiggly       = 14
+		AnnotSquiggly       = 14,
+		AnnotPolygon        = 15,
+		AnnotPolyLine       = 16
 	};
 	enum EAnnotHighlightMode
 	{
@@ -267,6 +269,23 @@ namespace PdfWriter
 		void SetSubtype(const BYTE& nSubtype);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetIC(const std::vector<double>& arrIC);
+	};
+	class CPolygonLineAnnotation : public CMarkupAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+	public:
+		CPolygonLineAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+
+		void SetIT(const BYTE& nIT);
+		void SetSubtype(const BYTE& nSubtype);
+		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
+		void SetIC(const std::vector<double>& arrIC);
+		void SetVertices(const std::vector<double>& arrVertices);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

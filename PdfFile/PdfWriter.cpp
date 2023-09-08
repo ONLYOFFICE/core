@@ -1711,6 +1711,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 	{
 		pAnnot = m_pDocument->CreateSquareCircleAnnot();
 	}
+	else if (oInfo.IsPolygonLine())
+	{
+		pAnnot = m_pDocument->CreatePolygonLineAnnot();
+	}
 	else if (oInfo.IsPopup())
 	{
 		pAnnot = m_pDocument->CreatePopupAnnot();
@@ -1848,6 +1852,24 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotF
 		}
 		if (nFlags & (1 << 16))
 			pSquareCircleAnnot->SetIC(pPr->GetIC());
+	}
+	else if (oInfo.IsPolygonLine())
+	{
+		CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
+		PdfWriter::CPolygonLineAnnotation* pPolygonLineAnnot = (PdfWriter::CPolygonLineAnnotation*)pAnnot;
+
+		pPolygonLineAnnot->SetVertices(pPr->GetVertices());
+		pPolygonLineAnnot->SetSubtype(pPr->GetSubtype());
+		if (nFlags & (1 << 15))
+		{
+			BYTE nLE1, nLE2;
+			pPr->GetLE(nLE1, nLE2);
+			pPolygonLineAnnot->SetLE(nLE1, nLE2);
+		}
+		if (nFlags & (1 << 16))
+			pPolygonLineAnnot->SetIC(pPr->GetIC());
+		if (nFlags & (1 << 20))
+			pPolygonLineAnnot->SetIT(pPr->GetIT());
 	}
 	else if (oInfo.IsPopup())
 	{

@@ -183,6 +183,29 @@ public:
 		std::vector<double> m_arrIC;
 	};
 
+	class CPolygonLineAnnotPr
+	{
+	public:
+		void SetIT(const BYTE& nIT)           { m_nIT      = nIT; }
+		void SetSubtype(const BYTE& nSubtype) { m_nSubtype = nSubtype; }
+		void SetLE(const BYTE& nLE1, const BYTE& nLE2) { m_nLE[0] = nLE1; m_nLE[1] = nLE2; }
+		void SetIC(const std::vector<double>& arrIC)   { m_arrIC  = arrIC; }
+		void SetVertices(const std::vector<double>& arrVertices) { m_arrVertices = arrVertices; }
+
+		BYTE GetIT()      const { return m_nIT; }
+		BYTE GetSubtype() const { return m_nSubtype; }
+		void GetLE(BYTE& nLE1, BYTE& nLE2)       const { nLE1 = m_nLE[0]; nLE2 = m_nLE[1]; }
+		const std::vector<double>& GetIC()       const { return m_arrIC; }
+		const std::vector<double>& GetVertices() const { return m_arrVertices; }
+
+	private:
+		BYTE m_nIT;
+		BYTE m_nSubtype;
+		BYTE m_nLE[2];
+		std::vector<double> m_arrIC;
+		std::vector<double> m_arrVertices;
+	};
+
 	class CPopupAnnotPr
 	{
 	public:
@@ -243,6 +266,7 @@ public:
 	bool IsLine()         const;
 	bool IsTextMarkup()   const;
 	bool IsSquareCircle() const;
+	bool IsPolygonLine()  const;
 	bool IsPopup()        const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
@@ -251,6 +275,7 @@ public:
 	CLineAnnotPr*         GetLineAnnotPr()         { return m_pLinePr; }
 	CTextMarkupAnnotPr*   GetTextMarkupAnnotPr()   { return m_pTextMarkupPr; }
 	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
+	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
 
 protected:
@@ -276,6 +301,7 @@ private:
 	CLineAnnotPr*         m_pLinePr;
 	CTextMarkupAnnotPr*   m_pTextMarkupPr;
 	CSquareCircleAnnotPr* m_pSquareCirclePr;
+	CPolygonLineAnnotPr*  m_pPolygonLinePr;
 	CPopupAnnotPr*        m_pPopupPr;
 };
 

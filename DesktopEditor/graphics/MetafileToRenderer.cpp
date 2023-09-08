@@ -1409,6 +1409,34 @@ namespace NSOnlineOfficeBinToPdf
 						pPr->SetIC(arrIC);
 					}
 				}
+				else if (oInfo.IsPolygonLine())
+				{
+					CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
+
+					int n = ReadInt(current, curindex);
+					std::vector<double> arrVertices;
+					for (int i = 0; i < n; ++i)
+						arrVertices.push_back(ReadDouble(current, curindex));
+					pPr->SetVertices(arrVertices);
+
+					pPr->SetSubtype(nType);
+					if (nFlags & (1 << 15))
+					{
+						BYTE nLE1 = ReadByte(current, curindex);
+						BYTE nLE2 = ReadByte(current, curindex);
+						pPr->SetLE(nLE1, nLE2);
+					}
+					if (nFlags & (1 << 16))
+					{
+						int n = ReadInt(current, curindex);
+						std::vector<double> arrIC;
+						for (int i = 0; i < n; ++i)
+							arrIC.push_back(ReadDouble(current, curindex));
+						pPr->SetIC(arrIC);
+					}
+					if (nFlags & (1 << 20))
+						pPr->SetIT(ReadByte(current, curindex));
+				}
 				else if (oInfo.IsPopup())
 				{
 					CAnnotFieldInfo::CPopupAnnotPr* pPr = oInfo.GetPopupAnnotPr();

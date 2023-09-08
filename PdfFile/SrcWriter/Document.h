@@ -136,6 +136,7 @@ namespace PdfWriter
 		CAnnotation*      CreateLineAnnot();
 		CAnnotation*      CreateTextMarkupAnnot();
 		CAnnotation*      CreateSquareCircleAnnot();
+		CAnnotation*      CreatePolygonLineAnnot();
 		CAnnotation*      CreatePopupAnnot();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
 		void              MatchAnnotation();

@@ -57,7 +57,9 @@ namespace PdfWriter
 		"FileAttachment",
 		"Popup",
 		"Line",
-		"Squiggly"
+		"Squiggly",
+		"Polygon",
+		"PolyLine"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -449,7 +451,7 @@ namespace PdfWriter
 		if (!pArray)
 			return;
 
-		Add("L", pArray);
+		Add("LE", pArray);
 
 		AddLE(pArray, nLE1);
 		AddLE(pArray, nLE2);
@@ -581,5 +583,65 @@ namespace PdfWriter
 	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
 		AddIC(this, arrIC);
+	}
+	//----------------------------------------------------------------------------------------
+	// CPolygonLineAnnotation
+	//----------------------------------------------------------------------------------------
+	CPolygonLineAnnotation::CPolygonLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotSquare)
+	{
+		m_nSubtype = AnnotPolygon;
+	}
+	void CPolygonLineAnnotation::SetIT(const BYTE& nIT)
+	{
+		std::string sValue;
+		switch (nIT)
+		{
+		case 0:
+		{ sValue = "PolygonCloud"; break; }
+		case 1:
+		{ sValue = "PolyLineDimension"; break; }
+		case 2:
+		{ sValue = "PolygonDimension"; break; }
+		}
+
+		Add("IT", new CStringObject(sValue.c_str()));
+	}
+	void CPolygonLineAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 6:
+		{ m_nSubtype = AnnotPolygon; break; }
+		case 7:
+		{ m_nSubtype = AnnotPolyLine; break; }
+		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
+	}
+	void CPolygonLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("LE", pArray);
+
+		AddLE(pArray, nLE1);
+		AddLE(pArray, nLE2);
+	}
+	void CPolygonLineAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
+	}
+	void CPolygonLineAnnotation::SetVertices(const std::vector<double>& arrVertices)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("Vertices", pArray);
+
+		for (const double& dVertices : arrVertices)
+			pArray->Add(dVertices);
 	}
 }

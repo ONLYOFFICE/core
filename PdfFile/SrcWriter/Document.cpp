@@ -573,6 +573,10 @@ namespace PdfWriter
 	{
 		return new CSquareCircleAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreatePolygonLineAnnot()
+	{
+		return new CPolygonLineAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreatePopupAnnot()
 	{
 		return new CPopupAnnotation(m_pXref);

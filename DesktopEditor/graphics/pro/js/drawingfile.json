@@ -12,6 +12,7 @@
 		"-O3", 
 		"-fexceptions", 
 		"-Wno-unused-command-line-argument", 
+		"-Wno-register",
 		"-s ALLOW_MEMORY_GROWTH=1", 
 		"-s FILESYSTEM=0", 
 		"-s ENVIRONMENT='web'", 
@@ -113,7 +114,7 @@
 	{
 		"name": "g",
 		"folder": "../../",
-		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"]
+		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "AlphaMask_private.cpp"]
 	},
 	{
 		"name": "fe",

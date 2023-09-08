@@ -53,6 +53,8 @@ HEADERS += \
     ../../../Matrix_private.h \
     ../../../GraphicsPath.h \
     ../../../GraphicsPath_private.h \
+	../../../AlphaMask_private.h \
+	../../../AlphaMask.h \
     \
     ../../../../raster/BgraFrame.h \
     ../../../../raster/ImageFileFormatChecker.h \
@@ -96,6 +98,8 @@ HEADERS += \
 SOURCES += \
     ../../../Matrix.cpp \
     ../../../GraphicsPath.cpp \
+	../../../AlphaMask_private.cpp \
+	../../../AlphaMask.cpp \
     ../../../../raster/BgraFrame.cpp \
     ../../../../raster/ImageFileFormatChecker.cpp \
     ../../../../raster/Metafile/MetaFile.cpp \

@@ -80,22 +80,16 @@ This directory contains plugins related to various methods of accessing multimed
 | access_imem | In-memory bit stream input |
 | access_jack | JACK audio input |
 | access_mms | Microsoft Media Server (MMS) input |
-| access_mtp | MTP input |
 | attachment | Input reading an attachment |
 | avio | libavformat AVIO access input |
-| cdda | Audio CD input |
-| dcp | Digital Cinema Package module |
 | dtv | Digital Television and Radio |
-| dvb | DVB input with v4l2 support |
 | filesystem | File input |
 | ftp | FTP input |
 | https | HTTPS input module |
 | http | HTTP input module |
-| idummy | dummy input plugin, to manage "vlc://" special options |
+| idummy | Dummy input plugin, to manage "vlc://" special options |
 | imem | Memory input for VLC |
-| nfs | NFS input |
 | pulsesrc | PulseAudio input plugin |
-| rdp | libfreeRDP based Remote Desktop access |
 | rist | RIST (Reliable Internet Stream Transport) input module |
 | rtp | Real-Time Protocol (RTP) packed input |
 | satip | SAT>IP Receiver Plugin |
@@ -104,8 +98,6 @@ This directory contains plugins related to various methods of accessing multimed
 | tcp | TCP input module |
 | timecode | Time code subpicture elementary stream generator |
 | udp | UDP input module |
-| v4l2 | Video4Linux2 input module |
-| vcd | VCD input module |
 | vdr | VDR recordings access plugin |
 | xcb_screen | Screen capture (with X11/XCB) |
 
@@ -122,7 +114,7 @@ Plugins in this directory are responsible for applying various audio filters and
 | dolby_surround_decoder | Simple decoder for dolby surround encoded streams |
 | equalizer | Equalizer with 10 bands |
 | gain | Gain control filter |
-| headphone_channel_mixer | headphone virtual spatialization channel mixer module |
+| headphone_channel_mixer | Headphone virtual spatialization channel mixer module |
 | karaoke | Simple Karaoke filter |
 | mad | MPEG audio layer I/II/III decoder |
 | mono | Stereo to mono downmixer |
@@ -169,13 +161,12 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 
 | Plugin name | Description |
 | --- | --- |
-| a52 | ATSC A/52 aka AC-3 audio decoder plugin |
 | adpcm | ADPCM audio decoder |
 | aes3 | AES3/SMPTE 302M audio decoder |
 | aom | AOM video decoder (AV1) |
 | araw | Raw/Log Audio decoder |
 | aribsub | ARIB subtitles decoder |
-| avcodec | video and audio decoder and encoder using libavcodec (FFmpeg) |
+| avcodec | Video and audio decoder and encoder using libavcodec (FFmpeg) |
 | cc | Closed Captions decoder |
 | cdg | CDG video decoder |
 | cvdsub | CVD subtitle decoder |
@@ -186,7 +177,6 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | faad | AAC audio decoder using libfaad2 |
 | flac | Flac audio decoder |
 | g711 | G.711 decoder |
-| jpeg | JPEG image decoder |
 | kate | Kate overlay decoder |
 | libass | SSA/ASS subtitle decoder using libass |
 | libmpeg2 | MPEG I/II video decoder using libmpeg2 |
@@ -194,12 +184,10 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | mpg123 | MPEG-1 & 2 audio layer I, II, III + MPEG 2.5 decoder |
 | oggspots | OggSpots video decoder |
 | opus | Opus audio decoder |
-| png | PNG image decoder |
 | rawvideo | Pseudo raw video decoder |
 | schroedinger | Dirac video decoder using libschroedinger |
 | scte18 | SCTE-18 EAS decoder |
 | scte27 | SCTE-27 subtitles decoder |
-| sdl_image | SDL_image video decoder |
 | spdif | S/PDIF pass-through decoder |
 | speex | Speex audio decoder |
 | spudec | DVD SPU decoder |
@@ -208,7 +196,6 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | substx3g | MP4 tx3g subtitles decoder |
 | subsusf | USF subtitles decoder |
 | svcdsub | Philips OGT (SVCD subtitle) decoder |
-| svgdec | SVG image decoder |
 | textst | HDMV TextST subtitles decoder |
 | theora | Theora video decoder |
 | ttml | TTML subtitles decoder |
@@ -226,7 +213,6 @@ Control plugins provide interfaces and mechanisms for local and remote control o
 
 | Plugin name | Description |
 | --- | --- |
-| dbus | D-Bus control interface |
 | dummy | Dummy interface |
 | gestures | Mouse gestures control interface |
 | hotkeys | Hotkeys management interface |
@@ -255,14 +241,11 @@ Demux plugins are responsible for demultiplexing multimedia containers, separati
 | directory_demux | Directory import module (import directory content to playlist) |
 | es | MPEG-I/II/4 / A52 / DTS / MLP audio |
 | flacsys | FLAC demuxer |
-| gme | Game Music Emu demux module |
-| h26x | raw H264 and HEVC Video demuxer |
+| h26x | Raw H264 and HEVC Video demuxer |
 | image | Image demuxer |
 | mjpeg | M-JPEG camera demuxer |
 | mkv | Matroska stream demuxer |
-| mod | MOD file demuxer using libmodplug |
 | mp4 | MP4 stream demuxer |
-| mpc | MusePack demuxer |
 | mpgv | MPEG-I/II video demuxer |
 | noseek | Seek prevention demux filter |
 | nsc | Windows Media NSC metademux |
@@ -276,11 +259,9 @@ Demux plugins are responsible for demultiplexing multimedia containers, separati
 | rawdv | DV (Digital Video) demuxer |
 | rawvid | Raw video demuxer |
 | real | Real Media format demuxer |
-| sid | C64 sid demuxer |
 | smf | SMF demuxer |
 | subtitle | Demux for subtitle text files |
-| ts | MPEG Transport Stream demuxer |
-| tta |TTA demuxer  |
+| tta | TTA demuxer |
 | ty | TY Stream audio/video demux |
 | vc1 | VC1 video demuxer |
 | vobsub | Vobsub subtitles demuxer |
@@ -290,11 +271,7 @@ Demux plugins are responsible for demultiplexing multimedia containers, separati
 
 ### GUI plugins
 
-GUI plugins offer various graphical interfaces and controls for interacting with the media player. Since we don't actually need them, there is only one plugin in this directory.
-
-| Plugin name | Description |
-| --- | --- |
-| ncurses | Ncurses command line interface |
+GUI plugins offer various graphical interfaces and controls for interacting with the media player. Since we don't actually need them, this directory should not exist.
 
 ### Keystore plugins
 
@@ -304,9 +281,7 @@ keystore
 | Plugin name | Description |
 | --- | --- |
 | file_keystore | File and crypt keystore (secrets can be stored encrypted in a file, or in a file without any encryption) |
-| kwallet | KWallet keystore module (secrets are stored via KWallet) |
 | memory_keystore | Memory keystore (secrets are stored in memory) |
-| secret | libsecret keystore module (secrets are stored via libsecret) |
 
 ### Logger plugins
 
@@ -334,14 +309,11 @@ The "misc" directory may contain miscellaneous plugins that don't fit neatly int
 | Plugin name | Description |
 | --- | --- |
 | audioscrobbler | Submission of played songs to last.fm |
-| dbus_screensaver | Power management inhibition using D-Bus |
 | export | Playlist export module |
 | fingerprinter | Audio fingerprinter module (based on Acoustid) |
-| gnutls | GNU TLS transport layer security |
 | logger | File logging plugin |
 | stats | Stats decoder/demuxer |
 | xdg_screensaver | XDG screen saver inhibition |
-| xml | XML Parser (using libxml2) |
 
 ### Packetizer plugins
 
@@ -371,13 +343,10 @@ Services discovery plugins help locate and identify network services, making it 
 
 | Plugin name | Description |
 | --- | --- |
-| avahi | Bonjour services discovery module (Zeroconf, Avahi Renderer Discovery) |
 | mediadirs | Picture/Music/Video user directories as service discoveries (My Pictures, My Music, My Video) |
-| mtp | MTP devices |
 | podcast | Podcasts |
 | pulselist | Audio capture (PulseAudio) |
 | sap | SAP interface module |
-| udev | List of multimedia devices (Video capture (Video4Linux), Audio capture (ALSA), Discs) |
 | xcb_apps | List of application windows XCB module |
 
 ### SPU plugins
@@ -391,17 +360,12 @@ SPU (Subpicture Unit) plugins handle the rendering of subtitles and other overla
 | logo | Logo sub source |
 | marq | Marquee display |
 | mosaic | Mosaic video sub source |
-| remoteosd | Remote-OSD over VNC |
 | rss | RSS and Atom feed display |
 | subsdelay | Subtitle delay |
 
 ### Stream extractor plugins 
 
-Stream extractor plugins can extract specific streams (e.g., audio or video) from multimedia containers without decoding the entire file.
-
-| Plugin name | Description |
-| --- | --- |
-| archive | libarchive based stream extractor |
+Stream extractor plugins can extract specific streams (e.g., audio or video) from multimedia containers without decoding the entire file. This directory shouldn't exist in our libVLC build.
 
 ### Stream filter plugins
 
@@ -426,7 +390,6 @@ Text renderer plugins are responsible for rendering text and subtitles on the sc
 | Plugin name | Description |
 | --- | --- |
 | freetype | Freetype2 font renderer |
-| svg | SVG renderer |
 | tdummy | Dummy font renderer |
 
 ### VA-API plugins
@@ -472,7 +435,6 @@ Video chroma plugins handle color space conversion and manipulation of video fra
 | i422_yuy2 | Conversions from I422 to YUY2,YUNV,YVYU,UYVY,UYNV,Y422,IUYV,Y211 |
 | i422_yuy2_sse2 | SSE2 conversions from I422 to YUY2,YUNV,YVYU,UYVY,UYNV,Y422,IUYV |
 | rv32 | RV32 conversion filter |
-| swscale | Video scaling filter |
 | yuvp | YUVP converter |
 | yuy2_i420 | Conversions from YUY2,YUNV,YVYU,UYVY,UYNV,Y422 to I420 |
 | yuy2_i422 | Conversions from YUY2,YUNV,YVYU,UYVY,UYNV,Y422 to I422 |
@@ -486,7 +448,7 @@ Video filter plugins apply various video effects and transformations to video st
 | adjust | Contrast/Hue/Saturation/Brightness video filter |
 | alphamask | Alpha mask video filter |
 | anaglyph | Convert 3D picture to anaglyph image video filter |
-| antiflicker | antiflicker video filter |
+| antiflicker | Antiflicker video filter |
 | ball | Ball video filter |
 | blendbench | Blending benchmark filter |
 | blend | Video pictures blending |
@@ -512,7 +474,6 @@ Video filter plugins apply various video effects and transformations to video st
 | motiondetect | Motion detect video filter |
 | oldmovie | Old movie effect video filter |
 | posterize | Posterize video filter |
-| postproc | Video post processing filter |
 | psychedelic | Psychedelic video filter |
 | puzzle | Puzzle interactive game video filter |
 | ripple | Ripple video filter |
@@ -563,5 +524,4 @@ Visualization plugins generate audio-driven visual effects, often used in media 
 | Plugin name | Description |
 | --- | --- |
 | glspectrum | 3D OpenGL spectrum visualization |
-| goom | Goom effect using libgoom |
 | visual | Visualisation system |

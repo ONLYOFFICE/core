@@ -10,6 +10,8 @@
   - [Audio output](#audio-output)
   - [Codec plugins](#codec-plugins)
   - [Control plugins](#control-plugins)
+  - [D3D11 plugins](#d3d11-plugins)
+  - [D3D9 plugins](#d3d9-plugins)
   - [Demux plugins](#demux-plugins)
   - [GUI plugins](#gui-plugins)
   - [Keystore plugins](#keystore-plugins)
@@ -80,8 +82,10 @@ This directory contains plugins related to various methods of accessing multimed
 | access_imem | In-memory bit stream input |
 | access_jack | JACK audio input |
 | access_mms | Microsoft Media Server (MMS) input |
+| access_wasapi | Windows Audio Session API input |
 | attachment | Input reading an attachment |
 | avio | libavformat AVIO access input |
+| dshow | DirectShow input |
 | dtv | Digital Television and Radio |
 | filesystem | File input |
 | ftp | FTP input |
@@ -93,8 +97,10 @@ This directory contains plugins related to various methods of accessing multimed
 | rist | RIST (Reliable Internet Stream Transport) input module |
 | rtp | Real-Time Protocol (RTP) packed input |
 | satip | SAT>IP Receiver Plugin |
+| screen | Screen capture module |
 | sdp | Fake input for SDP (Session Description Protocol) scheme |
 | shm | Shared memory frame buffer |
+| smb | SMB input |
 | tcp | TCP input module |
 | timecode | Time code subpicture elementary stream generator |
 | udp | UDP input module |
@@ -152,8 +158,12 @@ This directory contains audio output plugins responsible for delivering audio st
 | afile | File audio output |
 | alsa | ALSA audio output |
 | amem | Audio memory output |
+| directsound | DirectX audio output |
 | jack | JACK audio output |
+| mmdevice | Windows Multimedia Device output |
 | pulse | Pulseaudio audio output |
+| wasapi | Windows Audio Session API output |
+| waveout | WaveOut audio output |
 
 ### Codec plugins
 
@@ -169,11 +179,15 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | avcodec | Video and audio decoder and encoder using libavcodec (FFmpeg) |
 | cc | Closed Captions decoder |
 | cdg | CDG video decoder |
+| crystalhd | Crystal HD hardware video decoder |
 | cvdsub | CVD subtitle decoder |
+| d3d11va | Direct3D11 Video Acceleration |
 | dav1d | Dav1d video decoder (AV1) |
 | dca | DTS Coherent Acoustics audio decoder |
 | ddummy | Dummy decoder |
+| dmo | DirectMedia Object decoder |
 | dvbsub | DVB subtitles decoder |
+| dxva2 | DirectX Video Acceleration (DXVA) 2.0 |
 | faad | AAC audio decoder using libfaad2 |
 | flac | Flac audio decoder |
 | g711 | G.711 decoder |
@@ -181,6 +195,7 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | libass | SSA/ASS subtitle decoder using libass |
 | libmpeg2 | MPEG I/II video decoder using libmpeg2 |
 | lpcm | Linear PCM audio decoder |
+| mft | Media Foundation Transform decoder |
 | mpg123 | MPEG-1 & 2 audio layer I, II, III + MPEG 2.5 decoder |
 | oggspots | OggSpots video decoder |
 | opus | Opus audio decoder |
@@ -199,6 +214,7 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | textst | HDMV TextST subtitles decoder |
 | theora | Theora video decoder |
 | ttml | TTML subtitles decoder |
+| twolame | Libtwolame audio encoder |
 | uleaddvaudio | Ulead DV audio decoder |
 | vaapi_drm | VA-API video decoder via DRM |
 | vaapi | VA-API helpers for the libavcodec decoder |
@@ -217,9 +233,28 @@ Control plugins provide interfaces and mechanisms for local and remote control o
 | gestures | Mouse gestures control interface |
 | hotkeys | Hotkeys management interface |
 | motion | Laptop built-in motion sensors control interface |
+| ntservice | Windows Service interface |
 | netsync | Network synchronization between several network clients |
 | oldrc | Remote control interface |
+| win_hotkeys | Global Hotkeys interface for Windows |
+| win_msg | Windows messages interface |
 | xcb_hotkeys | Global Hotkeys interface |
+
+### D3D11 plugins
+
+Plugins for video filters using DirectX 11 (Direct3D 11) on Windows.
+
+| Plugin name | Description |
+| --- | --- |
+| direct3d11_filters | Direct3D11 video adjust and deinterlace filters |
+
+### D3D9 plugins
+
+Plugins for video filters using DirectX 9 (Direct3D 9) on Windows.
+
+| Plugin name | Description |
+| --- | --- |
+| direct3d9_filters | Direct3D11 adjust and deinterlace filters |
 
 ### Demux plugins
 
@@ -347,6 +382,7 @@ Services discovery plugins help locate and identify network services, making it 
 | podcast | Podcasts |
 | pulselist | Audio capture (PulseAudio) |
 | sap | SAP interface module |
+| windrive | List of disc drives |
 | xcb_apps | List of application windows XCB module |
 
 ### SPU plugins
@@ -390,11 +426,12 @@ Text renderer plugins are responsible for rendering text and subtitles on the sc
 | Plugin name | Description |
 | --- | --- |
 | freetype | Freetype2 font renderer |
+| sapi | Speech synthesis for Windows |
 | tdummy | Dummy font renderer |
 
 ### VA-API plugins
 
-VA-API (Video Acceleration API) plugins provide hardware acceleration support for video decoding and encoding on systems that support VA-API.
+VA-API (Video Acceleration API) plugins provide hardware acceleration support for video decoding and encoding on systems that support VA-API (only Linux in our case).
 
 | Plugin name | Description |
 | --- | --- |
@@ -402,7 +439,7 @@ VA-API (Video Acceleration API) plugins provide hardware acceleration support fo
 
 ### VDPAU plugins
 
-VDPAU (Video Decode and Presentation API for Unix) plugins offer hardware acceleration for video processing on systems that support VDPAU.
+VDPAU (Video Decode and Presentation API for Unix) plugins offer hardware acceleration for video processing on systems that support VDPAU (only Linux in our case).
 
 vdpau
 | Plugin name | Description |
@@ -492,16 +529,24 @@ These plugins are responsible for delivering video frames to the display or outp
 
 | Plugin name | Description |
 | --- | --- |
+| direct3d11 | Direct3D11 video output |
+| direct3d9 | Direct3D9 video output |
+| directdraw | DirectX (DirectDraw) video output |
+| drawable | Embedded window video |
 | egl_x11 | EGL extension for OpenGL |
 | fb | GNU/Linux framebuffer video output |
 | flaschen | Flaschen-Taschen video output |
 | glconv_vaapi_drm | VA-API OpenGL surface converter for DRM |
 | glconv_vaapi_x11 | VA-API OpenGL surface converter for X11 |
 | glconv_vdpau | VDPAU OpenGL surface converter |
+| glwin32 | OpenGL video output for Windows |
 | glx | GLX extension for OpenGL |
 | gl | OpenGL video output |
 | vdummy | Dummy video output |
 | vmem | Video memory output |
+| wgl | WGL extension for OpenGL |
+| wingdi | Windows GDI video output |
+| winhibit | Windows screen saver inhibition |
 | xcb_window | X11 embedded window video (XCB) |
 | xcb_x11 | X11 video output (XCB) |
 | xcb_xv | XVideo output (XCB) |

@@ -138,6 +138,7 @@ public:
 		void set_anim_attribute_name(const odf_types::smil_attribute_name& val);
 		void set_anim_to			(const std::wstring& val);
 		void set_anim_target_element(const std::wstring& val);
+		void set_anim_auto_reverse	(bool val);
 
 		void set_anim_animation_formula(const std::wstring& val);
 		void set_anim_animation_keytimes(const odf_types::smil_key_times& val);
@@ -154,6 +155,7 @@ public:
 		void set_anim_motion_path(const std::wstring& val);
 
 		void set_anim_color_to(const std::wstring& val);
+		void set_anim_color_by(const std::wstring& val);
 		void set_anim_color_interpolation(const std::wstring& val);
 		void set_anim_color_direction(const std::wstring& val);
 

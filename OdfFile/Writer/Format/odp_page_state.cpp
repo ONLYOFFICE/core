@@ -282,6 +282,14 @@ void odp_page_state::set_anim_target_element(const std::wstring& val)
 	anim_levels.back().attlist->smil_target_element_ = val;
 }
 
+void odp_page_state::set_anim_auto_reverse(bool val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_levels.back().attlist->smil_auto_reverse_ = val;
+}
+
 void odp_page_state::set_anim_animation_formula(const std::wstring& val)
 {
 	if (anim_levels.empty())		return;
@@ -424,6 +432,18 @@ void odp_page_state::set_anim_color_to(const std::wstring& val)
 		return;
 
 	anim_levels.back().color_attlist->smil_to_= val;
+}
+
+void odp_page_state::set_anim_color_by(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_animate_color* color = dynamic_cast<anim_animate_color*>(anim_levels.back().elm.get());
+	if (!color)
+		return;
+
+	anim_levels.back().color_attlist->smil_by_ = val;
 }
 
 void odp_page_state::set_anim_color_interpolation(const std::wstring& val)

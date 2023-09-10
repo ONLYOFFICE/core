@@ -114,6 +114,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 	_CP_OPT(std::wstring)			smil_to_;
+	_CP_OPT(std::wstring)			smil_by_;
 	_CP_OPT(std::wstring)			presentation_master_element_;
 	_CP_OPT(std::wstring)			anim_color_interpolation_;
 	_CP_OPT(std::wstring)			anim_color_interpolation_direction;

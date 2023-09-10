@@ -827,7 +827,7 @@ void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
 		else if (filter == L"circle")
 		{
 			odfType = smil_transition_type::ellipseWipe;
-			odfSubtype = L"circle";
+			odfSubtype = L"horizontal";
 			if (subtype == L"in")			odfReversed = true;
 			else if (subtype == L"out")		odfReversed = false;
 		}
@@ -1045,6 +1045,42 @@ void PptxConverter::convert(PPTX::Logic::AnimClr* oox_anim_color)
 			odp_context->current_slide().set_anim_color_direction(L"clockwise");
 		else if (oox_anim_color->dir->get() == L"ccw")
 			odp_context->current_slide().set_anim_color_direction(L"counter-clockwise");
+	}
+
+	if (oox_anim_color->byR.IsInit() ||
+		oox_anim_color->byG.IsInit() ||
+		oox_anim_color->byB.IsInit())
+	{
+		const int r = oox_anim_color->byR.get_value_or(0);
+		const int g = oox_anim_color->byG.get_value_or(0);
+		const int b = oox_anim_color->byB.get_value_or(0);
+		const float multiplyer = 1000.0f;
+
+		std::wstringstream ss;
+		ss << L"#"
+			<< std::setfill(L'0')
+			<< std::setw(2)
+			<< std::hex
+			<< ((int)(r / multiplyer) & 0xff)
+			<< ((int)(g / multiplyer) & 0xff)
+			<< ((int)(b / multiplyer) & 0xff);
+
+		odp_context->current_slide().set_anim_color_by(ss.str());
+	}
+	else if (oox_anim_color->byH.IsInit() ||
+		oox_anim_color->byS.IsInit() ||
+		oox_anim_color->byL.IsInit())
+	{
+		const int h = oox_anim_color->byH.get_value_or(0);
+		const int s = oox_anim_color->byS.get_value_or(0);
+		const int l = oox_anim_color->byL.get_value_or(0);
+
+		std::wstringstream ss;
+		ss << L"hsl("
+			<< (h / 100000) << L","
+			<< (s / 1000  ) << L"%,"
+			<< (l / 1000  ) << L"%)";
+		odp_context->current_slide().set_anim_color_by(ss.str());
 	}
 
 	odp_context->current_slide().end_timing_anim_clr();

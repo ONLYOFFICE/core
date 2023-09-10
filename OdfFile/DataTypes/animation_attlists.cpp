@@ -154,6 +154,7 @@ namespace odf_types {
 	void anim_animate_color_attlist::add_attributes(const xml::attributes_wc_ptr& Attributes)
 	{
 		CP_APPLY_ATTR(L"smil:to", smil_to_);
+		CP_APPLY_ATTR(L"smil:by", smil_by_);
 		CP_APPLY_ATTR(L"presentation:master-element", presentation_master_element_);
 		CP_APPLY_ATTR(L"anim:color-interpolation", anim_color_interpolation_);
 		CP_APPLY_ATTR(L"anim:color-interpolation-direction", anim_color_interpolation_direction);
@@ -162,6 +163,7 @@ namespace odf_types {
 	void anim_animate_color_attlist::apply_from(const anim_animate_color_attlist& Other)
 	{
 		_CP_APPLY_PROP2(smil_to_);
+		_CP_APPLY_PROP2(smil_by_);
 		_CP_APPLY_PROP2(presentation_master_element_);
 		_CP_APPLY_PROP2(anim_color_interpolation_);
 		_CP_APPLY_PROP2(anim_color_interpolation_direction);
@@ -170,6 +172,7 @@ namespace odf_types {
 	void anim_animate_color_attlist::serialize(CP_ATTR_NODE)
 	{
 		CP_XML_ATTR_OPT(L"smil:to",								smil_to_);
+		CP_XML_ATTR_OPT(L"smil:by",								smil_by_);
 		CP_XML_ATTR_OPT(L"presentation:master-element",			presentation_master_element_);
 		CP_XML_ATTR_OPT(L"anim:color-interpolation",			anim_color_interpolation_);
 		CP_XML_ATTR_OPT(L"anim:color-interpolation-direction",	anim_color_interpolation_direction);

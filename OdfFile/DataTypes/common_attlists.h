@@ -604,6 +604,7 @@ public:
     _CP_OPT(std::wstring)	                        smil_target_element_;
     _CP_OPT(odf_types::smil_attribute_name)	        smil_attribute_name_;
     _CP_OPT(odf_types::smil_fill)	                smil_fill_;
+    _CP_OPT(odf_types::Bool)                        smil_auto_reverse_;
 
 	_CP_OPT(std::wstring)			                smil_begin_;
 	_CP_OPT(std::wstring)			                smil_end_;

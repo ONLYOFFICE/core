@@ -116,7 +116,6 @@ namespace StarMath
 				arValueBrecket.push_back(ParsElement(itFirst,itEnd,arValueBrecket));
 			}
 			wsOneElement = GetElement(itFirst,itEnd);
-			std::wcout << wsOneElement << std::endl;
 			if(L"right" == wsOneElement) wsOneElement = GetElement(itFirst,itEnd);
 			m_oBracket->SetBracketVal(arValueBrecket);
 			m_oBracket->SetTypeBracket(wsTypeBracket);
@@ -447,9 +446,6 @@ namespace StarMath
 	}
 	TypeElement COperator::GetType()
 	{
-		/*std::wcout << oFromValue->GetType() <<std::endl;
-		std::wcout << oToValue->GetType() <<std::endl;
-		std::wcout << oValueOp->GetType() <<std::endl;*/
 		return Operator;
 	}
 	std::wstring COperator::GetValue()
@@ -475,6 +471,18 @@ namespace StarMath
 	void COperator::SetTypeOp(const TypeOperator& enType)
 	{
 		enTypeOp = enType;
+	}
+	CElement* COperator::GetValueOp()
+	{
+		return oValueOp;
+	}
+	CElement* COperator::GetFrom()
+	{
+		return oFromValue;
+	}
+	CElement* COperator::GetTo()
+	{
+		return oToValue;
 	}
 //Class methods CBracket
 	CBracket::CBracket()

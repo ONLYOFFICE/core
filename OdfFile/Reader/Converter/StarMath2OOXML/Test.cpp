@@ -3,9 +3,9 @@
 
 int main()
 {
-	std::wstring Temp = L"2+1";
+	std::wstring Temp = L"1 + 2 over 3";
 	StarMath::CStarMathPars TempO;
 	TempO.Pars(Temp);
-	ConversionSM2OOXML::CConversionSMtoOOXML m_oTest;
+	StarMath::CConversionSMtoOOXML m_oTest;
 	m_oTest.StartConversion(TempO.GetVector());
 }

@@ -1,5 +1,6 @@
 #ifndef CSTARMATHPARS_H
 #define CSTARMATHPARS_H
+#include "typeselements.h"
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -7,105 +8,6 @@
 
 namespace StarMath
 {
-	enum TypeElement{
-		Number,
-		BinOperator,
-		Operator,
-		Bracket,
-		UnarSign,
-		Attribute,
-		SpecialCharacter,
-	};
-	enum TypeBinOperator
-	{
-		cdot,
-		times,
-		over,
-		plus,
-		minus,
-		frac,
-		div,
-		multipl,
-		division,
-		oplus,
-		ominus,
-		odot,
-		otimes,
-		odivide,
-		circ,
-		wideslash,
-		widebslash,
-	};
-	enum TypeOperator
-	{
-		lim,
-		sum,
-	};
-	enum TypeBracket
-	{
-		brace,
-		round,
-		square,
-		ldbracket,
-		lbrace,
-		langle,
-		lceil,
-		lfloor,
-		lline,
-		ldline,
-	};
-	enum TypeAttributeTop
-	{
-		noneTop,
-		acute,
-		breve,
-		dot,
-		dddot,
-		vec,
-		tilde,
-		check,
-		grave,
-		circle,
-		ddot,
-		bar,
-		harpoon,
-		hat,
-		widevec,
-		widetilde,
-		overline,
-		overstrike,
-		wideharpoon,
-		widehat,
-		underline,//top elements
-	};
-	enum TypeAttributeColor
-	{
-		noneColor,
-		black,
-		green,
-		aqua,
-		yellow,
-		lime,
-		navy,
-		purple,
-		teal,
-		blue,
-		red,
-		fuchsia,
-		gray,
-		maroon,
-		olive,
-		silver,
-		coral,
-		midnightblue,
-		crimson,
-		violet,//color(without rgb and hex)
-	};
-	enum TypeCharacter
-	{
-		mline,
-		grid,
-	};
 	class CAttribute
 	{
 	public:
@@ -201,6 +103,9 @@ namespace StarMath
 		void SetFrom(CElement* oFrom);
 		void SetTo(CElement* oTo);
 		void SetValueOp(CElement* oValue);
+		CElement* GetValueOp();
+		CElement* GetFrom();
+		CElement* GetTo();
 	private:
 		TypeOperator enTypeOp;
 		CElement* oFromValue{nullptr};
@@ -233,7 +138,7 @@ namespace StarMath
 		std::wstring GetElement(std::wstring::iterator& itFirst,std::wstring::iterator& itEnd);
 		CElement* ParsElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd, std::vector<CElement*>& arParsLine);
 		bool CheckDigit(const std::wstring& wsCheckToken);
-		bool CheckUnarSign(std::wstring& wsCheckToken,CUnarySign& oUnarSign);
+		//bool CheckUnarSign(std::wstring& wsCheckToken,CUnarySign& oUnarSign);
 		static bool CheckBinOperator(const std::wstring& wsCheckToken);
 		bool CheckBinOperatorLowPriority(const std::wstring& wsCheckToken);
 		bool CheckPlusOrMinus(const std::wstring& wsCheckToken);

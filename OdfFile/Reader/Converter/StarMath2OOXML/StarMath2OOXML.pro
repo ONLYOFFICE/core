@@ -13,6 +13,7 @@ SOURCES += Test.cpp \
 
 HEADERS += \
     cconversionsmtoooxml.h \
-    cstarmathpars.h
+    cstarmathpars.h \
+    typeselements.h
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CIRE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

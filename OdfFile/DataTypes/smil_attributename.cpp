@@ -61,6 +61,7 @@ namespace cpdoccore { namespace odf_types {
 		case smil_attribute_name::rotate					: _Wostream << L"rotate"		; break;
 		case smil_attribute_name::skewX						: _Wostream << L"skewX"			; break;
 		case smil_attribute_name::skewY						: _Wostream << L"skewY"			; break;
+		case smil_attribute_name::transform					: _Wostream << L"transform"		; break;
 		case smil_attribute_name::visibility				: _Wostream << L"visibility"	; break;
 		case smil_attribute_name::width						: _Wostream << L"width"			; break;
 		case smil_attribute_name::x							: _Wostream << L"x"				; break;
@@ -94,6 +95,7 @@ namespace cpdoccore { namespace odf_types {
 		else if (Str == L"rotate")				return smil_attribute_name(rotate);
 		else if (Str == L"skewx")				return smil_attribute_name(skewX);
 		else if (Str == L"skewx")				return smil_attribute_name(skewY);
+		else if (Str == L"transform")			return smil_attribute_name(transform);
 		else if (Str == L"visibility")			return smil_attribute_name(visibility);
 		else if (Str == L"width")				return smil_attribute_name(width);
 		else if (Str == L"x")					return smil_attribute_name(x);

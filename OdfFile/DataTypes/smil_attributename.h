@@ -64,11 +64,12 @@ public:
 		strokeColor,
 		skewX,
 		skewY,
+		transform,
 		visibility,
 		width,
 		x,
 		y,
-		dim
+		dim,
 	};
 
 	smil_attribute_name() {}

@@ -430,6 +430,8 @@ void odf_drawing_context::start_group()
 	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
 	if (impl_->current_drawing_state_.hidden_)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+	if (!impl_->current_drawing_state_.xml_id_.empty())
+		group->xml_id_ = impl_->current_drawing_state_.xml_id_;
 	
 	impl_->current_drawing_state_.z_order_	= -1;
 

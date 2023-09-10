@@ -1120,37 +1120,27 @@ void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
 
 	odp_context->current_slide().start_timing_transform();
 	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::scale);
+	odp_context->current_slide().set_anim_attribute_name(odf_types::smil_attribute_name::transform);
 	
 	convert(&oox_anim_scale->cBhvr);
 
 	if (oox_anim_scale->fromX.IsInit() && oox_anim_scale->fromY.IsInit())
 	{
-		std::wstringstream ss;
-		const double odp_multipyer = 100000;
-		double x = *oox_anim_scale->fromX / odp_multipyer;
-		double y = *oox_anim_scale->fromY / odp_multipyer;
-		ss << int(x) << L"," << int(y);
-		odp_context->current_slide().set_anim_transform_from(ss.str());
+		std::wstring from = convert_animation_scale_values(*oox_anim_scale->fromX, *oox_anim_scale->fromY);
+		odp_context->current_slide().set_anim_transform_from(from);
 	}
 
 	if (oox_anim_scale->toX.IsInit() && oox_anim_scale->toY.IsInit())
 	{
-		std::wstringstream ss;
-		const double odp_multipyer = 100000;
-		double x = *oox_anim_scale->toX / odp_multipyer;
-		double y = *oox_anim_scale->toY / odp_multipyer;
-		ss << int(x) << L"," << int(y);
-		odp_context->current_slide().set_anim_transform_to(ss.str());
+		std::wstring to = convert_animation_scale_values(*oox_anim_scale->toX, *oox_anim_scale->toY);
+		odp_context->current_slide().set_anim_transform_to(to);
 	}
 
 	if (oox_anim_scale->byX.IsInit() && oox_anim_scale->byY.IsInit())
 	{
-		std::wstringstream ss;
-		const double odp_multipyer = 100000;
-		double x = *oox_anim_scale->byX / odp_multipyer;
-		double y = *oox_anim_scale->byY / odp_multipyer;
-		ss << int(x) << L"," << int(y);
-		odp_context->current_slide().set_anim_transform_by(ss.str());
+		const int pptx_multiplyer = 100000;
+		std::wstring by = convert_animation_scale_values(*oox_anim_scale->byX - pptx_multiplyer, *oox_anim_scale->byY - pptx_multiplyer);
+		odp_context->current_slide().set_anim_transform_by(by);
 	}
 
 	odp_context->current_slide().end_timing_transform();
@@ -1177,12 +1167,26 @@ void PptxConverter::convert_common()
 
 std::wstring PptxConverter::convert_animation_formula(std::wstring formula)
 {
-	boost::replace_all(formula, L"#ppt_x", L"x");
-	boost::replace_all(formula, L"#ppt_y", L"y");
-	boost::replace_all(formula, L"#ppt_w", L"width");
-	boost::replace_all(formula, L"#ppt_h", L"height");
+	boost::erase_all(formula, L"#");
+	boost::replace_all(formula, L"ppt_x", L"x");
+	boost::replace_all(formula, L"ppt_y", L"y");
+	boost::replace_all(formula, L"ppt_w", L"width");
+	boost::replace_all(formula, L"ppt_h", L"height");
 
 	return formula;
+}
+
+std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
+{
+	std::wstringstream ss;
+	ss.setf(std::ios::fixed);
+	ss.precision(2);
+	const double odp_multipyer = 100000;
+	double _x = x / odp_multipyer;
+	double _y = y / odp_multipyer;
+	ss << _x << L"," << _y;
+
+	return ss.str();
 }
 
 void PptxConverter::convert_slides()
@@ -1762,12 +1766,17 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	{
 		odp_context->current_slide().set_anim_fill(odf_types::smil_fill::parse(oox_time_common->fill->get()));
 	}
+	if (oox_time_common->autoRev.IsInit())
+	{
+		odp_context->current_slide().set_anim_auto_reverse(*oox_time_common->autoRev);
+	}
 	if (oox_time_common->presetClass.IsInit())
 	{
 		convert(*oox_time_common->presetClass);
 		if(oox_time_common->presetID.IsInit())
 			convert(*oox_time_common->presetClass, *oox_time_common->presetID);
 	}
+	
 
 	//nullable<CondLst>			stCondLst;
 	//nullable<CondLst>			endCondLst;
@@ -2520,14 +2529,17 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			OoxConverter::convert(pElem.GetPointer());
 		}
 
-		int id;
-		if (pShape.IsInit()) id = pShape->nvSpPr.cNvPr.id;
-		else if (pPic.IsInit()) id = pPic->nvPicPr.cNvPr.id;
-
-		if (id != -1)
 		{
-			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(id));
-			odf_context()->drawing_context()->set_xml_id(xml_id);
+			// TODO: Move to NvPicPr.cNvPr conversion
+			int id = -1;
+			if (pPic.IsInit()) 
+				id = pPic->nvPicPr.cNvPr.id;
+
+			if (id != -1)
+			{
+				const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(id));
+				odf_context()->drawing_context()->set_xml_id(xml_id);
+			}
 		}
 		
 		odf_context()->drawing_context()->end_drawing();

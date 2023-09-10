@@ -242,25 +242,32 @@ int odp_conversion_context::next_id()
 
 std::wstring odp_conversion_context::map_indentifier(std::wstring id)
 {
-	std::unordered_map<std::wstring, std::wstring>::const_iterator it = map_identifiers_.find(id);
+	const int page_index = slide_context_.page_index();
+	if (page_index < 0 || page_index >= map_identifiers_.size())
+		return L"";
 
-	if (it == map_identifiers_.end())
-	{
-		std::wstring odfId = L"id" + std::to_wstring(next_id());
-		map_identifiers_.insert(std::make_pair(id, odfId));
-		return odfId;
-	}
-	else
-	{
+	IdentifierMap& map = map_identifiers_[page_index];
+
+	IdentifierMap::iterator it = map.find(id);
+	if (it != map.end())
 		return it->second;
-	}
+	
+	std::wstring odfId = L"id" + std::to_wstring(next_id());
+	map.insert(std::make_pair(id, odfId));
+	return odfId;
 }
 
 std::wstring odp_conversion_context::get_mapped_identifier(const std::wstring& id)
 {
-	std::unordered_map<std::wstring, std::wstring>::const_iterator it = map_identifiers_.find(id);
+	const int page_index = slide_context_.page_index();
+	if (page_index < 0 || page_index >= map_identifiers_.size())
+		return L"";
 
-	if (it == map_identifiers_.end())
+	IdentifierMap& map = map_identifiers_[page_index];
+
+	std::unordered_map<std::wstring, std::wstring>::const_iterator it = map.find(id);
+
+	if (it == map.end())
 		return L"";
 	else
 		return it->second;

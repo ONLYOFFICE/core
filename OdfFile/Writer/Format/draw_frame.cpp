@@ -170,6 +170,9 @@ void draw_g::serialize(std::wostream & _Wostream)
 				common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = L"";
 			//брееед ... иначе либра не показывает группу!!!
 
+			CP_XML_ATTR_OPT(L"xml:id", xml_id_);
+			CP_XML_ATTR_OPT(L"draw:id", xml_id_);
+
 			common_draw_attlists_.serialize(CP_GET_XML_NODE());
 
 			for (size_t i = 0; i < content_.size(); i++)

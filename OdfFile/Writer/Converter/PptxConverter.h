@@ -233,7 +233,7 @@ private:
 		void convert_common		();
 
 		std::wstring convert_animation_formula(std::wstring formula);
-
+		std::wstring convert_animation_scale_values(int x, int y);
 		
 //--------------------------------------------------------------------------------
 	};

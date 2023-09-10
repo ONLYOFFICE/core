@@ -31,6 +31,7 @@
  */
 
 #include "../../DataTypes/anchortype.cpp"
+#include "../../DataTypes/animation_attlists.cpp"
 #include "../../DataTypes/backgroundcolor.cpp"
 #include "../../DataTypes/bool.cpp"
 #include "../../DataTypes/bordermodel.cpp"

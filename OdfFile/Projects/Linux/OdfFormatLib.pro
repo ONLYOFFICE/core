@@ -42,6 +42,7 @@ core_debug {
 SOURCES += \    
 	../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
+	../../DataTypes/animation_attlists.cpp \
 	../../DataTypes/backgroundcolor.cpp \
 	../../DataTypes/bool.cpp \
 	../../DataTypes/bordermodel.cpp \
@@ -443,6 +444,7 @@ HEADERS += \
 	\
 	../../DataTypes/mathvariant.h \
 	../../DataTypes/anchortype.h \
+	../../DataTypes/animation_attlists.h \
 	../../DataTypes/backgroundcolor.h \
 	../../DataTypes/bool.h \
 	../../DataTypes/bordermodel.h \

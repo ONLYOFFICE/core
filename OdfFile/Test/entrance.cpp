@@ -38,12 +38,16 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#include "Writer/Converter/Converter.h"
+#include "Writer/Converter/PptxConverter.h"
+#include "Writer/Format/office_elements.h"
+
 #define CH_DIR(x) FILE_SEPARATOR_STR + _T(x)
 
-boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> EntranceTestEnvironment::mConverionContext;
-boost::shared_ptr<cpdoccore::odf_reader::odf_document> EntranceTestEnvironment::mInputOdf;
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_EntranceTestEnvironment::mConverionContext;
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_EntranceTestEnvironment::mInputOdf;
 
-void EntranceTestEnvironment::SetUp()
+void ODP2OOX_EntranceTestEnvironment::SetUp()
 {
 	sExampleFilename = L"entrance.odp";
 
@@ -61,14 +65,14 @@ void EntranceTestEnvironment::SetUp()
 	mConverionContext = Convert(mInputOdf);
 }
 
-void EntranceTestEnvironment::TearDown()
+void ODP2OOX_EntranceTestEnvironment::TearDown()
 {
 	NSDirectory::DeleteDirectory(sTemp);
 }
 
 void ODP2OOX_EntranceAnimationTest::SetUp()
 {
-	mAnimationContext = &EntranceTestEnvironment::GetAnimationContext();
+	mAnimationContext = &ODP2OOX_EntranceTestEnvironment::GetAnimationContext();
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_EntranceAnimationTest::GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)
@@ -605,7 +609,7 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_blinds_wipe_hor
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
 
-	const std::wstring filterExp = L"box(in)";
+	const std::wstring filterExp = L"blinds(horizontal)";
 
 	EXPECT_EQ(animEffect->Filter.value(), filterExp);
 }
@@ -617,7 +621,7 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_iris_wipe_recta
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
 
-	const std::wstring filterExp = L"circle(in)";
+	const std::wstring filterExp = L"box(in)";
 
 	EXPECT_EQ(animEffect->Filter.value(), filterExp);
 }
@@ -629,7 +633,7 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_checker_board_w
 	const pptx_animation_context::Impl::_animation_element_array& actions = GetAnimationActionsByIndex(animationIndex);
 	const pptx_animation_context::Impl::_anim_effect* animEffect = dynamic_cast<pptx_animation_context::Impl::_anim_effect*>(actions[1].get());
 
-	const std::wstring filterExp = L"circle(in)";
+	const std::wstring filterExp = L"checkerboard(across)";
 
 	EXPECT_EQ(animEffect->Filter.value(), filterExp);
 }
@@ -645,3 +649,710 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_checker_iris_wi
 
 	EXPECT_EQ(animEffect->Filter.value(), filterExp);
 }
+
+//////////////////////////////////////////////////////////////////////////
+// OOX2ODP
+
+boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_EntranceAnimationTestEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationTestEnvironment::mContext;
+
+void OOX2ODP_EntranceAnimationTestEnvironment::SetUp()
+{
+	sExampleFilename = L"entrance.pptx";
+
+	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
+	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");
+
+	sFrom = sExampleFilesDirectory + FILE_SEPARATOR_STR + sExampleFilename;
+	sTemp = rootDir + CH_DIR("OOX2ODP_EntranceAnimationTestEnvironment_tmp");
+	sTempUnpackedOox = sTemp + CH_DIR("pptx_unpacked");
+
+	NSDirectory::CreateDirectory(sTemp);
+	NSDirectory::CreateDirectory(sTempUnpackedOox);
+
+	COfficeUtils oCOfficeUtils(NULL);
+	if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOox, NULL, 0))
+	{
+		mConverter = boost::make_shared<Oox2Odf::Converter>(sTempUnpackedOox, _T("presentation"), L"", false, sTemp);
+
+		try
+		{
+			mConverter->convert();
+			mContext = dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(mConverter->get_ooxConverter()->odf_context());
+		}
+		catch (...)
+		{
+			_CP_LOG << L"[ error ]: Failed to setup OOX2ODP_EntranceAnimationTestEnvironment";
+		}
+	}
+}
+
+void OOX2ODP_EntranceAnimationTestEnvironment::TearDown()
+{
+	NSDirectory::DeleteDirectory(sTemp);
+}
+
+void OOX2ODP_EntranceAnimationTest::SetUp()
+{
+	mContext = OOX2ODP_EntranceAnimationTestEnvironment::GetContext();
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, timing_root_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* timing_root = GetTimingRoot();
+	ASSERT_NE(timing_root, nullptr);
+	
+	const presentation_node_type NodeTypeExp = presentation_node_type::timing_root;
+
+	EXPECT_EQ(timing_root->attlist_.presentation_node_type_->get_type(), NodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, main_sequence_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_seq* main_sequence = GetMainSequence();
+	ASSERT_NE(main_sequence, nullptr);
+
+	const presentation_node_type nodeTypeExp = presentation_node_type::main_sequence;
+
+	EXPECT_EQ(main_sequence->attlist_.presentation_node_type_->get_type(), nodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, main_sequence_duration)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_seq* main_sequence = GetMainSequence();
+	ASSERT_NE(main_sequence, nullptr);
+
+	const odf_types::clockvalue durationExp(-1);
+
+	EXPECT_EQ(main_sequence->attlist_.smil_dur_->get_value(), durationExp.get_value());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_outer_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(0);
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"next";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.get_value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_outer_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(0);
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_inner_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_inner_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_innermost_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_innermost_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_innermost_par_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const presentation_node_type nodeTypeExp = presentation_node_type::on_click;
+
+	EXPECT_EQ(par->attlist_.presentation_node_type_.value_or(presentation_node_type::none).get_type(), nodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_innermost_par_preset_class)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const preset_class presetClassExp = preset_class::entrance;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_class_.value_or(preset_class::custom).get_type(), presetClassExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_innermost_par_preset_id)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(0));
+	ASSERT_NE(par, nullptr);
+
+	const preset_id presetIdExp = preset_id::ooo_entrance_appear;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_set_duration)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_set* set = GetAnimationBehaviourByIndex<anim_set>(GetInnermostPar(GetMainSequenceParByIndex(0)), 0);
+	ASSERT_NE(set, nullptr);
+
+	const clockvalue durationExp = clockvalue(1);
+
+	EXPECT_EQ(set->common_attlist_.smil_dur_->get_value(), durationExp.get_value());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_set_attribute_name)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_set* set = GetAnimationBehaviourByIndex<anim_set>(GetInnermostPar(GetMainSequenceParByIndex(0)), 0);
+	ASSERT_NE(set, nullptr);
+
+	const smil_attribute_name attributeNameExp = smil_attribute_name::visibility;
+
+	EXPECT_EQ(set->common_attlist_.smil_attribute_name_->get_type(), attributeNameExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_set_to)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_set* set = GetAnimationBehaviourByIndex<anim_set>(GetInnermostPar(GetMainSequenceParByIndex(0)), 0);
+	ASSERT_NE(set, nullptr);
+
+	const std::wstring toExp = L"visible";
+
+	EXPECT_EQ(set->set_attlist_.smil_to_.value_or(L"Empty"), toExp);
+}
+
+////////////////////////////////////////////////////////////
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_outer_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(1);
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"next";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.get_value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_outer_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(1);
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_inner_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_inner_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_innermost_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_innermost_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_innermost_par_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const presentation_node_type nodeTypeExp = presentation_node_type::on_click;
+
+	EXPECT_EQ(par->attlist_.presentation_node_type_.value_or(presentation_node_type::none).get_type(), nodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_innermost_par_preset_class)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const preset_class presetClassExp = preset_class::entrance;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_class_.value_or(preset_class::custom).get_type(), presetClassExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fade_in_innermost_par_preset_id)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(1));
+	ASSERT_NE(par, nullptr);
+
+	const preset_id presetIdExp = preset_id::ooo_entrance_fade_in;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_transition_filter_duration)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_transitionFilter* transitionFilter = GetAnimationBehaviourByIndex<anim_transitionFilter>(GetInnermostPar(GetMainSequenceParByIndex(1)), 1);
+	ASSERT_NE(transitionFilter, nullptr);
+
+	const clockvalue durationExp = clockvalue(500);
+
+	EXPECT_EQ(transitionFilter->common_attlist_.smil_dur_.value_or(clockvalue(-1)).get_value(), durationExp.get_value());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_transition_filter_subtype)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_transitionFilter* transitionFilter = GetAnimationBehaviourByIndex<anim_transitionFilter>(GetInnermostPar(GetMainSequenceParByIndex(1)), 1);
+	ASSERT_NE(transitionFilter, nullptr);
+
+	const std::wstring subtypeExp = L"crossfade";
+
+	EXPECT_EQ(transitionFilter->filter_attlist_.smil_subtype_.value_or(L"Empty"), subtypeExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_transition_filter_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_transitionFilter* transitionFilter = GetAnimationBehaviourByIndex<anim_transitionFilter>(GetInnermostPar(GetMainSequenceParByIndex(1)), 1);
+	ASSERT_NE(transitionFilter, nullptr);
+
+	const smil_transition_type typeExp = smil_transition_type::fade;
+
+	EXPECT_EQ(transitionFilter->filter_attlist_.smil_type_.value().get_type(), typeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, appear_transition_filter_mode)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_transitionFilter* transitionFilter = GetAnimationBehaviourByIndex<anim_transitionFilter>(GetInnermostPar(GetMainSequenceParByIndex(1)), 1);
+	ASSERT_NE(transitionFilter, nullptr);
+
+	const std::wstring modeExp = L"in";
+
+	EXPECT_EQ(transitionFilter->filter_attlist_.smil_mode_.value_or(L"Empty"), modeExp);
+}
+
+////////////////////////////////////////////////////////////
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_outer_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(2);
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"next";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.get_value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_outer_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(2);
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_inner_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_inner_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_innermost_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_innermost_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_innermost_par_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const presentation_node_type nodeTypeExp = presentation_node_type::on_click;
+
+	EXPECT_EQ(par->attlist_.presentation_node_type_.value_or(presentation_node_type::none).get_type(), nodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_innermost_par_preset_class)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const preset_class presetClassExp = preset_class::entrance;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_class_.value_or(preset_class::custom).get_type(), presetClassExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_innermost_par_preset_id)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(2));
+	ASSERT_NE(par, nullptr);
+
+	const preset_id presetIdExp = preset_id::ooo_entrance_fly_in;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_animate_duration)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_animate* animate = GetAnimationBehaviourByIndex<anim_animate>(GetInnermostPar(GetMainSequenceParByIndex(2)), 1);
+	ASSERT_NE(animate, nullptr);
+
+	const clockvalue durationExp = clockvalue(500);
+
+	EXPECT_EQ(animate->common_attlist_.smil_dur_.value_or(clockvalue(-1)).get_value(), durationExp.get_value());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_animate_values)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_animate* animate = GetAnimationBehaviourByIndex<anim_animate>(GetInnermostPar(GetMainSequenceParByIndex(2)), 1);
+	ASSERT_NE(animate, nullptr);
+
+	const smil_values valuesExp = smil_values::parse(L"x;x");
+
+	ASSERT_EQ(animate->animate_attlist_.smil_values_->get_values().size(), valuesExp.get_values().size());
+
+	for (size_t i = 0; i < valuesExp.get_values().size(); i++) 
+	{
+		EXPECT_EQ(
+			animate->animate_attlist_.smil_values_->get_values()[i],
+			valuesExp.get_values()[i]
+		);
+	}
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, fly_in_animate_key_times)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_animate* animate = GetAnimationBehaviourByIndex<anim_animate>(GetInnermostPar(GetMainSequenceParByIndex(2)), 1);
+	ASSERT_NE(animate, nullptr);
+
+	const smil_key_times keyTimesExp = smil_key_times::parse(L"0;1");
+
+	ASSERT_EQ(animate->animate_attlist_.smil_key_times_->get_values().size(), keyTimesExp.get_values().size());
+
+	for (size_t i = 0; i < keyTimesExp.get_values().size(); i++)
+	{
+		EXPECT_EQ(
+			animate->animate_attlist_.smil_key_times_->get_values()[i],
+			keyTimesExp.get_values()[i]
+		);
+	}
+}
+
+////////////////////////////////////////////////////////////
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_outer_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(3);
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"next";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.get_value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_outer_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetMainSequenceParByIndex(3);
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_inner_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_inner_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnerPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_begin)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const std::wstring beginExp = L"0s";
+
+	EXPECT_EQ(par->attlist_.smil_begin_.value_or(L"Empty"), beginExp);
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_fill)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const smil_fill fillExp = smil_fill::_hold;
+
+	EXPECT_EQ(par->attlist_.smil_fill_.value_or(smil_fill::none).get_type(), fillExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_node_type)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const presentation_node_type nodeTypeExp = presentation_node_type::on_click;
+
+	EXPECT_EQ(par->attlist_.presentation_node_type_.value_or(presentation_node_type::none).get_type(), nodeTypeExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_preset_class)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const preset_class presetClassExp = preset_class::entrance;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_class_.value_or(preset_class::custom).get_type(), presetClassExp.get_type());
+}
+
+TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_preset_id)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_par* par = GetInnermostPar(GetMainSequenceParByIndex(3));
+	ASSERT_NE(par, nullptr);
+
+	const preset_id presetIdExp = preset_id::ooo_entrance_ascend;
+
+	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
+}
+

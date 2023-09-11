@@ -1795,7 +1795,7 @@ private:
 
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		std::wstring wsAlt, sImageName, sImageId;
+		std::wstring wsAlt, sImageName, sImageId, sSrcM;
 		bool bRes = false;
 		while (m_oLightReader.MoveToNextAttribute())
 		{
@@ -1805,14 +1805,41 @@ private:
 				wsAlt = m_oLightReader.GetText();
 				continue;
 			}
-			else if (wsName != L"src")
+			else if (wsName == L"src")
+			{
+				sSrcM = m_oLightReader.GetText();
 				continue;
+			}
+		}
+		m_oLightReader.MoveToElement();
 
-			bool bIsAllowExternalLocalFiles = true;
-			if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
-				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+		if (sSrcM.empty())
+		{
+			if (!wsAlt.empty())
+			{
+				wrP(oXml, sSelectors, oTS);
+				oXml->WriteString(L"<w:r>");
+				wrR(oXml, sSelectors, oTS);
+				oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+				oXml->WriteEncodeXmlString(wsAlt);
+				oXml->WriteString(L"</w:t></w:r>");
+			}
+			return;
+		}
 
-			std::wstring sSrcM = m_oLightReader.GetText();
+		bool bIsAllowExternalLocalFiles = true;
+		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+		// Предполагаем картинку в Base64
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bRes = readBase64(sSrcM, sImageName);
+
+		if (!bRes)
+		{
+			if (NotValidExtension(sSrcM))
+				break;
+
 			sImageName = NSFile::GetFileName(sSrcM);
 			sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
 						(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
@@ -1825,47 +1852,36 @@ private:
 				break;
 			}
 
-			// Предполагаем картинку в Base64
-			if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
-				bRes = readBase64(sSrcM, sImageName);
+			std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;
 
-			if (!bRes)
+			// Предполагаем картинку по локальному пути
+			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
 			{
-				if (NotValidExtension(sSrcM))
-					break;
-
-				std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;
-
-				// Предполагаем картинку по локальному пути
-				if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+				if (!m_sBase.empty())
 				{
-					if (!m_sBase.empty())
-					{
-						if (!bRes)
-							bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
-						if (!bRes)
-							bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
-					}
 					if (!bRes)
-						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+						bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
 					if (!bRes)
-						bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
-					if (!bRes)
-						bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
 				}
-				// Предполагаем картинку в сети
-				else
-				{
-					// Проверка gc_allowNetworkRequest предполагается в kernel_network
-					NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-					oDownloadImg.SetFilePath(wsDst);
-					bRes = oDownloadImg.DownloadSync();
-				}
+				if (!bRes)
+					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+				if (!bRes)
+					bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+				if (!bRes)
+					bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
 			}
-
-			sImageId = std::to_wstring(m_mImages.size() + 1);
+			// Предполагаем картинку в сети
+			else
+			{
+				// Проверка gc_allowNetworkRequest предполагается в kernel_network
+				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+				oDownloadImg.SetFilePath(wsDst);
+				bRes = oDownloadImg.DownloadSync();
+			}
 		}
-		m_oLightReader.MoveToElement();
+
+		sImageId = std::to_wstring(m_mImages.size() + 1);
 
 		if(!bRes)
 		{

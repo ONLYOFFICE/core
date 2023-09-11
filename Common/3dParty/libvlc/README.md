@@ -158,6 +158,7 @@ This directory contains audio output plugins responsible for delivering audio st
 | afile | File audio output |
 | alsa | ALSA audio output |
 | amem | Audio memory output |
+| auhal | HAL AudioUnit output (Mac OS X) |
 | directsound | DirectX audio output |
 | jack | JACK audio output |
 | mmdevice | Windows Multimedia Device output |
@@ -176,6 +177,7 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | aom | AOM video decoder (AV1) |
 | araw | Raw/Log Audio decoder |
 | aribsub | ARIB subtitles decoder |
+| audiotoolboxmidi | AudioToolbox MIDI synthesizer (Mac OS X) |
 | avcodec | Video and audio decoder and encoder using libavcodec (FFmpeg) |
 | cc | Closed Captions decoder |
 | cdg | CDG video decoder |
@@ -218,6 +220,7 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | uleaddvaudio | Ulead DV audio decoder |
 | vaapi_drm | VA-API video decoder via DRM |
 | vaapi | VA-API helpers for the libavcodec decoder |
+| videotoolbox | VideoToolbox video decoder (Mac OS X) |
 | vorbis | Vorbis audio decoder |
 | vpx | WebM video decoder (VP8/VP9) |
 | webvtt | WEBVTT subtitles decoder |
@@ -316,6 +319,7 @@ keystore
 | Plugin name | Description |
 | --- | --- |
 | file_keystore | File and crypt keystore (secrets can be stored encrypted in a file, or in a file without any encryption) |
+| keychain | Keystore for iOS, Mac OS X and tvOS |
 | memory_keystore | Memory keystore (secrets are stored in memory) |
 
 ### Logger plugins
@@ -347,6 +351,7 @@ The "misc" directory may contain miscellaneous plugins that don't fit neatly int
 | export | Playlist export module |
 | fingerprinter | Audio fingerprinter module (based on Acoustid) |
 | logger | File logging plugin |
+| securetransport | TLS support for Mac OS X and iOS |
 | stats | Stats decoder/demuxer |
 | xdg_screensaver | XDG screen saver inhibition |
 
@@ -378,6 +383,7 @@ Services discovery plugins help locate and identify network services, making it 
 
 | Plugin name | Description |
 | --- | --- |
+| bonjour | mDNS services discovery module based on Bonjour (Mac OS X) |
 | mediadirs | Picture/Music/Video user directories as service discoveries (My Pictures, My Music, My Video) |
 | podcast | Podcasts |
 | pulselist | Audio capture (PulseAudio) |
@@ -426,6 +432,7 @@ Text renderer plugins are responsible for rendering text and subtitles on the sc
 | Plugin name | Description |
 | --- | --- |
 | freetype | Freetype2 font renderer |
+| nsspeechsynthesizer | Speech synthesis for Mac OS X systems |
 | sapi | Speech synthesis for Windows |
 | tdummy | Dummy font renderer |
 
@@ -458,6 +465,7 @@ Video chroma plugins handle color space conversion and manipulation of video fra
 | Plugin name | Description |
 | --- | --- |
 | chain | Video filtering using a chain of video filter modules (as a last resort solution) |
+| cvpx | Conversions between CoreVideo buffers (Mac OS X) |
 | grey_yuv | Conversions from GREY to I420,YUY2 |
 | i420_10_p010 | YUV 10-bits planar to semiplanar 10-bits conversions |
 | i420_nv12 | YUV planar to semiplanar conversions |
@@ -491,6 +499,7 @@ Video filter plugins apply various video effects and transformations to video st
 | blend | Video pictures blending |
 | bluescreen | Bluescreen video filter |
 | canvas | Canvas video filter |
+| ci_filters | Mac OS X hardware video filters |
 | colorthres | Color threshold filter |
 | croppadd | Video cropping filter |
 | deinterlace | Deinterlacing video filter |
@@ -529,6 +538,7 @@ These plugins are responsible for delivering video frames to the display or outp
 
 | Plugin name | Description |
 | --- | --- |
+| caopengllayer | Core Animation OpenGL Layer (Mac OS X) |
 | direct3d11 | Direct3D11 video output |
 | direct3d9 | Direct3D9 video output |
 | directdraw | DirectX (DirectDraw) video output |
@@ -536,6 +546,7 @@ These plugins are responsible for delivering video frames to the display or outp
 | egl_x11 | EGL extension for OpenGL |
 | fb | GNU/Linux framebuffer video output |
 | flaschen | Flaschen-Taschen video output |
+| glconv_cvpx | Apple OpenGL CVPX converter (Mac OS X) |
 | glconv_vaapi_drm | VA-API OpenGL surface converter for DRM |
 | glconv_vaapi_x11 | VA-API OpenGL surface converter for X11 |
 | glconv_vdpau | VDPAU OpenGL surface converter |
@@ -544,6 +555,7 @@ These plugins are responsible for delivering video frames to the display or outp
 | gl | OpenGL video output |
 | vdummy | Dummy video output |
 | vmem | Video memory output |
+| vout_macosx | Mac OS X OpenGL video output |
 | wgl | WGL extension for OpenGL |
 | wingdi | Windows GDI video output |
 | winhibit | Windows screen saver inhibition |

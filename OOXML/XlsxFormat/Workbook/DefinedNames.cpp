@@ -102,6 +102,8 @@ namespace OOX
 
 			if (m_oLocalSheetId.IsInit())
 				ptr->itab = m_oLocalSheetId->GetValue();
+			else
+				ptr->itab = 0xFFFFFFFF;
 
 			if (m_oName.IsInit())
                 ptr->name = m_oName.get();

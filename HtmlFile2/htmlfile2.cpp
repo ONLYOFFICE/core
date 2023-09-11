@@ -132,6 +132,7 @@ private:
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
 
+	std::map<std::wstring, std::wstring> m_mImages;    // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 public:
 
@@ -1736,15 +1737,14 @@ private:
 		std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
 		if (sType == L"octet-stream")
 			sType = L"jpg";
-		std::wstring sImageId = std::to_wstring(m_nImageId);
-		sImageName = sImageId + L"." + sType;
+		sImageName = L'i' + std::to_wstring(m_mImages.size() + 1) + L"." + sType;
 
 		nBase = sSrcM.find(L"base64", nEndBase);
 		if (nBase == std::wstring::npos)
 			return bRes;
 
 		NSFile::CFileBinary oImageWriter;
-		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
+		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/" + sImageName))
 		{
 			std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
 			int nSrcLen = (int)sBase64.length();
@@ -1783,7 +1783,7 @@ private:
 		return bRes;
 	}
 
-	inline bool ValidExtension(const std::wstring& sSrc)
+	inline bool NotValidExtension(const std::wstring& sSrc)
 	{
 		std::wstring sExtention = NSFile::GetFileExtention(sSrc);
 		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
@@ -1795,7 +1795,7 @@ private:
 
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		std::wstring wsAlt;
+		std::wstring wsAlt, sImageName, sImageId;
 		bool bRes = false;
 		while (m_oLightReader.MoveToNextAttribute())
 		{
@@ -1813,8 +1813,17 @@ private:
 				bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
 			std::wstring sSrcM = m_oLightReader.GetText();
-			std::wstring sImageName;
-			std::wstring sImageId = std::to_wstring(m_nImageId);
+			sImageName = NSFile::GetFileName(sSrcM);
+			sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
+						(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
+
+			std::map<std::wstring, std::wstring>::iterator nFind = m_mImages.find(sImageName);
+			if (nFind != m_mImages.end())
+			{
+				bRes = true;
+				sImageId = nFind->second;
+				break;
+			}
 
 			// Предполагаем картинку в Base64
 			if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
@@ -1822,11 +1831,7 @@ private:
 
 			if (!bRes)
 			{
-				sImageName = NSFile::GetFileName(sSrcM);
-				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
-							(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
-
-				if (ValidExtension(sSrcM))
+				if (NotValidExtension(sSrcM))
 					break;
 
 				std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;
@@ -1858,11 +1863,7 @@ private:
 				}
 			}
 
-			if (bRes)
-			{
-				wrP(oXml, sSelectors, oTS);
-				bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
-			}
+			sImageId = std::to_wstring(m_mImages.size() + 1);
 		}
 		m_oLightReader.MoveToElement();
 
@@ -1874,6 +1875,11 @@ private:
 			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
 			oXml->WriteEncodeXmlString(wsAlt);
 			oXml->WriteString(L"</w:t></w:r>");
+		}
+		else
+		{
+			wrP(oXml, sSelectors, oTS);
+			bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
 		}
 	}
 
@@ -1978,7 +1984,7 @@ private:
 		m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
 		m_oDocXmlRels.WriteString(sImageId);
 		m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-		m_oDocXmlRels.WriteString(sImageName);
+		m_oDocXmlRels.WriteEncodeXmlString(sImageName);
 		m_oDocXmlRels.WriteString(L"\"/>");
 
 		// Получаем размеры картинки

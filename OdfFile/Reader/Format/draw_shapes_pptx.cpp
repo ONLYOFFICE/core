@@ -351,19 +351,33 @@ void draw_connector::pptx_convert(oox::pptx_conversion_context & Context)
 	if (draw_connector_attlist_.draw_end_glue_point_)
 		Context.get_slide_context().set_connector_end_glue_point(pptx_convert_glue_point(draw_connector_attlist_.draw_end_glue_point_.value()));
 
+
+	int connector_size = 5;
+	if (draw_connector_attlist_.svg_d_)
+	{
+		std::vector<::svg_path::_polyline> polylines;
+		bool closed, stroked;
+		::svg_path::parseSvgD(polylines, draw_connector_attlist_.svg_d_.value(), false, closed, stroked);
+
+		const int v = polylines.size() - 1;
+		const int min = 2;
+		const int max = 5;
+		connector_size = v < min ? min : (v > max ? max : v); // clamp(v, min, max)
+	}
+	
 	std::wstring drawType = draw_connector_attlist_.draw_type_.get_value_or(L"standart");
 	std::wstring pptx_prst;
 
 	if (drawType == L"curve")
-		pptx_prst = L"curvedConnector3";
+		pptx_prst = L"curvedConnector" + std::to_wstring(connector_size);
 	else if (drawType == L"lines")
-		pptx_prst = L"bentConnector5";
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
 	else if (drawType == L"line")
-		pptx_prst = L"line";
+		pptx_prst = L"straightConnector1";
 	else if (drawType == L"standart")
-		pptx_prst = L"bentConnector3";
+		pptx_prst = L"bentConnector" + std::to_wstring(connector_size);
 	else
-		pptx_prst = L"bentConnector5";
+		pptx_prst = L"straightConnector1";
 
 	Context.get_slide_context().set_connector_draw_type(pptx_prst);
 		

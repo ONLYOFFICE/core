@@ -14,10 +14,10 @@ namespace StarMath {
 			ConversionOneElement(m_oTempElement);
 		}
 		EndConversion();
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(L"Test.txt");
-		oFile.WriteStringUTF8(m_oXmlWrite.GetXmlString());
-		oFile.CloseFile();
+//		NSFile::CFileBinary oFile;
+//		oFile.CreateFileW(L"Test.txt");
+//		oFile.WriteStringUTF8(m_oXmlWrite.GetXmlString());
+//		oFile.CloseFile();
 	}
 	void CConversionSMtoOOXML::ConversionOneElement(CElement *m_oElement)
 	{
@@ -98,7 +98,7 @@ namespace StarMath {
 		else if(m_oElement->GetTypeBin() == over || m_oElement->GetTypeBin() == division)
 		{
 			m_oXmlWrite.WriteNodeBegin(L"m:f",false);
-			if(m_oElement->GetTypeBin() == division) PropertiesMFPR(true,L"skw");
+			if(m_oElement->GetTypeBin() == division) PropertiesMFPR(true,L"lin");
 			else PropertiesMFPR(false,L"");
 			BlockRecording(L"m:num",m_oElement->GetLeftArg());
 			BlockRecording(L"m:den",m_oElement->GetRightArg());
@@ -119,7 +119,7 @@ namespace StarMath {
 		if(m_oElement->GetTypeOp() == sum)
 		{
 			m_oXmlWrite.WriteNodeBegin(L"m:nary",false);
-			PropertiesNaryPr(L"\u2211",nullptr == m_oElement->GetFrom(),m_oElement->GetTo());
+			PropertiesNaryPr(L"\u2211",nullptr == m_oElement->GetFrom(),nullptr == m_oElement->GetTo());
 			if(m_oElement->GetFrom() == nullptr) m_oXmlWrite.WriteNode(L"m:sub",L"");
 			else
 			{

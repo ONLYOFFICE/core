@@ -66,6 +66,16 @@ void CSlicerCacheOlapLevelName::fromBin(XLS::BiffStructure& obj)
 {
     ReadAttributes(obj);
 }
+void CSlicerCacheOlapLevelName::toBin(XLS::BiffStructure* obj)
+{
+	auto ptr = static_cast<XLSB::SlicerCacheLevelData*>(obj);
+	if(m_oCount.IsInit())
+		ptr->cHiddenItems = m_oCount.get();
+	if(m_oUniqueName.IsInit())
+		ptr->stUniqueName = m_oUniqueName.get();
+	else
+		ptr->stUniqueName = 0xFFFFFFFF;
+}
 void CSlicerCacheOlapLevelName::ReadAttributes(XLS::BiffStructure& obj)
 {
     auto ptr = static_cast<XLSB::SlicerCacheLevelData*>(&obj);
@@ -161,6 +171,20 @@ void CSlicerCacheHideNoData::fromBin(XLS::BaseObjectPtr &obj)
 
     }
 }
+XLS::BaseObjectPtr CSlicerCacheHideNoData::toBin()
+{
+	auto ptr(new XLSB::SlicerCacheHideItemsWithNoData);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	if(m_oCount.IsInit())
+		ptr->cHideItemLevelsCount = m_oCount.get();
+	for(auto i:m_oSlicerCacheOlapLevelName)
+	{
+		XLSB::SlicerCacheLevelData levelData;
+		i.toBin(&levelData);
+		ptr->rgLevels.push_back(levelData);
+	}
+	return objectPtr;
+}
 void CSlicerCacheHideNoData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -253,6 +277,22 @@ void CSlicerCacheHideNoData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 void CTableSlicerCache::fromBin(XLS::BaseObjectPtr& obj)
 {
    ReadAttributes(obj);
+}
+XLS::BaseObjectPtr CTableSlicerCache::toBin()
+{
+	auto ptr(new XLSB::BeginTableSlicerCache);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	if(m_oTableId.IsInit())
+		ptr->dwLstd = m_oTableId.get();
+	if(m_oColumn.IsInit())
+		ptr->dwColumn = m_oColumn.get();
+	if(m_oSortOrder.IsInit())
+		ptr->fSortOrder = m_oSortOrder->GetValue() + 1;
+	if(m_oCustomListSort.IsInit())
+		ptr->fSortUsingCustomLists = m_oCustomListSort.get();
+	if(m_oCrossFilter.IsInit())
+		ptr->iCrossFilter = m_oCrossFilter->GetValue();
+	return objectPtr;
 }
 void CTableSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
 {

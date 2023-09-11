@@ -191,6 +191,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBinWorkBook();
 			XLS::BaseObjectPtr toBinStyles();
 			XLS::BaseObjectPtr toBinTable();
+			XLS::BaseObjectPtr toBinSlicerCache();
 			virtual EElementType getType() const;
 
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;

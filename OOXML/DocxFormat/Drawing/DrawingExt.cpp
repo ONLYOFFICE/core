@@ -687,6 +687,43 @@ namespace OOX
                 }
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinSlicerCache()
+		{
+			auto ptr(new XLSB::FRTSLICERCACHE);
+			XLS::BaseObjectPtr objectPtr(ptr);
+			if (!m_arrExt.empty())
+			{
+				for(auto i:m_arrExt)
+				{
+					if(i->m_sUri == L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}")
+					{
+						auto ptr1(new XLSB::SLICERCACHEBOOKPIVOTTABLES);
+						ptr->m_SLICERCACHEBOOKPIVOTTABLES = XLS::BaseObjectPtr{ptr1};
+						auto ptr2(new XLSB::SlicerCacheBookPivotTables);
+						ptr1->m_BrtSlicerCacheBookPivotTables = XLS::BaseObjectPtr{ptr2};
+						for(auto j:i->m_oSlicerCachePivotTables)
+						{
+							XLSB::SlicerCachePivotTable table;
+							j->toBin(&table);
+							ptr2->pivotTables.push_back(table);
+						}
+					}
+					if(i->m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}")
+					{
+						auto ptr1(new XLSB::TABLESLICERCACHE);
+						ptr->m_TABLESLICERCACHE = XLS::BaseObjectPtr{ptr1};
+						ptr1->m_BrtBeginTableSlicerCache = i->m_oTableSlicerCache->toBin();
+					}
+					if(i->m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}")
+					{
+						auto ptr1(new XLSB::SLICERCACHECROSSFILTEREXT);
+						ptr->m_SLICERCACHECROSSFILTEREXT = XLS::BaseObjectPtr{ptr1};
+						ptr1->m_BrtSlicerCacheHideItemsWithNoData = i->m_oSlicerCacheHideItemsWithNoData->toBin();
+					}
+				}
+			}
+			return objectPtr;
+		}
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinTable()
 		{
 			auto ptr(new XLSB::FRTTABLE);

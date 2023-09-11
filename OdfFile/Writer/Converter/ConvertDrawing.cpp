@@ -532,6 +532,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
 
+#if 0
 		odf_context()->drawing_context()->start_drawing();
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
 		
@@ -554,6 +555,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		}
 		odf_context()->drawing_context()->end_shape();
 		odf_context()->drawing_context()->end_drawing();
+#endif
 
 		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 

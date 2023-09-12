@@ -3103,9 +3103,9 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
 			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
 			
-			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
-			
-			OoxConverter::convert(oox_obj->m_oShape.GetPointer());
+			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);		
+
+			OoxConverter::convert(oox_obj->m_oShape.GetPointer(), NULL);
 
 			odf_context()->drawing_context()->end_object_ole();
 			

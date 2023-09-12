@@ -660,7 +660,6 @@ public:
 		void convert(OOX::Vml::CFill					*vml_fill);
 		void convert(OOX::Vml::CLine					*vml_line);
 		void convert(OOX::Vml::COval					*vml_oval);
-		void convert(OOX::Vml::CPath					*vml_path);
 		void convert(OOX::Vml::CPolyLine				*vml_polyline);
 		void convert(OOX::Vml::CRect					*vml_rect);
 		void convert(OOX::Vml::CRoundRect				*vml_roundrect);
@@ -672,7 +671,6 @@ public:
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
-		void convert(OOX::Vml::CFormulas				*vml_formulas);
 
 		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
 		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);

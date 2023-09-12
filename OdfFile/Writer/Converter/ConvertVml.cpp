@@ -71,18 +71,7 @@ namespace Oox2Odf
 			}
 		}
 	}
-	void OoxConverter::convert(OOX::Vml::CFormulas *vml_formulas)
-	{
-		if (vml_formulas == NULL) return;
 
-		for (std::vector<OOX::Vml::CF*>::iterator it = vml_formulas->m_arrItems.begin(); it != vml_formulas->m_arrItems.end(); ++it)
-		{
-			OOX::Vml::CF *cf = dynamic_cast<OOX::Vml::CF *>(*it);
-			if (cf == NULL) continue;
-
-			//odf_context()->drawing_context()->add_formula(L"", cf->m_sEqn);
-		}
-	}
 
 	void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 	{
@@ -311,9 +300,6 @@ namespace Oox2Odf
 			//	odf_context()->drawing_context()->set_anchor(2);
 
 		}
-
-		//if (width_pt && height_pt)
-		//	odf_context()->drawing_context()->set_viewBox(width_pt.get(), height_pt.get());
 	}
 	void OoxConverter::convert(OOX::Vml::CShape *vml_shape, OOX::VmlOffice::COLEObject* vml_object)
 	{
@@ -366,11 +352,14 @@ namespace Oox2Odf
 				odf_context()->drawing_context()->end_object_ole();
 			}
 		}
-//-----------------------------------------------------------------------------------------------------------------------		
+//-----------------------------------------------------------------------------------------------------------------------	
+
+		bool bCustom = false;
+
 		if (vml_shape->m_oSpt.IsInit())
 		{
 			SimpleTypes::Vml::SptType sptType = static_cast<SimpleTypes::Vml::SptType>(vml_shape->m_oSpt->GetValue());
-			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
+			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType)); // ?? test for bCustom
 		}
 		else if ((vml_shape->m_oConnectorType.IsInit()) && (vml_shape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
 		{
@@ -382,46 +371,7 @@ namespace Oox2Odf
 			odf_context()->drawing_context()->start_shape(1000);
 			odf_context()->drawing_context()->set_line_width(1.);
 
-			std::wstring vml_path = vml_shape->m_oPath->GetValue();
-			std::wstring odf_path;
-
-			bool isDigitLast = true;
-
-			for (size_t i = 0; i < vml_path.size(); ++i)
-			{
-				if (vml_path[i] == L',')
-				{
-					odf_path += L" ";
-					isDigitLast = true;
-				}
-				else 
-				{
-					if (vml_path[i] >= L'0' && vml_path[i] <= L'9')
-					{
-						if (!isDigitLast) odf_path += L" ";
-						isDigitLast = true;
-					}
-					else
-					{
-						if (isDigitLast) odf_path += L" ";
-						isDigitLast = false;
-					}
-
-					odf_path += vml_path[i];
-					std::transform(odf_path.begin(), odf_path.end(), odf_path.begin(), toupper);
-				}
-			}
-
-			odf_context()->drawing_context()->set_path(odf_path);
-
-			if (vml_shape->m_oCoordSize.IsInit())
-			{
-				odf_context()->drawing_context()->set_viewBox(vml_shape->m_oCoordSize->GetX(), vml_shape->m_oCoordSize->GetY());
-			}
-			else
-			{
-				odf_context()->drawing_context()->set_viewBox(21600, 212600);
-			}
+			bCustom = true;
 		}
 		else if (vml_shape->m_bImage)
 		{
@@ -435,6 +385,16 @@ namespace Oox2Odf
 
 		convert(dynamic_cast<OOX::Vml::CVmlCommonElements *>(vml_shape));
 
+		if (bCustom)
+		{
+			//_CP_OPT(double) width, height;
+			//odf_context()->drawing_context()->get_size(width, height);
+
+			vml_shape->ConvertToPptx(1, 1);
+
+			convert(vml_shape->m_oCustGeom.GetPointer()); 
+			//odf_context()->drawing_context()->set_viewBox(*width, *height);
+		}
 		odf_context()->drawing_context()->end_shape();
 		odf_context()->drawing_context()->end_drawing();
 	}
@@ -688,25 +648,6 @@ namespace Oox2Odf
 		odf_context()->drawing_context()->end_shape();
 
 		odf_context()->drawing_context()->end_drawing();
-	}
-	void OoxConverter::convert(OOX::Vml::CPath	*vml_path)
-	{
-		if (vml_path == NULL) return;
-
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oArrowOk;
-		//nullable<std::wstring>                                         m_oConnectAngles;
-		//nullable<std::wstring>                                         m_oConnectLocs;
-		//SimpleTypes::CConnectType<SimpleTypes::connecttypeNone>   m_oConnectType;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oExtrusionOk;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oFillOk;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGradientShapeOk;
-		//nullable<std::wstring>                                         m_oId;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oInsetPenOk;
-		//SimpleTypes::Vml::CVml_Vector2D_Units                     m_oLimo;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oShadowOk;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oStrokeOk;
-		//nullable<SimpleTypes::Vml::CVml_Polygon2D>                m_oTextBoxRect;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oTextPathOk;
 	}
 	void OoxConverter::convert(OOX::Vml::CPolyLine	*vml_polyline)
 	{

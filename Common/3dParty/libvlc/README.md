@@ -216,7 +216,6 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 | textst | HDMV TextST subtitles decoder |
 | theora | Theora video decoder |
 | ttml | TTML subtitles decoder |
-| twolame | Libtwolame audio encoder |
 | uleaddvaudio | Ulead DV audio decoder |
 | vaapi_drm | VA-API video decoder via DRM |
 | vaapi | VA-API helpers for the libavcodec decoder |
@@ -550,13 +549,11 @@ These plugins are responsible for delivering video frames to the display or outp
 | glconv_vaapi_drm | VA-API OpenGL surface converter for DRM |
 | glconv_vaapi_x11 | VA-API OpenGL surface converter for X11 |
 | glconv_vdpau | VDPAU OpenGL surface converter |
-| glwin32 | OpenGL video output for Windows |
 | glx | GLX extension for OpenGL |
 | gl | OpenGL video output |
 | vdummy | Dummy video output |
 | vmem | Video memory output |
 | vout_macosx | Mac OS X OpenGL video output |
-| wgl | WGL extension for OpenGL |
 | wingdi | Windows GDI video output |
 | winhibit | Windows screen saver inhibition |
 | xcb_window | X11 embedded window video (XCB) |

@@ -1606,6 +1606,9 @@ namespace MetaFile
 
 					TPointD oPoint1(pArcTo->left, pArcTo->top), oPoint2(pArcTo->right, pArcTo->bottom);
 
+					oTransform.Apply(oPoint1.x, oPoint1.y);
+					oTransform.Apply(oPoint2.x, oPoint2.y);
+
 					double dXRadius = std::fabs(oPoint2.x - oPoint1.x) / 2;
 					double dYRadius = std::fabs(oPoint2.y - oPoint1.x) / 2;
 

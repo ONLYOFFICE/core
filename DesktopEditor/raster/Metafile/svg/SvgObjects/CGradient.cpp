@@ -117,9 +117,6 @@ namespace SVG
 		pRenderer->put_BrushLinearAngle(dAngle);
 		pRenderer->BrushBounds(oObjectBounds.m_dLeft, oObjectBounds.m_dTop, (oObjectBounds.m_dRight - oObjectBounds.m_dLeft) * dWidthKoef, (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * dHeightKoef);
 
-		Aggplus::CMatrix oMatrix(1, 0, 0, 1, 100, 0);
-		pRenderer->put_BrushTransform(oMatrix);
-
 		return true;
 	}
 

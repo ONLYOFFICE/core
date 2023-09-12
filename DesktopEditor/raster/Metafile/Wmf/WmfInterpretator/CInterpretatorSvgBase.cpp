@@ -458,9 +458,17 @@ namespace MetaFile
 		ResetClip();
 
 		TXForm *pTransform = m_pParser->GetTransform();
-
+		
+		double dLeft   = oClip.dLeft;
+		double dTop    = oClip.dTop;
+		double dRight  = oClip.dRight;
+		double dBottom = oClip.dBottom;
+		
+		pTransform->Apply(dLeft,  dTop);
+		pTransform->Apply(dRight, dBottom);
+		
 		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>";
+		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>";
 
 		m_oClip.AddClipValue(wsId, wsValue);
 	}
@@ -470,12 +478,28 @@ namespace MetaFile
 		CheckClip();
 	
 		TXForm *pTransform = m_pParser->GetTransform();
+		
+		double dClipLeft   = oClip.dLeft;
+		double dClipTop    = oClip.dTop;
+		double dClipRight  = oClip.dRight;
+		double dClipBottom = oClip.dBottom;
+		
+		pTransform->Apply(dClipLeft, dClipTop);
+		pTransform->Apply(dClipRight, dClipBottom);
+		
+		double dBBLeft   = oBB.dLeft;
+		double dBBTop    = oBB.dTop;
+		double dBBRight  = oBB.dRight;
+		double dBBBottom = oBB.dBottom;
+		
+		pTransform->Apply(dBBLeft, dBBTop);
+		pTransform->Apply(dBBRight, dBBBottom);
 
 		const std::wstring wsId    = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
-		                             ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
-		                             ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
-		                             ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>";
+		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(dBBLeft) + L' ' + ConvertToWString(dBBTop) + L", L" + ConvertToWString(dBBRight) + L' ' + ConvertToWString(dBBTop) + L", " +
+		                             ConvertToWString(dBBRight) + L' ' + ConvertToWString(dBBBottom) + L", " + ConvertToWString(dBBLeft ) + L' ' + ConvertToWString(dBBBottom) + L", M" +
+		                             ConvertToWString(dClipLeft) + L' ' + ConvertToWString(dClipTop) + L", L" + ConvertToWString(dClipRight) + L' ' + ConvertToWString(dClipTop) + L", " +
+		                             ConvertToWString(dClipRight) + L' ' + ConvertToWString(dClipBottom) + L", " + ConvertToWString(dClipLeft) + L' ' + ConvertToWString(dClipLeft ) + L"\" clip-rule=\"evenodd\"/>";
 
 		m_oClip.AddClipValue(wsId, wsValue);
 	}

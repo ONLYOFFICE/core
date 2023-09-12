@@ -116,7 +116,6 @@ public:
 	NSCSS::CTree m_oTree; // Дерево body html-файла
 
 private:
-	int m_nImageId;     // ID картинки
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
 	int m_nCrossId;     // ID перекрестной ссылки
@@ -132,11 +131,11 @@ private:
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
 
-	std::map<std::wstring, std::wstring> m_mImages;    // Картинки
+	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 public:
 
-	CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
+	CHtmlFile2_Private() : m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
 	{
 		//Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
 		//Это нужно для масштабирования некоторых значений
@@ -1724,29 +1723,29 @@ private:
 		sNote = L"";
 	}
 
-	bool readBase64 (const std::wstring& sSrcM, std::wstring& sImageName)
+	bool readBase64 (const std::wstring& sSrcM, std::wstring& sExtention)
 	{
 		bool bRes = false;
-
 		size_t nBase = sSrcM.find(L"/", 4);
 		nBase++;
 
 		size_t nEndBase = sSrcM.find(L";", nBase);
 		if (nEndBase == std::wstring::npos)
 			return bRes;
-		std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
-		if (sType == L"octet-stream")
-			sType = L"jpg";
-		sImageName = L'i' + std::to_wstring(m_mImages.size() + 1) + L"." + sType;
+		sExtention = sSrcM.substr(nBase, nEndBase - nBase);
+		if (sExtention == L"octet-stream")
+			sExtention = L"jpg";
 
 		nBase = sSrcM.find(L"base64", nEndBase);
 		if (nBase == std::wstring::npos)
 			return bRes;
 
 		NSFile::CFileBinary oImageWriter;
-		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/" + sImageName))
+		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
 		{
-			std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
+			std::string sSrc = U_TO_UTF8(sSrcM);
+			std::string sBase64 = sSrc.substr(nBase + 7);
 			int nSrcLen = (int)sBase64.length();
 			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
 			if (nDecodeLen != 0)
@@ -1783,47 +1782,44 @@ private:
 		return bRes;
 	}
 
-	inline bool NotValidExtension(const std::wstring& sSrc)
+	inline bool NotValidExtension(const std::wstring& sExtention)
 	{
-		std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-		std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
 		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
 				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
 				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
 				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
 	}
 
+	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt)
+	{
+		if (wsAlt.empty())
+			return;
+
+		wrP(oXml, sSelectors, oTS);
+		oXml->WriteString(L"<w:r>");
+		wrR(oXml, sSelectors, oTS);
+		oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+		oXml->WriteEncodeXmlString(wsAlt);
+		oXml->WriteString(L"</w:t></w:r>");
+	}
+
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		std::wstring wsAlt, sImageName, sImageId, sSrcM;
+		std::wstring wsAlt, sSrcM;
 		bool bRes = false;
 		while (m_oLightReader.MoveToNextAttribute())
 		{
 			std::wstring wsName = m_oLightReader.GetName();
 			if (wsName == L"alt")
-			{
 				wsAlt = m_oLightReader.GetText();
-				continue;
-			}
 			else if (wsName == L"src")
-			{
 				sSrcM = m_oLightReader.GetText();
-				continue;
-			}
 		}
 		m_oLightReader.MoveToElement();
 
 		if (sSrcM.empty())
 		{
-			if (!wsAlt.empty())
-			{
-				wrP(oXml, sSelectors, oTS);
-				oXml->WriteString(L"<w:r>");
-				wrR(oXml, sSelectors, oTS);
-				oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-				oXml->WriteEncodeXmlString(wsAlt);
-				oXml->WriteString(L"</w:t></w:r>");
-			}
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt);
 			return;
 		}
 
@@ -1831,28 +1827,36 @@ private:
 		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
 			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
 
+		int nImageId = -1;
+		std::wstring sImageSrc, sExtention;
 		// Предполагаем картинку в Base64
 		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
-			bRes = readBase64(sSrcM, sImageName);
+			bRes = readBase64(sSrcM, sExtention);
 
 		if (!bRes)
 		{
-			if (NotValidExtension(sSrcM))
-				break;
-
-			sImageName = NSFile::GetFileName(sSrcM);
-			sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) ||
-						(ch == L'\\' || ch == L'/' || ch == L':' || ch == L'*' || ch == L'?' || ch == L'\"' || ch == L'<' || ch == L'>' || ch == L'|'); }), sImageName.end());
-
-			std::map<std::wstring, std::wstring>::iterator nFind = m_mImages.find(sImageName);
-			if (nFind != m_mImages.end())
+			// Проверка расширения
+			sExtention = NSFile::GetFileExtention(sSrcM);
+			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+			if (NotValidExtension(sExtention))
 			{
-				bRes = true;
-				sImageId = nFind->second;
-				break;
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt);
+				return;
 			}
 
-			std::wstring wsDst = m_sDst + L"/word/media/i" + sImageName;
+			// Проверка на повтор
+			std::vector<std::wstring>::iterator nFind = std::find(m_arrImages.begin(), m_arrImages.end(), sSrcM);
+			if (nFind != m_arrImages.end())
+			{
+				bRes = true;
+				nImageId = nFind - m_arrImages.begin();
+			}
+		}
+
+		if (!bRes)
+		{
+			sImageSrc = sSrcM;
+			std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
 
 			// Предполагаем картинку по локальному пути
 			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
@@ -1881,21 +1885,12 @@ private:
 			}
 		}
 
-		sImageId = std::to_wstring(m_mImages.size() + 1);
-
-		if(!bRes)
-		{
-			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
-			wrR(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-			oXml->WriteEncodeXmlString(wsAlt);
-			oXml->WriteString(L"</w:t></w:r>");
-		}
+		if (!bRes)
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt);
 		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
+			ImageRels(oXml, nImageId, sImageSrc, sExtention);
 		}
 	}
 
@@ -1989,24 +1984,34 @@ private:
 		return sRStyle;
 	}
 
-	bool ImageRels  (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
+	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention)
 	{
-		CBgraFrame oBgraFrame;
-		if(!oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName))
-			return false;
+		bool bNew = nImageId < 0;
+		if (bNew)
+			nImageId = m_arrImages.size();
 
-		m_nImageId++;
+		std::wstring sImageId = std::to_wstring(nImageId);
+		std::wstring sImageName = sImageId + L'.' + sExtention;
+		CBgraFrame oBgraFrame;
+		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
+			return;
+
 		// Прописать рельсы
-		m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
-		m_oDocXmlRels.WriteString(sImageId);
-		m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-		m_oDocXmlRels.WriteEncodeXmlString(sImageName);
-		m_oDocXmlRels.WriteString(L"\"/>");
+		if (bNew)
+		{
+			m_arrImages.push_back(sImageSrc);
+
+			m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
+			m_oDocXmlRels.WriteString(sImageId);
+			m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/i");
+			m_oDocXmlRels.WriteEncodeXmlString(sImageName);
+			m_oDocXmlRels.WriteString(L"\"/>");
+		}
 
 		// Получаем размеры картинки
 		int nHy = oBgraFrame.get_Height();
 		int nWx = oBgraFrame.get_Width();
-		if(nWx > nHy)
+		if (nWx > nHy)
 		{
 			int nW = nWx * 9525;
 			nW = (nW > 7000000 ? 7000000 : nW);
@@ -2018,7 +2023,7 @@ private:
 			int nH = nHy * 9525;
 			nH = (nH > 8000000 ? 8000000 : nH);
 			int nW = (int)((double)nWx * (double)nH / (double)nHy);
-			if(nW > 7000000)
+			if (nW > 7000000)
 			{
 				nW = 7000000;
 				nHy = (int)((double)nHy * (double)nW / (double)nWx);
@@ -2044,7 +2049,6 @@ private:
 		oXml->WriteString(L"\" cy=\"");
 		oXml->WriteString(std::to_wstring(nHy));
 		oXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
-		return true;
 	}
 
 	void readNote   (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const std::wstring& sNote)
@@ -2075,7 +2079,7 @@ private:
 		// Сохранить как .svg картинку
 		NSStringUtils::CStringBuilder oSVG;
 		oSVG.WriteString(L"<svg ");
-		while(m_oLightReader.MoveToNextAttribute())
+		while (m_oLightReader.MoveToNextAttribute())
 		{
 			std::wstring sName = m_oLightReader.GetName();
 			if(sName.find(L"xmlns") != std::wstring::npos)
@@ -2090,7 +2094,7 @@ private:
 
 		std::wstring sSVG = m_oLightReader.GetInnerXml();
 		size_t nRef = sSVG.find(L"image");
-		while(nRef != std::wstring::npos)
+		while (nRef != std::wstring::npos)
 		{
 			size_t nRefBegin = sSVG.rfind(L'<', nRef);
 			if (nRefBegin != std::wstring::npos)
@@ -2103,10 +2107,10 @@ private:
 
 			size_t nRefEnd = sSVG.find(L'>', nRef);
 			size_t nHRef = sSVG.find(L"href", nRef);
-			if(nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
+			if (nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
 				break;
 			nHRef += 6;
-			if(nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
+			if (nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
 			{
 				nRef = sSVG.find(L"image", nRef + 5);
 				continue;
@@ -2129,9 +2133,9 @@ private:
 		oSVG.WriteString(sSVG);
 		oSVG.WriteString(L"</svg>");
 
-		std::wstring sImageId = std::to_wstring(m_nImageId);
+		std::wstring sImageId = std::to_wstring(m_arrImages.size());
 		NSFile::CFileBinary oSVGWriter;
-		std::wstring sImageFile = m_sDst + L"/word/media/" + sImageId + L".svg";
+		std::wstring sImageFile = m_sDst + L"/word/media/i" + sImageId + L".svg";
 		if (oSVGWriter.CreateFileW(sImageFile))
 		{
 			oSVGWriter.WriteStringUTF8(oSVG.GetData());
@@ -2142,15 +2146,15 @@ private:
 		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
 		MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 		bool bLoad = pMetafile->LoadFromFile(sImageFile.data());
-		if(bLoad)
+		if (bLoad)
 		{
-			std::wstring sPngFile = m_sDst + L"/word/media/" + sImageId + L".png";
+			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
 			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
 		}
 		pMetafile->Release();
 		pFonts->Release();
 
-		ImageRels(oXml, sImageId, sImageId + L".png");
+		ImageRels(oXml, -1, L"", L"png");
 	}
 };
 

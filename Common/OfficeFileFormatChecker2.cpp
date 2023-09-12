@@ -271,6 +271,14 @@ bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage *storage)
 					nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
 				}
 			}
+			if (std::string::npos != Program.find("Word") || std::string::npos != UserType.find("Word"))
+			{
+				if (isDocFormatFile(storage))
+				{
+					//nFileType inside
+					return true;
+				}
+			}
 			return true;
 		}
 		else

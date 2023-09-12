@@ -4,7 +4,12 @@ namespace SVG
 {
 	CClipPath::CClipPath(XmlUtils::CXmlNode &oNode)
 		: CAppliedObject(oNode)
-	{}
+	{
+		if (L"userSpaceOnUse" == oNode.GetAttribute(L"gradientUnits"))
+			m_enUnits = ClipU_UserSpaceOnUse;
+		else
+			m_enUnits = ClipU_ObjectBoundingBox;
+	}
 
 	void CClipPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -17,14 +22,8 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pFile)
 			return false;
 
-		pRenderer->put_ClipMode(c_nClipRegionUnion);
-
-		pRenderer->PathCommandStart();
-
 		for (const CRenderedObject* pObject : m_oContainer.m_arObjects)
 			pObject->Draw(pRenderer, pFile, CommandeModeClip);
-
-		pRenderer->PathCommandEnd();
 
 		return true;
 	}

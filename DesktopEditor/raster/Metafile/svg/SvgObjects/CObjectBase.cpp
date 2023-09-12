@@ -233,10 +233,7 @@ namespace SVG
 		ApplyMask(pRenderer, &m_oStyles.m_oMask, pFile);
 
 		if (CommandeModeClip == oMode)
-		{
 			pRenderer->BeginCommand(c_nClipType);
-			return true;
-		}
 
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
@@ -249,6 +246,8 @@ namespace SVG
 		if (CommandeModeClip == oMode)
 		{
 			pRenderer->EndCommand(c_nClipType);
+			pRenderer->EndCommand(c_nPathType);
+			pRenderer->PathCommandEnd();
 			pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 			return;
 		}
@@ -395,6 +394,9 @@ namespace SVG
 		if (pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
 			return true;
 
+		pRenderer->BeginCommand(c_nResetClipType);
+		pRenderer->EndCommand(c_nResetClipType);
+		
 		return ApplyDef(pRenderer, pFile, pClip->m_oHref.ToWString());
 	}
 

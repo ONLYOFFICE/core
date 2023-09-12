@@ -9,7 +9,7 @@ namespace NSCSS
 {
 	namespace NSProperties
 	{
-	#define CHECK_CONDITIONS (m_bImportant || unLevel <= m_unLevel)
+	#define CHECK_CONDITIONS (m_bImportant || unLevel < m_unLevel)
 
 	static bool CutImportant(std::wstring& wsValue)
 	{
@@ -426,7 +426,7 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (CHECK_CONDITIONS && !bHardMode))
+		if ((CHECK_CONDITIONS && !bHardMode) || (wsValue.empty() && unLevel == m_unLevel))
 			return false;
 
 		if (wsValue.empty())

@@ -1439,6 +1439,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
+			m_pInterpretator->ResetClip();
 			m_pInterpretator->IntersectClip(oClip);
 		}
 		UpdateOutputDC();

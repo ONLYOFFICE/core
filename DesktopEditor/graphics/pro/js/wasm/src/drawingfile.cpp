@@ -227,10 +227,18 @@ unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
 }
+int READ_SIGNED_INT(BYTE* x)
+{
+	bool bNegative = READ_BYTE(x) == 0;
+	int nRes = READ_INT(x + 1);
+	if (bNegative)
+		nRes = -nRes;
+	return nRes;
+}
 
 void ReadAction(BYTE* pWidgets, int& i)
 {
-	unsigned int nPathLength = READ_BYTE(pWidgets + i);
+	int nPathLength = READ_BYTE(pWidgets + i);
 	i += 1;
 	std::string arrAction[] = {"Unknown", "GoTo", "GoToR", "GoToE", "Launch", "Thread", "URI", "Sound", "Movie", "Hide",
 							  "Named", "SubmitForm", "ResetForm", "ImportData", "JavaScript", "SetOCGState", "Rendition",
@@ -251,9 +259,9 @@ void ReadAction(BYTE* pWidgets, int& i)
 		i += 4;
 		std::cout << "Page " << nPathLength << ", ";
 
-		BYTE nKind = READ_BYTE(pWidgets + i);
+		int nKind = READ_BYTE(pWidgets + i);
 		i += 1;
-		std::cout << "kind " << (int)nKind << ", ";
+		std::cout << "kind " << nKind << ", ";
 		switch (nKind)
 		{
 		case 0:
@@ -262,7 +270,7 @@ void ReadAction(BYTE* pWidgets, int& i)
 		case 6:
 		case 7:
 		{
-			BYTE nFlags = READ_BYTE(pWidgets + i);
+			int nFlags = READ_BYTE(pWidgets + i);
 			i += 1;
 			if (nFlags & (1 << 0))
 			{
@@ -368,7 +376,7 @@ void ReadAction(BYTE* pWidgets, int& i)
 
 void ReadAnnot(BYTE* pWidgets, int& i)
 {
-	DWORD nPathLength = READ_INT(pWidgets + i);
+	int nPathLength = READ_INT(pWidgets + i);
 	i += 4;
 	std::cout << "Annot - AP " << nPathLength << ", ";
 
@@ -380,20 +388,20 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 	i += 4;
 	std::cout << "Page " << nPathLength << ", ";
 
-	nPathLength = READ_INT(pWidgets + i);
-	i += 4;
+	nPathLength = READ_SIGNED_INT(pWidgets + i);
+	i += 5;
 	std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_INT(pWidgets + i);
-	i += 4;
+	nPathLength = READ_SIGNED_INT(pWidgets + i);
+	i += 5;
 	std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_INT(pWidgets + i);
-	i += 4;
+	nPathLength = READ_SIGNED_INT(pWidgets + i);
+	i += 5;
 	std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_INT(pWidgets + i);
-	i += 4;
+	nPathLength = READ_SIGNED_INT(pWidgets + i);
+	i += 5;
 	std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
 
 	nPathLength = READ_INT(pWidgets + i);
@@ -438,7 +446,7 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 	if (nFlags & (1 << 4))
 	{
 		std::string arrBorder[] = {"solid", "beveled", "dashed", "inset", "underline"};
-		BYTE nBorderType = READ_BYTE(pWidgets + i);
+		int nBorderType = READ_BYTE(pWidgets + i);
 		i += 1;
 		std::cout << "Border type " << arrBorder[nBorderType] << " ";
 
@@ -468,13 +476,13 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
 {
-	DWORD nCOLength = READ_INT(pWidgets + i);
+	int nCOLength = READ_INT(pWidgets + i);
 	i += 4;
 	if (nCOLength > 0)
 		std::cout << "CO ";
 	for (DWORD j = 0; j < nCOLength; ++j)
 	{
-		DWORD nPathLength = READ_INT(pWidgets + i);
+		int nPathLength = READ_INT(pWidgets + i);
 		i += 4;
 		std::cout << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 		i += nPathLength;
@@ -484,20 +492,20 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 	// Parents
 
-	DWORD nParentsLength = READ_INT(pWidgets + i);
+	int nParentsLength = READ_INT(pWidgets + i);
 	i += 4;
 	if (nParentsLength > 0)
 		std::cout << "Parents" << std::endl;
-	for (DWORD j = 0; j < nParentsLength; ++j)
+	for (int j = 0; j < nParentsLength; ++j)
 	{
-		DWORD nPathLength = READ_INT(pWidgets + i);
+		int nPathLength = READ_INT(pWidgets + i);
 		i += 4;
 		std::cout << "# " << nPathLength << ", ";
 
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
 		std::cout << "Flags " << nPathLength << ", ";
-		unsigned int nFlags = nPathLength;
+		int nFlags = nPathLength;
 
 		if (nFlags & (1 << 0))
 		{
@@ -532,10 +540,10 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 	if (nParentsLength > 0)
 		std::cout << std::endl;
 
-	DWORD nAnnots = READ_INT(pWidgets + i);
+	int nAnnots = READ_INT(pWidgets + i);
 	i += 4;
 
-	for (DWORD q = 0; q < nAnnots; ++q)
+	for (int q = 0; q < nAnnots; ++q)
 	{
 		// Annot
 
@@ -543,7 +551,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 		// Widget
 
-		DWORD nPathLength;
+		int nPathLength;
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
@@ -568,9 +576,9 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		std::string sType = arrType[nPathLength];
 		std::cout << "Widget type " << sType << ", ";
 
-		unsigned int unFieldFlag = READ_INT(pWidgets + i);
+		int nFieldFlag = READ_INT(pWidgets + i);
 		i += 4;
-		std::cout << "Field Flag " << unFieldFlag << ", ";
+		std::cout << "Field Flag " << nFieldFlag << ", ";
 
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
@@ -675,7 +683,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		{
 			std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
 
-			unsigned int nIFFlag = READ_INT(pWidgets + i);
+			int nIFFlag = READ_INT(pWidgets + i);
 			i += 4;
 
 			if (sType == "button")
@@ -767,7 +775,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				i += 4;
 				std::cout << "MaxLen " << nPathLength << ", ";
 			}
-			if (unFieldFlag & (1 << 25))
+			if (nFieldFlag & (1 << 25))
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
@@ -814,11 +822,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 {
-	DWORD nAP = READ_INT(pWidgetsAP + i);
+	int nAP = READ_INT(pWidgetsAP + i);
 	i += 4;
 	std::cout << "AP " << nAP << ", ";
 
-	DWORD nPathLength = READ_INT(pWidgetsAP + i);
+	int nPathLength = READ_INT(pWidgetsAP + i);
 	i += 4;
 	std::cout << "X " << nPathLength << ", ";
 
@@ -826,18 +834,18 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 	i += 4;
 	std::cout << "Y " << nPathLength << ", ";
 
-	unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
+	int nWidgetWidth = READ_INT(pWidgetsAP + i);
 	i += 4;
 	std::cout << "W " << nWidgetWidth << ", ";
 
-	unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
+	int nWidgetHeight = READ_INT(pWidgetsAP + i);
 	i += 4;
 	std::cout << "H " << nWidgetHeight << ", ";
 
-	unsigned int nAPLength = READ_INT(pWidgetsAP + i);
+	int nAPLength = READ_INT(pWidgetsAP + i);
 	i += 4;
 
-	for (unsigned int j = 0; j < nAPLength; ++j)
+	for (int j = 0; j < nAPLength; ++j)
 	{
 		std::cout << std::endl;
 		nPathLength = READ_INT(pWidgetsAP + i);
@@ -867,9 +875,9 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		oFrame.ClearNoAttack();
 		RELEASEARRAYOBJECTS(res);
 
-		unsigned int nTextSize = READ_INT(pWidgetsAP + i);
+		int nTextSize = READ_INT(pWidgetsAP + i);
 		i += 4;
-		for (unsigned int k = 0; k < nTextSize; ++k)
+		for (int k = 0; k < nTextSize; ++k)
 		{
 			nPathLength = READ_INT(pWidgetsAP + i);
 			i += 4;
@@ -1019,7 +1027,7 @@ int main(int argc, char* argv[])
 		nLength -= 4;
 		while (i < nLength)
 		{
-			DWORD nPathLength = READ_INT(pLinks + i);
+			int nPathLength = READ_INT(pLinks + i);
 			i += 4;
 			std::cout <<  "Link " << std::string((char*)(pLinks + i), nPathLength);
 			i += nPathLength;
@@ -1055,7 +1063,7 @@ int main(int argc, char* argv[])
 		nLength -= 4;
 		while (i < nLength)
 		{
-			DWORD nPathLength = READ_INT(pStructure + i);
+			int nPathLength = READ_INT(pStructure + i);
 			i += 4;
 			std::cout << "Page " << nPathLength << ", ";
 			nPathLength = READ_INT(pStructure + i);
@@ -1527,14 +1535,14 @@ int main(int argc, char* argv[])
 
 		while (i < nLength)
 		{
-			unsigned int nAP = READ_INT(pWidgetsMK + i);
+			int nAP = READ_INT(pWidgetsMK + i);
 			i += 4;
 			std::cout << "AP " << nAP << ", ";
-			unsigned int nMKLength = READ_INT(pWidgetsMK + i);
+			int nMKLength = READ_INT(pWidgetsMK + i);
 			i += 4;
-			for (unsigned int j = 0; j < nMKLength; ++j)
+			for (int j = 0; j < nMKLength; ++j)
 			{
-				unsigned int nPathLength = READ_INT(pWidgetsMK + i);
+				int nPathLength = READ_INT(pWidgetsMK + i);
 				i += 4;
 				std::string sMKName = std::string((char*)(pWidgetsMK + i), nPathLength);
 				i += nPathLength;
@@ -1549,10 +1557,10 @@ int main(int argc, char* argv[])
 				if (!nPathLength)
 					continue;
 
-				unsigned int nWidgetWidth = READ_INT(pWidgetsMK + i);
+				int nWidgetWidth = READ_INT(pWidgetsMK + i);
 				i += 4;
 				std::cout << "W " << nWidgetWidth << ", ";
-				unsigned int nWidgetHeight = READ_INT(pWidgetsMK + i);
+				int nWidgetHeight = READ_INT(pWidgetsMK + i);
 				i += 4;
 				std::cout << "H " << nWidgetHeight << ", ";
 				unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
@@ -1590,7 +1598,7 @@ int main(int argc, char* argv[])
 
 		while (i < nLength)
 		{
-			DWORD nPathLength = READ_BYTE(pAnnots + i);
+			int nPathLength = READ_BYTE(pAnnots + i);
 			i += 1;
 			std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine",
 									   "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink",
@@ -1808,8 +1816,8 @@ int main(int argc, char* argv[])
 
 				for (int j = 0; j < nQuadPointsLength; ++j)
 				{
-					nPathLength = READ_INT(pAnnots + i);
-					i += 4;
+					nPathLength = READ_SIGNED_INT(pAnnots + i);
+					i += 5;
 					std::cout << " " << (double)nPathLength / 100.0;
 				}
 				std::cout << ", ";

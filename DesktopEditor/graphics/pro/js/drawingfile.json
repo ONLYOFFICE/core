@@ -43,156 +43,140 @@
 		"wasm/src/lib", "../../../agg-2.4/include", "../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", "freetype-2.10.4/include", "freetype-2.10.4/include/freetype", "../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src", "../../../../Common/3dParty/icu/icu/source/common", "../../../xml/libxml2/include", "../../../xml/build/qt", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib", "../../../raster/Jp2/openjpeg", "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2"
 	],
 	"define": [
-		"__linux__", "_LINUX", "UNIX", "FT2_BUILD_LIBRARY", "HAVE_FCNTL_H", "FT_CONFIG_OPTION_SYSTEM_ZLIB", "BUILDING_WASM_MODULE", "U_COMMON_IMPLEMENTATION", "errno=0", "THREADMODEL=0", "DEBUGLVL=0", "HAVE_MBSTATE_T", "HAVE_STDINCLUDES", "HAS_WCHAR", "HAVE_VA_COPY", "LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", "LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", "LIBXML_C14N_ENABLED", "LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", "IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", "_ARM_ALIGN_", "_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", "NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM"
+		"__linux__", "_LINUX", "UNIX", 
+		"FT2_BUILD_LIBRARY", "HAVE_FCNTL_H", 
+		"FT_CONFIG_OPTION_SYSTEM_ZLIB", 
+		"BUILDING_WASM_MODULE", 
+		"U_COMMON_IMPLEMENTATION", 
+		"errno=0", "THREADMODEL=0", "DEBUGLVL=0", 
+		"HAVE_MBSTATE_T", "HAVE_STDINCLUDES", "HAS_WCHAR", "HAVE_VA_COPY", 
+		"LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", 
+		"LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", "LIBXML_C14N_ENABLED", 
+		"LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", 
+		"IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", 
+		"_ARM_ALIGN_", 
+		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", 
+		"NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM",
+		"IMAGE_CHECKER_DISABLE_XML"
 	],
 	"compile_files_array": [
 	{
-		"name": "r",
 		"folder": "../../../raster/",
 		"files": ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
 	},
 	{
-		"name": "ci",
 		"folder": "../../../cximage/CxImage/",
 		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
 	},
 	{
-		"name": "j",
 		"folder": "../../../cximage/jpeg/",
 		"files": ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c", "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c", "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c", "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c", "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c", "jcapimin.c", "jcparam.c", "jcapistd.c", "jcinit.c", "jcmaster.c", "jccolor.c", "jcmarker.c", "jcsample.c", "jcprepct.c", "jcdctmgr.c", "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c", "jfdctfst.c", "jfdctflt.c"]
 	},
 	{
-		"name": "pn",
 		"folder": "../../../cximage/png/",
 		"files": ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c", "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c", "pngwrite.c", "pngwio.c", "pngwutil.c", "pngwtran.c"]
 	},
 	{
-		"name": "t",
 		"folder": "../../../cximage/tiff/",
 		"files": ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c", "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c", "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c", "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c", "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c", "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c", "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
 	},
 	{
-		"name": "ja",
 		"folder": "../../../cximage/jasper/",
 		"files": ["base/jas_init.c", "base/jas_stream.c", "base/jas_malloc.c", "base/jas_image.c", "base/jas_cm.c", "base/jas_seq.c", "base/jas_string.c", "base/jas_icc.c", "base/jas_debug.c", "base/jas_iccdata.c", "base/jas_tvp.c", "base/jas_version.c", "mif/mif_cod.c", "pnm/pnm_dec.c", "pnm/pnm_enc.c", "pnm/pnm_cod.c", "bmp/bmp_dec.c", "bmp/bmp_enc.c", "bmp/bmp_cod.c", "ras/ras_dec.c", "ras/ras_enc.c", "jp2/jp2_dec.c", "jp2/jp2_enc.c", "jp2/jp2_cod.c", "jpc/jpc_cs.c", "jpc/jpc_enc.c", "jpc/jpc_dec.c", "jpc/jpc_t1cod.c", "jpc/jpc_math.c", "jpc/jpc_util.c", "jpc/jpc_tsfb.c", "jpc/jpc_mct.c", "jpc/jpc_t1enc.c", "jpc/jpc_t1dec.c", "jpc/jpc_bs.c", "jpc/jpc_t2cod.c", "jpc/jpc_t2enc.c", "jpc/jpc_t2dec.c", "jpc/jpc_tagtree.c", "jpc/jpc_mqenc.c", "jpc/jpc_mqdec.c", "jpc/jpc_mqcod.c", "jpc/jpc_qmfb.c", "jpg/jpg_val.c", "jpg/jpg_dummy.c", "pgx/pgx_dec.c", "pgx/pgx_enc.c"]
 	},
 	{
-		"name": "jp",
 		"folder": "../../../raster/Jp2/",
 		"files": ["J2kFile.cpp", "Reader.cpp"]
 	},
 	{
-		"name": "mn",
 		"folder": "../../../cximage/mng/",
 		"files": ["libmng_hlapi.c", "libmng_callback_xs.c", "libmng_prop_xs.c", "libmng_object_prc.c", "libmng_zlib.c", "libmng_jpeg.c", "libmng_pixels.c", "libmng_read.c", "libmng_error.c", "libmng_display.c", "libmng_write.c", "libmng_chunk_io.c", "libmng_cms.c", "libmng_filter.c", "libmng_chunk_prc.c", "libmng_chunk_xs.c"]
 	},
 	{
-		"name": "lp",
 		"folder": "../../../cximage/libpsd/",
 		"files": ["psd.c", "file_header.c", "color_mode.c", "image_resource.c", "blend.c", "layer_mask.c", "image_data.c", "stream.c", "psd_system.c", "color.c", "pattern_fill.c", "color_balance.c", "channel_image.c", "gradient_fill.c", "invert.c", "posterize.c", "brightness_contrast.c", "solid_color.c", "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c", "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c", "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c", "drop_shadow.c", "inner_shadow.c", "color_overlay.c", "outer_glow.c", "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c", "stroke.c", "pattern_overlay.c"]
 	},
 	{
-		"name": "ra",
 		"folder": "../../../cximage/raw/",
 		"files": ["libdcr.c"]
 	},
 	{
-		"name": "jb",
 		"folder": "../../../raster/JBig2/source/",
 		"files": ["JBig2File.cpp", "Encoder/jbig2enc.cpp", "Encoder/jbig2arith.cpp", "Encoder/jbig2sym.cpp", "LeptonLib/pixconv.cpp", "LeptonLib/writefile.cpp", "LeptonLib/scale.cpp", "LeptonLib/pix1.cpp", "LeptonLib/pix2.cpp", "LeptonLib/pix3.cpp", "LeptonLib/pix4.cpp", "LeptonLib/pix5.cpp", "LeptonLib/grayquant.cpp", "LeptonLib/grayquantlow.cpp", "LeptonLib/seedfill.cpp", "LeptonLib/jbclass.cpp", "LeptonLib/pixabasic.cpp", "LeptonLib/numabasic.cpp", "LeptonLib/morphseq.cpp", "LeptonLib/binexpandlow.cpp", "LeptonLib/ptabasic.cpp", "LeptonLib/rop.cpp", "LeptonLib/colormap.cpp", "LeptonLib/pngiostub.cpp", "LeptonLib/lepton_utils.cpp", "LeptonLib/scalelow.cpp", "LeptonLib/enhance.cpp", "LeptonLib/jpegio.cpp", "LeptonLib/jpegiostub.cpp", "LeptonLib/spixio.cpp", "LeptonLib/webpio.cpp", "LeptonLib/webpiostub.cpp", "LeptonLib/psio2.cpp", "LeptonLib/gifio.cpp", "LeptonLib/gifiostub.cpp", "LeptonLib/pnmio.cpp", "LeptonLib/tiffio.cpp", "LeptonLib/tiffiostub.cpp", "LeptonLib/bmpio.cpp", "LeptonLib/binexpand.cpp", "LeptonLib/compare.cpp", "LeptonLib/boxbasic.cpp", "LeptonLib/conncomp.cpp", "LeptonLib/pixafunc1.cpp", "LeptonLib/boxfunc1.cpp", "LeptonLib/ptafunc1.cpp", "LeptonLib/binreduce.cpp", "LeptonLib/seedfilllow.cpp", "LeptonLib/sel1.cpp", "LeptonLib/morphapp.cpp", "LeptonLib/correlscore.cpp", "LeptonLib/sarray.cpp", "LeptonLib/morph.cpp", "LeptonLib/roplow.cpp", "LeptonLib/fpix1.cpp", "LeptonLib/stack.cpp", "LeptonLib/pixacc.cpp", "LeptonLib/pixarith.cpp", "LeptonLib/convolve.cpp", "LeptonLib/binreducelow.cpp", "LeptonLib/convolvelow.cpp", "LeptonLib/arithlow.cpp"]
 	},
 	{
-		"name": "lib",
 		"folder": "./wasm/src/",
 		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp"]
 	},
 	{
-		"name": "f",
 		"folder": "freetype-2.10.4/src/",
 		"files": ["base/ftdebug.c","autofit/autofit.c","bdf/bdf.c","cff/cff.c","base/ftbase.c","base/ftbitmap.c","base/ftfstype.c","base/ftgasp.c","cache/ftcache.c","base/ftglyph.c","gzip/ftgzip.c","base/ftinit.c","lzw/ftlzw.c","base/ftstroke.c","base/ftsystem.c","smooth/smooth.cpp","base/ftbbox.c","base/ftbdf.c","base/ftcid.c","base/ftmm.c","base/ftpfr.c","base/ftsynth.c","base/fttype1.c","base/ftwinfnt.c","base/ftgxval.c","base/ftotval.c","base/ftpatent.c","pcf/pcf.c","pfr/pfr.c","psaux/psaux.c","pshinter/pshinter.c","psnames/psmodule.c","raster/raster.c","sfnt/sfnt.cpp","truetype/truetype.c","type1/type1.c","cid/type1cid.c","type42/type42.c","winfonts/winfnt.c"]
 	},
 	{
-		"name": "g",
 		"folder": "../../",
 		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "AlphaMask_private.cpp"]
 	},
 	{
-		"name": "fe",
 		"folder": "../../../fontengine/",
 		"files": ["GlyphString.cpp", "FontManager.cpp", "FontFile.cpp", "FontPath.cpp", "ApplicationFonts.cpp"]
 	},
 	{
-		"name": "a",
 		"folder": "../../../agg-2.4/src/",
 		"files": ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp", "agg_image_filters.cpp"]
 	},
 	{
-		"name": "co",
 		"folder": "../../../common/",
 		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp"]
 	},
 	{
-		"name": "i",
 		"folder": "../../../../Common/3dParty/icu/icu/source/common/",
 		"files": ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c", "ubidi_props.c", "uchar.c", "uinvchar.c", "usprep.cpp", "unistr.cpp", "uniset_props.cpp", "loadednormalizer2impl.cpp", "filterednormalizer2.cpp", "utrie2.cpp", "normalizer2.cpp", "normalizer2impl.cpp", "utrie.cpp", "ucase.cpp", "uniset.cpp", "ruleiter.cpp", "parsepos.cpp", "util.cpp", "uprops.cpp", "uvector.cpp", "unames.cpp", "propname.cpp", "utrie2_builder.cpp", "unifunct.cpp", "bmpset.cpp", "unisetspan.cpp", "unifilt.cpp", "patternprops.cpp", "utf_impl.c", "ustrcase.cpp", "cstring.c", "bytestrie.cpp"]
 	},
 	{
-		"name": "o",
 		"folder": "../../../../OfficeUtils/src/",
 		"files": ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp", "zlib_addon.c"]
 	},
 	{
-		"name": "m",
 		"folder": "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/",
 		"files": ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
 	},
 	{
-		"name": "z",
 		"folder": "../../../../OfficeUtils/src/zlib-1.2.11/",
 		"files": ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c", "compress.c"]
 	},
 	{
-		"name": "xm",
 		"folder": "./",
 		"files": ["xml/src/xmllight.cpp", "xml/src/xmldom.cpp", "xml/build/qt/libxml2_all.c", "xml/build/qt/libxml2_all2.c"]
 	},
 	{
-		"name": "p",
 		"folder": "../../../../PdfFile/",
 		"files": ["SrcReader/Adaptors.cpp", "SrcReader/GfxClip.cpp", "SrcReader/RendererOutputDev.cpp", "SrcReader/JPXStream2.cpp", "Resources/BaseFonts.cpp", "Resources/CMapMemory/cmap_memory.cpp", "lib/fofi/FofiBase.cc", "lib/fofi/FofiEncodings.cc", "lib/fofi/FofiIdentifier.cc", "lib/fofi/FofiTrueType.cc", "lib/fofi/FofiType1.cc", "lib/fofi/FofiType1C.cc", "lib/goo/FixedPoint.cc", "lib/goo/gfile.cc", "lib/goo/GHash.cc", "lib/goo/GList.cc", "lib/goo/gmem.cc", "lib/goo/gmempp.cc", "lib/goo/GString.cc", "lib/goo/parseargs.c", "lib/goo/Trace.cc", "lib/splash/Splash.cc", "lib/splash/SplashBitmap.cc", "lib/splash/SplashClip.cc", "lib/splash/SplashFont.cc", "lib/splash/SplashFontEngine.cc", "lib/splash/SplashFontFile.cc", "lib/splash/SplashFontFileID.cc", "lib/splash/SplashFTFont.cc", "lib/splash/SplashFTFontEngine.cc", "lib/splash/SplashFTFontFile.cc", "lib/splash/SplashPath.cc", "lib/splash/SplashPattern.cc", "lib/splash/SplashScreen.cc", "lib/splash/SplashState.cc", "lib/splash/SplashXPath.cc", "lib/splash/SplashXPathScanner.cc", "lib/xpdf/AcroForm.cc", "lib/xpdf/Annot.cc", "lib/xpdf/Array.cc", "lib/xpdf/BuiltinFont.cc", "lib/xpdf/BuiltinFontTables.cc", "lib/xpdf/Catalog.cc", "lib/xpdf/CharCodeToUnicode.cc", "lib/xpdf/CMap.cc", "lib/xpdf/Decrypt.cc", "lib/xpdf/Dict.cc", "lib/xpdf/DisplayState.cc", "lib/xpdf/Error.cc", "lib/xpdf/FontEncodingTables.cc", "lib/xpdf/Function.cc", "lib/xpdf/Gfx.cc", "lib/xpdf/GfxFont.cc", "lib/xpdf/GfxState.cc", "lib/xpdf/GlobalParams.cc", "lib/xpdf/ImageOutputDev.cc", "lib/xpdf/JArithmeticDecoder.cc", "lib/xpdf/JBIG2Stream.cc", "lib/xpdf/JPXStream.cc", "lib/xpdf/Lexer.cc", "lib/xpdf/Link.cc", "lib/xpdf/NameToCharCode.cc", "lib/xpdf/Object.cc", "lib/xpdf/OptionalContent.cc", "lib/xpdf/Outline.cc", "lib/xpdf/OutputDev.cc", "lib/xpdf/Page.cc", "lib/xpdf/Parser.cc", "lib/xpdf/PDF417Barcode.cc", "lib/xpdf/PDFCore.cc", "lib/xpdf/PDFDoc.cc", "lib/xpdf/PDFDocEncoding.cc", "lib/xpdf/PreScanOutputDev.cc", "lib/xpdf/PSOutputDev.cc", "lib/xpdf/PSTokenizer.cc", "lib/xpdf/SecurityHandler.cc", "lib/xpdf/ShadingImage.cc", "lib/xpdf/SplashOutputDev.cc", "lib/xpdf/Stream.cc", "lib/xpdf/TextOutputDev.cc", "lib/xpdf/TextString.cc", "lib/xpdf/TileCache.cc", "lib/xpdf/TileCompositor.cc", "lib/xpdf/TileMap.cc", "lib/xpdf/UnicodeMap.cc", "lib/xpdf/UnicodeRemapping.cc", "lib/xpdf/UnicodeTypeTable.cc", "lib/xpdf/UTF8.cc", "lib/xpdf/WebFont.cc", "lib/xpdf/XFAScanner.cc", "lib/xpdf/XRef.cc", "lib/xpdf/Zoox.cc", "PdfFile.cpp", "PdfReader.cpp", "PdfWriter_empty.cpp"]
 	},
 	{
-		"name": "opj",
 		"folder": "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2/",
 		"files": ["bio.c", "cidx_manager.c", "cio.c", "dwt.c", "event.c", "function_list.c", "image.c", "invert.c", "j2k.c", "jp2.c", "mct.c", "mqc.c", "openjpeg.c", "opj_clock.c", "opj_malloc.c", "phix_manager.c", "pi.c", "ppix_manager.c", "sparse_array.c", "t1.c", "t2.c", "tcd.c", "tgt.c", "thix_manager.c", "thread.c", "tpix_manager.c", "../../../../opj_bgraframe.cpp"]
 	},
 	{
-		"name": "x",
 		"folder": "../../../../XpsFile/",
 		"files": ["XpsFile.cpp", "XpsLib/Document.cpp", "XpsLib/XpsPage.cpp", "XpsLib/StaticResources.cpp", "XpsLib/Utils.cpp", "XpsLib/WString.cpp", "XpsLib/ContextState.cpp"]
 	},
 	{
-		"name": "d",
 		"folder": "../../../../DjVuFile/libdjvu/",
 		"files": ["../DjVu.cpp", "../DjVuFileImplementation.cpp", "Arrays.cpp", "BSByteStream.cpp", "BSEncodeByteStream.cpp", "ByteStream.cpp", "DataPool.cpp", "debug.cpp", "DjVmDir.cpp", "DjVmDir0.cpp", "DjVmDoc.cpp", "DjVmNav.cpp", "DjVuAnno.cpp", "DjVuDocEditor.cpp", "DjVuDocument.cpp", "DjVuDumpHelper.cpp", "DjVuErrorList.cpp", "DjVuFile.cpp", "DjVuFileCache.cpp", "DjVuGlobal.cpp", "DjVuGlobalMemory.cpp", "DjVuImage.cpp", "DjVuInfo.cpp", "DjVuMessageLite.cpp", "DjVuNavDir.cpp", "DjVuPalette.cpp", "DjVuPort.cpp", "DjVuText.cpp", "DjVuToPS.cpp", "GBitmap.cpp", "GContainer.cpp", "GException.cpp", "GIFFManager.cpp", "GMapAreas.cpp", "GPixmap.cpp", "GRect.cpp", "GScaler.cpp", "GSmartPointer.cpp", "GString.cpp", "GThreads.cpp", "GUnicode.cpp", "IFFByteStream.cpp", "IW44EncodeCodec.cpp", "IW44Image.cpp", "JB2EncodeCodec.cpp", "JB2Image.cpp", "JPEGDecoder.cpp", "MMRDecoder.cpp", "MMX.cpp", "UnicodeByteStream.cpp", "XMLParser.cpp", "XMLTags.cpp", "ZPCodec.cpp"]
 	},
 	{
-		"name": "dj",
 		"folder": "../../../../DjVuFile/wasm/libdjvu/",
 		"files": ["atomic.cpp", "DjVuMessage.cpp", "GOS.cpp", "GURL.cpp"]
 	},
 	{
-		"name": "df",
 		"folder": "../",
 		"files": ["officedrawingfile.cpp"]
 	},
 	{
-		"name": "hr",
 		"folder": "../../../../HtmlRenderer/src/",
 		"files": ["HTMLRendererText.cpp"]
 	},
 	{
-		"name": "u",
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]
 	}

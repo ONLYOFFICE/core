@@ -773,6 +773,11 @@ namespace OOX
 				{
 					ptr->m_SLICERSEX = i->m_oSlicerList->toBin();
 				}
+				else if(i->m_sUri == L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}")
+				{
+					if(i->m_oSlicerListExt.IsInit())
+						ptr->m_SLICERSEX = i->m_oSlicerListExt->toBin();
+				}
 			}
             return objectPtr;
 		}

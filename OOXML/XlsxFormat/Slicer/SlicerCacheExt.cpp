@@ -627,7 +627,7 @@ XLS::BaseObjectPtr CSlicerRef::toBin()
 		XLS::BaseObjectPtr objectPtr(ptr);
 		auto ptr1(new XLSB::BeginSlicerEx);
 		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
-
+        ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
 
 		return objectPtr;
 }

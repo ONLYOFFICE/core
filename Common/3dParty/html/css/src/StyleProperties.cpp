@@ -656,6 +656,10 @@ namespace NSCSS
 				enType = TransformScale;
 			else if (std::wstring::npos != wsTransform.find(L"rotate"))
 				enType = TransformRotate;
+			else if (std::wstring::npos != wsTransform.find(L"skewx"))
+				enType = TransformSkewX;
+			else if (std::wstring::npos != wsTransform.find(L"skewy"))
+				enType = TransformSkewY;
 			else
 			{
 				Clear();
@@ -730,6 +734,16 @@ namespace NSCSS
 				else
 					return false;
 
+				break;
+			}
+			case TransformSkewX:
+			case TransformSkewY:
+			{
+				if (arValues.empty())
+					return false;
+				
+				m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0]}, enType));
+				
 				break;
 			}
 		}
@@ -846,6 +860,16 @@ namespace NSCSS
 					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2]);
 					break;
 				}
+				case TransformSkewX:
+				{
+					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0);
+					break;
+				}
+				case TransformSkewY:
+				{
+					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0);
+					break;
+				}
 				default: break;
 			}
 		}
@@ -879,6 +903,16 @@ namespace NSCSS
 				case TransformRotate:
 				{
 					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2], order);
+					break;
+				}
+				case TransformSkewX:
+				{
+					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0, order);
+					break;
+				}
+				case TransformSkewY:
+				{
+					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0, order);
 					break;
 				}
 				default: break;

@@ -85,6 +85,25 @@ namespace SVG
 		
 		return true;
 	}
+	
+	void CGradient::ApplyTransform(IRenderer* pRenderer, const TBounds& oBounds, double& dAngle) const
+	{
+		TBounds oNewBounds(oBounds);
+		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue();
+
+		dAngle = oMatrix.rotation() * 180. / M_PI;
+
+		if (GradU_ObjectBoundingBox == m_enGradientUnits)
+		{
+			oMatrix.Scale(oBounds.m_dRight - oBounds.m_dLeft, oBounds.m_dBottom - oBounds.m_dTop, Aggplus::MatrixOrderAppend);
+			oMatrix.Scale(1 / (oBounds.m_dRight - oBounds.m_dLeft), 1 / (oBounds.m_dBottom - oBounds.m_dTop));
+			
+			oMatrix.TransformPoint(oNewBounds.m_dLeft,  oNewBounds.m_dTop);
+			oMatrix.TransformPoint(oNewBounds.m_dRight, oNewBounds.m_dBottom);
+		}
+
+		pRenderer->BrushBounds(oNewBounds.m_dLeft, oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft, oNewBounds.m_dBottom - oNewBounds.m_dTop);
+	}
 
 	CLinearGradient::CLinearGradient(XmlUtils::CXmlNode& oNode)
 		: CGradient(oNode)
@@ -98,35 +117,43 @@ namespace SVG
 	bool CLinearGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
-			return false;		
+			return false;
 
 		pRenderer->put_BrushType(c_BrushTypePathGradient1);
-
-		double dX1 = m_oX1.ToDouble(NSCSS::Pixel);
-		double dY1 = m_oY1.ToDouble(NSCSS::Pixel);
-		double dX2 = m_oX2.ToDouble(NSCSS::Pixel);
-		double dY2 = m_oY2.ToDouble(NSCSS::Pixel);
-
-		double dWidthKoef  = 1.;
-		double dHeightKoef = 1.;
-
-		if (NSCSS::UnitMeasure::Percent == m_oX2.GetUnitMeasure())
-			dWidthKoef*= dX2 / 100.;
-		else if (NSCSS::UnitMeasure::None ==  m_oX2.GetUnitMeasure() && dX2 > 1.)
-			dWidthKoef = dX2;
-
-		if (NSCSS::UnitMeasure::Percent == m_oY2.GetUnitMeasure())
-			dHeightKoef*= dY2 / 100.;
-		else if (NSCSS::UnitMeasure::None ==  m_oY2.GetUnitMeasure() && dY2 > 1.)
-			dHeightKoef = dY2;
+		
+		if (m_oX1 == m_oX2 && m_oY1 == m_oY2)
+		{
+			pRenderer->put_BrushType(c_BrushTypeSolid);
+			pRenderer->put_BrushColor1(m_arObjects.back()->GetColor().ToInt());
+			pRenderer->put_BrushAlpha1(m_arObjects.back()->GetOffset().ToInt());
+			return true;
+		}
 
 		double dAngle = 0.;
 
-		if (std::fabs(dX2 - dX1) >= 0. || fabs(dY2 - dY1) >= 0.)
-			dAngle = 180. * std::atan2(dY2 - dY1, dX2 - dX1) / M_PI;
+		TBounds oNewBounds(oObjectBounds);
+
+		if (GradU_ObjectBoundingBox == m_enGradientUnits)
+		{
+			oNewBounds.m_dLeft   += (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oX1.ToDouble(NSCSS::Pixel);
+			oNewBounds.m_dTop    += (oObjectBounds.m_dBottom - oObjectBounds.m_dTop)  * m_oY1.ToDouble(NSCSS::Pixel);
+			
+			oNewBounds.m_dRight  *= (!m_oX2.Zero()) ? m_oX2.ToDouble(NSCSS::Pixel) : 1.;
+			oNewBounds.m_dBottom *= (!m_oY2.Zero()) ? m_oY2.ToDouble(NSCSS::Pixel) : 1.;
+		}
+		else if (GradU_UserSpaceOnUse == m_enGradientUnits)
+		{
+			if (!m_oX1.Empty()) oNewBounds.m_dLeft   = m_oX1.ToDouble(NSCSS::Pixel);
+			if (!m_oY1.Empty()) oNewBounds.m_dTop    = m_oY1.ToDouble(NSCSS::Pixel);
+			if (!m_oX2.Empty()) oNewBounds.m_dRight  = m_oX2.ToDouble(NSCSS::Pixel);
+			if (!m_oY2.Empty()) oNewBounds.m_dBottom = m_oY2.ToDouble(NSCSS::Pixel);
+		}
+
+		CGradient::ApplyTransform(pRenderer, oNewBounds, dAngle);
+
+		dAngle += 180. * std::atan2(oNewBounds.m_dBottom - oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft) / M_PI;
 
 		pRenderer->put_BrushLinearAngle(dAngle);
-		pRenderer->BrushBounds(oObjectBounds.m_dLeft, oObjectBounds.m_dTop, (oObjectBounds.m_dRight - oObjectBounds.m_dLeft) * dWidthKoef, (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * dHeightKoef);
 
 		return true;
 	}
@@ -141,16 +168,31 @@ namespace SVG
 
 	bool CRadialGradient::Apply(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds)
 	{
-		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds))
+		if (!CGradient::Apply(pRenderer, pFile, oObjectBounds) || m_oR.Zero())
 			return false;
+		
+		double dCX = (oObjectBounds.m_dRight + oObjectBounds.m_dLeft) / 2.;
+		double dCY = (oObjectBounds.m_dBottom + oObjectBounds.m_dTop) / 2.;
+		double dR  = oObjectBounds.m_dBottom - oObjectBounds.m_dTop;
 
+		if (GradU_ObjectBoundingBox == m_enGradientUnits)
+		{
+			if (!m_oCx.Empty())
+				dCX = oObjectBounds.m_dLeft + (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oCx.ToDouble(NSCSS::Pixel);
+			if (!m_oCy.Empty())
+				dCY = oObjectBounds.m_dTop + (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oCy.ToDouble(NSCSS::Pixel);
+			if (!m_oR.Empty())
+				dR = (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) * m_oR.ToDouble(NSCSS::Pixel);
+		}
+		else if (GradU_UserSpaceOnUse == m_enGradientUnits)
+		{
+			if (!m_oCx.Empty()) dCX = m_oCx.ToDouble(NSCSS::Pixel);
+			if (!m_oCy.Empty()) dCY = m_oCy.ToDouble(NSCSS::Pixel);
+			if (!m_oR.Empty())  dR  = m_oR .ToDouble(NSCSS::Pixel);
+		}
+		
 		pRenderer->put_BrushType(c_BrushTypePathGradient2);
-
-		double dCx = m_oCx.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft) + oObjectBounds.m_dLeft;
-		double dCy = m_oCy.ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dBottom - oObjectBounds.m_dTop) + oObjectBounds.m_dTop;
-		double dR  = m_oR .ToDouble(NSCSS::Pixel) * (oObjectBounds.m_dRight - oObjectBounds.m_dLeft);
-
-		pRenderer->BrushBounds(dCx - dR, dCy - dR, (dR != 0) ? dR * 2 : (oObjectBounds.m_dRight - oObjectBounds.m_dLeft), (dR != 0) ? dR * 2 : (oObjectBounds.m_dBottom - oObjectBounds.m_dTop));
+		pRenderer->BrushBounds(dCX - dR, dCY - dR, 2. * dR, 2. * dR);
 
 		return true;
 	}

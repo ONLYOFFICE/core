@@ -474,10 +474,10 @@ namespace SVG
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{	
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+            if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 

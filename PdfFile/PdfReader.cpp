@@ -53,7 +53,6 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/xpdf/AcroForm.h"
-#include "lib/xpdf/Annot.h"
 #include "lib/goo/GList.h"
 
 #include <vector>

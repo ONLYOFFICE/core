@@ -32,8 +32,8 @@
 #ifndef _BUILD_FORMFIELD_H_
 #define _BUILD_FORMFIELD_H_
 
-#include "config.h"
-#include "AnnotField.h"
+#include "../config.h"
+#include "./AnnotField.h"
 
 class GRAPHICS_DECL CFormFieldInfo : public CAnnotFieldInfo
 {
@@ -323,6 +323,8 @@ public:
 	
 	CDateTimeFormPr* GetDateTimeFormPr();
 	const CDateTimeFormPr* GetDateTimePr() const;
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 	
 private:
 	double       m_dBaseLineOffset;

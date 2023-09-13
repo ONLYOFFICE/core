@@ -32,8 +32,9 @@
 #ifndef _BUILD_ANNOTFIELD_H_
 #define _BUILD_ANNOTFIELD_H_
 
-#include "config.h"
-#include "IRenderer.h"
+#include "../config.h"
+#include "../MetafileToRendererReader.h"
+class IMetafileToRenderter;
 
 // void Set(const int& n) { m_n = n; }
 // int Get() const { return m_n; }
@@ -44,7 +45,7 @@
 // void Set(const std::wstring& ws) { m_ws = ws; }
 // const std::wstring& Get() const { return m_ws; }
 
-class GRAPHICS_DECL CAnnotFieldInfo : public IAnnotField
+class GRAPHICS_DECL CAnnotFieldInfo : public IAdvancedCommand
 {
 public:
 	class CMarkupAnnotPr
@@ -277,6 +278,8 @@ public:
 	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
 	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 protected:
 	int          m_nType;

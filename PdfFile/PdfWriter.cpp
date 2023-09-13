@@ -51,8 +51,6 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/FormField.h"
-#include "../../DesktopEditor/graphics/AnnotField.h"
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
@@ -1081,7 +1079,7 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
@@ -1097,7 +1095,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotFi
 	if (!pFontTT)
 		return S_OK;
 
-	CFormFieldInfo& oInfo = *((CFormFieldInfo*)pFieldInfo);
+	CFormFieldInfo& oInfo = *pFieldInfo;
 
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
@@ -1672,16 +1670,16 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IAnnotFi
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, IAnnotField* pFieldInfo)
+HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
 		return S_OK;
 
-	CAnnotFieldInfo& oInfo = *((CAnnotFieldInfo*)pFieldInfo);
+	CAnnotFieldInfo& oInfo = *pFieldInfo;
 
 	if (oInfo.isWidget())
-		return AddFormField(pAppFonts, pFieldInfo);
+		return AddFormField(pAppFonts, (CFormFieldInfo*)pFieldInfo);
 
 	if (m_bNeedUpdateTextFont)
 		UpdateFont();

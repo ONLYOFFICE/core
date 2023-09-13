@@ -35,6 +35,7 @@
 #pragma once
 
 #include "pro/Image.h"
+#include "MetafileToRendererReader.h"
 
 #ifndef INT32
 typedef int INT32;

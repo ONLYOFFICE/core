@@ -1521,28 +1521,54 @@ HRESULT CPdfFile::CommandString(const LONG& lType, const std::wstring& sCommand)
 {
 	return m_pInternal->pWriter ? S_OK : S_FALSE;
 }
-HRESULT CPdfFile::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
+
+HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type)
 {
-	if (!m_pInternal->pWriter)
-		return S_FALSE;
-	return m_pInternal->pWriter->AddHyperlink(dX, dY, dW, dH, wsUrl, wsTooltip);
+	switch (type)
+	{
+	case IAdvancedCommand::AdvancedCommandType::Hyperlink:
+	case IAdvancedCommand::AdvancedCommandType::Link:
+	case IAdvancedCommand::AdvancedCommandType::DocInfo:
+	case IAdvancedCommand::AdvancedCommandType::Annotaion:
+		return S_OK;
+	default:
+		break;
+	}
+	return S_FALSE;
 }
-HRESULT CPdfFile::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
+HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-	return m_pInternal->pWriter->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
-}
-HRESULT CPdfFile::AddAnnotField(IAnnotField* pFieldInfo)
-{
-	if (!m_pInternal->pWriter)
-		return S_FALSE;
-	return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pFieldInfo);
-}
-HRESULT CPdfFile::DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
-{
-	if (!m_pInternal->pWriter)
-		return S_FALSE;
-	m_pInternal->pWriter->SetDocumentInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
-	return S_OK;
+
+	switch (command->GetCommandType())
+	{
+	case IAdvancedCommand::AdvancedCommandType::Hyperlink:
+	{
+		CHyperlinkCommand* pCommand = (CHyperlinkCommand*)command;
+		return m_pInternal->pWriter->AddHyperlink(pCommand->GetX(), pCommand->GetY(),
+												  pCommand->GetW(), pCommand->GetH(),
+												  pCommand->GetUrl(), pCommand->GetToolTip());
+	}
+	case IAdvancedCommand::AdvancedCommandType::Link:
+	{
+		CLinkCommand* pCommand = (CLinkCommand*)command;
+		return m_pInternal->pWriter->AddLink(pCommand->GetX(), pCommand->GetY(), pCommand->GetW(), pCommand->GetH(),
+											 pCommand->GetDestX(), pCommand->GetDestY(), pCommand->GetPage());
+	}
+	case IAdvancedCommand::AdvancedCommandType::DocInfo:
+	{
+		CDocInfoCommand* pCommand = (CDocInfoCommand*)command;
+		m_pInternal->pWriter->SetDocumentInfo(pCommand->GetTitle(), pCommand->GetCreator(),
+											  pCommand->GetSubject(), pCommand->GetKeywords());
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Annotaion:
+	{
+		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, (CAnnotFieldInfo*)command);
+	}
+	default:
+		break;
+	}
+	return S_FALSE;
 }

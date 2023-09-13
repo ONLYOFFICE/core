@@ -145,7 +145,7 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
-bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
+bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids) { return false; }
 bool CPdfWriter::UpdateFont() { return false; }
 bool CPdfWriter::GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex) { return false; }

@@ -269,8 +269,8 @@ public:
 	void SetType(int nType) override;
 
 	// Common
-	void SetBaseLineOffset(const double& dOffset) { m_dBaseLineOffset = dOffset; }
-	double GetBaseLineOffset() const { return m_dBaseLineOffset; }
+	void SetBaseLineOffset(const double& dOffset);
+	double GetBaseLineOffset() const;
 
 	void SetKey(const std::wstring& wsKey);
 	const std::wstring& GetKey() const;
@@ -325,13 +325,13 @@ public:
 	const CDateTimeFormPr* GetDateTimePr() const;
 	
 private:
+	double       m_dBaseLineOffset;
 	std::wstring m_wsKey;
 	std::wstring m_wsHelpText;
 	bool         m_bRequired;
 	bool         m_bPlaceHolder;
 	int          m_nBorderType;
 	double       m_dBorderSize;
-	double       m_dBaseLineOffset;
 	LONG         m_lBorderColor;
 	bool         m_bHaveShd;
 	LONG         m_lShdColor;

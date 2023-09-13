@@ -85,8 +85,8 @@ namespace NSWasm
         void AddDouble(double value)
         {
             // такой точности хватит
-			int nV = value * 100;
-			AddInt(nV);
+            int nV = value * 100;
+            AddInt(nV);
         }
         void WriteBYTE(BYTE value)
         {
@@ -95,15 +95,10 @@ namespace NSWasm
             m_pDataCur += sizeof(BYTE);
             m_lSizeCur += sizeof(BYTE);
         }
-        void WriteBYTE(BYTE value, size_t pos)
-        {
-            if (pos < m_lSizeCur)
-                memcpy(m_pData + pos, &value, sizeof(BYTE));
-        }
         void WriteDouble(double value)
         {
-			int nV = value * 10000;
-			AddInt(nV);
+            int nV = value * 10000;
+            AddInt(nV);
         }
         void WriteDouble2(double value)
         {
@@ -146,7 +141,7 @@ namespace NSWasm
             m_pDataCur += len;
             m_lSizeCur += len;
         }
-        void WriteString(std::string sStr)
+        void WriteString(const std::string& sStr)
         {
             WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
         }

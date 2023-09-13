@@ -439,6 +439,28 @@ void CFormFieldInfo::SetType(int nType)
 	m_nType = nType;
 }
 // Common
+void CFormFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	m_dX1 = dX;
+	m_dY1 = dY;
+	m_dX2 = dW + dX;
+	m_dY2 = dH + dY;
+}
+void CFormFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
+{
+	dX = m_dX1;
+	dY = m_dY1;
+	dW = m_dX2 - m_dX1;
+	dH = m_dY2 - m_dY1;
+}
+void CFormFieldInfo::SetBaseLineOffset(const double& dOffset)
+{
+	m_dBaseLineOffset = dOffset;
+}
+double CFormFieldInfo::GetBaseLineOffset() const
+{
+	return m_dBaseLineOffset;
+}
 void CFormFieldInfo::SetKey(const std::wstring& wsKey)
 {
 	m_wsKey = wsKey;
@@ -470,20 +492,6 @@ void CFormFieldInfo::SetPlaceHolder(const bool& bPlaceHolder)
 bool CFormFieldInfo::IsPlaceHolder() const
 {
 	return m_bPlaceHolder;
-}
-void CFormFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
-{
-	m_dX1 = dX;
-	m_dY1 = dY;
-	m_dX2 = dW + dX;
-	m_dY2 = dH + dY;
-}
-void CFormFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
-{
-	dX = m_dX1;
-	dY = m_dY1;
-	dW = m_dX2 - m_dX1;
-	dH = m_dY2 - m_dY1;
 }
 void CFormFieldInfo::SetBorder(const int& nType, const double& dSize, const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA)
 {

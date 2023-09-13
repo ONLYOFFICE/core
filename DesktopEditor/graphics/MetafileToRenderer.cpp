@@ -1800,7 +1800,6 @@ namespace NSOnlineOfficeBinToPdf
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
 				break;
-				break;
 			}
 			case ctDocInfo:
 			{

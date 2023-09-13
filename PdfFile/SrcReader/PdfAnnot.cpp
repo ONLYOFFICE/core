@@ -2087,7 +2087,7 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	oRes.AddInt(m_unAnnotFlag);
 	oRes.AddInt(m_unPage);
 	for (int i = 0; i < 4; ++i)
-		oRes.WriteSDouble(m_pRect[i]);
+		oRes.WriteDouble(m_pRect[i]);
 	oRes.AddInt(m_unAFlags);
 	if (m_unAFlags & (1 << 0))
 		oRes.WriteString(m_sNM);
@@ -2440,7 +2440,7 @@ void CAnnotTextMarkup::ToWASM(NSWasm::CData& oRes)
 
 	oRes.AddInt((unsigned int)m_arrQuadPoints.size());
 	for (int i = 0; i < m_arrQuadPoints.size(); ++i)
-		oRes.AddSDouble(m_arrQuadPoints[i]);
+		oRes.AddDouble(m_arrQuadPoints[i]);
 }
 
 void CAnnotSquareCircle::ToWASM(NSWasm::CData& oRes)

@@ -227,14 +227,6 @@ unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
 }
-int READ_SIGNED_INT(BYTE* x)
-{
-	bool bNegative = READ_BYTE(x) == 0;
-	int nRes = READ_INT(x + 1);
-	if (bNegative)
-		nRes = -nRes;
-	return nRes;
-}
 
 void ReadAction(BYTE* pWidgets, int& i)
 {
@@ -388,20 +380,20 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 	i += 4;
 	std::cout << "Page " << nPathLength << ", ";
 
-	nPathLength = READ_SIGNED_INT(pWidgets + i);
-	i += 5;
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
 	std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_SIGNED_INT(pWidgets + i);
-	i += 5;
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
 	std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_SIGNED_INT(pWidgets + i);
-	i += 5;
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
 	std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
 
-	nPathLength = READ_SIGNED_INT(pWidgets + i);
-	i += 5;
+	nPathLength = READ_INT(pWidgets + i);
+	i += 4;
 	std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
 
 	nPathLength = READ_INT(pWidgets + i);
@@ -1816,8 +1808,8 @@ int main(int argc, char* argv[])
 
 				for (int j = 0; j < nQuadPointsLength; ++j)
 				{
-					nPathLength = READ_SIGNED_INT(pAnnots + i);
-					i += 5;
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
 					std::cout << " " << (double)nPathLength / 100.0;
 				}
 				std::cout << ", ";

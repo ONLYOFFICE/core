@@ -77,11 +77,6 @@ namespace NSWasm
             m_pDataCur += 4;
             m_lSizeCur += 4;
         }
-		void AddSInt(int value)
-		{
-			WriteBYTE(value < 0 ? 0 : 1);
-			AddInt(value < 0 ? -value : value);
-		}
         void AddInt(unsigned int value, size_t pos)
         {
             if (pos < m_lSizeCur)
@@ -90,12 +85,9 @@ namespace NSWasm
         void AddDouble(double value)
         {
             // такой точности хватит
-            AddInt(value * 100);
+			int nV = value * 100;
+			AddInt(nV);
         }
-		void AddSDouble(double value)
-		{
-			AddSInt(value * 100);
-		}
         void WriteBYTE(BYTE value)
         {
             AddSize(sizeof(BYTE));
@@ -110,12 +102,9 @@ namespace NSWasm
         }
         void WriteDouble(double value)
         {
-            AddInt(value * 10000);
+			int nV = value * 10000;
+			AddInt(nV);
         }
-		void WriteSDouble(double value)
-		{
-			AddSInt(value * 10000);
-		}
         void WriteDouble2(double value)
         {
             SHORT lValue = (SHORT)(value * 100);

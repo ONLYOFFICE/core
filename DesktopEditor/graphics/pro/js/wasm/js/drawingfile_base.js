@@ -73,25 +73,13 @@
 		this.pos += 4;
 		return val;
 	};
-	CBinaryReader.prototype.readSInt = function()
-	{
-		let negative = (this.readByte() == 0);
-		let val = this.readInt();
-		if (negative)
-			val = -val;
-		return val;
-	};
 	CBinaryReader.prototype.readDouble = function()
 	{
 		return this.readInt() / 100;
 	};
-	CBinaryReader.prototype.readSDouble = function()
+	CBinaryReader.prototype.readDouble2 = function()
 	{
-		return this.readSInt() / 100;
-	};
-	CBinaryReader.prototype.readSDouble2 = function()
-	{
-		return this.readSInt() / 10000;
+		return this.readInt() / 10000;
 	};
 	CBinaryReader.prototype.readString = function()
 	{
@@ -530,10 +518,10 @@
 		rec["page"] = reader.readInt();
 		// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 		rec["rect"] = {};
-		rec["rect"]["x1"] = reader.readSDouble2();
-		rec["rect"]["y1"] = reader.readSDouble2();
-		rec["rect"]["x2"] = reader.readSDouble2();
-		rec["rect"]["y2"] = reader.readSDouble2();
+		rec["rect"]["x1"] = reader.readDouble2();
+		rec["rect"]["y1"] = reader.readDouble2();
+		rec["rect"]["x2"] = reader.readDouble2();
+		rec["rect"]["y2"] = reader.readDouble2();
 		let flags = reader.readInt();
 		// Уникальное имя - NM
 		if (flags & (1 << 0))
@@ -1122,7 +1110,7 @@
 				let n = reader.readInt();
 				rec["QuadPoints"] = [];
 				for (let i = 0; i < n; ++i)
-					rec["QuadPoints"].push(reader.readSDouble());
+					rec["QuadPoints"].push(reader.readDouble());
 			}
 			// Square, Circle
 			else if (rec["Type"] == 4 || rec["Type"] == 5)

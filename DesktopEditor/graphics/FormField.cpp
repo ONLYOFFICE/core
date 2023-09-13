@@ -414,12 +414,12 @@ const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetFormat() const
 //
 CFormFieldInfo::CFormFieldInfo()
 {
+	m_dBaseLineOffset = 0;
+
 	m_bRequired    = false;
 	m_bPlaceHolder = false;
 
 	m_nBorderType = 0;
-
-	m_dBaseLineOffset = 0;
 
 	// 0 - Right
 	// 1 - Left

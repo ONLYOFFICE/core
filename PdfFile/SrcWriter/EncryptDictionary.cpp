@@ -217,8 +217,8 @@ namespace PdfWriter
         pXref->Add(this);
 
         Add("Type", "Sig");
-		Add("Filter", "Adobe.PPKLite");
-		Add("SubFilter", "adbe.pkcs7.detached");
+        Add("Filter", "Adobe.PPKLite");
+        Add("SubFilter", "adbe.pkcs7.detached");
 
         unsigned int unDigestLength = 15000;
         BYTE* pDigest = new BYTE[unDigestLength];
@@ -322,9 +322,9 @@ namespace PdfWriter
                 return;
             }
 
-			BYTE* pDatatoWrite = NULL;
+            BYTE* pDatatoWrite = NULL;
             unsigned int dwLenDatatoWrite;
-			m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
+            m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
             RELEASEARRAYOBJECTS(pDataForSignature);
             if (!pDatatoWrite)
                 return;
@@ -370,6 +370,6 @@ namespace PdfWriter
         // M - Дата, Время подписания
         // Значение следует использовать когда время подписания недоступно в подписи
 
-		Add("M", new CStringObject(DateNow().c_str()));
+        Add("M", new CStringObject(DateNow().c_str()));
     }
 }

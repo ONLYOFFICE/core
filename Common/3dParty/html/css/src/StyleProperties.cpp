@@ -392,9 +392,10 @@ namespace NSCSS
 
 	std::wstring CColor::ConvertRGBtoHEX(const TRGB &oValue)
 	{
-		wchar_t arTemp[7];
+		const int tempLen = 7;
+		wchar_t arTemp[tempLen];
 
-		swprintf(arTemp, sizeof(arTemp), L"%02X%02X%02X", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
+		swprintf(arTemp, tempLen, L"%02X%02X%02X", oValue.uchRed, oValue.uchGreen, oValue.uchBlue);
 
 		return std::wstring(arTemp, 6);
 	}
@@ -1231,6 +1232,9 @@ namespace NSCSS
 	{
 		if (wsValue.empty())
 			return false;
+			
+		if (L"none" == wsValue)
+			return true;
 
 		const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 		for (const std::wstring& sValue : arValues)
@@ -1965,13 +1969,7 @@ namespace NSCSS
 
 	bool CFont::SetLineHeight(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (m_oLineHeight.SetValue(wsValue, unLevel, bHardMode))
-		{
-			m_oLineHeight *= 10.;
-			return true;
-		}
-
-		return false;
+		return m_oLineHeight.SetValue(wsValue, unLevel, bHardMode);
 	}
 
 	bool CFont::SetFamily(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -2212,8 +2210,25 @@ namespace NSCSS
 
 	bool CColorValue::operator==(const CColorValue &oColorValue) const
 	{
-		return (m_enType == oColorValue.m_enType) && ((ColorEmpty == m_enType) || (ColorNone == m_enType) ||
-		                                              (ColorRGB == m_enType && *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor)) || ((ColorHEX == m_enType || ColorUrl == m_enType) && *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor)));
+		if (m_enType != oColorValue.m_enType)
+			return false;
+
+		if (ColorEmpty == m_enType ||
+		    ColorNone == m_enType)
+			return true;
+
+		switch (m_enType)
+		{
+		case ColorRGB:
+			return *static_cast<TRGB*>(m_pColor) == *static_cast<TRGB*>(oColorValue.m_pColor);
+		case ColorHEX:
+		case ColorUrl:
+			return *static_cast<std::wstring*>(m_pColor) == *static_cast<std::wstring*>(oColorValue.m_pColor);
+		default:
+			break;
+		}
+
+		return false;
 	}
 
 	CColorValue &CColorValue::operator=(const CColorValue &oColorValue)

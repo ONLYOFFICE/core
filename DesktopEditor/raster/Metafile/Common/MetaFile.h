@@ -75,7 +75,6 @@ namespace MetaFile
 		virtual TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
-		virtual IClip*       GetClip() = 0;
 		virtual int          GetCharSpace() = 0;
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
@@ -120,7 +119,7 @@ namespace MetaFile
 
 			return true;
 		}
-		void          Close()
+		void Close()
 		{
 			if (!m_bIsExternalBuffer)
 				RELEASEARRAYOBJECTS(m_pBufferData);
@@ -131,7 +130,7 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		void          Scan()
+		void Scan()
 		{
 			IOutputDevice* pOutput = m_pOutput;
 			m_pOutput = NULL;
@@ -144,19 +143,19 @@ namespace MetaFile
 		{
 			return m_pFontManager;
 		}
-		void          SetFontManager(NSFonts::IFontManager* pFontManager)
+		void  SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
-		void          SetOutputDevice(IOutputDevice* pOutput)
+		void SetOutputDevice(IOutputDevice* pOutput)
 		{
 			m_pOutput = pOutput;
 		}
-		void          SetError()
+		void SetError()
 		{
 			m_bError = true;
 		}
-		bool          CheckError()
+		bool CheckError()
 		{
 			return m_bError;
 		}

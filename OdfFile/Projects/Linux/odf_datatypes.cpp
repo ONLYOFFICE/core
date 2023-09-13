@@ -140,3 +140,5 @@
 #include "../../DataTypes/stylecellprotect.cpp"
 #include "../../DataTypes/mathvariant.cpp"
 #include "../../DataTypes/sparklines.cpp"
+#include "../../DataTypes/tabledatatype.cpp"
+#include "../../DataTypes/tableoperator.cpp"

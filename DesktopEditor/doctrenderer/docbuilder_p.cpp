@@ -1414,7 +1414,7 @@ namespace NSDoctRenderer
 					bIsNoError = (0 == this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str()));
 				else if ("CreateFile" == sFuncNum)
 				{
-					if (L"docx" == _builder_params[0])
+					if (L"docx" == _builder_params[0] || L"docxf" == _builder_params[0] || L"oform" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 					else if (L"pptx" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
@@ -1511,6 +1511,10 @@ namespace NSDoctRenderer
 		else if (sParam == "--fonts-dir")
 		{
 			m_pInternal->m_oParams.m_arFontDirs.push_back(std::wstring(value));
+		}
+		else if (sParam == "--options")
+		{
+			NSProcessEnv::Load(std::wstring(value));
 		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)

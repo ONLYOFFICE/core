@@ -287,7 +287,6 @@ SOURCES += \
 core_debug {
 SOURCES += \
 	../../../PptFile/Enums/RecordType.cpp \
-	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Reader/ReadStructures.cpp \
 	../../../PptFile/Reader/RoundTripExtractor.cpp \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.cpp \

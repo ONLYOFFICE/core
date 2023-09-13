@@ -56,7 +56,8 @@ public:
 	_CP_OPT(odf_types::color) axis_color_;
 	_CP_OPT(odf_types::color) positive_color_;
 	_CP_OPT(odf_types::color) negative_color_;
-	_CP_OPT(int) max_length_;
+    _CP_OPT(std::wstring)     axis_position_;
+    _CP_OPT(int) max_length_;
 	_CP_OPT(int) min_length_;
 };
 
@@ -165,6 +166,7 @@ public:
 
 	_CP_OPT(std::wstring) value_;
 	_CP_OPT(odf_types::calcext_type) type_;
+    _CP_OPT(bool)  show_value_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);

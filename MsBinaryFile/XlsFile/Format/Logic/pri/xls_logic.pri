@@ -642,6 +642,8 @@ SOURCES +=  \
         $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqrefs.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/RelID.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxOs.cpp \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxSu.cpp \
         \
 	$$LOGIC_DIR/Biff_unions/AI.cpp \
 	$$LOGIC_DIR/Biff_unions/ATTACHEDLABEL_bu.cpp \
@@ -1128,6 +1130,8 @@ HEADERS +=  \
         $$LOGIC_DIR/Biff_structures/BIFF12/RelID.h \
         $$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.h \
         $$LOGIC_DIR/Biff_structures/BIFF12/XLWideString.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxOs.h \
+        $$LOGIC_DIR/Biff_structures/BIFF12/SxSu.h \
 	$$LOGIC_DIR/Biff_structures/AddinUdf.h \
 	$$LOGIC_DIR/Biff_structures/AF12Criteria.h \
 	$$LOGIC_DIR/Biff_structures/AF12CellIcon.h \

@@ -30,11 +30,11 @@
  *
  */
 
-#include "cextracttools.h"
-#include "ASCConverters.h"
-#include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../DesktopEditor/common/StringExt.h"
 #include "../../Common/3dParty/misc/proclimits.h"
+#include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
+#include "ASCConverters.h"
+#include "cextracttools.h"
 
 #include <iostream>
 
@@ -43,57 +43,57 @@
 
 using namespace NExtractTools;
 
-#if !defined(_WIN32) && !defined (_WIN64)
+#if !defined(_WIN32) && !defined(_WIN64)
 static std::wstring utf8_to_unicode(const char *src)
 {
-    return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)src, (LONG)strlen(src));
+	return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE *)src, (LONG)strlen(src));
 }
 #endif
 
 #ifdef BUILD_X2T_AS_LIBRARY_DYLIB
-#if !defined(_WIN32) && !defined (_WIN64)
-    int main_lib(int argc, char *argv[])
+#if !defined(_WIN32) && !defined(_WIN64)
+int main_lib(int argc, char *argv[])
 #else
-    int wmain_lib(int argc, wchar_t *argv[])
+int wmain_lib(int argc, wchar_t *argv[])
 #endif
 #endif
 #ifndef BUILD_X2T_AS_LIBRARY_DYLIB
-#if !defined(_WIN32) && !defined (_WIN64)
+#if !defined(_WIN32) && !defined(_WIN64)
 	int main(int argc, char *argv[])
 #else
 	int wmain(int argc, wchar_t *argv[])
 #endif
 #endif
 {
-//#define __CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-//#define new DEBUG_NEW
-		
-// check arguments
-    if (argc < 2)
-    {
-        // print out help topic
+	// #define __CRTDBG_MAP_ALLOC
+	// #include <crtdbg.h>
+	// #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+	// #define new DEBUG_NEW
+
+	// check arguments
+	if (argc < 2)
+	{
+		// print out help topic
 
 		std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << "-------------------------------------------------------------------------------" << std::endl;
-        std::cout << "\t\tOOX/binary file converter. Version: " VALUE(INTVER)  << std::endl;
-        std::cout << "-------------------------------------------------------------------------------" << std::endl;
-        std::cout << std::endl;
+		std::cout << std::endl;
+		std::cout << "-------------------------------------------------------------------------------" << std::endl;
+		std::cout << "\t\tOOX/binary file converter. Version: " VALUE(INTVER) << std::endl;
+		std::cout << "-------------------------------------------------------------------------------" << std::endl;
+		std::cout << std::endl;
 		std::cout << "USAGE: x2t \"path_to_params_xml\"" << std::endl;
 		std::cout << "or" << std::endl;
-        std::cout << "USAGE: x2t \"path_to_file_1\" \"path_to_file_2\" [\"path_to_font_selection\"]" << std::endl;
-        std::cout << "WHERE:" << std::endl;
-        std::cout << "\t\"path_to_file_1\" is a path to file to be converted" << std::endl;
-        std::cout << "\t\"path_to_file_2\" is a path to the corresponding output file" << std::endl;
-        std::cout << "\t\"path_to_font_selection\" is a path to 'font_selection.bin' location" << std::endl << std::endl;
-        std::cout << "NOTE: conversion direction will be calculated from file extensions" << std::endl << std::endl;
+		std::cout << "USAGE: x2t \"path_to_file_1\" \"path_to_file_2\" [\"path_to_font_selection\"]" << std::endl;
+		std::cout << "WHERE:" << std::endl;
+		std::cout << "\t\"path_to_file_1\" is a path to file to be converted" << std::endl;
+		std::cout << "\t\"path_to_file_2\" is a path to the corresponding output file" << std::endl;
+		std::cout << "\t\"path_to_font_selection\" is a path to 'font_selection.bin' location" << std::endl << std::endl;
+		std::cout << "NOTE: conversion direction will be calculated from file extensions" << std::endl << std::endl;
 
-        return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
-    }
+		return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
+	}
 
-	//set memory limit
+	// set memory limit
 	std::wstring sMemoryLimit = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMemoryLimit);
 	if (sMemoryLimit.empty())
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
@@ -105,19 +105,21 @@ static std::wstring utf8_to_unicode(const char *src)
 #endif
 	std::wstring sArg1, sArg2, sExePath;
 
-#if !defined(_WIN32) && !defined (_WIN64)
-    sExePath    = utf8_to_unicode(argv [0]);
-    sArg1       = utf8_to_unicode(argv [1]);
-    if (argc >= 3) sArg2   = utf8_to_unicode(argv [2]);
+#if !defined(_WIN32) && !defined(_WIN64)
+	sExePath = utf8_to_unicode(argv[0]);
+	sArg1 = utf8_to_unicode(argv[1]);
+	if (argc >= 3)
+		sArg2 = utf8_to_unicode(argv[2]);
 #else
-	sExePath	= std::wstring(argv [0]);
-    sArg1		= std::wstring(argv [1]);
-	if (argc >= 3) sArg2 = std::wstring(argv [2]);
+	sExePath = std::wstring(argv[0]);
+	sArg1 = std::wstring(argv[1]);
+	if (argc >= 3)
+		sArg2 = std::wstring(argv[2]);
 #endif
 
 	_UINT32 result = 0;
-    std::wstring sXmlExt = _T(".xml");
-    if((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
+	std::wstring sXmlExt = _T(".xml");
+	if ((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
 	{
 		NExtractTools::InputParams oInputParams;
 		if (oInputParams.FromXmlFile(sArg1) && (sArg2.empty() || oInputParams.FromXml(sArg2)))
@@ -133,20 +135,26 @@ static std::wstring utf8_to_unicode(const char *src)
 	{
 		std::wstring sArg3, sArg4, sArg5;
 
-#if !defined(_WIN32) && !defined (_WIN64)
-        if (argc >= 4) sArg3   = utf8_to_unicode(argv [3]);
-        if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
-        if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
+#if !defined(_WIN32) && !defined(_WIN64)
+		if (argc >= 4)
+			sArg3 = utf8_to_unicode(argv[3]);
+		if (argc >= 5)
+			sArg4 = utf8_to_unicode(argv[4]);
+		if (argc >= 6)
+			sArg5 = utf8_to_unicode(argv[5]);
 #else
-		if (argc >= 4) sArg3 = std::wstring(argv [3]);
-		if (argc >= 5) sArg4 = std::wstring(argv [4]);
-		if (argc >= 6) sArg5 = std::wstring(argv [5]);
+		if (argc >= 4)
+			sArg3 = std::wstring(argv[3]);
+		if (argc >= 5)
+			sArg4 = std::wstring(argv[4]);
+		if (argc >= 6)
+			sArg5 = std::wstring(argv[5]);
 #endif
 		if (sArg1 == L"-detectmacro")
 		{
 			InputParams oInputParams;
-			oInputParams.m_sFileFrom	= new std::wstring(sArg2);
-			
+			oInputParams.m_sFileFrom = new std::wstring(sArg2);
+
 			result = NExtractTools::detectMacroInFile(oInputParams);
 		}
 		else if (sArg1 == L"-create-js-cache")
@@ -157,8 +165,8 @@ static std::wstring utf8_to_unicode(const char *src)
 		else
 		{
 			InputParams oInputParams;
-			oInputParams.m_sFileFrom	= new std::wstring(sArg1);
-			oInputParams.m_sFileTo		= new std::wstring(sArg2);
+			oInputParams.m_sFileFrom = new std::wstring(sArg1);
+			oInputParams.m_sFileTo = new std::wstring(sArg2);
 
 			if (argc > 3)
 			{
@@ -172,6 +180,6 @@ static std::wstring utf8_to_unicode(const char *src)
 			result = NExtractTools::fromInputParams(oInputParams);
 		}
 	}
-	//_CrtDumpMemoryLeaks(); 
+	//_CrtDumpMemoryLeaks();
 	return getReturnErrorCode(result);
 }

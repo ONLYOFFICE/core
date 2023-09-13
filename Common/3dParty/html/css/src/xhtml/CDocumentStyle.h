@@ -25,6 +25,10 @@ namespace NSCSS
 
 	class CSSCALCULATOR_EXPORT CDocumentStyle
 	{
+		typedef NSConstValues::NSProperties::BasicProperties     BProperties;
+		typedef NSConstValues::NSProperties::ParagraphProperties PProperties;
+		typedef NSConstValues::NSProperties::RunnerProperties    RProperties;
+	
 		std::list<std::wstring> m_arStandardStylesUsed;
 		std::list<std::wstring> m_arStandardStyles;
 		std::list<CStyleUsed>   m_arStyleUsed;

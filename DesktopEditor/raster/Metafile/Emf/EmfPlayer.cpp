@@ -37,15 +37,15 @@
 namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)
+	    : m_pParser(pParser)
 	{
 		m_pDC = new CEmfDC(this);
+
 		if (!m_pDC)
 		{
-			pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
-
-		m_pParser = pParser;
 
 		InitStockObjects();
 	};
@@ -88,7 +88,7 @@ namespace MetaFile
 		m_pDC = new CEmfDC(this);
 		if (!m_pDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
@@ -102,14 +102,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
 		CEmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pParser->SetError();
+			if (NULL != m_pParser) m_pParser->SetError();
 			return;
 		}
 
@@ -140,7 +140,7 @@ namespace MetaFile
 		{
 			if (m_mDCs.empty() || m_mDCs.begin()->first > nIndex)
 			{
-				m_pParser->SetError();
+				if (NULL != m_pParser) m_pParser->SetError();
 				return;
 			}
 
@@ -161,7 +161,7 @@ namespace MetaFile
 				m_pDC = oFound->second;
 				m_mDCs.erase(oFound);
 			}
-			else
+			else if (NULL != m_pParser)
 				m_pParser->SetError();
 		}
 	}
@@ -368,7 +368,6 @@ namespace MetaFile
 		pNewDC->m_oWindow.Copy(&m_oWindow);
 		pNewDC->m_oViewport.Copy(&m_oViewport);
 		pNewDC->m_oCurPos        = m_oCurPos;
-		pNewDC->m_oClip          = m_oClip;
 		pNewDC->m_unArcDirection = m_unArcDirection;
 
 		return pNewDC;
@@ -773,14 +772,6 @@ namespace MetaFile
 	TEmfPointL& CEmfDC::GetCurPos()
 	{
 		return m_oCurPos;
-	}
-	CEmfClip* CEmfDC::GetClip()
-	{
-		return &m_oClip;
-	}
-	void CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform)
-	{
-		m_oClip.SetPath(pPath, unMode, pTransform);
 	}
 	void CEmfDC::SetArcDirection(unsigned int unDirection)
 	{

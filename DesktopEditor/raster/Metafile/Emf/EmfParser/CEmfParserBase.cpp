@@ -753,15 +753,6 @@ namespace MetaFile
 		return m_pDC->GetRop2Mode();
 	}
 
-	IClip *CEmfParserBase::GetClip()
-	{
-		CEmfClip* pClip = m_pDC->GetClip();
-		if (!pClip)
-			return NULL;
-
-		return (IClip*)pClip;
-	}
-
 	int CEmfParserBase::GetCharSpace()
 	{
 		return 0;
@@ -1317,14 +1308,15 @@ namespace MetaFile
 	void CEmfParserBase::HANDLE_EMR_SELECTCLIPPATH(unsigned int &unRegionMode)
 	{
 		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
-
-		if (m_pPath)
 		{
-			m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
-			RELEASEOBJECT(m_pPath);
-
-			UpdateOutputDC();
+			m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
+		
+			if (NULL != m_pPath)
+			{
+				m_pInterpretator->PathClip(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
+				RELEASEOBJECT(m_pPath);
+				UpdateOutputDC();
+			}
 		}
 	}
 
@@ -1339,9 +1331,6 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_EXCLUDECLIPRECT(TEmfRectL &oClip)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
-
 		TRectD oClipRect, oBB;
 
 		// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
@@ -1375,28 +1364,33 @@ namespace MetaFile
 		TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
 		TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
 
-		m_pDC->GetClip()->Exclude(oClipRect, oBB);
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
+			m_pInterpretator->ExcludeClip(oClipRect, oBB);
+		}
 		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_EXTSELECTCLIPRGN(unsigned int &unRgnDataSize, unsigned int &unRegionMode)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
-
-		m_oStream.Skip(m_ulRecordSize - 8);
-
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 		// текущим интерфейсом рендерера невозможно.
-		m_pDC->GetClip()->Reset();
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
+			m_pInterpretator->ResetClip();
+		}
+		m_oStream.Skip(m_ulRecordSize - 8);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETMETARGN()
 	{
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->HANDLE_EMR_SETMETARGN();
-
-		m_pDC->GetClip()->Reset();
+			m_pInterpretator->ResetClip();
+		}
 		UpdateOutputDC();
 	}
 
@@ -1434,13 +1428,15 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_INTERSECTCLIPRECT(TEmfRectL &oClip)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
-
 		TRectD oClipRect;
 		TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
 		TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
-		m_pDC->GetClip()->Intersect(oClipRect);
+		
+		if (NULL != m_pInterpretator)
+		{
+			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
+			m_pInterpretator->IntersectClip(oClipRect);
+		}
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETLAYOUT(unsigned int &unLayoutMode)

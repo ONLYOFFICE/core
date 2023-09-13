@@ -1401,55 +1401,67 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);
 
-		if (oox_grad_fill->GsLst.size() > 1)
+		bool bOpacity = false;
+		std::vector<std::wstring> hexColors;
+		std::vector<_CP_OPT(double)> opacities;
+
+		for (size_t i = 0; i < oox_grad_fill->GsLst.size(); ++i)
 		{
-			std::wstring hexColorStart, hexColorEnd;
-			_CP_OPT(double) opacityStart, opacityEnd;
+			hexColors.emplace_back();
+			opacities.emplace_back();
 			
-            convert(&oox_grad_fill->GsLst[0].color, hexColorEnd, opacityEnd, nARGB);
-            convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() - 1].color, hexColorStart, opacityStart, nARGB);
+			convert(&oox_grad_fill->GsLst[i].color, hexColors.back(), opacities.back(), nARGB);
+			if (opacities.back())
+				bOpacity = true;
 
-			if (hexColorEnd == hexColorStart && opacityEnd == opacityStart && oox_grad_fill->GsLst.size() > 2)
+			odf_context()->drawing_context()->set_gradient_stop(hexColors.back(), oox_grad_fill->GsLst[i].pos);
+		}	
+		std::reverse(hexColors.begin(), hexColors.end());
+		std::reverse(opacities.begin(), opacities.end());
+
+		if (hexColors.size() > 0)
+			odf_context()->drawing_context()->set_gradient_start(hexColors[0], opacities[0]);
+		if (hexColors.size() > 1)
+			odf_context()->drawing_context()->set_gradient_end	(hexColors[hexColors.size() - 1], opacities[opacities.size() - 1]);
+
+		odf_context()->drawing_context()->end_gradient_style();
+
+		if (bOpacity && opacities.size() > 1)
+		{
+			if (!opacities[0])	opacities[0] = 100;
+			if (!opacities[opacities.size() - 1]) opacities[opacities.size() - 1] = 100;
+
+			if (*opacities[0] == *opacities[opacities.size() - 1] && opacities.size() < 3)
 			{
-				convert(&oox_grad_fill->GsLst[oox_grad_fill->GsLst.size() / 2].color, hexColorStart, opacityStart, nARGB);
+				odf_context()->drawing_context()->set_opacity(*opacities[0]);
 			}
-			
-			odf_context()->drawing_context()->set_gradient_start(hexColorStart, opacityStart);
-			odf_context()->drawing_context()->set_gradient_end	(hexColorEnd,	opacityEnd);
-
-			if (opacityStart || opacityEnd)
+			else
 			{
-				if (!opacityStart)	opacityStart = 100;
-				if (!opacityEnd)	opacityEnd = 100;
-				
-				if (*opacityStart == *opacityEnd)
-				{
-					odf_context()->drawing_context()->set_opacity(*opacityStart);
-				}
-				else
-				{
-					odf_context()->drawing_context()->start_opacity_style();
-						odf_context()->drawing_context()->set_opacity_type	(grad_style);
-						odf_context()->drawing_context()->set_opacity_start	(*opacityStart);
-						odf_context()->drawing_context()->set_opacity_end	(*opacityEnd);
-						
-						if (oox_grad_fill->lin.is_init())
-						{
-							odf_context()->drawing_context()->set_opacity_angle(oox_grad_fill->lin->ang.get()/60000.);
-						}
-						else if (oox_grad_fill->path.is_init() && oox_grad_fill->path->rect.is_init())
-						{
-							odf_context()->drawing_context()->set_opacity_rect ( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
-																				 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),
-																				 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")),
-																				 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")));
-						}
-					odf_context()->drawing_context()->end_opacity_style();
-				}
+				odf_context()->drawing_context()->start_opacity_style();
+					odf_context()->drawing_context()->set_opacity_type(grad_style);
+					odf_context()->drawing_context()->set_opacity_start(*opacities[0]);
+					odf_context()->drawing_context()->set_opacity_end(*opacities[opacities.size() - 1]);
+
+					for (size_t i = 0; i < oox_grad_fill->GsLst.size(); ++i)
+					{
+						odf_context()->drawing_context()->set_opacity_stop(opacities[i], oox_grad_fill->GsLst[i].pos);
+					}
+
+					if (oox_grad_fill->lin.is_init())
+					{
+						odf_context()->drawing_context()->set_opacity_angle(oox_grad_fill->lin->ang.get() / 60000.);
+					}
+					else if (oox_grad_fill->path.is_init() && oox_grad_fill->path->rect.is_init())
+					{
+						odf_context()->drawing_context()->set_opacity_rect(XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
+							XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),
+							XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")),
+							XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")));
+					}
+				odf_context()->drawing_context()->end_opacity_style();
 			}
 		}
 	}
-	odf_context()->drawing_context()->end_gradient_style();
 
 }
 

@@ -467,6 +467,7 @@ namespace NSBinPptxRW
 			case _CXIMAGE_FORMAT_PNG:
 			case _CXIMAGE_FORMAT_WMF:
 			case _CXIMAGE_FORMAT_EMF:
+			case _CXIMAGE_FORMAT_GIF:
 			{
 				oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 

@@ -31,6 +31,7 @@
  */
 
 #include "FileTransporter_private.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
 
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
@@ -442,19 +443,17 @@ namespace NSNetwork
 			};
 
 
-			bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
+			bool DownloadFilePS(const std::wstring& sFileURLOriginal, const std::wstring& strFileOutput)
 			{
 				STARTUPINFO sturtupinfo;
 				ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
 				sturtupinfo.cb = sizeof(STARTUPINFO);
 
 				std::wstring sFileDst = strFileOutput;
-				size_t posn = 0;
-				while (std::wstring::npos != (posn = sFileDst.find('\\', posn)))
-				{
-					sFileDst.replace(posn, 1, L"/");
-					posn += 1;
-				}
+				std::wstring sFileURL = sFileURLOriginal;
+
+				NSStringExt::Replace(sFileDst, L"\\", L"/");
+				NSStringExt::Replace(sFileURL, L"'", L"%27");
 
 				std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
 				wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];

@@ -118,10 +118,15 @@ public:
 	void dump_rels_ole_objects	(rels & Rels);
 
 	bool start_database_range(const std::wstring &table_name, const std::wstring &ref, bool bNamedRangeOnly);
-		void set_database_orientation	(bool val);
-		void set_database_header		(bool val);
-		void set_database_filter		(bool val);
-		void add_database_sort	(int field_number, int order);
+		void set_database_orientation (bool val);
+		void set_database_header (bool val);
+		void set_database_filter_button(bool val);
+		void add_database_filter_conditional(int field_number, int type, const std::wstring & value, int operator_);
+		void add_database_sort	(int field_number, int order, int type);
+		void start_filters_or();
+		void start_filters_and();
+		void end_filters_or();
+		void end_filters_and();
 	void end_database_range();
 		
 	int in_database_range();

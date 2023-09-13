@@ -57,7 +57,7 @@ CRecordShapeProgBinaryTagSubContainerOrAtom *CRecordOfficeArtClientData::getProg
 {
     for (auto* progtag : m_rgShapeClientRoundtripData)
     {
-        if (progtag->m_pTagName->m_strText == tagname)
+        if ((progtag->m_pTagName) && (progtag->m_pTagName->m_strText == tagname))
             return progtag;
     }
 

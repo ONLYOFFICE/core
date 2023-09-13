@@ -250,46 +250,51 @@ namespace PPTX
 			std::wstring sProgID = m_sProgId.get_value_or(L"");
 
 			//test xls ole_file for convert to xlsx
-
-			COfficeFileFormatChecker checker;
-			if (ole_file.IsInit() && (checker.isXlsFormatFile(ole_file->filename().GetPath()) ||
-				checker.isDocFormatFile(ole_file->filename().GetPath())))
+			if (ole_file.IsInit())
 			{
-				std::wstring sTemp = ole_file->filename().GetDirectory();
-				
-				std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
-				NSDirectory::CreateDirectory(sResultOoxmlDir);
+				COfficeFileFormatChecker checker;
+				checker.isOfficeFile(ole_file->filename().GetPath());
 
-				bool bMacro = true;
-				_UINT32 nRes = 0;
-				std::wstring ooxml_file;
-
-				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)
+				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS ||
+					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
 				{
-					nRes = ConvertXls2Xlsx(ole_file->filename().GetPath(), sResultOoxmlDir, L"", L"", sTemp, 0, bMacro);
+					std::wstring sTemp = ole_file->filename().GetDirectory();
 
-					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
-				}
-				else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
-				{
-					COfficeDocFile docFile;
-					docFile.m_sTempFolder = ole_file->filename().GetDirectory();
+					std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
+					NSDirectory::CreateDirectory(sResultOoxmlDir);
 
-					nRes = docFile.LoadFromFile(ole_file->filename().GetPath(), sResultOoxmlDir, L"", bMacro);
+					bool bMacro = true;
+					_UINT32 nRes = 0;
+					std::wstring ooxml_file;
 
-					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".docm" : L".docx");
-				}
-				if (0 == nRes)
-				{
-					COfficeUtils oCOfficeUtils(NULL);
-					nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, ooxml_file)) ? nRes : S_FALSE;
-				}
-				NSDirectory::DeleteDirectory(sResultOoxmlDir);
-				
-				if (0 == nRes && false == ooxml_file.empty())
-				{
-					ole_file->set_MsPackage(true);
-					ole_file->set_filename(ooxml_file, false);
+					if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)
+					{
+						nRes = ConvertXls2Xlsx(ole_file->filename().GetPath(), sResultOoxmlDir, L"", L"", sTemp, 0, bMacro);
+
+						ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
+					}
+					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+					{
+						COfficeDocFile docFile;
+						docFile.m_sTempFolder = ole_file->filename().GetDirectory();
+
+						nRes = docFile.LoadFromFile(ole_file->filename().GetPath(), sResultOoxmlDir, L"", bMacro);
+
+						ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".docm" : L".docx");
+					}
+
+					if (0 == nRes)
+					{
+						COfficeUtils oCOfficeUtils(NULL);
+						nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, ooxml_file)) ? nRes : S_FALSE;
+					}
+					NSDirectory::DeleteDirectory(sResultOoxmlDir);
+
+					if (0 == nRes && false == ooxml_file.empty())
+					{
+						ole_file->set_MsPackage(true);
+						ole_file->set_filename(ooxml_file, false);
+					}
 				}
 			}
 
@@ -731,7 +736,7 @@ namespace PPTX
 		}
 		OOX::EElementType COLEObject::getType () const
 		{
-			return OOX::et_pic;
+			return OOX::et_oleobject;
 		}
 
 		Pic::Pic(std::wstring ns)

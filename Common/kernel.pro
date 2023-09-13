@@ -87,6 +87,10 @@ SOURCES += ./../DesktopEditor/common/Directory.cpp
 HEADERS += ./../DesktopEditor/common/SystemUtils.h
 SOURCES += ./../DesktopEditor/common/SystemUtils.cpp
 
+# PROCESSENV
+HEADERS += ./../DesktopEditor/common/ProcessEnv.h
+SOURCES += ./../DesktopEditor/common/ProcessEnv.cpp
+
 core_windows {
     LIBS += -lRpcrt4
     LIBS += -lShell32

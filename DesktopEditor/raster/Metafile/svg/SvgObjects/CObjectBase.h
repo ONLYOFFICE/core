@@ -18,42 +18,9 @@ namespace SVG
 		SvgTransform m_oTransform;
 		TClip        m_oClip;
 		SvgColor     m_oMask;
-		bool         m_bDisplay;
+		bool         m_bDraw;
 
-		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles)
-		{
-			m_oTransform.SetMatrix(oSvgStyles.m_oTransform.GetMatrix().ToWString(), 0, false);
-
-			if (!oSvgStyles.m_oFill.Empty())
-				m_oFill.SetValue(L'#' + oSvgStyles.m_oFill.ToWString(), 0, false);
-
-			m_oFill.SetOpacity(std::to_wstring(oSvgStyles.m_oFill.GetOpacity()), 0, false);
-
-			if (!oSvgStyles.m_oStroke.m_oColor.Empty())
-				m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
-
-			m_oStroke.m_oWidth.SetValue(oSvgStyles.m_oStroke.m_oWidth.ToWString(), 0, false);
-
-			if (m_oStroke.m_arDash.empty() && !oSvgStyles.m_oStroke.m_arDash.empty())
-				m_oStroke.m_arDash = oSvgStyles.m_oStroke.m_arDash;
-
-			if (m_oStroke.m_oLineCap.Empty() && !oSvgStyles.m_oStroke.m_oLineCap.Empty())
-				m_oStroke.m_oLineCap = oSvgStyles.m_oStroke.m_oLineCap;
-
-			if (m_oStroke.m_oLineJoin.Empty() && !oSvgStyles.m_oStroke.m_oLineJoin.Empty())
-				m_oStroke.m_oLineJoin = oSvgStyles.m_oStroke.m_oLineJoin;
-
-			if (m_oClip.m_oHref.Empty() && !oSvgStyles.m_oClip.m_oHref.Empty())
-				m_oClip.m_oHref = oSvgStyles.m_oClip.m_oHref;
-
-			if (m_oClip.m_oRule.Empty() && !oSvgStyles.m_oClip.m_oRule.Empty())
-				m_oClip.m_oRule = oSvgStyles.m_oClip.m_oRule;
-
-			if (m_oMask.Empty() && !oSvgStyles.m_oMask.Empty() && NSCSS::NSProperties::ColorUrl == oSvgStyles.m_oMask.GetType())
-				m_oMask= oSvgStyles.m_oMask;
-
-			return *this;
-		}
+		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
 
 	enum ObjectType
@@ -132,7 +99,7 @@ namespace SVG
 		bool StartPath(IRenderer* pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw) const;
 		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
 
-		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const;
 
 		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
 		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;

@@ -3,6 +3,41 @@
 
 namespace SVG
 {
+	TSvgStyles &TSvgStyles::operator+=(const TSvgStyles &oSvgStyles)
+	{
+		m_oTransform.SetMatrix(oSvgStyles.m_oTransform.GetMatrix().ToWString(), 0, false);
+
+		if (!oSvgStyles.m_oFill.Empty())
+			m_oFill.SetValue(L'#' + oSvgStyles.m_oFill.ToWString(), 0, false);
+
+		m_oFill.SetOpacity(std::to_wstring(oSvgStyles.m_oFill.GetOpacity()), 0, false);
+
+		if (!oSvgStyles.m_oStroke.m_oColor.Empty())
+			m_oStroke.m_oColor.SetValue(L'#' + oSvgStyles.m_oStroke.m_oColor.ToWString(), 0, false);
+
+		m_oStroke.m_oWidth.SetValue(oSvgStyles.m_oStroke.m_oWidth.ToWString(), 0, false);
+
+		if (m_oStroke.m_arDash.empty() && !oSvgStyles.m_oStroke.m_arDash.empty())
+			m_oStroke.m_arDash = oSvgStyles.m_oStroke.m_arDash;
+
+		if (m_oStroke.m_oLineCap.Empty() && !oSvgStyles.m_oStroke.m_oLineCap.Empty())
+			m_oStroke.m_oLineCap = oSvgStyles.m_oStroke.m_oLineCap;
+
+		if (m_oStroke.m_oLineJoin.Empty() && !oSvgStyles.m_oStroke.m_oLineJoin.Empty())
+			m_oStroke.m_oLineJoin = oSvgStyles.m_oStroke.m_oLineJoin;
+
+		if (m_oClip.m_oHref.Empty() && !oSvgStyles.m_oClip.m_oHref.Empty())
+			m_oClip.m_oHref = oSvgStyles.m_oClip.m_oHref;
+
+		if (m_oClip.m_oRule.Empty() && !oSvgStyles.m_oClip.m_oRule.Empty())
+			m_oClip.m_oRule = oSvgStyles.m_oClip.m_oRule;
+
+		if (m_oMask.Empty() && !oSvgStyles.m_oMask.Empty() && NSCSS::NSProperties::ColorUrl == oSvgStyles.m_oMask.GetType())
+			m_oMask= oSvgStyles.m_oMask;
+
+		return *this;
+	}
+
 	CObject::CObject(const NSCSS::CNode &oData)
 		: m_oXmlNode(oData)
 	{}
@@ -22,17 +57,15 @@ namespace SVG
 		{
 			if (L"class" == arProperties[unIndex])
 			{
-                            m_oXmlNode.m_wsClass = arValues[unIndex];
-                            std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
+				m_oXmlNode.m_wsClass = arValues[unIndex];
+				std::transform(m_oXmlNode.m_wsClass.begin(), m_oXmlNode.m_wsClass.end(), m_oXmlNode.m_wsClass.begin(), std::towlower);
 			}
 			else if (L"id" == arProperties[unIndex])
-			{
 				m_oXmlNode.m_wsId = arValues[unIndex];
-			}
 			else if (L"style" == arProperties[unIndex])
-                            m_oXmlNode.m_wsStyle = arValues[unIndex];
+				m_oXmlNode.m_wsStyle = arValues[unIndex];
 			else
-                            m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
+				m_oXmlNode.m_mAttributes.insert({arProperties[unIndex], arValues[unIndex]});
 		}
 	}
 
@@ -105,7 +138,7 @@ namespace SVG
 
 		m_oStyles.m_oStroke.m_oMiterlimit = 4.;
 
-		m_oStyles.m_bDisplay = true;
+		m_oStyles.m_bDraw = true;
 	}
 
 	void CRenderedObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -118,6 +151,9 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-dasharray"))
 			m_oStyles.m_oStroke.m_arDash = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"stroke-dasharray"));
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-dashoffset"))
+			m_oStyles.m_oStroke.m_oDashOffset.SetValue(mAttributes.at(L"stroke-dashoffset"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-linecap"))
 			m_oStyles.m_oStroke.m_oLineCap.SetValue(mAttributes.at(L"stroke-linecap"), ushLevel, bHardMode);
@@ -173,19 +209,23 @@ namespace SVG
 
 	void CRenderedObject::SetDisplay(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (mAttributes.end() != mAttributes.find(L"display"))
-		{
-			const std::wstring wsDisplay = mAttributes.at(L"display");
+		std::wstring wsDisplay, wsVisibility;
 
-			if (!wsDisplay.empty()) m_oStyles.m_bDisplay = (L"none" == wsDisplay) ? false : true;
-		}
+		if (mAttributes.end() != mAttributes.find(L"display"))
+			wsDisplay = mAttributes.at(L"display");
+
+		if (mAttributes.end() != mAttributes.find(L"visibility"))
+			wsVisibility = mAttributes.at(L"visibility");
+
+		if (L"none" == wsDisplay || L"hidden" == wsVisibility || L"collapse" == wsVisibility)
+			m_oStyles.m_bDraw = false;
 		else
-			m_oStyles.m_bDisplay = true;
+			m_oStyles.m_bDraw = true;
 	}
 
 	bool CRenderedObject::StartPath(IRenderer *pRenderer, const CSvgFile *pFile, Aggplus::CMatrix &oOldTransform, CommandeMode oMode) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDisplay)
+		if (NULL == pRenderer || !m_oStyles.m_bDraw)
 			return false;
 
 		Apply(pRenderer, &m_oStyles.m_oTransform, oOldTransform);
@@ -242,6 +282,9 @@ namespace SVG
 
 		pRenderer->SetTransform(oOldTransform.sx(), oOldTransform.shy(), oOldTransform.shx(), oOldTransform.sy(), oOldTransform.tx(), oOldTransform.ty());
 	}
+
+	void CRenderedObject::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	{}
 
 	bool CRenderedObject::Apply(IRenderer *pRenderer, const TStroke *pStroke, bool bUseDefault) const
 	{

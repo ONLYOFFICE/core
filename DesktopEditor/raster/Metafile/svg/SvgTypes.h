@@ -24,6 +24,7 @@ namespace SVG
 		SvgColor m_oColor;
 		SvgDigit m_oWidth;
 		std::vector<double> m_arDash;
+		SvgDigit m_oDashOffset;
 		SvgEnum  m_oLineCap;
 		SvgEnum  m_oLineJoin;
 		SvgDigit m_oMiterlimit;

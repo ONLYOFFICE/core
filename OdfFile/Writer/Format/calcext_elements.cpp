@@ -47,6 +47,7 @@ void calcext_data_bar_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"calcext:axis-color",		calcext_axis_color_);
 	CP_XML_ATTR_OPT(L"calcext:positive-color",	calcext_positive_color_);
 	CP_XML_ATTR_OPT(L"calcext:negative-color",	calcext_negative_color_);
+	CP_XML_ATTR_OPT(L"calcext:axis-position", calcext_axis_position_);
 }
 
 void calcext_icon_set_attr::serialize(CP_ATTR_NODE)
@@ -72,6 +73,8 @@ void calcext_sparkline_group_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"calcext:line-width", line_width_);
 	CP_XML_ATTR_OPT(L"calcext:first", first_);
 	CP_XML_ATTR_OPT(L"calcext:last", last_);
+	CP_XML_ATTR_OPT(L"calcext:high", high_);
+	CP_XML_ATTR_OPT(L"calcext:low", low_);
 	CP_XML_ATTR_OPT(L"calcext:markers", markers_);
 	CP_XML_ATTR_OPT(L"calcext:display-hidden", display_hidden_);
 	CP_XML_ATTR_OPT(L"calcext:right-to-left", right_to_left_);
@@ -243,8 +246,9 @@ void calcext_formatting_entry::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			CP_XML_ATTR_OPT_ENCODE_STRING(L"calcext:value",calcext_value_);
-			CP_XML_ATTR_OPT(L"calcext:type", calcext_type_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"calcext:value", value_);
+			CP_XML_ATTR_OPT(L"calcext:show-value", show_value_);
+			CP_XML_ATTR_OPT(L"calcext:type", type_);
 		}
 	}
 }

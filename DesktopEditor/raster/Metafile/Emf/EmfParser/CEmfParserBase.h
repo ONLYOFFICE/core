@@ -47,7 +47,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfParserBase();
-		~CEmfParserBase();
+		virtual ~CEmfParserBase();
 
 		virtual bool            ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true) = 0;
 		virtual bool            OpenFromFile(const wchar_t*)    = 0;
@@ -75,7 +75,6 @@ namespace MetaFile
 		TXForm*         GetTransform(int = GM_ADVANCED)  override;
 		unsigned int    GetMiterLimit()                  override;
 		unsigned int    GetRop2Mode()                    override;
-		IClip*          GetClip()                        override;
 		int             GetCharSpace()                   override;
 		bool            IsWindowFlippedY()               override;
 		bool            IsWindowFlippedX()               override;

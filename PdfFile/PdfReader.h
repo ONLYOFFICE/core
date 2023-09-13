@@ -33,7 +33,6 @@
 #define _PDF_READER_H
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcReader/RendererOutputDev.h"
@@ -43,7 +42,7 @@ class CPdfReader
 {
 public:
 
-	CPdfReader(NSFonts::IApplicationFonts* pAppFonts, IOfficeDrawingFile* pRenderer);
+	CPdfReader(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfReader();
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");

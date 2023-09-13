@@ -58,9 +58,8 @@
 
 #include <vector>
 
-CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts, IOfficeDrawingFile* pRenderer)
+CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 {
-	m_pRenderer    = pRenderer;
 	m_wsTempFolder = L"";
 	m_pPDFDocument = NULL;
 	m_nFileLength  = 0;

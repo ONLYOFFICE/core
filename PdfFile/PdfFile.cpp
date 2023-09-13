@@ -709,7 +709,7 @@ void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts, this);
+	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
 	if (!m_pInternal->pReader)
 		return false;
 	m_pInternal->wsSrcFile  = file;
@@ -720,7 +720,7 @@ bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& option
 }
 bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts, this);
+	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
 	if (!m_pInternal->pReader)
 		return false;
 	m_pInternal->wsSrcFile  = L"";

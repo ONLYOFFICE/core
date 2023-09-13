@@ -392,6 +392,7 @@ public:
   void setScreenBlackThreshold(double thresh);
   void setScreenWhiteThreshold(double thresh);
   void setDrawFormFields(GBool draw);
+  void setDrawAnnotations(GBool draw);
   void setOverprintPreview(GBool preview);
   void setMapNumericCharNames(GBool map);
   void setMapUnknownCharNames(GBool map);

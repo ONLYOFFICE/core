@@ -31,6 +31,9 @@
  */
 #include "Annotation.h"
 #include "Pages.h"
+#include "Utils.h"
+
+#include "../../DesktopEditor/common/File.h"
 
 #ifndef BS_DEF_WIDTH
 #define BS_DEF_WIDTH 1
@@ -52,7 +55,11 @@ namespace PdfWriter
 		"Underline",
 		"Ink",
 		"FileAttachment",
-		"Popup"
+		"Popup",
+		"Line",
+		"Squiggly",
+		"Polygon",
+		"PolyLine"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -68,10 +75,22 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotation
 	//----------------------------------------------------------------------------------------
-	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType, const TRect& oRect)
+	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
 		pXref->Add(this);
 
+		m_nID = 0;
+
+		Add("Type", "Annot");
+		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
+
+		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
+		Add("F", 4);
+
+		Add("M", new CStringObject(DateNow().c_str()));
+	}
+	void CAnnotation::SetRect(const TRect& oRect)
+	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
@@ -92,14 +111,8 @@ namespace PdfWriter
 			pArray->Add(oRect.fRight);
 			pArray->Add(oRect.fTop);
 		}
-
-		Add("Type", "Annot");
-		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
-
-		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
-		Add("F", 4);
 	}
-	void CAnnotation::SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn, unsigned short nDashOff, unsigned short nDashPhase)
+	void CAnnotation::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
 	{
 		CDictObject* pBorderStyleDict = new CDictObject();
 		if (!pBorderStyleDict)
@@ -107,25 +120,22 @@ namespace PdfWriter
 
 		Add("BS", pBorderStyleDict);
 
-		if (::fabs(BS_DEF_WIDTH - fWidth) > 0.01)
-			pBorderStyleDict->Add("W", fWidth);
+		pBorderStyleDict->Add("Type", "Border");
+		pBorderStyleDict->Add("W", dWidth);
 
-		if (fWidth < 0.01)
+		if (dWidth < 0.01)
 			return;
 
+		EBorderSubtype eSubtype = EBorderSubtype(nType);
 		if (border_subtype_Dashed == eSubtype)
 		{
 			CArrayObject* pDash = new CArrayObject();
-			if (!pDash)
-				return;
-
-			pBorderStyleDict->Add("D", pDash);
-			pBorderStyleDict->Add("Type", "Border");
-			pDash->Add(nDashOn);
-			pDash->Add(nDashOff);
-
-			if (0 != nDashPhase)
-				pDash->Add(nDashOff);
+			if (pDash)
+			{
+				pBorderStyleDict->Add("D", pDash);
+				pDash->Add(dDashesAlternating);
+				pDash->Add(dGaps);
+			}
 		}
 
 		switch (eSubtype)
@@ -137,10 +147,98 @@ namespace PdfWriter
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
 	}
+	void CAnnotation::SetID(const int& nID)
+	{
+		m_nID = nID;
+	}
+	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
+	{
+		Add("F", nAnnotFlag);
+	}
+	void CAnnotation::SetPage(CPage* pPage)
+	{
+		Add("P", pPage);
+	}
+	void CAnnotation::SetBE(const double& dBE)
+	{
+		CDictObject* pBEDict = new CDictObject();
+		if (!pBEDict)
+			return;
+
+		Add("BE", pBEDict);
+
+		pBEDict->Add("S", "C");
+		pBEDict->Add("I", dBE);
+	}
+	void CAnnotation::SetContents(const std::wstring& wsText)
+	{
+		std::string sValue = U_TO_UTF8(wsText);
+		Add("Contents", new CStringObject(sValue.c_str()));
+	}
+	void CAnnotation::SetC(const std::vector<double>& arrC)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("C", pArray);
+
+		for (const double& dC : arrC)
+			pArray->Add(dC);
+	}
+	//----------------------------------------------------------------------------------------
+	// CMarkupAnnotation
+	//----------------------------------------------------------------------------------------
+	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
+	{
+		m_nPopupID = 0;
+		m_nIRTID   = 0;
+
+		Add("CreationDate", new CStringObject(DateNow().c_str()));
+	}
+	void CMarkupAnnotation::SetRT(const BYTE& nRT)
+	{
+		Add("RT", nRT ? "Group" : "R");
+	}
+	void CMarkupAnnotation::SetPopupID(const int& nPopupID)
+	{
+		m_nPopupID = nPopupID;
+	}
+	void CMarkupAnnotation::SetIRTID(const int& nIRTID)
+	{
+		m_nIRTID = nIRTID;
+	}
+	void CMarkupAnnotation::SetCA(const double& dCA)
+	{
+		Add("CA", dCA);
+	}
+	void CMarkupAnnotation::SetT(const std::wstring& wsT)
+	{
+		std::string sValue = U_TO_UTF8(wsT);
+		Add("T", new CStringObject(sValue.c_str()));
+	}
+	void CMarkupAnnotation::SetRC(const std::wstring& wsRC)
+	{
+		std::string sValue = U_TO_UTF8(wsRC);
+		Add("RC", new CStringObject(sValue.c_str()));
+	}
+	void CMarkupAnnotation::SetSubj(const std::wstring& wsSubj)
+	{
+		std::string sValue = U_TO_UTF8(wsSubj);
+		Add("Subj", new CStringObject(sValue.c_str()));
+	}
+	void CMarkupAnnotation::SetPopupID(CAnnotation* pAnnot)
+	{
+		Add("Popup", pAnnot);
+	}
+	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
+	{
+		Add("IRT", pAnnot);
+	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation
 	//----------------------------------------------------------------------------------------
-	CLinkAnnotation::CLinkAnnotation(CXref* pXref, const TRect& oRect, CDestination* pDestination) : CAnnotation(pXref, AnnotLink, oRect)
+	CLinkAnnotation::CLinkAnnotation(CXref* pXref, CDestination* pDestination) : CAnnotation(pXref, AnnotLink)
 	{
 		Add("Dest", (CObjectBase*)pDestination);
 	}
@@ -183,25 +281,58 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CTextAnnotation
 	//----------------------------------------------------------------------------------------
-	CTextAnnotation::CTextAnnotation(CXref* pXref, const TRect& oRect, const char* sText) : CAnnotation(pXref, AnnotTextNotes, oRect)
+	CTextAnnotation::CTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotText)
 	{
-		Add("Contents", new CStringObject(sText));
+
 	}
-	void SetIcon(EAnnotIcon eIcon);
-	void SetOpened(bool bOpened);
-	void CTextAnnotation::SetIcon(EAnnotIcon eIcon)
+	void CTextAnnotation::SetOpen(bool bOpen)
 	{
-        eIcon = (EAnnotIcon)std::min(std::max(AnnotIconMin, eIcon), AnnotIconMax);
-		Add("Name", c_sAnnotIconNames[(int)eIcon]);
+		Add("Open", new CBoolObject(bOpen));
 	}
-	void CTextAnnotation::SetOpened(bool bOpened)
+	void CTextAnnotation::SetName(BYTE nName)
 	{
-		Add("Open", new CBoolObject(bOpened));
+		Add("Name", c_sAnnotIconNames[nName]);
+	}
+	void CTextAnnotation::SetState(BYTE nState)
+	{
+		std::string sValue;
+		switch (nState)
+		{
+		case 0:
+		{ sValue = "Marked"; break; }
+		case 1:
+		{ sValue = "Unmarked"; break; }
+		case 2:
+		{ sValue = "Accepted"; break; }
+		case 3:
+		{ sValue = "Rejected"; break; }
+		case 4:
+		{ sValue = "Cancelled"; break; }
+		case 5:
+		{ sValue = "Completed"; break; }
+		case 6:
+		{ sValue = "None"; break; }
+		}
+
+		Add("State", new CStringObject(sValue.c_str()));
+	}
+	void CTextAnnotation::SetStateModel(BYTE nStateModel)
+	{
+		std::string sValue;
+		switch (nStateModel)
+		{
+		case 0:
+		{ sValue = "Marked"; break; }
+		case 1:
+		{ sValue = "Review"; break; }
+		}
+
+		Add("StateModel", new CStringObject(sValue.c_str()));
 	}
 	//----------------------------------------------------------------------------------------
 	// CUriLinkAnnotation
 	//----------------------------------------------------------------------------------------
-	CUriLinkAnnotation::CUriLinkAnnotation(CXref* pXref, const TRect& oRect, const char* sUri) : CAnnotation(pXref, AnnotLink, oRect)
+	CUriLinkAnnotation::CUriLinkAnnotation(CXref* pXref, const char* sUri) : CAnnotation(pXref, AnnotLink)
 	{
 		CDictObject* pAction = new CDictObject();
 		if (!pAction)
@@ -211,5 +342,306 @@ namespace PdfWriter
 		pAction->Add("Type", "Action");
 		pAction->Add("S", "URI");
 		pAction->Add("URI", new CStringObject(sUri));
+	}
+	//----------------------------------------------------------------------------------------
+	// CInkAnnotation
+	//----------------------------------------------------------------------------------------
+	CInkAnnotation::CInkAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotInk)
+	{
+
+	}
+	void CInkAnnotation::SetInkList(const std::vector< std::vector<double> >& arrInkList)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("InkList", pArray);
+
+		for (const std::vector<double>& arrInk : arrInkList)
+		{
+			CArrayObject* pArrayI = new CArrayObject();
+			pArray->Add(pArrayI);
+
+			for (const double& dInk : arrInk)
+				pArrayI->Add(dInk);
+		}
+	}
+	//----------------------------------------------------------------------------------------
+	// CLineAnnotation
+	//----------------------------------------------------------------------------------------
+	CLineAnnotation::CLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotLine)
+	{
+
+	}
+	void CLineAnnotation::SetCap(bool bCap)
+	{
+		Add("Open", new CBoolObject(bCap));
+	}
+	void CLineAnnotation::SetIT(const BYTE& nIT)
+	{
+		std::string sValue;
+		switch (nIT)
+		{
+		case 0:
+		{ sValue = "LineDimension"; break; }
+		case 1:
+		{ sValue = "LineArrow"; break; }
+		}
+
+		Add("IT", new CStringObject(sValue.c_str()));
+	}
+	void CLineAnnotation::SetCP(const BYTE& nCP)
+	{
+		std::string sValue;
+		switch (nCP)
+		{
+		case 0:
+		{ sValue = "Inline"; break; }
+		case 1:
+		{ sValue = "Top"; break; }
+		}
+
+		Add("CP", new CStringObject(sValue.c_str()));
+	}
+	void CLineAnnotation::SetLL(const double& dLL)
+	{
+		Add("LL", dLL);
+	}
+	void CLineAnnotation::SetLLE(const double& dLLE)
+	{
+		Add("LLE", dLLE);
+	}
+	void CLineAnnotation::SetLLO(const double& dLLO)
+	{
+		Add("LLO", dLLO);
+	}
+	void AddLE(CArrayObject* pArray, const BYTE& nLE)
+	{
+		std::string sValue;
+		switch (nLE)
+		{
+		case 0:
+		{ sValue = "Square"; break; }
+		case 1:
+		{ sValue = "Circle"; break; }
+		case 2:
+		{ sValue = "Diamond"; break; }
+		case 3:
+		{ sValue = "OpenArrow"; break; }
+		case 4:
+		{ sValue = "ClosedArrow"; break; }
+		case 5:
+		{ sValue = "None"; break; }
+		case 6:
+		{ sValue = "Butt"; break; }
+		case 7:
+		{ sValue = "ROpenArrow"; break; }
+		case 8:
+		{ sValue = "RClosedArrow"; break; }
+		case 9:
+		{ sValue = "Slash"; break; }
+		}
+
+		pArray->Add(sValue.c_str());
+	}
+	void CLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("LE", pArray);
+
+		AddLE(pArray, nLE1);
+		AddLE(pArray, nLE2);
+	}
+	void CLineAnnotation::SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("L", pArray);
+
+		pArray->Add(dL1);
+		pArray->Add(dL2);
+		pArray->Add(dL3);
+		pArray->Add(dL4);
+	}
+	void CLineAnnotation::SetCO(const double& dCO1, const double& dCO2)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("CO", pArray);
+
+		pArray->Add(dCO1);
+		pArray->Add(dCO2);
+	}
+	void AddIC(CAnnotation* pAnnot, const std::vector<double>& arrIC)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pAnnot->Add("IC", pArray);
+
+		for (const double& dIC : arrIC)
+			pArray->Add(dIC);
+	}
+	void CLineAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
+	}
+	//----------------------------------------------------------------------------------------
+	// CPopupAnnotation
+	//----------------------------------------------------------------------------------------
+	CPopupAnnotation::CPopupAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotPopup)
+	{
+		m_nParentID = 0;
+	}
+	void CPopupAnnotation::SetOpen(bool bOpen)
+	{
+		Add("Open", new CBoolObject(bOpen));
+	}
+	void CPopupAnnotation::SetParentID(const int& nParentID)
+	{
+		m_nParentID = nParentID;
+	}
+	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
+	{
+		Add("Parent", pAnnot);
+	}
+	//----------------------------------------------------------------------------------------
+	// CTextMarkupAnnotation
+	//----------------------------------------------------------------------------------------
+	CTextMarkupAnnotation::CTextMarkupAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotHighLight)
+	{
+		m_nSubtype = AnnotHighLight;
+	}
+	void CTextMarkupAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 8:
+		{ m_nSubtype = AnnotHighLight; break; }
+		case 9:
+		{ m_nSubtype = AnnotUnderline; break; }
+		case 10:
+		{ m_nSubtype = AnnotSquiggly; break; }
+		case 11:
+		{ m_nSubtype = AnnotStrikeOut; break; }
+		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
+	}
+	void CTextMarkupAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (const double& dQuadPoints : arrQuadPoints)
+			pArray->Add(dQuadPoints);
+	}
+	//----------------------------------------------------------------------------------------
+	// CSquareCircleAnnotation
+	//----------------------------------------------------------------------------------------
+	CSquareCircleAnnotation::CSquareCircleAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotSquare)
+	{
+		m_nSubtype = AnnotSquare;
+	}
+	void CSquareCircleAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 4:
+		{ m_nSubtype = AnnotSquare; break; }
+		case 5:
+		{ m_nSubtype = AnnotCircle; break; }
+		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
+	}
+	void CSquareCircleAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
+	}
+	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
+	}
+	//----------------------------------------------------------------------------------------
+	// CPolygonLineAnnotation
+	//----------------------------------------------------------------------------------------
+	CPolygonLineAnnotation::CPolygonLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotSquare)
+	{
+		m_nSubtype = AnnotPolygon;
+	}
+	void CPolygonLineAnnotation::SetIT(const BYTE& nIT)
+	{
+		std::string sValue;
+		switch (nIT)
+		{
+		case 0:
+		{ sValue = "PolygonCloud"; break; }
+		case 1:
+		{ sValue = "PolyLineDimension"; break; }
+		case 2:
+		{ sValue = "PolygonDimension"; break; }
+		}
+
+		Add("IT", new CStringObject(sValue.c_str()));
+	}
+	void CPolygonLineAnnotation::SetSubtype(const BYTE& nSubtype)
+	{
+		switch (nSubtype)
+		{
+		case 6:
+		{ m_nSubtype = AnnotPolygon; break; }
+		case 7:
+		{ m_nSubtype = AnnotPolyLine; break; }
+		}
+
+		Add("Subtype", c_sAnnotTypeNames[(int)m_nSubtype]);
+	}
+	void CPolygonLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("LE", pArray);
+
+		AddLE(pArray, nLE1);
+		AddLE(pArray, nLE2);
+	}
+	void CPolygonLineAnnotation::SetIC(const std::vector<double>& arrIC)
+	{
+		AddIC(this, arrIC);
+	}
+	void CPolygonLineAnnotation::SetVertices(const std::vector<double>& arrVertices)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("Vertices", pArray);
+
+		for (const double& dVertices : arrVertices)
+			pArray->Add(dVertices);
 	}
 }

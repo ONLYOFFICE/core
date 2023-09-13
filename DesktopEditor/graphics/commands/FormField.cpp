@@ -31,6 +31,7 @@
  */
 
 #include "./FormField.h"
+#include "../MetafileToRenderer.h"
 
 CFormFieldInfo::CTextFormFormat::CTextFormFormat()
 {
@@ -414,13 +415,6 @@ const std::wstring& CFormFieldInfo::CDateTimeFormPr::GetFormat() const
 //
 CFormFieldInfo::CFormFieldInfo()
 {
-	m_nType = 0;
-
-	m_dX = 0;
-	m_dY = 0;
-	m_dW = 0;
-	m_dH = 0;
-
 	m_dBaseLineOffset = 0;
 
 	m_bRequired    = false;
@@ -445,25 +439,20 @@ void CFormFieldInfo::SetType(int nType)
 {
 	m_nType = nType;
 }
-bool CFormFieldInfo::IsValid() const
-{
-	return 0 != m_nType;
-}
-
 // Common
 void CFormFieldInfo::SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_dX = dX;
-	m_dY = dY;
-	m_dW = dW;
-	m_dH = dH;
+	m_dX1 = dX;
+	m_dY1 = dY;
+	m_dX2 = dW + dX;
+	m_dY2 = dH + dY;
 }
 void CFormFieldInfo::GetBounds(double& dX, double& dY, double& dW, double& dH) const
 {
-	dX = m_dX;
-	dY = m_dY;
-	dW = m_dW;
-	dH = m_dH;
+	dX = m_dX1;
+	dY = m_dY1;
+	dW = m_dX2 - m_dX1;
+	dH = m_dY2 - m_dY1;
 }
 void CFormFieldInfo::SetBaseLineOffset(const double& dOffset)
 {
@@ -622,4 +611,180 @@ CFormFieldInfo::CDateTimeFormPr* CFormFieldInfo::GetDateTimeFormPr()
 const CFormFieldInfo::CDateTimeFormPr* CFormFieldInfo::GetDateTimePr() const
 {
 	return &m_oDateTimePr;
+}
+
+bool CFormFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	double dX = pReader->ReadDouble();
+	double dY = pReader->ReadDouble();
+	double dW = pReader->ReadDouble();
+	double dH = pReader->ReadDouble();
+
+	SetBounds(dX, dY, dW, dH);
+	SetBaseLineOffset(pReader->ReadDouble());
+
+	int nFlags = pReader->ReadInt();
+
+	if (nFlags & (1 << 0))
+		SetKey(pReader->ReadString());
+
+	if (nFlags & (1 << 1))
+		SetHelpText(pReader->ReadString());
+
+	SetRequired(nFlags & (1 << 2));
+	SetPlaceHolder(nFlags & (1 << 3));
+
+	if (nFlags & (1 << 6))
+	{
+		int nBorderType = pReader->ReadInt();
+		double dBorderSize = pReader->ReadDouble();
+		unsigned char unR = pReader->ReadByte();
+		unsigned char unG = pReader->ReadByte();
+		unsigned char unB = pReader->ReadByte();
+		unsigned char unA = pReader->ReadByte();
+
+		SetBorder(nBorderType, dBorderSize, unR, unG, unB, unA);
+	}
+
+	if (nFlags & (1 << 9))
+	{
+		unsigned char unR = pReader->ReadByte();
+		unsigned char unG = pReader->ReadByte();
+		unsigned char unB = pReader->ReadByte();
+		unsigned char unA = pReader->ReadByte();
+		SetShd(unR, unG, unB, unA);
+	}
+
+	if (nFlags & (1 << 10))
+	{
+		SetJc(pReader->ReadByte());
+	}
+
+	SetType(pReader->ReadInt());
+
+	if (IsTextField())
+	{
+		CFormFieldInfo::CTextFormPr* pPr = GetTextFormPr();
+		pPr->SetComb(nFlags & (1 << 20));
+
+		if (nFlags & (1 << 21))
+			pPr->SetMaxCharacters(pReader->ReadInt());
+
+		if (nFlags & (1 << 22))
+			pPr->SetTextValue(pReader->ReadString());
+
+		pPr->SetMultiLine(nFlags & (1 << 23));
+		pPr->SetAutoFit(nFlags & (1 << 24));
+
+		if (nFlags & (1 << 25))
+			pPr->SetPlaceHolder(pReader->ReadString());
+
+		if (nFlags & (1 << 26))
+		{
+			CFormFieldInfo::CTextFormFormat* pFormat = pPr->GetFormat();
+			pFormat->SetType((CFormFieldInfo::EFormatType)pReader->ReadByte());
+
+			unsigned int unSymbolsCount = pReader->ReadInt();
+			for (unsigned int unSymbolIndex = 0; unSymbolIndex < unSymbolsCount; ++unSymbolIndex)
+			{
+				pFormat->AddSymbol(pReader->ReadInt());
+			}
+
+			pFormat->SetValue(pReader->ReadString());
+		}
+	}
+	else if (IsDropDownList())
+	{
+		CFormFieldInfo::CDropDownFormPr* pPr = GetDropDownFormPr();
+		pPr->SetEditComboBox(nFlags & (1 << 20));
+
+		int nItemsCount = pReader->ReadInt();
+		for (int nIndex = 0; nIndex < nItemsCount; ++nIndex)
+		{
+			pPr->AddComboBoxItem(pReader->ReadString());
+		}
+
+		int nSelectedIndex = pReader->ReadInt();
+
+		if (nFlags & (1 << 22))
+			pPr->SetTextValue(pReader->ReadString());
+
+		if (nFlags & (1 << 23))
+			pPr->SetPlaceHolder(pReader->ReadString());
+	}
+	else if (IsCheckBox())
+	{
+		CFormFieldInfo::CCheckBoxFormPr* pPr = GetCheckBoxFormPr();
+		pPr->SetChecked(nFlags & (1 << 20));
+		pPr->SetType(pReader->ReadInt());
+		pPr->SetCheckedSymbol(pReader->ReadInt());
+		pPr->SetCheckedFont(pReader->ReadString());
+		pPr->SetUncheckedSymbol(pReader->ReadInt());
+		pPr->SetUncheckedFont(pReader->ReadString());
+
+		if (nFlags & (1 << 21))
+			pPr->SetGroupKey(pReader->ReadString());
+	}
+	else if (IsPicture())
+	{
+		CFormFieldInfo::CPictureFormPr* pPr = GetPictureFormPr();
+		pPr->SetConstantProportions(nFlags & (1 << 20));
+		pPr->SetRespectBorders(nFlags & (1 << 21));
+		pPr->SetScaleType(CFormFieldInfo::EScaleType((nFlags >> 24) & 0xF));
+		LONG lShiftX = pReader->ReadInt();
+		LONG lShiftY = pReader->ReadInt();
+		pPr->SetShift(lShiftX, lShiftY);
+
+		if (nFlags & (1 << 22))
+			pPr->SetPicturePath(pCorrector->GetImagePath(pReader->ReadString()));
+	}
+	else if (IsSignature())
+	{
+		CFormFieldInfo::CSignatureFormPr* pPr = GetSignatureFormPr();
+
+			   // Поля Настройки подписи
+			   // Сведения о подписывающем
+
+			   // Имя
+		if (nFlags & (1 << 20))
+			pPr->SetName(pReader->ReadString());
+
+			   // Должность Игнорируется
+
+			   // Адрес электронной почты
+		if (nFlags & (1 << 21))
+			pPr->SetContact(pReader->ReadString());
+
+			   // Инструкция для подписывающего Игнорируется
+
+			   // Показывать дату подписи в строке подписи
+		pPr->SetDate(nFlags & (1 << 22));
+
+			   // Цель подписания документа (причина)
+		if (nFlags & (1 << 23))
+			pPr->SetReason(pReader->ReadString());
+
+			   // Картинка
+		if (nFlags & (1 << 24))
+			pPr->SetPicturePath(pCorrector->GetImagePath(pReader->ReadString()));
+
+			   // Необходимо передать сертификат, пароль, ключ, пароль ключа
+		if (nFlags & (1 << 25))
+			pPr->SetCert(pReader->ReadString());
+	}
+	else if (IsDateTime())
+	{
+		CFormFieldInfo::CDateTimeFormPr* pPr = GetDateTimeFormPr();
+
+		if (nFlags & (1 << 22))
+			pPr->SetValue(pReader->ReadString());
+
+		if (nFlags & (1 << 25))
+			pPr->SetPlaceHolder(pReader->ReadString());
+
+		if (nFlags & (1 << 26))
+			pPr->SetFormat(pReader->ReadString());
+	}
+
+	return IsValid();
 }

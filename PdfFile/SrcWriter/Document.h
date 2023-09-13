@@ -128,12 +128,18 @@ namespace PdfWriter
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
-					      
-		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
-		CAnnotation*      CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
-		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
+
+		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
+		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
+		CAnnotation*      CreateTextAnnot();
+		CAnnotation*      CreateInkAnnot();
+		CAnnotation*      CreateLineAnnot();
+		CAnnotation*      CreateTextMarkupAnnot();
+		CAnnotation*      CreateSquareCircleAnnot();
+		CAnnotation*      CreatePolygonLineAnnot();
+		CAnnotation*      CreatePopupAnnot();
+		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
+		void              MatchAnnotation();
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);
@@ -248,6 +254,7 @@ namespace PdfWriter
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
 		std::map<std::string, CFieldBase*> m_mFields;
+		std::map<int, CAnnotation*>        m_mAnnotations;
 
 		friend class CFontCidTrueType;
 		friend class CFontTrueType;

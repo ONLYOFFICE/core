@@ -32,10 +32,10 @@
 #ifndef _BUILD_FORMFIELD_H_
 #define _BUILD_FORMFIELD_H_
 
-#include "config.h"
-#include "IRenderer.h"
+#include "../config.h"
+#include "./AnnotField.h"
 
-class GRAPHICS_DECL CFormFieldInfo : public IFormField
+class GRAPHICS_DECL CFormFieldInfo : public CAnnotFieldInfo
 {
 public:
 	enum EScaleType
@@ -266,12 +266,11 @@ public:
 	CFormFieldInfo();
 	virtual ~CFormFieldInfo();
 
-	void SetType(int nType);
-	bool IsValid() const;
+	void SetType(int nType) override;
 
 	// Common
-	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
-	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH) override;
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const override;
 
 	void SetBaseLineOffset(const double& dOffset);
 	double GetBaseLineOffset() const;
@@ -324,13 +323,10 @@ public:
 	
 	CDateTimeFormPr* GetDateTimeFormPr();
 	const CDateTimeFormPr* GetDateTimePr() const;
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 	
 private:
-	int          m_nType;
-	double       m_dX;
-	double       m_dY;
-	double       m_dW;
-	double       m_dH;
 	double       m_dBaseLineOffset;
 	std::wstring m_wsKey;
 	std::wstring m_wsHelpText;

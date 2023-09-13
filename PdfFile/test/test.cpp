@@ -86,21 +86,33 @@ int main()
     if (!bResult)
     {
         wsPassword = L"123456";
-        bResult = pdfFile.LoadFromFile(wsSrcFile, wsPassword);
+		bResult = pdfFile.LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
     }
 
     ICertificate* pCertificate = NULL;
-    if (false)
+	if (false)
     {
-        std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
-        std::wstring wsPrivateKeyFile = L"";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsPrivateKeyFile = L"";
         std::string sCertificateFilePassword = "123456";
-        std::string sPrivateFilePassword = "";
+		std::string sPrivateFilePassword = "";
 
-        pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+
+		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
+		//properties.insert(std::make_pair(L"IP Address", L"127.0.0.1"));
+		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
+		//properties.insert(std::make_pair(L"phone", L"+00000000000"));
+		//std::wstring sNameTest = L"NameTest";
+		//std::wstring sValueTest = L"ValueTest";
+		//properties.insert(std::make_pair(sNameTest, sValueTest));
+
+		pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
+		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-    if (true)
+	if (false)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
@@ -110,37 +122,47 @@ int main()
         return 0;
     }
 
-    if (false)
+	if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        pdfFile.ConvertToRaster(0, NSFile::GetProcessDirectory() + L"/res.png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        int i = 0;
+        for (i = 0; i < pdfFile.GetPagesCount(); i++)
+        {
+            pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+            pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        }
+
+        if (pCertificate)
+        {
+            BYTE* pWidgets = pdfFile.VerifySign(wsSrcFile, pCertificate);
+            RELEASEARRAYOBJECTS(pWidgets);
+        }
 
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);
         return 0;
     }
 
-    if (false)
+	if (false)
     {
-        pdfFile.CreatePdf();
+        pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
         dWidth  *= 25.4 / dPageDpiX;
         dHeight *= 25.4 / dPageDpiY;
 
-        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
-        {
-            pdfFile.NewPage();
-            pdfFile.BeginCommand(c_nPageType);
-            pdfFile.put_Width(dWidth);
-            pdfFile.put_Height(dHeight);
-            pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
-            pdfFile.EndCommand(c_nPageType);
-        }
+        pdfFile.NewPage();
+        pdfFile.BeginCommand(c_nPageType);
+        pdfFile.put_Width(dWidth);
+        pdfFile.put_Height(dHeight);
+        std::string sTitle = "1<2<3<4";
+        pdfFile.DocInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
+        //pdfFile.DrawImageFromFile(NSFile::GetProcessDirectory() + L"/test.jpg", 10, 10, 455, 200);
+        pdfFile.EndCommand(c_nPageType);
+
         if (pCertificate)
-            pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+			pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
         int nRes = pdfFile.SaveToFile(wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
@@ -151,11 +173,12 @@ int main()
     if (bResult && pdfFile.EditPdf(wsDstFile))
     {
         if (pCertificate)
-        {
-            if (pdfFile.EditPage(0))
-            {
-                pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-            }
+		{
+			if (pdfFile.EditPage(0))
+			{
+				TEST(&pdfFile);
+				pdfFile.Sign(0, 0, 0, 0, L"", pCertificate);
+			}
         }
         else
         {

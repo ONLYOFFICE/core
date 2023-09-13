@@ -131,6 +131,7 @@ public:
 	static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, long lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT);
 	static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, long lCount);
 	static std::wstring GetUnicodeFromUTF32(const unsigned int* pData, long lCount);
+	static void GetUtf8FromUTF32(const unsigned int* pData, long lCount, unsigned char*& pOutputData, long& lOutputCount);
 	static std::string GetUtf8FromUTF32(const unsigned int* pData, long lCount);
 	static unsigned int* GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen);
 	static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen, const bool& isLE = true);

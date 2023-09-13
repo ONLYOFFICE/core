@@ -77,7 +77,7 @@ AnnotBorderStyle::~AnnotBorderStyle() {
 // Annot
 //------------------------------------------------------------------------
 
-Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA) {
+Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS) {
   Object apObj, asObj, obj1, obj2, obj3;
   AnnotBorderType borderType;
   double borderWidth;
@@ -248,11 +248,11 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA) {
   dict->lookup("AP", &apObj);
   dict->lookup("AS", &asObj);
   if (asObj.isName()) {
-    appearanceState = new GString(asObj.getName());
+    appearanceState = new GString(AS ? AS : asObj.getName());
   } else if (apObj.isDict()) {
-    apObj.dictLookup("N", &obj1);
+    apObj.dictLookup(AP, &obj1);
     if (obj1.isDict() && obj1.dictGetLength() == 1) {
-      appearanceState = new GString(obj1.dictGetKey(0));
+      appearanceState = new GString(AS ? AS : obj1.dictGetKey(0));
     }
     obj1.free();
   }
@@ -264,8 +264,8 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA) {
   //----- get the annotation appearance
 
   if (apObj.isDict()) {
-    apObj.dictLookup("N", &obj1);
-    apObj.dictLookupNF("N", &obj2);
+    apObj.dictLookup(AP, &obj1);
+    apObj.dictLookupNF(AP, &obj2);
     if (obj1.isDict()) {
       if (obj1.dictLookupNF(appearanceState->getCString(), &obj3)->isRef()) {
 	obj3.copy(&appearance);

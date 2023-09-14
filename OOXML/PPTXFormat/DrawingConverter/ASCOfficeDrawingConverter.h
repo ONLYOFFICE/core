@@ -66,6 +66,7 @@ namespace BinDocxRW
 }
 namespace OOX
 {
+	class WritingElement;
 	class CContentTypes;
 	class IFileContainer;
 	namespace Logic
@@ -198,24 +199,25 @@ namespace NSBinPptxRW
         std::map<std::wstring, CShapePtr> m_mapShapeTypes;
 		std::map<std::wstring, nullable<OOX::Logic::CBinData>> m_mapBinDatas;
 
-        NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
-        int                                                 m_lNextId;
-		unsigned int										m_nDrawingMaxZIndex = 0; // для смешанных записей pict & Drawing 
+        NSBinPptxRW::CBinaryFileWriter* m_pBinaryWriter;
+        int m_lNextId;
+		unsigned int m_nDrawingMaxZIndex = 0; // для смешанных записей pict & Drawing 
 
-        int                                                 m_lCurrentObjectTop;
+        int m_lCurrentObjectTop;
 
-        NSBinPptxRW::CBinaryFileReader*                     m_pReader;
-        NSBinPptxRW::CImageManager2*                        m_pImageManager;
-        NSBinPptxRW::CXmlWriter*                            m_pXmlWriter;
-        int                                                 m_nCurrentIndexObject;
-        IRenderer*                                          m_pOOXToVMLRenderer;
-        bool                                                m_bIsUseConvertion2007;
+        NSBinPptxRW::CBinaryFileReader* m_pReader;
+        NSBinPptxRW::CImageManager2* m_pImageManager;
+        NSBinPptxRW::CXmlWriter* m_pXmlWriter;
+        int m_nCurrentIndexObject;
+        IRenderer* m_pOOXToVMLRenderer;
+        bool m_bIsUseConvertion2007;
+		bool m_bNeedMainProps;
 
-		NSCommon::smart_ptr<PPTX::Theme>*					m_pTheme;
-		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*			m_pClrMap;
+		NSCommon::smart_ptr<PPTX::Theme>* m_pTheme;
+		NSCommon::smart_ptr<PPTX::Logic::ClrMap>* m_pClrMap;
 
-        std::wstring                                        m_strFontDirectory;
-
+        std::wstring m_strFontDirectory;
+		
 		CDrawingConverter();
 		~CDrawingConverter();
 
@@ -241,7 +243,7 @@ namespace NSBinPptxRW
 
         HRESULT AddObject(const std::wstring& sXml, std::wstring** pMainProps);
 
-		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements);
+		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements, NSCommon::nullable<OOX::WritingElement> &anchor);
 
         HRESULT SaveObject(long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
         HRESULT SaveObjectEx(long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);

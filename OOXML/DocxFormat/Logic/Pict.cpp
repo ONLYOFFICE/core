@@ -38,6 +38,7 @@
 #include "VmlOfficeDrawing.h"
 
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
 namespace OOX
 {
@@ -499,7 +500,7 @@ namespace OOX
 		{
 			return et_w_pict;
 		}
-
+//--------------------------------------------------------------------------------------------------------------------------
 		CObject::CObject(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
 		CObject::~CObject()
 		{

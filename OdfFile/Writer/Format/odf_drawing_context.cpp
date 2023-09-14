@@ -2300,7 +2300,7 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 		double sz_x =impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
 		double sz_y =impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
 
-		impl_->current_graphic_properties->draw_marker_end_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(((std::min)((std::max)(sz_x, sz_y), 50.) / 10.), odf_types::length::pt);
 	}
 	if (!impl_->current_graphic_properties->draw_marker_end_width_)
 	{
@@ -2326,7 +2326,7 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 		double sz_x = impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
 		double sz_y = impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
 
-		impl_->current_graphic_properties->draw_marker_start_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(((std::min)((std::max)(sz_x, sz_y), 50.) / 10.), odf_types::length::pt);
 	}
 	if (!impl_->current_graphic_properties->draw_marker_start_width_)
 	{

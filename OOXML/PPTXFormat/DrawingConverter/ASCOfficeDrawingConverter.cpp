@@ -1229,6 +1229,7 @@ CDrawingConverter::CDrawingConverter()
     m_lCurrentObjectTop     = 0;
     m_pOOXToVMLRenderer     = NULL;
     m_bIsUseConvertion2007  = true;
+	m_bNeedMainProps		= false;
     m_pBinaryWriter         = new NSBinPptxRW::CBinaryFileWriter();
     m_pReader               = new NSBinPptxRW::CBinaryFileReader();
     m_pImageManager         = new NSBinPptxRW::CImageManager2();
@@ -1760,7 +1761,7 @@ HRESULT CDrawingConverter::AddObject(const std::wstring& bsXml, std::wstring** p
 
 	return bResult ? S_OK : S_FALSE;
 }
-void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements)
+void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements, NSCommon::nullable<OOX::WritingElement>& anchor)
 {
 	std::wstring strXml = _start_xml_object + sXml + _end_xml_object;
 
@@ -1772,8 +1773,8 @@ void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullabl
 	if (!oMainNode.GetNodes(L"*", oNodes))
 		return;
 
-	std::wstring* pMainProps = NULL;
-	std::wstring** ppMainProps = &pMainProps;
+	std::wstring* mainProps = NULL;
+	std::wstring** ppMainProps = &mainProps;
 
 	for (size_t i = 0; i < oNodes.size(); ++i)
 	{
@@ -1921,6 +1922,31 @@ void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullabl
 				break;
 			}
 		}
+	}
+
+	if (mainProps)
+	{
+		strXml = _start_xml_object + *mainProps + _end_xml_object;
+
+		XmlUtils::CXmlLiteReader oReader;
+		oReader.FromString(strXml);
+		
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = oReader.GetName();
+			if (_T("wp:inline") == sName)
+			{
+				anchor = new OOX::Drawing::CInline(NULL);
+				anchor->fromXML(oReader);
+			}
+			else if (_T("wp:anchor") == sName)
+			{
+				anchor = new OOX::Drawing::CAnchor(NULL);
+				anchor->fromXML(oReader);
+			}
+		}
+		RELEASEOBJECT(mainProps);
 	}
 }
 bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** pMainProps)
@@ -4750,7 +4776,7 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
 
 void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wstring**& pMainProps)
 {
-	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter)
+	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter || m_bNeedMainProps)
 	{
 		*pMainProps = new std::wstring();
 		**pMainProps = strMainProps;

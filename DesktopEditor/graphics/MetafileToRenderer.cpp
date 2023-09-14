@@ -35,6 +35,7 @@
 #include "./MetafileToRenderer.h"
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
+#include "../common/StringExt.h"
 
 // этот класс нужно переписать. должно работать как и в js
 // а не просто на каждом символе переключаться, если нужно

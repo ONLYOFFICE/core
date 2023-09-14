@@ -919,6 +919,7 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & 8)
 						oReader.SkipString();
 				}
+				break;
 			}
 			case ctFormField:
 			case ctAnnotField:

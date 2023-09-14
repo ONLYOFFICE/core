@@ -112,7 +112,7 @@ int main()
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-	if (false)
+	if (true)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
@@ -157,7 +157,7 @@ int main()
         pdfFile.put_Width(dWidth);
         pdfFile.put_Height(dHeight);
         std::string sTitle = "1<2<3<4";
-        pdfFile.DocInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
+		pdfFile.SetDocumentInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
         //pdfFile.DrawImageFromFile(NSFile::GetProcessDirectory() + L"/test.jpg", 10, 10, 455, 200);
         pdfFile.EndCommand(c_nPageType);
 

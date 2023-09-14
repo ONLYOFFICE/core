@@ -1677,7 +1677,7 @@ namespace NExtractTools
 		CPdfFile pdfWriter(pApplicationFonts);
 		pdfWriter.CreatePdf(params.getIsPDFA());
 		pdfWriter.SetTempDirectory(sTemp);
-		pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
+		pdfWriter.SetDocumentInfo(params.getTitle(), L"", L"", L"");
 
 		CConvertFromBinParams oBufferParams;
 		oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -1955,7 +1955,7 @@ namespace NExtractTools
 			CPdfFile pdfWriter(pApplicationFonts);
 			pdfWriter.CreatePdf(params.getIsPDFA());
 			pdfWriter.SetTempDirectory(sTemp);
-			pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
+			pdfWriter.SetDocumentInfo(params.getTitle(), L"", L"", L"");
 
 			CConvertFromBinParams oBufferParams;
 			oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -3649,7 +3649,7 @@ namespace NExtractTools
 								CPdfFile pdfWriter(pApplicationFonts);
 								pdfWriter.CreatePdf(params.getIsPDFA());
 								pdfWriter.SetTempDirectory(sTemp);
-								pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
+								pdfWriter.SetDocumentInfo(params.getTitle(), L"", L"", L"");
 
 								CConvertFromBinParams oBufferParams;
 								oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -5022,7 +5022,7 @@ namespace NExtractTools
 				CPdfFile pdfWriter(pApplicationFonts);
 				pdfWriter.CreatePdf(params.getIsPDFA());
 				pdfWriter.SetTempDirectory(sTemp);
-				pdfWriter.DocInfo(params.getTitle(), L"", L"", L"");
+				pdfWriter.SetDocumentInfo(params.getTitle(), L"", L"", L"");
 
 				std::wstring documentID = params.getDocumentID();
 				if (false == documentID.empty())

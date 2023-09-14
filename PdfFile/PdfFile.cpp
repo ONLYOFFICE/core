@@ -383,6 +383,12 @@ void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const 
 		return;
 	m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pCertificate);
 }
+void CPdfFile::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
+{
+	if (!m_pInternal->pWriter)
+		return;
+	m_pInternal->pWriter->SetDocumentInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
+}
 void CPdfFile::RotatePage(int nRotate)
 {
 	if (!m_pInternal->pWriter)

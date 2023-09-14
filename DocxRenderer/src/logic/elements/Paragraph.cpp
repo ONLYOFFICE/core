@@ -154,7 +154,7 @@ namespace NSDocxRenderer
 			//Добавляем пробел в конец каждой строки
 			pLastCont->m_oText += L" ";
 			pLastCont->m_bSpaceIsNotNeeded = true;
-			pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthMM;
+			pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthSelected;
 
 			auto pNext = m_arLines[i];
 			auto pCont = pNext->m_arConts.front();

@@ -76,8 +76,8 @@ namespace NSDocxRenderer
 		virtual void AddContent(CBaseItem* pObj);
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
 
-		eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
-		eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
+		virtual eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
 
 		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj);
 		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj);

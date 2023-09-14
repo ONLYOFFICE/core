@@ -364,6 +364,7 @@ namespace NSDocxRenderer
 
 		auto pCont = new CContText(m_pFontManager);
 
+
 		pCont->m_dLeft = dTextX;
 		pCont->m_dBaselinePos = dBaseLinePos;
 
@@ -376,6 +377,7 @@ namespace NSDocxRenderer
 		pCont->m_dWidth     = dTextW;
 		pCont->m_dHeight    = dTextH;
 		pCont->m_dRight     = dTextX + dTextW;
+		pCont->m_dTrueHeight = _h - oMetrics.dBaselineOffset;
 
 		pCont->m_oText = oText;
 
@@ -1150,8 +1152,6 @@ namespace NSDocxRenderer
 					{
 						pCurrCont->m_bIsUnderlinePresent = true;
 						pCurrCont->m_eUnderlineType  = pShape->m_eLineType;
-
-						// почему 0.3?
 						pCurrCont->m_lUnderlineColor = pShape->m_dHeight > 0.3 ? pShape->m_oBrush.Color1 : pShape->m_oPen.Color;
 					}
 

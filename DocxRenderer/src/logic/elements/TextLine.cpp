@@ -24,6 +24,7 @@ namespace NSDocxRenderer
 	void CTextLine::AddContent(CBaseItem *pObj)
 	{
 		CBaseItem::AddContent(pObj);
+		m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(pObj)->m_dTrueHeight);
 
 		if (dynamic_cast<CContText*>(pObj)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
 		{

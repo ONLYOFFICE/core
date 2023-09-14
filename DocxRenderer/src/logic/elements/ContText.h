@@ -54,6 +54,7 @@ namespace NSDocxRenderer
 		const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
 		UINT m_iNumDuplicates {0};
+		double m_dTrueHeight{0};
 
 	public:
 		CContText(CFontManager* pManager);
@@ -62,6 +63,8 @@ namespace NSDocxRenderer
 		virtual void Clear() override final;
 		virtual void AddContent(CBaseItem* pObj) override final {};
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+
+		[[nodiscard]] virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) noexcept  override  final;
 
 		CContText& operator= (const CContText& rCont);
 

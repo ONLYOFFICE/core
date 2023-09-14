@@ -103,6 +103,33 @@ namespace NSDocxRenderer
 		}
 	}
 
+	[[nodiscard]] eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	{
+		if(oSrc->m_eType != ElemType::etContText)
+			return CBaseItem::GetVerticalCrossingType(oSrc);
+
+		auto m_dTop_copy = m_dTop;
+		auto m_dTop_copy_src = oSrc->m_dTop;
+
+		m_dTop = m_dBaselinePos - m_dTrueHeight;
+		const_cast<CBaseItem*>(oSrc)->m_dTop = oSrc->m_dBaselinePos - static_cast<const CContText*>(oSrc)->m_dTrueHeight;
+
+		auto vert_cross = CBaseItem::GetVerticalCrossingType(oSrc);
+
+		if(vert_cross == eVerticalCrossingType::vctCurrentAboveNext &&
+				(m_dBaselinePos - oSrc->m_dTop < m_dTrueHeight * 0.3))
+			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentAboveNext;
+
+		if(vert_cross == eVerticalCrossingType::vctCurrentBelowNext &&
+				(oSrc->m_dBaselinePos - m_dTop < static_cast<const CContText*>(oSrc)->m_dTrueHeight * 0.3))
+			vert_cross = eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+
+		m_dTop = m_dTop_copy;
+		const_cast<CBaseItem*>(oSrc)->m_dTop = m_dTop_copy_src;
+
+		return vert_cross;
+	}
+
 	void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
 		if (m_bIsNotNecessaryToUse)

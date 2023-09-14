@@ -21,6 +21,7 @@ namespace NSDocxRenderer
 		CTextLine* m_pLine {nullptr};  //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 		CShape* m_pDominantShape {nullptr};
 		UINT m_iNumDuplicates {0};
+		double m_dTrueHeight{0};
 
 	public:
 		CTextLine();

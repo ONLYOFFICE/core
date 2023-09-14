@@ -75,11 +75,6 @@ HEADERS += \
 	../../../Graphics.h \
 	../../../Image.h \
 	../../../ImageFilesCache.h \
-	../../../MetafileToRenderer.h \
-	../../../MetafileToRendererCheck.h \
-	../../../MetafileToGraphicsRenderer.h \
-	../../../FormField.h \
-	../../../AnnotField.h \
 	../../../structures.h \
 	../../../shading_info.h \
 	../../../GraphicsRenderer.h \
@@ -95,7 +90,15 @@ HEADERS += \
 	../../Graphics.h \
 	../../Image.h \
 	../../../../raster/Metafile/svg/SVGFramework.h \
-	../../../../raster/Metafile/svg/SVGTransformer.h
+	../../../../raster/Metafile/svg/SVGTransformer.h \
+	\
+	../../../MetafileToRenderer.h \
+	../../../MetafileToRendererCheck.h \
+	../../../MetafileToRendererReader.h \
+	../../../MetafileToGraphicsRenderer.h \
+	../../../commands/FormField.h \
+	../../../commands/AnnotField.h \
+	../../../commands/DocInfo.h
 
 SOURCES += \
 	../../../Matrix.cpp \
@@ -112,10 +115,6 @@ SOURCES += \
 	../../../Graphics.cpp \
 	../../../GraphicsRenderer.cpp \
 	../../../Image.cpp \
-	../../../MetafileToRenderer.cpp \
-	../../../MetafileToGraphicsRenderer.cpp \
-	../../../FormField.cpp \
-	../../../AnnotField.cpp \
 	\
 	../../../../fontengine/ApplicationFonts.cpp \
 	../../../../fontengine/FontFile.cpp \
@@ -127,7 +126,14 @@ SOURCES += \
 	../../pro_Image.cpp \
 	../../pro_Graphics.cpp \
 	../../../../raster/Metafile/svg/SVGFramework.cpp \
-	../../../../raster/Metafile/svg/SVGTransformer.cpp
+	../../../../raster/Metafile/svg/SVGTransformer.cpp \
+	\
+	../../../MetafileToRenderer.cpp \
+	../../../MetafileToRendererReader.cpp \
+	../../../MetafileToGraphicsRenderer.cpp \
+	../../../commands/FormField.cpp \
+	../../../commands/AnnotField.cpp \
+	../../../commands/DocInfo.cpp
 
 SOURCES += \
 	../../../../agg-2.4/src/agg_arc.cpp \

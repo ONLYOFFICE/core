@@ -30,7 +30,7 @@
  *
  */
 #include <string>
-#include "../MetafileToRenderer.h"
+#include "MetafileToRenderer.h"
 
 #include "./commands/DocInfo.h"
 #include "./commands/FormField.h"

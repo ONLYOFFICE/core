@@ -811,7 +811,7 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 		int nByteOffset = 0;
 		for (int j = 0; j < arrByteOffset.size(); ++j)
 		{
-			std::memcpy(pDataForVerify + nByteOffset, pFileData + arrByteOffset[j], arrByteLength[j]);
+			memcpy(pDataForVerify + nByteOffset, pFileData + arrByteOffset[j], arrByteLength[j]);
 			nByteOffset += arrByteLength[j];
 		}
 

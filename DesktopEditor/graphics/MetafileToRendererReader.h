@@ -35,6 +35,11 @@
 #pragma once
 #include <string>
 #include "./IRenderer.h"
+
+#if !defined(_WIN32) && !defined(_WIN64)
+#include "../common/StringExt.h"
+#endif
+
 class IMetafileToRenderter;
 
 namespace NSOnlineOfficeBinToPdf

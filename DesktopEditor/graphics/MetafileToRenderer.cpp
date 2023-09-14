@@ -32,14 +32,9 @@
 #pragma once
 
 #include "agg_math.h"
-#include "./MetafileToRendererCheck.h"
+#include "./MetafileToRenderer.h"
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
-#include "../common/StringExt.h"
-
-#if !defined(_WIN32) && !defined(_WIN64)
-#include "../common/StringExt.h"
-#endif
 
 // этот класс нужно переписать. должно работать как и в js
 // а не просто на каждом символе переключаться, если нужно

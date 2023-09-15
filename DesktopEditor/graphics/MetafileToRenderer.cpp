@@ -954,10 +954,8 @@ namespace NSOnlineOfficeBinToPdf
 		CommandType eCommand = ctError;
 
 		bool bIsPathOpened = false;
-		int curindex = 0;
-
 		CBufferReader oReader(pBuffer, lBufferLen);
-		while (curindex < lBufferLen)
+		while (oReader.Check())
 		{
 			eCommand = (CommandType)(oReader.ReadByte());
 			switch (eCommand)

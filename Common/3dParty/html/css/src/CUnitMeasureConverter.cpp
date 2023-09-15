@@ -3,8 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-
-#include "StaticFunctions.h"
+#include <regex>
 
 namespace NSCSS
 {
@@ -27,6 +26,8 @@ namespace NSCSS
 				return 1. / (double)ushDPI * dValue;
 			case NSCSS::Peak:
 				return 0.16667 / (double)ushDPI * dValue;
+			case NSCSS::Twips:
+				return (dValue / 96.) * 1440.;
 		}
 
 		return 0.;
@@ -48,6 +49,8 @@ namespace NSCSS
 				return dValue / 2.54f;
 			case NSCSS::Peak:
 				return 2.36 * dValue;
+			case NSCSS::Twips:
+				return (dValue) * 0.3937 * (double)ushDPI;
 		}
 
 		return 0.;
@@ -69,6 +72,8 @@ namespace NSCSS
 				return dValue / 25.4;
 			case NSCSS::Peak:
 				return 0.236 * dValue;
+			case NSCSS::Twips:
+				return (dValue / 10.) * 0.3937 * (double)ushDPI;
 		}
 
 		return 0.;
@@ -111,6 +116,8 @@ namespace NSCSS
 				return dValue / 72.;
 			case NSCSS::Peak:
 				return dValue / 12.;
+			case NSCSS::Twips:
+				return (dValue / 72.) * 1440.;
 		}
 
 		return 0.;
@@ -132,13 +139,31 @@ namespace NSCSS
 				return dValue / 6.;
 			case NSCSS::Peak:
 				return dValue;
+			case NSCSS::Twips:
+				return dValue * 12. * 20;
 		}
 
 		return 0.;
 	}
+	
+	std::wstring CUnitMeasureConverter::UMtoWString(UnitMeasure enFontSizeUM)
+	{
+		switch(enFontSizeUM)
+		{
+		case Pixel:      return L"px";
+		case Point:      return L"pt";
+		case Cantimeter: return L"cm";
+		case Millimeter: return L"mm";
+		case Inch:       return L"in";
+		case Peak:       return L"pc";
+		case Percent:    return L"%";
+		default:         return std::wstring();
+		}
+	}
+	
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
-		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|rem)?)");
+		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem)?)");
 		std::wsmatch oMatches;
 
 		if(!std::regex_search(wsValue, oMatches, oRegex))
@@ -160,14 +185,18 @@ namespace NSCSS
 			enUnitMeasure = Peak;
 		else if (L"%" == oMatches[3])
 			enUnitMeasure = Percent;
-		else if (L"rem" == oMatches[3])
-		{
-			enUnitMeasure = Percent;
-			dValue *= 100.;
-		}
 		else
 			enUnitMeasure = None;
 		
 		return true;
+	}
+	
+	void CUnitMeasureConverter::ReplaceEmValues(std::wstring &wsValue, double dFontSize, UnitMeasure enFontSizeUM)
+	{
+		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(em|rem){1})");
+		std::wsmatch oMatches;
+	
+		while (std::regex_search(wsValue, oMatches, oRegex))
+			wsValue.replace(oMatches.position(), oMatches.length(), std::to_wstring(std::stod(oMatches[1]) * dFontSize) + UMtoWString(enFontSizeUM));
 	}
 }

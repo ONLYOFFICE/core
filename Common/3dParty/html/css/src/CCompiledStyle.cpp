@@ -16,7 +16,10 @@ namespace NSCSS
 {
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point){}
+	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point)
+	{
+		m_oFont.UpdateSize(14);
+	}
 
 	 CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 	    m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
@@ -119,10 +122,11 @@ namespace NSCSS
 	void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
-
+		
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{
 			std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+
 			SWITCH(pPropertie.first)
 			{
 				//FONT
@@ -134,6 +138,7 @@ namespace NSCSS
 				CASE(L"font-size"):
 				CASE(L"font-size-adjust"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
 					m_oFont.SetSize(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -173,6 +178,8 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oMargin.AddValue(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -180,6 +187,8 @@ namespace NSCSS
 				{
 					if (bIsThereBorder)
 						break;
+
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
 
 					m_oMargin.AddTop(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -190,6 +199,8 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oMargin.AddRight(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -197,6 +208,8 @@ namespace NSCSS
 				{
 					if (bIsThereBorder)
 						break;
+
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
 
 					m_oMargin.AddBottom(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -207,6 +220,8 @@ namespace NSCSS
 					if (bIsThereBorder)
 						break;
 
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oMargin.AddLeft(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -214,30 +229,40 @@ namespace NSCSS
 				CASE(L"padding"):
 				CASE(L"mso-padding-alt"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oPadding.AddValue(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"padding-top"):
 				CASE(L"mso-padding-top-alt"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oPadding.AddTop(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"padding-right"):
 				CASE(L"mso-padding-right-alt"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oPadding.AddRight(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"padding-bottom"):
 				CASE(L"mso-padding-bottom-alt"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oPadding.AddBottom(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"padding-left"):
 				CASE(L"mso-padding-left-alt"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oPadding.AddLeft(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -249,6 +274,8 @@ namespace NSCSS
 				}
 				CASE(L"text-indent"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oText.SetIndent(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
@@ -397,11 +424,15 @@ namespace NSCSS
 				}
 				CASE(L"width"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oDisplay.SetWidth(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				CASE(L"height"):
 				{
+					CUnitMeasureConverter::ReplaceEmValues(pPropertie.second, m_oFont.GetSize().ToDouble(), m_oFont.GetSize().GetUnitMeasure());
+
 					m_oDisplay.SetHeight(pPropertie.second, unLevel, bHardMode);
 					break;
 				}

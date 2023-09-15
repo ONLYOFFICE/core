@@ -7,7 +7,7 @@
 #include <list>
 
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
-#define LINEHEIGHTCOEF  24 // Используется когда LineHeight указан в процентном соотношении
+#define LINEHEIGHTCOEF  24 // Используется когда необходимо перевести в twips значение
 #define SPACINGCOEF     20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
 #define FONTSCALE        2 // Значение шрифта при конвертации в OOXML необходимо увеличиыать в 2 рааз
 
@@ -300,10 +300,10 @@ namespace NSCSS
 		sSpacingValue.reserve(128);
 
 		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
+		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty()/*&& oStyle.m_oMargin.GetPermission()*/)
 		{
-			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Point);
-			const double dSpacingTop    = oStyle.m_oMargin.GetTop().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Point);;
+			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips);
+			const double dSpacingTop    = oStyle.m_oMargin.GetTop().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Twips);;
 			
 			sSpacingValue += L" w:after=\""  + std::to_wstring(dSpacingBottom * SPACINGCOEF) + L"\" ";
 			sSpacingValue += L" w:before=\"" + std::to_wstring(dSpacingTop * SPACINGCOEF) + L"\" ";
@@ -330,7 +330,7 @@ namespace NSCSS
 		}
 //		else if (!oStyle.m_oBorder.Empty())
 //		{
-//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2 * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
+//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * 2 * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
 //		}
 		else if (!oStyle.m_oBorder.Empty())
 			sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
@@ -424,7 +424,7 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * FONTSCALE)); 
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * FONTSCALE)); 
 
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());

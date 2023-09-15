@@ -858,8 +858,13 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
-		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && i != nWidget))
+		Object oRef;
+		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && pField->getFieldRef(&oRef) && oRef.getRefNum() != nWidget))
+		{
+			oRef.free();
 			continue;
+		}
+		oRef.free();
 
 		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, sButtonView, pField);
 		if (pAP)
@@ -1366,7 +1371,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		if (nAnnot >= 0 && i != nAnnot)
+		if (nAnnot >= 0 && oAnnotRef.getRefNum() != nAnnot)
 		{
 			oAnnotRef.free();
 			continue;

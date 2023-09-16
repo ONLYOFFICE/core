@@ -27,9 +27,23 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 LIBS += -L$$CORE_BOOST_LIBS
 
 ADD_DEPENDENCY(kernel)
+ADD_DEPENDENCY(kernel_network)
 ADD_DEPENDENCY(graphics)
+
 ADD_DEPENDENCY(DocxFormatLib)
 ADD_DEPENDENCY(OdfFormatLib)
+ADD_DEPENDENCY(PPTXFormatLib)
+ADD_DEPENDENCY(BinDocument)
+ADD_DEPENDENCY(DocxFormatLib)
+ADD_DEPENDENCY(XlsbFormatLib)
+ADD_DEPENDENCY(RtfFormatLib)
+ADD_DEPENDENCY(CompoundFileLib)
+
+ADD_DEPENDENCY(DocFormatLib XlsFormatLib PPTFormatLib VbaFormatLib)
+ADD_DEPENDENCY(HtmlFile2)
+ADD_DEPENDENCY(UnicodeConverter)
+
+
 
 core_linux {
     LIBS += -Wl,-unresolved-symbols=ignore-in-shared-libs

@@ -604,7 +604,7 @@ AscFonts.Hyphen_Word = function(lang, word)
 		{
 			if (1 === (vector[pos] & 1))
 			{
-				while (posUtf8 < pos)
+				while (posUtf8 < (pos + 1))
 				{
 					++posUnicode;
 					posUtf8 += GetUtf8SymbolLen(curUnicode[posUtf8]);

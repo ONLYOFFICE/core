@@ -261,7 +261,7 @@ JSSmart<CJSValue> CTextMeasurerEmbed::Hyphen_Word(JSSmart<CJSValue> lang, JSSmar
 	{
 		if (1 == (result[pos] & 1))
 		{
-			while (posUtf8 <= pos)
+			while (posUtf8 < (pos + 1))
 			{
 				++posUnicode;
 				posUtf8 += GetUtf8SymbolLen(curUnicode[posUtf8]);

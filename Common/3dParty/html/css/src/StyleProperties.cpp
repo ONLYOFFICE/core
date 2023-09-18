@@ -1984,10 +1984,10 @@ namespace NSCSS
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::map<std::wstring, std::wstring> arAbsoluteFontValues =
-			{{L"xx-small", L"9px"},  {L"x-small", L"10px"},
-			 {L"small",    L"13px"}, {L"medium",  L"16px"},
-			 {L"large",    L"18px"}, {L"x-large", L"24px"},
-			 {L"xx-large", L"32px"}};
+			{{L"xx-small", L"0.6em"},  {L"x-small", L"0.75em"},
+			 {L"small",    L"0.875em"}, {L"medium",  L"1em"},
+			 {L"large",    L"1.125em"}, {L"x-large", L"1.25em"},
+			 {L"xx-large", L"1.5em"}};
 
 		size_t unFoundPos = std::wstring::npos;
 		std::wstring wsNewValue(wsValue);

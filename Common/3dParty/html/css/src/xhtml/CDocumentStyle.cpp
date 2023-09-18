@@ -9,7 +9,6 @@
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
 #define LINEHEIGHTCOEF  24 // Используется когда необходимо перевести в twips значение
 #define POINTCOEF       20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
-#define FONTSCALE        2 // Значение шрифта при конвертации в OOXML необходимо увеличиыать в 2 рааз
 
 #define PAGEWIDTH  (12240 / POINTCOEF)
 #define PAGEHEIGHT (15840 / POINTCOEF)
@@ -319,8 +318,11 @@ namespace NSCSS
 		
 		if (!oStyle.m_oFont.GetLineHeight().Empty())
 		{
-			const double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips, LINEHEIGHTCOEF) * LINEHEIGHTSCALE;
+			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips, LINEHEIGHTCOEF) * LINEHEIGHTSCALE;
 
+			if (NSCSS::None == oStyle.m_oFont.GetLineHeight().GetUnitMeasure())
+				dLineHeight *= LINEHEIGHTCOEF;
+			
 			if (0. != dLineHeight)
 				wsLineHeight = DOUBLE_TO_INTW(dLineHeight);
 		}
@@ -425,7 +427,7 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * FONTSCALE)); 
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips))); 
 
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());

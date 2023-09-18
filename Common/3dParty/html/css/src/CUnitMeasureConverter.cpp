@@ -27,7 +27,7 @@ namespace NSCSS
 			case NSCSS::Peak:
 				return 0.16667 / (double)ushDPI * dValue;
 			case NSCSS::Twips:
-				return (dValue / 96.) * 1440.;
+				return (dValue / (double)ushDPI) * 144.;
 		}
 
 		return 0.;
@@ -95,6 +95,8 @@ namespace NSCSS
 				return dValue;
 			case NSCSS::Peak:
 				return dValue / 72.;
+			case NSCSS::Twips:
+				return dValue * 144.;
 		}
 
 		return 0.;
@@ -117,7 +119,7 @@ namespace NSCSS
 			case NSCSS::Peak:
 				return dValue / 12.;
 			case NSCSS::Twips:
-				return (dValue / 72.) * 1440.;
+				return (dValue / 72.) * 144.;
 		}
 
 		return 0.;
@@ -140,7 +142,7 @@ namespace NSCSS
 			case NSCSS::Peak:
 				return dValue;
 			case NSCSS::Twips:
-				return dValue * 12. * 20;
+				return dValue * 24.;
 		}
 
 		return 0.;

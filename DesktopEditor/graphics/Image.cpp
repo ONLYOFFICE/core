@@ -105,6 +105,16 @@ namespace Aggplus
 		m_Status = Ok;
 	}
 
+    bool CImage::GetInsideFrom(const std::wstring &file_inp, const std::wstring &file_out)
+    {
+        Create(file_inp);
+
+        if (m_Status != Ok) return false;
+
+
+        return SaveFile(file_out, 2);
+    }
+
 	bool CImage::SaveFile(const std::wstring& strFileName, UINT nFileType)
 	{
 		CBgraFrame oBgraFrame;

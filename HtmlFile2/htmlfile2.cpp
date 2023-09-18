@@ -972,11 +972,19 @@ private:
 			sSelectors.pop_back();
 			return;
 		}
+		else if (sName == L"span")
+		{
+			if (sSelectors.back().m_wsClass == L"MsoFootnoteReference")
+			{
+				sSelectors.pop_back();
+				return;
+			}
+			readStream(oXml, sSelectors, oTS);
+		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
 				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
-				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" ||
-				sName == L"acronym")
+				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym")
 			readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
 		else
@@ -1709,15 +1717,26 @@ private:
 		{
 			oXml->WriteString(L"</w:hyperlink>");
 
+			bool bFootnote = false;
+			if (sSelectors.size() > 1)
+			{
+				const NSCSS::CNode& oNode = sSelectors[sSelectors.size() - 2];
+				bFootnote = oNode.m_wsName == L"p" && oNode.m_wsClass == L"MsoFootnoteText";
+			}
+
 			// Сноска
 			if (bCross && !sFootnote.empty())
 			{
-				std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
-				oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
-				oXml->WriteString(sFootnoteID);
-				oXml->WriteString(L"\"/></w:r>");
-
-				m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+				if (!bFootnote)
+				{
+					std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+					oXml->WriteString(sFootnoteID);
+					oXml->WriteString(L"\"/></w:r>");
+					m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+				}
+				else
+					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>");
 			}
 		}
 		sNote = L"";

@@ -333,7 +333,7 @@ namespace NSCSS
 //			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2 * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
 //		}
 		else if (!oStyle.m_oBorder.Empty())
-			sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
+			sSpacingValue += L" w:line=\"240\" w:lineRule=\"auto\" ";
 
 		if (!sSpacingValue.empty())
 		{

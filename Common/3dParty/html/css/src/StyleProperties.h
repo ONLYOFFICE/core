@@ -234,6 +234,8 @@ namespace NSCSS
 		TransformTranslate,
 		TransformScale,
 		TransformRotate,
+		TransformSkewX,
+		TransformSkewY,
 		TransformNone
 	} TransformType;
 

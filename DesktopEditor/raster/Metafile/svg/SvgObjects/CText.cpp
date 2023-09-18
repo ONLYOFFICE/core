@@ -181,10 +181,10 @@ namespace SVG
 
 	void CTSpan::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{
-		if (Apply(pRenderer, &pStyles->m_oStroke, true))
+            if (ApplyStroke(pRenderer, &pStyles->m_oStroke, true))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile, true))
+            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += c_nWindingFillMode;
 	}
 
@@ -371,7 +371,7 @@ namespace SVG
 		if (NULL == pRenderer)
 			return;
 
-		Aggplus::CMatrix oCurrentMatrix(m_oStyles.m_oTransform.GetMatrix().GetFinalValue(NSCSS::NSProperties::TransformRotate));
+		Aggplus::CMatrix oCurrentMatrix(m_oTransformtaion.m_oTransform.GetMatrix().GetFinalValue(NSCSS::NSProperties::TransformRotate));
 
 		double dXScale = 1., dYScale = 1.;
 

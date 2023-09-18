@@ -145,22 +145,7 @@ namespace NSCSS
 
 		return 0.;
 	}
-	
-	std::wstring CUnitMeasureConverter::UMtoWString(UnitMeasure enFontSizeUM)
-	{
-		switch(enFontSizeUM)
-		{
-		case Pixel:      return L"px";
-		case Point:      return L"pt";
-		case Cantimeter: return L"cm";
-		case Millimeter: return L"mm";
-		case Inch:       return L"in";
-		case Peak:       return L"pc";
-		case Percent:    return L"%";
-		default:         return std::wstring();
-		}
-	}
-	
+
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
 		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem)?)");
@@ -185,18 +170,13 @@ namespace NSCSS
 			enUnitMeasure = Peak;
 		else if (L"%" == oMatches[3])
 			enUnitMeasure = Percent;
+		else if (L"em" == oMatches[3])
+			enUnitMeasure = Em;
+		else if (L"rem" == oMatches[3])
+			enUnitMeasure = Rem;
 		else
 			enUnitMeasure = None;
 		
 		return true;
-	}
-	
-	void CUnitMeasureConverter::ReplaceEmValues(std::wstring &wsValue, double dFontSize, UnitMeasure enFontSizeUM)
-	{
-		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(em|rem){1})");
-		std::wsmatch oMatches;
-	
-		while (std::regex_search(wsValue, oMatches, oRegex))
-			wsValue.replace(oMatches.position(), oMatches.length(), std::to_wstring(std::stod(oMatches[1]) * dFontSize) + UMtoWString(enFontSizeUM));
 	}
 }

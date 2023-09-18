@@ -15,6 +15,8 @@ namespace NSCSS
 		Millimeter,
 		Inch,
 		Peak,
+		Em,
+		Rem,
 		Twips
 	} UnitMeasure;
 
@@ -29,9 +31,7 @@ namespace NSCSS
 		static double ConvertPt(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);
 		static double ConvertPc(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);
 
-		static std::wstring UMtoWString(UnitMeasure enFontSizeUM);
 		static bool GetValue(const std::wstring& wsValue, double& dValue, UnitMeasure& enUnitMeasure);
-		static void ReplaceEmValues(std::wstring& wsValue, double dFontSize, UnitMeasure enFontSizeUM);
 	};
 }
 

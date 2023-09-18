@@ -129,6 +129,8 @@ namespace NSCSS
 		bool Zero() const;
 		void Clear() override;
 
+		void ConvertTo(UnitMeasure enUnitMeasure, double dPrevValue = 0.);
+		
 		int          ToInt()     const override;
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
@@ -562,6 +564,12 @@ namespace NSCSS
 		bool AddTop    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool AddRight  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool AddBottom (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		
+		void UpdateAll(double dFontSize);
+		void UpdateLeft(double dFontSize);
+		void UpdateTop(double dFontSize);
+		void UpdateRight(double dFontSize);
+		void UpdateBottom(double dFontSize);
 
 		const CDigit& GetLeft  () const;
 		const CDigit& GetTop   () const;
@@ -599,7 +607,8 @@ namespace NSCSS
 		bool SetVariant       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWeight        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		bool UpdateSize(double dSize);
+		void UpdateSize(double dFontSize);
+		void UpdateLineHeight(double dFontSize);
 
 		void Clear();
 

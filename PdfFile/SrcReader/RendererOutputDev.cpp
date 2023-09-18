@@ -35,6 +35,7 @@
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/fofi/FoFiTrueType.h"
+#include "../lib/fofi/FoFiType1C.h"
 #include "../lib/fofi/FoFiIdentifier.h"
 //#include "../lib/xpdf/File.h"
 #include "../lib/xpdf/CMap.h"
@@ -1691,17 +1692,34 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
-				//// TODO: Проверить, почему получение данной кодировки было отключено
-				//if ((pT1CFontFile = CFontFileType1C::LoadFromFile((wchar_t*)wsFileName.c_str())))
-				//{
-				//    pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
-				//    delete pT1CFontFile;
-				//}
-				//else
-				//{
-				pCodeToGID = NULL;
-				nLen = 0;
-				//}
+				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
+				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
+				{
+					nLen = pFontCID->getCIDToGIDLen();
+					if (!nLen)
+						break;
+					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
+					if (!pCodeToGID)
+					{
+						nLen = 0;
+						break;
+					}
+					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
+					break;
+				}
+				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
+				if (pT1CFontFile)
+				{
+					pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
+
+					delete pT1CFontFile;
+					pT1CFontFile = NULL;
+				}
+				else
+				{
+					pCodeToGID = NULL;
+					nLen = 0;
+				}
 				break;
 			}
 			case fontCIDType0COT:

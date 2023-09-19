@@ -276,7 +276,13 @@ bool COfficeFileFormatChecker::isOleObjectFile(POLE::Storage *storage)
 				if (isDocFormatFile(storage))
 				{
 					//nFileType inside
-					return true;
+				}
+			}
+			if (std::string::npos != Program.find("PowerPoint") || std::string::npos != UserType.find("PowerPoint"))
+			{
+				if (isPptFormatFile(storage))
+				{
+					nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
 				}
 			}
 			return true;

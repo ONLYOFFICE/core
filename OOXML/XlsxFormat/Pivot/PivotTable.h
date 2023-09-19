@@ -102,6 +102,7 @@ namespace OOX
 				writer.WriteString(L"/>");
 			}
 			XLS::BaseObjectPtr toBinPrfItem();
+			XLS::BaseObjectPtr toBinItemIndex();
             void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);

@@ -687,6 +687,25 @@ namespace OOX
                 }
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinPivotCache()
+		{
+			auto ptr(new XLSB::FRTPIVOTCACHEDEF);
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+				if (!m_arrExt.empty())
+				{
+					for(auto i:m_arrExt)
+					{
+
+						if(i->m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}")
+						{
+							ptr->m_PCD14 = i->m_oPivotCacheDefinitionExt->toBin();
+						}
+
+					}
+                }
+			return objectPtr;
+		}
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinSlicerCache()
 		{
 			auto ptr(new XLSB::FRTSLICERCACHE);

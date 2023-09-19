@@ -1883,7 +1883,7 @@ std::wstring PPT::CShapeWriter::ConvertShape()
         double width	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetWidth() : pShapeElement->m_rcAnchor.GetWidth();
         double height	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetHeight() : pShapeElement->m_rcAnchor.GetHeight();
 
-        if ( width > 0 && height > 0 )
+        if (( width > 0 && height > 0 ) || (pShapeElement->m_lShapeType == oox::msosptLine))
         {
             m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
         }

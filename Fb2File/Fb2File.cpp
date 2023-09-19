@@ -146,9 +146,9 @@ std::wstring EncodeXmlString(const std::wstring& s)
     replace_all(sRes, L">", L"&gt;");
     replace_all(sRes, L"\"", L"&quot;");
     replace_all(sRes, L"\'", L"&#39;");
-    replace_all(sRes, L"\n", L"&#xA;");
-    replace_all(sRes, L"\r", L"&#xD;");
-    replace_all(sRes, L"\t", L"&#x9;");
+	replace_all(sRes, L"\n", L" ");
+	replace_all(sRes, L"\r", L" ");
+	replace_all(sRes, L"\t", L" ");
 
     return sRes;
 }
@@ -163,7 +163,8 @@ public:
     std::map<std::wstring, std::vector<std::wstring>> m_mImages; // Картинки
     std::map<std::wstring, std::wstring> m_mFootnotes;           // Сноски
 
-    NSStringUtils::CStringBuilder m_oDocXmlRels; // document.xml.rels
+	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
+	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 
 private:
     int m_nContentsId;       // ID содержания
@@ -171,6 +172,7 @@ private:
     int m_nHyperlinkId;      // ID внешней ссылки
     bool m_bFootnote;        // Чтение Footnote из html
     bool m_bInP;
+	bool m_bInNote;
     bool m_bInTable;
 
     // STitleInfo* m_pSrcTitleInfo;  // Данные об исходнике книги
@@ -187,6 +189,7 @@ public:
         m_nHyperlinkId      = 1;
         m_bFootnote = false;
         m_bInP      = false;
+		m_bInNote   = false;
         m_bInTable  = false;
     }
 
@@ -443,11 +446,14 @@ public:
                 else
                 {
                     // Пишем рельсы
-                    m_oDocXmlRels.WriteString(L"<Relationship Id=\"rHyp");
-                    m_oDocXmlRels.WriteString(std::to_wstring(m_nHyperlinkId));
-                    m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
-                    m_oDocXmlRels.WriteEncodeXmlString(sRef);
-                    m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
+					NSStringUtils::CStringBuilder* oRelationshipXml = &m_oDocXmlRels;
+					if (m_bInNote)
+						oRelationshipXml = &m_oNoteXmlRels;
+					oRelationshipXml->WriteString(L"<Relationship Id=\"rHyp");
+					oRelationshipXml->WriteString(std::to_wstring(m_nHyperlinkId));
+					oRelationshipXml->WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
+					oRelationshipXml->WriteEncodeXmlString(sRef);
+					oRelationshipXml->WriteString(L"\" TargetMode=\"External\"/>");
 
                     // Пишем в document.xml
                     oBuilder.WriteString(L"<w:hyperlink w:tooltip=\"");
@@ -690,7 +696,7 @@ public:
         oBuilder += L"<w:p></w:p>";
     }
 
-    void readAnnotationFromDescription(NSStringUtils::CStringBuilder& oBuilder)
+	void readAnnotationFromDescription(NSStringUtils::CStringBuilder& oBuilder, bool bInP)
     {
         if (m_oLightReader.IsEmptyNode())
             return;
@@ -700,17 +706,13 @@ public:
         {
             std::wstring sAnName = m_oLightReader.GetName();
             if (sAnName == L"#text")
-                m_oTitleInfo.m_sAnnotation += ((m_oTitleInfo.m_sAnnotation.empty() ? L"" : L"&#xA;") + m_oLightReader.GetText());
-            else if (sAnName == L"image")
-            {
-                oBuilder += L"<w:p><w:pPr><w:pStyle w:val=\"image\"/></w:pPr>";
-                readImage(oBuilder);
-                oBuilder += L"</w:p>";
-            }
-            else if (sAnName == L"table")
-                readTable(oBuilder);
+			{
+				if (!bInP)
+					continue;
+				m_oTitleInfo.m_sAnnotation += ((m_oTitleInfo.m_sAnnotation.empty() ? L"" : L" ") + m_oLightReader.GetText());
+			}
             else
-                readAnnotationFromDescription(oBuilder);
+				readAnnotationFromDescription(oBuilder, bInP || sAnName == L"p" || sAnName == L"poem" || sAnName == L"cite" || sAnName == L"subtitle");
         }
     }
 
@@ -952,6 +954,7 @@ public:
         if (m_oLightReader.IsEmptyNode())
             return;
 
+		m_bInNote = true;
         int nBDepth = m_oLightReader.GetDepth();
         while (m_oLightReader.ReadNextSiblingNode(nBDepth))
         {
@@ -1044,6 +1047,7 @@ public:
             }
             oFootnotes += L"</w:footnote>";
         }
+		m_bInNote = false;
     }
 
     // Читает binary
@@ -1301,7 +1305,7 @@ public:
         {
             std::wstring sName = m_oLightReader.GetName();
             if (sName == L"annotation")
-                readAnnotationFromDescription(oBuilder);
+				readAnnotationFromDescription(oBuilder, false);
             else if (sName == L"coverpage")
             {
                 if (m_oLightReader.IsEmptyNode())
@@ -1908,14 +1912,14 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     oFootnotes += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
 
     // Создаем рельсы
-    //NSStringUtils::CStringBuilder oRels;
-    m_internal->m_oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
-    m_internal->m_oDocXmlRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
+	m_internal->m_oDocXmlRels  += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
+	m_internal->m_oNoteXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
 
     // Директория картинок
     std::wstring sMediaDirectory = sDirectory + L"/word/media";
@@ -2023,7 +2027,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
         oCore.WriteString(L"</dc:description>");
     }
     // Конец core
-    oCore += L"<cp:revision>1</cp:revision></cp:coreProperties>";
+	oCore += L"</cp:coreProperties>";
     // Пишем core в файл
     NSFile::CFileBinary oCoreWriter;
     if (oCoreWriter.CreateFileW(sDocPropsDirectory + L"/core.xml"))
@@ -2045,7 +2049,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     NSStringUtils::CStringBuilder oApp;
     oApp += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\"><Application>";
     oApp += sApplication;
-    oApp += L"</Application><Characters>0</Characters><CharactersWithSpaces>0</CharactersWithSpaces><DocSecurity>0</DocSecurity><HyperlinksChanged>false</HyperlinksChanged><Lines>1</Lines><LinksUpToDate>false</LinksUpToDate><Pages>1</Pages><Paragraphs>1</Paragraphs><ScaleCrop>false</ScaleCrop><SharedDoc>false</SharedDoc><TotalTime>1</TotalTime><Words>0</Words></Properties>";
+	oApp += L"</Application><DocSecurity>0</DocSecurity><HyperlinksChanged>false</HyperlinksChanged><LinksUpToDate>false</LinksUpToDate><ScaleCrop>false</ScaleCrop><SharedDoc>false</SharedDoc></Properties>";
     // Пишем app в файл
     NSFile::CFileBinary oAppWriter;
     if (oAppWriter.CreateFileW(sDocPropsDirectory + L"/app.xml"))
@@ -2063,6 +2067,12 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
         oRelsWriter.WriteStringUTF8(m_internal->m_oDocXmlRels.GetData());
         oRelsWriter.CloseFile();
     }
+	m_internal->m_oNoteXmlRels += L"</Relationships>";
+	if (oRelsWriter.CreateFileW(sDirectory + L"/word/_rels/footnotes.xml.rels"))
+	{
+		oRelsWriter.WriteStringUTF8(m_internal->m_oNoteXmlRels.GetData());
+		oRelsWriter.CloseFile();
+	}
 
     // Архивим в docx
     bool bNeedDocx = false;

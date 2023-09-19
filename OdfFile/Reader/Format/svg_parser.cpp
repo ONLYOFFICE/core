@@ -32,8 +32,12 @@
 #pragma once   
 
 #include "svg_parser.h"
+
+#include "../../../OOXML/Base/Unit.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 namespace svg_path
 {
@@ -67,16 +71,74 @@ namespace svg_path
 		const bool bPredicate	((L'0' <= aChar && L'9' >= aChar)
 								|| (bSignAllowed && L'+' == aChar)
 							    || (bSignAllowed && L'-' == aChar)
-							    || (L'.' == aChar) );
+							    || (L'.' == aChar) || (L'?' == aChar));
 
 		return bPredicate;
 	}
 
 	inline bool isOnNumberChar(const std::wstring& rStr, const int nPos, bool bSignAllowed = true)
 	{
-		return isOnNumberChar(rStr[nPos],bSignAllowed);
+		return isOnNumberChar(rStr[nPos], bSignAllowed);
 	}
+    bool getStringChar(std::wstring& o_fRetval, int& io_rPos, const std::wstring& rStr)
+    {
+        wchar_t aChar(rStr[io_rPos]);
+        std::wstring  sNumberString;
+        std::wstring  tmpString;
 
+        if (wchar_t(L'?') == aChar)
+        {
+            aChar = rStr[++io_rPos];
+            while (wchar_t(L' ') != aChar && io_rPos < rStr.length())
+            {
+                tmpString = rStr[io_rPos];
+
+                XmlUtils::replace_all(tmpString, L"f", L"gd");
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+        }
+        else
+        {
+            bool separator_seen = false;
+            if (wchar_t(L'+') == aChar || wchar_t(L'-') == aChar)
+            {
+                tmpString = rStr[io_rPos];
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+
+            while (((wchar_t(L'0') <= aChar && wchar_t(L'9') >= aChar)
+                || (!separator_seen && wchar_t(L'.') == aChar)) && io_rPos < rStr.length())
+            {
+                if (wchar_t(L'.') == aChar) separator_seen = true;
+                tmpString = rStr[io_rPos];
+                sNumberString.append(tmpString);
+                aChar = rStr[++io_rPos];
+            }
+            if (wchar_t(L'e') == aChar || wchar_t(L'E') == aChar)
+            {
+                sNumberString.append(&rStr[io_rPos], 1);
+                aChar = rStr[++io_rPos];
+
+                if (wchar_t(L'+') == aChar || wchar_t(L'-') == aChar)
+                {
+                    tmpString = rStr[io_rPos];
+                    sNumberString.append(tmpString);
+                    aChar = rStr[++io_rPos];
+                }
+
+                while (wchar_t(L'0') <= aChar && wchar_t(L'9') >= aChar && io_rPos < rStr.length())
+                {
+                    tmpString = rStr[io_rPos];
+                    sNumberString.append(tmpString);
+                    aChar = rStr[++io_rPos];
+                }
+            }
+        }
+        o_fRetval = sNumberString;
+        return true;
+    }
 	bool getDoubleChar(double&  o_fRetval,int &  io_rPos, const std::wstring& rStr)
 	{
 		wchar_t aChar( rStr[io_rPos] );
@@ -146,6 +208,17 @@ namespace svg_path
 
 		return true;
 	}
+    bool importStringAndSpaces(std::wstring& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
+    {
+        o_fRetval = L"";
+
+        if (!getStringChar(o_fRetval, io_rPos, rStr))
+            return false;
+
+        skipSpacesAndCommas(io_rPos, rStr, nLen);
+
+        return true;
+    }
 	bool importDoubleAndSpacesVml(double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
 	{
 		o_fRetval = 0;
@@ -746,6 +819,322 @@ namespace svg_path
         return true;
     }
 
+    bool parseSvgS(std::vector<_polylineS>& Polyline, const std::wstring& rSvgDStatement, bool bWrongPositionAfterZ, bool& bIsClosed, bool& bStroked)
+    {
+        Polyline.clear();
+        const int nLen(rSvgDStatement.length());
+        int nPos(0);
+
+        std::wstring nLastX;
+        std::wstring nLastY;
+
+        std::wstring nLastControlX;
+        std::wstring nLastControlY;
+
+        _polylineS aCurrPoly;
+
+        bIsClosed = false;
+        bStroked = true;
+
+        // skip initial whitespace
+        skipSpaces(nPos, rSvgDStatement, nLen);
+
+        while (nPos < nLen)
+        {
+            bool bRelative(false);
+            bool bMoveTo(false);
+            const wchar_t aCurrChar(rSvgDStatement[nPos]);
+
+            aCurrPoly.command.clear();
+
+            switch (aCurrChar)
+            {
+            case 'z':
+            case 'Z':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                bIsClosed = true;
+
+                if (aCurrPoly.points.size() > 0 && !bWrongPositionAfterZ)
+                {
+                    const _pointS aFirst(aCurrPoly.points[0]);
+                    nLastX = aFirst.x.get();
+                    nLastY = aFirst.y.get();
+                }
+
+                aCurrPoly.command = L"a:close";
+                Polyline.push_back(aCurrPoly);
+
+            } break;
+            case 'm':
+            case 'M':
+            {
+                bMoveTo = true;
+            }
+            case 'l':
+            case 'L':
+            {
+                if ('m' == aCurrChar || 'l' == aCurrChar)
+                {
+                    bRelative = true;
+                }
+
+                if (aCurrPoly.points.size() > 0)
+                {
+                    if (bIsClosed)
+                    {
+                        //closeWithGeometryChange(aCurrPoly);
+                    }
+                    Polyline.push_back(aCurrPoly);
+
+                    bIsClosed = false;
+                    if (bMoveTo)	aCurrPoly.command = L"a:moveTo";
+                    else		aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.clear();
+                }
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+                aCurrPoly.command.clear();
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    if (bMoveTo) aCurrPoly.command = L"a:moveTo";
+                    else aCurrPoly.command = L"a:lnTo";
+
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }
+            }break;
+            case 'h':
+            {
+                bRelative = true;
+            }
+            case 'H'://горизонт линия
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY(nLastY);
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                    }
+
+                    nLastX = nX;
+
+                    aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }
+                break;
+            }
+
+            case 'v':
+            {
+                bRelative = true;
+            }
+            case 'V'://вертикальная линия
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX(nLastX), nY;
+
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+
+                    if (bRelative)
+                    {
+                        nY += L"+" + nLastY;
+                    }
+
+                    nLastY = nY;
+
+                    aCurrPoly.command = L"a:lnTo";
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+                }                
+            }break;
+
+            case 's':
+            {
+                bRelative = true;
+            }
+            case 'S':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                bool bPresentNumber = false;
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    bPresentNumber = true;
+                    std::wstring nX, nY;
+                    std::wstring nX2, nY2;
+                    std::wstring nX1, nY1;
+
+                    if (!importStringAndSpaces(nX2, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nY2, nPos, rSvgDStatement, nLen)) return false;
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX2 += L"+" + nLastX;
+                        nY2 += L"+" + nLastY;
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+                    //// use mirrored previous control point
+                    //nX1 = ((2.0 * nLastX) - nLastControlX);
+                    //nY1 = ((2.0 * nLastY) - nLastControlY);
+
+                    aCurrPoly.command = L"a:cubicBezTo";
+                    // append curved edge
+                    aCurrPoly.points.push_back(_pointS(nX1, nY1));
+                    aCurrPoly.points.push_back(_pointS(nX2, nY2));
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX2;
+                    nLastControlY = nY2;
+                }
+                if (false == bPresentNumber)
+                {
+                    bStroked = false;
+                }
+            }break;
+
+            case 'c':
+            {
+                bRelative = true;
+            }
+            case 'C':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+                    std::wstring nX1, nY1;
+                    std::wstring nX2, nY2;
+
+                    if (!importStringAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nX2, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY2, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX1 += L"+" + nLastX;
+                        nY1 += L"+" + nLastY;
+                        nX2 += L"+" + nLastX;
+                        nY2 += L"+" + nLastY;
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    aCurrPoly.command = L"a:cubicBezTo";
+                    // append curved edge
+                    aCurrPoly.points.push_back(_pointS(nX1, nY1));
+                    aCurrPoly.points.push_back(_pointS(nX2, nY2));
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX2;
+                    nLastControlY = nY2;
+                }
+            }break;
+
+            case 'G':
+            {
+                nPos++;
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                {
+                    std::wstring nX, nY;
+                    std::wstring A1, A2;
+
+                    if (!importStringAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(A1, nPos, rSvgDStatement, nLen))	return false;
+                    if (!importStringAndSpaces(A2, nPos, rSvgDStatement, nLen))	return false;
+
+                    if (bRelative)
+                    {
+                        nX += L"+" + nLastX;
+                        nY += L"+" + nLastY;
+                    }
+
+                    aCurrPoly.command = L"a:ArcTo";
+                    // append curved edge
+                    aCurrPoly.points.push_back(_pointS(nX, nY));
+                    aCurrPoly.points.push_back(_pointS(A1, A2));
+
+                    Polyline.push_back(aCurrPoly);
+                    aCurrPoly.points.clear();
+
+                    nLastX = nX;
+                    nLastY = nY;
+
+                    nLastControlX = nX;
+                    nLastControlY = nY;
+                }
+            }break;
+            default:
+            {
+                ++nPos;
+                break;
+            }
+            }
+        }
+
+        if ((aCurrPoly.points.size() > 0/* || !bIsClosed*/) && !aCurrPoly.command.empty() && aCurrPoly.command != L"a:cubicBezTo")
+        {
+            Polyline.push_back(aCurrPoly);
+        }
+
+        return true;
+    }
 
 
 }

@@ -1780,7 +1780,7 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 			break;
 	}
 
-	//XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
+	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
 	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
 	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");

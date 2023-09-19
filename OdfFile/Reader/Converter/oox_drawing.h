@@ -145,7 +145,14 @@ namespace oox
 
 namespace svg_path
 {
-	void oox_serialize	(std::wostream & strm, _point & val);
-	void oox_serialize	(std::wostream & strm, _polyline & val);
-	void oox_serialize	(std::wostream & strm, std::vector<_polyline> & path);
+	void oox_serialize (std::wostream& strm, _point & val);
+	void oox_serialize (std::wostream& strm, _polyline & val);
+	void oox_serialize (std::wostream& strm, std::vector<_polyline> & path);
+	
+	void oox_serialize(std::wostream& strm, _pointS& val);
+	void oox_serialize(std::wostream& strm, _polylineS& val);
+	void oox_serialize (std::wostream& strm, std::vector<_polylineS>& path);
+
+	void oox_serialize(std::wostream& strm, std::vector<std::pair<std::wstring, std::wstring>>& equations);
+
 }

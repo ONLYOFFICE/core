@@ -153,6 +153,7 @@ private:
 
 	// format -> *t format -> all formats
 	bool m_bTroughConversion;
+	bool m_bSaveEnvironment;
 
 	std::vector<std::wstring> m_deleteLaterFiles;
 	std::vector<std::wstring> m_deleteLaterDirectories;
@@ -180,6 +181,7 @@ public:
 	void SetPassword(const std::wstring& password);
 	void SetTimeout(unsigned long timeout);
 	void SetFilesCount(int totalFiles, int currFile);
+	void SetSaveEnvironment(bool bSaveEnvironment);
 
 	virtual DWORD ThreadProc();
 
@@ -204,6 +206,7 @@ private:
 	bool m_bIsErrorsOnly;
 	bool m_bIsDeleteOk;
 	bool m_bIsTrough;
+	bool m_bSaveEnvironment;
 
 	int m_totalFiles;
 	int m_currFile;

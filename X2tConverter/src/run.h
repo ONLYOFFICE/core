@@ -45,7 +45,11 @@
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutIsTimeout = nullptr)
+	int Convert(const std::wstring& sConverterDirectory,
+	const std::wstring sXmlPath,
+	unsigned long nTimeout = 0,
+	bool *bOutIsTimeout = nullptr,
+	bool bIsSaveEnvironment = false)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -154,12 +158,6 @@ namespace NSX2T
 			nargs[1] = sXmlA.c_str();
 			nargs[2] = NULL;
 
-#ifndef _MAC
-			putenv(&sLibraryDir[0]);
-#else
-			putenv(&sLibraryDir[0]);
-			putenv(&sPATH[0]);
-#endif
 			if(nTimeout != 0)
 			{
 				// 5 secs to send signal etc...
@@ -167,9 +165,39 @@ namespace NSX2T
 				setrlimit(RLIMIT_CPU, &limit);
 			}
 
+			char** penv;
+#ifndef _MAC
+			if(bIsSaveEnvironment)
+			{
+				putenv(&sLibraryDir[0]);
+				penv = environ;
+			}
+			else
+			{
+				char* nenv[2];
+				nenv[0] = &sLibraryDir[0];
+				nenv[1] = NULL;
+				penv = nenv;
+			}
+#else
+			if(bIsSaveEnvironment)
+			{
+				putenv(&sLibraryDir[0]);
+				putenv(&sPATH[0]);
+				penv = environ;
+			}
+			else
+			{
+				char* nenv[3];
+				nenv[0] = &sLibraryDir[0];
+				nenv[1] = &sPATH[0];
+				nenv[2] = NULL;
+				penv = nenv;
+			}
+#endif
 			execve(sProgramm.c_str(),
 				   (char * const *)nargs,
-				   (char * const *)environ);
+				   (char * const *)penv);
 			exit(EXIT_SUCCESS);
 			break;
 		}

@@ -5,7 +5,7 @@
 CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 {
 	// initialize libVLC
-	m_pVlcInstance = libvlc_new(0, NULL);
+		m_pVlcInstance = libvlc_new(0, NULL);
 	// error if libvlc instantiation was unsuccessful
 	if (m_pVlcInstance == nullptr)
 	{
@@ -13,7 +13,7 @@ CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 		exit(1);
 	}
 	// initialize vlc media player
-	m_pVlcPlayer = libvlc_media_player_new(m_pVlcInstance);
+		m_pVlcPlayer = libvlc_media_player_new(m_pVlcInstance);
 	// disable event handling by vlc internals
 	libvlc_video_set_mouse_input(m_pVlcPlayer, false);
 	libvlc_video_set_key_input(m_pVlcPlayer, false);
@@ -30,10 +30,10 @@ CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 
 CVlcPlayer::~CVlcPlayer()
 {
+	if (m_pVlcPlayer)
+			libvlc_media_player_release(m_pVlcPlayer);
 	if (m_pVlcInstance)
 		libvlc_release(m_pVlcInstance);
-	if (m_pVlcPlayer)
-		libvlc_media_player_release(m_pVlcPlayer);
 }
 
 void CVlcPlayer::onStateChanged(const libvlc_event_t* pEvent, void* pData)

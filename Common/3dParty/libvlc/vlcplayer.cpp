@@ -26,14 +26,15 @@ CVlcPlayer::CVlcPlayer(QWidget* parent) : QWidget(parent)
 		libvlc_event_attach(m_pEventManager, nEvent, onStateChanged, this);
 	}
 	libvlc_event_attach(m_pEventManager, libvlc_MediaPlayerTimeChanged , onTimeChanged, this);
+	libvlc_event_attach(m_pEventManager, libvlc_MediaPlayerPositionChanged , onPositionChanged, this);
 }
 
 CVlcPlayer::~CVlcPlayer()
 {
+	if (m_pVlcPlayer)
+			libvlc_media_player_release(m_pVlcPlayer);
 	if (m_pVlcInstance)
 		libvlc_release(m_pVlcInstance);
-	if (m_pVlcPlayer)
-		libvlc_media_player_release(m_pVlcPlayer);
 }
 
 void CVlcPlayer::onStateChanged(const libvlc_event_t* pEvent, void* pData)
@@ -46,6 +47,12 @@ void CVlcPlayer::onTimeChanged(const libvlc_event_t* pEvent, void* pData)
 {
 	CVlcPlayer* pVlcPlayer = reinterpret_cast<CVlcPlayer*>(pData);
 	emit pVlcPlayer->timeChanged(pEvent->u.media_player_time_changed.new_time);
+}
+
+void CVlcPlayer::onPositionChanged(const libvlc_event_t* pEvent, void* pData)
+{
+	CVlcPlayer* pVlcPlayer = reinterpret_cast<CVlcPlayer*>(pData);
+	emit pVlcPlayer->positionChanged(pEvent->u.media_player_position_changed.new_position);
 }
 
 void CVlcPlayer::integrateIntoWidget(QWidget* pWidget)
@@ -95,14 +102,24 @@ void CVlcPlayer::setVolume(int nVolume)
 	libvlc_audio_set_volume(m_pVlcPlayer, nVolume);
 }
 
-void CVlcPlayer::setTime(int nTime)
+void CVlcPlayer::setTime(qint64 nTime)
 {
 	libvlc_media_player_set_time(m_pVlcPlayer, nTime);
+}
+
+void CVlcPlayer::setPosition(float fPos)
+{
+	libvlc_media_player_set_position(m_pVlcPlayer, fPos);
 }
 
 bool CVlcPlayer::isAudio()
 {
 	return !libvlc_media_player_has_vout(m_pVlcPlayer);
+}
+
+bool CVlcPlayer::isPlaying()
+{
+	return libvlc_media_player_is_playing(m_pVlcPlayer);
 }
 
 libvlc_state_t CVlcPlayer::getState()

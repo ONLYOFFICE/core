@@ -395,38 +395,42 @@ public:
             // Читаем ссылку
             else if (sName == L"a")
             {
-                bool bCross = true;
+				bool bCross = true, bMsoFootnote = false;
                 // Читаем href
                 std::wstring sRef;
                 while (m_oLightReader.MoveToNextAttribute())
                 {
                     std::wstring sTName = m_oLightReader.GetName();
+					std::wstring sTText = m_oLightReader.GetText();
                     size_t nLen = (sTName.length() > 4 ? sTName.length() - 4 : 0);
                     if (sTName.substr(nLen) == L"href")
                     {
-                        std::wstring sText = m_oLightReader.GetText();
-                        size_t nRef = sText.find('#');
+
+						size_t nRef = sTText.find('#');
                         if (nRef != 0)
                         {
                             bCross = false;
-                            sRef = sText;
+							sRef = sTText;
                         }
-                        else if (sText.length() > 1)
-                            sRef = sText.substr(1);
+						else if (sTText.length() > 1)
+							sRef = sTText.substr(1);
                         break;
                     }
+					if (sTName == L"style" && sTText.find(L"mso-footnote-id") != std::wstring::npos)
+						bMsoFootnote = true;
                 }
                 m_oLightReader.MoveToElement();
+				if (m_bFootnote && bMsoFootnote)
+					continue;
 
                 if (bCross)
                 {
                     std::map<std::wstring, std::wstring>::iterator it = m_mFootnotes.find(sRef);
                     if (it != m_mFootnotes.end())
                     {
-                        // Пробел перед текстом внутри сноски
-                        oBuilder += L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>";
                         // Читаем текст внутри сноски
-                        readP(sRStyle, oBuilder);
+						if (!bMsoFootnote)
+							readP(sRStyle, oBuilder);
                         // Стиль сноски
                         oBuilder += L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"";
                         oBuilder += it->second;
@@ -995,19 +999,11 @@ public:
                     while (m_oLightReader.ReadNextSiblingNode(nTDepth))
                     {
                         if (m_oLightReader.GetName() == L"p")
-                        {
-                            oFootnotes += L"<w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                            readP(L"", oFootnotes);
-                            oFootnotes += L"</w:p>";
-                        }
+							ReadFootnote(oFootnotes);
                     }
                 }
                 else if (sName == L"p" || sName == L"subtitle")
-                {
-                    oFootnotes += L"<w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                    readP(L"", oFootnotes);
-                    oFootnotes += L"</w:p>";
-                }
+					ReadFootnote(oFootnotes);
                 else if (sName == L"poem")
                 {
                     if (m_oLightReader.IsEmptyNode())
@@ -1028,20 +1024,12 @@ public:
                             {
                                 // Читаем v (один или более)
                                 if (m_oLightReader.GetName() == L"v")
-                                {
-                                    oFootnotes += L"<w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                                    readP(L"", oFootnotes);
-                                    oFootnotes += L"</w:p>";
-                                }
+									ReadFootnote(oFootnotes);
                             }
                         }
                         // Читаем text-author (любое)
                         else if (sPName == L"text-author")
-                        {
-                            oFootnotes += L"<w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r>";
-                            readP(L"", oFootnotes);
-                            oFootnotes += L"</w:p>";
-                        }
+							ReadFootnote(oFootnotes);
                     }
                 }
             }
@@ -1682,6 +1670,10 @@ public:
                     {
                         if (!m_bFootnote && sAtrName == L"style" && sAtrText.find(L"mso-footnote-id") != std::wstring::npos)
                         {
+							oXml.WriteString(sAtrName + L"=\"");
+							oXml.WriteEncodeXmlString(sAtrText);
+							oXml.WriteString(L"\" ");
+
                             sAtrText = sAtrText.substr(sAtrText.rfind(L':') + 1);
                             oXml.WriteString(L"href=\"#");
                             oXml.WriteString(sAtrText);
@@ -1867,6 +1859,16 @@ public:
         if (number >= 1) return L"i"    + ToLowerRoman(number - 1);
         return L"";
     }
+
+private:
+	void ReadFootnote(NSStringUtils::CStringBuilder& oFootnotes)
+	{
+		oFootnotes += L"<w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>";
+		m_bFootnote = true;
+		readP(L"", oFootnotes);
+		m_bFootnote = false;
+		oFootnotes += L"</w:p>";
+	}
 };
 
 CFb2File::CFb2File()

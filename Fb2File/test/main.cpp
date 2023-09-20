@@ -16,7 +16,7 @@ void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& a
 int main()
 {
     bool bBatchMode = false;
-    bool bFromHtml  = false;
+	bool bFromHtml  = false;
     if (bBatchMode)
     {
         // Директория файлов
@@ -113,7 +113,7 @@ int main()
 
         CFb2Params oParams;
         oParams.bNeedDocx = true;
-        oParams.bNeedContents = true;
+		oParams.bNeedContents = false;
 
         std::cout << (oFile.Open(sFile, sOutputDirectory, &oParams) == S_OK ? "Success" : "Failure") << std::endl;
     }

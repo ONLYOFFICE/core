@@ -16,8 +16,9 @@ public:
 
 public:
 	// libvlc event callbacks
-	static void onStateChanged(const libvlc_event_t *pEvent, void *pData);
-	static void onTimeChanged(const libvlc_event_t *pEvent, void *pData);
+	static void onStateChanged(const libvlc_event_t* pEvent, void *pData);
+	static void onTimeChanged(const libvlc_event_t* pEvent, void *pData);
+	static void onPositionChanged(const libvlc_event_t* pEvent, void *pData);
 
 public:
 	void integrateIntoWidget(QWidget* pWidget);
@@ -26,13 +27,16 @@ public:
 	void play();
 	void stop();
 	void setVolume(int nVolume);
-	void setTime(int nTime);
+	void setTime(qint64 nTime);
+	void setPosition(float fPos);
 	bool isAudio();
+	bool isPlaying();
 	libvlc_state_t getState();
 
 signals:
 	void stateChanged(int newState);
 	void timeChanged(qint64 nNewTime);
+	void positionChanged(float fNewPos);
 
 public:
 	libvlc_instance_t* m_pVlcInstance;

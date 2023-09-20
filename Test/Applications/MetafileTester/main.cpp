@@ -143,7 +143,7 @@ int wmain(int argc, wchar_t* argv[])
 
 	int nResult;
 
-	if (!pMetafile->LoadFromFile(argv[1]))
+	if (!pMetafile->LoadFromFile(wsInputFilePath.c_str()))
 	{
 		std::wcout << L"METAFILE OPENNING ERROR" << std::endl;
 		nResult = METAFILE_OPENNING_ERROR;

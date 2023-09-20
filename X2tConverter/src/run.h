@@ -46,10 +46,10 @@
 namespace NSX2T
 {
 	int Convert(const std::wstring& sConverterDirectory,
-	const std::wstring sXmlPath,
-	unsigned long nTimeout = 0,
-	bool *bOutIsTimeout = nullptr,
-	bool bIsSaveEnvironment = false)
+		const std::wstring sXmlPath,
+		unsigned long nTimeout = 0,
+		bool *bOutIsTimeout = nullptr,
+		bool bIsSaveEnvironment = false)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -90,8 +90,16 @@ namespace NSX2T
 
 		PROCESS_INFORMATION processinfo;
 		ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+
+		LPTCH env = NULL;
+		if(!bIsSaveEnvironment)
+		{
+			env = new wchar_t[1];
+			env[0] = 0;
+		}
+
 		BOOL bResult = CreateProcessW(sConverterExe.c_str(), pCommandLine,
-									  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
+									  NULL, NULL, TRUE, CREATE_NO_WINDOW, env, NULL, &sturtupinfo, &processinfo);
 
 		if (bResult && ghJob)
 		{
@@ -99,13 +107,13 @@ namespace NSX2T
 		}
 
 		if(nTimeout == 0)
-				nTimeout = INFINITE;
+			nTimeout = INFINITE;
 
 		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout * 1000);
 
 		// true if timeout
 		if(bOutIsTimeout != nullptr)
-				*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
+			*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 
@@ -124,6 +132,8 @@ namespace NSX2T
 			CloseHandle(ghJob);
 			ghJob = NULL;
 		}
+		if(!bIsSaveEnvironment)
+			delete[] env;
 
 #endif
 

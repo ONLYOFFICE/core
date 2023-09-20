@@ -2,10 +2,10 @@
 #include <iostream>
 #include <string>
 
-#include "../../../../graphics/pro/Fonts.h"
-#include "../../../../graphics/pro/Graphics.h"
-#include "../../../../fontengine/ApplicationFontsWorker.h"
-#include "../../../../common/Directory.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #define METAFILE_SUCCESSFUL_CONVERSION      0
 #define METAFILE_UNSUCCESSFUL_CONVERSION   -1

@@ -1707,7 +1707,11 @@ namespace PdfReader
 					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
 					break;
 				}
+#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
+#else
+				pT1CFontFile = FoFiType1C::load((char*)U_TO_UTF8(wsFileName).c_str());
+#endif
 				if (pT1CFontFile)
 				{
 					pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
@@ -3008,9 +3012,20 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
+	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox,
+											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
-
+		for (int yi = nY0; yi < nY1; ++yi)
+		{
+			for (int xi = nX0; xi < nX1; ++xi)
+			{
+				double x = xi * dXStep;
+				double y = yi * dYStep;
+				//pMatrix[4] = x * m[0] + y * m[2] + m[4];
+				//pMatrix[5] = x * m[1] + y * m[3] + m[5];
+				//drawForm(pStream, pResourcesDict, pMatrix, pBBox);
+			}
+		}
 	}
 	void RendererOutputDev::StartTilingFill(GfxState *pGState)
 	{

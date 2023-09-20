@@ -2450,8 +2450,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			else
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
-				dW = nImageW * 72 / 96;
-				dH = nImageH * 72 / 96;
+				dW = (double)nImageW * 72.0 / 96.0;
+				dH = (double)nImageH * 72.0 / 96.0;
 			}
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.

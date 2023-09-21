@@ -456,8 +456,8 @@ public:
 			if(nFindEnd != std::string::npos)
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
-		/*
 		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+		/*
 		NSFile::CFileBinary oWriter;
 		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
 		{
@@ -465,7 +465,7 @@ public:
 			oWriter.CloseFile();
 		}
 		*/
-		return m_oLightReader.FromString(htmlToXhtml(sFileContent, bNeedConvert));
+		return m_oLightReader.FromString(sRes);
 	}
 
 	// Конвертирует mht в xhtml
@@ -497,8 +497,8 @@ public:
 
 			std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
 			RELEASEARRAYOBJECTS(pData);
-			/*
 			std::wstring sRes = mhtToXhtml(sFileContent);
+			/*
 			NSFile::CFileBinary oWriter;
 			if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
 			{
@@ -506,7 +506,7 @@ public:
 				oWriter.CloseFile();
 			}
 			*/
-			bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
+			bRes = m_oLightReader.FromString(sRes);
 		}
 		else
 			bRes = htmlXhtml(sSrc);
@@ -1537,9 +1537,9 @@ private:
 		while(m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			std::wstring sName = m_oLightReader.GetName();
-			GetSubClass(oXml, sSelectors);
-			if(sName == L"optgroup")
+			if (sName == L"optgroup")
 			{
+				GetSubClass(oXml, sSelectors);
 				while(m_oLightReader.MoveToNextAttribute())
 				{
 					if(m_oLightReader.GetName() != L"label")
@@ -1562,15 +1562,16 @@ private:
 				}
 				m_oLightReader.MoveToElement();
 				readLi(oXml, sSelectors, oTS, true);
-				continue;
-			}
-			if(sName != L"li" && sName != L"option")
-			{
-				readInside(oXml, sSelectors, oTS, sName);
 				sSelectors.pop_back();
 				continue;
 			}
+			if (sName != L"li" && sName != L"option")
+			{
+				readInside(oXml, sSelectors, oTS, sName);
+				continue;
+			}
 
+			GetSubClass(oXml, sSelectors);
 			while(m_oLightReader.MoveToNextAttribute())
 				if(m_oLightReader.GetName() == L"value")
 					sStart = m_oLightReader.GetText();

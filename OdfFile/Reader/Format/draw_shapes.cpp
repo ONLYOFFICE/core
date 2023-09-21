@@ -534,7 +534,7 @@ std::wstring convert_equation(const std::wstring& formula)
 {
 	std::wstring result;
 	std::wstring operators;
-	std::wstring values[4];
+	std::vector<std::wstring> values;
 
 	size_t pos = 0, next = 0;
 	bool operator_prev = false;
@@ -555,11 +555,13 @@ std::wstring convert_equation(const std::wstring& formula)
 		{
 			operator_prev = false;
 
+			values.emplace_back();
 			values[next] = L"gd"; pos += 2;
 			while (formula[pos] >= L'0' && formula[pos] <= L'9')
 			{
 				values[next] += formula[pos++];
 			}
+			values.emplace_back();
 			next++;
 		}
 		else if (formula[pos] == L'c')
@@ -596,10 +598,12 @@ std::wstring convert_equation(const std::wstring& formula)
 			operator_prev = false;
 			if (formula[pos + 3] == L'w')
 			{
+				values.emplace_back();
 				values[next++] = L"w"; pos += 8;
 			}
 			else
 			{
+				values.emplace_back();
 				values[next++] = L"h"; pos += 9;
 			}
 		}
@@ -607,6 +611,7 @@ std::wstring convert_equation(const std::wstring& formula)
 		{
 			operator_prev = false;
 
+			values.emplace_back();
 			values[next] = L"adj";
 			values[next] += formula[pos + 1]; pos += 2;
 			next++;
@@ -615,6 +620,7 @@ std::wstring convert_equation(const std::wstring& formula)
 		{
 			operator_prev = false;
 
+			values.emplace_back();
 			size_t pos_start = pos;
 			while (formula[pos] >= L'0' && formula[pos] <= L'9' || (formula[pos] == L'-' && pos_start == pos))
 			{

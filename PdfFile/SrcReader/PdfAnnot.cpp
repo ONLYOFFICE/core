@@ -329,7 +329,7 @@ std::string getValue(Object* oV)
 	std::string sRes;
 	if (oV->isName())
 		sRes = oV->getName();
-	else if (oV->isString() || oV->isDict())
+	else if (oV->isString() || oV->isDict() || oV->isArray())
 	{
 		TextString* s = NULL;
 		if (oV->isString())
@@ -338,6 +338,15 @@ std::string getValue(Object* oV)
 		{
 			Object oContents;
 			if (oV->dictLookup("Contents", &oContents)->isString())
+			{
+				s = new TextString(oContents.getString());
+			}
+			oContents.free();
+		}
+		else if (oV->isArray())
+		{
+			Object oContents;
+			if (oV->arrayGet(0, &oContents)->isString())
 			{
 				s = new TextString(oContents.getString());
 			}

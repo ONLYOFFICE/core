@@ -138,10 +138,7 @@ namespace PdfReader
 		}
 		virtual GBool useTilingPatternFill()
         {
-			if (m_bDrawOnlyText)
-				return true;
-
-			return false;
+			return true;
 		}
 		virtual GBool useFunctionalShadedFills()
 		{

@@ -37,7 +37,7 @@
 #include "../lib/fofi/FoFiTrueType.h"
 #include "../lib/fofi/FoFiType1C.h"
 #include "../lib/fofi/FoFiIdentifier.h"
-//#include "../lib/xpdf/File.h"
+#include "../lib/xpdf/Page.h"
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
@@ -3012,20 +3012,91 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox,
+	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *matrix, double *pBBox,
 											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
-		for (int yi = nY0; yi < nY1; ++yi)
+		if (m_bDrawOnlyText)
+			return;
+
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
+			return;
+
+		double xMin, yMin, xMax, yMax;
+		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
+		pGState->closePath();
+
+		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+
+		long brush;
+		int alpha = pGState->getFillOpacity() * 255;
+
+		// Image
+		int nWidth  = (int)round(pBBox[2] - pBBox[0]);
+		int nHeight = (int)round(pBBox[3] - pBBox[1]);
+
+		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		memset(pBgraData, 0, nWidth * nHeight * 4);
+
+		CBgraFrame* pFrame = new CBgraFrame();
+		pFrame->put_Data(pBgraData);
+		pFrame->put_Width(nWidth);
+		pFrame->put_Height(nHeight);
+		pFrame->put_IsRGBA(true); // TODO влияет только на процесс SaveFile, внутри на самом деле BGRA
+		pFrame->put_Stride(4 * nWidth);
+
+		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+		pRenderer->SetFontManager(m_pFontManager);
+		pRenderer->CreateFromBgraFrame(pFrame);
+		pRenderer->SetSwapRGB(true); // TODO CGraphicsRenderer::CreateBrush не использует m_bSwapRGB для Aggplus::CBrushTexture
+		pRenderer->put_Width (nWidth  * 25.4 / 72.0);
+		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+
+		IRenderer* pOldRenderer = m_pRenderer;
+		m_pRenderer = pRenderer;
+
+		PDFRectangle box;
+		box.x1 = pBBox[0];
+		box.y1 = pBBox[1];
+		box.x2 = pBBox[2];
+		box.y2 = pBBox[3];
+
+		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
+		m_gfx->display(pStream);
+
+		pFrame->ClearNoAttack();
+		RELEASEOBJECT(m_gfx);
+		RELEASEOBJECT(pRenderer);
+		RELEASEOBJECT(pFrame);
+
+		m_pRenderer = pOldRenderer;
+		// TODO swap BGRA -> RGBA
+		for (int i = 0; i < nWidth * nHeight * 4; i += 4)
 		{
-			for (int xi = nX0; xi < nX1; ++xi)
-			{
-				double x = xi * dXStep;
-				double y = yi * dYStep;
-				//pMatrix[4] = x * m[0] + y * m[2] + m[4];
-				//pMatrix[5] = x * m[1] + y * m[3] + m[5];
-				//drawForm(pStream, pResourcesDict, pMatrix, pBBox);
-			}
+			BYTE nTemp = pBgraData[i];
+			pBgraData[i] = pBgraData[i + 2];
+			pBgraData[i + 2] = nTemp;
 		}
+		Aggplus::CImage* oImage = new Aggplus::CImage();
+		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
+
+		m_pRenderer->BrushRect(true, xMin, yMin, xMax, yMax);
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeTexture);
+		m_pRenderer->put_BrushTextureImage(oImage);
+		m_pRenderer->put_BrushTextureMode(1); // TODO Tile 1 или TileCenter 2
+		m_pRenderer->put_BrushTextureAlpha(alpha);
+
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->BrushRect(false, 0, 0, 1, 1);
+		m_pRenderer->put_BrushType(brush);
+
+		pGState->clearPath();
 	}
 	void RendererOutputDev::StartTilingFill(GfxState *pGState)
 	{

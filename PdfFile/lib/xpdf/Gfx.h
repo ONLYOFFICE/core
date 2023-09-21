@@ -180,6 +180,8 @@ public:
   // Clear the state stack and the marked content stack.
   void endOfPage();
 
+  PDFDoc *getDoc() { return doc; }
+
 private:
 
   PDFDoc *doc;

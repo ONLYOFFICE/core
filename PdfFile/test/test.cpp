@@ -33,6 +33,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
+#include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../PdfFile.h"
 
 void TEST(IRenderer* pRenderer)
@@ -112,7 +113,38 @@ int main()
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-	if (true)
+	if (false)
+	{
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"))
+			return 0;
+
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			return 0;
+		}
+
+		DWORD dwReaded;
+		oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+		oFile.CloseFile();
+
+		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+		imageWriter.SetApplication(pApplicationFonts);
+		imageWriter.SetRasterFormat(4);
+		imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/res.png");
+
+		imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+
+		RELEASEARRAYOBJECTS(pFileContent);
+		RELEASEINTERFACE(pApplicationFonts);
+		RELEASEOBJECT(pCertificate);
+		return 0;
+	}
+
+	if (false)
     {
         pdfFile.CreatePdf();
         pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
@@ -122,14 +154,14 @@ int main()
         return 0;
     }
 
-	if (false)
+	if (true)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 0;
         for (i = 0; i < pdfFile.GetPagesCount(); i++)
         {
             pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-            pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+			pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile.GetFontManager());
         }
 
         if (pCertificate)

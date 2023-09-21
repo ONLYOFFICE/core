@@ -54,12 +54,11 @@ namespace OOX
 	{
 		//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
 		//Tогда не будет проблем с добавление новый id, мы всегда будем генерировать их с префиксом rId
-		std::wstring sFindString(_T("rId"));
-		size_t nFindStringLength = sFindString.length();
+		std::wstring sFindString(L"rId");
 
-		if(0 == rid.find(sFindString) && rid.length() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
+		if (0 == rid.find(sFindString) && rid.length() > 3 && rid.length() < 11 && 0 != isdigit(rid[3]))
 		{
-			std::wstring strParam = rid.substr(nFindStringLength);
+			std::wstring strParam = rid.substr(3);
 			m_id = XmlUtils::GetUInteger(strParam);
 			bNumber = true;
 		}

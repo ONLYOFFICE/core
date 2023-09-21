@@ -139,8 +139,14 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
 
 void text_list_level_style_number::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
 	else if (L"style" == Ns && L"text-properties" == Name)
 	{
 		CP_CREATE_ELEMENT(style_text_properties_);
@@ -164,8 +170,14 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
 
 void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
 	else if (L"style" == Ns && L"text-properties" == Name)
 	{
         CP_CREATE_ELEMENT(style_text_properties_);

@@ -126,6 +126,7 @@ enum ElementType
     typeTextList,
     typeTextListItem,
     typeTextListHeader,
+	typeTextOrderedList,
     typeTextNumber,
     typeTextSoftPageBreak,
     typeTextSection,

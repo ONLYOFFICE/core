@@ -38,6 +38,7 @@
 #include "../../XlsbFormat/PivotTableStream.h"
 #include "../../XlsbFormat/PivotCacheDefStream.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.h"
+#include "../../XlsbFormat/Biff12_records/BeginPivotCacheRecords.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORD.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.h"
 #include "../../XlsbFormat/Biff12_unions/PCDIDT.h"
@@ -133,6 +134,7 @@
 
 #include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
+#include <codecvt>
 namespace OOX
 {
 namespace Spreadsheet
@@ -6190,6 +6192,23 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             //pivotCacheRecordsStream.reset();
         }
     }
+	XLS::BaseObjectPtr CPivotCacheRecordsFile::WriteBin() const
+	{
+		auto pivotCacheRecordsStream(new XLSB::PivotCacheRecordsStream);
+		if(m_oPivotCacheRecords.IsInit())
+			pivotCacheRecordsStream->m_PIVOTCACHERECORDS = m_oPivotCacheRecords->toBin();
+		else if(m_nDataLength > 0 && m_pData)
+		{
+            CPivotCacheRecords records;
+            XmlUtils::CXmlLiteReader reader;
+			auto wstringData = prepareData();
+            reader.FromString(wstringData);
+			reader.ReadNextNode();
+            records.fromXML(reader);
+            pivotCacheRecordsStream->m_PIVOTCACHERECORDS = records.toBin();
+		}
+		return XLS::BaseObjectPtr{pivotCacheRecordsStream};
+	}
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
@@ -6216,34 +6235,70 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	}
 	void CPivotCacheRecordsFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
-		if(m_oPivotCacheRecords.IsInit())
-		{
-			std::wstring sPath = oPath.GetPath();
-
-			if (false == m_oPivotCacheRecords->m_strOutputXml.empty())
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
-				NSFile::CFileBinary::SaveToFile(sPath, m_oPivotCacheRecords->m_strOutputXml);
+				XLS::BaseObjectPtr object = WriteBin();
+				xlsb->WriteBin(oPath, object.get());
 			}
-			else
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-				m_oPivotCacheRecords->toXML(sXml);
-				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-			}
-			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			IFileContainer::Write( oPath, oDirectory, oContent );
-		}
-		else if(m_nDataLength > 0 && m_pData)
+		else
 		{
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(oPath.GetPath());
-			oFile.WriteFile(m_pData, m_nDataLength);
-			oFile.CloseFile();
+			if(m_oPivotCacheRecords.IsInit())
+			{
+				std::wstring sPath = oPath.GetPath();
 
-			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			IFileContainer::Write( oPath, oDirectory, oContent );
+				if (false == m_oPivotCacheRecords->m_strOutputXml.empty())
+				{
+					NSFile::CFileBinary::SaveToFile(sPath, m_oPivotCacheRecords->m_strOutputXml);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
+					sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+					m_oPivotCacheRecords->toXML(sXml);
+					NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+				}
+
+			}
+			else if(m_nDataLength > 0 && m_pData)
+			{
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(oPath.GetPath());
+				oFile.WriteFile(m_pData, m_nDataLength);
+				oFile.CloseFile();
+
+			}
 		}
+		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+		IFileContainer::Write( oPath, oDirectory, oContent );
+	}
+	const OOX::FileType CPivotCacheRecordsFile::type() const
+	{
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+		{
+			return OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin;
+		}
+		return OOX::Spreadsheet::FileTypes::PivotCacheRecords;
+	}
+	std::wstring CPivotCacheRecordsFile::prepareData() const
+	{
+		std::vector<char> dataChars;
+		std::string rawStringData{reinterpret_cast<const char*>(m_pData)};
+		//std::string stringData(reinterpret_cast<const char*>(m_pData));
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		std::wstring result;
+		for (char i : rawStringData)
+		{
+        try {
+            // Попытка конвертировать каждый символ
+            result += converter.from_bytes(std::string(1, i));
+        } catch (const std::range_error&) {
+            // Пропускаем невалидные символы
+        }
+		}
+
+    	return result;
 	}
 //------------------------------------
 	void CPivotCacheRecords::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -6323,6 +6378,18 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			writer.Clear();
         }
     }
+	XLS::BaseObjectPtr CPivotCacheRecords::toBin()
+	{
+		auto ptr(new XLSB::PIVOTCACHERECORDS);
+		XLS::BaseObjectPtr objectPtr(ptr);
+		auto ptr1(new XLSB::BeginPivotCacheRecords);
+		ptr1->crecords = m_arrItems.size();
+		ptr->m_BrtBeginPivotCacheRecords = XLS::BaseObjectPtr{ptr1};
+		for(auto i:m_arrItems)
+			ptr->m_arPIVOTCACHERECORD.push_back(i->toBin());
+
+		return objectPtr;
+	}
 	void CPivotCacheRecords::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -6395,6 +6462,68 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if ( L"x" == sName )
 				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
+	}
+	XLS::BaseObjectPtr CPivotCacheRecord::toBin()
+	{
+		auto ptr(new XLSB::PIVOTCACHERECORD);
+		auto ptr1(new XLSB::PIVOTCACHERECORDDT);
+		XLS::BaseObjectPtr objectPtr(ptr);
+		ptr->m_source = XLS::BaseObjectPtr{ptr1};
+		for(auto i:m_arrItems)
+		{
+			auto ptrPCDIDT(new XLSB::PCDIDT);
+
+			auto boolValue = static_cast<CPivotBooleanValue*>(i);
+			if(boolValue)
+			{
+				ptrPCDIDT->m_source =  boolValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto dataValue = static_cast<CPivotDateTimeValue*>(i);
+			if(dataValue)
+			{
+				ptrPCDIDT->m_source =  dataValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto errorValue = static_cast<CPivotErrorValue*>(i);
+			if(errorValue)
+			{
+				ptrPCDIDT->m_source =  errorValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto noValue = static_cast<CPivotNoValue*>(i);
+			if(noValue)
+			{
+				ptrPCDIDT->m_source =  noValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto numValue = static_cast<CPivotNumericValue*>(i);
+			if(numValue)
+			{
+				ptrPCDIDT->m_source =  numValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto charValue = static_cast<CPivotCharacterValue*>(i);
+			if(charValue)
+			{
+				ptrPCDIDT->m_source =  charValue->toBin();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+			auto itemIndex = static_cast<CSharedItemsIndex*>(i);
+			if(charValue)
+			{
+				ptrPCDIDT->m_source =  itemIndex->toBinItemIndex();
+				ptr1->m_arPCDIDT.push_back(XLS::BaseObjectPtr{ptrPCDIDT});
+				continue;
+			}
+		}
+		return objectPtr;
 	}
     void CPivotCacheRecord::fromBin(XLS::BaseObjectPtr& obj)
     {

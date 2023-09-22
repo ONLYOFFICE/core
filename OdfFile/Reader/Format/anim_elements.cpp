@@ -758,7 +758,7 @@ std::wstring anim_transitionFilter::convert_filter()
 				else												pptx_subtype = L"2";
 			}
 			else
-				pptx_subtype = L"TODO";
+				pptx_subtype = L"2";
 			break;
 		case smil_transition_type::fanWipe:
 			filter = L"wedge";
@@ -818,16 +818,71 @@ std::wstring anim_transitionFilter::convert_filter()
 				else										pptx_subtype = L"vertical";
 			}
 			break;
-		case smil_transition_type::pushWipe:            
-		case smil_transition_type::doubleFanWipe:       
-		case smil_transition_type::doubleSweepWipe:     
-		case smil_transition_type::saloonDoorWipe:      
-		case smil_transition_type::windshieldWipe:      
-		case smil_transition_type::snakeWipe:           
-		case smil_transition_type::spiralWipe:          
-		case smil_transition_type::parallelSnakesWipe:  
-		case smil_transition_type::boxSnakesWipe:       
-		case smil_transition_type::singleSweepWipe:     
+		case smil_transition_type::pushWipe:
+			filter = L"slide";
+			if (subtype)
+				pptx_subtype = subtype.value(); // fromLeft, fromTop, fromRight, fromBottom
+			break;
+		case smil_transition_type::doubleSweepWipe:
+		case smil_transition_type::doubleFanWipe:
+			filter = L"wheel";
+			pptx_subtype = L"2";
+			break;
+		case smil_transition_type::saloonDoorWipe:    
+		case smil_transition_type::windshieldWipe:
+			filter = L"slide";
+			pptx_subtype = L"fromLeft";
+			break;
+		case smil_transition_type::snakeWipe:    
+			if (subtype)
+			{
+					 if (subtype.value() == L"topLeftHorizontal")	{ filter = L"slide" ; pptx_subtype = L"fromLeft";	}
+				else if (subtype.value() == L"topLeftVertical")		{ filter = L"slide" ; pptx_subtype = L"fromTop";	}
+				else if (subtype.value() == L"topLeftDiagonal")		{ filter = L"strips"; pptx_subtype = L"downRight";	}
+				else if (subtype.value() == L"topRightDiagonal")	{ filter = L"strips"; pptx_subtype = L"downLeft";	}
+				else if (subtype.value() == L"bottomRightDiagonal") { filter = L"strips"; pptx_subtype = L"upLeft";		}
+				else if (subtype.value() == L"bottomLeftDiagonal")	{ filter = L"strips"; pptx_subtype = L"upRight";	}
+				else
+					filter = L"fade";
+			}
+			break;
+		case smil_transition_type::spiralWipe:
+			filter = L"circle";
+			break;
+		case smil_transition_type::parallelSnakesWipe:
+			if (subtype)
+			{
+				if (boost::starts_with(subtype.value(), L"vertical"))
+				{
+					filter = L"barn";
+					pptx_subtype = L"inVertical";
+				}
+				else if (boost::starts_with(subtype.value(), L"horizontal"))
+				{
+					filter = L"barn";
+					pptx_subtype = L"inHorizontal";
+				}
+				else
+					filter = L"fade"; // NOTE: This is no corresponding transition to "diagonalBottomLeftOpposite" and "diagonalTopLeftOpposite"
+			}
+			break;
+		case smil_transition_type::boxSnakesWipe:
+			if (subtype)
+			{
+				filter = L"barn";
+				if (subtype.value() == L"twoBoxTop")				pptx_subtype = L"inVertical";
+				else if (subtype.value() == L"twoBoxBottom")		pptx_subtype = L"inVertical";
+				else if (subtype.value() == L"twoBoxLeft")			pptx_subtype = L"inHorizontal";
+				else if (subtype.value() == L"twoBoxRight")			pptx_subtype = L"inHorizontal";
+				else if (subtype.value() == L"fourBoxVertical")		pptx_subtype = L"inVertical";
+				else if (subtype.value() == L"fourBoxHorizontal")	pptx_subtype = L"inVertical";
+				else
+					pptx_subtype = L"inVertical";
+			}
+			break;
+
+		// NOTE: Not implemented. There is no corresponding conversion. Set "fade" as default animation 
+		case smil_transition_type::singleSweepWipe:
 		case smil_transition_type::eyeWipe:             
 		case smil_transition_type::roundRectWipe:       
 		case smil_transition_type::starWipe:            
@@ -844,11 +899,8 @@ std::wstring anim_transitionFilter::convert_filter()
 		case smil_transition_type::barnVeeWipe:         
 		case smil_transition_type::zigZagWipe:          
 		case smil_transition_type::barnZigZagWipe:       
-			// NOTE: Not implemented yet. Set "fade" as default animation 
-			filter = L"fade"; 
-			break;
 		default:
-
+			filter = L"fade";
 			break;
 		}
 	}

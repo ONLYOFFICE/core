@@ -454,30 +454,11 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 
 	bool isSlideAnimation = false; // NOTE: Анимация применяется к самому слайду, а не элементу на слайде
 
-	// NOTE: в pptx нет атрибутов accelerate/decelerate. Там надо менять svg path ???
-	//_CP_OPT(std::wstring)	accelerate; 
-	//_CP_OPT(std::wstring)	decelerate;
+	_CP_OPT(int)	accelerate; 
+	_CP_OPT(int)	decelerate;
 	
 	if (common_attlist_.presentation_node_type_)
-	{
-		switch (common_attlist_.presentation_node_type_.value().get_type())
-		{
-		case odf_types::presentation_node_type::timing_root:
-			presentationNodeType = L"tmRoot";
-			break;
-		case odf_types::presentation_node_type::on_click:
-			presentationNodeType = L"clickEffect";
-			break;
-		case odf_types::presentation_node_type::after_previous:
-			presentationNodeType = L"afterEffect";
-			break;
-		case odf_types::presentation_node_type::with_previous:
-			presentationNodeType = L"withEffect";
-			break;
-		}
-
 		presentationNodeType = pptx_convert_presentation_node_type(common_attlist_.presentation_node_type_.value());
-	}
 
 	if (common_attlist_.smil_direction_)
 	{
@@ -546,6 +527,18 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	else 
 		fill = L"hold";
+
+	if (par_attlist_.smil_accelerate_)
+	{
+		const int pptx_multiplyer = 100000;
+		accelerate = par_attlist_.smil_accelerate_.value() * pptx_multiplyer;
+	}
+
+	if (par_attlist_.smil_decelerate_)
+	{
+		const int pptx_multiplyer = 100000;
+		decelerate = par_attlist_.smil_decelerate_.value() * pptx_multiplyer;
+	}
 		
 	if (!isSlideAnimation)
 	{
@@ -560,6 +553,8 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 		if (presentationPresetClass)	animationContext.set_par_animation_preset_class(presentationPresetClass.value());
 		if (presentationPresetId)		animationContext.set_par_animation_preset_id(presentationPresetId.value());
 		if (fill)						animationContext.set_par_animation_fill(fill.value());
+		if (accelerate)					animationContext.set_par_animation_accelerate(accelerate.value());
+		if (decelerate)					animationContext.set_par_animation_decelerate(decelerate.value());
 	}
 	
 	animationContext.set_is_slide_animation(isSlideAnimation);
@@ -604,9 +599,10 @@ boost::optional<int> anim_par::pptx_convert_preset_id()
 			if (g_preset_id_map[i].ODF_PresetID == presetID)
 				return g_preset_id_map[i].OOX_PresetID;
 		}
+
+		return 0;
 	}
 	
-
 	return boost::none;
 }
 

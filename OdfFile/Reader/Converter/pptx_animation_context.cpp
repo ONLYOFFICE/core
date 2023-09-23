@@ -157,6 +157,24 @@ namespace oox {
 		}
 	}
 
+	void pptx_animation_context::set_par_animation_accelerate(int value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Accelerate = value;
+		}
+	}
+
+	void pptx_animation_context::set_par_animation_decelerate(int value)
+	{
+		if (impl_->par_animation_levels_.size())
+		{
+			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
+			back->Decelerate = value;
+		}
+	}
+
 	void pptx_animation_context::end_par_animation()
 	{
 		if (impl_->par_animation_levels_.size())
@@ -692,14 +710,12 @@ namespace oox {
 			{
 				CP_XML_NODE(L"p:cTn")
 				{
-					if (PresetClass)
-						CP_XML_ATTR(L"presetClass", PresetClass.value());
-					if (PresetID)
-						CP_XML_ATTR(L"presetID", PresetID.value());
-					if (Fill)
-						CP_XML_ATTR(L"fill", Fill.value());
+					CP_XML_ATTR_OPT(L"presetClass"	, PresetClass);
+					CP_XML_ATTR_OPT(L"presetID"		, PresetID);
+					CP_XML_ATTR_OPT(L"fill"			, Fill);
+					CP_XML_ATTR_OPT(L"accel"		, Accelerate);
+					CP_XML_ATTR_OPT(L"decel"		, Decelerate);
 					
-
 					if (NodeType)
 					{
 						if (NodeType.value() == L"tmRoot")
@@ -808,8 +824,8 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						if (Duration)	CP_XML_ATTR(L"dur", Duration.value());
-						if (Fill)		CP_XML_ATTR(L"fill", Fill.value());
+						CP_XML_ATTR_OPT(L"dur"	, Duration);
+						CP_XML_ATTR_OPT(L"fill"	, Fill);
 						
 						if (Delay)
 						{
@@ -864,8 +880,8 @@ namespace oox {
 		{
 			CP_XML_NODE(L"p:animEffect")
 			{
-				if (Filter)			CP_XML_ATTR(L"filter", Filter.value());
-				if (Transition)		CP_XML_ATTR(L"transition", Transition.value());
+				CP_XML_ATTR_OPT(L"filter"		, Filter);
+				CP_XML_ATTR_OPT(L"transition"	, Transition);
 
 				CP_XML_NODE(L"p:cBhvr")
 				{
@@ -904,8 +920,7 @@ namespace oox {
 				{
 					CP_XML_NODE(L"p:cTn")
 					{
-						if (SmilDurMs)
-							CP_XML_ATTR(L"dur", SmilDurMs);
+						CP_XML_ATTR_OPT(L"dur", SmilDurMs);
 						CP_XML_ATTR(L"fill", L"hold");
 					}
 					CP_XML_NODE(L"p:tgtEl")
@@ -926,16 +941,16 @@ namespace oox {
 		CP_XML_WRITER(strm)
 		{
 			CP_XML_NODE(L"p:anim")
-			{
-				if (CalcMode)		CP_XML_ATTR(L"calcmode", CalcMode.value());
-				if (ValueType)		CP_XML_ATTR(L"valueType", ValueType.value());
-				if(From)			CP_XML_ATTR(L"from", From.value());
-				if (To)				CP_XML_ATTR(L"to", To.value());
-				if (By)				CP_XML_ATTR(L"by", By.value());
+			{								   
+				CP_XML_ATTR_OPT(L"calcmode", CalcMode);
+				CP_XML_ATTR_OPT(L"valueType", ValueType);
+				CP_XML_ATTR_OPT(L"from", From);
+				CP_XML_ATTR_OPT(L"to", To);
+				CP_XML_ATTR_OPT(L"by", By);
 
 				CP_XML_NODE(L"p:cBhvr")
 				{
-					if (Additive)	CP_XML_ATTR(L"additive", Additive.value());
+					CP_XML_ATTR_OPT(L"additive", Additive);
 					
 					CP_XML_NODE(L"p:cTn")
 					{

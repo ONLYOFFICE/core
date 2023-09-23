@@ -551,7 +551,7 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 						}
 						else
 						{
-							CP_XML_ATTR2(ns_att + L"name", L"adj" + std::to_wstring(i/* + 1*/));
+							CP_XML_ATTR2(ns_att + L"name", L"adj" + std::to_wstring(i + 1));
 						}						
 						CP_XML_ATTR2(ns_att + L"fmla", L"val " + values[i]);
 					}

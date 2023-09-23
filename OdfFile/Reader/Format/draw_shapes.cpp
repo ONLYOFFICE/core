@@ -611,10 +611,15 @@ std::wstring convert_equation(const std::wstring& formula)
 		{
 			operator_prev = false;
 
-			values.emplace_back();
-			values[next] = L"adj";
-			values[next] += formula[pos + 1]; pos += 2;
-			next++;
+			if (formula[pos + 1] >= L'0' && formula[pos + 1] <= L'9')
+			{
+				int adj = XmlUtils::GetInteger(std::wstring(formula[pos + 1], 1));
+
+				values.emplace_back();
+				values[next] = L"adj" + std::to_wstring(adj + 1);
+				next++;
+			}
+			pos += 2;
 		}
 		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-')
 		{
@@ -763,7 +768,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 		props.push_back(odf_reader::_property(L"custom_equations", output1_.str()));
 	}
 
-	if (bOoxType_)
+	if (bOoxType_ || std::wstring::npos != odf_path_.find(L"?"))
 	{
 		std::vector<::svg_path::_polylineS> o_Polyline;
 

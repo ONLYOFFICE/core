@@ -57,8 +57,8 @@ public:
 	_CP_OPT(preset_class)			presentation_preset_class_;
 	_CP_OPT(preset_id)				presentation_preset_id_;
 	_CP_OPT(std::wstring)			presentation_preset_sub_type_;
-	_CP_OPT(std::wstring)			smil_accelerate_;
-	_CP_OPT(std::wstring)			smil_decelerate_;
+	_CP_OPT(float)					smil_accelerate_;
+	_CP_OPT(float)					smil_decelerate_;
 };
 
 class anim_audio_attlist

@@ -36,6 +36,21 @@
 
 #include "../../DataTypes/clockvalue.h"
 
+#define SET_PAR_ANIMATION_ATTRIBUTE(attribute, value)							\
+	if(impl_->par_animation_levels_.size())										\
+	{																			\
+		Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();	\
+		back->attribute = value;												\
+	}
+
+#define SET_SEQ_ANIMATION_ATTRIBUTE(attribute, value)							\
+	if (impl_->par_animation_levels_.size())									\
+	{																			\
+		Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();	\
+		if (back->AnimSeq)														\
+			back->AnimSeq->attribute = value;									\
+	}
+
 namespace cpdoccore {
 namespace oox {
 
@@ -78,101 +93,57 @@ namespace oox {
 
 	void pptx_animation_context::set_par_animation_presentation_node_type(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->NodeType = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(NodeType, value);
 	}
 
 	void pptx_animation_context::set_par_animation_direction(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Direction = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Direction, value);
 	}
 
 	void pptx_animation_context::set_par_animation_restart(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Restart = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Restart, value);
 	}
 
 	void pptx_animation_context::set_par_animation_duration(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Duration = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Duration, value);
 	}
 
 	void pptx_animation_context::set_par_animation_delay(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Delay = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Delay, value);
 	}
 
 	void pptx_animation_context::set_par_animation_end(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->End = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(End, value);
 	}
 
 	void pptx_animation_context::set_par_animation_preset_class(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->PresetClass = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(PresetClass, value);
 	}
 
 	void pptx_animation_context::set_par_animation_preset_id(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->PresetID = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(PresetID, value);
 	}
 
 	void pptx_animation_context::set_par_animation_fill(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Fill = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Fill, value);
 	}
 
 	void pptx_animation_context::set_par_animation_accelerate(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Accelerate = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Accelerate, value);
 	}
 
 	void pptx_animation_context::set_par_animation_decelerate(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			back->Decelerate = value;
-		}
+		SET_PAR_ANIMATION_ATTRIBUTE(Decelerate, value);
 	}
 
 	void pptx_animation_context::end_par_animation()
@@ -205,74 +176,32 @@ namespace oox {
 
 	void pptx_animation_context::set_seq_animation_presentation_node_type(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->PresentationNodeType = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(PresentationNodeType, value);
 	}
 
 	void pptx_animation_context::set_seq_animation_direction(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->Direction = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(Direction, value);
 	}
 
 	void pptx_animation_context::set_seq_animation_restart(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->Restart = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(Restart, value);
 	}
 
 	void pptx_animation_context::set_seq_animation_dur(int value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->Duration = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(Duration, value);
 	}
 
 	void pptx_animation_context::set_seq_animation_delay(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->Delay = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(Delay, value);
 	}
 
 	void pptx_animation_context::set_seq_animation_end(const std::wstring& value)
 	{
-		if (impl_->par_animation_levels_.size())
-		{
-			Impl::_par_animation_ptr& back = impl_->par_animation_levels_.back();
-			if (back->AnimSeq)
-			{
-				back->AnimSeq->End = value;
-			}
-		}
+		SET_SEQ_ANIMATION_ATTRIBUTE(End, value);
 	}
 
 	void pptx_animation_context::end_seq_animation()

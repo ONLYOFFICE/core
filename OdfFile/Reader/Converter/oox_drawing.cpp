@@ -520,9 +520,20 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 
 			if (inGroup == false)
 			{
-				_CP_OPT(int)	iWrap;
-				odf_reader::GetProperty(prop, L"text-wrap"	, iWrap);
-				if ((iWrap) && (*iWrap == 0)) CP_XML_ATTR(L"wrap", L"none");
+				_CP_OPT(bool) bAutoGrowWidth;
+				odf_reader::GetProperty(prop, L"auto-grow-width", bAutoGrowWidth);
+				if (bAutoGrowWidth)
+				{
+					if (*bAutoGrowWidth == true)
+						CP_XML_ATTR(L"wrap", L"none");
+				}
+				else
+				{
+					_CP_OPT(int)	iWrap;
+					odf_reader::GetProperty(prop, L"text-wrap", iWrap);
+					if ((iWrap) && (*iWrap == 0))
+						CP_XML_ATTR(L"wrap", L"none");
+				}
 			}
 
 			_CP_OPT(int) iAlign, iVert;

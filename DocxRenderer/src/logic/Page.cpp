@@ -991,7 +991,9 @@ namespace NSDocxRenderer
 				drop_caps.push_back(drop_cap);
 
 				drop_cap_cont->m_bIsNotNecessaryToUse = true;
-				drop_cap_line->RecalcSizes();
+				drop_cap_line->CheckLineToNecessaryToUse();
+				if(!drop_cap_line->m_bIsNotNecessaryToUse)
+					drop_cap_line->RecalcSizes();
 			}
 		}
 
@@ -1353,49 +1355,22 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arTextLine.size(); ++i)
 		{
 			auto pCurrLine = m_arTextLine[i];
-
 			if (pCurrLine->m_bIsNotNecessaryToUse)
-			{
 				continue;
-			}
 
 			if (pCurrLine->m_eVertAlignType == eVertAlignType::vatSuperscript)
 			{
 				auto pBaseLine = pCurrLine->m_pLine;
 				if (pBaseLine)
 				{
-					double dFontSize = 0;
-
-					for (size_t j = 0; j < pBaseLine->m_arConts.size(); ++j)
-					{
-						auto pCont = pBaseLine->m_arConts[j];
-						if (pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
-						{
-							continue;
-						}
-						dFontSize = pCont->m_pFontStyle->dFontSize;
-						break;
-					}
-
 					for (auto& pCont : pCurrLine->m_arConts)
 					{
-						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
-							pCont->m_pFontStyle->wsFontName,
-							dFontSize,
-							pCont->m_pFontStyle->bItalic,
-							pCont->m_pFontStyle->bBold);
-
 						if (pBaseLine->m_dLeft > pCont->m_dLeft)
-						{
 							pBaseLine->m_dLeft = pCont->m_dLeft;
-						}
 						if (pBaseLine->m_dRight < pCont->m_dRight)
-						{
 							pBaseLine->m_dRight = pCont->m_dRight;
-						}
 
 						pBaseLine->m_dWidth = pBaseLine->m_dRight - pBaseLine->m_dLeft;
-
 						pBaseLine->m_arConts.push_back(pCont);
 						pCont = nullptr;
 					}
@@ -1408,41 +1383,17 @@ namespace NSDocxRenderer
 				auto pSubLine = pCurrLine->m_pLine;
 				if (pSubLine)
 				{
-					double dFontSize = 0;
-
-					for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
-					{
-						auto pCont = pCurrLine->m_arConts[j];
-						if (pCont == nullptr || pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
-						{
-							continue;
-						}
-						dFontSize = pCont->m_pFontStyle->dFontSize;
-						break;
-					}
-
 					for (auto& pCont : pSubLine->m_arConts)
 					{
 						if (pCont == nullptr)
 							continue;
 
-						pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(pCont->m_pFontStyle->oBrush,
-							pCont->m_pFontStyle->wsFontName,
-							dFontSize,
-							pCont->m_pFontStyle->bItalic,
-							pCont->m_pFontStyle->bBold);
-
 						if (pCurrLine->m_dLeft > pCont->m_dLeft)
-						{
 							pCurrLine->m_dLeft = pCont->m_dLeft;
-						}
 						if (pCurrLine->m_dRight < pCont->m_dRight)
-						{
 							pCurrLine->m_dRight = pCont->m_dRight;
-						}
 
 						pCurrLine->m_dWidth = pCurrLine->m_dRight - pCurrLine->m_dLeft;
-
 						pCurrLine->m_arConts.push_back(pCont);
 						pCont = nullptr;
 					}

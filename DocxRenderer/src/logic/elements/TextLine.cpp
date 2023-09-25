@@ -37,12 +37,9 @@ namespace NSDocxRenderer
 	void CTextLine::CheckLineToNecessaryToUse()
 	{
 		for (size_t i = 0; i < m_arConts.size(); ++i)
-		{
 			if (!m_arConts[i]->m_bIsNotNecessaryToUse)
-			{
 				return;
-			}
-		}
+
 		m_bIsNotNecessaryToUse = true;
 	}
 
@@ -142,10 +139,14 @@ namespace NSDocxRenderer
 		m_dHeight = 0.0;
 		m_dBaselinePos = 0.0;
 		m_dRight = 0.0;
+		m_dTrueHeight = 0.0;
 
 		for(auto&& cont : m_arConts)
 			if(!cont->m_bIsNotNecessaryToUse)
+			{
+				m_dTrueHeight = std::max(m_dTrueHeight, dynamic_cast<CContText*>(cont)->m_dTrueHeight);
 				CBaseItem::AddContent(cont);
+			}
 	}
 
 	void CTextLine::SetVertAlignType(const eVertAlignType& oType)
@@ -202,5 +203,23 @@ namespace NSDocxRenderer
 		pPrev->CalcSelectedWidth();
 		pPrev->ToXml(oWriter);
 
+	}
+	[[nodiscard]] eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	{
+		if(oSrc->m_eType != ElemType::etContText)
+			return CBaseItem::GetVerticalCrossingType(oSrc);
+
+		auto m_dTop_copy = m_dTop;
+		auto m_dTop_copy_src = oSrc->m_dTop;
+
+		m_dTop = m_dBaselinePos - m_dTrueHeight;
+		const_cast<CBaseItem*>(oSrc)->m_dTop = oSrc->m_dBaselinePos - static_cast<const CContText*>(oSrc)->m_dTrueHeight;
+
+		auto vert_cross = CBaseItem::GetVerticalCrossingType(oSrc);
+
+		m_dTop = m_dTop_copy;
+		const_cast<CBaseItem*>(oSrc)->m_dTop = m_dTop_copy_src;
+
+		return vert_cross;
 	}
 }

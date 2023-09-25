@@ -127,6 +127,7 @@ namespace NSDocxRenderer
 
 		CBaseItem::SortByBaseline(rTextLines);
 
+
 		double avg_height = 0;
 		size_t n = 0;
 

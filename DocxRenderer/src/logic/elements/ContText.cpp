@@ -79,27 +79,23 @@ namespace NSDocxRenderer
 
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
-			if (m_eVertAlignType != eVertAlignType::vatSubscript &&
-					m_eVertAlignType != eVertAlignType::vatSuperscript)
-			{
-				// нужно перемерять...
-				NSStructures::CFont oFont;
-				oFont.Name = m_pFontStyle->wsFontName;
-				oFont.Bold = m_pFontStyle->bBold;
-				oFont.Italic = m_pFontStyle->bItalic;
-				oFont.Size = m_pFontStyle->dFontSize;
-				m_pManager->LoadFontByName(oFont);
+			// нужно перемерять...
+			NSStructures::CFont oFont;
+			oFont.Name = m_pFontStyle->wsFontName;
+			oFont.Bold = m_pFontStyle->bBold;
+			oFont.Italic = m_pFontStyle->bItalic;
+			oFont.Size = m_pFontStyle->dFontSize;
+			m_pManager->LoadFontByName(oFont);
 
-				double dBoxX;
-				double dBoxY;
-				double dBoxWidth;
-				double dBoxHeight;
+			double dBoxX;
+			double dBoxY;
+			double dBoxWidth;
+			double dBoxHeight;
 
-				m_pManager->SetStringGid(0);
-				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
-				m_dWidthSelected = dBoxWidth;
-				m_dSpaceWidthSelected = m_pManager->GetSpaceWidthMM();
-			}
+			m_pManager->SetStringGid(0);
+			m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			m_dWidthSelected = dBoxWidth;
+			m_dSpaceWidthSelected = m_pManager->GetSpaceWidthMM();
 		}
 	}
 
@@ -149,15 +145,11 @@ namespace NSDocxRenderer
 
 		if (!m_pFontStyle->wsFontName.empty() && !m_oText.empty())
 		{
-			if (m_eVertAlignType != eVertAlignType::vatSubscript &&
-					m_eVertAlignType != eVertAlignType::vatSuperscript)
-			{
-				double dSpacing = (m_dWidth - m_dWidthSelected) / (m_oText.length());
-				dSpacing *= c_dMMToDx;
+			double dSpacing = (m_dWidth - m_dWidthSelected) / (m_oText.length());
+			dSpacing *= c_dMMToDx;
 
-				//mm to points * 20
-				lCalculatedSpacing = static_cast<LONG>(dSpacing);
-			}
+			//mm to points * 20
+			lCalculatedSpacing = static_cast<LONG>(dSpacing);
 		}
 
 		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу

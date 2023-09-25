@@ -414,6 +414,12 @@ void CPdfReader::ChangeLength(DWORD nLength)
 	m_nFileLength = nLength;
 }
 
+void EscapingCharacter(std::wstring& sValue)
+{
+	NSStringExt::Replace(sValue, L"\\", L"\\\\");
+	NSStringExt::Replace(sValue, L"\"", L"\\\"");
+	sValue.erase(std::remove_if(sValue.begin(), sValue.end(), [] (const wchar_t& wc) { return wc < 0x20; } ), sValue.end());
+}
 std::wstring CPdfReader::GetInfo()
 {
 	if (!m_pPDFDocument)
@@ -435,13 +441,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
 	TextString* s = new TextString(obj1.getString());\
 	std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
 	delete s;\
-	NSStringExt::Replace(sValue, L"\"", L"\\\"");\
-	size_t nFind = sValue.find(L'\000');\
-	while (nFind != std::wstring::npos)\
-	{\
-		sValue.erase(nFind, 1);\
-		nFind = sValue.find(L'\000');\
-	}\
+	EscapingCharacter(sValue);\
 	if (!sValue.empty())\
 	{\
 		sRes += L"\"";\

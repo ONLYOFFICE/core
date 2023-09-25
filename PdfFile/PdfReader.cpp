@@ -414,6 +414,12 @@ void CPdfReader::ChangeLength(DWORD nLength)
 	m_nFileLength = nLength;
 }
 
+void EscapingCharacter(std::wstring& sValue)
+{
+	NSStringExt::Replace(sValue, L"\\", L"\\\\");
+	NSStringExt::Replace(sValue, L"\"", L"\\\"");
+	sValue.erase(std::remove_if(sValue.begin(), sValue.end(), [] (const wchar_t& wc) { return wc < 0x20; } ), sValue.end());
+}
 std::wstring CPdfReader::GetInfo()
 {
 	if (!m_pPDFDocument)
@@ -435,13 +441,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
 	TextString* s = new TextString(obj1.getString());\
 	std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
 	delete s;\
-	NSStringExt::Replace(sValue, L"\"", L"\\\"");\
-	size_t nFind = sValue.find(L'\000');\
-	while (nFind != std::wstring::npos)\
-	{\
-		sValue.erase(nFind, 1);\
-		nFind = sValue.find(L'\000');\
-	}\
+	EscapingCharacter(sValue);\
 	if (!sValue.empty())\
 	{\
 		sRes += L"\"";\
@@ -470,7 +470,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
 		{\
 			std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
 								 sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2);\
-			if (sNoDate.length() > 21)\
+			if (sNoDate.length() > 21 && (sNoDate[16] == L'+' || sNoDate[16] == L'-'))\
 				sDate += (L".000" + sNoDate.substr(16, 3) + L':' + sNoDate.substr(20, 2));\
 			else\
 				sDate += L"Z";\
@@ -858,8 +858,13 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
-		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && i != nWidget))
+		Object oRef;
+		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && pField->getFieldRef(&oRef) && oRef.getRefNum() != nWidget))
+		{
+			oRef.free();
 			continue;
+		}
+		oRef.free();
 
 		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, sButtonView, pField);
 		if (pAP)
@@ -1366,7 +1371,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		if (nAnnot >= 0 && i != nAnnot)
+		if (nAnnot >= 0 && oAnnotRef.getRefNum() != nAnnot)
 		{
 			oAnnotRef.free();
 			continue;

@@ -35,8 +35,9 @@
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/fofi/FoFiTrueType.h"
+#include "../lib/fofi/FoFiType1C.h"
 #include "../lib/fofi/FoFiIdentifier.h"
-//#include "../lib/xpdf/File.h"
+#include "../lib/xpdf/Page.h"
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
 #include "../lib/xpdf/Stream.h"
@@ -1691,17 +1692,38 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
-				//// TODO: Проверить, почему получение данной кодировки было отключено
-				//if ((pT1CFontFile = CFontFileType1C::LoadFromFile((wchar_t*)wsFileName.c_str())))
-				//{
-				//    pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
-				//    delete pT1CFontFile;
-				//}
-				//else
-				//{
-				pCodeToGID = NULL;
-				nLen = 0;
-				//}
+				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
+				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
+				{
+					nLen = pFontCID->getCIDToGIDLen();
+					if (!nLen)
+						break;
+					pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
+					if (!pCodeToGID)
+					{
+						nLen = 0;
+						break;
+					}
+					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
+					break;
+				}
+#ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
+#else
+				pT1CFontFile = FoFiType1C::load((char*)U_TO_UTF8(wsFileName).c_str());
+#endif
+				if (pT1CFontFile)
+				{
+					pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
+
+					delete pT1CFontFile;
+					pT1CFontFile = NULL;
+				}
+				else
+				{
+					pCodeToGID = NULL;
+					nLen = 0;
+				}
 				break;
 			}
 			case fontCIDType0COT:
@@ -2990,9 +3012,94 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 	}
-	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
+	void RendererOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *matrix, double *pBBox,
+											  int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
 	{
+		if (m_bDrawOnlyText)
+			return;
 
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
+			return;
+
+		double xMin, yMin, xMax, yMax;
+		pGState->getUserClipBBox(&xMin, &yMin, &xMax, &yMax);
+		pGState->moveTo(xMin, yMin);
+		pGState->lineTo(xMax, yMin);
+		pGState->lineTo(xMax, yMax);
+		pGState->lineTo(xMin, yMax);
+		pGState->closePath();
+
+		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+
+		long brush;
+		int alpha = pGState->getFillOpacity() * 255;
+
+		// Image
+		int nWidth  = (int)round(pBBox[2] - pBBox[0]);
+		int nHeight = (int)round(pBBox[3] - pBBox[1]);
+
+		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		memset(pBgraData, 0, nWidth * nHeight * 4);
+
+		CBgraFrame* pFrame = new CBgraFrame();
+		pFrame->put_Data(pBgraData);
+		pFrame->put_Width(nWidth);
+		pFrame->put_Height(nHeight);
+		pFrame->put_Stride(4 * nWidth);
+
+		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+		pRenderer->SetFontManager(m_pFontManager);
+		pRenderer->CreateFromBgraFrame(pFrame);
+		pRenderer->put_Width (nWidth  * 25.4 / 72.0);
+		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+
+		IRenderer* pOldRenderer = m_pRenderer;
+		m_pRenderer = pRenderer;
+
+		PDFRectangle box;
+		box.x1 = pBBox[0];
+		box.y1 = pBBox[1];
+		box.x2 = pBBox[2];
+		box.y2 = pBBox[3];
+
+		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
+		m_gfx->display(pStream);
+
+		// pBgraData будет передано oImage
+		pFrame->ClearNoAttack();
+		RELEASEOBJECT(m_gfx);
+		RELEASEOBJECT(pRenderer);
+		RELEASEOBJECT(pFrame);
+
+		m_pRenderer = pOldRenderer;
+		Aggplus::CImage* oImage = new Aggplus::CImage();
+		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
+
+		m_pRenderer->BrushRect(true, xMin, yMin, xMax, yMax);
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeTexture);
+		m_pRenderer->put_BrushTextureImage(oImage);
+		m_pRenderer->put_BrushTextureMode(1); // TODO Tile 1 или TileCenter 2
+		m_pRenderer->put_BrushTextureAlpha(alpha);
+#ifdef BUILDING_WASM_MODULE
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			// oImage BGRA
+			GRenderer->SetSwapRGB(false);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+			GRenderer->SetSwapRGB(true);
+		}
+#elif
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+#endif
+
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->BrushRect(false, 0, 0, 1, 1);
+		m_pRenderer->put_BrushType(brush);
+
+		pGState->clearPath();
+
+		RELEASEINTERFACE(oImage);
 	}
 	void RendererOutputDev::StartTilingFill(GfxState *pGState)
 	{

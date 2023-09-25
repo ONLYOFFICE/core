@@ -3045,13 +3045,11 @@ namespace PdfReader
 		pFrame->put_Data(pBgraData);
 		pFrame->put_Width(nWidth);
 		pFrame->put_Height(nHeight);
-		pFrame->put_IsRGBA(true); // TODO влияет только на процесс SaveFile, внутри на самом деле BGRA
 		pFrame->put_Stride(4 * nWidth);
 
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->SetSwapRGB(true); // TODO CGraphicsRenderer::CreateBrush не использует m_bSwapRGB для Aggplus::CBrushTexture
 		pRenderer->put_Width (nWidth  * 25.4 / 72.0);
 		pRenderer->put_Height(nHeight * 25.4 / 72.0);
 
@@ -3067,19 +3065,13 @@ namespace PdfReader
 		Gfx* m_gfx = new Gfx(gfx->getDoc(), this, pResourcesDict, &box, NULL);
 		m_gfx->display(pStream);
 
+		// pBgraData будет передано oImage
 		pFrame->ClearNoAttack();
 		RELEASEOBJECT(m_gfx);
 		RELEASEOBJECT(pRenderer);
 		RELEASEOBJECT(pFrame);
 
 		m_pRenderer = pOldRenderer;
-		// TODO swap BGRA -> RGBA
-		for (int i = 0; i < nWidth * nHeight * 4; i += 4)
-		{
-			BYTE nTemp = pBgraData[i];
-			pBgraData[i] = pBgraData[i + 2];
-			pBgraData[i + 2] = nTemp;
-		}
 		Aggplus::CImage* oImage = new Aggplus::CImage();
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
@@ -3089,14 +3081,25 @@ namespace PdfReader
 		m_pRenderer->put_BrushTextureImage(oImage);
 		m_pRenderer->put_BrushTextureMode(1); // TODO Tile 1 или TileCenter 2
 		m_pRenderer->put_BrushTextureAlpha(alpha);
-
+#ifdef BUILDING_WASM_MODULE
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			// oImage BGRA
+			GRenderer->SetSwapRGB(false);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+			GRenderer->SetSwapRGB(true);
+		}
+#elif
 		m_pRenderer->DrawPath(c_nWindingFillMode);
+#endif
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->BrushRect(false, 0, 0, 1, 1);
 		m_pRenderer->put_BrushType(brush);
 
 		pGState->clearPath();
+
+		RELEASEINTERFACE(oImage);
 	}
 	void RendererOutputDev::StartTilingFill(GfxState *pGState)
 	{

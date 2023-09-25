@@ -955,7 +955,9 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				else
 				{
 				#ifdef BUILDING_WASM_MODULE
-					if (m_oBrush.TexturePath.find(L"data:") == 0)
+					if (NULL != m_oBrush.Image)
+						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
+					else if (m_oBrush.TexturePath.find(L"data:") == 0)
 					{
 						bool bIsOnlyOfficeHatch = false;
 						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)

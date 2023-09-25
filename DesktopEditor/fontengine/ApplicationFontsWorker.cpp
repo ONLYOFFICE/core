@@ -791,7 +791,10 @@ public:
 				mapFontIndexes.insert(std::pair<std::wstring, int>(arrFonts[index], index));
 
 				oWriterJS += L"[\"";
-				oWriterJS += pPair->second.m_sName;
+				std::wstring sNameCorrect = pPair->second.m_sName;
+				NSStringUtils::string_replace(sNameCorrect, L"\\", L"\\\\");
+				NSStringUtils::string_replace(sNameCorrect, L"\"", L"\\\"");
+				oWriterJS += sNameCorrect;
 
 				oWriterJS.AddSize(120);
 				oWriterJS.AddCharNoCheck('\"');

@@ -142,6 +142,8 @@ mac {
 	!core_ios {
 		CONFIG += core_mac
 		CONFIG += core_mac_64
+
+        DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 	}
 }
 

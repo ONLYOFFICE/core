@@ -412,6 +412,7 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 
 	Object oMK;
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
+	m_nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
 	if (pField->fieldLookup("MK", &oMK)->isDict())
 	{
 		// 11 - Заголовок - СА
@@ -425,7 +426,6 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 		}
 		else
 		{
-			m_nStyle = (oType == acroFormFieldRadioButton ? 3 : 0);
 			if (oMK.dictLookup("CA", &oObj)->isString())
 			{
 				std::string sCA(oObj.getString()->getCString());

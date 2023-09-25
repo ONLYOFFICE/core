@@ -3,6 +3,7 @@
 
 #include "libvlc_base.h"
 #include "vlcmedia.h"
+#include "vlcinstance.h"
 
 #include <QWidget>
 
@@ -39,7 +40,6 @@ signals:
 	void positionChanged(float fNewPos);
 
 public:
-	libvlc_instance_t* m_pVlcInstance;
 	libvlc_media_player_t* m_pVlcPlayer;
 	libvlc_event_manager_t* m_pEventManager;
 };

@@ -3,10 +3,12 @@
 
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+	QApplication app(argc, argv);
 
-    Mwindow player;
-    player.show();
+	// set non-zero verbosity level
+	CVlcInstance::setVerbosityLevel(1);
+	Mwindow player;
+	player.show();
 
-    return app.exec();
+	return app.exec();
 }

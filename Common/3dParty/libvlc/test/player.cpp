@@ -116,7 +116,7 @@ void Mwindow::openFile()
 	QString sFile = QFileDialog::getOpenFileName(this, tr("Load a file"));
 
 	/* Create a new Media */
-	CVlcMedia* pMedia = new CVlcMedia(vlcPlayer->m_pVlcInstance, sFile, false);
+	CVlcMedia* pMedia = new CVlcMedia(GetVlcInstance(), sFile, false);
 
 	/* Open media and start playback */
 	vlcPlayer->open(pMedia);

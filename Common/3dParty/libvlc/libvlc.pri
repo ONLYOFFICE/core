@@ -18,10 +18,12 @@ apple_silicon:greaterThan(QT_MAJOR_VERSION, 5) {
 INCLUDEPATH += $$PWD
 
 HEADERS += \
+	$$PWD/vlcinstance.h \
 	$$PWD/vlcplayer.h \
 	$$PWD/vlcmedia.h \
 	$$PWD/libvlc_base.h
 
 SOURCES += \
+	$$PWD/vlcinstance.cpp \
 	$$PWD/vlcplayer.cpp \
 	$$PWD/vlcmedia.cpp

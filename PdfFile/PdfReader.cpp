@@ -470,7 +470,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
 		{\
 			std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
 								 sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2);\
-			if (sNoDate.length() > 21)\
+			if (sNoDate.length() > 21 && (sNoDate[16] == L'+' || sNoDate[16] == L'-'))\
 				sDate += (L".000" + sNoDate.substr(16, 3) + L':' + sNoDate.substr(20, 2));\
 			else\
 				sDate += L"Z";\

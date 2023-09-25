@@ -35,15 +35,15 @@ namespace StarMath
 	private:
 		CAttribute* oCAttribute;
 	};
-	class CSpecialCharacters: public CElement
+	class CSpecialSymbol: public CElement
 	{
 	public:
-		CSpecialCharacters(const std::wstring& wsToken);
-		virtual ~CSpecialCharacters();
+		CSpecialSymbol(const std::wstring& wsToken);
+		virtual ~CSpecialSymbol();
 		std::wstring GetValue() override;
 		TypeElement GetType() override;
 	private:
-		TypeCharacter enTypeSpecial;
+		TypeSymbol enTypeSpecial;
 	};
 	class CNumber: public CElement
 	{
@@ -69,7 +69,21 @@ namespace StarMath
 		std::wstring m_wsUnar;
 		TypeElement m_enUnarType = UnarSign;
 	};
-	class CBinaryOperator: public CElement
+
+	class CArgumentContainer: public CElement
+	{
+	public:
+		CArgumentContainer();
+		virtual ~CArgumentContainer();
+		std::wstring GetValue() override;
+		TypeElement GetType() override;
+		void SetArgument(CElement* oValue);
+		CElement* GetArgument();
+	private:
+		CElement* oArgument;
+	};
+
+	class CBinaryOperator: public CArgumentContainer
 	{
 	public:
 		CBinaryOperator();
@@ -78,17 +92,13 @@ namespace StarMath
 		std::wstring GetValue() override;
 		TypeElement GetType() override;
 		TypeBinOperator GetTypeBin();
+		void SetRightArg(CElement* oArgument);
 		void SetTypeBin(const TypeBinOperator& enType);
-		void SetLeftArg(CElement* oLeftArg);
-		void SetRightArg(CElement* oRightArg);
-		CElement* GetLeftArg();
 		CElement* GetRightArg();
 		TypeElement GetTypeRight();
-		bool CheckBinOperator(const std::wstring& wsCheckToken);
 	private:
+		CElement* oRightArg;
 		TypeBinOperator enTypeBinOp;
-		CElement* arLeftArg;
-		CElement* arRightArg;
 	};
 	class COperator: public CElement
 	{
@@ -128,6 +138,41 @@ namespace StarMath
 		TypeBracket enTypeBracket;
 		std::vector<CElement*> arBrecketVal;
 	};
+	class CFunction: public CArgumentContainer
+	{
+	public:
+		CFunction();
+		virtual ~CFunction();
+		std::wstring GetValue() override;
+		TypeElement GetType() override;
+		TypeFunction GetTypeFun();
+		void SetTypeFunction(const std::wstring& wsCheckToken);
+	private:
+		TypeFunction enTypeFun;
+	};
+	class CIndex: public CArgumentContainer
+	{
+	public:
+		CIndex(const std::wstring& wsToken);
+		virtual ~CIndex();
+		std::wstring GetValue() override;
+		TypeElement GetType() override;
+		void SetIndex(CElement* oValueIndex);
+		CElement* GetIndex();
+	private:
+		TypeIndex enTypeIn;
+		CElement* oIndex;
+	};
+	class CMatrix: public CArgumentContainer
+	{
+	public:
+		CMatrix(const std::wstring& wsToken);
+		virtual	~CMatrix();
+		std::wstring GetValue() override;
+		TypeElement GetType() override;
+	private:
+		TypeMatrix enTypeMatrix;
+	};
 	class CStarMathPars
 	{
 	public:
@@ -137,13 +182,15 @@ namespace StarMath
 		void Pars(std::wstring& wsStarMathLine);
 		std::wstring GetElement(std::wstring::iterator& itFirst,std::wstring::iterator& itEnd);
 		CElement* ParsElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd, std::vector<CElement*>& arParsLine);
+		CElement* ReadWithoutBrackets(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd,std::vector<CElement*>& arParsLine);
 		bool CheckDigit(const std::wstring& wsCheckToken);
 		//bool CheckUnarSign(std::wstring& wsCheckToken,CUnarySign& oUnarSign);
 		static bool CheckBinOperator(const std::wstring& wsCheckToken);
-		bool CheckBinOperatorLowPriority(const std::wstring& wsCheckToken);
-		bool CheckPlusOrMinus(const std::wstring& wsCheckToken);
+		static bool CheckBinOperatorLowPriority(const std::wstring& wsCheckToken);
+		static bool CheckPlusOrMinus(const std::wstring& wsCheckToken);
 		bool CheckOperator(const std::wstring& wsCheckToken);
 		static bool CheckIndex(const std::wstring& wsCheckToken);
+		bool CheckIndexOp(const std::wstring& wsCheckToken);
 		bool CheckBracketOpen(const std::wstring& wsCheckToken);
 		static bool CheckBracketClose(const std::wstring& wsCheckToken);
 		static bool CheckScalable_NotScalableBracketLeft(const std::wstring& wsCheckToken);
@@ -152,7 +199,12 @@ namespace StarMath
 		bool CheckPropertiesAttribute(const std::wstring& wsCheckToken);
 		static bool CheckColorAttribute(const std::wstring& wsCheckToken);
 		bool CheckSpecialCharacter(const std::wstring& wsCheckToken);
+		bool CheckSpecialOperation(const std::wstring& wsCheckToken);//doing first
+		bool CheckSpecialConnection(const std::wstring& wsCheckToken);// doint first
 		bool CheckingTheNextElement(std::wstring::iterator& itFirst, std::wstring::iterator& itEnd,bool (&func)(const std::wstring& wsCheckToken));
+		bool CheckFunction(const std::wstring& wsCheckToken);
+		bool CheckOperation(const std::wstring& wsCheckToken);
+		bool CheckMatrix(const std::wstring& wsCheckToken);
 		void PrintAr();
 	private:
 		std::vector<CElement*> m_arParsLine;

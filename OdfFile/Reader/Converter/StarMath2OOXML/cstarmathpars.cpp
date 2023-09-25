@@ -21,6 +21,29 @@ namespace StarMath
 			m_arParsLine[i]->GetType();
 		 }
 	 }
+//Test version (works correctly only with operators, does not work correctly with attributes)
+	CElement* CStarMathPars::ReadWithoutBrackets(std::wstring::iterator &itFirst, std::wstring::iterator &itEnd,std::vector<CElement*>& arParsLine)
+	{
+		CElement* m_oOneElement = ParsElement(itFirst,itEnd,arParsLine);
+		if(m_oOneElement->GetType() != Bracket)
+		{
+			std::vector<CElement*> arTempValue;
+			arTempValue.push_back(m_oOneElement);
+			while(CheckingTheNextElement(itFirst,itEnd,CheckBinOperator)|| CheckingTheNextElement(itFirst,itEnd,CheckPlusOrMinus)||CheckingTheNextElement(itFirst,itEnd,CheckBinOperatorLowPriority))
+			{
+				arTempValue.push_back(ParsElement(itFirst,itEnd,arTempValue));
+			}
+			if(arTempValue.size()== 1) return m_oOneElement = arTempValue.back();
+			else
+			{
+				CBracket* m_oBracket = new CBracket;
+				m_oBracket->SetBracketVal(arTempValue);
+				m_oBracket->SetTypeBracket(L"brace");
+				return m_oBracket;
+			}
+		}
+		else return m_oOneElement;
+	}
 
 	void CStarMathPars::Pars(std::wstring& wsStarMathLine)
 	{
@@ -44,11 +67,11 @@ namespace StarMath
 				itFirst++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst || (iswalpha(*itFirst) && iswdigit(m_wsElement.back())) || (iswdigit(*itFirst) && iswalpha(m_wsElement.back()))))
+			else if(!m_wsElement.empty() && (*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst  || (iswdigit(*itFirst) && !iswdigit(m_wsElement.back())) || (iswalpha(*itFirst) && !iswalpha(m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *itFirst || L'>' == *itFirst || L'=' == *itFirst))))
 			{
 				return m_wsElement;
 			}
-			else if((*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst ) && m_wsElement.empty() )
+			else if(((*itFirst == L'{' || *itFirst == L'}' || *itFirst == L'+' || *itFirst == L'-' || *itFirst == L'/' || *itFirst == L'*' || L'^' == *itFirst || L'_' == *itFirst || L'=' == *itFirst ) && m_wsElement.empty()) || (!m_wsElement.empty() && ((m_wsElement.back() == L'<' && (L'=' == *itFirst || L'<' == *itFirst || L'>' == *itFirst)) || (m_wsElement.back() == L'>' && (L'>' == *itFirst || L'=' == *itFirst)) ) ) )
 			{
 				m_wsElement.push_back(*itFirst);
 				itFirst++;
@@ -79,14 +102,37 @@ namespace StarMath
 			m_oCNumber->SetAttribute(m_oAttribute);
 			return m_oCNumber;
 		}
-		if(CheckSpecialCharacter(wsOneElement)) return new CSpecialCharacters(wsOneElement);
+		else if(CheckSpecialCharacter(wsOneElement) || CheckSpecialOperation(wsOneElement) || CheckSpecialConnection(wsOneElement)) return new CSpecialSymbol(wsOneElement);
+		else if(CheckFunction(wsOneElement))
+		{
+			CFunction* m_oFunction = new CFunction;
+			m_oFunction->SetTypeFunction(wsOneElement);
+			if(L"ln" == wsOneElement) m_oFunction->SetArgument(ReadWithoutBrackets(itFirst,itEnd,arParsLine));
+			else m_oFunction->SetArgument(ParsElement(itFirst,itEnd,arParsLine));
+			m_oFunction->SetAttribute(m_oAttribute);
+			return m_oFunction;
+		}
+		else if(CheckIndex(wsOneElement))
+		{
+			CIndex* m_oIndex = new CIndex(wsOneElement);
+			m_oIndex->SetArgument(arParsLine.back());
+			m_oIndex->SetIndex(ParsElement(itFirst,itEnd,arParsLine));
+			return m_oIndex;
+		}
+		else if(CheckMatrix(wsOneElement))
+		{
+			CMatrix* m_oMatrix = new CMatrix(wsOneElement);	
+			m_oMatrix->SetArgument(ParsElement(itFirst,itEnd,arParsLine));
+			m_oMatrix->SetAttribute(m_oAttribute);
+			return m_oMatrix;
+		}
 		else if(CheckBinOperator(wsOneElement) || CheckPlusOrMinus(wsOneElement) || CheckBinOperatorLowPriority(wsOneElement))
 		{
 			if(!arParsLine.empty())
 			{
 				CBinaryOperator* m_pBinOp = new CBinaryOperator(wsOneElement);
 				CElement* m_oTempElement{ParsElement(itFirst,itEnd,arParsLine)};
-				m_pBinOp->SetLeftArg(arParsLine.back());
+				m_pBinOp->SetArgument(arParsLine.back());
 				arParsLine.pop_back();
 				if(((CheckPlusOrMinus(wsOneElement) || CheckBinOperatorLowPriority(wsOneElement)) && (CheckingTheNextElement(itFirst, itEnd,CheckBinOperator)||CheckingTheNextElement(itFirst, itEnd, CheckIndex))) || (CheckBinOperator(wsOneElement) && CheckingTheNextElement(itFirst, itEnd,CheckIndex)))
 				{
@@ -189,7 +235,7 @@ namespace StarMath
 	}
 	bool CStarMathPars::CheckBinOperator(const std::wstring &wsCheckToken)
 	{
-		return(L"*" ==wsCheckToken || L"/" == wsCheckToken || wsCheckToken == L"over" || wsCheckToken == L"cdot" || wsCheckToken == L"times" || wsCheckToken == L"frac" || wsCheckToken == L"div"  || wsCheckToken == L"odot" || wsCheckToken == L"otimes" || wsCheckToken == L"odivide"  || wsCheckToken == L"wideslash" || wsCheckToken == L"widebslash");
+		return(L"*" ==wsCheckToken || L"/" == wsCheckToken || wsCheckToken == L"over" || wsCheckToken == L"cdot" || wsCheckToken == L"times"  || wsCheckToken == L"div"  || wsCheckToken == L"odot" || wsCheckToken == L"otimes" || wsCheckToken == L"odivide"  || wsCheckToken == L"wideslash" || wsCheckToken == L"widebslash");
 	}
 	bool CStarMathPars::CheckBinOperatorLowPriority(const std::wstring &wsCheckToken)
 	{
@@ -213,7 +259,11 @@ namespace StarMath
 	}
 	bool CStarMathPars::CheckIndex(const std::wstring &wsCheckToken)
 	{
-		return (wsCheckToken == L"from" || wsCheckToken == L"to" || wsCheckToken[0] == L'_' || wsCheckToken[0] == L'^' );
+		return (wsCheckToken == L"_" || wsCheckToken == L"^" || L"lsup" == wsCheckToken || L"lsub" == wsCheckToken || L"csup" == wsCheckToken || L"csub" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckIndexOp(const std::wstring &wsCheckToken)
+	{
+		return(L"from" == wsCheckToken || L"to" == wsCheckToken);
 	}
 	bool CStarMathPars::CheckBracketOpen(const std::wstring& wsCheckToken)
 	{
@@ -223,12 +273,6 @@ namespace StarMath
 		case '(':
 			return true;
 		case '[':
-			return true;
-		case '}':
-			return true;
-		case ')':
-			return true;
-		case ']':
 			return true;
 		default:
 			return false;
@@ -261,11 +305,31 @@ namespace StarMath
 	}
 	bool CStarMathPars::CheckSpecialCharacter(const std::wstring &wsCheckToken)
 	{
-		return (L"mline" == wsCheckToken || L"grid" == wsCheckToken);
+		return (L"mline" == wsCheckToken || L"#" == wsCheckToken || L"##" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckSpecialOperation(const std::wstring &wsCheckToken)
+	{
+		return(L"intersection" == wsCheckToken || L"union" == wsCheckToken || L"setminus" == wsCheckToken || L"setquoyient" == wsCheckToken || L"subseteq" == wsCheckToken || L"subset" == wsCheckToken || L"supset" == wsCheckToken || L"supseteq" == wsCheckToken || L"nsubset" == wsCheckToken || L"nsupseteq" == wsCheckToken || L"nsupset" == wsCheckToken || L"nsubseteq" == wsCheckToken || L"in" == wsCheckToken || L"notin" == wsCheckToken || L"owns" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckSpecialConnection(const std::wstring &wsCheckToken)
+	{
+		return(L"approx" == wsCheckToken || L"sim" == wsCheckToken || L"simeq" == wsCheckToken || L"equiv" == wsCheckToken || L"prop" == wsCheckToken || L"parallel" == wsCheckToken || L"ortho" == wsCheckToken || L"divides" == wsCheckToken || L"ndivides" == wsCheckToken || L"toward" == wsCheckToken || L"transl" == wsCheckToken || L"transr" == wsCheckToken || L"def" == wsCheckToken || L"=" == wsCheckToken || L"<>" == wsCheckToken || L"<" == wsCheckToken || L"<=" == wsCheckToken || L"leslant" == wsCheckToken || L">" == wsCheckToken || L">=" == wsCheckToken || L"geslant" == wsCheckToken || L"<<" == wsCheckToken || L">>" == wsCheckToken || L"prec" == wsCheckToken || L"succ" == wsCheckToken || L"preccurlyeq" == wsCheckToken || L"succcurlyeq" == wsCheckToken || L"precsim" == wsCheckToken || L"succsim" == wsCheckToken || L"nprec" == wsCheckToken || L"nsucc" == wsCheckToken || L"dlarrow" == wsCheckToken || L"dlrarrow" == wsCheckToken || L"drarrow" == wsCheckToken);
 	}
 	std::vector<CElement*> CStarMathPars::GetVector()
 	{
 		return m_arParsLine;
+	}
+	bool CStarMathPars::CheckFunction(const std::wstring &wsCheckToken)
+	{
+		return(L"sin" == wsCheckToken || L"cos" == wsCheckToken || L"ln" == wsCheckToken || L"tan" == wsCheckToken || L"cot" == wsCheckToken || L"sinh" == wsCheckToken || L"cosh" == wsCheckToken || L"tanh" == wsCheckToken || L"coth" == wsCheckToken || L"arcsin" == wsCheckToken || L"arccos" == wsCheckToken || L"arctan" == wsCheckToken || L"arccot" == wsCheckToken || L"arsinh" == wsCheckToken || L"arcosh" == wsCheckToken || L"artanh" == wsCheckToken || L"arcoth" == wsCheckToken || L"abs" == wsCheckToken || L"fact" == wsCheckToken || L"sqrt" == wsCheckToken || L"nroot" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckOperation(const std::wstring &wsCheckToken)
+	{
+		return(L"intersection" == wsCheckToken || L"union" == wsCheckToken || L"setminus" == wsCheckToken || L"setquoytient" == wsCheckToken || L"subseteq" == wsCheckToken || L"subset" == wsCheckToken);
+	}
+	bool CStarMathPars::CheckMatrix(const std::wstring &wsCheckToken)
+	{
+		return (L"stack" == wsCheckToken || L"matrix" == wsCheckToken || L"binom" == wsCheckToken);
 	}
 //Class methods CNumber
 	CNumber::CNumber()
@@ -309,7 +373,9 @@ namespace StarMath
 	{}
 //Class methods CBinaryOperator
 	CBinaryOperator::CBinaryOperator()
-	{}
+	{
+		oRightArg = nullptr;
+	}
 	CBinaryOperator::CBinaryOperator(const std::wstring& wsToken)
 	{
 		if(wsToken == L"+")
@@ -380,13 +446,11 @@ namespace StarMath
 		{
 			enTypeBinOp = widebslash;
 		}
-		arLeftArg = nullptr;
-		arRightArg = nullptr;
+		oRightArg = nullptr;
 	}
 	CBinaryOperator::~CBinaryOperator()
 	{
-		delete arLeftArg;
-		delete arRightArg;
+		delete oRightArg;
 	}
 	TypeElement CBinaryOperator::GetType()
 	{
@@ -400,29 +464,21 @@ namespace StarMath
 	{
 		return enTypeBinOp;
 	}
-	void CBinaryOperator::SetLeftArg( CElement *oLeftArg)
+	void CBinaryOperator::SetRightArg(CElement *oArgument)
 	{
-		this->arLeftArg = oLeftArg;
-	}
-	void CBinaryOperator::SetRightArg(CElement *oRightArg)
-	{
-		this->arRightArg  = oRightArg;
+		oRightArg = oArgument;
 	}
 	void CBinaryOperator::SetTypeBin(const TypeBinOperator &enType)
 	{
 		this->enTypeBinOp = enType;
 	}
-	CElement* CBinaryOperator::GetLeftArg()
-	{
-		return arLeftArg;
-	}
 	CElement* CBinaryOperator::GetRightArg()
 	{
-		return arRightArg;
+		return oRightArg;
 	}
 	TypeElement CBinaryOperator::GetTypeRight()
 	{
-		return arRightArg->GetType();
+		return oRightArg->GetType();
 	}
 //Class methods COperator
 	COperator::COperator(): oFromValue(NULL),oToValue(NULL),oValueOp(NULL)
@@ -551,7 +607,7 @@ namespace StarMath
 	}
 	void CBracket::SetTypeBracket(const std::wstring& wsCheckToken)
 	{
-		if (L"{" == wsCheckToken) enTypeBracket =brace;
+		if (L"{" == wsCheckToken) enTypeBracket = brace;
 		else if (L"(" == wsCheckToken) enTypeBracket = round;
 		else if (L"[" == wsCheckToken) enTypeBracket = square;
 		else if(wsCheckToken == L"ldbracket")
@@ -782,20 +838,183 @@ namespace StarMath
 		return oCAttribute->GetTypeAtt();
 	}
 //Class methods CSpecial
-	CSpecialCharacters::CSpecialCharacters(const std::wstring& wsToken)
+	CSpecialSymbol::CSpecialSymbol(const std::wstring& wsToken)
 	{
 		if(L"mline" == wsToken) enTypeSpecial = mline;
-		else if(L"grid" == wsToken) enTypeSpecial = grid;
+		else if(L"#" == wsToken) enTypeSpecial = grid;
+		else if(L"##" == wsToken) enTypeSpecial = dlgrid;
+		else if(L"intersection" == wsToken) enTypeSpecial = intersection;
+		else if(L"union" == wsToken) enTypeSpecial = Union;
+		else if(L"setminus" == wsToken) enTypeSpecial = setminus;
+		else if(L"setquoyient" == wsToken) enTypeSpecial = setquoyient;
+		else if(L"subseteg" == wsToken) enTypeSpecial = subseteq;
+		else if(L"subset" == wsToken) enTypeSpecial = subset;
+		else if(L"supset" == wsToken) enTypeSpecial = supset;
+		else if(L"supseteq" == wsToken) enTypeSpecial = supseteq;
+		else if(L"nsubset" == wsToken) enTypeSpecial = nsubset;
+		else if(L"nsubseteq" == wsToken) enTypeSpecial = nsubseteq;
+		else if(L"nsupseteq" == wsToken) enTypeSpecial = nsupseteq;
+		else if(L"nsupset" == wsToken) enTypeSpecial = nsupset;
+		else if(L"in" == wsToken) enTypeSpecial = in;
+		else if(L"notin" == wsToken) enTypeSpecial = notin;
+		else if(L"owns" == wsToken) enTypeSpecial = owns;
+		else if(L"approx" == wsToken) enTypeSpecial = approx;
+		else if(L"sim" == wsToken) enTypeSpecial = sim;
+		else if(L"simeq" == wsToken) enTypeSpecial = simeq;
+		else if(L"equiv" == wsToken) enTypeSpecial = equiv;
+		else if(L"prop" == wsToken) enTypeSpecial = prop;
+		else if(L"parallel" == wsToken) enTypeSpecial = parallel;
+		else if(L"ortho" == wsToken) enTypeSpecial = ortho;
+		else if(L"divides" == wsToken) enTypeSpecial = divides;
+		else if(L"ndivides" == wsToken) enTypeSpecial = ndivides;
+		else if(L"toward" == wsToken) enTypeSpecial = toward;
+		else if(L"transl" == wsToken) enTypeSpecial = transl;
+		else if(L"transr" == wsToken) enTypeSpecial = transr;
+		else if(L"def" == wsToken) enTypeSpecial = def;
+		else if(L"=" == wsToken) enTypeSpecial = equals;
+		else if(L"<>" == wsToken) enTypeSpecial = notequals;
+		else if(L"<" == wsToken) enTypeSpecial = learrow;
+		else if(L"<=" == wsToken) enTypeSpecial = learrowequals;
+		else if(L"leslant" == wsToken) enTypeSpecial = leslant;
+		else if(L">" == wsToken) enTypeSpecial = riarrow;
+		else if(L">=" == wsToken) enTypeSpecial = riarrowequals;
+		else if(L"geslant" == wsToken) enTypeSpecial = geslant;
+		else if(L"<<" == wsToken) enTypeSpecial = dllearrow;
+		else if(L">>" == wsToken) enTypeSpecial = dlriarrow;
+		else if(L"prec" == wsToken) enTypeSpecial = prec;
+		else if(L"succ" == wsToken) enTypeSpecial = succ;
+		else if(L"preccurlyeq" == wsToken) enTypeSpecial = preccurlyeq;
+		else if(L"succcurlyeq" == wsToken) enTypeSpecial = succcurlyeq;
+		else if(L"precsim" == wsToken) enTypeSpecial = precsim;
+		else if(L"succsim" == wsToken) enTypeSpecial = succsim;
+		else if(L"nprec" == wsToken) enTypeSpecial = nprec;
+		else if(L"nsucc" == wsToken) enTypeSpecial = nsucc;
+		else if(L"dlarrow" == wsToken) enTypeSpecial = dlarrow;
+		else if(L"dlrarrow" == wsToken) enTypeSpecial = dlrarrow;
+		else if(L"drarrow" == wsToken) enTypeSpecial = drarrow;
+		SetAttribute(nullptr);
 	}
-	CSpecialCharacters::~CSpecialCharacters()
+	CSpecialSymbol::~CSpecialSymbol()
 	{}
-	std::wstring CSpecialCharacters::GetValue()
+	std::wstring CSpecialSymbol::GetValue()
 	{
 		return {};
 	}
-	TypeElement CSpecialCharacters::GetType()
+	TypeElement CSpecialSymbol::GetType()
 	{
-		return SpecialCharacter;
+		return SpecialSymbol;
 	}
+//class methods CFunction
+	CFunction::CFunction()
+	{}
+	CFunction::~CFunction()
+	{
+	}
+	std::wstring CFunction::GetValue()
+	{
+		return L"";
+	}
+	TypeElement CFunction::GetType()
+	{
+		return Function;
+	}
+	TypeFunction CFunction::GetTypeFun()
+	{
+		return enTypeFun;
+	}
+	void CFunction::SetTypeFunction(const std::wstring &wsCheckToken)
+	{
+		if(L"sin" == wsCheckToken) enTypeFun = sin;
+		else if(L"abs" == wsCheckToken) enTypeFun = abs;
+		else if(L"fact" == wsCheckToken) enTypeFun = fact;
+		else if(L"sqrt" == wsCheckToken) enTypeFun = sqrt;
+		else if(L"cos" == wsCheckToken) enTypeFun = cos;
+		else if(L"tan" == wsCheckToken) enTypeFun = tan;
+		else if(L"cot" == wsCheckToken) enTypeFun = cot;
+		else if(L"sinh" == wsCheckToken) enTypeFun = sinh;
+		else if(L"cosh" == wsCheckToken) enTypeFun = cosh;
+		else if(L"tanh" == wsCheckToken) enTypeFun = tanh;
+		else if(L"coth" == wsCheckToken) enTypeFun = coth;
+		else if(L"arcsin" == wsCheckToken) enTypeFun = arcsin;
+		else if(L"arccos" == wsCheckToken) enTypeFun = arccos;
+		else if(L"arctan" == wsCheckToken) enTypeFun = arctan;
+		else if(L"arccot" == wsCheckToken) enTypeFun = arccot;
+		else if(L"arsinh" == wsCheckToken) enTypeFun = arsinh;
+		else if(L"arcosh" == wsCheckToken) enTypeFun = arcosh;
+		else if(L"artanh" == wsCheckToken) enTypeFun = artanh;
+		else if(L"arcoth" == wsCheckToken) enTypeFun = arcoth;
+		else if(L"ln" == wsCheckToken) enTypeFun = ln;
+	}
+//class methods CArgumentContainer
+	CArgumentContainer::CArgumentContainer()
+	{
+		oArgument = nullptr;
+	}
+	CArgumentContainer::~CArgumentContainer()
+	{
+		delete oArgument;
+	}
+	std::wstring CArgumentContainer::GetValue()
+	{
+		return L"";
+	}
+	TypeElement CArgumentContainer::GetType()
+	{
+		return TwoArgumentContainer;
+	}
+	void CArgumentContainer::SetArgument(CElement *oValue)
+	{
+		oArgument = oValue;
+	}
+	CElement* CArgumentContainer::GetArgument()
+	{
+		return oArgument;
+	}
+//class methods CIndex
+	CIndex::CIndex(const std::wstring& wsToken)
+	{
+		if(L"^" == wsToken) enTypeIn = upper;
+		else if(L"_" == wsToken) enTypeIn = lower;
+		else if(L"lsup" == wsToken) enTypeIn = lsup;
+		else if(L"lsub" == wsToken) enTypeIn = lsub;
+		else if(L"csup" == wsToken) enTypeIn = csup;
+		else if(L"csub" == wsToken) enTypeIn = csub;
+		SetAttribute(nullptr);
+	}
+	CIndex::~CIndex()
+	{
+		delete oIndex;
+	}
+	std::wstring CIndex::GetValue()
+	{
+		return {};
+	}
+	TypeElement CIndex::GetType()
+	{
+		return Index;
+	}
+	void CIndex::SetIndex(CElement *oValueIndex)
+	{
+		oIndex = oValueIndex;
+	}
+//class methods CMatrix
+   CMatrix::CMatrix(const std::wstring& wsToken)
+   {
+	   if (L"binom" == wsToken) enTypeMatrix = binom;
+	   else if(L"stack" == wsToken) enTypeMatrix = stack;
+	   else if(L"matrix" == wsToken) enTypeMatrix = matrix;
+   }
+   CMatrix::~CMatrix()
+   {}
+   std::wstring CMatrix::GetValue()
+   {
+	   return {};
+   }
+   TypeElement CMatrix::GetType()
+   {
+	   return Matrix;
+   }
 }
+
+
 

@@ -9,7 +9,12 @@ enum TypeElement{
 	Bracket,
 	UnarSign,
 	Attribute,
-	SpecialCharacter,
+	SpecialSymbol,
+	Function,
+	TwoArgumentContainer,
+	Operation,
+	Index,
+	Matrix,
 };
 enum TypeBinOperator
 {
@@ -96,10 +101,101 @@ enum TypeAttributeColor
 	crimson,
 	violet,//color(without rgb and hex)
 };
-enum TypeCharacter
+enum TypeSymbol
 {
 	mline,
 	grid,
+	dlgrid,
+	intersection,
+	Union,
+	setminus,
+	setquoyient,
+	subseteq,
+	subset,
+	supset,
+	supseteq,
+	nsubset,
+	nsupseteq,
+	nsupset,
+	nsubseteq,
+	in,
+	notin,
+	owns,
+	approx,
+	sim,
+	simeq,
+	equiv,
+	prop,
+	parallel,
+	ortho,
+	divides,
+	ndivides,
+	toward,
+	transl,
+	transr,
+	def,
+	equals,
+	notequals,
+	learrow,
+	learrowequals,
+	leslant,
+	riarrow,
+	riarrowequals,
+	geslant,
+	dllearrow,
+	dlriarrow,
+	prec,
+	succ,
+	preccurlyeq,
+	succcurlyeq,
+	precsim,
+	succsim,
+	nprec,
+	nsucc,
+	dlarrow,
+	dlrarrow,
+	drarrow,
+};
+enum TypeFunction
+{
+	abs,
+	fact,
+	sqrt,
+	nroot,//nroot?
+	sin,
+	cos,
+	tan,
+	cot,
+	sinh,
+	cosh,
+	tanh,
+	coth,
+	arcsin,
+	arccos,
+	arctan,
+	arccot,
+	arsinh,
+	arcosh,
+	artanh,
+	arcoth,
+	ln,
+	exp,
+	log,
+};
+enum TypeIndex
+{
+	upper,
+	lower,
+	lsup,
+	lsub,
+	csup,
+	csub,
+};
+enum TypeMatrix
+{
+	binom,
+	stack,
+	matrix,
 };
 }
 #endif // TYPESELEMENTS_H

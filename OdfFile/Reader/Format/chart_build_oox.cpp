@@ -737,6 +737,8 @@ void process_build_object::ApplyChartProperties(std::wstring style, chart_format
 		}
 		if (!properties) return;
 
+		propertiesOut->common_rotation_angle_attlist_.apply_from(properties->content_.common_rotation_angle_attlist_);
+
 		for (size_t i = 0; i < properties->content_.size(); i++)
 		{
 			propertiesOut->push_back(properties->content_[i]);
@@ -871,6 +873,7 @@ void process_build_object::visit(chart_title& val)
 	}
 	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 	ApplyGraphicProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.graphic_properties_, t.fill_);
+	ApplyChartProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.properties_);
 
 ///////////////////////////////////////////////////////////////////////////////////////
 	if (val.attlist_.common_draw_position_attlist_.svg_x_)

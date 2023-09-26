@@ -95,7 +95,7 @@ namespace MetaFile
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteNodeBegin(const std::wstring& wsNodeName, const NodeAttributes& arAttributes);
 		void WriteNodeEnd(const std::wstring& wsNodeName);
-		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds = TRect(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
+		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRectL& oBounds = TRectL(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
 		void CheckClip();
 		void ResetClip() override;

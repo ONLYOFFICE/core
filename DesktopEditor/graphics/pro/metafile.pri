@@ -1,10 +1,11 @@
 METAFILE_PATH = $$PWD/../../raster/Metafile
 
 !metafile_disable_wmf_emf {
-    DEFINES += METAFILE_SUPPORT_WMF_EMF
+	DEFINES += METAFILE_SUPPORT_WMF_EMF
 
-    HEADERS += \
-	    $$METAFILE_PATH/Common/CPathConverter.h \
+	HEADERS += \
+		$$METAFILE_PATH/Common/CPathConverter.h \
+		$$METAFILE_PATH/Common/CClip.h \
 		\
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretator.h \
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
@@ -15,6 +16,15 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Emf/EmfParser/CEmfParserBase.h \
 		$$METAFILE_PATH/Emf/EmfParser/CEmfPlusParser.h \
 		\
+		$$METAFILE_PATH/Emf/EmfTypes.h \
+		$$METAFILE_PATH/Emf/EmfObjects.h \
+		$$METAFILE_PATH/Emf/EmfPath.h \
+		$$METAFILE_PATH/Emf/EmfPlayer.h \
+		$$METAFILE_PATH/Emf/EmfFile.h \
+		$$METAFILE_PATH/Wmf/WmfObjects.h \
+		$$METAFILE_PATH/Wmf/WmfPlayer.h \
+		$$METAFILE_PATH/Wmf/WmfTypes.h \
+		\
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretator.h \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CWmfInterpretatorBase.h \
 		$$METAFILE_PATH/Wmf/WmfInterpretator/CInterpretatorSvgBase.h \
@@ -23,8 +33,9 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Wmf/WmfParser/CWmfParser.h \
 		$$METAFILE_PATH/Wmf/WmfParser/CWmfParserBase.h
 
-    SOURCES += \
-	    $$METAFILE_PATH/Common/CPathConverter.cpp \
+	SOURCES += \
+		$$METAFILE_PATH/Common/CPathConverter.cpp \
+		$$METAFILE_PATH/Common/CClip.cpp \
 		\
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretator.cpp \
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
@@ -35,6 +46,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Emf/EmfParser/CEmfPlusParser.cpp \
 		\
 		$$METAFILE_PATH/Emf/EmfObjects.cpp \
+		$$METAFILE_PATH/Emf/EmfPlusObjects.cpp \
 		$$METAFILE_PATH/Emf/EmfPath.cpp \
 		$$METAFILE_PATH/Emf/EmfPlayer.cpp \
 		$$METAFILE_PATH/Emf/EmfFile.cpp \
@@ -48,16 +60,16 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/Wmf/WmfParser/CWmfParser.cpp \
 		$$METAFILE_PATH/Wmf/WmfParser/CWmfParserBase.cpp
 
-    !metafile_disable_wmf_emf_xml {
-	    DEFINES += METAFILE_SUPPORT_WMF_EMF_XML
+	!metafile_disable_wmf_emf_xml {
+		DEFINES += METAFILE_SUPPORT_WMF_EMF_XML
 		HEADERS += \
-		    $$METAFILE_PATH/CXmlOutput.h \
+			$$METAFILE_PATH/CXmlOutput.h \
 			\
 			$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
 			$$METAFILE_PATH/Emf/EmfParser/CEmfxParser.h
 
-        SOURCES += \
-		    $$METAFILE_PATH/CXmlOutput.cpp \
+		SOURCES += \
+			$$METAFILE_PATH/CXmlOutput.cpp \
 			\
 			$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
 			$$METAFILE_PATH/Emf/EmfParser/CEmfxParser.cpp
@@ -65,24 +77,24 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 }
 
 !metafile_disable_svg {
-    DEFINES += METAFILE_SUPPORT_SVG
+	DEFINES += METAFILE_SUPPORT_SVG
 
-    # DEPRECATED ENGINE. REMOVE IN 7.6+ VERSIONS
+	# DEPRECATED ENGINE. REMOVE IN 7.6+ VERSIONS
 	#CONFIG += svg_old_version
 
-    svg_old_version {
+	svg_old_version {
 
-        DEFINES += SVG_OLD_ENGINE
+		DEFINES += SVG_OLD_ENGINE
 
-        HEADERS += \
-		    $$METAFILE_PATH/svg/SVGFramework.h \
+		HEADERS += \
+			$$METAFILE_PATH/svg/SVGFramework.h \
 			$$METAFILE_PATH/svg/SVGTransformer.h
 
-        SOURCES += \
-		    $$METAFILE_PATH/svg/SVGFramework.cpp \
+		SOURCES += \
+			$$METAFILE_PATH/svg/SVGFramework.cpp \
 			$$METAFILE_PATH/svg/SVGTransformer.cpp
 
-    } else {
+	} else {
 
         HEADERS += \
 		    $$METAFILE_PATH/svg/SvgTypes.h \

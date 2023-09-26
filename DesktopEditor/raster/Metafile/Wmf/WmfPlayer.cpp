@@ -243,7 +243,7 @@ namespace MetaFile
 		m_oViewport.Init();
 		m_oTextColor.Set(0, 0, 0);
 		m_oTextBgColor.Set(255, 255, 255);
-		m_oCurPos.Set(0, 0);
+		m_oCurPos = {0, 0};
 		m_ushTextBgMode     = OPAQUE;
 		m_ushLayout         = LAYOUT_LTR;
 		m_ushPolyFillMode   = ALTERNATE;
@@ -600,34 +600,34 @@ namespace MetaFile
 			if (!m_oViewport.h) m_oViewport.h = nMinCy;
 		}
 	}
-	void CWmfDC::SetTextColor(TWmfColor& oColor)
+	void CWmfDC::SetTextColor(TRGBA& oColor)
 	{
 		m_oTextColor = oColor;
 	}
-	TWmfColor&  CWmfDC::GetTextColor()
+	TRGBA&  CWmfDC::GetTextColor()
 	{
 		return m_oTextColor;
 	}
-	void  CWmfDC::SetTextBgColor(TWmfColor& oColor)
+	void  CWmfDC::SetTextBgColor(TRGBA& oColor)
 	{
 		m_oTextBgColor = oColor;
 	}
-	TWmfColor& CWmfDC::GetTextBgColor()
+	TRGBA& CWmfDC::GetTextBgColor()
 	{
 		return m_oTextBgColor;
 	}
-	TWmfPointS& CWmfDC::GetCurPos()
+	TPointS &CWmfDC::GetCurPos()
 	{
 		return m_oCurPos;
 	}
-	void           CWmfDC::SetCurPos(TWmfPointS& oPoint)
+	void           CWmfDC::SetCurPos(TPointS& oPoint)
 	{
 		m_oCurPos = oPoint;
 	}
 	void           CWmfDC::SetCurPos(short shX, short shY)
 	{
-		m_oCurPos.x = shX;
-		m_oCurPos.y = shY;
+		m_oCurPos.X = shX;
+		m_oCurPos.Y = shY;
 	}
 	void           CWmfDC::SetTextBgMode(unsigned short ushMode)
 	{

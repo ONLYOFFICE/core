@@ -40,31 +40,39 @@
 
 namespace MetaFile
 {
-	CEmfLogBrushEx::CEmfLogBrushEx() : Color(255, 255, 255)
+	CEmfObjectBase::CEmfObjectBase()
+	{}
+
+	CEmfObjectBase::~CEmfObjectBase()
+	{}
+
+	EEmfObjectType CEmfObjectBase::GetType()
 	{
-		BrushStyle     = BS_SOLID;
-		BrushHatch     = HS_HORIZONTAL;
-		DibPatternPath = L"";
-		BrushAlpha     = 255;
-		DibBuffer      = NULL;
-		DibWidth       = 0;
-		DibHeigth      = 0;
+		return EMF_OBJECT_UNKNOWN;
 	}
+
+	CEmfLogBrushEx::CEmfLogBrushEx() 
+		: unBrushStyle(BS_SOLID), oColor(255, 255, 255, 255), unBrushHatch(HS_HORIZONTAL), pDibBuffer(NULL), unDibWidth(0), unDibHeigth(0)
+	{}
+
 	CEmfLogBrushEx::~CEmfLogBrushEx()
 	{
-		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-        {
-            NSFile::CFileBinary::Remove(DibPatternPath);
-        }
+		if (BS_DIBPATTERN == unBrushStyle && !wsDibPatternPath.empty())
+			NSFile::CFileBinary::Remove(wsDibPatternPath);
 
-		if (DibBuffer)
-			delete[] DibBuffer;
+		RELEASEOBJECT(pDibBuffer);
 	}
+	
+	EEmfObjectType CEmfLogBrushEx::GetType()
+	{
+		return EMF_OBJECT_BRUSH;
+	}
+
 	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
-		DibBuffer = pBuffer;
-		DibWidth  = ulWidth;
-		DibHeigth = ulHeight;		
+		pDibBuffer = pBuffer;
+		unDibWidth  = ulWidth;
+		unDibHeigth = ulHeight;		
 
 		if (ulWidth <= 0 || ulHeight <= 0)
 			return;
@@ -86,19 +94,192 @@ namespace MetaFile
 
 		if (oBgraFrame.SaveFile(wsTempFileName, _CXIMAGE_FORMAT_PNG))
 		{
-			BrushStyle     = BS_DIBPATTERN;
-			DibPatternPath = wsTempFileName;
+			unBrushStyle     = BS_DIBPATTERN;
+			wsDibPatternPath = wsTempFileName;
 		}
 
 		oBgraFrame.put_Data(NULL);
 	#endif
 	}
-	int  CEmfLogBrushEx::GetColor()
+
+	int CEmfLogBrushEx::GetColor()
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
 	}
+
+	int CEmfLogBrushEx::GetColor2()
+	{
+		return 0;
+	}
+
+	unsigned int CEmfLogBrushEx::GetStyle()
+	{
+		return unBrushStyle;
+	}
+
+	unsigned int CEmfLogBrushEx::GetStyleEx()
+	{
+		return 0;
+	}
+
+	unsigned int CEmfLogBrushEx::GetHatch()
+	{
+		return unBrushHatch;
+	}
+
+	unsigned int CEmfLogBrushEx::GetAlpha()
+	{
+		return (unsigned int)oColor.a;
+	}
+
+	unsigned int CEmfLogBrushEx::GetAlpha2()
+	{
+		return 0xff;
+	}
+
+	std::wstring CEmfLogBrushEx::GetDibPatterPath()
+	{
+		return wsDibPatternPath;
+	}
+
+	void CEmfLogBrushEx::GetBounds(double &left, double &top, double &width, double &height)
+	{}
+
+	void CEmfLogBrushEx::GetCenterPoint(double &dX, double &dY)
+	{}
+
+	void CEmfLogBrushEx::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+	{
+		*pBuffer	= pDibBuffer;
+		unWidth		= unDibWidth;
+		unHeight	= unDibHeigth;
+	}
+
+	CEmfLogFont::CEmfLogFont(bool bFixedLength) : m_bFixedLength(bFixedLength)
+	{
+		oDesignVector.pValues = NULL;
+	}
+
+	CEmfLogFont::~CEmfLogFont()
+	{
+		RELEASEOBJECT(oDesignVector.pValues);
+	}
+
+	EEmfObjectType CEmfLogFont::GetType()
+	{
+		return EMF_OBJECT_FONT;
+	}
+
+	double CEmfLogFont::GetHeight()
+	{
+		return (double)oLogFontEx.oLogFont.nHeight;
+	}
+
+	std::wstring CEmfLogFont::GetFaceName()
+	{
+		return std::wstring(NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32).c_str());
+	}
+	
+	int CEmfLogFont::GetWeight()
+	{
+		return oLogFontEx.oLogFont.nWeight;
+	}
+
+	bool CEmfLogFont::IsItalic()
+	{
+		return (0x01 == oLogFontEx.oLogFont.uchItalic ? true : false);
+	}
+
+	bool CEmfLogFont::IsStrikeOut()
+	{
+		return (0x01 == oLogFontEx.oLogFont.uchStrikeOut ? true : false);
+	}
+
+	bool CEmfLogFont::IsUnderline()
+	{
+		return (0x01 == oLogFontEx.oLogFont.uchUnderline ? true : false);
+	}
+
+	int CEmfLogFont::GetEscapement()
+	{
+		return oLogFontEx.oLogFont.nEscapement;
+	}
+
+	int CEmfLogFont::GetCharSet()
+	{
+		return oLogFontEx.oLogFont.uchCharSet;
+	}
+
+	bool CEmfLogFont::IsFixedLength()
+	{
+		return m_bFixedLength;
+	}
+
+	int CEmfLogFont::GetOrientation()
+	{
+		return oLogFontEx.oLogFont.nOrientation;
+	}
+
+	CEmfLogPen::CEmfLogPen()
+		: unPenStyle(PS_SOLID), unWidth(1), oColor(0, 0, 0), pStyleEntry(NULL)
+	{}
+
+	CEmfLogPen::~CEmfLogPen()
+	{
+		RELEASEOBJECT(pStyleEntry);
+	}
+
+	EEmfObjectType CEmfLogPen::GetType()
+	{
+		return EMF_OBJECT_PEN;
+	}
+
 	int  CEmfLogPen::GetColor()
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
+	}
+
+	unsigned int CEmfLogPen::GetStyle()
+	{
+		return unPenStyle;
+	}
+
+	double CEmfLogPen::GetWidth()
+	{
+		return (double)unWidth;
+	}
+
+	unsigned int CEmfLogPen::GetAlpha()
+	{
+		return 0xff;
+	}
+
+	double CEmfLogPen::GetMiterLimit()
+	{
+		return 0;
+	}
+
+	double CEmfLogPen::GetDashOffset()
+	{
+		return 0;
+	}
+
+	void CEmfLogPen::GetDashData(double *&arDatas, unsigned int &unSize)
+	{
+		arDatas = NULL;
+		unSize  = 0;
+	}
+
+	CEmfLogPalette::CEmfLogPalette() : ushNumberOfEntries(0), pPaletteEntries(NULL)
+	{}
+
+	CEmfLogPalette::~CEmfLogPalette()
+	{
+		RELEASEOBJECT(pPaletteEntries);
+	}
+
+	EEmfObjectType CEmfLogPalette::GetType()
+	{
+		return EMF_OBJECT_PALETTE;
 	}
 }

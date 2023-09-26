@@ -143,7 +143,7 @@ namespace MetaFile
 			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
-		TEmfRectL* GetBounds()
+		TRectL* GetBounds()
 		{
 			return m_pParser->GetBounds();
 		}

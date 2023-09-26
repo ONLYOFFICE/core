@@ -59,7 +59,7 @@ namespace MetaFile
 		
 		virtual void         PlayMetaFile() = 0;
 		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
-		virtual TRect*       GetDCBounds() = 0;
+		virtual TRectL*      GetDCBounds() = 0;
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
 		virtual int          GetTextColor() = 0;

@@ -85,22 +85,22 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::SetSize(double dWidth, double dHeight)
 	{
-		m_oSizeWindow.x = dWidth;
-		m_oSizeWindow.y = dHeight;
+		m_oSizeWindow.X = dWidth;
+		m_oSizeWindow.Y = dHeight;
 	}
 
 	void CInterpretatorSvgBase::GetSize(double &dWidth, double &dHeight)
 	{
-		dWidth  = m_oSizeWindow.x;
-		dHeight = m_oSizeWindow.y;
+		dWidth  = m_oSizeWindow.X;
+		dHeight = m_oSizeWindow.Y;
 	}
 
 	void CInterpretatorSvgBase::UpdateSize()
 	{
-		if (0 != m_oSizeWindow.x && 0 == m_oSizeWindow.y)
-			m_oSizeWindow.y = m_oSizeWindow.x * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
-		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y)
-			m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
+		if (0 != m_oSizeWindow.X && 0 == m_oSizeWindow.Y)
+			m_oSizeWindow.Y = m_oSizeWindow.X * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
+		else if (0 == m_oSizeWindow.X && 0 != m_oSizeWindow.Y)
+			m_oSizeWindow.X = m_oSizeWindow.Y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
 	}
 
 	void CInterpretatorSvgBase::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
@@ -140,11 +140,11 @@ namespace MetaFile
 
 		TRectD oNewClipRect(oClipRect);
 
-		if (oNewClipRect.dLeft > oNewClipRect.dRight)
-			std::swap(oNewClipRect.dLeft, oNewClipRect.dRight);
+		if (oNewClipRect.Left > oNewClipRect.Right)
+			std::swap(oNewClipRect.Left, oNewClipRect.Right);
 
-		if (oNewClipRect.dTop > oNewClipRect.dBottom)
-			std::swap(oNewClipRect.dTop, oNewClipRect.dBottom);
+		if (oNewClipRect.Top > oNewClipRect.Bottom)
+			std::swap(oNewClipRect.Top, oNewClipRect.Bottom);
 
 		NodeAttributes arNodeAttributes;
 
@@ -154,9 +154,9 @@ namespace MetaFile
 
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
-		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
-		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
-		                      L"viewBox=\"" + ConvertToWString(oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dTop) + L' ' + ConvertToWString(oNewClipRect.dRight - oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dBottom - oNewClipRect.dTop) + L'\"';
+		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.Left) + L"\" y=\"" + ConvertToWString(oRect.Top) + L"\" " +
+		                      L"width=\"" + ConvertToWString(oRect.Right - oRect.Left) + L"\" height=\"" + ConvertToWString(oRect.Bottom - oRect.Top) + L"\" " +
+		                      L"viewBox=\"" + ConvertToWString(oNewClipRect.Left) + L' ' + ConvertToWString(oNewClipRect.Top) + L' ' + ConvertToWString(oNewClipRect.Right - oNewClipRect.Left) + L' ' + ConvertToWString(oNewClipRect.Bottom - oNewClipRect.Top) + L'\"';
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
@@ -212,7 +212,7 @@ namespace MetaFile
 		}
 	}
 
-	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRect &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
+	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRectL &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
 	{
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
@@ -226,13 +226,13 @@ namespace MetaFile
 
 		NodeAttributes arNodeAttributes;
 
-		double dXCoord = oCoord.x;
-		double dYCoord = oCoord.y;
+		double dXCoord = oCoord.X;
+		double dYCoord = oCoord.Y;
 
-		if (m_pParser->GetTextAlign() & TA_UPDATECP && (0. == oCoord.x && 0. == oCoord.y))
+		if (m_pParser->GetTextAlign() & TA_UPDATECP && (0. == oCoord.X && 0. == oCoord.Y))
 		{
-			dXCoord = m_pParser->GetCurPos().x;
-			dYCoord = m_pParser->GetCurPos().y;
+			dXCoord = m_pParser->GetCurPos().X;
+			dYCoord = m_pParser->GetCurPos().Y;
 		}
 
 		TXForm oTransform;
@@ -247,10 +247,10 @@ namespace MetaFile
 			WriteNodeBegin(L"g", {});
 			bWriteG = true;
 
-			WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.nLeft)},
-			                    {L"y",      ConvertToWString(oBounds.nTop)},
-			                    {L"width",  ConvertToWString(oBounds.nRight - oBounds.nLeft)},
-			                    {L"height", ConvertToWString(oBounds.nBottom - oBounds.nTop)},
+			WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.Left)},
+			                    {L"y",      ConvertToWString(oBounds.Top)},
+			                    {L"width",  ConvertToWString(oBounds.Right - oBounds.Left)},
+			                    {L"height", ConvertToWString(oBounds.Bottom - oBounds.Top)},
 			                    {L"fill",   wsFillRect},
 			                    {L"stroke", L"none"}});
 		}
@@ -354,7 +354,7 @@ namespace MetaFile
 			// Ничего не делаем
 		}
 
-		if (oScale.y < -0.00001) //TODO::Тоже нужно и для dXScale
+		if (oScale.Y < -0.00001) //TODO::Тоже нужно и для dXScale
 		{
 			dYCoord += dFontHeight;
 
@@ -374,12 +374,12 @@ namespace MetaFile
 
 			dYCoord -= dFontHeight * dSin;
 
-			if (oScale.y < -0.00001)
+			if (oScale.Y < -0.00001)
 				dXCoord -= dFontHeight * dSin;
 
 			arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
 
-			if (oScale.y > 0.00001)
+			if (oScale.Y > 0.00001)
 				dXCoord -= dFontHeight * dSin;
 		}
 
@@ -459,10 +459,10 @@ namespace MetaFile
 
 		TXForm *pTransform = m_pParser->GetTransform();
 		
-		double dLeft   = oClip.dLeft;
-		double dTop    = oClip.dTop;
-		double dRight  = oClip.dRight;
-		double dBottom = oClip.dBottom;
+		double dLeft   = oClip.Left;
+		double dTop    = oClip.Top;
+		double dRight  = oClip.Right;
+		double dBottom = oClip.Bottom;
 		
 		pTransform->Apply(dLeft,  dTop);
 		pTransform->Apply(dRight, dBottom);
@@ -479,18 +479,18 @@ namespace MetaFile
 	
 		TXForm *pTransform = m_pParser->GetTransform();
 		
-		double dClipLeft   = oClip.dLeft;
-		double dClipTop    = oClip.dTop;
-		double dClipRight  = oClip.dRight;
-		double dClipBottom = oClip.dBottom;
+		double dClipLeft   = oClip.Left;
+		double dClipTop    = oClip.Top;
+		double dClipRight  = oClip.Right;
+		double dClipBottom = oClip.Bottom;
 		
 		pTransform->Apply(dClipLeft, dClipTop);
 		pTransform->Apply(dClipRight, dClipBottom);
 		
-		double dBBLeft   = oBB.dLeft;
-		double dBBTop    = oBB.dTop;
-		double dBBRight  = oBB.dRight;
-		double dBBBottom = oBB.dBottom;
+		double dBBLeft   = oBB.Left;
+		double dBBTop    = oBB.Top;
+		double dBBRight  = oBB.Right;
+		double dBBBottom = oBB.Bottom;
 		
 		pTransform->Apply(dBBLeft, dBBTop);
 		pTransform->Apply(dBBRight, dBBBottom);
@@ -528,8 +528,8 @@ namespace MetaFile
 		{
 			double dScale = m_pParser->GetDpi() / 96.;
 
-			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
-				dScale *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
+				dScale *= m_oViewport.GetWidth() / m_oSizeWindow.X;
 
 			dStrokeWidth = dScale / std::fabs(m_pParser->GetTransform()->M11);
 		}
@@ -618,7 +618,7 @@ namespace MetaFile
 			CEmfPlusPen *pPen = dynamic_cast<CEmfPlusPen*>(m_pParser->GetPen());
 
 			if (NULL != pPen)
-				pBrush = pPen->Brush;
+				pBrush = pPen->pBrush;
 		}
 
 		if (NULL == pBrush)
@@ -776,12 +776,7 @@ namespace MetaFile
 		if (NULL != m_pParser)
 			return m_pParser->GetCurPos();
 
-		TPointD oCurPos;
-
-		oCurPos.x = m_oViewport.dLeft;
-		oCurPos.y = m_oViewport.dRight;
-
-		return oCurPos;
+		return TPointD(m_oViewport.dLeft, m_oViewport.dRight);
 	}
 
 	std::wstring CInterpretatorSvgBase::CreatePath(const IPath *pPath, const TXForm *pTransform)
@@ -804,8 +799,8 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
-		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
-			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
 
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
@@ -896,8 +891,8 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
-		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
-			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.X)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.X;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -1523,10 +1518,10 @@ namespace MetaFile
 	void CHatchGenerator::AddLine(const TPointD& oPoint1, const TPointD& oPoint2)
 	{
 		m_oStringBuilder.WriteNodeBegin(L"line", true);
-		m_oStringBuilder.WriteAttribute(L"x1", ConvertToWString(m_dStrokeWidth * oPoint1.x));
-		m_oStringBuilder.WriteAttribute(L"y1", ConvertToWString(m_dStrokeWidth * oPoint1.y));
-		m_oStringBuilder.WriteAttribute(L"x2", ConvertToWString(m_dStrokeWidth * oPoint2.x));
-		m_oStringBuilder.WriteAttribute(L"y2", ConvertToWString(m_dStrokeWidth * oPoint2.y));
+		m_oStringBuilder.WriteAttribute(L"x1", ConvertToWString(m_dStrokeWidth * oPoint1.X));
+		m_oStringBuilder.WriteAttribute(L"y1", ConvertToWString(m_dStrokeWidth * oPoint1.Y));
+		m_oStringBuilder.WriteAttribute(L"x2", ConvertToWString(m_dStrokeWidth * oPoint2.X));
+		m_oStringBuilder.WriteAttribute(L"y2", ConvertToWString(m_dStrokeWidth * oPoint2.Y));
 		m_oStringBuilder.WriteAttribute(L"stroke", L"rgb(" + INTCOLOR_TO_RGB(m_nStrokeColor) + L')');
 		m_oStringBuilder.WriteAttribute(L"stroke-width", ConvertToWString(m_dStrokeWidth));
 		m_oStringBuilder.WriteNodeEnd(L"line", true, true);
@@ -1541,10 +1536,10 @@ namespace MetaFile
 	void CHatchGenerator::AddPoint(const TPointD& oPoint)
 	{
 		m_oStringBuilder.WriteNodeBegin(L"line", true);
-		m_oStringBuilder.WriteAttribute(L"x1", ConvertToWString(m_dStrokeWidth * oPoint.x));
-		m_oStringBuilder.WriteAttribute(L"y1", ConvertToWString(m_dStrokeWidth * oPoint.y));
-		m_oStringBuilder.WriteAttribute(L"x2", ConvertToWString(m_dStrokeWidth * (oPoint.x + 1)));
-		m_oStringBuilder.WriteAttribute(L"y2", ConvertToWString(m_dStrokeWidth * oPoint.y));
+		m_oStringBuilder.WriteAttribute(L"x1", ConvertToWString(m_dStrokeWidth * oPoint.X));
+		m_oStringBuilder.WriteAttribute(L"y1", ConvertToWString(m_dStrokeWidth * oPoint.Y));
+		m_oStringBuilder.WriteAttribute(L"x2", ConvertToWString(m_dStrokeWidth * (oPoint.X + 1)));
+		m_oStringBuilder.WriteAttribute(L"y2", ConvertToWString(m_dStrokeWidth * oPoint.Y));
 		m_oStringBuilder.WriteAttribute(L"stroke", L"rgb(" + INTCOLOR_TO_RGB(m_nStrokeColor) + L')');
 		m_oStringBuilder.WriteAttribute(L"stroke-width", ConvertToWString(m_dStrokeWidth));
 		m_oStringBuilder.WriteNodeEnd(L"line", true, true);

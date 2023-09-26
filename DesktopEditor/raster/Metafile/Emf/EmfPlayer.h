@@ -94,8 +94,8 @@ namespace MetaFile
 		TEmfXForm*      GetInverseTransform();
 		TEmfXForm*      GetFinalTransform(int iGraphicsMode);
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
-		void            SetTextColor(TEmfColor& oColor);
-		TEmfColor&      GetTextColor();
+		void            SetTextColor(TRGBA& oColor);
+		TRGBA&          GetTextColor();
 		void            SetBrush(IBrush* pBrush);
 		void            RemoveBrush(IBrush* pBrush);
 		IBrush*         GetBrush();
@@ -106,8 +106,8 @@ namespace MetaFile
 		unsigned int    GetTextAlign();
 		void            SetBgMode(unsigned int ulBgMode);
 		unsigned int    GetBgMode();
-		void            SetBgColor(TEmfColor& oColor);
-		TEmfColor&      GetBgColor();
+		void            SetBgColor(TRGBA& oColor);
+		TRGBA&          GetBgColor();
 		void            SetMiterLimit(unsigned int ulMiter);
 		unsigned int    GetMiterLimit();
 		void            SetFillMode(unsigned int ulFillMode);
@@ -119,12 +119,12 @@ namespace MetaFile
 		unsigned int    GetStretchMode();
 		double          GetPixelWidth();
 		double          GetPixelHeight();
-		void            SetWindowOrigin(TEmfPointL& oPoint);
-		void            SetWindowExtents(TEmfSizeL& oPoint);
+		void            SetWindowOrigin(TPointL& oPoint);
+		void            SetWindowExtents(TSizeL& oPoint);
 		void            ScaleWindow(double dXScale, double dYScale);
 		TEmfWindow*     GetWindow();
-		void            SetViewportOrigin(TEmfPointL& oPoint);
-		void            SetViewportExtents(TEmfSizeL& oPoint);
+		void            SetViewportOrigin(TPointL& oPoint);
+		void            SetViewportExtents(TSizeL& oPoint);
 		void            ScaleViewport(double dXScale, double dYScale);
 		TEmfWindow*     GetViewport();
 		void            SetRop2Mode(unsigned int& nMode);
@@ -132,9 +132,9 @@ namespace MetaFile
 		void            SetPalette(CEmfLogPalette* pPalette);
 		void            RemovePalette(CEmfLogPalette* pPalette);
 		CEmfLogPalette* GetPalette();
-		void            SetCurPos(TEmfPointL& oPoint);
+		void            SetCurPos(TPointL& oPoint);
 		void            SetCurPos(int lX, int lY);
-		TEmfPointL&     GetCurPos();
+		TPointL&        GetCurPos();
 		void            SetArcDirection(unsigned int unDirection);
 		unsigned int    GetArcDirection();
 
@@ -159,8 +159,8 @@ namespace MetaFile
 		TEmfXForm       m_oInverseTransform;
 		TEmfXForm       m_oFinalTransform;
 		TEmfXForm       m_oFinalTransform2; // Преобразование без учета m_oTransform, т.е. чисто преобразование окна
-		TEmfColor       m_oTextColor;
-		TEmfColor       m_oBgColor;
+		TRGBA           m_oTextColor;
+		TRGBA           m_oBgColor;
 		unsigned int    m_ulTextAlign;
 		unsigned int    m_ulBgMode;
 		unsigned int    m_ulMiterLimit;
@@ -171,7 +171,7 @@ namespace MetaFile
 		double          m_dPixelHeight;
 		TEmfWindow      m_oWindow;
 		TEmfWindow      m_oViewport;
-		TEmfPointL      m_oCurPos;
+		TPointL         m_oCurPos;
 		unsigned int    m_unArcDirection;
 	};
 }

@@ -78,11 +78,11 @@ namespace MetaFile
 
 	bool CPathConverter::AddLineStartCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double& dX, double& dY, double dAngle)
 	{
-		if (NULL != oPen.LineStartCapData)
+		if (NULL != oPen.pLineStartCapData)
 		{
-			if (CustomLineCapDataTypeDefault == oPen.LineStartCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath)
+			if (CustomLineCapDataTypeDefault == oPen.pLineStartCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.pLineStartCapData)->pPath)
 			{
-				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath, dX, dY, dAngle, oPen.Width);
+				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.pLineStartCapData)->pPath, dX, dY, dAngle, oPen.dWidth);
 			}
 		}
 
@@ -91,11 +91,11 @@ namespace MetaFile
 
 	bool CPathConverter::AddLineEndCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double &dX, double &dY, double dAngle)
 	{
-		if (NULL != oPen.LineEndCapData)
+		if (NULL != oPen.pLineEndCapData)
 		{
-			if (CustomLineCapDataTypeDefault == oPen.LineEndCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath)
+			if (CustomLineCapDataTypeDefault == oPen.pLineEndCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.pLineEndCapData)->pPath)
 			{
-				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath, dX, dY, dAngle, oPen.Width);
+				return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.pLineEndCapData)->pPath, dX, dY, dAngle, oPen.dWidth);
 			}
 		}
 

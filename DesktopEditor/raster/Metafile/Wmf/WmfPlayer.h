@@ -65,7 +65,7 @@ namespace MetaFile
 
 		CWmfDC*                     m_pDC;
 		std::vector<CWmfDC*>        m_vDCStack;
-		CWmfParserBase*		    m_pParser;
+		CWmfParserBase*             m_pParser;
 		CWmfObjectMap               m_mObjects;
 		unsigned short              m_ushIndex;
 		std::vector<unsigned short> m_vAvailableIndexes;
@@ -106,12 +106,12 @@ namespace MetaFile
 		void           SetViewportExt(short shW, short shH);
 		void           SetViewportOff(short shX, short shY);
 		void           SetViewportScale(double dX, double dY);
-		void           SetTextColor(TWmfColor& oColor);
-		TWmfColor&     GetTextColor();
-		void           SetTextBgColor(TWmfColor& oColor);
-		TWmfColor&     GetTextBgColor();
-		TWmfPointS&    GetCurPos();
-		void           SetCurPos(TWmfPointS& oPoint);
+		void           SetTextColor(TRGBA& oColor);
+		TRGBA&         GetTextColor();
+		void           SetTextBgColor(TRGBA& oColor);
+		TRGBA&         GetTextBgColor();
+		TPointS&       GetCurPos();
+		void           SetCurPos(TPointS& oPoint);
 		void           SetCurPos(short shX, short shY);
 		void           SetTextBgMode(unsigned short ushMode);
 		unsigned short GetTextBgMode();
@@ -154,9 +154,9 @@ namespace MetaFile
 		double         m_dPixelHeight;
 		TWmfWindow     m_oWindow;
 		TWmfWindow     m_oViewport;
-		TWmfColor      m_oTextColor;
-		TWmfColor      m_oTextBgColor;
-		TWmfPointS     m_oCurPos;
+		TRGBA          m_oTextColor;
+		TRGBA          m_oTextBgColor;
+		TPointS        m_oCurPos;
 		unsigned short m_ushTextBgMode;
 		unsigned short m_ushLayout;
 		unsigned short m_ushPolyFillMode;

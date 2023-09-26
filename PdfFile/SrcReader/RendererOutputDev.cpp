@@ -3089,7 +3089,7 @@ namespace PdfReader
 			m_pRenderer->DrawPath(c_nWindingFillMode);
 			GRenderer->SetSwapRGB(true);
 		}
-#elif
+#else
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 #endif
 

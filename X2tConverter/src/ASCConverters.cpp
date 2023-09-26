@@ -2881,23 +2881,17 @@ namespace NExtractTools
 	_UINT32 txt2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params)
 	{
 		std::wstring sResultDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-
 		NSDirectory::CreateDirectory(sResultDocxDir);
 
 		CTxtXmlFile txtFile;
 
-		// txtFile.m_sTempFolder = sTemp);
-
-		if (txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptions()) == 0)
+		_UINT32 nRes = txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptions());
+		if (SUCCEEDED_X2T(nRes))
 		{
 			BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-            _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-
-            return nRes;
-
-			return res;
+            nRes = m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
-		return AVS_FILEUTILS_ERROR_CONVERT;
+		return nRes;
 	}
 	_UINT32 docx2txt(const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams &params)
 	{
@@ -4816,46 +4810,6 @@ namespace NExtractTools
 				{
 					nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
 				}
-			}
-		}
-		else
-			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-		return nRes;
-	}
-	_UINT32 fromPpttBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params)
-	{
-		_UINT32 nRes = 0;
-		if (AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == nFormatTo)
-		{
-			std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
-			nRes = dir2zip(sFromDir, sTo);
-		}
-		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
-		{
-			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
-			nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
-		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
-		{
-			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
-			nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
-		}
-		else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
-		{
-			std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
-
-			if (true == NSDirectory::CreateDirectory(sPptxDir))
-			{
-				params.m_bMacro = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo;
-				nRes = pptt_bin2pptx_dir(sFrom, sTo, sPptxDir, sThemeDir, params);
-				if (SUCCEEDED_X2T(nRes))
-				{
-					nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params, L"");
-				}
-			}
-			else
-			{
-				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			}
 		}
 		else

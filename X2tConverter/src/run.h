@@ -41,6 +41,10 @@
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <stdio.h>
+#include <unistd.h>
+#ifdef _MAC
+extern char **environ;
+#endif
 #endif
 
 namespace NSX2T

@@ -438,6 +438,26 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotFreeText
+//------------------------------------------------------------------------
+
+class CAnnotFreeText final : public CMarkupAnnot
+{
+public:
+	CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nQ; // Выравнивание текста - Q
+	BYTE m_nIT; // Назначение аннотации
+	BYTE m_nLE; // Стиль окончания линии
+	std::string m_sDS; // Строка стиля по умолчанию - DS
+	double m_pRD[4]{}; // Различия Rect и фактического размера
+	std::vector<double> m_arrCL; // Координаты выноски
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 

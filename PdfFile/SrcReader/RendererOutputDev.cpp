@@ -3031,12 +3031,15 @@ namespace PdfReader
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
+		// Image
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
 
-		// Image
-		int nWidth  = (int)round(pBBox[2] - pBBox[0]);
-		int nHeight = (int)round(pBBox[3] - pBBox[1]);
+		double dDpiX, dDpiY;
+		m_pRenderer->get_DpiX(&dDpiX);
+		m_pRenderer->get_DpiY(&dDpiY);
+		int nWidth  = dXStep * dDpiX / 72.0;
+		int nHeight = dYStep * dDpiY / 72.0;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3050,8 +3053,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (nWidth  * 25.4 / 72.0);
-		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->put_Width (dXStep * 25.4 / 72.0);
+		pRenderer->put_Height(dYStep * 25.4 / 72.0);
 
 		IRenderer* pOldRenderer = m_pRenderer;
 		m_pRenderer = pRenderer;

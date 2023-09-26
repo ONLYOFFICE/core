@@ -536,9 +536,14 @@ class draw_connector_attlist
 {
 public:
  	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	_CP_OPT(std::wstring) svg_d_;
-	_CP_OPT(std::wstring) svg_viewbox_;
-	_CP_OPT(std::wstring) draw_type_;
+	_CP_OPT(std::wstring)	svg_d_;
+	_CP_OPT(std::wstring)	svg_viewbox_;
+	_CP_OPT(std::wstring)	draw_type_;
+
+	_CP_OPT(std::wstring)	draw_start_shape_;
+	_CP_OPT(std::wstring)	draw_end_shape_;
+	_CP_OPT(int)			draw_start_glue_point_;
+	_CP_OPT(int)			draw_end_glue_point_;
 
 };
 /////////////////////////////////////////////////////////////////////////

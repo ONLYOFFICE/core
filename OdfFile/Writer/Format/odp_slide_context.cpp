@@ -66,8 +66,14 @@ odp_page_state & odp_slide_context::state()
     return page_state_list_.back();
 }
 
+int odp_slide_context::page_index()
+{
+	return count_slides_ - 1;
+}
+
 void odp_slide_context::start_page(office_element_ptr & elm)
 {
+	context_.map_identifiers_.push_back(odp_conversion_context::IdentifierMap());
 	page_state_list_.push_back( odp_page_state(&context_, elm) );
 	
 	std::wstring style_name_new = L"dp" + std::to_wstring(++count_slides_);

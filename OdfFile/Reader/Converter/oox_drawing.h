@@ -100,8 +100,14 @@ namespace oox
  		bool			inGroup;
 		size_t			id;
 		bool			lined;
-		bool			connector;
 		bool			hidden;
+
+		bool			connector;
+		std::wstring	start_connection_shape_id;
+		std::wstring	end_connection_shape_id;
+		size_t			start_connection_index;
+		size_t			end_connection_index;
+		std::wstring	connector_prst;
 
         std::wstring	name;
         int				sub_type; //odf

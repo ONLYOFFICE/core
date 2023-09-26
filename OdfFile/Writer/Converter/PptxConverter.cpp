@@ -47,6 +47,14 @@
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Set.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/CBhvr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimEffect.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimMotion.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimClr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimRot.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/AnimScale.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Anim.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
@@ -379,6 +387,765 @@ void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::text_form
 //nullable<FontRef> fontRef;
 //UniColor Color;
 }
+
+void PptxConverter::convert(const PPTX::Limit::TLNodeType& oox_note_type)
+{
+	odf_types::presentation_node_type odfNodeType;
+
+	switch (oox_note_type.GetBYTECode())
+	{
+	case 0:
+	case 1: 
+		odfNodeType = odf_types::presentation_node_type::after_previous; 
+		break;
+	case 2:
+	case 3:
+		odfNodeType = odf_types::presentation_node_type::on_click;
+		break;
+	case 4:
+		odfNodeType = odf_types::presentation_node_type::interactive_sequence;
+		break;
+	case 5:
+		odfNodeType = odf_types::presentation_node_type::main_sequence;
+		break;
+	case 6:
+		odfNodeType = odf_types::presentation_node_type::timing_root;
+		break;
+	case 7:
+	case 8:
+		odfNodeType = odf_types::presentation_node_type::with_previous;
+		break;
+	default:
+		odfNodeType = odf_types::presentation_node_type::on_click;
+	}
+
+	odp_context->current_slide().set_anim_type(odfNodeType);
+}
+
+void PptxConverter::convert(const PPTX::Limit::TLPresetClass& oox_preset_class)
+{
+	odf_types::preset_class odfPresetClass;
+
+	switch (oox_preset_class.GetBYTECode())
+	{
+	case 0: odfPresetClass = odf_types::preset_class::emphasis; break;
+	case 1: odfPresetClass = odf_types::preset_class::entrance; break;
+	case 2: odfPresetClass = odf_types::preset_class::exit; break;
+	case 3: odfPresetClass = odf_types::preset_class::media_call; break;
+	case 4: odfPresetClass = odf_types::preset_class::motion_path; break;
+	default: odfPresetClass = odf_types::preset_class::custom; break;
+	}
+
+	odp_context->current_slide().set_anim_preset_class(odfPresetClass);
+}
+
+void PptxConverter::convert(const PPTX::Limit::TLPresetClass& oox_preset_class, int preset_id)
+{
+	odf_types::preset_id odfPresetId = preset_id::type::none;
+
+	switch (oox_preset_class.GetBYTECode())
+	{
+		case 0: // "emph"
+		{
+			switch (preset_id)
+			{
+			case 1: 	odfPresetId = preset_id::type::ooo_emphasis_fill_color				; break;
+			case 2: 	odfPresetId = preset_id::type::ooo_emphasis_font					; break;
+			case 3: 	odfPresetId = preset_id::type::ooo_emphasis_font_color				; break;
+			case 4: 	odfPresetId = preset_id::type::ooo_emphasis_font_size				; break;
+			case 5: 	odfPresetId = preset_id::type::ooo_emphasis_font_style				; break;
+			case 6: 	odfPresetId = preset_id::type::ooo_emphasis_grow_and_shrink			; break;
+			case 7: 	odfPresetId = preset_id::type::ooo_emphasis_line_color				; break;
+			case 8: 	odfPresetId = preset_id::type::ooo_emphasis_spin					; break;
+			case 9: 	odfPresetId = preset_id::type::ooo_emphasis_transparency			; break;
+			case 10: 	odfPresetId = preset_id::type::ooo_emphasis_bold_flash				; break;
+			case 14: 	odfPresetId = preset_id::type::ooo_emphasis_blast					; break;
+			case 15: 	odfPresetId = preset_id::type::ooo_emphasis_bold_reveal				; break;
+			case 16: 	odfPresetId = preset_id::type::ooo_emphasis_color_over_by_word		; break;
+			case 18: 	odfPresetId = preset_id::type::ooo_emphasis_reveal_underline		; break;
+			case 19: 	odfPresetId = preset_id::type::ooo_emphasis_color_blend				; break;
+			case 20: 	odfPresetId = preset_id::type::ooo_emphasis_color_over_by_letter	; break;
+			case 21: 	odfPresetId = preset_id::type::ooo_emphasis_complementary_color		; break;
+			case 22: 	odfPresetId = preset_id::type::ooo_emphasis_complementary_color_2	; break;
+			case 23: 	odfPresetId = preset_id::type::ooo_emphasis_contrasting_color		; break;
+			case 24: 	odfPresetId = preset_id::type::ooo_emphasis_darken					; break;
+			case 25: 	odfPresetId = preset_id::type::ooo_emphasis_desaturate				; break;
+			case 26: 	odfPresetId = preset_id::type::ooo_emphasis_flash_bulb				; break;
+			case 27: 	odfPresetId = preset_id::type::ooo_emphasis_flicker					; break;
+			case 28: 	odfPresetId = preset_id::type::ooo_emphasis_grow_with_color			; break;
+			case 30: 	odfPresetId = preset_id::type::ooo_emphasis_lighten					; break;
+			case 31: 	odfPresetId = preset_id::type::ooo_emphasis_style_emphasis			; break;
+			case 32: 	odfPresetId = preset_id::type::ooo_emphasis_teeter					; break;
+			case 33: 	odfPresetId = preset_id::type::ooo_emphasis_vertical_highlight		; break;
+			case 34: 	odfPresetId = preset_id::type::ooo_emphasis_wave					; break;
+			case 35: 	odfPresetId = preset_id::type::ooo_emphasis_blink					; break;
+			case 36: 	odfPresetId = preset_id::type::ooo_emphasis_shimmer					; break;
+			}
+		} break;
+		case 1: // "entrance"
+		{
+			switch (preset_id)
+			{
+			case 1:		odfPresetId = preset_id::type::ooo_entrance_appear			; break;
+			case 2:		odfPresetId = preset_id::type::ooo_entrance_fly_in			; break;
+			case 3:		odfPresetId = preset_id::type::ooo_entrance_venetian_blinds	; break;
+			case 4:		odfPresetId = preset_id::type::ooo_entrance_box				; break;
+			case 5:		odfPresetId = preset_id::type::ooo_entrance_checkerboard	; break;
+			case 6:		odfPresetId = preset_id::type::ooo_entrance_circle			; break;
+			case 7:		odfPresetId = preset_id::type::ooo_entrance_fly_in_slow		; break;
+			case 8:		odfPresetId = preset_id::type::ooo_entrance_diamond			; break;
+			case 9:		odfPresetId = preset_id::type::ooo_entrance_dissolve_in		; break;
+			case 10:	odfPresetId = preset_id::type::ooo_entrance_fade_in			; break;
+			case 11:	odfPresetId = preset_id::type::ooo_entrance_flash_once		; break;
+			case 12:	odfPresetId = preset_id::type::ooo_entrance_peek_in			; break;
+			case 13:	odfPresetId = preset_id::type::ooo_entrance_plus			; break;
+			case 14:	odfPresetId = preset_id::type::ooo_entrance_random_bars		; break;
+			case 15:	odfPresetId = preset_id::type::ooo_entrance_spiral_in		; break;
+			case 16:	odfPresetId = preset_id::type::ooo_entrance_split			; break;
+			case 17:	odfPresetId = preset_id::type::ooo_entrance_stretchy		; break;
+			case 18:	odfPresetId = preset_id::type::ooo_entrance_diagonal_squares; break;
+			case 19:	odfPresetId = preset_id::type::ooo_entrance_swivel			; break;
+			case 20:	odfPresetId = preset_id::type::ooo_entrance_wedge			; break;
+			case 21:	odfPresetId = preset_id::type::ooo_entrance_wheel			; break;
+			case 22:	odfPresetId = preset_id::type::ooo_entrance_wipe			; break;
+			case 23:	odfPresetId = preset_id::type::ooo_entrance_zoom			; break;
+			case 24:	odfPresetId = preset_id::type::ooo_entrance_random			; break;
+			case 25:	odfPresetId = preset_id::type::ooo_entrance_boomerang		; break;
+			case 26:	odfPresetId = preset_id::type::ooo_entrance_bounce			; break;
+			case 27:	odfPresetId = preset_id::type::ooo_entrance_colored_lettering; break;
+			case 28:	odfPresetId = preset_id::type::ooo_entrance_movie_credits	; break;
+			case 29:	odfPresetId = preset_id::type::ooo_entrance_ease_in			; break;
+			case 30:	odfPresetId = preset_id::type::ooo_entrance_float			; break;
+			case 31:	odfPresetId = preset_id::type::ooo_entrance_turn_and_grow	; break;
+			case 34:	odfPresetId = preset_id::type::ooo_entrance_breaks			; break;
+			case 35:	odfPresetId = preset_id::type::ooo_entrance_pinwheel		; break;
+			case 37:	odfPresetId = preset_id::type::ooo_entrance_rise_up			; break;
+			case 38:	odfPresetId = preset_id::type::ooo_entrance_falling_in		; break;
+			case 39:	odfPresetId = preset_id::type::ooo_entrance_thread			; break;
+			case 40:	odfPresetId = preset_id::type::ooo_entrance_unfold			; break;
+			case 41:	odfPresetId = preset_id::type::ooo_entrance_whip			; break;
+			case 42:	odfPresetId = preset_id::type::ooo_entrance_ascend			; break;
+			case 43:	odfPresetId = preset_id::type::ooo_entrance_center_revolve	; break;
+			case 45:	odfPresetId = preset_id::type::ooo_entrance_fade_in_and_swivel; break;
+			case 47:	odfPresetId = preset_id::type::ooo_entrance_descend			; break;
+			case 48:	odfPresetId = preset_id::type::ooo_entrance_sling			; break;
+			case 49:	odfPresetId = preset_id::type::ooo_entrance_spin_in			; break;
+			case 50:	odfPresetId = preset_id::type::ooo_entrance_compress		; break;
+			case 51:	odfPresetId = preset_id::type::ooo_entrance_magnify			; break;
+			case 52:	odfPresetId = preset_id::type::ooo_entrance_curve_up		; break;
+			case 53:	odfPresetId = preset_id::type::ooo_entrance_fade_in_and_zoom; break;
+			case 54:	odfPresetId = preset_id::type::ooo_entrance_glide			; break;
+			case 55:	odfPresetId = preset_id::type::ooo_entrance_expand			; break;
+			case 56:	odfPresetId = preset_id::type::ooo_entrance_flip			; break;
+			case 58:	odfPresetId = preset_id::type::ooo_entrance_fold			; break;
+			}
+		} break;
+		case 2: // "exit"
+		{
+			switch (preset_id)
+			{
+			case 1: odfPresetId = preset_id::type::ooo_exit_disappear			; break;
+			case 2: odfPresetId = preset_id::type::ooo_exit_fly_out				; break;
+			case 3: odfPresetId = preset_id::type::ooo_exit_venetian_blinds		; break;
+			case 4: odfPresetId = preset_id::type::ooo_exit_box					; break;
+			case 5: odfPresetId = preset_id::type::ooo_exit_checkerboard		; break;
+			case 6: odfPresetId = preset_id::type::ooo_exit_circle				; break;
+			case 7: odfPresetId = preset_id::type::ooo_exit_crawl_out			; break;
+			case 8: odfPresetId = preset_id::type::ooo_exit_diamond				; break;
+			case 9: odfPresetId = preset_id::type::ooo_exit_dissolve			; break;
+			case 10: odfPresetId = preset_id::type::ooo_exit_fade_out			; break;
+			case 11: odfPresetId = preset_id::type::ooo_exit_flash_once			; break;
+			case 12: odfPresetId = preset_id::type::ooo_exit_peek_out			; break;
+			case 13: odfPresetId = preset_id::type::ooo_exit_plus				; break;
+			case 14: odfPresetId = preset_id::type::ooo_exit_random_bars		; break;
+			case 15: odfPresetId = preset_id::type::ooo_exit_spiral_out			; break;
+			case 16: odfPresetId = preset_id::type::ooo_exit_split				; break;
+			case 17: odfPresetId = preset_id::type::ooo_exit_collapse			; break;
+			case 18: odfPresetId = preset_id::type::ooo_exit_diagonal_squares	; break;
+			case 19: odfPresetId = preset_id::type::ooo_exit_swivel				; break;
+			case 20: odfPresetId = preset_id::type::ooo_exit_wedge				; break;
+			case 21: odfPresetId = preset_id::type::ooo_exit_wheel				; break;
+			case 22: odfPresetId = preset_id::type::ooo_exit_wipe				; break;
+			case 23: odfPresetId = preset_id::type::ooo_exit_zoom				; break;
+			case 24: odfPresetId = preset_id::type::ooo_exit_random				; break;
+			case 25: odfPresetId = preset_id::type::ooo_exit_boomerang			; break;
+			case 26: odfPresetId = preset_id::type::ooo_exit_bounce				; break;
+			case 27: odfPresetId = preset_id::type::ooo_exit_colored_lettering	; break;
+			case 28: odfPresetId = preset_id::type::ooo_exit_movie_credits		; break;
+			case 29: odfPresetId = preset_id::type::ooo_exit_ease_out			; break;
+			case 30: odfPresetId = preset_id::type::ooo_exit_float				; break;
+			case 31: odfPresetId = preset_id::type::ooo_exit_turn_and_grow		; break;
+			case 34: odfPresetId = preset_id::type::ooo_exit_breaks				; break;
+			case 35: odfPresetId = preset_id::type::ooo_exit_pinwheel			; break;
+			case 37: odfPresetId = preset_id::type::ooo_exit_sink_down			; break;
+			case 38: odfPresetId = preset_id::type::ooo_exit_swish				; break;
+			case 39: odfPresetId = preset_id::type::ooo_exit_thread				; break;
+			case 40: odfPresetId = preset_id::type::ooo_exit_unfold				; break;
+			case 41: odfPresetId = preset_id::type::ooo_exit_whip				; break;
+			case 42: odfPresetId = preset_id::type::ooo_exit_descend			; break;
+			case 43: odfPresetId = preset_id::type::ooo_exit_center_revolve		; break;
+			case 45: odfPresetId = preset_id::type::ooo_exit_fade_out_and_swivel; break;
+			case 47: odfPresetId = preset_id::type::ooo_exit_ascend				; break;
+			case 48: odfPresetId = preset_id::type::ooo_exit_sling				; break;
+			case 53: odfPresetId = preset_id::type::ooo_exit_fade_out_and_zoom	; break;
+			case 55: odfPresetId = preset_id::type::ooo_exit_contract			; break;
+			case 49: odfPresetId = preset_id::type::ooo_exit_spin_out			; break;
+			case 50: odfPresetId = preset_id::type::ooo_exit_stretchy			; break;
+			case 51: odfPresetId = preset_id::type::ooo_exit_magnify			; break;
+			case 52: odfPresetId = preset_id::type::ooo_exit_curve_down			; break;
+			case 54: odfPresetId = preset_id::type::ooo_exit_glide				; break;
+			case 56: odfPresetId = preset_id::type::ooo_exit_flip				; break;
+			case 58: odfPresetId = preset_id::type::ooo_exit_fold				; break;
+			}
+		} break;
+		case 4: // motion-path
+		{
+			switch (preset_id)
+			{
+			case 16:	odfPresetId = preset_id::type::ooo_motionpath_4_point_star		; break;
+			case 5:		odfPresetId = preset_id::type::ooo_motionpath_5_point_star		; break;
+			case 11:	odfPresetId = preset_id::type::ooo_motionpath_6_point_star		; break;
+			case 17:	odfPresetId = preset_id::type::ooo_motionpath_8_point_star		; break;
+			case 1:		odfPresetId = preset_id::type::ooo_motionpath_circle			; break;
+			case 6:		odfPresetId = preset_id::type::ooo_motionpath_crescent_moon		; break;
+			case 3:		odfPresetId = preset_id::type::ooo_motionpath_diamond			; break;
+			case 13:	odfPresetId = preset_id::type::ooo_motionpath_equal_triangle	; break;
+			case 12:	odfPresetId = preset_id::type::ooo_motionpath_oval				; break;
+			case 9:		odfPresetId = preset_id::type::ooo_motionpath_heart				; break;
+			case 4:		odfPresetId = preset_id::type::ooo_motionpath_hexagon			; break;
+			case 10:	odfPresetId = preset_id::type::ooo_motionpath_octagon			; break;
+			case 14:	odfPresetId = preset_id::type::ooo_motionpath_parallelogram		; break;
+			case 15:	odfPresetId = preset_id::type::ooo_motionpath_pentagon			; break;
+			case 2:		odfPresetId = preset_id::type::ooo_motionpath_right_triangle	; break;
+			case 7:		odfPresetId = preset_id::type::ooo_motionpath_square			; break;
+			case 18:	odfPresetId = preset_id::type::ooo_motionpath_teardrop			; break;
+			case 8:		odfPresetId = preset_id::type::ooo_motionpath_trapezoid			; break;
+			case 37:	odfPresetId = preset_id::type::ooo_motionpath_arc_down			; break;
+			case 51:	odfPresetId = preset_id::type::ooo_motionpath_arc_left			; break;
+			case 58:	odfPresetId = preset_id::type::ooo_motionpath_arc_right			; break;
+			case 44:	odfPresetId = preset_id::type::ooo_motionpath_arc_up			; break;
+			case 41:	odfPresetId = preset_id::type::ooo_motionpath_bounce_left		; break;
+			case 54:	odfPresetId = preset_id::type::ooo_motionpath_bounce_right		; break;
+			case 48:	odfPresetId = preset_id::type::ooo_motionpath_curvy_left		; break;
+			case 61:	odfPresetId = preset_id::type::ooo_motionpath_curvy_right		; break;
+			case 60:	odfPresetId = preset_id::type::ooo_motionpath_decaying_wave		; break;
+			case 49:	odfPresetId = preset_id::type::ooo_motionpath_diagonal_down_right; break;
+			case 56:	odfPresetId = preset_id::type::ooo_motionpath_diagonal_up_right	; break;
+			case 42:	odfPresetId = preset_id::type::ooo_motionpath_down				; break;
+			case 52:	odfPresetId = preset_id::type::ooo_motionpath_funnel			; break;
+			case 53:	odfPresetId = preset_id::type::ooo_motionpath_spring			; break;
+			case 62:	odfPresetId = preset_id::type::ooo_motionpath_stairs_down		; break;
+			case 50:	odfPresetId = preset_id::type::ooo_motionpath_turn_down			; break;
+			case 36:	odfPresetId = preset_id::type::ooo_motionpath_turn_down_right	; break;
+			case 43:	odfPresetId = preset_id::type::ooo_motionpath_turn_up			; break;
+			case 57:	odfPresetId = preset_id::type::ooo_motionpath_turn_up_right		; break;
+			case 64:	odfPresetId = preset_id::type::ooo_motionpath_up				; break;
+			case 47:	odfPresetId = preset_id::type::ooo_motionpath_wave				; break;
+			case 38:	odfPresetId = preset_id::type::ooo_motionpath_zigzag			; break;
+			case 31:	odfPresetId = preset_id::type::ooo_motionpath_bean				; break;
+			case 25:	odfPresetId = preset_id::type::ooo_motionpath_buzz_saw			; break;
+			case 20:	odfPresetId = preset_id::type::ooo_motionpath_curved_square		; break;
+			case 21:	odfPresetId = preset_id::type::ooo_motionpath_curved_x			; break;
+			case 23:	odfPresetId = preset_id::type::ooo_motionpath_curvy_star		; break;
+			case 28:	odfPresetId = preset_id::type::ooo_motionpath_figure_8_four		; break;
+			case 26:	odfPresetId = preset_id::type::ooo_motionpath_horizontal_figure_8; break;
+			case 34:	odfPresetId = preset_id::type::ooo_motionpath_inverted_square	; break;
+			case 33:	odfPresetId = preset_id::type::ooo_motionpath_inverted_triangle	; break;
+			case 24:	odfPresetId = preset_id::type::ooo_motionpath_loop_de_loop		; break;
+			case 29:	odfPresetId = preset_id::type::ooo_motionpath_neutron			; break;
+			case 27:	odfPresetId = preset_id::type::ooo_motionpath_peanut			; break;
+			case 32:	odfPresetId = preset_id::type::ooo_motionpath_clover			; break;
+			case 19:	odfPresetId = preset_id::type::ooo_motionpath_pointy_star		; break;
+			case 30:	odfPresetId = preset_id::type::ooo_motionpath_swoosh			; break;
+			case 22:	odfPresetId = preset_id::type::ooo_motionpath_vertical_figure_8	; break;
+			case 35:	odfPresetId = preset_id::type::ooo_motionpath_left				; break;
+			case 63:	odfPresetId = preset_id::type::ooo_motionpath_right				; break;
+			case 55:	odfPresetId = preset_id::type::ooo_motionpath_spiral_left		; break;
+			case 46:	odfPresetId = preset_id::type::ooo_motionpath_spiral_right		; break;
+			case 40:	odfPresetId = preset_id::type::ooo_motionpath_sine_wave			; break;
+			case 59:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_1			; break;
+			case 39:	odfPresetId = preset_id::type::ooo_motionpath_s_curve_2			; break;
+			case 45:	odfPresetId = preset_id::type::ooo_motionpath_heartbeat			; break;
+			default:	odfPresetId = preset_id::type::libo_motionpath_curve			; break;
+			}
+		} break;
+	}
+
+	if(odfPresetId.get_type() != preset_id::type::none)
+		odp_context->current_slide().set_anim_preset_id(odfPresetId);
+	else 
+		odp_context->current_slide().set_anim_preset_id(odfPresetId);
+}
+
+void PptxConverter::convert(PPTX::Logic::CBhvr* oox_cbhvr)
+{
+	if (!oox_cbhvr)
+		return;
+
+	convert(&oox_cbhvr->cTn);
+	convert(&oox_cbhvr->tgtEl);
+
+	if (oox_cbhvr->attrNameLst.IsInit())
+	{
+		if (oox_cbhvr->attrNameLst->list.size() == 1)
+		{
+			convert(&oox_cbhvr->attrNameLst->list[0]);
+		}
+		else
+			_CP_LOG << L"[warning] : multiple attribute list elements not supported\n";
+	}
+		
+}
+
+void PptxConverter::convert(PPTX::Logic::TgtEl* oox_tgt_el)
+{
+	if (!oox_tgt_el)
+		return;
+
+	if (oox_tgt_el->spTgt.IsInit())
+	{
+		const std::wstring& odfId = odp_context->get_mapped_identifier(oox_tgt_el->spTgt->spid);
+
+		if(!odfId.empty())
+			odp_context->current_slide().set_anim_target_element(odfId);
+	}
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimVariant* oox_anim_variant)
+{
+	if (!oox_anim_variant)
+		return;
+
+	std::wstring val;
+
+	if (oox_anim_variant->boolVal.IsInit())
+		val = std::to_wstring(*oox_anim_variant->boolVal);
+	else if (oox_anim_variant->strVal.IsInit())
+		val = *oox_anim_variant->strVal;
+	else if (oox_anim_variant->intVal.IsInit())
+		val = std::to_wstring(*oox_anim_variant->intVal);
+	else if (oox_anim_variant->fltVal.IsInit())
+		val = std::to_wstring(*oox_anim_variant->fltVal);
+
+	odp_context->current_slide().set_anim_to(val);
+}
+
+void PptxConverter::convert(PPTX::Logic::AttrName* oox_attr_name)
+{
+	if (!oox_attr_name)
+		return;
+
+	smil_attribute_name attrName = smil_attribute_name::none;
+	const std::wstring& val = oox_attr_name->text;
+
+	if (val == L"style.color")
+		attrName = smil_attribute_name::color;
+	else if(val == L"stroke.color")
+		attrName = smil_attribute_name::strokeColor;
+	else if (val == L"fill.type")
+		attrName = smil_attribute_name::fill;
+	else if (val == L"fillcolor")
+		attrName = smil_attribute_name::fillColor;
+	else if (val == L"fill.on")
+		attrName = smil_attribute_name::fillOn;
+	else if (val == L"style.opacity")
+		attrName = smil_attribute_name::opacity;
+	else if (val == L"stroke.on")
+		attrName = smil_attribute_name::stroke;
+	else if (val == L"r" || val == L"style.rotation")
+		attrName = smil_attribute_name::rotate;
+	else if (val == L"xshear")
+		attrName = smil_attribute_name::skewX;
+	else if (val == L"style.visibility")
+		attrName = smil_attribute_name::visibility;
+	else if (val == L"ppt_x")
+		attrName = smil_attribute_name::x;
+	else if (val == L"ppt_y")
+		attrName = smil_attribute_name::y;
+	else if (val == L"ppt_w")
+		attrName = smil_attribute_name::width;
+	else if (val == L"ppt_h")
+		attrName = smil_attribute_name::height;
+	else if (val == L"ppt_c")
+		attrName = smil_attribute_name::dim;
+
+	odp_context->current_slide().set_anim_attribute_name(attrName);
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimEffect* oox_anim_effect)
+{
+	if (!oox_anim_effect)
+		return;
+
+	odp_context->current_slide().start_timing_transition_filter();
+
+	if (oox_anim_effect->transition.IsInit())
+	{
+		odp_context->current_slide().set_anim_transition_filter_mode(oox_anim_effect->transition->get());
+	}
+	if (oox_anim_effect->filter.IsInit())
+	{
+		std::wstring filter = *oox_anim_effect->filter;
+		std::wstring subtype = L"";
+
+		smil_transition_type odfType;
+		std::wstring odfSubtype = L"";
+		bool odfReversed = false;
+
+		std::string::size_type openBracket = filter.find('(');
+		std::string::size_type closeBracket = filter.find(')');
+
+		if (openBracket != std::wstring::npos &&
+			closeBracket != std::wstring::npos)
+		{
+			filter = oox_anim_effect->filter->substr(0, openBracket);
+			subtype = oox_anim_effect->filter->substr(openBracket + 1, closeBracket - openBracket - 1);
+		}
+
+		std::transform(filter.begin(), filter.end(), filter.begin(), ::towlower);
+		if (filter == L"blinds")
+		{
+			odfType = smil_transition_type::blindsWipe;
+			odfReversed = false;
+			if (subtype == L"horizontal")			odfSubtype = L"horizontal";
+			else if (subtype == L"vertical")		odfSubtype = L"vertical";
+		}
+		else if (filter == L"box")
+		{
+			odfType = smil_transition_type::irisWipe;
+			odfSubtype = L"rectangle";
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
+		}
+		else if (filter == L"checkerboard")
+		{
+			odfType = smil_transition_type::checkerBoardWipe;
+			odfReversed = false;
+			if (subtype == L"across")			odfSubtype = L"across";
+			else if (subtype == L"down")		odfSubtype = L"down";
+		}
+		else if (filter == L"circle")
+		{
+			odfType = smil_transition_type::ellipseWipe;
+			odfSubtype = L"horizontal";
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
+		}
+		else if (filter == L"diamond")
+		{
+			odfType = smil_transition_type::irisWipe;
+			odfSubtype = L"diamond";
+			if (subtype == L"in")			odfReversed = true;
+			else if (subtype == L"out")		odfReversed = false;
+		}
+		else if (filter == L"dissolve")
+		{
+			odfType = smil_transition_type::dissolve;
+			odfSubtype = L"";
+			odfReversed = false;
+		}
+		else if (filter == L"fade")
+		{
+			odfType = smil_transition_type::fade;
+			odfSubtype = L"crossfade";
+			odfReversed = false;
+		}
+		else if (filter == L"slide")
+		{
+			odfType = smil_transition_type::slideWipe;
+			odfReversed = false;
+			odfSubtype = subtype;
+		}
+		else if (filter == L"plus")
+		{
+			odfType = smil_transition_type::fourBoxWipe;
+			odfSubtype = L"cornersIn";
+			if (subtype == L"in")			odfReversed = false;
+			else if (subtype == L"out")		odfReversed = true;
+		}
+		else if (filter == L"barn")
+		{
+			odfType = smil_transition_type::barnDoorWipe;
+			if (subtype == L"inVertical")			{ odfReversed = true;	odfSubtype = L"vertical"; }
+			else if (subtype == L"inHorizontal")	{ odfReversed = true;	odfSubtype = L"horizontal"; }
+			else if (subtype == L"outVertical")		{ odfReversed = false;	odfSubtype = L"vertical"; }
+			else if (subtype == L"outHorizontal")	{ odfReversed = false;	odfSubtype = L"horizontal"; }
+		}
+		else if (boost::starts_with(filter, L"randombar"))
+		{
+			odfType = smil_transition_type::randomBarWipe;
+			odfReversed = false;
+			odfSubtype = subtype;
+		}
+		else if (filter == L"strips")
+		{
+			odfType = smil_transition_type::waterfallWipe;
+			if (subtype == L"downLeft")			{ odfReversed = false;	odfSubtype = L"horizontalRight"; }
+			else if (subtype == L"upLeft")		{ odfReversed = true;	odfSubtype = L"horizontalLeft"; }
+			else if (subtype == L"downRight")	{ odfReversed = false;	odfSubtype = L"horizontalLeft"; }
+			else if (subtype == L"upRight")		{ odfReversed = true;	odfSubtype = L"horizontalRight"; }
+		}
+		else if (filter == L"wedge")
+		{
+			odfType = smil_transition_type::fanWipe;
+			odfReversed = false;
+			odfSubtype = L"centerTop";
+		}
+		else if (filter == L"wheel")
+		{
+			odfType = smil_transition_type::pinWheelWipe;
+			odfReversed = false;
+			if (subtype == L"1")		odfSubtype = L"oneBlade";
+			else if (subtype == L"2")	odfSubtype = L"twoBladeVertical"; 
+			else if (subtype == L"3")	odfSubtype = L"threeBlade"; 
+			else if (subtype == L"4")	odfSubtype = L"fourBlade";
+			else if (subtype == L"8")	odfSubtype = L"eightBlade";
+		}
+		else if (filter == L"wipe")
+		{
+			odfType = smil_transition_type::slideWipe;
+			if (subtype == L"right")		{ odfReversed = true;	odfSubtype = L"fromRight"; }
+			else if (subtype == L"left")	{ odfReversed = false;	odfSubtype = L"fromLeft"; }
+			else if (subtype == L"down")	{ odfReversed = true;	odfSubtype = L"fromBottom"; }
+			else if (subtype == L"up")		{ odfReversed = false;	odfSubtype = L"fromTop"; }
+		}
+		else
+		{
+			odfType = smil_transition_type::fade;
+			odfReversed = false;
+		}
+
+		odp_context->current_slide().set_anim_transition_filter_type(odfType);
+		if(!odfSubtype.empty())
+			odp_context->current_slide().set_anim_transition_filter_subtype(odfSubtype);
+		if(odfReversed)
+			odp_context->current_slide().set_anim_transition_filter_direction(L"reverse");
+	}
+
+	convert(&oox_anim_effect->cBhvr);
+	
+	odp_context->current_slide().end_timing_transition_filter();
+}
+
+void PptxConverter::convert(PPTX::Logic::Anim* oox_anim)
+{
+	if (!oox_anim)
+		return;
+
+	odp_context->current_slide().start_timing_anim();
+
+	convert(&oox_anim->cBhvr);
+
+	if (oox_anim->tavLst.IsInit())
+	{
+		std::wstringstream ss_tm;
+		std::wstringstream ss_val;
+
+		for (size_t i = 0; i < oox_anim->tavLst->list.size(); i++)
+		{
+			if (oox_anim->tavLst->list[i].tm.IsInit())
+			{
+				if (i > 0) 
+					ss_tm << L";";
+
+				ss_tm << boost::lexical_cast<double>(*oox_anim->tavLst->list[i].tm) / 100000.0;
+			}
+			
+			if (oox_anim->tavLst->list[i].val.IsInit())
+			{
+				if (i > 0) 
+					ss_val << L";";
+
+				if(oox_anim->tavLst->list[i].val->boolVal.IsInit())
+					ss_val << *oox_anim->tavLst->list[i].val->boolVal;
+				else if (oox_anim->tavLst->list[i].val->intVal.IsInit())
+					ss_val << *oox_anim->tavLst->list[i].val->intVal;
+				else if (oox_anim->tavLst->list[i].val->fltVal.IsInit())
+					ss_val << *oox_anim->tavLst->list[i].val->fltVal;
+				else if (oox_anim->tavLst->list[i].val->strVal.IsInit())
+					ss_val << *oox_anim->tavLst->list[i].val->strVal;
+			}
+		}
+
+		if (oox_anim->tavLst->list.size() > 1)
+		{
+			if (oox_anim->tavLst->list[0].fmla.IsInit())
+			{
+				std::wstring formula = convert_animation_formula(*oox_anim->tavLst->list[0].fmla);
+				odp_context->current_slide().set_anim_animation_formula(formula);
+			}
+		}
+		
+		odp_context->current_slide().set_anim_animation_keytimes(odf_types::smil_key_times::parse(convert_animation_formula(ss_tm.str())));
+		odp_context->current_slide().set_anim_animation_values(odf_types::smil_values::parse(convert_animation_formula(ss_val.str())));
+	}
+
+	if (oox_anim->by.IsInit())
+	{
+		std::wstring by = convert_animation_formula(*oox_anim->by);
+		odp_context->current_slide().set_anim_animation_by(by);
+	}
+	if (oox_anim->from.IsInit())
+	{
+		std::wstring from = convert_animation_formula(*oox_anim->from);
+		odp_context->current_slide().set_anim_animation_from(from);
+	}
+	if (oox_anim->to.IsInit())
+	{
+		std::wstring to = convert_animation_formula(*oox_anim->to);
+		odp_context->current_slide().set_anim_animation_to(to);
+	}
+
+	odp_context->current_slide().end_timing_anim();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimMotion* oox_anim_motion)
+{
+	if (!oox_anim_motion)
+		return;
+
+	odp_context->current_slide().start_timing_motion();
+
+	convert(&oox_anim_motion->cBhvr);
+
+	if (oox_anim_motion->path.IsInit())
+		odp_context->current_slide().set_anim_motion_path(*oox_anim_motion->path);
+		
+	// TODO: Convert "from", "to", "by"
+	// TODO: Convert "rCtr"
+
+	odp_context->current_slide().end_timing_motion();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimClr* oox_anim_color)
+{
+	if (!oox_anim_color)
+		return;
+
+	odp_context->current_slide().start_timing_anim_clr();
+
+	convert(&oox_anim_color->cBhvr);
+
+	if (oox_anim_color->to.is_init())
+	{
+		std::wstringstream ss;
+		ss << L"#" << std::hex << (oox_anim_color->to.GetRGBA() >> 8);
+
+		odp_context->current_slide().set_anim_color_to(ss.str());
+	}
+
+	if (oox_anim_color->clrSpc.IsInit())
+	{
+		odp_context->current_slide().set_anim_color_interpolation(oox_anim_color->clrSpc->get());
+	}
+
+	if (oox_anim_color->dir.IsInit())
+	{
+		if(oox_anim_color->dir->get() == L"cw")
+			odp_context->current_slide().set_anim_color_direction(L"clockwise");
+		else if (oox_anim_color->dir->get() == L"ccw")
+			odp_context->current_slide().set_anim_color_direction(L"counter-clockwise");
+	}
+
+	if (oox_anim_color->byR.IsInit() ||
+		oox_anim_color->byG.IsInit() ||
+		oox_anim_color->byB.IsInit())
+	{
+		const int r = oox_anim_color->byR.get_value_or(0);
+		const int g = oox_anim_color->byG.get_value_or(0);
+		const int b = oox_anim_color->byB.get_value_or(0);
+		const float multiplyer = 1000.0f;
+
+		std::wstringstream ss;
+		ss << L"#"
+			<< std::setfill(L'0')
+			<< std::setw(2)
+			<< std::hex
+			<< ((int)(r / multiplyer) & 0xff)
+			<< ((int)(g / multiplyer) & 0xff)
+			<< ((int)(b / multiplyer) & 0xff);
+
+		odp_context->current_slide().set_anim_color_by(ss.str());
+	}
+	else if (oox_anim_color->byH.IsInit() ||
+		oox_anim_color->byS.IsInit() ||
+		oox_anim_color->byL.IsInit())
+	{
+		const int h = oox_anim_color->byH.get_value_or(0);
+		const int s = oox_anim_color->byS.get_value_or(0);
+		const int l = oox_anim_color->byL.get_value_or(0);
+
+		std::wstringstream ss;
+		ss << L"hsl("
+			<< (h / 100000) << L","
+			<< (s / 1000  ) << L"%,"
+			<< (l / 1000  ) << L"%)";
+		odp_context->current_slide().set_anim_color_by(ss.str());
+	}
+
+	odp_context->current_slide().end_timing_anim_clr();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimRot* oox_anim_rot)
+{
+	if (!oox_anim_rot)
+		return;
+
+	odp_context->current_slide().start_timing_transform();
+	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::rotate);
+
+	convert(&oox_anim_rot->cBhvr);
+
+	const double odp_mulipyer = 60000.0;
+	if (oox_anim_rot->from.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_from(std::to_wstring(*oox_anim_rot->from / odp_mulipyer));
+	}
+	if (oox_anim_rot->to.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_to(std::to_wstring(*oox_anim_rot->to / odp_mulipyer));
+	}
+	if (oox_anim_rot->by.IsInit())
+	{
+		odp_context->current_slide().set_anim_transform_by(std::to_wstring(*oox_anim_rot->by / odp_mulipyer));
+	}
+
+	odp_context->current_slide().end_timing_transform();
+}
+
+void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
+{
+	if (!oox_anim_scale)
+		return;
+
+	odp_context->current_slide().start_timing_transform();
+	odp_context->current_slide().set_anim_transform_type(odf_types::svg_type::scale);
+	odp_context->current_slide().set_anim_attribute_name(odf_types::smil_attribute_name::transform);
+	
+	convert(&oox_anim_scale->cBhvr);
+
+	if (oox_anim_scale->fromX.IsInit() && oox_anim_scale->fromY.IsInit())
+	{
+		std::wstring from = convert_animation_scale_values(*oox_anim_scale->fromX, *oox_anim_scale->fromY);
+		odp_context->current_slide().set_anim_transform_from(from);
+	}
+
+	if (oox_anim_scale->toX.IsInit() && oox_anim_scale->toY.IsInit())
+	{
+		std::wstring to = convert_animation_scale_values(*oox_anim_scale->toX, *oox_anim_scale->toY);
+		odp_context->current_slide().set_anim_transform_to(to);
+	}
+
+	if (oox_anim_scale->byX.IsInit() && oox_anim_scale->byY.IsInit())
+	{
+		const int pptx_multiplyer = 100000;
+		std::wstring by = convert_animation_scale_values(*oox_anim_scale->byX - pptx_multiplyer, *oox_anim_scale->byY - pptx_multiplyer);
+		odp_context->current_slide().set_anim_transform_by(by);
+	}
+
+	odp_context->current_slide().end_timing_transform();
+}
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -396,6 +1163,30 @@ void PptxConverter::convert_common()
 			//odf_context()->page_layout_context()->set_page_orientation
 		}
 	}
+}
+
+std::wstring PptxConverter::convert_animation_formula(std::wstring formula)
+{
+	boost::erase_all(formula, L"#");
+	boost::replace_all(formula, L"ppt_x", L"x");
+	boost::replace_all(formula, L"ppt_y", L"y");
+	boost::replace_all(formula, L"ppt_w", L"width");
+	boost::replace_all(formula, L"ppt_h", L"height");
+
+	return formula;
+}
+
+std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
+{
+	std::wstringstream ss;
+	ss.setf(std::ios::fixed);
+	ss.precision(2);
+	const double odp_multipyer = 100000;
+	double _x = x / odp_multipyer;
+	double _y = y / odp_multipyer;
+	ss << _x << L"," << _y;
+
+	return ss.str();
 }
 
 void PptxConverter::convert_slides()
@@ -518,7 +1309,7 @@ void PptxConverter::convert_slides()
 		convert			(slide->Note.GetPointer());
 		
 		convert			(slide->transition.GetPointer());
-		//convert		(slide->timing.GetPointer());
+		convert			(slide->timing.GetPointer());
 
 
 		odp_context->end_slide();
@@ -735,6 +1526,41 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 			convert(&seq.cTn);
 		odp_context->current_slide().end_timing_seq();
 	}	
+	else if (oox_time_base->is<PPTX::Logic::Set>())
+	{
+		PPTX::Logic::Set& set = oox_time_base->as<PPTX::Logic::Set>();
+		convert(&set);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimEffect>())
+	{
+		PPTX::Logic::AnimEffect& animEffect = oox_time_base->as<PPTX::Logic::AnimEffect>();
+		convert(&animEffect);
+	}
+	else if (oox_time_base->is<PPTX::Logic::Anim>())
+	{
+		PPTX::Logic::Anim& animate = oox_time_base->as<PPTX::Logic::Anim>();
+		convert(&animate);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimMotion>())
+	{
+		PPTX::Logic::AnimMotion& motion = oox_time_base->as<PPTX::Logic::AnimMotion>();
+		convert(&motion);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimClr>())
+	{
+		PPTX::Logic::AnimClr& color = oox_time_base->as<PPTX::Logic::AnimClr>();
+		convert(&color);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimRot>())
+	{
+		PPTX::Logic::AnimRot& rotate = oox_time_base->as<PPTX::Logic::AnimRot>();
+		convert(&rotate);
+	}
+	else if (oox_time_base->is<PPTX::Logic::AnimScale>())
+	{
+		PPTX::Logic::AnimScale& rotate = oox_time_base->as<PPTX::Logic::AnimScale>();
+		convert(&rotate);
+	}
 }
 void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 {
@@ -923,7 +1749,7 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	}
 	if (oox_time_common->nodeType.IsInit())
 	{
-		odp_context->current_slide().set_anim_type(oox_time_common->nodeType->get());
+		convert(*oox_time_common->nodeType);
 	}
 	if (oox_time_common->dur.IsInit())
 	{
@@ -935,7 +1761,22 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	if (oox_time_common->restart.IsInit())
 	{
 		odp_context->current_slide().set_anim_restart(oox_time_common->restart->get());
-	}	
+	}
+	if (oox_time_common->fill.IsInit())
+	{
+		odp_context->current_slide().set_anim_fill(odf_types::smil_fill::parse(oox_time_common->fill->get()));
+	}
+	if (oox_time_common->autoRev.IsInit())
+	{
+		odp_context->current_slide().set_anim_auto_reverse(*oox_time_common->autoRev);
+	}
+	if (oox_time_common->presetClass.IsInit())
+	{
+		convert(*oox_time_common->presetClass);
+		if(oox_time_common->presetID.IsInit())
+			convert(*oox_time_common->presetClass, *oox_time_common->presetID);
+	}
+	
 
 	//nullable<CondLst>			stCondLst;
 	//nullable<CondLst>			endCondLst;
@@ -943,15 +1784,36 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//nullable<Iterate>			iterate;
 
     // TODO
-//    for (auto& child : oox_time_common->childTnLst)
-//    {
-//        for (size_t i = 0; i <child.m_node. .list.size(); i++)
-//        {
-//            if (tnLst.list[i].is_init() == false) continue;
+    //for (auto& child : oox_time_common->childTnLst)
+    //{
+    //    for (size_t i = 0; i <child.m_node. .list.size(); i++)
+    //    {
+    //        if (tnLst.list[i].is_init() == false) continue;
 
-//            convert(&oox_time_common->childTnLst->list[i]);
-//        }
-//    }
+    //        convert(&oox_time_common->childTnLst->list[i]);
+    //    }
+    //}
+	
+	if (oox_time_common->stCondLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->stCondLst->list.size(); i++)
+		{
+			PPTX::Logic::Cond& cond = oox_time_common->stCondLst->list[i];
+			convert(&cond);
+		}
+	}
+
+	if (oox_time_common->childTnLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+		{
+			PPTX::Logic::TimeNodeBase& child = oox_time_common->childTnLst->list[i];
+			if(child.is_init())
+				convert(&child);
+		}
+	}
+	
+
 //	if (oox_time_common->childTnLst.IsInit())
 //	{
 //		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
@@ -971,6 +1833,46 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//	}
 	//}
 }
+
+
+void PptxConverter::convert(PPTX::Logic::Cond* oox_condition)
+{
+	if (!oox_condition)
+		return;
+
+	if (oox_condition->delay.IsInit())
+	{
+		std::wstring begin;
+		if (*oox_condition->delay == L"indefinite")
+			begin = L"next";
+		else
+		{
+			int ms = XmlUtils::GetInteger(*oox_condition->delay);
+			std::wstringstream ss;
+			ss << ms / 1000.0 << L"s";
+			begin = ss.str();
+		}
+
+		odp_context->current_slide().set_anim_begin(begin);
+	}
+	//else if(oox_condition->evt.IsInit())
+	//	odp_context->current_slide().set_anim_evt();
+}
+
+void PptxConverter::convert(PPTX::Logic::Set* oox_set)
+{
+	if (!oox_set)
+		return;
+
+	odp_context->current_slide().start_timing_set();
+
+	convert(&oox_set->cBhvr);
+	if(oox_set->to.IsInit())
+		convert(oox_set->to.GetPointer());
+
+	odp_context->current_slide().end_timing_set();
+}
+
 void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 {
 	if (!oox_table_pr) return;
@@ -1627,6 +2529,19 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			OoxConverter::convert(pElem.GetPointer());
 		}
 
+		{
+			// TODO: Move to NvPicPr.cNvPr conversion
+			int id = -1;
+			if (pPic.IsInit()) 
+				id = pPic->nvPicPr.cNvPr.id;
+
+			if (id != -1)
+			{
+				const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(id));
+				odf_context()->drawing_context()->set_xml_id(xml_id);
+			}
+		}
+		
 		odf_context()->drawing_context()->end_drawing();
 	}
 	convert(oox_slide->controls.GetPointer());

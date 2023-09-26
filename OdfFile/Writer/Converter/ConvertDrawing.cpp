@@ -63,6 +63,7 @@
 #include "../../../OOXML/Common/SimpleTypes_Word.h"
 
 #include "../Format/odf_conversion_context.h"
+#include "../Format/odp_conversion_context.h"
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
 #include "../Format/style_text_properties.h"
@@ -153,6 +154,7 @@ void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
 {
 	if (oox_framePr == NULL) return;
 
+	convert(&oox_framePr->cNvPr);
 }
 void OoxConverter::RGB2HSL(DWORD argb, double& dH, double& dS, double& dL)
 {
@@ -530,6 +532,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
 
+#if 0
 		odf_context()->drawing_context()->start_drawing();
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
 		
@@ -552,6 +555,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		}
 		odf_context()->drawing_context()->end_shape();
 		odf_context()->drawing_context()->end_drawing();
+#endif
 
 		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 
@@ -1688,6 +1692,22 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	if (!oox_cnvPr) return;
 
 	odf_context()->drawing_context()->set_name(oox_cnvPr->name);
+
+	if (oox_cnvPr->id != -1)
+	{
+#if 0
+		const std::wstring xml_id = odf_context()->map_indentifier(std::to_wstring(oox_cnvPr->id));
+		odf_context()->drawing_context()->set_xml_id(xml_id);
+#else 
+		cpdoccore::odf_writer::odp_conversion_context* odp_context =
+			dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(odf_context());
+		if (odp_context)
+		{
+			const std::wstring xml_id = odp_context->map_indentifier(std::to_wstring(oox_cnvPr->id));
+			odf_context()->drawing_context()->set_xml_id(xml_id);
+		}
+#endif
+	}
 
 	if (oox_cnvPr->descr.IsInit())
 	{

@@ -30,13 +30,11 @@
  *
  */
 
-#include <vector>
 #include <xml/simple_xml_writer.h>
 
 #include "oox_rels.h"
 
 #include "pptx_drawings.h"
-#include "pptx_drawing.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -135,6 +133,11 @@ public:
 		}
 	}
 
+	std::vector<_pptx_drawing>& get_drawings()
+	{
+		return pptx_drawings_;
+	}
+
 private:
 
 	std::vector<_pptx_drawing>	pptx_drawings_;	
@@ -180,11 +183,16 @@ void pptx_drawings::dump_rels(rels & Rels)
     return impl_->dump_rels(Rels);
 }
 
+std::vector<_pptx_drawing>& pptx_drawings::get_drawings()
+{
+	return impl_->get_drawings();
+}
+
 pptx_drawings_ptr pptx_drawings::create()
 {
     return boost::make_shared<pptx_drawings>();
 }
 
 }
-}
+ }
 

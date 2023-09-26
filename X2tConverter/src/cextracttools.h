@@ -220,17 +220,17 @@ namespace NExtractTools
 		TCD_EPUB2DOCX,
 		TCD_EPUB2DOCT,
 		TCD_EPUB2DOCT_BIN,
-        TCD_MAILMERGE,
-        TCD_T2,
-        TCD_DOCT_BIN2,
-        TCD_XLST_BIN2,
-        TCD_PPTT_BIN2,
-        TCD_DOCUMENT2,
-        TCD_SPREADSHEET2,
-        TCD_PRESENTATION2,
-        TCD_CROSSPLATFORM2,
-        TCD_CANVAS_PDF2,
-        TCD_DRAW2
+
+		TCD_MAILMERGE,
+		TCD_T2,
+		TCD_DOCT_BIN2,
+		TCD_XLST_BIN2,
+		TCD_PPTT_BIN2,
+		TCD_DOCUMENT2,
+		TCD_SPREADSHEET2,
+		TCD_PRESENTATION2,
+		TCD_CROSSPLATFORM2,
+		TCD_CANVAS_PDF2
 	} TConversionDirection;
 
 	typedef enum tagTCsvDelimiter
@@ -943,25 +943,23 @@ namespace NExtractTools
 				else if ((AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom) && (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) || (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)))
 					eRes = TCD_SPREADSHEET2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatFrom))
-                    eRes = TCD_DOCUMENT2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
-                    eRes = TCD_SPREADSHEET2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
-                    eRes = TCD_PRESENTATION2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
-                    eRes = TCD_DRAW2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
-                    eRes = TCD_T2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
-                    eRes = TCD_DOCT_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
-                    eRes = TCD_XLST_BIN2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
-                    eRes = TCD_PPTT_BIN2;
-                else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
-                    eRes = TCD_CROSSPLATFORM2;
-                else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
-                    eRes = TCD_CANVAS_PDF2;
+					eRes = TCD_DOCUMENT2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatFrom))
+					eRes = TCD_SPREADSHEET2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatFrom))
+					eRes = TCD_PRESENTATION2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_TEAMLAB & nFormatFrom))
+					eRes = TCD_T2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatFrom)
+					eRes = TCD_DOCT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatFrom)
+					eRes = TCD_XLST_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
+					eRes = TCD_PPTT_BIN2;
+				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
+					eRes = TCD_CROSSPLATFORM2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)
+					eRes = TCD_CANVAS_PDF2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
 				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)

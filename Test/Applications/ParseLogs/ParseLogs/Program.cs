@@ -15,18 +15,17 @@ namespace ParseLogs
             string logMessage = "";
             foreach (var line in File.ReadLines(filename))
             {
-                var _line = line.Replace("\\n", "\n");
                 if (!start)
                 {
-                    if (_line.Contains("changesError:"))
+                    if (line.Contains("[ERROR] nodeJS - changesError"))
                     {
                         key = "";
                         logMessage = "";
-                        int indexStart = _line.IndexOf("Error:");
+                        int indexStart = line.IndexOf(" Error: ");
                         if (-1 != indexStart)
                         {
-                            key = _line.Substring(indexStart);
-                            int indexEnd = key.IndexOf("userAgent:");
+                            key = line.Substring(indexStart);
+                            int indexEnd = key.IndexOf(" userAgent: ");
                             if (-1 != indexEnd)
                             {
                                 key = key.Substring(0, indexEnd);
@@ -39,7 +38,7 @@ namespace ParseLogs
                                 unique[key] = 1;
                             }
                             start = true;
-                            logMessage += _line;
+                            logMessage += line;
                             logMessage += '\n';
                         }
                     }
@@ -48,7 +47,7 @@ namespace ParseLogs
                 {
                     if ("" == key)
                     {
-                        key = _line;
+                        key = line;
                         if (!unique.ContainsKey(key))
                         {
                             unique[key] = 1;
@@ -59,9 +58,9 @@ namespace ParseLogs
                             continue;
                         }
                     }
-                    if (!_line.StartsWith("202") && !line.StartsWith("[202") && !_line.StartsWith("\"{\"\"startTime") && !_line.StartsWith("{\"\"startTime"))
+                    if (!line.StartsWith("["))
                     {
-                        logMessage += _line;
+                        logMessage += line;
                         logMessage += '\n';
                     }
                     else
@@ -77,9 +76,9 @@ namespace ParseLogs
         }
         static void Main(string[] args)
         {
-            //string inputDir = @"D:\logs\doc.onlyoffice.eu\7.3.2\log2";
-            string inputDir = @"D:\logs\doc.onlyoffice.eu\7.4.0\log";
-            string outputFile = @"D:\logs\doc.onlyoffice.eu\7.4.0\changesError.txt";
+            string inputDir = @"D:\logs\doc.onlyoffice.com\sync\logs\docservice";
+            string outputFile = @"D:\logs\doc.onlyoffice.com\sync\changesError.txt";
+            string startDate = "out.log-20200601";
             using (StreamWriter writetext = new StreamWriter(outputFile))
             {
                 Dictionary<string, int> unique = new Dictionary<string, int>();
@@ -88,8 +87,12 @@ namespace ParseLogs
                 Array.Sort(fileNames, StringComparer.InvariantCulture);
                 foreach (string file in fileNames)
                 {
+                    if (String.Compare(Path.GetFileName(file), startDate) >= 0)
+                    {
                         start = processFile(file, start, unique, writetext);
+                    }
                 }
+                start = processFile(Path.Combine(inputDir, "out.log"), start, unique, writetext);
             }
         }
     }

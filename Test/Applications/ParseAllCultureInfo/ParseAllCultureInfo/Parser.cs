@@ -182,7 +182,6 @@ namespace ParseAllCultureInfo
         static Dictionary<int, int> g_mapUsedValues = new Dictionary<int, int>() {
             {4, 1},
             {5, 1},
-            {6, 1},
             {7, 1},
             {8, 1},
             {9, 1},
@@ -209,7 +208,6 @@ namespace ParseAllCultureInfo
             {1026, 1},
             {1028, 1},
             {1029, 1},
-            {1030, 1},
             {1031, 1},
             {1032, 1},
             {1033, 1},

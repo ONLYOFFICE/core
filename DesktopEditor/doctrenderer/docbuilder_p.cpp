@@ -280,8 +280,6 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 			pNative->m_strEditorType = L"document";
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
-		else if (7 == m_nFileType)
-			pNative->m_strEditorType = L"draw";
 		else
 			pNative->m_strEditorType = L"spreadsheet";
 
@@ -330,8 +328,6 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		_formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
 	else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
-	else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
-		_formatDst = NSDoctRenderer::DoctRendererFormat::VSDT;
 	else if (type & AVS_OFFICESTUDIO_FILE_IMAGE)
 	{
 		_formatDst = NSDoctRenderer::DoctRendererFormat::IMAGE;
@@ -341,7 +337,6 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		case 0: { _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT; break; }
 		case 1: { _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT; break; }
 		case 2: { _formatDst = NSDoctRenderer::DoctRendererFormat::XLST; break; }
-		case 7: { _formatDst = NSDoctRenderer::DoctRendererFormat::VSDT; break; }
 		default:
 			break;
 		}
@@ -1210,8 +1205,6 @@ namespace NSDoctRenderer
 			type = AVS_OFFICESTUDIO_FILE_PRESENTATION;
 		else if (L"xlsx" == sType)
 			type = AVS_OFFICESTUDIO_FILE_SPREADSHEET;
-		else if (L"vsdx" == sType)
-			type = AVS_OFFICESTUDIO_FILE_DRAW;
 
 		return CreateFile(type);
 	}
@@ -1427,8 +1420,6 @@ namespace NSDoctRenderer
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
 					else if (L"xlsx" == _builder_params[0])
 						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
-					else if (L"vsdx" == _builder_params[0])
-						bIsNoError = this->CreateFile(AVS_OFFICESTUDIO_FILE_DRAW_VSDX);
 				}
 				else if ("SetTmpFolder" == sFuncNum)
 					this->SetTmpFolder(_builder_params[0].c_str());

@@ -1010,13 +1010,8 @@ namespace svg_path
                         nX += L"+" + nLastX;
                         nY += L"+" + nLastY;
                     }
-                    //// use mirrored previous control point
-                    //nX1 = ((2.0 * nLastX) - nLastControlX);
-                    //nY1 = ((2.0 * nLastY) - nLastControlY);
+                    aCurrPoly.command = L"a:quadBezTo";
 
-                    aCurrPoly.command = L"a:cubicBezTo";
-                    // append curved edge
-                    aCurrPoly.points.push_back(_pointS(nX1, nY1));
                     aCurrPoly.points.push_back(_pointS(nX2, nY2));
                     aCurrPoly.points.push_back(_pointS(nX, nY));
 

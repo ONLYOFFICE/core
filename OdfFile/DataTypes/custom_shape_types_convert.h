@@ -53,7 +53,7 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"octagon"						,L"octagon"	,0	,0	,0	},
 {L"star4"						,L"star4"	,1	,0	,50000	},
 {L"star5"						,L"star5"	,0	,0	,50000	},//??? 19098 неверно
-{L"star8"						,L"star8"	,1	,0	,50000	},
+{L"star8"						,L"star8"	,0	,0	,50000	},
 {L"star24"						,L"star24"	,1	,0	,50000	},
 {L"star6"						,L"star6"	,0	,0	,50000	},
 {L"star12"						,L"star12"	,1	,0	,50000	},

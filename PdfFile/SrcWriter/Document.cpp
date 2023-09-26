@@ -541,61 +541,89 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-    CAnnotation* CDocument::CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText)
+	CAnnotation* CDocument::CreateTextAnnot()
 	{
-		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
-		if (pAnnot)
-		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
-		}
-
+		return new CTextAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
+	{
+		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
+		pAnnot->SetRect(oRect);
 		return pAnnot;
 	}
-	CAnnotation* CDocument::CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest)
+	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
 	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-
-		if (pAnnot)
-		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
-		}
-
-		return pAnnot;
-	}	
-	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
-	{
-		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-
-		if (pAnnot)
-			pPage->AddAnnotation(pAnnot);
-
+		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
+		pAnnot->SetRect(oRect);
 		return pAnnot;
 	}
-	CAnnotation* CDocument::CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri)
+	CAnnotation* CDocument::CreateInkAnnot()
 	{
-		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUri);
-	
-		if (pAnnot)
+		return new CInkAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreateLineAnnot()
+	{
+		return new CLineAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreateTextMarkupAnnot()
+	{
+		return new CTextMarkupAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreateSquareCircleAnnot()
+	{
+		return new CSquareCircleAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreatePolygonLineAnnot()
+	{
+		return new CPolygonLineAnnotation(m_pXref);
+	}
+	CAnnotation* CDocument::CreatePopupAnnot()
+	{
+		return new CPopupAnnotation(m_pXref);
+	}
+	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
+	{
+		m_mAnnotations[nID] = pAnnot;
+	}
+	void CDocument::MatchAnnotation()
+	{
+		CArrayObject* pArray = (CArrayObject*)(m_pCurPage->Get("Annots"));
+		if (!pArray)
+			return;
+
+		for (int i = 0, count = pArray->GetCount(); i < count; ++i)
 		{
-			CPage* pPage = m_pPageTree->GetPage(unPageNum);
-			if (pPage)
-				pPage->AddAnnotation(pAnnot);
+			CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pArray->Get(i));
+			if (!pAnnot)
+				continue;
+
+			if (pAnnot->isMarkup())
+			{
+				CMarkupAnnotation* pMarkupAnnot = (CMarkupAnnotation*)pAnnot;
+
+				int nID = pMarkupAnnot->GetPopupID();
+				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pMarkupAnnot->SetPopupID(it->second);
+
+				nID = pMarkupAnnot->GetIRTID();
+				it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pMarkupAnnot->SetIRTID(it->second);
+			}
+
+			if (pAnnot->GetAnnotationType() == EAnnotType::AnnotPopup)
+			{
+				CPopupAnnotation* pPopupAnnot = (CPopupAnnotation*)pAnnot;
+
+				int nID = pPopupAnnot->GetParentID();
+				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
+				if (it != m_mAnnotations.end())
+					pPopupAnnot->SetParentID(it->second);
+			}
 		}
 
-		return pAnnot;
-	}
-	CAnnotation* CDocument::CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl)
-	{
-		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, oRect, sUrl);
-
-		if (pAnnot)
-			pPage->AddAnnotation(pAnnot);
-
-		return pAnnot;
+		m_mAnnotations.clear();
 	}
     CImageDict* CDocument::CreateImage()
 	{

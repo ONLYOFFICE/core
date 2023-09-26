@@ -50,10 +50,6 @@ ENV PATH=/opt/protobuf/bin:$PATH
 
 RUN rm -rf /build/
 
-RUN apt-get build-dep -y vlc
-
-USER jenkins
-
 # build libvlc
 CMD cd /vlc && \
     (patch -p1 --forward src/modules/bank.c ignore-cache-time.patch || :) && \
@@ -61,11 +57,14 @@ CMD cd /vlc && \
     cd contrib && \
     mkdir -p native && \
     cd native && \
-    ../bootstrap && \
-    make && \
+    ../bootstrap --disable-disc --disable-net --disable-sout --disable-a52 --disable-asdcplib --disable-chromaprint --disable-gcrypt --disable-gme --disable-goom --disable-jpeg --disable-libarchive --disable-nfs --disable-png --disable-postproc --disable-sidplay2 --disable-dvbpsi && \
+# on WSL2 based docker containers the ffi build may fail, so some lines in ffi configs need to be changed
+    (make .ffi || (sed -i '/$(RECONF)/d' ../src/ffi/rules.mak && sed -i 's/mv $srcdir\/config.log/cp $srcdir\/config.log/' ffi/configure)) && \
+# build other contribs
+    (make -j$CORES || make) && \
     cd /vlc && \
     mkdir -p build/linux_64 && \
-    ./configure --prefix=/vlc/build/linux_64 --disable-vlc --disable-qt --disable-skins2 --disable-chromecast && \
+    ./configure --prefix=/vlc/build/linux_64 --disable-sout --disable-lua --disable-vlm --disable-addonmanagermodules --disable-dbus --disable-archive --disable-linsys --disable-nfs --disable-v4l2 --disable-vcd --disable-libcddb --disable-screen --disable-freerdp --disable-macosx-avfoundation --disable-asdcp --disable-dvbpsi --disable-gme --disable-sid --disable-mod --disable-mpc --disable-swscale --disable-postproc --disable-a52 --disable-png --disable-jpeg --disable-zvbi --disable-telx --disable-sdl-image --disable-svg --disable-svgdec --disable-chromaprint --disable-chromecast --disable-qt --disable-skins2 --disable-macosx --disable-sparkle --disable-ncurses --disable-goom --disable-projectm --disable-vsxu --disable-avahi --disable-udev --disable-mtp --disable-upnp --disable-microdns --disable-libxml2 --disable-libgcrypt --disable-gnutls --disable-secret --disable-kwallet --disable-vlc && \
     make && \
     make -j$CORES install-strip && \
 # correct build files

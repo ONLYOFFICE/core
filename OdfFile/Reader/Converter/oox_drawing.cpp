@@ -42,12 +42,79 @@ using namespace cpdoccore;
 
 namespace svg_path
 {
-	void oox_serialize(std::wostream & strm, std::vector<_polyline> & path)
+	void oox_serialize(std::wostream& strm, std::vector<std::pair<std::wstring, std::wstring>>& equations)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"a:gdLst")
+			{
+				for (auto equation : equations)
+				{
+					CP_XML_NODE(L"a:gd")
+					{
+						CP_XML_ATTR(L"name", equation.first);
+						CP_XML_ATTR(L"fmla", equation.second);
+					}
+				}
+			}
+		}
+	}
+	void oox_serialize(std::wostream& strm, std::vector<_polylineS>& path)
 	{
 		CP_XML_WRITER(strm)
 		{
 			for (size_t i = 0; i < path.size(); i++)
-			{	
+			{
+				oox_serialize(strm, path[i]);
+			}
+		}
+	}
+	void oox_serialize(std::wostream& strm, _polylineS& val)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(val.command)
+			{
+				if (val.command == L"a:ArcTo")
+				{
+					if (val.points.size() > 0)
+					{
+						CP_XML_ATTR(L"wR", val.points[0].x.get());
+						CP_XML_ATTR(L"hR", val.points[0].y.get());
+					}
+					//if (val.points.size() > 1)
+					//{
+					//	CP_XML_ATTR(L"stAng", (int)(val.points[1].x.get() * 60000));
+					//	CP_XML_ATTR(L"swAng", (int)(val.points[1].y.get() * 60000));
+					//}
+				}
+				else
+				{
+					for (size_t i = 0; i < val.points.size(); i++)
+					{
+						oox_serialize(CP_XML_STREAM(), val.points[i]);
+					}
+				}
+			}
+		}
+	}
+	void oox_serialize(std::wostream& strm, _pointS& val)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"a:pt")
+			{
+				if (val.x) CP_XML_ATTR(L"x", val.x.get());
+				if (val.y) CP_XML_ATTR(L"y", val.y.get());
+			}
+		}
+	}
+	void oox_serialize(std::wostream& strm, std::vector<_polyline>& path)
+	{
+		CP_XML_WRITER(strm)
+		{
+			for (size_t i = 0; i < path.size(); i++)
+			{
 				oox_serialize(strm, path[i]);
 			}
 		}
@@ -412,7 +479,7 @@ void vml_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 		}
     }
 }
-void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset, const std::wstring &ns)
+void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset, int max_count_values, const std::wstring &ns)
 {
 	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
 
@@ -439,11 +506,12 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					names.push_back(L"adj1");
 				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
-						 std::wstring::npos != shapeGeomPreset.find(L"decagon"))
-				{
-					values.clear();
-				}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
+				//		 std::wstring::npos != shapeGeomPreset.find(L"decagon") || 
+				//		std::wstring::npos != shapeGeomPreset.find(L"bevel"))
+				//{
+				//	values.clear();
+				//}
 				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
 				{
 					names.push_back(L"vf");
@@ -471,6 +539,11 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 					names.push_back(L"adj");
 					names.push_back(L"hf");
 				}
+				
+				if (max_count_values >= 0 && values.size() > max_count_values)
+				{ 
+					values.resize(max_count_values);
+				}
 
 				for (size_t i = 0; i < values.size(); i++)
 				{
@@ -484,10 +557,7 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 						}
 						else
 						{
-							if (values.size() > 1)
-								CP_XML_ATTR2(ns_att + L"name", L"adj" + std::to_wstring(i + 1));
-							else
-								CP_XML_ATTR2(ns_att + L"name", L"adj");
+							CP_XML_ATTR2(ns_att + L"name", L"adj" + std::to_wstring(i + 1));
 						}						
 						CP_XML_ATTR2(ns_att + L"fmla", L"val " + values[i]);
 					}
@@ -577,12 +647,12 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 				odf_reader::GetProperty(prop, L"oox-geom-index", iVal);
 				if (iVal)
 				{
-					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;					
+					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;
 					CP_XML_NODE(L"a:prstTxWarp")
 					{
 						CP_XML_ATTR(L"prst", shapeType);
 						
-						oox_serialize_aLst(CP_XML_STREAM(), prop, shapeType);
+						oox_serialize_aLst(CP_XML_STREAM(), prop, shapeType, _OO_OOX_wordart[*iVal].count_values);
 					}
 				}
 			}
@@ -594,20 +664,25 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 {
 	_CP_OPT(int)			iOoxShapeIndex;
 	_CP_OPT(bool)			bWordArt, bOoxShape;
-	_CP_OPT(std::wstring)	sCustomPath;
+	_CP_OPT(std::wstring)	sCustomPath, sCustomEquations;
 	
 	odf_reader::GetProperty(additional, L"wordArt",			bWordArt);
 	odf_reader::GetProperty(additional, L"oox-geom-index",	iOoxShapeIndex);
 	odf_reader::GetProperty(additional, L"oox-geom",		bOoxShape);
 
 	odf_reader::GetProperty(additional, L"custom_path", sCustomPath);
-	
+	odf_reader::GetProperty(additional, L"custom_equations", sCustomEquations);
+		
 	std::wstring shapeGeomPreset;
+	int max_count_values = -1;
 
 	if (sub_type == 7)//custom 
 	{
 		if (iOoxShapeIndex)
-			shapeGeomPreset = _OO_OOX_custom_shapes[*iOoxShapeIndex].oox;	
+		{
+			shapeGeomPreset = _OO_OOX_custom_shapes[*iOoxShapeIndex].oox;
+			max_count_values = _OO_OOX_custom_shapes[*iOoxShapeIndex].count_values;
+		}
 		else if (sCustomPath)
 			sub_type = 6; //path
 
@@ -634,8 +709,10 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				std::vector<std::wstring> names;
 				oox_serialize_aLst(CP_XML_STREAM(), additional, L"");
 				
-				CP_XML_NODE(L"a:ahLst");
-				CP_XML_NODE(L"a:gdLst");
+				if (sCustomEquations)
+				{
+					CP_XML_STREAM() << *sCustomEquations;
+				}
 				CP_XML_NODE(L"a:rect")
 				{
 					CP_XML_ATTR(L"b", L"b");
@@ -650,7 +727,6 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				odf_reader::GetProperty(additional, L"custom_path_h", h);
 
 				odf_reader::GetProperty(additional, L"custom_path_s", stroke);
-					
 
 				CP_XML_NODE(L"a:pathLst")
 				{ 	
@@ -690,7 +766,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				CP_XML_ATTR(L"prst", shapeGeomPreset);
 				if (!bWordArt) 
 				{
-					oox_serialize_aLst(CP_XML_STREAM(), additional, shapeGeomPreset);
+					oox_serialize_aLst(CP_XML_STREAM(), additional, shapeGeomPreset, max_count_values);
 				}
 			}					
 		}

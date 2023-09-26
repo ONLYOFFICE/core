@@ -14,13 +14,15 @@ namespace NSCSS
 		Cantimeter,
 		Millimeter,
 		Inch,
-		Peak
+		Peak,
+		Em,
+		Rem,
+		Twips
 	} UnitMeasure;
 
 	class CUnitMeasureConverter
 	{
 		CUnitMeasureConverter();
-		static std::wstring GetUnitMeasure(const std::wstring::const_iterator& itBegin, const std::wstring::const_iterator& itEnd);
 	public:
 		static double ConvertPx(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);
 		static double ConvertCm(double dValue, UnitMeasure enUnitMeasure, unsigned short ushDPI);

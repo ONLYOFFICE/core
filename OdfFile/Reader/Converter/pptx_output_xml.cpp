@@ -97,7 +97,7 @@ void pptx_xml_slide::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-   				CP_XML_ATTR(L"name", name());   
+				CP_XML_ATTR_ENCODE_STRING(L"name", name());
 				
 				CP_XML_STREAM() << strmBackground_.str();
 

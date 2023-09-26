@@ -246,7 +246,14 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		if (href[0] == L'#') href = href.substr(1);
 	}
-	Context.get_slide_context().set_image(href);
+	if (false == href.empty())
+	{
+		Context.get_slide_context().set_image(href);
+	}
+	else
+	{
+		Context.get_slide_context().set_text_box();
+	}
 ////////////////////////////////////в принципе достаточно общая часть ...	
 	Context.get_text_context().start_object();
 

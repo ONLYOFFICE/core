@@ -7,9 +7,13 @@
 #include <list>
 
 #define LINEHEIGHTSCALE 10 // Значение LineHeight в OOXML должно быть в 10 раз больше чем указано в стиле
-#define LINEHEIGHTCOEF  24 // Используется когда LineHeight указан в процентном соотношении
-#define SPACINGCOEF     20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
-#define FONTSCALE        2 // Значение шрифта при конвертации в OOXML необходимо увеличиыать в 2 рааз
+#define LINEHEIGHTCOEF  24 // Используется когда необходимо перевести в twips значение
+#define POINTCOEF       20 // Используется для конвертации в OOXML значение интервала между абзацами (Измерение в двадцатых долях от точки)
+
+#define PAGEWIDTH  (12240 / POINTCOEF)
+#define PAGEHEIGHT (15840 / POINTCOEF)
+
+#define DOUBLE_TO_INTW(dValue) std::to_wstring(static_cast<int>(dValue + 0.5))
 
 namespace NSCSS
 {
@@ -272,7 +276,7 @@ namespace NSCSS
 		ConvertStyle(oStyle, oXmlElement, true);
 		if (oStyle.Empty() && oXmlElement.Empty())
 			return;
-
+		
 		oXmlElement.AddPropertiesInP(PProperties::P_Jc, oStyle.m_oText.GetAlign().ToWString());
 
 		std::wstring sInfValue;
@@ -281,18 +285,17 @@ namespace NSCSS
 		//TODO:: проверить Permission в Margin
 		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
 		{
-			const std::wstring& sLeftSide  = (oStyle.m_oMargin.GetLeft()  + oStyle.m_oPadding.GetLeft()) .ToWString();
-			const std::wstring& sRightSide = (oStyle.m_oMargin.GetRight() + oStyle.m_oPadding.GetRight()).ToWString();
+			const double dLeftSide  = oStyle.m_oMargin.GetLeft() .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetLeft() .ToDouble(NSCSS::Twips);
+			const double dRightSide = oStyle.m_oMargin.GetRight().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetRight().ToDouble(NSCSS::Twips);
 
-			if (!sLeftSide.empty())
-				sInfValue += L"w:left=\""  + sLeftSide + L"\" ";
-			if (!sRightSide.empty())
-				sInfValue += L"w:right=\"" + sRightSide + L"\" ";
+			sInfValue += L"w:left=\""  + DOUBLE_TO_INTW(dLeftSide  * POINTCOEF) + L"\" ";
+			sInfValue += L"w:right=\"" + DOUBLE_TO_INTW(dRightSide * POINTCOEF) + L"\" ";
 		}
 
-		const std::wstring& sIndent = oStyle.m_oText.GetIndent().ToWString();
-		if (!sIndent.empty())
-			sInfValue += L"w:firstLine=\"" + sIndent + L"\" ";
+		const double dIndent = oStyle.m_oText.GetIndent().ToDouble(NSCSS::Twips);
+		
+		if (0. != dIndent)
+			sInfValue += L"w:firstLine=\"" + DOUBLE_TO_INTW(dIndent) + L"\" ";
 
 		oXmlElement.AddPropertiesInP(PProperties::P_Ind, sInfValue);
 
@@ -300,13 +303,13 @@ namespace NSCSS
 		sSpacingValue.reserve(128);
 
 		//TODO:: проверить Permission в Margin
-		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty() /*&& oStyle.m_oMargin.GetPermission()*/)
+		if (!oStyle.m_oMargin.Empty() || !oStyle.m_oPadding.Empty()/*&& oStyle.m_oMargin.GetPermission()*/)
 		{
-			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Point);
-			const double dSpacingTop    = oStyle.m_oMargin.GetTop().ToDouble(NSCSS::Point) + oStyle.m_oPadding.GetTop().ToDouble(NSCSS::Point);;
+			const double dSpacingBottom = oStyle.m_oMargin.GetBottom().ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetBottom().ToDouble(NSCSS::Twips);
+			const double dSpacingTop    = oStyle.m_oMargin.GetTop()   .ToDouble(NSCSS::Twips) + oStyle.m_oPadding.GetTop()   .ToDouble(NSCSS::Twips);;
 			
-			sSpacingValue += L" w:after=\""  + std::to_wstring(dSpacingBottom * SPACINGCOEF) + L"\" ";
-			sSpacingValue += L" w:before=\"" + std::to_wstring(dSpacingTop * SPACINGCOEF) + L"\" ";
+			sSpacingValue += L" w:after=\""  + DOUBLE_TO_INTW(dSpacingBottom * POINTCOEF) + L"\" ";
+			sSpacingValue += L" w:before=\"" + DOUBLE_TO_INTW(dSpacingTop    * POINTCOEF) + L"\" ";
 		}
 		else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_oMargin.GetPermission())*/
 			sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
@@ -315,13 +318,13 @@ namespace NSCSS
 		
 		if (!oStyle.m_oFont.GetLineHeight().Empty())
 		{
-			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble() * LINEHEIGHTSCALE;
-			NSCSS::UnitMeasure enUMLineHeight = oStyle.m_oFont.GetLineHeight().GetUnitMeasure();
-			
-			if (NSCSS::UnitMeasure::None == enUMLineHeight || NSCSS::UnitMeasure::Percent == enUMLineHeight)
+			double dLineHeight = oStyle.m_oFont.GetLineHeight().ToDouble(NSCSS::Twips, LINEHEIGHTCOEF) * LINEHEIGHTSCALE;
+
+			if (NSCSS::None == oStyle.m_oFont.GetLineHeight().GetUnitMeasure())
 				dLineHeight *= LINEHEIGHTCOEF;
 			
-			wsLineHeight = std::to_wstring((int)dLineHeight);
+			if (0. != dLineHeight)
+				wsLineHeight = DOUBLE_TO_INTW(dLineHeight);
 		}
 		
 		if (!wsLineHeight.empty())
@@ -330,10 +333,10 @@ namespace NSCSS
 		}
 //		else if (!oStyle.m_oBorder.Empty())
 //		{
-//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2 * SPACINGCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
+//			sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips) * 2 * POINTCOEF + 0.5f)) + L"\" w:lineRule=\"auto\"";
 //		}
 		else if (!oStyle.m_oBorder.Empty())
-			sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
+			sSpacingValue += L" w:line=\"240\" w:lineRule=\"auto\" ";
 
 		if (!sSpacingValue.empty())
 		{
@@ -423,10 +426,12 @@ namespace NSCSS
 		if (oStyle.Empty() && oXmlElement.Empty())
 			return;
 
+		if (!oStyle.m_oFont.GetSize().Empty())
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, DOUBLE_TO_INTW(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Twips))); 
+
 		oXmlElement.AddPropertiesInR(RProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
-		oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * FONTSCALE)); 
 		oXmlElement.AddPropertiesInR(RProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());
 		oXmlElement.AddPropertiesInR(RProperties::R_B, oStyle.m_oFont.GetWeight().ToWString());

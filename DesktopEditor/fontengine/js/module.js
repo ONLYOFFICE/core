@@ -679,7 +679,7 @@ function onLoadFontsModule(window, undefined)
 	function ZLib()
 	{
 		/** @suppress {checkVars} */
-		this.engine = new AscCommon["CZLibEngineJS"]();
+		this.engine = window["NATIVE_EDITOR_ENJINE"] ? CreateEmbedObject("CZipEmbed") : new AscCommon["CZLibEngineJS"]();
 		this.files = [];
 	}
 	/**
@@ -763,8 +763,9 @@ function onLoadFontsModule(window, undefined)
 	};
 
 	AscCommon.ZLib = ZLib;
-	AscCommon.ZLib.prototype.isModuleInit = true;
-	window.AscCommon.CZLibEngineJS.prototype.isModuleInit = true;
+
+	if (AscCommon["CZLibEngineJS"])
+		AscCommon["CZLibEngineJS"].prototype["isModuleInit"] = true;
 
 	window.nativeZlibEngine = new ZLib();
 

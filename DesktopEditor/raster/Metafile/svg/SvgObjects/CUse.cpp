@@ -27,7 +27,7 @@ namespace SVG
 
 	bool CUse::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles* pOtherStyles) const
 	{
-		if (NULL == pRenderer || !m_oStyles.m_bDraw)
+		if (NULL == pRenderer || !m_oTransformtaion.m_bDraw)
 			return false;
 
 		double dM11, dM12, dM21, dM22, dRx, dRy;

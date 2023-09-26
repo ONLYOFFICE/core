@@ -127,6 +127,10 @@ namespace ComplexTypes
 		class CShading;
 	}
 }
+namespace NSBinPptxRW
+{
+	class CDrawingConverter;
+}
 namespace cpdoccore 
 {
 	namespace odf_writer 
@@ -165,16 +169,18 @@ namespace Oox2Odf
     private:
 		struct _section
 		{
-            OOX::Logic::CSectionProperty    *props = NULL;
-            size_t							start_para = 0;
-            size_t							end_para = 0;
-			bool							bContinue = false;
-		}												*current_section_properties;
-		OOX::CDocx										*docx_document;
-		OOX::CDocxFlat									*docx_flat_document;
+            OOX::Logic::CSectionProperty *props = NULL;
+            size_t start_para = 0;
+            size_t end_para = 0;
+			bool bContinue = false;
+		} *current_section_properties;
+
+		OOX::CDocx *docx_document;
+		OOX::CDocxFlat *docx_flat_document;
 		
-		odf_writer::odt_conversion_context				*odt_context;
-        OOX::Logic::CSectionProperty					*last_section_properties;
+		NSBinPptxRW::CDrawingConverter *drawingConverter;
+		odf_writer::odt_conversion_context *odt_context;
+        OOX::Logic::CSectionProperty *last_section_properties;
 
 		void apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		

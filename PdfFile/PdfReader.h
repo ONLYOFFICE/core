@@ -33,7 +33,8 @@
 #define _PDF_READER_H
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcReader/RendererOutputDev.h"
 
 class PDFDoc;
@@ -70,8 +71,15 @@ public:
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
+	BYTE* GetWidgets();
+	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
+	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget = -1, const char* sView = NULL, const char* sButtonView = NULL);
+	BYTE* GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget = -1, const char* sIconView = NULL);
+	BYTE* GetAnnots(int nPageIndex = -1);
+	BYTE* GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot = -1, const char* sView = NULL);
 
 private:
+	IOfficeDrawingFile* m_pRenderer;
 	PDFDoc*            m_pPDFDocument;
 	std::wstring       m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;

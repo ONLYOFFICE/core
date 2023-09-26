@@ -268,6 +268,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsFilenameCsvTxtParams = true;
 	m_bIsFilenamePassword = true;
 	m_bTroughConversion = false;
+	m_bSaveEnvironment = false;
 	m_defaultCsvDelimiter = L";";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList = CFormatsList::GetDefaultExts();
@@ -363,6 +364,7 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty()) m_bIsFilenameCsvTxtParams = std::stoi(node.GetText());
 			else if(name == L"filenamePassword" && !node.GetText().empty()) m_bIsFilenamePassword = std::stoi(node.GetText());
 			else if(name == L"troughConversion" && !node.GetText().empty()) m_bTroughConversion = std::stoi(node.GetText());
+			else if(name == L"saveEnvironment" && !node.GetText().empty()) m_bSaveEnvironment = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
 			else if(name == L"inputFilesList" && !node.GetText().empty())
@@ -637,6 +639,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 		converter->SetPassword(password);
 		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
+		converter->SetSaveEnvironment(m_bSaveEnvironment);
 		converter->DestroyOnFinish();
 		m_currentProc++;
 
@@ -811,6 +814,11 @@ void CConverter::SetFilesCount(int totalFiles, int currFile)
 	m_currFile = currFile;
 }
 
+void CConverter::SetSaveEnvironment(bool bSaveEnvironment)
+{
+	m_bSaveEnvironment = bSaveEnvironment;
+}
+
 
 DWORD CConverter::ThreadProc()
 {
@@ -941,7 +949,7 @@ DWORD CConverter::ThreadProc()
 #endif // WIN32
 
 		bool is_timeout = false;
-		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout);
+		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout, m_bSaveEnvironment);
 
 		bool exist;
 		if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)

@@ -512,7 +512,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_v_shape:
 			{
-				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown));
+				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown), NULL);
 			}break;
 			case OOX::et_v_oval:
 			{
@@ -558,11 +558,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::Vml::CBackground*>(oox_unknown));
 			}break;
-			case OOX::et_v_path:
-			{
-				convert(dynamic_cast<OOX::Vml::CPath*>(oox_unknown));
-			}break;	
-				case OOX::et_v_textpath:
+			case OOX::et_v_textpath:
 			{
 				convert(dynamic_cast<OOX::Vml::CTextPath*>(oox_unknown));
 			}break;	
@@ -573,10 +569,6 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_v_stroke:
 			{
 				convert(dynamic_cast<OOX::Vml::CStroke*>(oox_unknown));
-			}break;
-			case OOX::et_v_formulas:
-			{
-				convert(dynamic_cast<OOX::Vml::CFormulas*>(oox_unknown));
 			}break;
 			case OOX::et_v_shadow:
 			{

@@ -194,32 +194,19 @@ public:
 
 		bool IsNeedUpdateR()
 		{
-			if (m_sStyleR == L"Regular" ||
-					m_sStyleR == L"Roman")
-				return false;
-			return true;
+			return !NSFonts::CFontInfo::IsStyleRegular(m_sStyleR);
 		}
 		bool IsNeedUpdateI()
 		{
-			if (m_sStyleI == L"Italic" ||
-					m_sStyleI == L"Oblique")
-				return false;
-			return true;
+			return !NSFonts::CFontInfo::IsStyleItalic(m_sStyleI);
 		}
 		bool IsNeedUpdateB()
 		{
-			if (m_sStyleB == L"Bold")
-				return false;
-			return true;
+			return !NSFonts::CFontInfo::IsStyleBold(m_sStyleB);
 		}
 		bool IsNeedUpdateBI()
 		{
-			if (m_sStyleBI == L"Bold Italic" ||
-					m_sStyleBI == L"Bold Oblique" ||
-					m_sStyleBI == L"BoldItalic" ||
-					m_sStyleBI == L"BoldOblique")
-				return false;
-			return true;
+			return !NSFonts::CFontInfo::IsStyleBoldItalic(m_sStyleBI);
 		}
 	};
 
@@ -804,7 +791,10 @@ public:
 				mapFontIndexes.insert(std::pair<std::wstring, int>(arrFonts[index], index));
 
 				oWriterJS += L"[\"";
-				oWriterJS += pPair->second.m_sName;
+				std::wstring sNameCorrect = pPair->second.m_sName;
+				NSStringUtils::string_replace(sNameCorrect, L"\\", L"\\\\");
+				NSStringUtils::string_replace(sNameCorrect, L"\"", L"\\\"");
+				oWriterJS += sNameCorrect;
 
 				oWriterJS.AddSize(120);
 				oWriterJS.AddCharNoCheck('\"');

@@ -75,7 +75,6 @@ namespace MetaFile
 		virtual TXForm*      GetTransform(int iGraphicsMode = GM_ADVANCED) = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
-		virtual IClip*       GetClip() = 0;
 		virtual int          GetCharSpace() = 0;
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;

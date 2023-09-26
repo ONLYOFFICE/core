@@ -38,6 +38,7 @@
 #include "VmlOfficeDrawing.h"
 
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
 namespace OOX
 {
@@ -258,9 +259,10 @@ namespace OOX
 
 					case 'O':
 						if (_T("o:OLEObject") == sName)
-							pItem = new OOX::VmlOffice::COLEObject(m_pMainDocument);
-
-						break;
+						{
+							m_oOLEObject = new OOX::VmlOffice::COLEObject(m_pMainDocument);
+							m_oOLEObject->fromXML(oSubReader);
+						}break;
 
 					case 'r':
 						if (_T("o:right") == sName)
@@ -498,7 +500,7 @@ namespace OOX
 		{
 			return et_w_pict;
 		}
-
+//--------------------------------------------------------------------------------------------------------------------------
 		CObject::CObject(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
 		CObject::~CObject()
 		{

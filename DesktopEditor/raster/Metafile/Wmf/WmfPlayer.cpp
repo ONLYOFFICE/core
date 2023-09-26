@@ -286,7 +286,6 @@ namespace MetaFile
 		pNewDC->m_ushTextAlign      = m_ushTextAlign;
 		pNewDC->m_ushCharSpacing    = m_ushCharSpacing;
 		pNewDC->m_oTransform.Init();
-		pNewDC->m_oClip             = m_oClip;
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
 		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 
@@ -704,9 +703,5 @@ namespace MetaFile
 	unsigned int   CWmfDC::GetMiterLimit()
 	{
 		return 0;
-	}
-	CWmfClip*      CWmfDC::GetClip()
-	{
-		return &m_oClip;
 	}
 }

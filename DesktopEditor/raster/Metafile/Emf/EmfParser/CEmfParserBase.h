@@ -75,7 +75,6 @@ namespace MetaFile
 		TXForm*         GetTransform(int = GM_ADVANCED)  override;
 		unsigned int    GetMiterLimit()                  override;
 		unsigned int    GetRop2Mode()                    override;
-		IClip*          GetClip()                        override;
 		int             GetCharSpace()                   override;
 		bool            IsWindowFlippedY()               override;
 		bool            IsWindowFlippedX()               override;

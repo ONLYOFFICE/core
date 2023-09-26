@@ -15,12 +15,16 @@ namespace SVG
 	{
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
+
+		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
+	};
+	
+	struct TSvgTransformation
+	{
 		SvgTransform m_oTransform;
 		TClip        m_oClip;
 		SvgColor     m_oMask;
 		bool         m_bDraw;
-
-		TSvgStyles& operator+=(const TSvgStyles& oSvgStyles);
 	};
 
 	enum ObjectType
@@ -42,11 +46,23 @@ namespace SVG
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
 
+		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);		
+		
 		std::wstring GetId() const;
 		virtual std::vector<NSCSS::CNode> GetFullPath() const;
 
 	private:
+		bool ApplyTransform(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
+		bool ApplyClip(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile, const TBounds& oBounds) const;
+		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile, const TBounds& oBounds) const;
+		
+		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl, const TBounds& oBounds) const;
+		
 		friend class CRenderedObject;
+		friend class CAppliedObject;
 
 		friend class CUse;
 		friend class CLine;
@@ -60,7 +76,10 @@ namespace SVG
 		friend class CEllipse;
 		friend class CPolyline;
 
-		NSCSS::CNode  m_oXmlNode;
+		friend class CClipPath;
+
+		NSCSS::CNode       m_oXmlNode;
+		TSvgTransformation m_oTransformtaion;
 	};
 
 	enum CommandeMode
@@ -91,23 +110,14 @@ namespace SVG
 
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetMask(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
-		void SetDisplay(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		bool StartPath(IRenderer* pRenderer, const CSvgFile *pFile, Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw) const;
 		void EndPath(IRenderer* pRenderer, const CSvgFile *pFile, const Aggplus::CMatrix& oOldTransform, CommandeMode oMode = CommandeModeDraw, const TSvgStyles* pOtherStyles = NULL) const;
 
 		virtual void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const;
 
-		bool Apply(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
-		bool Apply(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
-		bool Apply(IRenderer* pRenderer, const SvgTransform* pTransform, Aggplus::CMatrix& oOldMatrix) const;
-		bool Apply(IRenderer* pRenderer, const TClip* pClip, const CSvgFile *pFile) const;
-
-		bool ApplyMask(IRenderer* pRenderer, const SvgColor* pMask, const CSvgFile *pFile) const;
-		bool ApplyDef(IRenderer* pRenderer, const CSvgFile *pFile, const std::wstring& wsUrl) const;
+		bool ApplyStroke(IRenderer* pRenderer, const TStroke* pStroke, bool bUseDefault = false) const;
+		bool ApplyFill(IRenderer* pRenderer, const SvgColor* pFill, const CSvgFile *pFile, bool bUseDefault = false) const;
 
 		friend class CUse;
 		friend class CLine;

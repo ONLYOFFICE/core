@@ -599,13 +599,13 @@ namespace PPTX
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 	
-				std::wstring *main_props = NULL;
-
 				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
-				oDrawingConverter.ConvertVml(temp, elements);
+				nullable<OOX::WritingElement> anchor;
+
+				oDrawingConverter.ConvertVml(temp, elements, anchor);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
 
 				smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();

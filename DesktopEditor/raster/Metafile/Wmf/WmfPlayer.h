@@ -33,7 +33,6 @@
 #define _METAFILE_WMF_WMFPLAYER_H
 
 #include "WmfObjects.h"
-#include "WmfClip.h"
 
 #include <map>
 #include <vector>
@@ -132,7 +131,6 @@ namespace MetaFile
 		TXForm*        GetInverseTransform();
 		TXForm*        GetFinalTransform(int iGraphicsMode);
 		unsigned int   GetMiterLimit();
-		CWmfClip*      GetClip();
 
 	private:
 
@@ -169,7 +167,6 @@ namespace MetaFile
 		TXForm         m_oTransform;
 		TXForm         m_oFinalTransform;
 		TXForm         m_oFinalTransform2;
-		CWmfClip       m_oClip;
 	};
 }
 

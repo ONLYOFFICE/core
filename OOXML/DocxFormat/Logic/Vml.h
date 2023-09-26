@@ -40,6 +40,13 @@
 #include "../WritingElement.h"
 #include "VmlOfficeDrawing.h"
 
+namespace PPTX
+{
+	namespace Logic
+	{
+		class CustGeom;
+	}
+}
 namespace OOX
 {
 	namespace Spreadsheet
@@ -684,6 +691,8 @@ namespace OOX
 
 			void mergeFrom(CShapeType* shape_type);
 
+			void ConvertToPptx(double width, double height);
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -693,6 +702,8 @@ namespace OOX
             nullable<SimpleTypes::Vml::CVmlPath>	m_oPath;
             nullable_string							m_sGfxData;
             nullable_string							m_sEquationXML;
+//--------------------------------------------------------------------------
+			nullable<PPTX::Logic::CustGeom>			m_oCustGeom;
 		};
 
 		class CClientData : public WritingElement

@@ -51,7 +51,6 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/common/StringExt.h"
-#include "../../DesktopEditor/graphics/FormField.h"
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
@@ -747,6 +746,8 @@ HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
 				nCount--;
 			}
 		}
+
+		m_pDocument->MatchAnnotation();
 	}
 
 	return S_OK;
@@ -1055,8 +1056,9 @@ HRESULT CPdfWriter::ResetTransform()
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
 {
 	NSUnicodeConverter::CUnicodeConverter conv;
-	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(m_pPage, PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
-	pAnnot->SetBorderStyle(PdfWriter::EBorderSubtype::border_subtype_Solid, 0);
+	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
+	m_pPage->AddAnnotation(pAnnot);
+	pAnnot->SetBorder(0, 0);
 	return S_OK;
 }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
@@ -1077,7 +1079,7 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pFieldInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
@@ -1093,7 +1095,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 	if (!pFontTT)
 		return S_OK;
 
-	CFormFieldInfo& oInfo = *((CFormFieldInfo*)pFieldInfo);
+	CFormFieldInfo& oInfo = *pFieldInfo;
 
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
@@ -1186,7 +1188,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 
 	if (oInfo.IsTextField())
 	{
-		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextPr();
+		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
@@ -1664,6 +1666,218 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormFie
 			pFieldBase->SetFieldName(wsKey);
 		else
 			pFieldBase->SetFieldName("F" + std::to_string(++m_unFieldsCounter));
+	}
+
+	return S_OK;
+}
+HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
+{
+	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
+	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
+		return S_OK;
+
+	CAnnotFieldInfo& oInfo = *pFieldInfo;
+
+	if (oInfo.isWidget())
+		return AddFormField(pAppFonts, (CFormFieldInfo*)pFieldInfo);
+
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_OK;
+
+	PdfWriter::CAnnotation* pAnnot = NULL;
+
+	if (oInfo.IsText())
+	{
+		pAnnot = m_pDocument->CreateTextAnnot();
+	}
+	else if (oInfo.IsInk())
+	{
+		pAnnot = m_pDocument->CreateInkAnnot();
+	}
+	else if (oInfo.IsLine())
+	{
+		pAnnot = m_pDocument->CreateLineAnnot();
+	}
+	else if (oInfo.IsTextMarkup())
+	{
+		pAnnot = m_pDocument->CreateTextMarkupAnnot();
+	}
+	else if (oInfo.IsSquareCircle())
+	{
+		pAnnot = m_pDocument->CreateSquareCircleAnnot();
+	}
+	else if (oInfo.IsPolygonLine())
+	{
+		pAnnot = m_pDocument->CreatePolygonLineAnnot();
+	}
+	else if (oInfo.IsPopup())
+	{
+		pAnnot = m_pDocument->CreatePopupAnnot();
+	}
+
+	if (!pAnnot)
+		return S_FALSE;
+
+	PdfWriter::CPage* pPage = m_pDocument->GetPage(oInfo.GetPage());
+	pPage->AddAnnotation(pAnnot);
+
+	int nID = oInfo.GetID();
+	pAnnot->SetID(nID);
+	m_pDocument->AddAnnotation(nID, pAnnot);
+
+	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
+	pAnnot->SetPage(pPage);
+
+	double dX1, dY1, dX2, dY2;
+	oInfo.GetBounds(dX1, dY1, dX2, dY2);
+	PdfWriter::TRect oRect(MM_2_PT(dX1), pPage->GetHeight() - MM_2_PT(dY1), MM_2_PT(dX2), pPage->GetHeight() - MM_2_PT(dY2));
+	pAnnot->SetRect(oRect);
+
+	int nFlags = oInfo.GetFlag();
+	if (nFlags & (1 << 1))
+		pAnnot->SetContents(oInfo.GetContents());
+	if (nFlags & (1 << 2))
+		pAnnot->SetBE(oInfo.GetBE());
+	if (nFlags & (1 << 3))
+		pAnnot->SetC(oInfo.GetC());
+	if (nFlags & (1 << 4))
+	{
+		BYTE nType;
+		double dWidth, d1, d2;
+		oInfo.GetBorder(nType, dWidth, d1, d2);
+		pAnnot->SetBorder(nType, dWidth, d1, d2);
+	}
+
+	if (oInfo.isMarkup())
+	{
+		CAnnotFieldInfo::CMarkupAnnotPr* pPr = oInfo.GetMarkupAnnotPr();
+		PdfWriter::CMarkupAnnotation* pMarkupAnnot = (PdfWriter::CMarkupAnnotation*)pAnnot;
+
+		nFlags = pPr->GetFlag();
+		if (nFlags & (1 << 0))
+			pMarkupAnnot->SetPopupID(pPr->GetPopupID());
+		if (nFlags & (1 << 1))
+			pMarkupAnnot->SetT(pPr->GetT());
+		if (nFlags & (1 << 2))
+			pMarkupAnnot->SetCA(pPr->GetCA());
+		if (nFlags & (1 << 3))
+			pMarkupAnnot->SetRC(pPr->GetRC());
+		if (nFlags & (1 << 5))
+			pMarkupAnnot->SetIRTID(pPr->GetIRTID());
+		if (nFlags & (1 << 6))
+			pMarkupAnnot->SetRT(pPr->GetRT());
+		if (nFlags & (1 << 7))
+			pMarkupAnnot->SetSubj(pPr->GetSubj());
+	}
+
+	if (oInfo.IsText())
+	{
+		CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
+		PdfWriter::CTextAnnotation* pTextAnnot = (PdfWriter::CTextAnnotation*)pAnnot;
+
+		pTextAnnot->SetOpen(pPr->IsOpen());
+		if (nFlags & (1 << 16))
+			pTextAnnot->SetName(pPr->GetName());
+		if (nFlags & (1 << 17))
+			pTextAnnot->SetStateModel(pPr->GetStateModel());
+		if (nFlags & (1 << 18))
+			pTextAnnot->SetState(pPr->GetState());
+	}
+	else if (oInfo.IsInk())
+	{
+		CAnnotFieldInfo::CInkAnnotPr* pPr = oInfo.GetInkAnnotPr();
+		PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
+
+		pInkAnnot->SetInkList(pPr->GetInkList());
+	}
+	else if (oInfo.IsLine())
+	{
+		CAnnotFieldInfo::CLineAnnotPr* pPr = oInfo.GetLineAnnotPr();
+		PdfWriter::CLineAnnotation* pLineAnnot = (PdfWriter::CLineAnnotation*)pAnnot;
+
+		double dLX1, dLY1, dLX2, dLY2;
+		pPr->GetL(dLX1, dLY1, dLX2, dLY2);
+		pLineAnnot->SetL(dLX1, dLY1, dLX2, dLY2);
+
+		if (nFlags & (1 << 15))
+		{
+			BYTE nLE1, nLE2;
+			pPr->GetLE(nLE1, nLE2);
+			pLineAnnot->SetLE(nLE1, nLE2);
+		}
+		if (nFlags & (1 << 16))
+			pLineAnnot->SetIC(pPr->GetIC());
+		if (nFlags & (1 << 17))
+			pLineAnnot->SetLL(pPr->GetLL());
+		if (nFlags & (1 << 18))
+			pLineAnnot->SetLLE(pPr->GetLLE());
+		pLineAnnot->SetCap(pPr->IsCap());
+		if (nFlags & (1 << 20))
+			pLineAnnot->SetIT(pPr->GetIT());
+		if (nFlags & (1 << 21))
+			pLineAnnot->SetLLO(pPr->GetLLO());
+		if (nFlags & (1 << 22))
+			pLineAnnot->SetCP(pPr->GetCP());
+		if (nFlags & (1 << 23))
+		{
+			double dCO1, dCO2;
+			pPr->GetCO(dCO1, dCO2);
+			pLineAnnot->SetCO(dCO1, dCO2);
+		}
+	}
+	else if (oInfo.IsTextMarkup())
+	{
+		CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+		PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
+
+		pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
+		pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+	}
+	else if (oInfo.IsSquareCircle())
+	{
+		CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
+		PdfWriter::CSquareCircleAnnotation* pSquareCircleAnnot = (PdfWriter::CSquareCircleAnnotation*)pAnnot;
+
+		pSquareCircleAnnot->SetSubtype(pPr->GetSubtype());
+		if (nFlags & (1 << 15))
+		{
+			double dRD1, dRD2, dRD3, dRD4;
+			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+			pSquareCircleAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pSquareCircleAnnot->SetIC(pPr->GetIC());
+	}
+	else if (oInfo.IsPolygonLine())
+	{
+		CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
+		PdfWriter::CPolygonLineAnnotation* pPolygonLineAnnot = (PdfWriter::CPolygonLineAnnotation*)pAnnot;
+
+		pPolygonLineAnnot->SetVertices(pPr->GetVertices());
+		pPolygonLineAnnot->SetSubtype(pPr->GetSubtype());
+		if (nFlags & (1 << 15))
+		{
+			BYTE nLE1, nLE2;
+			pPr->GetLE(nLE1, nLE2);
+			pPolygonLineAnnot->SetLE(nLE1, nLE2);
+		}
+		if (nFlags & (1 << 16))
+			pPolygonLineAnnot->SetIC(pPr->GetIC());
+		if (nFlags & (1 << 20))
+			pPolygonLineAnnot->SetIT(pPr->GetIT());
+	}
+	else if (oInfo.IsPopup())
+	{
+		CAnnotFieldInfo::CPopupAnnotPr* pPr = oInfo.GetPopupAnnotPr();
+		PdfWriter::CPopupAnnotation* pPopupAnnot = (PdfWriter::CPopupAnnotation*)pAnnot;
+
+		nFlags = pPr->GetFlag();
+		pPopupAnnot->SetOpen(pPr->IsOpen());
+		if (nFlags & (1 << 1))
+			pPopupAnnot->SetParentID(pPr->GetParentID());
 	}
 
 	return S_OK;
@@ -2236,8 +2450,8 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 			else
 			{
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
-				dW = nImageW * 72 / 96;
-				dH = nImageH * 72 / 96;
+				dW = (double)nImageW * 72.0 / 96.0;
+				dH = (double)nImageH * 72.0 / 96.0;
 			}
 
 			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
@@ -2326,9 +2540,8 @@ void CPdfWriter::Reset()
 
 void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
 {
-	PdfWriter::CPage* pCurPage  = pPage;
 	PdfWriter::CPage* pDestPage = m_pDocument->GetPage(unDestPage);
-	if (!pCurPage || !pDestPage)
+	if (!pPage || !pDestPage)
 		return;
 
 	PdfWriter::CDestination* pDestination = m_pDocument->CreateDestination(unDestPage);
@@ -2336,8 +2549,10 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 		return;
 
 	pDestination->SetXYZ(MM_2_PT(dDestX), pDestPage->GetHeight() - MM_2_PT(dDestY), 0);
-	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, PdfWriter::TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
-	pAnnot->SetBorderStyle(PdfWriter::EBorderSubtype::border_subtype_Solid, 0);
+	PdfWriter::CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(PdfWriter::TRect(MM_2_PT(dX), pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
+	if (pAnnot && pPage)
+		pPage->AddAnnotation(pAnnot);
+	pAnnot->SetBorder(0, 0);
 }
 bool CPdfWriter::IsValid()
 {

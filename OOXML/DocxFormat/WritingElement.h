@@ -497,6 +497,7 @@ namespace OOX
 		et_graphicFrame,	// <...:graphicFrame>
 		et_pic,				// <...:pic>
 		et_cxnSp,			// <...:cxnSp>
+		et_oleobject,
 		
 		et_p_cNvPicPr,        // <p:cNvPicPr>
 		et_p_cNvPr,            // <p:cNvPr>

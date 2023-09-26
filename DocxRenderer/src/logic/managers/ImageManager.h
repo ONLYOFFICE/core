@@ -7,45 +7,45 @@
 
 namespace NSDocxRenderer
 {
-    class CImageManager
-    {
-        public:
-            std::map<std::wstring, std::shared_ptr<CImageInfo>>	m_mapImagesFile;
-            std::map<DWORD, std::shared_ptr<CImageInfo>>        m_mapImageData;
+	class CImageManager
+	{
+	public:
+		std::map<std::wstring, std::shared_ptr<CImageInfo>> m_mapImagesFile;
+		std::map<DWORD, std::shared_ptr<CImageInfo>> m_mapImageData;
+		std::shared_ptr<CImageInfo> m_pEmptyInfo;
 
-            std::wstring                        m_strDstMedia {L""};
+		std::wstring m_strDstMedia{L""};
 
-            int                                 m_lMaxSizeImage {1200};
-            int                                 m_lNextIDImage {0};
+		int m_lMaxSizeImage{1200};
+		int m_lNextIDImage{0};
 
-            CCalculatorCRC32                    m_oCRC;
+		CCalculatorCRC32 m_oCRC;
 
-        public:
+	public:
+		CImageManager(){};
 
-            CImageManager(){};
+		void NewDocument();
 
-            void NewDocument();
+	public:
+		std::shared_ptr<CImageInfo> WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height);
 
-        public:
-            std::shared_ptr<CImageInfo> WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height);
+		std::shared_ptr<CImageInfo> WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height);
 
-            std::shared_ptr<CImageInfo> WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height);
+	protected:
+		void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst);
 
-        protected:
-            void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst);
+		void SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo);
 
-            void SaveImage(const std::wstring& strFileSrc, std::shared_ptr<CImageInfo> pInfo);
+		void SaveEmptyImage(std::shared_ptr<CImageInfo> pInfo);
 
-            void SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo);
+		std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage);
 
-            std::shared_ptr<CImageInfo> GenerateImageID(Aggplus::CImage* pImage);
+		std::shared_ptr<CImageInfo> GenerateImageID(const std::wstring& strFileName);
 
-            std::shared_ptr<CImageInfo> GenerateImageID(const std::wstring& strFileName);
+		CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame);
 
-            CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame);
+		void FlipY(Aggplus::CImage* pImage);
 
-            void FlipY(Aggplus::CImage* pImage);
-
-            void FlipX(CBgraFrame* pImage);
-    };
-}
+		void FlipX(CBgraFrame* pImage);
+	};
+} // namespace NSDocxRenderer

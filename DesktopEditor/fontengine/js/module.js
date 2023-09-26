@@ -41,6 +41,7 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.TT_INTERPRETER_VERSION_40 = 40;
 
 	AscFonts.CopyStreamToMemory = AscFonts["CopyStreamToMemory"];
+	AscFonts.GetUint8ArrayFromPointer = AscFonts["GetUint8ArrayFromPointer"];
 
 	AscFonts.AllocString2 = AscFonts["AllocString"];
 	AscFonts.AllocString = function(size)
@@ -80,7 +81,6 @@ function onLoadFontsModule(window, undefined)
 	AscFonts.Hyphen_LoadDictionary = AscFonts["Hyphen_LoadDictionary"];
 	AscFonts.Hyphen_CheckDictionary = AscFonts["Hyphen_CheckDictionary"];
 	AscFonts.Hyphen_Word = AscFonts["Hyphen_Word"];
-
 
 	AscFonts.CreateNativeStreamByIndex = function(stream_index)
 	{

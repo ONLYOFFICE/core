@@ -759,7 +759,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 	if (attlist_.drawooo_enhanced_path_)		odf_path_ = attlist_.drawooo_enhanced_path_.get();
 	else if (attlist_.draw_enhanced_path_)		odf_path_ = attlist_.draw_enhanced_path_.get();
 }
-bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &props)
+bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& props)
 {
 	find_draw_type_oox();
 
@@ -791,9 +791,9 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 		owner_shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
+	std::vector<std::pair<std::wstring, std::wstring>> equations;
 	if (false == draw_equations_.empty())
 	{
-		std::vector<std::pair<std::wstring, std::wstring>> equations;
 		for (size_t i = 0; i < draw_equations_.size(); i++)
 		{
 			draw_equation* eq = dynamic_cast<draw_equation*>(draw_equations_[i].get());
@@ -807,7 +807,10 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 
 				if (value.empty())
 				{
-					return false;
+					if (!draw_type_oox_index_) 
+						set_shape = false;
+					equations.clear();
+					break;
 				}
 				else
 				{// 
@@ -815,44 +818,49 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 				}
 			}
 		}
-		std::wstringstream output1_;
-		::svg_path::oox_serialize(output1_, equations);
-		props.push_back(odf_reader::_property(L"custom_equations", output1_.str()));
+
+		if (false == equations.empty())
+		{
+			std::wstringstream output1_;
+			::svg_path::oox_serialize(output1_, equations);
+			props.push_back(odf_reader::_property(L"custom_equations", output1_.str()));
+		}
 	}
 
-	if (bOoxType_ || std::wstring::npos != odf_path_.find(L"?"))
+	if (!odf_path_.empty())
 	{
-		std::vector<::svg_path::_polylineS> o_Polyline;
-
-		bool res = false;
-		bool bClosed = false, bStroked = true;
-
-		try
+		bool bCPathWithArgs = (std::wstring::npos != odf_path_.find(L"?"));
+		if (bOoxType_ || (bCPathWithArgs && false == equations.empty()))
 		{
-			res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked);
-		}
-		catch (...)
-		{
-			res = false;
-		}
+			std::vector<::svg_path::_polylineS> o_Polyline;
 
-		if (!o_Polyline.empty() && res)
-		{
-			set_shape = true;
+			bool res = false;
+			bool bClosed = false, bStroked = true;
 
-			std::wstringstream output_;
-			::svg_path::oox_serialize(output_, o_Polyline);
-			props.push_back(odf_reader::_property(L"custom_path", output_.str()));
-			
-			if (false == bStroked)
+			try
 			{
-				props.push_back(odf_reader::_property(L"custom_path_s", false));
-			}		
+				res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked);
+			}
+			catch (...)
+			{
+				res = false;
+			}
+
+			if (!o_Polyline.empty() && res)
+			{
+				set_shape = true;
+
+				std::wstringstream output_;
+				::svg_path::oox_serialize(output_, o_Polyline);
+				props.push_back(odf_reader::_property(L"custom_path", output_.str()));
+
+				if (false == bStroked)
+				{
+					props.push_back(odf_reader::_property(L"custom_path_s", false));
+				}
+			}
 		}
-	}
-	else
-	{
-		if (!odf_path_.empty())
+		else if (!bCPathWithArgs)
 		{
 			std::vector<::svg_path::_polyline> o_Polyline;
 
@@ -886,6 +894,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 			}
 		}
 	}
+
 	if (attlist_.drawooo_sub_view_size_)
 	{
 		std::vector< std::wstring > splitted;
@@ -933,15 +942,12 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property> &pro
 			props.push_back(odf_reader::_property(L"custom_path_h", h));
 		}
 	}
-	if (attlist_.draw_modifiers_)
+	if (attlist_.draw_modifiers_ && set_shape)
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}
-	if (!set_shape)
-	{
-		return false;
-	}
-	return true;
+
+	return set_shape;
 }
 
 

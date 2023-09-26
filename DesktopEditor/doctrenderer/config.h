@@ -48,6 +48,7 @@ namespace NSDoctRenderer
 		std::vector<std::wstring> m_arDoctSDK;
 		std::vector<std::wstring> m_arPpttSDK;
 		std::vector<std::wstring> m_arXlstSDK;
+		std::vector<std::wstring> m_arVsdtSDK;
 
 		std::wstring m_strAllFonts;
 		bool m_bIsNotUseConfigAllFontsDir;
@@ -94,6 +95,7 @@ namespace NSDoctRenderer
 			m_arDoctSDK.clear();
 			m_arPpttSDK.clear();
 			m_arXlstSDK.clear();
+			m_arVsdtSDK.clear();
 
 			std::wstring sConfigDir = sWorkDir + L"/";
 			std::wstring sConfigPath = sConfigDir + L"DoctRenderer.config";
@@ -177,6 +179,10 @@ namespace NSDoctRenderer
 				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all-min.js");
 				m_arXlstSDK.push_back(sFontsPath);
 				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all.js");
+
+				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all-min.js");
+				m_arVsdtSDK.push_back(sFontsPath);
+				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all.js");
 			}
 
 			m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");

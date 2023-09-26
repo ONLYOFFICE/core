@@ -479,7 +479,7 @@ void vml_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 		}
     }
 }
-void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset, const std::wstring &ns)
+void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset, int max_count_values, const std::wstring &ns)
 {
 	std::wstring ns_att = (ns == L"a" ? L"" : ns + L":");
 
@@ -506,11 +506,12 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					names.push_back(L"adj1");
 				}
-				else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
-						 std::wstring::npos != shapeGeomPreset.find(L"decagon"))
-				{
-					values.clear();
-				}
+				//else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
+				//		 std::wstring::npos != shapeGeomPreset.find(L"decagon") || 
+				//		std::wstring::npos != shapeGeomPreset.find(L"bevel"))
+				//{
+				//	values.clear();
+				//}
 				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
 				{
 					names.push_back(L"vf");
@@ -537,6 +538,11 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				{
 					names.push_back(L"adj");
 					names.push_back(L"hf");
+				}
+				
+				if (max_count_values >= 0 && values.size() > max_count_values)
+				{ 
+					values.resize(max_count_values);
 				}
 
 				for (size_t i = 0; i < values.size(); i++)
@@ -641,12 +647,12 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 				odf_reader::GetProperty(prop, L"oox-geom-index", iVal);
 				if (iVal)
 				{
-					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;					
+					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;
 					CP_XML_NODE(L"a:prstTxWarp")
 					{
 						CP_XML_ATTR(L"prst", shapeType);
 						
-						oox_serialize_aLst(CP_XML_STREAM(), prop, shapeType);
+						oox_serialize_aLst(CP_XML_STREAM(), prop, shapeType, _OO_OOX_wordart[*iVal].count_values);
 					}
 				}
 			}
@@ -668,11 +674,15 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 	odf_reader::GetProperty(additional, L"custom_equations", sCustomEquations);
 		
 	std::wstring shapeGeomPreset;
+	int max_count_values = -1;
 
 	if (sub_type == 7)//custom 
 	{
 		if (iOoxShapeIndex)
-			shapeGeomPreset = _OO_OOX_custom_shapes[*iOoxShapeIndex].oox;	
+		{
+			shapeGeomPreset = _OO_OOX_custom_shapes[*iOoxShapeIndex].oox;
+			max_count_values = _OO_OOX_custom_shapes[*iOoxShapeIndex].count_values;
+		}
 		else if (sCustomPath)
 			sub_type = 6; //path
 
@@ -756,7 +766,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				CP_XML_ATTR(L"prst", shapeGeomPreset);
 				if (!bWordArt) 
 				{
-					oox_serialize_aLst(CP_XML_STREAM(), additional, shapeGeomPreset);
+					oox_serialize_aLst(CP_XML_STREAM(), additional, shapeGeomPreset, max_count_values);
 				}
 			}					
 		}

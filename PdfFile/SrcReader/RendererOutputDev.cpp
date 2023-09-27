@@ -1692,6 +1692,7 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
+				/*
 				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
 				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
 				{
@@ -1724,6 +1725,9 @@ namespace PdfReader
 					pCodeToGID = NULL;
 					nLen = 0;
 				}
+				*/
+				pCodeToGID = NULL;
+				nLen = 0;
 				break;
 			}
 			case fontCIDType0COT:
@@ -3990,7 +3994,7 @@ namespace PdfReader
 		}
 		else
 		{
-			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode()))
+			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C))
 					|| (!isCIDFont && wsUnicodeText.empty()))
 			{
 				int nCurCode = (0 == nCode ? 65534 : nCode);

@@ -175,6 +175,11 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsText);
 		Add("Contents", new CStringObject(sValue.c_str()));
 	}
+	void CAnnotation::SetNM(const std::wstring& wsNM)
+	{
+		std::string sValue = U_TO_UTF8(wsNM);
+		Add("NM", new CStringObject(sValue.c_str()));
+	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		CArrayObject* pArray = new CArrayObject();

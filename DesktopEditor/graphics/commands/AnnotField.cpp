@@ -267,6 +267,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	int nFlags = pReader->ReadInt();
 	SetFlag(nFlags);
 
+	if (nFlags & (1 << 0))
+		SetNM(pReader->ReadString());
 	if (nFlags & (1 << 1))
 		SetContents(pReader->ReadString());
 	if (nFlags & (1 << 2))
@@ -291,6 +293,7 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		}
 		SetBorder(nType, dWidth, d1, d2);
 	}
+	// nFlags & (1 << 5) LastModified вычисляется в PdfWriter::CAnnotation
 
 	if (isMarkup())
 	{
@@ -306,6 +309,7 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			pPr->SetCA(pReader->ReadDouble());
 		if (nFlags & (1 << 3))
 			pPr->SetRC(pReader->ReadString());
+		// nFlags & (1 << 4) CreationDate вычисляется в PdfWriter::CMarkupAnnotation
 		if (nFlags & (1 << 5))
 			pPr->SetIRTID(pReader->ReadInt());
 		if (nFlags & (1 << 6))

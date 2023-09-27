@@ -1741,6 +1741,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	pAnnot->SetRect(oRect);
 
 	int nFlags = oInfo.GetFlag();
+	if (nFlags & (1 << 0))
+		pAnnot->SetNM(oInfo.GetNM());
 	if (nFlags & (1 << 1))
 		pAnnot->SetContents(oInfo.GetContents());
 	if (nFlags & (1 << 2))

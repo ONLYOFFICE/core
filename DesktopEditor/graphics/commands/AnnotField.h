@@ -274,6 +274,7 @@ public:
 	void SetAnnotFlag(const int& nAnnotFlag) { m_nAnnotFlag = nAnnotFlag; }
 	void SetPage(const int& nPage)           { m_nPage      = nPage; }
 	void SetBE(const double& dBE)            { m_dBE        = dBE; }
+	void SetNM(const std::wstring& wsNM)     { m_wsNM      = wsNM; }
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
@@ -284,6 +285,7 @@ public:
 	int    GetAnnotFlag() const { return m_nAnnotFlag; }
 	int    GetPage()      const { return m_nPage; }
 	double GetBE()        const { return m_dBE; }
+	const std::wstring& GetNM() const { return m_wsNM; }
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
@@ -323,6 +325,7 @@ private:
 	int          m_nAnnotFlag;
 	int          m_nPage;
 	double       m_dBE;
+	std::wstring m_wsNM;
 	std::wstring m_wsContents;
 	std::vector<double> m_arrC;
 	CBorder      m_oBorder;

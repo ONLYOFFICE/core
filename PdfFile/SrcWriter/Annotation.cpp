@@ -416,7 +416,7 @@ namespace PdfWriter
 	{
 		Add("LLO", dLLO);
 	}
-	void AddLE(CArrayObject* pArray, const BYTE& nLE)
+	std::string AddLE(const BYTE& nLE)
 	{
 		std::string sValue;
 		switch (nLE)
@@ -443,7 +443,7 @@ namespace PdfWriter
 		{ sValue = "Slash"; break; }
 		}
 
-		pArray->Add(sValue.c_str());
+		return sValue;
 	}
 	void CLineAnnotation::SetLE(const BYTE& nLE1, const BYTE& nLE2)
 	{
@@ -453,8 +453,8 @@ namespace PdfWriter
 
 		Add("LE", pArray);
 
-		AddLE(pArray, nLE1);
-		AddLE(pArray, nLE2);
+		pArray->Add(AddLE(nLE1).c_str());
+		pArray->Add(AddLE(nLE2).c_str());
 	}
 	void CLineAnnotation::SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4)
 	{
@@ -513,6 +513,65 @@ namespace PdfWriter
 	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
 	{
 		Add("Parent", pAnnot);
+	}
+	//----------------------------------------------------------------------------------------
+	// CFreeTextAnnotation
+	//----------------------------------------------------------------------------------------
+	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotPopup)
+	{
+
+	}
+	void CFreeTextAnnotation::SetQ(const BYTE& nQ)
+	{
+		Add("Q", (int)nQ);
+	}
+	void CFreeTextAnnotation::SetIT(const BYTE& nIT)
+	{
+		std::string sValue;
+		switch (nIT)
+		{
+		case 0:
+		{ sValue = "FreeText"; break; }
+		case 1:
+		{ sValue = "FreeTextCallout"; break; }
+		case 2:
+		{ sValue = "FreeTextTypeWriter"; break; }
+		}
+
+		Add("IT", new CStringObject(sValue.c_str()));
+	}
+	void CFreeTextAnnotation::SetLE(const BYTE& nLE)
+	{
+		Add("LE", new CStringObject(AddLE(nLE).c_str()));
+	}
+	void CFreeTextAnnotation::SetDS(const std::wstring& wsDS)
+	{
+		std::string sValue = U_TO_UTF8(wsDS);
+		Add("DS", new CStringObject(sValue.c_str()));
+	}
+	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
+	}
+	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("CL", pArray);
+
+		for (const double& dCL : arrCL)
+			pArray->Add(dCL);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
@@ -626,8 +685,8 @@ namespace PdfWriter
 
 		Add("LE", pArray);
 
-		AddLE(pArray, nLE1);
-		AddLE(pArray, nLE2);
+		pArray->Add(AddLE(nLE1).c_str());
+		pArray->Add(AddLE(nLE2).c_str());
 	}
 	void CPolygonLineAnnotation::SetIC(const std::vector<double>& arrIC)
 	{

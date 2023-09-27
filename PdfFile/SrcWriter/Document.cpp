@@ -581,6 +581,10 @@ namespace PdfWriter
 	{
 		return new CPopupAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateFreeTextAnnot()
+	{
+		return new CFreeTextAnnotation(m_pXref);
+	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
 		m_mAnnotations[nID] = pAnnot;

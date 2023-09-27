@@ -61,6 +61,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pSquareCirclePr = NULL;
 	m_pPolygonLinePr  = NULL;
 	m_pPopupPr        = NULL;
+	m_pFreeTextPr     = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
@@ -72,6 +73,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pSquareCirclePr);
 	RELEASEOBJECT(m_pPolygonLinePr);
 	RELEASEOBJECT(m_pPopupPr);
+	RELEASEOBJECT(m_pFreeTextPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
@@ -88,6 +90,17 @@ void CAnnotFieldInfo::SetType(int nType)
 
 		RELEASEOBJECT(m_pTextPr);
 		m_pTextPr = new CAnnotFieldInfo::CTextAnnotPr();
+		break;
+	}
+	case 2:
+	{
+		m_nType = 13;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pFreeTextPr);
+		m_pFreeTextPr = new CAnnotFieldInfo::CFreeTextAnnotPr();
 		break;
 	}
 	case 3:
@@ -230,6 +243,10 @@ bool CAnnotFieldInfo::IsPolygonLine() const
 bool CAnnotFieldInfo::IsPopup() const
 {
 	return (m_nType == 24);
+}
+bool CAnnotFieldInfo::IsFreeText() const
+{
+	return (m_nType == 13);
 }
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
@@ -437,6 +454,34 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		pPr->SetOpen(nFlags & (1 << 0));
 		if (nFlags & (1 << 1))
 			pPr->SetParentID(pReader->ReadInt());
+	}
+	else if (IsFreeText())
+	{
+		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = GetFreeTextAnnotPr();
+
+		pPr->SetQ(pReader->ReadByte());
+		if (nFlags & (1 << 15))
+		{
+			double dRD1 = pReader->ReadDouble();
+			double dRD2 = pReader->ReadDouble();
+			double dRD3 = pReader->ReadDouble();
+			double dRD4 = pReader->ReadDouble();
+			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+		{
+			int n = pReader->ReadInt();
+			std::vector<double> arrCL;
+			for (int i = 0; i < n; ++i)
+				arrCL.push_back(pReader->ReadDouble());
+			pPr->SetCL(arrCL);
+		}
+		if (nFlags & (1 << 17))
+			pPr->SetDS(pReader->ReadString());
+		if (nFlags & (1 << 18))
+			pPr->SetLE(pReader->ReadByte());
+		if (nFlags & (1 << 20))
+			pPr->SetIT(pReader->ReadByte());
 	}
 
 	return IsValid();

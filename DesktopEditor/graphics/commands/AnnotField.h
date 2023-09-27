@@ -224,6 +224,33 @@ public:
 		int  m_nParentID;
 	};
 
+	class CFreeTextAnnotPr
+	{
+	public:
+		void SetQ(const BYTE& nQ)   { m_nQ  = nQ; }
+		void SetIT(const BYTE& nIT) { m_nIT = nIT; }
+		void SetLE(const BYTE& nLE) { m_nLE = nLE; }
+		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+		{ m_dRD[0] = dRD1; m_dRD[1] = dRD2; m_dRD[2] = dRD3; m_dRD[3] = dRD4; }
+		void SetCL(const std::vector<double>& arrCL) { m_arrCL = arrCL; }
+
+		BYTE GetQ()  const { return m_nQ; }
+		BYTE GetIT() const { return m_nIT; }
+		BYTE GetLE() const { return m_nLE; }
+		const std::wstring& GetDS() const { return m_wsDS; }
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+		const std::vector<double>& GetCL() const { return m_arrCL; }
+
+	private:
+		BYTE m_nQ;
+		BYTE m_nIT;
+		BYTE m_nLE;
+		std::wstring m_wsDS;
+		double m_dRD[4]{};
+		std::vector<double> m_arrCL;
+	};
+
 private:
 	struct CBorder
 	{
@@ -269,6 +296,7 @@ public:
 	bool IsSquareCircle() const;
 	bool IsPolygonLine()  const;
 	bool IsPopup()        const;
+	bool IsFreeText()     const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
 	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
@@ -278,6 +306,7 @@ public:
 	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
 	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
+	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -306,6 +335,7 @@ private:
 	CSquareCircleAnnotPr* m_pSquareCirclePr;
 	CPolygonLineAnnotPr*  m_pPolygonLinePr;
 	CPopupAnnotPr*        m_pPopupPr;
+	CFreeTextAnnotPr*     m_pFreeTextPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

@@ -1168,6 +1168,38 @@
 				if (flags & (1 << 1))
 					rec["PopupParent"] = reader.readInt();
 			}
+			// FreeText
+			else if (rec["Type"] == 2)
+			{
+				// 0 - left-justified, 1 - centered, 2 - right-justified
+				rec["alignment"] = reader.readByte();
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Координаты выноски - CL
+				if (flags & (1 << 16))
+				{
+					let n = reader.readInt();
+					rec["CL"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["CL"].push(reader.readDouble());
+				}
+				// Строка стиля по умолчанию (в формате CSS2) - DS
+				if (flags & (1 << 17))
+					rec["defaultStyle"] = reader.readString();
+				// Стиль окончания линии - LE
+				// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+				if (flags & (1 << 18))
+					rec["LE"] = reader.readByte();
+				// Назначение аннотации - IT
+				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
+				if (flags & (1 << 20))
+					rec["IT"] = reader.readByte();
+			}
 			res.push(rec);
 		}
 		

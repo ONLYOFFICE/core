@@ -107,8 +107,10 @@ CPdfReader::~CPdfReader()
 	RELEASEINTERFACE(m_pFontManager);
 }
 
-bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& arrCMap)
+bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& arrCMap, int nDepth)
 {
+	if (nDepth > 5)
+		return false;
 	Object oFonts;
 	if (pResources->lookup("Font", &oFonts) && oFonts.isDict())
 	{
@@ -146,7 +148,7 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 				continue;\
 			}\
 			oXObj.free();\
-			if (scanFonts(oResources.getDict(), pDoc, arrCMap))\
+			if (scanFonts(oResources.getDict(), pDoc, arrCMap, nDepth + 1))\
 			{\
 				oResources.free(); oObject.free();\
 				return true;\
@@ -172,7 +174,7 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 				continue;
 			}
 			oGS.free(); oSMask.free(); oSMaskGroup.free();
-			if (scanFonts(oResources.getDict(), pDoc, arrCMap))
+			if (scanFonts(oResources.getDict(), pDoc, arrCMap, nDepth + 1))
 			{
 				oResources.free(); oExtGState.free();
 				return true;
@@ -213,7 +215,7 @@ bool CPdfReader::IsNeedCMap()
 	{
 		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage + 1);
 		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap))
+		if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap, 0))
 			return true;
 	}
 	return false;
@@ -1276,7 +1278,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "FreeText")
 		{
-
+			pAnnot = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Line")
 		{

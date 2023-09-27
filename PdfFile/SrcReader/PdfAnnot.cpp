@@ -385,6 +385,31 @@ void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, 
 
 	oFieldRef.free(); oField.free();
 }
+BYTE getLE(Object* oObj)
+{
+	BYTE nLE = 5; // None
+
+	if (oObj->isName("Square"))
+		nLE = 0;
+	else if (oObj->isName("Circle"))
+		nLE = 1;
+	else if (oObj->isName("Diamond"))
+		nLE = 2;
+	else if (oObj->isName("OpenArrow"))
+		nLE = 3;
+	else if (oObj->isName("ClosedArrow"))
+		nLE = 4;
+	else if (oObj->isName("Butt"))
+		nLE = 6;
+	else if (oObj->isName("ROpenArrow"))
+		nLE = 7;
+	else if (oObj->isName("RClosedArrow"))
+		nLE = 8;
+	else if (oObj->isName("Slash"))
+		nLE = 9;
+
+	return nLE;
+}
 
 //------------------------------------------------------------------------
 // Widget
@@ -765,8 +790,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	{
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
-		pA->sType = sAA;
-		m_arrAction.push_back(pA);
+		if (pA)
+		{
+			pA->sType = sAA;
+			m_arrAction.push_back(pA);
+		}
 	}
 	oAction.free();
 
@@ -780,8 +808,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			{
 				std::string sAA(oAA.dictGetKey(j));
 				CAction* pA = getAction(pdfDoc, &oAction);
-				pA->sType = sAA;
-				m_arrAction.push_back(pA);
+				if (pA)
+				{
+					pA->sType = sAA;
+					m_arrAction.push_back(pA);
+				}
 			}
 			oAction.free();
 		}
@@ -962,31 +993,8 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 		m_nLE[0] = 5; m_nLE[1] = 5; // None
 		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
 		{
-			if (!oObj.arrayGet(i, &oObj2)->isName())
-			{
-				oObj2.free();
-				continue;
-			}
-
-			if (oObj2.isName("Square"))
-				m_nLE[i] = 0;
-			else if (oObj2.isName("Circle"))
-				m_nLE[i] = 1;
-			else if (oObj2.isName("Diamond"))
-				m_nLE[i] = 2;
-			else if (oObj2.isName("OpenArrow"))
-				m_nLE[i] = 3;
-			else if (oObj2.isName("ClosedArrow"))
-				m_nLE[i] = 4;
-			else if (oObj2.isName("Butt"))
-				m_nLE[i] = 6;
-			else if (oObj2.isName("ROpenArrow"))
-				m_nLE[i] = 7;
-			else if (oObj2.isName("RClosedArrow"))
-				m_nLE[i] = 8;
-			else if (oObj2.isName("Slash"))
-				m_nLE[i] = 9;
-
+			if (oObj.arrayGet(i, &oObj2)->isName())
+				m_nLE[i] = getLE(&oObj2);
 			oObj2.free();
 		}
 	}
@@ -1195,31 +1203,8 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 		m_nLE[0] = 5; m_nLE[1] = 5; // None
 		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
 		{
-			if (!oObj.arrayGet(i, &oObj2)->isName())
-			{
-				oObj2.free();
-				continue;
-			}
-
-			if (oObj2.isName("Square"))
-				m_nLE[i] = 0;
-			else if (oObj2.isName("Circle"))
-				m_nLE[i] = 1;
-			else if (oObj2.isName("Diamond"))
-				m_nLE[i] = 2;
-			else if (oObj2.isName("OpenArrow"))
-				m_nLE[i] = 3;
-			else if (oObj2.isName("ClosedArrow"))
-				m_nLE[i] = 4;
-			else if (oObj2.isName("Butt"))
-				m_nLE[i] = 6;
-			else if (oObj2.isName("ROpenArrow"))
-				m_nLE[i] = 7;
-			else if (oObj2.isName("RClosedArrow"))
-				m_nLE[i] = 8;
-			else if (oObj2.isName("Slash"))
-				m_nLE[i] = 9;
-
+			if (oObj.arrayGet(i, &oObj2)->isName())
+				m_nLE[i] = getLE(&oObj2);
 			oObj2.free();
 		}
 	}
@@ -1245,6 +1230,74 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 		if (oObj.isName("PolyLineDimension"))
 			m_nIT = 1;
 		else if (oObj.isName("PolygonDimension"))
+			m_nIT = 2;
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// FreeText
+//------------------------------------------------------------------------
+
+CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Выравнивание текста - Q
+	m_nQ = 0;
+	if (oAnnot.dictLookup("Q", &oObj)->isInt())
+		m_nQ = oObj.getInt();
+	oObj.free();
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Координаты выноски - CL
+	if (oAnnot.dictLookup("CL", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			if (oObj.arrayGet(j, &oObj2)->isNum())
+				m_arrCL.push_back(j % 2 == 0 ? oObj2.getNum() : m_dHeight - oObj2.getNum());
+			else
+				m_arrCL.push_back(0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 18 - Строка стиля по умолчанию - DS
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "DS", 17, m_sDS);
+
+	// 19 - Стили окончания линии - LE
+	if (oAnnot.dictLookup("LE", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 18);
+		m_nLE = getLE(&oObj);
+	}
+	oObj.free();
+
+	// 21 - Назначение аннотации - IT
+	if (oAnnot.dictLookup("IT", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 20);
+		m_nIT = 0; // FreeText
+		if (oObj.isName("FreeTextCallout"))
+			m_nIT = 1;
+		else if (oObj.isName("FreeTextTypeWriter"))
 			m_nIT = 2;
 	}
 	oObj.free();
@@ -2492,6 +2545,32 @@ void CAnnotPolygonLine::ToWASM(NSWasm::CData& oRes)
 		for (int i = 0; i < m_arrIC.size(); ++i)
 			oRes.AddDouble(m_arrIC[i]);
 	}
+	if (m_unFlags & (1 << 20))
+		oRes.WriteBYTE(m_nIT);
+}
+
+void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(2); // FreeText
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	oRes.WriteBYTE(m_nQ);
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrCL.size());
+		for (int i = 0; i < m_arrCL.size(); ++i)
+			oRes.AddDouble(m_arrCL[i]);
+	}
+	if (m_unFlags & (1 << 17))
+		oRes.WriteString(m_sDS);
+	if (m_unFlags & (1 << 18))
+		oRes.WriteBYTE(m_nLE);
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
 }

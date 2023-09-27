@@ -1717,6 +1717,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	{
 		pAnnot = m_pDocument->CreatePopupAnnot();
 	}
+	else if (oInfo.isFreeText())
+	{
+		pAnnot = m_pDocument->CreateFreeTextAnnot();
+	}
 
 	if (!pAnnot)
 		return S_FALSE;
@@ -1737,6 +1741,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	pAnnot->SetRect(oRect);
 
 	int nFlags = oInfo.GetFlag();
+	if (nFlags & (1 << 0))
+		pAnnot->SetNM(oInfo.GetNM());
 	if (nFlags & (1 << 1))
 		pAnnot->SetContents(oInfo.GetContents());
 	if (nFlags & (1 << 2))
@@ -1878,6 +1884,27 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pPopupAnnot->SetOpen(pPr->IsOpen());
 		if (nFlags & (1 << 1))
 			pPopupAnnot->SetParentID(pPr->GetParentID());
+	}
+	else if (oInfo.isFreeText())
+	{
+		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = oInfo.GetFreeTextAnnotPr();
+		PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
+
+		pFreeTextAnnot->SetQ(pPr->GetQ());
+		if (nFlags & (1 << 15))
+		{
+			double dRD1, dRD2, dRD3, dRD4;
+			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+			pFreeTextAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pFreeTextAnnot->SetCL(pPr->GetCL());
+		if (nFlags & (1 << 17))
+			pFreeTextAnnot->SetDS(pPr->GetDS());
+		if (nFlags & (1 << 18))
+			pFreeTextAnnot->SetLE(pPr->GetLE());
+		if (nFlags & (1 << 20))
+			pFreeTextAnnot->SetIT(pPr->GetIT());
 	}
 
 	return S_OK;

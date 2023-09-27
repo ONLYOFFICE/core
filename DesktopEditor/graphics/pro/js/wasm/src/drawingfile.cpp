@@ -970,8 +970,8 @@ int main(int argc, char* argv[])
 			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
 			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
-			//nWidth  *= (dpi / 25.4);
-			//nHeight *= (dpi / 25.4);
+			//nWidth  *= 2;
+			//nHeight *= 2;
 			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
 
 			nLength = READ_INT(pInfo + nPagesCount * 12 + 8);
@@ -1495,6 +1495,60 @@ int main(int argc, char* argv[])
 					nPathLength = READ_INT(pAnnots + i);
 					i += 4;
 					std::cout << "Popup parent " << nPathLength << ", ";
+				}
+			}
+			else if (sType == "FreeText")
+			{
+				std::string arrQ[] = {"left-justified", "centered", "right-justified"};
+				nPathLength = READ_BYTE(pAnnots + i);
+				i += 1;
+				std::cout << "Q " << arrQ[nPathLength] << ", ";
+
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "RD";
+					for (int j = 0; j < 4; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					int nCLLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "CL";
+
+					for (int j = 0; j < nCLLength; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 17))
+				{
+					nPathLength = READ_INT(pAnnots + i);
+					i += 4;
+					std::cout << "DS " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 18))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrLE[] = {"Square", "Circle", "Diamond", "OpenArrow", "ClosedArrow", "None", "Butt", "ROpenArrow", "RClosedArrow", "Slash"};
+					std::cout << "LE " << arrLE[nPathLength] << ", ";
+				}
+				if (nFlags & (1 << 20))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrIT[] = {"FreeText", "FreeTextCallout", "FreeTextTypeWriter"};
+					std::cout << "IT " << arrIT[nPathLength] << ", ";
 				}
 			}
 

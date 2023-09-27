@@ -224,6 +224,33 @@ public:
 		int  m_nParentID;
 	};
 
+	class CFreeTextAnnotPr
+	{
+	public:
+		void SetQ(const BYTE& nQ)   { m_nQ  = nQ; }
+		void SetIT(const BYTE& nIT) { m_nIT = nIT; }
+		void SetLE(const BYTE& nLE) { m_nLE = nLE; }
+		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+		{ m_dRD[0] = dRD1; m_dRD[1] = dRD2; m_dRD[2] = dRD3; m_dRD[3] = dRD4; }
+		void SetCL(const std::vector<double>& arrCL) { m_arrCL = arrCL; }
+
+		BYTE GetQ()  const { return m_nQ; }
+		BYTE GetIT() const { return m_nIT; }
+		BYTE GetLE() const { return m_nLE; }
+		const std::wstring& GetDS() const { return m_wsDS; }
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+		const std::vector<double>& GetCL() const { return m_arrCL; }
+
+	private:
+		BYTE m_nQ;
+		BYTE m_nIT;
+		BYTE m_nLE;
+		std::wstring m_wsDS;
+		double m_dRD[4]{};
+		std::vector<double> m_arrCL;
+	};
+
 private:
 	struct CBorder
 	{
@@ -247,6 +274,7 @@ public:
 	void SetAnnotFlag(const int& nAnnotFlag) { m_nAnnotFlag = nAnnotFlag; }
 	void SetPage(const int& nPage)           { m_nPage      = nPage; }
 	void SetBE(const double& dBE)            { m_dBE        = dBE; }
+	void SetNM(const std::wstring& wsNM)     { m_wsNM      = wsNM; }
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
@@ -257,6 +285,7 @@ public:
 	int    GetAnnotFlag() const { return m_nAnnotFlag; }
 	int    GetPage()      const { return m_nPage; }
 	double GetBE()        const { return m_dBE; }
+	const std::wstring& GetNM() const { return m_wsNM; }
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
@@ -269,6 +298,7 @@ public:
 	bool IsSquareCircle() const;
 	bool IsPolygonLine()  const;
 	bool IsPopup()        const;
+	bool IsFreeText()     const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
 	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
@@ -278,6 +308,7 @@ public:
 	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
 	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
+	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -294,6 +325,7 @@ private:
 	int          m_nAnnotFlag;
 	int          m_nPage;
 	double       m_dBE;
+	std::wstring m_wsNM;
 	std::wstring m_wsContents;
 	std::vector<double> m_arrC;
 	CBorder      m_oBorder;
@@ -306,6 +338,7 @@ private:
 	CSquareCircleAnnotPr* m_pSquareCirclePr;
 	CPolygonLineAnnotPr*  m_pPolygonLinePr;
 	CPopupAnnotPr*        m_pPopupPr;
+	CFreeTextAnnotPr*     m_pFreeTextPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

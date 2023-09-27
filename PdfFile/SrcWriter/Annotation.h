@@ -120,7 +120,9 @@ namespace PdfWriter
 		void SetPage(CPage* pPage);
 		void SetBE(const double& dBE);
 		void SetContents(const std::wstring& wsText);
+		void SetNM(const std::wstring& wsNM);
 		void SetC(const std::vector<double>& arrC);
+		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 	};
 	class CMarkupAnnotation : public CAnnotation
 	{
@@ -286,6 +288,22 @@ namespace PdfWriter
 		void SetLE(const BYTE& nLE1, const BYTE& nLE2);
 		void SetIC(const std::vector<double>& arrIC);
 		void SetVertices(const std::vector<double>& arrVertices);
+	};
+	class CFreeTextAnnotation : public CMarkupAnnotation
+	{
+	public:
+		CFreeTextAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotFreeText;
+		}
+
+		void SetQ(const BYTE& nQ);
+		void SetIT(const BYTE& nIT);
+		void SetLE(const BYTE& nLE);
+		void SetDS(const std::wstring& wsDS);
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
+		void SetCL(const std::vector<double>& arrCL);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

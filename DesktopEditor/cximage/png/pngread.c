@@ -330,6 +330,16 @@ png_read_info(png_structp png_ptr, png_infop info_ptr)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
 
+#ifdef PNG_READ_gIFg_SUPPORTED
+      else if (chunk_name == png_gIFg)
+         png_handle_gIFg(png_ptr, info_ptr, length);
+#endif
+
+#ifdef PNG_READ_gIFx_SUPPORTED
+      else if (chunk_name == png_gIFx)
+          png_handle_gIFx(png_ptr, info_ptr, length);
+#endif
+
       else
          png_handle_unknown(png_ptr, info_ptr, length);
    }

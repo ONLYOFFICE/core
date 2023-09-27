@@ -2657,6 +2657,51 @@ png_handle_iTXt(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
 }
 #endif
 
+#ifdef PNG_READ_gIFg_SUPPORTED
+void
+png_handle_gIFg(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
+{
+    if (length != 4)
+    {
+       png_warning(png_ptr, "Incorrect gIFg chunk length");
+       png_crc_finish(png_ptr, length);
+       return;
+    }
+
+    png_crc_read(png_ptr, &png_ptr->gifgce, 4);
+
+    if (png_crc_finish(png_ptr, 0))
+       return;
+}
+#endif
+
+#ifdef PNG_READ_gIFx_SUPPORTED
+void
+png_handle_gIFx(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
+{
+    png_byte buf[14];
+
+    if (length != 14)
+    {
+        png_warning(png_ptr, "Incorrect gIFx chunk length");
+        png_crc_finish(png_ptr, length);
+        return;
+    }
+
+    png_crc_read(png_ptr, buf, length);
+
+    if (png_crc_finish(png_ptr, 0))
+       return;
+
+    if (strncmp("NETSPACE2.0", buf, 11))
+    {
+        png_warning(png_ptr, "Incorrect gIFx chunk data");
+        return;
+    }
+    png_ptr->m_loops = buf[13] + 256 * buf[14];
+}
+#endif
+
 /* This function is called when we haven't found a handler for a
  * chunk.  If there isn't a problem with the chunk itself (ie bad
  * chunk name, CRC, or a critical chunk), the chunk is silently ignored

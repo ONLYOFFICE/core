@@ -204,6 +204,7 @@ typedef struct tagCxImageInfo {
 	int32_t	nFrame;				///< used for TIF, GIF, MNG : actual frame
 	int32_t	nNumFrames;			///< used for TIF, GIF, MNG : total number of frames
 	uint32_t	dwFrameDelay;		///< used for GIF, MNG
+    uint32_t m_loops;
 	int32_t	xDPI;				///< horizontal resolution
 	int32_t	yDPI;				///< vertical resolution
 	RECT	rSelectionBox;		///< bounding rectangle

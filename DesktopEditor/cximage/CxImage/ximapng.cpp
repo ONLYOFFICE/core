@@ -85,6 +85,13 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		longjmp(png_ptr->longjmp_buffer, 1);
 	}
 
+
+    png_ptr->gifgce.delaytime = m_ntohs(png_ptr->gifgce.delaytime);
+    info.nBkgndIndex  = (png_ptr->gifgce.flags & 0x1) ? png_ptr->gifgce.transpcolindex : -1;
+    info.dwFrameDelay = png_ptr->gifgce.delaytime;
+    SetDisposalMethod((png_ptr->gifgce.flags >> 2) & 0x7);
+    info.m_loops = png_ptr->m_loops;
+
 	/* calculate new number of channels */
 	int32_t channels=0;
 	switch(info_ptr->color_type){

@@ -23,7 +23,7 @@
  * in this structure and is required for decompressing the LZ compressed
  * data in PNG files.
  */
-#include "zlib.h"
+#include "../zlib/zlib.h"
 
 struct png_struct_def
 {
@@ -344,6 +344,9 @@ struct png_struct_def
 /* New member added in libpng-1.5.7 */
    void (*read_filter[PNG_FILTER_VALUE_LAST-1])(png_row_infop row_info,
       png_bytep row, png_const_bytep prev_row);
+
+   struct_gifgce gifgce;
+   png_uint_32 m_loops;
 
    /* Options */
 #ifdef PNG_SET_OPTION_SUPPORTED

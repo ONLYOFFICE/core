@@ -656,6 +656,8 @@ PNG_EXTERN png_fixed_point png_fixed PNGARG((png_structp png_ptr, double fp,
 #define png_bKGD PNG_CHUNK( 98,  75,  71,  68)
 #define png_cHRM PNG_CHUNK( 99,  72,  82,  77)
 #define png_gAMA PNG_CHUNK(103,  65,  77,  65)
+#define png_gIFg PNG_CHUNK(103,  73,  70, 103)
+#define png_gIFx PNG_CHUNK(103,  73,  70, 120)
 #define png_hIST PNG_CHUNK(104,  73,  83,  84)
 #define png_iCCP PNG_CHUNK(105,  67,  67,  80)
 #define png_iTXt PNG_CHUNK(105,  84,  88, 116)
@@ -1214,6 +1216,16 @@ PNG_EXTERN void png_handle_iCCP PNGARG((png_structp png_ptr, png_infop info_ptr,
 
 #ifdef PNG_READ_iTXt_SUPPORTED
 PNG_EXTERN void png_handle_iTXt PNGARG((png_structp png_ptr, png_infop info_ptr,
+    png_uint_32 length));
+#endif
+
+#ifdef PNG_READ_gIFg_SUPPORTED
+PNG_EXTERN void png_handle_gIFg PNGARG((png_structp png_ptr, png_infop info_ptr,
+    png_uint_32 length));
+#endif
+
+#ifdef PNG_READ_gIFx_SUPPORTED
+PNG_EXTERN void png_handle_gIFx PNGARG((png_structp png_ptr, png_infop info_ptr,
     png_uint_32 length));
 #endif
 

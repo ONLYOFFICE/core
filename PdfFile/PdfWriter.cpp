@@ -1717,7 +1717,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	{
 		pAnnot = m_pDocument->CreatePopupAnnot();
 	}
-	else if (oInfo.isFreeText())
+	else if (oInfo.IsFreeText())
 	{
 		pAnnot = m_pDocument->CreateFreeTextAnnot();
 	}
@@ -1885,7 +1885,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 1))
 			pPopupAnnot->SetParentID(pPr->GetParentID());
 	}
-	else if (oInfo.isFreeText())
+	else if (oInfo.IsFreeText())
 	{
 		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = oInfo.GetFreeTextAnnotPr();
 		PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;

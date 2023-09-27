@@ -790,8 +790,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	{
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
-		pA->sType = sAA;
-		m_arrAction.push_back(pA);
+		if (pA)
+		{
+			pA->sType = sAA;
+			m_arrAction.push_back(pA);
+		}
 	}
 	oAction.free();
 
@@ -805,8 +808,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			{
 				std::string sAA(oAA.dictGetKey(j));
 				CAction* pA = getAction(pdfDoc, &oAction);
-				pA->sType = sAA;
-				m_arrAction.push_back(pA);
+				if (pA)
+				{
+					pA->sType = sAA;
+					m_arrAction.push_back(pA);
+				}
 			}
 			oAction.free();
 		}

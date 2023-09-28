@@ -842,6 +842,13 @@ function onLoadFontsModule(window, undefined)
 		{
 			var xhr = new XMLHttpRequest();
 			let urlDictionaries = "../../../../dictionaries/";
+			if (window["AscDesktopEditor"] && window["AscDesktopEditor"]["getDictionariesPath"])
+			{
+				let urlDesktop = window["AscDesktopEditor"]["getDictionariesPath"]();
+				if ("" !== urlDesktop)
+					urlDictionaries = urlDesktop;
+			}
+			
 			let url = urlDictionaries + langName + "/hyph_" + langName + ".dic";
 
 			xhr.open('GET', url, true);

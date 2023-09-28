@@ -115,15 +115,25 @@ void list_item::pptx_convert(oox::pptx_conversion_context & Context)
     {
         restart = true;                    
     }
+    
+	// NOTE (Kamil Kerimov): This specific version of OpenOffice does not recognize text:list, text:list-item elements.
+	// This version of OpenOffice serialize simple paragraphs as a list with one text:list-item element. (???)
+	// LibreOffice handle this by ignoring lists and list-items and just woking with its content.
+	const GeneratorMetaData generator = Context.get_generator_meta_data();
+	bool ignore_list_item =
+		generator.Producer == GeneratorMetaData::ProducerType::OpenOffice &&
+		generator.Build == L"680m5$Build-9011";
 
-    Context.get_text_context().start_list_item(restart);
+    if(!ignore_list_item)
+        Context.get_text_context().start_list_item(restart);
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
 
-    Context.get_text_context().end_list_item();
+    if(!ignore_list_item)
+        Context.get_text_context().end_list_item();
 
 }
 // text:list-header

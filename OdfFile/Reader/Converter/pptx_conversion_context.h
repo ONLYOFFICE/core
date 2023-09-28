@@ -57,6 +57,28 @@ namespace odf_reader
     class office_element;
 }
 
+struct GeneratorMetaData
+{
+	GeneratorMetaData() = default;
+	GeneratorMetaData(const std::wstring& meta_generator_str);
+
+	enum ProducerType
+	{
+		LibreOffice,
+		MicrosoftOffice,
+		OpenOffice,
+		ONLYOFFICE,
+		Unknown
+	};
+
+	// Producer/Version$Platform Product/Build
+	ProducerType Producer = ProducerType::Unknown;
+	std::wstring Version = L"";
+	std::wstring Platform = L"";
+	std::wstring Product = L"";
+	std::wstring Build = L"";
+};
+
 namespace oox {
 
 namespace package
@@ -135,6 +157,8 @@ public:
 
     mediaitems_ptr & get_mediaitems() { return pptx_slide_context_.get_mediaitems(); }
 
+	const GeneratorMetaData& get_generator_meta_data() { return generator_meta_data_; }
+
     //void start_hyperlink(const std::wstring & styleName);
     //void end_hyperlink(std::wstring const & href);
 	bool process_masters_;
@@ -181,7 +205,7 @@ private:
 
     pptx_comments_context_handle comments_context_handle_;
 
-
+	GeneratorMetaData generator_meta_data_;
 };
 
 }

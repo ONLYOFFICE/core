@@ -244,6 +244,16 @@ namespace docbuilder_net
 		m_internal = new NSDoctRenderer::CDocBuilderValue(StringToStdString(value));
 	}
 
+	CDocBuilderValue::CDocBuilderValue(array<CDocBuilderValue^>^ values)
+	{
+		int length = values->Length;
+		m_internal = new NSDoctRenderer::CDocBuilderValue(NSDoctRenderer::CDocBuilderValue::CreateArray(length));
+		for (int i = 0; i < length; i++)
+		{
+			Set(i, values[i]);
+		}
+	}
+
 	CDocBuilderValue::operator CDocBuilderValue ^ (bool value)
 	{
 		return gcnew CDocBuilderValue(value);
@@ -261,6 +271,11 @@ namespace docbuilder_net
 		return gcnew CDocBuilderValue(value);
 	}
 	CDocBuilderValue::operator CDocBuilderValue ^ (String^ value)
+	{
+		return gcnew CDocBuilderValue(value);
+	}
+
+	CDocBuilderValue::operator CDocBuilderValue ^ (array<CDocBuilderValue^>^ value)
 	{
 		return gcnew CDocBuilderValue(value);
 	}
@@ -522,4 +537,3 @@ namespace docbuilder_net
 		return m_internal->IsError();
 	}
 }
-

@@ -35,6 +35,8 @@
 #include "pptx_package.h"
 
 #include <xml/simple_xml_writer.h>
+#include <boost/algorithm/algorithm.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <iostream>
 
@@ -69,6 +71,7 @@ pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odf
 	,math_context_			(odf_document_->odf_context().fontContainer(), true)
 	,last_idx_placeHolder	(1)
 	,last_uniq_big_id		(1)
+	,generator_meta_data_	(odf_document_->odf_context().DocProps().application_)
 {
 }
 
@@ -711,4 +714,51 @@ void pptx_conversion_context::add_jsaProject(const std::string &content)
 	output_document_->get_content_types_file().add_or_find_default(L"bin");
 }
 }
+
+GeneratorMetaData::GeneratorMetaData(const std::wstring& meta_generator_str)
+{
+	std::vector<std::wstring> strs;
+	boost::split(strs, meta_generator_str, boost::is_any_of(" "));
+
+	if (strs.size() > 0)
+	{
+		std::vector<std::wstring> splt;
+		boost::split(splt, strs[0], boost::is_any_of("/$"));
+
+		if (splt.size() > 0)
+		{
+			const std::wstring& producer = splt[0];
+			if (boost::contains(producer, L"LibreOffice"))
+				Producer = ProducerType::LibreOffice;
+			else if (boost::contains(producer, L"MicrosoftOffice"))
+				Producer = ProducerType::MicrosoftOffice;
+			else if (boost::contains(producer, L"OpenOffice"))
+				Producer = ProducerType::OpenOffice;
+			else if (boost::contains(producer, L"ONLYOFFICE"))
+				Producer = ProducerType::ONLYOFFICE;
+			else
+				Producer = ProducerType::Unknown;
+		}
+
+		if (splt.size() > 1)
+			Version = splt[1];
+
+		if (splt.size() > 2)
+			Platform = splt[2];
+	}
+
+	if (strs.size() > 1)
+	{
+		std::vector<std::wstring> splt;
+		boost::split(splt, strs[1], boost::is_any_of("/"));
+
+		if (splt.size() > 0)
+			Product = splt[0];
+
+		if (splt.size() > 1)
+			Build = splt[1];
+	}
 }
+
+}
+

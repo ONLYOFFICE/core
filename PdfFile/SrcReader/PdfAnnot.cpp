@@ -1938,11 +1938,9 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 
 	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
 
-	// Координаты и размеры внешнего вида
+	// Координаты внешнего вида
 	m_nRx1 = (int)round(m_dx1 * m_dWScale) - 1;
 	m_nRy1 = nRasterH - (int)round(m_dy2 * m_dHScale) - 1;
-	m_nRx1 = m_nRx1 < 0 ? 0 : m_nRx1;
-	m_nRy1 = m_nRy1 < 0 ? 0 : m_nRy1;
 }
 
 void CAnnotAP::Init(AcroFormField* pField)

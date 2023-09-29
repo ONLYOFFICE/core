@@ -951,6 +951,8 @@ namespace OOX
 			XLS::BaseObjectPtr Castedptr(ptr);
 			if(m_oBaseColWidth.IsInit())
 				ptr->dxGCol = m_oBaseColWidth.get() * 256.;
+            else
+                ptr->dxGCol = 2304;
 			if(m_oDefaultColWidth.IsInit())
 			{
 				ptr->cchDefColWidth = m_oDefaultColWidth.get();
@@ -959,6 +961,10 @@ namespace OOX
                     ptr->dxGCol = m_oDefaultColWidth.get() * 256;
 				}
 			}
+            else
+            {
+                ptr->cchDefColWidth = 9;
+            }
 				if (m_oDefaultRowHeight.IsInit())
 					ptr->miyDefRwHeight = m_oDefaultRowHeight.get() * 20;
 				else

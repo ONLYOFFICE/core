@@ -157,13 +157,12 @@ namespace OOX
 		{
 			if (oReader.IsEmptyNode())
 				return;
-
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (L"pivotCaches" == sName)
+                if (L"pivotCache" == sName)
 				{
 					CWorkbookPivotCache *pPivotCache = new CWorkbookPivotCache();
 					m_arrItems.push_back(pPivotCache);

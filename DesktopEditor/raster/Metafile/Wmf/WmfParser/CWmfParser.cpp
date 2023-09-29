@@ -367,15 +367,15 @@ namespace MetaFile
 	{
 		short shY, shX, shStringLength;
 		unsigned short ushFwOptions;
-		TRectL oRectangle;
+		TRectS oRectangle;
 		m_oStream >> shY >> shX >> shStringLength >> ushFwOptions;
-
+		
 		if (shStringLength <= 0)
 			return;
 
 		if (ushFwOptions & ETO_CLIPPED || ushFwOptions & ETO_OPAQUE)
 			m_oStream >> oRectangle;
-
+		
 		unsigned char* pString = new unsigned char[shStringLength + 1];
 		if (!pString)
 			return SetError();

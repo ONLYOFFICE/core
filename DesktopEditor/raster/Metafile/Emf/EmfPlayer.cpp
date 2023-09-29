@@ -262,11 +262,11 @@ namespace MetaFile
 			return;
 
 		if (bNull)
-                    pBrush->unBrushStyle = BS_NULL;
+			pBrush->unBrushStyle = BS_NULL;
 		else
 		{
-                    pBrush->unBrushStyle = BS_SOLID;
-                    pBrush->oColor.Set(r, g, b);
+			pBrush->unBrushStyle = BS_SOLID;
+			pBrush->oColor.Set(r, g, b);
 		}
 
 		RegisterObject(ulIndex, (CEmfObjectBase*)pBrush);
@@ -278,10 +278,10 @@ namespace MetaFile
 			return;
 
 		if (bNull)
-                    pPen->unPenStyle = PS_NULL;
+			pPen->unPenStyle = PS_NULL;
 		else
 		{
-                    pPen->unPenStyle = PS_COSMETIC | PS_SOLID;
+			pPen->unPenStyle = PS_COSMETIC | PS_SOLID;
 			pPen->oColor.Set(r, g, b);
 		}
 
@@ -346,6 +346,7 @@ namespace MetaFile
 		if (!pNewDC)
 			return NULL;
 
+		pNewDC->m_oClip.Copy(m_oClip);
 		pNewDC->m_ulMapMode      = m_ulMapMode;
 		pNewDC->m_pBrush         = m_pBrush;
 		pNewDC->m_pPen           = m_pPen;
@@ -372,6 +373,12 @@ namespace MetaFile
 
 		return pNewDC;
 	}
+
+	CClip *CEmfDC::GetClip()
+	{
+		return &m_oClip;
+	}
+
 	void CEmfDC::SetMapMode(unsigned int ulMapMode)
 	{
 		m_ulMapMode = ulMapMode;

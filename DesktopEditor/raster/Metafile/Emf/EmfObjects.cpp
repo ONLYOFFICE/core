@@ -104,7 +104,7 @@ namespace MetaFile
 
 	int CEmfLogBrushEx::GetColor()
 	{
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 
 	int CEmfLogBrushEx::GetColor2()
@@ -129,7 +129,7 @@ namespace MetaFile
 
 	unsigned int CEmfLogBrushEx::GetAlpha()
 	{
-		return (unsigned int)oColor.a;
+		return 0xff;
 	}
 
 	unsigned int CEmfLogBrushEx::GetAlpha2()

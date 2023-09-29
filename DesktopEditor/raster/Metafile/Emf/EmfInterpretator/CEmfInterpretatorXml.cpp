@@ -225,7 +225,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN");
 		m_pOutputXml->WriteNode(L"ihPen",   unPenIndex);
 		m_pOutputXml->WriteNodeBegin(L"LogPenEx");
-                m_pOutputXml->WriteNode(L"PenStyle",            pPen->unPenStyle);
+		m_pOutputXml->WriteNode(L"PenStyle",            pPen->unPenStyle);
 		m_pOutputXml->WriteNode(L"Width",               pPen->unWidth);
 		m_pOutputXml->WriteNode(L"BrushStyle",          arUnused[0]);
 		m_pOutputXml->WriteNode(L"ColorRef",            pPen->oColor);
@@ -233,7 +233,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNode(L"NumStyleEntries",     pPen->unNumStyleEntries);
 
 		for (unsigned int ulIndex = 0; ulIndex < pPen->unNumStyleEntries; ulIndex++)
-                    m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->pStyleEntry[ulIndex]);
+			m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->pStyleEntry[ulIndex]);
 
 		m_pOutputXml->WriteNodeEnd(L"LogPenEx");
 		m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
@@ -248,7 +248,7 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPEN");
 		m_pOutputXml->WriteNode(L"ihPen", unPenIndex);
 		m_pOutputXml->WriteNodeBegin(L"LogPen");
-                m_pOutputXml->WriteNode(L"PenStyle", pPen->unPenStyle);
+		m_pOutputXml->WriteNode(L"PenStyle", pPen->unPenStyle);
 		m_pOutputXml->WriteNode(L"Width", unWidthX);
 		m_pOutputXml->WriteNodeEnd(L"LogPen");
 		m_pOutputXml->WriteNode(L"COLORREF", pPen->oColor);

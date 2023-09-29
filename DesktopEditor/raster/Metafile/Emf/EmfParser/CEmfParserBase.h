@@ -6,7 +6,6 @@
 //#include "../../Common/MetaFileUtils.h"
 
 #include "../EmfPlayer.h"
-#include "../EmfPath.h"
 
 #include "../../Common/MetaFile.h"
 
@@ -60,6 +59,7 @@ namespace MetaFile
 		void            PlayMetaFile()                   override;
 		void            ClearFile()                      override;
 		TRectL*         GetDCBounds()                    override;
+		CClip*          GetClip()                        override;
 		double          GetPixelHeight()                 override;
 		double          GetPixelWidth()                  override;
 		int             GetTextColor()                   override;
@@ -82,6 +82,7 @@ namespace MetaFile
 		double          GetDpi()                         override;
 		IRegion*        GetRegion()                      override;
 		unsigned int    GetArcDirection()                override;
+		CPath*          GetPath()                        override;
 		bool            IsViewportFlippedY();
 		bool            IsViewportFlippedX();
 
@@ -94,7 +95,7 @@ namespace MetaFile
 
 		CEmfDC*     GetDC();
 		TRectL*     GetBounds();
-		CEmfPath*   GetPath() const;
+		CPath*      GetPath() const;
 	private:
 		//Работа с изображениями
 		void ImageProcessing(const TEmfAlphaBlend       &oTEmfAlphaBlend);
@@ -147,7 +148,7 @@ namespace MetaFile
 		unsigned int      m_ulRecordSize;
 		CEmfDC*           m_pDC;
 		CEmfPlayer        m_oPlayer;
-		CEmfPath*         m_pPath;
+		CPath*            m_pPath;
 		TEmfXForm         m_oTransform;
 
 		CEmfInterpretatorBase   *m_pInterpretator;

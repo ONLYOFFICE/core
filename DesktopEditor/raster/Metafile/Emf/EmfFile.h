@@ -38,7 +38,6 @@
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"
-#include "EmfPath.h"
 
 #if defined(DrawText)
 #undef DrawText

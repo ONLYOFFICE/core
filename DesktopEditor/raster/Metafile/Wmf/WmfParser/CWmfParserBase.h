@@ -37,6 +37,7 @@ namespace MetaFile
 		void            PlayMetaFile()                   override;
 		void            ClearFile()                      override;
 		TRectL*         GetDCBounds()                    override;
+		CClip*          GetClip()                        override;
 		double          GetPixelHeight()                 override;
 		double          GetPixelWidth()                  override;
 		int             GetTextColor()                   override;
@@ -44,7 +45,7 @@ namespace MetaFile
 		IBrush*         GetBrush()                       override;
 		IPen*           GetPen()                         override;
 		unsigned int    GetTextAlign()                   override;
-		unsigned int	GetTextBgMode()                  override;
+		unsigned int    GetTextBgMode()                  override;
 		int             GetTextBgColor()                 override;
 		unsigned int    GetFillMode()                    override;
 		TPointD         GetCurPos()                      override;
@@ -59,6 +60,7 @@ namespace MetaFile
 		double          GetDpi()                         override;
 		IRegion*        GetRegion()                      override;
 		unsigned int    GetArcDirection()                override;
+		CPath*          GetPath()                        override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -142,7 +144,7 @@ namespace MetaFile
 		void HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft);
 		void HANDLE_META_CHORD(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft);
 		void HANDLE_META_ELLIPSE(short shBottom, short shRight, short shTop, short shLeft);
-		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL& oRectangle, unsigned char* pString, short* pDx);
+		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectS &oRectangle, unsigned char* pString, short* pDx);
 		void HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex);
 		void HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth);
 		void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex);

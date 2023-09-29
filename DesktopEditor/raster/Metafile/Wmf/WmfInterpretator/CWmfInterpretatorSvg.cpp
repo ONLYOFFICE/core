@@ -71,7 +71,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
-		ResetClip();
+		CloseClip();
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);

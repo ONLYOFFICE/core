@@ -176,13 +176,13 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		return m_pDC->GetRop2Mode();
 	}
-	IClip*       GetClip()
+	CClip*       GetClip()
 	{
-		CSvmClip* pClip = m_pDC->GetClip();
+		CClip* pClip = m_pDC->GetClip();
 		if (!pClip)
 			return NULL;
 
-		return (IClip*)pClip;
+		return pClip;
 	}
 	int          GetCharSpace()
 	{
@@ -215,6 +215,11 @@ class CSvmFile : virtual public IMetaFileBase
 	unsigned int GetArcDirection()
 	{
 		return AD_CLOCKWISE;
+	}
+
+	CPath* GetPath()
+	{
+		return NULL;
 	}
 
  private:

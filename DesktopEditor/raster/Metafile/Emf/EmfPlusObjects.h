@@ -1,13 +1,11 @@
 ﻿#ifndef _METAFILE_EMF_EMFPLUSOBJECTS_H
 #define _METAFILE_EMF_EMFPLUSOBJECTS_H
 
-#include "EmfPath.h"
 #include "EmfObjects.h"
 #include "EmfPlusTypes.h"
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
-
-#include "../../../../OOXML/Base/Types_32.h"
+#include "../Common/CPath.h"
 
 #ifndef MININT32
 #define MAXUINT32   ((_UINT32)~((_UINT32)0))
@@ -287,7 +285,7 @@ namespace MetaFile
 		friend class CEmfPlusImage;
 	};
 
-	class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
+	class CEmfPlusPath : public CEmfPlusObject, public CPath
 	{
 	public:
 		CEmfPlusPath();
@@ -295,8 +293,6 @@ namespace MetaFile
 		virtual EEmfPlusObjectType GetObjectType() override;
 
 		TRectD GetBounds() const;
-
-		void Clear();
 	};
 
 	typedef  enum

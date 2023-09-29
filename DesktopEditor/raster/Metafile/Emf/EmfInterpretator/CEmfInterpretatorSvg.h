@@ -146,7 +146,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWLINES(short shOgjectIndex, const std::vector<TEmfPlusPointF>& arPoints) override;
-		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath) override;
+		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CPath* pPath) override;
 		void HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF& oRect) override;
 		void HANDLE_EMFPLUS_DRAWRECTS(short shOgjectIndex, const std::vector<TEmfPlusRectF>& arRects) override;
 		void HANDLE_EMFPLUS_DRAWSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unFormatID, const std::wstring& wsString, const TEmfPlusRectF& oRect) override;
@@ -206,6 +206,13 @@ namespace MetaFile
 
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override {};
 
+		void ResetClip() override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(const CPath& oPath, int nClipMode, TXForm* pTransform = NULL) override;
+		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
+		void EndClipPath(unsigned int unMode) override {};
+
 		void StartPath() override {};
 		void MoveTo(double dX, double dY) override {};
 		void LineTo(double dX, double dY) override {};
@@ -215,20 +222,11 @@ namespace MetaFile
 		void DrawPath(int nType = 0) override {};
 		void EndPath() override {};
 
-		void ResetClip() override;
-		void IntersectClip(const TRectD& oClip) override;
-		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
-		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
-		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
-		void EndClipPath(unsigned int unMode) override {};
-
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
 
 		TRectD TranslateRect(const TRectL &oRect) const;
-
-		std::wstring CreatePath(const CEmfPath* pPath = NULL, const TXForm* pTransform = NULL);
 	};
 }
 

@@ -34,9 +34,10 @@
 #ifndef _METAFILE_EMF_EMFPLAYER_H
 #define _METAFILE_EMF_EMFPLAYER_H
 
+#include "../Common/CClip.h"
+
 #include "EmfTypes.h"
 #include "EmfObjects.h"
-#include "EmfPlusObjects.h"
 
 #include <vector>
 #include <map>
@@ -46,7 +47,6 @@ namespace MetaFile
 	class CEmfFile;
 	class CEmfParserBase;
 	class CEmfDC;
-	class CEmfPath;
 
 	class CEmfPlayer
 	{
@@ -86,6 +86,8 @@ namespace MetaFile
 		CEmfDC(CEmfPlayer* pPlayer);
 		~CEmfDC();
 		CEmfDC* Copy();
+
+		CClip*          GetClip();
 
 		void            SetMapMode(unsigned int ulMapMode);
 		unsigned int    GetMapMode();
@@ -149,6 +151,7 @@ namespace MetaFile
 	private:
 
 		CEmfPlayer*     m_pPlayer;
+		CClip           m_oClip;
 		unsigned int    m_ulMapMode;
 		IBrush*         m_pBrush;
 		IPen*           m_pPen;

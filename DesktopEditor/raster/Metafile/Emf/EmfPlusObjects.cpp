@@ -265,10 +265,10 @@ namespace MetaFile
 		unSize = m_ulPosition;
 	}
 
-	CEmfPlusPath::CEmfPlusPath() : CEmfPlusObject(), CEmfPath()
+	CEmfPlusPath::CEmfPlusPath() : CEmfPlusObject(), CPath()
 	{}
 
-	CEmfPlusPath::CEmfPlusPath(CEmfPlusPath *pPath) : CEmfPlusObject(), CEmfPath(pPath)
+	CEmfPlusPath::CEmfPlusPath(CEmfPlusPath *pPath) : CEmfPlusObject(), CPath(*pPath)
 	{}
 
 	EEmfPlusObjectType CEmfPlusPath::GetObjectType()
@@ -283,42 +283,41 @@ namespace MetaFile
 		oRect.Right = oRect.Bottom = MININT32;
 		oRect.Left  = oRect.Top    = MAXINT32;
 
-		for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
+		for (const CPathCommandBase* pCommand : GetCommands())
 		{
-			CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
-			switch (pCommand->GetType())
+			switch(pCommand->GetType())
 			{
-				case EMF_PATHCOMMAND_MOVETO:
-				{
-					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+			case PATH_COMMAND_MOVETO:
+			{
+				CPathCommandMoveTo* pMoveTo = (CPathCommandMoveTo*)pCommand;
 
-					oRect.Left   = std::min(oRect.Left,   pMoveTo->x);
-					oRect.Top    = std::min(oRect.Top,    pMoveTo->y);
-					oRect.Right  = std::max(oRect.Right,  pMoveTo->x);
-					oRect.Bottom = std::max(oRect.Bottom, pMoveTo->y);
+				oRect.Left   = std::min(oRect.Left,   pMoveTo->GetX());
+				oRect.Top    = std::min(oRect.Top,    pMoveTo->GetY());
+				oRect.Right  = std::max(oRect.Right,  pMoveTo->GetX());
+				oRect.Bottom = std::max(oRect.Bottom, pMoveTo->GetY());
 
-					break;
-				}
-				case EMF_PATHCOMMAND_LINETO:
-				{
-					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+				break;
+			}
+			case PATH_COMMAND_LINETO:
+			{
+				CPathCommandLineTo* pLineTo = (CPathCommandLineTo*)pCommand;
 
-					oRect.Left   = std::min(oRect.Left,   pLineTo->x);
-					oRect.Top    = std::min(oRect.Top,    pLineTo->y);
-					oRect.Right  = std::max(oRect.Right,  pLineTo->x);
-					oRect.Bottom = std::max(oRect.Bottom, pLineTo->y);
+				oRect.Left   = std::min(oRect.Left,   pLineTo->GetX());
+				oRect.Top    = std::min(oRect.Top,    pLineTo->GetY());
+				oRect.Right  = std::max(oRect.Right,  pLineTo->GetX());
+				oRect.Bottom = std::max(oRect.Bottom, pLineTo->GetY());
 
-					break;
-				}
-				case EMF_PATHCOMMAND_CLOSE: return oRect;
+				break;
+			}
+			case PATH_COMMAND_CURVETO:
+			case PATH_COMMAND_ARCTO:
+			case PATH_COMMAND_CLOSE:
+			case PATH_COMMAND_UNKNOWN:
+			break;
 			}
 		}
-		return oRect;
-	}
 
-	void CEmfPlusPath::Clear()
-	{
-		CEmfPath::Clear();
+		return oRect;
 	}
 
 	CEmfPlusImageAttributes::CEmfPlusImageAttributes() : CEmfPlusObject()
@@ -511,44 +510,7 @@ namespace MetaFile
 					CEmfPlusRegionNodePath *pRegionNodePath = (CEmfPlusRegionNodePath*)pNode;
 
 					if (!pRegionNodePath->Empty())
-					{
-						for (unsigned int ulIndex = 0; ulIndex < pRegionNodePath->GetPath()->m_pCommands.size(); ulIndex++)
-						{
-							CEmfPathCommandBase* pCommand = pRegionNodePath->GetPath()->m_pCommands.at(ulIndex);
-							switch (pCommand->GetType())
-							{
-								case EMF_PATHCOMMAND_MOVETO:
-								{
-									CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
-									pOutput->MoveTo(pMoveTo->x, pMoveTo->y);
-									break;
-								}
-								case EMF_PATHCOMMAND_LINETO:
-								{
-									CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
-									pOutput->LineTo(pLineTo->x, pLineTo->y);
-									break;
-								}
-								case EMF_PATHCOMMAND_CURVETO:
-								{
-									CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
-									pOutput->CurveTo(pCurveTo->x1, pCurveTo->y1, pCurveTo->x2, pCurveTo->y2, pCurveTo->xE, pCurveTo->yE);
-									break;
-								}
-								case EMF_PATHCOMMAND_ARCTO:
-								{
-									CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
-									pOutput->ArcTo(pArcTo->left, pArcTo->top, pArcTo->right, pArcTo->bottom, pArcTo->start, pArcTo->sweep);
-									break;
-								}
-								case EMF_PATHCOMMAND_CLOSE:
-								{
-									pOutput->ClosePath();
-									break;
-								}
-							}
-						}
-					}
+						pRegionNodePath->GetPath()->DrawOn(pOutput, false, false);
 				}
 				case EmfPLusRegionNodeTypeRectF:
 				{

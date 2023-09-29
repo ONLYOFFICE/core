@@ -5,6 +5,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 
 	HEADERS += \
 		$$METAFILE_PATH/Common/CPathConverter.h \
+		$$METAFILE_PATH/Common/CPath.h \
 		$$METAFILE_PATH/Common/CClip.h \
 		\
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretator.h \
@@ -18,7 +19,6 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		\
 		$$METAFILE_PATH/Emf/EmfTypes.h \
 		$$METAFILE_PATH/Emf/EmfObjects.h \
-		$$METAFILE_PATH/Emf/EmfPath.h \
 		$$METAFILE_PATH/Emf/EmfPlayer.h \
 		$$METAFILE_PATH/Emf/EmfFile.h \
 		$$METAFILE_PATH/Wmf/WmfObjects.h \
@@ -35,6 +35,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 
 	SOURCES += \
 		$$METAFILE_PATH/Common/CPathConverter.cpp \
+		$$METAFILE_PATH/Common/CPath.cpp \
 		$$METAFILE_PATH/Common/CClip.cpp \
 		\
 		$$METAFILE_PATH/Emf/EmfInterpretator/CEmfInterpretator.cpp \
@@ -47,7 +48,6 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		\
 		$$METAFILE_PATH/Emf/EmfObjects.cpp \
 		$$METAFILE_PATH/Emf/EmfPlusObjects.cpp \
-		$$METAFILE_PATH/Emf/EmfPath.cpp \
 		$$METAFILE_PATH/Emf/EmfPlayer.cpp \
 		$$METAFILE_PATH/Emf/EmfFile.cpp \
 		$$METAFILE_PATH/Wmf/WmfObjects.cpp \
@@ -96,8 +96,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 
 	} else {
 
-        HEADERS += \
-		    $$METAFILE_PATH/svg/SvgTypes.h \
+		HEADERS += \
+			$$METAFILE_PATH/svg/SvgTypes.h \
 			$$METAFILE_PATH/svg/CSvgFile.h \
 			$$METAFILE_PATH/svg/CSvgParser.h \
 			$$METAFILE_PATH/svg/SvgObjects/CContainer.h \
@@ -120,8 +120,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 			$$METAFILE_PATH/svg/SvgObjects/CObjectBase.h \
 			$$METAFILE_PATH/svg/SvgUtils.h
 
-        SOURCES += 	\
-		    $$METAFILE_PATH/svg/CSvgFile.cpp \
+		SOURCES += 	\
+			$$METAFILE_PATH/svg/CSvgFile.cpp \
 			$$METAFILE_PATH/svg/CSvgParser.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CContainer.cpp \
 			$$METAFILE_PATH/svg/SvgObjects/CGradient.cpp \
@@ -144,31 +144,34 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 
 		CONFIG += css_calculator_without_xhtml
 
-        include($$METAFILE_PATH/../../../Common/3dParty/html/css/CssCalculator.pri)
-    }
+		include($$METAFILE_PATH/../../../Common/3dParty/html/css/CssCalculator.pri)
+	}
 }
 
 !metafile_disable_svm {
-    DEFINES += METAFILE_SUPPORT_SVM
+	DEFINES += METAFILE_SUPPORT_SVM
 
-    SOURCES += \
-	    $$METAFILE_PATH/StarView/SvmClip.cpp \
+	HEADERS += \
+		$$METAFILE_PATH/StarView/SvmFile.h \
+		$$METAFILE_PATH/StarView/SvmObjects.h \
+		$$METAFILE_PATH/StarView/SvmPlayer.h
+
+	SOURCES += \
 		$$METAFILE_PATH/StarView/SvmFile.cpp \
 		$$METAFILE_PATH/StarView/SvmObjects.cpp \
 		$$METAFILE_PATH/StarView/SvmPlayer.cpp
 }
 
 HEADERS += \
-    $$METAFILE_PATH/MetaFile.h \
+	$$METAFILE_PATH/MetaFile.h \
 	$$METAFILE_PATH/Common/MetaFile.h \
 	$$METAFILE_PATH/Common/IOutputDevice.h \
 	$$METAFILE_PATH/Common/MetaFileTypes.h \
-	$$METAFILE_PATH/Common/MetaFileClip.h \
 	$$METAFILE_PATH/Common/MetaFileObjects.h \
 	$$METAFILE_PATH/Common/MetaFileRenderer.h \
 	$$METAFILE_PATH/Common/MetaFileUtils.h
 
 SOURCES += \
-    $$METAFILE_PATH/MetaFile.cpp \
+	$$METAFILE_PATH/MetaFile.cpp \
 	$$METAFILE_PATH/Common/MetaFileTypes.cpp \
 	$$METAFILE_PATH/Common/MetaFileUtils.cpp

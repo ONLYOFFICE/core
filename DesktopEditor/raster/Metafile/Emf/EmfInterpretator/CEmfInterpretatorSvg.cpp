@@ -89,7 +89,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EOF()
 	{
-		ResetClip();
+		CloseClip();
 		if (!m_wsDefs.empty())
 			m_pXmlWriter->WriteString(L"<defs>" + m_wsDefs + L"</defs>");
 		m_pXmlWriter->WriteNodeEnd(L"svg", false, false);
@@ -105,7 +105,12 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		std::wstring wsValue = CreatePath();
+		const CPath* pPath = m_pParser->GetPath();
+		
+		if (NULL == pPath)
+			return;
+		
+		const std::wstring wsValue = CreatePath(*pPath);
 
 		if (wsValue.empty())
 			return;
@@ -121,26 +126,31 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
+		m_bUpdatedClip = false;
 //		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
 	{
+		m_bUpdatedClip = false;
 //		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
+		m_bUpdatedClip = false;
 //		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
 	{
+		m_bUpdatedClip = false;
 //		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
 	{
+		m_bUpdatedClip = false;
 //		CInterpretatorSvgBase::ResetClip();
 	}
 
@@ -872,7 +882,12 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		std::wstring wsValue = CreatePath();
+		const CPath* pPath = m_pParser->GetPath();
+		
+		if (NULL == pPath)
+			return;
+		
+		const std::wstring wsValue = CreatePath(*pPath);;
 
 		if (wsValue.empty())
 			return;
@@ -892,7 +907,12 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		std::wstring wsValue = CreatePath();
+		const CPath* pPath = m_pParser->GetPath();
+		
+		if (NULL == pPath)
+			return;
+		
+		const std::wstring wsValue = CreatePath(*pPath);
 
 		if (wsValue.empty())
 			return;
@@ -928,13 +948,13 @@ namespace MetaFile
 		}
 		else if (3 == arVertex.size())
 		{
-			CEmfPath oPath;
+			CPath oPath;
 			oPath.MoveTo(arVertex[0].nX, arVertex[0].nY);
 			oPath.LineTo(arVertex[1].nX, arVertex[1].nY);
 			oPath.LineTo(arVertex[2].nX, arVertex[2].nY);
 			oPath.Close();
 
-			std::wstring wsValue = CreatePath(&oPath);
+			std::wstring wsValue = CreatePath(oPath);
 
 			if (!wsValue.empty())
 				arAttributes.push_back({L"d", wsValue});
@@ -1007,12 +1027,14 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_OFFSETCLIP(double dX, double dY)
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_RESETCLIP()
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPPATH(short unShFlags, const CEmfPlusPath *pPath)
@@ -1032,7 +1054,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_ENDOFFILE()
 	{
-		CInterpretatorSvgBase::ResetClip();
+//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB &oARGB)
@@ -1042,7 +1064,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWARC(BYTE chOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF &oRect)
 	{
-            TRectD oNewRect = oRect.ToRectD();
+		TRectD oNewRect = oRect.ToRectD();
 
 		if (NULL != m_pParser && m_pParser->GetTransform()->M22 < 0)
 		{
@@ -1200,7 +1222,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF &oRect)
 	{
-            TRectD oNewRect = oRect.ToRectD();
+		TRectD oNewRect = oRect.ToRectD();
 
 		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.Left   + oNewRect.Right)  / 2)},
 		                               {L"cy", ConvertToWString((oNewRect.Top    + oNewRect.Bottom) / 2)},
@@ -1234,12 +1256,12 @@ namespace MetaFile
 		WriteNode(L"polyline", arAttributes);
 	}
 
-	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath)
+	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CPath *pPath)
 	{
-		if (NULL == m_pParser)
+		if (NULL == m_pParser || NULL == pPath)
 			return;
 
-		std::wstring wsValue = CreatePath(pPath);
+		const std::wstring wsValue = CreatePath(*pPath);
 
 		if (wsValue.empty())
 			return;
@@ -1267,7 +1289,7 @@ namespace MetaFile
 
 		for (const TEmfPlusRectF& oRect : arRects)
 		{
-                    oTempRect = oRect.ToRectD();
+			oTempRect = oRect.ToRectD();
 
 			wsValue +=	L"M "  + ConvertToWString(oTempRect.Left)  + L',' + ConvertToWString(oTempRect.Top) +
 			            L" L " + ConvertToWString(oTempRect.Right) + L',' + ConvertToWString(oTempRect.Top) + L' ' +
@@ -1298,7 +1320,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_FILLELLIPSE(unsigned int unBrushId, const TEmfPlusRectF &oRect)
 	{
-            TRectD oNewRect = oRect.ToRectD();
+		TRectD oNewRect = oRect.ToRectD();
 
 		NodeAttributes arAttributes = {{L"cx", ConvertToWString((oNewRect.Left   + oNewRect.Right)  / 2)},
 		                               {L"cy", ConvertToWString((oNewRect.Top    + oNewRect.Bottom) / 2)},
@@ -1314,10 +1336,10 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_FILLPATH(short shOgjectIndex, unsigned int unBrushId, const CEmfPlusPath *pPath)
 	{
-		if (NULL == m_pParser)
+		if (NULL == m_pParser || NULL == pPath)
 			return;
 
-		std::wstring wsValue = CreatePath(pPath);
+		std::wstring wsValue = CreatePath(*pPath);
 
 		if (wsValue.empty())
 			return;
@@ -1367,7 +1389,7 @@ namespace MetaFile
 
 		for (const TEmfPlusRectF& oRect : arRects)
 		{
-                    oTempRect = oRect.ToRectD();
+			oTempRect = oRect.ToRectD();
 
 			m_pParser->GetTransform()->Apply(oTempRect.Left,  oTempRect.Top);
 			m_pParser->GetTransform()->Apply(oTempRect.Right, oTempRect.Bottom);
@@ -1452,43 +1474,25 @@ namespace MetaFile
 		if (NULL != pNewBuffer)
 			delete [] pNewBuffer;
 	}
-
+	
 	void CEmfInterpretatorSvg::ResetClip()
 	{
 		CInterpretatorSvgBase::ResetClip();
 	}
-
+	
 	void CEmfInterpretatorSvg::IntersectClip(const TRectD &oClip)
 	{
 		CInterpretatorSvgBase::IntersectClip(oClip);
 	}
-
+	
 	void CEmfInterpretatorSvg::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
 		CInterpretatorSvgBase::ExcludeClip(oClip, oBB);
 	}
-
-	void CEmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
+	
+	void CEmfInterpretatorSvg::PathClip(const CPath &oPath, int nClipMode, TXForm *pTransform)
 	{
-		if (NULL == pPath)
-			return;
-
-		CEmfPath *pEmfPath = dynamic_cast<CEmfPath*>(pPath);
-
-		if (NULL == pEmfPath)
-			return;
-
-		std::wstring wsPath = CreatePath(pEmfPath, pTransform);
-
-		if (wsPath.empty())
-			return;
-
-		CheckClip();
-
-		const std::wstring wsClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue  = L"<path d=\"" + wsPath + L"\"/>";
-
-		m_oClip.AddClipValue(wsClipId, wsValue, nClipMode);
+		CInterpretatorSvgBase::PathClip(oPath, nClipMode, pTransform);
 	}
 
 	TRectD CEmfInterpretatorSvg::TranslateRect(const TRectL &oRect) const
@@ -1510,136 +1514,6 @@ namespace MetaFile
 		}
 
 		return oNewRect;
-	}
-
-	std::wstring CEmfInterpretatorSvg::CreatePath(const CEmfPath* pPath, const TXForm* pTransform)
-	{
-		if (NULL == m_pParser)
-			return std::wstring();
-
-		const CEmfPath* pNewPath = pPath;
-
-		if (NULL == pNewPath)
-		{
-			CEmfParserBase *pEmfParser = dynamic_cast<CEmfParserBase*>(m_pParser);
-
-			if (NULL == pEmfParser)
-				return std::wstring();
-
-			pNewPath = pEmfParser->GetPath();
-		}
-
-		if (NULL == pNewPath || pNewPath->m_pCommands.empty())
-			return std::wstring();
-
-		std::wstring wsValue, wsMoveValue;
-		BYTE oLastType = 0x00;
-
-		TXForm oTransform;
-
-		if (NULL != pTransform)
-			oTransform.Copy(pTransform);
-
-		for (const CEmfPathCommandBase* pCommand : pNewPath->m_pCommands)
-		{
-			if (EMF_PATHCOMMAND_MOVETO != pCommand->GetType() && !wsMoveValue.empty())
-			{
-				wsValue += wsMoveValue;
-				wsMoveValue.clear();
-			}
-			switch ((unsigned int)pCommand->GetType())
-			{
-				case EMF_PATHCOMMAND_MOVETO:
-				{
-					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
-
-					TPointD oPoint(pMoveTo->x, pMoveTo->y);
-					oTransform.Apply(oPoint.X, oPoint.Y);
-
-					wsMoveValue = L"M " + ConvertToWString(oPoint.X) + L',' +  ConvertToWString(oPoint.Y) + L' ';
-
-					oLastType = EMF_PATHCOMMAND_MOVETO;
-
-					break;
-				}
-				case EMF_PATHCOMMAND_LINETO:
-				{
-					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
-
-					TPointD oPoint(pLineTo->x, pLineTo->y);
-					oTransform.Apply(oPoint.X, oPoint.Y);
-
-					if (EMF_PATHCOMMAND_LINETO != oLastType)
-					{
-						oLastType = EMF_PATHCOMMAND_LINETO;
-						wsValue += L"L ";
-					}
-
-					wsValue += ConvertToWString(oPoint.X) + L',' +  ConvertToWString(oPoint.Y) + L' ';
-
-					break;
-				}
-				case EMF_PATHCOMMAND_CURVETO:
-				{
-					CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
-
-					if (EMF_PATHCOMMAND_CURVETO != oLastType)
-					{
-						oLastType = EMF_PATHCOMMAND_CURVETO;
-						wsValue += L"C ";
-					}
-
-					TPointD oPoint1(pCurveTo->x1, pCurveTo->y1), oPoint2(pCurveTo->x2, pCurveTo->y2), oPointE(pCurveTo->xE, pCurveTo->yE);
-					oTransform.Apply(oPoint1.X, oPoint1.Y);
-					oTransform.Apply(oPoint2.X, oPoint2.Y);
-					oTransform.Apply(oPointE.X, oPointE.Y);
-
-					wsValue +=	ConvertToWString(oPoint1.X) + L',' + ConvertToWString(oPoint1.Y)  + L' ' +
-					            ConvertToWString(oPoint2.X) + L',' + ConvertToWString(oPoint2.Y) + L' ' +
-					            ConvertToWString(oPointE.X) + L',' + ConvertToWString(oPointE.Y) + L' ';
-
-					break;
-				}
-				case EMF_PATHCOMMAND_ARCTO:
-				{
-					CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
-
-					TPointD oPoint1(pArcTo->left, pArcTo->top), oPoint2(pArcTo->right, pArcTo->bottom);
-
-					oTransform.Apply(oPoint1.X, oPoint1.Y);
-					oTransform.Apply(oPoint2.X, oPoint2.Y);
-
-					double dXRadius = std::fabs(oPoint2.X - oPoint1.X) / 2;
-					double dYRadius = std::fabs(oPoint2.Y - oPoint1.X) / 2;
-
-					double dEndX = (oPoint2.X + oPoint1.X) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
-					double dEndY = (oPoint2.Y + oPoint1.X) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
-
-					wsValue += L"A " + ConvertToWString(dXRadius) + L' ' +
-					           ConvertToWString(dYRadius) + L' ' +
-					           L"0 " +
-					           ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
-					           ((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
-					           ConvertToWString(dEndX) + L' ' +
-					           ConvertToWString(dEndY) + L' ';
-
-					oLastType = EMF_PATHCOMMAND_ARCTO;
-
-					break;
-				}
-				case EMF_PATHCOMMAND_CLOSE:
-				{
-					wsValue += L"Z ";
-					oLastType = EMF_PATHCOMMAND_CLOSE;
-					break;
-				}
-			}
-		}
-
-		if (!wsValue.empty() && wsValue[0] != L'M')
-			wsValue.insert(0, L"M " + ConvertToWString(m_pParser->GetCurPos().X) + L',' + ConvertToWString(m_pParser->GetCurPos().Y) + L' ');
-
-		return wsValue;
 	}
 }
 

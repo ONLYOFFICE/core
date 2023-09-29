@@ -107,10 +107,10 @@ namespace MetaFile
 			m_pMetaFileRenderer->ExcludeClip(oClip, oBB);
 	}
 
-	void CWmfInterpretatorRender::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
+	void CWmfInterpretatorRender::PathClip(const CPath &oPath, int nClipMode, TXForm *pTransform)
 	{
 		if (NULL != m_pMetaFileRenderer)
-			m_pMetaFileRenderer->PathClip(pPath, nClipMode, pTransform);
+			m_pMetaFileRenderer->PathClip(oPath, nClipMode, pTransform);
 	}
 
 	void CWmfInterpretatorRender::StartClipPath(unsigned int unMode, int nFillMode)

@@ -572,7 +572,7 @@ namespace MetaFile
 
 		m_pOutput->ReadNextNode();
 
-                *m_pOutput >> pPen->unPenStyle;
+		*m_pOutput >> pPen->unPenStyle;
 		*m_pOutput >> pPen->unWidth;
 		*m_pOutput >> arUnused[0];
 		*m_pOutput >> pPen->oColor;
@@ -584,19 +584,19 @@ namespace MetaFile
 		if (pPen->unNumStyleEntries > 0)
 		{
 			current_size -= pPen->unNumStyleEntries * 4;
-                        pPen->pStyleEntry = new unsigned int[pPen->unNumStyleEntries];
-                        if (!pPen->pStyleEntry)
+			pPen->pStyleEntry = new unsigned int[pPen->unNumStyleEntries];
+			if (!pPen->pStyleEntry)
 			{
 				delete pPen;
 				return SetError();
 			}
 
 			for (unsigned int ulIndex = 0; ulIndex < pPen->unNumStyleEntries; ulIndex++)
-                            *m_pOutput >> pPen->pStyleEntry[ulIndex];
+				*m_pOutput >> pPen->pStyleEntry[ulIndex];
 		}
 		else
 		{
-                    pPen->pStyleEntry = NULL;
+			pPen->pStyleEntry = NULL;
 		}
 
 		HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
@@ -614,7 +614,7 @@ namespace MetaFile
 
 		m_pOutput->ReadNextNode();
 
-                *m_pOutput >> pPen->unPenStyle;
+		*m_pOutput >> pPen->unPenStyle;
 
 		unsigned int widthX;
 

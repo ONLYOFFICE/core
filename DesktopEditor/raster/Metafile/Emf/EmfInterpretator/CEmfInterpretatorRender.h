@@ -38,7 +38,7 @@ namespace MetaFile
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
-		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
+		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override;
 		void EndClipPath(unsigned int unMode) override;
 
@@ -173,7 +173,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWLINES(short, const std::vector<TEmfPlusPointF>&) override {};
-		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CEmfPath*) override {};
+		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CPath*) override {};
 		void HANDLE_EMFPLUS_DRAWPIE(short, double, double, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWRECTS(short, const std::vector<TEmfPlusRectF>&) override {};
 		void HANDLE_EMFPLUS_DRAWSTRING(short, unsigned int, unsigned int, const std::wstring&, const TEmfPlusRectF&) override {};

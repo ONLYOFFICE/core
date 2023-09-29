@@ -98,6 +98,7 @@ namespace MetaFile
 			UpdateScale();
 
 			m_bStartedPath = false;
+			m_bUpdatedClip = true;
 
 			//int alpha = 0xff;
 			//m_pRenderer->put_BrushAlpha1(alpha);
@@ -137,6 +138,7 @@ namespace MetaFile
 			UpdateScale();
 
 			m_bStartedPath = false;
+			m_bUpdatedClip = false;
 
 			//int alpha = 0xff;
 			//m_pRenderer->put_BrushAlpha1(alpha);
@@ -222,6 +224,7 @@ namespace MetaFile
 			CheckEndPath();
 
 			UpdateTransform();
+			UpdateClip();
 
 			Aggplus::CImage oImage;
 			oImage.Create(pBuffer, unWidth, unHeight, 4 * unWidth, true);
@@ -271,6 +274,7 @@ namespace MetaFile
 				return;
 
 			UpdateTransform();
+			UpdateClip();
 
 			double dFontScale = 1.;
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
@@ -332,6 +336,7 @@ namespace MetaFile
 				return;
 
 			UpdateTransform(iGraphicsMode);
+			UpdateClip();
 
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
 
@@ -679,6 +684,7 @@ namespace MetaFile
 			CheckEndPath();
 
 			UpdateTransform();
+			UpdateClip();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -779,11 +785,15 @@ namespace MetaFile
 		}
 		void ResetClip()
 		{
+			m_bUpdatedClip = false;
+
 			m_pRenderer->BeginCommand(c_nResetClipType);
 			m_pRenderer->EndCommand(c_nResetClipType);
 		}
 		void IntersectClip(const TRectD& oClip)
 		{
+			m_bUpdatedClip = false;
+
 			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
 			m_pRenderer->BeginCommand(c_nClipType);
@@ -805,6 +815,8 @@ namespace MetaFile
 		}
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB)
 		{
+			m_bUpdatedClip = false;
+
 			StartClipPath(RGN_AND, ALTERNATE);
 
 			MoveTo(oClip.Left,  oClip.Top);
@@ -821,8 +833,10 @@ namespace MetaFile
 
 			EndClipPath(RGN_AND);
 		}
-		void PathClip(IPath *pPath, int nClipMode, TXForm* pTransform = NULL)
+		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL)
 		{
+			m_bUpdatedClip = false;
+
 			double dM11, dM12, dM21, dM22, dX, dY;
 
 			if (NULL != pTransform)
@@ -831,7 +845,7 @@ namespace MetaFile
 				SetTransform(pTransform->M11, pTransform->M12, pTransform->M21, pTransform->M22, pTransform->Dx, pTransform->Dy);
 			}
 
-			pPath->Draw(this, false, false, nClipMode);
+			oPath.DrawOn(this, false, false, nClipMode);
 
 			if (NULL != pTransform)
 				SetTransform(dM11, dM12, dM21, dM22, dX, dY);
@@ -1102,7 +1116,6 @@ namespace MetaFile
 				
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
 			}
-
 			else //if (BS_SOLID == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -1111,6 +1124,16 @@ namespace MetaFile
 			}
 
 			return true;
+		}
+		void UpdateClip()
+		{
+			CClip *pClip = m_pFile->GetClip();
+			
+			if (NULL == pClip)
+				return;
+			
+			pClip->DrawOnRenderer(this);
+			m_bUpdatedClip = true;
 		}
 		void UpdateTransform(int iGraphicsMode = GM_ADVANCED)
 		{
@@ -1316,7 +1339,8 @@ namespace MetaFile
 		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы
 		double         m_dScaleY; // результирующая картинка была нужных размеров.
 		bool           m_bStartedPath;
-
+		bool           m_bUpdatedClip;
+		
 		TRenderConditional *m_pSecondConditional;
 	};
 }

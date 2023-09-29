@@ -88,7 +88,7 @@ namespace MetaFile
 			chBlue  = 0;
 			chGreen = 0;
 			chRed   = 0;
-			chAlpha = 0;
+			chAlpha = 255;
 		}
 
 		TEmfPlusARGB(unsigned char chBlue, unsigned char chGreen, unsigned char chRed)

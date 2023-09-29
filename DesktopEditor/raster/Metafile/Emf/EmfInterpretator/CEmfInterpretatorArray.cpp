@@ -158,10 +158,10 @@ namespace MetaFile
 			pInterpretator->ExcludeClip(oClip, oBB);
 	}
 
-	void CEmfInterpretatorArray::PathClip(IPath* pPath, int nClipMode, TXForm* pTransform)
+	void CEmfInterpretatorArray::PathClip(const CPath &oPath, int nClipMode, TXForm* pTransform)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-			pInterpretator->PathClip(pPath, nClipMode, pTransform);
+			pInterpretator->PathClip(oPath, nClipMode, pTransform);
 	}
 
 	void CEmfInterpretatorArray::StartClipPath(unsigned int unMode, int nFillMode)
@@ -846,7 +846,7 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMFPLUS_DRAWLINES(shOgjectIndex, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath)
+	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CPath *pPath)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, pPath);

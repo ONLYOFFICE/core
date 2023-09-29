@@ -1,4 +1,4 @@
-#include "CEmfParser.h"
+#include "../../Common/CPath.h"
 #include "CEmfPlusParser.h"
 
 #include "../EmfInterpretator/CEmfInterpretator.h"
@@ -528,7 +528,7 @@ namespace MetaFile
 
 		std::vector<unsigned int> arUnused(2);
 
-                m_oStream >> pPen->unPenStyle;
+		m_oStream >> pPen->unPenStyle;
 		m_oStream >> pPen->unWidth;
 		m_oStream >> arUnused[0]; // BrushStyle
 		m_oStream >> pPen->oColor;
@@ -540,19 +540,19 @@ namespace MetaFile
 		if (pPen->unNumStyleEntries > 0)
 		{
 			current_size -= pPen->unNumStyleEntries * 4;
-                        pPen->pStyleEntry = new unsigned int[pPen->unNumStyleEntries];
-                        if (!pPen->pStyleEntry)
+			pPen->pStyleEntry = new unsigned int[pPen->unNumStyleEntries];
+			if (!pPen->pStyleEntry)
 			{
 				delete pPen;
 				return SetError();
 			}
 
 			for (unsigned int ulIndex = 0; ulIndex < pPen->unNumStyleEntries; ulIndex++)
-                            m_oStream >> pPen->pStyleEntry[ulIndex];
+				m_oStream >> pPen->pStyleEntry[ulIndex];
 		}
 		else
 		{
-                    pPen->pStyleEntry = NULL;
+			pPen->pStyleEntry = NULL;
 		}
 
 		// Пропускаем часть с картинкой, если она была
@@ -572,7 +572,7 @@ namespace MetaFile
 		if (!pPen)
 			return SetError();
 
-                m_oStream >> pPen->unPenStyle;
+		m_oStream >> pPen->unPenStyle;
 
 		unsigned int widthX, widthY;
 

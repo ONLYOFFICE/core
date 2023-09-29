@@ -97,21 +97,25 @@ namespace MetaFile
 		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRectL& oBounds = TRectL(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
-		void CheckClip();
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(const CPath& oPath, int nClipMode, TXForm* pTransform = NULL) override;
+		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
+		void EndClipPath(unsigned int unMode) override {};
 
 		void AddStroke(NodeAttributes &arAttributes) const;
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL) const;
 		void AddClip();
+		bool OpenClip();
+		void CloseClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
 
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath(const IPath* pPath = NULL, const TXForm* pTransform = NULL);
+		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL);
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreatePatternStyle(IBrush *pBrush);
@@ -129,6 +133,7 @@ namespace MetaFile
 		XmlUtils::CXmlWriter *m_pXmlWriter;
 		bool                 m_bExternXmlWriter;
 
+		bool                 m_bUpdatedClip;
 		CSvgClip             m_oClip;
 
 		friend class CEmfInterpretatorSvg;

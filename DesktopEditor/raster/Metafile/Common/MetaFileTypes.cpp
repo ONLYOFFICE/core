@@ -46,14 +46,14 @@ namespace MetaFile
 
 	TRGBA::TRGBA(int nValue) : r((nValue >> 0)  & 0xFF), g((nValue >> 8)  & 0xFF), b((nValue >> 16)  & 0xFF), a((nValue >> 24)  & 0xFF)
 	{}
-	
+
 	void TRGBA::Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
 	{
 		r = _r;
 		g = _g;
 		b = _b;
 	}
-	
+
 	void TRGBA::Copy(const TRGBA &oRGBA)
 	{
 		r = oRGBA.r;
@@ -73,14 +73,18 @@ namespace MetaFile
 		r = b;
 		b = t;
 	}
-	
+
 	TXForm::TXForm() : M11(1), M12(0), M21(0), M22(1), Dx(0), Dy(0)
 	{}
-	
+
+	TXForm::TXForm(const TXForm &oXForm) 
+		: M11(oXForm.M11), M12(oXForm.M12), M21(oXForm.M21), M22(oXForm.M22), Dx(oXForm.Dx), Dy(oXForm.Dy)
+	{}
+
 	TXForm::TXForm(double m11, double m12, double m21, double m22, double dx, double dy)
 		: M11(m11), M12(m12), M21(m21), M22(m22), Dx(dx), Dy(dy)
 	{}
-	
+
 	void TXForm::Init()
 	{
 		M11 = 1;
@@ -90,7 +94,7 @@ namespace MetaFile
 		Dx  = 0;
 		Dy  = 0;
 	}
-	
+
 	void TXForm::Copy(const TXForm *pOther)
 	{
 		if (NULL == pOther)
@@ -103,7 +107,7 @@ namespace MetaFile
 		Dx	= pOther->Dx;
 		Dy	= pOther->Dy;
 	}
-	
+
 	void TXForm::Multiply(TXForm &oOther, unsigned int ulMode)
 	{
 		if (MWT_IDENTITY == ulMode)
@@ -149,7 +153,7 @@ namespace MetaFile
 			Copy(&oOther);
 		}
 	}
-	
+
 	void TXForm::Apply(double &dX, double &dY)
 	{
 		double _dX = dX;
@@ -158,5 +162,4 @@ namespace MetaFile
 		dX = _dX * M11 + _dY * M21 + Dx;
 		dY = _dX * M12 + _dY * M22 + Dy;
 	}
-	
 }

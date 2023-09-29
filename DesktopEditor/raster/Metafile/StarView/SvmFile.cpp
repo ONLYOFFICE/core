@@ -185,8 +185,8 @@ void CSvmFile::PlayMetaFile()
 			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION(); break;
 			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION(); break;
 
-                        case META_BMPEX_ACTION:                 Read_META_BMPEX(); break;
-                        case META_BMPEXSCALE_ACTION:		Read_META_BMPEXSCALE(); break;
+			case META_BMPEX_ACTION:                 Read_META_BMPEX(); break;
+			case META_BMPEXSCALE_ACTION:		Read_META_BMPEXSCALE(); break;
 
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
@@ -224,7 +224,7 @@ void CSvmFile::PlayMetaFile()
 #ifdef _DEBUG
 		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
 		{
-                        std::wstring name = actionNamesSmv[actionType - 99].actionName;
+			std::wstring name = actionNamesSmv[actionType - 99].actionName;
 
 			std::wcout << name << L"\t\t" << actionType << L"\t(version = " << m_currentActionVersion << L")\t; skiped = " << need_skip << L"\n";
 		}			

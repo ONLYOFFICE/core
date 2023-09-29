@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -549,8 +549,9 @@ namespace MetaFile
 		double Dy;
 
 		TXForm();
+		TXForm(const TXForm& oXForm);
 		TXForm(double m11, double m12, double m21, double m22, double dx, double dy);
-
+		
 		void Init();
 		void Copy(const TXForm* pOther);
 		void Multiply(TXForm &oOther, unsigned int ulMode);

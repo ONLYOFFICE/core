@@ -65,7 +65,7 @@ namespace MetaFile
 		}
 		m_mObjects.clear();
 	}
-	void    CWmfPlayer::Clear()
+	void CWmfPlayer::Clear()
 	{
 		for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
 		{
@@ -132,7 +132,7 @@ namespace MetaFile
 	{
 		return m_pDC;
 	}
-	void    CWmfPlayer::RegisterObject(CWmfObjectBase* pObject)
+	void CWmfPlayer::RegisterObject(CWmfObjectBase* pObject)
 	{
 		// Найдем наименьший доступный индекс
 		unsigned short ushIndex = m_ushIndex;
@@ -162,13 +162,12 @@ namespace MetaFile
 		if (ushIndex == m_ushIndex)
 			m_ushIndex++;
 	}
-	void    CWmfPlayer::SelectObject(unsigned short ushIndex)
+	void CWmfPlayer::SelectObject(unsigned short ushIndex)
 	{
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
 		if (m_mObjects.end() != oPos)
 		{
 			CWmfObjectBase* pObject = oPos->second;
-
 
 			switch (pObject->GetType())
 			{
@@ -177,10 +176,12 @@ namespace MetaFile
 			case WMF_OBJECT_PEN: m_pDC->SetPen((CWmfPen*)pObject); break;
 			case WMF_OBJECT_PALETTE: m_pDC->SetPalette((CWmfPalette*)pObject); break;
 			case WMF_OBJECT_REGION: m_pDC->SetRegion((CWmfRegion*)pObject); break;
+			case WMF_OBJECT_UNKNOWN:
+			break;
 			}
 		}
 	}
-	void    CWmfPlayer::SelectPalette(unsigned short ushIndex)
+	void CWmfPlayer::SelectPalette(unsigned short ushIndex)
 	{
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
 		if (m_mObjects.end() != oPos)
@@ -190,7 +191,7 @@ namespace MetaFile
 				m_pDC->SetPalette((CWmfPalette*)pObject);
 		}
 	}
-	void    CWmfPlayer::DeleteObject(unsigned short ushIndex)
+	void CWmfPlayer::DeleteObject(unsigned short ushIndex)
 	{
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
 		if (m_mObjects.end() != oPos)
@@ -208,6 +209,8 @@ namespace MetaFile
 				case WMF_OBJECT_PEN: pDC->RemovePen((CWmfPen*)pObject); break;
 				case WMF_OBJECT_PALETTE: pDC->RemovePalette((CWmfPalette*)pObject); break;
 				case WMF_OBJECT_REGION: pDC->RemoveRegion((CWmfRegion*)pObject); break;
+				case WMF_OBJECT_UNKNOWN:
+				break;
 				}
 			}
 
@@ -259,12 +262,13 @@ namespace MetaFile
 	{
 
 	}
-	CWmfDC*        CWmfDC::Copy()
+	CWmfDC* CWmfDC::Copy()
 	{
 		CWmfDC* pNewDC = new CWmfDC();
 		if (!pNewDC)
 			return NULL;
 
+		pNewDC->m_oClip.Copy(m_oClip);
 		pNewDC->m_pBrush            = (m_pBrush == &m_oDefaultBrush ? &pNewDC->m_oDefaultBrush : m_pBrush);
 		pNewDC->m_pPen              = (m_pPen == &m_oDefaultPen ? &pNewDC->m_oDefaultPen : m_pPen);
 		pNewDC->m_pPalette          = m_pPalette;
@@ -291,72 +295,77 @@ namespace MetaFile
 
 		return pNewDC;
 	}
-	void           CWmfDC::SetBrush(CWmfBrush* pBrush)
+	
+	CClip *CWmfDC::GetClip()
+	{
+		return &m_oClip;
+	}
+	void CWmfDC::SetBrush(CWmfBrush* pBrush)
 	{
 		m_pBrush = pBrush;
 	}
-	void           CWmfDC::RemoveBrush(CWmfBrush* pBrush)
+	void CWmfDC::RemoveBrush(CWmfBrush* pBrush)
 	{
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
 	}
-	CWmfBrush*     CWmfDC::GetBrush()
+	CWmfBrush* CWmfDC::GetBrush()
 	{
 		return m_pBrush;
 	}
-	void           CWmfDC::SetPen(CWmfPen* pPen)
+	void CWmfDC::SetPen(CWmfPen* pPen)
 	{
 		m_pPen = pPen;
 	}
-	void           CWmfDC::RemovePen(CWmfPen* pPen)
+	void CWmfDC::RemovePen(CWmfPen* pPen)
 	{
 		if (m_pPen == pPen)
 			m_pPen = NULL;
 	}
-	CWmfPen*       CWmfDC::GetPen()
+	CWmfPen* CWmfDC::GetPen()
 	{
 		return m_pPen;
 	}
-	void           CWmfDC::SetPalette(CWmfPalette* pPalette)
+	void CWmfDC::SetPalette(CWmfPalette* pPalette)
 	{
 		m_pPalette = pPalette;
 	}
-	void           CWmfDC::RemovePalette(CWmfPalette* pPalette)
+	void CWmfDC::RemovePalette(CWmfPalette* pPalette)
 	{
 		if (m_pPalette == pPalette)
 			m_pPalette = NULL;
 	}
-	CWmfPalette*   CWmfDC::GetPalette()
+	CWmfPalette* CWmfDC::GetPalette()
 	{
 		return m_pPalette;
 	}
-	void           CWmfDC::SetFont(CWmfFont* pFont)
+	void CWmfDC::SetFont(CWmfFont* pFont)
 	{
 		m_pFont = pFont;
 	}
-	void           CWmfDC::RemoveFont(CWmfFont* pFont)
+	void CWmfDC::RemoveFont(CWmfFont* pFont)
 	{
 		if (m_pFont == pFont)
 			m_pFont = NULL;
 	}
-	CWmfFont*      CWmfDC::GetFont()
+	CWmfFont*  CWmfDC::GetFont()
 	{
 		return m_pFont;
 	}
-	void           CWmfDC::SetRegion(CWmfRegion* pRegion)
+	void CWmfDC::SetRegion(CWmfRegion* pRegion)
 	{
 		m_pRegion = pRegion;
 	}
-	void           CWmfDC::RemoveRegion(CWmfRegion* pRegion)
+	void CWmfDC::RemoveRegion(CWmfRegion* pRegion)
 	{
 		if (m_pRegion == pRegion)
 			m_pRegion = NULL;
 	}
-	CWmfRegion*    CWmfDC::GetRegion()
+	CWmfRegion* CWmfDC::GetRegion()
 	{
 		return m_pRegion;
 	}
-	void           CWmfDC::SetMapMode(unsigned short ushMapMode)
+	void CWmfDC::SetMapMode(unsigned short ushMapMode)
 	{
 		m_ushMapMode = ushMapMode;
 
@@ -412,23 +421,23 @@ namespace MetaFile
 
 		UpdateFinalTransform();
 	}
-	unsigned int   CWmfDC::GetMapMode()
+	unsigned int CWmfDC::GetMapMode()
 	{
 		return m_ushMapMode;
 	}
-	double         CWmfDC::GetPixelWidth()
+	double CWmfDC::GetPixelWidth()
 	{
 		return m_dPixelWidth;
 	}
-	double         CWmfDC::GetPixelHeight()
+	double CWmfDC::GetPixelHeight()
 	{
 		return m_dPixelHeight;
 	}
-	void           CWmfDC::SetPixelWidth(double dW)
+	void CWmfDC::SetPixelWidth(double dW)
 	{
 		m_dPixelWidth = dW;
 	}
-	void           CWmfDC::SetPixelHeight(double dH)
+	void CWmfDC::SetPixelHeight(double dH)
 	{
 		m_dPixelHeight = dH;
 	}
@@ -502,7 +511,7 @@ namespace MetaFile
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
-	void  CWmfDC::SetViewportExt(short shW, short shH)
+	void CWmfDC::SetViewportExt(short shW, short shH)
 	{
 		m_oViewport.w = shW;
 		m_oViewport.h = shH;
@@ -620,16 +629,16 @@ namespace MetaFile
 	{
 		return m_oCurPos;
 	}
-	void           CWmfDC::SetCurPos(TPointS& oPoint)
+	void CWmfDC::SetCurPos(TPointS& oPoint)
 	{
 		m_oCurPos = oPoint;
 	}
-	void           CWmfDC::SetCurPos(short shX, short shY)
+	void CWmfDC::SetCurPos(short shX, short shY)
 	{
 		m_oCurPos.X = shX;
 		m_oCurPos.Y = shY;
 	}
-	void           CWmfDC::SetTextBgMode(unsigned short ushMode)
+	void CWmfDC::SetTextBgMode(unsigned short ushMode)
 	{
 		m_ushTextBgMode = ushMode;
 	}
@@ -637,7 +646,7 @@ namespace MetaFile
 	{
 		return m_ushTextBgMode;
 	}
-	void           CWmfDC::SetLayout(unsigned short ushLayout)
+	void CWmfDC::SetLayout(unsigned short ushLayout)
 	{
 		m_ushLayout = ushLayout;
 	}
@@ -645,7 +654,7 @@ namespace MetaFile
 	{
 		return m_ushLayout;
 	}
-	void           CWmfDC::SetPolyFillMode(unsigned short ushMode)
+	void CWmfDC::SetPolyFillMode(unsigned short ushMode)
 	{
 		m_ushPolyFillMode = ushMode;
 	}
@@ -653,7 +662,7 @@ namespace MetaFile
 	{
 		return m_ushPolyFillMode;
 	}
-	void           CWmfDC::SetRop2Mode(unsigned short ushMode)
+	void CWmfDC::SetRop2Mode(unsigned short ushMode)
 	{
 		m_ushRop2Mode = ushMode;
 	}
@@ -661,7 +670,7 @@ namespace MetaFile
 	{
 		return m_ushRop2Mode;
 	}
-	void           CWmfDC::SetStretchBltMode(unsigned short ushMode)
+	void CWmfDC::SetStretchBltMode(unsigned short ushMode)
 	{
 		m_ushStretchBltMode = ushMode;
 	}
@@ -669,7 +678,7 @@ namespace MetaFile
 	{
 		return m_ushStretchBltMode;
 	}
-	void           CWmfDC::SetTextAlign(unsigned short ushTextAlign)
+	void CWmfDC::SetTextAlign(unsigned short ushTextAlign)
 	{
 		m_ushTextAlign = ushTextAlign;
 	}
@@ -677,7 +686,7 @@ namespace MetaFile
 	{
 		return m_ushTextAlign;
 	}
-	void           CWmfDC::SetCharSpacing(unsigned short ushCharSpacing)
+	void CWmfDC::SetCharSpacing(unsigned short ushCharSpacing)
 	{
 		m_ushCharSpacing = ushCharSpacing;
 	}
@@ -685,22 +694,22 @@ namespace MetaFile
 	{
 		return m_ushCharSpacing;
 	}
-	TXForm*        CWmfDC::GetTransform()
+	TXForm* CWmfDC::GetTransform()
 	{
 		return &m_oTransform;
 	}
-	TXForm*        CWmfDC::GetInverseTransform()
+	TXForm* CWmfDC::GetInverseTransform()
 	{
 		return &m_oTransform;
 	}
-	TXForm*        CWmfDC::GetFinalTransform(int iGraphicsMode)
+	TXForm* CWmfDC::GetFinalTransform(int iGraphicsMode)
 	{
 		if (GM_COMPATIBLE == iGraphicsMode)
 			return &m_oFinalTransform2;
 
 		return &m_oFinalTransform;
 	}
-	unsigned int   CWmfDC::GetMiterLimit()
+	unsigned int CWmfDC::GetMiterLimit()
 	{
 		return 0;
 	}

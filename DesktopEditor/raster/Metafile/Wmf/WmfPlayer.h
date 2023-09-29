@@ -32,6 +32,8 @@
 #ifndef _METAFILE_WMF_WMFPLAYER_H
 #define _METAFILE_WMF_WMFPLAYER_H
 
+#include "../Common/CClip.h"
+
 #include "WmfObjects.h"
 
 #include <map>
@@ -77,6 +79,7 @@ namespace MetaFile
 		CWmfDC();
 		~CWmfDC();
 		CWmfDC*        Copy();
+		CClip*         GetClip();
 		void           SetBrush(CWmfBrush* pBrush);
 		void           RemoveBrush(CWmfBrush* pBrush);
 		CWmfBrush*     GetBrush();				     
@@ -142,6 +145,7 @@ namespace MetaFile
 
 	private:
 
+		CClip          m_oClip;
 		CWmfBrush      m_oDefaultBrush;
 		CWmfPen        m_oDefaultPen;
 		CWmfBrush*     m_pBrush;

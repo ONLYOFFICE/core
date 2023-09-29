@@ -652,6 +652,11 @@ namespace MetaFile
 	{
 		return &m_oHeader.oFrameToBounds;
 	}
+	
+	CClip *CEmfParserBase::GetClip()
+	{
+		return m_pDC->GetClip();
+	}
 
 	double CEmfParserBase::GetPixelHeight()
 	{
@@ -789,6 +794,11 @@ namespace MetaFile
 	{
 		return m_pDC->GetArcDirection();
 	}
+	
+	CPath *CEmfParserBase::GetPath()
+	{
+		return m_pPath;
+	}
 
 	bool CEmfParserBase::IsViewportFlippedY()
 	{
@@ -855,7 +865,7 @@ namespace MetaFile
 		return &m_oHeader.oFramePx;
 	}
 
-	CEmfPath *CEmfParserBase::GetPath() const
+	CPath *CEmfParserBase::GetPath() const
 	{
 		return m_pPath;
 	}
@@ -1116,7 +1126,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_BEGINPATH();
 
-		m_pPath = new CEmfPath();
+		m_pPath = new CPath();
 		if (!m_pPath)
 			SetError();
 
@@ -1196,7 +1206,8 @@ namespace MetaFile
 
 		if (m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, false, true);
+			m_pPath->DrawOn(m_pInterpretator, false, true);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -1308,15 +1319,13 @@ namespace MetaFile
 	void CEmfParserBase::HANDLE_EMR_SELECTCLIPPATH(unsigned int &unRegionMode)
 	{
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
 		
-			if (NULL != m_pPath)
-			{
-				m_pInterpretator->PathClip(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
-				RELEASEOBJECT(m_pPath);
-				UpdateOutputDC();
-			}
+		if (NULL != m_pPath)
+		{
+			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, *GetDC()->GetFinalTransform(GM_ADVANCED));
+			RELEASEOBJECT(m_pPath);
+			UpdateOutputDC();
 		}
 	}
 
@@ -1693,7 +1702,8 @@ namespace MetaFile
 
 		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, true, true);
+			m_pPath->DrawOn(m_pInterpretator, true, true);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -1705,7 +1715,8 @@ namespace MetaFile
 
 		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, true, false);
+			m_pPath->DrawOn(m_pInterpretator, true, false);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}

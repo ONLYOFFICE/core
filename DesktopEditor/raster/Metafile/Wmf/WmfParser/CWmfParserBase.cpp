@@ -34,6 +34,11 @@ namespace MetaFile
 		m_oDCRect = GetBoundingBox();
 		return &m_oDCRect;
 	}
+	
+	CClip *CWmfParserBase::GetClip()
+	{
+		return m_pDC->GetClip();
+	}
 
 	double CWmfParserBase::GetPixelHeight()
 	{
@@ -169,6 +174,11 @@ namespace MetaFile
 	unsigned int CWmfParserBase::GetArcDirection()
 	{
 		return AD_CLOCKWISE;
+	}
+	
+	CPath *CWmfParserBase::GetPath()
+	{
+		return NULL;
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -999,7 +1009,7 @@ namespace MetaFile
 		m_pDC->SetCurPos((shLeft + shRight) / 2, (shTop + shBottom) / 2);
 	}
 
-	void CWmfParserBase::HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL &oRectangle, unsigned char *pString, short *pDx)
+	void CWmfParserBase::HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectS &oRectangle, unsigned char *pString, short *pDx)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_EXTTEXTOUT(shY, shX, shStringLength, ushFwOptions, oRectangle, pString, pDx);
@@ -1356,13 +1366,12 @@ namespace MetaFile
 
 	void CWmfParserBase::HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex)
 	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_META_SELECTCLIPREGION(ushIndex);
+
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 		// текущим интерфейсом рендерера невозможно.
-		if (NULL != m_pInterpretator)
-		{
-			m_pInterpretator->HANDLE_META_SELECTCLIPREGION(ushIndex);
-			m_pInterpretator->ResetClip();
-		}
+		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 	}
 
@@ -1421,12 +1430,14 @@ namespace MetaFile
 		TranslatePoint(pWindow->x, pWindow->y, oBB.Left, oBB.Top);
 		TranslatePoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h, oBB.Right, oBB.Bottom);
 
+		m_pDC->GetClip()->Exclude(oClip, oBB);
+		UpdateOutputDC();
+
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->HANDLE_META_EXCLUDECLIPRECT(shBottom, shRight, shTop, shLeft);
 			m_pInterpretator->ExcludeClip(oClip, oBB);
 		}
-		UpdateOutputDC();
 	}
 
 	void CWmfParserBase::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
@@ -1437,11 +1448,9 @@ namespace MetaFile
 		TranslatePoint(shRight, shBottom, oClip.Right, oClip.Bottom);
 
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
-			m_pInterpretator->ResetClip();
-			m_pInterpretator->IntersectClip(oClip);
-		}
+
+		m_pDC->GetClip()->Intersect(oClip);
 		UpdateOutputDC();
 	}
 

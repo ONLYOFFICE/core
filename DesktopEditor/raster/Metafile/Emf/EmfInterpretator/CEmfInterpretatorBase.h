@@ -134,7 +134,7 @@ namespace MetaFile
 		virtual void HANDLE_EMFPLUS_DRAWIMAGE(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) = 0;
 		virtual void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) = 0;
 		virtual void HANDLE_EMFPLUS_DRAWLINES(short, const std::vector<TEmfPlusPointF>&) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CEmfPath*) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CPath*) = 0;
 		virtual void HANDLE_EMFPLUS_DRAWPIE(short, double, double, const TEmfPlusRectF&) = 0;
 		virtual void HANDLE_EMFPLUS_DRAWRECTS(short, const std::vector<TEmfPlusRectF>&) = 0;
 		virtual void HANDLE_EMFPLUS_DRAWSTRING(short, unsigned int, unsigned int, const std::wstring&, const TEmfPlusRectF&) = 0;

@@ -513,7 +513,7 @@ namespace MetaFile
 		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (unsigned int)); // offBits
 		m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int)); // cbBits
 
-                m_pOutStream->WriteFile((BYTE*)&pPen->unPenStyle,    sizeof (unsigned int));
+		m_pOutStream->WriteFile((BYTE*)&pPen->unPenStyle,    sizeof (unsigned int));
 
 		m_pOutStream->WriteFile((BYTE*)&pPen->unWidth,       sizeof (unsigned int));
 
@@ -526,9 +526,9 @@ namespace MetaFile
 		m_pOutStream->WriteFile((BYTE*)&pPen->unNumStyleEntries, sizeof (unsigned int));
 
 		for (unsigned int i = 0; i < pPen->unNumStyleEntries; ++i)
-                    m_pOutStream->WriteFile((BYTE*)&pPen->pStyleEntry[i], sizeof (unsigned int));
+			m_pOutStream->WriteFile((BYTE*)&pPen->pStyleEntry[i], sizeof (unsigned int));
 
-                if (pPen->unPenStyle != PS_USERSTYLE)
+		if (pPen->unPenStyle != PS_USERSTYLE)
 			m_pOutStream->WriteFile((BYTE*)&unZero,            sizeof (unsigned int));
 	}
 

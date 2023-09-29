@@ -1330,7 +1330,7 @@ namespace MetaFile
 		oPath.Close();
 
 		if (NULL != m_pInterpretator)
-			m_pInterpretator->PathClip(&oPath, nMode, GetTransform());
+			m_pInterpretator->PathClip(oPath, nMode, GetTransform());
 
 		UpdateOutputDC();
 	}
@@ -1699,7 +1699,7 @@ namespace MetaFile
 				oRect.Right  = arPoints[1].X - m_pDC->GetPixelWidth();
 				oRect.Bottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
-                                TRectD oTempSrcRect = oSrcRect.ToRectD();
+				TRectD oTempSrcRect = oSrcRect.ToRectD();
 
 				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
@@ -1964,8 +1964,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex < unCount; unIndex += 3)
 			CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
-					arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
-					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+			        arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+			        arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		ClosePath();
 
@@ -2017,8 +2017,8 @@ namespace MetaFile
 
 		for (unsigned int unIndex = 1; unIndex < unCountPoints; unIndex += 3)
 			CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
-					arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
-					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+			        arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+			        arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		DrawPath(true, false);
 
@@ -2108,10 +2108,10 @@ namespace MetaFile
 
 			TRGBA oColor;
 
-                        oColor.b = pBrush->oColor.chBlue;
-                        oColor.g = pBrush->oColor.chGreen;
-                        oColor.r = pBrush->oColor.chRed;
-                        oColor.a = pBrush->oColor.chAlpha;
+			oColor.b = pBrush->oColor.chBlue;
+			oColor.g = pBrush->oColor.chGreen;
+			oColor.r = pBrush->oColor.chRed;
+			oColor.a = pBrush->oColor.chAlpha;
 
 			TRGBA oTextColor = m_pDC->GetTextColor();
 
@@ -2337,12 +2337,12 @@ namespace MetaFile
 				m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
 			CPathConverter oPathConverter;
-			CEmfPath oNewPath, oLineCapPath;
+			CPath oNewPath, oLineCapPath;
 
 			oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
 
-			oNewPath.DrawWithoutClean(m_pInterpretator, true, false);
-			oLineCapPath.DrawWithoutClean(m_pInterpretator, false, true);
+			oNewPath.DrawOn(m_pInterpretator, true, false);
+			oLineCapPath.DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, &oNewPath);
@@ -2531,10 +2531,10 @@ namespace MetaFile
 
 			TRGBA oColor;
 
-                        oColor.b = pBrush->oColor.chBlue;
-                        oColor.g = pBrush->oColor.chGreen;
-                        oColor.r = pBrush->oColor.chRed;
-                        oColor.a = pBrush->oColor.chAlpha;
+			oColor.b = pBrush->oColor.chBlue;
+			oColor.g = pBrush->oColor.chGreen;
+			oColor.r = pBrush->oColor.chRed;
+			oColor.a = pBrush->oColor.chAlpha;
 
 			TRGBA oTextColor = m_pDC->GetTextColor();
 
@@ -2676,14 +2676,15 @@ namespace MetaFile
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
 			CEmfPlusBrush oBrush;
-                        oBrush.oColor.chBlue     = (unBrushId >> 0)  & 0xFF;
-                        oBrush.oColor.chGreen    = (unBrushId >> 8)  & 0xFF;
-                        oBrush.oColor.chRed      = (unBrushId >> 16) & 0xFF;
-                        oBrush.oColor.chAlpha    = (unBrushId >> 24) & 0xFF;
+			
+			oBrush.oColor.chBlue  = (unBrushId >> 0)  & 0xFF;
+			oBrush.oColor.chGreen = (unBrushId >> 8)  & 0xFF;
+			oBrush.oColor.chRed   = (unBrushId >> 16) & 0xFF;
+			oBrush.oColor.chAlpha = (unBrushId >> 24) & 0xFF;
 
 			m_pDC->SetBrush(&oBrush);
 
-			pPath->DrawWithoutClean(m_pInterpretator, false, true);
+			pPath->DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
@@ -2698,7 +2699,7 @@ namespace MetaFile
 
 			m_pDC->SetBrush(pBrush);
 
-			pPath->DrawWithoutClean(m_pInterpretator, false, true);
+			pPath->DrawOn(m_pInterpretator, false, true);
 
 			if (NULL != m_pInterpretator)
 				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
@@ -2732,7 +2733,7 @@ namespace MetaFile
 		m_oStream >> oRect;
 
 		if (NULL != m_pInterpretator)
-			    m_pInterpretator->HANDLE_EMFPLUS_FILLPIE(unBrushId, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
+			m_pInterpretator->HANDLE_EMFPLUS_FILLPIE(unBrushId, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
 
 		//TODO: реализовать
 	}
@@ -3371,7 +3372,7 @@ namespace MetaFile
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
 		m_pInterpretator->ResetClip();
-		m_pInterpretator->PathClip(pPath, uchCM, GetTransform());
+		m_pInterpretator->PathClip(*pPath, uchCM, GetTransform());
 
 		m_pInterpretator->HANDLE_EMFPLUS_SETCLIPPATH(unShFlags, pPath);
 	}
@@ -3390,7 +3391,7 @@ namespace MetaFile
 		if (NULL == m_pInterpretator) return;
 
 		m_pInterpretator->ResetClip();
-                CombineClip(oRect.ToRectD(), shCM);
+		CombineClip(oRect.ToRectD(), shCM);
 		m_pInterpretator->HANDLE_EMFPLUS_SETCLIPRECT(shCM, oRect);
 	}
 
@@ -3422,7 +3423,7 @@ namespace MetaFile
 						CEmfPlusRegionNodePath* pNodeRegionPath = (CEmfPlusRegionNodePath*)pNode;
 
 						if (!pNodeRegionPath->Empty())
-							m_pInterpretator->PathClip(pNodeRegionPath->GetPath(), shCM, GetTransform());
+							m_pInterpretator->PathClip(*pNodeRegionPath->GetPath(), shCM, GetTransform());
 
 						break;
 					}
@@ -3431,7 +3432,7 @@ namespace MetaFile
 						CEmfPlusRegionNodeRectF* pNodeRegionRectF = (CEmfPlusRegionNodeRectF*)pNode;
 
 						if (!pNodeRegionRectF->Empty())
-                                                    CombineClip(pNodeRegionRectF->GetRect()->ToRectD(), shCM);
+							CombineClip(pNodeRegionRectF->GetRect()->ToRectD(), shCM);
 
 						break;
 					}

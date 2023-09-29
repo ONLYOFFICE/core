@@ -82,7 +82,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
 #else
 	globalParams->setDrawFormFields(gFalse);
-	//globalParams->setDrawAnnotations(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
 	SetCMapMemory(NULL, 0);
 #endif
 

@@ -1505,6 +1505,8 @@ namespace OOX
 		}
 		std::wstring CMathFont::toXML() const
 		{
+			if (!m_val.IsInit()) return L"";
+			
 			std::wstring sResult = _T("<m:mathFont m:val=\"");
 			sResult += *m_val;
 			sResult += _T("\"/>");

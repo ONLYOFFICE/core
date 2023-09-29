@@ -417,9 +417,14 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 	}
 	if (nFlags & (1 << 2))
 	{
+		std::string arrEffects[] = {"S", "C"};
+		nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::cout << "BE " << arrEffects[nPathLength] << " ";
+
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
-		std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
+		std::cout << (double)nPathLength / 100.0 << ", ";
 	}
 	if (nFlags & (1 << 3))
 	{

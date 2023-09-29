@@ -1568,13 +1568,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (pField->fieldLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Специальный цвет для аннотации - C
 	if (pField->fieldLookup("C", &oObj)->isArray())
@@ -1680,13 +1689,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj2)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (oAnnot.dictLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj2.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Цвет - C
 	if (oAnnot.dictLookup("C", &oObj)->isArray())
@@ -2156,7 +2174,10 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	if (m_unAFlags & (1 << 1))
 		oRes.WriteString(m_sContents);
 	if (m_unAFlags & (1 << 2))
-		oRes.AddDouble(m_dBE);
+	{
+		oRes.WriteBYTE(m_pBE.first);
+		oRes.AddDouble(m_pBE.second);
+	}
 	if (m_unAFlags & (1 << 3))
 	{
 		oRes.AddInt((unsigned int)m_arrC.size());

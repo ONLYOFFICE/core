@@ -493,6 +493,7 @@
 		rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
 		let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
 		rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+		rec["ToggleNoView"] = (rec["annotflag"] >> 8) & 1; // ToggleNoView
 		rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
 		// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
 		rec["display"] = 0;
@@ -531,7 +532,11 @@
 			rec["Contents"] = reader.readString();
 		// Эффекты границы - BE
 		if (flags & (1 << 2))
-			rec["borderCloudy"] = reader.readDouble();
+		{
+			rec["BE"] = {};
+			rec["BE"]["S"] = reader.readByte();
+			rec["BE"]["I"] = reader.readDouble();
+		}
 		// Специальный цвет аннотации - С
 		if (flags & (1 << 3))
 		{

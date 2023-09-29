@@ -197,7 +197,7 @@ private:
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
 	double m_pRect[4]; // Координаты
-	double m_dBE; // Эффекты границы
+	std::pair<BYTE, double> m_pBE; // Эффекты границы
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения

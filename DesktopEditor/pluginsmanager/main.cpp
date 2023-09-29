@@ -790,7 +790,8 @@ private:
 
 				// Archive
 				COfficeUtils oOfficeUtils(NULL);
-				if (S_OK == oOfficeUtils.ExtractToDirectory(sTmpFile, sTempDirExt, NULL, 0))
+				if (S_OK == oOfficeUtils.IsArchive(sTmpFile) &&
+					S_OK == oOfficeUtils.ExtractToDirectory(sTmpFile, sTempDirExt, NULL, 0))
 				{
 					std::wstring sConfigFile = sTempDirExt + L"/config.json";
 

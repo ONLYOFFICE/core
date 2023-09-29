@@ -38,17 +38,15 @@ namespace Test
 
             CValue oApi = oGlobal["Api"];
             CValue oDocument = oApi.Call("GetDocument");
-            CValue oParagraph = oApi.Call("CreateParagraph");
-            //CValue oContent = oContext.CreateArray(1);
+            CValue oParagraph1 = oApi.Call("CreateParagraph");
 
-            oParagraph.Call("SetSpacingAfter", 1000, false);
-            oParagraph.Call("AddText", "Hello from .net!");
+            oParagraph1.Call("SetSpacingAfter", 1000, false);
+            oParagraph1.Call("AddText", "Hello from .net!");
 
             CValue oParagraph2 = oApi.Call("CreateParagraph");
             oParagraph2.Call("AddText", "Goodbye!");
 
-            CValue oCustomArray = new CValue[] { oParagraph, "hello", 10, new CValue[] { true, oParagraph2 } };
-            CValue oContent = new CValue[] { oCustomArray[0] /* oParagraph */, oCustomArray[3][1] /* oParagraph2 */ };
+            CValue oContent = new CValue[] { oParagraph1, oParagraph2 };
 
             oDocument.Call("InsertContent", oContent);
 

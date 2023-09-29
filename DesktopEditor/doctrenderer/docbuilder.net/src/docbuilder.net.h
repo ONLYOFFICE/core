@@ -172,7 +172,7 @@ namespace docbuilder_net
 		static operator CDocBuilderValue^ (unsigned int value);
 		static operator CDocBuilderValue^ (double value);
 		static operator CDocBuilderValue^ (String^ value);
-		static operator CDocBuilderValue^ (array<CDocBuilderValue^>^ value);
+		static operator CDocBuilderValue^ (array<CDocBuilderValue^>^ values);
 
 		/// <summary>
 		/// Please use CDocBuilderContext.CreateUndefined.

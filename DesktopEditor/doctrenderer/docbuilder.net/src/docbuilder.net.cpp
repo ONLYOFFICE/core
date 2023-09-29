@@ -275,9 +275,9 @@ namespace docbuilder_net
 		return gcnew CDocBuilderValue(value);
 	}
 
-	CDocBuilderValue::operator CDocBuilderValue ^ (array<CDocBuilderValue^>^ value)
+	CDocBuilderValue::operator CDocBuilderValue ^ (array<CDocBuilderValue^>^ values)
 	{
-		return gcnew CDocBuilderValue(value);
+		return gcnew CDocBuilderValue(values);
 	}
 
 	CDocBuilderValue^ CDocBuilderValue::CreateUndefined()

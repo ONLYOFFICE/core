@@ -199,6 +199,11 @@ namespace NSDoctRenderer
 		 * Creates a null value. This method returns the current context and calls its CreateNull method.
 		 */
 		static CDocBuilderValue CreateNull();
+		/**
+		 * Please use CDocBuilderContext::CreateArray
+		 * Creates an array. This method returns the current context and calls its CreateArray method.
+		 */
+		static CDocBuilderValue CreateArray(const int& length);
 
 	public:
 		/**

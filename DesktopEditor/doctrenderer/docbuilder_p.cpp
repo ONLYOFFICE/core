@@ -790,6 +790,14 @@ namespace NSDoctRenderer
 		return ret;
 	}
 
+	CDocBuilderValue CDocBuilderValue::CreateArray(const int& length)
+	{
+		CDocBuilderValue ret;
+		ret.m_internal->m_context = NSJSBase::CJSContext::GetCurrent();
+		ret.m_internal->m_value = NSJSBase::CJSContext::createArray(length);
+		return ret;
+	}
+
 	// Functions
 	CDocBuilderValue CDocBuilderValue::Call(const char* name)
 	{

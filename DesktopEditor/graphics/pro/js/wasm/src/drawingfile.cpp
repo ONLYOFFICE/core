@@ -1556,6 +1556,27 @@ int main(int argc, char* argv[])
 					std::cout << "IT " << arrIT[nPathLength] << ", ";
 				}
 			}
+			else if (sType == "Caret")
+			{
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "RD";
+					for (int j = 0; j < 4; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrSy[] = {"P", "None"};
+					std::cout << "Sy " << arrSy[nPathLength] << ", ";
+				}
+			}
 
 			std::cout << std::endl;
 		}

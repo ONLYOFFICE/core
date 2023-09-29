@@ -585,6 +585,10 @@ namespace PdfWriter
 	{
 		return new CFreeTextAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateCaretAnnot()
+	{
+		return new CCaretAnnotation(m_pXref);
+	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
 		m_mAnnotations[nID] = pAnnot;

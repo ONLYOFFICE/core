@@ -458,6 +458,22 @@ private:
 };
 
 //------------------------------------------------------------------------
+// PdfReader::CAnnotCaret
+//------------------------------------------------------------------------
+
+class CAnnotCaret final : public CMarkupAnnot
+{
+public:
+	CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nSy; // Связанный символ - Sy
+	double m_pRD[4]{}; // Различия Rect и фактического размера
+};
+
+//------------------------------------------------------------------------
 // PdfReader::CAnnots
 //------------------------------------------------------------------------
 

@@ -1721,6 +1721,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	{
 		pAnnot = m_pDocument->CreateFreeTextAnnot();
 	}
+	else if (oInfo.IsCaret())
+	{
+		pAnnot = m_pDocument->CreateCaretAnnot();
+	}
 
 	if (!pAnnot)
 		return S_FALSE;
@@ -1746,7 +1750,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 1))
 		pAnnot->SetContents(oInfo.GetContents());
 	if (nFlags & (1 << 2))
-		pAnnot->SetBE(oInfo.GetBE());
+	{
+		BYTE nS;
+		double dI;
+		oInfo.GetBE(nS, dI);
+		pAnnot->SetBE(nS, dI);
+	}
 	if (nFlags & (1 << 3))
 		pAnnot->SetC(oInfo.GetC());
 	if (nFlags & (1 << 4))
@@ -1905,6 +1914,20 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pFreeTextAnnot->SetLE(pPr->GetLE());
 		if (nFlags & (1 << 20))
 			pFreeTextAnnot->SetIT(pPr->GetIT());
+	}
+	else if (oInfo.IsCaret())
+	{
+		CAnnotFieldInfo::CCaretAnnotPr* pPr = oInfo.GetCaretAnnotPr();
+		PdfWriter::CCaretAnnotation* pCaretAnnot = (PdfWriter::CCaretAnnotation*)pAnnot;
+
+		if (nFlags & (1 << 15))
+		{
+			double dRD1, dRD2, dRD3, dRD4;
+			pPr->GetRD(dRD1, dRD2, dRD3, dRD4);
+			pCaretAnnot->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pCaretAnnot->SetSy(pPr->GetSy());
 	}
 
 	return S_OK;

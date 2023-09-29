@@ -59,7 +59,8 @@ namespace PdfWriter
 		"Line",
 		"Squiggly",
 		"Polygon",
-		"PolyLine"
+		"PolyLine",
+		"Caret"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -159,7 +160,7 @@ namespace PdfWriter
 	{
 		Add("P", pPage);
 	}
-	void CAnnotation::SetBE(const double& dBE)
+	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
 		CDictObject* pBEDict = new CDictObject();
 		if (!pBEDict)
@@ -167,7 +168,16 @@ namespace PdfWriter
 
 		Add("BE", pBEDict);
 
-		pBEDict->Add("S", "C");
+		std::string sValue;
+		switch (nType)
+		{
+		case 0:
+		{ sValue = "S"; break; }
+		case 1:
+		{ sValue = "C"; break; }
+		}
+
+		pBEDict->Add("S", sValue.c_str());
 		pBEDict->Add("I", dBE);
 	}
 	void CAnnotation::SetContents(const std::wstring& wsText)
@@ -394,7 +404,7 @@ namespace PdfWriter
 		{ sValue = "LineArrow"; break; }
 		}
 
-		Add("IT", new CStringObject(sValue.c_str()));
+		Add("IT", sValue.c_str());
 	}
 	void CLineAnnotation::SetCP(const BYTE& nCP)
 	{
@@ -407,7 +417,7 @@ namespace PdfWriter
 		{ sValue = "Top"; break; }
 		}
 
-		Add("CP", new CStringObject(sValue.c_str()));
+		Add("CP", sValue.c_str());
 	}
 	void CLineAnnotation::SetLL(const double& dLL)
 	{
@@ -522,7 +532,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CFreeTextAnnotation
 	//----------------------------------------------------------------------------------------
-	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotPopup)
+	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
 
 	}
@@ -543,11 +553,11 @@ namespace PdfWriter
 		{ sValue = "FreeTextTypeWriter"; break; }
 		}
 
-		Add("IT", new CStringObject(sValue.c_str()));
+		Add("IT", sValue.c_str());
 	}
 	void CFreeTextAnnotation::SetLE(const BYTE& nLE)
 	{
-		Add("LE", new CStringObject(AddLE(nLE).c_str()));
+		Add("LE", AddLE(nLE).c_str());
 	}
 	void CFreeTextAnnotation::SetDS(const std::wstring& wsDS)
 	{
@@ -651,7 +661,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPolygonLineAnnotation
 	//----------------------------------------------------------------------------------------
-	CPolygonLineAnnotation::CPolygonLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotSquare)
+	CPolygonLineAnnotation::CPolygonLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotPolygon)
 	{
 		m_nSubtype = AnnotPolygon;
 	}
@@ -668,7 +678,7 @@ namespace PdfWriter
 		{ sValue = "PolygonDimension"; break; }
 		}
 
-		Add("IT", new CStringObject(sValue.c_str()));
+		Add("IT", sValue.c_str());
 	}
 	void CPolygonLineAnnotation::SetSubtype(const BYTE& nSubtype)
 	{
@@ -707,5 +717,38 @@ namespace PdfWriter
 
 		for (const double& dVertices : arrVertices)
 			pArray->Add(dVertices);
+	}
+	//----------------------------------------------------------------------------------------
+	// CCaretAnnotation
+	//----------------------------------------------------------------------------------------
+	CCaretAnnotation::CCaretAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotCaret)
+	{
+
+	}
+	void CCaretAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("RD", pArray);
+
+		pArray->Add(dRD1);
+		pArray->Add(dRD2);
+		pArray->Add(dRD3);
+		pArray->Add(dRD4);
+	}
+	void CCaretAnnotation::SetSy(const BYTE& nSy)
+	{
+		std::string sValue;
+		switch (nSy)
+		{
+		case 0:
+		{ sValue = "P"; break; }
+		case 1:
+		{ sValue = "None"; break; }
+		}
+
+		Add("IT", sValue.c_str());
 	}
 }

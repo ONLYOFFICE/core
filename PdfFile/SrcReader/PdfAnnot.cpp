@@ -1306,6 +1306,40 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 }
 
 //------------------------------------------------------------------------
+// FreeText
+//------------------------------------------------------------------------
+
+CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Связанный символ - Sy
+	if (oAnnot.dictLookup("Sy", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 16);
+		m_nSy = 1; // None
+		if (oObj.isName("P"))
+			m_nSy = 0;
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
 
@@ -2592,5 +2626,20 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteBYTE(m_nLE);
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
+}
+
+void CAnnotCaret::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(13); // Caret
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+		oRes.WriteBYTE(m_nSy);
 }
 }

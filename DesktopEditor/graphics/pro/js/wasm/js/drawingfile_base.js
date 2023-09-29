@@ -1205,6 +1205,21 @@
 				if (flags & (1 << 20))
 					rec["IT"] = reader.readByte();
 			}
+			// Caret
+			else if (rec["Type"] == 13)
+			{
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Связанный символ - Sy
+				// 0 - P, 1 - None
+				if (flags & (1 << 16))
+					rec["Sy"] = reader.readByte();
+			}
 			res.push(rec);
 		}
 		

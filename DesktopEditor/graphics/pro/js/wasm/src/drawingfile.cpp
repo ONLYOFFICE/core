@@ -120,10 +120,12 @@ WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
 		int nW = 0;
 		int nH = 0;
 		int nDpi = 0;
-		pGraphics->GetPageInfo(page, nW, nH, nDpi);
+		int nRotate = 0;
+		pGraphics->GetPageInfo(page, nW, nH, nDpi, nRotate);
 		oRes.AddInt(nW);
 		oRes.AddInt(nH);
 		oRes.AddInt(nDpi);
+		oRes.AddInt(nRotate);
 	}
 	std::wstring wsInfo = pGraphics->GetInfo();
 	std::string sInfo = U_TO_UTF8(wsInfo);
@@ -417,9 +419,14 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 	}
 	if (nFlags & (1 << 2))
 	{
+		std::string arrEffects[] = {"S", "C"};
+		nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::cout << "BE " << arrEffects[nPathLength] << " ";
+
 		nPathLength = READ_INT(pWidgets + i);
 		i += 4;
-		std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
+		std::cout << (double)nPathLength / 100.0 << ", ";
 	}
 	if (nFlags & (1 << 3))
 	{
@@ -970,12 +977,13 @@ int main(int argc, char* argv[])
 			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
 			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
+			int rotate = READ_INT(pInfo + nTestPage * 12 + 20);
 			//nWidth  *= 2;
 			//nHeight *= 2;
-			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
+			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;
 
-			nLength = READ_INT(pInfo + nPagesCount * 12 + 8);
-			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 12 + 12), nLength) << std::endl;;
+			nLength = READ_INT(pInfo + nPagesCount * 16 + 8);
+			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 12), nLength) << std::endl;;
 		}
 	}
 
@@ -1549,6 +1557,27 @@ int main(int argc, char* argv[])
 					i += 1;
 					std::string arrIT[] = {"FreeText", "FreeTextCallout", "FreeTextTypeWriter"};
 					std::cout << "IT " << arrIT[nPathLength] << ", ";
+				}
+			}
+			else if (sType == "Caret")
+			{
+				if (nFlags & (1 << 15))
+				{
+					std::cout << "RD";
+					for (int j = 0; j < 4; ++j)
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << " " << (double)nPathLength / 100.0;
+					}
+					std::cout << ", ";
+				}
+				if (nFlags & (1 << 16))
+				{
+					nPathLength = READ_BYTE(pAnnots + i);
+					i += 1;
+					std::string arrSy[] = {"P", "None"};
+					std::cout << "Sy " << arrSy[nPathLength] << ", ";
 				}
 			}
 

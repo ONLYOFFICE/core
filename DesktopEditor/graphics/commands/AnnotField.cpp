@@ -42,11 +42,12 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_nAnnotFlag = 0;
 	m_nPage      = 0;
 
-	m_dX1  = 0.0;
-	m_dY1  = 0.0;
-	m_dX2  = 0.0;
-	m_dY2  = 0.0;
-	m_dBE = 0.0;
+	m_dX1 = 0.0;
+	m_dY1 = 0.0;
+	m_dX2 = 0.0;
+	m_dY2 = 0.0;
+	m_pBE.first  = 0.0;
+	m_pBE.second = 0.0;
 
 	m_oBorder.nType              = 0;
 	m_oBorder.dWidth             = 0.0;
@@ -62,6 +63,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pPolygonLinePr  = NULL;
 	m_pPopupPr        = NULL;
 	m_pFreeTextPr     = NULL;
+	m_pCaretPr        = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
@@ -74,6 +76,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pPolygonLinePr);
 	RELEASEOBJECT(m_pPopupPr);
 	RELEASEOBJECT(m_pFreeTextPr);
+	RELEASEOBJECT(m_pCaretPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
@@ -150,6 +153,17 @@ void CAnnotFieldInfo::SetType(int nType)
 
 		RELEASEOBJECT(m_pTextMarkupPr);
 		m_pTextMarkupPr = new CAnnotFieldInfo::CTextMarkupAnnotPr();
+		break;
+	}
+	case 13:
+	{
+		m_nType = 14;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pCaretPr);
+		m_pCaretPr = new CAnnotFieldInfo::CCaretAnnotPr();
 		break;
 	}
 	case 14:
@@ -248,6 +262,10 @@ bool CAnnotFieldInfo::IsFreeText() const
 {
 	return (m_nType == 13);
 }
+bool CAnnotFieldInfo::IsCaret() const
+{
+	return (m_nType == 14);
+}
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
@@ -272,7 +290,11 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	if (nFlags & (1 << 1))
 		SetContents(pReader->ReadString());
 	if (nFlags & (1 << 2))
-		SetBE(pReader->ReadDouble());
+	{
+		BYTE nS = pReader->ReadByte();
+		double dI = pReader->ReadDouble();
+		SetBE(nS, dI);
+	}
 	if (nFlags & (1 << 3))
 	{
 		int n = pReader->ReadInt();
@@ -486,6 +508,21 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			pPr->SetLE(pReader->ReadByte());
 		if (nFlags & (1 << 20))
 			pPr->SetIT(pReader->ReadByte());
+	}
+	else if (IsCaret())
+	{
+		CAnnotFieldInfo::CCaretAnnotPr* pPr = GetCaretAnnotPr();
+
+		if (nFlags & (1 << 15))
+		{
+			double dRD1 = pReader->ReadDouble();
+			double dRD2 = pReader->ReadDouble();
+			double dRD3 = pReader->ReadDouble();
+			double dRD4 = pReader->ReadDouble();
+			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pPr->SetSy(pReader->ReadByte());
 	}
 
 	return IsValid();

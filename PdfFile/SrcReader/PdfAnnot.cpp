@@ -1306,6 +1306,40 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 }
 
 //------------------------------------------------------------------------
+// FreeText
+//------------------------------------------------------------------------
+
+CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Связанный символ - Sy
+	if (oAnnot.dictLookup("Sy", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 16);
+		m_nSy = 1; // None
+		if (oObj.isName("P"))
+			m_nSy = 0;
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
 // Annots
 //------------------------------------------------------------------------
 
@@ -1568,13 +1602,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (pField->fieldLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Специальный цвет для аннотации - C
 	if (pField->fieldLookup("C", &oObj)->isArray())
@@ -1680,13 +1723,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj2)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (oAnnot.dictLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj2.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Цвет - C
 	if (oAnnot.dictLookup("C", &oObj)->isArray())
@@ -1800,6 +1852,14 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
+	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
+	if (nRotate % 180 != 0)
+	{
+		int nTemp = nRasterH;
+		nRasterH = nRasterW;
+		nRasterW = nTemp;
+	}
+
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict())
 	{
@@ -1818,6 +1878,14 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
+
+	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
+	if (nRotate % 180 != 0)
+	{
+		int nTemp = nRasterH;
+		nRasterH = nRasterW;
+		nRasterW = nTemp;
+	}
 
 	Object oAnnot, oAP;
 	XRef* xref = pdfDoc->getXRef();
@@ -1858,18 +1926,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 
-	double dWidth, dHeight;
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 == 0)
-	{
-		dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
-	else
-	{
-		dHeight = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dWidth  = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
+	double dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
+	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
 
 	m_dWScale = (double)nRasterW / dWidth;
 	m_dHScale = (double)nRasterH / dHeight;
@@ -1910,21 +1968,15 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 	// Создание Gfx
 	GBool crop = gTrue;
 	PDFRectangle box;
-	int rotate = pPage->getRotate();
-	if (rotate >= 360)
-		rotate -= 360;
-	else if (rotate < 0)
-		rotate += 360;
-	pPage->makeBox(72.0, 72.0, rotate, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
+	// Поворот не требуется
+	pPage->makeBox(72.0, 72.0, 0, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
 	PDFRectangle* cropBox = pPage->getCropBox();
 
-	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
-	// Координаты и размеры внешнего вида
+	// Координаты внешнего вида
 	m_nRx1 = (int)round(m_dx1 * m_dWScale) - 1;
 	m_nRy1 = nRasterH - (int)round(m_dy2 * m_dHScale) - 1;
-	m_nRx1 = m_nRx1 < 0 ? 0 : m_nRx1;
-	m_nRy1 = m_nRy1 < 0 ? 0 : m_nRy1;
 }
 
 void CAnnotAP::Init(AcroFormField* pField)
@@ -2156,7 +2208,10 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	if (m_unAFlags & (1 << 1))
 		oRes.WriteString(m_sContents);
 	if (m_unAFlags & (1 << 2))
-		oRes.AddDouble(m_dBE);
+	{
+		oRes.WriteBYTE(m_pBE.first);
+		oRes.AddDouble(m_pBE.second);
+	}
 	if (m_unAFlags & (1 << 3))
 	{
 		oRes.AddInt((unsigned int)m_arrC.size());
@@ -2573,5 +2628,20 @@ void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteBYTE(m_nLE);
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
+}
+
+void CAnnotCaret::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(13); // Caret
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+		oRes.WriteBYTE(m_nSy);
 }
 }

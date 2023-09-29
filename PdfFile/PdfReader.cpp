@@ -351,6 +351,15 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 	*pdDpiX = 72.0;
 	*pdDpiY = 72.0;
 }
+int CPdfReader::GetRotate(int _nPageIndex)
+{
+	int nPageIndex = _nPageIndex + 1;
+
+	if (!m_pPDFDocument)
+		return 0;
+
+	return m_pPDFDocument->getPageRotate(nPageIndex);
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	int nPageIndex = _nPageIndex + 1;
@@ -889,6 +898,14 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 	if (!pAcroForms || !pPage)
 		return NULL;
 
+	int nRotate = m_pPDFDocument->getPageRotate(nPageIndex + 1);
+	if (nRotate % 180 != 0)
+	{
+		int nTemp = nRasterH;
+		nRasterH = nRasterW;
+		nRasterW = nTemp;
+	}
+
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;
 	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
@@ -1199,15 +1216,10 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			// Создание Gfx
 			GBool crop = gTrue;
 			PDFRectangle box;
-			int rotate = pPage->getRotate();
-			if (rotate >= 360)
-				rotate -= 360;
-			else if (rotate < 0)
-				rotate += 360;
-			pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+			pPage->makeBox(72.0, 72.0, 0, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
 			PDFRectangle* cropBox = pPage->getCropBox();
 
-			Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+			Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 			pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
 			gfx->drawForm(&oStrRef, oResourcesDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
@@ -1305,7 +1317,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "Caret")
 		{
-
+			pAnnot = new PdfReader::CAnnotCaret(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Ink")
 		{

@@ -248,6 +248,7 @@
 			rec["W"] = reader.readInt();
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
+			rec["Rotate"] = reader.readInt();
 			rec.fonts = [];
 			rec.text = null;
 			this.pages.push(rec);
@@ -493,6 +494,7 @@
 		rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
 		let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
 		rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+		rec["ToggleNoView"] = (rec["annotflag"] >> 8) & 1; // ToggleNoView
 		rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
 		// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
 		rec["display"] = 0;
@@ -531,7 +533,11 @@
 			rec["Contents"] = reader.readString();
 		// Эффекты границы - BE
 		if (flags & (1 << 2))
-			rec["borderCloudy"] = reader.readDouble();
+		{
+			rec["BE"] = {};
+			rec["BE"]["S"] = reader.readByte();
+			rec["BE"]["I"] = reader.readDouble();
+		}
 		// Специальный цвет аннотации - С
 		if (flags & (1 << 3))
 		{
@@ -1199,6 +1205,21 @@
 				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
 				if (flags & (1 << 20))
 					rec["IT"] = reader.readByte();
+			}
+			// Caret
+			else if (rec["Type"] == 13)
+			{
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Связанный символ - Sy
+				// 0 - P, 1 - None
+				if (flags & (1 << 16))
+					rec["Sy"] = reader.readByte();
 			}
 			res.push(rec);
 		}

@@ -67,7 +67,8 @@ namespace PdfWriter
 		AnnotLine           = 13,
 		AnnotSquiggly       = 14,
 		AnnotPolygon        = 15,
-		AnnotPolyLine       = 16
+		AnnotPolyLine       = 16,
+		AnnotCaret          = 17
 	};
 	enum EAnnotHighlightMode
 	{
@@ -118,7 +119,7 @@ namespace PdfWriter
 		void SetID(const int& nID);
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage);
-		void SetBE(const double& dBE);
+		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetC(const std::vector<double>& arrC);
@@ -304,6 +305,19 @@ namespace PdfWriter
 		void SetDS(const std::wstring& wsDS);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 		void SetCL(const std::vector<double>& arrCL);
+	};
+	class CCaretAnnotation : public CMarkupAnnotation
+	{
+	public:
+		CCaretAnnotation(CXref* pXref);
+		EAnnotType
+		GetAnnotationType() const override
+		{
+			return AnnotCaret;
+		}
+
+		void SetSy(const BYTE& nSy);
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

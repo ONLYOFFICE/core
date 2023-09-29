@@ -248,6 +248,7 @@
 			rec["W"] = reader.readInt();
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
+			rec["Rotate"] = reader.readInt();
 			rec.fonts = [];
 			rec.text = null;
 			this.pages.push(rec);

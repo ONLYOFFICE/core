@@ -120,10 +120,12 @@ WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
 		int nW = 0;
 		int nH = 0;
 		int nDpi = 0;
-		pGraphics->GetPageInfo(page, nW, nH, nDpi);
+		int nRotate = 0;
+		pGraphics->GetPageInfo(page, nW, nH, nDpi, nRotate);
 		oRes.AddInt(nW);
 		oRes.AddInt(nH);
 		oRes.AddInt(nDpi);
+		oRes.AddInt(nRotate);
 	}
 	std::wstring wsInfo = pGraphics->GetInfo();
 	std::string sInfo = U_TO_UTF8(wsInfo);
@@ -975,12 +977,13 @@ int main(int argc, char* argv[])
 			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
 			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
+			int rotate = READ_INT(pInfo + nTestPage * 12 + 20);
 			//nWidth  *= 2;
 			//nHeight *= 2;
-			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
+			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;
 
-			nLength = READ_INT(pInfo + nPagesCount * 12 + 8);
-			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 12 + 12), nLength) << std::endl;;
+			nLength = READ_INT(pInfo + nPagesCount * 16 + 8);
+			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 12), nLength) << std::endl;;
 		}
 	}
 

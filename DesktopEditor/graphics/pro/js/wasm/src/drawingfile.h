@@ -73,7 +73,7 @@ public:
 	{
 		return pReader->GetPagesCount();
 	}
-	void GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
+	void GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX, int& nRotate)
 	{
 		double dPageDpiX, dPageDpiY;
 		double dWidth, dHeight;
@@ -84,6 +84,8 @@ public:
 			dHeight   = dHeight   / 25.4 * 96.0;
 			dPageDpiX = dPageDpiX / 25.4 * 96.0;
 		}
+		if (nType == 0)
+			nRotate = ((CPdfFile*)pReader)->GetRotate(nPageIndex);
 		nWidth    = dWidth;
 		nHeight   = dHeight;
 		nPageDpiX = dPageDpiX;

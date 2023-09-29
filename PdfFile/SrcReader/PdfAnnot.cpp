@@ -1852,6 +1852,14 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
+	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
+	if (nRotate % 180 != 0)
+	{
+		int nTemp = nRasterH;
+		nRasterH = nRasterW;
+		nRasterW = nTemp;
+	}
+
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict())
 	{
@@ -1870,6 +1878,14 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
+
+	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
+	if (nRotate % 180 != 0)
+	{
+		int nTemp = nRasterH;
+		nRasterH = nRasterW;
+		nRasterW = nTemp;
+	}
 
 	Object oAnnot, oAP;
 	XRef* xref = pdfDoc->getXRef();
@@ -1910,18 +1926,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 
-	double dWidth, dHeight;
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 == 0)
-	{
-		dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
-	else
-	{
-		dHeight = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dWidth  = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
+	double dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
+	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
 
 	m_dWScale = (double)nRasterW / dWidth;
 	m_dHScale = (double)nRasterH / dHeight;
@@ -1962,15 +1968,11 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 	// Создание Gfx
 	GBool crop = gTrue;
 	PDFRectangle box;
-	int rotate = pPage->getRotate();
-	if (rotate >= 360)
-		rotate -= 360;
-	else if (rotate < 0)
-		rotate += 360;
-	pPage->makeBox(72.0, 72.0, rotate, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
+	// Поворот не требуется
+	pPage->makeBox(72.0, 72.0, 0, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
 	PDFRectangle* cropBox = pPage->getCropBox();
 
-	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 	// Координаты внешнего вида
 	m_nRx1 = (int)round(m_dx1 * m_dWScale) - 1;

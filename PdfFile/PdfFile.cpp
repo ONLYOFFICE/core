@@ -799,6 +799,12 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 #endif
 		m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
+int CPdfFile::GetRotate(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return 0;
+	m_pInternal->pReader->GetRotate(nPageIndex);
+}
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pInternal->pReader)

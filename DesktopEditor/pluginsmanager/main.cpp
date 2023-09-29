@@ -1224,20 +1224,28 @@ private:
 	{
 		// [ "...", "...", "..." ]
 		std::wstring sJson = L"";
-		if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
+
+		try
 		{
-			std::wstring sDelim = L"\"";
-			std::wstring::size_type pos1 = sJson.find(sDelim);
-
-			while ( pos1 != std::wstring::npos )
+			if (NSFile::CFileBinary::Exists(sFile) && NSFile::CFileBinary::ReadAllTextUtf8(sFile, sJson))
 			{
-				std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
+				std::wstring sDelim = L"\"";
+				std::wstring::size_type pos1 = sJson.find(sDelim);
 
-				if (pos1 != std::wstring::npos && pos2 > pos1)
-					arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+				while ( pos1 != std::wstring::npos )
+				{
+					std::wstring::size_type pos2 = sJson.find(sDelim, pos1 + 1);
 
-				pos1 = sJson.find(sDelim, pos2 + 1);
+					if (pos1 != std::wstring::npos && pos2 > pos1)
+						arrOutput.push_back(sJson.substr(pos1 + 1, pos2 - pos1 - 1));
+
+					pos1 = sJson.find(sDelim, pos2 + 1);
+				}
 			}
+		}
+		catch(...)
+		{
+			Message(L"Can't read file: " + sFile, L"", true);
 		}
 
 		return arrOutput.size() > 0;

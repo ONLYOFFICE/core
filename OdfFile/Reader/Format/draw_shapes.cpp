@@ -942,7 +942,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			props.push_back(odf_reader::_property(L"custom_path_h", h));
 		}
 	}
-	if (attlist_.draw_modifiers_ && set_shape)
+	if (attlist_.draw_modifiers_ && set_shape && bOoxType_)
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}

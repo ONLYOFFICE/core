@@ -42,8 +42,7 @@ public:
 	enum type
 	{
 		none,
-
-		default,
+		default_,
 		after_previous,
 		interactive_sequence,
 		main_sequence,

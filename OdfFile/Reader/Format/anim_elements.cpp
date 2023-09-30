@@ -308,7 +308,7 @@ static std::wstring pptx_convert_presentation_node_type(const odf_types::present
 
 	switch (presentation_node_type_.get_type())
 	{
-	case presentation_node_type::default				: return L"clickEffect";
+	case presentation_node_type::default_				: return L"clickEffect";
 	case presentation_node_type::after_previous			: return L"afterEffect";
 	case presentation_node_type::interactive_sequence	: return L"interactiveSeq";
 	case presentation_node_type::main_sequence			: return L"mainSeq";

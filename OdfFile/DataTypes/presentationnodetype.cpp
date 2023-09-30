@@ -41,7 +41,7 @@ namespace cpdoccore { namespace odf_types {
 	{
 		switch (_Val.get_type())
 		{
-		case presentation_node_type::default				: _Wostream << L"default"; break;
+		case presentation_node_type::default_				: _Wostream << L"default"; break;
 		case presentation_node_type::after_previous			: _Wostream << L"after-previous"; break;
 		case presentation_node_type::interactive_sequence	: _Wostream << L"interactive-sequence"; break;
 		case presentation_node_type::main_sequence			: _Wostream << L"main-sequence"; break;
@@ -54,7 +54,7 @@ namespace cpdoccore { namespace odf_types {
 
 	presentation_node_type presentation_node_type::parse(const std::wstring& Str)
 	{
-			 if (Str == L"default")					return presentation_node_type(default);
+			 if (Str == L"default")					return presentation_node_type(default_);
 		else if (Str == L"after-previous")			return presentation_node_type(after_previous);
 		else if (Str == L"interactive-sequence")	return presentation_node_type(interactive_sequence);
 		else if (Str == L"main-sequence")			return presentation_node_type(main_sequence);

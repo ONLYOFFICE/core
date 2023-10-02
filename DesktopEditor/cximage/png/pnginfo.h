@@ -264,5 +264,9 @@ defined(PNG_READ_BACKGROUND_SUPPORTED)
    png_bytepp row_pointers;        /* the image bits */
 #endif
 
+#ifdef PNG_READ_msOG_SUPPORTED
+   png_bytep gif_data;          /* the GIF89a image data*/
+   png_size_t gif_data_size;
+#endif
 };
 #endif /* PNGINFO_H */

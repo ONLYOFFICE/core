@@ -61,6 +61,15 @@ void CxImageToMediaFrame( CxImage* img, CBgraFrame* bgra )
 	bgra->put_Height(nHeight);
 	bgra->put_Stride(-4 * nWidth);
 
+    if (true)
+    {
+        bgra->put_Data(img->GetData());
+        bgra->put_Width(0);
+        bgra->put_Height(img->GetDataSize());
+        bgra->put_Stride(0);
+        return;
+    }
+
 	BYTE* pPixels = bgra->get_Data();
 
 	int nBitsPerPixel = img->GetBpp();
@@ -558,6 +567,20 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		oFile.CloseFile();
 	}
 	return true;
+}
+bool CBgraFrame::SaveGetInsideFromFile(const std::wstring &strFileName)
+{
+    if (m_pData == NULL)
+        return false;
+
+    NSFile::CFileBinary oFile;
+    if (!oFile.CreateFileW(strFileName))
+        return false;
+
+    oFile.WriteFile(m_pData, (get_Width() == 0) ? get_Height() : get_Width());
+
+    oFile.CloseFile();
+    return true;
 }
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 {

@@ -2657,48 +2657,77 @@ png_handle_iTXt(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
 }
 #endif
 
-#ifdef PNG_READ_gIFg_SUPPORTED
+#ifdef PNG_READ_msOG_SUPPORTED
 void
-png_handle_gIFg(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
+png_handle_msOG(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
 {
-    if (length != 4)
-    {
-       png_warning(png_ptr, "Incorrect gIFg chunk length");
-       png_crc_finish(png_ptr, length);
+    png_byte buf[11];
+    png_bytep data;
+    png_size_t slength;
+    png_int_32 gif_terminator = -1;
+    int ret;
+
+   png_crc_read(png_ptr, buf, 11);
+
+   if (strncmp("MSOFFICE9.0", buf, 11))
+   {
+       png_warning(png_ptr, "No GIF format in msOG chunk");
        return;
-    }
+   }
 
-    png_crc_read(png_ptr, &png_ptr->gifgce, 4);
+   data = (png_bytep)png_malloc_warn(png_ptr, length - 10);
 
-    if (png_crc_finish(png_ptr, 0))
+   if (data == NULL)
+   {
+      png_warning(png_ptr, "No memory to process msOG chunk");
+      return;
+   }
+
+   slength = length - 11;
+   png_crc_read(png_ptr, data, slength);
+
+   if (png_crc_finish(png_ptr, 0))
+   {
+      png_free(png_ptr, data);
+      data = NULL;
+      return;
+   }
+
+   data[slength] = 0x00;
+
+   if (strncmp("GIF89a", data, 6))
+   {
+       png_free(png_ptr, data);
+       data = NULL;
+       png_warning(png_ptr, "No GIF format in msOG chunk");
        return;
-}
-#endif
+   }
 
-#ifdef PNG_READ_gIFx_SUPPORTED
-void
-png_handle_gIFx(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
-{
-    png_byte buf[14];
+   for (int iter = 0; iter < slength; iter++)
+   {
+       png_byte a = data[iter];
+       if (data[iter] == 0x3B)
+       {
+           gif_terminator = iter;
+       }
+   }
 
-    if (length != 14)
-    {
-        png_warning(png_ptr, "Incorrect gIFx chunk length");
-        png_crc_finish(png_ptr, length);
-        return;
-    }
-
-    png_crc_read(png_ptr, buf, length);
-
-    if (png_crc_finish(png_ptr, 0))
+   if (gif_terminator == -1)
+   {
+       png_free(png_ptr, data);
+       data = NULL;
+       png_warning(png_ptr, "No GIF terminator in msOG chunk");
        return;
+   }
 
-    if (strncmp("NETSPACE2.0", buf, 11))
-    {
-        png_warning(png_ptr, "Incorrect gIFx chunk data");
-        return;
-    }
-    png_ptr->m_loops = buf[13] + 256 * buf[14];
+   data[gif_terminator + 1] = 0x00;
+   ret = png_set_GIF(png_ptr, info_ptr, data, gif_terminator+1);
+
+   png_free(png_ptr, data);
+   data = NULL;
+
+   if (ret == -1)
+       png_error(png_ptr, "Insufficient memory to store GIF data");
 }
 #endif
 

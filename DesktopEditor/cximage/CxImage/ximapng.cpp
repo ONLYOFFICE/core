@@ -85,13 +85,6 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		longjmp(png_ptr->longjmp_buffer, 1);
 	}
 
-
-    png_ptr->gifgce.delaytime = m_ntohs(png_ptr->gifgce.delaytime);
-    info.nBkgndIndex  = (png_ptr->gifgce.flags & 0x1) ? png_ptr->gifgce.transpcolindex : -1;
-    info.dwFrameDelay = png_ptr->gifgce.delaytime;
-    SetDisposalMethod((png_ptr->gifgce.flags >> 2) & 0x7);
-    info.m_loops = png_ptr->m_loops;
-
 	/* calculate new number of channels */
 	int32_t channels=0;
 	switch(info_ptr->color_type){
@@ -309,6 +302,14 @@ bool CxImagePNG::Decode(CxFile *hFile)
     png_read_end(png_ptr, info_ptr);
     is_read_end = true;
 
+#ifdef PNG_READ_msOG_SUPPORTED
+    if (info_ptr->gif_data != NULL)
+    {
+        SetImageData(info_ptr->gif_data, info_ptr->gif_data_size);
+        png_free(png_ptr, info_ptr->gif_data);
+        info_ptr->gif_data = NULL;
+    }
+#endif
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 

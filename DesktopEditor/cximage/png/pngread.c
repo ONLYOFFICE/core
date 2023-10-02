@@ -330,14 +330,9 @@ png_read_info(png_structp png_ptr, png_infop info_ptr)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
 
-#ifdef PNG_READ_gIFg_SUPPORTED
-      else if (chunk_name == png_gIFg)
-         png_handle_gIFg(png_ptr, info_ptr, length);
-#endif
-
-#ifdef PNG_READ_gIFx_SUPPORTED
-      else if (chunk_name == png_gIFx)
-          png_handle_gIFx(png_ptr, info_ptr, length);
+#ifdef PNG_READ_msOG_SUPPORTED
+      else if (chunk_name == png_msOG)
+         png_handle_msOG(png_ptr, info_ptr, length);
 #endif
 
       else
@@ -940,6 +935,11 @@ png_read_end(png_structp png_ptr, png_infop info_ptr)
 #ifdef PNG_READ_iTXt_SUPPORTED
       else if (chunk_name == png_iTXt)
          png_handle_iTXt(png_ptr, info_ptr, length);
+#endif
+
+#ifdef PNG_READ_msOG_SUPPORTED
+      else if (chunk_name == png_msOG)
+         png_handle_msOG(png_ptr, info_ptr, length);
 #endif
 
       else

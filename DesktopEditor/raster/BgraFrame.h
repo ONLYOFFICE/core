@@ -90,6 +90,7 @@ public:
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
 
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+    bool SaveGetInsideFromFile(const std::wstring& strFileName);
 	bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
 	bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
 	static void FreeEncodedMemory(void* pMemory);

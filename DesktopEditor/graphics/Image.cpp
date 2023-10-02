@@ -107,12 +107,16 @@ namespace Aggplus
 
     bool CImage::GetInsideFrom(const std::wstring &file_inp, const std::wstring &file_out)
     {
-        Create(file_inp);
+        Destroy();
 
-        if (m_Status != Ok) return false;
+        CBgraFrame oFrame;
+        bool bOpen = oFrame.OpenFile(file_inp);
 
+        if (bOpen)
+            if (oFrame.get_Data() != NULL && (oFrame.get_Height() == 0 || oFrame.get_Width() == 0))
+                return oFrame.SaveGetInsideFromFile(file_out);
 
-        return SaveFile(file_out, 2);
+        return false;
     }
 
 	bool CImage::SaveFile(const std::wstring& strFileName, UINT nFileType)

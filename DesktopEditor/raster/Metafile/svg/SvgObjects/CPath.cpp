@@ -16,7 +16,7 @@ namespace SVG
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.};
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
 
 		for (const Point& oPoint : m_arPoints)
 		{
@@ -55,7 +55,7 @@ namespace SVG
 	CMoveElement *CMoveElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -94,7 +94,7 @@ namespace SVG
 	CLineElement *CLineElement::CreateFromArray(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
 		if (arValues.size() < 2)
-				return NULL;
+			return NULL;
 
 		Point oTranslatePoint{0., 0.};
 
@@ -474,10 +474,10 @@ namespace SVG
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{	
-            if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 
@@ -551,15 +551,15 @@ namespace SVG
 
 	TBounds CPath::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
+		TBounds oBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX}, oTempBounds;
 
 		for (const IPathElement* oElement : m_arElements)
 		{
 			oTempBounds = oElement->GetBounds();
 
-			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
-			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
-			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oTempBounds.m_dLeft);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    oTempBounds.m_dTop);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  oTempBounds.m_dRight);
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
 
@@ -586,7 +586,7 @@ namespace SVG
 			}
 
 			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), [](wchar_t wChar){return ISPATHCOMMAND(wChar);});
-
+			
 			std::vector<double> arValues = StrUtils::ReadDoubleValues(oFirstPos, oSecondPos);
 
 			switch(*oFirstPos)

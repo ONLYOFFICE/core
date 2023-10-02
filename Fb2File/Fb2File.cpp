@@ -752,10 +752,12 @@ public:
 	// Читает перекрестные ссылки
 	void readCrossReference(NSStringUtils::CStringBuilder& oBuilder)
 	{
+		bool bPBB = false, bCBB = false;
 		// id для перекрестных ссылок
 		while (m_oLightReader.MoveToNextAttribute())
 		{
-			if (m_oLightReader.GetName() == L"id")
+			std::wstring sAtrName = m_oLightReader.GetName();
+			if (sAtrName == L"id")
 			{
 				std::wstring sCrossId = std::to_wstring(m_nCrossReferenceId++);
 				oBuilder += L"<w:bookmarkStart w:id=\"";
@@ -765,10 +767,22 @@ public:
 				oBuilder += L"\"/><w:bookmarkEnd w:id=\"";
 				oBuilder += sCrossId;
 				oBuilder += L"\"/>";
-				break;
+			}
+			else if (sAtrName == L"style")
+			{
+				std::wstring sAtrText = m_oLightReader.GetText();
+				bCBB = sAtrText.find(L"column-break-before") != std::wstring::npos;
+				bPBB = sAtrText.find(L"page-break-before") != std::wstring::npos;
 			}
 		}
 		m_oLightReader.MoveToElement();
+
+		if (bPBB || bCBB)
+		{
+			oBuilder += L"<w:r><w:br w:type=\"";
+			oBuilder += (bPBB ? L"page\" w:clear=\"all" : L"column");
+			oBuilder += L"\"/></w:r>";
+		}
 	}
 
 	// Читает section
@@ -1447,10 +1461,29 @@ public:
 				oXml.WriteEncodeXmlString(m_oLightReader.GetText());
 			else if (sName == L"br" && !m_bInTable)
 			{
+				bool bPBB = false, bCBB = false;
+				while (m_oLightReader.MoveToNextAttribute())
+				{
+					if (m_oLightReader.GetName() != L"style")
+						continue;
+					std::wstring sAtrText = m_oLightReader.GetText();
+					bCBB = sAtrText.find(L"column-break-before") != std::wstring::npos;
+					bPBB = sAtrText.find(L"page-break-before") != std::wstring::npos;
+				}
+				m_oLightReader.MoveToElement();
+
+				std::wstring sStyle;
+				if (bPBB || bCBB)
+				{
+					sStyle = L" style=\"";
+					sStyle += (bPBB ? L"page" : L"column");
+					sStyle += L"-break-before\"";
+				}
+
 				if (m_bInP)
-					oXml.WriteString(L"</p><p>");
+					oXml.WriteString(L"</p><p" + sStyle + L">");
 				else
-					oXml.WriteString(L"<p></p>");
+					oXml.WriteString(L"<p" + sStyle + L"></p>");
 			}
 			else if (sName == L"div")
 			{

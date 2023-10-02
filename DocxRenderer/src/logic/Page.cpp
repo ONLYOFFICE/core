@@ -1234,7 +1234,7 @@ namespace NSDocxRenderer
 				pShape->m_eLineType != eLineType::ltUnknown;
 
 		//Условие по вертикали
-		bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.15;
+		bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.3;
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&

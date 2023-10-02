@@ -225,14 +225,19 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 		}
 
+		if(m_eVertAlignType == eVertAlignType::vatSubscript || m_eVertAlignType == eVertAlignType::vatSuperscript)
+		{
+			int lSize = static_cast<int>(3.0 * m_pFontStyle->dFontSize);
+			oWriter.WriteString(L"<w:sz w:val=\"");
+			oWriter.AddInt(lSize);
+			oWriter.WriteString(L"\"/><w:szCs w:val=\"");
+			oWriter.AddInt(lSize);
+			oWriter.WriteString(L"\"/>");
+		}
 		if (m_eVertAlignType == eVertAlignType::vatSubscript)
-		{
 			oWriter.WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
-		}
 		else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
-		{
 			oWriter.WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
-		}
 
 		oWriter.WriteString(L"</w:rPr>");
 

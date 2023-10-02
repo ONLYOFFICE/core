@@ -654,7 +654,7 @@ namespace OOX
 
 				if(i->m_sUri == L"{46BE6895-7355-4a93-B00E-2C351335B9C9}")
 				{
-					ptr->m_TABLESLICERCACHEIDS = i->m_oSlicerCachesExt->toBin();
+					ptr->m_TABLESLICERCACHEIDS = i->m_oSlicerCachesExt->toBinTable();
 				}
 				else if(i->m_sUri == L"{BBE1A952-AA13-448e-AADC-164F8A28A991}")
 				{
@@ -795,7 +795,7 @@ namespace OOX
 				else if(i->m_sUri == L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}")
 				{
 					if(i->m_oSlicerListExt.IsInit())
-						ptr->m_SLICERSEX = i->m_oSlicerListExt->toBin();
+                        ptr->m_TABLESLICERSEX = i->m_oSlicerListExt->toBinTable();
 				}
 			}
             return objectPtr;
@@ -813,6 +813,7 @@ namespace OOX
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{46BE6895-7355-4a93-B00E-2C351335B9C9}";
                         oExt->m_oSlicerCachesExt = ptr->m_TABLESLICERCACHEIDS;
+						oExt->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 
                         if (oExt)
                             m_arrExt.push_back( oExt );

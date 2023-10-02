@@ -47,6 +47,9 @@
 #include "../../XlsbFormat/Biff12_unions/SLICERCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/SLICERCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/BeginSlicerCacheID.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHEID.h"
+#include "../../XlsbFormat/Biff12_records/TableSlicerCacheID.h"
 
 #include "../../Binary/Presentation/XmlWriter.h"
 #include "../../Binary/Presentation/BinReaderWriterDefines.h"
@@ -574,6 +577,18 @@ XLS::BaseObjectPtr CSlicerCache::toBin()
 	}
 	return objectPtr;
 }
+XLS::BaseObjectPtr CSlicerCache::toBinTable()
+{
+	auto ptr(new XLSB::TABLESLICERCACHEID);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	if(m_oRId.IsInit())
+	{
+		auto ptr1(new XLSB::TableSlicerCacheID);
+		ptr->m_BrtTableSlicerCacheID = XLS::BaseObjectPtr{ptr1};
+		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	}
+	return objectPtr;
+}
 void CSlicerCache::fromBin(XLS::BaseObjectPtr &obj)
 {
     ReadAttributes(obj);
@@ -623,13 +638,23 @@ void CSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 }
 XLS::BaseObjectPtr CSlicerRef::toBin()
 {
-	    auto ptr(new XLSB::SLICEREX);
-		XLS::BaseObjectPtr objectPtr(ptr);
-		auto ptr1(new XLSB::BeginSlicerEx);
-		ptr1->FRTheader.relID.relId = m_oRId->GetValue();
-        ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
+	auto ptr(new XLSB::SLICEREX);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	auto ptr1(new XLSB::BeginSlicerEx);
+	ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
 
-		return objectPtr;
+	return objectPtr;
+}
+XLS::BaseObjectPtr CSlicerRef::toBinTable()
+{
+	auto ptr(new XLSB::TABLESLICEREX);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	auto ptr1(new XLSB::BeginSlicerEx);
+	ptr1->FRTheader.relID.relId = m_oRId->GetValue();
+	ptr->m_BrtBeginSlicerEx = XLS::BaseObjectPtr{ptr1};
+
+	return objectPtr;
 }
 void CSlicerRef::fromBin(XLS::BaseObjectPtr &obj)
 {
@@ -844,6 +869,17 @@ XLS::BaseObjectPtr CSlicerCaches::toBin()
 	return objectPtr;
 }
 
+XLS::BaseObjectPtr CSlicerCaches::toBinTable()
+{
+	auto ptr(new XLSB::TABLESLICERCACHEIDS);
+	XLS::BaseObjectPtr objectPtr(ptr);
+	for(auto i:m_oSlicerCache)
+	{
+		ptr->m_arTABLESLICERCACHEID.push_back(i.toBinTable());
+	}
+	return objectPtr;
+}
+
 void CSlicerCaches::fromBin(XLS::BaseObjectPtr &obj)
 {
     auto ptr = static_cast<XLSB::SLICERCACHEIDS*>(obj.get());
@@ -905,6 +941,17 @@ XLS::BaseObjectPtr CSlicerRefs::toBin()
 	for(auto i:m_oSlicer)
 	{
 		ptr->m_arSLICEREX.push_back(i.toBin());
+	}
+	return objectPtr;
+}
+XLS::BaseObjectPtr CSlicerRefs::toBinTable()
+{
+	auto ptr(new XLSB::TABLESLICERSEX);
+	XLS::BaseObjectPtr objectPtr(ptr);
+
+	for(auto i:m_oSlicer)
+	{
+		ptr->m_arTABLESLICEREX.push_back(i.toBinTable());
 	}
 	return objectPtr;
 }

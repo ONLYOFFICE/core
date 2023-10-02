@@ -200,13 +200,12 @@ XLS::BaseObjectPtr CSlicer::toBin()
 	if(m_oRowHeight.IsInit())
 		ptr->dxRowHeight = m_oRowHeight.get();
 
-	if(m_oName.IsInit())
+    if(m_oName.IsInit())
 		ptr->stName = m_oName.get();
 	else if(m_oUid.IsInit())
 		ptr->stName = m_oUid.get();
 	else
-		ptr->stName = 0xFFFFFFFF;
-
+        ptr->stName = 0xFFFFFFFF;
 	if(m_oCache.IsInit())
 		ptr->stSlicerCacheName = m_oCache.get();
 	else

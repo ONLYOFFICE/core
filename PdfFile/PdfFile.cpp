@@ -803,7 +803,7 @@ int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)
 		return 0;
-	m_pInternal->pReader->GetRotate(nPageIndex);
+	return m_pInternal->pReader->GetRotate(nPageIndex);
 }
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {

@@ -974,10 +974,10 @@ int main(int argc, char* argv[])
 		nPagesCount = READ_INT(pInfo + 4);
 		if (nPagesCount > 0)
 		{
-			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
-			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
-			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
-			int rotate = READ_INT(pInfo + nTestPage * 12 + 20);
+			nWidth  = READ_INT(pInfo + nTestPage * 16 + 8);
+			nHeight = READ_INT(pInfo + nTestPage * 16 + 12);
+			int dpi = READ_INT(pInfo + nTestPage * 16 + 16);
+			int rotate = READ_INT(pInfo + nTestPage * 16 + 20);
 			//nWidth  *= 2;
 			//nHeight *= 2;
 			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;

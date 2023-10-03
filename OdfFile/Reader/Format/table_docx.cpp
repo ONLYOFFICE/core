@@ -292,16 +292,16 @@ void table_table_column_group::docx_convert(oox::docx_conversion_context & Conte
 void table_table_column::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
-    const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const unsigned int columnsRepeated = attlist_.table_number_columns_repeated_;
+    const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
     Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
 		bool bAddWidth = false;
-        if (table_table_column_attlist_.table_style_name_)
+        if (attlist_.table_style_name_)
         {
-            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
+            const std::wstring colStyleName = attlist_.table_style_name_.get();
             if (style_instance * inst = 
                 Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn, Context.process_headers_footers_ ))
             {

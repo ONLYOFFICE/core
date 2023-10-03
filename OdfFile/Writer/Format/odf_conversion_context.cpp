@@ -136,7 +136,7 @@ double odf_conversion_context::convert_symbol_width(double val)
 
 	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size))) / 256.) * font_metrix_.approx_symbol_size); //in pixels
 
-	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
+	return pixels * 0.76; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
 void odf_conversion_context::set_styles_context(odf_style_context_ptr styles_context)
 {

@@ -1161,7 +1161,7 @@ void process_build_object::visit(table_table_row & val)
 }
 void process_build_object::visit(table_table_column& val)
 {
-    const unsigned int columnsRepeated = val.table_table_column_attlist_.table_number_columns_repeated_;
+    const unsigned int columnsRepeated = val.attlist_.table_number_columns_repeated_;
   
 	visit_column(columnsRepeated);
 }

@@ -624,9 +624,9 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
  		if (column_properties == NULL)return; //error ????
 
 		if (bBreak)
-			column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Page);
+			column_properties->attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Page);
 		else
-			column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
+			column_properties->attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
 
 	office_element_ptr column_elm;

@@ -1852,14 +1852,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
-
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict())
 	{
@@ -1878,14 +1870,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
-
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
 
 	Object oAnnot, oAP;
 	XRef* xref = pdfDoc->getXRef();

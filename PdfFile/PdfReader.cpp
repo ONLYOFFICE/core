@@ -336,6 +336,10 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 	if (!m_pPDFDocument)
 		return;
 
+#ifdef BUILDING_WASM_MODULE
+	*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
+	*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
+#else
 	int nRotate = m_pPDFDocument->getPageRotate(nPageIndex);
 	if (nRotate % 180 == 0)
 	{
@@ -347,6 +351,7 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 		*pdHeight = m_pPDFDocument->getPageCropWidth(nPageIndex);
 		*pdWidth  = m_pPDFDocument->getPageCropHeight(nPageIndex);
 	}
+#endif
 
 	*pdDpiX = 72.0;
 	*pdDpiY = 72.0;
@@ -369,7 +374,11 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
 		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
 		oRendererOut.SetBreak(pbBreak);
-		m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+		int nRotate = 0;
+#ifdef BUILDING_WASM_MODULE
+		nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+#endif
+		m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 	}
 }
 void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
@@ -712,11 +721,16 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 	}
 	RELEASEOBJECT(pLinks);
 
+	int nRotate = 0;
+#ifdef BUILDING_WASM_MODULE
+	nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+#endif
+
 	// Текст-ссылка
 	TextOutputControl textOutControl;
 	textOutControl.mode = textOutReadingOrder;
 	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 	m_pPDFDocument->processLinks(pTextOut, nPageIndex);
 	TextWordList* pWordList = pTextOut->makeWordList();
 	for (int i = 0; i < pWordList->getLength(); i++)
@@ -897,14 +911,6 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1);
 	if (!pAcroForms || !pPage)
 		return NULL;
-
-	int nRotate = m_pPDFDocument->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
 
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;

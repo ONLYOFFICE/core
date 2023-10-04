@@ -2507,7 +2507,18 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	}
 	else
 	{
-		text_context->add_text_content( oox_run->GetText());
+		const std::wstring& text = oox_run->GetText();
+		std::vector<std::wstring> tabSplit;
+
+		boost::split(tabSplit, text, boost::is_any_of(L"\t"), boost::token_compress_off);
+
+		for (const std::wstring& str : tabSplit)
+		{
+			if (str.empty())
+				text_context->add_tab();
+			else 
+				text_context->add_text_content(str);
+		}
 	}
 	text_context->end_span();
 }

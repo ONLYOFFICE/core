@@ -3218,7 +3218,7 @@ void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 	}
 	odt_context->end_drawing_context();
 }
-void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor) 
+void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 {
 	if (oox_anchor == NULL)return;
 
@@ -3230,18 +3230,18 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
 		height = oox_anchor->m_oExtent->m_oCy.ToPoints();
 	}
-	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left	(oox_anchor->m_oDistL->ToPoints());
-	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top	(oox_anchor->m_oDistT->ToPoints());
-	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right	(oox_anchor->m_oDistR->ToPoints());
-	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom	(oox_anchor->m_oDistB->ToPoints());
+	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_anchor->m_oDistL->ToPoints());
+	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_anchor->m_oDistT->ToPoints());
+	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_anchor->m_oDistR->ToPoints());
+	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_anchor->m_oDistB->ToPoints());
 
 	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 
 	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
-	bool bBackground = oox_anchor->m_oBehindDoc.IsInit() ? oox_anchor->m_oBehindDoc->ToBool(): false;
+	bool bBackground = oox_anchor->m_oBehindDoc.IsInit() ? oox_anchor->m_oBehindDoc->ToBool() : false;
 
-	bool bThrough = oox_anchor->m_oAllowOverlap.IsInit() ? oox_anchor->m_oAllowOverlap->ToBool(): false;
+	bool bThrough = oox_anchor->m_oAllowOverlap.IsInit() ? oox_anchor->m_oAllowOverlap->ToBool() : false;
 
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
@@ -3249,16 +3249,25 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 
 		odt_context->drawing_context()->set_vertical_rel(vert_rel);
 
-		if ( oox_anchor->m_oPositionV->m_oAlign.IsInit())
+		if (oox_anchor->m_oPositionV->m_oAlign.IsInit())
 			odt_context->drawing_context()->set_vertical_pos(oox_anchor->m_oPositionV->m_oAlign->GetValue());
 
 		else if (oox_anchor->m_oPositionV->m_oPosOffset.IsInit())
 		{
-			switch(vert_rel)
+			//	relfromvBottomMargin = 0,
+			//	relfromvInsideMargin = 1,
+			//	relfromvLine = 2,
+			//	relfromvMargin = 3,
+			//	relfromvOutsideMargin = 4,
+			//	relfromvPage = 5,
+			//	relfromvParagraph = 6,
+			//	relfromvTopMargin = 7	
+			switch (vert_rel)
 			{
-				case 3:	
-				case 6:	anchor_type_y = anchor_type::Paragraph;	break;  
-				case 5:	anchor_type_y = anchor_type::Page;		break;       
+			case 2: anchor_type_x = anchor_type::Char;		break;
+			case 5:	anchor_type_y = anchor_type::Page;		break;
+			case 3:
+			case 6:	anchor_type_y = anchor_type::Paragraph;	break;
 			}
 			odt_context->drawing_context()->set_vertical_pos(oox_anchor->m_oPositionV->m_oPosOffset->ToPoints());
 		}
@@ -3269,26 +3278,41 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	{
 		int horiz_rel = oox_anchor->m_oPositionH->m_oRelativeFrom->GetValue();
 		odt_context->drawing_context()->set_horizontal_rel(horiz_rel);
-		
+
 		if (oox_anchor->m_oPositionH->m_oAlign.IsInit())
 			odt_context->drawing_context()->set_horizontal_pos(oox_anchor->m_oPositionH->m_oAlign->GetValue());
-		
+
 		else if (oox_anchor->m_oPositionH->m_oPosOffset.IsInit())
 		{
 			odt_context->drawing_context()->set_horizontal_pos(oox_anchor->m_oPositionH->m_oPosOffset->ToPoints());
-			switch(horiz_rel)
+			//	relfromhCharacter = 0,
+			//	relfromhColumn = 1,
+			//	relfromhInsideMargin = 2,
+			//	relfromhLeftMargin = 3,
+			//	relfromhMargin = 4,
+			//	relfromhOutsideMargin = 5,
+			//	relfromhPage = 6,
+			//	relfromhRightMargin = 7
+			switch (horiz_rel)
 			{
-				case 1:
-				case 2:	anchor_type_x = anchor_type::Paragraph;	break;  
-				case 6:	anchor_type_x = anchor_type::Page;		break;       
+			case 0: anchor_type_x = anchor_type::Char;		break;
+			case 1: anchor_type_x = anchor_type::Frame;		break;
+			case 4:
+			case 2:	anchor_type_x = anchor_type::Paragraph;	break;
+			case 6:	anchor_type_x = anchor_type::Page;		break;
 			}
 		}
 		else
 			odt_context->drawing_context()->set_horizontal_pos(SimpleTypes::alignhLeft);
 	}
 
-	if ( (anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
-		odt_context->drawing_context()->set_anchor(*anchor_type_x);
+	if (anchor_type_x && anchor_type_y)
+	{
+		if (*anchor_type_x == *anchor_type_y)
+			odt_context->drawing_context()->set_anchor(*anchor_type_x);
+		else if (*anchor_type_x == anchor_type::Frame  && *anchor_type_y == anchor_type::Paragraph)
+			odt_context->drawing_context()->set_anchor(anchor_type::Char);
+	}
 
 	bool wrap_set = false;
 	if (oox_anchor->m_oWrapSquare.IsInit())

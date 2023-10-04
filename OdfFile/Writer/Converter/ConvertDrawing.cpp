@@ -2039,6 +2039,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
 	}	
 
+	std::vector<PPTX::Logic::RunElem>::iterator runIt = std::find_if_not(oox_paragraph->RunElems.begin(), oox_paragraph->RunElems.end(),
+		[](const PPTX::Logic::RunElem& r) {
+			return !r.is<PPTX::Logic::Run>();
+		});
+	if (runIt != oox_paragraph->RunElems.end())
+	{
+		const PPTX::Logic::Run& run = runIt->as<PPTX::Logic::Run>();
+		if (!run.HasText())
+			list_present = false;
+	}
+	else 
+		list_present = false;
+
 	//if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
 	while ((int)odf_context()->text_context()->list_state_.levels.size() > list_level)

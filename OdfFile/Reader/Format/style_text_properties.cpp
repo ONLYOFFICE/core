@@ -1252,11 +1252,12 @@ void text_format_properties::docx_convert(oox::docx_conversion_context & Context
     bool needProcessFontSize = true;
 
     // 17.3.2.42
-	if (Context.get_drop_cap_context().state() == 2)
-	{
-		_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//формула ачуметь !! - подбор вручную
-	}
-	else if (style_text_position_)
+	//if (Context.get_drop_cap_context().state() == 2)
+	//{
+	//	_rPr << L"<w:position w:val=\"-" << (2+Context.get_drop_cap_context().Scale*2-3)*2 << "\"/> ";//формула ачуметь !! - подбор вручную
+	//}
+	//else
+		if (style_text_position_)
     {
         bool noNeedSize = false;
         if (style_text_position_->get_type() == text_position::Sub)

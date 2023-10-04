@@ -78,7 +78,7 @@ std::wostream & operator << (std::wostream & _Wostream, const smil_transition_ty
 	case smil_transition_type::pushWipe			:	_Wostream << L"pushWipe"		; break;
 	case smil_transition_type::slideWipe		:	_Wostream << L"slideWipe"		; break;
 	case smil_transition_type::fade				:	_Wostream << L"fade"			; break;
-	case smil_transition_type::checkerBoardWipe	:	_Wostream << L"checkerboardWipe"; break;
+	case smil_transition_type::checkerBoardWipe	:	_Wostream << L"checkerBoardWipe"; break;
 	case smil_transition_type::blindsWipe		:	_Wostream << L"blindsWipe"		; break;
 	case smil_transition_type::dissolve			:	_Wostream << L"dissolve"		; break;
 	case smil_transition_type::randomBarWipe	:	_Wostream << L"randomBarWipe"	; break;

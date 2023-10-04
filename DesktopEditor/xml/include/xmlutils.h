@@ -168,6 +168,7 @@ namespace XmlUtils
 		void Clear();
 
 		std::wstring GetName();
+		std::string GetNameA();
 		std::wstring GetText();
 		std::string GetTextA();
 

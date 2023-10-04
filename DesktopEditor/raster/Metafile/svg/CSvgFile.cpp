@@ -126,11 +126,14 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 		}
 	}
 
-	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
-	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
-
 	double dViewBoxWidth  = oViewBox.m_oWidth.ToDouble(NSCSS::Pixel);
 	double dViewBoxHeight = oViewBox.m_oHeight.ToDouble(NSCSS::Pixel);
+	
+	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel, dViewBoxWidth);
+	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel, dViewBoxHeight);
+
+	if (0. == dWindowWidth || 0. == dWindowHeight)
+		return false;
 
 	double oldTransform[6];
 	oldTransform[0] = oldTransform[3] = 1;

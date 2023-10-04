@@ -100,8 +100,8 @@ public:
    
 	void apply_from(const drawing_page_properties & Other);
 
-	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
+	odf_types::common_draw_fill_attlist		        common_draw_fill_attlist_;
+    odf_types::anim_transition_filter_attlist		anim_transition_filter_attlist_;
 
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;
@@ -138,14 +138,14 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 	
-	drawing_page_properties & content() { return drawing_page_properties_; }
+	drawing_page_properties & content() { return content_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     //virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-	drawing_page_properties drawing_page_properties_;
+	drawing_page_properties content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_drawing_page_properties);

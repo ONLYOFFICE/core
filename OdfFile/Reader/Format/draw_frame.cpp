@@ -94,7 +94,8 @@ void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	{
 		draw_frame_ptr = office_element_creator::get()->create(L"draw", L"frame", getContext(), false);
 		draw_frame_ptr->add_attributes(Attributes);
-	}
+	}	
+	CP_APPLY_ATTR(L"draw:mime-type", draw_mime_type_);
 	
 	draw_image_attlist_.add_attributes(Attributes);
     xlink_attlist_.add_attributes(Attributes);
@@ -109,7 +110,6 @@ void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
     else
     {
         CP_CREATE_ELEMENT(content_);
-        //CP_NOT_APPLICABLE_ELM();
     }
 }
 std::wostream & draw_image::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const

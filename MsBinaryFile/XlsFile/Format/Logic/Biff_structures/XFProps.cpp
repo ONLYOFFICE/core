@@ -245,16 +245,9 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 		if (arXFPropBorder.is_present)
 		{
 			CP_XML_NODE(L"border")
-			{	
-				//порядок важен - xfPropType - 8, 9, 6, 7 ( - DataVal_Headings.xls
-				if (arXFPropBorder.left)	arXFPropBorder.left->serialize(CP_XML_STREAM());
-				if (arXFPropBorder.right)	arXFPropBorder.right->serialize(CP_XML_STREAM());
-				if (arXFPropBorder.top)		arXFPropBorder.top->serialize(CP_XML_STREAM());
-				if (arXFPropBorder.bottom)	arXFPropBorder.bottom->serialize(CP_XML_STREAM());
-
-				//----------------------------------------
+			{
 				for (size_t i = 0; i < arXFPropBorder.other.size(); i++)
-				{					
+				{
 					if (dxf)
 					{
 						arXFPropBorder.other[i]->serialize_attr(CP_GET_XML_NODE());
@@ -264,6 +257,11 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 						arXFPropBorder.other[i]->serialize(CP_XML_STREAM());
 					}
 				}
+
+				if (arXFPropBorder.left)	arXFPropBorder.left->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.right)	arXFPropBorder.right->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.top)		arXFPropBorder.top->serialize(CP_XML_STREAM());
+				if (arXFPropBorder.bottom)	arXFPropBorder.bottom->serialize(CP_XML_STREAM());
 			}
 		}	
 	}

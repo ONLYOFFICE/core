@@ -808,7 +808,10 @@ namespace BinXlsxRW
 	namespace c_oSer_PrintOptions{enum c_oSer_PrintOptions
 	{
 		GridLines = 0,
-		Headings = 1
+		Headings = 1,
+		GridLinesSet = 2,
+		HorizontalCentered = 3,
+		VerticalCentered = 4
 	};}
 	namespace c_oSer_QueryTable{enum c_oSer_QueryTable
 	{

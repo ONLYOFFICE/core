@@ -64,7 +64,7 @@ public:
 	std::wstring convert_formula(const std::wstring& expr);
 	std::wstring convert_conditional_formula(const std::wstring& expr);
 
-	std::wstring convert_chart_distance(const std::wstring& expr);
+	std::wstring convert_ref_distances(std::wstring const& expr, std::wstring const& separator_in, std::wstring const& separator_out);
     static void replace_cells_range(std::wstring& expr, bool bSelect = true);
   
 	static void replace_semicolons(std::wstring& expr);
@@ -844,21 +844,21 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 //в
 //Sheet2.C3:Sheet2.C19 Sheet2.L29:Sheet2.L36
 //todooo
-std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring& expr1)
+std::wstring oox2odf_converter::Impl::convert_ref_distances(std::wstring const& expr1, std::wstring const& separator_in, std::wstring const& separator_out)
 {
 	std::wstring expr = expr1;
-	int res = expr.find(L"(");
-	if (res ==0) expr = expr.substr(res + 1, expr.size()-1);
+	size_t res = expr.find(L"(");
+	if (res == 0) expr = expr.substr(res + 1, expr.size()-1);
 
 	res= expr.rfind(L")");
 	if (res ==expr.size()-2) expr = expr.substr(0, res);
 
-	//распарсить по диапазонам - одф-пробел, ик-эль-запятая
+	//распарсить по диапазонам - пробел -> separator
 
 	std::vector<std::wstring> distance_inp;
 	std::vector<std::wstring> distance_out;
 	
-	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+	boost::algorithm::split(distance_inp,expr, boost::algorithm::is_any_of(separator_in), boost::algorithm::token_compress_on);
 
 	for (size_t i = 0; i < distance_inp.size(); i++)
 	{
@@ -902,7 +902,7 @@ std::wstring oox2odf_converter::Impl::convert_chart_distance(const std::wstring&
 	for (size_t i = 0 ; i < distance_out.size(); i++)
 	{
 		result += distance_out[i];
-		result += L" ";
+		result += separator_out;
 	}
 	return result.substr(0, result.size()-1);
 }
@@ -926,9 +926,9 @@ std::wstring oox2odf_converter::convert_formula(const std::wstring& expr)
 {
     return impl_->convert_formula(expr);
 }
-std::wstring oox2odf_converter::convert_chart_distance(const std::wstring& expr)
+std::wstring oox2odf_converter::convert_ref_distances(std::wstring const& expr, std::wstring const& separator_in, std::wstring const& separator_out)
 {
-    return impl_->convert_chart_distance(expr);
+    return impl_->convert_ref_distances(expr, separator_in, separator_out);
 }
 std::wstring oox2odf_converter::convert_named_ref(const std::wstring& expr)
 {
@@ -946,7 +946,10 @@ bool oox2odf_converter::is_simple_ref(std::wstring const & expr)
 {
 	return impl_->is_simple_ref(expr);
 }
-
+void oox2odf_converter::set_table_name(std::wstring const& val)
+{
+	impl_->table_name_ = val;
+}
 std::wstring oox2odf_converter::get_table_name()
 {
     return impl_->table_name_;

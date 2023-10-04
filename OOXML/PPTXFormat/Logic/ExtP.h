@@ -32,9 +32,6 @@
 
 #pragma once
 
-#ifndef PPTX_LOGIC_EXTP_PROPERTIES_INCLUDE_H_
-#define PPTX_LOGIC_EXTP_PROPERTIES_INCLUDE_H_
-
 #include "../Presentation/SectionLst.h"
 
 //--------------------------------------------------------------------------------------------------------------
@@ -106,9 +103,6 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes1(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
@@ -118,20 +112,18 @@ namespace PPTX
 //-------------------------------------------------------
 			nullable_string			uri;
 //media
-			nullable<OOX::RId>		link;
+			nullable<OOX::RId>		link_media;
 			nullable_double			st;
 			nullable_double			end;			
 //compatExt
 			nullable_string			spid;
 
-			nullable<nsPresentation::SectionLst>	sectionLst;
-//dataModelExt
-//table
-//sparklineGroups
+			nullable<nsPresentation::SectionLst> sectionLst;
+//image
+			nullable<OOX::RId>		link_svg;
+
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} 
 } 
-
-#endif 

@@ -72,6 +72,7 @@ namespace SVG
 		friend class CGradient;
 		friend class CClipPath;
 		friend class CTextPath;
+		friend class CLinearGradient;
 		friend class CGraphicsContainer;
 	};
 
@@ -90,8 +91,6 @@ namespace SVG
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, const TSvgStyles* pStyles, const CSvgFile *pFile, int& nTypePath) const override;
-
 		TBounds GetBounds() const override;
 
 		friend class CPattern;

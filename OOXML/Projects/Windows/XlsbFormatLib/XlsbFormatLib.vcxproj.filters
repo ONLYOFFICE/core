@@ -2058,12 +2058,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.cpp">
       <Filter>structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Tws.cpp">
       <Filter>structures</Filter>
     </ClCompile>
@@ -5089,12 +5083,6 @@
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.h">
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Tws.h">

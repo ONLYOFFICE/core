@@ -103,7 +103,7 @@ namespace MetaFile
 		{
 			pBuffer = pBuf;
 			pCur    = pBuf;
-			pEnd    = pBuf + unSize + 1;
+			pEnd    = pBuf + unSize;
 		};
 		BYTE* GetCurPtr()
 		{
@@ -112,7 +112,7 @@ namespace MetaFile
 
 		unsigned char  ReadUChar()
 		{
-			if (pCur + 1 >= pEnd)
+			if (pCur >= pEnd)
 				return 0;
 
 			unsigned char unResult = pCur[0];
@@ -121,7 +121,7 @@ namespace MetaFile
 		};
 		unsigned short ReadUShort()
 		{
-			if (pCur + 2 >= pEnd)
+			if (pCur + 1 >= pEnd)
 				return 0;
 
 			unsigned short ushResult = (pCur[0]) | ((pCur[1]) << 8);
@@ -130,7 +130,7 @@ namespace MetaFile
 		};
 		unsigned int   ReadULong()
 		{
-			if (pCur + 4 >= pEnd)
+			if (pCur + 3 >= pEnd)
 				return 0;
 
 			unsigned int unResult = (unsigned int)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
@@ -139,7 +139,7 @@ namespace MetaFile
 		};
 		double         ReadDouble()
 		{
-			if (pCur + 4 >= pEnd)
+			if (pCur + 3 >= pEnd)
 				return 0;
 
 			float output;

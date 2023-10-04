@@ -83,6 +83,7 @@
 
 #include "../../../OOXML/Common/SimpleTypes_Spreadsheet.h"
 #include "../../../OOXML/Common/SimpleTypes_Word.h"
+#include "../../../OOXML/PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
 using namespace cpdoccore;
 
@@ -135,6 +136,9 @@ DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate) : docx_f
 
 	output_document = new odf_writer::package::odf_document(L"text", bTemplate);
     odt_context     = new odf_writer::odt_conversion_context(output_document);
+	drawingConverter = new NSBinPptxRW::CDrawingConverter;
+
+	drawingConverter->m_bNeedMainProps = true;
 
 //set flags to default
 	current_section_properties	= NULL;
@@ -142,10 +146,11 @@ DocxConverter::DocxConverter(const std::wstring & path, bool bTemplate) : docx_f
 }
 DocxConverter::~DocxConverter()
 {
-	if (odt_context)			delete odt_context;			odt_context		= NULL;
+	if (odt_context)			delete odt_context;			odt_context = NULL;
 	if (output_document)		delete output_document;		output_document = NULL;
-	if (docx_document)			delete docx_document;		docx_document	= NULL;
-	if (docx_flat_document)		delete docx_flat_document;	docx_flat_document	= NULL;
+	if (docx_document)			delete docx_document;		docx_document = NULL;
+	if (docx_flat_document)		delete docx_flat_document;	docx_flat_document = NULL;
+	if (drawingConverter)		delete drawingConverter;	drawingConverter = NULL;
 }
 odf_writer::odf_conversion_context* DocxConverter::odf_context()
 {
@@ -424,6 +429,14 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_drawing:
 		{
 			convert(dynamic_cast<OOX::Logic::CDrawing*>(oox_unknown));
+		}break;
+		case OOX::et_wp_anchor:
+		{
+			convert(dynamic_cast<OOX::Drawing::CAnchor*>(oox_unknown));
+		}break;
+		case OOX::et_wp_inline:
+		{
+			convert(dynamic_cast<OOX::Drawing::CInline*>(oox_unknown));
 		}break;
 		case OOX::et_w_pict:
 		{
@@ -733,9 +746,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			//вставка знака абзаца - разделение текущего параграфа - в либре нету
 			//if (oox_paragraph->m_arrItems.size() < 2)//только для пустых 
 			{
-				id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
-				if (id >= 0)	
-					id_change_properties.push_back(std::pair<int, int> (1, id));
+				//id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
+				//if (id >= 0)	
+				//	id_change_properties.push_back(std::pair<int, int> (1, id));
 			}
 
 			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oRPrChange.GetPointer());
@@ -1480,10 +1493,10 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 			outline_level = *parent_paragraph_properties.content_.outline_level_;
 		}
 	}
-	if (!reDefine && oox_paragraph_pr->m_oRPr.IsInit())
-	{
-		convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties, true);
-	}	
+	//if (!reDefine && oox_paragraph_pr->m_oRPr.IsInit() && !odt_context->in_drop_cap())
+	//{
+	//	convert(oox_paragraph_pr->m_oRPr.GetPointer(), text_properties, true);
+	//}	
 	
 	if (text_properties && text_properties->fo_font_size_)
 	{
@@ -2822,7 +2835,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		else
 			text_properties->fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	}
-	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
+	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit() && !odt_context->in_drop_cap())
 	{
 		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		current_font_size.push_back(font_size_pt);
@@ -2900,13 +2913,13 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::te
 		double spacing = oox_run_pr->m_oSpacing->m_oVal->ToPoints();
 		text_properties->fo_letter_spacing_ = odf_types::letter_spacing(odf_types::length(spacing, odf_types::length::pt));
 	}
-	if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
-	{
-		double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
-		double percent = current_font_size.empty() ? 0 : position_pt / current_font_size.back() * 100;
+	//if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
+	//{
+	//	double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
+	//	double percent = current_font_size.empty() ? 0 : position_pt / current_font_size.back() * 100;
 
-		text_properties->style_text_position_ = odf_types::text_position(percent, 100.);
-	}
+	//	text_properties->style_text_position_ = odf_types::text_position(percent, 100.);
+	//}
 	if (oox_run_pr->m_oBdr.IsInit())
 	{
 		std::wstring odf_border;
@@ -3029,21 +3042,56 @@ void DocxConverter::convert(OOX::Logic::CAlternateContent *oox_alt_content)
 void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 {
 	if (oox_pic == NULL) return;
-
+	
 	odt_context->start_drawing_context();
-			
-	if (odt_context->table_context()->empty())
-		odf_context()->drawing_context()->set_anchor(anchor_type::Char);//default
+
+	if (drawingConverter && oox_pic->m_sXml.IsInit())
+	{
+		std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
+		NSCommon::nullable<OOX::WritingElement> anchor;
+
+		drawingConverter->ConvertVml(*oox_pic->m_sXml, elements, anchor);
+
+		convert(anchor.GetPointer());
+
+		odf_context()->drawing_context()->start_drawing();
+		for (size_t i = 0; i < elements.size(); ++i)
+		{
+			OoxConverter::convert(elements[i].GetPointer());
+		}
+		odf_context()->drawing_context()->end_drawing();
+		odt_context->end_drawing_context();
+	}
 	else
 	{
-		odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);
-		odf_context()->drawing_context()->set_object_background(true);
-	}
-		
-	OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
-	OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
+		odt_context->start_drawing_context();
 
-	odt_context->end_drawing_context();
+		if (odt_context->table_context()->empty())
+			odf_context()->drawing_context()->set_anchor(anchor_type::Char);//default
+		else
+		{
+			odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);
+			odf_context()->drawing_context()->set_object_background(true);
+		}
+		OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
+
+		OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(oox_pic->m_oShapeElement.GetPointer());
+
+		if (pShape)
+		{
+			OoxConverter::convert(pShape, oox_pic->m_oOLEObject.GetPointer());
+		}
+		else
+		{
+			OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
+		}
+
+		for (size_t i = 0; i < oox_pic->m_arrItems.size(); ++i)
+		{
+			OoxConverter::convert(oox_pic->m_arrItems[i]);
+		}
+		odt_context->end_drawing_context();
+	}
 }
 void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 {
@@ -3080,7 +3128,6 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		if (!odf_ref_ole.empty())
 		{
 			odf_context()->drawing_context()->start_object_ole(odf_ref_ole);
-			OoxConverter::convert(oox_obj->m_oShape.GetPointer());
 
 			if (oox_obj->m_oOleObject->m_sProgId.IsInit())
 			{
@@ -3089,8 +3136,9 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			std::wstring sIdImageFileCache = GetImageIdFromVmlShape(oox_obj->m_oShape.GetPointer());
 			
 			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
-			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
-			
+			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);			
+
+			OoxConverter::convert(oox_obj->m_oShape.GetPointer(), NULL);
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 
 			odf_context()->drawing_context()->end_object_ole();
@@ -3151,8 +3199,23 @@ void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 	if (oox_drawing == NULL) return;
 
 	odt_context->start_drawing_context();
+	if (oox_drawing->m_oAnchor.IsInit())
+	{
 		convert(oox_drawing->m_oAnchor.GetPointer());
+		
+		odf_context()->drawing_context()->start_drawing();
+			OoxConverter::convert(&oox_drawing->m_oAnchor->m_oGraphic);
+		odf_context()->drawing_context()->end_drawing();
+	}
+	else if (oox_drawing->m_oInline.IsInit())
+	{
 		convert(oox_drawing->m_oInline.GetPointer());
+		
+		odf_context()->drawing_context()->start_drawing();
+			OoxConverter::convert(&oox_drawing->m_oInline->m_oGraphic);
+			odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
+		odf_context()->drawing_context()->end_drawing();
+	}
 	odt_context->end_drawing_context();
 }
 void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor) 
@@ -3325,12 +3388,6 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	}
 	
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
-	
-	odf_context()->drawing_context()->start_drawing();
-		OoxConverter::convert(&oox_anchor->m_oGraphic);
-	odf_context()->drawing_context()->end_drawing();
-
-	odf_context()->drawing_context()->check_anchor();
 }
 void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 {
@@ -3360,11 +3417,6 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 	odt_context->drawing_context()->set_vertical_pos(1);//middle
 	
 	OoxConverter::convert(oox_inline->m_oDocPr.GetPointer());
-	
-	odf_context()->drawing_context()->start_drawing();
-		OoxConverter::convert(&oox_inline->m_oGraphic);
-	odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar); 
-	odf_context()->drawing_context()->end_drawing();
 }
 
 void DocxConverter::convert(SimpleTypes::CHexColor			*color,

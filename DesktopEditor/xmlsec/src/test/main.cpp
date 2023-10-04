@@ -29,7 +29,8 @@ int main()
 	unsigned char* pSignData = NULL;
 	unsigned int nSignDataLen = 0;
 	std::string sSignData = "Hello world!";
-	bool bRes = pCertificate->SignPKCS7((unsigned char*)sSignData.c_str(), (unsigned int)sSignData.length(), pSignData, nSignDataLen);
+	//bool bRes = pCertificate->SignPKCS7((unsigned char*)sSignData.c_str(), (unsigned int)sSignData.length(), pSignData, nSignDataLen);
+	bool bRes = pCertificate->Sign((unsigned char*)sSignData.c_str(), (unsigned int)sSignData.length(), pSignData, nSignDataLen);
 
 	RELEASEARRAYOBJECTS(pSignData);
 

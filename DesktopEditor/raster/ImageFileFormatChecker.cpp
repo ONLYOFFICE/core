@@ -31,9 +31,11 @@
  */
 #include "ImageFileFormatChecker.h"
 #include "../common/File.h"
-
 #include "../cximage/CxImage/ximacfg.h"
 
+#ifndef IMAGE_CHECKER_DISABLE_XML
+#include "../xml/include/xmlutils.h"
+#endif
 
 #define MIN_SIZE_BUFFER 4096
 #define MAX_SIZE_BUFFER 102400
@@ -439,93 +441,92 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 	{
 		eFileType = _CXIMAGE_FORMAT_GIF;
 	}
-	if (isPngFile(buffer,sizeRead))
+	else if (isPngFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_PNG;
 	}
-	if (isTgaFile(buffer,sizeRead))
+	else if (isTgaFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_TGA;
 	}
-	if (isPcxFile(buffer,sizeRead))
+	else if (isPcxFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_PCX;
 	}
-	if (isJpgFile(buffer,sizeRead))
+	else if (isJpgFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_JPG;
 	}
-	if (isEmfFile(buffer,sizeRead))
+	else if (isEmfFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_EMF;
 	}
-	if (isWmfFile(buffer,sizeRead))
+	else if (isWmfFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_WMF;
 	}
-	if (isTiffFile(buffer,sizeRead))
+	else if (isTiffFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_TIF;
 	}
-	if (isIcoFile(buffer,sizeRead))
+	else if (isIcoFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_ICO;
 	}
-	if (isWbFile(buffer,sizeRead))
+	else if (isWbFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_WB;
 	}
-	if (isPsdFile(buffer,sizeRead))
+	else if (isPsdFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_PSD;
 	}
-	if (isRasFile(buffer,sizeRead))
+	else if (isRasFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_RAS;
 	}
-
-	if (isIpodFile(buffer,sizeRead))
+	else if (isIpodFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	if (isJ2kFile(buffer,sizeRead))
+	else if (isJ2kFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_JP2;
 	}
-	if (isJp2File(buffer,sizeRead))
+	else if (isJp2File(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_JP2;
 	}
-	if (isMj2File(buffer,sizeRead))
+	else if (isMj2File(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_JP2;
 	}
-	if (isSfwFile(buffer,sizeRead))
+	else if (isSfwFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	if (isSvmFile(buffer,sizeRead))
+	else if (isSvmFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	if (isSwfFile(buffer,sizeRead))
+	else if (isSwfFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	if (isWbcFile(buffer,sizeRead))
+	else if (isWbcFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	if (isWbzFile(buffer,sizeRead))
+	else if (isWbzFile(buffer,sizeRead))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
-	///////////////////////////////////////////////////////////////////////
-	if (isSvgFile(fileName))
+//----------------------------------------------------------------
+	else if (isSvgFile(fileName))
 	{
 		eFileType = _CXIMAGE_FORMAT_SVG;
 	}
-	if (isRawFile(fileName))
+	else if (isRawFile(fileName))
 	{
 		eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	}
@@ -718,13 +719,25 @@ bool CImageFileFormatChecker::isRawFile(BYTE* pBuffer, DWORD dwBytes)
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {
+#ifndef IMAGE_CHECKER_DISABLE_XML
+	XmlUtils::CXmlLiteReader oReader;
+	if (!oReader.FromFile(fileName))
+		return false;
+	if (!oReader.ReadNextNode())
+		return false;
+
+	if (L"svg" == oReader.GetNameNoNS())
+		return true;
+	else
+		return false;
+#else
 	NSFile::CFileBinary file;
 	if (!file.OpenFile(fileName))
 		return false;
 
 	DWORD nSize = (DWORD)file.GetFileSize();
-	if (nSize > 100)
-		nSize = 100;
+	if (nSize > 1000)
+		nSize = 1000;
 
 	BYTE* buffer = new BYTE[nSize];
 	if (!buffer)
@@ -738,31 +751,12 @@ bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 	}
 	file.CloseFile();
 
-	if ('<' == buffer[0] &&
-			's' == buffer[1] &&
-			'v' == buffer[2] &&
-			'g' == buffer[3])
-	{
-		delete [] buffer;
-		return true;
-	}
-
-	if ('<' == buffer[0] &&
-			'?' == buffer[1] &&
-			'x' == buffer[2] &&
-			'm' == buffer[3] &&
-			'l' == buffer[4])
-	{
-		std::string test((char*)buffer, nSize);
-		if (std::string::npos != test.find("<svg"))
-		{
-			delete [] buffer;
-			return true;
-		}
-	}
+	std::string test((char*)buffer, nSize);
+	bool bFind = (std::string::npos != test.find("<svg")) ? true : false;
 
 	delete [] buffer;
-	return false;
+	return bFind;
+#endif
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)

@@ -85,6 +85,8 @@ void draw_image::serialize(std::wostream & _Wostream)
 			draw_image_attlist_.serialize(CP_GET_XML_NODE());
 			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 
+			CP_XML_ATTR_OPT(L"draw:mime-type", draw_mime_type_);
+
 			if (office_binary_data_)office_binary_data_->serialize(CP_XML_STREAM());
 
 			for (size_t i = 0; i < content_.size(); i++)
@@ -167,6 +169,9 @@ void draw_g::serialize(std::wostream & _Wostream)
 			if (!common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_)
 				common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = L"";
 			//брееед ... иначе либра не показывает группу!!!
+
+			CP_XML_ATTR_OPT(L"xml:id", xml_id_);
+			CP_XML_ATTR_OPT(L"draw:id", xml_id_);
 
 			common_draw_attlists_.serialize(CP_GET_XML_NODE());
 

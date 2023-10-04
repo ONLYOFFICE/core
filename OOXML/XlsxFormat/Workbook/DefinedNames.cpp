@@ -54,6 +54,8 @@ namespace OOX
 		}
 		void CDefinedName::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
+			if (false == m_oRef.IsInit() && false == m_oName.IsInit()) return;
+
 			writer.WriteString(L"<definedName");
 			WritingStringNullableAttrEncodeXmlString(L"name", m_oName, *m_oName);
 			WritingStringNullableAttrInt(L"localSheetId", m_oLocalSheetId, m_oLocalSheetId->GetValue());
@@ -148,26 +150,32 @@ namespace OOX
         void CDefinedName::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::Name*>(obj.get());
-			m_oComment                  = ptr->comment.value();
-		   // m_oCustomMenu               = ptr->.value();
-			m_oDescription              = ptr->description.value();
-			m_oFunction                 = ptr->fFunc;
-			m_oFunctionGroupId          = ptr->fGrp;
-			m_oHelp                     = ptr->helpTopic.value();
-			m_oHidden                   = ptr->fHidden;
+
+			std::wstring ref = ptr->rgce.getAssembledFormula();
+			
+			if (ref.empty()) return; // ???
+			
+			m_oComment = ptr->comment.value();
+		   // m_oCustomMenu = ptr->.value();
+			m_oDescription = ptr->description.value();
+			m_oFunction = ptr->fFunc;
+			m_oFunctionGroupId = ptr->fGrp;
+			m_oHelp = ptr->helpTopic.value();
+
+			if (ptr->fHidden)
+				m_oHidden = ptr->fHidden;
 
 			if(ptr->itab != 0xFFFFFFFF)
 				m_oLocalSheetId         = ptr->itab;
 
-			m_oName                     = ptr->name.value();
-			m_oPublishToServer          = ptr->fPublished;
-			m_oShortcutKey              = std::to_wstring(ptr->chKey);
-			//m_oStatusBar                = ;
-			m_oVbProcedure              = ptr->fOB;
-			m_oWorkbookParameter        = ptr->fWorkbookParam;
-			m_oXlm                      = ptr->fFutureFunction;
-			m_oRef                      = ptr->rgce.getAssembledFormula();
-
+			m_oName = ptr->name.value();
+			m_oPublishToServer = ptr->fPublished;
+			m_oShortcutKey = std::to_wstring(ptr->chKey);
+			//m_oStatusBar = ;
+			m_oVbProcedure = ptr->fOB;
+			m_oWorkbookParameter = ptr->fWorkbookParam;
+			m_oXlm = ptr->fFutureFunction;
+			m_oRef = ref;
 		}
 
 		CDefinedNames::CDefinedNames(OOX::Document *pMain) : WritingElementWithChilds<CDefinedName>(pMain)

@@ -342,21 +342,18 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 		pageColumn.GetNode(L"REGION", region);
 
         NSWasm::CData oRes;
-        oRes.SkipLen();
-        std::vector<XmlUtils::CXmlNode> oParagraphsNodes;
-        region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
+		oRes.SkipLen();
+		std::vector<XmlUtils::CXmlNode> oParagraphsNodes = region.GetNodes(L"PARAGRAPH");
         for (size_t nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.size(); nParagraphIndex++)
         {
             XmlUtils::CXmlNode & oParagraphNode = oParagraphsNodes[nParagraphIndex];
 
-            std::vector<XmlUtils::CXmlNode> oLinesNodes;
-            oParagraphNode.GetNodes(L"LINE", oLinesNodes);
+			std::vector<XmlUtils::CXmlNode> oLinesNodes = oParagraphNode.GetNodes(L"LINE");
             for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); nLineIndex++)
             {
                 XmlUtils::CXmlNode & oLineNode = oLinesNodes[nLineIndex];
 
-                std::vector<XmlUtils::CXmlNode> oWordsNodes;
-                oLineNode.GetNodes(L"WORD", oWordsNodes);
+				std::vector<XmlUtils::CXmlNode> oWordsNodes = oLineNode.GetNodes(L"WORD");
                 for (size_t nWordIndex = 0; nWordIndex < oWordsNodes.size(); nWordIndex++)
                 {
                     XmlUtils::CXmlNode & oWordNode = oWordsNodes[nWordIndex];
@@ -912,7 +909,6 @@ void CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXm
 	pRenderer->put_FontName(L"DjvuEmptyFont");
 	//std::wstring csText = oTextNode.GetXml();
 	std::vector<XmlUtils::CXmlNode> oLinesNodes = oTextNode.GetNodes(L"LINE");
-	oTextNode.GetNodes(L"LINE", oLinesNodes);
 	for (size_t nLineIndex = 0; nLineIndex < oLinesNodes.size(); ++nLineIndex)
 	{
 		XmlUtils::CXmlNode& oLineNode = oLinesNodes[nLineIndex];

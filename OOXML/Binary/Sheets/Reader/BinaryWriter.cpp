@@ -4536,6 +4536,24 @@ void BinaryWorksheetTableWriter::WritePrintOptions(const OOX::Spreadsheet::CPrin
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oHeadings->ToBool());
 	}
+	if (oPrintOptions.m_oGridLinesSet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::GridLinesSet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oGridLinesSet->ToBool());
+	}
+	if (oPrintOptions.m_oHorizontalCentered.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::HorizontalCentered);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oHorizontalCentered->ToBool());
+	}
+	if (oPrintOptions.m_oVerticalCentered.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_PrintOptions::VerticalCentered);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(oPrintOptions.m_oVerticalCentered->ToBool());
+	}
 }
 void BinaryWorksheetTableWriter::WriteHyperlinks(const OOX::Spreadsheet::CHyperlinks& oHyperlinks, OOX::Spreadsheet::CWorksheet& oWorksheet)
 {

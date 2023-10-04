@@ -12,11 +12,16 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
+#define DEFAULTFONTSIZE 28 // 14 * 2
+
 namespace NSCSS
 {
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point){}
+	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point)
+	{
+		m_oFont.SetSize(std::to_wstring(DEFAULTFONTSIZE), 0, true);
+	}
 
 	 CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 	    m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
@@ -119,22 +124,27 @@ namespace NSCSS
 	void CCompiledStyle::AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode)
 	{
 		const bool bIsThereBorder = (m_oBorder.Empty()) ? false : true;
-
+		const double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Twips);
+		
 		for (std::pair<std::wstring, std::wstring> pPropertie : mStyle)
 		{
 			std::transform(pPropertie.first.begin(), pPropertie.first.end(), pPropertie.first.begin(), tolower);
+
 			SWITCH(pPropertie.first)
 			{
 				//FONT
 				CASE(L"font"):
 				{
 					m_oFont.SetValue(pPropertie.second, unLevel, bHardMode);
+					m_oFont.UpdateSize(dFontSize);
+					m_oFont.UpdateLineHeight(dFontSize);
 					break;
 				}
 				CASE(L"font-size"):
 				CASE(L"font-size-adjust"):
 				{
 					m_oFont.SetSize(pPropertie.second, unLevel, bHardMode);
+					m_oFont.UpdateSize(dFontSize);
 					break;
 				}
 				CASE(L"font-stretch"):
@@ -174,6 +184,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.AddValue(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.UpdateAll(dFontSize);
 					break;
 				}
 				CASE(L"margin-top"):
@@ -182,6 +193,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.AddTop(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.UpdateTop(dFontSize);
 					break;
 				}
 				CASE(L"margin-right"):
@@ -191,6 +203,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.AddRight(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.UpdateRight(dFontSize);
 					break;
 				}
 				CASE(L"margin-bottom"):
@@ -199,6 +212,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.AddBottom(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.UpdateBottom(dFontSize);
 					break;
 				}
 				CASE(L"margin-left"):
@@ -208,6 +222,7 @@ namespace NSCSS
 						break;
 
 					m_oMargin.AddLeft(pPropertie.second, unLevel, bHardMode);
+					m_oMargin.UpdateLeft(dFontSize);
 					break;
 				}
 				//PADDING
@@ -215,30 +230,35 @@ namespace NSCSS
 				CASE(L"mso-padding-alt"):
 				{
 					m_oPadding.AddValue(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.UpdateAll(dFontSize);
 					break;
 				}
 				CASE(L"padding-top"):
 				CASE(L"mso-padding-top-alt"):
 				{
 					m_oPadding.AddTop(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.UpdateTop(dFontSize);
 					break;
 				}
 				CASE(L"padding-right"):
 				CASE(L"mso-padding-right-alt"):
 				{
 					m_oPadding.AddRight(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.UpdateRight(dFontSize);
 					break;
 				}
 				CASE(L"padding-bottom"):
 				CASE(L"mso-padding-bottom-alt"):
 				{
 					m_oPadding.AddBottom(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.UpdateBottom(dFontSize);
 					break;
 				}
 				CASE(L"padding-left"):
 				CASE(L"mso-padding-left-alt"):
 				{
 					m_oPadding.AddLeft(pPropertie.second, unLevel, bHardMode);
+					m_oPadding.UpdateLeft(dFontSize);
 					break;
 				}
 				// TEXT
@@ -441,7 +461,7 @@ namespace NSCSS
 				sValue += *iWord;
 
 				if (L' ' == sValue.front())
-					    sValue.erase(0, 1);
+					sValue.erase(0, 1);
 
 				if (!sValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
 				{

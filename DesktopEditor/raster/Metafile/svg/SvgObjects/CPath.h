@@ -30,6 +30,7 @@ namespace SVG
 	class IPathElement
 	{
 	public:
+		virtual ~IPathElement();
 		virtual EPathElement GetType() const = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
 
@@ -56,6 +57,7 @@ namespace SVG
 	{
 	public:
 		CMoveElement(const Point& oPoint);
+		virtual ~CMoveElement();
 		EPathElement GetType() const override;
 		static CMoveElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		void Draw(IRenderer* pRenderer) const override;
@@ -77,6 +79,7 @@ namespace SVG
 	{
 	public:
 		CCBezierElement(const Point& oPoint1, const Point& oPoint2, const Point& oPointE, EPathElement enType = CBezier);
+		virtual ~CCBezierElement();
 		EPathElement GetType() const override;
 		static IPathElement* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
 		static IPathElement* CreateFromSArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL);
@@ -94,6 +97,7 @@ namespace SVG
 	{
 	public:
 		CCloseElement();
+		virtual ~CCloseElement();
 		EPathElement GetType() const override;
 		void Draw(IRenderer* pRenderer) const override;
 	};

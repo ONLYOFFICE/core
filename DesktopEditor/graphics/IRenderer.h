@@ -133,11 +133,22 @@ const int c_nAdditionalParamBreak = 0x00;
 // типы команд
 const long c_nCommandLongTypeOnlyText = 0x1000;
 
-class IFormField
+class IAdvancedCommand
 {
 public:
-    IFormField() {}
-    virtual ~IFormField() {}
+	enum class AdvancedCommandType
+	{
+		Hyperlink = 0,
+		Link      = 1,
+		DocInfo   = 2,
+		Annotaion = 3
+	};
+private:
+	AdvancedCommandType m_nCommandType;
+public:
+	IAdvancedCommand(const AdvancedCommandType& type) { m_nCommandType = type; }
+	virtual ~IAdvancedCommand() {}
+	AdvancedCommandType GetCommandType() { return m_nCommandType; }
 };
 
 namespace Aggplus { class CImage; }
@@ -333,13 +344,12 @@ public:
 		m_bUseTransformCoordsToIdentity = false;
 		return S_OK;
 	}
-	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;}
-	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;}
-	virtual HRESULT AddFormField(IFormField* pField) {return S_OK;}
-	virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords) {return S_OK;}
 
 	virtual HRESULT IsExistAdditionalParam(const int& type) {return S_FALSE;}
 	virtual HRESULT GetAdditionalParam(const int& type, std::string& result) {return S_FALSE;}
+
+	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type) { return S_FALSE; }
+	virtual HRESULT AdvancedCommand(IAdvancedCommand* command) { return S_FALSE; }
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)    \

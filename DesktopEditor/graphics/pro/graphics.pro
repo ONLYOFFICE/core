@@ -106,10 +106,6 @@ HEADERS += \
 	./../Defines.h \
 	./../Graphics.h \
 	./../ImageFilesCache.h \
-	./../MetafileToRenderer.h \
-	./../MetafileToRendererCheck.h \
-	./../MetafileToGraphicsRenderer.h \
-	./../FormField.h \
 	./../structures.h \
 	./../shading_info.h \
 	./../Graphics.h \
@@ -124,9 +120,25 @@ SOURCES += \
 	./../Clip.cpp \
 	./../Graphics.cpp \
 	./../GraphicsRenderer.cpp \
-	./../MetafileToRenderer.cpp \
-	./../MetafileToGraphicsRenderer.cpp \
-	./../FormField.cpp \
 	\
 	./pro_Image.cpp \
 	./pro_Graphics.cpp
+
+HEADERS += \
+	./../MetafileToRenderer.h \
+	./../MetafileToRendererCheck.h \
+	./../MetafileToRendererReader.h \
+	./../MetafileToGraphicsRenderer.h \
+	\
+	./../commands/FormField.h \
+	./../commands/AnnotField.h \
+	./../commands/DocInfo.h
+
+SOURCES += \
+	./../MetafileToRenderer.cpp \
+	./../MetafileToRendererReader.cpp \
+	./../MetafileToGraphicsRenderer.cpp \
+	\
+	./../commands/FormField.cpp \
+	./../commands/AnnotField.cpp \
+	./../commands/DocInfo.cpp

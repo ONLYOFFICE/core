@@ -2,6 +2,15 @@
 
 namespace NSDocxRenderer
 {
+    void WriteImageToWriter(NSStringUtils::CStringBuilder& oWriter, const std::shared_ptr<CImageInfo>& info)
+    {
+        oWriter.WriteString(L"<Relationship Id=\"rId");
+        oWriter.AddInt(c_iStartingIdForImages + info->m_nId);
+        oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
+        oWriter.WriteString(info->m_strFileName);
+        oWriter.WriteString(L"\"/>");
+    }
+
     CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
         m_pAppFonts(pFonts), m_oCurrentPage(pFonts)
     {
@@ -900,33 +909,26 @@ namespace NSDocxRenderer
         NSStringUtils::CStringBuilder oWriter;
 
         oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-                            <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-                <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>\
-                <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>\
-                <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>\
-                <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
-                <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>\
+<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>\
+<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>\
+<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
+<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
         for (const auto& pImage : m_oImageManager.m_mapImageData)
         {
-            auto pInfo = pImage.second;
-
-            oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
-            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-            oWriter.WriteString(pInfo->m_strFileName);
-            oWriter.WriteString(L"\"/>");
+            WriteImageToWriter(oWriter, pImage.second);
         }
 
         for (const auto& pImage : m_oImageManager.m_mapImagesFile)
         {
-            auto pInfo = pImage.second;;
+            WriteImageToWriter(oWriter, pImage.second);
+        }
 
-            oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
-            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-            oWriter.WriteString(pInfo->m_strFileName);
-            oWriter.WriteString(L"\"/>");
+        if (m_oImageManager.m_pEmptyInfo)
+        {
+            WriteImageToWriter(oWriter, m_oImageManager.m_pEmptyInfo);
         }
 
         oWriter.WriteString(L"</Relationships>");

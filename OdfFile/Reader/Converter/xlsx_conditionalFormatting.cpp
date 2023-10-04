@@ -99,7 +99,11 @@ namespace oox {
 //data bar
 		_CP_OPT(int)				minLength;
 		_CP_OPT(int)				maxLength;
+		_CP_OPT(std::wstring)		axis_position;
+		_CP_OPT(std::wstring)		axis_color;
+		_CP_OPT(std::wstring)		negative_color;
 //icon set
+		_CP_OPT(int)				icon_set_type;
 		_CP_OPT(bool)				reverse;
 		_CP_OPT(bool)				iconset_percent;
 		_CP_OPT(int)				iconset_type;
@@ -214,6 +218,31 @@ public:
 									CP_XML_ATTR(L"type", L"iconSet");
 									CP_XML_NODE(L"iconSet")
 									{
+										if (c.rules[j].icon_set_type)
+										{
+											switch (*c.rules[j].icon_set_type)
+											{
+												case 1: CP_XML_ATTR(L"iconSet", L"3ArrowsGray"); break;
+												case 2: CP_XML_ATTR(L"iconSet", L"3Flags"); break;
+												case 3: CP_XML_ATTR(L"iconSet", L"3Signs"); break;
+												case 4: CP_XML_ATTR(L"iconSet", L"3Symbols"); break;
+												case 5: CP_XML_ATTR(L"iconSet", L"3Symbols2"); break;
+												case 6: CP_XML_ATTR(L"iconSet", L"3TrafficLights1"); break;
+												case 7: CP_XML_ATTR(L"iconSet", L"3TrafficLights2"); break;
+												case 8: CP_XML_ATTR(L"iconSet", L"4Arrows"); break;
+												case 9: CP_XML_ATTR(L"iconSet", L"4ArrowsGray"); break;
+												case 10: CP_XML_ATTR(L"iconSet", L"4Rating"); break;
+												case 11: CP_XML_ATTR(L"iconSet", L"4RedToBlack"); break;
+												case 12: CP_XML_ATTR(L"iconSet", L"4TrafficLights"); break;
+												case 13: CP_XML_ATTR(L"iconSet", L"5Arrows"); break;
+												case 14: CP_XML_ATTR(L"iconSet", L"5ArrowsGray"); break;
+												case 15: CP_XML_ATTR(L"iconSet", L"5Quarters"); break;
+												case 16: CP_XML_ATTR(L"iconSet", L"5Rating"); break;
+												case 0:	
+												default: CP_XML_ATTR(L"iconSet", L"3Arrows"); break;
+													break;
+											}											
+										}
 										if (c.rules[j].showValue)	CP_XML_ATTR(L"showValue", *c.rules[j].showValue);
 										
 										for (size_t k = 0; k < c.rules[j].cfvo.size(); k++)
@@ -520,6 +549,22 @@ void xlsx_conditionalFormatting_context::add_sfv(int type, std::wstring value)
 void xlsx_conditionalFormatting_context::add_color(std::wstring col)
 {
 	impl_->conditionalFormattings_.back().rules.back().color.push_back(col);
+}
+void xlsx_conditionalFormatting_context::set_negative_color(std::wstring col) 
+{
+	impl_->conditionalFormattings_.back().rules.back().negative_color = col;
+}
+void xlsx_conditionalFormatting_context::set_axis_position(std::wstring val) 
+{
+	impl_->conditionalFormattings_.back().rules.back().axis_position = val;
+}
+void xlsx_conditionalFormatting_context::set_axis_color(std::wstring val)
+{
+	impl_->conditionalFormattings_.back().rules.back().axis_color = val;
+}
+void xlsx_conditionalFormatting_context::set_icon_set_type(int type)
+{
+	impl_->conditionalFormattings_.back().rules.back().icon_set_type = type;
 }
 void xlsx_conditionalFormatting_context::set_showVal(bool val)
 {

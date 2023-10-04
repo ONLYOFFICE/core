@@ -224,6 +224,7 @@ LinkDest::LinkDest(Array *a) {
   // initialize fields
   left = bottom = right = top = zoom = 0;
   ok = gFalse;
+  changeLeft = changeTop = changeZoom = gFalse;
 
   // get page
   if (a->getLength() < 2) {
@@ -752,7 +753,7 @@ LinkHide::LinkHide(Object *fieldsObj, Object *hideFlagObj) {
     hideFlag = hideFlagObj->getBool();
   } else {
     error(errSyntaxError, -1, "Hide action H value is wrong type");
-    hideFlag = gFalse;
+    hideFlag = gTrue;
   }
 }
 

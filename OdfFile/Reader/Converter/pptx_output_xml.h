@@ -63,6 +63,10 @@ public:
 
     static pptx_xml_slide_ptr create(std::wstring const & name,int id);
 
+    // NOTE: Temp solution
+    // TODO: remove this method
+    void remove_timing_redundant_space();
+
 private:
 	std::wstring name_;
     std::wstringstream  strmData_;

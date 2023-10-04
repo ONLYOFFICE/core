@@ -17,6 +17,10 @@
 #define OOXML_HASH_ALG_GOST_GR3411_2012_256 11
 #define OOXML_HASH_ALG_GOST_GR3411_2012_512 12
 
+#define OOXML_HASH_ALG_ECDSA_256    13
+#define OOXML_HASH_ALG_ECDSA_384    14
+#define OOXML_HASH_ALG_ECDSA_512    15
+
 #define OPEN_SSL_WARNING_OK         0
 #define OPEN_SSL_WARNING_ERR        1
 #define OPEN_SSL_WARNING_ALL_OK     2
@@ -49,10 +53,17 @@ public:
 	virtual int VerifySelf()                    = 0;
 
 public:
-	virtual std::string Sign(unsigned char* pData, unsigned int nSize)                  = 0;
-	virtual std::string Sign(const std::string& sXml)                                   = 0;
+
+	virtual bool Sign(unsigned char* pData, unsigned int nSize,
+					  unsigned char*& pDataDst, unsigned int& nSizeDst)                 = 0;
+
 	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
 						   unsigned char*& pDataDst, unsigned int& nSizeDst)            = 0;
+	virtual int VerifyPKCS7(unsigned char* pPKCS7Data, unsigned int nPKCS7Size,
+							unsigned char* pData, unsigned int nSize)                   = 0;
+
+	std::string Sign(unsigned char* pData, unsigned int nSize);
+	std::string Sign(const std::string& sXml);
 
 	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
 	virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;
@@ -65,6 +76,8 @@ public:
 	virtual int GetHashAlg()                                                            = 0;
 
 	virtual bool IsGOST()                                                               = 0;
+
+	static void FreeData(unsigned char* data);
 
 public:
 	virtual int ShowSelectDialog(void* parent = NULL)   = 0;

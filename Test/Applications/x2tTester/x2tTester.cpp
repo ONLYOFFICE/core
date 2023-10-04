@@ -89,6 +89,10 @@ bool CFormatsList::IsPdf(const std::wstring& ext) const
 {
 	return ext == m_pdf;
 }
+bool CFormatsList::IsAny(const std::wstring& ext) const
+{
+	return IsDocument(ext) || IsPresentation(ext) || IsSpreadsheet(ext) || IsCrossplatform(ext) || IsImage(ext) || IsPdf(ext);
+}
 
 void CFormatsList::AddDocument(const std::wstring& ext)
 {
@@ -199,8 +203,8 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_crossplatform.push_back(L"djvu");
 	list.m_crossplatform.push_back(L"xps");
 
-	list.m_images.push_back(L"jpg");
-	list.m_images.push_back(L"png");
+//	list.m_images.push_back(L"jpg");
+//	list.m_images.push_back(L"png");
 
 	list.m_pdf = L"pdf";
 
@@ -264,6 +268,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsFilenameCsvTxtParams = true;
 	m_bIsFilenamePassword = true;
 	m_bTroughConversion = false;
+	m_bSaveEnvironment = false;
 	m_defaultCsvDelimiter = L";";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList = CFormatsList::GetDefaultExts();
@@ -359,6 +364,7 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty()) m_bIsFilenameCsvTxtParams = std::stoi(node.GetText());
 			else if(name == L"filenamePassword" && !node.GetText().empty()) m_bIsFilenamePassword = std::stoi(node.GetText());
 			else if(name == L"troughConversion" && !node.GetText().empty()) m_bTroughConversion = std::stoi(node.GetText());
+			else if(name == L"saveEnvironment" && !node.GetText().empty()) m_bSaveEnvironment = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
 			else if(name == L"inputFilesList" && !node.GetText().empty())
@@ -494,20 +500,27 @@ void Cx2tTester::Start()
 		m_outputDirectory = m_troughConversionDirectory;
 		m_outputExts = {L"doct", L"xlst", L"pptt"};
 
-		Convert(files, true);
+		Convert(files, true, true);
 
 		m_outputDirectory = copy_outputDirectory;
+		m_inputExts = m_outputExts;
 		m_outputExts = copy_outputExts;
-		m_inputDirectory = m_troughConversionDirectory;
 
+		m_inputDirectory = m_troughConversionDirectory;
 		files = NSDirectory::GetFiles(m_troughConversionDirectory, true);
 	}
 
 	Convert(files);
 	WriteTime();
+
+	for(auto&& val : m_deleteLaterFiles)
+		NSFile::CFileBinary::Remove(val);
+
+	for(auto&& val : m_deleteLaterDirectories)
+		NSDirectory::DeleteDirectory(val);
 }
 
-void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory)
+void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirectory, bool bTrough)
 {
 	for(int i = 0; i < files.size(); i++)
 	{
@@ -544,7 +557,9 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 			// all formats -> pdf
 			|| m_outputFormatsList.IsPdf(ext))
 			// input format != output format
-			&& ext != input_ext)
+			&& ext != input_ext
+			// any good input ext
+			&& m_inputFormatsList.IsAny(input_ext))
 			{
 				output_file_exts.push_back(ext);
 			}
@@ -617,12 +632,14 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 		converter->SetX2tPath(m_x2tPath);
 		converter->SetErrorsOnly(m_bIsErrorsOnly);
 		converter->SetDeleteOk(m_bIsDeleteOk);
+		converter->SetTrough(bTrough);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 		converter->SetCsvTxtEncoding(csvTxtEncoding);
 		converter->SetCsvDelimiter(csvDelimiter);
 		converter->SetPassword(password);
 		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
+		converter->SetSaveEnvironment(m_bSaveEnvironment);
 		converter->DestroyOnFinish();
 		m_currentProc++;
 
@@ -680,6 +697,15 @@ void Cx2tTester::WriteTime()
 	CTemporaryCS CS(&m_reportCS);
 	unsigned long time = NSTimers::GetTickCount() - m_timeStart;
 	m_reportStream.WriteStringUTF8(L"Time: " + std::to_wstring(time));
+}
+
+void Cx2tTester::AddDeleteLaterFile(const std::wstring& file)
+{
+	m_deleteLaterFiles.push_back(file);
+}
+void Cx2tTester::AddDeleteLaterDirectory(const std::wstring& directory)
+{
+	m_deleteLaterDirectories.push_back(directory);
 }
 
 bool Cx2tTester::IsAllBusy()
@@ -758,6 +784,10 @@ void CConverter::SetDeleteOk(bool bIsDeleteOk)
 {
 	m_bIsDeleteOk = bIsDeleteOk;
 }
+void CConverter::SetTrough(bool bIsTrough)
+{
+	m_bIsTrough = bIsTrough;
+}
 void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 {
 	m_errorsXmlDirectory = errorsXmlDirectory;
@@ -782,6 +812,11 @@ void CConverter::SetFilesCount(int totalFiles, int currFile)
 {
 	m_totalFiles = totalFiles;
 	m_currFile = currFile;
+}
+
+void CConverter::SetSaveEnvironment(bool bSaveEnvironment)
+{
+	m_bSaveEnvironment = bSaveEnvironment;
 }
 
 
@@ -914,7 +949,7 @@ DWORD CConverter::ThreadProc()
 #endif // WIN32
 
 		bool is_timeout = false;
-		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout);
+		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout, m_bSaveEnvironment);
 
 		bool exist;
 		if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
@@ -1015,15 +1050,25 @@ DWORD CConverter::ThreadProc()
 
 		if(m_bIsDeleteOk && ok)
 		{
-			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-				NSDirectory::DeleteDirectory(output_file);
+			if(m_bIsTrough)
+			{
+				if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+					m_internal->AddDeleteLaterDirectory(output_file);
+				else
+					m_internal->AddDeleteLaterFile(output_file);
+			}
 			else
-				NSFile::CFileBinary::Remove(output_file);
+			{
+				if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+					NSDirectory::DeleteDirectory(output_file);
+				else
+					NSFile::CFileBinary::Remove(output_file);
+			}
 		}
 	}
 	m_internal->WriteReports(reports);
 
-	if(m_bIsDeleteOk && is_all_ok)
+	if(m_bIsDeleteOk && is_all_ok && !m_bIsTrough)
 		NSDirectory::DeleteDirectory(m_outputFilesDirectory);
 
 	CTemporaryCS CS(&m_internal->m_coresCS);

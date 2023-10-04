@@ -20,6 +20,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/Path.h"
+#include "../DesktopEditor/common/ProcessEnv.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
@@ -115,26 +116,27 @@ public:
 	NSCSS::CTree m_oTree; // Дерево body html-файла
 
 private:
-	int m_nImageId;     // ID картинки
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
 	int m_nCrossId;     // ID перекрестной ссылки
 	int m_nNumberingId; // ID списка
 
-	NSStringUtils::CStringBuilder m_oStylesXml;  // styles.xml
-	NSStringUtils::CStringBuilder m_oDocXmlRels; // document.xml.rels
-	NSStringUtils::CStringBuilder m_oDocXml;     // document.xml
-	NSStringUtils::CStringBuilder m_oNoteXml;    // footnotes.xml
-	NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
+	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
+	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
+	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
+	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
+	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
+	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
 
 	bool m_bInP;       // <w:p> открыт?
 	bool m_bWasPStyle; // <w:pStyle> записан?
 	bool m_bWasSpace;  // Был пробел?
 
+	std::vector<std::wstring>            m_arrImages;  // Картинки
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 public:
 
-	CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
+	CHtmlFile2_Private() : m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false), m_bWasSpace(false)
 	{
 		//Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
 		//Это нужно для масштабирования некоторых значений
@@ -149,6 +151,7 @@ public:
 		m_oXmlStyle        .Clear();
 		m_oStylesXml       .Clear();
 		m_oDocXmlRels      .Clear();
+		m_oNoteXmlRels     .Clear();
 		m_oDocXml          .Clear();
 		m_oNoteXml         .Clear();
 		m_oNumberXml       .Clear();
@@ -213,14 +216,6 @@ public:
 		{
 			oContentWriter.WriteStringUTF8(sContent);
 			oContentWriter.CloseFile();
-		}
-
-		// footnotes.xml.rels
-		NSFile::CFileBinary oFootRelsWriter;
-		if (oFootRelsWriter.CreateFileW(m_sDst + L"/word/_rels/footnotes.xml.rels"))
-		{
-			oFootRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"></Relationships>");
-			oFootRelsWriter.CloseFile();
 		}
 
 		// fontTable.xml
@@ -310,18 +305,19 @@ public:
 		}
 
 		// Начала файлов
-		m_oDocXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-		m_oDocXmlRels += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
-		m_oDocXmlRels += L"<Relationship Id=\"rId7\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/>";
-		m_oDocXml     += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>";
-		m_oNoteXml    += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">";
-		m_oNoteXml    += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
-		m_oStylesXml  += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
+		m_oDocXmlRels  += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
+		m_oDocXmlRels  += L"<Relationship Id=\"rId7\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/>";
+		m_oNoteXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+		m_oDocXml      += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>";
+		m_oNoteXml     += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">";
+		m_oNoteXml     += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
+		m_oStylesXml   += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
 
 		// docDefaults по умолчанию
 		if(oParams && !oParams->m_sdocDefaults.empty())
@@ -370,6 +366,13 @@ public:
 		if (oRelsWriter.CreateFileW(m_sDst + L"/word/_rels/document.xml.rels"))
 		{
 			oRelsWriter.WriteStringUTF8(m_oDocXmlRels.GetData());
+			oRelsWriter.CloseFile();
+		}
+
+		m_oNoteXmlRels.WriteString(L"</Relationships>");
+		if (oRelsWriter.CreateFileW(m_sDst + L"/word/_rels/footnotes.xml.rels"))
+		{
+			oRelsWriter.WriteStringUTF8(m_oNoteXmlRels.GetData());
 			oRelsWriter.CloseFile();
 		}
 
@@ -453,8 +456,8 @@ public:
 			if(nFindEnd != std::string::npos)
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
-		/*
 		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+		/*
 		NSFile::CFileBinary oWriter;
 		if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
 		{
@@ -462,7 +465,7 @@ public:
 			oWriter.CloseFile();
 		}
 		*/
-		return m_oLightReader.FromString(htmlToXhtml(sFileContent, bNeedConvert));
+		return m_oLightReader.FromString(sRes);
 	}
 
 	// Конвертирует mht в xhtml
@@ -494,8 +497,8 @@ public:
 
 			std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
 			RELEASEARRAYOBJECTS(pData);
-			/*
 			std::wstring sRes = mhtToXhtml(sFileContent);
+			/*
 			NSFile::CFileBinary oWriter;
 			if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
 			{
@@ -503,7 +506,7 @@ public:
 				oWriter.CloseFile();
 			}
 			*/
-			bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
+			bRes = m_oLightReader.FromString(sRes);
 		}
 		else
 			bRes = htmlXhtml(sSrc);
@@ -688,13 +691,13 @@ private:
 		if(m_oLightReader.IsEmptyNode())
 			return;
 		int nDeath = m_oLightReader.GetDepth();
-		while(m_oLightReader.ReadNextSiblingNode(nDeath))
+		while (m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			// Базовый адрес
-			if(m_oLightReader.GetName() == L"base")
+			if (m_oLightReader.GetName() == L"base")
 			{
-				while(m_oLightReader.MoveToNextAttribute())
-					if(m_oLightReader.GetName() == L"href")
+				while (m_oLightReader.MoveToNextAttribute())
+					if (m_oLightReader.GetName() == L"href")
 						m_sBase = m_oLightReader.GetText();
 				m_oLightReader.MoveToElement();
 			}
@@ -704,6 +707,9 @@ private:
 	void readBody()
 	{
 		std::vector<NSCSS::CNode> sSelectors;
+		
+		sSelectors.push_back(NSCSS::CNode(L"html", L"", L""));
+		
 		GetSubClass(&m_oDocXml, sSelectors);
 		/*
 		std::wstring sCrossId = std::to_wstring(m_nCrossId++);
@@ -968,11 +974,19 @@ private:
 			sSelectors.pop_back();
 			return;
 		}
+		else if (sName == L"span")
+		{
+			if (sSelectors.back().m_wsClass == L"MsoFootnoteReference")
+			{
+				sSelectors.pop_back();
+				return;
+			}
+			readStream(oXml, sSelectors, oTS);
+		}
 		// Без нового абзаца
 		else if(sName == L"basefont" || sName == L"button" || sName == L"label" || sName == L"data" || sName == L"object" ||
 				sName == L"noscript" || sName == L"output" || sName == L"abbr"  || sName == L"time" || sName == L"ruby"   ||
-				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"span" ||
-				sName == L"acronym")
+				sName == L"progress" || sName == L"hgroup" || sName == L"meter" || sName == L"acronym")
 			readStream(oXml, sSelectors, oTS);
 		// С нового абзаца
 		else
@@ -1374,8 +1388,6 @@ private:
 			}
 			else
 			{
-				wsTable.insert(35, oStyle.GetId());
-
 				std::wstring sColorLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetColor().ToWString();
 				std::wstring sSzLeftSide        = oStyle.m_oBorder.GetLeftBorder().GetWidth().ToWString();
 				std::wstring sStyleLeftSide     = oStyle.m_oBorder.GetLeftBorder().GetStyle().ToWString();
@@ -1525,9 +1537,9 @@ private:
 		while(m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			std::wstring sName = m_oLightReader.GetName();
-			GetSubClass(oXml, sSelectors);
-			if(sName == L"optgroup")
+			if (sName == L"optgroup")
 			{
+				GetSubClass(oXml, sSelectors);
 				while(m_oLightReader.MoveToNextAttribute())
 				{
 					if(m_oLightReader.GetName() != L"label")
@@ -1550,15 +1562,16 @@ private:
 				}
 				m_oLightReader.MoveToElement();
 				readLi(oXml, sSelectors, oTS, true);
-				continue;
-			}
-			if(sName != L"li" && sName != L"option")
-			{
-				readInside(oXml, sSelectors, oTS, sName);
 				sSelectors.pop_back();
 				continue;
 			}
+			if (sName != L"li" && sName != L"option")
+			{
+				readInside(oXml, sSelectors, oTS, sName);
+				continue;
+			}
 
+			GetSubClass(oXml, sSelectors);
 			while(m_oLightReader.MoveToNextAttribute())
 				if(m_oLightReader.GetName() == L"value")
 					sStart = m_oLightReader.GetText();
@@ -1681,11 +1694,14 @@ private:
 		else
 		{
 			// Пишем рельсы
-			m_oDocXmlRels.WriteString(L"<Relationship Id=\"rHyp");
-			m_oDocXmlRels.WriteString(std::to_wstring(m_nHyperlinkId));
-			m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
-			m_oDocXmlRels.WriteEncodeXmlString(sRef);
-			m_oDocXmlRels.WriteString(L"\" TargetMode=\"External\"/>");
+			NSStringUtils::CStringBuilder* oRelationshipXml = &m_oDocXmlRels;
+			if (oXml == &m_oNoteXml)
+				oRelationshipXml = &m_oNoteXmlRels;
+			oRelationshipXml->WriteString(L"<Relationship Id=\"rHyp");
+			oRelationshipXml->WriteString(std::to_wstring(m_nHyperlinkId));
+			oRelationshipXml->WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
+			oRelationshipXml->WriteEncodeXmlString(sRef);
+			oRelationshipXml->WriteString(L"\" TargetMode=\"External\"/>");
 
 			// Пишем в document.xml
 			oXml->WriteString(L"<w:hyperlink w:tooltip=\"");
@@ -1707,122 +1723,199 @@ private:
 		{
 			oXml->WriteString(L"</w:hyperlink>");
 
+			bool bFootnote = false;
+			if (sSelectors.size() > 1)
+			{
+				const NSCSS::CNode& oNode = sSelectors[sSelectors.size() - 2];
+				bFootnote = oNode.m_wsName == L"p" && oNode.m_wsClass == L"MsoFootnoteText";
+			}
+
 			// Сноска
 			if (bCross && !sFootnote.empty())
 			{
-				std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
-				oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
-				oXml->WriteString(sFootnoteID);
-				oXml->WriteString(L"\"/></w:r>");
-
-				m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+				if (!bFootnote)
+				{
+					std::wstring sFootnoteID = std::to_wstring(m_nFootnoteId++);
+					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteReference w:id=\"");
+					oXml->WriteString(sFootnoteID);
+					oXml->WriteString(L"\"/></w:r>");
+					m_mFootnotes.insert(std::make_pair(sFootnote, sFootnoteID));
+				}
+				else
+					oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr><w:footnoteRef/></w:r>");
 			}
 		}
 		sNote = L"";
 	}
 
+	bool readBase64 (const std::wstring& sSrcM, std::wstring& sExtention)
+	{
+		bool bRes = false;
+		size_t nBase = sSrcM.find(L"/", 4);
+		nBase++;
+
+		size_t nEndBase = sSrcM.find(L";", nBase);
+		if (nEndBase == std::wstring::npos)
+			return bRes;
+		sExtention = sSrcM.substr(nBase, nEndBase - nBase);
+		if (sExtention == L"octet-stream")
+			sExtention = L"jpg";
+
+		nBase = sSrcM.find(L"base64", nEndBase);
+		if (nBase == std::wstring::npos)
+			return bRes;
+
+		NSFile::CFileBinary oImageWriter;
+		std::wstring sImageName = std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+		if (oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
+		{
+			std::string sSrc = U_TO_UTF8(sSrcM);
+			std::string sBase64 = sSrc.substr(nBase + 7);
+			int nSrcLen = (int)sBase64.length();
+			int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
+			if (nDecodeLen != 0)
+			{
+				BYTE* pImageData = new BYTE[nDecodeLen];
+				if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
+				{
+					oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
+					bRes = true;
+				}
+				RELEASEARRAYOBJECTS(pImageData);
+			}
+			oImageWriter.CloseFile();
+		}
+
+		return bRes;
+	}
+
+	bool CopyImage  (const std::wstring& wscSrc, const std::wstring& wsDst, bool bIsAllowExternalLocalFiles)
+	{
+		bool bRes = false;
+		bool bAllow = true;
+
+		std::wstring wsSrc = wscSrc;
+		if (!bIsAllowExternalLocalFiles)
+		{
+			wsSrc = NSSystemPath::NormalizePath(wsSrc);
+			std::wstring wsStartSrc = NSSystemPath::NormalizePath(m_sSrc);
+			bAllow = wsSrc.substr(0, wsStartSrc.length()) == wsStartSrc;
+		}
+		if (bAllow)
+			bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
+
+		return bRes;
+	}
+
+	inline bool NotValidExtension(const std::wstring& sExtention)
+	{
+		return  sExtention != L"bmp" && sExtention != L"emf"  && sExtention != L"emz"  && sExtention != L"eps"  && sExtention != L"fpx" && sExtention != L"gif"  &&
+				sExtention != L"jpe" && sExtention != L"jpeg" && sExtention != L"jpg"  && sExtention != L"jfif" && sExtention != L"pct" && sExtention != L"pict" &&
+				sExtention != L"png" && sExtention != L"pntg" && sExtention != L"psd"  && sExtention != L"qtif" && sExtention != L"sgi" && sExtention != L"svg"  &&
+				sExtention != L"tga" && sExtention != L"tpic" && sExtention != L"tiff" && sExtention != L"tif"  && sExtention != L"wmf" && sExtention != L"wmz";
+	}
+
+	void ImageAlternative(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS, const std::wstring& wsAlt)
+	{
+		if (wsAlt.empty())
+			return;
+
+		wrP(oXml, sSelectors, oTS);
+		oXml->WriteString(L"<w:r>");
+		wrR(oXml, sSelectors, oTS);
+		oXml->WriteString(L"<w:t xml:space=\"preserve\">");
+		oXml->WriteEncodeXmlString(wsAlt);
+		oXml->WriteString(L"</w:t></w:r>");
+	}
+
 	void readImage  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
-		std::wstring sAlt = L"";
+		std::wstring wsAlt, sSrcM;
 		bool bRes = false;
-		while(m_oLightReader.MoveToNextAttribute())
+		while (m_oLightReader.MoveToNextAttribute())
 		{
-			if(m_oLightReader.GetName() == L"alt")
-			{
-				sAlt = m_oLightReader.GetText();
-				continue;
-			}
-			else if(m_oLightReader.GetName() != L"src")
-				continue;
-
-			std::wstring sSrcM = m_oLightReader.GetText();
-			std::wstring sImageName;
-			std::wstring sImageId = std::to_wstring(m_nImageId);
-			// Картинка Base64
-			if(sSrcM.substr(0, 4) == L"data")
-			{
-				size_t nBase = sSrcM.find(L"/", 4);
-				if(nBase == std::wstring::npos)
-					continue;
-				nBase++;
-				size_t nEndBase = sSrcM.find(L";", nBase);
-				if(nEndBase == std::wstring::npos)
-					continue;
-				std::wstring sType = sSrcM.substr(nBase, nEndBase - nBase);
-				if(sType == L"octet-stream")
-					sType = L"jpg";
-				sImageName = sImageId + L"." + sType;
-				NSFile::CFileBinary oImageWriter;
-				if(oImageWriter.CreateFileW(m_sDst + L"/word/media/i" + sImageName))
-				{
-
-					nBase = sSrcM.find(L"base64", 4);
-					if(nBase == std::wstring::npos)
-						continue;
-					std::string sBase64 = m_oLightReader.GetTextA().substr(nBase + 7);
-					int nSrcLen = (int)sBase64.length();
-					int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nSrcLen);
-					if(nDecodeLen == 0)
-						continue;
-					BYTE* pImageData = new BYTE[nDecodeLen];
-					if (TRUE == NSBase64::Base64Decode(sBase64.c_str(), nSrcLen, pImageData, &nDecodeLen))
-					{
-						oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-						bRes = true;
-					}
-					RELEASEARRAYOBJECTS(pImageData);
-					oImageWriter.CloseFile();
-				}
-			}
-			// Картинка в сети
-			else if(sSrcM.substr(0, 4) == L"http" || !m_sBase.empty())
-			{
-				std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
-				std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-				if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
-				   sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
-					continue;
-
-				sImageName = NSFile::GetFileName(sSrcM);
-				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
-				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
-				oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
-				bRes = oDownloadImg.DownloadSync();
-			}
-			// Картинка по относительному пути
-			else
-			{
-				sImageName = NSFile::GetFileName(sSrcM);
-				sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
-
-				std::wstring sExtention = NSFile::GetFileExtention(sSrcM);
-				std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
-				if(sExtention != L"bmp" && sExtention != L"svg" && sExtention != L"jfif" && sExtention != L"wmf" && sExtention != L"gif" &&
-				   sExtention != L"jpe" && sExtention != L"png" && sExtention != L"jpeg" && sExtention != L"jpg" )
-					continue;
-
-				bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + sSrcM, m_sDst + L"/word/media/i" + sImageName);
-				if(!bRes)
-					bRes = NSFile::CFileBinary::Copy(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), m_sDst + L"/word/media/i" + sImageName);
-				if(!bRes)
-					bRes = NSFile::CFileBinary::Copy(sSrcM, m_sDst + L"/word/media/i" + sImageName);
-			}
-			if(bRes)
-			{
-				wrP(oXml, sSelectors, oTS);
-				bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
-			}
+			std::wstring wsName = m_oLightReader.GetName();
+			if (wsName == L"alt")
+				wsAlt = m_oLightReader.GetText();
+			else if (wsName == L"src")
+				sSrcM = m_oLightReader.GetText();
 		}
 		m_oLightReader.MoveToElement();
 
-		if(!bRes)
+		if (sSrcM.empty())
+		{
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt);
+			return;
+		}
+
+		bool bIsAllowExternalLocalFiles = true;
+		if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+			bIsAllowExternalLocalFiles = NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+		int nImageId = -1;
+		std::wstring sImageSrc, sExtention;
+		// Предполагаем картинку в Base64
+		if (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"data" && sSrcM.find(L"/", 4) != std::wstring::npos)
+			bRes = readBase64(sSrcM, sExtention);
+
+		if (!bRes)
+		{
+			// Проверка расширения
+			sExtention = NSFile::GetFileExtention(sSrcM);
+			std::transform(sExtention.begin(), sExtention.end(), sExtention.begin(), tolower);
+			if (NotValidExtension(sExtention))
+			{
+				ImageAlternative(oXml, sSelectors, oTS, wsAlt);
+				return;
+			}
+
+			// Проверка на повтор
+			std::vector<std::wstring>::iterator nFind = std::find(m_arrImages.begin(), m_arrImages.end(), sSrcM);
+			if (nFind != m_arrImages.end())
+			{
+				bRes = true;
+				nImageId = nFind - m_arrImages.begin();
+			}
+		}
+
+		if (!bRes)
+		{
+			sImageSrc = sSrcM;
+			std::wstring wsDst = m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L'.' + sExtention;
+
+			// Предполагаем картинку по локальному пути
+			if (!((!m_sBase.empty() && m_sBase.length() > 4 && m_sBase.substr(0, 4) == L"http") || (sSrcM.length() > 4 && sSrcM.substr(0, 4) == L"http")))
+			{
+				if (!m_sBase.empty())
+				{
+					if (!bRes)
+						bRes = CopyImage(NSSystemPath::Combine(m_sBase, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+					if (!bRes)
+						bRes = CopyImage(NSSystemPath::Combine(m_sSrc, m_sBase + sSrcM), wsDst, bIsAllowExternalLocalFiles);
+				}
+				if (!bRes)
+					bRes = CopyImage(NSSystemPath::Combine(m_sSrc, sSrcM), wsDst, bIsAllowExternalLocalFiles);
+				if (!bRes)
+					bRes = CopyImage(m_sSrc + L"/" + NSFile::GetFileName(sSrcM), wsDst, bIsAllowExternalLocalFiles);
+				if (!bRes)
+					bRes = CopyImage(sSrcM, wsDst, bIsAllowExternalLocalFiles);
+			}
+			// Предполагаем картинку в сети
+			else
+			{
+				// Проверка gc_allowNetworkRequest предполагается в kernel_network
+				NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+				oDownloadImg.SetFilePath(wsDst);
+				bRes = oDownloadImg.DownloadSync();
+			}
+		}
+
+		if (!bRes)
+			ImageAlternative(oXml, sSelectors, oTS, wsAlt);
+		else
 		{
 			wrP(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:r>");
-			wrR(oXml, sSelectors, oTS);
-			oXml->WriteString(L"<w:t xml:space=\"preserve\">");
-			oXml->WriteEncodeXmlString(sAlt);
-			oXml->WriteString(L"</w:t></w:r>");
+			ImageRels(oXml, nImageId, sImageSrc, sExtention);
 		}
 	}
 
@@ -1916,24 +2009,34 @@ private:
 		return sRStyle;
 	}
 
-	bool ImageRels  (NSStringUtils::CStringBuilder* oXml, const std::wstring& sImageId, const std::wstring& sImageName)
+	void ImageRels  (NSStringUtils::CStringBuilder* oXml, int nImageId, const std::wstring& sImageSrc, const std::wstring& sExtention)
 	{
-		CBgraFrame oBgraFrame;
-		if(!oBgraFrame.OpenFile(m_sDst + L"/word/media/" + sImageName))
-			return false;
+		bool bNew = nImageId < 0;
+		if (bNew)
+			nImageId = m_arrImages.size();
 
-		m_nImageId++;
+		std::wstring sImageId = std::to_wstring(nImageId);
+		std::wstring sImageName = sImageId + L'.' + sExtention;
+		CBgraFrame oBgraFrame;
+		if (!oBgraFrame.OpenFile(m_sDst + L"/word/media/i" + sImageName))
+			return;
+
 		// Прописать рельсы
-		m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
-		m_oDocXmlRels.WriteString(sImageId);
-		m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-		m_oDocXmlRels.WriteString(sImageName);
-		m_oDocXmlRels.WriteString(L"\"/>");
+		if (bNew)
+		{
+			m_arrImages.push_back(sImageSrc);
+
+			m_oDocXmlRels.WriteString(L"<Relationship Id=\"rPic");
+			m_oDocXmlRels.WriteString(sImageId);
+			m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/i");
+			m_oDocXmlRels.WriteEncodeXmlString(sImageName);
+			m_oDocXmlRels.WriteString(L"\"/>");
+		}
 
 		// Получаем размеры картинки
 		int nHy = oBgraFrame.get_Height();
 		int nWx = oBgraFrame.get_Width();
-		if(nWx > nHy)
+		if (nWx > nHy)
 		{
 			int nW = nWx * 9525;
 			nW = (nW > 7000000 ? 7000000 : nW);
@@ -1945,7 +2048,7 @@ private:
 			int nH = nHy * 9525;
 			nH = (nH > 8000000 ? 8000000 : nH);
 			int nW = (int)((double)nWx * (double)nH / (double)nHy);
-			if(nW > 7000000)
+			if (nW > 7000000)
 			{
 				nW = 7000000;
 				nHy = (int)((double)nHy * (double)nW / (double)nWx);
@@ -1971,7 +2074,6 @@ private:
 		oXml->WriteString(L"\" cy=\"");
 		oXml->WriteString(std::to_wstring(nHy));
 		oXml->WriteString(L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
-		return true;
 	}
 
 	void readNote   (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const std::wstring& sNote)
@@ -2002,7 +2104,7 @@ private:
 		// Сохранить как .svg картинку
 		NSStringUtils::CStringBuilder oSVG;
 		oSVG.WriteString(L"<svg ");
-		while(m_oLightReader.MoveToNextAttribute())
+		while (m_oLightReader.MoveToNextAttribute())
 		{
 			std::wstring sName = m_oLightReader.GetName();
 			if(sName.find(L"xmlns") != std::wstring::npos)
@@ -2017,7 +2119,7 @@ private:
 
 		std::wstring sSVG = m_oLightReader.GetInnerXml();
 		size_t nRef = sSVG.find(L"image");
-		while(nRef != std::wstring::npos)
+		while (nRef != std::wstring::npos)
 		{
 			size_t nRefBegin = sSVG.rfind(L'<', nRef);
 			if (nRefBegin != std::wstring::npos)
@@ -2030,10 +2132,10 @@ private:
 
 			size_t nRefEnd = sSVG.find(L'>', nRef);
 			size_t nHRef = sSVG.find(L"href", nRef);
-			if(nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
+			if (nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
 				break;
 			nHRef += 6;
-			if(nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
+			if (nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
 			{
 				nRef = sSVG.find(L"image", nRef + 5);
 				continue;
@@ -2056,9 +2158,9 @@ private:
 		oSVG.WriteString(sSVG);
 		oSVG.WriteString(L"</svg>");
 
-		std::wstring sImageId = std::to_wstring(m_nImageId);
+		std::wstring sImageId = std::to_wstring(m_arrImages.size());
 		NSFile::CFileBinary oSVGWriter;
-		std::wstring sImageFile = m_sDst + L"/word/media/" + sImageId + L".svg";
+		std::wstring sImageFile = m_sDst + L"/word/media/i" + sImageId + L".svg";
 		if (oSVGWriter.CreateFileW(sImageFile))
 		{
 			oSVGWriter.WriteStringUTF8(oSVG.GetData());
@@ -2069,15 +2171,15 @@ private:
 		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
 		MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 		bool bLoad = pMetafile->LoadFromFile(sImageFile.data());
-		if(bLoad)
+		if (bLoad)
 		{
-			std::wstring sPngFile = m_sDst + L"/word/media/" + sImageId + L".png";
+			std::wstring sPngFile = m_sDst + L"/word/media/i" + sImageId + L".png";
 			pMetafile->ConvertToRaster(sPngFile.data(), 4, 1000);
 		}
 		pMetafile->Release();
 		pFonts->Release();
 
-		ImageRels(oXml, sImageId, sImageId + L".png");
+		ImageRels(oXml, -1, L"", L"png");
 	}
 };
 

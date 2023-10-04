@@ -243,12 +243,13 @@ namespace OOX
 					}
 					else if ((sName == L"conditionalFormattings") && (false == oReader.IsEmptyNode()))
 					{
-						while (oReader.ReadNextSiblingNode(oReader.GetDepth()))
+						int nCurDepth1 = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
 							OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
 							*pConditionalFormatting = oReader;
 							m_arrConditionalFormatting.push_back(pConditionalFormatting);
-						}
+						} 
 					}
 					else if (sName == L"dataValidations")
 					{
@@ -290,7 +291,8 @@ namespace OOX
 					}
 					else if ((sName == L"slicerCachePivotTables") && false == oReader.IsEmptyNode())
 					{
-						while (oReader.ReadNextSiblingNode(oReader.GetDepth()))
+						int nCurDepth1 = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
 							OOX::Spreadsheet::CSlicerCachePivotTable* pSlicerCachePivotTable = new OOX::Spreadsheet::CSlicerCachePivotTable();
 							*pSlicerCachePivotTable = oReader;
@@ -336,7 +338,8 @@ namespace OOX
 					}
 					else if ((sName == L"dataDisplayOptions16") && (false == oReader.IsEmptyNode()))
 					{
-						while (oReader.ReadNextSiblingNode(oReader.GetDepth()))
+						int nCurDepth1 = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
 							std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
 							if (sName1 == L"dispNaAsBlank")

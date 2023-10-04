@@ -40,8 +40,8 @@ namespace FilesSort
         }
         static void Main(string[] args)
         {
-            string input = @"D:\logs\doc.onlyoffice.com\sync\files";
-            string output = @"D:\logs\doc.onlyoffice.com\6.4.1\errorsorted";
+            string input = @"D:\logs\doc.onlyoffice.com\7.3.2\files";
+            string output = @"D:\logs\doc.onlyoffice.com\7.3.2\files-sorted";
 
             DateTime start = DateTime.Now;
             Dictionary<long, long> hash = new Dictionary<long, long>();
@@ -58,39 +58,43 @@ namespace FilesSort
                 string[] dirs2 = Directory.GetDirectories(dirs[i]);
                 for (int j = 0; j < dirs2.Length; ++j)
                 {
-                    string curDir = dirs2[j];
-                    if (!curDir.EndsWith("browser"))
+                    string[] dirs3 = Directory.GetDirectories(dirs2[j]);
+                    for (int k = 0; k < dirs3.Length; ++k)
                     {
-                        string source = Path.Combine(curDir, "source");
-                        bool bError = true;
-                        if (Directory.Exists(source))
+                        string curDir = dirs3[k];
+                        if (!curDir.EndsWith("browser"))
                         {
-                            string[] files = Directory.GetFiles(source);
-                            if (files.Length > 0)
+                            string source = Path.Combine(curDir, "source");
+                            bool bError = true;
+                            if (Directory.Exists(source))
                             {
-                                bError = false;
-                                string file = files[0];
-                                long size = new System.IO.FileInfo(file).Length;
-                                long outVal;
-                                if (!hash.TryGetValue(size, out outVal))
+                                string[] files = Directory.GetFiles(source);
+                                if (files.Length > 0)
                                 {
-                                    hash[size] = 1;
+                                    bError = false;
+                                    string file = files[0];
+                                    long size = new System.IO.FileInfo(file).Length;
+                                    long outVal;
+                                    if (!hash.TryGetValue(size, out outVal))
+                                    {
+                                        hash[size] = 1;
 
-                                    int format = FormatChecker.GetFileFormat(file);
-                                    string formatStr = FormatChecker.FileFormats.ToString(format);
-                                    if (string.IsNullOrEmpty(formatStr))
-                                        formatStr = "unknown";
-                                    string formatDir = Path.Combine(output, formatStr);
-                                    Directory.CreateDirectory(formatDir);
-                                    Copy(curDir, Path.Combine(formatDir, Path.GetFileName(curDir)));
+                                        int format = FormatChecker.GetFileFormat(file);
+                                        string formatStr = FormatChecker.FileFormats.ToString(format);
+                                        if (string.IsNullOrEmpty(formatStr))
+                                            formatStr = "unknown";
+                                        string formatDir = Path.Combine(output, formatStr);
+                                        Directory.CreateDirectory(formatDir);
+                                        Copy(curDir, Path.Combine(formatDir, Path.GetFileName(curDir)));
+                                    }
                                 }
                             }
-                        }
-                        if (bError)
-                        {
-                            string error = Path.Combine(output, "error");
-                            Directory.CreateDirectory(error);
-                            Copy(curDir, Path.Combine(error, Path.GetFileName(curDir)));
+                            if (bError)
+                            {
+                                string error = Path.Combine(output, "error");
+                                Directory.CreateDirectory(error);
+                                Copy(curDir, Path.Combine(error, Path.GetFileName(curDir)));
+                            }
                         }
                     }
                 }

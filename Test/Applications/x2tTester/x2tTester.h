@@ -41,6 +41,7 @@ public:
 	bool IsCrossplatform(const std::wstring& ext) const;
 	bool IsImage(const std::wstring& ext) const;
 	bool IsPdf(const std::wstring& ext) const;
+	bool IsAny(const std::wstring& ext) const;
 
 	void AddDocument(const std::wstring& ext);
 	void AddPresentation(const std::wstring& ext);
@@ -93,6 +94,9 @@ public:
 	void WriteReports(const std::vector<Report>& reports);
 	void WriteTime();
 
+	void AddDeleteLaterFile(const std::wstring& file);
+	void AddDeleteLaterDirectory(const std::wstring& directory);
+
 	bool IsAllBusy();
 	bool IsAllFree();
 
@@ -106,7 +110,7 @@ public:
 private:
 	// parse string like "docx txt" into vector
 	std::vector<std::wstring> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
-	void Convert(const std::vector<std::wstring>& files, bool bNoDirectory = false);
+	void Convert(const std::vector<std::wstring>& files, bool bNoDirectory = false, bool bTrough = false);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -149,6 +153,10 @@ private:
 
 	// format -> *t format -> all formats
 	bool m_bTroughConversion;
+	bool m_bSaveEnvironment;
+
+	std::vector<std::wstring> m_deleteLaterFiles;
+	std::vector<std::wstring> m_deleteLaterDirectories;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport
@@ -166,12 +174,14 @@ public:
 	void SetX2tPath(const std::wstring& x2tPath);
 	void SetErrorsOnly(bool bIsErrorsOnly);
 	void SetDeleteOk(bool bIsDeleteOk);
+	void SetTrough(bool bIsTrough);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 	void SetCsvTxtEncoding(int csvTxtEncoding);
 	void SetCsvDelimiter(const std::wstring& csvDelimiter);
 	void SetPassword(const std::wstring& password);
 	void SetTimeout(unsigned long timeout);
 	void SetFilesCount(int totalFiles, int currFile);
+	void SetSaveEnvironment(bool bSaveEnvironment);
 
 	virtual DWORD ThreadProc();
 
@@ -195,6 +205,8 @@ private:
 
 	bool m_bIsErrorsOnly;
 	bool m_bIsDeleteOk;
+	bool m_bIsTrough;
+	bool m_bSaveEnvironment;
 
 	int m_totalFiles;
 	int m_currFile;

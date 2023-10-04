@@ -31,6 +31,7 @@
  */
 #include <boost/make_shared.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <xml/simple_xml_writer.h>
 
@@ -54,6 +55,14 @@ pptx_xml_slide_ptr pptx_xml_slide::create(std::wstring const & name,int id)
 {
 	const std::wstring rId = std::wstring(L"sId") + std::to_wstring(id);
     return boost::make_shared<pptx_xml_slide>(name, rId);
+}
+
+void pptx_xml_slide::remove_timing_redundant_space()
+{
+	std::wstring tmp = strmTiming_.str();
+	boost::replace_all(tmp, L"> ", L">");
+	strmTiming_.str(std::wstring());
+	strmTiming_.str(tmp);
 }
 
 pptx_xml_slide::pptx_xml_slide(std::wstring const & name,std::wstring const & id)
@@ -97,7 +106,7 @@ void pptx_xml_slide::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-   				CP_XML_ATTR(L"name", name());   
+				CP_XML_ATTR_ENCODE_STRING(L"name", name());
 				
 				CP_XML_STREAM() << strmBackground_.str();
 

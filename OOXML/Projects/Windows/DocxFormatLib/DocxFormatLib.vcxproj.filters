@@ -135,7 +135,6 @@
     <ClInclude Include="..\..\..\DocxFormat\HeaderFooter.h" />
     <ClInclude Include="..\..\..\DocxFormat\IFileBuilder.h" />
     <ClInclude Include="..\..\..\DocxFormat\IFileContainer.h" />
-    <ClInclude Include="..\..\..\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\..\DocxFormat\Numbering.h" />
     <ClInclude Include="..\..\..\DocxFormat\Rels.h" />
     <ClInclude Include="..\..\..\DocxFormat\RId.h" />
@@ -776,7 +775,6 @@
     <ClCompile Include="..\..\..\DocxFormat\FontTable.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Footnote.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FtnEdn.cpp" />
-    <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />

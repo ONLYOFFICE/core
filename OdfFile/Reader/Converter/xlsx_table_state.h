@@ -56,8 +56,15 @@ typedef _CP_PTR(xlsx_data_range) xlsx_data_range_ptr;
 
 class xlsx_data_range
 {
+	struct filter_condition
+	{
+		int field_number = 0;
+		int type = 0;
+		std::wstring value;
+		int operator_ = 0;
+	};
 public:
-	xlsx_data_range() : byRow(true), filter(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
+	xlsx_data_range() : byRow(true), filter_button(false), bTablePart(true), withHeader(false), cell_start(0,0), cell_end(0,0) {}
 
 	std::wstring	table_name;
 	std::wstring	name;
@@ -67,16 +74,20 @@ public:
 	std::pair<int, int> cell_start;
 	std::pair<int, int> cell_end;
 
-	bool			bTablePart;
-	bool			byRow;
-	bool			filter;
-	bool			withHeader;
+	bool bTablePart = true;
+	bool byRow = true;
+	bool filter_button = false;
+	bool withHeader = false;
 
 	std::vector<std::pair<size_t, bool>> bySort;  //field + order
 	
-	void serialize_sort			(std::wostream & _Wostream);
-	void serialize_autofilter	(std::wostream & _Wostream);
+	_CP_OPT(bool) bFilterAndOr;
+	std::vector<filter_condition> filter_conditions;
 	
+	void serialize_sort (std::wostream & _Wostream);
+	void serialize_autofilter (std::wostream & _Wostream);
+	void serialize_filterColumn(std::wostream& _Wostream, int indexCol);
+
 	std::vector<std::wstring> header_values;
 
 	void set_header(size_t row, size_t col1, size_t col2)

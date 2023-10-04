@@ -8,6 +8,10 @@
 
 namespace SVG
 {
+	IPathElement::~IPathElement()
+	{
+	}
+
 	#define ISPATHCOMMAND(wchar) L'M' == wchar || L'm' == wchar || L'Z' == wchar || L'z' == wchar || L'L' == wchar || L'l' == wchar || L'H' == wchar || L'h' == wchar || L'V' == wchar || L'v' == wchar || L'C' == wchar || L'c' == wchar || L'S' == wchar || L's' == wchar || L'Q' == wchar || L'q' == wchar || L'T' == wchar || L't' == wchar || L'A' == wchar || L'a' == wchar
 	// IpathElement
 	TBounds IPathElement::GetBounds() const
@@ -37,6 +41,10 @@ namespace SVG
 	CMoveElement::CMoveElement(const Point &oPoint)
 	{
 		m_arPoints.push_back(oPoint);
+	}
+
+	CMoveElement::~CMoveElement()
+	{
 	}
 
 	EPathElement CMoveElement::GetType() const
@@ -149,6 +157,9 @@ namespace SVG
 		m_arPoints.push_back(oPoint1);
 		m_arPoints.push_back(oPoint2);
 		m_arPoints.push_back(oPointE);
+	}
+	CCBezierElement::~CCBezierElement()
+	{
 	}
 
 	EPathElement CCBezierElement::GetType() const
@@ -386,6 +397,10 @@ namespace SVG
 	CCloseElement::CCloseElement()
 	{}
 
+	CCloseElement::~CCloseElement()
+	{
+	}
+
 	EPathElement CCloseElement::GetType() const
 	{
 		return EPathElement::Close;
@@ -459,10 +474,10 @@ namespace SVG
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
 	{	
-		if (Apply(pRenderer, &pStyles->m_oStroke))
+            if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
 			nTypePath += c_nStroke;
 
-		if (Apply(pRenderer, &pStyles->m_oFill, pFile))
+            if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
 			nTypePath += (m_bEvenOddRule) ? c_nEvenOddFillMode : c_nWindingFillMode;
 	}
 

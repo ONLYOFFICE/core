@@ -36,6 +36,7 @@
 #include "./../../SlideMaster.h"
 #include "./../../SlideLayout.h"
 #include "./../../Theme.h"
+
 #include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PPTX
@@ -77,8 +78,8 @@ namespace PPTX
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed)
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"link", link )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"cstate", cstate )
+				WritingElement_ReadAttributes_Read_else_if ( oReader, L"link", link )
+				WritingElement_ReadAttributes_Read_else_if ( oReader, L"cstate", cstate )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -94,11 +95,27 @@ namespace PPTX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				UniEffect uni;
-				Effects.push_back(uni);
-				Effects.back().fromXML(oReader);
+				if (strName == L"extLst")
+				{
+					if (oReader.IsEmptyNode())
+						continue;
+
+					int nParentDepth1 = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nParentDepth1))
+					{
+						Ext element;
+						ExtLst.push_back(element);
+						ExtLst.back().fromXML(oReader);
+					}
+				}
+				else
+				{
+					UniEffect uni;
+					Effects.push_back(uni);
+					Effects.back().fromXML(oReader);
+				}
 			}
 		
 			FillParentPointersForChilds();
@@ -111,9 +128,26 @@ namespace PPTX
             XmlMacroReadAttributeBase(node, L"r:link", link);
             XmlMacroReadAttributeBase(node, L"cstate", cstate);
 
-			Effects.clear();
-            XmlMacroLoadArray(node, L"*", Effects, UniEffect);
+			XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
+			if (list.IsValid())
+			{
+				std::vector<XmlUtils::CXmlNode> oNodes;
+				if (list.GetNodes(L"*", oNodes))
+				{
+					size_t nCount = oNodes.size();
+					for (size_t i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode& oNode = oNodes[i];
 
+						Ext element;
+						element.fromXML(oNode);
+					
+						ExtLst.push_back(element);
+					}
+				}
+			}
+			Effects.clear();
+			XmlMacroLoadArray(node, L"*", Effects, UniEffect);
 			FillParentPointersForChilds();
 		}
 		std::wstring Blip::toXML() const
@@ -134,13 +168,35 @@ namespace PPTX
 		}
 		void Blip::FillParentPointersForChilds()
 		{
-			size_t count = Effects.size();
-			for(size_t i = 0; i < count; ++i)
+			for (size_t i = 0; i < Effects.size(); ++i)
+			{
 				Effects[i].SetParentPointer(this);
+			}
+
+			for (size_t i = 0; i < ExtLst.size(); ++i)
+			{
+				ExtLst[i].SetParentPointer(this);
+			}
+
 		}
 		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
-			if(embed.IsInit())
+			for (size_t i = 0; i < ExtLst.size(); ++i)
+			{
+				if (ExtLst[i].link_svg.IsInit())
+				{
+					if (pRels != NULL)
+					{
+						smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*ExtLst[i].link_svg);
+						if (p.is_init())
+							return p->filename().m_strFilename;
+					}
+
+					if (parentFileIs<FileContainer>())
+						return parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+				}
+			}
+			if (embed.IsInit())
 			{
 				if (pRels != NULL)
 				{
@@ -149,12 +205,12 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<FileContainer>())
+				if (parentFileIs<FileContainer>())
 					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*embed);
 
 				return L"";
 			}
-			else if(link.IsInit())
+			else if (link.IsInit())
 			{
 				if (pRels != NULL)
 				{
@@ -163,7 +219,7 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<FileContainer>())
+				if (parentFileIs<FileContainer>())
 					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*link);
 
 				return L"";
@@ -201,11 +257,11 @@ namespace PPTX
 			pWriter->WriteAttribute(L"cstate", cstate);
 			pWriter->EndAttributes();
 
-			size_t nCount = Effects.size();
-			for (size_t i = 0; i < nCount; ++i)
+			for (size_t i = 0; i < Effects.size(); ++i)
 			{
 				Effects[i].toXmlWriter(pWriter);
 			}
+			pWriter->WriteArray(L"a:extLst", ExtLst);
 
 			pWriter->EndNode(strName);
 		}
@@ -241,36 +297,36 @@ namespace PPTX
 
 			std::wstring	additionalPath;
 			int				additionalType = 0;
-			if(!oleFilepathBin.empty())
+			if (!oleFilepathBin.empty())
 			{
 				additionalPath = oleFilepathBin;
 				additionalType = 1;
 			}
-			else if(!oleRid.empty())
+			else if (!oleRid.empty())
 			{
 				additionalPath	= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				additionalType	= 1;
 			}
-			else if(!mediaRid.empty())
+			else if (!mediaRid.empty())
 			{
 				additionalPath	= this->GetFullOleName(OOX::RId(mediaRid), pRels);
 				additionalType	= 2;
 			}
-			else if(!mediaFilepath.empty())
+			else if (!mediaFilepath.empty())
 			{
 				additionalPath	= mediaFilepath;
 				additionalType	= 2;
 			}
 			NSShapeImageGen::CMediaInfo oId;
-			if(!dataFilepathImageA.empty())
+			if (!dataFilepathImageA.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImageA, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			if (!dataFilepathImage.empty())
+			else if (!dataFilepathImage.empty())
 			{
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(dataFilepathImage, dX, dY, dW, dH, additionalPath, additionalType);
 			}
-			else if(!oleFilepathImage.empty())
+			else if (!oleFilepathImage.empty())
 			{
 				std::wstring imagePath = oleFilepathImage;
 				oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);

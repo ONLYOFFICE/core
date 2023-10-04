@@ -32,10 +32,11 @@
 #ifndef DOC_BUILDER_CONFIG
 #define DOC_BUILDER_CONFIG
 
-#include "../xml/include/xmlutils.h"
-#include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/File.h"
 #include "../common/SystemUtils.h"
+#include "../xml/include/xmlutils.h"
+#include "../fontengine/TextHyphen.h"
 
 namespace NSDoctRenderer
 {
@@ -47,6 +48,7 @@ namespace NSDoctRenderer
 		std::vector<std::wstring> m_arDoctSDK;
 		std::vector<std::wstring> m_arPpttSDK;
 		std::vector<std::wstring> m_arXlstSDK;
+		std::vector<std::wstring> m_arVsdtSDK;
 
 		std::wstring m_strAllFonts;
 		bool m_bIsNotUseConfigAllFontsDir;
@@ -68,20 +70,19 @@ namespace NSDoctRenderer
 		}
 		void private_LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& files, const std::wstring& sConfigDir)
 		{
-            std::vector<XmlUtils::CXmlNode> oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (oNode.GetNodes(L"file", oNodes))
 			{
-                size_t nCount = oNodes.size();
+				size_t nCount = oNodes.size();
 				XmlUtils::CXmlNode node;
-                for (size_t i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < nCount; ++i)
 				{
-                    files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
+					files.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 				}
 			}
 		}
 
 	public:
-
 		void SetAllFontsExternal(const std::wstring& sFilePath)
 		{
 			m_strAllFonts = private_GetFile(NSFile::GetProcessDirectory() + L"/", sFilePath);
@@ -94,6 +95,7 @@ namespace NSDoctRenderer
 			m_arDoctSDK.clear();
 			m_arPpttSDK.clear();
 			m_arXlstSDK.clear();
+			m_arVsdtSDK.clear();
 
 			std::wstring sConfigDir = sWorkDir + L"/";
 			std::wstring sConfigPath = sConfigDir + L"DoctRenderer.config";
@@ -101,15 +103,21 @@ namespace NSDoctRenderer
 			XmlUtils::CXmlNode oNode;
 			if (oNode.FromXmlFile(sConfigPath))
 			{
-                std::vector<XmlUtils::CXmlNode> oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				if (oNode.GetNodes(L"file", oNodes))
 				{
-                    size_t nCount = oNodes.size();
+					size_t nCount = oNodes.size();
 					XmlUtils::CXmlNode node;
-                    for (size_t i = 0; i < nCount; ++i)
+					for (size_t i = 0; i < nCount; ++i)
 					{
-                        m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
+						m_arrFiles.push_back(private_GetFile(sConfigDir, oNodes[i].GetText()));
 					}
+				}
+
+				XmlUtils::CXmlNode oNodeDict;
+				if (oNode.GetNode(L"dictionaries", oNodeDict))
+				{
+					NSHyphen::CEngine::Init(private_GetFile(sConfigDir, oNodeDict.GetText()));
 				}
 
 				bool bIsAbsoluteFontsPath = false;
@@ -171,6 +179,10 @@ namespace NSDoctRenderer
 				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all-min.js");
 				m_arXlstSDK.push_back(sFontsPath);
 				m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all.js");
+
+				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all-min.js");
+				m_arVsdtSDK.push_back(sFontsPath);
+				m_arVsdtSDK.push_back(sSdkPath + L"/draw/sdk-all.js");
 			}
 
 			m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");
@@ -182,6 +194,6 @@ namespace NSDoctRenderer
 				m_sErrorsLogFile = private_GetFile(sConfigDir, m_sErrorsLogFile);
 		}
 	};
-}
+} // namespace NSDoctRenderer
 
 #endif // DOC_BUILDER_CONFIG

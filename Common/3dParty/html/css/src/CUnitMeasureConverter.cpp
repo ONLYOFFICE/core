@@ -3,8 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
-
-#include "StaticFunctions.h"
+#include <regex>
 
 namespace NSCSS
 {
@@ -27,6 +26,8 @@ namespace NSCSS
 				return 1. / (double)ushDPI * dValue;
 			case NSCSS::Peak:
 				return 0.16667 / (double)ushDPI * dValue;
+			case NSCSS::Twips:
+				return (dValue / (double)ushDPI) * 144.;
 		}
 
 		return 0.;
@@ -48,6 +49,8 @@ namespace NSCSS
 				return dValue / 2.54f;
 			case NSCSS::Peak:
 				return 2.36 * dValue;
+			case NSCSS::Twips:
+				return (dValue) * 0.3937 * (double)ushDPI;
 		}
 
 		return 0.;
@@ -69,6 +72,8 @@ namespace NSCSS
 				return dValue / 25.4;
 			case NSCSS::Peak:
 				return 0.236 * dValue;
+			case NSCSS::Twips:
+				return (dValue / 10.) * 0.3937 * (double)ushDPI;
 		}
 
 		return 0.;
@@ -90,6 +95,8 @@ namespace NSCSS
 				return dValue;
 			case NSCSS::Peak:
 				return dValue / 72.;
+			case NSCSS::Twips:
+				return dValue * 144.;
 		}
 
 		return 0.;
@@ -111,6 +118,8 @@ namespace NSCSS
 				return dValue / 72.;
 			case NSCSS::Peak:
 				return dValue / 12.;
+			case NSCSS::Twips:
+				return (dValue / 72.) * 144.;
 		}
 
 		return 0.;
@@ -132,47 +141,44 @@ namespace NSCSS
 				return dValue / 6.;
 			case NSCSS::Peak:
 				return dValue;
+			case NSCSS::Twips:
+				return dValue * 24.;
 		}
 
 		return 0.;
 	}
+
 	bool CUnitMeasureConverter::GetValue(const std::wstring &wsValue, double &dValue, UnitMeasure &enUnitMeasure)
 	{
-		std::wstring::const_iterator oFoundDigit = std::find_if(wsValue.begin(), wsValue.end(), std::iswdigit);
+		std::wregex oRegex(LR"((\.\d+|\d+(\.\d+)?)\s*(px|pt|cm|mm|in|pc|%|em|rem)?)");
+		std::wsmatch oMatches;
 
-		if (wsValue.end() == oFoundDigit)
+		if(!std::regex_search(wsValue, oMatches, oRegex))
 			return false;
 
-		std::wistringstream(wsValue) >> dValue;
+		dValue = stod(oMatches[1]);
 
-		std::wstring::const_iterator oFoundUM = std::find_if(oFoundDigit, wsValue.end(), [](wchar_t wcSymbol){ return std::iswalpha(wcSymbol) || L'%' == wcSymbol; });
-
-		if (wsValue.end() != oFoundUM)
-		{
-			if (L'%' == *oFoundUM)
-			{
-				enUnitMeasure = Percent;
-				return true;
-			}
-
-			std::wstring wsUnitMeasure(oFoundUM, oFoundUM + 2);
-
-			if (L"px" == wsUnitMeasure)
-				enUnitMeasure = Pixel;
-			else if (L"pt" == wsUnitMeasure)
-				enUnitMeasure = Point;
-			else if (L"cm" == wsUnitMeasure)
-				enUnitMeasure = Cantimeter;
-			else if (L"mm" == wsUnitMeasure)
-				enUnitMeasure = Millimeter;
-			else if (L"in" == wsUnitMeasure)
-				enUnitMeasure = Inch;
-			else if (L"pc" == wsUnitMeasure)
-				enUnitMeasure = Peak;
-		}
+		if (L"px" == oMatches[3])
+			enUnitMeasure = Pixel;
+		else if (L"pt" == oMatches[3])
+			enUnitMeasure = Point;
+		else if (L"cm" == oMatches[3])
+			enUnitMeasure = Cantimeter;
+		else if (L"mm" == oMatches[3])
+			enUnitMeasure = Millimeter;
+		else if (L"in" == oMatches[3])
+			enUnitMeasure = Inch;
+		else if (L"pc" == oMatches[3])
+			enUnitMeasure = Peak;
+		else if (L"%" == oMatches[3])
+			enUnitMeasure = Percent;
+		else if (L"em" == oMatches[3])
+			enUnitMeasure = Em;
+		else if (L"rem" == oMatches[3])
+			enUnitMeasure = Rem;
 		else
 			enUnitMeasure = None;
-
+		
 		return true;
 	}
 }

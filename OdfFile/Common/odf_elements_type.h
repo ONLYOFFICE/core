@@ -126,6 +126,7 @@ enum ElementType
     typeTextList,
     typeTextListItem,
     typeTextListHeader,
+	typeTextOrderedList,
     typeTextNumber,
     typeTextSoftPageBreak,
     typeTextSection,
@@ -284,6 +285,9 @@ enum ElementType
     typeStylePageLayout,
     typeStyleMap,
 	typeStylePageMaster, // openoffice xml 1.0
+
+	typeStyleGradientStop,
+	typeStyleOpacityStop,
 
 	typeTableTemplate,
 	typeTableTemplateElement,
@@ -540,6 +544,11 @@ enum ElementType
 	typeAnimAudio,
 	typeAnimCommand,
 	typeAnimIterate,
+	typeAnimSet,
+	typeAnimAnimate,
+	typeAnimAnimateTransform,
+	typeAnimAnimateMotion,
+	typeAnimAnimateColor,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

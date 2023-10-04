@@ -141,6 +141,7 @@ public:
 	void end_frame		();
 
 	void start_image	(std::wstring odf_file_path);
+	void start_image2	(std::wstring odf_file_path);
 	void end_image		();
 	
 	bool change_text_box_2_wordart();
@@ -266,6 +267,7 @@ public:
 
 	void set_placeholder_id			(std::wstring val);
 	void set_placeholder_type		(int val);
+	void set_xml_id					(const std::wstring& xml_id);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);
@@ -274,6 +276,7 @@ public:
 		void set_gradient_rect(	double l, double t, double r,double b);
 		void set_gradient_center(double cx, double cy);
 		void set_gradient_angle	(double angle);
+		void set_gradient_stop(std::wstring hexColor, int pos);
 	void end_gradient_style		();
 ////////////////////////////////////////////////////////////////////////////////////////
 	void start_opacity_style	();
@@ -282,6 +285,7 @@ public:
 		void set_opacity_end	(double val);
 		void set_opacity_rect	(double l, double t, double r,double b);
 		void set_opacity_angle	(double angle);
+		void set_opacity_stop(_CP_OPT(double)& val, int pos);
 	void end_opacity_style		();
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_hatch_style();

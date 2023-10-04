@@ -53,7 +53,10 @@ namespace PPTX
 
 				if (strName == L"media")
 				{
-					ReadAttributes1(oReader);
+					WritingElement_ReadAttributes_Start(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:embed", link_media)
+					WritingElement_ReadAttributes_End(oReader)
+
 					if ( oReader.IsEmptyNode() )
 						continue;
 
@@ -64,13 +67,24 @@ namespace PPTX
 
 						if (strName1 == L"trim")
 						{
-							ReadAttributes2(oReader);
+							WritingElement_ReadAttributes_Start(oReader)
+								WritingElement_ReadAttributes_Read_if(oReader, L"st", st)
+								WritingElement_ReadAttributes_Read_else_if(oReader, L"end", end)
+							WritingElement_ReadAttributes_End(oReader)
 						}
 					}
 				}
+				if (strName == L"svgBlip")
+				{
+					WritingElement_ReadAttributes_Start(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:embed", link_svg)
+					WritingElement_ReadAttributes_End(oReader)
+				}
 				else if (strName == L"compatExt")
 				{
-					ReadAttributes3(oReader);
+					WritingElement_ReadAttributes_Start(oReader);
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"spid", spid)
+					WritingElement_ReadAttributes_End(oReader)
 				}
 			}
 		}
@@ -78,25 +92,6 @@ namespace PPTX
 		{
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle ( oReader, L"uri",	uri)
-			WritingElement_ReadAttributes_End( oReader )
-		}
-		void Ext::ReadAttributes1(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"r:embed",	link)
-			WritingElement_ReadAttributes_End( oReader )
-		}
-		void Ext::ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if		( oReader, L"st",	st)
-				WritingElement_ReadAttributes_Read_else_if	( oReader, L"end",	end)
-			WritingElement_ReadAttributes_End( oReader )
-		}
-		void Ext::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start( oReader );
-				WritingElement_ReadAttributes_ReadSingle ( oReader, L"spid",	spid)
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void Ext::fromXML(XmlUtils::CXmlNode& node)
@@ -113,7 +108,7 @@ namespace PPTX
 
 					if (L"media" == strName)
 					{
-						link = oNode.GetAttribute(L"r:embed");
+						link_media = oNode.GetAttribute(L"r:embed");
 
 						XmlUtils::CXmlNode trim = oNode.ReadNodeNoNS(L"trim");
 						if (trim.IsValid())
@@ -129,6 +124,10 @@ namespace PPTX
 					else if (L"sectionLst" == strName)
 					{
 						sectionLst = oNode;
+					}
+					else if (L"svgBlip" == strName)
+					{
+						link_svg = oNode.GetAttribute(L"r:embed");
 					}
 				}
 			}
@@ -147,7 +146,7 @@ namespace PPTX
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY ||
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ext= L"a";
 
-			if (link.IsInit())
+			if (link_media.IsInit())
 			{
 				std::wstring namespace_link = L"p14";
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
@@ -165,10 +164,27 @@ namespace PPTX
 							pWriter->WriteAttribute(L"xmlns:wp15", std::wstring(L"http://schemas.microsoft.com/office/word/2012/wordprocessingDrawing"));
 						else
 							pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
-						pWriter->WriteAttribute(L"r:embed", link->get());
+						pWriter->WriteAttribute(L"r:embed", link_media->get());
 						pWriter->EndAttributes();
 					pWriter->EndNode(namespace_link + L":media");
 				pWriter->EndNode(namespace_ext + L":ext");
+			}
+			if (link_svg.IsInit())
+			{
+				std::wstring namespace_link = L"asvg";
+
+				pWriter->StartNode(L"a:ext");
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"uri", std::wstring(L"{96DAC541-7B7A-43D3-8B79-37D633B846F1}"));
+				pWriter->EndAttributes();
+
+				pWriter->StartNode(namespace_link + L":svgBlip");
+				pWriter->StartAttributes();
+					pWriter->WriteAttribute(L"xmlns:asvg", std::wstring(L"http://schemas.microsoft.com/office/drawing/2016/SVG/main"));
+					pWriter->WriteAttribute(L"r:embed", link_svg->get());
+				pWriter->EndAttributes();
+				pWriter->EndNode(namespace_link + L":svgBlip");
+				pWriter->EndNode(L"a:ext");
 			}
 			if (sectionLst.IsInit())
 			{
@@ -184,8 +200,10 @@ namespace PPTX
 		void Ext::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			if (link.IsInit())
-				link->toPPTY(0, pWriter);
+			if (link_media.IsInit())
+			{
+				link_media->toPPTY(0, pWriter);
+			}
 			pWriter->WriteDouble2(1, st);
 			pWriter->WriteDouble2(2, end);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);

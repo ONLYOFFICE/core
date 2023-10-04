@@ -548,6 +548,8 @@ namespace NSDoctRenderer
 
 		bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
 		{
+			if (strScript.empty() && sCachePath.empty()) return true;
+
 			LOGGER_SPEED_START();
 
 			bool bIsBreak = false;
@@ -935,6 +937,24 @@ namespace NSDoctRenderer
 			}
 			break;
 		}
+		case DoctRendererFormat::VSDT:
+		{
+			switch (m_pInternal->m_oParams.m_eDstFormat)
+			{
+			case DoctRendererFormat::VSDT:
+			case DoctRendererFormat::PDF:
+			case DoctRendererFormat::IMAGE:
+			{
+				arSdkFiles = &m_pInternal->m_arVsdtSDK;
+				m_pInternal->m_strEditorType = L"draw";
+				break;
+			}
+			default:
+				return false;
+			}
+			break;
+		}
+
 		default:
 			return false;
 		}
@@ -973,10 +993,12 @@ namespace NSDoctRenderer
 					sCachePath += L"/";
 
 				wchar_t editorFirst = m_pInternal->m_strEditorType.at(0);
-				if (editorFirst == 'd')
+				if (editorFirst == 'd' && L"document" == m_pInternal->m_strEditorType)
 					sCachePath += L"word";
 				else if (editorFirst == 'p')
 					sCachePath += L"slide";
+				else if (editorFirst == 'd')
+					sCachePath += L"draw";
 				else
 					sCachePath += L"cell";
 			}
@@ -1033,7 +1055,7 @@ namespace NSDoctRenderer
 			strScriptAll += "\n\n";
 		}
 
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			std::string strScript = strScriptAll;
 			std::wstring sCachePath = sCacheDirectory;
@@ -1058,6 +1080,16 @@ namespace NSDoctRenderer
 			{
 				arSdkFiles = &m_pInternal->m_arXlstSDK;
 				sCachePath += L"/cell/sdk-all.cache";
+				break;
+			}
+			case 3:
+			{
+				arSdkFiles = &m_pInternal->m_arVsdtSDK;
+				sCachePath += L"/draw/sdk-all.cache";
+				if (0 < arSdkFiles->size() && !NSFile::CFileBinary::Exists(*arSdkFiles->begin()))
+				{
+					continue;
+				}
 				break;
 			}
 			default:

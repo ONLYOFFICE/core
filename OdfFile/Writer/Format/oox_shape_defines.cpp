@@ -125,6 +125,9 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeParallelogram:		return boost::make_shared<oox_shape_Parallelogram>();
 	case SimpleTypes::shapetypeDiamond:				return boost::make_shared<oox_shape_Diamond>();
 	case SimpleTypes::shapetypePlus:				return boost::make_shared<oox_shape_Plus>();
+	case SimpleTypes::shapetypeTeardrop:			return boost::make_shared<oox_shape_Teardrop>();
+	case SimpleTypes::shapetypeDiagStripe:			return boost::make_shared<oox_shape_DiagStripe>();
+	case SimpleTypes::shapetypeHalfFrame: 			return boost::make_shared<oox_shape_HalfFrame>();
 
 	case SimpleTypes::shapetypePlaque:				return boost::make_shared<oox_shape_Plaque>();
 	case SimpleTypes::shapetypeDoubleWave:			return boost::make_shared<oox_shape_DoubleWave>();
@@ -238,7 +241,9 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 void oox_shape::add(std::wstring name,std::wstring frmla)
 {
     XmlUtils::replace_all(name, L"gd", L"f");
-    _equation q = {name, frmla};
+	XmlUtils::replace_all(frmla, L"gd", L"?f");
+	
+	_equation q = {name, frmla};
     equations.push_back(q);
 }
 }

@@ -129,7 +129,7 @@ public:
 	void end_pivot_table();
 
 	void start_conditional_formats();
-	void end_conditional_formats(){}
+	void end_conditional_formats();
 
 	void start_table_view(int view_id);
 	void end_table_view();

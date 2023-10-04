@@ -50,8 +50,12 @@ def exec_wasm(data, work, compiler_flags, wasm):
     run_file.append("source " + cur_dir + "/emsdk/emsdk_env.sh")
 
   libs = ""
+  cur_folder_index = 0
   for compile_files in data["compile_files_array"]:
-    base.create_dir("./o/" + compile_files["name"])
+    compile_files_name_folder = str(cur_folder_index)
+    cur_folder_index += 1
+    compile_files_name_folder_all = "all_" + compile_files_name_folder + ".o"
+    base.create_dir("./o/" + compile_files_name_folder)
 
     temp_arguments = ""
     if "include_path" in compile_files and compile_files["include_path"]:
@@ -64,14 +68,14 @@ def exec_wasm(data, work, compiler_flags, wasm):
     temp_libs = ""
     for item in compile_files["files"]:
       file_name = os.path.splitext(os.path.basename(item))[0]
-      if not base.is_file("./o/" + compile_files["name"] + "/" + file_name + ".o"):
-        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.join(compile_files["folder"], item))
-      temp_libs += ("o/" + compile_files["name"] + "/" + file_name + ".o ")
+      if not base.is_file("./o/" + compile_files_name_folder + "/" + file_name + ".o"):
+        run_file.append(prefix_call + "emcc -o o/" + compile_files_name_folder + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.join(compile_files["folder"], item))
+      temp_libs += ("o/" + compile_files_name_folder + "/" + file_name + ".o ")
 
     if len(compile_files["files"]) > 10:
-      if not base.is_file("./o/" + compile_files["name"] + "/" + compile_files["name"] + ".o"):
-        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + compile_files["name"] + ".o -r " + arguments + temp_arguments + temp_libs)
-      libs += ("o/" + compile_files["name"] + "/" + compile_files["name"] + ".o ")
+      if not base.is_file("./o/" + compile_files_name_folder + "/" + compile_files_name_folder_all):
+        run_file.append(prefix_call + "emcc -o o/" + compile_files_name_folder + "/" + compile_files_name_folder_all + " -r " + arguments + temp_arguments + temp_libs)
+      libs += ("o/" + compile_files_name_folder + "/" + compile_files_name_folder_all + " ")
     else:
       libs += temp_libs
 

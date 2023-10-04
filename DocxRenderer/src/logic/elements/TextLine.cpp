@@ -204,7 +204,7 @@ namespace NSDocxRenderer
 		pPrev->ToXml(oWriter);
 
 	}
-	[[nodiscard]] eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	eVerticalCrossingType CTextLine::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
 	{
 		if(oSrc->m_eType != ElemType::etContText)
 			return CBaseItem::GetVerticalCrossingType(oSrc);

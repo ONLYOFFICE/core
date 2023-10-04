@@ -31,7 +31,7 @@ namespace NSDocxRenderer
 		virtual void Clear() override final;
 		virtual void AddContent(CBaseItem* pObj) override final;
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
-		[[nodiscard]] virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) noexcept  override  final;
+		virtual eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc) noexcept  override  final;
 
 		void CheckLineToNecessaryToUse();
 		void MergeConts();

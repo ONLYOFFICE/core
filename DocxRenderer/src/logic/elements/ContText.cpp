@@ -99,7 +99,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	[[nodiscard]] eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
+	eVerticalCrossingType CContText::GetVerticalCrossingType(const CBaseItem* oSrc) noexcept
 	{
 		if(oSrc->m_eType != ElemType::etContText)
 			return CBaseItem::GetVerticalCrossingType(oSrc);

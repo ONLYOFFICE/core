@@ -1001,7 +1001,7 @@ int main(int argc, char* argv[])
 	}
 
 	// RASTER
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* res = NULL;
 		res = GetPixmap(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
@@ -1085,10 +1085,11 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
 		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
+		DestroyTextInfo(pGrFile);
 	}
 
 	// INTERACTIVE FORMS

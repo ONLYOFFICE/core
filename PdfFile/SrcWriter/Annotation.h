@@ -97,9 +97,9 @@ namespace PdfWriter
 	protected:
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
+	public:
 		int m_nID; // Идентификатор сопоставления
 
-	public:
 		EDictType GetDictType() const
 		{
 			return dict_type_ANNOTATION;

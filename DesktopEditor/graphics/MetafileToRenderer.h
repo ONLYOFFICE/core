@@ -188,6 +188,10 @@ namespace NSOnlineOfficeBinToPdf
 		ctPageStart                     = 202,
 		ctPageEnd                       = 203,
 
+		ctDocumentEdit                  = 204,
+		ctDocumentClose                 = 205,
+		ctPageEdit                      = 206,
+
 		// gradients
 
 		ctGradientFill					= 220,

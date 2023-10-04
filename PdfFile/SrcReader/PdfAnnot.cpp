@@ -2051,6 +2051,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -2087,6 +2088,8 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
+
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 }
 
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)

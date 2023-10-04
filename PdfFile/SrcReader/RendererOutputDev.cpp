@@ -771,7 +771,7 @@ namespace PdfReader
 	void RendererOutputDev::updateBlendMode(GfxState *pGState)
 	{
 		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
+		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
 			return;
 
 		switch (pGState->getBlendMode())

@@ -57,6 +57,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 			virtual std::wstring GetText() const;
+			bool HasText() const;
 			void SetText(const std::wstring& srcText);
 
 		public:

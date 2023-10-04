@@ -2470,6 +2470,33 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::t
 	}
 
 }
+static std::vector<std::wstring> split_tabs(const std::wstring& text)
+{
+	std::vector<std::wstring> result;
+	std::wstringstream ss;
+	const wchar_t tabChar = L'\t';
+
+	for (const auto& c : text)
+	{
+		if (c == tabChar)
+		{
+			if (!ss.str().empty())
+			{
+				result.push_back(ss.str());
+				ss.str(std::wstring());
+			}
+				
+			result.push_back(L"\t");
+		}
+		else
+			ss << c;
+	}
+
+	if(!ss.str().empty())
+		result.push_back(ss.str());
+
+	return result;
+}
 void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 {
 	if (!oox_run) return;
@@ -2521,13 +2548,11 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	else
 	{
 		const std::wstring& text = oox_run->GetText();
-		std::vector<std::wstring> tabSplit;
-
-		boost::split(tabSplit, text, boost::is_any_of(L"\t"), boost::token_compress_off);
+		std::vector<std::wstring> tabSplit = split_tabs(text);
 
 		for (const std::wstring& str : tabSplit)
 		{
-			if (str.empty())
+			if (str == L"\t")
 				text_context->add_tab();
 			else 
 				text_context->add_text_content(str);

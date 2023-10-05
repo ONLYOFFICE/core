@@ -609,13 +609,13 @@ namespace PdfWriter
 			{
 				CMarkupAnnotation* pMarkupAnnot = (CMarkupAnnotation*)pAnnot;
 
-				int nID = pMarkupAnnot->GetPopupID();
-				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
-				if (it != m_mAnnotations.end())
-					pMarkupAnnot->SetPopupID(it->second);
+				// int nID = pMarkupAnnot->GetPopupID();
+				// std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
+				// if (it != m_mAnnotations.end())
+				// 	pMarkupAnnot->SetPopupID(it->second);
 
-				nID = pMarkupAnnot->GetIRTID();
-				it = m_mAnnotations.find(nID);
+				int nID = pMarkupAnnot->GetIRTID();
+				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
 				if (it != m_mAnnotations.end())
 					pMarkupAnnot->SetIRTID(it->second);
 			}

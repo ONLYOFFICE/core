@@ -1502,11 +1502,13 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// 1 - Всплывающая аннотация - Popup
+	/*
 	if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 0);
 		m_unRefNumPopup = oObj.getRefNum();
 	}
+	*/
 
 	// 2 - Текстовая метка пользователя - T
 	DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1, m_sT);
@@ -2441,8 +2443,8 @@ void CMarkupAnnot::ToWASM(NSWasm::CData& oRes)
 	CAnnot::ToWASM(oRes);
 
 	oRes.AddInt(m_unFlags);
-	if (m_unFlags & (1 << 0))
-		oRes.AddInt(m_unRefNumPopup);
+	// if (m_unFlags & (1 << 0))
+	// 	oRes.AddInt(m_unRefNumPopup);
 	if (m_unFlags & (1 << 1))
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 2))

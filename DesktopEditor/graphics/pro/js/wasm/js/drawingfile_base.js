@@ -1002,8 +1002,8 @@
 			{
 				flags = reader.readInt();
 				// Номер AP popup аннотации для сопоставления
-				if (flags & (1 << 0))
-					rec["Popup"] = reader.readInt();
+				// if (flags & (1 << 0))
+				// 	rec["Popup"] = reader.readInt();
 				// Текстовая метка пользователя - T
 				if (flags & (1 << 1))
 					rec["User"] = reader.readString();
@@ -1166,6 +1166,7 @@
 					rec["IT"] = reader.readByte();
 			}
 			// Popup
+			/*
 			else if (rec["Type"] == 15)
 			{
 				flags = reader.readInt();
@@ -1174,6 +1175,7 @@
 				if (flags & (1 << 1))
 					rec["PopupParent"] = reader.readInt();
 			}
+			*/
 			// FreeText
 			else if (rec["Type"] == 2)
 			{

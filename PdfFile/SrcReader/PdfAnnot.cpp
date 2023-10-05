@@ -1502,11 +1502,13 @@ CMarkupAnnot::CMarkupAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// 1 - Всплывающая аннотация - Popup
+	/*
 	if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 0);
 		m_unRefNumPopup = oObj.getRefNum();
 	}
+	*/
 
 	// 2 - Текстовая метка пользователя - T
 	DICT_LOOKUP_STRING(oAnnot.dictLookup, "T", 1, m_sT);
@@ -1852,14 +1854,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
-
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict())
 	{
@@ -1878,14 +1872,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
-
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
 
 	Object oAnnot, oAP;
 	XRef* xref = pdfDoc->getXRef();
@@ -2067,6 +2053,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -2103,6 +2090,8 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
+
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 }
 
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
@@ -2454,8 +2443,8 @@ void CMarkupAnnot::ToWASM(NSWasm::CData& oRes)
 	CAnnot::ToWASM(oRes);
 
 	oRes.AddInt(m_unFlags);
-	if (m_unFlags & (1 << 0))
-		oRes.AddInt(m_unRefNumPopup);
+	// if (m_unFlags & (1 << 0))
+	// 	oRes.AddInt(m_unRefNumPopup);
 	if (m_unFlags & (1 << 1))
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 2))

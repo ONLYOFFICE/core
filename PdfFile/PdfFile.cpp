@@ -622,7 +622,7 @@ bool CPdfFile::EditPage(int nPageIndex)
 	{
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
-		if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0)
+		if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0 || strcmp("Annots", chKey) == 0)
 			pageObj.dictGetVal(nIndex, &oTemp);
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
@@ -803,6 +803,17 @@ int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)
 		return 0;
+#ifndef BUILDING_WASM_MODULE
+	if (m_pInternal->bEdit && m_pInternal->pWriter && m_pInternal->pWriter->m_pDocument)
+	{
+		PdfWriter::CPage* pPage = m_pInternal->pWriter->m_pDocument->GetPage(nPageIndex);
+		if (!pPage)
+			return 0;
+
+		return pPage->GetRotate();
+	}
+	else
+#endif
 	return m_pInternal->pReader->GetRotate(nPageIndex);
 }
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)

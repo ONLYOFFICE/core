@@ -34,6 +34,7 @@
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
+#include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "../PdfFile.h"
 
 void TEST(IRenderer* pRenderer)
@@ -154,7 +155,7 @@ int main()
         return 0;
     }
 
-	if (true)
+	if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         int i = 0;
@@ -212,25 +213,73 @@ int main()
 				pdfFile.Sign(0, 0, 0, 0, L"", pCertificate);
 			}
         }
-        else
+		else if (true)
+		{
+			if (pdfFile.EditPage(0))
+			{
+				CAnnotFieldInfo* pInfo = new CAnnotFieldInfo();
+
+				pInfo->SetType(8);
+				pInfo->SetID(80);
+				pInfo->SetAnnotFlag(4);
+				pInfo->SetPage(0); // та что в EditPage
+
+				pInfo->SetBounds(42, 660, 145, 677);
+
+				pInfo->SetFlag(8);
+
+				std::vector<double> arrC;
+				arrC.push_back(1);
+				arrC.push_back(0.4);
+				arrC.push_back(0);
+				pInfo->SetC(arrC);
+
+				CAnnotFieldInfo::CMarkupAnnotPr* pPrm = pInfo->GetMarkupAnnotPr();
+				pPrm->SetFlag(4);
+
+				pPrm->SetCA(0.4);
+
+				CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = pInfo->GetTextMarkupAnnotPr();
+				pPr->SetSubtype(8);
+				std::vector<double> arrQuadPoints;
+
+				arrQuadPoints.push_back(47);
+				arrQuadPoints.push_back(676);
+
+				arrQuadPoints.push_back(140);
+				arrQuadPoints.push_back(676);
+
+				arrQuadPoints.push_back(47);
+				arrQuadPoints.push_back(660);
+
+				arrQuadPoints.push_back(140);
+				arrQuadPoints.push_back(660);
+
+				pPr->SetQuadPoints(arrQuadPoints);
+
+				pdfFile.AdvancedCommand(pInfo);
+				RELEASEOBJECT(pInfo);
+			}
+		}
+		else
         {
             if (pdfFile.EditPage(0))
             {
-                TEST(&pdfFile);
-                pdfFile.RotatePage(90);
+				TEST(&pdfFile);
+				pdfFile.RotatePage(90);
             }
 
-            pdfFile.DeletePage(1);
+			pdfFile.DeletePage(1);
 
-            if (pdfFile.EditPage(1))
-            {
-                TEST2(&pdfFile);
-            }
+			if (pdfFile.EditPage(1))
+			{
+				TEST2(&pdfFile);
+			}
 
-            if (pdfFile.AddPage(3))
-            {
-                TEST3(&pdfFile);
-            }
+			if (pdfFile.AddPage(3))
+			{
+				TEST3(&pdfFile);
+			}
         }
 
         pdfFile.Close();

@@ -1678,6 +1678,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
 
+	// TODO внести Widget в PdfWriter::CAnnotation
 	if (oInfo.isWidget())
 		return AddFormField(pAppFonts, (CFormFieldInfo*)pFieldInfo);
 
@@ -1729,11 +1730,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (!pAnnot)
 		return S_FALSE;
 
-	PdfWriter::CPage* pPage = m_pDocument->GetPage(oInfo.GetPage());
-	pPage->AddAnnotation(pAnnot);
-
 	int nID = oInfo.GetID();
 	pAnnot->SetID(nID);
+
+	PdfWriter::CPage* pPage = m_pDocument->GetPage(oInfo.GetPage());
+	if (!pPage)
+		pPage = m_pPage;
+	pPage->AddAnnotation(pAnnot, nID);
+
 	m_pDocument->AddAnnotation(nID, pAnnot);
 
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
@@ -1741,7 +1745,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	double dX1, dY1, dX2, dY2;
 	oInfo.GetBounds(dX1, dY1, dX2, dY2);
-	PdfWriter::TRect oRect(MM_2_PT(dX1), pPage->GetHeight() - MM_2_PT(dY1), MM_2_PT(dX2), pPage->GetHeight() - MM_2_PT(dY2));
+	PdfWriter::TRect oRect(dX1, pPage->GetHeight() - dY1, dX2, pPage->GetHeight() - dY2);
 	pAnnot->SetRect(oRect);
 
 	int nFlags = oInfo.GetFlag();

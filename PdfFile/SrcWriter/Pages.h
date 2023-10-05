@@ -134,7 +134,7 @@ namespace PdfWriter
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
-		void      AddAnnotation(CDictObject* pAnnot);
+		void      AddAnnotation(CDictObject* pAnnot, unsigned int nID = 0);
 		void      DrawShading(CShading* pShading);
 		void      SetStrokeAlpha(unsigned char unAlpha);
 		void      SetFillAlpha(unsigned char unAlpha);

@@ -1584,3 +1584,11 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	return S_FALSE;
 }
+
+bool CPdfFile::AddCommandsToFile(BYTE* pBuffer, unsigned int& nLen, CConvertFromBinParams* pParams)
+{
+	if (!m_pInternal->pReader || !m_pInternal->pWriter)
+		return false;
+
+	return NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams);
+}

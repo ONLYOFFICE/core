@@ -5,11 +5,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <stdint.h>
 
 #ifndef MININT32
-#define MAXUINT32   ((UINT32)~((UINT32)0))
-#define MAXINT32    ((INT32)(MAXUINT32 >> 1))
-#define MININT32    ((INT32)~MAXINT32)
+#define MAXUINT32   ((uint32_t)~((uint32_t)0))
+#define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
+#define MININT32    ((int32_t)~MAXINT32)
 #endif
 
 namespace MetaFile

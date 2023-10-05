@@ -297,7 +297,7 @@ namespace SVG
 			if ((int)(dStartAngle / 90.) == dStartAngle / 90.)
 				dEndAngle = dStartAngle + ((dSweep > 0.) ? 90. : -90.);
 			else
-				dEndAngle = (int)(dStartAngle / 90.) * ((dSweep > 0.) ? 90. : -90.);
+				dEndAngle = copysign(ceil(std::abs(dStartAngle) / 90.), dStartAngle) * ((dSweep > 0. || dStartAngle < 0.) ? 90. : -90.);
 
 			if (std::abs(dAngle - dEndAngle) > std::abs(dSweep))
 				dEndAngle = dAngle + dSweep;

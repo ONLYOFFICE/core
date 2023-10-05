@@ -58,6 +58,7 @@ public:
 		void SetCA(const double& dCA)            { m_dCA      = dCA; }
 		void SetT(const std::wstring& wsT)       { m_wsT      = wsT; }
 		void SetRC(const std::wstring& wsRC)     { m_wsRC     = wsRC; }
+		void SetCD(const std::wstring& wsCD)     { m_wsCD     = wsCD; }
 		void SetSubj(const std::wstring& wsSubj) { m_wsSubj   = wsSubj; }
 
 		BYTE   GetRT()      const { return m_nRT; }
@@ -67,6 +68,7 @@ public:
 		double GetCA()      const { return m_dCA; }
 		const std::wstring& GetT()    const { return m_wsT; }
 		const std::wstring& GetRC()   const { return m_wsRC; }
+		const std::wstring& GetCD()   const { return m_wsCD; }
 		const std::wstring& GetSubj() const { return m_wsSubj; }
 
 	private:
@@ -77,6 +79,7 @@ public:
 		double       m_dCA;
 		std::wstring m_wsT;
 		std::wstring m_wsRC;
+		std::wstring m_wsCD;
 		std::wstring m_wsSubj;
 	};
 

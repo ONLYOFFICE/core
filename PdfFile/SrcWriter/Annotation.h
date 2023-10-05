@@ -97,6 +97,8 @@ namespace PdfWriter
 	protected:
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
+		CXref* m_pXref;
+
 	public:
 		int m_nID; // Идентификатор сопоставления
 
@@ -130,7 +132,6 @@ namespace PdfWriter
 	protected:
 		CMarkupAnnotation(CXref* pXref, EAnnotType eType);
 
-		int m_nPopupID;
 		int m_nIRTID;
 
 	public:
@@ -145,17 +146,13 @@ namespace PdfWriter
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
 		void SetRC(const std::wstring& wsRC);
+		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
-		int GetPopupID() const
-		{
-			return m_nPopupID;
-		}
 		int GetIRTID() const
 		{
 			return m_nIRTID;
 		}
-		void SetPopupID(CAnnotation* pAnnot);
 		void SetIRTID(CAnnotation* pAnnot);
 	};
 	class CLinkAnnotation : public CAnnotation

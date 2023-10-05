@@ -671,6 +671,13 @@ bool CPdfFile::AddPage(int nPageIndex)
 	}
 	return bRes;
 }
+bool CPdfFile::DeleteAnnot(int nPageIndex, int nID)
+{
+	// Проверка режима редактирования
+	if (!m_pInternal->pWriter || !m_pInternal->bEdit)
+		return false;
+	return m_pInternal->pWriter->DeleteAnnot(nPageIndex, nID);
+}
 #endif // BUILDING_WASM_MODULE
 
 // ------------------------------------------------------------------------

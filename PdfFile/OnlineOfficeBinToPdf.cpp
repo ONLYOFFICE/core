@@ -149,6 +149,7 @@ namespace NSOnlineOfficeBinToPdf
 		Annotation = 0,
 		AddPage    = 1,
 		RemovePage = 2,
+		RemoveAnnotation = 3,
 		Undefined  = 255
 	};
 

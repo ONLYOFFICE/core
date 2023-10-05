@@ -331,7 +331,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			pPr->SetCA(pReader->ReadDouble());
 		if (nFlags & (1 << 3))
 			pPr->SetRC(pReader->ReadString());
-		// nFlags & (1 << 4) CreationDate вычисляется в PdfWriter::CMarkupAnnotation
+		if (nFlags & (1 << 4))
+			pPr->SetCD(pReader->ReadString());
 		if (nFlags & (1 << 5))
 			pPr->SetIRTID(pReader->ReadInt());
 		if (nFlags & (1 << 6))

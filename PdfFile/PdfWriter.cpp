@@ -1733,10 +1733,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	int nID = oInfo.GetID();
 	pAnnot->SetID(nID);
 
-	PdfWriter::CPage* pPage = m_pDocument->GetPage(oInfo.GetPage());
-	if (!pPage)
-		pPage = m_pPage;
-	pPage->AddAnnotation(pAnnot, nID);
+	int nOriginalPage = oInfo.GetPage();
+	PdfWriter::CPage* pOrigPage = m_pDocument->GetPage(nOriginalPage);
+	if (pOrigPage)
+		pOrigPage->DeleteAnnotation(nID);
+
+	PdfWriter::CPage* pPage = m_pPage;
+	pPage->AddAnnotation(pAnnot);
 
 	m_pDocument->AddAnnotation(nID, pAnnot);
 
@@ -1777,13 +1780,20 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		nFlags = pPr->GetFlag();
 		if (nFlags & (1 << 0))
-			pMarkupAnnot->SetPopupID(pPr->GetPopupID());
+		{
+			int nPopupID = pPr->GetPopupID();
+			if (pOrigPage)
+				pOrigPage->DeleteAnnotation(nPopupID);
+			pMarkupAnnot->SetPopupID(nPopupID);
+		}
 		if (nFlags & (1 << 1))
 			pMarkupAnnot->SetT(pPr->GetT());
 		if (nFlags & (1 << 2))
 			pMarkupAnnot->SetCA(pPr->GetCA());
 		if (nFlags & (1 << 3))
 			pMarkupAnnot->SetRC(pPr->GetRC());
+		if (nFlags & (1 << 4))
+			pMarkupAnnot->SetCD(pPr->GetCD());
 		if (nFlags & (1 << 5))
 			pMarkupAnnot->SetIRTID(pPr->GetIRTID());
 		if (nFlags & (1 << 6))
@@ -1997,6 +2007,8 @@ bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 		return false;
 	m_oCommandManager.Flush();
 
+	m_pDocument->MatchAnnotation();
+
 	m_pPage = pNewPage;
 	if (m_pPage)
 	{
@@ -2060,6 +2072,14 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 
 	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
 					  pImage, pCertificate);
+}
+bool CPdfWriter::DeleteAnnot(int nPageIndex, int nID)
+{
+	PdfWriter::CPage* pPage = m_pDocument->GetPage(nPageIndex);
+	if (!pPage)
+		pPage = m_pPage;
+	pPage->DeleteAnnotation(nID);
+	return true;
 }
 //----------------------------------------------------------------------------------------
 // Внутренние функции

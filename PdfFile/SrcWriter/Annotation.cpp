@@ -78,6 +78,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
+		m_pXref = pXref;
 		pXref->Add(this);
 
 		m_nID = 0;
@@ -206,10 +207,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_nPopupID = 0;
 		m_nIRTID   = 0;
 
-		Add("CreationDate", new CStringObject(DateNow().c_str()));
+		// Add("CreationDate", new CStringObject(DateNow().c_str()));
 	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
@@ -217,7 +217,11 @@ namespace PdfWriter
 	}
 	void CMarkupAnnotation::SetPopupID(const int& nPopupID)
 	{
-		m_nPopupID = nPopupID;
+		//m_nPopupID = nPopupID;
+		CPopupAnnotation* pAnnot = new CPopupAnnotation(m_pXref);
+		pAnnot->SetOpen(false);
+		pAnnot->SetParentID(this);
+		Add("Popup", pAnnot);
 	}
 	void CMarkupAnnotation::SetIRTID(const int& nIRTID)
 	{
@@ -237,14 +241,15 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsRC);
 		Add("RC", new CStringObject(sValue.c_str()));
 	}
+	void CMarkupAnnotation::SetCD(const std::wstring& wsCD)
+	{
+		std::string sValue = U_TO_UTF8(wsCD);
+		Add("CreationDate", new CStringObject(sValue.c_str()));
+	}
 	void CMarkupAnnotation::SetSubj(const std::wstring& wsSubj)
 	{
 		std::string sValue = U_TO_UTF8(wsSubj);
 		Add("Subj", new CStringObject(sValue.c_str()));
-	}
-	void CMarkupAnnotation::SetPopupID(CAnnotation* pAnnot)
-	{
-		Add("Popup", pAnnot);
 	}
 	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
 	{

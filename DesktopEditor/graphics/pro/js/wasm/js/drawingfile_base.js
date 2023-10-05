@@ -518,6 +518,7 @@
 			}
 		}
 		rec["page"] = reader.readInt();
+		rec["OriginalPage"] = rec["page"];
 		// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 		rec["rect"] = {};
 		rec["rect"]["x1"] = reader.readDouble2();
@@ -1001,9 +1002,9 @@
 			if ((rec["Type"] < 18 && rec["Type"] != 1 && rec["Type"] != 15) || rec["Type"] == 25)
 			{
 				flags = reader.readInt();
-				// Номер AP popup аннотации для сопоставления
-				// if (flags & (1 << 0))
-				// 	rec["Popup"] = reader.readInt();
+				// Номер popup аннотации для сопоставления
+				if (flags & (1 << 0))
+					rec["Popup"] = reader.readInt();
 				// Текстовая метка пользователя - T
 				if (flags & (1 << 1))
 					rec["User"] = reader.readString();

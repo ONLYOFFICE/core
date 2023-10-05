@@ -40,36 +40,39 @@
 
 namespace MetaFile
 {
-	CWmfBrush::CWmfBrush() : Color(255, 255, 255)
+	CWmfObjectBase::CWmfObjectBase()
+	{}
+	
+	CWmfObjectBase::~CWmfObjectBase()
+	{}
+
+	EWmfObjectType CWmfObjectBase::GetType()
 	{
-		BrushStyle     = BS_SOLID;
-		BrushHatch     = HS_HORIZONTAL;
-		DibPatternPath = L"";
-		DibBuffer      = NULL;
-		DibWidth       = 0;
-		DibHeigth      = 0;
+		return WMF_OBJECT_UNKNOWN;
 	}
-	CWmfBrush::CWmfBrush(TWmfLogBrush& oBrush)
-	{
-		BrushStyle     = oBrush.BrushStyle;
-		Color          = oBrush.Color;
-		BrushHatch     = oBrush.BurshHatch;
-		DibPatternPath = L"";
-		DibBuffer      = NULL;
-		DibWidth       = 0;
-		DibHeigth      = 0;
-	}
+
+	CWmfBrush::CWmfBrush() 
+		: ushBrushStyle(BS_SOLID), oColor(255, 255, 255), ushBrushHatch(HS_HORIZONTAL), pDibBuffer(NULL), unDibWidth(0), unDibHeigth(0)
+	{}
+
+	CWmfBrush::CWmfBrush(const TWmfLogBrush& oBrush)
+		: ushBrushStyle(oBrush.ushBrushStyle), oColor(oBrush.oColor), ushBrushHatch(oBrush.ushBrushHatch), pDibBuffer(NULL), unDibWidth(0), unDibHeigth(0)
+	{}
+
 	CWmfBrush::~CWmfBrush()
 	{
-		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-		{
-			NSFile::CFileBinary::Remove(DibPatternPath);
-		}
+		if (BS_DIBPATTERN == ushBrushStyle && !wsDibPatternPath.empty())
+			NSFile::CFileBinary::Remove(wsDibPatternPath);
 
-		if (DibBuffer)
-			delete[] DibBuffer;
+		RELEASEOBJECT(pDibBuffer);
 	}
-	void         CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
+
+	EWmfObjectType CWmfBrush::GetType()
+	{
+		return WMF_OBJECT_BRUSH;
+	}
+
+	void CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
 #ifdef METAFILE_DISABLE_FILESYSTEM
 		// без использования файловой системы пока реализовать не получится при конвертации в растр,
@@ -89,45 +92,208 @@ namespace MetaFile
 
 		if (oBgraFrame.SaveFile(wsTempFileName, _CXIMAGE_FORMAT_PNG))
 		{
-			BrushStyle     = BS_DIBPATTERN;
-			DibPatternPath = wsTempFileName;
+			ushBrushStyle    = BS_DIBPATTERN;
+			wsDibPatternPath = wsTempFileName;
 
 			BYTE* pNewBuffer = NULL;
 			int nNewSize = 0;
 
 			oBgraFrame.Encode(pNewBuffer, nNewSize, _CXIMAGE_FORMAT_PNG);
 
-			DibBuffer	= pNewBuffer;
-			DibWidth	= oBgraFrame.get_Width();
-			DibHeigth	= oBgraFrame.get_Height();
+			pDibBuffer  = pNewBuffer;
+			unDibWidth  = oBgraFrame.get_Width();
+			unDibHeigth = oBgraFrame.get_Height();
 		}
 
 		oBgraFrame.put_Data(NULL);
 #endif
 	}
-	int          CWmfBrush::GetColor()
+
+	int CWmfBrush::GetColor()
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
 	}
+
+	int CWmfBrush::GetColor2()
+	{
+		return 0;
+	}
+
 	unsigned int CWmfBrush::GetStyle()
 	{
-		return BrushStyle;
+		return ushBrushStyle;
 	}
+
+	unsigned int CWmfBrush::GetStyleEx()
+	{
+		return 0;
+	}
+
 	unsigned int CWmfBrush::GetHatch()
 	{
-		return BrushHatch;
+		return ushBrushHatch;
 	}
+
 	unsigned int CWmfBrush::GetAlpha()
 	{
 		return 255;
 	}
+
+	unsigned int CWmfBrush::GetAlpha2()
+	{
+		return 0xff;
+	}
+
 	std::wstring CWmfBrush::GetDibPatterPath()
 	{
-		return DibPatternPath;
+		return wsDibPatternPath;
+	}
+
+	void CWmfBrush::GetBounds(double &left, double &top, double &width, double &height)
+	{
+		
+	}
+
+	void CWmfBrush::GetCenterPoint(double &dX, double &dY)
+	{
+		
+	}
+
+	void CWmfBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+	{
+		*pBuffer	= pDibBuffer;
+		unWidth		= unDibWidth;
+		unHeight	= unDibHeigth;
+	}
+
+	CWmfFont::CWmfFont()
+	{
+		memset(uchFacename, 0x00, 32);
+	}
+
+	CWmfFont::~CWmfFont()
+	{}
+
+	EWmfObjectType CWmfFont::GetType()
+	{
+		return WMF_OBJECT_FONT;
+	}
+
+	double CWmfFont::GetHeight()
+	{
+		return (double)shHeight;
+	}
+
+	std::wstring CWmfFont::GetFaceName()
+	{
+		return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)uchFacename, 32).c_str());
+	}
+
+	int CWmfFont::GetWeight()
+	{
+		return (int)shWidth;
+	}
+
+	bool CWmfFont::IsItalic()
+	{
+		return (0x01 == uchItalic ? true : false);
+	}
+
+	bool CWmfFont::IsStrikeOut()
+	{
+		return (0x01 == uchStrikeOut ? true : false);
+	}
+
+	bool CWmfFont::IsUnderline()
+	{
+		return (0x01 == uchUnderline ? true : false);
+	}
+
+	int CWmfFont::GetEscapement()
+	{
+		return (int)shEscapement;
+	}
+
+	int CWmfFont::GetCharSet()
+	{
+		return (int)uchCharSet;
+	}
+
+	int CWmfFont::GetOrientation()
+	{
+		return (int)shOrientation;
+	}
+
+	CWmfPalette::CWmfPalette() : ushNumberOfEntries(0), pPaletteEntries(NULL)
+	{}
+
+	CWmfPalette::~CWmfPalette()
+	{
+		RELEASEOBJECT(pPaletteEntries);
+	}
+
+	EWmfObjectType CWmfPalette::GetType()
+	{
+		return WMF_OBJECT_PALETTE;
+	}
+
+	CWmfPen::CWmfPen()
+	{}
+
+	CWmfPen::~CWmfPen()
+	{}
+
+	EWmfObjectType CWmfPen::GetType()
+	{
+		return WMF_OBJECT_PEN;
 	}
 
 	int CWmfPen::GetColor()
 	{
-		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, oColor.a);
+	}
+
+	unsigned int CWmfPen::GetStyle()
+	{
+		return (unsigned int)ushPenStyle;
+	}
+
+	double CWmfPen::GetWidth()
+	{
+		return (double)oWidth.X;
+	}
+
+	unsigned int CWmfPen::GetAlpha()
+	{
+		return 0xff;
+	}
+
+	double CWmfPen::GetMiterLimit()
+	{
+		return 0;
+	}
+
+	double CWmfPen::GetDashOffset()
+	{
+		return 0;
+	}
+
+	void CWmfPen::GetDashData(double *&arDatas, unsigned int &unSize)
+	{
+		arDatas = NULL;
+		unSize  = 0;
+	}
+
+	CWmfRegion::CWmfRegion() : pScans(NULL)
+	{}
+
+	CWmfRegion::~CWmfRegion()
+	{
+		RELEASEOBJECT(pScans);
+	}
+
+	EWmfObjectType CWmfRegion::GetType()
+	{
+		return WMF_OBJECT_REGION;
 	}
 }

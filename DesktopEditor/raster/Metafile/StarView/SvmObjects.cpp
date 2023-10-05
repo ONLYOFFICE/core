@@ -269,8 +269,8 @@ CDataStream& operator>>(CDataStream &stream, SvmHeader &header)
 	stream >> width;
 	stream >> height;
 
-	header.boundRect.nBottom	= height;
-	header.boundRect.nRight		= width;
+	header.boundRect.Bottom = height;
+	header.boundRect.Right  = width;
 
 	stream >> header.actionCount;
 
@@ -321,11 +321,11 @@ CSvmBrush::CSvmBrush(CSvmBrush& oBrush)
 
 int CSvmBrush::GetColor()
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return METAFILE_RGBA(Color.r, Color.g, Color.b, 0);
 }
 int CSvmBrush::GetColor2()
 {
-	return METAFILE_RGBA(Color2.r, Color2.g, Color2.b);
+	return METAFILE_RGBA(Color2.r, Color2.g, Color2.b, 0);
 }
 unsigned int CSvmBrush::GetStyleEx()
 {
@@ -360,7 +360,7 @@ void CSvmBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, un
 
 int CSvmPen::GetColor()
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return METAFILE_RGBA(Color.r, Color.g, Color.b, 0);
 }
 TSvmRect::TSvmRect(CDataStream &stream)
 {

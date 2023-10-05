@@ -48,6 +48,82 @@ class IMetafileToRenderter;
 class GRAPHICS_DECL CAnnotFieldInfo : public IAdvancedCommand
 {
 public:
+	class CWidgetAnnotPr
+	{
+	public:
+		class CButtonWidgetPr
+		{
+
+		};
+
+		class CTextWidgetPr
+		{
+
+		};
+
+		class CChoiceWidgetPr
+		{
+
+		};
+
+		class CSignatureWidgetPr
+		{
+
+		};
+
+	private:
+		class CActionWidget
+		{
+
+		};
+
+	public:
+		void SetQ(const BYTE& nQ) { m_nQ = nQ; }
+		void SetH(const BYTE& nH) { m_nH = nH; }
+		void SetR(const int& nR)  { m_nR = nR; }
+		void SetTU(const std::wstring& wsTU) { m_wsTU = wsTU; }
+		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
+		void SetDV(const std::wstring& wsDV) { m_wsDV = wsDV; }
+		void SetT (const std::wstring& wsT)  { m_wsT = wsT; }
+		void SetTC(const std::vector<double>& arrTC) { m_arrTC = arrTC; }
+		void SetBC(const std::vector<double>& arrBC) { m_arrBC = arrBC; }
+		void SetBG(const std::vector<double>& arrBG) { m_arrBG = arrBG; }
+
+		BYTE GetQ() const { return m_nQ; }
+		BYTE GetH() const { return m_nH; }
+		int  GetR() const { return m_nR; }
+		const std::wstring& GetTU() const { return m_wsTU; }
+		const std::wstring& GetDS() const { return m_wsDS; }
+		const std::wstring& GetDV() const { return m_wsDV; }
+		const std::wstring& GetT()  const { return m_wsT; }
+		const std::vector<double>& GetTC() const { return m_arrTC; }
+		const std::vector<double>& GetBC() const { return m_arrBC; }
+		const std::vector<double>& GetBG() const { return m_arrBG; }
+
+		CButtonWidgetPr*    GetButtonWidgetPr()    { return m_pButtonPr; }
+		CTextWidgetPr*      GetTextWidgetPr()      { return m_pTextPr; }
+		CChoiceWidgetPr*    GetChoiceWidgetPr()    { return m_pChoicePr; }
+		CSignatureWidgetPr* GetSignatureWidgetPr() { return m_pSignaturePr; }
+
+	private:
+		BYTE m_nQ;
+		BYTE m_nH;
+		int m_nR;
+		std::wstring m_wsTU;
+		std::wstring m_wsDS;
+		std::wstring m_wsDV;
+		std::wstring m_wsT;
+		std::vector<double> m_arrTC;
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+		std::vector<CActionWidget*> m_arrAction;
+
+		CButtonWidgetPr*    m_pButtonPr;
+		CTextWidgetPr*      m_pTextPr;
+		CChoiceWidgetPr*    m_pChoicePr;
+		CSignatureWidgetPr* m_pSignaturePr;
+	};
+
 	class CMarkupAnnotPr
 	{
 	public:
@@ -293,6 +369,7 @@ public:
 	void SetPage(const int& nPage)           { m_nPage      = nPage; }
 	void SetBE(BYTE nS, const double& dI)    { m_pBE.first = nS; m_pBE.second = dI; }
 	void SetNM(const std::wstring& wsNM)     { m_wsNM      = wsNM; }
+	void SetLM(const std::wstring& wsLM)     { m_wsLM      = wsLM; }
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
@@ -304,6 +381,7 @@ public:
 	int    GetPage()      const { return m_nPage; }
 	void   GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
 	const std::wstring& GetNM() const { return m_wsNM; }
+	const std::wstring& GetLM() const { return m_wsLM; }
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
@@ -329,6 +407,7 @@ public:
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 	CCaretAnnotPr*        GetCaretAnnotPr()        { return m_pCaretPr; }
+	CWidgetAnnotPr*        GetWidgetAnnotPr()        { return m_pWidgetPr; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -345,6 +424,7 @@ private:
 	int          m_nAnnotFlag;
 	int          m_nPage;
 	std::wstring m_wsNM;
+	std::wstring m_wsLM;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
@@ -360,6 +440,7 @@ private:
 	CPopupAnnotPr*        m_pPopupPr;
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
+	CWidgetAnnotPr*       m_pWidgetPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

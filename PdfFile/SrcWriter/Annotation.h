@@ -124,6 +124,7 @@ namespace PdfWriter
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
+		void SetLM(const std::wstring& wsLM);
 		void SetC(const std::vector<double>& arrC);
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 	};

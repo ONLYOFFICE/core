@@ -926,6 +926,14 @@ HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const
 #endif
 	return S_OK;
 }
+HRESULT CPdfFile::AddToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
+{
+#ifndef BUILDING_WASM_MODULE
+	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams))
+		return S_FALSE;
+#endif
+	return S_OK;
+}
 HRESULT CPdfFile::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	if (!m_pInternal->pWriter)

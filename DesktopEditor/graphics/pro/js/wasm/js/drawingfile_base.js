@@ -518,7 +518,6 @@
 			}
 		}
 		rec["page"] = reader.readInt();
-		rec["OriginalPage"] = rec["page"];
 		// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 		rec["rect"] = {};
 		rec["rect"]["x1"] = reader.readDouble2();
@@ -683,6 +682,10 @@
 			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
 			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
+			// 12.7.3.1
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
 			let flags = reader.readInt();
 			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 			if (flags & (1 << 0))
@@ -829,11 +832,7 @@
 				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
 				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 			}
-			// 12.7.3.1
-			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
-			rec["required"] = (rec["flag"] >> 1) & 1; // Required
-			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
-
+			
 			res["Fields"].push(rec);
 		}
 

@@ -595,6 +595,9 @@ namespace PdfWriter
 	}
 	void CDocument::MatchAnnotation()
 	{
+		if (!m_pCurPage)
+			return;
+
 		CArrayObject* pArray = (CArrayObject*)(m_pCurPage->Get("Annots"));
 		if (!pArray)
 			return;

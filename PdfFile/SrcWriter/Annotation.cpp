@@ -89,7 +89,7 @@ namespace PdfWriter
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
 
-		Add("M", new CStringObject(DateNow().c_str()));
+		//Add("M", new CStringObject(DateNow().c_str()));
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -190,6 +190,11 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsNM);
 		Add("NM", new CStringObject(sValue.c_str()));
+	}
+	void CAnnotation::SetLM(const std::wstring& wsLM)
+	{
+		std::string sValue = U_TO_UTF8(wsLM);
+		Add("M", new CStringObject(sValue.c_str()));
 	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{

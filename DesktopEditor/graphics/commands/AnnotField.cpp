@@ -315,7 +315,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		}
 		SetBorder(nType, dWidth, d1, d2);
 	}
-	// nFlags & (1 << 5) LastModified вычисляется в PdfWriter::CAnnotation
+	if (nFlags & (1 << 5))
+		SetLM(pReader->ReadString());
 
 	if (isMarkup())
 	{

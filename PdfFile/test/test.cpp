@@ -36,6 +36,7 @@
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "../PdfFile.h"
+#include "../OnlineOfficeBinToPdf.h"
 
 void TEST(IRenderer* pRenderer)
 {
@@ -217,6 +218,35 @@ int main()
 		{
 			if (pdfFile.EditPage(0))
 			{
+				// чтение и конвертации бинарника
+				NSFile::CFileBinary oFile;
+				if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
+					return false;
+
+				DWORD dwFileSize = oFile.GetFileSize();
+				BYTE* pFileContent = new BYTE[dwFileSize];
+				if (!pFileContent)
+				{
+					oFile.CloseFile();
+					return false;
+				}
+
+				DWORD dwReaded;
+				oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+				oFile.CloseFile();
+
+				int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+				BYTE* pBuffer = new BYTE[nBufferLen];
+				if (!pBuffer)
+				{
+					RELEASEARRAYOBJECTS(pFileContent);
+					return false;
+				}
+
+				if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
+					pdfFile.AddToPdfFromBinary(pBuffer, nBufferLen, NULL);//NSOnlineOfficeBinToPdf::AddBinToPdf(&pdfFile, pBuffer, nBufferLen, NULL);
+
+				/*
 				CAnnotFieldInfo* pInfo = new CAnnotFieldInfo();
 
 				pInfo->SetType(8);
@@ -259,6 +289,7 @@ int main()
 
 				pdfFile.AdvancedCommand(pInfo);
 				RELEASEOBJECT(pInfo);
+				*/
 			}
 		}
 		else

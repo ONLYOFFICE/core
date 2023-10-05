@@ -1682,8 +1682,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (oInfo.isWidget())
 		return AddFormField(pAppFonts, (CFormFieldInfo*)pFieldInfo);
 
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
+	// if (m_bNeedUpdateTextFont)
+	// 	UpdateFont();
 
 	if (!m_pFont)
 		return S_OK;
@@ -1772,6 +1772,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		oInfo.GetBorder(nType, dWidth, d1, d2);
 		pAnnot->SetBorder(nType, dWidth, d1, d2);
 	}
+	if (nFlags & (1 << 5))
+		pAnnot->SetLM(oInfo.GetLM());
 
 	if (oInfo.isMarkup())
 	{

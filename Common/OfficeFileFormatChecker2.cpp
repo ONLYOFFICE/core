@@ -126,6 +126,21 @@ bool COfficeFileFormatChecker::iXmlFile(const std::wstring &fileName)
 	if (!oReader.ReadNextNode())
 		return false;
 
+	std::wstring name = oReader.GetNameNoNS();
+
+	if (name == L"svg")
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SVG;
+	}
+	else if (name == L"html")
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+	}
+	else
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_XML;
+	}
+
 	return true;
 }
 
@@ -751,7 +766,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 	//------------------------------------------------------------------------------------------------
 	if (iXmlFile(fileName))
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_XML;
+		// nFileType внутри
 		return true;
 	}
 	//// by Extension

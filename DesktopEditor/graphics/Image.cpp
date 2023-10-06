@@ -110,10 +110,8 @@ namespace Aggplus
         Destroy();
 
         CBgraFrame oFrame;
-        bool bOpen = oFrame.OpenFile(file_inp);
 
-        if (bOpen)
-            if (oFrame.get_Data() != NULL && (oFrame.get_Height() == 0 || oFrame.get_Width() == 0))
+        if (oFrame.GetInfo(file_inp))
                 return oFrame.SaveGetInsideFromFile(file_out);
 
         return false;

@@ -345,8 +345,9 @@ struct png_struct_def
    void (*read_filter[PNG_FILTER_VALUE_LAST-1])(png_row_infop row_info,
       png_bytep row, png_const_bytep prev_row);
 
-   struct_gifgce gifgce;
-   png_uint_32 m_loops;
+#ifdef PNG_READ_CHUNKS_SUPPORTED
+
+#endif
 
    /* Options */
 #ifdef PNG_SET_OPTION_SUPPORTED

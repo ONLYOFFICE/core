@@ -88,6 +88,7 @@ public:
 	void SetJpegQuality(const double& value);
 
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
+    bool GetInfo(const std::wstring& strFileName, unsigned int nFileType = 0);
 
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
     bool SaveGetInsideFromFile(const std::wstring& strFileName);

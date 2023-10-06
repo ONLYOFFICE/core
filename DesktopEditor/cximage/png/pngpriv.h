@@ -1228,6 +1228,11 @@ PNG_EXTERN void png_handle_msOG PNGARG((png_structp png_ptr, png_infop info_ptr,
     png_uint_32 length));
 #endif
 
+//#ifdef PNG_READ_CHUNKS_SUPPORTED
+//PNG_EXTERN void png_skip_chunk PNGARG((png_structp png_ptr, png_infop info_ptr,
+//    png_uint_32 length));
+//#endif
+
 #ifdef PNG_READ_oFFs_SUPPORTED
 PNG_EXTERN void png_handle_oFFs PNGARG((png_structp png_ptr, png_infop info_ptr,
     png_uint_32 length));

@@ -449,11 +449,6 @@ typedef long png_int_32;
 typedef unsigned short png_uint_16;
 typedef short png_int_16;
 typedef unsigned char png_byte;
-typedef struct tag_gifgce{
-    unsigned __int8 flags; /*res:3|dispmeth:3|userinputflag:1|transpcolflag:1*/
-  png_uint_16 delaytime;
-  unsigned __int8 transpcolindex;
-} struct_gifgce;
 
 #ifdef PNG_NO_SIZE_T
 typedef unsigned int png_size_t;

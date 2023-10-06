@@ -2731,6 +2731,17 @@ png_handle_msOG(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
 }
 #endif
 
+//#ifdef PNG_READ_CHUNKS_SUPPORTED
+//void
+//png_skip_chunk(png_structp png_ptr, png_infop info_ptr, png_uint_32 length)
+//{
+//    png_bytep buf = (png_bytep)png_malloc_warn(png_ptr, length);
+//    png_crc_read(png_ptr, buf, length);
+//    png_free(png_ptr, buf);
+//    return;
+//}
+//#endif
+
 /* This function is called when we haven't found a handler for a
  * chunk.  If there isn't a problem with the chunk itself (ie bad
  * chunk name, CRC, or a critical chunk), the chunk is silently ignored

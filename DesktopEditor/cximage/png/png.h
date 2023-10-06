@@ -1460,6 +1460,11 @@ PNG_EXPORT(61, void, png_write_end,
 PNG_EXPORT(62, void, png_read_end, (png_structp png_ptr, png_infop info_ptr));
 #endif
 
+#ifdef PNG_READ_CHUNKS_SUPPORTED
+/* Read all chunks*/
+PNG_EXPORT(237, int, png_read_chunks, (png_structp png_ptr, png_infop info_ptr));
+#endif
+
 /* Free any memory associated with the png_info_struct */
 PNG_EXPORT(63, void, png_destroy_info_struct, (png_structp png_ptr,
     png_infopp info_ptr_ptr));

@@ -290,8 +290,6 @@ public:
 	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
 	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
 
-	bool AddCommandsToFile(BYTE* pBuffer, unsigned int& nLen, CConvertFromBinParams* pParams);
-
 private:
 	CPdfFile_Private* m_pInternal;
 };

@@ -140,6 +140,11 @@ namespace PdfWriter
 		CAnnotation*      CreatePopupAnnot();
 		CAnnotation*      CreateFreeTextAnnot();
 		CAnnotation*      CreateCaretAnnot();
+		CAnnotation*      CreateWidgetAnnot();
+		CAnnotation*      CreateButtonWidget();
+		CAnnotation*      CreateTextWidget();
+		CAnnotation*      CreateChoiceWidget();
+		CAnnotation*      CreateSignatureWidget();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
 		void              MatchAnnotation();
 					      

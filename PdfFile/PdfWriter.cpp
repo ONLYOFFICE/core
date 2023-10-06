@@ -1678,15 +1678,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
 
-	// TODO внести Widget в PdfWriter::CAnnotation
-	if (oInfo.isWidget())
-		return AddFormField(pAppFonts, (CFormFieldInfo*)pFieldInfo);
-
 	// if (m_bNeedUpdateTextFont)
 	// 	UpdateFont();
-
-	if (!m_pFont)
-		return S_OK;
+	// if (!m_pFont)
+	// 	return S_OK;
 
 	PdfWriter::CAnnotation* pAnnot = NULL;
 
@@ -1725,6 +1720,45 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	else if (oInfo.IsCaret())
 	{
 		pAnnot = m_pDocument->CreateCaretAnnot();
+	}
+
+	BYTE nWidgetType = 0;
+	if (oInfo.IsWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
+		nWidgetType = pPr->GetType();
+
+		switch (nWidgetType)
+		{
+		case 26:
+		{
+			pAnnot = m_pDocument->CreateWidgetAnnot();
+			break;
+		}
+		case 27:
+		case 28:
+		case 29:
+		{
+			pAnnot = m_pDocument->CreateButtonWidget();
+			break;
+		}
+		case 30:
+		{
+			pAnnot = m_pDocument->CreateTextWidget();
+			break;
+		}
+		case 31:
+		case 32:
+		{
+			pAnnot = m_pDocument->CreateChoiceWidget();
+			break;
+		}
+		case 33:
+		{
+			pAnnot = m_pDocument->CreateSignatureWidget();
+			break;
+		}
+		}
 	}
 
 	if (!pAnnot)
@@ -1775,7 +1809,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
 
-	if (oInfo.isMarkup())
+	if (oInfo.IsMarkup())
 	{
 		CAnnotFieldInfo::CMarkupAnnotPr* pPr = oInfo.GetMarkupAnnotPr();
 		PdfWriter::CMarkupAnnotation* pMarkupAnnot = (PdfWriter::CMarkupAnnotation*)pAnnot;
@@ -1944,6 +1978,90 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		if (nFlags & (1 << 16))
 			pCaretAnnot->SetSy(pPr->GetSy());
+	}
+
+	if (oInfo.IsWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
+		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
+
+		pWidgetAnnot->SetTC(pPr->GetTC());
+		pWidgetAnnot->SetQ(pPr->GetQ());
+		int nWidgetFlag = pPr->GetFlag();
+		pWidgetAnnot->SetFlag(nWidgetFlag);
+
+		int nFlags = pPr->GetFlags();
+		if (nFlags & (1 << 0))
+			pWidgetAnnot->SetTU(pPr->GetTU());
+		if (nFlags & (1 << 1))
+			pWidgetAnnot->SetDS(pPr->GetDS());
+		if (nFlags & (1 << 3))
+			pWidgetAnnot->SetH(pPr->GetH());
+		if (nFlags & (1 << 5))
+			pWidgetAnnot->SetBC(pPr->GetBC());
+		if (nFlags & (1 << 6))
+			pWidgetAnnot->SetR(pPr->GetR());
+		if (nFlags & (1 << 7))
+			pWidgetAnnot->SetBG(pPr->GetBG());
+		if (nFlags & (1 << 8))
+			pWidgetAnnot->SetDV(pPr->GetDV());
+		if (nFlags & (1 << 17))
+			pWidgetAnnot->SetParentID(pPr->GetParentID());
+		if (nFlags & (1 << 18))
+			pWidgetAnnot->SetT(pPr->GetT());
+	}
+
+	if (oInfo.IsButtonWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
+		PdfWriter::CButtonWidget* pButtonWidget = (PdfWriter::CButtonWidget*)pAnnot;
+
+		int nIFFlags = pPr->GetIFFlag();
+		pButtonWidget->SetIFFlag(nIFFlags);
+		if (nWidgetType == 27)
+		{
+			if (nFlags & (1 << 10))
+				pButtonWidget->SetCA(pPr->GetCA());
+			if (nFlags & (1 << 11))
+				pButtonWidget->SetRC(pPr->GetRC());
+			if (nFlags & (1 << 12))
+				pButtonWidget->SetAC(pPr->GetAC());
+		}
+		else
+			pButtonWidget->SetS(pPr->GetS());
+
+		if (nFlags & (1 << 13))
+			pButtonWidget->SetTP(pPr->GetTP());
+		if (nIFFlags & (1 << 0))
+		{
+			if (nIFFlags & (1 << 1))
+				pButtonWidget->SetSW(pPr->GetSW());
+			if (nIFFlags & (1 << 2))
+				pButtonWidget->SetS(pPr->GetS());
+			if (nIFFlags & (1 << 3))
+			{
+				double d1, d2;
+				pPr->GetA(d1, d2);
+				pButtonWidget->SetA(d1, d2);
+			}
+		}
+		if (nFlags & (1 << 14))
+			pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
+	}
+	else if (oInfo.IsTextWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
+		PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
+	}
+	else if (oInfo.IsChoiceWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetChoiceWidgetPr();
+		PdfWriter::CChoiceWidget* pChoiceWidget = (PdfWriter::CChoiceWidget*)pAnnot;
+	}
+	else if (oInfo.IsSignatureWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
+		PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
 	}
 
 	return S_OK;

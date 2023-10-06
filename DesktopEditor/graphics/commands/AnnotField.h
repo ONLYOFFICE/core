@@ -36,6 +36,9 @@
 #include "../MetafileToRendererReader.h"
 class IMetafileToRenderter;
 
+// void Set(const BYTE& n) { m_n = n; }
+// BYTE Get() const { return m_n; }
+
 // void Set(const int& n) { m_n = n; }
 // int Get() const { return m_n; }
 
@@ -53,17 +56,74 @@ public:
 	public:
 		class CButtonWidgetPr
 		{
+		public:
+			void SetS (const BYTE& nS)  { m_nS  = nS; }
+			void SetTP(const BYTE& nTP) { m_nTP = nTP; }
+			void SetSW(const BYTE& nSW) { m_nSW = nSW; }
+			void SetStyle(const BYTE& nStyle)  { m_nStyle  = nStyle; }
+			void SetIFFlag(const int& nIFFlag) { m_nIFFlag = nIFFlag; }
+			void SetA(const double& dA1, const double& dA2) { m_dA1 = dA1; m_dA2 = dA2; }
+			void SetCA(const std::wstring& wsCA) { m_wsCA = wsCA; }
+			void SetRC(const std::wstring& wsRC) { m_wsRC = wsRC; }
+			void SetAC(const std::wstring& wsAC) { m_wsAC = wsAC; }
+			void SetAP_N_Yes(const std::wstring& wsAP_N_Yes) { m_wsAP_N_Yes = wsAP_N_Yes; }
 
+			BYTE GetS() const  { return m_nS; }
+			BYTE GetTP() const { return m_nTP; }
+			BYTE GetSW() const { return m_nSW; }
+			BYTE GetStyle()  const { return m_nStyle; }
+			int  GetIFFlag() const { return m_nIFFlag; }
+			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
+			const std::wstring& GetCA() const { return m_wsCA; }
+			const std::wstring& GetRC() const { return m_wsRC; }
+			const std::wstring& GetAC() const { return m_wsAC; }
+			const std::wstring& GetAP_N_Yes() const { return m_wsAP_N_Yes; }
+
+		private:
+			BYTE m_nS;
+			BYTE m_nTP;
+			BYTE m_nSW;
+			BYTE m_nStyle;
+			int m_nIFFlag;
+			double m_dA1, m_dA2;
+			std::wstring m_wsCA;
+			std::wstring m_wsRC;
+			std::wstring m_wsAC;
+			std::wstring m_wsAP_N_Yes;
 		};
 
 		class CTextWidgetPr
 		{
+		public:
+			void SetMaxLen(const int& nMaxLen) { m_nMaxLen = nMaxLen; }
+			void SetV (const std::wstring& wsV)  { m_wsV  = wsV; }
+			void SetRV(const std::wstring& wsRV) { m_wsRV = wsRV; }
 
+			int GetMaxLen() const { return m_nMaxLen; }
+			const std::wstring& GetV()  const { return m_wsV; }
+			const std::wstring& GetRV() const { return m_wsRV; }
+
+		private:
+			int m_nMaxLen;
+			std::wstring m_wsV;
+			std::wstring m_wsRV;
 		};
 
 		class CChoiceWidgetPr
 		{
+		public:
+			void SetTI(const int& nTI) { m_nTI = nTI; }
+			void SetV(const std::wstring& wsV) { m_wsV = wsV; }
+			void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt) { m_arrOpt = arrOpt; }
 
+			int GetTI() const { return m_nTI; }
+			const std::wstring& GetV() const { return m_wsV; }
+			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
+
+		private:
+			int m_nTI;
+			std::wstring m_wsV;
+			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
 		};
 
 		class CSignatureWidgetPr
@@ -71,27 +131,49 @@ public:
 
 		};
 
-	private:
 		class CActionWidget
 		{
+		public:
+			CActionWidget() : pNext(NULL) {}
+			~CActionWidget() { RELEASEOBJECT(pNext); }
 
+			BYTE nKind;
+			BYTE nFlags;
+			BYTE nActionType;
+			int  nInt1;
+			double dD[4];
+			std::wstring wsType;
+			std::wstring wsStr1;
+			std::vector<std::wstring> arrStr;
+			CActionWidget* pNext;
 		};
 
 	public:
+		CWidgetAnnotPr(BYTE nType);
+		~CWidgetAnnotPr();
+
 		void SetQ(const BYTE& nQ) { m_nQ = nQ; }
 		void SetH(const BYTE& nH) { m_nH = nH; }
 		void SetR(const int& nR)  { m_nR = nR; }
+		void SetFlag    (const int& nFlag)     { m_nFlag     = nFlag; }
+		void SetFlags   (const int& nFlags)    { m_nFlags    = nFlags; }
+		void SetParentID(const int& nParentID) { m_nParentID = nParentID; }
 		void SetTU(const std::wstring& wsTU) { m_wsTU = wsTU; }
 		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
 		void SetDV(const std::wstring& wsDV) { m_wsDV = wsDV; }
-		void SetT (const std::wstring& wsT)  { m_wsT = wsT; }
+		void SetT (const std::wstring& wsT)  { m_wsT  = wsT; }
 		void SetTC(const std::vector<double>& arrTC) { m_arrTC = arrTC; }
 		void SetBC(const std::vector<double>& arrBC) { m_arrBC = arrBC; }
 		void SetBG(const std::vector<double>& arrBG) { m_arrBG = arrBG; }
+		void AddAction(CActionWidget* pA) { m_arrAction.push_back(pA); }
 
-		BYTE GetQ() const { return m_nQ; }
-		BYTE GetH() const { return m_nH; }
-		int  GetR() const { return m_nR; }
+		BYTE GetQ()    const { return m_nQ; }
+		BYTE GetH()    const { return m_nH; }
+		BYTE GetType() const { return m_nType; }
+		int  GetR()    const { return m_nR; }
+		int  GetFlag()     const { return m_nFlag; }
+		int  GetFlags()    const { return m_nFlags; }
+		int  GetParentID() const { return m_nParentID; }
 		const std::wstring& GetTU() const { return m_wsTU; }
 		const std::wstring& GetDS() const { return m_wsDS; }
 		const std::wstring& GetDV() const { return m_wsDV; }
@@ -108,7 +190,11 @@ public:
 	private:
 		BYTE m_nQ;
 		BYTE m_nH;
+		BYTE m_nType;
 		int m_nR;
+		int m_nFlag;
+		int m_nFlags;
+		int m_nParentID;
 		std::wstring m_wsTU;
 		std::wstring m_wsDS;
 		std::wstring m_wsDV;
@@ -385,17 +471,21 @@ public:
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
-	bool isWidget()       const;
-	bool isMarkup()       const;
-	bool IsText()         const;
-	bool IsInk()          const;
-	bool IsLine()         const;
-	bool IsTextMarkup()   const;
-	bool IsSquareCircle() const;
-	bool IsPolygonLine()  const;
-	bool IsPopup()        const;
-	bool IsFreeText()     const;
-	bool IsCaret()        const;
+	bool IsWidget()          const;
+	bool IsButtonWidget()    const;
+	bool IsTextWidget()      const;
+	bool IsChoiceWidget()    const;
+	bool IsSignatureWidget() const;
+	bool IsMarkup()          const;
+	bool IsText()            const;
+	bool IsInk()             const;
+	bool IsLine()            const;
+	bool IsTextMarkup()      const;
+	bool IsSquareCircle()    const;
+	bool IsPolygonLine()     const;
+	bool IsPopup()           const;
+	bool IsFreeText()        const;
+	bool IsCaret()           const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
 	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
@@ -407,7 +497,7 @@ public:
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 	CCaretAnnotPr*        GetCaretAnnotPr()        { return m_pCaretPr; }
-	CWidgetAnnotPr*        GetWidgetAnnotPr()        { return m_pWidgetPr; }
+	CWidgetAnnotPr*       GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 

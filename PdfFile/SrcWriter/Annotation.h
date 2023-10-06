@@ -68,7 +68,8 @@ namespace PdfWriter
 		AnnotSquiggly       = 14,
 		AnnotPolygon        = 15,
 		AnnotPolyLine       = 16,
-		AnnotCaret          = 17
+		AnnotCaret          = 17,
+		AnnotWidget         = 18
 	};
 	enum EAnnotHighlightMode
 	{
@@ -308,14 +309,98 @@ namespace PdfWriter
 	{
 	public:
 		CCaretAnnotation(CXref* pXref);
-		EAnnotType
-		GetAnnotationType() const override
+		EAnnotType GetAnnotationType() const override
 		{
 			return AnnotCaret;
 		}
 
 		void SetSy(const BYTE& nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
+	};
+	class CWidgetAnnotation : public CAnnotation
+	{
+	protected:
+		CDictObject* m_pMK;
+
+		void CheckMK();
+
+	public:
+		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
+
+		void SetQ(const BYTE& nQ);
+		void SetH(const BYTE& nH);
+		void SetR(const int& nR);
+		void SetFlag    (const int& nFlag);
+		void SetParentID(const int& nParentID);
+		void SetTU(const std::wstring& wsTU);
+		void SetDS(const std::wstring& wsDS);
+		void SetDV(const std::wstring& wsDV);
+		void SetT (const std::wstring& wsT);
+		void SetTC(const std::vector<double>& arrTC);
+		void SetBC(const std::vector<double>& arrBC);
+		void SetBG(const std::vector<double>& arrBG);
+	};
+	class CButtonWidget : public CWidgetAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+		CDictObject* m_pIF;
+
+		void CheckIF();
+
+	public:
+		CButtonWidget(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+
+		void SetS(const BYTE& nS);
+		void SetTP(const BYTE& nTP);
+		void SetSW(const BYTE& nSW);
+		void SetStyle(const BYTE& nStyle);
+		void SetIFFlag(const int& nIFFlag);
+		void SetA(const double& dA1, const double& dA2);
+		void SetCA(const std::wstring& wsCA);
+		void SetRC(const std::wstring& wsRC);
+		void SetAC(const std::wstring& wsAC);
+		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
+	};
+	class CTextWidget : public CWidgetAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+
+	public:
+		CTextWidget(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+	};
+	class CChoiceWidget : public CWidgetAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+
+	public:
+		CChoiceWidget(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
+	};
+	class CSignatureWidget : public CWidgetAnnotation
+	{
+	private:
+		EAnnotType m_nSubtype;
+
+	public:
+		CSignatureWidget(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return m_nSubtype;
+		}
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

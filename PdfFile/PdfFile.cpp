@@ -929,7 +929,7 @@ HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const
 HRESULT CPdfFile::AddToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
 {
 #ifndef BUILDING_WASM_MODULE
-	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams))
+	if (!m_pInternal->pReader || !m_pInternal->pWriter || !m_pInternal->bEdit || !NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams))
 		return S_FALSE;
 #endif
 	return S_OK;
@@ -1609,12 +1609,4 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		break;
 	}
 	return S_FALSE;
-}
-
-bool CPdfFile::AddCommandsToFile(BYTE* pBuffer, unsigned int& nLen, CConvertFromBinParams* pParams)
-{
-	if (!m_pInternal->pReader || !m_pInternal->pWriter)
-		return false;
-
-	return NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams);
 }

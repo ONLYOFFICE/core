@@ -60,7 +60,8 @@ namespace PdfWriter
 		"Squiggly",
 		"Polygon",
 		"PolyLine",
-		"Caret"
+		"Caret",
+		"Widget"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -196,16 +197,20 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("M", new CStringObject(sValue.c_str()));
 	}
-	void CAnnotation::SetC(const std::vector<double>& arrC)
+	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("C", pArray);
+		pObj->Add(sName, pArray);
 
-		for (const double& dC : arrC)
-			pArray->Add(dC);
+		for (const double& dV : arrV)
+			pArray->Add(dV);
+	}
+	void CAnnotation::SetC(const std::vector<double>& arrC)
+	{
+		AddToVectorD(this, "C", arrC);
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -505,20 +510,9 @@ namespace PdfWriter
 		pArray->Add(dCO1);
 		pArray->Add(dCO2);
 	}
-	void AddIC(CAnnotation* pAnnot, const std::vector<double>& arrIC)
-	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pAnnot->Add("IC", pArray);
-
-		for (const double& dIC : arrIC)
-			pArray->Add(dIC);
-	}
 	void CLineAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
-		AddIC(this, arrIC);
+		AddToVectorD(this, "IC", arrIC);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -589,14 +583,7 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("CL", pArray);
-
-		for (const double& dCL : arrCL)
-			pArray->Add(dCL);
+		AddToVectorD(this, "CL", arrCL);
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
@@ -623,14 +610,7 @@ namespace PdfWriter
 	}
 	void CTextMarkupAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("QuadPoints", pArray);
-
-		for (const double& dQuadPoints : arrQuadPoints)
-			pArray->Add(dQuadPoints);
+		AddToVectorD(this, "QuadPoints", arrQuadPoints);
 	}
 	//----------------------------------------------------------------------------------------
 	// CSquareCircleAnnotation
@@ -666,7 +646,7 @@ namespace PdfWriter
 	}
 	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
-		AddIC(this, arrIC);
+		AddToVectorD(this, "IC", arrIC);
 	}
 	//----------------------------------------------------------------------------------------
 	// CPolygonLineAnnotation
@@ -715,18 +695,11 @@ namespace PdfWriter
 	}
 	void CPolygonLineAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
-		AddIC(this, arrIC);
+		AddToVectorD(this, "IC", arrIC);
 	}
 	void CPolygonLineAnnotation::SetVertices(const std::vector<double>& arrVertices)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("Vertices", pArray);
-
-		for (const double& dVertices : arrVertices)
-			pArray->Add(dVertices);
+		AddToVectorD(this, "Vertices", arrVertices);
 	}
 	//----------------------------------------------------------------------------------------
 	// CCaretAnnotation
@@ -760,5 +733,209 @@ namespace PdfWriter
 		}
 
 		Add("IT", sValue.c_str());
+	}
+	//----------------------------------------------------------------------------------------
+	// CWidgetAnnotation
+	//----------------------------------------------------------------------------------------
+	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
+	{
+		m_pMK = NULL;
+	}
+	void CWidgetAnnotation::CheckMK()
+	{
+		if (!m_pMK)
+		{
+			m_pMK = new CDictObject();
+			Add("MK", m_pMK);
+		}
+	}
+	void CWidgetAnnotation::SetQ(const BYTE& nQ)
+	{
+		Add("Q", (int)nQ);
+	}
+	void CWidgetAnnotation::SetH(const BYTE& nH)
+	{
+		std::string sValue;
+		switch (nH)
+		{
+		case 0:
+		{ sValue = "N"; break; }
+		case 1:
+		{ sValue = "I"; break; }
+		case 2:
+		{ sValue = "P"; break; }
+		case 3:
+		{ sValue = "O"; break; }
+		}
+
+		Add("H", sValue.c_str());
+	}
+	void CWidgetAnnotation::SetR(const int& nR)
+	{
+		CheckMK();
+
+		m_pMK->Add("R", nR);
+	}
+	void CWidgetAnnotation::SetFlag(const int& nFlag)
+	{
+		Add("Ff", nFlag);
+	}
+	void CWidgetAnnotation::SetParentID(const int& nParentID)
+	{
+
+	}
+	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
+	{
+		std::string sValue = U_TO_UTF8(wsTU);
+		Add("TU", new CStringObject(sValue.c_str()));
+	}
+	void CWidgetAnnotation::SetDS(const std::wstring& wsDS)
+	{
+
+	}
+	void CWidgetAnnotation::SetDV(const std::wstring& wsDV)
+	{
+
+	}
+	void CWidgetAnnotation::SetT(const std::wstring& wsT)
+	{
+		std::string sValue = U_TO_UTF8(wsT);
+		Add("T", new CStringObject(sValue.c_str()));
+	}
+	void CWidgetAnnotation::SetTC(const std::vector<double>& arrTC)
+	{
+		// Text color из DA
+	}
+	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
+	{
+		CheckMK();
+		AddToVectorD(m_pMK, "BC", arrBC);
+	}
+	void CWidgetAnnotation::SetBG(const std::vector<double>& arrBG)
+	{
+		CheckMK();
+		AddToVectorD(m_pMK, "BG", arrBG);
+	}
+	//----------------------------------------------------------------------------------------
+	// CButtonWidget
+	//----------------------------------------------------------------------------------------
+	CButtonWidget::CButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+		m_pIF = NULL;
+	}
+	void CButtonWidget::CheckIF()
+	{
+		CheckMK();
+
+		if (!m_pIF)
+		{
+			m_pIF = new CDictObject();
+			m_pMK->Add("IF", m_pIF);
+		}
+	}
+	void CButtonWidget::SetS(const BYTE& nS)
+	{
+		CheckIF();
+
+		std::string sValue;
+		switch (nS)
+		{
+		case 0:
+		{ sValue = "P"; break; }
+		case 1:
+		{ sValue = "A"; break; }
+		}
+
+		m_pIF->Add("S", sValue.c_str());
+	}
+	void CButtonWidget::SetTP(const BYTE& nTP)
+	{
+		Add("TP", nTP);
+	}
+	void CButtonWidget::SetSW(const BYTE& nSW)
+	{
+		CheckIF();
+
+		std::string sValue;
+		switch (nSW)
+		{
+		case 0:
+		{ sValue = "A"; break; }
+		case 1:
+		{ sValue = "N"; break; }
+		case 2:
+		{ sValue = "B"; break; }
+		case 3:
+		{ sValue = "S"; break; }
+		}
+
+		m_pIF->Add("SW", sValue.c_str());
+	}
+	void CButtonWidget::SetStyle(const BYTE& nStyle)
+	{
+		CheckMK();
+
+		std::string sValue;
+		switch (nStyle)
+		{
+		case 0:
+		{ sValue = "4"; break; }
+		case 1:
+		{ sValue = "8"; break; }
+		case 2:
+		{ sValue = "u"; break; }
+		case 3:
+		{ sValue = "l"; break; }
+		case 4:
+		{ sValue = "H"; break; }
+		case 5:
+		{ sValue = "n"; break; }
+		}
+
+		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+	}
+	void CButtonWidget::SetIFFlag(const int& nIFFlag)
+	{
+		CheckIF();
+
+		m_pIF->Add("FB", (nIFFlag & (1 << 4)) ? true : false);
+	}
+	void CButtonWidget::SetA(const double& dA1, const double& dA2)
+	{
+		CheckIF();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		m_pIF->Add("A", pArray);
+
+		pArray->Add(dA1);
+		pArray->Add(dA2);
+	}
+	void CButtonWidget::SetCA(const std::wstring& wsCA)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsCA);
+		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
+	}
+	void CButtonWidget::SetRC(const std::wstring& wsRC)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsRC);
+		m_pMK->Add("RC", new CStringObject(sValue.c_str()));
+	}
+	void CButtonWidget::SetAC(const std::wstring& wsAC)
+	{
+		CheckMK();
+
+		std::string sValue = U_TO_UTF8(wsAC);
+		m_pMK->Add("AC", new CStringObject(sValue.c_str()));
+	}
+	void CButtonWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
+	{
+
 	}
 }

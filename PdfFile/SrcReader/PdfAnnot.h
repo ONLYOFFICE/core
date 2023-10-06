@@ -277,7 +277,7 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sV;
-	std::vector<std::pair<std::string, std::string>> m_arrOpt;
+	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 	unsigned int m_unTI;
 };
 

@@ -229,6 +229,9 @@ unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
 }
+std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine", "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink", "Popup",
+						   "FileAttachment", "Sound", "Movie", "Widget", "Screen", "PrinterMark", "TrapNet", "Watermark", "3D", "Redact", "unknown", "button", "radiobutton", "checkbox", "text",
+						   "combobox", "listbox", "signature"};
 
 void ReadAction(BYTE* pWidgets, int& i)
 {
@@ -544,13 +547,17 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 	for (int q = 0; q < nAnnots; ++q)
 	{
+		int nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::string sType = arrAnnots[nPathLength];
+		std::cout << "Widget type " << sType << ", ";
+
 		// Annot
 
 		ReadAnnot(pWidgets, i);
 
 		// Widget
 
-		int nPathLength;
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
@@ -568,12 +575,6 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		nPathLength = READ_BYTE(pWidgets + i);
 		i += 1;
 		std::cout << "Q " << arrQ[nPathLength] << ", ";
-
-		std::string arrType[] = {"", "button", "radiobutton", "checkbox", "text", "combobox", "listbox", "signature"};
-		nPathLength = READ_BYTE(pWidgets + i);
-		i += 1;
-		std::string sType = arrType[nPathLength];
-		std::cout << "Widget type " << sType << ", ";
 
 		int nFieldFlag = READ_INT(pWidgets + i);
 		i += 4;
@@ -1191,10 +1192,6 @@ int main(int argc, char* argv[])
 		{
 			int nPathLength = READ_BYTE(pAnnots + i);
 			i += 1;
-			std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine",
-									   "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink",
-									   "Popup", "FileAttachment", "Sound", "Movie", "Widget", "Screen", "PrinterMark",
-									   "TrapNet", "Watermark", "3D", "Redact"};
 			std::string sType = arrAnnots[nPathLength];
 			std::cout << "Type " << sType << ", ";
 
@@ -1577,7 +1574,7 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrSy[] = {"P", "None"};
+					std::string arrSy[] = {"None", "P", "S"};
 					std::cout << "Sy " << arrSy[nPathLength] << ", ";
 				}
 			}

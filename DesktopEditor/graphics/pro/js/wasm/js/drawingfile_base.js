@@ -665,6 +665,9 @@
 		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
 			let rec = {};
+			// Тип аннотации виджета - FT
+			// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
+			rec["type"] = reader.readByte();
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
@@ -677,10 +680,6 @@
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
-			// Тип аннотации виджета - FT
-			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
-			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
-			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
 			// 12.7.3.1
 			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
@@ -735,12 +734,12 @@
 				readAction(reader, rec["AA"][AAType]);
 			}
 			// Widget types
-			if (rec["type"] == 3 || rec["type"] == 2 || rec["type"] == 1)
+			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
 			{
 				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
 				let IFflags = reader.readInt();
 				// Характеристики внешнего вида - MK
-				if (rec["type"] == 1)
+				if (rec["type"] == 27)
 				{
 					// Заголовок - СА
 					if (flags & (1 << 10))
@@ -789,7 +788,7 @@
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
 			}
-			else if (rec["type"] == 4)
+			else if (rec["type"] == 30)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
@@ -806,7 +805,7 @@
 				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
 				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
 			}
-			else if (rec["type"] == 5 || rec["type"] == 6)
+			else if (rec["type"] == 31 || rec["type"] == 32)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
@@ -1219,7 +1218,7 @@
 						rec["RD"].push(reader.readDouble());
 				}
 				// Связанный символ - Sy
-				// 0 - P, 1 - None
+				// 0 - None, 1 - P, 2 - S
 				if (flags & (1 << 16))
 					rec["Sy"] = reader.readByte();
 			}

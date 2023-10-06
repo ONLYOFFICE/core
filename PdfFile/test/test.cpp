@@ -216,81 +216,36 @@ int main()
         }
 		else if (true)
 		{
-			if (pdfFile.EditPage(0))
+			// чтение и конвертации бинарника
+			NSFile::CFileBinary oFile;
+			if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
+				return 0;
+
+			DWORD dwFileSize = oFile.GetFileSize();
+			BYTE* pFileContent = new BYTE[dwFileSize];
+			if (!pFileContent)
 			{
-				// чтение и конвертации бинарника
-				NSFile::CFileBinary oFile;
-				if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
-					return false;
-
-				DWORD dwFileSize = oFile.GetFileSize();
-				BYTE* pFileContent = new BYTE[dwFileSize];
-				if (!pFileContent)
-				{
-					oFile.CloseFile();
-					return false;
-				}
-
-				DWORD dwReaded;
-				oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
 				oFile.CloseFile();
-
-				int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
-				BYTE* pBuffer = new BYTE[nBufferLen];
-				if (!pBuffer)
-				{
-					RELEASEARRAYOBJECTS(pFileContent);
-					return false;
-				}
-
-				if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
-					pdfFile.AddToPdfFromBinary(pBuffer, nBufferLen, NULL);//NSOnlineOfficeBinToPdf::AddBinToPdf(&pdfFile, pBuffer, nBufferLen, NULL);
-
-				/*
-				CAnnotFieldInfo* pInfo = new CAnnotFieldInfo();
-
-				pInfo->SetType(8);
-				pInfo->SetID(80);
-				pInfo->SetAnnotFlag(4);
-				pInfo->SetPage(0); // та что в EditPage
-
-				pInfo->SetBounds(42, 660, 145, 677);
-
-				pInfo->SetFlag(8);
-
-				std::vector<double> arrC;
-				arrC.push_back(1);
-				arrC.push_back(0.4);
-				arrC.push_back(0);
-				pInfo->SetC(arrC);
-
-				CAnnotFieldInfo::CMarkupAnnotPr* pPrm = pInfo->GetMarkupAnnotPr();
-				pPrm->SetFlag(4);
-
-				pPrm->SetCA(0.4);
-
-				CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = pInfo->GetTextMarkupAnnotPr();
-				pPr->SetSubtype(8);
-				std::vector<double> arrQuadPoints;
-
-				arrQuadPoints.push_back(47);
-				arrQuadPoints.push_back(676);
-
-				arrQuadPoints.push_back(140);
-				arrQuadPoints.push_back(676);
-
-				arrQuadPoints.push_back(47);
-				arrQuadPoints.push_back(660);
-
-				arrQuadPoints.push_back(140);
-				arrQuadPoints.push_back(660);
-
-				pPr->SetQuadPoints(arrQuadPoints);
-
-				pdfFile.AdvancedCommand(pInfo);
-				RELEASEOBJECT(pInfo);
-				*/
+				return 0;
 			}
+
+			DWORD dwReaded;
+			oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+			oFile.CloseFile();
+
+			int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+			BYTE* pBuffer = new BYTE[nBufferLen];
+			if (!pBuffer)
+			{
+				RELEASEARRAYOBJECTS(pFileContent);
+				return 0;
+			}
+
+			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
+				pdfFile.AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
+
+			RELEASEARRAYOBJECTS(pBuffer);
+			RELEASEARRAYOBJECTS(pFileContent);
 		}
 		else
         {

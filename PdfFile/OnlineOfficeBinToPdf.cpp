@@ -181,24 +181,24 @@ namespace NSOnlineOfficeBinToPdf
 				return false;
 			}
 
-			// TODO: помечаем страницу в writer (nPageNum)
-
 			switch (CommandType)
 			{
-				case AddCommandType::Annotation:
-				{
-					NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
-					oReader.Skip(nLen - 9);
-					break;
-				}
-				case AddCommandType::AddPage:
-				case AddCommandType::RemovePage:
-				{
-					// TODO: version 7.6+
-					break;
-				}
-				default:
-					return false;
+			case AddCommandType::Annotation:
+			{
+				pPdf->EditPage(nPageNum);
+
+				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
+				oReader.Skip(nLen - 9);
+				break;
+			}
+			case AddCommandType::AddPage:
+			case AddCommandType::RemovePage:
+			{
+				// TODO: version 7.6+
+				break;
+			}
+			default:
+				return false;
 			}
 		}
 

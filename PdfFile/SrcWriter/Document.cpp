@@ -589,6 +589,26 @@ namespace PdfWriter
 	{
 		return new CCaretAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateWidgetAnnot()
+	{
+		return new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+	}
+	CAnnotation* CDocument::CreateButtonWidget()
+	{
+		return new CButtonWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateTextWidget()
+	{
+		return new CTextWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateChoiceWidget()
+	{
+		return new CChoiceWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateSignatureWidget()
+	{
+		return new CSignatureWidget(m_pXref);
+	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
 		m_mAnnotations[nID] = pAnnot;

@@ -680,20 +680,20 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Тип - FT + флаги
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
-	m_nType = 0; // Unknown
+	m_nType = 26; // Unknown
 	switch (oType)
 	{
-	case acroFormFieldPushbutton:    m_nType = 1;/*sType = "button";*/             break;
-	case acroFormFieldRadioButton:   m_nType = 2;/*sType = "radiobutton";*/        break;
-	case acroFormFieldCheckbox:      m_nType = 3;/*sType = "checkbox";*/           break;
-	case acroFormFieldFileSelect:    m_nType = 4;/*sType = "text""fileselect"*/    break;
-	case acroFormFieldMultilineText: m_nType = 4;/*sType = "text""multilinetext"*/ break;
-	case acroFormFieldText:          m_nType = 4;/*sType = "text";*/               break;
-	case acroFormFieldBarcode:       m_nType = 4;/*sType = "text""barcode"*/       break;
-	case acroFormFieldComboBox:      m_nType = 5;/*sType = "combobox";*/           break;
-	case acroFormFieldListBox:       m_nType = 6;/*sType = "listbox";*/            break;
-	case acroFormFieldSignature:     m_nType = 7;/*sType = "signature";*/          break;
-	default:                         m_nType = 0;/*sType = "";*/                   break;
+	case acroFormFieldPushbutton:    m_nType = 27; break;
+	case acroFormFieldRadioButton:   m_nType = 28; break;
+	case acroFormFieldCheckbox:      m_nType = 29; break;
+	case acroFormFieldFileSelect:    m_nType = 30; break;
+	case acroFormFieldMultilineText: m_nType = 30; break;
+	case acroFormFieldText:          m_nType = 30; break;
+	case acroFormFieldBarcode:       m_nType = 30; break;
+	case acroFormFieldComboBox:      m_nType = 31; break;
+	case acroFormFieldListBox:       m_nType = 32; break;
+	case acroFormFieldSignature:     m_nType = 33; break;
+	default:                         m_nType = 26; break;
 	}
 
 	// Флаг - Ff
@@ -1306,7 +1306,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 }
 
 //------------------------------------------------------------------------
-// FreeText
+// Caret
 //------------------------------------------------------------------------
 
 CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
@@ -1330,9 +1330,11 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 	if (oAnnot.dictLookup("Sy", &oObj)->isName())
 	{
 		m_unFlags |= (1 << 16);
-		m_nSy = 1; // None
+		m_nSy = 0; // None
 		if (oObj.isName("P"))
-			m_nSy = 0;
+			m_nSy = 1;
+		if (oObj.isName("S"))
+			m_nSy = 2;
 	}
 	oObj.free();
 
@@ -2230,13 +2232,14 @@ void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 
 void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 {
+	oRes.WriteBYTE(m_nType);
+
 	CAnnot::ToWASM(oRes);
 
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);
 	oRes.WriteBYTE(m_nQ);
-	oRes.WriteBYTE(m_nType);
 	oRes.AddInt(m_unFieldFlag);
 	oRes.AddInt(m_unFlags);
 	if (m_unFlags & (1 << 0))
@@ -2374,7 +2377,7 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 	CAnnotWidget::ToWASM(oRes);
 
 	oRes.AddInt(m_unIFFlag);
-	if (m_nType == 1)
+	if (m_nType == 27)
 	{
 		if (m_unFlags & (1 << 10))
 			oRes.WriteString(m_sCA);

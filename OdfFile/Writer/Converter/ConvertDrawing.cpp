@@ -2103,10 +2103,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	}
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (size_t i=0; i< oox_paragraph->RunElems.size(); i++)
+	if (oox_paragraph->RunElems.size() > 0)
 	{
-		convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		for (size_t i = 0; i < oox_paragraph->RunElems.size(); i++)
+		{
+			convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
+		}
 	}
+	else
+	{
+		odf_context()->text_context()->start_span(true);
+		odf_context()->text_context()->end_span();
+	}
+	
 	odf_context()->text_context()->end_paragraph();
 
 	//if(list_present)

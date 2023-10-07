@@ -654,7 +654,18 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
 {
+	Object oObj;
+	Object oFieldRef, oField;
+	pField->getFieldRef(&oFieldRef);
+	oFieldRef.fetch(pdfDoc->getXRef(), &oField);
+	oFieldRef.free();
 
+	// 10 - Значение
+	if (oField.dictLookup("V", &oObj)->isDict())
+		m_unFlags |= (1 << 9);
+	oObj.free();
+
+	oField.free();
 }
 
 CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDoc, pField)

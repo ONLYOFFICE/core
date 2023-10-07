@@ -831,6 +831,10 @@
 				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
 				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 			}
+			else if (rec["type"] == 33)
+			{
+				rec["Sig"] = rec["flag"] >> 9) & 1;
+			}
 			
 			res["Fields"].push(rec);
 		}

@@ -803,13 +803,12 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
 		AcroFormFieldType oType = pField->getAcroFormFieldType();
-		if (oType != acroFormFieldSignature || nWidget >= 0 && i != nWidget)
+		if (oType != acroFormFieldSignature || (nWidget >= 0 && i != nWidget))
 			continue;
 
 		Object oObj, oObj1;
-		if (!pField->fieldLookup("V", &oObj)->isDict() || !oObj.dictLookup("Type", &oObj1)->isName("Sig"))
+		if (!pField->fieldLookup("V", &oObj)->isDict())
 			continue;
-		oObj1.free();
 
 		std::vector<int> arrByteOffset, arrByteLength;
 		if (oObj.dictLookup("ByteRange", &oObj1)->isArray())
@@ -836,6 +835,7 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 		int nByteOffset = 0;
 		for (int j = 0; j < arrByteOffset.size(); ++j)
 		{
+			// TODO проверка длины файла и ByteRange
 			memcpy(pDataForVerify + nByteOffset, pFileData + arrByteOffset[j], arrByteLength[j]);
 			nByteOffset += arrByteLength[j];
 		}

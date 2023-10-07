@@ -93,14 +93,14 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-	if (false)
+	if (true)
     {
 		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
 		std::wstring wsPrivateKeyFile = L"";
         std::string sCertificateFilePassword = "123456";
 		std::string sPrivateFilePassword = "";
 
-		//pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
 
 		std::map<std::wstring, std::wstring> properties;
 		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
@@ -111,7 +111,7 @@ int main()
 		//std::wstring sValueTest = L"ValueTest";
 		//properties.insert(std::make_pair(sNameTest, sValueTest));
 
-		pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
+		//pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
 		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
@@ -210,8 +210,8 @@ int main()
 		{
 			if (pdfFile.EditPage(0))
 			{
-				TEST(&pdfFile);
-				pdfFile.Sign(0, 0, 0, 0, L"", pCertificate);
+				//TEST(&pdfFile);
+				pdfFile.Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
 			}
         }
 		else if (true)

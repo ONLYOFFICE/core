@@ -1768,9 +1768,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	pAnnot->SetID(nID);
 
 	int nOriginalPage = oInfo.GetPage();
-	PdfWriter::CPage* pOrigPage = m_pDocument->GetPage(nOriginalPage);
+	PdfWriter::CPage* pOrigPage = m_pPage;// TODO m_pDocument->GetPage(nOriginalPage);
 	if (pOrigPage)
 		pOrigPage->DeleteAnnotation(nID);
+
+	//int nPopupID = pOrigPage->GetAnnot(nID);
+	//if (nPopupID)
+	//	pOrigPage->DeleteAnnotation(nPopupID);
 
 	PdfWriter::CPage* pPage = m_pPage;
 	pPage->AddAnnotation(pAnnot);
@@ -1815,12 +1819,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		PdfWriter::CMarkupAnnotation* pMarkupAnnot = (PdfWriter::CMarkupAnnotation*)pAnnot;
 
 		nFlags = pPr->GetFlag();
+
 		if (nFlags & (1 << 0))
 		{
 			int nPopupID = pPr->GetPopupID();
 			if (pOrigPage)
 				pOrigPage->DeleteAnnotation(nPopupID);
-			pMarkupAnnot->SetPopupID(nPopupID);
+			PdfWriter::CPopupAnnotation* pPopupAnnot = pMarkupAnnot->SetPopupID(nPopupID);
+			pPage->AddAnnotation(pPopupAnnot);
 		}
 		if (nFlags & (1 << 1))
 			pMarkupAnnot->SetT(pPr->GetT());
@@ -1985,7 +1991,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
-		pWidgetAnnot->SetTC(pPr->GetTC());
+		// TODO
+		pWidgetAnnot->SetDA(NULL, 0, pPr->GetTC());
 		pWidgetAnnot->SetQ(pPr->GetQ());
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);
@@ -2009,59 +2016,74 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetParentID(pPr->GetParentID());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
-	}
 
-	if (oInfo.IsButtonWidget())
-	{
-		CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
-		PdfWriter::CButtonWidget* pButtonWidget = (PdfWriter::CButtonWidget*)pAnnot;
-
-		int nIFFlags = pPr->GetIFFlag();
-		pButtonWidget->SetIFFlag(nIFFlags);
-		if (nWidgetType == 27)
+		if (oInfo.IsButtonWidget())
 		{
-			if (nFlags & (1 << 10))
-				pButtonWidget->SetCA(pPr->GetCA());
-			if (nFlags & (1 << 11))
-				pButtonWidget->SetRC(pPr->GetRC());
-			if (nFlags & (1 << 12))
-				pButtonWidget->SetAC(pPr->GetAC());
-		}
-		else
-			pButtonWidget->SetS(pPr->GetS());
+			CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
+			PdfWriter::CButtonWidget* pButtonWidget = (PdfWriter::CButtonWidget*)pAnnot;
 
-		if (nFlags & (1 << 13))
-			pButtonWidget->SetTP(pPr->GetTP());
-		if (nIFFlags & (1 << 0))
-		{
-			if (nIFFlags & (1 << 1))
-				pButtonWidget->SetSW(pPr->GetSW());
-			if (nIFFlags & (1 << 2))
-				pButtonWidget->SetS(pPr->GetS());
-			if (nIFFlags & (1 << 3))
+			pButtonWidget->SetV(nFlags & (1 << 9));
+			int nIFFlags = pPr->GetIFFlag();
+			pButtonWidget->SetIFFlag(nIFFlags);
+			if (nWidgetType == 27)
 			{
-				double d1, d2;
-				pPr->GetA(d1, d2);
-				pButtonWidget->SetA(d1, d2);
+				if (nFlags & (1 << 10))
+					pButtonWidget->SetCA(pPr->GetCA());
+				if (nFlags & (1 << 11))
+					pButtonWidget->SetRC(pPr->GetRC());
+				if (nFlags & (1 << 12))
+					pButtonWidget->SetAC(pPr->GetAC());
 			}
+			else
+				pButtonWidget->SetS(pPr->GetS());
+
+			if (nFlags & (1 << 13))
+				pButtonWidget->SetTP(pPr->GetTP());
+			if (nIFFlags & (1 << 0))
+			{
+				if (nIFFlags & (1 << 1))
+					pButtonWidget->SetSW(pPr->GetSW());
+				if (nIFFlags & (1 << 2))
+					pButtonWidget->SetS(pPr->GetS());
+				if (nIFFlags & (1 << 3))
+				{
+					double d1, d2;
+					pPr->GetA(d1, d2);
+					pButtonWidget->SetA(d1, d2);
+				}
+			}
+			if (nFlags & (1 << 14))
+				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
 		}
-		if (nFlags & (1 << 14))
-			pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
-	}
-	else if (oInfo.IsTextWidget())
-	{
-		CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
-		PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
-	}
-	else if (oInfo.IsChoiceWidget())
-	{
-		CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetChoiceWidgetPr();
-		PdfWriter::CChoiceWidget* pChoiceWidget = (PdfWriter::CChoiceWidget*)pAnnot;
-	}
-	else if (oInfo.IsSignatureWidget())
-	{
-		CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
-		PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
+		else if (oInfo.IsTextWidget())
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetTextWidgetPr();
+			PdfWriter::CTextWidget* pTextWidget = (PdfWriter::CTextWidget*)pAnnot;
+
+			if (nFlags & (1 << 9))
+				pTextWidget->SetV(pPr->GetV());
+			if (nFlags & (1 << 10))
+				pTextWidget->SetMaxLen(pPr->GetMaxLen());
+			if (nWidgetFlag & (1 << 25))
+				pTextWidget->SetRV(pPr->GetRV());
+		}
+		else if (oInfo.IsChoiceWidget())
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetChoiceWidgetPr();
+			PdfWriter::CChoiceWidget* pChoiceWidget = (PdfWriter::CChoiceWidget*)pAnnot;
+
+			if (nFlags & (1 << 9))
+				pChoiceWidget->SetV(pPr->GetV());
+			if (nFlags & (1 << 10))
+				pChoiceWidget->SetOpt(pPr->GetOpt());
+			if (nFlags & (1 << 11))
+				pChoiceWidget->SetTI(pPr->GetTI());
+		}
+		else if (oInfo.IsSignatureWidget())
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CSignatureWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetSignatureWidgetPr();
+			PdfWriter::CSignatureWidget* pSignatureWidget = (PdfWriter::CSignatureWidget*)pAnnot;
+		}
 	}
 
 	return S_OK;
@@ -2160,6 +2182,8 @@ bool CPdfWriter::EditClose()
 	if (!IsValid())
 		return false;
 	m_oCommandManager.Flush();
+
+	m_pDocument->MatchAnnotation();
 
 	unsigned int nPagesCount = m_pDocument->GetPagesCount();
 	for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)

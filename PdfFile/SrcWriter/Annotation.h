@@ -35,6 +35,7 @@
 #include "Objects.h"
 #include "Types.h"
 #include "Pages.h"
+#include "Document.h"
 
 namespace PdfWriter
 {
@@ -99,6 +100,7 @@ namespace PdfWriter
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
 		CXref* m_pXref;
+		TRect m_oRect;
 
 	public:
 		int m_nID; // Идентификатор сопоставления
@@ -129,6 +131,27 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 	};
+	class CPopupAnnotation : public CAnnotation
+	{
+	private:
+		int m_nParentID;
+
+	public:
+		CPopupAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotPopup;
+		}
+
+		void SetOpen(bool bOpen);
+		void SetParentID(const int& nParentID);
+
+		int GetParentID() const
+		{
+			return m_nParentID;
+		}
+		void SetParentID(CAnnotation* pAnnot);
+	};
 	class CMarkupAnnotation : public CAnnotation
 	{
 	protected:
@@ -143,7 +166,7 @@ namespace PdfWriter
 		}
 
 		void SetRT(const BYTE& nRT);
-		void SetPopupID(const int& nPopupID);
+		CPopupAnnotation* SetPopupID(const int& nPopupID);
 		void SetIRTID(const int& nIRTID);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
@@ -221,27 +244,6 @@ namespace PdfWriter
 		void SetL(const double& dL1, const double& dL2, const double& dL3, const double& dL4);
 		void SetCO(const double& dCO1, const double& dCO2);
 		void SetIC(const std::vector<double>& arrIC);
-	};
-	class CPopupAnnotation : public CAnnotation
-	{
-	private:
-		int m_nParentID;
-
-	public:
-		CPopupAnnotation(CXref* pXref);
-		EAnnotType GetAnnotationType() const override
-		{
-			return AnnotPopup;
-		}
-
-		void SetOpen(bool bOpen);
-		void SetParentID(const int& nParentID);
-
-		int GetParentID() const
-		{
-			return m_nParentID;
-		}
-		void SetParentID(CAnnotation* pAnnot);
 	};
 	class CTextMarkupAnnotation : public CMarkupAnnotation
 	{
@@ -321,11 +323,16 @@ namespace PdfWriter
 	{
 	protected:
 		CDictObject* m_pMK;
+		CDictObject* m_pParent;
+		CDocument* m_pDocument;
 
 		void CheckMK();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
+
+		void SetDocument(CDocument* pDocument);
+		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC);
 
 		void SetQ(const BYTE& nQ);
 		void SetH(const BYTE& nH);
@@ -334,9 +341,8 @@ namespace PdfWriter
 		void SetParentID(const int& nParentID);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
-		void SetDV(const std::wstring& wsDV);
+		virtual void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
-		void SetTC(const std::vector<double>& arrTC);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 	};
@@ -355,6 +361,8 @@ namespace PdfWriter
 			return m_nSubtype;
 		}
 
+		void SetV(bool bV);
+		void SetDV(const std::wstring& wsDV) override;
 		void SetS(const BYTE& nS);
 		void SetTP(const BYTE& nTP);
 		void SetSW(const BYTE& nSW);
@@ -377,6 +385,10 @@ namespace PdfWriter
 		{
 			return m_nSubtype;
 		}
+
+		void SetMaxLen(const int& nMaxLen);
+		void SetV (const std::wstring& wsV);
+		void SetRV(const std::wstring& wsRV);
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
@@ -389,6 +401,10 @@ namespace PdfWriter
 		{
 			return m_nSubtype;
 		}
+
+		void SetTI(const int& nTI);
+		void SetV(const std::wstring& wsV);
+		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

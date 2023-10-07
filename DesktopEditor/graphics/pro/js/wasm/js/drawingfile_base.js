@@ -833,7 +833,7 @@
 			}
 			else if (rec["type"] == 33)
 			{
-				rec["Sig"] = rec["flag"] >> 9) & 1;
+				rec["Sig"] = (flags >> 9) & 1;
 			}
 			
 			res["Fields"].push(rec);
@@ -1035,7 +1035,7 @@
 			{
 				rec["Open"] = (flags >> 15) & 1;
 				// иконка - Name
-				// 0 - Comment, 1 - Key, 2 - Note, 3 - Help, 4 - NewParagraph, 5 - Paragraph, 6 - Insert
+				// 0 - Check, 1 - Circle, 2 - Comment, 3 - Cross, 4 - Help, 5 - Insert, 6 - Key, 7 - NewParagraph, 8 - Note, 9 - Paragraph, 10 - RightArrow, 11 - RightPointer, 12 - Star, 13 - UpArrow, 14 - UpLeftArrow
 				if (flags & (1 << 16))
 					rec["Icon"] = reader.readByte();
 				// Модель состояния - StateModel

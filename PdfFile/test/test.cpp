@@ -93,7 +93,7 @@ int main()
     }
 
     ICertificate* pCertificate = NULL;
-	if (true)
+	if (false)
     {
 		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
 		std::wstring wsPrivateKeyFile = L"";

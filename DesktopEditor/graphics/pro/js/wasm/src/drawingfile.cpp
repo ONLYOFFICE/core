@@ -816,6 +816,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				std::cout << "TI " << nPathLength << ", ";
 			}
 		}
+		else if (sType == "signature")
+		{
+			if (nFlags & (1 << 9))
+				std::cout << "SIG, ";
+		}
 		std::cout << std::endl;
 	}
 }
@@ -1269,7 +1274,7 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert"};
+					std::string arrIcon[] = {"Check", "Circle", "Comment", "Cross", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
 					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 17))

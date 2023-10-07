@@ -162,6 +162,8 @@ namespace PdfWriter
 		void      AddContents(CXref* pXref);
         void      SetRotate(int nRotate);
         int       GetRotate();
+		void      SetAnnots(const std::map<int, int>& mAnnots) { m_mAnnots = mAnnots; }
+		int       GetAnnot(int nAnnot);
 
 	private:
 
@@ -208,6 +210,8 @@ namespace PdfWriter
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
+
+		std::map<int, int> m_mAnnots;
 	};
 	//----------------------------------------------------------------------------------------
 	// CTextWord

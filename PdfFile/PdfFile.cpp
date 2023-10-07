@@ -627,7 +627,23 @@ bool CPdfFile::EditPage(int nPageIndex)
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0 || strcmp("Annots", chKey) == 0)
+		{
 			pageObj.dictGetVal(nIndex, &oTemp);
+			if (strcmp("Annots", chKey) == 0 && oTemp.isArray())
+			{
+				std::map<int, int> mAnnots;
+				for (int i = 0; i < oTemp.arrayGetLength(); ++i)
+				{
+					Object oAnnot, oPopupRef, oAnnotRef;
+					if (oTemp.arrayGet(i, &oAnnot)->isDict() && oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef() && oTemp.arrayGetNF(i, &oAnnotRef)->isRef())
+					{
+						mAnnots[oAnnotRef.getRefNum()] = oPopupRef.getRefNum();
+					}
+					oAnnot.free(); oPopupRef.free(); oAnnotRef.free();
+				}
+				pPage->SetAnnots(mAnnots);
+			}
+		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPage, true, chKey);

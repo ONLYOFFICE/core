@@ -32,6 +32,7 @@
 #include "Annotation.h"
 #include "Pages.h"
 #include "Utils.h"
+#include "ResourcesDictionary.h"
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -94,6 +95,8 @@ namespace PdfWriter
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
+		m_oRect = oRect;
+
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
@@ -125,9 +128,6 @@ namespace PdfWriter
 
 		pBorderStyleDict->Add("Type", "Border");
 		pBorderStyleDict->Add("W", dWidth);
-
-		if (dWidth < 0.01)
-			return;
 
 		EBorderSubtype eSubtype = EBorderSubtype(nType);
 		if (border_subtype_Dashed == eSubtype)
@@ -225,13 +225,20 @@ namespace PdfWriter
 	{
 		Add("RT", nRT ? "Group" : "R");
 	}
-	void CMarkupAnnotation::SetPopupID(const int& nPopupID)
+	CPopupAnnotation* CMarkupAnnotation::SetPopupID(const int& nPopupID)
 	{
-		//m_nPopupID = nPopupID;
 		CPopupAnnotation* pAnnot = new CPopupAnnotation(m_pXref);
+		Add("Popup", pAnnot);
+
 		pAnnot->SetOpen(false);
 		pAnnot->SetParentID(this);
-		Add("Popup", pAnnot);
+
+		TRect oRect = m_oRect;
+		oRect.fBottom -= 100;
+		oRect.fRight += 100;
+		pAnnot->SetRect(oRect);
+
+		return pAnnot;
 	}
 	void CMarkupAnnotation::SetIRTID(const int& nIRTID)
 	{
@@ -313,7 +320,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CTextAnnotation::CTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotText)
 	{
-
+		Add("Name", "Comment");
 	}
 	void CTextAnnotation::SetOpen(bool bOpen)
 	{
@@ -739,7 +746,48 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
+		Add("Ff", 0);
+
 		m_pMK = NULL;
+		m_pParent = NULL;
+		m_pDocument = NULL;
+	}
+	void CWidgetAnnotation::SetDocument(CDocument* pDocument)
+	{
+		m_pDocument = pDocument;
+	}
+	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC)
+	{
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
+
+		std::string sDA;
+		for (double dColoc : arrTC)
+		{
+			sDA.append(std::to_string(dColoc));
+			sDA.append(" ");
+		}
+		if (arrTC.size() == 3)
+			sDA.append("rg");
+		else if (arrTC.size() == 4)
+			sDA.append("k");
+		else if (arrTC.size() == 1)
+			sDA.append("g");
+		else
+			sDA.append("sc");
+
+		if (sFontName)
+		{
+			sDA.append(" /");
+			sDA.append(sFontName);
+		}
+
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		Add("DA", new CStringObject(sDA.c_str(), false, true));
 	}
 	void CWidgetAnnotation::CheckMK()
 	{
@@ -802,10 +850,6 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsT);
 		Add("T", new CStringObject(sValue.c_str()));
 	}
-	void CWidgetAnnotation::SetTC(const std::vector<double>& arrTC)
-	{
-		// Text color из DA
-	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
 		CheckMK();
@@ -821,6 +865,8 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CButtonWidget::CButtonWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
+		Add("FT", "Btn");
+
 		m_pIF = NULL;
 	}
 	void CButtonWidget::CheckIF()
@@ -832,6 +878,16 @@ namespace PdfWriter
 			m_pIF = new CDictObject();
 			m_pMK->Add("IF", m_pIF);
 		}
+	}
+	void CButtonWidget::SetV(bool bV)
+	{
+		Add("V", (bV ? "Yes" : "Off"));
+		Add("AS", (bV ? "Yes" : "Off"));
+	}
+	void CButtonWidget::SetDV(const std::wstring& wsDV)
+	{
+		std::string sValue = U_TO_UTF8(wsDV);
+		Add("DV", sValue.c_str());
 	}
 	void CButtonWidget::SetS(const BYTE& nS)
 	{
@@ -850,7 +906,7 @@ namespace PdfWriter
 	}
 	void CButtonWidget::SetTP(const BYTE& nTP)
 	{
-		Add("TP", nTP);
+		Add("TP", (int)nTP);
 	}
 	void CButtonWidget::SetSW(const BYTE& nSW)
 	{
@@ -936,19 +992,84 @@ namespace PdfWriter
 	}
 	void CButtonWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
-
+		CNameObject* pV = (CNameObject*)Get("V");
+		if (pV && 0 == StrCmp(pV->Get(), "Yes"))
+		{
+			std::string sValue = U_TO_UTF8(wsAP_N_Yes);
+			Add("V", new CStringObject(sValue.c_str()));
+			Add("AS", new CStringObject(sValue.c_str()));
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
 	//----------------------------------------------------------------------------------------
 	CTextWidget::CTextWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
+		Add("FT", "Tx");
+	}
+	void CTextWidget::SetMaxLen(const int& nMaxLen)
+	{
+		if (nMaxLen > 0)
+		{
+			if (m_pParent)
+				m_pParent->Add("MaxLen", nMaxLen);
+			else
+				Add("MaxLen", nMaxLen);
+		}
+	}
+	void CTextWidget::SetV(const std::wstring& wsV)
+	{
+		std::string sValue = U_TO_UTF8(wsV);
+		Add("V", new CStringObject(sValue.c_str()));
+	}
+	void CTextWidget::SetRV(const std::wstring& wsRV)
+	{
+		std::string sValue = U_TO_UTF8(wsRV);
+		Add("RV", new CStringObject(sValue.c_str()));
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceWidget
 	//----------------------------------------------------------------------------------------
 	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
+		Add("FT", "Ch");
+	}
+	void CChoiceWidget::SetTI(const int& nTI)
+	{
+		Add("TI", nTI);
+	}
+	void CChoiceWidget::SetV(const std::wstring& wsV)
+	{
+		std::string sValue = U_TO_UTF8(wsV);
+		Add("V", new CStringObject(sValue.c_str()));
+	}
+	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("Opt", pArray);
+
+		for (const std::pair<std::wstring, std::wstring>& PV : arrOpt)
+		{
+			if (PV.first.empty())
+			{
+				std::string sValue = U_TO_UTF8(PV.second);
+				pArray->Add(new CStringObject(sValue.c_str()));
+			}
+			else
+			{
+				CArrayObject* pArray2 = new CArrayObject();
+				pArray->Add(pArray2);
+
+				std::string sValue = U_TO_UTF8(PV.first);
+				pArray2->Add(new CStringObject(sValue.c_str()));
+
+				sValue = U_TO_UTF8(PV.second);
+				pArray2->Add(new CStringObject(sValue.c_str()));
+			}
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CSignatureWidget

@@ -938,4 +938,20 @@ namespace PdfWriter
 	{
 
 	}
+
+	// TODO:
+	CTextWidget::CTextWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+
+	}
+
+	CChoiceWidget::CChoiceWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+
+	}
+
+	CSignatureWidget::CSignatureWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	{
+
+	}
 }

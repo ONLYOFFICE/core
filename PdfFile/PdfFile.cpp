@@ -399,13 +399,15 @@ void CPdfFile::RotatePage(int nRotate)
 #ifndef BUILDING_WASM_MODULE
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
+	if (wsDstFile.empty())
+		return false;
+
 	if (!m_pInternal->pReader)
 		return false;
+
 	// Создание writer для редактирования
 	RELEASEOBJECT(m_pInternal->pWriter);
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
-	if (!wsDstFile.empty())
-		NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile);
 
 	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
 	if (!pPDFDocument)
@@ -426,6 +428,8 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	}
 	else
 	{
+		if (!NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile))
+			return false;
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(wsDstFile, true))
 			return false;

@@ -408,17 +408,27 @@ std::wstring ods_table_state::get_column_default_cell_style(int column)
 	}
 	return L"";
 }
+void ods_table_state::set_column_width_sym(double width)
+{
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
+	if (!style) return;
+
+	style_table_column_properties* column_properties = style->content_.add_get_style_table_column_properties();
+	if (column_properties == NULL) return; //error ????
+
+	column_properties->attlist_.loext_column_width_sym_ = width;
+}
 void ods_table_state::set_column_width(double width)//pt
 {
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
-	if (!style)return;		
+	if (!style) return;		
 
 	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	columns_.back().size = width; //pt
 
-	column_properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
+	column_properties->attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
 }
 void ods_table_state::set_column_optimal_width(bool val)
 {
@@ -428,19 +438,19 @@ void ods_table_state::set_column_optimal_width(bool val)
 	style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
-	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
+	column_properties->attlist_.style_use_optimal_column_width_ = val;
 
 }
 void ods_table_state::set_column_hidden(bool val)
 {
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
-	if (column == NULL)return;
+	if (column == NULL) return;
 
 	column->attlist_.table_visibility_ = table_visibility(table_visibility::Collapse);
 }
 void ods_table_state::set_table_dimension(int col, int row)
 {
-	if (col<1 || row <1 )return;
+	if (col < 1 || row < 1 ) return;
 
 	if (dimension_columns < col)	dimension_columns = col + 1;
 	if (dimension_row < row)		dimension_row = row + 1;

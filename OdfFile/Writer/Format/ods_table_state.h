@@ -330,6 +330,7 @@ public:
 		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style);
+		void set_column_width_sym(double width);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);

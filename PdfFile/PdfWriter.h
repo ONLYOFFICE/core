@@ -211,6 +211,7 @@ public:
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+	bool DeleteAnnot(int nPageIndex, int nID);
 
 
 	PdfWriter::CDocument* m_pDocument;

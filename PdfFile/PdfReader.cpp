@@ -107,8 +107,10 @@ CPdfReader::~CPdfReader()
 	RELEASEINTERFACE(m_pFontManager);
 }
 
-bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& arrCMap)
+bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& arrCMap, int nDepth)
 {
+	if (nDepth > 5)
+		return false;
 	Object oFonts;
 	if (pResources->lookup("Font", &oFonts) && oFonts.isDict())
 	{
@@ -146,7 +148,7 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 				continue;\
 			}\
 			oXObj.free();\
-			if (scanFonts(oResources.getDict(), pDoc, arrCMap))\
+			if (scanFonts(oResources.getDict(), pDoc, arrCMap, nDepth + 1))\
 			{\
 				oResources.free(); oObject.free();\
 				return true;\
@@ -172,7 +174,7 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 				continue;
 			}
 			oGS.free(); oSMask.free(); oSMaskGroup.free();
-			if (scanFonts(oResources.getDict(), pDoc, arrCMap))
+			if (scanFonts(oResources.getDict(), pDoc, arrCMap, nDepth + 1))
 			{
 				oResources.free(); oExtGState.free();
 				return true;
@@ -213,7 +215,7 @@ bool CPdfReader::IsNeedCMap()
 	{
 		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage + 1);
 		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap))
+		if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap, 0))
 			return true;
 	}
 	return false;
@@ -334,6 +336,10 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 	if (!m_pPDFDocument)
 		return;
 
+#ifdef BUILDING_WASM_MODULE
+	*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
+	*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
+#else
 	int nRotate = m_pPDFDocument->getPageRotate(nPageIndex);
 	if (nRotate % 180 == 0)
 	{
@@ -345,9 +351,19 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 		*pdHeight = m_pPDFDocument->getPageCropWidth(nPageIndex);
 		*pdWidth  = m_pPDFDocument->getPageCropHeight(nPageIndex);
 	}
+#endif
 
 	*pdDpiX = 72.0;
 	*pdDpiY = 72.0;
+}
+int CPdfReader::GetRotate(int _nPageIndex)
+{
+	int nPageIndex = _nPageIndex + 1;
+
+	if (!m_pPDFDocument)
+		return 0;
+
+	return m_pPDFDocument->getPageRotate(nPageIndex);
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
@@ -358,7 +374,11 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
 		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
 		oRendererOut.SetBreak(pbBreak);
-		m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+		int nRotate = 0;
+#ifdef BUILDING_WASM_MODULE
+		nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+#endif
+		m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 	}
 }
 void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
@@ -701,11 +721,16 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 	}
 	RELEASEOBJECT(pLinks);
 
+	int nRotate = 0;
+#ifdef BUILDING_WASM_MODULE
+	nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+#endif
+
 	// Текст-ссылка
 	TextOutputControl textOutControl;
 	textOutControl.mode = textOutReadingOrder;
 	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 	m_pPDFDocument->processLinks(pTextOut, nPageIndex);
 	TextWordList* pWordList = pTextOut->makeWordList();
 	for (int i = 0; i < pWordList->getLength(); i++)
@@ -778,13 +803,12 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
 		AcroFormFieldType oType = pField->getAcroFormFieldType();
-		if (oType != acroFormFieldSignature || nWidget >= 0 && i != nWidget)
+		if (oType != acroFormFieldSignature || (nWidget >= 0 && i != nWidget))
 			continue;
 
 		Object oObj, oObj1;
-		if (!pField->fieldLookup("V", &oObj)->isDict() || !oObj.dictLookup("Type", &oObj1)->isName("Sig"))
+		if (!pField->fieldLookup("V", &oObj)->isDict())
 			continue;
-		oObj1.free();
 
 		std::vector<int> arrByteOffset, arrByteLength;
 		if (oObj.dictLookup("ByteRange", &oObj1)->isArray())
@@ -811,6 +835,7 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 		int nByteOffset = 0;
 		for (int j = 0; j < arrByteOffset.size(); ++j)
 		{
+			// TODO проверка длины файла и ByteRange
 			memcpy(pDataForVerify + nByteOffset, pFileData + arrByteOffset[j], arrByteLength[j]);
 			nByteOffset += arrByteLength[j];
 		}
@@ -1197,15 +1222,10 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			// Создание Gfx
 			GBool crop = gTrue;
 			PDFRectangle box;
-			int rotate = pPage->getRotate();
-			if (rotate >= 360)
-				rotate -= 360;
-			else if (rotate < 0)
-				rotate += 360;
-			pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+			pPage->makeBox(72.0, 72.0, 0, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
 			PDFRectangle* cropBox = pPage->getCropBox();
 
-			Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+			Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, cropBox ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 			pRenderer->SetCoordTransformOffset(0, bbox[3] * (double)nRasterH / dHeight - nRasterH);
 			gfx->drawForm(&oStrRef, oResourcesDict, m, bbox, gFalse, gFalse, gFalse, gFalse);
@@ -1276,7 +1296,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "FreeText")
 		{
-
+			pAnnot = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Line")
 		{
@@ -1303,16 +1323,16 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		}
 		else if (sType == "Caret")
 		{
-
+			pAnnot = new PdfReader::CAnnotCaret(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Ink")
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
 		}
-		else if (sType == "Popup")
-		{
-			pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);
-		}
+		// else if (sType == "Popup")
+		// {
+		// 	pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);
+		// }
 		// TODO Все аннотации
 		oAnnotRef.free();
 

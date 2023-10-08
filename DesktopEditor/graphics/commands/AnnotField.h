@@ -36,6 +36,9 @@
 #include "../MetafileToRendererReader.h"
 class IMetafileToRenderter;
 
+// void Set(const BYTE& n) { m_n = n; }
+// BYTE Get() const { return m_n; }
+
 // void Set(const int& n) { m_n = n; }
 // int Get() const { return m_n; }
 
@@ -48,6 +51,165 @@ class IMetafileToRenderter;
 class GRAPHICS_DECL CAnnotFieldInfo : public IAdvancedCommand
 {
 public:
+	class CWidgetAnnotPr
+	{
+	public:
+		class CButtonWidgetPr
+		{
+		public:
+			void SetS (const BYTE& nS)  { m_nS  = nS; }
+			void SetTP(const BYTE& nTP) { m_nTP = nTP; }
+			void SetSW(const BYTE& nSW) { m_nSW = nSW; }
+			void SetStyle(const BYTE& nStyle)  { m_nStyle  = nStyle; }
+			void SetIFFlag(const int& nIFFlag) { m_nIFFlag = nIFFlag; }
+			void SetA(const double& dA1, const double& dA2) { m_dA1 = dA1; m_dA2 = dA2; }
+			void SetCA(const std::wstring& wsCA) { m_wsCA = wsCA; }
+			void SetRC(const std::wstring& wsRC) { m_wsRC = wsRC; }
+			void SetAC(const std::wstring& wsAC) { m_wsAC = wsAC; }
+			void SetAP_N_Yes(const std::wstring& wsAP_N_Yes) { m_wsAP_N_Yes = wsAP_N_Yes; }
+
+			BYTE GetS() const  { return m_nS; }
+			BYTE GetTP() const { return m_nTP; }
+			BYTE GetSW() const { return m_nSW; }
+			BYTE GetStyle()  const { return m_nStyle; }
+			int  GetIFFlag() const { return m_nIFFlag; }
+			void GetA(double& dA1, double& dA2) const { dA1 = m_dA1; dA2 = m_dA2; }
+			const std::wstring& GetCA() const { return m_wsCA; }
+			const std::wstring& GetRC() const { return m_wsRC; }
+			const std::wstring& GetAC() const { return m_wsAC; }
+			const std::wstring& GetAP_N_Yes() const { return m_wsAP_N_Yes; }
+
+		private:
+			BYTE m_nS;
+			BYTE m_nTP;
+			BYTE m_nSW;
+			BYTE m_nStyle;
+			int m_nIFFlag;
+			double m_dA1, m_dA2;
+			std::wstring m_wsCA;
+			std::wstring m_wsRC;
+			std::wstring m_wsAC;
+			std::wstring m_wsAP_N_Yes;
+		};
+
+		class CTextWidgetPr
+		{
+		public:
+			void SetMaxLen(const int& nMaxLen) { m_nMaxLen = nMaxLen; }
+			void SetV (const std::wstring& wsV)  { m_wsV  = wsV; }
+			void SetRV(const std::wstring& wsRV) { m_wsRV = wsRV; }
+
+			int GetMaxLen() const { return m_nMaxLen; }
+			const std::wstring& GetV()  const { return m_wsV; }
+			const std::wstring& GetRV() const { return m_wsRV; }
+
+		private:
+			int m_nMaxLen;
+			std::wstring m_wsV;
+			std::wstring m_wsRV;
+		};
+
+		class CChoiceWidgetPr
+		{
+		public:
+			void SetTI(const int& nTI) { m_nTI = nTI; }
+			void SetV(const std::wstring& wsV) { m_wsV = wsV; }
+			void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt) { m_arrOpt = arrOpt; }
+
+			int GetTI() const { return m_nTI; }
+			const std::wstring& GetV() const { return m_wsV; }
+			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt() const { return m_arrOpt; }
+
+		private:
+			int m_nTI;
+			std::wstring m_wsV;
+			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+		};
+
+		class CSignatureWidgetPr
+		{
+
+		};
+
+		class CActionWidget
+		{
+		public:
+			CActionWidget() : pNext(NULL) {}
+			~CActionWidget() { RELEASEOBJECT(pNext); }
+
+			BYTE nKind;
+			BYTE nFlags;
+			BYTE nActionType;
+			int  nInt1;
+			double dD[4];
+			std::wstring wsType;
+			std::wstring wsStr1;
+			std::vector<std::wstring> arrStr;
+			CActionWidget* pNext;
+		};
+
+	public:
+		CWidgetAnnotPr(BYTE nType);
+		~CWidgetAnnotPr();
+
+		void SetQ(const BYTE& nQ) { m_nQ = nQ; }
+		void SetH(const BYTE& nH) { m_nH = nH; }
+		void SetR(const int& nR)  { m_nR = nR; }
+		void SetFlag    (const int& nFlag)     { m_nFlag     = nFlag; }
+		void SetFlags   (const int& nFlags)    { m_nFlags    = nFlags; }
+		void SetParentID(const int& nParentID) { m_nParentID = nParentID; }
+		void SetTU(const std::wstring& wsTU) { m_wsTU = wsTU; }
+		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
+		void SetDV(const std::wstring& wsDV) { m_wsDV = wsDV; }
+		void SetT (const std::wstring& wsT)  { m_wsT  = wsT; }
+		void SetTC(const std::vector<double>& arrTC) { m_arrTC = arrTC; }
+		void SetBC(const std::vector<double>& arrBC) { m_arrBC = arrBC; }
+		void SetBG(const std::vector<double>& arrBG) { m_arrBG = arrBG; }
+		void AddAction(CActionWidget* pA) { m_arrAction.push_back(pA); }
+
+		BYTE GetQ()    const { return m_nQ; }
+		BYTE GetH()    const { return m_nH; }
+		BYTE GetType() const { return m_nType; }
+		int  GetR()    const { return m_nR; }
+		int  GetFlag()     const { return m_nFlag; }
+		int  GetFlags()    const { return m_nFlags; }
+		int  GetParentID() const { return m_nParentID; }
+		const std::wstring& GetTU() const { return m_wsTU; }
+		const std::wstring& GetDS() const { return m_wsDS; }
+		const std::wstring& GetDV() const { return m_wsDV; }
+		const std::wstring& GetT()  const { return m_wsT; }
+		const std::vector<double>& GetTC() const { return m_arrTC; }
+		const std::vector<double>& GetBC() const { return m_arrBC; }
+		const std::vector<double>& GetBG() const { return m_arrBG; }
+
+		CButtonWidgetPr*    GetButtonWidgetPr()    { return m_pButtonPr; }
+		CTextWidgetPr*      GetTextWidgetPr()      { return m_pTextPr; }
+		CChoiceWidgetPr*    GetChoiceWidgetPr()    { return m_pChoicePr; }
+		CSignatureWidgetPr* GetSignatureWidgetPr() { return m_pSignaturePr; }
+
+	private:
+		BYTE m_nQ;
+		BYTE m_nH;
+		BYTE m_nType;
+		int m_nR;
+		int m_nFlag;
+		int m_nFlags;
+		int m_nParentID;
+		std::wstring m_wsTU;
+		std::wstring m_wsDS;
+		std::wstring m_wsDV;
+		std::wstring m_wsT;
+		std::vector<double> m_arrTC;
+		std::vector<double> m_arrBC;
+		std::vector<double> m_arrBG;
+		std::vector<CActionWidget*> m_arrAction;
+
+		CButtonWidgetPr*    m_pButtonPr;
+		CTextWidgetPr*      m_pTextPr;
+		CChoiceWidgetPr*    m_pChoicePr;
+		CSignatureWidgetPr* m_pSignaturePr;
+	};
+
 	class CMarkupAnnotPr
 	{
 	public:
@@ -58,6 +220,7 @@ public:
 		void SetCA(const double& dCA)            { m_dCA      = dCA; }
 		void SetT(const std::wstring& wsT)       { m_wsT      = wsT; }
 		void SetRC(const std::wstring& wsRC)     { m_wsRC     = wsRC; }
+		void SetCD(const std::wstring& wsCD)     { m_wsCD     = wsCD; }
 		void SetSubj(const std::wstring& wsSubj) { m_wsSubj   = wsSubj; }
 
 		BYTE   GetRT()      const { return m_nRT; }
@@ -67,6 +230,7 @@ public:
 		double GetCA()      const { return m_dCA; }
 		const std::wstring& GetT()    const { return m_wsT; }
 		const std::wstring& GetRC()   const { return m_wsRC; }
+		const std::wstring& GetCD()   const { return m_wsCD; }
 		const std::wstring& GetSubj() const { return m_wsSubj; }
 
 	private:
@@ -77,6 +241,7 @@ public:
 		double       m_dCA;
 		std::wstring m_wsT;
 		std::wstring m_wsRC;
+		std::wstring m_wsCD;
 		std::wstring m_wsSubj;
 	};
 
@@ -224,6 +389,48 @@ public:
 		int  m_nParentID;
 	};
 
+	class CFreeTextAnnotPr
+	{
+	public:
+		void SetQ(const BYTE& nQ)   { m_nQ  = nQ; }
+		void SetIT(const BYTE& nIT) { m_nIT = nIT; }
+		void SetLE(const BYTE& nLE) { m_nLE = nLE; }
+		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+		{ m_dRD[0] = dRD1; m_dRD[1] = dRD2; m_dRD[2] = dRD3; m_dRD[3] = dRD4; }
+		void SetCL(const std::vector<double>& arrCL) { m_arrCL = arrCL; }
+
+		BYTE GetQ()  const { return m_nQ; }
+		BYTE GetIT() const { return m_nIT; }
+		BYTE GetLE() const { return m_nLE; }
+		const std::wstring& GetDS() const { return m_wsDS; }
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+		const std::vector<double>& GetCL() const { return m_arrCL; }
+
+	private:
+		BYTE m_nQ;
+		BYTE m_nIT;
+		BYTE m_nLE;
+		std::wstring m_wsDS;
+		double m_dRD[4]{};
+		std::vector<double> m_arrCL;
+	};
+
+	class CCaretAnnotPr
+	{
+	public:
+		void SetSy(const BYTE& nSy) { m_nSy  = nSy; }
+		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+		{ m_dRD[0] = dRD1; m_dRD[1] = dRD2; m_dRD[2] = dRD3; m_dRD[3] = dRD4; }
+
+		BYTE GetSy()  const { return m_nSy; }
+		void GetRD(double& dRD1, double& dRD2, double& dRD3, double& dRD4) const { dRD1 = m_dRD[0]; dRD2 = m_dRD[1]; dRD3 = m_dRD[2]; dRD4 = m_dRD[3]; }
+
+	private:
+		BYTE m_nSy;
+		double m_dRD[4]{};
+	};
+
 private:
 	struct CBorder
 	{
@@ -246,7 +453,9 @@ public:
 	void SetID(const int& nID)               { m_nID        = nID; }
 	void SetAnnotFlag(const int& nAnnotFlag) { m_nAnnotFlag = nAnnotFlag; }
 	void SetPage(const int& nPage)           { m_nPage      = nPage; }
-	void SetBE(const double& dBE)            { m_dBE        = dBE; }
+	void SetBE(BYTE nS, const double& dI)    { m_pBE.first = nS; m_pBE.second = dI; }
+	void SetNM(const std::wstring& wsNM)     { m_wsNM      = wsNM; }
+	void SetLM(const std::wstring& wsLM)     { m_wsLM      = wsLM; }
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
@@ -256,19 +465,27 @@ public:
 	int    GetID()        const { return m_nID; }
 	int    GetAnnotFlag() const { return m_nAnnotFlag; }
 	int    GetPage()      const { return m_nPage; }
-	double GetBE()        const { return m_dBE; }
+	void   GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
+	const std::wstring& GetNM() const { return m_wsNM; }
+	const std::wstring& GetLM() const { return m_wsLM; }
 	const std::wstring& GetContents() const { return m_wsContents; }
 	const std::vector<double>& GetC() const { return m_arrC; }
 
-	bool isWidget()       const;
-	bool isMarkup()       const;
-	bool IsText()         const;
-	bool IsInk()          const;
-	bool IsLine()         const;
-	bool IsTextMarkup()   const;
-	bool IsSquareCircle() const;
-	bool IsPolygonLine()  const;
-	bool IsPopup()        const;
+	bool IsWidget()          const;
+	bool IsButtonWidget()    const;
+	bool IsTextWidget()      const;
+	bool IsChoiceWidget()    const;
+	bool IsSignatureWidget() const;
+	bool IsMarkup()          const;
+	bool IsText()            const;
+	bool IsInk()             const;
+	bool IsLine()            const;
+	bool IsTextMarkup()      const;
+	bool IsSquareCircle()    const;
+	bool IsPolygonLine()     const;
+	bool IsPopup()           const;
+	bool IsFreeText()        const;
+	bool IsCaret()           const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr()       { return m_pMarkupPr; }
 	CTextAnnotPr*         GetTextAnnotPr()         { return m_pTextPr; }
@@ -278,6 +495,9 @@ public:
 	CSquareCircleAnnotPr* GetSquareCircleAnnotPr() { return m_pSquareCirclePr; }
 	CPolygonLineAnnotPr*  GetPolygonLineAnnotPr()  { return m_pPolygonLinePr; }
 	CPopupAnnotPr*        GetPopupAnnotPr()        { return m_pPopupPr; }
+	CFreeTextAnnotPr*     GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
+	CCaretAnnotPr*        GetCaretAnnotPr()        { return m_pCaretPr; }
+	CWidgetAnnotPr*       GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
@@ -293,8 +513,10 @@ private:
 	int          m_nID;
 	int          m_nAnnotFlag;
 	int          m_nPage;
-	double       m_dBE;
+	std::wstring m_wsNM;
+	std::wstring m_wsLM;
 	std::wstring m_wsContents;
+	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
 	CBorder      m_oBorder;
 
@@ -306,6 +528,9 @@ private:
 	CSquareCircleAnnotPr* m_pSquareCirclePr;
 	CPolygonLineAnnotPr*  m_pPolygonLinePr;
 	CPopupAnnotPr*        m_pPopupPr;
+	CFreeTextAnnotPr*     m_pFreeTextPr;
+	CCaretAnnotPr*        m_pCaretPr;
+	CWidgetAnnotPr*       m_pWidgetPr;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

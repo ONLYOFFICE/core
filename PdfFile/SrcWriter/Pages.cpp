@@ -1125,7 +1125,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-    void CPage::AddAnnotation(CDictObject* pAnnot)
+	void CPage::AddAnnotation(CDictObject* pAnnot)
 	{
 		CArrayObject* pArray = (CArrayObject*)Get("Annots");
 		if (!pArray)
@@ -1138,6 +1138,23 @@ namespace PdfWriter
 	    }
 	
 	    return pArray->Add(pAnnot);
+	}
+	void CPage::DeleteAnnotation(unsigned int nID)
+	{
+		CArrayObject* pArray = (CArrayObject*)Get("Annots");
+		if (!pArray)
+			return;
+
+		for (int i = 0; i < pArray->GetCount(); i++)
+		{
+			CObjectBase* pObj = pArray->Get(i, false);
+			if (pObj->GetType() == object_type_PROXY && ((CProxyObject*)pObj)->Get()->GetObjId() == nID)
+			{
+				CObjectBase* pDelete = pArray->Remove(i);
+				RELEASEOBJECT(pDelete);
+				break;
+			}
+		}
 	}
     void CPage::BeginText()
 	{

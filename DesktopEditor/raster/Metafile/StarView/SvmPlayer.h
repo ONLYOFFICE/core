@@ -33,7 +33,7 @@
 
 #include "SvmEnums.h"
 #include "SvmObjects.h"
-#include "SvmClip.h"
+#include "../Common/CClip.h"
 
 #include <map>
 #include <vector>
@@ -130,7 +130,7 @@ public:
 	void            SetCurPos(TSvmPoint& oPoint);
 	void            SetCurPos(int lX, int lY);
 	TSvmPoint&      GetCurPos();
-	CSvmClip*       GetClip();
+	CClip*          GetClip();
 	//void            ClipToPath(CSvmPath* pPath, unsigned int unMode);
 	void            SetArcDirection(unsigned int unDirection);
 	unsigned int    GetArcDirection();

@@ -197,7 +197,7 @@ private:
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
 	double m_pRect[4]; // Координаты
-	double m_dBE; // Эффекты границы
+	std::pair<BYTE, double> m_pBE; // Эффекты границы
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
@@ -277,7 +277,7 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sV;
-	std::vector<std::pair<std::string, std::string>> m_arrOpt;
+	std::vector< std::pair<std::string, std::string> > m_arrOpt;
 	unsigned int m_unTI;
 };
 
@@ -435,6 +435,42 @@ private:
 	std::vector<double> m_arrIC; // Цвет заполнения
 	std::vector<double> m_arrVertices; // Координаты вершин
 	// TODO Measure Показатели масштаба, единиц измерения
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotFreeText
+//------------------------------------------------------------------------
+
+class CAnnotFreeText final : public CMarkupAnnot
+{
+public:
+	CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nQ; // Выравнивание текста - Q
+	BYTE m_nIT; // Назначение аннотации
+	BYTE m_nLE; // Стиль окончания линии
+	std::string m_sDS; // Строка стиля по умолчанию - DS
+	double m_pRD[4]{}; // Различия Rect и фактического размера
+	std::vector<double> m_arrCL; // Координаты выноски
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotCaret
+//------------------------------------------------------------------------
+
+class CAnnotCaret final : public CMarkupAnnot
+{
+public:
+	CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nSy; // Связанный символ - Sy
+	double m_pRD[4]{}; // Различия Rect и фактического размера
 };
 
 //------------------------------------------------------------------------

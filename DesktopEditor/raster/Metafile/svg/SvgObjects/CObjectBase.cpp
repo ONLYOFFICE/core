@@ -137,13 +137,13 @@ namespace SVG
 		if (NULL == pRenderer || NULL == pClip || NULL == pFile)
 			return false;
 
+		if (pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
+			return true;
+
 		if (pClip->m_oRule == L"evenodd")
 			pRenderer->put_ClipMode(c_nClipRegionTypeEvenOdd);
 		else
 			pRenderer->put_ClipMode(c_nClipRegionTypeWinding);
-
-		if (pClip->m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != pClip->m_oHref.GetType())
-			return true;
 
 		pRenderer->BeginCommand(c_nResetClipType);
 		pRenderer->EndCommand(c_nResetClipType);

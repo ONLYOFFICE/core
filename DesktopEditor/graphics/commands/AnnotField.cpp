@@ -42,11 +42,12 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_nAnnotFlag = 0;
 	m_nPage      = 0;
 
-	m_dX1  = 0.0;
-	m_dY1  = 0.0;
-	m_dX2  = 0.0;
-	m_dY2  = 0.0;
-	m_dBE = 0.0;
+	m_dX1 = 0.0;
+	m_dY1 = 0.0;
+	m_dX2 = 0.0;
+	m_dY2 = 0.0;
+	m_pBE.first  = 0.0;
+	m_pBE.second = 0.0;
 
 	m_oBorder.nType              = 0;
 	m_oBorder.dWidth             = 0.0;
@@ -61,6 +62,9 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pSquareCirclePr = NULL;
 	m_pPolygonLinePr  = NULL;
 	m_pPopupPr        = NULL;
+	m_pFreeTextPr     = NULL;
+	m_pCaretPr        = NULL;
+	m_pWidgetPr       = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
 {
@@ -72,22 +76,35 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pSquareCirclePr);
 	RELEASEOBJECT(m_pPolygonLinePr);
 	RELEASEOBJECT(m_pPopupPr);
+	RELEASEOBJECT(m_pFreeTextPr);
+	RELEASEOBJECT(m_pCaretPr);
+	RELEASEOBJECT(m_pWidgetPr);
 }
 
 void CAnnotFieldInfo::SetType(int nType)
 {
-
 	switch (nType)
 	{
 	case 0:
 	{
-		m_nType = 7;
+		m_nType = 15;
 
 		RELEASEOBJECT(m_pMarkupPr);
 		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
 
 		RELEASEOBJECT(m_pTextPr);
 		m_pTextPr = new CAnnotFieldInfo::CTextAnnotPr();
+		break;
+	}
+	case 2:
+	{
+		m_nType = 13;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pFreeTextPr);
+		m_pFreeTextPr = new CAnnotFieldInfo::CFreeTextAnnotPr();
 		break;
 	}
 	case 3:
@@ -139,6 +156,17 @@ void CAnnotFieldInfo::SetType(int nType)
 		m_pTextMarkupPr = new CAnnotFieldInfo::CTextMarkupAnnotPr();
 		break;
 	}
+	case 13:
+	{
+		m_nType = 14;
+
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pCaretPr);
+		m_pCaretPr = new CAnnotFieldInfo::CCaretAnnotPr();
+		break;
+	}
 	case 14:
 	{
 		m_nType = 8;
@@ -156,6 +184,21 @@ void CAnnotFieldInfo::SetType(int nType)
 
 		RELEASEOBJECT(m_pPopupPr);
 		m_pPopupPr = new CAnnotFieldInfo::CPopupAnnotPr();
+		break;
+	}
+	case 26:
+	case 27:
+	case 28:
+	case 29:
+	case 30:
+	case 31:
+	case 32:
+	case 33:
+	{
+		m_nType = nType - 26;
+
+		RELEASEOBJECT(m_pWidgetPr);
+		m_pWidgetPr = new CAnnotFieldInfo::CWidgetAnnotPr(nType);
 		break;
 	}
 	}
@@ -195,17 +238,33 @@ void CAnnotFieldInfo::GetBorder(BYTE& nType, double& dWidth, double& dDashesAlte
 }
 
 // Common
-bool CAnnotFieldInfo::isWidget() const
+bool CAnnotFieldInfo::IsWidget() const
 {
-	return (m_nType != 0 && m_nType < 7);
+	return (m_nType < 8);
 }
-bool CAnnotFieldInfo::isMarkup() const
+bool CAnnotFieldInfo::IsButtonWidget() const
+{
+	return (m_nType == 1 || m_nType == 2 || m_nType == 3);
+}
+bool CAnnotFieldInfo::IsTextWidget() const
+{
+	return (m_nType == 4);
+}
+bool CAnnotFieldInfo::IsChoiceWidget() const
+{
+	return (m_nType == 5 || m_nType == 6);
+}
+bool CAnnotFieldInfo::IsSignatureWidget() const
+{
+	return (m_nType == 7);
+}
+bool CAnnotFieldInfo::IsMarkup() const
 {
 	return (m_nType > 6 && m_nType < 24);
 }
 bool CAnnotFieldInfo::IsText() const
 {
-	return (m_nType == 7);
+	return (m_nType == 15);
 }
 bool CAnnotFieldInfo::IsInk() const
 {
@@ -231,6 +290,153 @@ bool CAnnotFieldInfo::IsPopup() const
 {
 	return (m_nType == 24);
 }
+bool CAnnotFieldInfo::IsFreeText() const
+{
+	return (m_nType == 13);
+}
+bool CAnnotFieldInfo::IsCaret() const
+{
+	return (m_nType == 14);
+}
+
+CAnnotFieldInfo::CWidgetAnnotPr::CWidgetAnnotPr(BYTE nType)
+{
+	m_pButtonPr    = NULL;
+	m_pTextPr      = NULL;
+	m_pChoicePr    = NULL;
+	m_pSignaturePr = NULL;
+
+	m_nType = nType;
+	switch (nType)
+	{
+	case 26:
+	{
+		// Unknown widget
+		break;
+	}
+	case 27:
+	case 28:
+	case 29:
+	{
+		RELEASEOBJECT(m_pButtonPr);
+		m_pButtonPr = new CWidgetAnnotPr::CButtonWidgetPr();
+		break;
+	}
+	case 30:
+	{
+		RELEASEOBJECT(m_pTextPr);
+		m_pTextPr = new CWidgetAnnotPr::CTextWidgetPr();
+		break;
+	}
+	case 31:
+	case 32:
+	{
+		RELEASEOBJECT(m_pChoicePr);
+		m_pChoicePr = new CWidgetAnnotPr::CChoiceWidgetPr();
+		break;
+	}
+	case 33:
+	{
+		RELEASEOBJECT(m_pSignaturePr);
+		m_pSignaturePr = new CWidgetAnnotPr::CSignatureWidgetPr();
+		break;
+	}
+	}
+}
+CAnnotFieldInfo::CWidgetAnnotPr::~CWidgetAnnotPr()
+{
+	RELEASEOBJECT(m_pButtonPr);
+	RELEASEOBJECT(m_pTextPr);
+	RELEASEOBJECT(m_pChoicePr);
+	RELEASEOBJECT(m_pSignaturePr);
+
+	for (int i = 0; i < m_arrAction.size(); ++i)
+		RELEASEOBJECT(m_arrAction[i]);
+}
+
+CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* ReadAction(NSOnlineOfficeBinToPdf::CBufferReader* pReader)
+{
+	CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pRes = new CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget();
+
+	pRes->nActionType = pReader->ReadByte();
+	switch (pRes->nActionType)
+	{
+	case 14: // JavaScript
+	{
+		pRes->wsStr1 = pReader->ReadString();
+		break;
+	}
+	case 1: // GoTo
+	{
+		pRes->nInt1 = pReader->ReadInt();
+		pRes->nKind = pReader->ReadByte();
+		switch (pRes->nKind)
+		{
+		case 0:
+		case 2:
+		case 3:
+		case 6:
+		case 7:
+		{
+			pRes->nFlags = pReader->ReadByte();
+			if (pRes->nFlags & (1 << 0))
+				pRes->dD[0] = pReader->ReadDouble();
+			if (pRes->nFlags & (1 << 1))
+				pRes->dD[1] = pReader->ReadDouble();
+			if (pRes->nFlags & (1 << 2))
+				pRes->dD[2] = pReader->ReadDouble();
+			break;
+		}
+		case 4:
+		{
+			pRes->dD[0] = pReader->ReadDouble();
+			pRes->dD[1] = pReader->ReadDouble();
+			pRes->dD[2] = pReader->ReadDouble();
+			pRes->dD[3] = pReader->ReadDouble();
+			break;
+		}
+		case 1:
+		case 5:
+		default:
+		{
+			break;
+		}
+		}
+		break;
+	}
+	case 10: // Named
+	{
+		pRes->wsStr1 = pReader->ReadString();
+		break;
+	}
+	case 6: // URI
+	{
+		pRes->wsStr1 = pReader->ReadString();
+		break;
+	}
+	case 9: // Hide
+	{
+		pRes->nInt1 = pReader->ReadInt();
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			pRes->arrStr.push_back(pReader->ReadString());
+		break;
+	}
+	case 12: // ResetForm
+	{
+		pRes->nInt1 = pReader->ReadInt();
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
+			pRes->arrStr.push_back(pReader->ReadString());
+		break;
+	}
+	}
+
+	if (pReader->ReadByte())
+		pRes->pNext = ReadAction(pReader);
+
+	return pRes;
+}
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
@@ -250,10 +456,16 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	int nFlags = pReader->ReadInt();
 	SetFlag(nFlags);
 
+	if (nFlags & (1 << 0))
+		SetNM(pReader->ReadString());
 	if (nFlags & (1 << 1))
 		SetContents(pReader->ReadString());
 	if (nFlags & (1 << 2))
-		SetBE(pReader->ReadDouble());
+	{
+		BYTE nS = pReader->ReadByte();
+		double dI = pReader->ReadDouble();
+		SetBE(nS, dI);
+	}
 	if (nFlags & (1 << 3))
 	{
 		int n = pReader->ReadInt();
@@ -274,8 +486,10 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		}
 		SetBorder(nType, dWidth, d1, d2);
 	}
+	if (nFlags & (1 << 5))
+		SetLM(pReader->ReadString());
 
-	if (isMarkup())
+	if (IsMarkup())
 	{
 		CAnnotFieldInfo::CMarkupAnnotPr* pPr = GetMarkupAnnotPr();
 
@@ -289,6 +503,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			pPr->SetCA(pReader->ReadDouble());
 		if (nFlags & (1 << 3))
 			pPr->SetRC(pReader->ReadString());
+		if (nFlags & (1 << 4))
+			pPr->SetCD(pReader->ReadString());
 		if (nFlags & (1 << 5))
 			pPr->SetIRTID(pReader->ReadInt());
 		if (nFlags & (1 << 6))
@@ -437,6 +653,180 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		pPr->SetOpen(nFlags & (1 << 0));
 		if (nFlags & (1 << 1))
 			pPr->SetParentID(pReader->ReadInt());
+	}
+	else if (IsFreeText())
+	{
+		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = GetFreeTextAnnotPr();
+
+		pPr->SetQ(pReader->ReadByte());
+		if (nFlags & (1 << 15))
+		{
+			double dRD1 = pReader->ReadDouble();
+			double dRD2 = pReader->ReadDouble();
+			double dRD3 = pReader->ReadDouble();
+			double dRD4 = pReader->ReadDouble();
+			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+		{
+			int n = pReader->ReadInt();
+			std::vector<double> arrCL;
+			for (int i = 0; i < n; ++i)
+				arrCL.push_back(pReader->ReadDouble());
+			pPr->SetCL(arrCL);
+		}
+		if (nFlags & (1 << 17))
+			pPr->SetDS(pReader->ReadString());
+		if (nFlags & (1 << 18))
+			pPr->SetLE(pReader->ReadByte());
+		if (nFlags & (1 << 20))
+			pPr->SetIT(pReader->ReadByte());
+	}
+	else if (IsCaret())
+	{
+		CAnnotFieldInfo::CCaretAnnotPr* pPr = GetCaretAnnotPr();
+
+		if (nFlags & (1 << 15))
+		{
+			double dRD1 = pReader->ReadDouble();
+			double dRD2 = pReader->ReadDouble();
+			double dRD3 = pReader->ReadDouble();
+			double dRD4 = pReader->ReadDouble();
+			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+		}
+		if (nFlags & (1 << 16))
+			pPr->SetSy(pReader->ReadByte());
+	}
+
+	if (IsWidget())
+	{
+		CAnnotFieldInfo::CWidgetAnnotPr* pPr = GetWidgetAnnotPr();
+
+		int n = pReader->ReadInt();
+		std::vector<double> arrTC;
+		for (int i = 0; i < n; ++i)
+			arrTC.push_back(pReader->ReadDouble());
+		pPr->SetTC(arrTC);
+
+		pPr->SetQ(pReader->ReadByte());
+		int nWidgetFlag = pReader->ReadInt();
+		pPr->SetFlag(nWidgetFlag);
+
+		int nFlags = pReader->ReadInt();
+		pPr->SetFlags(nFlags);
+		if (nFlags & (1 << 0))
+			pPr->SetTU(pReader->ReadString());
+		if (nFlags & (1 << 1))
+			pPr->SetDS(pReader->ReadString());
+		if (nFlags & (1 << 3))
+			pPr->SetH(pReader->ReadByte());
+		if (nFlags & (1 << 5))
+		{
+			int n = pReader->ReadInt();
+			std::vector<double> arrBC;
+			for (int i = 0; i < n; ++i)
+				arrBC.push_back(pReader->ReadDouble());
+			pPr->SetBC(arrBC);
+		}
+		if (nFlags & (1 << 6))
+			pPr->SetR(pReader->ReadInt());
+		if (nFlags & (1 << 7))
+		{
+			int n = pReader->ReadInt();
+			std::vector<double> arrBG;
+			for (int i = 0; i < n; ++i)
+				arrBG.push_back(pReader->ReadDouble());
+			pPr->SetBG(arrBG);
+		}
+		if (nFlags & (1 << 8))
+			pPr->SetDV(pReader->ReadString());
+		if (nFlags & (1 << 17))
+			pPr->SetParentID(pReader->ReadInt());
+		if (nFlags & (1 << 18))
+			pPr->SetT(pReader->ReadString());
+
+		// Action
+		int nAction = pReader->ReadInt();
+		for (int i = 0; i < nAction; ++i)
+		{
+			std::wstring wsType = pReader->ReadString();
+			CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pA = ReadAction(pReader);
+			if (pA)
+			{
+				pA->wsType = wsType;
+				pPr->AddAction(pA);
+			}
+		}
+
+		if (nType == 29 || nType == 28 || nType == 27)
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr1 = pPr->GetButtonWidgetPr();
+
+			int nIFFlags = pReader->ReadInt();
+			pPr1->SetIFFlag(nIFFlags);
+			if (nType == 27)
+			{
+				if (nFlags & (1 << 10))
+					pPr1->SetCA(pReader->ReadString());
+				if (nFlags & (1 << 11))
+					pPr1->SetRC(pReader->ReadString());
+				if (nFlags & (1 << 12))
+					pPr1->SetAC(pReader->ReadString());
+			}
+			else
+				pPr1->SetS(pReader->ReadByte());
+
+			if (nFlags & (1 << 13))
+				pPr1->SetTP(pReader->ReadByte());
+			if (nIFFlags & (1 << 0))
+			{
+				if (nIFFlags & (1 << 1))
+					pPr1->SetSW(pReader->ReadByte());
+				if (nIFFlags & (1 << 2))
+					pPr1->SetS(pReader->ReadByte());
+				if (nIFFlags & (1 << 3))
+				{
+					double d1 = pReader->ReadDouble();
+					double d2 = pReader->ReadDouble();
+					pPr1->SetA(d1, d2);
+				}
+			}
+			if (nFlags & (1 << 14))
+				pPr1->SetAP_N_Yes(pReader->ReadString());
+
+		}
+		else if (nType == 30)
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr* pPr1 = pPr->GetTextWidgetPr();
+
+			if (nFlags & (1 << 9))
+				pPr1->SetV(pReader->ReadString());
+			if (nFlags & (1 << 10))
+				pPr1->SetMaxLen(pReader->ReadInt());
+			if (nWidgetFlag & (1 << 25))
+				pPr1->SetRV(pReader->ReadString());
+		}
+		else if (nType == 31 || nType == 32)
+		{
+			CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr* pPr1 = pPr->GetChoiceWidgetPr();
+
+			if (nFlags & (1 << 9))
+				pPr1->SetV(pReader->ReadString());
+			if (nFlags & (1 << 10))
+			{
+				int n = pReader->ReadInt();
+				std::vector< std::pair<std::wstring, std::wstring> > arrOpt;
+				for (int i = 0; i < n; ++i)
+				{
+					std::wstring s1 = pReader->ReadString();
+					std::wstring s2 = pReader->ReadString();
+					arrOpt.push_back(std::make_pair(s2, s1));
+				}
+				pPr1->SetOpt(arrOpt);
+			}
+			if (nFlags & (1 << 11))
+				pPr1->SetTI(pReader->ReadInt());
+		}
 	}
 
 	return IsValid();

@@ -5042,19 +5042,88 @@ namespace NExtractTools
        return nRes;
    }
 
-	_UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params)
-   {
-       _UINT32 nRes = 0;
-       NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
-       initApplicationFonts(pApplicationFonts, params);
-      
-	   if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
-       {
-		   std::string sPages = checkPrintPages(params);
+	bool applyChangesPdf(const std::wstring& sFrom, const std::wstring& sTo,
+						 NSFonts::IApplicationFonts* pApplicationFonts,
+						 const std::wstring &sTemp, InputParams& params,
+						 std::vector<std::wstring>& changes)
+	{
+		CPdfFile oPdfResult(pApplicationFonts);
+		oPdfResult.SetTempDirectory(sTemp);
+		oPdfResult.SetDocumentInfo(params.getTitle(), L"", L"", L"");
 
-		   if (nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
-           {
-				nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		std::wstring documentID = params.getDocumentID();
+		if (!documentID.empty())
+			oPdfResult.SetDocumentID(documentID);
+
+		std::wstring password = params.getSavePassword();
+		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+			return false;
+
+		if (!oPdfResult.EditPdf(sTo))
+			return false;
+
+		CConvertFromBinParams oConvertParams;
+		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);
+		oConvertParams.m_sMediaDirectory = oConvertParams.m_sInternalMediaDirectory;
+
+		for (std::vector<std::wstring>::const_iterator i = changes.begin(); i != changes.end(); i++)
+		{
+			BYTE* pChangesData = NULL;
+			DWORD dwChangesSize = 0;
+			if (NSFile::CFileBinary::ReadAllBytes(*i, &pChangesData, dwChangesSize))
+			{
+				oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
+				RELEASEARRAYOBJECTS(pChangesData);
+			}
+		}
+
+		oPdfResult.Close();
+		return true;
+	}
+
+	_UINT32
+	fromCrossPlatform(const std::wstring &sFromSrc, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params)
+	{
+		_UINT32 nRes = 0;
+		NSFonts::IApplicationFonts *pApplicationFonts = NSFonts::NSApplication::Create();
+		initApplicationFonts(pApplicationFonts, params);
+
+		std::wstring sFrom = sFromSrc;
+		if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom ||
+			AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == nFormatFrom)
+		{
+			if (params.getFromChanges())
+			{
+				std::wstring sChangesDir = NSDirectory::GetFolderPath(sFrom) + FILE_SEPARATOR_STR + L"changes";
+				std::vector<std::wstring> arChanges = NSDirectory::GetFiles(sChangesDir);
+
+				sFrom = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTemp, L"PDF_");
+				if (NSFile::CFileBinary::Exists(sFrom))
+					NSFile::CFileBinary::Remove(sFrom);
+
+				if (!applyChangesPdf(sFromSrc, sFrom, pApplicationFonts, sTemp, params, arChanges))
+				{
+					if (NSFile::CFileBinary::Exists(sFrom))
+						NSFile::CFileBinary::Remove(sFrom);
+
+					sFrom = sFromSrc;
+				}
+			}
+		}
+
+		if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+		{
+			std::string sPages = checkPrintPages(params);
+
+			if (nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
+			{
+				if (sFrom == sFromSrc)
+					nRes = NSFile::CFileBinary::Copy(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+				else
+				{
+					nRes = NSFile::CFileBinary::Move(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+					sFrom = sFromSrc;
+				}
 			}
 			else
 			{
@@ -5187,6 +5256,9 @@ namespace NExtractTools
 			RELEASEOBJECT(pReader);
 		}
 		RELEASEOBJECT(pApplicationFonts);
+
+		if (sFrom != sFromSrc && NSFile::CFileBinary::Exists(sFrom))
+			NSFile::CFileBinary::Remove(sFrom);
 		return nRes;
 	}
 	_UINT32 fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams &params)

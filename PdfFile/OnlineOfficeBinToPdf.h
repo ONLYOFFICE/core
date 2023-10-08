@@ -37,8 +37,8 @@
 
 namespace NSOnlineOfficeBinToPdf
 {
-    bool ConvertBinToPdf(CPdfFile* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, CConvertFromBinParams* pParams);
+	bool ConvertBinToPdf(CPdfFile* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, CConvertFromBinParams* pParams);
+	bool AddBinToPdf(CPdfFile* pPdf, BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams);
 }
 
 #endif // _PDF_WRITER_ONLINEOFFICEBINTOPDF_H
-

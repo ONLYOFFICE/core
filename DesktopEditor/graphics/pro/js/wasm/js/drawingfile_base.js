@@ -1035,7 +1035,7 @@
 			{
 				rec["Open"] = (flags >> 15) & 1;
 				// иконка - Name
-				// 0 - Check, 1 - Circle, 2 - Comment, 3 - Cross, 4 - Help, 5 - Insert, 6 - Key, 7 - NewParagraph, 8 - Note, 9 - Paragraph, 10 - RightArrow, 11 - RightPointer, 12 - Star, 13 - UpArrow, 14 - UpLeftArrow
+				// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
 				if (flags & (1 << 16))
 					rec["Icon"] = reader.readByte();
 				// Модель состояния - StateModel

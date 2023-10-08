@@ -66,13 +66,7 @@ namespace PdfWriter
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
-		"Comment",
-		"Key",
-		"Note",
-		"Help",
-		"NewParagraph",
-		"Paragraph",
-		"Insert"
+		"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"
 	};
 
 	//----------------------------------------------------------------------------------------
@@ -90,8 +84,10 @@ namespace PdfWriter
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
-
-		//Add("M", new CStringObject(DateNow().c_str()));
+	}
+	void CAnnotation::SetHeight(double dHeight)
+	{
+		m_dPageHeight = dHeight;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -217,9 +213,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_nIRTID   = 0;
-
-		// Add("CreationDate", new CStringObject(DateNow().c_str()));
+		m_nIRTID = 0;
 	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
@@ -385,7 +379,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CInkAnnotation::CInkAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotInk)
 	{
-
 	}
 	void CInkAnnotation::SetInkList(const std::vector< std::vector<double> >& arrInkList)
 	{
@@ -400,8 +393,8 @@ namespace PdfWriter
 			CArrayObject* pArrayI = new CArrayObject();
 			pArray->Add(pArrayI);
 
-			for (const double& dInk : arrInk)
-				pArrayI->Add(dInk);
+			for (int i = 0; i < arrInk.size(); ++i)
+				pArrayI->Add(i % 2 == 0 ? arrInk[i] : (m_dPageHeight - arrInk[i]));
 		}
 	}
 	//----------------------------------------------------------------------------------------
@@ -502,9 +495,9 @@ namespace PdfWriter
 		Add("L", pArray);
 
 		pArray->Add(dL1);
-		pArray->Add(dL2);
+		pArray->Add(m_dPageHeight - dL2);
 		pArray->Add(dL3);
-		pArray->Add(dL4);
+		pArray->Add(m_dPageHeight - dL4);
 	}
 	void CLineAnnotation::SetCO(const double& dCO1, const double& dCO2)
 	{
@@ -590,7 +583,14 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
 	{
-		AddToVectorD(this, "CL", arrCL);
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("CL", pArray);
+
+		for (int i = 0; i < arrCL.size(); ++i)
+			pArray->Add(i % 2 == 0 ? arrCL[i] : (m_dPageHeight - arrCL[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextMarkupAnnotation
@@ -617,7 +617,14 @@ namespace PdfWriter
 	}
 	void CTextMarkupAnnotation::SetQuadPoints(const std::vector<double>& arrQuadPoints)
 	{
-		AddToVectorD(this, "QuadPoints", arrQuadPoints);
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("QuadPoints", pArray);
+
+		for (int i = 0; i < arrQuadPoints.size(); ++i)
+			pArray->Add(i % 2 == 0 ? arrQuadPoints[i] : (m_dPageHeight - arrQuadPoints[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CSquareCircleAnnotation
@@ -706,7 +713,14 @@ namespace PdfWriter
 	}
 	void CPolygonLineAnnotation::SetVertices(const std::vector<double>& arrVertices)
 	{
-		AddToVectorD(this, "Vertices", arrVertices);
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("Vertices", pArray);
+
+		for (int i = 0; i < arrVertices.size(); ++i)
+			pArray->Add(i % 2 == 0 ? arrVertices[i] : (m_dPageHeight - arrVertices[i]));
 	}
 	//----------------------------------------------------------------------------------------
 	// CCaretAnnotation

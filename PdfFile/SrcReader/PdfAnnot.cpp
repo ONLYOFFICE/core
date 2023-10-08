@@ -885,35 +885,11 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 	{
 		m_unFlags |= (1 << 16);
 		std::string sName(oObj.getName());
-		m_nName = 2; // Default: Comment
-		if (sName == "Check")
-			m_nName = 0;
-		else if (sName == "Circle")
-			m_nName = 1;
-		else if (sName == "Cross")
-			m_nName = 3;
-		else if (sName == "Help")
-			m_nName = 4;
-		else if (sName == "Insert")
-			m_nName = 5;
-		else if (sName == "Key")
-			m_nName = 6;
-		else if (sName == "NewParagraph")
-			m_nName = 7;
-		else if (sName == "Note")
-			m_nName = 8;
-		else if (sName == "Paragraph")
-			m_nName = 9;
-		else if (sName == "RightArrow")
-			m_nName = 10;
-		else if (sName == "RightPointer")
-			m_nName = 11;
-		else if (sName == "Star")
-			m_nName = 12;
-		else if (sName == "UpArrow")
-			m_nName = 13;
-		else if (sName == "UpLeftArrow")
-			m_nName = 14;
+		std::vector<std::string> arrName = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
+		m_nName = 10; // Default: Note
+		std::vector<std::string>::iterator p = std::find(arrName.begin(), arrName.end(), sName);
+		if (p != arrName.end())
+			m_nName = p - arrName.begin();
 	}
 	oObj.free();
 

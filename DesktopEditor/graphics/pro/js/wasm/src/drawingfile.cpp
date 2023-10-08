@@ -1274,7 +1274,7 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrIcon[] = {"Check", "Circle", "Comment", "Cross", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
+					std::string arrIcon[] = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
 					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 17))

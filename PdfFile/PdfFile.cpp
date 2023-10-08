@@ -52,6 +52,7 @@
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
 #include "SrcWriter/Info.h"
+#include "SrcWriter/Annotation.h"
 
 #define AddToObject(oVal)\
 {\
@@ -68,7 +69,8 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 	{
 	case objBool:
 	{
-		AddToObject(obj->getBool())
+		bool b = obj->getBool();
+		AddToObject(b)
 				break;
 	}
 	case objInt:
@@ -589,6 +591,14 @@ bool CPdfFile::EditPage(int nPageIndex)
 	if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
 		return false;
 
+	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	if (pEditPage)
+	{
+		pDoc->SetCurPage(pEditPage);
+		m_pInternal->pWriter->EditPage(pEditPage);
+		return true;
+	}
+
 	XRef* xref = pPDFDocument->getXRef();
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	if (!xref || !pCatalog)
@@ -627,23 +637,7 @@ bool CPdfFile::EditPage(int nPageIndex)
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0 || strcmp("Annots", chKey) == 0)
-		{
 			pageObj.dictGetVal(nIndex, &oTemp);
-			if (strcmp("Annots", chKey) == 0 && oTemp.isArray())
-			{
-				std::map<int, int> mAnnots;
-				for (int i = 0; i < oTemp.arrayGetLength(); ++i)
-				{
-					Object oAnnot, oPopupRef, oAnnotRef;
-					if (oTemp.arrayGet(i, &oAnnot)->isDict() && oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef() && oTemp.arrayGetNF(i, &oAnnotRef)->isRef())
-					{
-						mAnnots[oAnnotRef.getRefNum()] = oPopupRef.getRefNum();
-					}
-					oAnnot.free(); oPopupRef.free(); oAnnotRef.free();
-				}
-				pPage->SetAnnots(mAnnots);
-			}
-		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPage, true, chKey);
@@ -655,7 +649,7 @@ bool CPdfFile::EditPage(int nPageIndex)
 
 	// Применение редактирования страницы для writer
 	m_pInternal->bEditPage = true;
-	if (m_pInternal->pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage))
+	if (m_pInternal->pWriter->EditPage(pPage) && pDoc->EditPage(pXref, pPage, nPageIndex))
 		return true;
 
 	RELEASEOBJECT(pXref);
@@ -690,6 +684,165 @@ bool CPdfFile::AddPage(int nPageIndex)
 		m_pInternal->pWriter->put_Height(dHeight);
 	}
 	return bRes;
+}
+bool CPdfFile::EditAnnot(int nPageIndex, int nID)
+{
+	// Проверка режима редактирования
+	if (!m_pInternal->pWriter || !m_pInternal->bEdit)
+		return false;
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+	if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
+		return false;
+
+	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	if (!pEditPage)
+	{
+		pEditPage = pDoc->GetCurPage();
+		EditPage(nPageIndex);
+		pDoc->SetCurPage(pEditPage);
+		m_pInternal->pWriter->EditPage(pEditPage);
+	}
+
+	XRef* xref = pPDFDocument->getXRef();
+	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
+	if (!xref || pPageRef.first == 0)
+		return false;
+
+	// Получение объекта аннотации
+	Object pageRefObj, pageObj, oAnnots;
+	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	if (!pageRefObj.fetch(xref, &pageObj)->isDict() || !pageObj.dictLookup("Annots", &oAnnots)->isArray())
+	{
+		pageRefObj.free(); pageObj.free(); oAnnots.free();
+		return false;
+	}
+	pageRefObj.free(); pageObj.free();
+
+	Object oAnnotRef, oAnnot, oType;
+	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+	{
+		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
+			break;
+		oAnnotRef.free();
+	}
+	oAnnots.free();
+	if (!oAnnotRef.isRef() || !oAnnotRef.fetch(xref, &oAnnot)->isDict() || !oAnnot.dictLookup("Subtype", &oType)->isName())
+	{
+		oAnnotRef.free(); oAnnot.free(); oType.free();
+		return false;
+	}
+
+	// Воспроизведение словаря аннотации из reader для writer
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, oAnnotRef.getRefNum());
+	if (!pXref)
+	{
+		oAnnotRef.free(); oAnnot.free(); oType.free();
+		return false;
+	}
+
+	PdfWriter::CAnnotation* pAnnot = NULL;
+	if (oType.isName("Text"))
+		pAnnot = new PdfWriter::CTextAnnotation(pXref);
+	else if (oType.isName("Ink"))
+		pAnnot = new PdfWriter::CInkAnnotation(pXref);
+	else if (oType.isName("Line"))
+		pAnnot = new PdfWriter::CLineAnnotation(pXref);
+	else if (oType.isName("Highlight") || oType.isName("Underline") || oType.isName("Squiggly") || oType.isName("StrikeOut"))
+		pAnnot = new PdfWriter::CTextMarkupAnnotation(pXref);
+	else if (oType.isName("Square") || oType.isName("Circle"))
+		pAnnot = new PdfWriter::CSquareCircleAnnotation(pXref);
+	else if (oType.isName("Polygon") || oType.isName("PolyLine"))
+		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
+	else if (oType.isName("FreeText"))
+		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
+	else if (oType.isName("Caret"))
+		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
+	else if (oType.isName("Popup"))
+		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
+	else if (oType.isName("Widget"))
+	{
+		char* sName = NULL;
+		Object oFT;
+		if (oAnnot.dictLookup("FT", &oFT)->isName())
+			sName = oFT.getName();
+
+		if (!sName)
+		{
+			Object oParent, oParent2;
+			oAnnot.dictLookup("Parent", &oParent);
+			while (oParent.isDict())
+			{
+				if (oParent.dictLookup("FT", &oFT)->isName())
+				{
+					sName = oFT.getName();
+					break;
+				}
+				oFT.free();
+				oParent.dictLookup("Parent", &oParent2);
+				oParent.free();
+				oParent = oParent2;
+			}
+			oParent.free();
+		}
+
+		if (sName)
+		{
+			if (strcmp("Btn", sName) == 0)
+				pAnnot = new PdfWriter::CButtonWidget(pXref);
+			else if (strcmp("Tx", sName) == 0)
+				pAnnot = new PdfWriter::CTextWidget(pXref);
+			else if (strcmp("Ch", sName) == 0)
+				pAnnot = new PdfWriter::CChoiceWidget(pXref);
+			else if (strcmp("Sig", sName) == 0)
+				pAnnot = new PdfWriter::CSignatureWidget(pXref);
+			else
+				pAnnot = new PdfWriter::CWidgetAnnotation(pXref, PdfWriter::EAnnotType::AnnotWidget);
+		}
+		oFT.free();
+	}
+	oType.free();
+
+	if (!pAnnot)
+	{
+		oAnnotRef.free(); oAnnot.free();
+		RELEASEOBJECT(pXref);
+		return false;
+	}
+
+	for (int nIndex = 0; nIndex < oAnnot.dictGetLength(); ++nIndex)
+	{
+		char* chKey = oAnnot.dictGetKey(nIndex);
+		if (strcmp("AP", chKey) == 0)
+			continue;
+		if (strcmp("Popup", chKey) == 0)
+		{
+			Object oPopupRef;
+			if (oAnnot.dictGetValNF(nIndex, &oPopupRef)->isRef() && EditAnnot(nPageIndex, oPopupRef.getRefNum()))
+			{
+				PdfWriter::CAnnotation* pPopup = pDoc->GetAnnot(oPopupRef.getRefNum());
+				if (pPopup)
+				{
+					pAnnot->Add("Popup", pPopup);
+					pPopup->Add("Parent", pAnnot);
+				}
+			}
+			continue;
+		}
+		Object oTemp;
+		oAnnot.dictGetValNF(nIndex, &oTemp);
+		DictToCDictObject(&oTemp, pAnnot, false, chKey);
+		oTemp.free();
+	}
+	pAnnot->SetRef(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+	oAnnotRef.free(); oAnnot.free();
+
+	if (pDoc->EditAnnot(pXref, pAnnot, nID))
+		return true;
+
+	RELEASEOBJECT(pXref);
+	return false;
 }
 bool CPdfFile::DeleteAnnot(int nPageIndex, int nID)
 {
@@ -1623,7 +1776,12 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{
-		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, (CAnnotFieldInfo*)command);
+		CAnnotFieldInfo* cCommand = (CAnnotFieldInfo*)command;
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && m_pInternal->bEditPage)
+			EditAnnot(cCommand->GetPage(), cCommand->GetID());
+#endif
+		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, cCommand);
 	}
 	default:
 		break;

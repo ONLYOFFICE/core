@@ -1584,13 +1584,6 @@ namespace PdfWriter
         CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
         return pRotate ? pRotate->Get() : 0;
     }
-	int CPage::GetAnnot(int nAnnot)
-	{
-		std::map<int, int>::iterator it = m_mAnnots.find(nAnnot);
-		if (it != m_mAnnots.end())
-			return it->second;
-		return 0;
-	}
     //----------------------------------------------------------------------------------------
 	// CTextWord
 	//----------------------------------------------------------------------------------------

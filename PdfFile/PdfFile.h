@@ -94,9 +94,10 @@ public:
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	// Манипуляции со страницами возможны в режиме редактирования
-	bool EditPage  (int nPageIndex);
-	bool DeletePage(int nPageIndex);
-	bool AddPage   (int nPageIndex);
+	bool EditPage   (int nPageIndex);
+	bool DeletePage (int nPageIndex);
+	bool AddPage    (int nPageIndex);
+	bool EditAnnot  (int nPageIndex, int nID);
 	bool DeleteAnnot(int nPageIndex, int nID);
 #endif
 

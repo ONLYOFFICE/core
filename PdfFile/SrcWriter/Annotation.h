@@ -100,7 +100,8 @@ namespace PdfWriter
 		CAnnotation(CXref* pXref, EAnnotType eType);
 
 		CXref* m_pXref;
-		TRect m_oRect;
+		TRect  m_oRect;
+		double m_dPageHeight = 0;
 
 	public:
 		int m_nID; // Идентификатор сопоставления
@@ -118,6 +119,7 @@ namespace PdfWriter
 		{
 			return false;
 		}
+		void SetHeight(double dHeight);
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, double dDashesAlternating = 0.0, double dGaps = 0.0);

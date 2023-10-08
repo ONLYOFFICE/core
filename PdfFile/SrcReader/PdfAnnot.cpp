@@ -654,7 +654,18 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
 {
+	Object oObj;
+	Object oFieldRef, oField;
+	pField->getFieldRef(&oFieldRef);
+	oFieldRef.fetch(pdfDoc->getXRef(), &oField);
+	oFieldRef.free();
 
+	// 10 - Значение
+	if (oField.dictLookup("V", &oObj)->isDict())
+		m_unFlags |= (1 << 9);
+	oObj.free();
+
+	oField.free();
 }
 
 CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDoc, pField)
@@ -680,20 +691,20 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Тип - FT + флаги
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
-	m_nType = 0; // Unknown
+	m_nType = 26; // Unknown
 	switch (oType)
 	{
-	case acroFormFieldPushbutton:    m_nType = 1;/*sType = "button";*/             break;
-	case acroFormFieldRadioButton:   m_nType = 2;/*sType = "radiobutton";*/        break;
-	case acroFormFieldCheckbox:      m_nType = 3;/*sType = "checkbox";*/           break;
-	case acroFormFieldFileSelect:    m_nType = 4;/*sType = "text""fileselect"*/    break;
-	case acroFormFieldMultilineText: m_nType = 4;/*sType = "text""multilinetext"*/ break;
-	case acroFormFieldText:          m_nType = 4;/*sType = "text";*/               break;
-	case acroFormFieldBarcode:       m_nType = 4;/*sType = "text""barcode"*/       break;
-	case acroFormFieldComboBox:      m_nType = 5;/*sType = "combobox";*/           break;
-	case acroFormFieldListBox:       m_nType = 6;/*sType = "listbox";*/            break;
-	case acroFormFieldSignature:     m_nType = 7;/*sType = "signature";*/          break;
-	default:                         m_nType = 0;/*sType = "";*/                   break;
+	case acroFormFieldPushbutton:    m_nType = 27; break;
+	case acroFormFieldRadioButton:   m_nType = 28; break;
+	case acroFormFieldCheckbox:      m_nType = 29; break;
+	case acroFormFieldFileSelect:    m_nType = 30; break;
+	case acroFormFieldMultilineText: m_nType = 30; break;
+	case acroFormFieldText:          m_nType = 30; break;
+	case acroFormFieldBarcode:       m_nType = 30; break;
+	case acroFormFieldComboBox:      m_nType = 31; break;
+	case acroFormFieldListBox:       m_nType = 32; break;
+	case acroFormFieldSignature:     m_nType = 33; break;
+	default:                         m_nType = 26; break;
 	}
 
 	// Флаг - Ff
@@ -874,19 +885,11 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 	{
 		m_unFlags |= (1 << 16);
 		std::string sName(oObj.getName());
-		m_nName = 2; // Default: Note
-		if (sName == "Comment")
-			m_nName = 0;
-		else if (sName == "Key")
-			m_nName = 1;
-		else if (sName == "Help")
-			m_nName = 3;
-		else if (sName == "NewParagraph")
-			m_nName = 4;
-		else if (sName == "Paragraph")
-			m_nName = 5;
-		else if (sName == "Insert")
-			m_nName = 6;
+		std::vector<std::string> arrName = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
+		m_nName = 10; // Default: Note
+		std::vector<std::string>::iterator p = std::find(arrName.begin(), arrName.end(), sName);
+		if (p != arrName.end())
+			m_nName = p - arrName.begin();
 	}
 	oObj.free();
 
@@ -1306,7 +1309,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 }
 
 //------------------------------------------------------------------------
-// FreeText
+// Caret
 //------------------------------------------------------------------------
 
 CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
@@ -1330,9 +1333,11 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 	if (oAnnot.dictLookup("Sy", &oObj)->isName())
 	{
 		m_unFlags |= (1 << 16);
-		m_nSy = 1; // None
+		m_nSy = 0; // None
 		if (oObj.isName("P"))
-			m_nSy = 0;
+			m_nSy = 1;
+		if (oObj.isName("S"))
+			m_nSy = 2;
 	}
 	oObj.free();
 
@@ -1852,14 +1857,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
 
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
-
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict())
 	{
@@ -1878,14 +1875,6 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pFrame = NULL;
 	m_pRendererOut = NULL;
 	m_pRenderer = NULL;
-
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 != 0)
-	{
-		int nTemp = nRasterH;
-		nRasterH = nRasterW;
-		nRasterW = nTemp;
-	}
 
 	Object oAnnot, oAP;
 	XRef* xref = pdfDoc->getXRef();
@@ -2067,6 +2056,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -2103,6 +2093,8 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
+
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 }
 
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
@@ -2243,13 +2235,14 @@ void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 
 void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 {
+	oRes.WriteBYTE(m_nType);
+
 	CAnnot::ToWASM(oRes);
 
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);
 	oRes.WriteBYTE(m_nQ);
-	oRes.WriteBYTE(m_nType);
 	oRes.AddInt(m_unFieldFlag);
 	oRes.AddInt(m_unFlags);
 	if (m_unFlags & (1 << 0))
@@ -2387,7 +2380,7 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 	CAnnotWidget::ToWASM(oRes);
 
 	oRes.AddInt(m_unIFFlag);
-	if (m_nType == 1)
+	if (m_nType == 27)
 	{
 		if (m_unFlags & (1 << 10))
 			oRes.WriteString(m_sCA);

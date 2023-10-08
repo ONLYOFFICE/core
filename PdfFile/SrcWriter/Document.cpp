@@ -311,10 +311,22 @@ namespace PdfWriter
 	}
 	CPage* CDocument::GetPage(const unsigned int &unPage)
 	{
+		CPage* pRes = GetEditPage(unPage);
+		if (pRes)
+			return pRes;
+
 		if (unPage >= m_pPageTree->GetCount())
 			return NULL;
 
 		return m_pPageTree->GetPage(unPage);
+	}
+	CPage* CDocument::GetEditPage(const unsigned int& unPage)
+	{
+		CPage* pRes = NULL;
+		std::map<int, CPage*>::iterator p = m_mEditPages.find(unPage);
+		if (p != m_mEditPages.end())
+			pRes = p->second;
+		return pRes;
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
@@ -589,49 +601,29 @@ namespace PdfWriter
 	{
 		return new CCaretAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateWidgetAnnot()
+	{
+		return new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+	}
+	CAnnotation* CDocument::CreateButtonWidget()
+	{
+		return new CButtonWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateTextWidget()
+	{
+		return new CTextWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateChoiceWidget()
+	{
+		return new CChoiceWidget(m_pXref);
+	}
+	CAnnotation* CDocument::CreateSignatureWidget()
+	{
+		return new CSignatureWidget(m_pXref);
+	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
 		m_mAnnotations[nID] = pAnnot;
-	}
-	void CDocument::MatchAnnotation()
-	{
-		CArrayObject* pArray = (CArrayObject*)(m_pCurPage->Get("Annots"));
-		if (!pArray)
-			return;
-
-		for (int i = 0, count = pArray->GetCount(); i < count; ++i)
-		{
-			CAnnotation* pAnnot = dynamic_cast<CAnnotation*>(pArray->Get(i));
-			if (!pAnnot)
-				continue;
-
-			if (pAnnot->isMarkup())
-			{
-				CMarkupAnnotation* pMarkupAnnot = (CMarkupAnnotation*)pAnnot;
-
-				int nID = pMarkupAnnot->GetPopupID();
-				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
-				if (it != m_mAnnotations.end())
-					pMarkupAnnot->SetPopupID(it->second);
-
-				nID = pMarkupAnnot->GetIRTID();
-				it = m_mAnnotations.find(nID);
-				if (it != m_mAnnotations.end())
-					pMarkupAnnot->SetIRTID(it->second);
-			}
-
-			if (pAnnot->GetAnnotationType() == EAnnotType::AnnotPopup)
-			{
-				CPopupAnnotation* pPopupAnnot = (CPopupAnnotation*)pAnnot;
-
-				int nID = pPopupAnnot->GetParentID();
-				std::map<int, CAnnotation*>::iterator it = m_mAnnotations.find(nID);
-				if (it != m_mAnnotations.end())
-					pPopupAnnot->SetParentID(it->second);
-			}
-		}
-
-		m_mAnnotations.clear();
 	}
     CImageDict* CDocument::CreateImage()
 	{
@@ -1248,7 +1240,7 @@ namespace PdfWriter
 
 		return pRes;
 	}
-    bool CDocument::EditPage(CXref* pXref, CPage* pPage)
+	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex)
 	{
 		if (!pXref || !pPage)
 			return false;
@@ -1262,8 +1254,27 @@ namespace PdfWriter
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 		m_pCurPage  = pPage;
+		m_mEditPages[nPageIndex] = pPage;
 
 		return true;
+	}
+	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
+	{
+		if (!pXref || !pAnnot)
+			return false;
+
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+		m_mAnnotations[nID] = pAnnot;
+
+		return true;
+	}
+	CAnnotation* CDocument::GetAnnot(int nID)
+	{
+		std::map<int, CAnnotation*>::iterator p = m_mAnnotations.find(nID);
+		if (p != m_mAnnotations.end())
+			return p->second;
+		return NULL;
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{

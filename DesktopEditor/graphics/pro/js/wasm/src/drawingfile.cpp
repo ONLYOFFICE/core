@@ -229,6 +229,9 @@ unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
 }
+std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine", "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink", "Popup",
+						   "FileAttachment", "Sound", "Movie", "Widget", "Screen", "PrinterMark", "TrapNet", "Watermark", "3D", "Redact", "unknown", "button", "radiobutton", "checkbox", "text",
+						   "combobox", "listbox", "signature"};
 
 void ReadAction(BYTE* pWidgets, int& i)
 {
@@ -544,13 +547,17 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 
 	for (int q = 0; q < nAnnots; ++q)
 	{
+		int nPathLength = READ_BYTE(pWidgets + i);
+		i += 1;
+		std::string sType = arrAnnots[nPathLength];
+		std::cout << "Widget type " << sType << ", ";
+
 		// Annot
 
 		ReadAnnot(pWidgets, i);
 
 		// Widget
 
-		int nPathLength;
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
@@ -568,12 +575,6 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		nPathLength = READ_BYTE(pWidgets + i);
 		i += 1;
 		std::cout << "Q " << arrQ[nPathLength] << ", ";
-
-		std::string arrType[] = {"", "button", "radiobutton", "checkbox", "text", "combobox", "listbox", "signature"};
-		nPathLength = READ_BYTE(pWidgets + i);
-		i += 1;
-		std::string sType = arrType[nPathLength];
-		std::cout << "Widget type " << sType << ", ";
 
 		int nFieldFlag = READ_INT(pWidgets + i);
 		i += 4;
@@ -815,6 +816,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				std::cout << "TI " << nPathLength << ", ";
 			}
 		}
+		else if (sType == "signature")
+		{
+			if (nFlags & (1 << 9))
+				std::cout << "SIG, ";
+		}
 		std::cout << std::endl;
 	}
 }
@@ -1001,7 +1007,7 @@ int main(int argc, char* argv[])
 	}
 
 	// RASTER
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* res = NULL;
 		res = GetPixmap(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
@@ -1085,10 +1091,11 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
 		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
+		DestroyTextInfo(pGrFile);
 	}
 
 	// INTERACTIVE FORMS
@@ -1190,10 +1197,6 @@ int main(int argc, char* argv[])
 		{
 			int nPathLength = READ_BYTE(pAnnots + i);
 			i += 1;
-			std::string arrAnnots[] = {"Text", "Link", "FreeText", "Line", "Square", "Circle", "Polygon", "PolyLine",
-									   "Highlight", "Underline", "Squiggly", "StrikeOut", "Stamp", "Caret", "Ink",
-									   "Popup", "FileAttachment", "Sound", "Movie", "Widget", "Screen", "PrinterMark",
-									   "TrapNet", "Watermark", "3D", "Redact"};
 			std::string sType = arrAnnots[nPathLength];
 			std::cout << "Type " << sType << ", ";
 
@@ -1271,7 +1274,7 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrIcon[] = {"Comment", "Key", "Note", "Help", "NewParagraph", "Paragraph", "Insert"};
+					std::string arrIcon[] = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
 					std::cout << "Icon " << arrIcon[nPathLength] << ", ";
 				}
 				if (nFlags & (1 << 17))
@@ -1576,7 +1579,7 @@ int main(int argc, char* argv[])
 				{
 					nPathLength = READ_BYTE(pAnnots + i);
 					i += 1;
-					std::string arrSy[] = {"P", "None"};
+					std::string arrSy[] = {"None", "P", "S"};
 					std::cout << "Sy " << arrSy[nPathLength] << ", ";
 				}
 			}

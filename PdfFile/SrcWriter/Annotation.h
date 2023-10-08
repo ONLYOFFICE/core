@@ -168,7 +168,6 @@ namespace PdfWriter
 		}
 
 		void SetRT(const BYTE& nRT);
-		CPopupAnnotation* SetPopupID(const int& nPopupID);
 		void SetIRTID(const int& nIRTID);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
@@ -181,6 +180,7 @@ namespace PdfWriter
 			return m_nIRTID;
 		}
 		void SetIRTID(CAnnotation* pAnnot);
+		CPopupAnnotation* CreatePopup();
 	};
 	class CLinkAnnotation : public CAnnotation
 	{

@@ -219,7 +219,7 @@ namespace PdfWriter
 	{
 		Add("RT", nRT ? "Group" : "R");
 	}
-	CPopupAnnotation* CMarkupAnnotation::SetPopupID(const int& nPopupID)
+	CPopupAnnotation* CMarkupAnnotation::CreatePopup()
 	{
 		CPopupAnnotation* pAnnot = new CPopupAnnotation(m_pXref);
 		Add("Popup", pAnnot);

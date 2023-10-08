@@ -1677,6 +1677,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	CAnnotFieldInfo& oInfo = *pFieldInfo;
 	PdfWriter::CAnnotation* pAnnot = NULL;
 
+	PdfWriter::CPage* pOrigPage = m_pDocument->GetPage(oInfo.GetPage());
+	PdfWriter::CPage* pPage = m_pPage;
+
 	int nID = oInfo.GetID();
 	pAnnot = m_pDocument->GetAnnot(nID);
 	BYTE nWidgetType = 0;
@@ -1740,22 +1743,22 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 
 		if (pAnnot)
+		{
 			m_pDocument->AddAnnotation(nID, pAnnot);
+			pPage->AddAnnotation(pAnnot);
+		}
 	}
 
 	if (!pAnnot)
 		return S_FALSE;
 
-	pAnnot->SetID(nID);
-
-	PdfWriter::CPage* pOrigPage = m_pDocument->GetPage(oInfo.GetPage());
-	PdfWriter::CPage* pPage = m_pPage;
 	if (pOrigPage && pPage != pOrigPage)
 	{
 		pOrigPage->DeleteAnnotation(nID);
 		pPage->AddAnnotation(pAnnot);
 	}
 
+	pAnnot->SetID(nID);
 	pAnnot->SetPage(pPage);
 	pAnnot->SetHeight(pPage->GetHeight());
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
@@ -1796,21 +1799,26 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		nFlags = pPr->GetFlag();
 
+		PdfWriter::CAnnotation* pPopupAnnot = NULL;
 		if (nFlags & (1 << 0))
 		{
 			int nPopupID = pPr->GetPopupID();
 			if (nPopupID && pOrigPage && pPage != pOrigPage)
 			{
 				pOrigPage->DeleteAnnotation(nPopupID);
-				PdfWriter::CAnnotation* pPopupAnnot = m_pDocument->GetAnnot(nPopupID);
+				pPopupAnnot = m_pDocument->GetAnnot(nPopupID);
 				if (pPopupAnnot)
 				{
 					pPage->AddAnnotation(pPopupAnnot);
 					pPopupAnnot->SetPage(pPage);
 				}
 			}
-			// PdfWriter::CPopupAnnotation* pPopupAnnot = pMarkupAnnot->SetPopupID(nPopupID);
-			// pPage->AddAnnotation(pPopupAnnot);
+		}
+		if (!pPopupAnnot)
+		{
+			pPopupAnnot = pMarkupAnnot->CreatePopup();
+			pPage->AddAnnotation(pPopupAnnot);
+			pPopupAnnot->SetPage(pPage);
 		}
 		if (nFlags & (1 << 1))
 			pMarkupAnnot->SetT(pPr->GetT());

@@ -126,6 +126,7 @@ public:
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
 	int GetRotate(int nPageIndex);
+	int GetMaxRefID();
 	BYTE* GetWidgets();
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);

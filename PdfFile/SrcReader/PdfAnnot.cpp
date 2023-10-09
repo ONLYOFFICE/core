@@ -1661,6 +1661,11 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 		delete s;
 	}
 	oObj.free();
+
+	// 7 - Наличие/Отсутствие внешнего вида
+	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
+		m_unAFlags |= (1 << 6);
+	oObj.free();
 }
 
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
@@ -1782,6 +1787,11 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	}
 	oObj.free();
 
+	// 7 - Наличие/Отсутствие внешнего вида
+	if (oAnnot.dictLookup("AP", &oObj)->isDict() && oObj.dictGetLength())
+		m_unAFlags |= (1 << 6);
+	oObj.free();
+
 	oAnnot.free();
 }
 
@@ -1858,7 +1868,7 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLis
 	m_pRenderer = NULL;
 
 	Object oAP;
-	if (pField->fieldLookup("AP", &oAP)->isDict())
+	if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictGetLength())
 	{
 		Init(pField);
 		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);

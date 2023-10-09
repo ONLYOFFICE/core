@@ -146,10 +146,9 @@ namespace NSOnlineOfficeBinToPdf
 
 	enum class AddCommandType
 	{
-		Annotation = 0,
+		Annotation = 0, // EditPage
 		AddPage    = 1,
 		RemovePage = 2,
-		RemoveAnnotation = 3,
 		Undefined  = 255
 	};
 

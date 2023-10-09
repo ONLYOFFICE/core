@@ -44,8 +44,8 @@ public:
 	bool Decode(CxFile * hFile);
 	bool Decode(FILE *hFile) { CxIOFile file(hFile); return Decode(&file); }
 
-    bool GetInfo(CxFile* hFile);
-    bool GetInfo(FILE* hFile) { CxIOFile file(hFile); return GetInfo(&file); }
+    bool GetSpecializedGIFInfo(CxFile* hFile);
+    bool GetSpecializedGIFInfo(FILE* hFile) { CxIOFile file(hFile); return GetSpecializedGIFInfo(&file); }
 
 #if CXIMAGE_SUPPORT_ENCODE
 	bool Encode(CxFile * hFile);

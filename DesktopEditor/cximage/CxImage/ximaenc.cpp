@@ -1179,13 +1179,13 @@ bool CxImage::GetExifThumbnail(const TCHAR *filename, const TCHAR *outname, int3
 }
 #endif //CXIMAGE_SUPPORT_EXIF
 ////////////////////////////////////////////////////////////////////////////////
-bool CxImage::GetInfo(FILE *hFile, uint32_t imagetype)
+bool CxImage::GetSpecializedGIFInfo(FILE *hFile, uint32_t imagetype)
 {
     CxIOFile file(hFile);
-    return GetInfo(&file, imagetype);
+    return GetSpecializedGIFInfo(&file, imagetype);
 }
 ////////////////////////////////////////////////////////////////////////////////
-bool CxImage::GetInfo(CxFile *hFile, uint32_t imagetype)
+bool CxImage::GetSpecializedGIFInfo(CxFile *hFile, uint32_t imagetype)
 {
     if (hFile == NULL){
         strcpy(info.szLastError,CXIMAGE_ERR_NOFILE);
@@ -1200,7 +1200,7 @@ bool CxImage::GetInfo(CxFile *hFile, uint32_t imagetype)
         if (!newima)
             return false;
         newima->CopyInfo(*this);
-        if (newima->GetInfo(hFile))
+        if (newima->GetSpecializedGIFInfo(hFile))
         {
             Transfer(*newima);
             delete newima;

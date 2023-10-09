@@ -111,7 +111,7 @@ namespace Aggplus
 
         CBgraFrame oFrame;
 
-        if (oFrame.GetInfo(file_inp))
+        if (oFrame.GetSpecializedGIFInfo(file_inp))
                 return oFrame.SaveGetInsideFromFile(file_out);
 
         return false;

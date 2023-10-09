@@ -371,8 +371,8 @@ public:
 	void	SetRetreiveAllFrames(bool flag);
 	CxImage * GetFrame(int32_t nFrame) const;
 
-    bool    GetInfo(FILE* hFile, uint32_t imagetype);
-    bool    GetInfo(CxFile* hFile, uint32_t imagetype);
+    bool    GetSpecializedGIFInfo(FILE* hFile, uint32_t imagetype);
+    bool    GetSpecializedGIFInfo(CxFile* hFile, uint32_t imagetype);
 
 	//void*	GetUserData() const {return info.pUserData;}
 	//void	SetUserData(void* pUserData) {info.pUserData = pUserData;}

@@ -322,7 +322,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 ////////////////////////////////////////////////////////////////////////////////
 #endif //CXIMAGE_SUPPORT_DECODE
 ////////////////////////////////////////////////////////////////////////////////
-bool CxImagePNG::GetInfo(CxFile *hFile)
+bool CxImagePNG::GetSpecializedGIFInfo(CxFile *hFile)
 {
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,(void *)NULL,NULL,NULL);
     if (png_ptr == NULL)  return false;

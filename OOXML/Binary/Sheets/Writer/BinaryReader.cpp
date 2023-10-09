@@ -7366,9 +7366,9 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 			if (checker.isImageFile(sImageSrc))
 			{
 				ReadMediaItemSaveFilePath(sImageSrc);
-				if (bAddToDelete)
-					NSFile::CFileBinary::Remove(sImageSrc);
 			}
+			if (bAddToDelete)
+				NSFile::CFileBinary::Remove(sImageSrc);
 		}
 	}
 	else if (c_oSer_OtherType::MediaId == type)

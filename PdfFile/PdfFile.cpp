@@ -996,6 +996,13 @@ int CPdfFile::GetRotate(int nPageIndex)
 #endif
 	return m_pInternal->pReader->GetRotate(nPageIndex);
 }
+int CPdfFile::GetMaxRefID()
+{
+	if (!m_pInternal->pReader)
+		return 0;
+
+	return m_pInternal->pReader->GetMaxRefID();
+}
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pInternal->pReader)

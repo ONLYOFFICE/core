@@ -365,6 +365,13 @@ int CPdfReader::GetRotate(int _nPageIndex)
 
 	return m_pPDFDocument->getPageRotate(nPageIndex);
 }
+int CPdfReader::GetMaxRefID()
+{
+	if (!m_pPDFDocument)
+		return 0;
+	XRef* xref = m_pPDFDocument->getXRef();
+	return xref->getNumObjects();
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	int nPageIndex = _nPageIndex + 1;

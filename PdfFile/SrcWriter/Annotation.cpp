@@ -181,7 +181,7 @@ namespace PdfWriter
 	void CAnnotation::SetContents(const std::wstring& wsText)
 	{
 		std::string sValue = U_TO_UTF8(wsText);
-		Add("Contents", new CStringObject(sValue.c_str()));
+		Add("Contents", new CStringObject(sValue.c_str(), true));
 	}
 	void CAnnotation::SetNM(const std::wstring& wsNM)
 	{
@@ -315,6 +315,9 @@ namespace PdfWriter
 	CTextAnnotation::CTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotText)
 	{
 		Add("Name", "Comment");
+
+		if (!Get("C"))
+			SetC({ 1.0, 0.8, 0.0 });
 	}
 	void CTextAnnotation::SetOpen(bool bOpen)
 	{

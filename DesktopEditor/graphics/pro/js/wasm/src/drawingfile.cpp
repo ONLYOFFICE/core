@@ -113,6 +113,8 @@ WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
+	oRes.AddInt(pGraphics->GetMaxRefID());
+
 	int pages_count = pGraphics->GetPagesCount();
 	oRes.AddInt(pages_count);
 	for (int page = 0; page < pages_count; ++page)
@@ -474,6 +476,10 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "Last modified " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 		i += nPathLength;
 	}
+	if (nFlags & (1 << 6))
+		std::cout << "YES AP, ";
+	else
+		std::cout << "NO AP, ";
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -977,19 +983,21 @@ int main(int argc, char* argv[])
 
 	if (nLength > 0)
 	{
-		nPagesCount = READ_INT(pInfo + 4);
+		std::cout << "MaxID " << READ_INT(pInfo + 4);
+
+		nPagesCount = READ_INT(pInfo + 8);
 		if (nPagesCount > 0)
 		{
-			nWidth  = READ_INT(pInfo + nTestPage * 16 + 8);
-			nHeight = READ_INT(pInfo + nTestPage * 16 + 12);
-			int dpi = READ_INT(pInfo + nTestPage * 16 + 16);
-			int rotate = READ_INT(pInfo + nTestPage * 16 + 20);
+			nWidth  = READ_INT(pInfo + nTestPage * 16 + 12);
+			nHeight = READ_INT(pInfo + nTestPage * 16 + 16);
+			int dpi = READ_INT(pInfo + nTestPage * 16 + 20);
+			int rotate = READ_INT(pInfo + nTestPage * 16 + 24);
 			//nWidth  *= 2;
 			//nHeight *= 2;
-			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;
+			std::cout << " Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << " rotate " << rotate << std::endl;
 
-			nLength = READ_INT(pInfo + nPagesCount * 16 + 8);
-			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 12), nLength) << std::endl;;
+			nLength = READ_INT(pInfo + nPagesCount * 16 + 12);
+			std::cout << "json "<< std::string((char*)(pInfo + nPagesCount * 16 + 16), nLength) << std::endl;;
 		}
 	}
 

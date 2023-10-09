@@ -2350,7 +2350,7 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
-	m_pFontManager->LoadFontByName(m_oFont.GetName(), m_oFont.GetSize(), (int)m_oFont.GetFaceIndex(), 72.0, 72.0);
+	m_pFontManager->LoadFontByName(m_oFont.GetName(), m_oFont.GetSize(), (int)m_oFont.GetStyle(), 72.0, 72.0);
 	PathCommandEnd();
 	if (simplifier.PathCommandText2(L"", (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
 	{
@@ -2377,7 +2377,10 @@ bool CPdfWriter::UpdateFont()
 	if (L"" == wsFontPath)
 	{
 		if (!GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+		{
+			m_pFont = NULL;
 			return false;
+		}
 	}
 
 	m_oFont.SetNeedDoBold(false);

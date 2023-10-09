@@ -1147,6 +1147,58 @@ namespace NExtractTools
 			oXlsb.ReadSheetData();
 
 			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+			if(!params.m_bMacro)
+			{
+				///removing scripts
+				std::wstring sContentTypesPath = sTo + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
+				if (NSFile::CFileBinary::Exists(sContentTypesPath))
+				{
+					std::wstring sData;
+					if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+					{
+						std::wstring sCTFrom = L"application/vnd.ms-excel.sheet.macroEnabled.main+xml";
+						std::wstring sCTTo = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
+						sData = string_replaceAll(sData, sCTFrom, sCTTo);
+
+							sCTFrom = L"<Override PartName=\"/xl/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
+							sData = string_replaceAll(sData, sCTFrom, L"");
+
+							sCTFrom = L"<Default Extension=\"bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
+							sData = string_replaceAll(sData, sCTFrom, L"");
+
+							if (NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true) == false)
+							{
+								return AVS_FILEUTILS_ERROR_CONVERT;
+							}
+						}
+					}
+				std::wstring sWorkbookRelsPath = sTo + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"workbook.xml.rels";
+				if (NSFile::CFileBinary::Exists(sWorkbookRelsPath))
+				{
+					std::wstring sData;
+					if (NSFile::CFileBinary::ReadAllTextUtf8(sWorkbookRelsPath, sData))
+					{
+						size_t pos = sData.find(L"vbaProject.bin");
+						if (pos != std::wstring::npos)
+						{
+							size_t pos1 = sData.rfind(L"<", pos);
+							size_t pos2 = sData.find(L">", pos);
+
+							if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+							{
+								sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
+							}
+						}
+						if (NSFile::CFileBinary::SaveToFile(sWorkbookRelsPath, sData, true) == false)
+						{
+							return AVS_FILEUTILS_ERROR_CONVERT;
+						}
+					}
+				}
+				std::wstring sVbaProjectPath = sTo + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"vbaProject.bin";
+				NSFile::CFileBinary::Remove(sVbaProjectPath);
+				}
+
 		}
 		return nRes;
 	}

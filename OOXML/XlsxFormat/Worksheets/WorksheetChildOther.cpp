@@ -1993,7 +1993,9 @@ namespace OOX
 				auto ptr = static_cast<XLSB::SheetProtection*>(obj.get());
 				if (ptr != nullptr)
 				{
-					m_oPassword = std::to_wstring(ptr->protpwd);
+					std::wstringstream hexStream;
+					hexStream << std::hex << ptr->protpwd;
+					m_oPassword = hexStream.str();
 					m_oAutoFilter = (bool)ptr->fAutoFilter;
 					m_oContent = true;
 					m_oDeleteColumns = (bool)ptr->fDeleteColumns;
@@ -2300,7 +2302,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
 			WritingElement_ReadAttributes_End(oReader)
-		}		
+		}
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);

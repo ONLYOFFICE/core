@@ -1758,9 +1758,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		pPage->AddAnnotation(pAnnot);
 	}
 
-	pAnnot->SetID(nID);
 	pAnnot->SetPage(pPage);
-	pAnnot->SetHeight(pPage->GetHeight());
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
 
 	double dX1, dY1, dX2, dY2;
@@ -1829,7 +1827,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 4))
 			pMarkupAnnot->SetCD(pPr->GetCD());
 		if (nFlags & (1 << 5))
-			pMarkupAnnot->SetIRTID(pPr->GetIRTID());
+		{
+			int nIRTID = pPr->GetIRTID();
+			PdfWriter::CAnnotation* pIRTAnnot = m_pDocument->GetAnnot(nIRTID);
+			if (pIRTAnnot)
+				pMarkupAnnot->SetIRTID(pIRTAnnot);
+		}
 		if (nFlags & (1 << 6))
 			pMarkupAnnot->SetRT(pPr->GetRT());
 		if (nFlags & (1 << 7))
@@ -1940,7 +1943,12 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		nFlags = pPr->GetFlag();
 		pPopupAnnot->SetOpen(pPr->IsOpen());
 		if (nFlags & (1 << 1))
-			pPopupAnnot->SetParentID(pPr->GetParentID());
+		{
+			int nParentID = pPr->GetParentID();
+			PdfWriter::CAnnotation* pParentAnnot = m_pDocument->GetAnnot(nParentID);
+			if (pParentAnnot)
+				pPopupAnnot->SetParentID(pParentAnnot);
+		}
 	}
 	else if (oInfo.IsFreeText())
 	{

@@ -90,7 +90,7 @@ namespace PdfWriter
 		AnnotIconParagraph    = 5,
 		AnnotIconInsert       = 6,
 
-		AnnotIconMin          = 0, 
+		AnnotIconMin          = 0,
 		AnnotIconMax          = 6
 	};
 
@@ -101,11 +101,10 @@ namespace PdfWriter
 
 		CXref* m_pXref;
 		TRect  m_oRect;
+		double m_dPageWidth  = 0;
 		double m_dPageHeight = 0;
 
 	public:
-		int m_nID; // Идентификатор сопоставления
-
 		EDictType GetDictType() const
 		{
 			return dict_type_ANNOTATION;
@@ -119,11 +118,9 @@ namespace PdfWriter
 		{
 			return false;
 		}
-		void SetHeight(double dHeight);
 
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, double dDashesAlternating = 0.0, double dGaps = 0.0);
-		void SetID(const int& nID);
 		void SetAnnotFlag(const int& nAnnotFlag);
 		void SetPage(CPage* pPage);
 		void SetBE(BYTE nType, const double& dBE);
@@ -135,9 +132,6 @@ namespace PdfWriter
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
-	private:
-		int m_nParentID;
-
 	public:
 		CPopupAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -146,20 +140,13 @@ namespace PdfWriter
 		}
 
 		void SetOpen(bool bOpen);
-		void SetParentID(const int& nParentID);
 
-		int GetParentID() const
-		{
-			return m_nParentID;
-		}
 		void SetParentID(CAnnotation* pAnnot);
 	};
 	class CMarkupAnnotation : public CAnnotation
 	{
 	protected:
 		CMarkupAnnotation(CXref* pXref, EAnnotType eType);
-
-		int m_nIRTID;
 
 	public:
 		bool isMarkup() const override
@@ -168,17 +155,12 @@ namespace PdfWriter
 		}
 
 		void SetRT(const BYTE& nRT);
-		void SetIRTID(const int& nIRTID);
 		void SetCA(const double& dCA);
 		void SetT(const std::wstring& wsT);
 		void SetRC(const std::wstring& wsRC);
 		void SetCD(const std::wstring& wsCD);
 		void SetSubj(const std::wstring& wsSubj);
 
-		int GetIRTID() const
-		{
-			return m_nIRTID;
-		}
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
 	};

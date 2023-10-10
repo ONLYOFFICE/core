@@ -545,6 +545,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 								width = *prop->attlist_.loext_column_width_sym_;
 
 								CP_XML_ATTR(L"width", *width);
+								CP_XML_ATTR(L"customWidth", true);
 								Context.table_column_last_width(*width);
 							}
 							else if (prop->attlist_.style_column_width_)

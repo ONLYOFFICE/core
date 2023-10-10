@@ -33,9 +33,9 @@
 #define _BUILD_FORMFIELD_H_
 
 #include "../config.h"
-#include "./AnnotField.h"
+#include "../MetafileToRendererReader.h"
 
-class GRAPHICS_DECL CFormFieldInfo : public CAnnotFieldInfo
+class GRAPHICS_DECL CFormFieldInfo : public IAdvancedCommand
 {
 public:
 	enum EScaleType
@@ -266,11 +266,12 @@ public:
 	CFormFieldInfo();
 	virtual ~CFormFieldInfo();
 
-	void SetType(int nType) override;
+	void SetType(int nType);
+	bool IsValid() const;
 
 	// Common
-	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH) override;
-	void GetBounds(double& dX, double& dY, double& dW, double& dH) const override;
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH);
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const;
 
 	void SetBaseLineOffset(const double& dOffset);
 	double GetBaseLineOffset() const;
@@ -327,7 +328,12 @@ public:
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 	
 private:
+	int          m_nType;
 	double       m_dBaseLineOffset;
+	double       m_dX1;
+	double       m_dY1;
+	double       m_dX2;
+	double       m_dY2;
 	std::wstring m_wsKey;
 	std::wstring m_wsHelpText;
 	bool         m_bRequired;

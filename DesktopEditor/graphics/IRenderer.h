@@ -138,10 +138,12 @@ class IAdvancedCommand
 public:
 	enum class AdvancedCommandType
 	{
-		Hyperlink = 0,
-		Link      = 1,
-		DocInfo   = 2,
-		Annotaion = 3
+		Hyperlink   = 0,
+		Link        = 1,
+		DocInfo     = 2,
+		FormField   = 3, // Обратная совместимость для docxf
+		Annotaion   = 4,
+		DeleteAnnot = 5
 	};
 private:
 	AdvancedCommandType m_nCommandType;

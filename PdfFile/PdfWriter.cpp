@@ -1801,10 +1801,11 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 0))
 		{
 			int nPopupID = pPr->GetPopupID();
-			if (nPopupID && pOrigPage && pPage != pOrigPage)
+			if (nPopupID)
+				pPopupAnnot = m_pDocument->GetAnnot(nPopupID);
+			if (pOrigPage && pPage != pOrigPage)
 			{
 				pOrigPage->DeleteAnnotation(nPopupID);
-				pPopupAnnot = m_pDocument->GetAnnot(nPopupID);
 				if (pPopupAnnot)
 				{
 					pPage->AddAnnotation(pPopupAnnot);
@@ -1823,7 +1824,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 2))
 			pMarkupAnnot->SetCA(pPr->GetCA());
 		if (nFlags & (1 << 3))
-			pMarkupAnnot->SetRC(pPr->GetRC());
+		{
+			// TODO
+			// pMarkupAnnot->SetRC(pPr->GetRC());
+		}
 		if (nFlags & (1 << 4))
 			pMarkupAnnot->SetCD(pPr->GetCD());
 		if (nFlags & (1 << 5))
@@ -2212,16 +2216,6 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 
 	m_pDocument->Sign(PdfWriter::TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
 					  pImage, pCertificate);
-}
-bool CPdfWriter::DeleteAnnot(int nPageIndex, int nID)
-{
-	PdfWriter::CPage* pPage = m_pDocument->GetPage(nPageIndex);
-	if (pPage)
-	{
-		pPage->DeleteAnnotation(nID);
-		return true;
-	}
-	return false;
 }
 //----------------------------------------------------------------------------------------
 // Внутренние функции

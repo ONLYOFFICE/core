@@ -832,3 +832,12 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 
 	return IsValid();
 }
+
+CAnnotFieldDelete::CAnnotFieldDelete() : IAdvancedCommand(AdvancedCommandType::DeleteAnnot) {}
+
+bool CAnnotFieldDelete::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nID = pReader->ReadInt();
+
+	return true;
+}

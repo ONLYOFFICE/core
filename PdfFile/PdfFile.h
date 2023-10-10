@@ -98,7 +98,7 @@ public:
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
 	bool EditAnnot  (int nPageIndex, int nID);
-	bool DeleteAnnot(int nPageIndex, int nID);
+	bool DeleteAnnot(int nID);
 #endif
 
 	// --- READER ---

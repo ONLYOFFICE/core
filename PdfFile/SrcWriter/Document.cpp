@@ -1269,6 +1269,22 @@ namespace PdfWriter
 
 		return true;
 	}
+	bool CDocument::DeleteAnnot(int nID)
+	{
+		if (m_pCurPage)
+		{
+			m_pCurPage->DeleteAnnotation(nID);
+
+			CXref* pXref = new CXref(this, nID, 0);
+			if (!pXref)
+				return false;
+
+			pXref->SetPrev(m_pLastXref);
+			m_pLastXref = pXref;
+			return true;
+		}
+		return false;
+	}
 	CAnnotation* CDocument::GetAnnot(int nID)
 	{
 		std::map<int, CAnnotation*>::iterator p = m_mAnnotations.find(nID);

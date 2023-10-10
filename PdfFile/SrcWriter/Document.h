@@ -181,6 +181,7 @@ namespace PdfWriter
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 		bool              EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID);
+		bool              DeleteAnnot(int nID);
 		CAnnotation*      GetAnnot(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }

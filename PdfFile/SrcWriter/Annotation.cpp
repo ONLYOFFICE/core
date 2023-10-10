@@ -174,6 +174,9 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsText);
 		Add("Contents", new CStringObject(sValue.c_str(), true));
+
+		// TODO
+		Remove("RC");
 	}
 	void CAnnotation::SetNM(const std::wstring& wsNM)
 	{

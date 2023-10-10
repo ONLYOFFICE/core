@@ -146,7 +146,7 @@ namespace NSOnlineOfficeBinToPdf
 
 	enum class AddCommandType
 	{
-		Annotation = 0, // EditPage
+		EditPage = 0, // Annotation
 		AddPage    = 1,
 		RemovePage = 2,
 		Undefined  = 255
@@ -182,7 +182,7 @@ namespace NSOnlineOfficeBinToPdf
 
 			switch (CommandType)
 			{
-			case AddCommandType::Annotation:
+			case AddCommandType::EditPage:
 			{
 				pPdf->EditPage(nPageNum);
 

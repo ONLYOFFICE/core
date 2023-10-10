@@ -34,6 +34,7 @@
 
 #include "./commands/DocInfo.h"
 #include "./commands/FormField.h"
+#include "./commands/AnnotField.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
@@ -42,7 +43,7 @@ namespace NSOnlineOfficeBinToPdf
 	{
 		T* command = new T();
 		if (!command->Read(pReader, pCorrector))
-			delete command;
+			RELEASEOBJECT(command);
 		return command;
 	}
 
@@ -50,11 +51,12 @@ namespace NSOnlineOfficeBinToPdf
 	{
 		switch (type)
 		{
-		case ctHyperlink:  return Read_Command<CHyperlinkCommand>(this, pCorrector);
-		case ctLink:       return Read_Command<CLinkCommand>(this, pCorrector);
-		case ctDocInfo:    return Read_Command<CDocInfoCommand>(this, pCorrector);
-		case ctAnnotField: return Read_Command<CAnnotFieldInfo>(this, pCorrector);
-		case ctFormField:  return Read_Command<CFormFieldInfo>(this, pCorrector);
+		case ctHyperlink:        return Read_Command<CHyperlinkCommand>(this, pCorrector);
+		case ctLink:             return Read_Command<CLinkCommand>     (this, pCorrector);
+		case ctDocInfo:          return Read_Command<CDocInfoCommand>  (this, pCorrector);
+		case ctAnnotField:       return Read_Command<CAnnotFieldInfo>  (this, pCorrector);
+		case ctFormField:        return Read_Command<CFormFieldInfo>   (this, pCorrector);
+		case ctAnnotFieldDelete: return Read_Command<CAnnotFieldDelete>(this, pCorrector);
 		default: break;
 		}
 

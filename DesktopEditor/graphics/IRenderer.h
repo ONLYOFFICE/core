@@ -143,7 +143,9 @@ public:
 		DocInfo     = 2,
 		FormField   = 3, // Обратная совместимость для docxf
 		Annotaion   = 4,
-		DeleteAnnot = 5
+		DeleteAnnot = 5,
+
+		Undefined   = 255
 	};
 private:
 	AdvancedCommandType m_nCommandType;

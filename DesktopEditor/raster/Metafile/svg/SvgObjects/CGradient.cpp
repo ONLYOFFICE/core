@@ -88,6 +88,9 @@ namespace SVG
 	
 	void CGradient::ApplyTransform(IRenderer* pRenderer, const TBounds& oBounds, double& dAngle) const
 	{
+		if (NULL == pRenderer)
+			return;
+		
 		TBounds oNewBounds(oBounds);
 		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue();
 
@@ -97,10 +100,10 @@ namespace SVG
 		{
 			oMatrix.Scale(oBounds.m_dRight - oBounds.m_dLeft, oBounds.m_dBottom - oBounds.m_dTop, Aggplus::MatrixOrderAppend);
 			oMatrix.Scale(1 / (oBounds.m_dRight - oBounds.m_dLeft), 1 / (oBounds.m_dBottom - oBounds.m_dTop));
-			
-			oMatrix.TransformPoint(oNewBounds.m_dLeft,  oNewBounds.m_dTop);
-			oMatrix.TransformPoint(oNewBounds.m_dRight, oNewBounds.m_dBottom);
 		}
+
+		oMatrix.TransformPoint(oNewBounds.m_dLeft,  oNewBounds.m_dTop);
+		oMatrix.TransformPoint(oNewBounds.m_dRight, oNewBounds.m_dBottom);
 
 		pRenderer->BrushBounds(oNewBounds.m_dLeft, oNewBounds.m_dTop, oNewBounds.m_dRight - oNewBounds.m_dLeft, oNewBounds.m_dBottom - oNewBounds.m_dTop);
 	}
@@ -137,7 +140,6 @@ namespace SVG
 		{
 			oNewBounds.m_dLeft   += (oObjectBounds.m_dRight  - oObjectBounds.m_dLeft) * m_oX1.ToDouble(NSCSS::Pixel);
 			oNewBounds.m_dTop    += (oObjectBounds.m_dBottom - oObjectBounds.m_dTop)  * m_oY1.ToDouble(NSCSS::Pixel);
-			
 			oNewBounds.m_dRight  *= (!m_oX2.Zero()) ? m_oX2.ToDouble(NSCSS::Pixel) : 1.;
 			oNewBounds.m_dBottom *= (!m_oY2.Zero()) ? m_oY2.ToDouble(NSCSS::Pixel) : 1.;
 		}

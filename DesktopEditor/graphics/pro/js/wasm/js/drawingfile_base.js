@@ -248,6 +248,7 @@
 			rec["W"] = reader.readInt();
 			rec["H"] = reader.readInt();
 			rec["Dpi"] = reader.readInt();
+			rec["Rotate"] = reader.readInt();
 			rec.fonts = [];
 			rec.text = null;
 			this.pages.push(rec);
@@ -493,6 +494,7 @@
 		rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
 		let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
 		rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+		rec["ToggleNoView"] = (rec["annotflag"] >> 8) & 1; // ToggleNoView
 		rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
 		// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
 		rec["display"] = 0;
@@ -531,7 +533,11 @@
 			rec["Contents"] = reader.readString();
 		// Эффекты границы - BE
 		if (flags & (1 << 2))
-			rec["borderCloudy"] = reader.readDouble();
+		{
+			rec["BE"] = {};
+			rec["BE"]["S"] = reader.readByte();
+			rec["BE"]["I"] = reader.readDouble();
+		}
 		// Специальный цвет аннотации - С
 		if (flags & (1 << 3))
 		{
@@ -659,6 +665,9 @@
 		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
 			let rec = {};
+			// Тип аннотации виджета - FT
+			// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
+			rec["type"] = reader.readByte();
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
@@ -671,11 +680,11 @@
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();
-			// Тип аннотации виджета - FT
-			// 0 - Unknown, 1 - button, 2 - radiobutton, 3 - checkbox
-			// 4 - text, 5 - combobox, 6 - listbox, 7 - signature
-			rec["type"] = reader.readByte();
 			rec["flag"] = reader.readInt();
+			// 12.7.3.1
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
 			let flags = reader.readInt();
 			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 			if (flags & (1 << 0))
@@ -725,12 +734,12 @@
 				readAction(reader, rec["AA"][AAType]);
 			}
 			// Widget types
-			if (rec["type"] == 3 || rec["type"] == 2 || rec["type"] == 1)
+			if (rec["type"] == 29 || rec["type"] == 28 || rec["type"] == 27)
 			{
 				rec["value"] = (flags & (1 << 9)) ? "Yes" : "Off";
 				let IFflags = reader.readInt();
 				// Характеристики внешнего вида - MK
-				if (rec["type"] == 1)
+				if (rec["type"] == 27)
 				{
 					// Заголовок - СА
 					if (flags & (1 << 10))
@@ -779,7 +788,7 @@
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
 				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
 			}
-			else if (rec["type"] == 4)
+			else if (rec["type"] == 30)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
@@ -796,7 +805,7 @@
 				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
 				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
 			}
-			else if (rec["type"] == 5 || rec["type"] == 6)
+			else if (rec["type"] == 31 || rec["type"] == 32)
 			{
 				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
@@ -822,11 +831,11 @@
 				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
 				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 			}
-			// 12.7.3.1
-			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
-			rec["required"] = (rec["flag"] >> 1) & 1; // Required
-			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
-
+			else if (rec["type"] == 33)
+			{
+				rec["Sig"] = (flags >> 9) & 1;
+			}
+			
 			res["Fields"].push(rec);
 		}
 
@@ -995,7 +1004,7 @@
 			if ((rec["Type"] < 18 && rec["Type"] != 1 && rec["Type"] != 15) || rec["Type"] == 25)
 			{
 				flags = reader.readInt();
-				// Номер AP popup аннотации для сопоставления
+				// Номер popup аннотации для сопоставления
 				if (flags & (1 << 0))
 					rec["Popup"] = reader.readInt();
 				// Текстовая метка пользователя - T
@@ -1026,7 +1035,7 @@
 			{
 				rec["Open"] = (flags >> 15) & 1;
 				// иконка - Name
-				// 0 - Comment, 1 - Key, 2 - Note, 3 - Help, 4 - NewParagraph, 5 - Paragraph, 6 - Insert
+				// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
 				if (flags & (1 << 16))
 					rec["Icon"] = reader.readByte();
 				// Модель состояния - StateModel
@@ -1160,6 +1169,7 @@
 					rec["IT"] = reader.readByte();
 			}
 			// Popup
+			/*
 			else if (rec["Type"] == 15)
 			{
 				flags = reader.readInt();
@@ -1167,6 +1177,54 @@
 				// Ссылка на аннотацию-родителя
 				if (flags & (1 << 1))
 					rec["PopupParent"] = reader.readInt();
+			}
+			*/
+			// FreeText
+			else if (rec["Type"] == 2)
+			{
+				// 0 - left-justified, 1 - centered, 2 - right-justified
+				rec["alignment"] = reader.readByte();
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Координаты выноски - CL
+				if (flags & (1 << 16))
+				{
+					let n = reader.readInt();
+					rec["CL"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["CL"].push(reader.readDouble());
+				}
+				// Строка стиля по умолчанию (в формате CSS2) - DS
+				if (flags & (1 << 17))
+					rec["defaultStyle"] = reader.readString();
+				// Стиль окончания линии - LE
+				// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+				if (flags & (1 << 18))
+					rec["LE"] = reader.readByte();
+				// Назначение аннотации - IT
+				// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
+				if (flags & (1 << 20))
+					rec["IT"] = reader.readByte();
+			}
+			// Caret
+			else if (rec["Type"] == 13)
+			{
+				// Различия Rect и фактического размера - RD
+				if (flags & (1 << 15))
+				{
+					rec["RD"] = [];
+					for (let i = 0; i < 4; ++i)
+						rec["RD"].push(reader.readDouble());
+				}
+				// Связанный символ - Sy
+				// 0 - None, 1 - P, 2 - S
+				if (flags & (1 << 16))
+					rec["Sy"] = reader.readByte();
 			}
 			res.push(rec);
 		}
@@ -1329,7 +1387,7 @@
 		let fileId = file.GetID();
 		let fileStatus = file.GetStatus();
 
-		if (fileStatus == 0)
+		if (fileStatus === 0)
 		{
 			// шрифт загружен.
 			fontToMemory(file, true);
@@ -1345,11 +1403,11 @@
 				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
 			}
 
-			if (fileStatus != 2)
+			// шрифт может грузиться в редакторе
+			if (undefined === file.externalCallback)
 			{
-				// шрифт не грузится - надо загрузить
 				let _t = file;
-				file.LoadFontAsync(baseFontsPath, function(){
+				file.externalCallback = function() {
 					fontToMemory(_t, true);
 
 					let pages = self.fontStreams[fileId].pages;
@@ -1377,7 +1435,12 @@
 						if (self.drawingFile.onRepaintPages)
 							self.drawingFile.onRepaintPages(pagesRepaint);
 					}
-				});
+
+					delete _t.externalCallback;
+				};
+
+				if (2 !== file.LoadFontAsync)
+					file.LoadFontAsync(baseFontsPath, null);
 			}
 		}
 

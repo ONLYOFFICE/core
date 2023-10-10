@@ -552,7 +552,9 @@ namespace OOX
 
 					for(auto &dval : ptr->m_arBrtDVal)
 					{
-						m_arrItems.push_back(new CDataValidation(dval));
+                        auto validation(new CDataValidation(dval));
+                        if(validation->m_oType.IsInit())
+                            m_arrItems.push_back(validation);
 					}
 				}
 			}
@@ -565,10 +567,13 @@ namespace OOX
 
 					for(auto &dval14 : ptr->m_arBrtDVal14)
 					{
-						m_arrItems.push_back(new CDataValidation(dval14));
+                        auto validation(new CDataValidation(dval14));
+                        if(validation->m_oType.IsInit())
+                            m_arrItems.push_back(validation);
 					}
 				}
 			}
+			m_oCount = m_arrItems.size();
 		}
         XLS::BaseObjectPtr CDataValidations::toBin()
     	{
@@ -606,7 +611,7 @@ namespace OOX
 				auto ptr = static_cast<XLSB::BeginDVals*>(obj.get());
 				if(ptr != nullptr)
 				{
-					m_oCount            = ptr->dVals.idvMac;
+					//m_oCount            = ptr->dVals.idvMac;
 					m_oDisablePrompts   = ptr->dVals.fWnClosed;
 					m_oXWindow          = ptr->dVals.xLeft;
 					m_oYWindow          = ptr->dVals.yTop;

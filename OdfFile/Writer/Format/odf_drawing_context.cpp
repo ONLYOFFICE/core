@@ -553,34 +553,40 @@ void odf_drawing_context::set_anchor_drawing()
 	if (impl_->current_level_.empty()) return;
 	if (!impl_->current_level_.back().bDrawElement) return;
 	if (!impl_->current_level_.back().graphic_properties) return;
-
-	impl_->current_level_.back().graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_ = impl_->anchor_settings_.style_vertical_pos_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_ = impl_->anchor_settings_.style_horizontal_pos_;
-
-	impl_->current_level_.back().graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_ = impl_->anchor_settings_.style_vertical_rel_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_ = impl_->anchor_settings_.style_horizontal_rel_;
-
-	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_ = impl_->anchor_settings_.fo_margin_left_;
-	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_top_ = impl_->anchor_settings_.fo_margin_top_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_ = impl_->anchor_settings_.fo_margin_right_;
-	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_ = impl_->anchor_settings_.fo_margin_bottom_;
 	
-	impl_->current_level_.back().graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
-
+	set_anchor_drawing(impl_->current_level_.back().graphic_properties);
+}
+void odf_drawing_context::set_anchor_drawing(graphic_format_properties *graphic_properties)
+{
 	int index = impl_->current_drawing_state_.index_base < 0 ? 0 : impl_->current_drawing_state_.index_base;
 	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
-	
+
 	if (draw && !impl_->current_drawing_state_.in_group_)
 	{
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 	}
-	else // libra падает
+	else if (graphic_properties) // libra падает
 	{
-		impl_->current_level_.back().graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
-		impl_->current_level_.back().graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;
-		impl_->current_level_.back().graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;
-		impl_->current_level_.back().graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;
+		graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
+		graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;
+		graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;
+		graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;
 	}
+
+	if (!graphic_properties) return;
+
+	graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_ = impl_->anchor_settings_.style_vertical_pos_;
+	graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_ = impl_->anchor_settings_.style_horizontal_pos_;
+
+	graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_ = impl_->anchor_settings_.style_vertical_rel_;
+	graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_ = impl_->anchor_settings_.style_horizontal_rel_;
+
+	graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_ = impl_->anchor_settings_.fo_margin_left_;
+	graphic_properties->common_vertical_margin_attlist_.fo_margin_top_ = impl_->anchor_settings_.fo_margin_top_;
+	graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_ = impl_->anchor_settings_.fo_margin_right_;
+	graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_ = impl_->anchor_settings_.fo_margin_bottom_;
+	
+	graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
 }
 void odf_drawing_context::end_drawing()
 {
@@ -917,7 +923,6 @@ bool odf_drawing_context::change_text_box_2_wordart()
 			}
 		}
 	//----------------------------------------------
-
 		odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 2];
 		state.elm = draw_elm;
 
@@ -935,6 +940,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
 
 		if (sz == 2)	impl_->root_element_ = draw_elm;
+
+		set_anchor_drawing(impl_->current_graphic_properties);
+
+		
 		return true;
 	}
 	draw_rect* s = dynamic_cast<draw_rect*>(impl_->current_drawing_state_.elements_.back().elm.get());
@@ -980,9 +989,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
 
 		if (sz == 1)	impl_->root_element_ = draw_elm;
+	
+		set_anchor_drawing(impl_->current_graphic_properties);
 		return true;
 	}
-
 	return false;
 }
 
@@ -1969,7 +1979,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 	switch(from)
 	{
 		case 0:	type = horizontal_rel::Char;				break;	//	relfromhCharacter     = 0,
-		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
+		case 1:	type = horizontal_rel::Char;				break;	//	relfromhColumn        = 1,
 		case 2:	type = horizontal_rel::Paragraph;			break;	//	relfromhInsideMargin  = 2, ???
 		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
 		case 4:	type = horizontal_rel::PageContent;			break;	//	relfromhMargin        = 4, ??? //ParagraphStartMargin

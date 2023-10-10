@@ -36,7 +36,8 @@ namespace MetaFile
 
 		void            PlayMetaFile()                   override;
 		void            ClearFile()                      override;
-		TRect*          GetDCBounds()                    override;
+		TRectL*         GetDCBounds()                    override;
+		CClip*          GetClip()                        override;
 		double          GetPixelHeight()                 override;
 		double          GetPixelWidth()                  override;
 		int             GetTextColor()                   override;
@@ -44,7 +45,7 @@ namespace MetaFile
 		IBrush*         GetBrush()                       override;
 		IPen*           GetPen()                         override;
 		unsigned int    GetTextAlign()                   override;
-		unsigned int	GetTextBgMode()                  override;
+		unsigned int    GetTextBgMode()                  override;
 		int             GetTextBgColor()                 override;
 		unsigned int    GetFillMode()                    override;
 		TPointD         GetCurPos()                      override;
@@ -59,6 +60,7 @@ namespace MetaFile
 		double          GetDpi()                         override;
 		IRegion*        GetRegion()                      override;
 		unsigned int    GetArcDirection()                override;
+		CPath*          GetPath()                        override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -73,7 +75,7 @@ namespace MetaFile
 	private:
 		void    SkipVoid();
 		void    TranslatePoint(short shX, short shY, double& dX, double &dY);
-		TRect   GetBoundingBox();
+		TRectL  GetBoundingBox();
 		bool    IsPlaceable();
 		int     GetRecordRemainingBytesCount();
 		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle);
@@ -88,9 +90,9 @@ namespace MetaFile
 		void RegisterPoint(short shX, short shY);
 
 		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
-		void DrawImage(const TRect& oDestRect, const TRect& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
+		void DrawImage(const TRectL& oDestRect, const TRectL& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
 
-		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRect& oNewRect);
+		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRectL& oNewRect);
 
 		void UpdateOutputDC();
 	private:
@@ -103,13 +105,13 @@ namespace MetaFile
 
 		TWmfPlaceable  m_oPlaceable;
 		TWmfHeader     m_oHeader;
-		TRect          m_oRect;
-		TRect          m_oDCRect;
+		TRectL         m_oRect;
+		TRectL         m_oDCRect;
 
 		CWmfPlayer     m_oPlayer;
 		CWmfDC*        m_pDC;
 
-		TRect          m_oBoundingBox;
+		TRectL         m_oBoundingBox;
 		bool           m_bFirstPoint;
 
 		TXForm         m_oTransform;
@@ -142,7 +144,7 @@ namespace MetaFile
 		void HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft);
 		void HANDLE_META_CHORD(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft);
 		void HANDLE_META_ELLIPSE(short shBottom, short shRight, short shTop, short shLeft);
-		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TWmfRect& oRectangle, unsigned char* pString, short* pDx);
+		void HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectS &oRectangle, unsigned char* pString, short* pDx);
 		void HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex);
 		void HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth);
 		void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex);
@@ -150,12 +152,12 @@ namespace MetaFile
 		void HANDLE_META_PAINTREGION(unsigned short ushRegionIndex);
 		void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX);
 		void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL);
-		void HANDLE_META_POLYLINE(const std::vector<TWmfPointS>& arPoints);
-		void HANDLE_META_POLYGON(const std::vector<TWmfPointS>& arPoints);
-		void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>>& arPolygons);
+		void HANDLE_META_POLYLINE(const std::vector<TPointS>& arPoints);
+		void HANDLE_META_POLYGON(const std::vector<TPointS>& arPoints);
+		void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TPointS>>& arPolygons);
 		void HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL);
 		void HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL);
-		void HANDLE_META_SETPIXEL(const TWmfColor& oColor, short shY, short shX);
+		void HANDLE_META_SETPIXEL(const TRGBA& oColor, short shY, short shX);
 		void HANDLE_META_TEXTOUT(short shStringLength, unsigned char* pString, short shY, short shX);
 		//-----------------------------------------------------------
 		// 2.3.4 Object records
@@ -184,7 +186,7 @@ namespace MetaFile
 		void HANDLE_META_SAVEDC();
 		void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum);
 		void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum);
-		void HANDLE_META_SETBKCOLOR(TWmfColor& oColor);
+		void HANDLE_META_SETBKCOLOR(TRGBA& oColor);
 		void HANDLE_META_SETBKMODE(unsigned short ushMode);
 		void HANDLE_META_SETLAYOUT(unsigned short ushLayout);
 		void HANDLE_META_SETMAPMODE(unsigned short ushMapMode);
@@ -193,7 +195,7 @@ namespace MetaFile
 		void HANDLE_META_SETSTRETCHBLTMODE(unsigned short ushMode);
 		void HANDLE_META_SETTEXTALIGN(unsigned short ushTextAlign);
 		void HANDLE_META_SETTEXTCHAREXTRA(unsigned short ushCharSpacing);
-		void HANDLE_META_SETTEXTCOLOR(TWmfColor& oColor);
+		void HANDLE_META_SETTEXTCOLOR(TRGBA& oColor);
 		void HANDLE_META_SETTEXTJUSTIFICATION(unsigned short ushBreakCount, unsigned short ushBreakExtra);
 		void HANDLE_META_SETVIEWPORTEXT(short shX, short shY);
 		void HANDLE_META_SETVIEWPORTORG(short shX, short shY);

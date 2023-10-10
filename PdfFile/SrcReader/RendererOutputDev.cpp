@@ -771,7 +771,7 @@ namespace PdfReader
 	void RendererOutputDev::updateBlendMode(GfxState *pGState)
 	{
 		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (!GRenderer)
+		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
 			return;
 
 		switch (pGState->getBlendMode())
@@ -1692,6 +1692,7 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
+				/*
 				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
 				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
 				{
@@ -1724,6 +1725,9 @@ namespace PdfReader
 					pCodeToGID = NULL;
 					nLen = 0;
 				}
+				*/
+				pCodeToGID = NULL;
+				nLen = 0;
 				break;
 			}
 			case fontCIDType0COT:
@@ -3031,12 +3035,15 @@ namespace PdfReader
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
+		// Image
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
 
-		// Image
-		int nWidth  = (int)round(pBBox[2] - pBBox[0]);
-		int nHeight = (int)round(pBBox[3] - pBBox[1]);
+		double dDpiX, dDpiY;
+		m_pRenderer->get_DpiX(&dDpiX);
+		m_pRenderer->get_DpiY(&dDpiY);
+		int nWidth  = dXStep * dDpiX / 72.0;
+		int nHeight = dYStep * dDpiY / 72.0;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		memset(pBgraData, 0, nWidth * nHeight * 4);
@@ -3050,8 +3057,8 @@ namespace PdfReader
 		NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
 		pRenderer->SetFontManager(m_pFontManager);
 		pRenderer->CreateFromBgraFrame(pFrame);
-		pRenderer->put_Width (nWidth  * 25.4 / 72.0);
-		pRenderer->put_Height(nHeight * 25.4 / 72.0);
+		pRenderer->put_Width (dXStep * 25.4 / 72.0);
+		pRenderer->put_Height(dYStep * 25.4 / 72.0);
 
 		IRenderer* pOldRenderer = m_pRenderer;
 		m_pRenderer = pRenderer;
@@ -3987,7 +3994,7 @@ namespace PdfReader
 		}
 		else
 		{
-			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode()))
+			if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C))
 					|| (!isCIDFont && wsUnicodeText.empty()))
 			{
 				int nCurCode = (0 == nCode ? 65534 : nCode);
@@ -4829,6 +4836,17 @@ namespace PdfReader
 		*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
 		*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
 	}
+	double ClampCoords(double v)
+	{
+		// conv_type::upscale = int (double v * 256)
+		// 2^31 - 2^8 = 8.388.608; - MaxPageSize ~= 8.380.000
+		double dMaxCoord = 8380000.0;
+		if (v > dMaxCoord)
+			v = dMaxCoord;
+		else if (v < -dMaxCoord)
+			v = -dMaxCoord;
+		return v;
+	}
 	void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
 	{
 		if (m_bDrawOnlyText)
@@ -4866,19 +4884,21 @@ namespace PdfReader
 			GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
 			int nPointsCount = pSubpath->getNumPoints();
 
-			m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));
+			m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(0) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(0) + dShiftY)));
 
 			int nCurPointIndex = 1;
 			while (nCurPointIndex < nPointsCount)
 			{
 				if (pSubpath->getCurve(nCurPointIndex))
 				{
-					m_pRenderer->PathCommandCurveTo(PDFCoordsToMM(pSubpath->getX(nCurPointIndex) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex) + dShiftY), PDFCoordsToMM(pSubpath->getX(nCurPointIndex + 1) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex + 1) + dShiftY), PDFCoordsToMM(pSubpath->getX(nCurPointIndex + 2) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex + 2) + dShiftY));
+					m_pRenderer->PathCommandCurveTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex)     + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex)     + dShiftY)),
+													PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex + 1) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex + 1) + dShiftY)),
+													PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex + 2) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex + 2) + dShiftY)));
 					nCurPointIndex += 3;
 				}
 				else
 				{
-					m_pRenderer->PathCommandLineTo(PDFCoordsToMM(pSubpath->getX(nCurPointIndex) + dShiftX), PDFCoordsToMM(pSubpath->getY(nCurPointIndex) + dShiftY));
+					m_pRenderer->PathCommandLineTo(PDFCoordsToMM(ClampCoords(pSubpath->getX(nCurPointIndex) + dShiftX)), PDFCoordsToMM(ClampCoords(pSubpath->getY(nCurPointIndex) + dShiftY)));
 					++nCurPointIndex;
 				}
 			}

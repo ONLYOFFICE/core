@@ -165,7 +165,9 @@ namespace OOX
 
 			for (auto &externalReference : obj)
 			{
-				m_arrItems.push_back(new CExternalReference(externalReference));
+                auto reference = new CExternalReference(externalReference);
+                if(reference->m_oRid.IsInit())
+                    m_arrItems.push_back(reference);
 			}
 		}
 		std::vector<XLS::BaseObjectPtr> CExternalReferences::toBin()

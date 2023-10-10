@@ -2712,7 +2712,9 @@ namespace OOX
 				auto ptr = static_cast<XLSB::SheetProtection*>(obj.get());
 				if (ptr != nullptr)
 				{
-					m_oPassword = std::to_wstring(ptr->protpwd);
+					std::wstringstream hexStream;
+					hexStream << std::hex << ptr->protpwd;
+					m_oPassword = hexStream.str();
 					m_oAutoFilter = (bool)ptr->fAutoFilter;
 					m_oContent = true;
 					m_oDeleteColumns = (bool)ptr->fDeleteColumns;

@@ -188,6 +188,10 @@ void table_filter::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 void table_filter::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (table_condition_source_range_address_)
+	{
+		Context.get_table_context().set_database_source_ref(*table_condition_source_range_address_);
+	}
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);

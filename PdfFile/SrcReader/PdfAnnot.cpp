@@ -385,6 +385,31 @@ void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, 
 
 	oFieldRef.free(); oField.free();
 }
+BYTE getLE(Object* oObj)
+{
+	BYTE nLE = 5; // None
+
+	if (oObj->isName("Square"))
+		nLE = 0;
+	else if (oObj->isName("Circle"))
+		nLE = 1;
+	else if (oObj->isName("Diamond"))
+		nLE = 2;
+	else if (oObj->isName("OpenArrow"))
+		nLE = 3;
+	else if (oObj->isName("ClosedArrow"))
+		nLE = 4;
+	else if (oObj->isName("Butt"))
+		nLE = 6;
+	else if (oObj->isName("ROpenArrow"))
+		nLE = 7;
+	else if (oObj->isName("RClosedArrow"))
+		nLE = 8;
+	else if (oObj->isName("Slash"))
+		nLE = 9;
+
+	return nLE;
+}
 
 //------------------------------------------------------------------------
 // Widget
@@ -629,7 +654,18 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
 {
+	Object oObj;
+	Object oFieldRef, oField;
+	pField->getFieldRef(&oFieldRef);
+	oFieldRef.fetch(pdfDoc->getXRef(), &oField);
+	oFieldRef.free();
 
+	// 10 - Значение
+	if (oField.dictLookup("V", &oObj)->isDict())
+		m_unFlags |= (1 << 9);
+	oObj.free();
+
+	oField.free();
 }
 
 CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDoc, pField)
@@ -655,20 +691,20 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Тип - FT + флаги
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
-	m_nType = 0; // Unknown
+	m_nType = 26; // Unknown
 	switch (oType)
 	{
-	case acroFormFieldPushbutton:    m_nType = 1;/*sType = "button";*/             break;
-	case acroFormFieldRadioButton:   m_nType = 2;/*sType = "radiobutton";*/        break;
-	case acroFormFieldCheckbox:      m_nType = 3;/*sType = "checkbox";*/           break;
-	case acroFormFieldFileSelect:    m_nType = 4;/*sType = "text""fileselect"*/    break;
-	case acroFormFieldMultilineText: m_nType = 4;/*sType = "text""multilinetext"*/ break;
-	case acroFormFieldText:          m_nType = 4;/*sType = "text";*/               break;
-	case acroFormFieldBarcode:       m_nType = 4;/*sType = "text""barcode"*/       break;
-	case acroFormFieldComboBox:      m_nType = 5;/*sType = "combobox";*/           break;
-	case acroFormFieldListBox:       m_nType = 6;/*sType = "listbox";*/            break;
-	case acroFormFieldSignature:     m_nType = 7;/*sType = "signature";*/          break;
-	default:                         m_nType = 0;/*sType = "";*/                   break;
+	case acroFormFieldPushbutton:    m_nType = 27; break;
+	case acroFormFieldRadioButton:   m_nType = 28; break;
+	case acroFormFieldCheckbox:      m_nType = 29; break;
+	case acroFormFieldFileSelect:    m_nType = 30; break;
+	case acroFormFieldMultilineText: m_nType = 30; break;
+	case acroFormFieldText:          m_nType = 30; break;
+	case acroFormFieldBarcode:       m_nType = 30; break;
+	case acroFormFieldComboBox:      m_nType = 31; break;
+	case acroFormFieldListBox:       m_nType = 32; break;
+	case acroFormFieldSignature:     m_nType = 33; break;
+	default:                         m_nType = 26; break;
 	}
 
 	// Флаг - Ff
@@ -765,8 +801,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	{
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
-		pA->sType = sAA;
-		m_arrAction.push_back(pA);
+		if (pA)
+		{
+			pA->sType = sAA;
+			m_arrAction.push_back(pA);
+		}
 	}
 	oAction.free();
 
@@ -780,8 +819,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			{
 				std::string sAA(oAA.dictGetKey(j));
 				CAction* pA = getAction(pdfDoc, &oAction);
-				pA->sType = sAA;
-				m_arrAction.push_back(pA);
+				if (pA)
+				{
+					pA->sType = sAA;
+					m_arrAction.push_back(pA);
+				}
 			}
 			oAction.free();
 		}
@@ -843,19 +885,11 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 	{
 		m_unFlags |= (1 << 16);
 		std::string sName(oObj.getName());
-		m_nName = 2; // Default: Note
-		if (sName == "Comment")
-			m_nName = 0;
-		else if (sName == "Key")
-			m_nName = 1;
-		else if (sName == "Help")
-			m_nName = 3;
-		else if (sName == "NewParagraph")
-			m_nName = 4;
-		else if (sName == "Paragraph")
-			m_nName = 5;
-		else if (sName == "Insert")
-			m_nName = 6;
+		std::vector<std::string> arrName = {"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"};
+		m_nName = 10; // Default: Note
+		std::vector<std::string>::iterator p = std::find(arrName.begin(), arrName.end(), sName);
+		if (p != arrName.end())
+			m_nName = p - arrName.begin();
 	}
 	oObj.free();
 
@@ -962,31 +996,8 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMar
 		m_nLE[0] = 5; m_nLE[1] = 5; // None
 		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
 		{
-			if (!oObj.arrayGet(i, &oObj2)->isName())
-			{
-				oObj2.free();
-				continue;
-			}
-
-			if (oObj2.isName("Square"))
-				m_nLE[i] = 0;
-			else if (oObj2.isName("Circle"))
-				m_nLE[i] = 1;
-			else if (oObj2.isName("Diamond"))
-				m_nLE[i] = 2;
-			else if (oObj2.isName("OpenArrow"))
-				m_nLE[i] = 3;
-			else if (oObj2.isName("ClosedArrow"))
-				m_nLE[i] = 4;
-			else if (oObj2.isName("Butt"))
-				m_nLE[i] = 6;
-			else if (oObj2.isName("ROpenArrow"))
-				m_nLE[i] = 7;
-			else if (oObj2.isName("RClosedArrow"))
-				m_nLE[i] = 8;
-			else if (oObj2.isName("Slash"))
-				m_nLE[i] = 9;
-
+			if (oObj.arrayGet(i, &oObj2)->isName())
+				m_nLE[i] = getLE(&oObj2);
 			oObj2.free();
 		}
 	}
@@ -1195,31 +1206,8 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 		m_nLE[0] = 5; m_nLE[1] = 5; // None
 		for (int i = 0; i < oObj.arrayGetLength() && i < 2; ++i)
 		{
-			if (!oObj.arrayGet(i, &oObj2)->isName())
-			{
-				oObj2.free();
-				continue;
-			}
-
-			if (oObj2.isName("Square"))
-				m_nLE[i] = 0;
-			else if (oObj2.isName("Circle"))
-				m_nLE[i] = 1;
-			else if (oObj2.isName("Diamond"))
-				m_nLE[i] = 2;
-			else if (oObj2.isName("OpenArrow"))
-				m_nLE[i] = 3;
-			else if (oObj2.isName("ClosedArrow"))
-				m_nLE[i] = 4;
-			else if (oObj2.isName("Butt"))
-				m_nLE[i] = 6;
-			else if (oObj2.isName("ROpenArrow"))
-				m_nLE[i] = 7;
-			else if (oObj2.isName("RClosedArrow"))
-				m_nLE[i] = 8;
-			else if (oObj2.isName("Slash"))
-				m_nLE[i] = 9;
-
+			if (oObj.arrayGet(i, &oObj2)->isName())
+				m_nLE[i] = getLE(&oObj2);
 			oObj2.free();
 		}
 	}
@@ -1246,6 +1234,110 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 			m_nIT = 1;
 		else if (oObj.isName("PolygonDimension"))
 			m_nIT = 2;
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// FreeText
+//------------------------------------------------------------------------
+
+CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// Выравнивание текста - Q
+	m_nQ = 0;
+	if (oAnnot.dictLookup("Q", &oObj)->isInt())
+		m_nQ = oObj.getInt();
+	oObj.free();
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Координаты выноски - CL
+	if (oAnnot.dictLookup("CL", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			if (oObj.arrayGet(j, &oObj2)->isNum())
+				m_arrCL.push_back(j % 2 == 0 ? oObj2.getNum() : m_dHeight - oObj2.getNum());
+			else
+				m_arrCL.push_back(0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 18 - Строка стиля по умолчанию - DS
+	DICT_LOOKUP_STRING(oAnnot.dictLookup, "DS", 17, m_sDS);
+
+	// 19 - Стили окончания линии - LE
+	if (oAnnot.dictLookup("LE", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 18);
+		m_nLE = getLE(&oObj);
+	}
+	oObj.free();
+
+	// 21 - Назначение аннотации - IT
+	if (oAnnot.dictLookup("IT", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 20);
+		m_nIT = 0; // FreeText
+		if (oObj.isName("FreeTextCallout"))
+			m_nIT = 1;
+		else if (oObj.isName("FreeTextTypeWriter"))
+			m_nIT = 2;
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// Caret
+//------------------------------------------------------------------------
+
+CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CMarkupAnnot(pdfDoc, oAnnotRef, nPageIndex)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 16 - Различия Rect и фактического размера - RD
+	if (oAnnot.dictLookup("RD", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		ARR_GET_NUM(oObj, 0, m_pRD[0]);
+		ARR_GET_NUM(oObj, 1, m_pRD[1]);
+		ARR_GET_NUM(oObj, 2, m_pRD[2]);
+		ARR_GET_NUM(oObj, 3, m_pRD[3]);
+	}
+	oObj.free();
+
+	// 17 - Связанный символ - Sy
+	if (oAnnot.dictLookup("Sy", &oObj)->isName())
+	{
+		m_unFlags |= (1 << 16);
+		m_nSy = 0; // None
+		if (oObj.isName("P"))
+			m_nSy = 1;
+		if (oObj.isName("S"))
+			m_nSy = 2;
 	}
 	oObj.free();
 
@@ -1515,13 +1607,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (pField->fieldLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Специальный цвет для аннотации - C
 	if (pField->fieldLookup("C", &oObj)->isArray())
@@ -1627,13 +1728,22 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	oObj.free();
 
 	// 3 - Эффекты границы - BE
-	Object oBorderBEI;
-	if (oAnnot.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oObj2)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+	if (oAnnot.dictLookup("BE", &oObj)->isDict())
 	{
+		Object oBorderBE;
 		m_unAFlags |= (1 << 2);
-		m_dBE = oBorderBEI.getNum();
+
+		m_pBE.first = 0;
+		if (oObj.dictLookup("S", &oBorderBE)->isName("C"))
+			m_pBE.first = 1;
+		oBorderBE.free();
+
+		m_pBE.second = 0;
+		if (oObj.dictLookup("I", &oBorderBE)->isNum())
+			m_pBE.second = oBorderBE.getNum();
+		oBorderBE.free();
 	}
-	oObj.free(); oObj2.free(); oBorderBEI.free();
+	oObj.free();
 
 	// 4 - Цвет - C
 	if (oAnnot.dictLookup("C", &oObj)->isArray())
@@ -1805,18 +1915,8 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
 
-	double dWidth, dHeight;
-	int nRotate = pdfDoc->getPageRotate(nPageIndex + 1);
-	if (nRotate % 180 == 0)
-	{
-		dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
-	else
-	{
-		dHeight = pdfDoc->getPageCropWidth(nPageIndex + 1);
-		dWidth  = pdfDoc->getPageCropHeight(nPageIndex + 1);
-	}
+	double dWidth  = pdfDoc->getPageCropWidth(nPageIndex + 1);
+	double dHeight = pdfDoc->getPageCropHeight(nPageIndex + 1);
 
 	m_dWScale = (double)nRasterW / dWidth;
 	m_dHScale = (double)nRasterH / dHeight;
@@ -1857,21 +1957,15 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontLi
 	// Создание Gfx
 	GBool crop = gTrue;
 	PDFRectangle box;
-	int rotate = pPage->getRotate();
-	if (rotate >= 360)
-		rotate -= 360;
-	else if (rotate < 0)
-		rotate += 360;
-	pPage->makeBox(72.0, 72.0, rotate, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
+	// Поворот не требуется
+	pPage->makeBox(72.0, 72.0, 0, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
 	PDFRectangle* cropBox = pPage->getCropBox();
 
-	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
-	// Координаты и размеры внешнего вида
+	// Координаты внешнего вида
 	m_nRx1 = (int)round(m_dx1 * m_dWScale) - 1;
 	m_nRy1 = nRasterH - (int)round(m_dy2 * m_dHScale) - 1;
-	m_nRx1 = m_nRx1 < 0 ? 0 : m_nRx1;
-	m_nRy1 = m_nRy1 < 0 ? 0 : m_nRy1;
 }
 
 void CAnnotAP::Init(AcroFormField* pField)
@@ -1962,6 +2056,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -1998,6 +2093,8 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 			m_arrAP.push_back(pView);
 	}
 	oAnnot.free();
+
+	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 }
 
 void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
@@ -2103,7 +2200,10 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 	if (m_unAFlags & (1 << 1))
 		oRes.WriteString(m_sContents);
 	if (m_unAFlags & (1 << 2))
-		oRes.AddDouble(m_dBE);
+	{
+		oRes.WriteBYTE(m_pBE.first);
+		oRes.AddDouble(m_pBE.second);
+	}
 	if (m_unAFlags & (1 << 3))
 	{
 		oRes.AddInt((unsigned int)m_arrC.size());
@@ -2135,13 +2235,14 @@ void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 
 void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 {
+	oRes.WriteBYTE(m_nType);
+
 	CAnnot::ToWASM(oRes);
 
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);
 	oRes.WriteBYTE(m_nQ);
-	oRes.WriteBYTE(m_nType);
 	oRes.AddInt(m_unFieldFlag);
 	oRes.AddInt(m_unFlags);
 	if (m_unFlags & (1 << 0))
@@ -2279,7 +2380,7 @@ void CAnnotWidgetBtn::ToWASM(NSWasm::CData& oRes)
 	CAnnotWidget::ToWASM(oRes);
 
 	oRes.AddInt(m_unIFFlag);
-	if (m_nType == 1)
+	if (m_nType == 27)
 	{
 		if (m_unFlags & (1 << 10))
 			oRes.WriteString(m_sCA);
@@ -2494,5 +2595,46 @@ void CAnnotPolygonLine::ToWASM(NSWasm::CData& oRes)
 	}
 	if (m_unFlags & (1 << 20))
 		oRes.WriteBYTE(m_nIT);
+}
+
+void CAnnotFreeText::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(2); // FreeText
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	oRes.WriteBYTE(m_nQ);
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrCL.size());
+		for (int i = 0; i < m_arrCL.size(); ++i)
+			oRes.AddDouble(m_arrCL[i]);
+	}
+	if (m_unFlags & (1 << 17))
+		oRes.WriteString(m_sDS);
+	if (m_unFlags & (1 << 18))
+		oRes.WriteBYTE(m_nLE);
+	if (m_unFlags & (1 << 20))
+		oRes.WriteBYTE(m_nIT);
+}
+
+void CAnnotCaret::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(13); // Caret
+
+	CMarkupAnnot::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+	{
+		for (int i = 0; i < 4; ++i)
+			oRes.AddDouble(m_pRD[i]);
+	}
+	if (m_unFlags & (1 << 16))
+		oRes.WriteBYTE(m_nSy);
 }
 }

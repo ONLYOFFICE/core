@@ -118,6 +118,7 @@ public:
 	void dump_rels_ole_objects	(rels & Rels);
 
 	bool start_database_range(const std::wstring &table_name, const std::wstring &ref, bool bNamedRangeOnly);
+		void set_database_source_ref(const std::wstring& ref);
 		void set_database_orientation (bool val);
 		void set_database_header (bool val);
 		void set_database_filter_button(bool val);

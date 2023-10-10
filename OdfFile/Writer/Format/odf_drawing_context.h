@@ -116,6 +116,7 @@ public:
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
 	void set_anchor_drawing();
+	void set_anchor_drawing(graphic_format_properties* graphic_properties);
 
 	size_t	get_group_level();
 	void start_group();		

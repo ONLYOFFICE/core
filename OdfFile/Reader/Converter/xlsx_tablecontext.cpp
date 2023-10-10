@@ -58,6 +58,85 @@ namespace oox {
 		else
 			return xlsx_table_state_ptr();
 	}
+	void xlsx_table_context::set_database_source_ref(const std::wstring& ref)
+	{
+		if (xlsx_data_ranges_.empty()) return;
+
+		formulasconvert::odf2oox_converter convert;
+		std::wstring oox_ref = convert.convert_named_ref(ref);
+
+		std::wstring ref1, ref2;
+		size_t pos = oox_ref.find(L":");
+
+		std::wstring xlsx_table_name;
+
+		if (pos != std::wstring::npos)
+		{
+			ref1 = oox_ref.substr(0, pos);
+			ref2 = oox_ref.substr(pos + 1);
+
+			pos = ref1.find(L"!");
+			if (pos > 0)
+			{
+				xlsx_table_name = ref1.substr(0, pos);
+				ref1 = ref1.substr(pos + 1);
+			}
+
+			pos = ref2.find(L"!");
+			if (pos > 0) ref2 = ref2.substr(pos + 1);
+
+			size_t col1, col2, row1, row2;
+
+			XmlUtils::replace_all(xlsx_table_name, L"'", L"");
+
+			bool res1 = getCellAddressInv(ref1, col1, row1);
+			bool res2 = getCellAddressInv(ref2, col2, row2);
+
+			if (!res1)
+				return;
+
+			if (!res2)
+			{
+				ref2 = ref1; col2 = col1; row2 = row1;
+			}
+
+			//xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
+
+			if (/*name.find(L"__Anonymous_Sheet_DB__") != std::wstring::npos ||*/ col1 == col2/* || bNamedRangeOnly*/)
+			{//check range in pivots
+				xlsx_data_ranges_.back()->bTablePart = false;
+			}
+			xlsx_data_ranges_.back()->table_name = xlsx_table_name;
+			xlsx_data_ranges_.back()->ref = ref1 + L":" + ref2;
+			xlsx_data_ranges_.back()->cell_start = std::pair<int, int>(col1, row1);
+			xlsx_data_ranges_.back()->cell_end = std::pair<int, int>(col2, row2);
+
+			xlsx_data_ranges_.back()->set_header(row1, col1, col2);
+		}
+		//-----------------------------------------------------------------------
+		if (!xlsx_table_name.empty())
+		{
+			if (xlsx_data_ranges_.back()->bTablePart)
+			{
+				std::pair<std::multimap<std::wstring, int>::iterator, std::multimap<std::wstring, int>::iterator> range = xlsx_data_ranges_map_.equal_range(xlsx_table_name);
+
+				for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
+				{
+					if (xlsx_data_ranges_[it->second]->bTablePart)
+					{
+						if (std::wstring::npos != xlsx_data_ranges_[it->second]->name.find(L"__Anonymous_Sheet_DB__"))
+							xlsx_data_ranges_[it->second]->bTablePart = false;
+						else
+							xlsx_data_ranges_.back()->bTablePart = false;
+						break;
+					}
+
+				}
+			}
+			//-----------------------------------------------------------------------
+			xlsx_data_ranges_map_.insert(std::pair<std::wstring, int>(xlsx_table_name, xlsx_data_ranges_.size() - 1));
+		}
+	}
 
 	bool xlsx_table_context::start_database_range(const std::wstring& name, const std::wstring& ref, bool bNamedRangeOnly)
 	{

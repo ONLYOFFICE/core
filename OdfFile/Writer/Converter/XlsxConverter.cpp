@@ -1650,13 +1650,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 	
 	if (oox_column->m_oHidden.IsInit() && oox_column->m_oHidden->ToBool()) width = 0;
 
-	if (width <0.01)
+	if (width < 0.01)
 	{
 		width = 0;
 		ods_context->current_table()->set_column_hidden(true);
 	}
 	
-	width = ods_context->convert_symbol_width(width);	
+	ods_context->current_table()->set_column_width_sym(width);
+	
+	width = ods_context->convert_symbol_width(width);
 	ods_context->current_table()->set_column_width(width);
 
 	std::wstring style_cell_name;
@@ -2073,7 +2075,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 			odf_writer::style_table_column_properties * column_properties = style->content_.add_get_style_table_column_properties();
 			if (column_properties)
 			{		
-				column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
+				column_properties->attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
 					width = *oox_sheet_format_pr->m_oDefaultColWidth;
@@ -2089,7 +2091,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 					width = ods_context->convert_symbol_width(8.43) + 5 * 3 / 4.;
 				}
 				ods_context->current_table()->defaut_column_width_ = width;//pt
-				column_properties->style_table_column_properties_attlist_.style_column_width_ = odf_types::length(odf_types::length(width,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
+				column_properties->attlist_.style_column_width_ = odf_types::length(odf_types::length(width,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
 			}
 		}
 		ods_context->styles_context()->add_default( ods_context->styles_context()->last_state() );

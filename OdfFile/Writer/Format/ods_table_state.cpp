@@ -197,7 +197,6 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 	dimension_columns = 64;
 	dimension_row = 64;
 
-
 	defaut_row_height_ = 9;
 	defaut_column_width_ = 28.34467120181406 * 1.674;// 
 }

@@ -61,6 +61,8 @@ public:
 };
 unsigned int xlsx_num_fmts::Impl::add(const std::wstring & format_code, unsigned int id)
 {
+	if (format_code.empty()) return id;
+
 	std::map<unsigned int, size_t>::iterator pFind = mapIdsFormat.find(id);
 
 	if (pFind == mapIdsFormat.end())

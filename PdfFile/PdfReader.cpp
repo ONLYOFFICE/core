@@ -336,7 +336,7 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 	if (!m_pPDFDocument)
 		return;
 
-#ifdef BUILDING_WASM_MODULE
+#if 0 //#ifdef BUILDING_WASM_MODULE
 	*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
 	*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
 #else
@@ -382,7 +382,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
 		oRendererOut.SetBreak(pbBreak);
 		int nRotate = 0;
-#ifdef BUILDING_WASM_MODULE
+#if 0 //#ifdef BUILDING_WASM_MODULE
 		nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
 #endif
 		m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
@@ -729,7 +729,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 	RELEASEOBJECT(pLinks);
 
 	int nRotate = 0;
-#ifdef BUILDING_WASM_MODULE
+#if 0 //#ifdef BUILDING_WASM_MODULE
 	nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
 #endif
 
@@ -1267,8 +1267,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSWasm::CData& oRes, int nPageIndex)
 		return;
 
 	Object oAnnots;
-	XRef* xref = pdfDoc->getXRef();
-	if (!pPage->getAnnots(&oAnnots)->isArray() || !xref)
+	if (!pPage->getAnnots(&oAnnots)->isArray())
 	{
 		oAnnots.free();
 		return;

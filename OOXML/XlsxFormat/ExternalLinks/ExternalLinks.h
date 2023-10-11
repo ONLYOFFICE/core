@@ -464,7 +464,7 @@ namespace OOX
 			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
 			virtual ~CExternalLink();
 
-			XLS::BaseObjectPtr writeBin();
+			XLS::BaseObjectPtr writeBin() const;
 			void readBin(const CPath& oPath);
 
 			virtual void read(const CPath& oPath);

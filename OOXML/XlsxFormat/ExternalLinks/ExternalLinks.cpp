@@ -65,7 +65,7 @@
 #include "../../XlsbFormat/Biff12_records/SupName.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
-
+#include "../../binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include <string>
 
 namespace OOX
@@ -1685,7 +1685,7 @@ namespace Spreadsheet
 	CExternalLink::~CExternalLink()
 	{
 	}
-	XLS::BaseObjectPtr CExternalLink::writeBin()
+    XLS::BaseObjectPtr CExternalLink::writeBin() const
 	{
 		XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
 
@@ -1812,6 +1812,14 @@ namespace Spreadsheet
 	}
 	void CExternalLink::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+		{
+			XLS::BaseObjectPtr object = writeBin();
+			xlsb->WriteBin(oPath, object.get());
+		}
+		else
+		{
 		NSStringUtils::CStringBuilder sXml;
 		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 		sXml.WriteString(L"<externalLink \
@@ -1847,7 +1855,7 @@ xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks202
 
 		std::wstring sPath = oPath.GetPath();
 		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
+		}
 		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		IFileContainer::Write(oPath, oDirectory, oContent);
 	}
@@ -1857,6 +1865,11 @@ xmlns:xxl21=\"http://schemas.microsoft.com/office/spreadsheetml/2021/extlinks202
 	}
 	const OOX::FileType CExternalLink::type() const
 	{
+		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+		if ((xlsb) && (xlsb->m_bWriteToXlsb))
+		{
+			return OOX::SpreadsheetBin::FileTypes::ExternalLinksBin;
+		}
 		return OOX::Spreadsheet::FileTypes::ExternalLinks;
 	}
 	const CPath CExternalLink::DefaultDirectory() const

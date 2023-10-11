@@ -547,7 +547,10 @@ namespace PdfWriter
 		// Если объект Resources нулевой, тогда ищем Resources у родительского объекта рекурсивно
 		if (!pObject)
 		{
-			CPageTree* pPageTree = (CPageTree*)Get("Parent");
+			CPageTree* pPageTree = NULL;
+			CObjectBase* pObj = Get("Parent");
+			if (pObj->GetType() == object_type_DICT)
+				pPageTree = (CPageTree*)pObj;
 			while (pPageTree)
 			{
 				pObject = Get("Resources");

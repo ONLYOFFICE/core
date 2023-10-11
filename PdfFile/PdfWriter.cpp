@@ -1813,7 +1813,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				}
 			}
 		}
-		if (!pPopupAnnot)
+		if (!pPopupAnnot && !oInfo.IsFreeText())
 		{
 			pPopupAnnot = pMarkupAnnot->CreatePopup();
 			pPage->AddAnnotation(pPopupAnnot);
@@ -2016,8 +2016,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetBG(pPr->GetBG());
 		if (nFlags & (1 << 8))
 			pWidgetAnnot->SetDV(pPr->GetDV());
-		if (nFlags & (1 << 17))
-			pWidgetAnnot->SetParentID(pPr->GetParentID());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
 
@@ -2026,6 +2024,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CWidgetAnnotPr::CButtonWidgetPr* pPr = oInfo.GetWidgetAnnotPr()->GetButtonWidgetPr();
 			PdfWriter::CButtonWidget* pButtonWidget = (PdfWriter::CButtonWidget*)pAnnot;
 
+			if (nFlags & (1 << 14))
+				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
 			pButtonWidget->SetV(nFlags & (1 << 9));
 			int nIFFlags = pPr->GetIFFlag();
 			pButtonWidget->SetIFFlag(nIFFlags);
@@ -2056,8 +2056,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pButtonWidget->SetA(d1, d2);
 				}
 			}
-			if (nFlags & (1 << 14))
-				pButtonWidget->SetAP_N_Yes(pPr->GetAP_N_Yes());
 		}
 		else if (oInfo.IsTextWidget())
 		{

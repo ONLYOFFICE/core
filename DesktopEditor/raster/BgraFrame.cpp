@@ -34,6 +34,7 @@
 #include "../cximage/CxImage/ximage.h"
 #include "ImageFileFormatChecker.h"
 #include "../graphics/Image.h"
+#include "../graphics/tests/TestPngGif/CxImage_Wrapped.h"
 
 #if CXIMAGE_SUPPORT_JP2
 #include "Jp2/J2kFile.h"
@@ -388,6 +389,14 @@ void CBgraFrame::put_Data(BYTE* pData)
 {
 	m_pData = pData;
 }
+int CBgraFrame::get_DataSize()
+{
+    return m_lDataSize;
+}
+void CBgraFrame::put_DataSize(int size)
+{
+    m_lDataSize = size;
+}
 
 bool CBgraFrame::IsGrayScale()
 {
@@ -490,7 +499,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	return true;
 }
 
-bool CBgraFrame::GetInfo(const std::wstring &strFileName, unsigned int nFileType)
+bool CBgraFrame::GetSpecializedGIFInfo(const std::wstring &strFileName, unsigned int nFileType)
 {
     m_nFileType = nFileType;
 
@@ -504,15 +513,13 @@ bool CBgraFrame::GetInfo(const std::wstring &strFileName, unsigned int nFileType
     if (!oFile.OpenFile(strFileName))
         return false;
 
-    CxImage* img = new CxImage();
+    CxImage_Wrapped* wrapimg = new CxImage_Wrapped();
 
-    if(!img->GetInfo(oFile.GetFileNative(), m_nFileType))
+    if(!wrapimg->GetSpecializedGIFInfo(oFile.GetFileNative(), m_nFileType))
         return false;
 
-    put_Data(img->GetData());
-    put_Width(0);
-    put_Height(img->GetDataSize());
-    put_Stride(0);
+    put_Data(wrapimg->GetData());
+    put_DataSize(wrapimg->GetDataSize());
 
     return true;
 }
@@ -595,7 +602,7 @@ bool CBgraFrame::SaveGetInsideFromFile(const std::wstring &strFileName)
     if (!oFile.CreateFileW(strFileName))
         return false;
 
-    oFile.WriteFile(m_pData, (get_Width() == 0) ? get_Height() : get_Width());
+    oFile.WriteFile(m_pData, m_lDataSize);
 
     oFile.CloseFile();
     return true;

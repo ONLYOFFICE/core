@@ -1774,8 +1774,8 @@ namespace OOX
 			{
 				m_oId = ptr->unRwCol;
 				m_oMan = ptr->fMan;
-				m_oMax = ptr->unColRwStrt;
-				m_oMin = ptr->unColRwEnd;
+                m_oMax = ptr->unColRwEnd;
+                m_oMin = ptr->unColRwStrt;
 				m_oPt = ptr->fPivot;
 			}
 		}

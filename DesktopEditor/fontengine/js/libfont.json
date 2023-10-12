@@ -273,7 +273,14 @@
 	},	
 	{
 		"folder": "../../raster/Metafile/",
-		"files": ["MetaFile.cpp", "Common/MetaFileTypes.cpp", "Common/MetaFileUtils.cpp", "Common/CPathConverter.cpp"]
+		"files": [
+			"MetaFile.cpp", 
+			"Common/MetaFileTypes.cpp", 
+			"Common/MetaFileUtils.cpp", 
+			"Common/CPathConverter.cpp",
+			"Common/CPath.cpp",
+			"Common/CClip.cpp"
+		]
 	},
 	{
 		"folder": "../../raster/Metafile/Emf/",
@@ -286,7 +293,7 @@
 			"EmfParser/CEmfParserBase.cpp",
 			"EmfParser/CEmfPlusParser.cpp",
 			"EmfObjects.cpp",
-			"EmfPath.cpp",
+			"EmfPlusObjects.cpp",
 			"EmfPlayer.cpp",
 			"EmfFile.cpp"
 		]

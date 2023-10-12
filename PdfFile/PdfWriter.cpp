@@ -1682,6 +1682,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	int nID = oInfo.GetID();
 	pAnnot = m_pDocument->GetAnnot(nID);
+
+	if (pAnnot && pOrigPage && pPage != pOrigPage)
+	{
+		pOrigPage->DeleteAnnotation(nID);
+		pPage->AddAnnotation(pAnnot);
+	}
+
 	BYTE nWidgetType = 0;
 	if (!pAnnot)
 	{
@@ -1751,12 +1758,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	if (!pAnnot)
 		return S_FALSE;
-
-	if (pOrigPage && pPage != pOrigPage)
-	{
-		pOrigPage->DeleteAnnotation(nID);
-		pPage->AddAnnotation(pAnnot);
-	}
 
 	pAnnot->SetPage(pPage);
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());

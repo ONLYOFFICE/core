@@ -1774,8 +1774,8 @@ namespace OOX
 			{
 				m_oId = ptr->unRwCol;
 				m_oMan = ptr->fMan;
-				m_oMax = ptr->unColRwStrt;
-				m_oMin = ptr->unColRwEnd;
+				m_oMax = ptr->unColRwEnd;
+				m_oMin = ptr->unColRwStrt;
 				m_oPt = ptr->fPivot;
 			}
 		}
@@ -1787,7 +1787,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"max"), m_oMax)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"min"), m_oMin)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"pt"), m_oPt)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 		CRowColBreaks::CRowColBreaks()

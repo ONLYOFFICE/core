@@ -1725,27 +1725,21 @@ namespace NExtractTools
 
 		if (SUCCEEDED_X2T(nRes))
 		{
-			// todo сделать отдельный метод для сохранения в csv
-			//  Save to file (from temp dir)
 			BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
 
 			oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 			oCXlsxSerializer.setFontDir(params.getFontPath());
 
-			std::wstring sToTemp = sTemp + FILE_SEPARATOR_STR + _T("output.csv");
+			std::wstring sResultCsvDir = sTemp + FILE_SEPARATOR_STR + _T("csv_unpacked");
+
+			NSDirectory::CreateDirectory(sResultCsvDir);
 			std::wstring sMediaPath; // will be filled by 'CreateXlsxFolders' method
 			std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
 			std::wstring sXmlOptions = params.getXmlOptions();
 
-			oCXlsxSerializer.CreateXlsxFolders(sXmlOptions, sTemp, sMediaPath, sEmbedPath);
+			oCXlsxSerializer.CreateXlsxFolders(sXmlOptions, sResultCsvDir, sMediaPath, sEmbedPath);
 
-			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, sToTemp, sXmlOptions, sMediaPath, sEmbedPath);
-
-			// пишем в Temp и копируем, чтобы не возникало лишних файлов рядом с sTo, а лучше перейти на отдельный метод
-			if (SUCCEEDED_X2T(nRes))
-			{
-				nRes = NSFile::CFileBinary::Copy(sToTemp, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-			}
+			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
 		}
 		return nRes;
 	}

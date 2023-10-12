@@ -241,6 +241,8 @@
 		let buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
 		let reader = new CBinaryReader(buffer, 0, len);
 
+		this.StartID = reader.readInt();
+
 		let _pages = reader.readInt();
 		for (let i = 0; i < _pages; i++)
 		{
@@ -268,6 +270,7 @@
 		this.nativeFile = 0;
 		this.pages = [];
 		this.info = null;
+		this.StartID = null;
 		if (this.stream > 0)
 			Module["_free"](this.stream);
 		this.stream = -1;
@@ -287,6 +290,11 @@
 	CFile.prototype["getDocumentInfo"] = function()
 	{
 		return this.info;
+	};
+	
+	CFile.prototype["getStartID"] = function()
+	{
+		return this.StartID;
 	};
 
 	CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
@@ -563,6 +571,7 @@
 		// Дата последнего изменения - M
 		if (flags & (1 << 5))
 			rec["LastModified"] = reader.readString();
+		rec["AP"]["have"] = (flags >> 6) & 1;
 	}
 	function readAnnotAP(reader, AP)
 	{

@@ -59,6 +59,7 @@ public:
 	void SetCMapFile(const std::wstring& sFile);
 
 	int GetRotate(int nPageIndex);
+	int GetMaxRefID();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();

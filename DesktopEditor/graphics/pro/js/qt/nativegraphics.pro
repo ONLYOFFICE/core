@@ -164,7 +164,6 @@ SOURCES += \
 	\
 	../../../../raster/JBig2/source/JBig2File.cpp \
 	\
-	../../../../raster/Metafile/StarView/SvmClip.cpp \
 	../../../../raster/Metafile/StarView/SvmFile.cpp \
 	../../../../raster/Metafile/StarView/SvmObjects.cpp \
 	../../../../raster/Metafile/StarView/SvmPlayer.cpp

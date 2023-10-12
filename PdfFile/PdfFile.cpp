@@ -844,12 +844,46 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfFile::DeleteAnnot(int nPageIndex, int nID)
+bool CPdfFile::DeleteAnnot(int nID)
 {
 	// Проверка режима редактирования
-	if (!m_pInternal->pWriter || !m_pInternal->bEdit)
+	if (!m_pInternal->pWriter || !m_pInternal->pWriter->m_pDocument  || !m_pInternal->bEdit)
 		return false;
-	return m_pInternal->pWriter->DeleteAnnot(nPageIndex, nID);
+
+	PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+	if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
+		return false;
+
+	XRef* xref = pPDFDocument->getXRef();
+	std::pair<int, int> pPageRef;
+	pPageRef.first  = pDoc->GetCurPage()->GetObjId();
+	pPageRef.second = pDoc->GetCurPage()->GetGenNo();
+	if (!xref || pPageRef.first == 0)
+		return false;
+
+	// Получение объекта аннотации
+	Object pageRefObj, pageObj, oAnnots;
+	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	if (!pageRefObj.fetch(xref, &pageObj)->isDict() || !pageObj.dictLookup("Annots", &oAnnots)->isArray())
+	{
+		pageRefObj.free(); pageObj.free(); oAnnots.free();
+		return false;
+	}
+	pageRefObj.free(); pageObj.free();
+
+	Object oAnnotRef, oAnnot, oPopupRef;
+	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
+	{
+		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
+			break;
+		oAnnotRef.free();
+	}
+	oAnnots.free();
+	if (oAnnotRef.isRef() && oAnnotRef.fetch(xref, &oAnnot)->isDict() && oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+		m_pInternal->pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum());
+
+	return m_pInternal->pWriter->m_pDocument->DeleteAnnot(nID);
 }
 #endif // BUILDING_WASM_MODULE
 
@@ -995,6 +1029,13 @@ int CPdfFile::GetRotate(int nPageIndex)
 	else
 #endif
 	return m_pInternal->pReader->GetRotate(nPageIndex);
+}
+int CPdfFile::GetMaxRefID()
+{
+	if (!m_pInternal->pReader)
+		return 0;
+
+	return m_pInternal->pReader->GetMaxRefID();
 }
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
@@ -1740,7 +1781,9 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Hyperlink:
 	case IAdvancedCommand::AdvancedCommandType::Link:
 	case IAdvancedCommand::AdvancedCommandType::DocInfo:
+	case IAdvancedCommand::AdvancedCommandType::FormField:
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
+	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
 		return S_OK;
 	default:
 		break;
@@ -1774,14 +1817,27 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 											  pCommand->GetSubject(), pCommand->GetKeywords());
 		return S_OK;
 	}
+	case IAdvancedCommand::AdvancedCommandType::FormField:
+	{
+		return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, (CFormFieldInfo*)command);
+	}
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	{
-		CAnnotFieldInfo* cCommand = (CAnnotFieldInfo*)command;
+		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
 #ifndef BUILDING_WASM_MODULE
 		if (m_pInternal->bEdit && m_pInternal->bEditPage)
-			EditAnnot(cCommand->GetPage(), cCommand->GetID());
+			EditAnnot(pCommand->GetPage(), pCommand->GetID());
 #endif
-		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, cCommand);
+		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
+	}
+	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
+	{
+		CAnnotFieldDelete* pCommand = (CAnnotFieldDelete*)command;
+#ifndef BUILDING_WASM_MODULE
+		if (m_pInternal->bEdit && m_pInternal->bEditPage)
+			DeleteAnnot(pCommand->GetID());
+#endif
+		return true;
 	}
 	default:
 		break;

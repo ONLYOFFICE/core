@@ -77,17 +77,11 @@ namespace PdfWriter
 		m_pXref = pXref;
 		pXref->Add(this);
 
-		m_nID = 0;
-
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
-	}
-	void CAnnotation::SetHeight(double dHeight)
-	{
-		m_dPageHeight = dHeight;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -146,10 +140,6 @@ namespace PdfWriter
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
 	}
-	void CAnnotation::SetID(const int& nID)
-	{
-		m_nID = nID;
-	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
 		Add("F", nAnnotFlag);
@@ -157,6 +147,8 @@ namespace PdfWriter
 	void CAnnotation::SetPage(CPage* pPage)
 	{
 		Add("P", pPage);
+		m_dPageWidth  = pPage->GetWidth();
+		m_dPageHeight = pPage->GetHeight();
 	}
 	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
@@ -181,7 +173,10 @@ namespace PdfWriter
 	void CAnnotation::SetContents(const std::wstring& wsText)
 	{
 		std::string sValue = U_TO_UTF8(wsText);
-		Add("Contents", new CStringObject(sValue.c_str()));
+		Add("Contents", new CStringObject(sValue.c_str(), true));
+
+		// TODO
+		Remove("RC");
 	}
 	void CAnnotation::SetNM(const std::wstring& wsNM)
 	{
@@ -213,7 +208,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_nIRTID = 0;
 	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
@@ -226,17 +220,15 @@ namespace PdfWriter
 
 		pAnnot->SetOpen(false);
 		pAnnot->SetParentID(this);
+		pAnnot->SetAnnotFlag(28);
 
 		TRect oRect = m_oRect;
+		oRect.fLeft = m_dPageWidth - 100 - (oRect.fRight - oRect.fLeft);
 		oRect.fBottom -= 100;
-		oRect.fRight += 100;
+		oRect.fRight = m_dPageWidth;
 		pAnnot->SetRect(oRect);
 
 		return pAnnot;
-	}
-	void CMarkupAnnotation::SetIRTID(const int& nIRTID)
-	{
-		m_nIRTID = nIRTID;
 	}
 	void CMarkupAnnotation::SetCA(const double& dCA)
 	{
@@ -245,12 +237,12 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetRC(const std::wstring& wsRC)
 	{
 		std::string sValue = U_TO_UTF8(wsRC);
-		Add("RC", new CStringObject(sValue.c_str()));
+		Add("RC", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetCD(const std::wstring& wsCD)
 	{
@@ -260,7 +252,7 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetSubj(const std::wstring& wsSubj)
 	{
 		std::string sValue = U_TO_UTF8(wsSubj);
-		Add("Subj", new CStringObject(sValue.c_str()));
+		Add("Subj", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
 	{
@@ -315,6 +307,9 @@ namespace PdfWriter
 	CTextAnnotation::CTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotText)
 	{
 		Add("Name", "Comment");
+
+		if (!Get("C"))
+			SetC({ 1.0, 0.8, 0.0 });
 	}
 	void CTextAnnotation::SetOpen(bool bOpen)
 	{
@@ -402,7 +397,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CLineAnnotation::CLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotLine)
 	{
-
 	}
 	void CLineAnnotation::SetCap(bool bCap)
 	{
@@ -519,15 +513,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPopupAnnotation::CPopupAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotPopup)
 	{
-		m_nParentID = 0;
 	}
 	void CPopupAnnotation::SetOpen(bool bOpen)
 	{
 		Add("Open", new CBoolObject(bOpen));
-	}
-	void CPopupAnnotation::SetParentID(const int& nParentID)
-	{
-		m_nParentID = nParentID;
 	}
 	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
 	{
@@ -538,7 +527,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
-
 	}
 	void CFreeTextAnnotation::SetQ(const BYTE& nQ)
 	{
@@ -568,18 +556,22 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsDS);
 		Add("DS", new CStringObject(sValue.c_str()));
 	}
-	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("RD", pArray);
+		pObj->Add("RD", pArray);
 
 		pArray->Add(dRD1);
 		pArray->Add(dRD2);
 		pArray->Add(dRD3);
 		pArray->Add(dRD4);
+	}
+	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
 	{
@@ -647,16 +639,7 @@ namespace PdfWriter
 	}
 	void CSquareCircleAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
@@ -727,20 +710,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCaretAnnotation::CCaretAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotCaret)
 	{
-
 	}
 	void CCaretAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CCaretAnnotation::SetSy(const BYTE& nSy)
 	{

@@ -590,7 +590,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 
 		pPr->SetSubtype(nType);
 		std::vector<double> arrQuadPoints;
-		for (int i = 0; i < 8; ++i)
+		int n = pReader->ReadInt();
+		for (int i = 0; i < n; ++i)
 			arrQuadPoints.push_back(pReader->ReadDouble());
 		pPr->SetQuadPoints(arrQuadPoints);
 	}
@@ -830,4 +831,13 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	}
 
 	return IsValid();
+}
+
+CAnnotFieldDelete::CAnnotFieldDelete() : IAdvancedCommand(AdvancedCommandType::DeleteAnnot) {}
+
+bool CAnnotFieldDelete::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	m_nID = pReader->ReadInt();
+
+	return true;
 }

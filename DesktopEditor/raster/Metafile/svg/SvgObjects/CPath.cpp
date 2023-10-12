@@ -351,6 +351,13 @@ namespace SVG
 				m_arPoints[2].dX, m_arPoints[2].dY);
 	}
 
+	inline double ClampSinCos(const double& d)
+	{
+		if (d < -1) return -1;
+		if (d > 1)  return 1;
+		return d;
+	}
+
 	void CCBezierElement::CalculateArcData(const Point &oFirst, const Point &oSecond, Point &oRadius, Point &oCenter, double dAngle, bool bLargeArc, bool bSweep, double &dStartAngle, double &dSweep)
 	{
 		dAngle *= M_PI / 180.;
@@ -377,8 +384,11 @@ namespace SVG
 
 		oCenter = Point{dCpx * std::cos(dAngle) - dCpy * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCpx * std::sin(dAngle) + dCpy * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 
-		dStartAngle = std::acos(((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2))) * 180. / M_PI;
-		dSweep      = std::acos((((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)))) * 180. / M_PI;
+		double dStartAngleCos = ((dXp - dCpx) / oRadius.dX) / std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2));
+		dStartAngle = std::acos(ClampSinCos(dStartAngleCos)) * 180. / M_PI;
+
+		double dSweepAngleCos = (((dXp - dCpx) / oRadius.dX * (-dXp - dCpx) / oRadius.dX) + ((dYp - dCpy) / oRadius.dY * (-dYp - dCpy) / oRadius.dY)) / (std::sqrt(std::pow((dXp - dCpx) / oRadius.dX, 2) + std::pow((dYp - dCpy) / oRadius.dY, 2)) * std::sqrt(std::pow((-dXp - dCpx) / oRadius.dX, 2) + std::pow((-dYp - dCpy) / oRadius.dY, 2)));
+		dSweep = std::acos(ClampSinCos(dSweepAngleCos)) * 180. / M_PI;
 
 		if (((dYp - dCpy) / oRadius.dY) < 0)
 			dStartAngle *= -1;

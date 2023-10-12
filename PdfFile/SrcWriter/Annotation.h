@@ -129,6 +129,7 @@ namespace PdfWriter
 		void SetLM(const std::wstring& wsLM);
 		void SetC(const std::vector<double>& arrC);
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
+		virtual void CreateAP();
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -163,6 +164,7 @@ namespace PdfWriter
 
 		void SetIRTID(CAnnotation* pAnnot);
 		CPopupAnnotation* CreatePopup();
+		virtual void CreateAP() override;
 	};
 	class CLinkAnnotation : public CAnnotation
 	{
@@ -177,6 +179,8 @@ namespace PdfWriter
 	};
 	class CTextAnnotation : public CMarkupAnnotation
 	{
+	private:
+		BYTE m_nName;
 	public:
 		CTextAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
@@ -188,6 +192,8 @@ namespace PdfWriter
 		void SetName(BYTE nName);
 		void SetState(BYTE nState);
 		void SetStateModel(BYTE nStateModel);
+
+		void CreateAP() override;
 	};
 	class CUriLinkAnnotation : public CAnnotation
 	{
@@ -310,6 +316,7 @@ namespace PdfWriter
 		CDictObject* m_pParent;
 		CDocument* m_pDocument;
 
+		CDictObject* GetObjOwnValue(const std::string& sV);
 		void CheckMK();
 
 	public:
@@ -322,7 +329,7 @@ namespace PdfWriter
 		void SetH(const BYTE& nH);
 		void SetR(const int& nR);
 		void SetFlag    (const int& nFlag);
-		void SetParentID(const int& nParentID);
+		void SetParent(CDictObject* pParent);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		virtual void SetDV(const std::wstring& wsDV);
@@ -335,6 +342,7 @@ namespace PdfWriter
 	private:
 		EAnnotType m_nSubtype;
 		CDictObject* m_pIF;
+		std::string m_sAP_N_Yes;
 
 		void CheckIF();
 
@@ -401,6 +409,18 @@ namespace PdfWriter
 		{
 			return m_nSubtype;
 		}
+	};
+
+	class CAnnotationAppearance : public CDictObject
+	{
+	public:
+		CAnnotationAppearance(CXref* pXref, const TRect& oRect);
+
+		void DrawTextComment();
+
+	private:
+		CXref*   m_pXref;
+		CStream* m_pStream;
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

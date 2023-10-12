@@ -247,6 +247,13 @@ int main()
 			RELEASEARRAYOBJECTS(pBuffer);
 			RELEASEARRAYOBJECTS(pFileContent);
 		}
+		else if (false)
+		{
+			if (pdfFile.EditPage(0))
+			{
+				pdfFile.EditAnnot(0, 99);
+			}
+		}
 		else
         {
             if (pdfFile.EditPage(0))

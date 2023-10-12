@@ -685,6 +685,57 @@ bool CPdfFile::AddPage(int nPageIndex)
 	}
 	return bRes;
 }
+PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
+{
+	PdfWriter::CDictObject* pParent = NULL;
+
+	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
+		return pParent;
+	XRef* xref = pdfDoc->getXRef();
+	Object oParent;
+	if (!pParentRef->fetch(xref, &oParent)->isDict())
+	{
+		oParent.free();
+		return pParent;
+	}
+
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pParentRef->getRefNum());
+	pParent = new PdfWriter::CDictObject();
+	pXref->Add(pParent);
+	if (!pDoc->EditParent(pXref, pParent, pParentRef->getRefNum()))
+	{
+		RELEASEOBJECT(pXref);
+		oParent.free();
+		return NULL;
+	}
+
+	for (int i = 0; i < oParent.dictGetLength(); ++i)
+	{
+		char* chKey = oParent.dictGetKey(i);
+		if (strcmp("Parent", chKey) == 0)
+		{
+			Object oParentRef;
+			oParent.dictGetValNF(i, &oParentRef);
+			PdfWriter::CDictObject* pParent2 = GetWidgetParent(pdfDoc, pDoc, &oParentRef);
+			if (pParent2)
+			{
+				pParent->Add("Parent", pParent2);
+				oParentRef.free();
+				continue;
+			}
+			oParentRef.free();
+		}
+		Object oTemp;
+		oParent.dictGetValNF(i, &oTemp);
+		DictToCDictObject(&oTemp, pParent, false, chKey);
+		oTemp.free();
+	}
+	pParent->SetRef(pParentRef->getRefNum(), pParentRef->getRefGen());
+
+	oParent.free();
+
+	return pParent;
+}
 bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 {
 	// Проверка режима редактирования
@@ -742,6 +793,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		return false;
 	}
 
+	bool bIsWidget = false;
 	PdfWriter::CAnnotation* pAnnot = NULL;
 	if (oType.isName("Text"))
 		pAnnot = new PdfWriter::CTextAnnotation(pXref);
@@ -763,6 +815,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
 	{
+		bIsWidget = true;
 		char* sName = NULL;
 		Object oFT;
 		if (oAnnot.dictLookup("FT", &oFT)->isName())
@@ -830,6 +883,20 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 			}
 			continue;
 		}
+		if (strcmp("Parent", chKey) == 0 && bIsWidget)
+		{
+			Object oParentRef;
+			oAnnot.dictGetValNF(nIndex, &oParentRef);
+			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+
+			if (pParent)
+			{
+				((PdfWriter::CWidgetAnnotation*)pAnnot)->SetParent(pParent);
+				oParentRef.free();
+				continue;
+			}
+			oParentRef.free();
+		}
 		Object oTemp;
 		oAnnot.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pAnnot, false, chKey);
@@ -844,6 +911,7 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
+
 bool CPdfFile::DeleteAnnot(int nID)
 {
 	// Проверка режима редактирования

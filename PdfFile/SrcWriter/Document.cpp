@@ -555,7 +555,9 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateTextAnnot()
 	{
-		return new CTextAnnotation(m_pXref);
+		CTextAnnotation* pNew = new CTextAnnotation(m_pXref);
+		pNew->SetC({ 1.0, 0.8, 0.0 });
+		return pNew;
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
@@ -611,7 +613,9 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
-		return new CTextWidget(m_pXref);
+		CAnnotation* pNew = new CTextWidget(m_pXref);
+		pNew->Add("FT", "Tx");
+		return pNew;
 	}
 	CAnnotation* CDocument::CreateChoiceWidget()
 	{
@@ -1168,15 +1172,13 @@ namespace PdfWriter
 	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
-		if (!pXref || !pPageTree)
+		if (!pPageTree || !EditXref(pXref))
 			return false;
 
 		if (!m_pPageTree)
 			m_pPageTree = pPageTree;
 		else
 			m_pPageTree->Join(pPageTree);
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
 
 		return true;
 	}
@@ -1242,7 +1244,7 @@ namespace PdfWriter
 	}
 	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex)
 	{
-		if (!pXref || !pPage)
+		if (!pPage || !EditXref(pXref))
 			return false;
 
 		pPage->AddContents(m_pXref);
@@ -1251,8 +1253,6 @@ namespace PdfWriter
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
 		m_pCurPage  = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
@@ -1260,12 +1260,29 @@ namespace PdfWriter
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
 	{
-		if (!pXref || !pAnnot)
+		if (!pAnnot || !EditXref(pXref))
+			return false;
+
+		m_mAnnotations[nID] = pAnnot;
+
+		return true;
+	}
+	bool CDocument::EditParent(CXref* pXref, CDictObject* pParent, int nID)
+	{
+		if (!pParent || !EditXref(pXref))
+			return false;
+
+		m_mParents[nID] = pParent;
+
+		return true;
+	}
+	bool CDocument::EditXref(CXref* pXref)
+	{
+		if (!pXref)
 			return false;
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
-		m_mAnnotations[nID] = pAnnot;
 
 		return true;
 	}

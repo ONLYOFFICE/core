@@ -34,7 +34,7 @@
 #include "../cximage/CxImage/ximage.h"
 #include "ImageFileFormatChecker.h"
 #include "../graphics/Image.h"
-#include "../graphics/tests/TestPngGif/CxImage_Wrapped.h"
+#include "../graphics/tests/TestPngGif/CxImage_Addon.h"
 
 #if CXIMAGE_SUPPORT_JP2
 #include "Jp2/J2kFile.h"
@@ -513,7 +513,7 @@ bool CBgraFrame::GetSpecializedGIFInfo(const std::wstring &strFileName, unsigned
     if (!oFile.OpenFile(strFileName))
         return false;
 
-    CxImage_Wrapped* wrapimg = new CxImage_Wrapped();
+    CxImage_Addon* wrapimg = new CxImage_Addon();
 
     if(!wrapimg->GetSpecializedGIFInfo(oFile.GetFileNative(), m_nFileType))
         return false;

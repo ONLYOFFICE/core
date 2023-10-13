@@ -1349,7 +1349,7 @@ namespace PdfWriter
 	}
 	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
-		if (!pTrailer || !pInfoXref || !pInfo || m_wsFilePath.empty())
+		if (!pTrailer || m_wsFilePath.empty())
 			return false;
 
 		CFileStream* pStream = new CFileStream();
@@ -1364,6 +1364,8 @@ namespace PdfWriter
 
 		m_pTrailer = pTrailer;
 		m_pInfo = pInfo;
+		if (!m_pInfo)
+			m_pInfo = new PdfWriter::CInfoDict(m_pXref);
 
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())
@@ -1379,8 +1381,12 @@ namespace PdfWriter
 		m_pInfo->SetInfo(InfoCreator, cCreator ? cCreator : sCreatorA.c_str());
 		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
 
-		pInfoXref->SetPrev(m_pLastXref);
-		pXref->SetPrev(pInfoXref);
+		if (pInfoXref)
+		{
+			pInfoXref->SetPrev(m_pLastXref);
+			m_pLastXref = pInfoXref;
+		}
+		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
 		// Вторая часть идентификатора должна обновляться

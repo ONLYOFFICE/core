@@ -9,7 +9,7 @@
 namespace MetaFile
 {
 	CWmfParserBase::CWmfParserBase()
-		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
+		: m_oPlayer(this), m_oBoundingBox(0, 0, 1, 1), m_pInterpretator(NULL), m_bEof(false)
 	{
 		m_pDC = m_oPlayer.GetDC();
 	}
@@ -1730,6 +1730,8 @@ namespace MetaFile
 					m_oEscapeBuffer.Clear();
 					return;
 				}
+				
+				m_oBoundingBox = *oEmfParser.GetBounds();
 
 				if (NULL == m_pInterpretator)
 				{
@@ -1756,13 +1758,15 @@ namespace MetaFile
 					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
 
 					TRectD oCurrentRect = GetBounds();
-					TRectL* pEmfRect =  oEmfParser.GetBounds();
 
-					double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (pEmfRect->Right - pEmfRect->Left));
-					double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (pEmfRect->Bottom - pEmfRect->Top));
+					double dScaleX = std::abs((oCurrentRect.Right - oCurrentRect.Left) / (m_oBoundingBox.Right - m_oBoundingBox.Left));
+					double dScaleY = std::abs((oCurrentRect.Bottom - oCurrentRect.Top) / (m_oBoundingBox.Bottom - m_oBoundingBox.Top));
 
 					pXmlWriter->WriteNodeBegin(L"g", true);
-					pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+
+					if (0 != dScaleX || 0 != dScaleY)
+						pXmlWriter->WriteAttribute(L"transform", L"scale(" + std::to_wstring(dScaleX) + L',' + std::to_wstring(dScaleY) + L')');
+
 					pXmlWriter->WriteNodeEnd(L"g", true, false);
 
 					((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);

@@ -61,7 +61,7 @@ namespace MetaFile
 		void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) override {};
 		void HANDLE_EMR_EOF() override {};
 		void HANDLE_EMR_SAVEDC() override {};
-		void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override {};
+		void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override;
 		void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm& oXForm, const unsigned int& unMode) override {};
 		void HANDLE_EMR_SETWORLDTRANSFORM(const TEmfXForm& oXForm) override {};
 		void HANDLE_EMR_CREATEBRUSHINDIRECT(const unsigned int& unBrushIndex, const CEmfLogBrushEx* pBrush) override {};
@@ -95,16 +95,16 @@ namespace MetaFile
 		void HANDLE_EMR_SETICMMODE(const unsigned int& unICMMode) override {};
 		void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
 		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};
-		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override {};
+		void HANDLE_EMR_SELECTCLIPPATH(const unsigned int& unRegionMode) override;
 		void HANDLE_EMR_SETBKCOLOR(const TRGBA& oColor) override {};
-		void HANDLE_EMR_EXCLUDECLIPRECT(const TRectL& oClip) override {};
-		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override {};
-		void HANDLE_EMR_SETMETARGN() override {};
+		void HANDLE_EMR_EXCLUDECLIPRECT(const TRectL& oClip) override;
+		void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int& unRgnDataSize, const unsigned int& unRegionMode, CDataStream &oDataStream) override;
+		void HANDLE_EMR_SETMETARGN() override;
 		void HANDLE_EMR_SETROP2(const unsigned int& unRop2Mode) override {};
 		void HANDLE_EMR_CREATEPALETTE(const unsigned int& unPaletteIndex, const CEmfLogPalette* oEmfLogPalette) override {};
 		void HANDLE_EMR_SELECTPALETTE(const unsigned int& unPaletteIndex) override {};
 		void HANDLE_EMR_REALIZEPALETTE() override {};
-		void HANDLE_EMR_INTERSECTCLIPRECT(const TRectL& oClip) override {};
+		void HANDLE_EMR_INTERSECTCLIPRECT(const TRectL& oClip) override;
 		void HANDLE_EMR_SETLAYOUT(const unsigned int& unLayoutMode) override {};
 		void HANDLE_EMR_SETBRUSHORGEX(const TPointL& oOrigin) override {};
 		void HANDLE_EMR_ANGLEARC(const TPointL& oCenter, const unsigned int& unRadius, const double& dStartAngle, const double& dSweepAngle) override {};
@@ -148,11 +148,11 @@ namespace MetaFile
 
 		// Emf+
 		// 2.3.1 Clipping Record Types
-		void HANDLE_EMFPLUS_OFFSETCLIP(double, double) override {};
-		void HANDLE_EMFPLUS_RESETCLIP() override {};
-		void HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath*) override {};
-		void HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF&) override {};
-		void HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion*) override {};
+		void HANDLE_EMFPLUS_OFFSETCLIP(double, double) override;
+		void HANDLE_EMFPLUS_RESETCLIP() override;
+		void HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath*) override;
+		void HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF&) override;
+		void HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion*) override;
 
 		// 2.3.2 Comment Record Types
 		void HANDLE_EMFPLUS_COMMENT(CDataStream &, unsigned int) override {};
@@ -203,7 +203,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_BEGINCONTAINER(short, const TEmfPlusRectF&, const TEmfPlusRectF&, unsigned int) override {};
 		void HANDLE_EMFPLUS_BEGINCONTAINERNOPARAMS(unsigned int) override {};
 		void HANDLE_EMFPLUS_ENDCONTAINER(unsigned int) override {};
-		void HANDLE_EMFPLUS_RESTORE(unsigned int) override {};
+		void HANDLE_EMFPLUS_RESTORE(unsigned int) override;
 		void HANDLE_EMFPLUS_SAVE(unsigned int) override {};
 
 		// 2.3.8 Terminal Server Record Types

@@ -249,7 +249,7 @@ namespace OOX
 							OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
 							*pConditionalFormatting = oReader;
 							m_arrConditionalFormatting.push_back(pConditionalFormatting);
-						} 
+						}
 					}
 					else if (sName == L"dataValidations")
 					{
@@ -645,6 +645,18 @@ namespace OOX
 			sResult += L"</" + sNamespace + L"extLst>";
 
 			return sResult;
+		}
+		XLS::BaseObjectPtr COfficeArtExtensionList::toBinConnections()
+		{
+			auto ptr(new XLSB::FRTEXTCONNECTIONS);
+			for(auto i:m_arrExt)
+			{
+				if(i->m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}")
+				{
+					ptr->m_EXTCONN15 = i->m_oConnection->toBin();
+				}
+			}
+			return XLS::BaseObjectPtr{ptr};
 		}
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinWorkBook()
 		{

@@ -176,7 +176,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_BEGINCONTAINER(short, const TEmfPlusRectF&, const TEmfPlusRectF&, unsigned int) override {};
 		void HANDLE_EMFPLUS_BEGINCONTAINERNOPARAMS(unsigned int) override {};
 		void HANDLE_EMFPLUS_ENDCONTAINER(unsigned int) override {};
-		void HANDLE_EMFPLUS_RESTORE(unsigned int) override {};
+		void HANDLE_EMFPLUS_RESTORE(unsigned int) override;
 		void HANDLE_EMFPLUS_SAVE(unsigned int) override {};
 
 		// 2.3.8 Terminal Server Record Types

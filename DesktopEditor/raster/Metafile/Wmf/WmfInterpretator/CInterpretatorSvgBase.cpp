@@ -75,7 +75,7 @@ namespace MetaFile
 	};
 
 	CInterpretatorSvgBase::CInterpretatorSvgBase(IMetaFileBase *pParser, double dWidth, double dHeight)
-	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser), m_pXmlWriter(new XmlUtils::CXmlWriter()), m_bExternXmlWriter(false), m_bUpdatedClip(false)
+	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser), m_pXmlWriter(new XmlUtils::CXmlWriter()), m_bExternXmlWriter(false), m_bUpdatedClip(true)
 	{}
 
 	CInterpretatorSvgBase::~CInterpretatorSvgBase()
@@ -1724,12 +1724,11 @@ namespace MetaFile
 	}
 
 	CSvgClip::CSvgClip()
-        : m_bStartClip(false)
+		: m_bStartClip(false)
 	{}
 
 	void CSvgClip::Reset()
 	{
-		m_bStartClip = false;
 		m_arValues.clear();
 	}
 

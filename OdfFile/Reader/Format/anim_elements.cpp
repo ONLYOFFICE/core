@@ -1144,6 +1144,24 @@ void anim_audio::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	oox::pptx_slide_context& slideContext = Context.get_slide_context();
+	oox::pptx_animation_context& animationContext = Context.get_slide_context().get_animation_context();
+	
+	animationContext.start_anim_audio();
+
+	if (audio_attlist_.xlink_href_)
+	{
+		const std::wstring& href = audio_attlist_.xlink_href_.value();
+		const std::wstring name = NSFile::GetFileName(href);
+
+		std::wstring ref;
+		const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, ref);
+		slideContext.add_rels(true, rId, ref, oox::_rels_type::typeAudio);
+		
+		animationContext.add_anim_audio(rId, name);
+	}
+
+	animationContext.end_anim_audio();
 }
 
 ////////////////////////////////////////////////////////////////

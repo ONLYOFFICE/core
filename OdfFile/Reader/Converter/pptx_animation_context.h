@@ -236,6 +236,16 @@ namespace oox {
 				void serialize(std::wostream& strm) override;
 			};
 
+			struct _audio;
+			typedef shared_ptr<_audio>::Type					_audio_ptr;
+			struct _audio : _animation_element
+			{
+				_CP_OPT(std::wstring)							Name;
+				_CP_OPT(std::wstring)							RId;
+
+				void serialize(std::wostream& strm) override;
+			};
+
 			_par_animation_ptr							root_animation_element_;
 			_par_animation_array						par_animation_levels_;
 
@@ -246,6 +256,7 @@ namespace oox {
 			_anim_clr_ptr								anim_clr_description_;
 			_anim_scale_ptr								anim_scale_description_;
 			_anim_rotate_ptr							anim_rotate_description_;
+			_audio_ptr									audio_description_;
 
 			void clear();
 
@@ -353,6 +364,12 @@ namespace oox {
 			void set_animate_rotate_delay(const std::wstring& value);
 			void set_animate_rotate_auto_reverse(bool value);
 		void end_animate_rotate();
+
+		void start_anim_audio();
+			void add_anim_audio(const std::wstring& rId, const std::wstring& name);
+		void end_anim_audio();
+
+		
 		
 		void serialize(std::wostream & strm);
 		void clear();

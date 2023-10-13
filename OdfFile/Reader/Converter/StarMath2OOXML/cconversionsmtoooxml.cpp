@@ -1,7 +1,7 @@
 #include "cconversionsmtoooxml.h"
 #include "../../../../DesktopEditor/common/File.h"
 #include <fstream>
-namespace StarMath {
+/*namespace StarMath {
 	CConversionSMtoOOXML::CConversionSMtoOOXML()
 	{
 	}
@@ -14,17 +14,17 @@ namespace StarMath {
 			ConversionOneElement(m_oTempElement);
 		}
 		EndConversion();
-//		NSFile::CFileBinary oFile;
-//		oFile.CreateFileW(L"Test.txt");
-//		oFile.WriteStringUTF8(m_oXmlWrite.GetXmlString());
-//		oFile.CloseFile();
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(L"Test.txt");
+		oFile.WriteStringUTF8(m_oXmlWrite.GetXmlString());
+		oFile.CloseFile();
 	}
 	void CConversionSMtoOOXML::ConversionOneElement(CElement *m_oElement)
 	{
 		switch (m_oElement->GetType())
 		{
-		case Number:
-			ConversNumber(dynamic_cast<CNumber*>(m_oElement));
+		case Text:
+			ConversText(dynamic_cast<CText*>(m_oElement));
 		break;
 		case BinOperator:
 			ConversBinOperator(dynamic_cast<CBinaryOperator*> (m_oElement));
@@ -40,7 +40,7 @@ namespace StarMath {
 	{
 		if(m_oElement->GetTypeBin() == plus || m_oElement->GetTypeBin() == minus || m_oElement->GetTypeBin() == multipl || m_oElement->GetTypeBin() == cdot || m_oElement->GetTypeBin() == times || m_oElement->GetTypeBin() == div || m_oElement->GetTypeBin() == odivide || m_oElement->GetTypeBin() == oplus || m_oElement->GetTypeBin() == ominus || m_oElement->GetTypeBin() == odot || m_oElement->GetTypeBin() == otimes)
 		{
-			ConversionOneElement(m_oElement->GetLeftArg());
+			ConversionOneElement(m_oElement->GetFirstElement());
 			m_oXmlWrite.WriteNodeBegin(L"m:r",false);
 			StandartProperties();
 			m_oXmlWrite.WriteNodeBegin(L"m:t",false);
@@ -80,9 +80,9 @@ namespace StarMath {
 			default:
 			break;
 			}
-			if(m_oElement->GetTypeRight() == Number)
+			if(m_oElement->GetTypeSecondElement() == Text)
 			{
-				CNumber* m_oNumber = dynamic_cast<CNumber*> (m_oElement->GetRightArg());
+				CText* m_oNumber = dynamic_cast<CText*> (m_oElement->GetSecondElement());
 				m_oXmlWrite.WriteString(m_oNumber->GetValue());
 				m_oXmlWrite.WriteNodeEnd(L"m:t",false,false);
 				m_oXmlWrite.WriteNodeEnd(L"m:r",false,false);
@@ -91,7 +91,7 @@ namespace StarMath {
 			{
 				m_oXmlWrite.WriteNodeEnd(L"m:t",false,false);
 				m_oXmlWrite.WriteNodeEnd(L"m:r",false,false);
-				ConversionOneElement(m_oElement->GetRightArg());
+				ConversionOneElement(m_oElement->GetSecondElement());
 			}
 
 		}
@@ -100,12 +100,12 @@ namespace StarMath {
 			m_oXmlWrite.WriteNodeBegin(L"m:f",false);
 			if(m_oElement->GetTypeBin() == division) PropertiesMFPR(true,L"lin");
 			else PropertiesMFPR(false,L"");
-			BlockRecording(L"m:num",m_oElement->GetLeftArg());
-			BlockRecording(L"m:den",m_oElement->GetRightArg());
+			BlockRecording(L"m:num",m_oElement->GetFirstElement());
+			BlockRecording(L"m:den",m_oElement->GetSecondElement());
 			m_oXmlWrite.WriteNodeEnd(L"m:f",false,false);
 		}
 	}
-	void CConversionSMtoOOXML::ConversNumber(CNumber *m_oElement)
+	void CConversionSMtoOOXML::ConversText(CText *m_oElement)
 	{
 		m_oXmlWrite.WriteNodeBegin(L"m:r",false);
 		StandartProperties();
@@ -225,3 +225,4 @@ namespace StarMath {
 		m_oXmlWrite.WriteNodeEnd(L"m:oMathPara",false,false);
 	}
 }
+*/

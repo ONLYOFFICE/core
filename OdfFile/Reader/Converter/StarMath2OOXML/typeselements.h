@@ -2,8 +2,10 @@
 #define TYPESELEMENTS_H
 namespace StarMath
 {
-enum TypeElement{
-	Number,
+enum class TypeElement{
+	undefine,
+	//global
+	String,
 	BinOperator,
 	Operator,
 	Bracket,
@@ -15,9 +17,7 @@ enum TypeElement{
 	Operation,
 	Index,
 	Matrix,
-};
-enum TypeBinOperator
-{
+	//binoop
 	cdot,
 	times,
 	over,
@@ -35,14 +35,10 @@ enum TypeBinOperator
 	circ,
 	wideslash,
 	widebslash,
-};
-enum TypeOperator
-{
+	//op
 	lim,
 	sum,
-};
-enum TypeBracket
-{
+	//brace
 	brace,
 	round,
 	square,
@@ -53,10 +49,10 @@ enum TypeBracket
 	lfloor,
 	lline,
 	ldline,
-};
-enum TypeAttributeTop
-{
-	noneTop,
+	//attribute
+	ital,
+	bold,
+	//top element
 	acute,
 	breve,
 	dot,
@@ -77,10 +73,7 @@ enum TypeAttributeTop
 	wideharpoon,
 	widehat,
 	underline,//top elements
-};
-enum TypeAttributeColor
-{
-	noneColor,
+	color,
 	black,
 	green,
 	aqua,
@@ -99,10 +92,14 @@ enum TypeAttributeColor
 	coral,
 	midnightblue,
 	crimson,
-	violet,//color(without rgb and hex)
-};
-enum TypeSymbol
-{
+	violet,
+	orange,
+	seagreen,
+	hotpink,
+	orangered,
+	indigo,
+	lavender,
+	//color(without rgb and hex)
 	mline,
 	grid,
 	dlgrid,
@@ -155,9 +152,27 @@ enum TypeSymbol
 	dlarrow,
 	dlrarrow,
 	drarrow,
-};
-enum TypeFunction
-{
+	emptyset,
+	aleph,
+	setN,
+	setZ,
+	setQ,
+	setR,
+	setC,
+	infinity,
+	partial,
+	nabla,
+	exists,
+	notexists,
+	forall,
+	hbar,
+	lambdabar,
+	Re,
+	Im,
+	wp,
+	laplace,
+	fourier,
+	backepsilon,
 	abs,
 	fact,
 	sqrt,
@@ -181,18 +196,12 @@ enum TypeFunction
 	ln,
 	exp,
 	log,
-};
-enum TypeIndex
-{
 	upper,
 	lower,
 	lsup,
 	lsub,
 	csup,
 	csub,
-};
-enum TypeMatrix
-{
 	binom,
 	stack,
 	matrix,

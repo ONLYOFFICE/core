@@ -128,31 +128,26 @@ namespace MetaFile
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_ANGLEARC(const TPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)

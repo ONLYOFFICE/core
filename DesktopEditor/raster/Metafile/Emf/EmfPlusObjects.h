@@ -6,6 +6,7 @@
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
 #include "../Common/CPath.h"
+#include "../Common/CClip.h"
 #include <stdint.h>
 
 #ifndef MININT32
@@ -416,9 +417,8 @@ namespace MetaFile
 		virtual ~CEmfPlusRegionNodeChild();
 
 		EEmfPLusRegionNodeType GetNodeType();
-
-		void ClipRegionOnRenderer(IOutputDevice* pOutput, TRectL *pOutRect = NULL);
 		
+		void DrawOnClip(CClip& oClip, const TXForm& oTransform, TRectL *pOutRect = NULL);
 	public:
 		CEmfPlusRegionNode *pLeft, *pRigth;
 	};

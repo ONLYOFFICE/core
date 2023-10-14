@@ -457,14 +457,11 @@ namespace MetaFile
 	{
 		return EmfPLusRegionNodeTypeChild;
 	}
-
-	void CEmfPlusRegionNodeChild::ClipRegionOnRenderer(IOutputDevice *pOutput, TRectL *pOutRect)
+	
+	void CEmfPlusRegionNodeChild::DrawOnClip(CClip &oClip, const TXForm &oTransform, TRectL *pOutRect)
 	{
-		if (NULL == pOutput)
-			return;
-
 		unsigned int unType;
-
+		
 		switch (eType)
 		{
 			case RegionNodeDataTypeAnd:
@@ -487,8 +484,6 @@ namespace MetaFile
 			default: return;
 		}
 
-		pOutput->StartClipPath(unType, ALTERNATE);
-
 		for (CEmfPlusRegionNode *pNode : std::vector<CEmfPlusRegionNode*>{pLeft, pRigth})
 		{
 			switch (pNode->GetNodeType())
@@ -497,11 +492,15 @@ namespace MetaFile
 				{
 					if (NULL != pOutRect)
 					{
-						pOutput->MoveTo(pOutRect->Left,  pOutRect->Top);
-						pOutput->LineTo(pOutRect->Right, pOutRect->Top);
-						pOutput->LineTo(pOutRect->Right, pOutRect->Bottom);
-						pOutput->LineTo(pOutRect->Left,  pOutRect->Bottom);
-						pOutput->ClosePath();
+						CPath oPath;
+
+						oPath.MoveTo(pOutRect->Left,  pOutRect->Top);
+						oPath.LineTo(pOutRect->Right, pOutRect->Top);
+						oPath.LineTo(pOutRect->Right, pOutRect->Bottom);
+						oPath.LineTo(pOutRect->Left,  pOutRect->Bottom);
+						oPath.Close();
+
+						oClip.SetPath(oPath, unType, oTransform);
 					}
 					break;
 				}
@@ -509,29 +508,30 @@ namespace MetaFile
 				{
 					CEmfPlusRegionNodePath *pRegionNodePath = (CEmfPlusRegionNodePath*)pNode;
 
-					if (!pRegionNodePath->Empty())
-						pRegionNodePath->GetPath()->DrawOn(pOutput, false, false);
+					oClip.SetPath(*pRegionNodePath->GetPath(), unType, oTransform);
 				}
 				case EmfPLusRegionNodeTypeRectF:
 				{
 					CEmfPlusRegionNodeRectF *pRegionNodeRectF = (CEmfPlusRegionNodeRectF*)pNode;
 
-					if (!pRegionNodeRectF->Empty())
-					{
-						TRectD oRect = pRegionNodeRectF->GetRect()->ToRectD();
+					if (pRegionNodeRectF->Empty())
+						break;
+					
+					TRectD oRect = pRegionNodeRectF->GetRect()->ToRectD();
+					
+					CPath oPath;
 
-						pOutput->MoveTo(oRect.Left,  oRect.Top);
-						pOutput->LineTo(oRect.Right, oRect.Top);
-						pOutput->LineTo(oRect.Right, oRect.Bottom);
-						pOutput->LineTo(oRect.Left,  oRect.Bottom);
-						pOutput->ClosePath();
-					}
+					oPath.MoveTo(oRect.Left,  oRect.Top);
+					oPath.LineTo(oRect.Right, oRect.Top);
+					oPath.LineTo(oRect.Right, oRect.Bottom);
+					oPath.LineTo(oRect.Left,  oRect.Bottom);
+					oPath.Close();
+
+					oClip.SetPath(oPath, unType, oTransform);
 				}
 				default: break;
 			}
 		}
-
-		pOutput->EndClipPath(unType);
 	}
 
 	CEmfPlusRegion::CEmfPlusRegion() : CEmfPlusObject()

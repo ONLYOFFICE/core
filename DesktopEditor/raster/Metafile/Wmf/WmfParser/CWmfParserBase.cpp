@@ -1515,7 +1515,7 @@ namespace MetaFile
 		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
 			return;
 
-		m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+		m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)yDenom);
 		UpdateOutputDC();
 	}
 
@@ -1527,7 +1527,7 @@ namespace MetaFile
 		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
 			return;
 
-		m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+		m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)yDenom);
 		UpdateOutputDC();
 	}
 

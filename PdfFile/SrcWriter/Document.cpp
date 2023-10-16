@@ -1289,13 +1289,11 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::DeleteAnnot(int nID)
+	bool CDocument::DeleteAnnot(int nObjNum, int nObjGen)
 	{
-		if (m_pCurPage)
+		if (m_pCurPage && m_pCurPage->DeleteAnnotation(nObjNum))
 		{
-			m_pCurPage->DeleteAnnotation(nID);
-
-			CXref* pXref = new CXref(this, nID, 0);
+			CXref* pXref = new CXref(this, nObjNum, nObjGen);
 			if (!pXref)
 				return false;
 

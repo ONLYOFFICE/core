@@ -909,7 +909,6 @@ bool CPdfFile::EditAnnot(int nPageIndex, int nID)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-
 bool CPdfFile::DeleteAnnot(int nID)
 {
 	// Проверка режима редактирования
@@ -938,18 +937,33 @@ bool CPdfFile::DeleteAnnot(int nID)
 	}
 	pageRefObj.free(); pageObj.free();
 
-	Object oAnnotRef, oAnnot, oPopupRef;
+	bool bRes = false;
 	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
 	{
+		Object oAnnotRef, oAnnot;
 		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
-			break;
-		oAnnotRef.free();
+		{
+			bRes = m_pInternal->pWriter->m_pDocument->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
+			{
+				Object oPopupRef;
+				if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+					m_pInternal->pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+				oPopupRef.free();
+			}
+		}
+		else if (oAnnots.arrayGet(i, &oAnnot)->isDict())
+		{
+			Object oIRTRef;
+			if (oAnnot.dictLookupNF("IRT", &oIRTRef)->isRef() && oIRTRef.getRefNum() == nID)
+				DeleteAnnot(oAnnotRef.getRefNum());
+			oIRTRef.free();
+		}
+		oAnnotRef.free(); oAnnot.free();
 	}
 	oAnnots.free();
-	if (oAnnotRef.isRef() && oAnnotRef.fetch(xref, &oAnnot)->isDict() && oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-		m_pInternal->pWriter->m_pDocument->DeleteAnnot(oPopupRef.getRefNum());
 
-	return m_pInternal->pWriter->m_pDocument->DeleteAnnot(nID);
+	return bRes;
 }
 #endif // BUILDING_WASM_MODULE
 

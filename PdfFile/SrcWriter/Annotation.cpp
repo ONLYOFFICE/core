@@ -220,6 +220,7 @@ namespace PdfWriter
 	CPopupAnnotation* CMarkupAnnotation::CreatePopup()
 	{
 		CPopupAnnotation* pAnnot = new CPopupAnnotation(m_pXref);
+		m_pXref->Add(pAnnot);
 		Add("Popup", pAnnot);
 
 		pAnnot->SetOpen(false);
@@ -348,6 +349,8 @@ namespace PdfWriter
 		}
 
 		Add("State", new CStringObject(sValue.c_str()));
+		if (!Get("C"))
+			SetC({ 1.0, 0.8, 0.0 });
 	}
 	void CTextAnnotation::SetStateModel(BYTE nStateModel)
 	{

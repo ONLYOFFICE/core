@@ -1136,11 +1136,11 @@ namespace PdfWriter
 	
 	    return pArray->Add(pAnnot);
 	}
-	void CPage::DeleteAnnotation(unsigned int nID)
+	bool CPage::DeleteAnnotation(unsigned int nID)
 	{
 		CArrayObject* pArray = (CArrayObject*)Get("Annots");
 		if (!pArray)
-			return;
+			return false;
 
 		for (int i = 0; i < pArray->GetCount(); i++)
 		{
@@ -1149,9 +1149,11 @@ namespace PdfWriter
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
 				RELEASEOBJECT(pDelete);
+				return true;
 				break;
 			}
 		}
+		return false;
 	}
     void CPage::BeginText()
 	{

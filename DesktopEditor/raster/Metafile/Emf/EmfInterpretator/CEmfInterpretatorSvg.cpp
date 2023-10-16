@@ -1048,6 +1048,12 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_ENDOFFILE()
 	{
+		CloseClip();
+	}
+	
+	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_GETDC()
+	{
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB &oARGB)

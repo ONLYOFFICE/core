@@ -31,6 +31,8 @@
  */
 
 #include "gtest/gtest.h"
+#include "common.h"
+
 #include <boost/shared_ptr.hpp>
 
 #include "Reader/Format/odf_document.h"
@@ -41,33 +43,16 @@
 #include "Writer/Format/anim_elements.h"
 #include "Writer/Format/draw_page.h"
 
-class ODP2OOX_EntranceTestEnvironment : public ::testing::Environment {
+class ODP2OOX_AnimationEtranceEnvironment : public ODP2OOX_AnimationEnvironment
+{
 public:
+	ODP2OOX_AnimationEtranceEnvironment();
 
-	~ODP2OOX_EntranceTestEnvironment() override {}
-
-	void SetUp() override;
-
-	void TearDown() override;
-
-	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> GetConversionContext()
-	{
-		return mConverionContext;
-	}
-
-	static const cpdoccore::oox::pptx_animation_context& GetAnimationContext()
-	{
-		return mConverionContext->get_slide_context().get_animation_context();
-	}
+	static const cpdoccore::oox::pptx_animation_context& GetAnimationContext();
 
 private:
-	std::wstring sExampleFilename;
-	std::wstring sFrom;
-	std::wstring sTemp;
-	std::wstring sTempUnpackedOdf;
-
-	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> mConverionContext;
-	static boost::shared_ptr<cpdoccore::odf_reader::odf_document> mInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> sConverionContext;
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document> sInputOdf;
 };
 
 class ODP2OOX_EntranceAnimationTest : public testing::Test

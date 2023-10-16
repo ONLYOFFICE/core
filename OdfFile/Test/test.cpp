@@ -38,8 +38,12 @@
 int main(int argc, char* argv[])
 {
 	::testing::InitGoogleTest(&argc, argv);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_EntranceTestEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationTestEnvironment);
-	::testing::AddGlobalTestEnvironment(new MotionTestEnvironment);
+
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEtranceEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
+	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
+
+	//::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationTestEnvironment);
+
 	return RUN_ALL_TESTS();
 }

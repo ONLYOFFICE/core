@@ -56,3 +56,37 @@ boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> Convert(boost::shared
 
 	return conversionContext;
 }
+
+ODP2OOX_AnimationEnvironment::ODP2OOX_AnimationEnvironment(const std::wstring& exampleFilename, boost::shared_ptr<cpdoccore::odf_reader::odf_document>* doc, boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>* context)
+	: testing::Environment()
+{
+	sExampleFilename = NSFile::GetFileName(exampleFilename);
+	mDocument = doc;
+	mContext = context;
+}
+
+ODP2OOX_AnimationEnvironment::~ODP2OOX_AnimationEnvironment()
+{
+}
+
+void ODP2OOX_AnimationEnvironment::SetUp()
+{
+	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
+	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");
+
+	sFrom = sExampleFilesDirectory + FILE_SEPARATOR_STR + sExampleFilename;
+	sTemp = sFrom + _T(".tmp");
+	sTempUnpackedOdf = sTemp + CH_DIR("odf_unpacked");
+
+	NSDirectory::CreateDirectory(sTemp);
+	NSDirectory::CreateDirectory(sTempUnpackedOdf);
+
+	*mDocument = ReadOdfDocument(sFrom, sTemp, sTempUnpackedOdf);
+	*mContext = Convert(*mDocument);
+}
+
+void ODP2OOX_AnimationEnvironment::TearDown()
+{
+	NSDirectory::DeleteDirectory(sTemp);
+}
+

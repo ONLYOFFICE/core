@@ -721,7 +721,7 @@ namespace Aggplus
 
     bool CGraphicsPath::IsPointInPath(const double& x, const double& y)
     {
-        agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> rasterizer;
+        agg::rasterizer_scanline_aa<> rasterizer;
         agg::conv_curve<agg::path_storage> c_c_path(m_internal->m_agg_ps);
         rasterizer.add_path(c_c_path);
 

@@ -228,7 +228,7 @@ namespace Aggplus
 		if (!m_bIsClip2)
 		{
 			// смешивать надо с растерайзером
-			agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> rasterizer;
+			agg::rasterizer_scanline_aa<> rasterizer;
 			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
@@ -251,7 +251,7 @@ namespace Aggplus
 		else
 		{
 			// надо смешивать со стораджем
-			agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> rasterizer;
+			agg::rasterizer_scanline_aa<> rasterizer;
 			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;

@@ -67,7 +67,7 @@ public:
 
 	agg::rendering_buffer	m_alpha_rbuf;
 
-	agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> m_rasterizer;
+	agg::rasterizer_scanline_aa<> m_rasterizer;
 
 	agg::pixfmt_gray8		m_pixf;
 	ren_base				m_base_renderer;
@@ -108,7 +108,7 @@ public:
 
 	agg::rendering_buffer	m_alpha_rbuf;
 
-	agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> m_rasterizer;
+	agg::rasterizer_scanline_aa<> m_rasterizer;
 
 	agg::pixfmt_gray8		m_pixf;
 	ren_base				m_base_renderer;
@@ -141,7 +141,7 @@ class CClipMulti
 	typedef agg::scanline_p8 scanline_type;
 
 public:
-	agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> m_rasterizer;
+	agg::rasterizer_scanline_aa<> m_rasterizer;
 	
 	agg::scanline_storage_aa8 m_storage1;
 	agg::scanline_storage_aa8 m_storage2;

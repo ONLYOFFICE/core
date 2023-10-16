@@ -226,6 +226,18 @@ namespace MetaFile
 			m_pMetaFileRenderer->NeedUpdateClip();
 	}
 	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_ENDOFFILE()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
+	void CEmfInterpretatorRender::HANDLE_EMFPLUS_GETDC()
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->NeedUpdateClip();
+	}
+	
 	void CEmfInterpretatorRender::HANDLE_EMFPLUS_RESTORE(unsigned int)
 	{
 		if (NULL != m_pMetaFileRenderer)

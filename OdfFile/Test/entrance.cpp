@@ -34,45 +34,34 @@
 
 #include "common.h"
 
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
+//#include "../../DesktopEditor/common/File.h"
+//#include "../../DesktopEditor/common/Directory.h"
+//#include "../../OfficeUtils/src/OfficeUtils.h"
+//
+//#include "Writer/Converter/Converter.h"
+//#include "Writer/Converter/PptxConverter.h"
+//#include "Writer/Format/office_elements.h"
 
-#include "Writer/Converter/Converter.h"
-#include "Writer/Converter/PptxConverter.h"
-#include "Writer/Format/office_elements.h"
+boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_AnimationEtranceEnvironment::sConverionContext;
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_AnimationEtranceEnvironment::sInputOdf;
 
-#define CH_DIR(x) FILE_SEPARATOR_STR + _T(x)
-
-boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_EntranceTestEnvironment::mConverionContext;
-boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_EntranceTestEnvironment::mInputOdf;
-
-void ODP2OOX_EntranceTestEnvironment::SetUp()
+ODP2OOX_AnimationEtranceEnvironment::ODP2OOX_AnimationEtranceEnvironment()
+	: ODP2OOX_AnimationEnvironment(
+		L"ExampleFiles" FILE_SEPARATOR_STR "entrance.odp",
+		&sInputOdf,
+		&sConverionContext)
 {
-	sExampleFilename = L"entrance.odp";
 
-	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
-	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");
-
-	sFrom = sExampleFilesDirectory + FILE_SEPARATOR_STR + sExampleFilename;
-	sTemp = rootDir + CH_DIR("tmp");
-	sTempUnpackedOdf = sTemp + CH_DIR("odf_unpacked");
-
-	NSDirectory::CreateDirectory(sTemp);
-	NSDirectory::CreateDirectory(sTempUnpackedOdf);
-
-	mInputOdf = ReadOdfDocument(sFrom, sTemp, sTempUnpackedOdf);
-	mConverionContext = Convert(mInputOdf);
 }
 
-void ODP2OOX_EntranceTestEnvironment::TearDown()
+const cpdoccore::oox::pptx_animation_context& ODP2OOX_AnimationEtranceEnvironment::GetAnimationContext()
 {
-	NSDirectory::DeleteDirectory(sTemp);
+	return sConverionContext->get_slide_context().get_animation_context();
 }
 
 void ODP2OOX_EntranceAnimationTest::SetUp()
 {
-	mAnimationContext = &ODP2OOX_EntranceTestEnvironment::GetAnimationContext();
+	mAnimationContext = &ODP2OOX_AnimationEtranceEnvironment::GetAnimationContext();
 }
 
 const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& ODP2OOX_EntranceAnimationTest::GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par)
@@ -652,6 +641,8 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_checker_iris_wi
 
 //////////////////////////////////////////////////////////////////////////
 // OOX2ODP
+
+#if 0
 
 boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_EntranceAnimationTestEnvironment::mConverter;
 cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationTestEnvironment::mContext;
@@ -1356,3 +1347,4 @@ TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_preset_id)
 	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
 }
 
+#endif

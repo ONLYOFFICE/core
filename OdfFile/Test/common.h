@@ -32,12 +32,33 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
+#include "gtest/gtest.h"
 #include "Reader/Converter/pptx_conversion_context.h"
 #include "Reader/Format/odf_document.h"
+
+#include <boost/shared_ptr.hpp>
+#include <string>
 
 #define CH_DIR(x) FILE_SEPARATOR_STR + _T(x)
 
 boost::shared_ptr<cpdoccore::odf_reader::odf_document> ReadOdfDocument(const std::wstring& from, const std::wstring& temp, const std::wstring& tempUnpackedOdf);
 boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> Convert(boost::shared_ptr<cpdoccore::odf_reader::odf_document> inputOdf);
+
+class ODP2OOX_AnimationEnvironment : public ::testing::Environment
+{
+public:
+	ODP2OOX_AnimationEnvironment(const std::wstring& exampleFilename, boost::shared_ptr<cpdoccore::odf_reader::odf_document>* doc, boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>* context);
+	~ODP2OOX_AnimationEnvironment();
+
+	void SetUp() override;
+	void TearDown() override;
+
+private:
+	std::wstring sExampleFilename;
+	std::wstring sFrom;
+	std::wstring sTemp;
+	std::wstring sTempUnpackedOdf;
+
+	boost::shared_ptr<cpdoccore::odf_reader::odf_document>* mDocument;
+	boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>* mContext;
+};

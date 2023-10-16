@@ -182,7 +182,7 @@ namespace PdfWriter
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
-		bool              DeleteAnnot(int nID);
+		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }

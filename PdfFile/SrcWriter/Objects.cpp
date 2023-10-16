@@ -842,7 +842,7 @@ namespace PdfWriter
 
 		return NULL;
 	}
-    void CXref::Add(CObjectBase* pObject)
+	void CXref::Add(CObjectBase* pObject, unsigned int unObjectGen)
 	{
 		if (!pObject)
 			return;
@@ -856,7 +856,6 @@ namespace PdfWriter
 			return;
 		}
 
-
 		// В случае ошибки r объектe нужно применить dispose
 		TXrefEntry* pEntry = new TXrefEntry;
 		if (NULL == pEntry)
@@ -869,7 +868,7 @@ namespace PdfWriter
 
 		pEntry->nEntryType   = IN_USE_ENTRY;
 		pEntry->unByteOffset = 0;
-		pEntry->unGenNo      = 0;
+		pEntry->unGenNo      = unObjectGen;
 		pEntry->pObject      = pObject;
 		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
 		pObject->SetIndirect();

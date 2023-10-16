@@ -2,6 +2,7 @@
 #define CXIMAGE_ADDON_H
 
 #include "../../cximage/CxImage/ximage.h"
+#include "../../Image.h"
 
 class CxImage_Addon
 {
@@ -9,7 +10,7 @@ public:
     CxImage_Addon();
     virtual ~CxImage_Addon();
 
-    BYTE* GetData() const;
+    BYTE* GetData();
     size_t GetDataSize() const;
     const char* GetError();
     bool GetSpecializedGIFInfo(FILE* hFile, uint32_t imagetype);

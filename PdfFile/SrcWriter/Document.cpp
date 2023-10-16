@@ -563,12 +563,14 @@ namespace PdfWriter
 	{
 		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
+		m_pXref->Add(pAnnot);
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
 		pAnnot->SetRect(oRect);
+		m_pXref->Add(pAnnot);
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateInkAnnot()
@@ -627,6 +629,7 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
+		m_pXref->Add(pAnnot);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
@@ -1482,14 +1485,14 @@ namespace PdfWriter
 			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
 			if (pXrefCatalog)
 			{
-				pXrefCatalog->Add(m_pCatalog->Copy());
+				pXrefCatalog->Add(m_pCatalog->Copy(), m_pCatalog->GetGenNo());
 				pXrefCatalog->SetPrev(m_pXref);
 			}
 
 			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
 			if (pXrefPage)
 			{
-				pXrefPage->Add(m_vSignatures[i].pPage->Copy());
+				pXrefPage->Add(m_vSignatures[i].pPage->Copy(), m_vSignatures[i].pPage->GetGenNo());
 				pXrefPage->SetPrev(pXrefCatalog);
 			}
 

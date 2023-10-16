@@ -76,7 +76,6 @@ namespace PdfWriter
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
 		m_pXref = pXref;
-		pXref->Add(this);
 
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);

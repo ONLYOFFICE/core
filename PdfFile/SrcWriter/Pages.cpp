@@ -183,7 +183,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPageTree::CPageTree(CXref* pXref)
 	{
-		m_pXref = pXref;
 		pXref->Add(this);
 
 		m_pPages = new CArrayObject();
@@ -193,11 +192,8 @@ namespace PdfWriter
 		Add("Kids", m_pPages);
 		Add("Count", m_pCount);
 	}
-	CPageTree::CPageTree(CXref* pXref, bool bEmpty)
+	CPageTree::CPageTree()
 	{
-		m_pXref = pXref;
-		pXref->Add(this);
-
 		m_pPages = NULL;
 		m_pCount = NULL;
 	}
@@ -314,9 +310,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CXref* pXref, CDocument* pDocument)
+	CPage::CPage(CDocument* pDocument)
 	{
-		Init(pXref, pDocument);
+		Init(pDocument);
 	}
 	void CPage::Fix()
 	{
@@ -431,7 +427,8 @@ namespace PdfWriter
 	}
 	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
 	{
-		Init(pXref, pDocument);
+		pXref->Add(this);
+		Init(pDocument);
 
 		m_pContents = new CArrayObject();
 		CDictObject* pContent = new CDictObject(pXref);
@@ -454,11 +451,8 @@ namespace PdfWriter
 			pGrState = pPrev;
 		}
 	}
-	void CPage::Init(CXref* pXref, CDocument* pDocument)
+	void CPage::Init(CDocument* pDocument)
 	{
-		pXref->Add(this);
-
-		m_pXref     = pXref;
 		m_pDocument = pDocument;
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);

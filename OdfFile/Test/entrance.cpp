@@ -34,13 +34,13 @@
 
 #include "common.h"
 
-//#include "../../DesktopEditor/common/File.h"
-//#include "../../DesktopEditor/common/Directory.h"
-//#include "../../OfficeUtils/src/OfficeUtils.h"
-//
-//#include "Writer/Converter/Converter.h"
-//#include "Writer/Converter/PptxConverter.h"
-//#include "Writer/Format/office_elements.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+
+#include "Writer/Converter/Converter.h"
+#include "Writer/Converter/PptxConverter.h"
+#include "Writer/Format/office_elements.h"
 
 boost::shared_ptr<cpdoccore::oox::pptx_conversion_context> ODP2OOX_AnimationEtranceEnvironment::sConverionContext;
 boost::shared_ptr<cpdoccore::odf_reader::odf_document> ODP2OOX_AnimationEtranceEnvironment::sInputOdf;
@@ -641,8 +641,6 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_checker_iris_wi
 
 //////////////////////////////////////////////////////////////////////////
 // OOX2ODP
-
-#if 0
 
 boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_EntranceAnimationTestEnvironment::mConverter;
 cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationTestEnvironment::mContext;
@@ -1346,5 +1344,3 @@ TEST_F(OOX2ODP_EntranceAnimationTest, ascend_innermost_par_preset_id)
 
 	EXPECT_EQ(par->par_attlist_.presentation_preset_id_.value_or(preset_id::none).get_type(), presetIdExp.get_type());
 }
-
-#endif

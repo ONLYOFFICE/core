@@ -29,22 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
+#include "common.h"
 
 #include "gtest/gtest.h"
 
-#include "entrance.h"
-#include "motion.h"
-#include "audio.h"
-
-int main(int argc, char* argv[])
+class ODP2OOX_AnimationAudioEnvironment : public ODP2OOX_AnimationEnvironment
 {
-	::testing::InitGoogleTest(&argc, argv);
+public:
+	ODP2OOX_AnimationAudioEnvironment();
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEtranceEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
-	
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationTestEnvironment);
+	static const cpdoccore::oox::pptx_animation_context& GetAnimationContext();
 
-	return RUN_ALL_TESTS();
-}
+private:
+	static boost::shared_ptr<cpdoccore::odf_reader::odf_document>		sInputOdf;
+	static boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	sConverionContext;
+};
+
+class ODP2OOX_AnimationAudioTest : public testing::Test
+{
+public:
+	void SetUp() override;
+	void TearDown() override
+	{ }
+
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr&				GetInnerPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_seq_animation_ptr&				GetMainSequence();
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_array&			GetMainSequenceArray();
+	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&		GetActionArray(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr				GetInnermostPar(const cpdoccore::oox::pptx_animation_context::Impl::_par_animation_ptr& par);
+	const cpdoccore::oox::pptx_animation_context::Impl::_animation_element_array&		GetAnimationActionsByIndex(size_t index);
+
+
+public:
+	const cpdoccore::oox::pptx_animation_context* mAnimationContext;
+};

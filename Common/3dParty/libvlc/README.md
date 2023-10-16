@@ -172,6 +172,7 @@ Codec plugins handle the encoding and decoding of audio and video data, making i
 
 | Plugin name | Description |
 | --- | --- |
+| a52 | ATSC A/52 aka AC-3 audio decoder plugin |
 | adpcm | ADPCM audio decoder |
 | aes3 | AES3/SMPTE 302M audio decoder |
 | aom | AOM video decoder (AV1) |
@@ -298,6 +299,7 @@ Demux plugins are responsible for demultiplexing multimedia containers, separati
 | real | Real Media format demuxer |
 | smf | SMF demuxer |
 | subtitle | Demux for subtitle text files |
+| ts | MPEG Transport Stream demuxer |
 | tta | TTA demuxer |
 | ty | TY Stream audio/video demux |
 | vc1 | VC1 video demuxer |
@@ -353,6 +355,7 @@ The "misc" directory may contain miscellaneous plugins that don't fit neatly int
 | securetransport | TLS support for Mac OS X and iOS |
 | stats | Stats decoder/demuxer |
 | xdg_screensaver | XDG screen saver inhibition |
+| xml | XML Parser (using libxml2) |
 
 ### Packetizer plugins
 
@@ -479,6 +482,7 @@ Video chroma plugins handle color space conversion and manipulation of video fra
 | i422_yuy2 | Conversions from I422 to YUY2,YUNV,YVYU,UYVY,UYNV,Y422,IUYV,Y211 |
 | i422_yuy2_sse2 | SSE2 conversions from I422 to YUY2,YUNV,YVYU,UYVY,UYNV,Y422,IUYV |
 | rv32 | RV32 conversion filter |
+| swscale | Video scaling filter |
 | yuvp | YUVP converter |
 | yuy2_i420 | Conversions from YUY2,YUNV,YVYU,UYVY,UYNV,Y422 to I420 |
 | yuy2_i422 | Conversions from YUY2,YUNV,YVYU,UYVY,UYNV,Y422 to I422 |

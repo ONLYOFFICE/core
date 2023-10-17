@@ -81,5 +81,37 @@ void Pane::readFields(CFRecord& record)
 
 }
 
+void Pane::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		CellRef ref(topLeftCell);
+
+		_UINT16		rwTop_2b = ref.row;
+		_UINT16		colLeft_2b = ref.column;
+
+		record << x << y << rwTop_2b << colLeft_2b << pnnAcct;
+		
+		record.reserveNunBytes(1); // reserved
+	}
+	else
+	{
+		CellRef ref(topLeftCell);
+
+		rwTop = ref.row;
+		colLeft = ref.column;
+
+		record << xnumXSplit << xnumYSplit << rwTop << colLeft << pnnAcct_xlsb;
+
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fFrozen);
+		SETBIT(flags, 1, fFrozenNoSplit);
+
+		record << flags;
+	}
+
+}
+
 } // namespace XLS
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,6 +61,18 @@ namespace XLSB
 
         record >> stUniqueName >> stSourceCaption;
     }
+
+	void BeginSlicerCacheLevelData::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBITS(flags, 0, 1, fSortOrder)
+		SETBITS(flags, 2, 3, fCrossFilter)
+
+		record << citem << flags;
+
+		record << stUniqueName << stSourceCaption;
+	}
 
 } // namespace XLSB
 

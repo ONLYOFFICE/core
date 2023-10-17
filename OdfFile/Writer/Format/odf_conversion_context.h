@@ -170,7 +170,7 @@ public:
 	void end_tabs();
 
 	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
-	double convert_symbol_width(double val);
+	double convert_symbol_width(double va, bool add_padding = false);
 
 protected:
 	std::vector<odf_text_context_ptr> text_context_;

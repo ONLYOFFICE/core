@@ -16,14 +16,6 @@
 #ifndef AGG_SPAN_GRADIENT_INCLUDED
 #define AGG_SPAN_GRADIENT_INCLUDED
 
-#include <stdlib.h>
-#include <string.h>
-#include "../../graphics/structures.h"
-#include "agg_math.h"
-#include "agg_array.h"
-#include "agg_trans_affine.h"
-#include <iostream>
-#include <cmath>
 #include "./test_grads/custom_gradients.h"
 namespace agg
 {
@@ -193,8 +185,8 @@ namespace agg
 			if (t1 >= 1 || t2 >= 1)
 			{
 				if (t1 > t2)
-					return 0;
-				return 1;
+					return 1;
+				return 0;
 			}
 			return t1;
 		}

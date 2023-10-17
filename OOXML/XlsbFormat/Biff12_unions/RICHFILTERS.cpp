@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -87,12 +87,34 @@ namespace XLSB
 
         if (proc.optional<EndRichFilters>())
         {
-            m_BrtEndRichFilters = elements_.back();
+            m_bBrtEndRichFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndRichFilters = false;
 
-        return m_BrtBeginRichFilters && m_BrtEndRichFilters;
+        return m_BrtBeginRichFilters && m_bBrtEndRichFilters;
     }
+
+	const bool RICHFILTERS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginRichFilters != nullptr)
+			proc.mandatory(*m_BrtBeginRichFilters);
+
+		for (auto &item : m_arBrtRichFilter)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtRichFilterDateGroupItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndRichFilters>();
+		
+		return true;
+	}
 
 } // namespace XLSB
 

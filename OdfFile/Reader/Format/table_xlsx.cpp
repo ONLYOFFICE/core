@@ -165,6 +165,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	int row_current = Context.current_table_row() + 1;
 
     bool hidden = attlist_.table_visibility_.get_type() == table_visibility::Collapse;
+	bool filter = attlist_.table_visibility_.get_type() == table_visibility::Filter;
 
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
@@ -195,7 +196,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 						if (Context.get_table_context().state()->group_rows_.back()) hidden = false;
 					}					
 
-                    if (hidden)
+                    if (hidden || filter)
                     {
                         CP_XML_ATTR(L"hidden", 1);                        
                     }
@@ -399,6 +400,11 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
 
+	if (sparkline_groups_)
+	{
+		sparkline_groups_->xlsx_convert(Context);
+	}
+
 	for (size_t i = 0 ; i < table_named_.size(); i++)
 	{
 		table_named_[i]->xlsx_convert(Context);
@@ -459,7 +465,7 @@ double pixToSize(double pixels, double maxDigitSize)
 { 
 	if (pixels < 8) pixels = 8; //УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИНОСТРАННОГО ГРАЖДАНИНА.ods
 
-	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
+	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
 
 }
@@ -468,9 +474,9 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wostream & strm = Context.current_sheet().cols();
 
-    const unsigned int columnsRepeated		= table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring styleName			= table_table_column_attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring defaultCellStyleName = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const unsigned int columnsRepeated		= attlist_.table_number_columns_repeated_;
+    const std::wstring styleName			= attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyleName = attlist_.table_default_cell_style_name_.get_value_or(L"");
 
 
     int cMin = 0, cMax = 0;
@@ -487,7 +493,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         CP_XML_NODE(L"col")
         {
-            bool hidden = table_table_column_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
+            bool hidden = attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 
 			if (false == Context.get_table_context().state()->group_columns_.empty())
 			{
@@ -504,7 +510,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 			CP_XML_ATTR(L"max", cMax);
 			CP_XML_ATTR(L"min", (cMin + 1));
 
-            if (table_table_column_attlist_.table_style_name_)
+            if (attlist_.table_style_name_)
             {
 
 				if (style_instance * inst = 
@@ -522,19 +528,27 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
 
 							//if (set_default)
-								CP_XML_ATTR(L"style", style_ );
+							//	CP_XML_ATTR(L"style", style_ );
 						}
 					}
 				}
 				_CP_OPT(double) width;
-                const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get_value_or(L"");
+                const std::wstring colStyleName = attlist_.table_style_name_.get_value_or(L"");
                 if (style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn, false))
                 {
                     if (inst->content())
                     {
                         if (const style_table_column_properties * prop = inst->content()->get_style_table_column_properties())
                         {  
-                            if (prop->attlist_.style_column_width_)
+							if ((prop->attlist_.loext_column_width_sym_) && (*prop->attlist_.loext_column_width_sym_ > 0))
+							{
+								width = *prop->attlist_.loext_column_width_sym_;
+
+								CP_XML_ATTR(L"width", *width);
+								CP_XML_ATTR(L"customWidth", true);
+								Context.table_column_last_width(*width);
+							}
+							else if (prop->attlist_.style_column_width_)
                             {
                                 pt_width = prop->attlist_.style_column_width_->get_value_unit(length::pt);                        
                                 cm_width = prop->attlist_.style_column_width_->get_value_unit(length::cm);        
@@ -732,9 +746,9 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
-	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
-    style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
+    text_format_properties_ptr textFormatProperties	= calc_text_properties_content (instances);          
+	paragraph_format_properties parFormatProperties = calc_paragraph_properties_content (instances);
+    style_table_cell_properties_attlist cellFormatProperties = calc_table_cell_properties (instances);
 //-------------------------------------------------------------------------------------------------------------------------------
 	std::wstring			num_format;
 	office_value_type::type num_format_type = office_value_type::Custom;

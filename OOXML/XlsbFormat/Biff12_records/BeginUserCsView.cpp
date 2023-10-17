@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -62,6 +62,21 @@ namespace XLSB
         hsState     = GETBITS(flags, 0, 1);
         fZoomToFit  = GETBIT(flags, 2);
     }
+
+	void BeginUserCsView::writeFields(XLS::CFRecord& record)
+	{
+		_GUID_          guid_;
+		_UINT32         flags = 0;
+
+		STR::bstr2guid(guid, guid_);
+
+		SETBITS(flags, 0, 1, hsState)
+		SETBIT(flags, 2, fZoomToFit)
+
+		record << guid_ << iTabId << dwScale << flags;
+
+
+	}
 
 } // namespace XLSB
 

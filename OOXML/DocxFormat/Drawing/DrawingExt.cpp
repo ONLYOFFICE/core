@@ -216,7 +216,9 @@ namespace OOX
 										*m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}" ||
 										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||	
 										*m_sUri == L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}" ||
-										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
+										*m_sUri == L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}" ||
+										*m_sUri == L"{56B9EC1D-385E-4148-901F-78D8002777C0}" ||
+				*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nCurDepth))
@@ -238,18 +240,15 @@ namespace OOX
 					{
 						m_oAltTextTable = oReader;
 					}
-					else if (sName == L"conditionalFormattings")
+					else if ((sName == L"conditionalFormattings") && (false == oReader.IsEmptyNode()))
 					{
-						if (oReader.IsEmptyNode())
-							continue;
-
 						int nCurDepth1 = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
 							OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
 							*pConditionalFormatting = oReader;
 							m_arrConditionalFormatting.push_back(pConditionalFormatting);
-						}
+						} 
 					}
 					else if (sName == L"dataValidations")
 					{
@@ -289,11 +288,8 @@ namespace OOX
 					{
 						m_oSlicerStyles = oReader;
 					}
-					else if (sName == L"slicerCachePivotTables")
+					else if ((sName == L"slicerCachePivotTables") && false == oReader.IsEmptyNode())
 					{
-						if (oReader.IsEmptyNode())
-							continue;
-
 						int nCurDepth1 = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
@@ -332,6 +328,26 @@ namespace OOX
 					else if (sName == L"userProtectedRanges")
 					{
 						m_oUserProtectedRanges = oReader;
+					}
+					else if (sName == L"externalLinksPr")
+					{
+						WritingElement_ReadAttributes_Start_No_NS(oReader)
+							WritingElement_ReadAttributes_ReadSingle(oReader, L"autoRefresh", m_oExternalLinksAutoRefresh)
+						WritingElement_ReadAttributes_End_No_NS(oReader)
+					}
+					else if ((sName == L"dataDisplayOptions16") && (false == oReader.IsEmptyNode()))
+					{
+						int nCurDepth1 = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
+						{
+							std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+							if (sName1 == L"dispNaAsBlank")
+							{
+								WritingElement_ReadAttributes_Start_No_NS(oReader)
+									WritingElement_ReadAttributes_ReadSingle(oReader, L"val", m_oDataDisplayNaAsBlank)
+								WritingElement_ReadAttributes_End_No_NS(oReader)
+							}
+						}
 					}
 				}
 			}
@@ -513,6 +529,29 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder writer;
 				m_oChartFiltering->toXML(writer);
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oExternalLinksAutoRefresh.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"xxlnp:externalLinksPr");
+				writer.StartAttributes();
+					writer.WriteAttribute(L"autoRefresh", *m_oExternalLinksAutoRefresh);
+				writer.EndAttributes();
+				writer.EndNode(L"xxlnp:externalLinksPr");
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oDataDisplayNaAsBlank.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"c16r3:dataDisplayOptions16");
+				writer.EndAttributes();
+					writer.StartNode(L"c16r3:dispNaAsBlank");
+						writer.StartAttributes();
+							writer.WriteAttribute(L"val", *m_oDataDisplayNaAsBlank);
+						writer.EndAttributes();
+					writer.EndNode(L"c16r3:dispNaAsBlank");
+				writer.EndNode(L"c16r3:dataDisplayOptions16");
 				sResult += writer.GetData().c_str();
 			}
 			sResult += L"</" + sNamespace + L"ext>";

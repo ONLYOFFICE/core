@@ -36,7 +36,6 @@
 #include "../Drawing/Theme.h"
 
 #include "../../XlsFile/Converter/ShapeType.h"
-#include "../../../Common/MS-LCID.h"
 #include "../../../OOXML/Base/Unit.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
@@ -48,7 +47,6 @@
 using namespace PPT;
 
 static UINT nRTCounter = 1;
-
 
 CStylesWriter::CStylesWriter() : m_pTheme(NULL) {}
 CStylesWriter::CStylesWriter(PPT::CTheme* pTheme) : m_pTheme(pTheme) {}
@@ -65,7 +63,6 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
 
     oWriter.WriteString(str1);
 
-
     // <a:pPr>
     auto pPPr = new PPTX::Logic::TextParagraphPr;
     BulletsConverter buConverter;
@@ -74,8 +71,8 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
     std::wstring strPPr = pPPr->toXML().substr(6); // remove <a:pPr
     strPPr = strPPr.substr(0, strPPr.size() - 8);  // remove </a:pPr>
     delete pPPr;
+  
     oWriter.WriteString(strPPr);
-
 
     oWriter.WriteString(L"<a:defRPr");
 
@@ -83,7 +80,7 @@ void CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, PPT::CString
 
     if (pCF->Language.is_init())
     {
-        std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+        std::wstring str_lang = m_lcidConverter.get_wstring(pCF->Language.get());
 
         if (str_lang.length() > 0)
             oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
@@ -1250,7 +1247,7 @@ void PPT::CShapeWriter::WriteTextInfo(PPT::CTextCFRun* pLastCF)
             }
             if (pCF->Language.is_init())
             {
-                std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+                std::wstring str_lang = m_lcidConverter.get_wstring(pCF->Language.get());
 
                 if (str_lang.length() > 0)
                     m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
@@ -1531,7 +1528,7 @@ std::wstring PPT::CShapeWriter::ConvertGroup()
         double width	= bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
         double height	= bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
 
-        if ( width > 0 || height > 0 )
+        if ( width > 0 && height > 0 )
         {
             m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
         }
@@ -1773,7 +1770,7 @@ std::wstring	PPT::CShapeWriter::ConvertTable	()
         double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
         double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
 
-        if ( width > 0 || height > 0 )
+        if ( width > 0 && height > 0 )
         {
             m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
         }
@@ -1886,7 +1883,7 @@ std::wstring PPT::CShapeWriter::ConvertShape()
         double width	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetWidth() : pShapeElement->m_rcAnchor.GetWidth();
         double height	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetHeight() : pShapeElement->m_rcAnchor.GetHeight();
 
-        if ( width > 0 || height > 0 )
+        if (( width > 0 && height > 0 ) || (pShapeElement->m_lShapeType == oox::msosptLine))
         {
             m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
         }
@@ -2138,7 +2135,7 @@ std::wstring PPT::CShapeWriter::ConvertImage()
 		_INT64 width	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth());
 		_INT64 height	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight());
 
-        if (( width > 0 || height > 0 ) && ((_UINT64)width) < 0xffffffffffff && ((_UINT64)height) < 0xffffffffffff)
+        if (( width > 0 && height > 0 ) && ((_UINT64)width) < 0xffffffffffff && ((_UINT64)height) < 0xffffffffffff)
         {
             m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
         }

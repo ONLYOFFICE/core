@@ -34,8 +34,8 @@
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/HtmlRenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfReader.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfWriter.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/DocxRenderer.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/XpsFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/EpubFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/DjVuFile.lib")
@@ -45,7 +45,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
-#else
+	#else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfFile.lib")
@@ -59,7 +59,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
 	#endif
-	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../../Common/3dParty/icu/win_64/build//icuuc.lib")
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/doctrenderer.lib")
@@ -90,7 +90,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
 	#endif
-		#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+		#pragma comment(lib, "../../../Common/3dParty/icu/win_32/build/icuuc.lib")
 #endif
 
 #include "../../src/main.cpp"

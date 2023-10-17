@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace XLSB
     {
         record >> FRTheader >> bLenMin >> bLenMax >> fShowValue >> bDirection >> bAxisPosType;
 
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
 
         fBorder                     = GETBIT(flags, 0);
@@ -62,6 +62,20 @@ namespace XLSB
         fCustomNegativeFillColor    = GETBIT(flags, 2);
         fCustomNegativeBorderColor  = GETBIT(flags, 3);
     }
+
+	void BeginDatabar14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << bLenMin << bLenMax << fShowValue << bDirection << bAxisPosType;
+
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fBorder)
+		SETBIT(flags, 1, fGradient)
+		SETBIT(flags, 2, fCustomNegativeFillColor)
+		SETBIT(flags, 3, fCustomNegativeBorderColor)
+
+		record << flags;
+	}
 
 } // namespace XLSB
 

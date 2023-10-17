@@ -30,23 +30,22 @@ public:
 	JSSmart<CJSValue> CheckNextChange();
 	JSSmart<CJSValue> GetCountChanges();
 	JSSmart<CJSValue> GetChangesFile(JSSmart<CJSValue> index);
-	JSSmart<CJSValue> Save_AllocNative(JSSmart<CJSValue> nLen);
-	JSSmart<CJSValue> Save_ReAllocNative(JSSmart<CJSValue> pos, JSSmart<CJSValue> len);
+	/*[noexport]*/JSSmart<CJSValue> Save_AllocNative(JSSmart<CJSValue> nLen);
+	/*[noexport]*/JSSmart<CJSValue> Save_ReAllocNative(JSSmart<CJSValue> pos, JSSmart<CJSValue> len);
 	JSSmart<CJSValue> Save_End(JSSmart<CJSValue> pos, JSSmart<CJSValue> len);
 	JSSmart<CJSValue> AddImageInChanges(JSSmart<CJSValue> img);
 	JSSmart<CJSValue> ConsoleLog(JSSmart<CJSValue> message);
-	JSSmart<CJSValue> SaveChanges(JSSmart<CJSValue> sParam, JSSmart<CJSValue> nDeleteIndex, JSSmart<CJSValue> nCount);
-	JSSmart<CJSValue> zipOpenFile(JSSmart<CJSValue> name);
-	JSSmart<CJSValue> zipOpenFileBase64(JSSmart<CJSValue> name);
-	JSSmart<CJSValue> zipGetFileAsString(JSSmart<CJSValue> name);
-	JSSmart<CJSValue> zipGetFileAsBinary(JSSmart<CJSValue> name);
-	JSSmart<CJSValue> zipCloseFile();
+	/*[noexport]*/JSSmart<CJSValue> SaveChanges(JSSmart<CJSValue> sParam, JSSmart<CJSValue> nDeleteIndex, JSSmart<CJSValue> nCount);
+	JSSmart<CJSValue> ZipOpen(JSSmart<CJSValue> name);
+	JSSmart<CJSValue> ZipOpenBase64(JSSmart<CJSValue> name);
+	JSSmart<CJSValue> ZipFileAsString(JSSmart<CJSValue> name);
+	JSSmart<CJSValue> ZipFileAsBinary(JSSmart<CJSValue> name);
+	JSSmart<CJSValue> ZipClose();
 	JSSmart<CJSValue> GetImageUrl(JSSmart<CJSValue> sUrl);
 	JSSmart<CJSValue> GetImagesPath();
 	JSSmart<CJSValue> GetImageOriginalSize(JSSmart<CJSValue> sUrl);
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
-	static void CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context);
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_NATIVECONTROL_EMBED_H_

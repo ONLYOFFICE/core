@@ -2,22 +2,20 @@
 #define _BUILD_NATIVE_TEXT_MEASURER_EMBED_H_
 
 #include "../js_internal/js_base.h"
-#include "./PointerEmbed.h"
 
 #if defined(__ANDROID__) || defined(_IOS)
 #define SUPPORT_HARFBUZZ_SHAPER
 #endif
 
 using namespace NSJSBase;
-class CTextMeasurerEmbed : public CJSEmbedObject
+class JS_DECL CTextMeasurerEmbed : public CJSEmbedObject
 {
+private:
+	void* m_hyphen_engine;
+
 public:
-	CTextMeasurerEmbed()
-	{
-	}
-	~CTextMeasurerEmbed()
-	{
-	}
+	CTextMeasurerEmbed();
+	~CTextMeasurerEmbed();
 
 public:
 	JSSmart<CJSValue> FT_Malloc(JSSmart<CJSValue> typed_array_or_len);
@@ -51,7 +49,11 @@ public:
 	JSSmart<CJSValue> HB_FontFree(JSSmart<CJSValue> font);
 #endif
 
-	static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
+	JSSmart<CJSValue> Hyphen_SetCacheSize(JSSmart<CJSValue> size);
+	JSSmart<CJSValue> Hyphen_Word(JSSmart<CJSValue> lang, JSSmart<CJSValue> word);
+	JSSmart<CJSValue> Hyphen_IsDictionaryExist(JSSmart<CJSValue> lang);
+
+	DECLARE_EMBED_METHODS
 };
 
 #endif // _BUILD_NATIVE_TEXT_MEASURER_EMBED_H_

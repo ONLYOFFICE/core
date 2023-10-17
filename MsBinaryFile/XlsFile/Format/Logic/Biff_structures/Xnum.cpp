@@ -45,5 +45,10 @@ void Xnum::load(CFRecord& record)
 	record.loadAnyData(data);
 }
 
+void Xnum::save(CFRecord& record)
+{
+	record.storeAnyData(data);
+}
+
 } // namespace XLS
 

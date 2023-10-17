@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,7 @@ namespace XLSB
 
     void WsFmtInfo::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> dxGCol >> cchDefColWidth >> miyDefRwHeight >> flags >> iOutLevelRw >> iOutLevelCol;
 
         fUnsynced	= GETBIT(flags, 0);
@@ -63,6 +63,18 @@ namespace XLSB
         fExAsc 		= GETBIT(flags, 2);
         fExDesc		= GETBIT(flags, 3);
     }
+
+	void WsFmtInfo::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fUnsynced)
+		SETBIT(flags, 1, fDyZero)
+		SETBIT(flags, 2, fExAsc)
+		SETBIT(flags, 3, fExDesc)
+
+		record << dxGCol << cchDefColWidth << miyDefRwHeight << flags << iOutLevelRw << iOutLevelCol;
+	}
 
 } // namespace XLSB
 

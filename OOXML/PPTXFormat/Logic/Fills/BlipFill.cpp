@@ -70,8 +70,8 @@ namespace PPTX
 		void BlipFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start_No_NS (oReader )
-				WritingElement_ReadAttributes_Read_if ( oReader, _T("dpi"), dpi)
-				WritingElement_ReadAttributes_Read_else_if ( oReader, _T("rotWithShape"), rotWithShape )
+				WritingElement_ReadAttributes_Read_if ( oReader, L"dpi", dpi)
+				WritingElement_ReadAttributes_Read_else_if ( oReader, L"rotWithShape", rotWithShape )
 			WritingElement_ReadAttributes_End_No_NS	( oReader )
 		}
 		void BlipFill::FillParentPointersForChilds()
@@ -102,13 +102,13 @@ namespace PPTX
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
 				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (_T("blip") == strName)
+				if (L"blip" == strName)
 					blip = oReader;
-				else if (_T("srcRect") == strName)
+				else if (L"srcRect" == strName)
 					srcRect = oReader;
-				else if (_T("tile") == strName)
+				else if (L"tile" == strName)
 					tile = oReader;
-				else if (_T("stretch") == strName)
+				else if (L"stretch" == strName)
 					stretch = oReader;
 			}
 		}
@@ -119,32 +119,31 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"dpi", dpi);
 			XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
 
-			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-					if (_T("blip") == strName)
+					if (L"blip" == strName)
 					{
 						if (!blip.IsInit())
 							blip = oNode;
 					}
-					else if (_T("srcRect") == strName)
+					else if (L"srcRect" == strName)
 					{
 						if (!srcRect.IsInit())
 							srcRect = oNode;
 					}
-					else if (_T("tile") == strName)
+					else if (L"tile" == strName)
 					{
 						if (!tile.IsInit())
 							tile = oNode;
 					}
-					else if (_T("stretch") == strName)
+					else if (L"stretch" == strName)
 					{
 						if (!stretch.IsInit())
 							stretch = oNode;
@@ -157,8 +156,8 @@ namespace PPTX
 		std::wstring BlipFill::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("dpi"), dpi);
-			oAttr.Write(_T("rotWithShape"), rotWithShape);
+			oAttr.Write(L"dpi", dpi);
+			oAttr.Write(L"rotWithShape", rotWithShape);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteNullable(blip);
@@ -166,33 +165,33 @@ namespace PPTX
 			oValue.WriteNullable(tile);
 			oValue.WriteNullable(stretch);
 
-			std::wstring strName = (_T("") == m_namespace) ? _T("blipFill") : (m_namespace + _T(":blipFill"));
+			std::wstring strName = m_namespace.empty() ? L"blipFill" : (m_namespace + L":blipFill");
 			return XmlUtils::CreateNode(strName, oAttr, oValue);
 		}
 		void BlipFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strName = (_T("") == m_namespace) ? _T("blipFill") : (m_namespace + _T(":blipFill"));
+			std::wstring strName = m_namespace.empty() ? L"blipFill" : (m_namespace + L":blipFill");
 			pWriter->StartNode(strName);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("dpi"), dpi);
-			pWriter->WriteAttribute(_T("rotWithShape"), rotWithShape);
+			pWriter->WriteAttribute(L"dpi", dpi);
+			pWriter->WriteAttribute(L"rotWithShape", rotWithShape);
 			pWriter->EndAttributes();
 
 			pWriter->Write(blip);
 
 			if (srcRect.is_init())
 			{
-				pWriter->StartNode(_T("a:srcRect"));
+				pWriter->StartNode(L"a:srcRect");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("l"), srcRect->l);
-				pWriter->WriteAttribute(_T("t"), srcRect->t);
-				pWriter->WriteAttribute(_T("r"), srcRect->r);
-				pWriter->WriteAttribute(_T("b"), srcRect->b);
+				pWriter->WriteAttribute(L"l", srcRect->l);
+				pWriter->WriteAttribute(L"t", srcRect->t);
+				pWriter->WriteAttribute(L"r", srcRect->r);
+				pWriter->WriteAttribute(L"b", srcRect->b);
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("a:srcRect"));
+				pWriter->EndNode(L"a:srcRect");
 			}
 
 			pWriter->Write(tile);
@@ -276,16 +275,14 @@ namespace PPTX
 								case 1:
 								{
 									// id. embed / link
-									pReader->Skip(4);
-									break;
-								}
+									pReader->Skip(4);									
+								}break;
 								case 10:
 								case 11:
 								{
 									// id. embed / link
-									pReader->GetString2();
-									break;
-								}
+									pReader->GetString2();									
+								}break;
 								case 2:
 								{
 									if (!blip.is_init())
@@ -316,31 +313,29 @@ namespace PPTX
 									std::wstring strOrigBase64;
 									std::wstring strTempFile ;
 
-									bool bIsUrl = false;
-									bool bIsTheme = false;
-
 									if (!blip.is_init())
 										blip = new PPTX::Logic::Blip();
 
-									if (0 == strImagePath.find(_T("data:")))
+									if (0 == strImagePath.find(L"data:"))
 									{
 										blip->dataFilepathImage = strImagePath;
 										bool bBase64 = false;
 
 										strOrigBase64 = strImagePath;
-										int nFind = (int)strImagePath.find(_T(","));
+										size_t nFind = strImagePath.find(L",");
 
 										std::wstring sImageExtension;
 
-										std::wstring sFormatDataString = XmlUtils::GetLower(strImagePath.substr(5,nFind-5));
+										if (std::wstring::npos != nFind)
 										{
-											int nFind1 = (int)sFormatDataString.find(_T("base64"));
-											if (nFind1 >=0 ) bBase64 = true;
+											std::wstring sFormatDataString = XmlUtils::GetLower(strImagePath.substr(5, nFind - 5));
+											size_t nFind1 = sFormatDataString.find(L"base64");
+											if (std::wstring::npos != nFind1) bBase64 = true;
 
-											nFind1 = (int)sFormatDataString.find(_T("image/"));
-											if (nFind1 >= 0)
+											nFind1 = sFormatDataString.find(L"image/");
+											if (std::wstring::npos != nFind1)
 											{
-												int nFind2 = (int)sFormatDataString.find(_T(";"));
+												int nFind2 = (int)sFormatDataString.find(L";");
 												if (nFind2 < 0) nFind2  = (int)sFormatDataString.length();
 
 												sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
@@ -349,7 +344,8 @@ namespace PPTX
 										strImagePath.erase(0, nFind + 1);
 
 										std::string __s = std::string(strImagePath.begin(), strImagePath.end());
-										int len = (int)__s.length();
+										size_t len = __s.length();
+										
 										BYTE* pDstBuffer = NULL;
 										int dstLen = 0;
 
@@ -377,14 +373,14 @@ namespace PPTX
 											//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
 											std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
 
-											OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+											OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + L"." + sImageExtension;
 
 											NSFile::CFileBinary oTempFile;
 											oTempFile.CreateFile(pathTemp.GetPath());
 											oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 											oTempFile.CloseFile();
 
-											strImagePath = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+											strImagePath = strTempFile = pathTemp.GetPath(); // strTempFile для удаления
 										}
 										else
 										{// бяка
@@ -397,50 +393,42 @@ namespace PPTX
 									}
 									else
 									{
-										if (0 != strImagePath.find(_T("http:")) &&
-											0 != strImagePath.find(_T("https:")) &&
-											0 != strImagePath.find(_T("ftp:")) &&
-											0 != strImagePath.find(_T("file:")))
+										if (0 != strImagePath.find(L"http:") &&
+											0 != strImagePath.find(L"https:") &&
+											0 != strImagePath.find(L"ftp:") &&
+											0 != strImagePath.find(L"file:"))
 										{
-											if (0 == strImagePath.find(_T("theme")))
+											if (0 == strImagePath.find(L"theme"))
 											{
 												strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
-												bIsTheme = true;
 											}
 											else
 											{
-												strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strImagePath;
+												strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media"  + FILE_SEPARATOR_STR + strImagePath;
+												
+												OOX::CPath pathUrl = strImagePath;
+												strImagePath = pathUrl.GetPath();
+
+												if (std::wstring::npos == strImagePath.find(pReader->m_strFolder))
+												{
+													strImagePath.clear();
+												}
 											}
 										}
-										else
-											bIsUrl = true;
 									}
-									// -------------------
-									//в случае url не надо нормализовать путь
-									if(!bIsUrl && !bIsTheme)
-									{
-										OOX::CPath pathUrl = strImagePath;
-										strImagePath = pathUrl.GetPath();
-										
-										if (std::wstring::npos == strImagePath.find(pReader->m_strFolder))
-										{
-											strImagePath.clear();
-										}				
-									}
+								// -------------------
 									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
-
-									// -------------------
+								// -------------------
 									if (!strTempFile.empty())
 									{
 										CDirectory::DeleteFile(strTempFile);
 									}
-									// -------------------
+								// -------------------
 									if (oRelsGeneratorInfo.nImageRId > 0)
 									{
 										blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
 										blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
 									}
-
 									if(oRelsGeneratorInfo.nOleRId > 0)
 									{
 										blip->oleRid			= OOX::RId(oRelsGeneratorInfo.nOleRId).get();
@@ -452,9 +440,8 @@ namespace PPTX
 										blip->mediaRid		= OOX::RId(oRelsGeneratorInfo.nMediaRId).get();
 										blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
 									}
-									pReader->Skip(1); // end attribute
-									break;
-								}
+									pReader->Skip(1); // end attribute									
+								}break;
 								default:
 								{
 									pReader->SkipRecord();

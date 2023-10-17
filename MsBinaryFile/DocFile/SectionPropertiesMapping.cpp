@@ -103,7 +103,7 @@ namespace DocFileFormat
 		if (pTable)
 		{
 			unsigned char fHF = _ctx->_doc->nWordVersion == 0 ? 255 : 0; //all headers & footers
-			for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
+			for (std::vector<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 			{
 				switch (iter->OpCode)
 				{
@@ -164,7 +164,7 @@ namespace DocFileFormat
 		std::wstring wsSprmSPgnStart;
 		int nProperty = 0; // for unknown
 
-		for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
+		for (std::vector<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 		{
 			switch (iter->OpCode)
 			{

@@ -55,7 +55,31 @@ void ParameterParsedFormula::load(XLS::CFRecord& record)
 
     rgce.load(record, cce);
     record >> cb;
-    rgcb.load(record, rgce.getPtgs(), true);
+	if (cb > 0)
+		rgcb.load(record, rgce.getPtgs(), true);
+}
+
+void ParameterParsedFormula::save(XLS::CFRecord& record)
+{
+	_UINT32 size = 0;
+
+	auto saving = [&](BiffStructure& rgceORrgb)
+	{
+		record << size;
+
+		auto rdPtr = record.getRdPtr();
+
+		rgceORrgb.save(record);
+
+		size = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(size + 4);
+		record << size;
+		record.skipNunBytes(size);
+	};
+
+	saving(rgce);
+	saving(rgcb);
 }
 
 } // namespace XLS

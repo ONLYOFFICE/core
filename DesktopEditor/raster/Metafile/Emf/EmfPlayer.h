@@ -34,10 +34,10 @@
 #ifndef _METAFILE_EMF_EMFPLAYER_H
 #define _METAFILE_EMF_EMFPLAYER_H
 
+#include "../Common/CClip.h"
+
 #include "EmfTypes.h"
 #include "EmfObjects.h"
-#include "EmfPlusObjects.h"
-#include "EmfClip.h"
 
 #include <vector>
 #include <map>
@@ -47,7 +47,6 @@ namespace MetaFile
 	class CEmfFile;
 	class CEmfParserBase;
 	class CEmfDC;
-	class CEmfPath;
 
 	class CEmfPlayer
 	{
@@ -74,10 +73,10 @@ namespace MetaFile
 		typedef std::map < unsigned int, CEmfObjectBase* > CEmfObjectMap;
 		typedef std::map < int, CEmfDC* > EmfDCsMap;
 
-		CEmfDC*              m_pDC;
-		EmfDCsMap            m_mDCs;
-		CEmfParserBase*	     m_pParser;
-		CEmfObjectMap        m_mObjects;
+		CEmfDC*         m_pDC;
+		EmfDCsMap       m_mDCs;
+		CEmfParserBase* m_pParser;
+		CEmfObjectMap   m_mObjects;
 	};
 
 	class CEmfDC
@@ -88,6 +87,8 @@ namespace MetaFile
 		~CEmfDC();
 		CEmfDC* Copy();
 
+		CClip*          GetClip();
+
 		void            SetMapMode(unsigned int ulMapMode);
 		unsigned int    GetMapMode();
 		void            ResetTransform();
@@ -95,8 +96,8 @@ namespace MetaFile
 		TEmfXForm*      GetInverseTransform();
 		TEmfXForm*      GetFinalTransform(int iGraphicsMode);
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
-		void            SetTextColor(TEmfColor& oColor);
-		TEmfColor&      GetTextColor();
+		void            SetTextColor(TRGBA& oColor);
+		TRGBA&          GetTextColor();
 		void            SetBrush(IBrush* pBrush);
 		void            RemoveBrush(IBrush* pBrush);
 		IBrush*         GetBrush();
@@ -107,8 +108,8 @@ namespace MetaFile
 		unsigned int    GetTextAlign();
 		void            SetBgMode(unsigned int ulBgMode);
 		unsigned int    GetBgMode();
-		void            SetBgColor(TEmfColor& oColor);
-		TEmfColor&      GetBgColor();
+		void            SetBgColor(TRGBA& oColor);
+		TRGBA&          GetBgColor();
 		void            SetMiterLimit(unsigned int ulMiter);
 		unsigned int    GetMiterLimit();
 		void            SetFillMode(unsigned int ulFillMode);
@@ -120,12 +121,12 @@ namespace MetaFile
 		unsigned int    GetStretchMode();
 		double          GetPixelWidth();
 		double          GetPixelHeight();
-		void            SetWindowOrigin(TEmfPointL& oPoint);
-		void            SetWindowExtents(TEmfSizeL& oPoint);
+		void            SetWindowOrigin(TPointL& oPoint);
+		void            SetWindowExtents(TSizeL& oPoint);
 		void            ScaleWindow(double dXScale, double dYScale);
 		TEmfWindow*     GetWindow();
-		void            SetViewportOrigin(TEmfPointL& oPoint);
-		void            SetViewportExtents(TEmfSizeL& oPoint);
+		void            SetViewportOrigin(TPointL& oPoint);
+		void            SetViewportExtents(TSizeL& oPoint);
 		void            ScaleViewport(double dXScale, double dYScale);
 		TEmfWindow*     GetViewport();
 		void            SetRop2Mode(unsigned int& nMode);
@@ -133,11 +134,9 @@ namespace MetaFile
 		void            SetPalette(CEmfLogPalette* pPalette);
 		void            RemovePalette(CEmfLogPalette* pPalette);
 		CEmfLogPalette* GetPalette();
-		void            SetCurPos(TEmfPointL& oPoint);
+		void            SetCurPos(TPointL& oPoint);
 		void            SetCurPos(int lX, int lY);
-		TEmfPointL&     GetCurPos();
-		CEmfClip*       GetClip();
-		void            ClipToPath(CEmfPath* pPath, unsigned int unMode, TEmfXForm* pTransform);
+		TPointL&        GetCurPos();
 		void            SetArcDirection(unsigned int unDirection);
 		unsigned int    GetArcDirection();
 
@@ -152,6 +151,7 @@ namespace MetaFile
 	private:
 
 		CEmfPlayer*     m_pPlayer;
+		CClip           m_oClip;
 		unsigned int    m_ulMapMode;
 		IBrush*         m_pBrush;
 		IPen*           m_pPen;
@@ -162,8 +162,8 @@ namespace MetaFile
 		TEmfXForm       m_oInverseTransform;
 		TEmfXForm       m_oFinalTransform;
 		TEmfXForm       m_oFinalTransform2; // Преобразование без учета m_oTransform, т.е. чисто преобразование окна
-		TEmfColor       m_oTextColor;
-		TEmfColor       m_oBgColor;
+		TRGBA           m_oTextColor;
+		TRGBA           m_oBgColor;
 		unsigned int    m_ulTextAlign;
 		unsigned int    m_ulBgMode;
 		unsigned int    m_ulMiterLimit;
@@ -174,8 +174,7 @@ namespace MetaFile
 		double          m_dPixelHeight;
 		TEmfWindow      m_oWindow;
 		TEmfWindow      m_oViewport;
-		TEmfPointL      m_oCurPos;
-		CEmfClip        m_oClip;
+		TPointL         m_oCurPos;
 		unsigned int    m_unArcDirection;
 	};
 }

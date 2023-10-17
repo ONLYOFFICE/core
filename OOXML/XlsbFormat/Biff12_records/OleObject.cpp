@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,11 +60,28 @@ namespace XLSB
 
         record >> strProgID;
 
-        if(fLinked != 0)
+        if(fLinked != false)
             record >> link;
         else
             record >> strRelID;
     }
+
+	void OleObject::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fLinked)
+		SETBIT(flags, 1, fAutoLoad)
+
+		record << dwAspect << dwOleUpdate << shapeId << flags;
+
+		record << strProgID;
+
+		if (fLinked != false)
+			record << link;
+		else
+			record << strRelID;
+	}
 
 } // namespace XLSB
 

@@ -783,9 +783,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\CFVO14.cpp">
       <Filter>records</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Color.cpp">
-      <Filter>records</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Color14.cpp">
       <Filter>records</Filter>
     </ClCompile>
@@ -1947,9 +1944,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\CodeName.cpp">
       <Filter>structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ColSpan.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DataConsolidationFunction.cpp">
       <Filter>structures</Filter>
     </ClCompile>
@@ -1957,9 +1951,6 @@
       <Filter>structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DDEItemProperties.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\DValStrings.cpp">
       <Filter>structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\ECTwFldInfoData.cpp">
@@ -1977,34 +1968,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTBlank.cpp">
       <Filter>structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormula.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormulas.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTHeader.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTParsedFormula.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTProductVersion.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRef.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRefs.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTRelID.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqref.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqrefs.cpp">
       <Filter>structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\GradientStop.cpp">
@@ -2064,9 +2028,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RangeProtectionTitleSDRel.cpp">
       <Filter>structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RelID.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\RichStr.cpp">
       <Filter>structures</Filter>
     </ClCompile>
@@ -2097,16 +2058,7 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.cpp">
       <Filter>structures</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\Tws.cpp">
-      <Filter>structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\UncheckedSqRfX.cpp">
       <Filter>structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.cpp">
@@ -3846,9 +3798,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\CFVO14.h">
       <Filter>records</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Color.h">
-      <Filter>records</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Color14.h">
       <Filter>records</Filter>
     </ClInclude>
@@ -4995,12 +4944,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Cell.h">
       <Filter>structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CellRangeRef.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CellRef.h">
-      <Filter>structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CFDateOper.h">
       <Filter>structures</Filter>
     </ClInclude>
@@ -5028,9 +4971,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\CodeName.h">
       <Filter>structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ColSpan.h">
-      <Filter>structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DataConsolidationFunction.h">
       <Filter>structures</Filter>
     </ClInclude>
@@ -5038,9 +4978,6 @@
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DDEItemProperties.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\DValStrings.h">
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\ECTwFldInfoData.h">
@@ -5058,34 +4995,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTBlank.h">
       <Filter>structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormula.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTFormulas.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTHeader.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTParsedFormula.h">
-      <Filter>structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTProductVersion.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRef.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRefs.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTRelID.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqref.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\FRTSqrefs.h">
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\GradientStop.h">
@@ -5145,9 +5055,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RangeProtectionTitleSDRel.h">
       <Filter>structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RelID.h">
-      <Filter>structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\RichStr.h">
       <Filter>structures</Filter>
     </ClInclude>
@@ -5178,19 +5085,7 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SXMA.h">
       <Filter>structures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxOs.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\SxSu.h">
-      <Filter>structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\Tws.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\UncheckedSqRfX.h">
-      <Filter>structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\XLWideString.h">
       <Filter>structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_structures\XmlDataType.h">

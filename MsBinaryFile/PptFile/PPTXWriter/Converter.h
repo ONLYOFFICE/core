@@ -50,16 +50,13 @@ namespace PPT
 	class CPPTXWriter
 	{
 	public:
-        std::wstring	m_strTempDirectory;
-        std::wstring    m_strDstFileName;
-
-		CDocument	*	m_pDocument;
+		CDocument*		m_pDocument;
 		CPPTUserInfo*	m_pUserInfo;
 		CMediaManager	m_oManager;
 
 		CShapeWriter*	m_pShapeWriter;
 
-		CPPTXWriter();
+		CPPTXWriter(const std::wstring & destPath);
 		~CPPTXWriter();
 
 		void CreateFile(CDocument	* pDocument);
@@ -70,10 +67,12 @@ namespace PPT
 		void Write()
 		{
 		}
-		std::wstring    m_xmlApp;
-		std::wstring    m_xmlCore;
+		std::wstring m_xmlApp;
+		std::wstring m_xmlCore;
 
 	protected:
+		std::wstring m_strDestPath;
+
 		void WriteApp			(NSFile::CFileBinary& oFile);
 		void WriteContentTypes	();
 		void WritePresInfo		();

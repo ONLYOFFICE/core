@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheSelections>())
         {
-            m_BrtEndSlicerCacheSelections = elements_.back();
+            m_bBrtEndSlicerCacheSelections = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheSelections = false;
 
-        return m_BrtBeginSlicerCacheSelections && !m_arBrtSlicerCacheSelection.empty() && m_BrtEndSlicerCacheSelections;
+        return m_BrtBeginSlicerCacheSelections && !m_arBrtSlicerCacheSelection.empty() && m_bBrtEndSlicerCacheSelections;
     }
+
+	const bool SLICERCACHESELECTIONS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheSelections == nullptr)
+			m_BrtBeginSlicerCacheSelections = XLS::BaseObjectPtr(new XLSB::BeginSlicerCacheSelections());
+
+		if (m_BrtBeginSlicerCacheSelections != nullptr)
+		{
+			auto ptrBrtBeginSlicerCacheSelections = static_cast<XLSB::BeginSlicerCacheSelections*>(m_BrtBeginSlicerCacheSelections.get());
+
+			if (ptrBrtBeginSlicerCacheSelections != nullptr)
+				ptrBrtBeginSlicerCacheSelections->cUniqueNames = m_arBrtSlicerCacheSelection.size();
+
+			proc.mandatory(*m_BrtBeginSlicerCacheSelections);
+		}
+
+		for (auto &item : m_arBrtSlicerCacheSelection)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheSelections>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

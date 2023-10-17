@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 
 #include "../Biff12_structures/Cell.h"
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLSB
 {
@@ -79,12 +79,19 @@ class Cell_T: public CellBase, public XLS::BiffRecord
             return XLS::BaseObjectPtr(new Cell_T<T, id>(*this));
         }
 
-        void readFields(XLS::CFRecord& record)
+        void readFields(XLS::CFRecord& record) override
         {
             record >> cell;
             if(id != rt_CellBlank)
                 record >> value;
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			record << cell;
+			if (id != rt_CellBlank)
+				record << value;
+		}
 
         T value;
 };

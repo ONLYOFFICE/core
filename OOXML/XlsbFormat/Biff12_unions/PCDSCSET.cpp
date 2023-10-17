@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndPCDSCSet>())
         {
-            m_BrtEndPCDSCSet = elements_.back();
+            m_bBrtEndPCDSCSet = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDSCSet = false;
 
-        return m_BrtBeginPCDSCSet && m_BrtEndPCDSCSet;
+        return m_BrtBeginPCDSCSet && m_bBrtEndPCDSCSet;
     }
+
+	const bool PCDSCSET::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDSCSet != nullptr)
+			proc.mandatory(*m_BrtBeginPCDSCSet);
+
+		proc.mandatory<EndPCDSCSet>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

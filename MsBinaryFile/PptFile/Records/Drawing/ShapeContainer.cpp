@@ -50,6 +50,9 @@ ULONG xmlName = 1;
 using namespace ODRAW;
 using namespace PPT;
 
+CPPTElement::CPPTElement(const std::wstring& tempPath) : m_tempPath(tempPath)
+{
+}
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
     CBgraFrame bgraFrame;
@@ -921,9 +924,8 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     {
         NSFile::CFileBinary file;
 
-        std::wstring tempFileName = NSDirectory::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"MB");
-        if (NSFile::CFileBinary::Exists(tempFileName))
-            NSFile::CFileBinary::Remove(tempFileName);
+        std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
+        std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
         if (file.CreateFileW(tempFileName))
         {
@@ -950,6 +952,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
             delete []utf8Data;
         }
         NSFile::CFileBinary::Remove(tempFileName);
+        NSDirectory::DeleteDirectory(tempPath);
     }break;
     case ODRAW::geoRight:
     {
@@ -1512,7 +1515,6 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 CRecordShapeContainer::CRecordShapeContainer()
 {
     bGroupShape = false;
-
     m_pStream = NULL;
 
 }
@@ -1935,7 +1937,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
 
         //------ shape properties ----------------------------------------------------------------------------------------
-        CPPTElement oElement;
+        CPPTElement oElement(m_pCommonInfo->tempPath);
+
         for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
         {
             oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
@@ -2056,7 +2059,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     }
     else
     {//image, audio, video ....
-        CPPTElement oElement;
+        CPPTElement oElement(m_pCommonInfo->tempPath);
         for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
         {
             oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties, (nIndexProp == 0));
@@ -2145,9 +2148,8 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
         if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
         {
-            std::wstring tempFileName = NSDirectory::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"MB");
-            if (NSFile::CFileBinary::Exists(tempFileName))
-                NSFile::CFileBinary::Remove(tempFileName);
+            std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_pCommonInfo->tempPath);
+            std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
             NSFile::CFileBinary file;
             if (file.CreateFileW(tempFileName))
@@ -2163,6 +2165,7 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
             delete[] utf8Data;
             NSFile::CFileBinary::Remove(tempFileName);
+            NSDirectory::DeleteDirectory(tempPath);
         }
     }
 

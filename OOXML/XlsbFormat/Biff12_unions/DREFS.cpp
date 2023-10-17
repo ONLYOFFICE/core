@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,8 @@
  */
 
 #include "DREFS.h"
+
+#include "ACTIVEXCONTROLS.h"
 #include "../Biff12_records/BeginDRefs.h"
 #include "../Biff12_records/DRef.h"
 #include "../Biff12_records/EndDRefs.h"
@@ -70,14 +72,41 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndDRefs>())
-        {
-            m_BrtEndDRefs = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndDRefs>())
+		{
+			m_bBrtEndDRefs = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndDRefs = false;
 
-        return m_BrtBeginDRefs && m_BrtEndDRefs;
+        return m_BrtBeginDRefs && m_bBrtEndDRefs;
     }
+
+	const bool DREFS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginDRefs == nullptr)
+			m_BrtBeginDRefs = XLS::BaseObjectPtr(new XLSB::BeginDRefs());
+
+		if (m_BrtBeginDRefs != nullptr)
+		{
+			auto ptrBrtBeginDRefs = static_cast<XLSB::BeginDRefs*>(m_BrtBeginDRefs.get());
+
+			if (ptrBrtBeginDRefs != nullptr)
+				ptrBrtBeginDRefs->cdref = m_arBrtDRef.size();
+
+			proc.mandatory(*m_BrtBeginDRefs);
+		}
+
+		for (auto &item : m_arBrtDRef)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDRefs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

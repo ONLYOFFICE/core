@@ -86,14 +86,13 @@ public:
 			if (oBuilder.GetCurSize() != 1)
 				ret.m_namespaces += oBuilder.GetData();
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (stack.m_node.GetChilds(oNodes))
 			{
-				int nCount = oNodes.GetCount();
-
-				for (int i = 0; i < nCount; i++)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; i++)
 				{
-					oNodes.GetAt(i, ret.m_node);
+					ret.m_node = oNodes[i];
 					CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id, isNameUse);
 					if (_retRecursion.m_node.IsValid())
 						return _retRecursion;
@@ -259,12 +258,11 @@ public:
 		if (!sDateW.empty())
 			m_sDate = U_TO_UTF8(sDateW);
 
-		XmlUtils::CXmlNodes nodesManifestRefs = nodeManifect.ReadNode(L"Manifest").GetNodes(L"Reference");
-		int nRefsCount = nodesManifestRefs.GetCount();
+		std::vector<XmlUtils::CXmlNode> nodesManifestRefs = nodeManifect.ReadNode(L"Manifest").GetNodes(L"Reference");
+		size_t nRefsCount = nodesManifestRefs.size();
 		for (int i = 0; i < nRefsCount; i++)
 		{
-			XmlUtils::CXmlNode tmp;
-			nodesManifestRefs.GetAt(i, tmp);
+			XmlUtils::CXmlNode tmp = nodesManifestRefs[i];
 
 			m_valid = CheckManifestReference(tmp);
 			if (OOXML_SIGNATURE_VALID != m_valid)
@@ -272,13 +270,11 @@ public:
 		}
 
 		// 4) Objects
-		XmlUtils::CXmlNodes nodesReferences;
-		m_node.ReadNode(L"SignedInfo").GetNodes(L"Reference", nodesReferences);
-		nRefsCount = nodesReferences.GetCount();
+		std::vector<XmlUtils::CXmlNode> nodesReferences = m_node.ReadNode(L"SignedInfo").GetNodes(L"Reference");
+		nRefsCount = nodesReferences.size();
 		for (int i = 0; i < nRefsCount; i++)
 		{
-			XmlUtils::CXmlNode tmp;
-			nodesReferences.GetAt(i, tmp);
+			XmlUtils::CXmlNode tmp= nodesReferences[i];
 
 			m_valid = CheckObjectReference(tmp);
 			if (OOXML_SIGNATURE_VALID != m_valid)
@@ -395,12 +391,11 @@ public:
 
 	XmlUtils::CXmlNode GetObjectById(std::string sId)
 	{
-		XmlUtils::CXmlNodes oNodes = m_node.GetNodes(L"Object");
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; i++)
+		std::vector<XmlUtils::CXmlNode> oNodes = m_node.GetNodes(L"Object");
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; i++)
 		{
-			XmlUtils::CXmlNode tmp;
-			oNodes.GetAt(i, tmp);
+			XmlUtils::CXmlNode tmp= oNodes[i];
 			if (sId == tmp.GetAttributeA("Id"))
 				return tmp;
 		}
@@ -410,12 +405,11 @@ public:
 
 	XmlUtils::CXmlNode GetObjectSignedProperties()
 	{
-		XmlUtils::CXmlNodes oNodes = m_node.GetNodes(L"Object");
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; i++)
+		std::vector<XmlUtils::CXmlNode> oNodes = m_node.GetNodes(L"Object");
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; i++)
 		{
-			XmlUtils::CXmlNode tmp;
-			oNodes.GetAt(i, tmp);
+			XmlUtils::CXmlNode tmp = oNodes[i];
 
 			XmlUtils::CXmlNode nodeQ = tmp.ReadNodeNoNS(L"QualifyingProperties");
 			if (nodeQ.IsValid())
@@ -432,14 +426,13 @@ public:
 		if (node.GetName() == sName)
 			return node;
 
-		XmlUtils::CXmlNodes childs;
+		std::vector<XmlUtils::CXmlNode> childs;
 		if (node.GetChilds(childs))
 		{
-			int nCount = childs.GetCount();
-			for (int i = 0; i < nCount; i++)
+			size_t nCount = childs.size();
+			for (size_t i = 0; i < nCount; i++)
 			{
-				XmlUtils::CXmlNode child;
-				childs.GetAt(i, child);
+				XmlUtils::CXmlNode child = childs[i];
 
 				XmlUtils::CXmlNode ret = FindFirstChild(child, sName);
 				if (ret.IsValid())
@@ -704,13 +697,12 @@ public:
 		if (!oContentTypes.IsValid())
 			return;
 
-		XmlUtils::CXmlNodes oOverrides = oContentTypes.GetNodes(L"Override");
-		int nCount = oOverrides.GetCount();
+		std::vector<XmlUtils::CXmlNode> oOverrides = oContentTypes.GetNodes(L"Override");
+		size_t nCount = oOverrides.size();
 
-		for (int i = 0; i < nCount; i++)
+		for (size_t i = 0; i < nCount; i++)
 		{
-			XmlUtils::CXmlNode node;
-			oOverrides.GetAt(i, node);
+			XmlUtils::CXmlNode node = oOverrides[i];
 
 			if (node.GetAttributeA("ContentType") != "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml")
 				continue;
@@ -780,15 +772,14 @@ public:
 
 		XmlUtils::CXmlNode oContentTypes = m_pFolder->getNodeFromFile(L"[Content_Types].xml");
 		std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\n";
-		XmlUtils::CXmlNodes oNodes;
-		if (oContentTypes.GetNodes(L"*", oNodes))
+		std::vector<XmlUtils::CXmlNode> oNodes = oContentTypes.GetNodes(L"*");
+		if (!oNodes.empty())
 		{
-			int nCount = oNodes.GetCount();
+			size_t nCount = oNodes.size();
 
-			for (int i = 0; i < nCount; ++i)
+			for (size_t i = 0; i < nCount; ++i)
 			{
-				XmlUtils::CXmlNode oNode;
-				oNodes.GetAt(i, oNode);
+				XmlUtils::CXmlNode oNode = oNodes[i];
 
 				if (bIsRemoveAll)
 				{
@@ -826,15 +817,14 @@ public:
 				return;
 
 			sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-			XmlUtils::CXmlNodes oNodes;
-			if (oRels.GetNodes(L"*", oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes = oRels.GetNodes(L"*");
+			if (!oNodes.empty())
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 
-				for (int i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode oNode = oNodes[i];
 
 					if (L"Relationship" == oNode.GetName() &&
 							L"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin" == oNode.GetAttribute(L"Type"))
@@ -860,15 +850,14 @@ public:
 				return;
 
 			sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-			XmlUtils::CXmlNodes oNodes;
-			if (oRels.GetNodes(L"*", oNodes))
+			std::vector<XmlUtils::CXmlNode> oNodes = oRels.GetNodes(L"*");
+			if (!oNodes.empty())
 			{
-				int nCount = oNodes.GetCount();
+				size_t nCount = oNodes.size();
 
-				for (int i = 0; i < nCount; ++i)
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode oNode = oNodes[i];
 
 					if (L"Relationship" == oNode.GetName() &&
 							L"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature" == oNode.GetAttribute(L"Type") &&

@@ -31,7 +31,7 @@
  */
 
 #include "Qsi.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
 
 namespace XLS
 {
@@ -53,7 +53,7 @@ void Qsi::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short  flags1, flags2;
+        _UINT16			flags1, flags2;
         _UINT32         reserved;
         XLUnicodeString rgchName;
 
@@ -115,6 +115,74 @@ void Qsi::readFields(CFRecord& record)
 
         name            = irstName.value();
     }
+}
+
+void Qsi::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16			flags1 = 0, flags2 = 0;
+		_UINT32         reserved = 0;
+		XLUnicodeString rgchName;
+
+		SETBIT(flags1, 0, fTitles)
+		SETBIT(flags1, 1, fRowNums)
+		SETBIT(flags1, 2, fDisableRefresh)
+		SETBIT(flags1, 3, fAsync)
+		SETBIT(flags1, 4, fNewAsync)
+		SETBIT(flags1, 5, fAutoRefresh)
+		SETBIT(flags1, 6, fShrink)
+		SETBIT(flags1, 7, fFill)
+		SETBIT(flags1, 8, fAutoFormat)
+		SETBIT(flags1, 9, fSaveData)
+		SETBIT(flags1, 10, fDisableEdit)
+		SETBIT(flags1, 13, fOverwrite)
+
+		SETBIT(flags2, 0, fibitAtrNum)
+		SETBIT(flags2, 1, fibitAtrFnt)
+		SETBIT(flags2, 2, fibitAtrAlc)
+		SETBIT(flags2, 3, fibitAtrBdr)
+		SETBIT(flags2, 4, fibitAtrPat)
+		SETBIT(flags2, 5, fibitAtrProt)
+
+		rgchName = name;
+		record << flags1 << itblAutoFmt << flags2 << reserved << rgchName;
+
+		record.reserveNunBytes(2);	//unused
+	}
+
+	else
+	{
+		_UINT32            flags = 0;
+		XLSB::XLWideString irstName;
+
+		SETBIT(flags, 0, fTitles)
+		SETBIT(flags, 1, fRowNums)
+		SETBIT(flags, 2, fDisableRefresh)
+		SETBIT(flags, 3, fAsync)
+		SETBIT(flags, 4, fNewAsync)
+		SETBIT(flags, 5, fAutoRefresh)
+		SETBIT(flags, 6, fShrink)
+
+		SETBIT(flags, 7, fOverwrite)
+		SETBIT(flags, 8, fFill)
+		SETBIT(flags, 9, fSaveData)
+		SETBIT(flags, 10, fDisableEdit)
+		SETBIT(flags, 11, fPreserveFmt)
+		SETBIT(flags, 12, fAutoFit)
+		SETBIT(flags, 13, fDummyList)
+
+		SETBIT(flags, 14, fibitAtrNum)
+		SETBIT(flags, 15, fibitAtrFnt)
+		SETBIT(flags, 16, fibitAtrAlc)
+		SETBIT(flags, 17, fibitAtrBdr)
+		SETBIT(flags, 18, fibitAtrPat)
+		SETBIT(flags, 19, fibitAtrProt)
+
+		irstName = name;
+
+		record << flags << itblAutoFmt << dwConnID << irstName;
+	}
 }
 
 } // namespace XLS

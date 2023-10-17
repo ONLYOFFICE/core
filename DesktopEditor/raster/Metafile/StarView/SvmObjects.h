@@ -156,7 +156,7 @@ struct SvmHeader
     VersionCompat	versionCompat;
     unsigned int	compressionMode;
     TSvmMapMode		mapMode;
-	TRect			boundRect;
+    TRectL			boundRect;
     unsigned int	actionCount;
 };
 

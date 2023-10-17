@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,6 +68,23 @@ namespace XLSB
         fNoDeps             = GETBIT(flags, 8);
 
     }
+
+	void CalcProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+		
+		SETBIT(flags, 0, fFullCalcOnLoad)
+    	SETBIT(flags, 1, fRefA1)
+    	SETBIT(flags, 2, fIter)
+		SETBIT(flags, 3, fFullPrec)
+    	SETBIT(flags, 4, fSomeUncalced)
+		SETBIT(flags, 5, fSaveRecalc)
+		SETBIT(flags, 6, fMTREnabled)
+		SETBIT(flags, 7, fUserSetThreadCount)
+    	SETBIT(flags, 8, fNoDeps)
+
+		record << recalcID << fAutoRecalc << cCalcCount << xnumDelta << cUserThreadCount << flags;
+	}
 
 } // namespace XLSB
 

@@ -55,7 +55,7 @@ void DXF::readFields(CFRecord& record)
     if(record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
         record >> frtRefHeaderU;
-        unsigned short flags;
+        _UINT16 flags;
 
         record >> flags >> xfprops;
 
@@ -63,12 +63,31 @@ void DXF::readFields(CFRecord& record)
     }
     else
     {
-        unsigned short flags;
+        _UINT16 flags;
 
         record >> flags >> xfprops;
 
         xfprops.fNewBorder = GETBIT(flags, 15);
     }
+}
+
+void DXF::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << frtRefHeaderU;
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 1, xfprops.fNewBorder)
+		record << flags << xfprops;
+	}
+	else
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 15, xfprops.fNewBorder)
+		record << flags << xfprops;
+	}
 }
 
 int DXF::serialize(std::wostream & stream)
@@ -80,6 +99,13 @@ int DXF::serialize(std::wostream & stream)
 			xfprops.serialize(CP_XML_STREAM(), true);
 		}
 	}
+	return 0;
+}
+
+int DXF::deserialize(XmlUtils::CXmlLiteReader & oReader)
+{
+	xfprops.deserialize(oReader);
+
 	return 0;
 }
 

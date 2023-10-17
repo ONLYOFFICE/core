@@ -66,6 +66,15 @@ void PtgInt::loadFields(CFRecord& record)
 	}
 }
 
+void PtgInt::writeFields(CFRecord& record)
+{
+	if (record.checkFitWriteSafe(2))
+	{
+		unsigned short tmp;
+		tmp = value_.get();
+		record << tmp;
+	}
+}
 
 void PtgInt::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

@@ -852,7 +852,13 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new std::wstring(value);
-
+		}
+		void operator+=(const std::wstring& value)
+		{
+			if (NULL == m_pPointer)
+				m_pPointer = new std::wstring(value);
+			else
+				*m_pPointer += value;
 		}
 		void operator=(std::wstring* value)
 		{

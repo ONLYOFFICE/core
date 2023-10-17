@@ -83,4 +83,12 @@ const bool PivotCacheRecordsStream::loadContent(BinProcessor& proc)
     return true;
 }
 
+const bool PivotCacheRecordsStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_PIVOTCACHERECORDS != nullptr)
+		proc.mandatory(*m_PIVOTCACHERECORDS);
+
+	return true;
+}
+
 } // namespace XLSB

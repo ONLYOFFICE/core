@@ -497,6 +497,7 @@ namespace OOX
 		et_graphicFrame,	// <...:graphicFrame>
 		et_pic,				// <...:pic>
 		et_cxnSp,			// <...:cxnSp>
+		et_oleobject,
 		
 		et_p_cNvPicPr,        // <p:cNvPicPr>
 		et_p_cNvPr,            // <p:cNvPr>
@@ -1372,6 +1373,7 @@ namespace OOX
 		et_x_ExternalSheetData,
 		et_x_ExternalRow,
 		et_x_ExternalCell,
+		et_x_AlternateUrls,
 		et_x_OleLink,
 		et_x_OleItems,
 		et_x_OleItem,

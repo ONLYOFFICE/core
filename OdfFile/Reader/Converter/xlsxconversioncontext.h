@@ -134,6 +134,7 @@ public:
 	
     size_t	get_default_cell_style() const { return default_style_; }
 	int		get_dxfId_style(const std::wstring &style_name);
+    int     add_dxfId_style(const std::wstring& color, bool cellColor);
 
 //------------------------------------------------------------------------------------
 	void add_pivot_sheet_source				(const std::wstring & sheet_name, int index_table_view);

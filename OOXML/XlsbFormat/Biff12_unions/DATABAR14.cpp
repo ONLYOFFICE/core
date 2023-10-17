@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -85,12 +85,34 @@ namespace XLSB
 
         if (proc.optional<EndDatabar14>())
         {
-            m_BrtEndDatabar14 = elements_.back();
+            m_bBrtEndDatabar14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDatabar14 = false;
 
-        return m_BrtBeginDatabar14 && !m_arCFVO14.empty() && m_BrtEndDatabar14;
+        return m_BrtBeginDatabar14 && !m_arCFVO14.empty() && m_bBrtEndDatabar14;
     }
+
+	const bool DATABAR14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginDatabar14 != nullptr)
+			proc.mandatory(*m_BrtBeginDatabar14);
+
+		for (auto &item : m_arCFVO14)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arBrtColor14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDatabar14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

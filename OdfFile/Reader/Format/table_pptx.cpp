@@ -202,8 +202,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 			
 			graphic_format_properties * graphic_props = inst->content()->get_graphic_properties();
 			if (graphic_props)
-				Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_, 
-																				Context.root()->odf_context().drawStyles(), fill);	
+				Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_, Context.root(), fill);	
 
 			if (fill.bitmap)
 			{
@@ -290,16 +289,16 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.get_table_context().tableData();
 
-    const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const unsigned int columnsRepeated = attlist_.table_number_columns_repeated_;
+    const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
    
 	Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
-        if (table_table_column_attlist_.table_style_name_)
+        if (attlist_.table_style_name_)
         {
-            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
+            const std::wstring colStyleName = attlist_.table_style_name_.get();
           
 			style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,false );
 			if ((inst) && (inst->content()))
@@ -334,25 +333,25 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 				style_name = Context.get_table_context().get_default_cell_style();
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 				style_name = Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst)style_instances.push_back(style_inst);
 				}
 				style_name = Context.get_table_context().get_default_cell_style_row();
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 				style_name = attlist_.table_style_name_.get_value_or(L"");
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 
@@ -380,8 +379,8 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 				bool presentText = content_.pptx_convert(Context);
 				
 				std::wstring cellContent = Context.get_text_context().end_object();
-
-				if (cellContent.length()>0)
+				
+				if (false == cellContent.empty())
 				{
 					CP_XML_NODE(L"a:txBody")
 					{
@@ -393,7 +392,6 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 					CP_XML_STREAM() << emptyParTable;
 			
 				oox_serialize_tcPr(CP_XML_STREAM(), style_instances, Context);
-
 			}
 
 			Context.get_table_context().end_cell();

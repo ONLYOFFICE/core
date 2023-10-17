@@ -144,15 +144,11 @@ public:
 
 	void FromXmlNode(XmlUtils::CXmlNode& oNode, std::set<std::wstring>* check_need = NULL)
 	{
-		XmlUtils::CXmlNodes oNodes;
-		if (!oNode.GetNodes(L"Relationship", oNodes))
-			return;
-
-		int nCount = oNodes.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		std::vector<XmlUtils::CXmlNode> oNodes = oNode.GetNodes(L"Relationship");
+		size_t nCount = oNodes.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oRel;
-			oNodes.GetAt(i, oRel);
+			XmlUtils::CXmlNode oRel = oNodes[i];
 
 			COOXMLRelationship oCurrentRel(oRel);
 			if (NULL == check_need)

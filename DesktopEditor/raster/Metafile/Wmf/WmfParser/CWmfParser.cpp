@@ -44,6 +44,10 @@ namespace MetaFile
 			m_unRecordPos = m_oStream.Tell();
 
 			m_oStream >> unSize;
+
+			if (unSize - 1 > m_oStream.CanRead())
+				return  SetError();
+
 			m_oStream >> ushType;
 
 			m_unRecordSize = unSize * 2; // Размер указан в WORD
@@ -59,13 +63,13 @@ namespace MetaFile
 				case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
 				case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
 				case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
-					//-----------------------------------------------------------
-					// 2.3.2 Control records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.2 Control records
+				//-----------------------------------------------------------
 				case META_EOF: Read_META_EOF(); break;
-					//-----------------------------------------------------------
-					// 2.3.3 Drawing records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.3 Drawing records
+				//-----------------------------------------------------------
 				case META_ARC: Read_META_ARC(); break;
 				case META_CHORD: Read_META_CHORD(); break;
 				case META_ELLIPSE: Read_META_ELLIPSE(); break;
@@ -86,9 +90,9 @@ namespace MetaFile
 				case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
 				case META_SETPIXEL: Read_META_SETPIXEL(); break;
 				case META_TEXTOUT: Read_META_TEXTOUT(); break;
-					//-----------------------------------------------------------
-					// 2.3.4 Object records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.4 Object records
+				//-----------------------------------------------------------
 				case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
 				case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
 				case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
@@ -100,9 +104,9 @@ namespace MetaFile
 				case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
 				case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
 				case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
-					//-----------------------------------------------------------
-					// 2.3.5 State records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.5 State records
+				//-----------------------------------------------------------
 				case META_ANIMATEPALETTE: Read_META_UNKNOWN(); break;
 				case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
 				case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
@@ -134,13 +138,13 @@ namespace MetaFile
 				case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
 				case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
 				case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
-					//-----------------------------------------------------------
-					// 2.3.6 State records
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// 2.3.6 State records
+				//-----------------------------------------------------------
 				case META_ESCAPE: Read_META_ESCAPE(); break;
-					//-----------------------------------------------------------
-					// Неизвестные записи
-					//-----------------------------------------------------------
+				//-----------------------------------------------------------
+				// Неизвестные записи
+				//-----------------------------------------------------------
 				default:
 				{
 					//std::cout << ushType << " ";
@@ -192,38 +196,38 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_HEADER()
 	{
-		m_oStream >> m_oPlaceable.Key;
-		if (0x9AC6CDD7 == m_oPlaceable.Key)
+		m_oStream >> m_oPlaceable.unKey;
+		if (0x9AC6CDD7 == m_oPlaceable.unKey)
 		{
-			m_oStream >> m_oPlaceable.HWmf;
-			m_oStream >> m_oPlaceable.BoundingBox;
-			m_oStream >> m_oPlaceable.Inch;
-			m_oStream >> m_oPlaceable.Reserved;
-			m_oStream >> m_oPlaceable.Checksum;
+			m_oStream >> m_oPlaceable.ushHWmf;
+			m_oStream >> m_oPlaceable.oBoundingBox;
+			m_oStream >> m_oPlaceable.ushInch;
+			m_oStream >> m_oPlaceable.unReserved;
+			m_oStream >> m_oPlaceable.ushChecksum;
 
 			SkipVoid();
 		}
 		else
 		{
 			m_oStream.SeekBack(m_oStream.Tell());
-			m_oPlaceable.Key                = 0;
-			m_oPlaceable.HWmf               = 0;
-			m_oPlaceable.BoundingBox.Left   = 0;
-			m_oPlaceable.BoundingBox.Top    = 0;
-			m_oPlaceable.BoundingBox.Right  = 0;
-			m_oPlaceable.BoundingBox.Bottom = 0;
-			m_oPlaceable.Inch               = 0;
-			m_oPlaceable.Reserved           = 0;
-			m_oPlaceable.Checksum           = 0;
+			m_oPlaceable.unKey               = 0;
+			m_oPlaceable.ushHWmf             = 0;
+			m_oPlaceable.oBoundingBox.Left   = 0;
+			m_oPlaceable.oBoundingBox.Top    = 0;
+			m_oPlaceable.oBoundingBox.Right  = 0;
+			m_oPlaceable.oBoundingBox.Bottom = 0;
+			m_oPlaceable.ushInch             = 0;
+			m_oPlaceable.unReserved          = 0;
+			m_oPlaceable.ushChecksum         = 0;
 		}
 
-		m_oStream >> m_oHeader.Type;
-		m_oStream >> m_oHeader.HeaderSize;
-		m_oStream >> m_oHeader.Version;
-		m_oStream >> m_oHeader.Size;
-		m_oStream >> m_oHeader.NumberOfObjects;
-		m_oStream >> m_oHeader.MaxRecord;
-		m_oStream >> m_oHeader.NumberOfMembers;
+		m_oStream >> m_oHeader.ushType;
+		m_oStream >> m_oHeader.ushHeaderSize;
+		m_oStream >> m_oHeader.ushVersion;
+		m_oStream >> m_oHeader.unSize;
+		m_oStream >> m_oHeader.ushNumberOfObjects;
+		m_oStream >> m_oHeader.unMaxRecord;
+		m_oStream >> m_oHeader.ushNumberOfMembers;
 
 		HANDLE_META_HEADER();
 	}
@@ -250,8 +254,8 @@ namespace MetaFile
 			}
 			else
 			{
-				RegisterPoint(oBitmap.XDest, oBitmap.YDest);
-				RegisterPoint(oBitmap.XDest + oBitmap.Width, oBitmap.YDest + oBitmap.Height);
+				RegisterPoint(oBitmap.shXDest, oBitmap.shYDest);
+				RegisterPoint(oBitmap.shXDest + oBitmap.shWidth, oBitmap.shYDest + oBitmap.shHeight);
 			}
 
 
@@ -310,8 +314,8 @@ namespace MetaFile
 			}
 			else
 			{
-				RegisterPoint(oBitmap.XDest, oBitmap.YDest);
-				RegisterPoint(oBitmap.XDest + oBitmap.DestWidth, oBitmap.YDest + oBitmap.DestHeight);
+				RegisterPoint(oBitmap.shXDest, oBitmap.shYDest);
+				RegisterPoint(oBitmap.shXDest + oBitmap.shDestWidth, oBitmap.shYDest + oBitmap.shDestHeight);
 			}
 
 			int nRemainingBytes = GetRecordRemainingBytesCount();
@@ -363,15 +367,15 @@ namespace MetaFile
 	{
 		short shY, shX, shStringLength;
 		unsigned short ushFwOptions;
-		TWmfRect oRectangle;
+		TRectS oRectangle;
 		m_oStream >> shY >> shX >> shStringLength >> ushFwOptions;
-
+		
 		if (shStringLength <= 0)
 			return;
 
 		if (ushFwOptions & ETO_CLIPPED || ushFwOptions & ETO_OPAQUE)
 			m_oStream >> oRectangle;
-
+		
 		unsigned char* pString = new unsigned char[shStringLength + 1];
 		if (!pString)
 			return SetError();
@@ -479,7 +483,7 @@ namespace MetaFile
 		if (shNumberOfPoints < 1)
 			return;
 
-		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
+		std::vector<TPointS> arPoints(shNumberOfPoints);
 
 		m_oStream >> arPoints[0];
 
@@ -496,7 +500,7 @@ namespace MetaFile
 		if (shNumberOfPoints < 1)
 			return;
 
-		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
+		std::vector<TPointS> arPoints(shNumberOfPoints);
 
 		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
@@ -511,7 +515,7 @@ namespace MetaFile
 		if (ushNumberOfPolygons <= 0)
 			return;
 
-		std::vector<std::vector<TWmfPointS>> arPolygons(ushNumberOfPolygons);
+		std::vector<std::vector<TPointS>> arPolygons(ushNumberOfPolygons);
 
 		unsigned short ushSizePolygon;
 
@@ -557,7 +561,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETPIXEL()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		short shX, shY;
 		m_oStream >> oColor >> shY >> shX;
 
@@ -644,7 +648,7 @@ namespace MetaFile
 		if (!pPen)
 			return SetError();
 
-		m_oStream >> pPen;
+		m_oStream >> *pPen;
 
 		HANDLE_META_CREATEPENINDIRECT(*pPen);
 	}
@@ -775,7 +779,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETBKCOLOR()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		m_oStream >> oColor;
 
 		HANDLE_META_SETBKCOLOR(oColor);
@@ -847,7 +851,7 @@ namespace MetaFile
 
 	void CWmfParser::Read_META_SETTEXTCOLOR()
 	{
-		TWmfColor oColor;
+		TRGBA oColor;
 		m_oStream >> oColor;
 
 		HANDLE_META_SETTEXTCOLOR(oColor);

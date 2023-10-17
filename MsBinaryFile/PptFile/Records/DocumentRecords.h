@@ -43,7 +43,6 @@ public:
 	std::vector<SSlidePersist> m_arNotePersists;
 	std::vector<SSlidePersist> m_arSlidePersists;
 
-
     CRecordDocument();
     ~CRecordDocument();
 

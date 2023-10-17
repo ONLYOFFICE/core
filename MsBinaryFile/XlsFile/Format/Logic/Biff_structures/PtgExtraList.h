@@ -34,7 +34,7 @@
 #include "Ptg.h"
 #include "CellRangeRef.h"
 #include "Boolean.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/SxSu.h"
+#include "BIFF12/SxSu.h"
 
 namespace XLS
 {
@@ -49,7 +49,8 @@ public:
     PtgExtraList(CFRecord& record);
     BiffStructurePtr clone();
 
-    virtual void load(CFRecord& record); // No type info
+    void load(CFRecord& record) override; // No type info
+	void save(CFRecord& record) override;
  // No type info
 
     const std::wstring toString() const;

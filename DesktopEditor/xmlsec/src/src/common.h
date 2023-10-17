@@ -71,27 +71,20 @@ public:
 	{
 		XmlUtils::CXmlNode oNode = pFolder->getNodeFromFile(L"/[Content_Types].xml");
 
-		XmlUtils::CXmlNodes nodesDefaults;
-		oNode.GetNodes(L"Default", nodesDefaults);
+		std::vector<XmlUtils::CXmlNode> nodesDefaults = oNode.GetNodes(L"Default");
+		std::vector<XmlUtils::CXmlNode> nodesOverrides = oNode.GetNodes(L"Override");
 
-		XmlUtils::CXmlNodes nodesOverrides;
-		oNode.GetNodes(L"Override", nodesOverrides);
-
-		int nCount = nodesDefaults.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		size_t nCount = nodesDefaults.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode node;
-			nodesDefaults.GetAt(i, node);
-
+			XmlUtils::CXmlNode node = nodesDefaults[i];
 			m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("Extension"), node.GetAttribute("ContentType")));
 		}
 
-		nCount = nodesOverrides.GetCount();
-		for (int i = 0; i < nCount; ++i)
+		nCount = nodesOverrides.size();
+		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode node;
-			nodesOverrides.GetAt(i, node);
-
+			XmlUtils::CXmlNode node = nodesOverrides[i];
 			m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("PartName"), node.GetAttribute("ContentType")));
 		}
 	}

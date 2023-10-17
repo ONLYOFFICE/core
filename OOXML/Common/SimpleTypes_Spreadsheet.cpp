@@ -533,8 +533,8 @@ namespace SimpleTypes
 				case 5:this->m_eValue = fontfamilyDecorative; break;
 				default:this->m_eValue = fontfamilyNotApplicable;
 				}
-				return this->m_eValue;
 			}
+			return this->m_eValue;
 		}
 
 		std::wstring CFontFamily::ToString  () const
@@ -2009,10 +2009,10 @@ namespace SimpleTypes
 
 		ESparklineAxisMinMax ST_SparklineAxisMinMax::FromString(const std::wstring &sValue)
 		{
-			if(L"individual" == sValue)			this->m_eValue = Individual;
-			else if(L"group" == sValue)		this->m_eValue = Group;
+			if(L"individual" == sValue)	this->m_eValue = Individual;
+			else if(L"group" == sValue)	this->m_eValue = Group;
 			else if(L"custom" == sValue)	this->m_eValue = Custom;
-			else 								this->m_eValue = Individual;
+			else							this->m_eValue = Individual;
 			return this->m_eValue;
 		}
 
@@ -2409,9 +2409,9 @@ namespace SimpleTypes
 			switch(this->m_eValue)
 			{
 			case layoutNone_ :		return L"none";
-			case layoutOverlapping:	return L"banner";
+			case layoutOverlapping:	return L"overlapping";
 			case layoutBanner :
-			default :				return L"overlapping";
+			default :				return L"banner";
 			}
 		}
 

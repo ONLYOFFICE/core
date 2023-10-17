@@ -601,12 +601,14 @@ namespace OOX
 		}
 		void CPrintOptions::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			if (m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit())
+			if (m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit() || m_oHorizontalCentered.IsInit() || m_oVerticalCentered.IsInit())
 			{
 				writer.WriteString(L"<printOptions");
 				WritingStringNullableAttrBool(L"headings", m_oHeadings);
 				WritingStringNullableAttrBool(L"gridLines", m_oGridLines);
 				WritingStringNullableAttrBool(L"gridLinesSet", m_oGridLinesSet);
+				WritingStringNullableAttrBool(L"horizontalCentered", m_oHorizontalCentered);
+				WritingStringNullableAttrBool(L"verticalCentered", m_oVerticalCentered);
 				writer.WriteString(L"/>");
 			}
 		}
@@ -633,7 +635,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"headings"), m_oHeadings)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"horizontalCentered"), m_oHorizontalCentered)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"verticalCentered"), m_oVerticalCentered)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CPrintOptions::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
@@ -1772,8 +1774,8 @@ namespace OOX
 			{
 				m_oId = ptr->unRwCol;
 				m_oMan = ptr->fMan;
-				m_oMax = ptr->unColRwStrt;
-				m_oMin = ptr->unColRwEnd;
+				m_oMax = ptr->unColRwEnd;
+				m_oMin = ptr->unColRwStrt;
 				m_oPt = ptr->fPivot;
 			}
 		}
@@ -1785,7 +1787,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"max"), m_oMax)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"min"), m_oMin)
 				WritingElement_ReadAttributes_Read_else_if(oReader, (L"pt"), m_oPt)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 		CRowColBreaks::CRowColBreaks()
@@ -1991,7 +1993,9 @@ namespace OOX
 				auto ptr = static_cast<XLSB::SheetProtection*>(obj.get());
 				if (ptr != nullptr)
 				{
-					m_oPassword = std::to_wstring(ptr->protpwd);
+					std::wstringstream hexStream;
+					hexStream << std::hex << ptr->protpwd;
+					m_oPassword = hexStream.str();
 					m_oAutoFilter = (bool)ptr->fAutoFilter;
 					m_oContent = true;
 					m_oDeleteColumns = (bool)ptr->fDeleteColumns;
@@ -2298,7 +2302,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
 			WritingElement_ReadAttributes_End(oReader)
-		}		
+		}
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);

@@ -183,12 +183,11 @@ public:
 			XmlUtils::CXmlNode oNodeRels = m_pFolder->getNodeFromFile(*iter);
 			if (!oNodeRels.IsValid())
 				continue;
-			XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
-			int nCount = oNodesRels.GetCount();
-			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			std::vector<XmlUtils::CXmlNode> oNodesRels = oNodeRels.GetNodes(L"Relationship");
+			size_t nCount = oNodesRels.size();
+			for (size_t nIndex = 0; nIndex < nCount; nIndex++)
 			{
-				XmlUtils::CXmlNode oNodeRel;
-				oNodesRels.GetAt(nIndex, oNodeRel);
+				XmlUtils::CXmlNode oNodeRel = oNodesRels[nIndex];
 
 				std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
 				if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pFolder->exists(folder + L"/" + sTarget))
@@ -333,13 +332,12 @@ public:
 
 		oBuilder.WriteNodeEnd(oNode.GetName(), true, false);
 
-		XmlUtils::CXmlNodes oNodes = oNode.GetNodes(L"*");
+		std::vector<XmlUtils::CXmlNode> oNodes = oNode.GetNodes(L"*");
 
-		int nCountNodes = oNodes.GetCount();
-		for (int nIndex = 0; nIndex < nCountNodes; ++nIndex)
+		size_t nCountNodes = oNodes.size();
+		for (size_t nIndex = 0; nIndex < nCountNodes; ++nIndex)
 		{
-			XmlUtils::CXmlNode oCurrentRecord;
-			oNodes.GetAt(nIndex, oCurrentRecord);
+			XmlUtils::CXmlNode oCurrentRecord = oNodes[nIndex];
 
 			if (L"Default" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("Extension") == "sigs")
 				continue;

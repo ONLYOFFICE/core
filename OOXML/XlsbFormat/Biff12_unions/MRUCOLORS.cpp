@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,7 +58,7 @@ namespace XLSB
     {
         if (proc.optional<BeginMRUColors>())
         {
-            m_BrtBeginMRUColors = elements_.back();
+            m_bBrtBeginMRUColors = true;
             elements_.pop_back();
         }
         else return false;
@@ -74,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndMRUColors>())
         {
-            m_BrtEndMRUColors = elements_.back();
+            m_bBrtEndMRUColors = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndMRUColors = false;
 
-        return m_BrtBeginMRUColors && !m_arMRUColor.empty() && m_BrtEndMRUColors;
+        return m_bBrtBeginMRUColors && !m_arMRUColor.empty() && m_bBrtEndMRUColors;
     }
+
+	const bool MRUCOLORS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginMRUColors>();
+
+		for (auto &item : m_arMRUColor)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndMRUColors>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

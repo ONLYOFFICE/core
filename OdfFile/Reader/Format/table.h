@@ -147,7 +147,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    table_table_source_attlist table_table_source_attlist_;
+    table_table_source_attlist attlist_;
     table_linked_source_attlist table_linked_source_attlist_;
 
 private:
@@ -167,8 +167,7 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context) ;
 
     office_element_ptr			table_table_columns_;
-    office_element_ptr_array	table_table_column_;
-    
+    office_element_ptr_array	table_table_column_;    
 };
 
 class table_columns_no_group: public office_element
@@ -251,7 +250,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_column_attlist	table_table_column_attlist_;
+    table_table_column_attlist	attlist_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column);
@@ -275,7 +274,6 @@ private:
 
 public:
     office_element_ptr_array	table_table_column_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_columns);
 
@@ -482,7 +480,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    office_element_ptr_array	table_table_row_;
+    office_element_ptr_array table_table_row_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_rows);
@@ -687,9 +685,11 @@ public:
     office_element_ptr			table_table_source_;	
 
 	office_element_ptr			conditional_formats_;
+    office_element_ptr			sparkline_groups_;
 
     office_element_ptr			table_shapes_;
 	office_element_ptr_array	table_named_;
+
 	office_element_ptr			office_forms_;
     //office-dde-source
     //table-scenario

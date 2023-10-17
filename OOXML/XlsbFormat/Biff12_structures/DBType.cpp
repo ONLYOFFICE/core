@@ -43,5 +43,11 @@ BiffStructurePtr DBType::clone()
     return BiffStructurePtr(new DBType(*this));
 }
 
+DBType& DBType::operator= (const _UINT32& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

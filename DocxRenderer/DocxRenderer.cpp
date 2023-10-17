@@ -344,6 +344,10 @@ HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions
     // TODO:
     return S_OK;
 }
+HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage) { return S_OK; }
+HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage) { return S_OK; }
+HRESULT CDocxRenderer::get_BrushTransform(Aggplus::CMatrix& oMatrix) { return S_OK; }
+HRESULT CDocxRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------

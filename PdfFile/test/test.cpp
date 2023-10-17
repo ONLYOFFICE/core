@@ -33,7 +33,10 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
+#include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
+#include "../../DesktopEditor/graphics/commands/AnnotField.h"
 #include "../PdfFile.h"
+#include "../OnlineOfficeBinToPdf.h"
 
 void TEST(IRenderer* pRenderer)
 {
@@ -86,52 +89,115 @@ int main()
     if (!bResult)
     {
         wsPassword = L"123456";
-        bResult = pdfFile.LoadFromFile(wsSrcFile, wsPassword);
+		bResult = pdfFile.LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
     }
 
     ICertificate* pCertificate = NULL;
-    if (false)
+	if (false)
     {
-        std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
-        std::wstring wsPrivateKeyFile = L"";
+		std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/cert.pfx";
+		std::wstring wsPrivateKeyFile = L"";
         std::string sCertificateFilePassword = "123456";
-        std::string sPrivateFilePassword = "";
+		std::string sPrivateFilePassword = "";
 
-        pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+		pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+
+		std::map<std::wstring, std::wstring> properties;
+		properties.insert(std::make_pair(L"DNS", L"8.8.8.8"));
+		//properties.insert(std::make_pair(L"IP Address", L"127.0.0.1"));
+		properties.insert(std::make_pair(L"email", L"sign@onlyoffice.com"));
+		//properties.insert(std::make_pair(L"phone", L"+00000000000"));
+		//std::wstring sNameTest = L"NameTest";
+		//std::wstring sValueTest = L"ValueTest";
+		//properties.insert(std::make_pair(sNameTest, sValueTest));
+
+		//pCertificate = NSCertificate::GenerateByAlg("ecdsa512", properties);
+		//pCertificate = NSCertificate::GenerateByAlg("rsa2048", properties);
     }
 
-    if (false)
+	if (false)
+	{
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/pdf.bin"))
+			return 0;
+
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			return 0;
+		}
+
+		DWORD dwReaded;
+		oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+		oFile.CloseFile();
+
+		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+		imageWriter.SetApplication(pApplicationFonts);
+		imageWriter.SetRasterFormat(4);
+		imageWriter.SetFileName(NSFile::GetProcessDirectory() + L"/res.png");
+
+		imageWriter.ConvertBuffer(pFileContent, dwFileSize);
+
+		RELEASEARRAYOBJECTS(pFileContent);
+		RELEASEINTERFACE(pApplicationFonts);
+		RELEASEOBJECT(pCertificate);
+		return 0;
+	}
+
+	if (false)
     {
-        double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        pdfFile.ConvertToRaster(0, NSFile::GetProcessDirectory() + L"/res.png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        pdfFile.CreatePdf();
+        pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);
         return 0;
     }
 
-    if (false)
+	if (false)
     {
-        pdfFile.CreatePdf();
+        double dPageDpiX, dPageDpiY, dWidth, dHeight;
+        int i = 0;
+        for (i = 0; i < pdfFile.GetPagesCount(); i++)
+        {
+            pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+			pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile.GetFontManager());
+        }
+
+        if (pCertificate)
+        {
+            BYTE* pWidgets = pdfFile.VerifySign(wsSrcFile, pCertificate);
+            RELEASEARRAYOBJECTS(pWidgets);
+        }
+
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
+	if (false)
+    {
+        pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
         dWidth  *= 25.4 / dPageDpiX;
         dHeight *= 25.4 / dPageDpiY;
 
-        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
-        {
-            pdfFile.NewPage();
-            pdfFile.BeginCommand(c_nPageType);
-            pdfFile.put_Width(dWidth);
-            pdfFile.put_Height(dHeight);
-            pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
-            pdfFile.EndCommand(c_nPageType);
-        }
+        pdfFile.NewPage();
+        pdfFile.BeginCommand(c_nPageType);
+        pdfFile.put_Width(dWidth);
+        pdfFile.put_Height(dHeight);
+        std::string sTitle = "1<2<3<4";
+		pdfFile.SetDocumentInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
+        //pdfFile.DrawImageFromFile(NSFile::GetProcessDirectory() + L"/test.jpg", 10, 10, 455, 200);
+        pdfFile.EndCommand(c_nPageType);
+
         if (pCertificate)
-            pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-        pdfFile.SaveToFile(wsDstFile);
+			pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+        int nRes = pdfFile.SaveToFile(wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);
@@ -141,31 +207,72 @@ int main()
     if (bResult && pdfFile.EditPdf(wsDstFile))
     {
         if (pCertificate)
-        {
-            if (pdfFile.EditPage(0))
-            {
-                pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-            }
+		{
+			if (pdfFile.EditPage(0))
+			{
+				//TEST(&pdfFile);
+				pdfFile.Sign(10, 10, 100, 100, NSFile::GetProcessDirectory() + L"/test.jpeg", pCertificate);
+			}
         }
-        else
+		else if (true)
+		{
+			// чтение и конвертации бинарника
+			NSFile::CFileBinary oFile;
+			if (!oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
+				return 0;
+
+			DWORD dwFileSize = oFile.GetFileSize();
+			BYTE* pFileContent = new BYTE[dwFileSize];
+			if (!pFileContent)
+			{
+				oFile.CloseFile();
+				return 0;
+			}
+
+			DWORD dwReaded;
+			oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+			oFile.CloseFile();
+
+			int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+			BYTE* pBuffer = new BYTE[nBufferLen];
+			if (!pBuffer)
+			{
+				RELEASEARRAYOBJECTS(pFileContent);
+				return 0;
+			}
+
+			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
+				pdfFile.AddToPdfFromBinary(pBuffer, nBufferLen, NULL);
+
+			RELEASEARRAYOBJECTS(pBuffer);
+			RELEASEARRAYOBJECTS(pFileContent);
+		}
+		else if (false)
+		{
+			if (pdfFile.EditPage(0))
+			{
+				pdfFile.EditAnnot(0, 99);
+			}
+		}
+		else
         {
             if (pdfFile.EditPage(0))
             {
-                TEST(&pdfFile);
-                pdfFile.RotatePage(90);
+				TEST(&pdfFile);
+				pdfFile.RotatePage(90);
             }
 
-            pdfFile.DeletePage(1);
+			pdfFile.DeletePage(1);
 
-            if (pdfFile.EditPage(1))
-            {
-                TEST2(&pdfFile);
-            }
+			if (pdfFile.EditPage(1))
+			{
+				TEST2(&pdfFile);
+			}
 
-            if (pdfFile.AddPage(3))
-            {
-                TEST3(&pdfFile);
-            }
+			if (pdfFile.AddPage(3))
+			{
+				TEST3(&pdfFile);
+			}
         }
 
         pdfFile.Close();

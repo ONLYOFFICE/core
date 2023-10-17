@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -85,8 +85,8 @@ namespace XLSB
 
         if(m_source->get_type() == XLS::typeSUPADDIN)
         {
-            auto pSUPSAME = dynamic_cast<SUPADDIN*>(m_source.get());
-            for(auto &pPlaceholderName : pSUPSAME->m_arBrtPlaceholderName)
+            auto pSUPADDIN = dynamic_cast<SUPADDIN*>(m_source.get());
+            for(auto &pPlaceholderName : pSUPADDIN->m_arBrtPlaceholderName)
             {
                 auto pBrtPlaceholderName = dynamic_cast<PlaceholderName*>(pPlaceholderName.get());
                 if(pBrtPlaceholderName != nullptr && !pBrtPlaceholderName->name.value().empty())
@@ -96,6 +96,44 @@ namespace XLSB
         elements_.pop_back();
         return true;
     }
+
+	const bool SUP::saveContent(BinProcessor& proc)
+	{		
+		if (m_source->get_type() == XLS::typeSUPSAME)
+		{
+			auto pSUPSAME = dynamic_cast<SUPSAME*>(m_source.get());
+			for (auto &pPlaceholderName : arNames)
+			{
+				XLS::BaseObjectPtr item(new PlaceholderName());
+				auto pBrtPlaceholderName = dynamic_cast<PlaceholderName*>(item.get());
+				if(pBrtPlaceholderName != nullptr)
+				{
+					pBrtPlaceholderName->name = pPlaceholderName;
+					pSUPSAME->m_arBrtPlaceholderName.push_back(item);
+				}
+			}			
+		}
+
+		if (m_source->get_type() == XLS::typeSUPADDIN)
+		{
+			auto pSUPADDIN = dynamic_cast<SUPADDIN*>(m_source.get());
+			for (auto &pPlaceholderName : arNames)
+			{
+				XLS::BaseObjectPtr item(new PlaceholderName());
+				auto pBrtPlaceholderName = dynamic_cast<PlaceholderName*>(item.get());
+				if (pBrtPlaceholderName != nullptr)
+				{
+					pBrtPlaceholderName->name = pPlaceholderName;
+					pSUPADDIN->m_arBrtPlaceholderName.push_back(item);
+				}
+			}
+		}
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

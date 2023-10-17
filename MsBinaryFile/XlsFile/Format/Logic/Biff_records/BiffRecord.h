@@ -47,8 +47,12 @@ public:
 	~BiffRecord();
 
 	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory); // Read self and children
+
+	virtual const bool write(StreamCacheWriterPtr writer, BaseObject* parent); // Write self and children
 	
-	virtual void readFields(CFRecord& record) = 0;
+	virtual void readFields(CFRecord& record) {}//= 0;
+
+	virtual void writeFields(CFRecord& record) {}// = 0;
 
 	virtual const CFRecordType::TypeId getTypeId() const = 0;  // made virtual to let derived assign their own names (for example, EOF_T)
 

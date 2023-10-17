@@ -24,6 +24,36 @@ ICertificate::~ICertificate()
 CCertificateInfo::CCertificateInfo() {}
 CCertificateInfo::~CCertificateInfo() {}
 
+std::string ICertificate::Sign(unsigned char* pData, unsigned int nSize)
+{
+	unsigned char* pDataDst = NULL;
+	unsigned int nSizeDst = 0;
+	bool bRes = Sign(pData, nSize, pDataDst, nSizeDst);
+
+	if (!bRes || 0 == nSizeDst || NULL == pDataDst)
+		return "";
+
+	char* pBase64 = NULL;
+	int nBase64Len = 0;
+	NSFile::CBase64Converter::Encode(pDataDst, nSizeDst, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+
+	std::string sReturn(pBase64, nBase64Len);
+	delete[] pBase64;
+	ICertificate::FreeData(pDataDst);
+
+	return sReturn;
+}
+std::string ICertificate::Sign(const std::string& sXml)
+{
+	return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+}
+
+void ICertificate::FreeData(unsigned char* data)
+{
+	if (data)
+		delete [] data;
+}
+
 namespace NSOpenSSL
 {
 #ifdef SUPPORT_OPENSSL
@@ -315,6 +345,21 @@ namespace NSCertificate
 			return new CCertificate_oform();
 #endif
 
+		return NULL;
+	}
+
+	ICertificate* GenerateByAlg(const std::string& key_alg, const std::map<std::wstring, std::wstring>& props)
+	{
+#ifdef SUPPORT_OPENSSL
+		CCertificate_openssl* pCert = new CCertificate_openssl();
+		bool bIsGenerated = pCert->Generate(key_alg, props);
+		if (!bIsGenerated)
+		{
+			delete pCert;
+			return NULL;
+		}
+		return pCert;
+#endif
 		return NULL;
 	}
 };

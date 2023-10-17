@@ -134,7 +134,7 @@ namespace oox
 	void vml_serialize_ln(std::wostream & strm, const odf_reader::graphic_format_properties_ptr & val);
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false, const std::wstring &ns = L"a");
-	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, const std::wstring &ns = L"a");
+	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset, int max_count_values = -1, const std::wstring &ns = L"a");
     void oox_serialize_action	(std::wostream & strm, const _action_desc & val);
 	void oox_serialize_effects	(std::wostream & strm, const std::vector<odf_reader::_property> & val);
     
@@ -145,7 +145,14 @@ namespace oox
 
 namespace svg_path
 {
-	void oox_serialize	(std::wostream & strm, _point & val);
-	void oox_serialize	(std::wostream & strm, _polyline & val);
-	void oox_serialize	(std::wostream & strm, std::vector<_polyline> & path);
+	void oox_serialize (std::wostream& strm, _point & val);
+	void oox_serialize (std::wostream& strm, _polyline & val);
+	void oox_serialize (std::wostream& strm, std::vector<_polyline> & path);
+	
+	void oox_serialize(std::wostream& strm, _pointS& val);
+	void oox_serialize(std::wostream& strm, _polylineS& val);
+	void oox_serialize (std::wostream& strm, std::vector<_polylineS>& path);
+
+	void oox_serialize(std::wostream& strm, std::vector<std::pair<std::wstring, std::wstring>>& equations);
+
 }

@@ -37,25 +37,23 @@ void DocInfoListSubContainerOrAtom::ReadFromStream(SRecordHeader &oHeader, POLE:
 {
     switch (oHeader.RecType)
     {
-    case RT_ProgTags:
-    {
-        m_record.reset(new CRecordDocProgTagsContainer);
-        m_record->ReadFromStream(oHeader, pStream);
-        break;
-    }
-    case RT_VbaInfo:
-    {
-        m_record.reset(new CRecordVBAInfoContainer);
-        m_record->ReadFromStream(oHeader, pStream);
-        break;
-    }
-//        case RT_OutlineViewInfo:
-//        {
-
-//        }
-    default:
-        StreamUtils::StreamSkip(oHeader.RecLen, pStream);
-        break;
+        case RT_ProgTags:
+        {
+            m_record.reset(new CRecordDocProgTagsContainer);
+            m_record->m_pCommonInfo = m_pCommonInfo;
+            m_record->ReadFromStream(oHeader, pStream);        
+        }break;
+        case RT_VbaInfo:
+        {
+            m_record.reset(new CRecordVBAInfoContainer);
+            m_record->m_pCommonInfo = m_pCommonInfo;
+            m_record->ReadFromStream(oHeader, pStream);
+        }break;
+    // RT_OutlineViewInfo:
+        default:
+        {
+            StreamUtils::StreamSkip(oHeader.RecLen, pStream);
+        }break;
     }
 }
 
@@ -88,11 +86,13 @@ void CRecordDocInfoListContainer::ReadFromStream(SRecordHeader &oHeader, POLE::S
             break;
         }
 
-
         lCurLen += 8 + ReadHeader.RecLen;
 
         auto pRec = new DocInfoListSubContainerOrAtom;
+        pRec->m_pCommonInfo = m_pCommonInfo;
+
         pRec->ReadFromStream(ReadHeader, pStream);
+
         m_rgChildRec.push_back(pRec);
     }
     StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);

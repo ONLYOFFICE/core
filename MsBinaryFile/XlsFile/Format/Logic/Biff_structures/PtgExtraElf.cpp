@@ -69,6 +69,18 @@ void PtgExtraElf::load(CFRecord& record)
 	}
 }
 
+void PtgExtraElf::save(CFRecord& record)
+{
+	_UINT32 flags = 0;
+	SETBIT(flags, 31, fRel);
+	record << flags;
+
+	for (auto& item : array_)
+	{
+		record << item;
+	}
+}
+
 
 const std::wstring PtgExtraElf::toString() const
 {

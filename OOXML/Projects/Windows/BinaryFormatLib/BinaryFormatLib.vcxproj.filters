@@ -25,6 +25,12 @@
     <Filter Include="Common">
       <UniqueIdentifier>{02739917-e580-44c9-9b2c-8e80c7a2164d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sheets\Reader\XML">
+      <UniqueIdentifier>{47d28884-9f95-479a-a812-cf3b0e0a6ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sheets\Reader\CellFormat">
+      <UniqueIdentifier>{3bf431c7-ab39-40bb-a5ce-dbc6008ae5e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp">
@@ -119,6 +125,39 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\columnNameController.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XLSXTableController.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XML2TableConverter.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLConverter2.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader2.cpp">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CellFormatController.cpp">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.cpp">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.cpp">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.cpp">
+      <Filter>Sheets\Reader\CellFormat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +277,36 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Presentation\XmlWriter.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\columnNamesController.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XLSXTableController.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XML2TableConverter.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLConverter2.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLMap.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\XMLReader\XMLReader.h">
+      <Filter>Sheets\Reader\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CellFormatController.h">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.h">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.h">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.h">
+      <Filter>Sheets\Reader\CellFormat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

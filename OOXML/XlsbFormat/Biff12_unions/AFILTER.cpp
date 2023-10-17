@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,19 +61,40 @@ namespace XLSB
             m_BrtBeginAFilter = elements_.back();
             elements_.pop_back();
         }
-        if (proc.optional<PIVOTFILTERCOLUMN>())
-        {
-            m_PIVOTFILTERCOLUMN = elements_.back();
-            elements_.pop_back();
-        }
+
+		auto count = proc.repeated<PIVOTFILTERCOLUMN>(0, 0);
+		while (count > 0)
+		{
+			m_arPIVOTFILTERCOLUMN.insert(m_arPIVOTFILTERCOLUMN.begin(), elements_.back());
+			elements_.pop_back();
+			count--;
+		}
+
         if (proc.optional<EndAFilter>())
         {
-            m_BrtEndAFilter = elements_.back();
+            m_bBrtEndAFilter = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndAFilter = false;
 
-        return m_BrtBeginAFilter && m_PIVOTFILTERCOLUMN && m_BrtEndAFilter;
+        return m_BrtBeginAFilter && m_bBrtEndAFilter;
     }
+
+	const bool AFILTER::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginAFilter != nullptr)
+			proc.mandatory(*m_BrtBeginAFilter);
+
+		for (auto &item : m_arPIVOTFILTERCOLUMN)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndAFilter>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

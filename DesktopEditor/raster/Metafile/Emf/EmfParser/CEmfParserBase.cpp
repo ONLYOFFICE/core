@@ -23,26 +23,26 @@ namespace MetaFile
 		BYTE* pBgraBuffer = NULL;
 		unsigned int unWidth, unHeight;
 
-		if (ReadImage(oTEmfAlphaBlend.offBmiSrc, oTEmfAlphaBlend.cbBmiSrc,
-					  oTEmfAlphaBlend.offBitsSrc, oTEmfAlphaBlend.cbBitsSrc,
-					  c_nTEmfAlphaBlendSize + 8, &pBgraBuffer, &unWidth, &unHeight))
+		if (ReadImage(oTEmfAlphaBlend.unOffBmiSrc, oTEmfAlphaBlend.unCbBmiSrc,
+		              oTEmfAlphaBlend.unOffBitsSrc, oTEmfAlphaBlend.unCbBitsSrc,
+		              c_nTEmfAlphaBlendSize + 8, &pBgraBuffer, &unWidth, &unHeight))
 		{
 			if (m_pInterpretator)
 			{
-				if (0x00 == oTEmfAlphaBlend.AlphaFormat)
+				if (0x00 == oTEmfAlphaBlend.uchAlphaFormat)
 				{
 					for (unsigned int unY = 0; unY < unHeight; unY++)
 					{
 						for (unsigned int unX = 0; unX < unWidth; unX++)
 						{
 							unsigned int unIndex = (unX + unY * unWidth) * 4;
-							pBgraBuffer[unIndex + 3] = oTEmfAlphaBlend.SrcConstantAlpha;
+							pBgraBuffer[unIndex + 3] = oTEmfAlphaBlend.uchSrcConstantAlpha;
 						}
 					}
 				}
 				else
 				{
-					double dAlphaKoef = oTEmfAlphaBlend.SrcConstantAlpha / 255.0;
+					double dAlphaKoef = oTEmfAlphaBlend.uchSrcConstantAlpha / 255.0;
 					for (unsigned int unY = 0; unY < unHeight; unY++)
 					{
 						for (unsigned int unX = 0; unX < unWidth; unX++)
@@ -54,8 +54,8 @@ namespace MetaFile
 
 				}
 
-				DrawImage(oTEmfAlphaBlend.xDest, oTEmfAlphaBlend.yDest,
-						  oTEmfAlphaBlend.cxDest, oTEmfAlphaBlend.cyDest,
+				DrawImage(oTEmfAlphaBlend.nXDest, oTEmfAlphaBlend.nYDest,
+						  oTEmfAlphaBlend.nCxDest, oTEmfAlphaBlend.nCyDest,
 						  pBgraBuffer, unWidth, unHeight);
 			}
 		}
@@ -69,16 +69,16 @@ namespace MetaFile
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
 
-		if (ReadImage(oTEmfStretchDIBITS.offBmiSrc, oTEmfStretchDIBITS.cbBmiSrc,
-					  oTEmfStretchDIBITS.offBitsSrc, oTEmfStretchDIBITS.cbBitsSrc,
+		if (ReadImage(oTEmfStretchDIBITS.unOffBmiSrc, oTEmfStretchDIBITS.unCbBmiSrc,
+					  oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
 					  sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			if (m_pInterpretator)
 			{
-				ProcessRasterOperation(oTEmfStretchDIBITS.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
-				DrawImage(oTEmfStretchDIBITS.xDest, oTEmfStretchDIBITS.yDest,
-						  oTEmfStretchDIBITS.cxDest, oTEmfStretchDIBITS.cyDest,
-						  pBgraBuffer, ulWidth, ulHeight);
+				ProcessRasterOperation(oTEmfStretchDIBITS.unBitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
+				DrawImage(oTEmfStretchDIBITS.nXDest, oTEmfStretchDIBITS.nYDest,
+				          oTEmfStretchDIBITS.nCxDest, oTEmfStretchDIBITS.nCyDest,
+				          pBgraBuffer, ulWidth, ulHeight);
 			}
 		}
 
@@ -94,18 +94,18 @@ namespace MetaFile
 		// sizeof использовать нельзя, т.к. мы используем double в структуре TEmfBitBlt, а читаем его 4-байтовым
 		unsigned int unEmfBitBltRecordSize = 100; // sizeof(TEmfBitBlt) + 8
 
-		if (ReadImage(oTEmfBitBlt.offBmiSrc, oTEmfBitBlt.cbBmiSrc,
-					  oTEmfBitBlt.offBitsSrc, oTEmfBitBlt.cbBitsSrc,
+		if (ReadImage(oTEmfBitBlt.unOffBmiSrc, oTEmfBitBlt.unCbBmiSrc,
+					  oTEmfBitBlt.unOffBitsSrc, oTEmfBitBlt.unCbBitsSrc,
 					  unEmfBitBltRecordSize, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
-			DrawImage(oTEmfBitBlt.xDest, oTEmfBitBlt.yDest,
-					  oTEmfBitBlt.cxDest, oTEmfBitBlt.cyDest,
+			DrawImage(oTEmfBitBlt.nXDest, oTEmfBitBlt.nYDest,
+					  oTEmfBitBlt.nCxDest, oTEmfBitBlt.nCyDest,
 					  pBgraBuffer, ulWidth, ulHeight);
 		}
 
 		if (m_pInterpretator)
 		{
-			if (0x00000042 == oTEmfBitBlt.BitBltRasterOperation) // BLACKNESS
+			if (0x00000042 == oTEmfBitBlt.unBitBltRasterOperation) // BLACKNESS
 			{
 				// Делаем все черным цветом
 				pBgraBuffer = new BYTE[4];
@@ -117,7 +117,7 @@ namespace MetaFile
 				ulWidth  = 1;
 				ulHeight = 1;
 			}
-			if (0x00FF0062 == oTEmfBitBlt.BitBltRasterOperation) // WHITENESS
+			if (0x00FF0062 == oTEmfBitBlt.unBitBltRasterOperation) // WHITENESS
 			{
 				// Делаем все черным цветом
 				pBgraBuffer = new BYTE[4];
@@ -129,48 +129,48 @@ namespace MetaFile
 				ulWidth  = 1;
 				ulHeight = 1;
 			}
-			else if (0x00f00021 == oTEmfBitBlt.BitBltRasterOperation) // PATCOPY
+			else if (0x00f00021 == oTEmfBitBlt.unBitBltRasterOperation) // PATCOPY
 			{
 				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
 				if (pBrush)
 				{
 					// Делаем цветом кисти
 					pBgraBuffer = new BYTE[4];
-					pBgraBuffer[0] = pBrush->Color.b;
-					pBgraBuffer[1] = pBrush->Color.g;
-					pBgraBuffer[2] = pBrush->Color.r;
+                                        pBgraBuffer[0] = pBrush->oColor.b;
+                                        pBgraBuffer[1] = pBrush->oColor.g;
+                                        pBgraBuffer[2] = pBrush->oColor.r;
 					pBgraBuffer[3] = 0xff;
 
 					ulWidth  = 1;
 					ulHeight = 1;
 				}
 			}
-			else if (0x005a0049 == oTEmfBitBlt.BitBltRasterOperation) // PATINVERT
+			else if (0x005a0049 == oTEmfBitBlt.unBitBltRasterOperation) // PATINVERT
 			{
 				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
 				if (pBrush)
 				{
 					// Делаем цветом кисти
 					pBgraBuffer = new BYTE[4];
-					pBgraBuffer[0] = pBrush->Color.b;
-					pBgraBuffer[1] = pBrush->Color.g;
-					pBgraBuffer[2] = pBrush->Color.r;
+                                        pBgraBuffer[0] = pBrush->oColor.b;
+                                        pBgraBuffer[1] = pBrush->oColor.g;
+                                        pBgraBuffer[2] = pBrush->oColor.r;
 					pBgraBuffer[3] = 30;
 
 					ulWidth  = 1;
 					ulHeight = 1;
 				}
 			}
-			else if (0x00A000C9 == oTEmfBitBlt.BitBltRasterOperation) // PATINVERT
+			else if (0x00A000C9 == oTEmfBitBlt.unBitBltRasterOperation) // PATINVERT
 			{
 				CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
 				if (pBrush)
 				{
 					// Делаем цветом кисти
 					pBgraBuffer = new BYTE[4];
-					pBgraBuffer[0] = pBrush->Color.b;
-					pBgraBuffer[1] = pBrush->Color.g;
-					pBgraBuffer[2] = pBrush->Color.r;
+                                        pBgraBuffer[0] = pBrush->oColor.b;
+                                        pBgraBuffer[1] = pBrush->oColor.g;
+                                        pBgraBuffer[2] = pBrush->oColor.r;
 					pBgraBuffer[3] = 30;
 
 					ulWidth  = 1;
@@ -179,8 +179,8 @@ namespace MetaFile
 			}
 
 			if (pBgraBuffer)
-				DrawImage(oTEmfBitBlt.xDest, oTEmfBitBlt.yDest,
-						  oTEmfBitBlt.cxDest, oTEmfBitBlt.cyDest,
+				DrawImage(oTEmfBitBlt.nXDest, oTEmfBitBlt.nYDest,
+						  oTEmfBitBlt.nCxDest, oTEmfBitBlt.nCyDest,
 						  pBgraBuffer, ulWidth, ulHeight);
 		}
 
@@ -192,14 +192,14 @@ namespace MetaFile
 	{
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
-		if (ReadImage(oTEmfSetDiBitsToDevice.offBmiSrc, oTEmfSetDiBitsToDevice.cbBmiSrc,
-					  oTEmfSetDiBitsToDevice.offBitsSrc, oTEmfSetDiBitsToDevice.cbBitsSrc,
+		if (ReadImage(oTEmfSetDiBitsToDevice.unOffBmiSrc, oTEmfSetDiBitsToDevice.unCbBmiSrc,
+					  oTEmfSetDiBitsToDevice.unOffBitsSrc, oTEmfSetDiBitsToDevice.unCbBitsSrc,
 					  sizeof(TEmfSetDiBitsToDevice) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
-			DrawImage(oTEmfSetDiBitsToDevice.Bounds.lLeft, oTEmfSetDiBitsToDevice.Bounds.lTop,
-					  oTEmfSetDiBitsToDevice.Bounds.lRight - oTEmfSetDiBitsToDevice.Bounds.lLeft,
-					  oTEmfSetDiBitsToDevice.Bounds.lBottom - oTEmfSetDiBitsToDevice.Bounds.lTop,
+			DrawImage(oTEmfSetDiBitsToDevice.oBounds.Left, oTEmfSetDiBitsToDevice.oBounds.Top,
+					  oTEmfSetDiBitsToDevice.oBounds.Right - oTEmfSetDiBitsToDevice.oBounds.Left,
+					  oTEmfSetDiBitsToDevice.oBounds.Bottom - oTEmfSetDiBitsToDevice.oBounds.Top,
 					  pBgraBuffer, ulWidth, ulHeight);
 		}
 
@@ -213,15 +213,15 @@ namespace MetaFile
 		unsigned int ulWidth, ulHeight;
 
 		unsigned int unSkip = 108; // sizeof(TEmfStretchBLT) + 8 неправильно считает, из-з TXForm, там double, а в Emf они по 4 байта
-		if (ReadImage(oTEmfStretchBLT.offBmiSrc, oTEmfStretchBLT.cbBmiSrc,
-					  oTEmfStretchBLT.offBitsSrc, oTEmfStretchBLT.cbBitsSrc,
+		if (ReadImage(oTEmfStretchBLT.unOffBmiSrc, oTEmfStretchBLT.unCbBmiSrc,
+					  oTEmfStretchBLT.unOffBitsSrc, oTEmfStretchBLT.unCbBitsSrc,
 					  unSkip, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			if (m_pInterpretator)
 			{
-				ProcessRasterOperation(oTEmfStretchBLT.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
-				DrawImage(oTEmfStretchBLT.xDest, oTEmfStretchBLT.yDest,
-						  oTEmfStretchBLT.cxDest, oTEmfStretchBLT.cyDest,
+				ProcessRasterOperation(oTEmfStretchBLT.unBitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
+				DrawImage(oTEmfStretchBLT.nXDest, oTEmfStretchBLT.nYDest,
+						  oTEmfStretchBLT.nCxDest, oTEmfStretchBLT.nCyDest,
 						  pBgraBuffer, ulWidth, ulHeight);
 			}
 		}
@@ -235,8 +235,8 @@ namespace MetaFile
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
 
-		if (ReadImage(oTEmfDibPatternBrush.offBmi, oTEmfDibPatternBrush.cbBmi,
-					  oTEmfDibPatternBrush.offBits, oTEmfDibPatternBrush.cbBits,
+		if (ReadImage(oTEmfDibPatternBrush.unOffBmi, oTEmfDibPatternBrush.unCbBmi,
+					  oTEmfDibPatternBrush.unOffBits, oTEmfDibPatternBrush.unCbBits,
 					  sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			CEmfLogBrushEx* pBrush = new CEmfLogBrushEx();
@@ -259,9 +259,9 @@ namespace MetaFile
 		}
 	}
 
-	void CEmfParserBase::TranslatePoint(TEmfPointL &oPoint, double &dX, double &dY)
+	void CEmfParserBase::TranslatePoint(TPointL &oPoint, double &dX, double &dY)
 	{
-		TranslatePoint(oPoint.x, oPoint.y, dX, dY);
+		TranslatePoint(oPoint.X, oPoint.Y, dX, dY);
 	}
 
 	void CEmfParserBase::TranslatePoint(int nX, int nY, double &dX, double &dY)
@@ -309,20 +309,20 @@ namespace MetaFile
 		MoveTo(dX, dY);
 	}
 
-	void CEmfParserBase::MoveTo(TEmfPointD &oPoint)
+	void CEmfParserBase::MoveTo(TPointD &oPoint)
 	{
-		MoveTo(oPoint.x, oPoint.y);
+		MoveTo(oPoint.X, oPoint.Y);
 	}
 
 
-	void CEmfParserBase::MoveTo(TEmfPointL &oPoint)
+	void CEmfParserBase::MoveTo(TPointL &oPoint)
 	{
-		MoveTo(oPoint.x, oPoint.y);
+		MoveTo(oPoint.X, oPoint.Y);
 	}
 
-	void CEmfParserBase::MoveTo(TEmfPointS &oPoint)
+	void CEmfParserBase::MoveTo(TPointS &oPoint)
 	{
-		MoveTo(oPoint.x, oPoint.y);
+		MoveTo(oPoint.X, oPoint.Y);
 	}
 
 	void CEmfParserBase::LineTo(double dX, double dY)
@@ -347,19 +347,19 @@ namespace MetaFile
 		LineTo(dX, dY);
 	}
 
-	void CEmfParserBase::LineTo(TEmfPointD &oPoint)
+	void CEmfParserBase::LineTo(TPointD &oPoint)
 	{
-		LineTo(oPoint.x, oPoint.y);
+		LineTo(oPoint.X, oPoint.Y);
 	}
 
-	void CEmfParserBase::LineTo(TEmfPointL &oPoint)
+	void CEmfParserBase::LineTo(TPointL &oPoint)
 	{
-		LineTo(oPoint.x, oPoint.y);
+		LineTo(oPoint.X, oPoint.Y);
 	}
 
-	void CEmfParserBase::LineTo(TEmfPointS &oPoint)
+	void CEmfParserBase::LineTo(TPointS &oPoint)
 	{
-		LineTo(oPoint.x, oPoint.y);
+		LineTo(oPoint.X, oPoint.Y);
 	}
 
 	void CEmfParserBase::CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe)
@@ -382,14 +382,14 @@ namespace MetaFile
 		m_pDC->SetCurPos(nXe, nYe);
 	}
 
-	void CEmfParserBase::CurveTo(TEmfPointS &oPoint1, TEmfPointS &oPoint2, TEmfPointS &oPointE)
+	void CEmfParserBase::CurveTo(TPointS &oPoint1, TPointS &oPoint2, TPointS &oPointE)
 	{
-		CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
+		CurveTo(oPoint1.X, oPoint1.Y, oPoint2.X, oPoint2.Y, oPointE.X, oPointE.Y);
 	}
 
-	void CEmfParserBase::CurveTo(TEmfPointL &oPoint1, TEmfPointL &oPoint2, TEmfPointL &oPointE)
+	void CEmfParserBase::CurveTo(TPointL &oPoint1, TPointL &oPoint2, TPointL &oPointE)
 	{
-		CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
+		CurveTo(oPoint1.X, oPoint1.Y, oPoint2.X, oPoint2.Y, oPointE.X, oPointE.Y);
 	}
 
 	void CEmfParserBase::ArcTo(int nL, int nT, int nR, int nB, double dStart, double dSweep)
@@ -427,15 +427,15 @@ namespace MetaFile
 	}
 
 	void CEmfParserBase::DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY,
-								  int *pnDx, int iGraphicsMode, TEmfScale oScale)
+								  int *pnDx, int iGraphicsMode, TScale oScale)
 	{
 		int nX = _nX;
 		int nY = _nY;
 
 		if (m_pDC->GetTextAlign() & TA_UPDATECP && (0 == _nX && 0 == _nY))
 		{
-			nX = m_pDC->GetCurPos().x;
-			nY = m_pDC->GetCurPos().y;
+			nX = m_pDC->GetCurPos().X;
+			nY = m_pDC->GetCurPos().Y;
 		}
 
 		if (m_pInterpretator)
@@ -464,16 +464,16 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.dX, oScale.dY);
+			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.X, oScale.Y);
 
 			if (pdDx)
 				delete[] pdDx;
 		}
 	}
 
-	void CEmfParserBase::DrawTextA(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale)
+	void CEmfParserBase::DrawTextA(TEmrTextA &oText, int iGraphicsMode, TScale oScale)
 	{
-		if (!oText.OutputString)
+		if (!oText.pOutputString)
 			return SetError();
 
 		IFont* pFont = GetFont();
@@ -527,56 +527,56 @@ namespace MetaFile
 			}
 		}
 
-		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
+		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.pOutputString, oText.unChars, eCharSet);
 
 		int* pDx = NULL;
-		if (oText.OutputDx)
+		if (oText.pOutputDx)
 		{
-			pDx = new int[oText.Chars];
+			pDx = new int[oText.unChars];
 			if (pDx)
 			{
-				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+				for (unsigned int unIndex = 0; unIndex < oText.unChars; unIndex++)
 				{
-					pDx[unIndex] = oText.OutputDx[unIndex];
+					pDx[unIndex] = oText.pOutputDx[unIndex];
 
 					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
+					if (oText.unOptions & ETO_PDY)
 						unIndex++;
 				}
 			}
 		}
 
-		DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode, oScale);
+		DrawText(wsText, oText.unChars, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale);
 
 		if (pDx)
 			delete[] pDx;
 	}
 
-	void CEmfParserBase::DrawTextW(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale)
+	void CEmfParserBase::DrawTextW(TEmrTextW &oText, int iGraphicsMode, TScale oScale)
 	{
-		if (!oText.OutputString)
+		if (!oText.pOutputString)
 			return SetError();
 
-		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
+		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.pOutputString, oText.unChars);
 
 		unsigned int unLen = 0;
 		int* pDx = NULL;
-		if (oText.OutputDx && oText.Chars)
+		if (oText.pOutputDx && oText.unChars)
 		{
 			// Здесь мы эмулируем конвертацию Utf16 в Utf32, чтобы правильно получить массив pDx
-			pDx = new int[oText.Chars];
+			pDx = new int[oText.unChars];
 			unLen = 0;
 
-			unsigned short* pUtf16 = (unsigned short*)oText.OutputString;
+			unsigned short* pUtf16 = (unsigned short*)oText.pOutputString;
 			wchar_t wLeading, wTrailing;
 			unsigned int unCode;
 			unsigned int unPos = 0;
-			while (unPos < oText.Chars)
+			while (unPos < oText.unChars)
 			{
 				wLeading = pUtf16[unPos++];
 				if (wLeading < 0xD800 || wLeading > 0xDFFF)
 				{
-					pDx[unLen++] = oText.OutputDx[unPos - 1];
+					pDx[unLen++] = oText.pOutputDx[unPos - 1];
 				}
 				else if (wLeading >= 0xDC00)
 				{
@@ -594,16 +594,16 @@ namespace MetaFile
 					}
 					else
 					{
-						pDx[unLen++] = oText.OutputDx[unPos - 2] + oText.OutputDx[unPos - 1];
+						pDx[unLen++] = oText.pOutputDx[unPos - 2] + oText.pOutputDx[unPos - 1];
 					}
 
 					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
+					if (oText.unOptions & ETO_PDY)
 						unPos++;
 				}
 
 				// Пропускаем сдвиги по Y если они есть
-				if (oText.Options & ETO_PDY)
+				if (oText.unOptions & ETO_PDY)
 					unPos++;
 			}
 		}
@@ -616,7 +616,7 @@ namespace MetaFile
 		}
 
 		if (unLen)
-			DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode, oScale);
+			DrawText(wsText, unLen, oText.oReference.X, oText.oReference.Y, pDx, iGraphicsMode, oScale);
 
 		if (pDx)
 			delete[] pDx;
@@ -648,9 +648,14 @@ namespace MetaFile
 		m_bEof = false;
 	}
 
-	TRect *CEmfParserBase::GetDCBounds()
+	TRectL *CEmfParserBase::GetDCBounds()
 	{
 		return &m_oHeader.oFrameToBounds;
+	}
+	
+	CClip *CEmfParserBase::GetClip()
+	{
+		return m_pDC->GetClip();
 	}
 
 	double CEmfParserBase::GetPixelHeight()
@@ -665,8 +670,8 @@ namespace MetaFile
 
 	int CEmfParserBase::GetTextColor()
 	{
-		TEmfColor& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		TRGBA& oColor = m_pDC->GetTextColor();
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 
 	IFont *CEmfParserBase::GetFont()
@@ -709,8 +714,8 @@ namespace MetaFile
 
 	int CEmfParserBase::GetTextBgColor()
 	{
-		TEmfColor& oColor = m_pDC->GetBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		TRGBA& oColor = m_pDC->GetBgColor();
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
 	}
 
 	unsigned int CEmfParserBase::GetFillMode()
@@ -722,7 +727,7 @@ namespace MetaFile
 	{
 		TPointL oPoint = m_pDC->GetCurPos();
 		TPointD oRes;
-		TranslatePoint(oPoint.x, oPoint.y, oRes.x, oRes.y);
+		TranslatePoint(oPoint.X, oPoint.Y, oRes.X, oRes.Y);
 		return oRes;
 	}
 
@@ -733,9 +738,9 @@ namespace MetaFile
 
 	TXForm *CEmfParserBase::GetTransform(int iGraphicsMode)
 	{
-		TRect* pBounds = GetDCBounds();
-		double dT = pBounds->nTop;
-		double dL = pBounds->nLeft;
+		TRectL* pBounds = GetDCBounds();
+		double dT = pBounds->Top;
+		double dL = pBounds->Left;
 
 		TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
 		m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
@@ -751,15 +756,6 @@ namespace MetaFile
 	unsigned int CEmfParserBase::GetRop2Mode()
 	{
 		return m_pDC->GetRop2Mode();
-	}
-
-	IClip *CEmfParserBase::GetClip()
-	{
-		CEmfClip* pClip = m_pDC->GetClip();
-		if (!pClip)
-			return NULL;
-
-		return (IClip*)pClip;
 	}
 
 	int CEmfParserBase::GetCharSpace()
@@ -797,6 +793,11 @@ namespace MetaFile
 	unsigned int CEmfParserBase::GetArcDirection()
 	{
 		return m_pDC->GetArcDirection();
+	}
+	
+	CPath *CEmfParserBase::GetPath()
+	{
+		return m_pPath;
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()
@@ -859,29 +860,29 @@ namespace MetaFile
 		return m_pInterpretator;
 	}
 
-	TEmfRectL* CEmfParserBase::GetBounds()
+	TRectL* CEmfParserBase::GetBounds()
 	{
 		return &m_oHeader.oFramePx;
 	}
 
-	CEmfPath *CEmfParserBase::GetPath() const
+	CPath *CEmfParserBase::GetPath() const
 	{
 		return m_pPath;
 	}
 
-	TEmfPointL CEmfParserBase::GetStartPointForArc(const TEmfRectL &oBox, double dStartAngle)
+	TPointL CEmfParserBase::GetStartPointForArc(const TRectL &oBox, double dStartAngle)
 	{
-		TEmfPointL oStartPoint;
+		TPointL oStartPoint;
 
 		dStartAngle *= -M_PI / 180;
 
-		double dWidth  = oBox.lRight  - oBox.lLeft;
-		double dHeight = oBox.lBottom - oBox.lTop;
+		double dWidth  = oBox.Right  - oBox.Left;
+		double dHeight = oBox.Bottom - oBox.Top;
 
 		double dTan = atan2( sin( dStartAngle ) / dHeight / 2,  cos( dStartAngle ) / dWidth / 2 );
 
-		oStartPoint.x = oBox.lLeft + dWidth / 2.0 + dWidth / 2 * cos(dTan);
-		oStartPoint.y = oBox.lTop + dHeight / 2.0 - dHeight / 2 * sin(dTan);
+		oStartPoint.X = oBox.Left + dWidth / 2.0 + dWidth / 2 * cos(dTan);
+		oStartPoint.Y = oBox.Top + dHeight / 2.0 - dHeight / 2 * sin(dTan);
 
 		return oStartPoint;
 	}
@@ -895,10 +896,10 @@ namespace MetaFile
 		unsigned int ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
 		m_oStream.Skip(ulRemaining);
 
-		double dL = m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
-		double dR = m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
-		double dT = m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
-		double dB = m_oHeader.oFrame.lBottom / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
+		double dL = m_oHeader.oFrame.Left / 100.0 / m_oHeader.oMillimeters.X * m_oHeader.oDevice.X;
+		double dR = m_oHeader.oFrame.Right / 100.0 / m_oHeader.oMillimeters.X * m_oHeader.oDevice.X;
+		double dT = m_oHeader.oFrame.Top / 100.0 / m_oHeader.oMillimeters.Y * m_oHeader.oDevice.Y;
+		double dB = m_oHeader.oFrame.Bottom / 100.0 / m_oHeader.oMillimeters.Y * m_oHeader.oDevice.Y;
 
 		double dW = dR - dL;
 		double dH = dB - dT;
@@ -909,10 +910,10 @@ namespace MetaFile
 		int nB = (int)floor(dH + 0.5) + nT;
 
 		// По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
-		m_oHeader.oFrameToBounds.nLeft   = nL;
-		m_oHeader.oFrameToBounds.nRight  = nR;
-		m_oHeader.oFrameToBounds.nTop    = nT;
-		m_oHeader.oFrameToBounds.nBottom = nB;
+		m_oHeader.oFrameToBounds.Left   = nL;
+		m_oHeader.oFrameToBounds.Right  = nR;
+		m_oHeader.oFrameToBounds.Top    = nT;
+		m_oHeader.oFrameToBounds.Bottom = nB;
 
 		m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
 
@@ -1028,7 +1029,7 @@ namespace MetaFile
 		m_oPlayer.RegisterObject(unBrushIndex, (CEmfObjectBase*)pBrush);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETTEXTCOLOR(TEmfColor &oColor)
+	void CEmfParserBase::HANDLE_EMR_SETTEXTCOLOR(TRGBA &oColor)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETTEXTCOLOR(oColor);
@@ -1103,7 +1104,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_CREATEPEN(unPenIndex, unWidthX, pPen);
 
-		pPen->Width = unWidthX;
+		pPen->unWidth = unWidthX;
 
 		m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
 	}
@@ -1125,12 +1126,12 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_BEGINPATH();
 
-		m_pPath = new CEmfPath();
+		m_pPath = new CPath();
 		if (!m_pPath)
 			SetError();
 
 		// Иногда MoveTo идет до BeginPath
-		TEmfPointL oPoint = m_pDC->GetCurPos();
+		TPointL oPoint = m_pDC->GetCurPos();
 		double dX, dY;
 		TranslatePoint(oPoint, dX, dY);
 		m_pPath->MoveTo(dX, dY);
@@ -1181,7 +1182,7 @@ namespace MetaFile
 		}
 	}
 
-	void CEmfParserBase::HANDLE_EMR_MOVETOEX(TEmfPointL &oPoint)
+	void CEmfParserBase::HANDLE_EMR_MOVETOEX(TPointL &oPoint)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_MOVETOEX(oPoint);
@@ -1198,14 +1199,15 @@ namespace MetaFile
 		// Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
 	}
 
-	void CEmfParserBase::HANDLE_EMR_FILLPATH(TEmfRectL &oBounds)
+	void CEmfParserBase::HANDLE_EMR_FILLPATH(TRectL &oBounds)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_FILLPATH(oBounds);
 
 		if (m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, false, true);
+			m_pPath->DrawOn(m_pInterpretator, false, true);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -1218,7 +1220,7 @@ namespace MetaFile
 		m_pDC->SetMapMode(unMapMode);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETWINDOWORGEX(TEmfPointL &oOrigin)
+	void CEmfParserBase::HANDLE_EMR_SETWINDOWORGEX(TPointL &oOrigin)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
@@ -1227,7 +1229,7 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL &oExtent)
+	void CEmfParserBase::HANDLE_EMR_SETWINDOWEXTEX(TSizeL &oExtent)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
@@ -1251,7 +1253,7 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL &oOrigin)
+	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TPointL &oOrigin)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
@@ -1260,7 +1262,7 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL &oExtent)
+	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTEXTEX(TSizeL &oExtent)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
@@ -1318,17 +1320,16 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
-
-		if (m_pPath)
+		
+		if (NULL != m_pPath)
 		{
-			m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
+			m_pDC->GetClip()->SetPath(*m_pPath, unRegionMode, *GetDC()->GetFinalTransform(GM_ADVANCED));
 			RELEASEOBJECT(m_pPath);
-
 			UpdateOutputDC();
 		}
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETBKCOLOR(TEmfColor &oColor)
+	void CEmfParserBase::HANDLE_EMR_SETBKCOLOR(TRGBA &oColor)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETBKCOLOR(oColor);
@@ -1337,66 +1338,67 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
-	void CEmfParserBase::HANDLE_EMR_EXCLUDECLIPRECT(TEmfRectL &oClip)
+	void CEmfParserBase::HANDLE_EMR_EXCLUDECLIPRECT(TRectL &oClip)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
-
 		TRectD oClipRect, oBB;
 
 		// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
 		// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
-		if (oClip.lLeft < oClip.lRight)
+		if (oClip.Left < oClip.Right)
 		{
-			oClip.lLeft--;
-			oClip.lRight++;
+			oClip.Left--;
+			oClip.Right++;
 		}
 		else
 		{
-			oClip.lLeft++;
-			oClip.lRight--;
+			oClip.Left++;
+			oClip.Right--;
 		}
 
-		if (oClip.lTop < oClip.lBottom)
+		if (oClip.Top < oClip.Bottom)
 		{
-			oClip.lTop--;
-			oClip.lBottom++;
+			oClip.Top--;
+			oClip.Bottom++;
 		}
 		else
 		{
-			oClip.lTop++;
-			oClip.lBottom--;
+			oClip.Top++;
+			oClip.Bottom--;
 		}
 
-		TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
-		TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
+		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
+		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
 
-		TRect* pRect = GetDCBounds();
-		TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
-		TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
+		TRectL* pRect = GetDCBounds();
+		TranslatePoint(pRect->Left, pRect->Top, oBB.Left, oBB.Top);
+		TranslatePoint(pRect->Right, pRect->Bottom, oBB.Right, oBB.Bottom);
 
 		m_pDC->GetClip()->Exclude(oClipRect, oBB);
 		UpdateOutputDC();
+		
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_EXTSELECTCLIPRGN(unsigned int &unRgnDataSize, unsigned int &unRegionMode)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
-
-		m_oStream.Skip(m_ulRecordSize - 8);
-
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 		// текущим интерфейсом рендерера невозможно.
 		m_pDC->GetClip()->Reset();
+		
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
+		
+		m_oStream.Skip(m_ulRecordSize - 8);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETMETARGN()
 	{
+		m_pDC->GetClip()->Reset();
+		
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETMETARGN();
-
-		m_pDC->GetClip()->Reset();
+		
 		UpdateOutputDC();
 	}
 
@@ -1432,15 +1434,16 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_REALIZEPALETTE();
 	}
 
-	void CEmfParserBase::HANDLE_EMR_INTERSECTCLIPRECT(TEmfRectL &oClip)
+	void CEmfParserBase::HANDLE_EMR_INTERSECTCLIPRECT(TRectL &oClip)
 	{
+		TRectD oClipRect;
+		TranslatePoint(oClip.Left, oClip.Top, oClipRect.Left, oClipRect.Top);
+		TranslatePoint(oClip.Right, oClip.Bottom, oClipRect.Right, oClipRect.Bottom);
+		
+		m_pDC->GetClip()->Intersect(oClipRect);
+		
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
-
-		TRectD oClipRect;
-		TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
-		TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
-		m_pDC->GetClip()->Intersect(oClipRect);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETLAYOUT(unsigned int &unLayoutMode)
@@ -1450,29 +1453,29 @@ namespace MetaFile
 		// TODO: реализовать
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETBRUSHORGEX(TEmfPointL &oOrigin)
+	void CEmfParserBase::HANDLE_EMR_SETBRUSHORGEX(TPointL &oOrigin)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETBRUSHORGEX(oOrigin);
 		// TODO: реализовать
 	}
 
-	void CEmfParserBase::HANDLE_EMR_ANGLEARC(TEmfPointL &oCenter, unsigned int &unRadius, double &dStartAngle, double &dSweepAngle)
+	void CEmfParserBase::HANDLE_EMR_ANGLEARC(TPointL &oCenter, unsigned int &unRadius, double &dStartAngle, double &dSweepAngle)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 
-		ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
+		ArcTo(oCenter.X - unRadius, oCenter.Y - unRadius, oCenter.X + unRadius, oCenter.Y + unRadius, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_ARC(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
+	void CEmfParserBase::HANDLE_EMR_ARC(TRectL &oBox, TPointL &oStart, TPointL &oEnd)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ARC(oBox, oStart, oEnd);
 
-		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-		double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
+		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
 
 		// TODO: Проверить здесь
 		//                if (dSweepAngle < 0.001)
@@ -1486,44 +1489,44 @@ namespace MetaFile
 
 		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
-		TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
+		TPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
 
 		MoveTo(oStartDraw);
-		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_ARCTO(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
+	void CEmfParserBase::HANDLE_EMR_ARCTO(TRectL &oBox, TPointL &oStart, TPointL &oEnd)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
 
-		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-		double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
+		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
 
 		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
-		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_CHORD(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
+	void CEmfParserBase::HANDLE_EMR_CHORD(TRectL &oBox, TPointL &oStart, TPointL &oEnd)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_CHORD(oBox, oStart, oEnd);
 
-		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-		double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
+		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
 
-		TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
+		TPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
 
 		MoveTo(oStartDraw);
-		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle, dSweepAngle);
 		LineTo(oStart);
 		DrawPath(true, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_ELLIPSE(TEmfRectL &oBox)
+	void CEmfParserBase::HANDLE_EMR_ELLIPSE(TRectL &oBox)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
@@ -1531,9 +1534,9 @@ namespace MetaFile
 		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
 		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+			ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, 0, 360);
 		else
-			ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+			ArcTo(oBox.Left, oBox.Bottom, oBox.Right, oBox.Top, 0, 360);
 
 		DrawPath(true, true);
 	}
@@ -1543,8 +1546,8 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA);
 
-		if (oTEmfExtTextoutA.aEmrText.Chars > 0)
-			DrawTextA(oTEmfExtTextoutA.aEmrText, oTEmfExtTextoutA.iGraphicsMode);
+		if (oTEmfExtTextoutA.oEmrText.unChars > 0)
+			DrawTextA(oTEmfExtTextoutA.oEmrText, oTEmfExtTextoutA.unIGraphicsMode);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_EXTTEXTOUTW(TEmfExtTextoutW &oTEmfExtTextoutW)
@@ -1552,14 +1555,14 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
 
-		if (oTEmfExtTextoutW.wEmrText.Chars > 0)
+		if (oTEmfExtTextoutW.oEmrText.unChars > 0)
 		{
-			TEmfScale oScale(oTEmfExtTextoutW.exScale, oTEmfExtTextoutW.eyScale);
-			DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode, oScale);
+			TScale oScale(oTEmfExtTextoutW.dExScale, oTEmfExtTextoutW.dEyScale);
+			DrawTextW(oTEmfExtTextoutW.oEmrText, oTEmfExtTextoutW.unIGraphicsMode, oScale);
 		}
 	}
 
-	void CEmfParserBase::HANDLE_EMR_LINETO(TEmfPointL &oPoint)
+	void CEmfParserBase::HANDLE_EMR_LINETO(TPointL &oPoint)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_LINETO(oPoint);
@@ -1567,84 +1570,84 @@ namespace MetaFile
 		LineTo(oPoint);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_PIE(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
+	void CEmfParserBase::HANDLE_EMR_PIE(TRectL &oBox, TPointL &oStart, TPointL &oEnd)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_PIE(oBox, oStart, oEnd);
 
-		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-		double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
+		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
 
-		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
-		LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
+		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle, dSweepAngle);
+		LineTo((oBox.Left + oBox.Right) / 2, (oBox.Top + oBox.Bottom) / 2);
 		ClosePath();
 		DrawPath(true, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_RECTANGLE(TEmfRectL &oBox)
+	void CEmfParserBase::HANDLE_EMR_RECTANGLE(TRectL &oBox)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_RECTANGLE(oBox);
 
 		if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
 		{
-			MoveTo(oBox.lLeft, oBox.lTop);
-			LineTo(oBox.lLeft, oBox.lBottom);
-			LineTo(oBox.lRight, oBox.lBottom);
-			LineTo(oBox.lRight, oBox.lTop);
+			MoveTo(oBox.Left, oBox.Top);
+			LineTo(oBox.Left, oBox.Bottom);
+			LineTo(oBox.Right, oBox.Bottom);
+			LineTo(oBox.Right, oBox.Top);
 		}
 		else
 		{
-			MoveTo(oBox.lLeft, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lBottom);
-			LineTo(oBox.lLeft, oBox.lBottom);
+			MoveTo(oBox.Left, oBox.Top);
+			LineTo(oBox.Right, oBox.Top);
+			LineTo(oBox.Right, oBox.Bottom);
+			LineTo(oBox.Left, oBox.Bottom);
 		}
 		ClosePath();
 		DrawPath(true, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_ROUNDRECT(TEmfRectL &oBox, TEmfSizeL &oCorner)
+	void CEmfParserBase::HANDLE_EMR_ROUNDRECT(TRectL &oBox, TSizeL &oCorner)
 	{
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ROUNDRECT(oBox, oCorner);
 
-		int lBoxW = oBox.lRight - oBox.lLeft;
-		int lBoxH = oBox.lBottom - oBox.lTop;
+		int lBoxW = oBox.Right - oBox.Left;
+		int lBoxH = oBox.Bottom - oBox.Top;
 
-		int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
-		int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
+		int lRoundW = (std::min)((int)oCorner.X, lBoxW / 2);
+		int lRoundH = (std::min)((int)oCorner.Y, lBoxH / 2);
 
 		if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
 		{
-			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 270, -90);
-			LineTo(oBox.lLeft, oBox.lBottom - lRoundH);
-			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 180, -90);
-			LineTo(oBox.lRight - lRoundW, oBox.lBottom);
-			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 90, -90);
-			LineTo(oBox.lRight, oBox.lTop + lRoundH);
-			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, 0, -90);
-			LineTo(oBox.lLeft + lRoundW, oBox.lTop);
+			MoveTo(oBox.Left + lRoundW, oBox.Top);
+			ArcTo(oBox.Left, oBox.Top, oBox.Left + lRoundW, oBox.Top + lRoundH, 270, -90);
+			LineTo(oBox.Left, oBox.Bottom - lRoundH);
+			ArcTo(oBox.Left, oBox.Bottom - lRoundH, oBox.Left + lRoundW, oBox.Bottom, 180, -90);
+			LineTo(oBox.Right - lRoundW, oBox.Bottom);
+			ArcTo(oBox.Right - lRoundW, oBox.Bottom - lRoundH, oBox.Right, oBox.Bottom, 90, -90);
+			LineTo(oBox.Right, oBox.Top + lRoundH);
+			ArcTo(oBox.Right - lRoundW, oBox.Top, oBox.Right, oBox.Top + lRoundH, 0, -90);
+			LineTo(oBox.Left + lRoundW, oBox.Top);
 		}
 		else
 		{
-			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-			LineTo(oBox.lRight - lRoundW, oBox.lTop);
-			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
-			LineTo(oBox.lRight, oBox.lBottom - lRoundH);
-			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
-			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
-			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
-			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
+			MoveTo(oBox.Left + lRoundW, oBox.Top);
+			LineTo(oBox.Right - lRoundW, oBox.Top);
+			ArcTo(oBox.Right - lRoundW, oBox.Top, oBox.Right, oBox.Top + lRoundH, -90, 90);
+			LineTo(oBox.Right, oBox.Bottom - lRoundH);
+			ArcTo(oBox.Right - lRoundW, oBox.Bottom - lRoundH, oBox.Right, oBox.Bottom, 0, 90);
+			LineTo(oBox.Left + lRoundW, oBox.Bottom);
+			ArcTo(oBox.Left, oBox.Bottom - lRoundH, oBox.Left + lRoundW, oBox.Bottom, 90, 90);
+			LineTo(oBox.Left, oBox.Top + lRoundH);
+			ArcTo(oBox.Left, oBox.Top, oBox.Left + lRoundW, oBox.Top + lRoundH, 180, 90);
 		}
 
 		ClosePath();
 		DrawPath(true, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_SETPIXELV(TEmfPointL &oPoint, TEmfColor &oColor)
+	void CEmfParserBase::HANDLE_EMR_SETPIXELV(TPointL &oPoint, TRGBA &oColor)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETPIXELV(oPoint, oColor);
@@ -1656,7 +1659,7 @@ namespace MetaFile
 		pBgraBuffer[2] = oColor.r;
 		pBgraBuffer[3] = 0xff;
 
-		DrawImage(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
+		DrawImage(oPoint.X, oPoint.Y, 1, 1, pBgraBuffer, 1, 1);
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SMALLTEXTOUT(TEmfSmallTextout &oText)
@@ -1665,15 +1668,16 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SMALLTEXTOUT(oText);
 
 		// Переводим oText в TEmfEmrText
-		TEmfEmrText oEmrText;
-		oEmrText.Chars        = oText.cChars;
-		oEmrText.offDx        = 0;
-		oEmrText.offString    = 0;
-		oEmrText.Options      = oText.fuOptions;
-		oEmrText.OutputString = oText.TextString;
-		oEmrText.Reference.x  = oText.x;
-		oEmrText.Reference.y  = oText.y;
-		oEmrText.OutputDx     = NULL;
+		TEmrTextW oEmrText;
+		
+		oEmrText.unChars       = oText.unCChars;
+		oEmrText.unOffDx       = 0;
+		oEmrText.unOffString   = 0;
+		oEmrText.unOptions     = oText.unFuOptions;
+		oEmrText.pOutputString = oText.pTextString;
+		oEmrText.oReference.X  = oText.nX;
+		oEmrText.oReference.Y  = oText.nY;
+		oEmrText.pOutputDx     = NULL;
 
 		// Запись не документированна нормально, остается несколько байт в конце, непонятно почему.
 		unsigned int unSize = oText.GetSize();
@@ -1682,33 +1686,35 @@ namespace MetaFile
 		else if (m_ulRecordSize - unSize < 0)
 			m_oStream.SeekBack(unSize - m_ulRecordSize);
 
-		DrawTextW(oEmrText, oText.iGraphicsMode);
+		DrawTextW(oEmrText, oText.unIGraphicsMode);
 
 		// Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому
 		// что на деструкторе структуры освобождается память.
-		oEmrText.OutputString = NULL;
+		oEmrText.pOutputString = NULL;
 	}
 
-	void CEmfParserBase::HANDLE_EMR_STROKEANDFILLPATH(TEmfRectL &oBounds)
+	void CEmfParserBase::HANDLE_EMR_STROKEANDFILLPATH(TRectL &oBounds)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_STROKEANDFILLPATH(oBounds);
 
 		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, true, true);
+			m_pPath->DrawOn(m_pInterpretator, true, true);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}
 
-	void CEmfParserBase::HANDLE_EMR_STROKEPATH(TEmfRectL &oBounds)
+	void CEmfParserBase::HANDLE_EMR_STROKEPATH(TRectL &oBounds)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
 
 		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pInterpretator, true, false);
+			m_pPath->DrawOn(m_pInterpretator, true, false);
+			m_pPath->Clear();
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -1720,36 +1726,36 @@ namespace MetaFile
 			return;
 
 		CEmfPlusBrush oBrush;
-		oBrush.Style = BS_LINEARGRADIENT;
+                oBrush.unStyle = BS_LINEARGRADIENT;
 
-		oBrush.Color.chRed   = arVertex[0].ushRed   / 255.;
-		oBrush.Color.chGreen = arVertex[0].ushGreen / 255.;
-		oBrush.Color.chBlue  = arVertex[0].ushBlue  / 255.;
-		oBrush.Color.chAlpha = 255;
+                oBrush.oColor.chRed   = arVertex[0].ushRed   / 255.;
+                oBrush.oColor.chGreen = arVertex[0].ushGreen / 255.;
+                oBrush.oColor.chBlue  = arVertex[0].ushBlue  / 255.;
+                oBrush.oColor.chAlpha = 255;
 
 		if (GRADIENT_FILL_RECT_H == unFillMode || GRADIENT_FILL_TRIANGLE == unFillMode)
 		{
 			if (arVertex[1].nX - arVertex[0].nX != 1)
 			{
-				oBrush.ColorBack.chRed   = arVertex[1].ushRed   / 255.;
-				oBrush.ColorBack.chGreen = arVertex[1].ushGreen / 255.;
-				oBrush.ColorBack.chBlue  = arVertex[1].ushBlue  / 255.;
+				oBrush.oColorBack.chRed   = arVertex[1].ushRed   / 255.;
+				oBrush.oColorBack.chGreen = arVertex[1].ushGreen / 255.;
+				oBrush.oColorBack.chBlue  = arVertex[1].ushBlue  / 255.;
 			}
 			else
-				oBrush.Style = BS_SOLID;
+                            oBrush.unStyle = BS_SOLID;
 		}
 		else if (GRADIENT_FILL_RECT_V == unFillMode)
 		{
 			if (arVertex[2].nY - arVertex[0].nY != 1)
 			{
-				oBrush.ColorBack.chRed   = arVertex[2].ushRed   / 255.;
-				oBrush.ColorBack.chGreen = arVertex[2].ushGreen / 255.;
-				oBrush.ColorBack.chBlue  = arVertex[2].ushBlue  / 255.;
+				oBrush.oColorBack.chRed   = arVertex[2].ushRed   / 255.;
+				oBrush.oColorBack.chGreen = arVertex[2].ushGreen / 255.;
+				oBrush.oColorBack.chBlue  = arVertex[2].ushBlue  / 255.;
 			}
 			else
-				oBrush.Style = BS_SOLID;
+                            oBrush.unStyle = BS_SOLID;
 		}
-		oBrush.ColorBack.chAlpha = 255;
+		oBrush.oColorBack.chAlpha = 255;
 
 		IBrush* pBrush = m_pDC->GetBrush();
 		m_pDC->SetBrush(&oBrush);
@@ -1781,14 +1787,14 @@ namespace MetaFile
 		m_oStream.Skip(unRecordSize);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL>& arRects)
+	void CEmfParserBase::HANDLE_EMR_FILLRGN(const TRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL>& arRects)
 	{
-		for (const TEmfRectL &oRect : arRects)
+		for (const TRectL &oRect : arRects)
 		{
-			MoveTo(oRect.lLeft,  oRect.lTop);
-			LineTo(oRect.lRight, oRect.lTop);
-			LineTo(oRect.lRight, oRect.lBottom);
-			LineTo(oRect.lLeft,  oRect.lBottom);
+			MoveTo(oRect.Left,  oRect.Top);
+			LineTo(oRect.Right, oRect.Top);
+			LineTo(oRect.Right, oRect.Bottom);
+			LineTo(oRect.Left,  oRect.Bottom);
 		}
 
 		ClosePath();
@@ -1800,24 +1806,24 @@ namespace MetaFile
 		DrawPath(false, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfParserBase::HANDLE_EMR_PAINTRGN(const TRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
 
-		for (const TEmfRectL &oRect : arRects)
+		for (const TRectL &oRect : arRects)
 		{
-			MoveTo(oRect.lLeft,  oRect.lTop);
-			LineTo(oRect.lRight, oRect.lTop);
-			LineTo(oRect.lRight, oRect.lBottom);
-			LineTo(oRect.lLeft,  oRect.lBottom);
+			MoveTo(oRect.Left,  oRect.Top);
+			LineTo(oRect.Right, oRect.Top);
+			LineTo(oRect.Right, oRect.Bottom);
+			LineTo(oRect.Left,  oRect.Bottom);
 		}
 
 		ClosePath();
 		DrawPath(false, true);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	void CEmfParserBase::HANDLE_EMR_FRAMERGN(const TRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
@@ -1825,75 +1831,75 @@ namespace MetaFile
 		//TODO: реализовать
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TRectL &oBounds, std::vector<TPointL> &arPoints)
 	{
-		HANDLE_EMR_POLYBEZIER_BASE<TEmfPointL>(oBounds, arPoints);
+		HANDLE_EMR_POLYBEZIER_BASE<TPointL>(oBounds, arPoints);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TRectL &oBounds, std::vector<TPointS> &arPoints)
 	{
-		HANDLE_EMR_POLYBEZIER_BASE<TEmfPointS>(oBounds, arPoints);
+		HANDLE_EMR_POLYBEZIER_BASE<TPointS>(oBounds, arPoints);
 	}
-	void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TRectL &oBounds, std::vector<TPointL> &arPoints)
 	{
-		HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointL>(oBounds, arPoints);
-	}
-
-	void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
-	{
-		HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointS>(oBounds, arPoints);
-	}
-	void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointL *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
-	{
-		HANDLE_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
-	}
-	void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointS *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
-	{
-		HANDLE_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
-	}
-	void CEmfParserBase::HANDLE_EMR_POLYGON(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
-	{
-		HANDLE_EMR_POLYGON_BASE<TEmfPointL>(oBounds, arPoints);
+		HANDLE_EMR_POLYBEZIERTO_BASE<TPointL>(oBounds, arPoints);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYGON(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TRectL &oBounds, std::vector<TPointS> &arPoints)
 	{
-		HANDLE_EMR_POLYGON_BASE<TEmfPointS>(oBounds, arPoints);
+		HANDLE_EMR_POLYBEZIERTO_BASE<TPointS>(oBounds, arPoints);
 	}
-	void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYDRAW(TRectL &oBounds, TPointL *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
 	{
-		HANDLE_EMR_POLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
+		HANDLE_EMR_POLYDRAW_BASE<TPointL>(oBounds, arPoints, unCount, pAbTypes);
 	}
-	void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYDRAW(TRectL &oBounds, TPointS *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
 	{
-		HANDLE_EMR_POLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
+		HANDLE_EMR_POLYDRAW_BASE<TPointS>(oBounds, arPoints, unCount, pAbTypes);
 	}
-	void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYGON(TRectL &oBounds, std::vector<TPointL> &arPoints)
 	{
-		HANDLE_EMR_POLYLINETO_BASE<TEmfPointL>(oBounds, arPoints);
-	}
-
-	void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
-	{
-		HANDLE_EMR_POLYLINETO_BASE<TEmfPointS>(oBounds, arPoints);
+		HANDLE_EMR_POLYGON_BASE<TPointL>(oBounds, arPoints);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYGON(TRectL &oBounds, std::vector<TPointS> &arPoints)
 	{
-		HANDLE_EMR_POLYPOLYGON_BASE<TEmfPointL>(oBounds, arPoints);
+		HANDLE_EMR_POLYGON_BASE<TPointS>(oBounds, arPoints);
+	}
+	void CEmfParserBase::HANDLE_EMR_POLYLINE(TRectL &oBounds, std::vector<TPointL> &arPoints)
+	{
+		HANDLE_EMR_POLYLINE_BASE<TPointL>(oBounds, arPoints);
+	}
+	void CEmfParserBase::HANDLE_EMR_POLYLINE(TRectL &oBounds, std::vector<TPointS> &arPoints)
+	{
+		HANDLE_EMR_POLYLINE_BASE<TPointS>(oBounds, arPoints);
+	}
+	void CEmfParserBase::HANDLE_EMR_POLYLINETO(TRectL &oBounds, std::vector<TPointL> &arPoints)
+	{
+		HANDLE_EMR_POLYLINETO_BASE<TPointL>(oBounds, arPoints);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYLINETO(TRectL &oBounds, std::vector<TPointS> &arPoints)
 	{
-		HANDLE_EMR_POLYPOLYGON_BASE<TEmfPointS>(oBounds, arPoints);
-	}
-	void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
-	{
-		HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
+		HANDLE_EMR_POLYLINETO_BASE<TPointS>(oBounds, arPoints);
 	}
 
-	void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TRectL &oBounds, std::vector<std::vector<TPointL>> &arPoints)
 	{
-		HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
+		HANDLE_EMR_POLYPOLYGON_BASE<TPointL>(oBounds, arPoints);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TRectL &oBounds, std::vector<std::vector<TPointS>> &arPoints)
+	{
+		HANDLE_EMR_POLYPOLYGON_BASE<TPointS>(oBounds, arPoints);
+	}
+	void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TRectL &oBounds, std::vector<std::vector<TPointL>> &arPoints)
+	{
+		HANDLE_EMR_POLYPOLYLINE_BASE<TPointL>(oBounds, arPoints);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TRectL &oBounds, std::vector<std::vector<TPointS>> &arPoints)
+	{
+		HANDLE_EMR_POLYPOLYLINE_BASE<TPointS>(oBounds, arPoints);
 	}
 }

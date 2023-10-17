@@ -51,234 +51,128 @@ namespace MetaFile
 		WMF_OBJECT_PALETTE = 0x04,
 		WMF_OBJECT_REGION  = 0x05
 	} EWmfObjectType;
+
 	class CWmfObjectBase
 	{
 	public:
-		CWmfObjectBase(){}
-		virtual ~CWmfObjectBase(){}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_UNKNOWN;
-		}
+		CWmfObjectBase();
+		virtual ~CWmfObjectBase();
+		virtual EWmfObjectType GetType();
 	};
+	
 	class CWmfBrush : public CWmfObjectBase, public IBrush
 	{
 	public:
 		CWmfBrush();
-		CWmfBrush(TWmfLogBrush& oBrush);
+		CWmfBrush(const TWmfLogBrush &oBrush);
 		virtual ~CWmfBrush();
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_BRUSH;
-		}
+		virtual EWmfObjectType GetType();
+		
 		void SetDibPattern(unsigned char* pBuffer, unsigned int unWidth, unsigned int unHeight);
 
 		// IBrush
 		int          GetColor();
-		int          GetColor2()
-		{
-			return 0;
-		}
+		int          GetColor2();
 		unsigned int GetStyle();
-		unsigned int GetStyleEx()
-		{
-			return 0;
-		}
+		unsigned int GetStyleEx();
 		unsigned int GetHatch();
 		unsigned int GetAlpha();
-		unsigned int GetAlpha2()
-		{
-			return 0xff;
-		}
+		unsigned int GetAlpha2();
 		std::wstring GetDibPatterPath();
-		void GetBounds(double& left, double& top, double& width, double& height) {}
-		void GetCenterPoint(double& dX, double& dY) {}
-
-		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
-		{
-			*pBuffer	= DibBuffer;
-			unWidth		= DibWidth;
-			unHeight	= DibHeigth;
-		}
-
+		void GetBounds(double& left, double& top, double& width, double& height);
+		void GetCenterPoint(double& dX, double& dY);
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
 	public:
 
-		unsigned short BrushStyle;
-		TWmfColor      Color;
-		unsigned short BrushHatch;
-		std::wstring   DibPatternPath;
-		unsigned char* DibBuffer;
-		unsigned int   DibWidth;
-		unsigned int   DibHeigth;
+		unsigned short ushBrushStyle;
+		TRGBA          oColor;
+		unsigned short ushBrushHatch;
+		std::wstring   wsDibPatternPath;
+		unsigned char* pDibBuffer;
+		unsigned int   unDibWidth;
+		unsigned int   unDibHeigth;
 	};
 	class CWmfFont : public CWmfObjectBase, public IFont
 	{
 	public:
+		CWmfFont();
+		virtual ~CWmfFont();
 
-		CWmfFont()
-		{
-            memset(Facename, 0x00, 32);
-		}
-		~CWmfFont()
-		{
-
-		}
-
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_FONT;
-		}
+		virtual EWmfObjectType GetType();
 
 		// IFont
-		double          GetHeight()
-		{
-			return (double)Height;
-		}
-		std::wstring GetFaceName()
-		{
-			return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)Facename, 32).c_str());
-		}
-		int          GetWeight()
-		{
-			return (int)Weight;
-		}
-		bool         IsItalic()
-		{
-			return (0x01 == Italic ? true : false);
-		}
-		bool         IsStrikeOut()
-		{
-			return (0x01 == StrikeOut ? true : false);
-		}
-		bool         IsUnderline()
-		{
-			return (0x01 == Underline ? true : false);
-		}
-		int          GetEscapement()
-		{
-			return (int)Escapement;
-		}
-		int          GetCharSet()
-		{
-			return (int)CharSet;
-		}
-		int          GetOrientation()
-		{
-			return (int)Orientation;
-		}
-
+		double       GetHeight();
+		std::wstring GetFaceName();
+		int          GetWeight();
+		bool         IsItalic();
+		bool         IsStrikeOut();
+		bool         IsUnderline();
+		int          GetEscapement();
+		int          GetCharSet();
+		int          GetOrientation();
 	public:
 
-		short         Height;
-		short         Width;
-		short         Escapement;
-		short         Orientation;
-		short         Weight;
-		unsigned char Italic;
-		unsigned char Underline;
-		unsigned char StrikeOut;
-		unsigned char CharSet;
-		unsigned char OutPrecision;
-		unsigned char ClipPrecision;
-		unsigned char Quality;
-		unsigned char PitchAndFamily;
-		unsigned char Facename[32]; // Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
+		short         shHeight;
+		short         shWidth;
+		short         shEscapement;
+		short         shOrientation;
+		short         shWeight;
+		unsigned char uchItalic;
+		unsigned char uchUnderline;
+		unsigned char uchStrikeOut;
+		unsigned char uchCharSet;
+		unsigned char uchOutPrecision;
+		unsigned char uchClipPrecision;
+		unsigned char uchQuality;
+		unsigned char uchPitchAndFamily;
+		unsigned char uchFacename[32]; // Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
 	};
 	class CWmfPalette : public CWmfObjectBase
 	{
 	public:
-		CWmfPalette()
-		{
-			aPaletteEntries = NULL;
-			NumberOfEntries = 0;
-		}
-		~CWmfPalette()
-		{
-			if (aPaletteEntries)
-				delete[] aPaletteEntries;
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_PALETTE;
-		}
+		CWmfPalette();
+		virtual ~CWmfPalette();
+		virtual EWmfObjectType GetType();
 	public:
-		unsigned short    Start;
-		unsigned short    NumberOfEntries;
-		TWmfPaletteEntry* aPaletteEntries;
+		unsigned short    ushStart;
+		unsigned short    ushNumberOfEntries;
+		TWmfPaletteEntry* pPaletteEntries;
 	};
 	class CWmfPen : public CWmfObjectBase, public IPen
 	{
 	public:
-		CWmfPen()
-		{
-
-		}
-		~CWmfPen()
-		{
-
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_PEN;
-		}
+		CWmfPen();
+		virtual ~CWmfPen();
+		virtual EWmfObjectType GetType();
 
 		// IPen
 		int          GetColor();
-		unsigned int GetStyle()
-		{
-			return (unsigned int)PenStyle;
-		}
-		double GetWidth()
-		{
-			return (double)Width.x;
-		}
-		unsigned int GetAlpha()
-		{
-			return 255;
-		}
-		double GetMiterLimit()
-		{
-			return 0;
-		}
-		double GetDashOffset()
-		{
-			return 0;
-		}
-		void GetDashData(double*& arDatas, unsigned int& unSize)
-		{
-			arDatas = NULL;
-			unSize  = 0;
-		}
-
+		unsigned int GetStyle();
+		double       GetWidth();
+		unsigned int GetAlpha();
+		double       GetMiterLimit();
+		double       GetDashOffset();
+		void         GetDashData(double*& arDatas, unsigned int& unSize);
 	public:
-		unsigned short PenStyle;
-		TWmfPointS     Width;
-		TWmfColor      Color;
+		unsigned short ushPenStyle;
+		TPointS        oWidth;
+		TRGBA          oColor;
 	};
 	class CWmfRegion : public CWmfObjectBase, public IRegion
 	{
 	public:
-		CWmfRegion()
-		{
-
-		}
-		~CWmfRegion()
-		{
-
-		}
-		virtual EWmfObjectType GetType()
-		{
-			return WMF_OBJECT_REGION;
-		}
+		CWmfRegion();
+		virtual ~CWmfRegion();
+		virtual EWmfObjectType GetType();
 	public:
-		short           nextInChain; // не используется
-		short           ObjectType;  // не используется
-		int             ObjectCount; // не используется
-		short           RegionSize;
-		short           ScanCount;
-		short           MaxScan;
-		TWmfRect        BoundingRectangle;
-		TWmfScanObject* aScans;
+		short           shNextInChain; // не используется
+		short           shObjectType;  // не используется
+		int             shObjectCount; // не используется
+		short           shRegionSize;
+		short           shScanCount;
+		short           shMaxScan;
+		TRectS          oBoundingRectangle;
+		TWmfScanObject* pScans;
 	};
 }
 

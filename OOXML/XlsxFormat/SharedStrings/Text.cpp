@@ -236,7 +236,10 @@ namespace OOX
 			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 			{
-				if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
+				if (eNodeType == XmlUtils::XmlNodeType_Text ||
+					eNodeType == XmlUtils::XmlNodeType_Whitespace || 
+					eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+					eNodeType == XmlUtils::XmlNodeType_CDATA)
 				{
 					std::string sTemp = oReader.GetTextA();
 					wchar_t* pUnicodes = NULL;

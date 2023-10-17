@@ -549,34 +549,40 @@ void odf_drawing_context::set_anchor_drawing()
 	if (impl_->current_level_.empty()) return;
 	if (!impl_->current_level_.back().bDrawElement) return;
 	if (!impl_->current_level_.back().graphic_properties) return;
-
-	impl_->current_level_.back().graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_ = impl_->anchor_settings_.style_vertical_pos_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_ = impl_->anchor_settings_.style_horizontal_pos_;
-
-	impl_->current_level_.back().graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_ = impl_->anchor_settings_.style_vertical_rel_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_ = impl_->anchor_settings_.style_horizontal_rel_;
-
-	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_ = impl_->anchor_settings_.fo_margin_left_;
-	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_top_ = impl_->anchor_settings_.fo_margin_top_;
-	impl_->current_level_.back().graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_ = impl_->anchor_settings_.fo_margin_right_;
-	impl_->current_level_.back().graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_ = impl_->anchor_settings_.fo_margin_bottom_;
 	
-	impl_->current_level_.back().graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
-
+	set_anchor_drawing(impl_->current_level_.back().graphic_properties);
+}
+void odf_drawing_context::set_anchor_drawing(graphic_format_properties *graphic_properties)
+{
 	int index = impl_->current_drawing_state_.index_base < 0 ? 0 : impl_->current_drawing_state_.index_base;
 	draw_base* draw = impl_->current_drawing_state_.elements_.empty() ? NULL : dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[index].elm.get());
-	
+
 	if (draw && !impl_->current_drawing_state_.in_group_)
 	{
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 	}
-	else // libra падает
+	else if (graphic_properties) // libra падает
 	{
-		impl_->current_level_.back().graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
-		impl_->current_level_.back().graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;
-		impl_->current_level_.back().graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;
-		impl_->current_level_.back().graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;
+		graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
+		graphic_properties->style_wrap_contour_ = impl_->anchor_settings_.style_wrap_contour_;
+		graphic_properties->style_wrap_contour_mode_ = impl_->anchor_settings_.style_wrap_contour_mode_;
+		graphic_properties->style_number_wrapped_paragraphs_ = impl_->anchor_settings_.style_number_wrapped_paragraphs_;
 	}
+
+	if (!graphic_properties) return;
+
+	graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_ = impl_->anchor_settings_.style_vertical_pos_;
+	graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_ = impl_->anchor_settings_.style_horizontal_pos_;
+
+	graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_ = impl_->anchor_settings_.style_vertical_rel_;
+	graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_ = impl_->anchor_settings_.style_horizontal_rel_;
+
+	graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_ = impl_->anchor_settings_.fo_margin_left_;
+	graphic_properties->common_vertical_margin_attlist_.fo_margin_top_ = impl_->anchor_settings_.fo_margin_top_;
+	graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_ = impl_->anchor_settings_.fo_margin_right_;
+	graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_ = impl_->anchor_settings_.fo_margin_bottom_;
+	
+	graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
 }
 void odf_drawing_context::end_drawing()
 {
@@ -911,7 +917,6 @@ bool odf_drawing_context::change_text_box_2_wordart()
 			}
 		}
 	//----------------------------------------------
-
 		odf_element_state state = impl_->current_drawing_state_.elements_[sz_state - 2];
 		state.elm = draw_elm;
 
@@ -929,6 +934,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
 
 		if (sz == 2)	impl_->root_element_ = draw_elm;
+
+		set_anchor_drawing(impl_->current_graphic_properties);
+
+		
 		return true;
 	}
 	draw_rect* s = dynamic_cast<draw_rect*>(impl_->current_drawing_state_.elements_.back().elm.get());
@@ -974,9 +983,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 		impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
 
 		if (sz == 1)	impl_->root_element_ = draw_elm;
+	
+		set_anchor_drawing(impl_->current_graphic_properties);
 		return true;
 	}
-
 	return false;
 }
 
@@ -998,8 +1008,10 @@ void odf_drawing_context::end_shape()
 	if (path)
 	{
 		if (impl_->current_drawing_state_.view_box_.empty() && impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
-			set_viewBox( impl_->current_drawing_state_.svg_width_->get_value_unit(length::cm) * 1000, 
-						 impl_->current_drawing_state_.svg_height_->get_value_unit(length::cm) *1000);
+		{
+			set_viewBox(impl_->current_drawing_state_.svg_width_->get_value_unit(length::cm) * 1000,
+						impl_->current_drawing_state_.svg_height_->get_value_unit(length::cm) * 1000);
+		}
 		
 		if (!impl_->current_drawing_state_.path_.empty()) 		path->draw_path_attlist_.svg_d_ = impl_->current_drawing_state_.path_;
 		if (!impl_->current_drawing_state_.view_box_.empty())	path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
@@ -1135,9 +1147,9 @@ void odf_drawing_context::end_shape()
 				if (shape_define)
 				{
 					if (impl_->current_drawing_state_.oox_shape_ && impl_->current_drawing_state_.oox_shape_->view_box)
-						enhanced->svg_viewbox_										= impl_->current_drawing_state_.oox_shape_->view_box;
+						enhanced->svg_viewbox_ = impl_->current_drawing_state_.oox_shape_->view_box;
 					else
-						enhanced->svg_viewbox_										= shape_define->view_box;
+						enhanced->svg_viewbox_ = shape_define->view_box;
 
 					enhanced->attlist_.draw_type_			= shape_define->odf_type_name;
 					enhanced->attlist_.draw_text_areas_		= shape_define->text_areas;
@@ -1778,7 +1790,7 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 			break;
 	}
 
-	//XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
+	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
 	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
 	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
@@ -1805,9 +1817,9 @@ void odf_drawing_context::set_viewBox (double W, double H)
 	{
 		impl_->current_drawing_state_.oox_shape_->view_box  = impl_->current_drawing_state_.view_box_;
 
-		if (impl_->current_drawing_state_.oox_shape_->sub_view_size)
-			impl_->current_drawing_state_.oox_shape_->sub_view_size = *impl_->current_drawing_state_.oox_shape_->sub_view_size + L" " + std::to_wstring((int)W) + L" " + std::to_wstring((int)H);
-		else
+		//if (impl_->current_drawing_state_.oox_shape_->sub_view_size)
+		//	impl_->current_drawing_state_.oox_shape_->sub_view_size = *impl_->current_drawing_state_.oox_shape_->sub_view_size + L" " + std::to_wstring((int)W) + L" " + std::to_wstring((int)H);
+		//else
 			impl_->current_drawing_state_.oox_shape_->sub_view_size = std::to_wstring((int)W) + L" " + std::to_wstring((int)H);
 	}
 }
@@ -1955,7 +1967,7 @@ void odf_drawing_context::set_horizontal_rel(int from)
 	switch(from)
 	{
 		case 0:	type = horizontal_rel::Char;				break;	//	relfromhCharacter     = 0,
-		case 1:	type = horizontal_rel::Paragraph;			break;	//	relfromhColumn        = 1,
+		case 1:	type = horizontal_rel::Char;				break;	//	relfromhColumn        = 1,
 		case 2:	type = horizontal_rel::Paragraph;			break;	//	relfromhInsideMargin  = 2, ???
 		case 3:	type = horizontal_rel::PageStartMargin;		break;	//	relfromhLeftMargin    = 3,
 		case 4:	type = horizontal_rel::PageContent;			break;	//	relfromhMargin        = 4, ??? //ParagraphStartMargin
@@ -2123,31 +2135,45 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 	if (line == NULL) return;
 
 	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && x_pt)
-		x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
-			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+	{
+		//x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x;
+		// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+		x_pt = (*x_pt + impl_->current_group_->shift_x) * impl_->current_group_->scale_cx;
+	}
 	
 	if (x_pt && !line->draw_line_attlist_.svg_x1_) 
-		line->draw_line_attlist_.svg_x1_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
+		line->draw_line_attlist_.svg_x1_ = length(length(*x_pt, length::pt).get_value_unit(length::cm), length::cm);
 
 	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && y_pt)
-		y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
-			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+	{
+		//y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+		//+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+		y_pt = (*y_pt + impl_->current_group_->shift_y) * impl_->current_group_->scale_cy;
+	}
 
 	if (y_pt && !line->draw_line_attlist_.svg_y1_) 
-		line->draw_line_attlist_.svg_y1_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
+		line->draw_line_attlist_.svg_y1_ = length(length(*y_pt, length::pt).get_value_unit(length::cm), length::cm);
 
 ///////////////////////////////////////
 	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && x2_pt)
-		x2_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
-			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+	{
+		//x2_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x;
+		// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
+		x2_pt = (*x2_pt + impl_->current_group_->shift_x) * impl_->current_group_->scale_cx;
+	}
 
-	if (x2_pt && !line->draw_line_attlist_.svg_x2_) line->draw_line_attlist_.svg_x2_ = length(length(*x2_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (x2_pt && !line->draw_line_attlist_.svg_x2_) 
+		line->draw_line_attlist_.svg_x2_ = length(length(*x2_pt, length::pt).get_value_unit(length::cm), length::cm);
 
 	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && y2_pt)
-		y2_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
-			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+	{
+		//y2_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
+		//+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
+		y2_pt = (*y2_pt + impl_->current_group_->shift_y) * impl_->current_group_->scale_cy;
+	}
 
-	if (y2_pt && !line->draw_line_attlist_.svg_y2_) line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt,length::pt).get_value_unit(length::cm),length::cm);
+	if (y2_pt && !line->draw_line_attlist_.svg_y2_) 
+		line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt, length::pt).get_value_unit(length::cm), length::cm);
 
 }
 void odf_drawing_context::get_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
@@ -2284,7 +2310,7 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 		double sz_x =impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
 		double sz_y =impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
 
-		impl_->current_graphic_properties->draw_marker_end_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(((std::min)((std::max)(sz_x, sz_y), 50.) / 10.), odf_types::length::pt);
 	}
 	if (!impl_->current_graphic_properties->draw_marker_end_width_)
 	{
@@ -2307,10 +2333,10 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 
 	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 	{
-		double sz_x =impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
-		double sz_y =impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
+		double sz_x = impl_->current_drawing_state_.svg_width_->get_value_unit(odf_types::length::pt);
+		double sz_y = impl_->current_drawing_state_.svg_height_->get_value_unit(odf_types::length::pt);
 
-		impl_->current_graphic_properties->draw_marker_start_width_ = length((std::max)(sz_x, sz_y) / 10., odf_types::length::pt); 
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(((std::min)((std::max)(sz_x, sz_y), 50.) / 10.), odf_types::length::pt);
 	}
 	if (!impl_->current_graphic_properties->draw_marker_start_width_)
 	{
@@ -2723,17 +2749,37 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
 
 	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
-	if (image == NULL)return;
+	if (image == NULL) return;
 
 	image->common_xlink_attlist_.type_		= xlink_type::Simple;
 	image->common_xlink_attlist_.show_		= xlink_show::Embed;
 	image->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 
-	if (!odf_path.empty())   image->common_xlink_attlist_.href_= odf_path; //may be later set
+	if (!odf_path.empty()) image->common_xlink_attlist_.href_= odf_path; //may be later set
 	
 	start_element(image_elm);
 			
 	set_image_style_repeat(1);//default
+}
+void odf_drawing_context::start_image2(std::wstring odf_path)
+{
+	end_element();
+
+	office_element_ptr image_elm;
+	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
+
+	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
+	if (image == NULL) return;
+
+	image->common_xlink_attlist_.type_ = xlink_type::Simple;
+	image->common_xlink_attlist_.show_ = xlink_show::Embed;
+	image->common_xlink_attlist_.actuate_ = xlink_actuate::OnLoad;
+
+	image->draw_mime_type_ = L"image/svg+xml"; 
+
+	if (!odf_path.empty()) image->common_xlink_attlist_.href_ = odf_path; //may be later set
+
+	start_element(image_elm);
 }
 void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 {
@@ -3293,7 +3339,6 @@ void odf_drawing_context::start_gradient_style()
 	if (!impl_->current_graphic_properties) return;
 
 	odf_writer::office_element_ptr gradient_element;
-
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
@@ -3330,6 +3375,23 @@ void odf_drawing_context::set_gradient_type(gradient_style::type style)
 	if (!gradient) return;
 
 	gradient->draw_style_ = style;
+}
+void odf_drawing_context::set_gradient_stop(std::wstring hexColor, int pos)
+{
+	draw_gradient* gradient = dynamic_cast<draw_gradient*>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
+	if (!gradient) return;
+
+	odf_writer::office_element_ptr gradient_element;
+	odf_writer::create_element(L"loext", L"gradient-stop", gradient_element, impl_->odf_context_);
+	
+	loext_gradient_stop* gradient_stop = dynamic_cast<loext_gradient_stop*>(gradient_element.get());
+	if (!gradient_stop) return;
+
+	gradient->add_child_element(gradient_element);
+
+	gradient_stop->color_type_ = odf_types::color_type::rgb;
+	gradient_stop->color_value_ = hexColor;
+	gradient_stop->svg_offset_  = 1 - pos / 100000.;
 }
 void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv)
 {
@@ -3413,6 +3475,23 @@ void odf_drawing_context::start_opacity_style()
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
 	
 	impl_->styles_context_->add_style(opacity_element, false, true, style_family::Opacity);
+}
+void odf_drawing_context::set_opacity_stop(_CP_OPT(double)& val, int pos)
+{
+	draw_opacity* opacity = dynamic_cast<draw_opacity*>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
+	if (!opacity) return;
+
+	odf_writer::office_element_ptr opacity_element;
+	odf_writer::create_element(L"loext", L"opacity-stop", opacity_element, impl_->odf_context_);
+
+	loext_opacity_stop* opacity_stop = dynamic_cast<loext_opacity_stop*>(opacity_element.get());
+	if (!opacity_stop) return;
+
+	opacity->add_child_element(opacity_element);
+
+	if (val)
+		opacity_stop->stop_opacity_ = *val /  100.;
+	opacity_stop->svg_offset_ = 1 - pos / 100000.;
 }
 void odf_drawing_context::set_opacity_start(double val)
 {

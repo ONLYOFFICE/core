@@ -2,6 +2,7 @@
 #define NSHASH_H
 
 #include <functional>
+#include <stddef.h>
 #include "./common.h"
 
 // hide algs into lib

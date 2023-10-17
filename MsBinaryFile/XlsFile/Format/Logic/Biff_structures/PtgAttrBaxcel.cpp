@@ -48,6 +48,11 @@ void PtgAttrBaxcel::loadFields(CFRecord& record)
 	record.skipNunBytes(2); // unused
 }
 
+void PtgAttrBaxcel::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2); // unused
+}
+
 
 void PtgAttrBaxcel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

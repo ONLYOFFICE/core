@@ -107,12 +107,12 @@ const wchar_t * style_drawing_page_properties::name = L"drawing-page-properties"
 
 void style_drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	drawing_page_properties_.add_attributes(Attributes);
+	content_.add_attributes(Attributes);
 }
 void style_drawing_page_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"presentation", L"sound")
-        CP_CREATE_ELEMENT(drawing_page_properties_.presentation_sound_);
+        CP_CREATE_ELEMENT(content_.presentation_sound_);
     else
         CP_NOT_APPLICABLE_ELM();
 }

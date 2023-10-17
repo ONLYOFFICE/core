@@ -91,7 +91,7 @@ public:
 	unsigned char	verLowestBiff;
 	unsigned char	verLastXLSaved;
 	
-	ForwardOnlyParam<unsigned int> stream_ptr;
+	_CP_OPT(unsigned int) stream_ptr;
 
 	CFRecordType::TypeId type_id_ = rt_BOF_BIFF8;	
 };

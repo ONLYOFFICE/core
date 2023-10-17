@@ -56,7 +56,8 @@ public:
 	void addPtg(const PtgPtr ptg);
 
 	// Shall not be used. This is just a stub for the virtual 'load' realization
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 private:
 	PtgQueue ptg_records;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "Style.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/XLWideString.h"
 
 using namespace XLS;
 
@@ -69,6 +69,25 @@ namespace XLSB
         record >> str;
         stName = str.value();
     }
+
+	void Style::writeFields(XLS::CFRecord& record)
+	{
+		record << ixf;
+
+		_UINT16 flag = 0;
+
+		SETBIT(flag, 0, fBuiltIn)
+		SETBIT(flag, 1, fHidden)
+		SETBIT(flag, 2 , fCustom)
+
+		record << flag;
+
+		record << iStyBuiltIn;
+		record << iLevel;
+
+		XLNullableWideString str(stName);
+		record << str;
+	}
 
 } // namespace XLSB
 

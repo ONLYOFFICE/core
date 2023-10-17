@@ -41,18 +41,18 @@ namespace XMLTools
 	XMLAttribute::XMLAttribute()
 	{
 	}
-	XMLAttribute::XMLAttribute( const std::wstring & name ) : m_Name(name)
+	XMLAttribute::XMLAttribute(const std::wstring& name) : m_Name(name)
 	{
 	}
-	XMLAttribute::XMLAttribute( const std::wstring & name, const std::wstring & value ) :	m_Name(name), m_Value(value)
+	XMLAttribute::XMLAttribute(const std::wstring& name, const std::wstring& value) : m_Name(name), m_Value(value)
 	{
 	}
 	XMLAttribute::~XMLAttribute()
 	{
 	}
-	void XMLAttribute::SetValue( const std::wstring & value )
+	void XMLAttribute::SetValue(const std::wstring& value)
 	{
-		m_Value = std::wstring( value );
+		m_Value = std::wstring(value);
 	}
 	std::wstring XMLAttribute::GetName() const
 	{
@@ -63,51 +63,51 @@ namespace XMLTools
 		return m_Value;
 	}
 	std::wstring XMLAttribute::GetXMLString()
-		{
-			std::wstring xmlString( L"" );
+	{
+		std::wstring xmlString(L"");
 
-			xmlString += m_Name;
-			xmlString += std::wstring( L"=\"" );
-			xmlString += m_Value;
-			xmlString += std::wstring( L"\"" );
+		xmlString += m_Name;
+		xmlString += std::wstring(L"=\"");
+		xmlString += m_Value;
+		xmlString += std::wstring(L"\"");
 
-			return xmlString;
-		}
+		return xmlString;
+	}
 
 	/*========================================================================================================
 	class XMLElement
 	========================================================================================================*/
 
 	XMLElement::XMLElement() {}
-	XMLElement::XMLElement( const std::wstring & name ) : m_Name(name)
+	XMLElement::XMLElement(const std::wstring& name) : m_Name(name)
 	{
 	}
-	XMLElement::XMLElement( const std::wstring & prefix, const std::wstring & localName ) :
-		m_Name( std::wstring( prefix ) + std::wstring( L":" ) + std::wstring( localName ) ), m_ElementText( L"" )
+	XMLElement::XMLElement(const std::wstring& prefix, const std::wstring& localName) :
+		m_Name(std::wstring(prefix) + std::wstring(L":") + std::wstring(localName)), m_ElementText(L"")
 	{
 	}
 	XMLElement::~XMLElement() {}
-	void XMLElement::AppendText( const std::wstring & text )
+	void XMLElement::AppendText(const std::wstring& text)
 	{
-		m_ElementText = std::wstring( text );
+		m_ElementText = std::wstring(text);
 	}
-	void XMLElement::AppendTextSymbol( const wchar_t symbol )
+	void XMLElement::AppendTextSymbol(const wchar_t symbol)
 	{
-		m_ElementText += std::wstring( &symbol );
+		m_ElementText += std::wstring(&symbol);
 	}
-	void XMLElement::AppendAttribute( const XMLAttribute& attribute )
+	void XMLElement::AppendAttribute(const XMLAttribute& attribute)
 	{
-		AttributeValuePair p( attribute.GetName(), attribute.GetValue() );
+		AttributeValuePair p(attribute.GetName(), attribute.GetValue());
 
-		m_AttributeMap.insert( p );
+		m_AttributeMap.insert(p);
 	}
-	void XMLElement::AppendAttribute( const std::wstring & name, const std::wstring & value )
+	void XMLElement::AppendAttribute(const std::wstring& name, const std::wstring& value)
 	{
-		AttributeValuePair p(  name , value  );
+		AttributeValuePair p(name, value);
 
-		m_AttributeMap.insert( p );
+		m_AttributeMap.insert(p);
 	}
-	void XMLElement::AppendChild( const XMLElement& element, bool uniq)
+	void XMLElement::AppendChild(const XMLElement& element, bool uniq)
 	{
 		if (m_ChildMap.find(element.GetName()) != m_ChildMap.end())
 		{
@@ -117,9 +117,9 @@ namespace XMLTools
 		{
 			m_ChildMap.insert(m_ChildMap.end(), std::pair<std::wstring, int>(element.GetName(), 0));
 		}
-		m_Elements.push_back( element );
+		m_Elements.push_back(element);
 	}
-	void XMLElement::AppendChild( XMLElementPtr element, bool uniq)
+	void XMLElement::AppendChild(XMLElementPtr element, bool uniq)
 	{
 		if (!element) return;
 
@@ -131,19 +131,19 @@ namespace XMLTools
 		{
 			m_ChildMap.insert(m_ChildMap.end(), std::pair<std::wstring, int>(element->GetName(), 0));
 		}
-		m_Elements.push_back( *element.get() );
+		m_Elements.push_back(*element.get());
 	}
-	void XMLElement::RemoveChild( const XMLElement& element )
+	void XMLElement::RemoveChild(const XMLElement& element)
 	{
-		m_Elements.remove( element );
+		m_Elements.remove(element);
 	}
-	bool XMLElement::FindChild( const XMLElement& element )
+	bool XMLElement::FindChild(const XMLElement& element)
 	{
 		bool result = false;
 
-		for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+		for (ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 		{
-			if ( *iter == element )
+			if (*iter == element)
 			{
 				result = true;
 
@@ -153,13 +153,13 @@ namespace XMLTools
 
 		return result;
 	}
-	bool XMLElement::FindChildByName( const std::wstring & elementName ) const
+	bool XMLElement::FindChildByName(const std::wstring& elementName) const
 	{
 		bool result = false;
 
-		for ( ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+		for (ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 		{
-			if ( iter->m_Name == std::wstring( elementName ) )
+			if (iter->m_Name == std::wstring(elementName))
 			{
 				result = true;
 
@@ -169,15 +169,15 @@ namespace XMLTools
 
 		return result;
 	}
-	bool XMLElement::RemoveChildByName( const std::wstring& elementName )
+	bool XMLElement::RemoveChildByName(const std::wstring& elementName)
 	{
 		bool result = false;
 
-		for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+		for (ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 		{
-			if ( iter->m_Name == elementName )
+			if (iter->m_Name == elementName)
 			{
-				m_Elements.erase( iter );
+				m_Elements.erase(iter);
 
 				result = true;
 
@@ -187,13 +187,13 @@ namespace XMLTools
 
 		return result;
 	}
-	bool XMLElement::operator == ( const XMLElement& element ) const
+	bool XMLElement::operator == (const XMLElement& element) const
 	{
 		bool result = false;
 
-		result = ( m_Name == element.m_Name );
+		result = (m_Name == element.m_Name);
 
-		if ( m_AttributeMap.size() != element.m_AttributeMap.size() )
+		if (m_AttributeMap.size() != element.m_AttributeMap.size())
 		{
 			result = false;
 		}
@@ -203,27 +203,27 @@ namespace XMLTools
 			AttMapIteratorConst  thisIter = m_AttributeMap.begin();
 			AttMapIteratorConst elementIter = element.m_AttributeMap.begin();
 
-			for ( ; thisIter != m_AttributeMap.end(); thisIter++, elementIter++ )
+			for (; thisIter != m_AttributeMap.end(); thisIter++, elementIter++)
 			{
-				if ( ( thisIter->first != elementIter->first ) || ( thisIter->second != elementIter->second ) )
+				if ((thisIter->first != elementIter->first) || (thisIter->second != elementIter->second))
 				{
 					result = false;
 				}
 			}
 		}
 
-		if ( m_Elements.size() != element.m_Elements.size() )
+		if (m_Elements.size() != element.m_Elements.size())
 		{
 			result = false;
 		}
 		else
 		{
-			ElementsIteratorConst  thisIter    = m_Elements.begin();
+			ElementsIteratorConst  thisIter = m_Elements.begin();
 			ElementsIteratorConst  elementIter = element.m_Elements.begin();
 
-			for ( ; thisIter != m_Elements.end(); thisIter++, elementIter++ )
+			for (; thisIter != m_Elements.end(); thisIter++, elementIter++)
 			{
-				if ( !( (*thisIter) == (*elementIter) ) )
+				if (!((*thisIter) == (*elementIter)))
 				{
 					result = false;
 				}
@@ -238,57 +238,57 @@ namespace XMLTools
 	}
 	std::wstring XMLElement::GetXMLString()
 	{
-		std::wstring xmlString( L"");
+		std::wstring xmlString(L"");
 
-		bool bIsNameExists = ( m_Name != std::wstring( L"") );
-		bool bIsTextExists = ( m_ElementText != std::wstring( L"") );
+		bool bIsNameExists = (m_Name != std::wstring(L""));
+		bool bIsTextExists = (m_ElementText != std::wstring(L""));
 
-		if ( bIsNameExists )
+		if (bIsNameExists)
 		{
-			xmlString += std::wstring( L"<" ) + m_Name;
+			xmlString += std::wstring(L"<") + m_Name;
 		}
 
-		if ( ( bIsNameExists ) && ( m_AttributeMap.size() > 0 ) )
+		if ((bIsNameExists) && (m_AttributeMap.size() > 0))
 		{
-			for ( AttMapIterator iter = m_AttributeMap.begin(); iter != m_AttributeMap.end(); iter++ )
+			for (AttMapIterator iter = m_AttributeMap.begin(); iter != m_AttributeMap.end(); iter++)
 			{
-				xmlString += std::wstring( L" " );
+				xmlString += std::wstring(L" ");
 				xmlString += iter->first;
-				xmlString += std::wstring( L"=\"" );
+				xmlString += std::wstring(L"=\"");
 				xmlString += iter->second;
-				xmlString += std::wstring( L"\"" );
+				xmlString += std::wstring(L"\"");
 			}
 		}
 
-		if ( ( m_Elements.size() > 0 ) || ( bIsTextExists ) )
+		if ((m_Elements.size() > 0) || (bIsTextExists))
 		{
-			if ( bIsNameExists )
+			if (bIsNameExists)
 			{
-				xmlString += std::wstring( L">" );
+				xmlString += std::wstring(L">");
 			}
 
-			for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+			for (ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 			{
 				xmlString += iter->GetXMLString();
 			}
 
-			if ( bIsTextExists )
+			if (bIsTextExists)
 			{
 				xmlString += m_ElementText;
 			}
 
-			if ( bIsNameExists )
+			if (bIsNameExists)
 			{
-				xmlString += std::wstring( L"</" );
+				xmlString += std::wstring(L"</");
 				xmlString += m_Name;
-				xmlString += std::wstring( L">" );
+				xmlString += std::wstring(L">");
 			}
 		}
 		else
 		{
-			if ( bIsNameExists )
+			if (bIsNameExists)
 			{
-				xmlString += std::wstring( L"/>" );
+				xmlString += std::wstring(L"/>");
 			}
 		}
 
@@ -303,7 +303,7 @@ namespace XMLTools
 		return (unsigned int)m_Elements.size();
 	}
 
-	CStringXmlWriter::CStringXmlWriter(){}
+	CStringXmlWriter::CStringXmlWriter() {}
 	std::wstring CStringXmlWriter::GetXmlString()
 	{
 		return m_str;
@@ -331,7 +331,7 @@ namespace XMLTools
 		file.CloseFile();
 		return true;
 	}
-	void CStringXmlWriter::WriteString(const std::wstring & strValue)
+	void CStringXmlWriter::WriteString(const std::wstring& strValue)
 	{
 		m_str += strValue;
 	}
@@ -379,15 +379,15 @@ namespace XMLTools
 	void CStringXmlWriter::WriteNode(const std::wstring& strNodeName, int nValue, int nBase, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
 	{
 		WriteNodeBegin(strNodeName);
-			WriteString(strTextBeforeValue);
-			WriteInteger(nValue, nBase);
-			WriteString(strTextAfterValue);
+		WriteString(strTextBeforeValue);
+		WriteInteger(nValue, nBase);
+		WriteString(strTextAfterValue);
 		WriteNodeEnd(strNodeName);
 	}
 	void CStringXmlWriter::WriteNode(const std::wstring& strNodeName, double dValue)
 	{
 		WriteNodeBegin(strNodeName);
-			WriteDouble(dValue);
+		WriteDouble(dValue);
 		WriteNodeEnd(strNodeName);
 	}
 	void CStringXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)

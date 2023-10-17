@@ -32,7 +32,7 @@
 #pragma once
 
 #include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 
 namespace XLSB
 {
@@ -45,16 +45,16 @@ public:
 
     static const XLS::ElementType	type = XLS::typeBiffStructure;
 	
-    virtual void load(XLS::CFRecord& record);
+	void load(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
+    _UINT16 ichFirst;
+    _UINT16 ichMom;
+    _UINT16 cchMom;
+    _UINT16 ifnt;
 
-    unsigned short ichFirst;
-    unsigned short ichMom;
-    unsigned short cchMom;
-    unsigned short ifnt;
-
-    unsigned char  phType;
-    unsigned char  alcH;
+    BYTE  phType;
+	BYTE  alcH;
 };
 
 } // namespace XLSB

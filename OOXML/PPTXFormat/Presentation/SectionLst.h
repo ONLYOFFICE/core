@@ -165,18 +165,17 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				XmlUtils::CXmlNodes oNodes;
+				std::vector<XmlUtils::CXmlNode> oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
 				{
-					int nCount = oNodes.GetCount();
+					size_t nCount = oNodes.size();
 					for (int i = 0; i < nCount; ++i)
 					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
+						XmlUtils::CXmlNode & oNode = oNodes[i];
 
 						Logic::Section sect;
+						arSectionLst.push_back(sect);		
 
-						arSectionLst.push_back(sect);				
 						arSectionLst.back().fromXML(oNode);
 					}		
 				}

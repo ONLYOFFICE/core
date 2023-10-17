@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,9 +59,11 @@ namespace XLSB
     {
         if (proc.optional<BeginWsViews>())
         {
-            m_BrtBeginWsViews = elements_.back();
+			m_bBrtBeginWsViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginWsViews = false;
 
         int countWSVIEW2 = proc.repeated<WSVIEW2>(0, 0);
 
@@ -83,12 +85,28 @@ namespace XLSB
 
         if (proc.optional<EndWsViews>())
         {
-            m_BrtEndWsViews = elements_.back();
+            m_bBrtEndWsViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndWsViews = false;
 
-        return m_BrtBeginWsViews && !m_arWSVIEW2.empty() && m_BrtEndWsViews;
+        return m_bBrtBeginWsViews && !m_arWSVIEW2.empty() && m_bBrtEndWsViews;
     }
+
+	const bool WSVIEWS2::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginWsViews>();
+
+		for (auto &item : m_arWSVIEW2)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndWsViews>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

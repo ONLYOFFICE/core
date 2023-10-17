@@ -38,6 +38,8 @@
 #include "RtfMath.h"
 #include "RtfShape.h"
 
+#include "../../Common/MS-LCID.h"
+
 namespace OOX
 {
 	class WritingElement;
@@ -92,6 +94,8 @@ private:
 	int					m_nZIndexLast;
 
 public: 
+	MS_LCID_converter m_lcidConverter;
+
 	int GetZIndex();
 	void SetZIndex(int val);
 

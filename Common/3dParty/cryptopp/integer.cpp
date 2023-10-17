@@ -1,54 +1,59 @@
 // integer.cpp - originally written and placed in the public domain by Wei Dai
 // contains public domain code contributed by Alister Lee and Leonard Janke
 
-// Notes by JW: The Integer class needs to do two things. First, it needs to set function
-//  pointers on some platforms, like X86 and X64. The function pointers select a fast multiply
-//  and addition based on the cpu. Second, it wants to create Integer::Zero(), Integer::One()
-//  and Integer::Two().
-// The function pointers are initialized in the InitializeInteger class by calling
-//  SetFunctionPointers(). The call to SetFunctionPointers() is guarded to run once. If C++11
-//  dynamic initialization is available, then a standard run_once is used. Otherwise, and simple
-//  flag is used. The flag suffers a race, but the worse case is the same function pointers
-//  get written twice without leaking memory.
-// For Integer::Zero(), Integer::One() and Integer::Two(), we use one of two strategies. First,
-//  if C++11 dynamic initialization is available, then we use a static variable. Second, if
-//  C++11 dynamic initialization is not available, then we fall back to Wei's original code of
-//  a Singleton.
-// Wei's original code was much simpler. It simply used the Singleton pattern, but it always
-//  produced memory findings on some platforms. The Singleton generates memory findings because
-//  it uses a Create On First Use pattern (a dumb Nifty Counter) and the compiler had to be smart
-//  enough to fold them to return the same object. Unix and Linux compilers do a good job of folding
-//  objects, but Microsoft compilers do a rather poor job for some versions of the compilers.
-// Another problem with the Singleton is resource destruction requires running resource acquisition
-//  in reverse. For resources provided through the Singletons, there is no way to express the
-//  dependency order to safely destroy resources. (That's one of the problems C++11 dynamic
-//  intitialization with concurrent execution is supposed to solve).
+// Notes by JW: The Integer class needs to do two things. First, it needs
+//  to set function pointers on some platforms, like X86 and X64. The
+//  function pointers select a fast multiply and addition based on the cpu.
+//  Second, it wants to create Integer::Zero(), Integer::One() and
+//  Integer::Two().
+// The function pointers are initialized in the InitializeInteger class by
+//  calling SetFunctionPointers(). The call to SetFunctionPointers() is
+//  guarded to run once using a double-checked pattern. We don't use C++
+//  std::call_once due to bad interactions between libstdc++, glibc and
+//  pthreads. The bad interactions were causing crashes for us on platforms
+//  like Sparc and PowerPC. Since we are only setting function pointers we
+//  don't have to worry about leaking memory. The worst case seems to be the
+//  pointers gets written twice until the init flag is set and visible to
+//  all threads.
+// For Integer::Zero(), Integer::One() and Integer::Two(), we use one of three
+//  strategies. First, if initialization priorities are available then we use
+//  them. Initialization priorities are init_priority() on Linux and init_seg()
+//  on Windows. OS X and several other platforms lack them. Initialization
+//  priorities are platform specific but they are also the most trouble free
+//  with deterministic destruction.
+// Second, if C++11 dynamic initialization is available, then we use it. After
+//  the std::call_once fiasco we moved to dynamic initialization to avoid
+//  unknown troubles platforms that are tested less frequently. In addition
+//  Microsoft platforms mostly do not provide dynamic initialization.
+//  The MSDN docs claim they do but they don't in practice because we need
+//  Visual Studio 2017 and Windows 10 or above.
+// Third, we fall back to Wei's original code of a Singleton. Wei's original
+//  code was much simpler. It simply used the Singleton pattern, but it always
+//  produced memory findings on some platforms. The Singleton generates memory
+//  findings because it uses a Create On First Use pattern (a dumb Nifty
+//  Counter) and the compiler had to be smart enough to fold them to return
+//  the same object. Unix and Linux compilers do a good job of folding objects,
+//  but Microsoft compilers do a rather poor job for some versions of the
+//  compiler.
+// Another problem with the Singleton is resource destruction requires running
+//  resource acquisition in reverse. For resources provided through the
+//  Singletons, there is no way to express the dependency order to safely
+//  destroy resources. (That's one of the problems C++11 dynamic
+//  initialization with concurrent execution is supposed to solve).
+// The final problem with Singletons is resource/memory exhaustion in languages
+//  like Java and .Net. Java and .Net load and unload a native DLL hundreds or
+//  thousands of times during the life of a program. Each load produces a
+//  memory leak and they can add up quickly. If they library is being used in
+//  Java or .Net then Singleton must be avoided at all costs.
+//
+// The code below has a path cut-in for BMI2 using mulx and adcx instructions.
+//  There was a modest speedup of approximately 0.03 ms in public key Integer
+//  operations. We had to disable BMI2 for the moment because some OS X machines
+//  were advertising BMI/BMI2 support but caused SIGILL's at runtime. Also see
+//  https://github.com/weidai11/cryptopp/issues/850.
 
 #include "pch.h"
 #include "config.h"
-
-#if CRYPTOPP_MSC_VERSION
-# pragma warning(disable: 4100)
-#endif
-
-#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
-# pragma GCC diagnostic ignored "-Wunused"
-#if !defined(__clang__)
-# pragma GCC diagnostic ignored "-Wunused-but-set-variable"
-#endif
-#endif
-
-// Issue 340
-#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
-# pragma GCC diagnostic ignored "-Wconversion"
-# pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif
-
-// Define this to statically initialize Integer Zero(), One()
-//   and Two() using Microsoft init_seg(). This is useful for
-//   testing Integer code for leaks when the MSC compiler
-//   does not fold use of the Singletons.
-// #define USE_MSC_INIT_PRIORITY 1
 
 #ifndef CRYPTOPP_IMPORTS
 
@@ -78,7 +83,8 @@
 	#include <c_asm.h>
 #endif
 
-// "Error: The operand ___LKDB cannot be assigned to", http://github.com/weidai11/cryptopp/issues/188
+// "Error: The operand ___LKDB cannot be assigned to",
+// http://github.com/weidai11/cryptopp/issues/188
 #if (__SUNPRO_CC >= 0x5130)
 # define MAYBE_CONST
 # define MAYBE_UNCONST_CAST(x) const_cast<word*>(x)
@@ -88,8 +94,8 @@
 #endif
 
 // "Inline assembly operands don't work with .intel_syntax",
-//   http://llvm.org/bugs/show_bug.cgi?id=24232
-#if CRYPTOPP_BOOL_X32 || defined(CRYPTOPP_DISABLE_INTEL_ASM)
+//  http://llvm.org/bugs/show_bug.cgi?id=24232
+#if CRYPTOPP_BOOL_X32 || defined(CRYPTOPP_DISABLE_MIXED_ASM)
 # undef CRYPTOPP_X86_ASM_AVAILABLE
 # undef CRYPTOPP_X32_ASM_AVAILABLE
 # undef CRYPTOPP_X64_ASM_AVAILABLE
@@ -102,16 +108,18 @@
 // ***************** C++ Static Initialization ********************
 
 NAMESPACE_BEGIN(CryptoPP)
+
+// Function body near the middle of the file
 static void SetFunctionPointers();
+
+// Use a double-checked pattern. We are not leaking anything so it
+// does not matter if a pointer is written twice during a race.
+// Avoid std::call_once due to too many problems on platforms like
+// Solaris and Sparc. Also see
+// http://gcc.gnu.org/bugzilla/show_bug.cgi?id=66146 and
+// http://github.com/weidai11/cryptopp/issues/707.
 InitializeInteger::InitializeInteger()
 {
-#if !(HAVE_GCC_INIT_PRIORITY || HAVE_MSC_INIT_PRIORITY)
-#if defined(CRYPTOPP_CXX11_SYNCHRONIZATION) && defined(CRYPTOPP_CXX11_DYNAMIC_INIT)
-	static std::once_flag s_flag;
-	std::call_once(s_flag, []() {
-		SetFunctionPointers();
-	});
-#else
 	static bool s_flag;
 	MEMORY_BARRIER();
 	if (s_flag == false)
@@ -120,8 +128,6 @@ InitializeInteger::InitializeInteger()
 		s_flag = true;
 		MEMORY_BARRIER();
 	}
-#endif  // C++11 or C++03 flag
-#endif  // not GCC and MSC init priorities
 }
 
 template <long i>
@@ -194,7 +200,8 @@ static word AtomicInverseModPower2(word A)
 
 // ********************************************************
 
-#if !defined(CRYPTOPP_NATIVE_DWORD_AVAILABLE) || (defined(__x86_64__) && defined(CRYPTOPP_WORD128_AVAILABLE))
+#if !defined(CRYPTOPP_NATIVE_DWORD_AVAILABLE) || ((defined(__aarch64__) || defined(__x86_64__)) && defined(CRYPTOPP_WORD128_AVAILABLE))
+	#define TWO_64_BIT_WORDS 1
 	#define Declare2Words(x)			word x##0, x##1;
 	#define AssignWord(a, b)			a##0 = b; a##1 = 0;
 	#define Add2WordsBy1(a, b, c)		a##0 = b##0 + c; a##1 = b##1 + (a##0 < c);
@@ -205,12 +212,21 @@ static word AtomicInverseModPower2(word A)
 		#ifndef __INTEL_COMPILER
 			#define Double3Words(c, d)		d##1 = __shiftleft128(d##0, d##1, 1); d##0 = __shiftleft128(c, d##0, 1); c *= 2;
 		#endif
+	#elif defined(__aarch32__) || defined(__aarch64__)
+		#define MultiplyWordsLoHi(p0, p1, a, b)		p0 = a*b; asm ("umulh %0,%1,%2" : "=r"(p1) : "r"(a), "r"(b));
 	#elif defined(__DECCXX)
 		#define MultiplyWordsLoHi(p0, p1, a, b)		p0 = a*b; p1 = asm("umulh %a0, %a1, %v0", a, b);
 	#elif defined(__x86_64__)
 		#if defined(__SUNPRO_CC) && __SUNPRO_CC < 0x5100
 			// Sun Studio's gcc-style inline assembly is heavily bugged as of version 5.9 Patch 124864-09 2008/12/16, but this one works
 			#define MultiplyWordsLoHi(p0, p1, a, b)		asm ("mulq %3" : "=a"(p0), "=d"(p1) : "a"(a), "r"(b) : "cc");
+		#elif defined(__BMI2__) && 0
+			#define MultiplyWordsLoHi(p0, p1, a, b)		asm ("mulxq %3, %0, %1" : "=r"(p0), "=r"(p1) : "d"(a), "r"(b));
+			#define MulAcc(c, d, a, b)		asm ("mulxq %6, %3, %4; addq %3, %0; adcxq %4, %1; adcxq %7, %2;" : "+&r"(c), "+&r"(d##0), "+&r"(d##1), "=&r"(p0), "=&r"(p1) : "d"(a), "r"(b), "r"(W64LIT(0)) : "cc");
+			#define Double3Words(c, d)		asm ("addq %0, %0; adcxq %1, %1; adcxq %2, %2;" : "+r"(c), "+r"(d##0), "+r"(d##1) : : "cc");
+			#define Acc2WordsBy1(a, b)		asm ("addq %2, %0; adcxq %3, %1;" : "+&r"(a##0), "+r"(a##1) : "r"(b), "r"(W64LIT(0)) : "cc");
+			#define Acc2WordsBy2(a, b)		asm ("addq %2, %0; adcxq %3, %1;" : "+r"(a##0), "+r"(a##1) : "r"(b##0), "r"(b##1) : "cc");
+			#define Acc3WordsBy2(c, d, e)	asm ("addq %5, %0; adcxq %6, %1; adcxq %7, %2;" : "+r"(c), "=&r"(e##0), "=&r"(e##1) : "1"(d##0), "2"(d##1), "r"(e##0), "r"(e##1), "r"(W64LIT(0)) : "cc");
 		#else
 			#define MultiplyWordsLoHi(p0, p1, a, b)		asm ("mulq %3" : "=a"(p0), "=d"(p1) : "a"(a), "g"(b) : "cc");
 			#define MulAcc(c, d, a, b)		asm ("mulq %6; addq %3, %0; adcq %4, %1; adcq $0, %2;" : "+r"(c), "+r"(d##0), "+r"(d##1), "=a"(p0), "=d"(p1) : "a"(a), "g"(b) : "cc");
@@ -233,7 +249,7 @@ static word AtomicInverseModPower2(word A)
 	#define GetBorrow(u)				u##1
 #else
 	#define Declare2Words(x)			dword x;
-	#if _MSC_VER >= 1400 && !defined(__INTEL_COMPILER) && !defined(_M_ARM)
+	#if _MSC_VER >= 1400 && !defined(__INTEL_COMPILER) && (defined(_M_IX86) || defined(_M_X64) || defined(_M_IA64))
 		#define MultiplyWords(p, a, b)		p = __emulu(a, b);
 	#else
 		#define MultiplyWords(p, a, b)		p = (dword)a*b;
@@ -285,7 +301,7 @@ public:
 #endif
 	{
 #if defined(CRYPTOPP_NATIVE_DWORD_AVAILABLE)
-#  if defined(CRYPTOPP_LITTLE_ENDIAN)
+#  if (CRYPTOPP_LITTLE_ENDIAN)
 		const word t[2] = {low,high};
 		memcpy(&m_whole, t, sizeof(m_whole));
 #  else
@@ -390,7 +406,7 @@ private:
 	//   Thanks to Martin Bonner at http://stackoverflow.com/a/39507183
     struct half_words
     {
-    #ifdef CRYPTOPP_LITTLE_ENDIAN
+    #if (CRYPTOPP_LITTLE_ENDIAN)
         word low;
         word high;
     #else
@@ -464,10 +480,9 @@ S DivideThreeWordsByTwo(S *A, S B0, S B1, D *dummy=NULLPTR)
 	// Assert {A[2],A[1]} < {B1,B0}, so quotient can fit in a S
 	CRYPTOPP_ASSERT(A[2] < B1 || (A[2]==B1 && A[1] < B0));
 
-	// estimate the quotient: do a 2 S by 1 S divide.
-	// Profiling tells us the original second case was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 
+	// estimate the quotient: do a 2 S by 1 S divide.
 	S Q; bool pre = (S(B1+1) == 0);
 	if (B1 > 0 && !pre)
 		Q = D(A[1], A[2]) / S(B1+1);
@@ -503,8 +518,7 @@ S DivideThreeWordsByTwo(S *A, S B0, S B1, D *dummy=NULLPTR)
 template <class S, class D>
 inline D DivideFourWordsByTwo(S *T, const D &Al, const D &Ah, const D &B)
 {
-	// Profiling tells us the original second case was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 
 	if (!!B)
 	{
@@ -744,6 +758,10 @@ CRYPTOPP_NAKED int CRYPTOPP_FASTCALL Baseline_Add(size_t N, word *C, const word 
 	AS1(	setc	al)					// store carry into eax (return result register)
 
 	AddEpilogue
+
+	// http://github.com/weidai11/cryptopp/issues/340
+	CRYPTOPP_UNUSED(A); CRYPTOPP_UNUSED(B);
+	CRYPTOPP_UNUSED(C); CRYPTOPP_UNUSED(N);
 }
 
 CRYPTOPP_NAKED int CRYPTOPP_FASTCALL Baseline_Sub(size_t N, word *C, const word *A, const word *B)
@@ -785,6 +803,10 @@ CRYPTOPP_NAKED int CRYPTOPP_FASTCALL Baseline_Sub(size_t N, word *C, const word 
 	AS1(	setc	al)					// store carry into eax (return result register)
 
 	AddEpilogue
+
+	// http://github.com/weidai11/cryptopp/issues/340
+	CRYPTOPP_UNUSED(A); CRYPTOPP_UNUSED(B);
+	CRYPTOPP_UNUSED(C); CRYPTOPP_UNUSED(N);
 }
 
 #if CRYPTOPP_INTEGER_SSE2
@@ -843,6 +865,10 @@ CRYPTOPP_NAKED int CRYPTOPP_FASTCALL SSE2_Add(size_t N, word *C, const word *A, 
 	AS1(	emms)
 
 	AddEpilogue
+
+	// http://github.com/weidai11/cryptopp/issues/340
+	CRYPTOPP_UNUSED(A); CRYPTOPP_UNUSED(B);
+	CRYPTOPP_UNUSED(C); CRYPTOPP_UNUSED(N);
 }
 CRYPTOPP_NAKED int CRYPTOPP_FASTCALL SSE2_Sub(size_t N, word *C, const word *A, const word *B)
 {
@@ -899,6 +925,10 @@ CRYPTOPP_NAKED int CRYPTOPP_FASTCALL SSE2_Sub(size_t N, word *C, const word *A, 
 	AS1(	emms)
 
 	AddEpilogue
+
+	// http://github.com/weidai11/cryptopp/issues/340
+	CRYPTOPP_UNUSED(A); CRYPTOPP_UNUSED(B);
+	CRYPTOPP_UNUSED(C); CRYPTOPP_UNUSED(N);
 }
 #endif	// CRYPTOPP_INTEGER_SSE2
 #else   // CRYPTOPP_SSE2_ASM_AVAILABLE
@@ -1295,6 +1325,11 @@ void Baseline_MultiplyBottom2(word *R, const word *AA, const word *BB)
 	MAYBE_CONST word* B = MAYBE_UNCONST_CAST(BB);
 
 	Bot_2
+
+// http://github.com/weidai11/cryptopp/issues/340
+#if defined(TWO_64_BIT_WORDS)
+	CRYPTOPP_UNUSED(d0); CRYPTOPP_UNUSED(d1);
+#endif
 }
 
 void Baseline_MultiplyBottom4(word *R, const word *AA, const word *BB)
@@ -2396,8 +2431,7 @@ void AsymmetricMultiply(word *R, word *T, const word *A, size_t NA, const word *
 {
 	if (NA == NB)
 	{
-		// Profiling tells us the original second case was dominant, so it was promoted to the first If statement.
-		// The code change occurred at Commit dc99266599a0e72d.
+		// Profiling guided the flow below.
 		if (A != B)
 			Multiply(R, T, A, B, NA);
 		else
@@ -2416,8 +2450,7 @@ void AsymmetricMultiply(word *R, word *T, const word *A, size_t NA, const word *
 
 	if (NA==2 && !A[1])
 	{
-		// Profiling tells us the original Default case was dominant, so it was promoted to the first Case statement.
-		// The code change occurred at Commit dc99266599a0e72d.
+		// Profiling guided the flow below.
 		switch (A[0])
 		{
 		default:
@@ -2463,8 +2496,7 @@ void AsymmetricMultiply(word *R, word *T, const word *A, size_t NA, const word *
 
 void RecursiveInverseModPower2(word *R, word *T, const word *A, size_t N)
 {
-	// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	if (N!=2)
 	{
 		const size_t N2 = N/2;
@@ -3024,7 +3056,7 @@ Integer::Integer(const byte *encodedInteger, size_t byteCount, Signedness s, Byt
 	else
 	{
 		SecByteBlock block(byteCount);
-#if (_MSC_FULL_VER >= 140050727)
+#if (_MSC_VER >= 1500)
 		std::reverse_copy(encodedInteger, encodedInteger+byteCount,
 			stdext::make_checked_array_iterator(block.begin(), block.size()));
 #else
@@ -3078,8 +3110,7 @@ Integer& Integer::operator=(const Integer& t)
 
 bool Integer::GetBit(size_t n) const
 {
-	// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	if (n/WORD_BITS < reg.size())
 		return bool((reg[n/WORD_BITS] >> (n % WORD_BITS)) & 1);
 	else
@@ -3102,8 +3133,7 @@ void Integer::SetBit(size_t n, bool value)
 
 byte Integer::GetByte(size_t n) const
 {
-	// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	if (n/WORD_SIZE < reg.size())
 		return byte(reg[n/WORD_SIZE] >> ((n%WORD_SIZE)*8));
 	else
@@ -3169,6 +3199,7 @@ static Integer StringToInteger(const T *str, ByteOrder order)
 	if (length == 0)
 		return Integer::Zero();
 
+	// 'str' is of length 1 or more
 	switch (str[length-1])
 	{
 	case 'h':
@@ -3194,10 +3225,25 @@ static Integer StringToInteger(const T *str, ByteOrder order)
 		str += 1, length -= 1;
 	}
 
-	if (length > 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+	// Recognize common prefixes for hexadecimal, octal and decimal.
+	// Microsoft's MASM also recognizes 0t for octal, but not here.
+	if (length > 2 && str[0] == '0')
 	{
-		radix = 16;
-		str += 2, length -= 2;
+		if (str[1] == 'x' || str[1] == 'X')
+		{
+			radix = 16;
+			str += 2, length -= 2;
+		}
+		else if (str[1] == 'n' || str[1] == 'N')
+		{
+			radix = 10;
+			str += 2, length -= 2;
+		}
+		else if (str[1] == 'o' || str[1] == 'O')
+		{
+			radix = 8;
+			str += 2, length -= 2;
+		}
 	}
 
 	if (order == BIG_ENDIAN_ORDER)
@@ -3206,8 +3252,7 @@ static Integer StringToInteger(const T *str, ByteOrder order)
 		{
 			int digit, ch = static_cast<int>(str[i]);
 
-			//  Profiling showd the second and third Else needed to be swapped
-			// The code change occurred at Commit dc99266599a0e72d.
+			// Profiling guided the flow below.
 			if (ch >= '0' && ch <= '9')
 				digit = ch - '0';
 			else if (ch >= 'a' && ch <= 'f')
@@ -3366,8 +3411,7 @@ void Integer::Decode(BufferedTransformation &bt, size_t inputLen, Signedness s)
 
 size_t Integer::MinEncodedSize(Signedness signedness) const
 {
-	// Profiling tells us the original second If was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	unsigned int outputLen = STDMAX(1U, ByteCount());
 	const bool pre = (signedness == UNSIGNED);
 	if (!pre && NotNegative() && (GetByte(outputLen-1) & 0x80))
@@ -3443,8 +3487,8 @@ void Integer::BERDecodeAsOctetString(BufferedTransformation &bt, size_t length)
 
 size_t Integer::OpenPGPEncode(byte *output, size_t bufferSize) const
 {
-	CRYPTOPP_ASSERT(output && bufferSize);            // NULL buffer
-	CRYPTOPP_ASSERT(bufferSize >= MinEncodedSize());  // Undersized buffer
+	CRYPTOPP_ASSERT(output && bufferSize);         // NULL buffer
+	CRYPTOPP_ASSERT(bufferSize >= 2+ByteCount());  // Undersized buffer
 	ArraySink sink(output, bufferSize);
 	return OpenPGPEncode(sink);
 }
@@ -3502,16 +3546,17 @@ void Integer::Randomize(RandomNumberGenerator &rng, const Integer &min, const In
 
 bool Integer::Randomize(RandomNumberGenerator &rng, const Integer &min, const Integer &max, RandomNumberType rnType, const Integer &equiv, const Integer &mod)
 {
-	return GenerateRandomNoThrow(rng, MakeParameters("Min", min)("Max", max)("RandomNumberType", rnType)("EquivalentTo", equiv)("Mod", mod));
+	return GenerateRandomNoThrow(rng, MakeParameters("Min", min)("Max", max)
+		("RandomNumberType", rnType)("EquivalentTo", equiv)("Mod", mod));
 }
 
 class KDF2_RNG : public RandomNumberGenerator
 {
 public:
 	KDF2_RNG(const byte *seed, size_t seedSize)
-		: m_counter(0), m_counterAndSeed(seedSize + 4)
+		: m_counter(0), m_counterAndSeed(ClampSize(seedSize) + 4)
 	{
-		memcpy(m_counterAndSeed + 4, seed, seedSize);
+		memcpy(m_counterAndSeed + 4, seed, ClampSize(seedSize));
 	}
 
 	void GenerateBlock(byte *output, size_t size)
@@ -3520,6 +3565,15 @@ public:
 		PutWord(false, BIG_ENDIAN_ORDER, m_counterAndSeed, m_counter);
 		++m_counter;
 		P1363_KDF2<SHA1>::DeriveKey(output, size, m_counterAndSeed, m_counterAndSeed.size(), NULLPTR, 0);
+	}
+
+	// UBsan finding, -Wstringop-overflow
+	inline size_t ClampSize(size_t req) const
+	{
+		// Clamp at 16 MB
+		if (req > 16U*1024*1024)
+			return 16U*1024*1024;
+		return req;
 	}
 
 private:
@@ -3745,24 +3799,36 @@ Integer& Integer::operator--()
 //  worry about negative zero. Also see http://stackoverflow.com/q/11644362.
 Integer Integer::And(const Integer& t) const
 {
+	// Grow due to https://github.com/weidai11/cryptopp/issues/1072
+	// The temporary Integer 'result' may have fewer blocks than
+	// 'this' or 't', if leading 0-blocks are trimmed in copy ctor.
+
 	if (this == &t)
 	{
 		return AbsoluteValue();
 	}
 	else if (reg.size() >= t.reg.size())
 	{
-		Integer result(t);
-		AndWords(result.reg, reg, t.reg.size());
+		IntegerSecBlock temp(t.reg.size());
+		// AndWords(temp, reg, t.reg, t.reg.size());
+		for (size_t i=0; i<t.reg.size(); ++i)
+			temp[i] = reg[i] & t.reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 	else // reg.size() < t.reg.size()
 	{
-		Integer result(*this);
-		AndWords(result.reg, t.reg, reg.size());
+		IntegerSecBlock temp(reg.size());
+		// AndWords(temp, reg, t.reg, reg.size());
+		for (size_t i=0; i<reg.size(); ++i)
+			temp[i] = reg[i] & t.reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 }
@@ -3771,24 +3837,36 @@ Integer Integer::And(const Integer& t) const
 //  worry about negative zero. Also see http://stackoverflow.com/q/11644362.
 Integer Integer::Or(const Integer& t) const
 {
+	// Grow due to https://github.com/weidai11/cryptopp/issues/1072
+	// The temporary Integer 'result' may have fewer blocks than
+	// 'this' or 't', if leading 0-blocks are trimmed in copy ctor.
+
 	if (this == &t)
 	{
 		return AbsoluteValue();
 	}
 	else if (reg.size() >= t.reg.size())
 	{
-		Integer result(*this);
-		OrWords(result.reg, t.reg, t.reg.size());
+		IntegerSecBlock temp(reg, reg.size());
+		// OrWords(temp, t.reg, t.reg.size());
+		for (size_t i=0; i<t.reg.size(); ++i)
+			temp[i] |= t.reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 	else // reg.size() < t.reg.size()
 	{
-		Integer result(t);
-		OrWords(result.reg, reg, reg.size());
+		IntegerSecBlock temp(t.reg, t.reg.size());
+		// OrWords(temp, reg, reg.size());
+		for (size_t i=0; i<reg.size(); ++i)
+			temp[i] |= reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 }
@@ -3797,32 +3875,43 @@ Integer Integer::Or(const Integer& t) const
 //  worry about negative zero. Also see http://stackoverflow.com/q/11644362.
 Integer Integer::Xor(const Integer& t) const
 {
+	// Grow due to https://github.com/weidai11/cryptopp/issues/1072
+	// The temporary Integer 'result' may have fewer blocks than
+	// 'this' or 't', if leading 0-blocks are trimmed in copy ctor.
+
 	if (this == &t)
 	{
 		return Integer::Zero();
 	}
 	else if (reg.size() >= t.reg.size())
 	{
-		Integer result(*this);
-		XorWords(result.reg, t.reg, t.reg.size());
+		IntegerSecBlock temp(reg, reg.size());
+		// OrWords(temp, t.reg, t.reg.size());
+		for (size_t i=0; i<t.reg.size(); ++i)
+			temp[i] ^= t.reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 	else // reg.size() < t.reg.size()
 	{
-		Integer result(t);
-		XorWords(result.reg, reg, reg.size());
+		IntegerSecBlock temp(t.reg, t.reg.size());
+		// OrWords(temp, reg, reg.size());
+		for (size_t i=0; i<reg.size(); ++i)
+			temp[i] ^= reg[i];
 
-		result.sign = POSITIVE;
+		Integer result;
+		std::swap(result.reg, temp);
+
 		return result;
 	}
 }
 
 void PositiveAdd(Integer &sum, const Integer &a, const Integer& b)
 {
-	// Profiling tells us the original second Else If was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	int carry; const bool pre = (a.reg.size() == b.reg.size());
 	if (!pre && a.reg.size() > b.reg.size())
 	{
@@ -3856,8 +3945,7 @@ void PositiveSubtract(Integer &diff, const Integer &a, const Integer& b)
 	unsigned bSize = b.WordCount();
 	bSize += bSize%2;
 
-	// Profiling tells us the original second Else If was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	if (aSize > bSize)
 	{
 		word borrow = Subtract(diff.reg, a.reg, b.reg, bSize);
@@ -4214,7 +4302,9 @@ void Integer::Divide(word &remainder, Integer &quotient, const Integer &dividend
 	if (!divisor)
 		throw Integer::DivideByZero();
 
-	if ((divisor & (divisor-1)) == 0)	// divisor is a power of 2
+	// IsPowerOf2 uses BMI on x86 if available. There is a small
+	// but measurable improvement during decryption and signing.
+	if (IsPowerOf2(divisor))
 	{
 		quotient = dividend >> (BitPrecision(divisor)-1);
 		remainder = dividend.reg[0] & (divisor-1);
@@ -4258,12 +4348,10 @@ word Integer::Modulo(word divisor) const
 
 	word remainder;
 
-	// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	if ((divisor & (divisor-1)) != 0)	// divisor is not a power of 2
 	{
-		// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-		// The code change occurred at Commit dc99266599a0e72d.
+		// Profiling guided the flow below.
 		unsigned int i = WordCount();
 		if (divisor > 5)
 		{
@@ -4298,8 +4386,7 @@ void Integer::Negate()
 
 int Integer::PositiveCompare(const Integer& t) const
 {
-	// Profiling tells us the original Else was dominant, so it was promoted to the first If statement.
-	// The code change occurred at Commit dc99266599a0e72d.
+	// Profiling guided the flow below.
 	const unsigned size = WordCount(), tSize = t.WordCount();
 	if (size != tSize)
 		return size > tSize ? 1 : -1;
@@ -4361,8 +4448,8 @@ Integer Integer::MultiplicativeInverse() const
 
 Integer a_times_b_mod_c(const Integer &x, const Integer& y, const Integer& m)
 {
-	CRYPTOPP_ASSERT(m != 0);
-	if (m == 0)
+	CRYPTOPP_ASSERT(m.NotZero());
+	if (m.IsZero())
 		throw Integer::DivideByZero();
 
 	return x*y%m;
@@ -4370,8 +4457,8 @@ Integer a_times_b_mod_c(const Integer &x, const Integer& y, const Integer& m)
 
 Integer a_exp_b_mod_c(const Integer &x, const Integer& e, const Integer& m)
 {
-	CRYPTOPP_ASSERT(m != 0);
-	if (m == 0)
+	CRYPTOPP_ASSERT(m.NotZero());
+	if (m.IsZero())
 		throw Integer::DivideByZero();
 
 	ModularArithmetic mr(m);
@@ -4675,7 +4762,7 @@ const Integer& MontgomeryRepresentation::MultiplicativeInverse(const Integer &a)
 }
 
 // Specialization declared in misc.h to allow us to print integers
-//  with additional control options, like arbirary bases and uppercase.
+//  with additional control options, like arbitrary bases and uppercase.
 template <> CRYPTOPP_DLL
 std::string IntToString<Integer>(Integer value, unsigned int base)
 {
@@ -4787,22 +4874,31 @@ public:
 	}
 };
 
-// This is not really needed because each Integer can dynamically initialize itself,
-// but we take a peephole optimization and initialize the class once if init priorities are
-// available. Dynamic initialization will be used if init priorities are not available.
+// This is not really needed because each Integer can dynamically initialize
+// itself, but we take a peephole optimization and initialize the class once
+// if init priorities are available. Dynamic initialization will be used if
+// init priorities are not available.
 
-#if HAVE_GCC_INIT_PRIORITY
+#if defined(HAVE_GCC_INIT_PRIORITY)
 	const InitInteger s_init __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 10))) = InitInteger();
+	const Integer g_zero __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 11))) = Integer(0L);
+	const Integer g_one __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 12))) = Integer(1L);
+	const Integer g_two __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 13))) = Integer(2L);
 #elif defined(HAVE_MSC_INIT_PRIORITY)
 	#pragma warning(disable: 4075)
 	#pragma init_seg(".CRT$XCU")
 	const InitInteger s_init;
-#   if defined(USE_MSC_INIT_PRIORITY)
 	const Integer g_zero(0L);
 	const Integer g_one(1L);
 	const Integer g_two(2L);
-#   endif
 	#pragma warning(default: 4075)
+#elif HAVE_XLC_INIT_PRIORITY
+	// XLC needs constant, not a define
+	#pragma priority(280)
+	const InitInteger s_init;
+	const Integer g_zero(0L);
+	const Integer g_one(1L);
+	const Integer g_two(2L);
 #else
 	const InitInteger s_init;
 #endif
@@ -4811,36 +4907,36 @@ public:
 
 const Integer &Integer::Zero()
 {
-#if defined(CRYPTOPP_CXX11_DYNAMIC_INIT)
-	static Integer s_zero(0L);
-	return s_zero;
-#elif defined(HAVE_MSC_INIT_PRIORITY) && defined(USE_MSC_INIT_PRIORITY)
+#if defined(HAVE_GCC_INIT_PRIORITY) || defined(HAVE_MSC_INIT_PRIORITY) || defined(HAVE_XLC_INIT_PRIORITY)
 	return g_zero;
-#else
+#elif defined(CRYPTOPP_CXX11_STATIC_INIT)
+	static const Integer s_zero(0L);
+	return s_zero;
+#else  // Potential memory leak. Avoid if possible.
 	return Singleton<Integer, NewInteger<0L> >().Ref();
 #endif
 }
 
 const Integer &Integer::One()
 {
-#if defined(CRYPTOPP_CXX11_DYNAMIC_INIT)
-	static Integer s_one(1L);
-	return s_one;
-#elif defined(HAVE_MSC_INIT_PRIORITY) && defined(USE_MSC_INIT_PRIORITY)
+#if defined(HAVE_GCC_INIT_PRIORITY) || defined(HAVE_MSC_INIT_PRIORITY) || defined(HAVE_XLC_INIT_PRIORITY)
 	return g_one;
-#else
+#elif defined(CRYPTOPP_CXX11_STATIC_INIT)
+	static const Integer s_one(1L);
+	return s_one;
+#else  // Potential memory leak. Avoid if possible.
 	return Singleton<Integer, NewInteger<1L> >().Ref();
 #endif
 }
 
 const Integer &Integer::Two()
 {
-#if defined(CRYPTOPP_CXX11_DYNAMIC_INIT)
-	static Integer s_two(2L);
-	return s_two;
-#elif defined(HAVE_MSC_INIT_PRIORITY) && defined(USE_MSC_INIT_PRIORITY)
+#if defined(HAVE_GCC_INIT_PRIORITY) || defined(HAVE_MSC_INIT_PRIORITY) || defined(HAVE_XLC_INIT_PRIORITY)
 	return g_two;
-#else
+#elif defined(CRYPTOPP_CXX11_STATIC_INIT)
+	static const Integer s_two(2L);
+	return s_two;
+#else  // Potential memory leak. Avoid if possible.
 	return Singleton<Integer, NewInteger<2L> >().Ref();
 #endif
 }

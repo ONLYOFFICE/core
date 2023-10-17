@@ -53,10 +53,9 @@ BaseObjectPtr Window1::clone()
 
 void Window1::readFields(CFRecord& record)
 {
-	unsigned short flags;
-
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
+		unsigned short flags;
         _INT16 xWn_2b;
         _INT16 yWn_2b;
         _INT16 dxWn_2b;
@@ -97,6 +96,31 @@ void Window1::readFields(CFRecord& record)
         fBotAdornment	= GETBIT(flags1, 5);
         fNoAFDateGroup	= GETBIT(flags1, 6);
     }
+}
+
+void Window1::writeFields(CFRecord& record)
+{
+	unsigned short flags;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		//stub
+	}
+
+	else
+	{
+		BYTE flags1 = 0;
+
+		SETBIT(flags1, 0, fHidden)
+		SETBIT(flags1, 1, fVeryHidden)
+		SETBIT(flags1, 2, fIconic)
+		SETBIT(flags1, 3, fDspHScroll)
+		SETBIT(flags1, 4, fDspVScroll)
+		SETBIT(flags1, 5, fBotAdornment)
+		SETBIT(flags1, 6, fNoAFDateGroup)
+
+		record << xWn << yWn << dxWn << dyWn << wTabRatio << itabFirst << itabCur << flags1;
+	}
 }
 
 int Window1::serialize(std::wostream & stream)

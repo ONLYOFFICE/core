@@ -72,7 +72,7 @@ namespace XLS
 			_UINT16		colLast_2b;
 			_UINT16		coldx_2b;
 
-			unsigned short flags;
+			_UINT16		flags;
 			record >> colFirst_2b >> colLast_2b >> coldx_2b >> ixfe >> flags;
 
 			fHidden = GETBIT(flags, 0);
@@ -85,10 +85,12 @@ namespace XLS
 			colFirst = colFirst_2b;
 			colLast = colLast_2b;
 			coldx = coldx_2b;
+
+			record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused //0x0600 - 2 bytes; lower - 1 byte
 		}
 		else
 		{
-			unsigned short flags;
+			_UINT16		flags;
 			record >> colFirst >> colLast >> coldx >> ixfeXLSB >> flags;
 
 			fHidden = GETBIT(flags, 0);
@@ -99,8 +101,49 @@ namespace XLS
 			fCollapsed = GETBIT(flags, 12);
 		}
 
-		record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
-																	   //0x0600 - 2 bytes; lower - 1 byte
+																	   
+	}
+
+	void ColInfo::writeFields(CFRecord& record)
+	{
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		{
+			_UINT16		colFirst_2b;
+			_UINT16		colLast_2b;
+			_UINT16		coldx_2b;
+
+			_UINT16		flags = 0;
+			colFirst_2b = colFirst;
+			colLast_2b	= colLast;
+			coldx_2b	= coldx;
+
+			SETBIT(flags, 0, fHidden)
+			SETBIT(flags, 1, fUserSet)
+			SETBIT(flags, 2, fBestFit)
+			SETBIT(flags, 3, fPhonetic)
+			SETBITS(flags, 8, 10, iOutLevel)
+			SETBIT(flags, 12, fCollapsed)
+
+			record << colFirst_2b << colLast_2b << coldx_2b << ixfe << flags;
+
+			if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+				record.reserveNunBytes(1); // unused //0x0600 - 2 bytes; lower - 1 byte
+			else
+				record.reserveNunBytes(2);
+		}
+		else
+		{
+			_UINT16		flags = 0;
+
+			SETBIT(flags, 0, fHidden)
+			SETBIT(flags, 1, fUserSet)
+			SETBIT(flags, 2, fBestFit)
+			SETBIT(flags, 3, fPhonetic)
+			SETBITS(flags, 8, 10, iOutLevel)
+			SETBIT(flags, 12, fCollapsed)
+
+			record << colFirst << colLast << coldx << ixfeXLSB << flags;
+		}
 	}
 
 } // namespace XLS

@@ -227,7 +227,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
         state_.in_run_ = true;
 		output_stream() << L"<w:r>";
 
-		start_changes();
+		start_changes(true);
 
 		if (!state_.text_properties_stack_.empty() || parenStyleId.length() > 0)
 		{
@@ -252,20 +252,20 @@ void docx_conversion_context::start_paragraph(bool is_header)
 	if (state_.in_paragraph_)
 		finish_paragraph();
 
+	start_changes(false);
 	output_stream() << L"<w:p>";
 
 	in_header_		= is_header;
     is_rtl_			= false; 
 	
 	state_.in_paragraph_ = true;
-	start_changes();
 }
 
 void docx_conversion_context::finish_paragraph()
 {
 	if (state_.in_paragraph_)
 	{
-		end_changes();
+		end_changes(true);
 
 		if (false == current_process_comment_ && false == get_comments_context().ref_end_.empty())
 		{
@@ -282,6 +282,7 @@ void docx_conversion_context::finish_paragraph()
 				get_comments_context().ref_end_.clear();	
 		}	
 		output_stream() << L"</w:p>";
+		end_changes(false);
 	}
 	
 	in_header_					= false;
@@ -317,7 +318,7 @@ void docx_conversion_context::end_math_formula()
 
 	if (!math_content.empty())
 	{
-		output_stream() << L"<m:oMath>" << math_content << L"</m:oMath>";
+		output_stream() << math_content;
 	}
 }
 void docx_conversion_context::start_sdt(int type)
@@ -2390,6 +2391,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 			{
 				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
 				state.active = true;
+				state.in_para = true;
 			}
 
 			if (state.type == 2)
@@ -2413,7 +2415,7 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 	}
 }
 
-void docx_conversion_context::start_changes()
+void docx_conversion_context::start_changes(bool in_para)
 {
 	if (map_current_changes_.empty()) return;
 	if (current_process_comment_) return;
@@ -2431,6 +2433,8 @@ void docx_conversion_context::start_changes()
 
 		if (state.type == 0)	continue; //unknown change ... todooo
 		if (state.active)		continue;
+
+		state.in_para = in_para;
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
@@ -2543,7 +2547,7 @@ void docx_conversion_context::start_changes()
 	}
 }
 
-void docx_conversion_context::end_changes()
+void docx_conversion_context::end_changes(bool in_para)
 {
 	if (current_process_comment_) return;
 	if (current_process_note_) return;
@@ -2552,10 +2556,11 @@ void docx_conversion_context::end_changes()
 	{
 		text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 0)	continue; //unknown change ... libra format change skip
-		if (state.type	== 3)	continue;
-		if (!state.active)		continue;
-		
+		if (state.type	== 0)			continue; //unknown change ... libra format change skip
+		if (state.type	== 3)			continue;
+		if (!state.active)				continue;
+		if (state.in_para != in_para)	continue;
+
 		if (state.in_drawing != get_drawing_state_content())
 			continue;
 

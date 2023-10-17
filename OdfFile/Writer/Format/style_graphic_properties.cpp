@@ -112,12 +112,6 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 
 void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar_t * ns, const wchar_t * name )
 {
-	if (common_draw_fill_attlist_.draw_fill_gradient_name_ || 
-		common_draw_fill_attlist_.draw_fill_image_name_)
-	{
-		common_draw_fill_attlist_.draw_opacity_ = boost::none;
-	}
-
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()

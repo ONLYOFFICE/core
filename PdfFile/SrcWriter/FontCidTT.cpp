@@ -71,10 +71,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
 	//----------------------------------------------------------------------------------------
-	CFontCidTrueType::CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument)
+	CFontCidTrueType::CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex, CFontFileTrueType* pFontTT) : CFontDict(pXref, pDocument)
 	{
 		m_bNeedAddFontName = true;
-		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		m_pFontFile = pFontTT;
 
 		m_wsFontPath  = wsFontPath;
@@ -99,7 +98,7 @@ namespace PdfWriter
 		CreateCIDFont2(pFont);
 
 		m_pFace         = NULL;
-		m_pFaceMemory   = NULL;	
+		m_pFaceMemory   = NULL;
 		m_nGlyphsCount  = 0;
 		m_nSymbolicCmap = -1;
 		m_ushCodesCount = 0;

@@ -36,32 +36,16 @@
 namespace XLS
 {
 
-class BiffAttribute : public BiffStructure
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(BiffAttribute)
-public:
-    BiffAttribute() {}
-    BiffAttribute(const std::wstring  name_init) : attrib_name(name_init) {}
-
-	void setName(const std::wstring  name_init)
-	{
-		attrib_name = name_init;
-	}
-	static const ElementType	type = typeBiffAttribute;
-
-	_CP_OPT(std::wstring) attrib_name;
-};
-
-
-
-
 template<class Type>
-class BiffAttributeSimple : public BiffAttribute
+class BiffAttributeSimple : public BiffStructure
 {
 public:
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(BiffAttributeSimple)
+        
     BiffAttributeSimple() {}
     BiffAttributeSimple<Type>(const Type& val_init) : val(val_init) {}
-    BiffAttributeSimple<Type>(const Type& val_init, const std::wstring & attrib_name) : val(val_init), BiffAttribute(attrib_name) {}
+
+    static const ElementType type = typeBiffAttribute;
 
     _CP_OPT(Type) & value() {return val;}
 
@@ -73,6 +57,12 @@ public:
 	{
 		version = record.getGlobalWorkbookInfo()->Version;
 		record >> val;
+    }
+
+    virtual void save(CFRecord& record)
+    {
+        version = record.getGlobalWorkbookInfo()->Version;
+        record << val;
     }
 
     operator Type () const { return (val ? static_cast<Type>(*val) : (Type)0); }
@@ -96,44 +86,5 @@ protected:
 	int						version;
 
 };
-
-template<class Type>
-class ForwardOnlyParam : public BiffAttributeSimple<Type>
-{
-public:
-    ForwardOnlyParam() {}
-    ForwardOnlyParam(const Type& val_init)
-    {
-        BiffAttributeSimple<Type>::val = val_init;
-    }
-
-    ForwardOnlyParam<Type> operator= (const ForwardOnlyParam<Type>& other)
-	{
-       BiffAttributeSimple<Type>::val = other.val;
-	   return *this;
-    }
-
-};
-
-
-template<class Type>
-class BackwardOnlyParam : public BiffAttributeSimple<Type>
-{
-public:
-    BackwardOnlyParam() {}
-    BackwardOnlyParam(const Type& val_init)
-    {
-         BiffAttributeSimple<Type>::val = val_init;
-    }
-
-    BackwardOnlyParam<Type> operator= (const BackwardOnlyParam<Type>& other)
-	{
-        BiffAttributeSimple<Type>::val = other.val;
-		return *this;
-    }
-
-};
-
-
 
 } // namespace XLS

@@ -117,7 +117,8 @@ namespace PdfWriter
 		bool              IsPDFA() const;
 			              
 		CPage*            AddPage();
-		CPage*            GetPage(const unsigned int& unPage);
+		CPage*            GetPage    (const unsigned int& unPage);
+		CPage*            GetEditPage(const unsigned int& unPage);
 		unsigned int      GetPagesCount() const;
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
@@ -128,12 +129,24 @@ namespace PdfWriter
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
-					      
-		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
-		CAnnotation*      CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest);
-		CAnnotation*      CreateUriLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, const char* sUri);
-		CAnnotation*      CreateUriLinkAnnot(CPage* pPage, const TRect& oRect, const char* sUrl);
+
+		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
+		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
+		CAnnotation*      CreateTextAnnot();
+		CAnnotation*      CreateInkAnnot();
+		CAnnotation*      CreateLineAnnot();
+		CAnnotation*      CreateTextMarkupAnnot();
+		CAnnotation*      CreateSquareCircleAnnot();
+		CAnnotation*      CreatePolygonLineAnnot();
+		CAnnotation*      CreatePopupAnnot();
+		CAnnotation*      CreateFreeTextAnnot();
+		CAnnotation*      CreateCaretAnnot();
+		CAnnotation*      CreateWidgetAnnot();
+		CAnnotation*      CreateButtonWidget();
+		CAnnotation*      CreateTextWidget();
+		CAnnotation*      CreateChoiceWidget();
+		CAnnotation*      CreateSignatureWidget();
+		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);
@@ -161,12 +174,18 @@ namespace PdfWriter
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
 		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
 		std::pair<int, int> GetPageRef(int nPageIndex);
-		bool              EditPage(CXref* pXref, CPage* pPage);
+		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
+		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
+		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
+		bool              DeleteAnnot(int nObjNum, int nObjGen);
+		CAnnotation*      GetAnnot(int nID);
+		CPage*            GetCurPage() { return m_pCurPage; }
+		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -182,6 +201,7 @@ namespace PdfWriter
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
 		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
+		bool              EditXref(CXref* pXref);
 
 	private:
 
@@ -248,6 +268,9 @@ namespace PdfWriter
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
 		std::map<std::string, CFieldBase*> m_mFields;
+		std::map<int, CAnnotation*>        m_mAnnotations;
+		std::map<int, CDictObject*>        m_mParents;
+		std::map<int, CPage*>              m_mEditPages;
 
 		friend class CFontCidTrueType;
 		friend class CFontTrueType;

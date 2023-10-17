@@ -37,6 +37,8 @@
 
 #include "BitMarkedStructs.h"
 
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
+
 namespace XLS
 {
 
@@ -112,6 +114,18 @@ void XFProps::load(CFRecord& record)
 		else
 		{
 		}
+	}
+}
+
+void XFProps::save(CFRecord& record)
+{
+	record.reserveNunBytes(2); // reserved
+	cprops = rgExt.size();
+	record << cprops;
+
+	for (auto& item : rgExt)
+	{
+		item->save(record);
 	}
 }
 
@@ -216,29 +230,137 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 			CP_XML_NODE(L"alignment")
 			{	
 				for (size_t i = 0; i < arXFPropAlignment.size(); i++)
-				{
-					arXFPropAlignment[i]->serialize(CP_XML_STREAM());
+				{					
+					if (dxf)
+					{
+						arXFPropAlignment[i]->serialize_attr(CP_GET_XML_NODE());
+					}
+					else
+					{
+						arXFPropAlignment[i]->serialize(CP_XML_STREAM());
+					}
 				}
 			}
 		}
 		if (arXFPropBorder.is_present)
 		{
 			CP_XML_NODE(L"border")
-			{	
-				//порядок важен - xfPropType - 8, 9, 6, 7 ( - DataVal_Headings.xls
+			{
+				for (size_t i = 0; i < arXFPropBorder.other.size(); i++)
+				{
+					if (dxf)
+					{
+						arXFPropBorder.other[i]->serialize_attr(CP_GET_XML_NODE());
+					}
+					else
+					{
+						arXFPropBorder.other[i]->serialize(CP_XML_STREAM());
+					}
+				}
+
 				if (arXFPropBorder.left)	arXFPropBorder.left->serialize(CP_XML_STREAM());
 				if (arXFPropBorder.right)	arXFPropBorder.right->serialize(CP_XML_STREAM());
 				if (arXFPropBorder.top)		arXFPropBorder.top->serialize(CP_XML_STREAM());
 				if (arXFPropBorder.bottom)	arXFPropBorder.bottom->serialize(CP_XML_STREAM());
-
-				//----------------------------------------
-				for (size_t i = 0; i < arXFPropBorder.other.size(); i++)
-				{
-					arXFPropBorder.other[i]->serialize(CP_XML_STREAM());
-				}
 			}
 		}	
 	}
+	return 0;
+}
+
+int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
+{
+	int nCurDepth = oReader.GetDepth();
+	while (oReader.ReadNextSiblingNode(nCurDepth))
+	{
+		std::wstring wsNodeName = oReader.GetName();		
+
+		if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+		{
+			std::wstring wsPropName = oReader.GetName();
+
+			while (!wsPropName.empty())
+			{
+				XFPropPtr prop(new XFProp);
+
+				prop->deserialize(wsNodeName, wsPropName, oReader);
+				rgExt.push_back(prop);
+
+				if (!oReader.MoveToNextAttribute())
+					break;
+
+				wsPropName = oReader.GetName();
+			}
+
+			oReader.MoveToElement();
+		}
+
+		if (!oReader.IsEmptyNode())
+		{
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = oReader.GetName();				
+
+				if (wsNodeName == L"fill")
+				{
+					if (sName == L"gradientFill")
+					{
+						XFPropPtr prop(new XFProp);
+						prop->deserialize(wsNodeName, sName, oReader);
+						rgExt.push_back(prop);
+
+						if (!oReader.IsEmptyNode())
+						{
+							int nCurDepth = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nCurDepth))
+							{
+								std::wstring wsPropName2 = oReader.GetName();
+								XFPropPtr prop(new XFProp);
+								prop->deserialize(wsNodeName, wsPropName2, oReader);
+								rgExt.push_back(prop);
+							}
+						}
+					}
+					else if (sName == L"patternFill")
+					{
+						if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+						{
+							std::wstring wsPropName1 = oReader.GetName();
+
+							if (!wsPropName1.empty())
+							{
+								XFPropPtr prop(new XFProp);
+								prop->deserialize(wsNodeName, wsPropName1, oReader);
+								rgExt.push_back(prop);
+							}
+							oReader.MoveToElement();
+						}
+
+						if (!oReader.IsEmptyNode())
+						{
+							int nCurDepth = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nCurDepth))
+							{
+								std::wstring wsPropName2 = oReader.GetName();
+								XFPropPtr prop(new XFProp);
+								prop->deserialize(wsNodeName, wsPropName2, oReader);
+								rgExt.push_back(prop);
+							}
+						}
+					}
+				}
+				else
+				{
+					XFPropPtr prop(new XFProp);
+					prop->deserialize(wsNodeName, sName, oReader);
+					rgExt.push_back(prop);
+				}
+
+			}
+		}
+	}		
+	
 	return 0;
 }
 } // namespace XLS

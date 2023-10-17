@@ -69,8 +69,7 @@ namespace odf_writer {
 
 			if (appr.first > 0)
 			{
-				//pixels to pt
-				metrix.approx_symbol_size = appr.first;///1.1;//"1.2" волшебное число оО
+				metrix.approx_symbol_size = (int)appr.first;
 				metrix.IsCalc = true;
 			}
 
@@ -125,16 +124,20 @@ void odf_conversion_context::calculate_font_metrix(std::wstring name, double siz
 	////////////////////////////////////////////
 	utils::calculate_size_font_symbols(font_metrix_, applicationFonts_);
 }
-double odf_conversion_context::convert_symbol_width(double val)
+double odf_conversion_context::convert_symbol_width(double val, bool add_padding)
 {
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
-	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
-	//
-	//_dxR = dxR / 1024. * width * 9525.;  // to emu
-
-	val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256)) / 256.;
+	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels	
+	
+	//if (add_padding)
+	{
+		val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256)) / 256.;
+	}
 
 	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size))) / 256.) * font_metrix_.approx_symbol_size); //in pixels
+
+	// to back
+	//double back = (int((pixels /*/ 0.75*/ - 5) / font_metrix_.approx_symbol_size * 100. + 0.5)) / 100.;// *0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
@@ -398,8 +401,8 @@ void odf_conversion_context::end_math()
 	double h = math_context_.lvl_max - math_context_.lvl_min;
 	if (math_context_.lvl_min < 0) h += 1;
 	
-	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.2); // либра рамка формулы(её параметры)
-	_CP_OPT(double)height = convert_symbol_width(1.76 * h);
+	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.2, true); // либра рамка формулы(её параметры)
+	_CP_OPT(double)height = convert_symbol_width(1.76 * h, true);
 
 	if (false == math_context_.in_text_box_)
 		drawing_context()->set_size(width, height); // раскомиттить по завершению

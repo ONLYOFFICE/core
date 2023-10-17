@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,6 +69,26 @@ namespace XLSB
         if(bLoadConnLocal)
             record >> stConnLocal;
     }
+
+	void BeginECOlapProps::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags1 = 0, flags2 = 0;
+
+		SETBIT(flags1, 0, fLocalConn)
+		SETBIT(flags1, 1, fNoRefreshCube)
+		SETBIT(flags1, 2, fSrvFmtBack)
+		SETBIT(flags1, 3, fSrvFmtFore)
+		SETBIT(flags1, 4, fSrvFmtFlags)
+		SETBIT(flags1, 5, fSrvFmtNum)
+		SETBIT(flags1, 6, fUseOfficeLcid)
+
+		SETBIT(flags2, 0, bLoadConnLocal)
+
+		record << flags1 << nDrillthroughRows << flags2;
+
+		if (bLoadConnLocal)
+			record << stConnLocal;
+	}
 
 } // namespace XLSB
 

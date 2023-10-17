@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "PIVOTVALUECELL15.h"
-#include "../Biff12_records/BeginSxRow.h"
+#include "../Biff12_records/SxvcellNum.h"
 #include "../Biff12_records/SxvcellStr.h"
 #include "../Biff12_records/SxvcellErr.h"
 #include "../Biff12_records/SxvcellBool.h"
@@ -56,10 +56,10 @@ namespace XLSB
         return BaseObjectPtr(new PIVOTVALUECELL15(*this));
     }
 
-    // PIVOTVALUECELL15 = BrtBeginSxRow / BrtSxvcellStr / BrtSxvcellErr / BrtSxvcellBool / BrtSxvcellDate / BrtSxvcellNil
+    // PIVOTVALUECELL15 = BrtSxvcellNum / BrtSxvcellStr / BrtSxvcellErr / BrtSxvcellBool / BrtSxvcellDate / BrtSxvcellNil
     const bool PIVOTVALUECELL15::loadContent(BinProcessor& proc)
     {
-        if (!proc.optional<BeginSxRow>())
+        if (!proc.optional<SxvcellNum>())
             if (!proc.optional<SxvcellStr>())
                 if (!proc.optional<SxvcellErr>())
                     if (!proc.optional<SxvcellBool>())
@@ -72,6 +72,14 @@ namespace XLSB
 
         return m_source != nullptr;
     }
+
+	const bool PIVOTVALUECELL15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

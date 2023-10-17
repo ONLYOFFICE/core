@@ -34,12 +34,13 @@
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/NameParsedFormula.h"
-#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../Biff_structures/BIFF12/XLWideString.h"
 
 
 namespace XLS
 {
 
+// Logical representation of Lbl record in BIFF8 and BrtName in BIFF12
 class Lbl: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Lbl)
@@ -50,7 +51,8 @@ public:
 
 	BaseObjectPtr clone();
 
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeLbl;
 
@@ -80,16 +82,6 @@ public:
     XLSB::XLNullableWideString  helpTopic; //biff12
     XLSB::XLNullableWideString  unusedstring2; //biff12
 
-};
-class Lbl_BIFF34 : public Lbl
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(Lbl_BIFF34)
-	BASE_OBJECT_DEFINE_CLASS_NAME(Lbl_BIFF34)
-public:
-	Lbl_BIFF34();
-	~Lbl_BIFF34();
-
-	BaseObjectPtr clone();
 };
 
 } // namespace XLS

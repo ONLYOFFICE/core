@@ -85,6 +85,24 @@ void Ptg::load(CFRecord& record)
 	size_of_struct = record.getRdPtr() - offset_in_record.get_value_or(0);
 }
 
+void Ptg::save(CFRecord& record)
+{
+	offset_in_record = record.getRdPtr();
+	if(ptg_id.get() < 256)
+	{
+		unsigned char ptg_1b = ptg_id.get();
+		record << ptg_1b;
+	}
+	else
+	{
+		unsigned short ptg_2b = ptg_id.get();
+		record << ptg_2b;
+	}
+
+	writeFields(record);
+	size_of_struct = record.getRdPtr() - offset_in_record.get_value_or(0);
+}
+
 
 
 } // namespace XLS

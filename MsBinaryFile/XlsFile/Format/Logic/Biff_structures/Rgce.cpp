@@ -115,6 +115,12 @@ void Rgce::load(CFRecord& record)
 	}
 }
 
+void Rgce::save(CFRecord& record)
+{
+	for (auto& item : sequence)
+		item->save(record);
+}
+
 
 const size_t Rgce::getCCE() const
 {

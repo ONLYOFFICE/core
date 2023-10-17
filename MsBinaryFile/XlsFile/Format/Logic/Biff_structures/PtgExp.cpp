@@ -58,6 +58,15 @@ void PtgExp::loadFields(CFRecord& record)
 
 }
 
+void PtgExp::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		record << row << col;
+	else
+		record << rowXlsb;
+
+}
+
 
 void PtgExp::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

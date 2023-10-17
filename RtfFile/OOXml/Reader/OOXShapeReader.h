@@ -46,7 +46,13 @@ namespace OOX
 		class CBackground;
 	}
 }
-
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SchemeClr;
+	}
+}
 class OOXShapeReader
 {
 public: 
@@ -62,8 +68,8 @@ public:
 	bool ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	
 	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
-	static void Parse(ReaderParameter oParam, PPTX::Logic::UniFill *fill, unsigned int & nColor, _CP_OPT(double) &opacity);
-	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor, _CP_OPT(double) &opacity);
+	static void Parse(ReaderParameter oParam, PPTX::Logic::UniFill *fill, unsigned long & nColor, _CP_OPT(double) &opacity);
+	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned long& nColor, _CP_OPT(double) &opacity);
 	
 	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 
@@ -83,16 +89,16 @@ private:
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BodyPr *text_properties);
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Xfrm *xfrm);
 	
-	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill *oox_solid_fill, unsigned long & nColor, _CP_OPT(double) &opacity);
 	
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::StyleRef	*style_ref, int type);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Ln		*oox_line_prop,		std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Ln		*oox_line_prop, PPTX::Logic::SchemeClr* change_color = NULL);
 
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill	*oox_fill,			std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill	*oox_fill, PPTX::Logic::SchemeClr* change_color = NULL);
 	
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::GradFill	*oox_grad_fill,		std::wstring *change_sheme_color = NULL);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::GradFill	*oox_grad_fill, PPTX::Logic::SchemeClr* change_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill, PPTX::Logic::SchemeClr* change_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill, PPTX::Logic::SchemeClr* change_color = NULL);
 //---------------------------------------------------------------------------
 	OOX::Vml::CVmlCommonElements						*m_vmlElement = NULL;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement = NULL;

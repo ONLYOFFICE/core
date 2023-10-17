@@ -38,8 +38,8 @@
 #include <list>
 
 #if defined(_WIN32) || defined (_WIN64)
-	#include <direct.h>
-    #include <windows.h>
+#include <direct.h>
+#include <windows.h>
 #endif
 
 #include "OfficeUtilsCommon.h"
@@ -49,27 +49,38 @@ using namespace std;
 
 #include "zlib-1.2.11/contrib/minizip/unzip.h"
 #include "zlib-1.2.11/contrib/minizip/zip.h"
+#include "zlib-1.2.11/contrib/minizip/ioapibuf.h"
 #if defined(_WIN32) || defined (_WIN64)
-	#include "zlib-1.2.11/contrib/minizip/iowin32.h"
+#include "zlib-1.2.11/contrib/minizip/iowin32.h"
 #endif
 #include <zlib.h>
 
 namespace ZLibZipUtils
 {
-  zipFile zipOpenHelp(const wchar_t* filename);
-  unzFile unzOpenHelp(const wchar_t* filename);
+	zipFile zipOpenHelp(const wchar_t* filename);
+	unzFile unzOpenHelp(const wchar_t* filename);
 
-  int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false);
-  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false );
-  bool ClearDirectory( const WCHAR* dir, bool delDir = false );
-  int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
-  int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize );
-  int CompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize, SHORT level );
-  
-  bool IsArchive(const WCHAR* filename);
-  bool IsFileExistInArchive(const WCHAR* zipFile, const WCHAR* filePathInZip);
-  bool LoadFileFromArchive(const WCHAR* zipFile, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize);
-  bool ExtractFiles(const WCHAR* zip_file_path, const ExtractedFileCallback& callback, void* pParam);
-  bool CompressFiles(const WCHAR* zip_file_path, const RequestFileCallback& callback, void* pParam, int compression_level);
-  bool GetFilesSize(const WCHAR* zip_file_path, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);
+	int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false);
+	int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method = Z_DEFLATED, int compressionLevel = -1, bool bDateTime = false );
+	bool ClearDirectory( const WCHAR* dir, bool delDir = false );
+
+	int UnzipToDir( unzFile uf, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory );
+	int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
+	int UnzipToDir( BYTE* data, size_t len, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );
+
+	int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize );
+	int CompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize, SHORT level );
+
+	bool IsArchive(const WCHAR* filename);
+	bool IsArchive(BYTE* data, size_t len);
+
+	bool IsFileExistInArchive(const WCHAR* zipFile, const WCHAR* filePathInZip);
+	bool IsFileExistInArchive(BYTE* data, size_t len, const WCHAR* filePathInZip);
+
+	bool LoadFileFromArchive(const WCHAR* zipFile, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize);
+	bool LoadFileFromArchive(BYTE* data, size_t len, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize);
+
+	bool ExtractFiles(const WCHAR* zip_file_path, const ExtractedFileCallback& callback, void* pParam);
+	bool CompressFiles(const WCHAR* zip_file_path, const RequestFileCallback& callback, void* pParam, int compression_level);
+	bool GetFilesSize(const WCHAR* zip_file_path, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);
 }

@@ -1170,7 +1170,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 	SS				*series_ss		= dynamic_cast<SS *>(series->m_SS.get());	
 	DataFormat		*series_df		= dynamic_cast<DataFormat *>(series_ss->m_DataFormat.get());
 
-	bool is_area = (crt->m_iChartType == CHART_TYPE_Area || crt->m_iChartType == CHART_TYPE_RadarArea);
+	bool is_area = (crt->m_iChartType == CHART_TYPE_Area || crt->m_iChartType == CHART_TYPE_RadarArea || crt->m_iChartType == CHART_TYPE_Bar);
 	int series_id = series_df->iss;
 	
 	std::vector<std::pair<int, BaseObjectPtr>>	labels = chart_formats->find_labels ( 4, id);
@@ -1228,7 +1228,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 		
 		if (text)
 		{
-			if (text->dlp > 0 && text->dlp < 9)
+			if (text->dlp > 0 && text->dlp < 9 && !crt->m_Chart3d)
 			{
 				CP_XML_NODE(L"c:dLblPos")
 				{

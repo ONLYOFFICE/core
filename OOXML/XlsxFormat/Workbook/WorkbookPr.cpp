@@ -77,7 +77,7 @@ namespace OOX
 			WritingStringNullableAttrBool(L"refreshAllConnections", m_oRefreshAllConnections);
 			WritingStringNullableAttrBool(L"showBorderUnselectedTables", m_oShowBorderUnselectedTables);
 			WritingStringNullableAttrBool(L"showInkAnnotation", m_oShowInkAnnotation);
-			WritingStringNullableAttrBool(L"showObjects", m_oShowObjects);
+			WritingStringNullableAttrString(L"showObjects", m_oShowObjects, m_oShowObjects->ToBool() ? L"all" : L"none");
 			WritingStringNullableAttrBool(L"showPivotChartFilter", m_oShowPivotChartFilter);
 			WritingStringNullableAttrString(L"updateLinks", m_oUpdateLinks, m_oUpdateLinks->ToString());
 			writer.WriteString(_T("/>"));
@@ -247,7 +247,7 @@ namespace OOX
 		{
 			writer.WriteString(L"<fileSharing");
 			WritingStringNullableAttrEncodeXmlString2(L"userName", m_oUserName);
-			WritingStringNullableAttrBool2(L"readOnlyRecommended", m_oReadOnlyRecommended);			
+			WritingStringNullableAttrBool2(L"readOnlyRecommended", m_oReadOnlyRecommended);
 			WritingStringNullableAttrString(L"algorithmName", m_oAlgorithmName, m_oAlgorithmName->ToString());
 			WritingStringNullableAttrString(L"hashValue", m_oHashValue, m_oHashValue.get());
 			WritingStringNullableAttrString(L"saltValue", m_oSaltValue, m_oSaltValue.get());

@@ -477,7 +477,10 @@ void draw_fill_image::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void draw_fill_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	if CP_CHECK_NAME(L"office", L"binary-data")
+	{
+		CP_CREATE_ELEMENT(office_binary_data_);
+	}
 }
 //----------------------------------------------------------------------------------------
 const wchar_t * draw_marker::ns = L"draw";
@@ -542,7 +545,7 @@ void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_gradient::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_hatch::ns = L"draw";
@@ -583,7 +586,7 @@ void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	CP_CREATE_ELEMENT(content_);
 }
 // style:style
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1560,7 +1563,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 	{
 		oox::_oox_fill fill;
 			
-		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, style_background_image_, Context.root()->odf_context().drawStyles(), fill);
+		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, style_background_image_, Context.root(), fill);
 		if (fill.bitmap)
 		{
 			if ( fill.bitmap->rId.empty())
@@ -1781,8 +1784,7 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 			if (properties)
 			{				
 				oox::_oox_fill fill;
-				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
-																			Context.root()->odf_context().drawStyles() ,fill);
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
 				Context.get_slide_context().add_background(fill);
 			}
 		}
@@ -2155,6 +2157,28 @@ void style_presentation_page_layout::pptx_convert(oox::pptx_conversion_context &
 		content_[i]->pptx_convert(Context);
 	}
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_gradient_stop::ns = L"loext";
+const wchar_t* loext_gradient_stop::name = L"gradient-stop";
+
+void loext_gradient_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"loext:color-type", color_type_);
+	CP_APPLY_ATTR(L"loext:color-value", color_value_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t* loext_opacity_stop::ns = L"loext";
+const wchar_t* loext_opacity_stop::name = L"opacity-stop";
+
+void loext_opacity_stop::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+	CP_APPLY_ATTR(L"svg:stop-opacity", stop_opacity_);
+	CP_APPLY_ATTR(L"svg:offset", svg_offset_);
+	
+	//CP_APPLY_ATTR(L"loext:stop-opacity", stop_opacity_); //?? 
+}
+
 
 }
 }

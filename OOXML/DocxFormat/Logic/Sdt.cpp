@@ -429,13 +429,13 @@ namespace OOX
 		{
 			ClearItems();
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
-				XmlUtils::CXmlNode oItem;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItem ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
@@ -865,16 +865,16 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( L"w:listItem", oChilds ) )
 			{
-				XmlUtils::CXmlNode oItemNode;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItemNode ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
-						*oListItem = oItemNode;
+						*oListItem = oItem;
 
 						if (oListItem) m_arrListItem.push_back( oListItem );
 					}
@@ -1094,16 +1094,16 @@ namespace OOX
 		{
 			XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
 
-			XmlUtils::CXmlNodes oChilds;
+			std::vector<XmlUtils::CXmlNode> oChilds;
 			if ( oNode.GetNodes( L"w:listItem", oChilds ) )
 			{
-				XmlUtils::CXmlNode oItemNode;
-				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oChilds.size(); nIndex++ )
 				{
-					if ( oChilds.GetAt( nIndex, oItemNode ) )
+					XmlUtils::CXmlNode& oItem = oChilds[nIndex];
+					if (oItem.IsValid())
 					{
 						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
-						*oListItem = oItemNode;
+						*oListItem = oItem;
 
 						if (oListItem) m_arrListItem.push_back( oListItem );
 					}

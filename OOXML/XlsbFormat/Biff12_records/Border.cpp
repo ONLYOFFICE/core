@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,6 +61,17 @@ namespace XLSB
 
         record >> blxfTop >> blxfBottom >> blxfLeft >> blxfRight >> blxfDiag;
     }
+
+	void Border::writeFields(XLS::CFRecord& record)
+	{
+		unsigned char flags = 0;
+
+		SETBIT(flags, 0, fBdrDiagDown)
+		SETBIT(flags, 1, fBdrDiagUp)
+
+		record << flags;
+		record << blxfTop << blxfBottom << blxfLeft << blxfRight << blxfDiag;
+	}
 
 } // namespace XLSB
 

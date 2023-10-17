@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,8 +52,21 @@ namespace XLSB
 
     void BeginListXmlCPr::readFields(XLS::CFRecord& record)
     {
-        record >> dwMapId >> fCanBeSingle >> lfxidtDisk >> xpath;
+		_UINT32 flags;
+
+        record >> dwMapId >> flags >> lfxidtDisk >> xpath;
+
+		fCanBeSingle = GETBIT(flags, 1);
     }
+
+	void BeginListXmlCPr::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 1, fCanBeSingle);
+
+		record << dwMapId << flags << lfxidtDisk << xpath;
+	}
 
 } // namespace XLSB
 

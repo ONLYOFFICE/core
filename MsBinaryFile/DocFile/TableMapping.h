@@ -69,7 +69,7 @@ namespace DocFileFormat
 
 		int cp;
 		unsigned int depth;
-		std::list<ITableCellElementPtr> cellElements;
+		std::vector<ITableCellElementPtr> cellElements;
 
 		DocumentMapping* documentMapping;
 	};
@@ -92,7 +92,7 @@ namespace DocFileFormat
 
 		int cp;
 		unsigned int depth;
-		std::list<TableCell> cells;
+		std::vector<TableCell> cells;
 
 		DocumentMapping* documentMapping;
 	};
@@ -154,7 +154,7 @@ namespace DocFileFormat
 		int cpStart;
 		int cpEnd;
 		unsigned int depth;
-		std::list<TableRow> rows;
+		std::vector<TableRow> rows;
 
 		DocumentMapping* documentMapping;
 	};

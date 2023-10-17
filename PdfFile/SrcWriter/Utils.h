@@ -132,6 +132,8 @@ namespace PdfWriter
 
 	void  UIntChangeBit(unsigned int& nValue, short nBit);
 	void  UIntChangeBit2(unsigned int& nValue, short nBit);
+
+	std::string DateNow();
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

@@ -97,12 +97,15 @@ border_style& border_style::operator =(const border_style& Value)
 }
 border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
 {
+    if (Value.empty()) return;
+
 	std::wstring tmp =  boost::algorithm::trim_copy(Value);
     boost::algorithm::to_lower(tmp);
     
-    if (L"none" == tmp || tmp.length() < 1)
+    if (L"none" == tmp/* || tmp.length() < 1*/)
     {
         none_ = true;
+        style_ = none;
     }
     else
     {
@@ -139,7 +142,6 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
 border_style border_style::parse( const std::wstring & Value)
 {
     return border_style(Value);
-
 }
 
 border_style::border_style(const color & color_,  const type & style_, const length & length_)

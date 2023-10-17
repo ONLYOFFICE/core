@@ -201,6 +201,13 @@ namespace NSFile
 		static bool Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags = NSBase64::B64_BASE64_FLAG_NONE);
 		static bool Decode(const char* pDataSrc, int nLenSrc, BYTE*& pDataDst, int& nLenDst);
 	};
+
+#ifdef _IOS
+	namespace NSIOS
+	{
+		KERNEL_DECL std::string GetFileSystemRepresentation(const std::wstring& path);
+	}
+#endif
 }
 
 namespace NSFile

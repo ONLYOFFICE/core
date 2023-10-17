@@ -48,14 +48,13 @@ namespace PPTX
 		{
 			arrControls.clear();
 
-			XmlUtils::CXmlNodes oNodes;
+			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode oNode;
-					oNodes.GetAt(i, oNode);
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -252,12 +251,12 @@ namespace PPTX
 					RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 
-					std::wstring *main_props = NULL;
-
 					oDrawingConverter.SetRels(rels);
 
 					std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
-					oDrawingConverter.ConvertVml(temp, elements);
+					nullable<OOX::WritingElement> anchor;
+					
+					oDrawingConverter.ConvertVml(temp, elements, anchor);
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
 
 					smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();

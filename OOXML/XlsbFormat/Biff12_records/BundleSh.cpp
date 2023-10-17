@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,6 +59,19 @@ namespace XLSB
         sheet_info.name = strName.value();
         record.getGlobalWorkbookInfo()->sheets_info.push_back(sheet_info);
     }
+
+	void BundleSh::writeFields(XLS::CFRecord& record)
+	{
+		record << hsState << iTabID << strRelID << strName;
+	}
+
+	void BundleSh::saveSheetInfo(XLS::GlobalWorkbookInfo* global_info_)
+	{
+		GlobalWorkbookInfo::_sheet_info sheet_info;
+		sheet_info.state = hsState;
+		sheet_info.name = strName.value();
+		global_info_->sheets_info.push_back(sheet_info);
+	}
 
 } // namespace XLSB
 

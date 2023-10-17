@@ -136,8 +136,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	if (properties)
 	{
 		properties->apply_to(Context.get_slide_context().get_properties());
-		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_,
-			Context.root()->odf_context().drawStyles(), fill);
+		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 	}
  	for (size_t i = 0; i < additional_.size(); i++)
 	{
@@ -339,117 +338,9 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 {
 	find_draw_type_oox();
 
-	bool set_shape = false;
-
-	if (attlist_.draw_mirror_horizontal_)
-	{
-		Context.get_slide_context().set_property(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
-	}
-	if (attlist_.draw_mirror_vertical_)
-	{
-		Context.get_slide_context().set_property(_property(L"flipV", *attlist_.draw_mirror_vertical_));
-	}
-	if (draw_type_oox_index_)
-	{
-		Context.get_slide_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
-		Context.get_slide_context().set_property(_property(L"oox-geom", bOoxType_));	
-		
-		if (word_art_ == true)
-			Context.get_slide_context().set_property(_property(L"wordArt", true));	
-
-		set_shape = true;
-	}
-	if (sub_type_)
-	{
-		Context.get_slide_context().start_shape(sub_type_.get());
-		set_shape = true;
-	}
-
-	if (!odf_path_.empty())
-	{
-		std::vector<::svg_path::_polyline> o_Polyline;
+	bool set_shape = oox_convert(Context.get_slide_context().get_properties());
 	
-		bool res = false;
-		bool bClosed = false, bStroked = true;
-		
-		try
-		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
-		}
-		catch(...)
-		{
-			res = false; 
-		}
-		//if (!bClosed) lined_shape_ = true;
-		
-		if (o_Polyline.size() > 1 && res )
-		{
-			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
-			std::wstringstream output_;   
-            ::svg_path::oox_serialize(output_, o_Polyline);
-			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
-			set_shape = true;
-
-			if (false == bStroked)
-			{
-				Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_s", false));
-			}
-			if (attlist_.drawooo_sub_view_size_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 2)
-				{
-					int w = boost::lexical_cast<int>(splitted[0]);
-					int h = boost::lexical_cast<int>(splitted[1]);
-					
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
-				}
-				else if (splitted.size() == 4)
-				{///???? rect ???
-					int l = boost::lexical_cast<int>(splitted[0]);
-					int t = boost::lexical_cast<int>(splitted[1]);
-					int r = boost::lexical_cast<int>(splitted[2]);
-					int b = boost::lexical_cast<int>(splitted[3]);
-
-				}
-			}
-			else if (svg_viewbox_)
-			{
-				std::vector< std::wstring > splitted;			    
-				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-				
-				if (splitted.size() == 4)
-				{
-					int w = boost::lexical_cast<int>(splitted[2]);
-					int h = boost::lexical_cast<int>(splitted[3]);
-					
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
-					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
-				}
-			}
-		}
-	}
-	if (attlist_.draw_modifiers_)
-	{
-		if (bOoxType_)
-			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));	
-		else
-		{
-		}
-
-		//if (draw_handle_geometry_.size()>0)
-		//{
-		//	if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-		//	{
-		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
-		//	}
-		//}
-	}
 	if (!set_shape)
 	{
 		Context.get_slide_context().start_shape(1); //restart type shape

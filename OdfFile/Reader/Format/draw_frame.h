@@ -77,13 +77,14 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    draw_image_attlist				draw_image_attlist_;
-	odf_types::common_xlink_attlist xlink_attlist_;
+    draw_image_attlist draw_image_attlist_;
+    _CP_OPT(std::wstring) draw_mime_type_;
+    odf_types::common_xlink_attlist xlink_attlist_;
     
-    office_element_ptr_array		content_;
-	office_element_ptr				office_binary_data_;
+    office_element_ptr_array content_;
+	office_element_ptr office_binary_data_;
 	
-	office_element_ptr			draw_frame_ptr; //openoffice xml 1.0
+	office_element_ptr draw_frame_ptr; //openoffice xml 1.0
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_image);
@@ -383,9 +384,9 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
     odf_types::common_xlink_attlist	xlink_attlist_;
-	_CP_OPT(std::wstring)			draw_mime_type_;
+	_CP_OPT(std::wstring) draw_mime_type_;
     
-	office_element_ptr_array		content_;
+	office_element_ptr_array content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

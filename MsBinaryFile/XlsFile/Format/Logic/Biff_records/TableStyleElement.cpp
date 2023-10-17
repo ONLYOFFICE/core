@@ -58,5 +58,15 @@ void TableStyleElement::readFields(CFRecord& record)
     record >> tseType >> size >> index;
 }
 
+void TableStyleElement::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		record << frtHeader;
+	}
+
+	record << tseType << size << index;
+}
+
 } // namespace XLS
 

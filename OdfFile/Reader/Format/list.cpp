@@ -155,10 +155,7 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
     {
         content_[i]->pptx_convert(Context);
     }
-
 }
-
-
 std::wostream & list_header::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
  	for (size_t i = 0; i < content_.size(); i++)
@@ -184,8 +181,45 @@ void list_header::add_child_element( xml::sax * Reader, const std::wstring & Ns,
         CP_CREATE_ELEMENT(content_);        
     }
 }
+//-------------------------------------------------------------------------------------------------------------
+const wchar_t* ordered_list::ns = L"text";
+const wchar_t* ordered_list::name = L"ordered-list";
 
+void ordered_list::add_attributes(const xml::attributes_wc_ptr& Attributes)
+{
+    CP_APPLY_ATTR(L"style:name", style_name_);
+}
+void ordered_list::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+std::wostream& ordered_list::text_to_stream(std::wostream& _Wostream, bool bXmlEncode) const
+{
+    for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->text_to_stream(_Wostream, bXmlEncode);
+    }
+    return _Wostream;
+}
+void ordered_list::docx_convert(oox::docx_conversion_context& Context)
+{
+    Context.start_list(style_name_.get_value_or(L""));
 
+    for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->docx_convert(Context);
+    }
+    Context.end_list();
+}
+void ordered_list::pptx_convert(oox::pptx_conversion_context& Context)
+{
+    Context.get_text_context().start_list(style_name_.get_value_or(L""));
+    for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->pptx_convert(Context);
+    }
+    Context.get_text_context().end_list();
+}
 }
 }
 }

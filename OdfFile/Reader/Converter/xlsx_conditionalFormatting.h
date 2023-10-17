@@ -58,6 +58,12 @@ public:
 
 	void add_sfv	(int type, std::wstring value);
 	void add_color	(std::wstring col);
+	
+	void set_negative_color(std::wstring col);
+	
+	void set_axis_position(std::wstring val);
+	void set_axis_color(std::wstring val);
+	void set_icon_set_type(int type);
 
     void serialize(std::wostream & _Wostream);
 private:

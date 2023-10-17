@@ -83,7 +83,6 @@ public:
     odf_types::common_keep_with_next_attlist		common_keep_with_next_attlist_;
     odf_types::common_writing_mode_attlist			common_writing_mode_attlist_;
 	odf_types::common_border_attlist				common_border_attlist_;
-
  
 	office_element_ptr			style_background_image_;
     _CP_OPT(odf_types::Bool)	style_use_optimal_column_width_;
@@ -91,16 +90,13 @@ public:
 };
 
 // style:table-properties
-
 class style_table_properties : public office_element_impl<style_table_properties>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleTableProperties;
-
-    
+    static const ElementType type = typeStyleTableProperties;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -111,7 +107,6 @@ public:
 
     table_format_properties content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_table_properties)
 
 // style-table-column-properties-attlist
@@ -120,9 +115,10 @@ class style_table_column_properties_attlist
 public:
  	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
    
-    _CP_OPT(odf_types::length)	style_column_width_;
-    _CP_OPT(odf_types::length)	style_rel_column_width_;
-    _CP_OPT(odf_types::Bool)	style_use_optimal_column_width_;
+    _CP_OPT(double) loext_column_width_sym_;
+    _CP_OPT(odf_types::length) style_column_width_;
+    _CP_OPT(odf_types::length) style_rel_column_width_;
+    _CP_OPT(odf_types::Bool) style_use_optimal_column_width_;
   
 	odf_types::common_break_attlist common_break_attlist_;
 
@@ -135,16 +131,13 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeStyleTableColumnProperties;
-
-    
+    static const ElementType type = typeStyleTableColumnProperties;    
   
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void serialize(std::wostream & strm);
 
-    style_table_column_properties_attlist style_table_column_properties_attlist_;
+    style_table_column_properties_attlist attlist_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_table_column_properties)
 
 // style-table-row-properties-attlist
@@ -159,7 +152,7 @@ public:
     _CP_OPT(odf_types::keep_together)	fo_keep_together_;        
 
     odf_types::common_background_color_attlist common_background_color_attlist_;
-    odf_types::common_break_attlist			common_break_attlist_;
+    odf_types::common_break_attlist common_break_attlist_;
 };
 
 // style:table-row-properties
@@ -178,10 +171,9 @@ public:
 
 public:
     style_table_row_properties_attlist	style_table_row_properties_attlist_;
-    office_element_ptr					style_background_image_;
+    office_element_ptr style_background_image_;
         
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_table_row_properties)
 
 // style-table-cell-properties-attlist
@@ -227,8 +219,7 @@ public:
 class style_table_cell_properties_elements
 {
 public:
-    office_element_ptr style_background_image_;
-    
+    office_element_ptr style_background_image_;    
 };
 
 // style:table-cell-properties
@@ -248,10 +239,9 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     style_table_cell_properties_attlist content_;
-    office_element_ptr					style_background_image_;
+    office_element_ptr style_background_image_;
         
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_table_cell_properties)
 
 }

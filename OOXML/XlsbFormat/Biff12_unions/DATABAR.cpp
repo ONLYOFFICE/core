@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,8 +33,8 @@
 #include "DATABAR.h"
 #include "../Biff12_records/BeginDatabar.h"
 #include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
 #include "../Biff12_records/EndDatabar.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 
 using namespace XLS;
 
@@ -82,12 +82,32 @@ namespace XLSB
 
         if (proc.optional<EndDatabar>())
         {
-            m_BrtEndDatabar = elements_.back();
+			m_bBrtEndDatabar = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDatabar = false;
 
-        return m_BrtBeginDatabar && !m_arCFVO.empty() && m_BrtColor && m_BrtEndDatabar;
+        return m_BrtBeginDatabar && !m_arCFVO.empty() && m_BrtColor && m_bBrtEndDatabar;
     }
+
+	const bool DATABAR::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginDatabar != nullptr)
+			proc.mandatory(*m_BrtBeginDatabar);
+
+		for (auto &item : m_arCFVO)
+		{
+			proc.mandatory(*item);
+		}
+
+		if (m_BrtColor != nullptr)
+			proc.mandatory(*m_BrtColor);
+
+		proc.mandatory<EndDatabar>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

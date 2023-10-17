@@ -622,6 +622,7 @@ public:
 	office_element_ptr			table_shapes_;
     table_columns_and_groups	table_columns_and_groups_;//table-columns-and-groups
     table_rows_and_groups		table_rows_and_groups_;
+    office_element_ptr			table_sparkline_groups_;
 
  	office_element_ptr			office_forms_;
    //office-dde-source

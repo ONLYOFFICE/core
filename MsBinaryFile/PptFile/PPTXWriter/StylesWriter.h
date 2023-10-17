@@ -31,6 +31,7 @@
  */
 #pragma once
 #include  "../Drawing/TextStructures.h"
+#include "../../../Common/MS-LCID.h"
 
 namespace PPT
 {
@@ -55,4 +56,6 @@ namespace PPT
 		static std::wstring GetColorInScheme(const LONG& lIndex);
 
 		static std::wstring GetFontAlign(const WORD& value);
+	private:
+		MS_LCID_converter m_lcidConverter;
 };

@@ -501,7 +501,7 @@ namespace NSCustomVML
 			if (NULL == m_pAdjustValues)
 				return;
 
-			int lCount = m_pAdjustValues->size();
+			size_t lCount = m_pAdjustValues->size();
 
 			while (lCount <= lIndex)
 			{

@@ -78,11 +78,13 @@ namespace OOX
 		std::wstring CRelationShip::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"Id",         m_rId.ToString() );
-			oAttr.Write(L"Type",       m_sType );
+			oAttr.Write(L"Id", m_rId.ToString() );
+			oAttr.Write(L"Type", m_sType );
 			std::wstring sTarget = m_oTarget.m_strFilename;
 
-			XmlUtils::replace_all(sTarget,L"\\",L"/");
+			if (false == IsExternal())
+				XmlUtils::replace_all(sTarget,L"\\",L"/");
+
 			sTarget = XmlUtils::EncodeXmlString(sTarget);
 			oAttr.Write(L"Target", sTarget);
 			if(m_sMode.IsInit())
@@ -97,12 +99,11 @@ namespace OOX
 		void CRelationShip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sTempTarget;
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
+				WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
 			WritingElement_ReadAttributes_End( oReader )
 
 			//External rels не нормализуем, иначе искажаются пути в гиперссылках.

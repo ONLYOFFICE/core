@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginBundleShs>())
         {
-            m_BrtBeginBundleShs = elements_.back();
+            m_bBrtBeginBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginBundleShs = false;
 
         while (proc.optional<BundleSh>())
         {
@@ -70,12 +72,27 @@ namespace XLSB
 
         if (proc.optional<EndBundleShs>())
         {
-            m_BrtEndBundleShs = elements_.back();
+            m_bBrtEndBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndBundleShs = false;
 
-        return m_BrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_BrtEndBundleShs;
+        return m_bBrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_bBrtEndBundleShs;
     }
+
+	const bool BUNDLESHS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginBundleShs>();
+
+		for (auto &item : m_arBrtBundleSh)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndBundleShs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

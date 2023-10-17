@@ -58,7 +58,7 @@ namespace DocFileFormat
 	struct RelationshipsFile
 	{
 		std::wstring			FileName;
-		std::list<Relationship> Relationships;
+		std::vector<Relationship> Relationships;
 		int						RelID;
 
 		RelationshipsFile():
@@ -71,7 +71,7 @@ namespace DocFileFormat
 		{
 		}
 
-		RelationshipsFile( int relID, const std::wstring& fileName, const std::list<Relationship>& relationships ):
+		RelationshipsFile( int relID, const std::wstring& fileName, const std::vector<Relationship>& relationships ):
 					RelID(relID), FileName( fileName ), Relationships( relationships )
 		{
 		}
@@ -128,8 +128,8 @@ namespace DocFileFormat
 		RelationshipsFile CommentsRelationshipsFile;
 		RelationshipsFile NumberingRelationshipsFile;
 		
-		std::list<RelationshipsFile> HeaderRelationshipsFiles;
-		std::list<RelationshipsFile> FooterRelationshipsFiles;
+		std::vector<RelationshipsFile> HeaderRelationshipsFiles;
+		std::vector<RelationshipsFile> FooterRelationshipsFiles;
 
 		int relID;
 

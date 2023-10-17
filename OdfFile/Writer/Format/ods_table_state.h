@@ -330,6 +330,7 @@ public:
 		void set_table_protection_protected_cells(bool Val);
 
     void add_column(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style);
+		void set_column_width_sym(double width);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);
@@ -382,14 +383,22 @@ public:
 	void add_child_element( const office_element_ptr & child_element);
 
 	void start_conditional_formats();
-		void start_conditional_format(std::wstring ref);
+		void start_conditional_format(const std::wstring& ref);
             void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
-				void set_conditional_formula(std::wstring formula);
-                void set_conditional_value(int type, std::wstring value );
-                void set_conditional_iconset(int type_iconset);
-				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) color);
-				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
+				void set_conditional_formula(const std::wstring& formula);
+                void set_conditional_value(int type, const std::wstring& value );
+                
+				void set_conditional_iconset(int type_iconset);
 				
+				void set_conditional_show_value(bool value);
+
+				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) & color);
+				
+				void set_conditional_databar_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_negative_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_axis_color(_CP_OPT(odf_types::color) & color);
+				void set_conditional_databar_axis_position(const std::wstring& value);
+
 				void set_conditional_style_name(const std::wstring &style_name);
                 void set_conditional_operator(int _operator);
 
@@ -403,6 +412,44 @@ public:
 	void start_pilot_table(office_element_ptr & elm);
 	void end_pilot_table();
 
+	void start_sparkline_groups();
+		void start_sparkline_group();
+		void set_sparkline_id(const std::wstring& val);
+		void set_sparkline_type(int type);
+		void set_sparkline_manual_max(double val);
+		void set_sparkline_manual_min(double val);
+		void set_sparkline_line_weight(double val);
+		void set_sparkline_minAxisType(int val);
+		void set_sparkline_maxAxisType(int val);
+		void set_sparkline_emptyCellsAs(int val);
+		void set_sparkline_markers(bool val);
+		void set_sparkline_date_axis(bool val);
+		void set_sparkline_high(bool val);
+		void set_sparkline_low(bool val);
+		void set_sparkline_first(bool val);
+		void set_sparkline_last(bool val);
+		void set_sparkline_negative(bool val);
+		void set_sparkline_display_xAxis(bool val);
+		void set_sparkline_display_hidden(bool val);
+		void set_sparkline_rtl(bool val);
+
+		void set_sparkline_color_series(_CP_OPT(odf_types::color) &color);
+		void set_sparkline_color_negative(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_axis(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_markers(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_first(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_last(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_high(_CP_OPT(odf_types::color)& color);
+		void set_sparkline_color_low(_CP_OPT(odf_types::color)& color);
+
+			void start_sparklines();
+				void start_sparkline();
+					void set_sparkline_range(const std::wstring& ref);
+					void set_sparkline_cell(const std::wstring& ref);
+				void end_sparkline();
+			void end_sparklines();
+		void end_sparkline_group();
+	void end_sparkline_groups();
 ///////////////////////////////
     void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location);
 	
@@ -444,6 +491,7 @@ public:
     int dimension_columns;
     int dimension_row;
 
+	double defaut_column_width_sym_ = 0;
 	double defaut_column_width_;
 	double defaut_row_height_;
 

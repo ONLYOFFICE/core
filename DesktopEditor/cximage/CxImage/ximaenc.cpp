@@ -1179,45 +1179,5 @@ bool CxImage::GetExifThumbnail(const TCHAR *filename, const TCHAR *outname, int3
 }
 #endif //CXIMAGE_SUPPORT_EXIF
 ////////////////////////////////////////////////////////////////////////////////
-bool CxImage::GetSpecializedGIFInfo(FILE *hFile, uint32_t imagetype)
-{
-    CxIOFile file(hFile);
-    return GetSpecializedGIFInfo(&file, imagetype);
-}
-////////////////////////////////////////////////////////////////////////////////
-bool CxImage::GetSpecializedGIFInfo(CxFile *hFile, uint32_t imagetype)
-{
-    if (hFile == NULL){
-        strcpy(info.szLastError,CXIMAGE_ERR_NOFILE);
-        return false;
-    }
-
-    uint32_t pos = hFile->Tell();
-
-#ifdef CXIMAGE_SUPPORT_PNG
-    if (CXIMAGE_FORMAT_UNKNOWN==imagetype || CXIMAGE_FORMAT_PNG==imagetype){
-        CxImagePNG *newima = new CxImagePNG;
-        if (!newima)
-            return false;
-        newima->CopyInfo(*this);
-        if (newima->GetSpecializedGIFInfo(hFile))
-        {
-            Transfer(*newima);
-            delete newima;
-            return true;
-        } else {
-            strcpy(info.szLastError,newima->GetLastError());
-            hFile->Seek(pos,SEEK_SET);
-            delete newima;
-            if (CXIMAGE_FORMAT_UNKNOWN!=imagetype)
-                return false;
-        }
-    }
-#endif
-
-    strcpy(info.szLastError, "GetInfo: Unknown wrong format");
-    return false;
-}
-////////////////////////////////////////////////////////////////////////////////
 #endif //CXIMAGE_SUPPORT_DECODE
 ////////////////////////////////////////////////////////////////////////////////

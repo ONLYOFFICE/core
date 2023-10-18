@@ -195,14 +195,6 @@ uint32_t CxImage::GetWidth() const
 {
 	return head.biWidth;
 }
-BYTE* CxImage::GetData() const
-{
-    return info.image_data;
-}
-size_t CxImage::GetDataSize() const
-{
-    return info.image_data_size;
-}
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \return uint32_t aligned width of the image.
@@ -972,13 +964,3 @@ const TCHAR* CxImage::GetVersion()
 	return (CxImageVersion);
 }
 ////////////////////////////////////////////////////////////////////////////////
-void CxImage::SetImageData(BYTE* pData, size_t data_size)
-{
-    if (pData == NULL)
-        return;
-
-    info.image_data = (BYTE*)malloc(data_size);
-
-    memcpy(info.image_data, pData, data_size);
-    info.image_data_size = data_size;
-}

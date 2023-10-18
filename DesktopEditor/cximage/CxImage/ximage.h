@@ -63,7 +63,6 @@
 #include "xiofile.h"
 #include "xmemfile.h"
 #include "ximadef.h"	//<vho> adjust some #define
-
 /* see "ximacfg.h" for CxImage configuration options */
 
 /////////////////////////////////////////////////////////////////////////////
@@ -222,8 +221,6 @@ typedef struct tagCxImageInfo {
 	uint8_t	dispmeth;
 	bool	bGetAllFrames;
 	bool	bLittleEndianHost;
-    BYTE*               image_data; //for gif in png
-    size_t              image_data_size;
 
 #if CXIMAGE_SUPPORT_EXIF
 	EXIFINFO ExifInfo;
@@ -299,8 +296,6 @@ public:
 	void*	GetDIBLimit() const;
 	uint32_t	GetHeight() const;
 	uint32_t	GetWidth() const;
-    BYTE*       GetData() const;
-    size_t      GetDataSize() const;
 	uint32_t	GetEffWidth() const;
 	uint32_t	GetNumColors() const;
 	uint16_t	GetBpp() const;
@@ -308,7 +303,6 @@ public:
 	const char*	GetLastError();
 	static const TCHAR* GetVersion();
 	static const float GetVersionNumber();
-    void        SetImageData(BYTE* pData, size_t data_size);
 
 	uint32_t	GetFrameDelay() const;
 	void	SetFrameDelay(uint32_t d);
@@ -370,9 +364,6 @@ public:
 	bool	GetRetreiveAllFrames() const;
 	void	SetRetreiveAllFrames(bool flag);
 	CxImage * GetFrame(int32_t nFrame) const;
-
-    bool    GetSpecializedGIFInfo(FILE* hFile, uint32_t imagetype);
-    bool    GetSpecializedGIFInfo(CxFile* hFile, uint32_t imagetype);
 
 	//void*	GetUserData() const {return info.pUserData;}
 	//void	SetUserData(void* pUserData) {info.pUserData = pUserData;}

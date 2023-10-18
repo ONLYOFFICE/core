@@ -329,12 +329,6 @@ png_read_info(png_structp png_ptr, png_infop info_ptr)
       else if (chunk_name == png_iTXt)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
-
-#ifdef PNG_READ_msOG_SUPPORTED
-      else if (chunk_name == png_msOG)
-         png_handle_msOG(png_ptr, info_ptr, length);
-#endif
-
       else
          png_handle_unknown(png_ptr, info_ptr, length);
    }
@@ -936,51 +930,11 @@ png_read_end(png_structp png_ptr, png_infop info_ptr)
       else if (chunk_name == png_iTXt)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
-
-#ifdef PNG_READ_msOG_SUPPORTED
-      else if (chunk_name == png_msOG)
-         png_handle_msOG(png_ptr, info_ptr, length);
-#endif
-
       else
          png_handle_unknown(png_ptr, info_ptr, length);
    } while (!(png_ptr->mode & PNG_HAVE_IEND));
 }
 #endif /* PNG_SEQUENTIAL_READ_SUPPORTED */
-
-#ifdef PNG_READ_CHUNKS_SUPPORTED
-int
-png_read_chunks (png_structp png_ptr, png_infop info_ptr)
-{
-    png_debug(1, "in png_read_end");
-
-    if (png_ptr == NULL)
-       return -1;
-
-    /* Read and check the PNG file signature. */
-    png_read_sig(png_ptr, info_ptr);
-
-    for(;;)
-    {
-        png_uint_32 length = png_read_chunk_header(png_ptr);
-        png_uint_32 chunk_name = png_ptr->chunk_name;
- #ifdef PNG_READ_msOG_SUPPORTED
-        if(chunk_name == png_msOG)
-        {
-            png_handle_msOG(png_ptr, info_ptr, length);
-            return 1;
-        }
-#endif
-
-        else if(chunk_name == png_IEND)
-            return -1;
-        else
-            png_crc_finish(png_ptr, length);
-//            png_skip_chunk(png_ptr, info_ptr, length);
-    }
-    return -1;
-}
-#endif
 
 /* Free all memory used by the read */
 void PNGAPI

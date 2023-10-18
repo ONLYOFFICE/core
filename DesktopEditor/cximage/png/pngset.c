@@ -976,21 +976,6 @@ png_set_tIME(png_structp png_ptr, png_infop info_ptr, png_const_timep mod_time)
 }
 #endif
 
-#ifdef PNG_READ_msOG_SUPPORTED
-int
-png_set_GIF(png_structp png_ptr, png_infop info_ptr, png_bytep gif_data, png_size_t length)
-{
-    if (png_ptr == NULL || info_ptr == NULL)
-        return -1;
-
-    info_ptr->gif_data = (png_bytep)png_malloc_warn(png_ptr, length);
-
-    png_memcpy(info_ptr->gif_data, gif_data, length);
-    info_ptr->gif_data_size = length;
-    return 0;
-}
-#endif
-
 #ifdef PNG_tRNS_SUPPORTED
 void PNGAPI
 png_set_tRNS(png_structp png_ptr, png_infop info_ptr,

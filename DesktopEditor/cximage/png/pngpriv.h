@@ -659,7 +659,6 @@ PNG_EXTERN png_fixed_point png_fixed PNGARG((png_structp png_ptr, double fp,
 #define png_hIST PNG_CHUNK(104,  73,  83,  84)
 #define png_iCCP PNG_CHUNK(105,  67,  67,  80)
 #define png_iTXt PNG_CHUNK(105,  84,  88, 116)
-#define png_msOG PNG_CHUNK(109, 115,  79,  71)
 #define png_oFFs PNG_CHUNK(111,  70,  70, 115)
 #define png_pCAL PNG_CHUNK(112,  67,  65,  76)
 #define png_sCAL PNG_CHUNK(115,  67,  65,  76)
@@ -921,11 +920,6 @@ PNG_EXTERN void png_write_iTXt PNGARG((png_structp png_ptr,
 #ifdef PNG_TEXT_SUPPORTED  /* Added at version 1.0.14 and 1.2.4 */
 PNG_EXTERN int png_set_text_2 PNGARG((png_structp png_ptr,
     png_infop info_ptr, png_const_textp text_ptr, int num_text));
-#endif
-
-#ifdef PNG_READ_msOG_SUPPORTED
-PNG_EXTERN int png_set_GIF PNGARG((png_structp png_ptr,
-    png_infop info_ptr, png_bytep gif_data, png_size_t length));
 #endif
 
 #ifdef PNG_WRITE_oFFs_SUPPORTED
@@ -1222,16 +1216,6 @@ PNG_EXTERN void png_handle_iCCP PNGARG((png_structp png_ptr, png_infop info_ptr,
 PNG_EXTERN void png_handle_iTXt PNGARG((png_structp png_ptr, png_infop info_ptr,
     png_uint_32 length));
 #endif
-
-#ifdef PNG_READ_msOG_SUPPORTED
-PNG_EXTERN void png_handle_msOG PNGARG((png_structp png_ptr, png_infop info_ptr,
-    png_uint_32 length));
-#endif
-
-//#ifdef PNG_READ_CHUNKS_SUPPORTED
-//PNG_EXTERN void png_skip_chunk PNGARG((png_structp png_ptr, png_infop info_ptr,
-//    png_uint_32 length));
-//#endif
 
 #ifdef PNG_READ_oFFs_SUPPORTED
 PNG_EXTERN void png_handle_oFFs PNGARG((png_structp png_ptr, png_infop info_ptr,

@@ -1997,6 +1997,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
 		// TODO
+		pWidgetAnnot->SetDocument(m_pDocument);
 		pWidgetAnnot->SetDA(NULL, 0, pPr->GetTC());
 		pWidgetAnnot->SetQ(pPr->GetQ());
 		int nWidgetFlag = pPr->GetFlag();
@@ -2069,6 +2070,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pTextWidget->SetMaxLen(pPr->GetMaxLen());
 			if (nWidgetFlag & (1 << 25))
 				pTextWidget->SetRV(pPr->GetRV());
+
+			pTextWidget->CreateAP();
 		}
 		else if (oInfo.IsChoiceWidget())
 		{

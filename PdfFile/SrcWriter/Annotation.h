@@ -130,6 +130,7 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 		virtual void CreateAP();
+		TRect GetRect() { return m_oRect; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -370,6 +371,7 @@ namespace PdfWriter
 	{
 	private:
 		EAnnotType m_nSubtype;
+		std::string m_sV;
 
 	public:
 		CTextWidget(CXref* pXref);
@@ -381,6 +383,9 @@ namespace PdfWriter
 		void SetMaxLen(const int& nMaxLen);
 		void SetV (const std::wstring& wsV);
 		void SetRV(const std::wstring& wsRV);
+
+		void CreateAP() override;
+		std::string GetV() { return m_sV; }
 	};
 	class CChoiceWidget : public CWidgetAnnotation
 	{
@@ -417,6 +422,7 @@ namespace PdfWriter
 		CAnnotationAppearance(CXref* pXref, const TRect& oRect);
 
 		void DrawTextComment();
+		void DrawTextWidget(CTextWidget* pAnnot);
 
 	private:
 		CXref*   m_pXref;

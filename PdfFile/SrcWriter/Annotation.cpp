@@ -803,7 +803,8 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		sDA.append(" Tf");
 
-		Add("DA", new CStringObject(sDA.c_str(), false, true));
+		// TODO
+		// Add("DA", new CStringObject(sDA.c_str(), false, true));
 	}
 	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
 	{
@@ -884,7 +885,7 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -1063,18 +1064,29 @@ namespace PdfWriter
 	}
 	void CTextWidget::SetV(const std::wstring& wsV)
 	{
-		std::string sValue = U_TO_UTF8(wsV);
+		m_sV = U_TO_UTF8(wsV);
 		CDictObject* pOwner = GetObjOwnValue("V");
 		if (!pOwner)
 			pOwner = GetObjOwnValue("FT");
 		if (!pOwner)
 			pOwner = this;
-		pOwner->Add("V", new CStringObject(sValue.c_str()));
+		pOwner->Add("V", new CStringObject(m_sV.c_str(), true));
 	}
 	void CTextWidget::SetRV(const std::wstring& wsRV)
 	{
 		std::string sValue = U_TO_UTF8(wsRV);
 		Add("RV", new CStringObject(sValue.c_str()));
+	}
+	void CTextWidget::CreateAP()
+	{
+		CAnnotationAppearance* pAPN = new CAnnotationAppearance(m_pXref, m_oRect);
+
+		CDictObject* pAP = new CDictObject();
+		pAP->Add("N", pAPN);
+
+		Add("AP", pAP);
+
+		pAPN->DrawTextWidget(this);
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceWidget
@@ -1152,10 +1164,30 @@ namespace PdfWriter
 		pArray->Add(0);
 		pArray->Add(0);
 		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fBottom - oRect.fTop);
+		pArray->Add(oRect.fTop - oRect.fBottom);
 	}
 	void CAnnotationAppearance::DrawTextComment()
 	{
 		m_pStream->WriteStr("");
+	}
+	void CAnnotationAppearance::DrawTextWidget(CTextWidget* pAnnot)
+	{
+		m_pStream->WriteStr("q 1 1 ");
+
+		TRect oRect = pAnnot->GetRect();
+		std::string sSize = std::to_string(oRect.fRight - oRect.fLeft - 2);
+		sSize += " ";
+		sSize += std::to_string(oRect.fTop - oRect.fBottom - 2);
+		m_pStream->WriteStr(sSize.c_str());
+
+		m_pStream->WriteStr(" re W n BT ");
+
+		CStringObject* pDA = (CStringObject*)pAnnot->Get("DA");
+		if (pDA)
+			m_pStream->WriteStr((const char*)pDA->GetString());
+
+		m_pStream->WriteStr(" 2 6.548 Td (");
+		m_pStream->WriteStr(pAnnot->GetV().c_str());
+		m_pStream->WriteStr(") Tj ET Q");
 	}
 }

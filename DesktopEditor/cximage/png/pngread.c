@@ -329,6 +329,7 @@ png_read_info(png_structp png_ptr, png_infop info_ptr)
       else if (chunk_name == png_iTXt)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
+
       else
          png_handle_unknown(png_ptr, info_ptr, length);
    }
@@ -930,6 +931,7 @@ png_read_end(png_structp png_ptr, png_infop info_ptr)
       else if (chunk_name == png_iTXt)
          png_handle_iTXt(png_ptr, info_ptr, length);
 #endif
+
       else
          png_handle_unknown(png_ptr, info_ptr, length);
    } while (!(png_ptr->mode & PNG_HAVE_IEND));

@@ -63,6 +63,7 @@
 #include "xiofile.h"
 #include "xmemfile.h"
 #include "ximadef.h"	//<vho> adjust some #define
+
 /* see "ximacfg.h" for CxImage configuration options */
 
 /////////////////////////////////////////////////////////////////////////////
@@ -203,7 +204,6 @@ typedef struct tagCxImageInfo {
 	int32_t	nFrame;				///< used for TIF, GIF, MNG : actual frame
 	int32_t	nNumFrames;			///< used for TIF, GIF, MNG : total number of frames
 	uint32_t	dwFrameDelay;		///< used for GIF, MNG
-    uint32_t m_loops;
 	int32_t	xDPI;				///< horizontal resolution
 	int32_t	yDPI;				///< vertical resolution
 	RECT	rSelectionBox;		///< bounding rectangle
@@ -805,7 +805,6 @@ protected:
 	uint8_t*			pAlpha; //alpha channel
 	CxImage**			ppLayers; //generic layers
 	CxImage**			ppFrames;
-
 //@}
 };
 ////////////////////////////////////////////////////////////////////////////

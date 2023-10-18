@@ -10,7 +10,7 @@ foreach($i in $Lcids) {
 	echo .\run-macros-data.vbs $pathMacro $i
  
 	.\run-macros-data.vbs $pathMacro $i
-	Start-Sleep -Seconds 7
+	Start-Sleep -Seconds 1
  
 }
 

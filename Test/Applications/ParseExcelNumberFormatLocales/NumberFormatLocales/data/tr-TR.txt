@@ -1,4 +1,5 @@
-﻿gg.aa.yy;@
-s:dd:nn;@
-Genel
-[$-411]ggge"年"a"月"g"日";@
+﻿gg.aa.yy;@-02.05.00
+s:dd:nn;@-0:00:00
+Genel-123
+[$-411]ggge"年"a"月"g"日";@-明治33年1月1日
+aaaa-Çarşamba

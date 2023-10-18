@@ -1,4 +1,5 @@
-﻿jj-mm-aa;@
-h:mm:ss;@
-Standard
-[$-411]ggge"年"m"月"j"日";@
+﻿jj-mm-aa;@-02-05-00
+h:mm:ss;@-0:00:00
+Standard-123
+[$-411]ggge"年"m"月"j"日";@-明治33年1月1日
+oooo-mercredi

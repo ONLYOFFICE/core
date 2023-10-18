@@ -1,4 +1,5 @@
-﻿pp.kk.vv;@
-t:mm:ss;@
-Yleinen
-[$-411]ggge"年"k"月"p"日";@
+﻿pp.kk.vv;@-02.05.00
+t:mm:ss;@-0:00:00
+Yleinen-123
+[$-411]ggge"年"k"月"p"日";@-明治33年1月1日
+aaaa-gaskavahkku

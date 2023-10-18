@@ -1,4 +1,5 @@
-﻿dd.mm.åå;@
-t:mm:ss;@
-Standard
-[$-411]ggge"年"m"月"d"日";@
+﻿dd.mm.åå;@-02.05.00
+t:mm:ss;@-0:00:00
+Standard-123
+[$-411]ggge"年"m"月"d"日";@-明治33年1月1日
+aaaa-mikudagur

@@ -1,4 +1,5 @@
-﻿dd.mm.rr;@
-g:mm:ss;@
-Standardowy
-[$-411]ggge"年"m"月"d"日";@
+﻿dd.mm.rr;@-02.05.00
+g:mm:ss;@-0:00:00
+Standardowy-123
+[$-411]ggge"年"m"月"d"日";@-明治33年1月1日
+aaaa-środa

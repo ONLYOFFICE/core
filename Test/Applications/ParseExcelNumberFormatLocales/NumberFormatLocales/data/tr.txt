@@ -1,4 +1,5 @@
-﻿dd/mm/yy;@
-h:mm:ss;@
-General
-[$-411]ggge"年"m"月"d"日";@
+﻿dd/mm/yy;@-02/05/00
+h:mm:ss;@-0:00:00
+General-123
+[$-411]ggge"年"m"月"d"日";@-明治33年1月1日
+aaaa-Pulelulu

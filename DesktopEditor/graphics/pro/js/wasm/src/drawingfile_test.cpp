@@ -1,3 +1,8 @@
+#include <iostream>
+
+#include "../../../../raster/BgraFrame.h"
+#include "../../../../raster/ImageFileFormatChecker.h"
+#include "../../../../../common/File.h"
 #include "drawingfile.cpp"
 
 unsigned char READ_BYTE(BYTE* x)
@@ -691,7 +696,7 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 int main(int argc, char* argv[])
 {
 
-		   // CHECK SYSTEM FONTS
+	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
 	//oWorker.m_arAdditionalFolders.push_back(L"D:\\GIT\\core-fonts");
@@ -704,7 +709,7 @@ int main(int argc, char* argv[])
 		RELEASEINTERFACE(pFonts);
 	}
 
-		   // INITIALIZE FONTS
+	// INITIALIZE FONTS
 	if (true)
 	{
 		BYTE* pFontSelection = NULL;
@@ -722,7 +727,7 @@ int main(int argc, char* argv[])
 		RELEASEARRAYOBJECTS(pFontSelection);
 	}
 
-		   // OPEN FILE
+	// OPEN FILE
 	std::wstring sFilePath = NSFile::GetProcessDirectory() + L"/test.pdf";
 
 	BYTE* pFileData = NULL;
@@ -748,7 +753,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-		   // INFO
+	// INFO
 	BYTE* pInfo = GetInfo(pGrFile);
 	int nLength = READ_INT(pInfo);
 	nLength -= 4;
@@ -780,7 +785,7 @@ int main(int argc, char* argv[])
 
 	free(pInfo);
 
-		   // CMAP
+	// CMAP
 	BYTE* pCMapData = NULL;
 	if (IsNeedCMap(pGrFile))
 	{
@@ -791,7 +796,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-		   // RASTER
+	// RASTER
 	if (true && nPagesCount > 0)
 	{
 		BYTE* res = NULL;
@@ -809,7 +814,7 @@ int main(int argc, char* argv[])
 		RELEASEARRAYOBJECTS(res);
 	}
 
-		   // LINKS
+	// LINKS
 	if (false && nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
@@ -845,7 +850,7 @@ int main(int argc, char* argv[])
 			free(pLinks);
 	}
 
-		   // STRUCTURE
+	// STRUCTURE
 	if (false)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
@@ -875,7 +880,7 @@ int main(int argc, char* argv[])
 			free(pStructure);
 	}
 
-		   // GLYPHS
+	// GLYPHS
 	if (false && nPagesCount > 0)
 	{
 		// TODO:
@@ -883,7 +888,7 @@ int main(int argc, char* argv[])
 		DestroyTextInfo(pGrFile);
 	}
 
-		   // INTERACTIVE FORMS
+	// INTERACTIVE FORMS
 	if (true)
 	{
 		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
@@ -968,7 +973,7 @@ int main(int argc, char* argv[])
 			free(pWidgetsMK);
 	}
 
-		   // ANNOTS
+	// ANNOTS
 	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);

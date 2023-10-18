@@ -1,8 +1,7 @@
 #ifndef _WASM_GRAPHICS_
 #define _WASM_GRAPHICS_
 
-#include "../../../../GraphicsRenderer.h"
-#include "../../../../pro/Graphics.h"
+#include "../../../../../common/File.h"
 #include "../../../../pro/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
 #include "../../../../../../DjVuFile/DjVu.h"

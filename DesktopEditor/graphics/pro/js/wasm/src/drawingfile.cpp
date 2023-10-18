@@ -1,9 +1,7 @@
 #include <malloc.h>
-#include <iostream>
 
-#include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
-#include "../../../../../common/File.h"
+
 #include "drawingfile.h"
 #include "serialize.h"
 

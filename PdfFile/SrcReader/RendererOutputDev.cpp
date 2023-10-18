@@ -83,7 +83,7 @@ namespace NSCorrectFontName
 		while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
 		{
 			size_t nOffset = 0;
-			if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+			if ((nPos > 0) && (sName2.at(nPos - 1) == '-' || sName2.at(nPos - 1) == ','))
 			{
 				--nPos;
 				++nOffset;
@@ -96,7 +96,7 @@ namespace NSCorrectFontName
 		return bRet;
 	}
 
-	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat& format)
+	void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat* format)
 	{
 		if (sName.length() > 7 && sName.at(6) == '+')
 		{
@@ -116,33 +116,46 @@ namespace NSCorrectFontName
 			}
 		}
 
-		bool bBold = false;
+		bool bBold   = false;
 		bool bItalic = false;
-
-		CheckFontNameStyle(sName, L"regular");
-		CheckFontNameStyle(sName, L"condensed");
-		CheckFontNameStyle(sName, L"condensedlight");
-		//CheckFontNameStyle(sName, L"light");
 
 		CheckFontNameStyle(sName, L"condensedbold");
 		CheckFontNameStyle(sName, L"semibold");
-		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
-		if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+		CheckFontNameStyle(sName, L"regular");
 
-		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+		CheckFontNameStyle(sName, L"ultraexpanded");
+		CheckFontNameStyle(sName, L"extraexpanded");
+		CheckFontNameStyle(sName, L"semiexpanded");
+		CheckFontNameStyle(sName, L"expanded");
 
-		if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+		CheckFontNameStyle(sName, L"ultracondensed");
+		CheckFontNameStyle(sName, L"extracondensed");
+		CheckFontNameStyle(sName, L"semicondensed");
+		CheckFontNameStyle(sName, L"condensedlight");
+		CheckFontNameStyle(sName, L"condensed");
+		//CheckFontNameStyle(sName, L"light");
+
+		if (CheckFontNameStyle(sName, L"bold_italic"))  { bBold = true; bItalic = true; }
 		if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
 
-		if (bBold)
-			format.bBold = new INT(1);
-		if (bItalic)
-			format.bItalic = new INT(1);
+		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+		if (CheckFontNameStyle(sName, L"bold"))   bBold = true;
+
+		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+		if (CheckFontNameStyle(sName, L"italic"))   bItalic = true;
+		if (CheckFontNameStyle(sName, L"oblique"))  bItalic = true;
+
+		//if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+		//if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+		//if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+
+		if (format)
+		{
+			if (bBold)
+				format->bBold = new INT(1);
+			if (bItalic)
+				format->bItalic = new INT(1);
+		}
 	}
 }
 
@@ -869,8 +882,6 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateFont(GfxState *pGState)
 	{
-
-
 		// Проверяем наличие списка со шрифтами
 		if (NULL == m_pFontList)
 			return;
@@ -880,9 +891,6 @@ namespace PdfReader
 			return;
 
 		m_pRenderer->put_FontSize(pGState->getFontSize());
-		//m_oFont.Size = pGState->getFontSize();
-
-
 
 		std::wstring wsFileName = L"";
 		std::wstring wsFontName = L"";
@@ -1247,15 +1255,17 @@ namespace PdfReader
 #else
 			else if ([&oMemoryFontStream, wsFontBaseName]()
 			{
-					 const unsigned char* pData14 = NULL;
-					 unsigned int nSize14 = 0;
-					 if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
-			{
-					 oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
-					 return true;
-		}
-					 return false;
-		}())
+				const unsigned char* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				std::wstring wsFont = wsFontBaseName;
+				NSCorrectFontName::CheckFontNamePDF(wsFont, NULL);
+				if (PdfReader::GetBaseFont(wsFont, pData14, nSize14))
+				{
+					oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
+					return true;
+				}
+				return false;
+			}())
 			{
 				wsFileName = wsFontBaseName;
 				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
@@ -1263,11 +1273,7 @@ namespace PdfReader
 #endif
 			else if (!pFont->locateFont(m_pXref, false) ||
 					 (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(m_pXref, false)->path)).length() == 0)
-				//else if (0)
 			{
-				// TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
-				//       тогда мы должны вернуть путь к стандартному шрифту.
-
 				NSFonts::CFontInfo* pFontInfo = NULL;
 				if (m_pFontManager)
 				{
@@ -1278,7 +1284,7 @@ namespace PdfReader
 					oRefObject.free();
 
 					NSFonts::CFontSelectFormat oFontSelect;
-					NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, oFontSelect);
+					NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, &oFontSelect);
 					if (oFontObject.isDict())
 					{
 						Dict *pFontDict = oFontObject.getDict();

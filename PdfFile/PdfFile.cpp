@@ -53,6 +53,7 @@
 #include "SrcWriter/EncryptDictionary.h"
 #include "SrcWriter/Info.h"
 #include "SrcWriter/Annotation.h"
+#include "SrcWriter/ResourcesDictionary.h"
 
 #define AddToObject(oVal)\
 {\
@@ -100,7 +101,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 			TextString* s = new TextString(obj->getString());
 			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 			AddToObject(new PdfWriter::CStringObject(sValue.c_str()))
-					delete s;
+			delete s;
 		}
 		break;
 	}
@@ -482,7 +483,46 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	{
 		Object oTemp;
 		char* chKey = catDict.dictGetKey(nIndex);
-		catDict.dictGetValNF(nIndex, &oTemp);
+		if (strcmp("AcroForm", chKey) == 0)
+		{
+			catDict.dictGetVal(nIndex, &oTemp);
+			if (!oTemp.isDict())
+				continue;
+
+			PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
+			pCatalog->Add(chKey, pAcroForm);
+			for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+			{
+				Object oTemp2;
+				char* chKey = oTemp.dictGetKey(nIndex);
+				if (strcmp("DR", chKey) == 0)
+				{
+					oTemp.dictGetVal(nIndex, &oTemp2);
+					if (!oTemp2.isDict())
+						continue;
+
+					PdfWriter::CResourcesDict* pDR = new PdfWriter::CResourcesDict(NULL, true, false);
+					pAcroForm->Add(chKey, pDR);
+					for (int nIndex = 0; nIndex < oTemp2.dictGetLength(); ++nIndex)
+					{
+
+					}
+					oTemp2.free();
+					continue;
+				}
+				oTemp.dictGetValNF(nIndex, &oTemp2);
+				DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
+				oTemp2.free();
+			}
+			oTemp.free();
+
+			if (!pAcroForm->Get("Fields"))
+				pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
+
+			continue;
+		}
+		else
+			catDict.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pCatalog, false, chKey);
 		oTemp.free();
 	}
@@ -636,7 +676,7 @@ bool CPdfFile::EditPage(int nPageIndex)
 	{
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
-		if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0 || strcmp("Annots", chKey) == 0)
+		if (strcmp("Resources", chKey) == 0 || strcmp("Annots", chKey) == 0)
 			pageObj.dictGetVal(nIndex, &oTemp);
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
@@ -686,7 +726,9 @@ bool CPdfFile::AddPage(int nPageIndex)
 }
 PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
 {
-	PdfWriter::CDictObject* pParent = NULL;
+	PdfWriter::CDictObject* pParent = pDoc->GetParent(pParentRef->getRefNum());
+	if (pParent)
+		return pParent;
 
 	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
 		return pParent;

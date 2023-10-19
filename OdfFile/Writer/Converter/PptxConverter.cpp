@@ -55,6 +55,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimRot.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/AnimScale.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Anim.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Audio.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
@@ -1146,6 +1147,27 @@ void PptxConverter::convert(PPTX::Logic::AnimScale* oox_anim_scale)
 	odp_context->current_slide().end_timing_transform();
 }
 
+void PptxConverter::convert(PPTX::Logic::Audio* oox_audio)
+{
+	if (!oox_audio)
+		return;
+
+	odp_context->current_slide().start_anim_audio();
+
+	if (oox_audio->cMediaNode.tgtEl.name.IsInit())
+	{
+		bool isExternal;
+		const std::wstring aID = oox_audio->cMediaNode.tgtEl.embed->get();
+		const std::wstring pathAudio = find_link_by_id(aID, 3, isExternal);
+
+		const std::wstring xlink = odp_context->add_media(pathAudio);
+		
+		odp_context->current_slide().set_anim_audio_xlink(xlink);
+	}
+
+	odp_context->current_slide().end_anim_audio();
+}
+
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -1561,6 +1583,11 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 		PPTX::Logic::AnimScale& rotate = oox_time_base->as<PPTX::Logic::AnimScale>();
 		convert(&rotate);
 	}
+	else if (oox_time_base->is<PPTX::Logic::Audio>())
+	{
+		PPTX::Logic::Audio& audio = oox_time_base->as<PPTX::Logic::Audio>();
+		convert(&audio);
+	}
 }
 void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 {
@@ -1823,15 +1850,15 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 //			convert(&oox_time_common->childTnLst->list[i]);
 //		}
 //	}
-	//if (oox_time_common->subTnLst.IsInit())
-	//{
-	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
-	//	{
-	//		if (oox_time_common->subTnLst->list[i].is_init() == false) continue;
+	if (oox_time_common->subTnLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
+		{
+			if (oox_time_common->subTnLst->list[i].is_init() == false) continue;
 
-	//		convert(&oox_time_common->subTnLst->list[i]);
-	//	}
-	//}
+			convert(&oox_time_common->subTnLst->list[i]);
+		}
+	}
 }
 
 

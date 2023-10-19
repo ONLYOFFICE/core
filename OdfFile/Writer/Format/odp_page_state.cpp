@@ -518,6 +518,18 @@ void odp_page_state::set_anim_transform_by(const std::wstring& val)
 	anim_levels.back().transform_attlist->smil_by_ = val;
 }
 
+void odp_page_state::set_anim_audio_xlink(const std::wstring& val)
+{
+	if (anim_levels.empty())		return;
+	if (!anim_levels.back().attlist)return;
+
+	anim_audio* audio = dynamic_cast<anim_audio*>(anim_levels.back().elm.get());
+	if (!audio)
+		return;
+
+	anim_levels.back().audio_attlist->xlink_href_ = val;
+}
+
 void odp_page_state::start_transition()
 {
 	office_element_ptr elm;
@@ -810,6 +822,33 @@ void odp_page_state::start_timing_transform()
 }
 
 void odp_page_state::end_timing_transform()
+{
+	if (anim_levels.empty())		return;
+	anim_levels.pop_back();
+}
+
+void odp_page_state::start_anim_audio()
+{
+	if (anim_levels.empty()) return;
+
+	anim_state anim;
+	create_element(L"anim", L"audio", anim.elm, context_);
+	if (!anim.elm) return;
+
+	anim_audio* audio = dynamic_cast<anim_audio*>(anim.elm.get());
+	if (audio)
+	{
+		anim.attlist = &audio->common_attlist_;
+		anim.audio_attlist = &audio->audio_attlist_;
+	}
+
+	anim_levels.back().empty = false;
+	anim_levels.back().elm->add_child_element(anim.elm);
+
+	anim_levels.push_back(anim);
+}
+
+void odp_page_state::end_anim_audio()
 {
 	if (anim_levels.empty())		return;
 	anim_levels.pop_back();

@@ -69,6 +69,7 @@ struct anim_state
 	odf_types::anim_animate_motion_attlist*		motion_attlist;
 	odf_types::anim_animate_color_attlist*		color_attlist;
 	odf_types::anim_animate_transform_attlist*	transform_attlist;
+	odf_types::anim_audio_attlist*				audio_attlist;
 
 	bool empty;
 };
@@ -126,6 +127,9 @@ public:
 		void start_timing_transform();
 		void end_timing_transform();
 
+		void start_anim_audio();
+		void end_anim_audio();
+
 		void set_anim_id			(int val);
 		void set_anim_type			(const odf_types::presentation_node_type& val);
 		void set_anim_duration		(int val);
@@ -164,6 +168,8 @@ public:
 		void set_anim_transform_to(const std::wstring& val);
 		void set_anim_transform_by(const std::wstring& val);
 		
+		void set_anim_audio_xlink(const std::wstring& val);
+
 
 	void end_timing();
 

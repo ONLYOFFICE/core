@@ -181,6 +181,7 @@ public:
 		const std::vector<double>& GetTC() const { return m_arrTC; }
 		const std::vector<double>& GetBC() const { return m_arrBC; }
 		const std::vector<double>& GetBG() const { return m_arrBG; }
+		const std::vector<CActionWidget*> GetActions() const { return m_arrAction; }
 
 		CButtonWidgetPr*    GetButtonWidgetPr()    { return m_pButtonPr; }
 		CTextWidgetPr*      GetTextWidgetPr()      { return m_pTextPr; }

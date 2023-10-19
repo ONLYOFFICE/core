@@ -70,6 +70,7 @@ namespace PdfWriter
 	class CDestination;
 	class CExtGrState;
 	class CAnnotation;
+	class CAction;
 	class CImageDict;
 	class CFontDict;
 	class CFont14;
@@ -147,6 +148,7 @@ namespace PdfWriter
 		CAnnotation*      CreateChoiceWidget();
 		CAnnotation*      CreateSignatureWidget();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
+		CAction*          CreateAction(BYTE nType);
 					      
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);
@@ -184,6 +186,7 @@ namespace PdfWriter
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
 		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);
+		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 	private:		  

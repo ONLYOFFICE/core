@@ -1996,7 +1996,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
-		// TODO
 		pWidgetAnnot->SetDocument(m_pDocument);
 		pWidgetAnnot->SetDA(NULL, 0, pPr->GetTC());
 		pWidgetAnnot->SetQ(pPr->GetQ());
@@ -2020,6 +2019,22 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetDV(pPr->GetDV());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
+
+		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
+		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+		{
+			switch (pAction->nActionType)
+			{
+			case 12:
+			{
+				PdfWriter::CActionResetForm* pA = (PdfWriter::CActionResetForm*)m_pDocument->CreateAction(pAction->nActionType);
+				pA->SetType(pAction->wsType);
+				pA->SetFlags(pAction->nInt1);
+				pA->SetFields(pAction->arrStr);
+				pWidgetAnnot->AddAction(pA);
+			}
+			}
+		}
 
 		if (oInfo.IsButtonWidget())
 		{

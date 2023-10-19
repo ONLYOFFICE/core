@@ -110,6 +110,9 @@ namespace PdfWriter
 	}
 	void CAnnotation::SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps)
 	{
+		if (dWidth <= 0)
+			return;
+
 		CDictObject* pBorderStyleDict = new CDictObject();
 		if (!pBorderStyleDict)
 			return;
@@ -767,6 +770,8 @@ namespace PdfWriter
 		m_pMK = NULL;
 		m_pParent = NULL;
 		m_pDocument = NULL;
+		m_pAA = NULL;
+		m_pA = NULL;
 	}
 	void CWidgetAnnotation::SetDocument(CDocument* pDocument)
 	{
@@ -831,6 +836,14 @@ namespace PdfWriter
 			Add("MK", m_pMK);
 		}
 	}
+	void CWidgetAnnotation::CheckAA()
+	{
+		if (!m_pAA)
+		{
+			m_pAA = new CDictObject();
+			Add("AA", m_pAA);
+		}
+	}
 	void CWidgetAnnotation::SetQ(const BYTE& nQ)
 	{
 		Add("Q", (int)nQ);
@@ -885,7 +898,7 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str(), true));
+		Add("T", new CStringObject(sValue.c_str()));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
@@ -896,6 +909,14 @@ namespace PdfWriter
 	{
 		CheckMK();
 		AddToVectorD(m_pMK, "BG", arrBG);
+	}
+	void CWidgetAnnotation::AddAction(CAction* pAction)
+	{
+		if (!pAction)
+			return;
+		CheckAA();
+
+		m_pAA->Add(pAction->m_sType.c_str(), pAction);
 	}
 	//----------------------------------------------------------------------------------------
 	// CButtonWidget
@@ -1189,5 +1210,39 @@ namespace PdfWriter
 		m_pStream->WriteStr(" 2 6.548 Td (");
 		m_pStream->WriteStr(pAnnot->GetV().c_str());
 		m_pStream->WriteStr(") Tj ET Q");
+	}
+	//----------------------------------------------------------------------------------------
+	// CAction
+	//----------------------------------------------------------------------------------------
+	CAction::CAction(CXref* pXref)
+	{
+		pXref->Add(this);
+	}
+	void CAction::SetType(const std::wstring& wsType)
+	{
+		m_sType = U_TO_UTF8(wsType);
+	}
+	CActionResetForm::CActionResetForm(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "ResetForm");
+		Add("Flags", 1);
+	}
+	void CActionResetForm::SetFlags(int nFlag)
+	{
+		Add("Flags", nFlag);
+	}
+	void CActionResetForm::SetFields(const std::vector<std::wstring>& arrFileds)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("Fields", pArray);
+
+		for (const std::wstring& A : arrFileds)
+		{
+			std::string sValue = U_TO_UTF8(A);
+			pArray->Add(new CStringObject(sValue.c_str()));
+		}
 	}
 }

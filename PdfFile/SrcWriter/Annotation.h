@@ -94,6 +94,24 @@ namespace PdfWriter
 		AnnotIconMax          = 6
 	};
 
+	class CAction : public CDictObject
+	{
+	public:
+		std::string m_sType;
+		CAction(CXref* pXref);
+
+		void SetType(const std::wstring& wsType);
+		void SetNext(CAction* pNext);
+	};
+	class CActionResetForm : public CAction
+	{
+	public:
+		CActionResetForm(CXref* pXref);
+
+		void SetFlags(int nFlag);
+		void SetFields(const std::vector<std::wstring>& arrFileds);
+	};
+
 	class CAnnotation : public CDictObject
 	{
 	protected:
@@ -131,6 +149,7 @@ namespace PdfWriter
 		// TODO AP Необходимо генерировать внешний вид аннотации как у Widget
 		virtual void CreateAP();
 		TRect GetRect() { return m_oRect; }
+		void SetXref(CXref* pXref) { m_pXref = pXref; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -315,10 +334,13 @@ namespace PdfWriter
 	protected:
 		CDictObject* m_pMK;
 		CDictObject* m_pParent;
+		CDictObject* m_pAA;
+		CDictObject* m_pA;
 		CDocument* m_pDocument;
 
 		CDictObject* GetObjOwnValue(const std::string& sV);
 		void CheckMK();
+		void CheckAA();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
@@ -337,6 +359,7 @@ namespace PdfWriter
 		void SetT (const std::wstring& wsT);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
+		void AddAction(CAction* pAction);
 	};
 	class CButtonWidget : public CWidgetAnnotation
 	{

@@ -399,6 +399,45 @@ void CPdfFile::RotatePage(int nRotate)
 	m_pInternal->pWriter->PageRotate(nRotate);
 }
 #ifndef BUILDING_WASM_MODULE
+PdfWriter::CDictObject* GetAcroForm(Object* oAcroForm)
+{
+	if (!oAcroForm || !oAcroForm->isDict())
+		return NULL;
+
+	PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
+
+	for (int nIndex = 0; nIndex < oAcroForm->dictGetLength(); ++nIndex)
+	{
+		Object oTemp2;
+		char* chKey = oAcroForm->dictGetKey(nIndex);
+		if (strcmp("DR", chKey) == 0)
+		{
+			oAcroForm->dictGetVal(nIndex, &oTemp2);
+			if (!oTemp2.isDict())
+			{
+				oTemp2.free();
+				continue;
+			}
+
+			PdfWriter::CResourcesDict* pDR = new PdfWriter::CResourcesDict(NULL, true, false);
+			pAcroForm->Add(chKey, pDR);
+			for (int nIndex = 0; nIndex < oTemp2.dictGetLength(); ++nIndex)
+			{
+
+			}
+			oTemp2.free();
+			continue;
+		}
+		oAcroForm->dictGetValNF(nIndex, &oTemp2);
+		DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
+		oTemp2.free();
+	}
+
+	if (!pAcroForm->Get("Fields"))
+		pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
+
+	return pAcroForm;
+}
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
 	if (wsDstFile.empty())
@@ -486,39 +525,12 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		if (strcmp("AcroForm", chKey) == 0)
 		{
 			catDict.dictGetVal(nIndex, &oTemp);
-			if (!oTemp.isDict())
-				continue;
-
-			PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
-			pCatalog->Add(chKey, pAcroForm);
-			for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
-			{
-				Object oTemp2;
-				char* chKey = oTemp.dictGetKey(nIndex);
-				if (strcmp("DR", chKey) == 0)
-				{
-					oTemp.dictGetVal(nIndex, &oTemp2);
-					if (!oTemp2.isDict())
-						continue;
-
-					PdfWriter::CResourcesDict* pDR = new PdfWriter::CResourcesDict(NULL, true, false);
-					pAcroForm->Add(chKey, pDR);
-					for (int nIndex = 0; nIndex < oTemp2.dictGetLength(); ++nIndex)
-					{
-
-					}
-					oTemp2.free();
-					continue;
-				}
-				oTemp.dictGetValNF(nIndex, &oTemp2);
-				DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
-				oTemp2.free();
-			}
+			PdfWriter::CDictObject* pAcroForm = GetAcroForm(&oTemp);
 			oTemp.free();
-
-			if (!pAcroForm->Get("Fields"))
-				pAcroForm->Add("Fields", new PdfWriter::CArrayObject());
-
+			if (pAcroForm)
+			{
+				pCatalog->Add(chKey, pAcroForm);
+			}
 			continue;
 		}
 		else
@@ -1190,6 +1202,12 @@ BYTE* CPdfFile::GetWidgets()
 		return NULL;
 	return m_pInternal->pReader->GetWidgets();
 }
+BYTE* CPdfFile::GetAnnots(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return NULL;
+	return m_pInternal->pReader->GetAnnots(nPageIndex);
+}
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
 	if (!m_pInternal->pReader)
@@ -1202,17 +1220,11 @@ BYTE* CPdfFile::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, in
 		return NULL;
 	return m_pInternal->pReader->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+BYTE* CPdfFile::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
-	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
-}
-BYTE* CPdfFile::GetAnnots(int nPageIndex)
-{
-	if (!m_pInternal->pReader)
-		return NULL;
-	return m_pInternal->pReader->GetAnnots(nPageIndex);
+	return m_pInternal->pReader->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
 }
 BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
 {

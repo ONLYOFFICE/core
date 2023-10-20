@@ -174,7 +174,7 @@ WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nRa
 
 	return pGraphics->GetAPWidget(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nWidget, sView, sButtonView);
 }
-WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, int nIconView)
+WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, int nIconView)
 {
 	const char* sIconView = NULL;
 	if (nIconView == 0)
@@ -184,7 +184,7 @@ WASM_EXPORT BYTE* GetButtonIcons(CGraphicsFileDrawing* pGraphics, int nRasterW, 
 	else if (nIconView == 2)
 		sIconView = "IX";
 
-	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nButtonWidget, sIconView);
+	return pGraphics->GetButtonIcon(nRasterW, nRasterH, nBackgroundColor, nPageIndex, bBase64, nButtonWidget, sIconView);
 }
 WASM_EXPORT BYTE* GetAnnotationsInfo(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {

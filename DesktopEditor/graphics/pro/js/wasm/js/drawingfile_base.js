@@ -790,9 +790,9 @@
 				}
 			    if (flags & (1 << 14))
 				{
-					rec["NameOfYes"] = reader.readString();
+					rec["ExportValue"] = reader.readString();
 					if (flags & (1 << 9))
-						rec["value"] = rec["NameOfYes"];
+						rec["value"] = rec["ExportValue"];
 				}
 				// 12.7.4.2.1
 				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
@@ -854,7 +854,7 @@
 	};
 	// optional nWidget     - rec["AP"]["i"]
 	// optional sView       - N/D/R
-	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["NameOfYes"])
+	// optional sButtonView - state pushbutton-annotation - Off/Yes(or rec["ExportValue"])
 	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor, nWidget, sView, sButtonView)
 	{
 		let nView = -1;
@@ -899,9 +899,10 @@
 		Module["_free"](ext);
 		return res;
 	};
+	// optional bBase64   - true/false base64 result
 	// optional nWidget ...
 	// optional sIconView - icon - I/RI/IX
-	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, sIconView)
+	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, bBase64, sIconView)
 	{
 		let nView = -1;
 		if (sIconView)
@@ -915,7 +916,7 @@
 		}
 
 		let res = {};
-		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
+		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, bBase64 === undefined ? false : bBase64, nView);
 		if (ext == 0)
 			return res;
 
@@ -952,10 +953,18 @@
 					ViewMK["j"] = MK[MKType];
 					ViewMK["w"] = reader.readInt();
 					ViewMK["h"] = reader.readInt();
-					let np1 = reader.readInt();
-					let np2 = reader.readInt();
-					// this memory needs to be deleted
-					ViewMK["retValue"] = np2 << 32 | np1;
+					if (bBase64)
+					{
+						// base64 string with image
+						ViewMK["retValue"] = reader.readString();
+					}
+					else
+					{
+						let np1 = reader.readInt();
+						let np2 = reader.readInt();
+						// this memory needs to be deleted
+						ViewMK["retValue"] = np2 << 32 | np1;
+					}
 					res["View"].push(ViewMK);
 				}
 			}

@@ -915,7 +915,8 @@ int main(int argc, char* argv[])
 		if (pWidgetsAP)
 			free(pWidgetsAP);
 
-		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, -1, -1);
+		bool bBase64 = true;
+		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, bBase64, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;
 		nLength -= 4;
@@ -950,21 +951,46 @@ int main(int argc, char* argv[])
 				int nWidgetHeight = READ_INT(pWidgetsMK + i);
 				i += 4;
 				std::cout << "H " << nWidgetHeight << ", ";
-				unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
-				i += 4;
-				unsigned long long npBgraData2 = READ_INT(pWidgetsMK + i);
-				i += 4;
 
-				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-				CBgraFrame oFrame;
-				oFrame.put_Data(res);
-				oFrame.put_Width(nWidgetWidth);
-				oFrame.put_Height(nWidgetHeight);
-				oFrame.put_Stride(4 * nWidgetWidth);
-				oFrame.put_IsRGBA(true);
-				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png", _CXIMAGE_FORMAT_PNG);
-				oFrame.ClearNoAttack();
-				RELEASEARRAYOBJECTS(res);
+				if (bBase64)
+				{
+					nPathLength = READ_INT(pWidgetsMK + i);
+					i += 4;
+					BYTE* pBase64 = pWidgetsMK + i;
+					i += nPathLength;
+
+					int nLenDst = NSBase64::Base64DecodeGetRequiredLength(nPathLength);
+					BYTE* pDataDst = new BYTE[nLenDst];
+
+					if (NSBase64::Base64Decode((const char*)pBase64, nPathLength, pDataDst, &nLenDst))
+					{
+						NSFile::CFileBinary oFile;
+						if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png"))
+						{
+							oFile.WriteFile(pDataDst, nLenDst);
+							oFile.CloseFile();
+						}
+					}
+					RELEASEARRAYOBJECTS(pDataDst);
+				}
+				else
+				{
+					unsigned long long npBgraData1 = READ_INT(pWidgetsMK + i);
+					i += 4;
+					unsigned long long npBgraData2 = READ_INT(pWidgetsMK + i);
+					i += 4;
+
+					BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+					CBgraFrame oFrame;
+					oFrame.put_Data(res);
+					oFrame.put_Width(nWidgetWidth);
+					oFrame.put_Height(nWidgetHeight);
+					oFrame.put_Stride(4 * nWidgetWidth);
+					oFrame.put_IsRGBA(true);
+					oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_MK_" + UTF8_TO_U(sMKName) + L".png", _CXIMAGE_FORMAT_PNG);
+					oFrame.ClearNoAttack();
+					RELEASEARRAYOBJECTS(res);
+				}
 			}
 			std::cout << std::endl;
 		}
@@ -992,7 +1018,7 @@ int main(int argc, char* argv[])
 
 			ReadAnnot(pAnnots, i);
 
-				   // Markup
+			// Markup
 
 			DWORD nFlags = 0;
 			if ((nPathLength < 18 && nPathLength != 1 && nPathLength != 15) || nPathLength == 25)

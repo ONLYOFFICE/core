@@ -1207,6 +1207,7 @@ namespace PdfWriter
 		if (pDA)
 			m_pStream->WriteStr((const char*)pDA->GetString());
 
+		// TODO возможно потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
 		m_pStream->WriteStr(" 2 6.548 Td (");
 		m_pStream->WriteStr(pAnnot->GetV().c_str());
 		m_pStream->WriteStr(") Tj ET Q");

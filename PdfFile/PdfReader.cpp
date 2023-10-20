@@ -909,7 +909,7 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nButtonWidget, const char* sIconView)
+BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
 	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
@@ -1017,6 +1017,34 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 					oRes.AddInt(nWidth);
 					oRes.AddInt(nHeight);
 					oWidth.free(); oHeight.free();
+
+					if (bBase64)
+					{
+						int nLength = 0;
+						Object oLength;
+						if (oImDict->lookup("Length", &oLength)->isInt())
+							nLength = oLength.getInt();
+						oLength.free();
+
+						// TODO используется размер закодированного потока, а необходим размер после декодирования, и DecodeLength есть не всегда
+						BYTE* pBuffer = new BYTE[nLength];
+						BYTE* pBufferPtr = pBuffer;
+
+						Stream* pImage = oIm.getStream()->getUndecodedStream();
+						for (int nI = 0; nI < nLength; ++nI)
+							*pBufferPtr++ = (BYTE)pImage->getChar();
+
+						char* cData64 = NULL;
+						int nData64Dst = 0;
+						NSFile::CBase64Converter::Encode(pBuffer, nLength, cData64, nData64Dst);
+
+						oRes.WriteString((BYTE*)cData64, nData64Dst);
+
+						nMKLength++;
+						RELEASEARRAYOBJECTS(pBuffer);
+						RELEASEARRAYOBJECTS(cData64);
+						continue;
+					}
 
 					BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 					unsigned int nColor = (unsigned int)nBackgroundColor;
@@ -1239,13 +1267,32 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 			oStr.free(); oStrRef.free(); oResources.free();
 
 			nMKLength++;
-			unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-			unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-			oRes.AddInt(npSubMatrix1);
-			oRes.AddInt(npSubMatrix >> 32);
+
+			if (bBase64)
+			{
+				BYTE* pPngBuffer = NULL;
+				int nPngSize = 0;
+				pFrame->Encode(pPngBuffer, nPngSize, 4);
+
+				char* cData64 = NULL;
+				int nData64Dst = 0;
+				NSFile::CBase64Converter::Encode(pPngBuffer, nPngSize, cData64, nData64Dst);
+
+				oRes.WriteString((BYTE*)cData64, nData64Dst);
+
+				RELEASEARRAYOBJECTS(cData64);
+			}
+			else
+			{
+				unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+
+				pFrame->ClearNoAttack();
+			}
 
 			delete gfx;
-			pFrame->ClearNoAttack();
 			RELEASEOBJECT(pFrame);
 			RELEASEOBJECT(pRenderer);
 		}

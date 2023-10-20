@@ -101,7 +101,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
     return add_or_find(href, type, isInternal, ref, type_place);
 }
 
-std::wstring mediaitems::add_or_find_anim_audio(const std::wstring& href, std::wstring& ref)
+std::wstring mediaitems::add_or_find_anim_audio(const std::wstring& href, bool& isInternal, std::wstring& ref)
 {
 	std::wstring sub_path = L"media/";
 	int number = count_audio + 1;
@@ -109,9 +109,9 @@ std::wstring mediaitems::add_or_find_anim_audio(const std::wstring& href, std::w
 	bool isAudioInternal;
 	const std::wstring inputFileName = create_file_name(href, _rels_type::typeAudio, isAudioInternal, number);
 
-	std::wstring inputPath = boost::algorithm::starts_with(href, L"file:///") ?
-		href.substr(std::wstring(L"file:///").size()) : 
-		href;
+	isInternal = is_internal(href, odf_packet_);
+
+	std::wstring inputPath = isInternal ? (odf_packet_ + FILE_SEPARATOR_STR + href) : href;
 	std::wstring outputPath = sub_path + inputFileName;
 
 	std::wstring id;

@@ -872,7 +872,9 @@
 			nButtonView = (sButtonView == "Off" ? 0 : 1);
 
 		let res = [];
+		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetInteractiveFormsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView, nButtonView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 
@@ -915,7 +917,9 @@
 		}
 
 		let res = {};
+		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, nView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 
@@ -1257,7 +1261,9 @@
 		}
 
 		let res = [];
+		self.drawingFileCurrentPageIndex = pageIndex;
 		let ext = Module["_GetAnnotationsAP"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nAnnot === undefined ? -1 : nAnnot, nView);
+		self.drawingFileCurrentPageIndex = -1;
 		if (ext == 0)
 			return res;
 

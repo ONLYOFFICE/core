@@ -1151,11 +1151,17 @@ void anim_audio::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (audio_attlist_.xlink_href_)
 	{
-		const std::wstring& href = audio_attlist_.xlink_href_.value();
+		std::wstring href = audio_attlist_.xlink_href_.value();
+
+		if (boost::algorithm::starts_with(href, L"file:///"))
+			href = href.substr(std::wstring(L"file:///").size());
+
 		const std::wstring name = NSFile::GetFileName(href);
 
 		std::wstring ref;
-		const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, ref);
+		bool isInternal;
+		const std::wstring& rId = slideContext.get_mediaitems()->add_or_find_anim_audio(href, isInternal, ref);
+
 		slideContext.add_rels(true, rId, ref, oox::_rels_type::typeAudio);
 		
 		animationContext.add_anim_audio(rId, name);

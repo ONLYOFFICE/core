@@ -1070,17 +1070,19 @@ namespace oox {
 						}
 					}
 				}
-				CP_XML_NODE(L"p:from")
+
+				if (From)
 				{
-					if (From)
+					CP_XML_NODE(L"p:from")
 					{
 						CP_XML_ATTR(L"x", From->x);
 						CP_XML_ATTR(L"y", From->y);
 					}
 				}
-				CP_XML_NODE(L"p:to")
+
+				if (To)
 				{
-					if (To)
+					CP_XML_NODE(L"p:to")
 					{
 						CP_XML_ATTR(L"x", To->x);
 						CP_XML_ATTR(L"y", To->y);

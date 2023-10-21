@@ -35,6 +35,14 @@
 
 #include "gtest/gtest.h"
 
+#include "Writer/Converter/Oox2OdfConverter.h"
+#include "Writer/Format/odp_conversion_context.h"
+#include "Writer/Format/anim_elements.h"
+#include "Writer/Format/draw_page.h"
+
+#include "Reader/Format/odf_document.h"
+#include "Reader/Converter/pptx_conversion_context.h"
+
 class ODP2OOX_AnimationAudioEnvironment : public ODP2OOX_AnimationEnvironment
 {
 public:
@@ -64,4 +72,24 @@ public:
 
 public:
 	const cpdoccore::oox::pptx_animation_context* mAnimationContext;
+};
+
+class OOX2ODP_AudioAnimationEnvironment : public OOX2ODP_AnimationEnvironment
+{
+public:
+	OOX2ODP_AudioAnimationEnvironment();
+
+public:
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
+
+private:
+	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
+	static cpdoccore::odf_writer::odp_conversion_context* mContext;
+};
+
+class OOX2ODP_AudioAnimationTest : public OOX2ODP_AnimationTest
+{
+public:
+	void SetUp() override;
+	void TearDown() override {}
 };

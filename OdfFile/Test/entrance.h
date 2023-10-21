@@ -76,131 +76,22 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // OOX2ODP
 
-class OOX2ODP_EntranceAnimationTestEnvironment : public ::testing::Environment
+class OOX2ODP_EntranceAnimationEnvironment : public OOX2ODP_AnimationEnvironment
 {
-	~OOX2ODP_EntranceAnimationTestEnvironment() override {}
-
-	void SetUp() override;
-	void TearDown() override;
+public:
+	OOX2ODP_EntranceAnimationEnvironment();
 
 public:
-	static cpdoccore::odf_writer::odp_conversion_context* GetContext()
-	{
-		return mContext;
-	}
+	static cpdoccore::odf_writer::odp_conversion_context* GetContext();
 
 private:
-	std::wstring sExampleFilename;
-	std::wstring sFrom;
-	std::wstring sTemp;
-	std::wstring sTempUnpackedOox;
-
 	static boost::shared_ptr<Oox2Odf::Converter> mConverter;
 	static cpdoccore::odf_writer::odp_conversion_context* mContext;
 };
 
-class OOX2ODP_EntranceAnimationTest : public testing::Test
+class OOX2ODP_EntranceAnimationTest : public OOX2ODP_AnimationTest
 {
 public:
 	void SetUp() override;
 	void TearDown() override {}
-
-	const cpdoccore::odf_writer::anim_par* GetTimingRoot()
-	{
-		using namespace cpdoccore::odf_writer;
-		draw_page* page = dynamic_cast<draw_page*>(mContext->current_slide().page_elm_.get());
-		if (!page)
-			return nullptr;
-		
-		anim_par* timing_root = dynamic_cast<anim_par*>(page->animation_.get());
-		if (!timing_root)
-			return nullptr;
-		
-		return timing_root;
-	}
-
-	const cpdoccore::odf_writer::anim_seq* GetMainSequence()
-	{
-		using namespace cpdoccore::odf_writer;
-		const anim_par* timing_root = GetTimingRoot();
-		if (!timing_root)
-			return nullptr;
-
-		if (timing_root->anim_seq_array_.size() < 1)
-			return nullptr;
-
-		const anim_seq* main_sequence = dynamic_cast<anim_seq*>(timing_root->anim_seq_array_.at(0).get());
-		if (!main_sequence)
-			return nullptr;
-
-		return main_sequence;
-	}
-
-	const cpdoccore::odf_writer::anim_par* GetMainSequenceParByIndex(size_t index)
-	{
-		using namespace cpdoccore::odf_writer;
-		const anim_seq* main_sequence = GetMainSequence();
-
-		if (index >= main_sequence->anim_par_array_.size())
-			return nullptr;
-
-		const anim_par* par = dynamic_cast<anim_par*>(main_sequence->anim_par_array_[index].get());
-		if (!par)
-			return nullptr;
-
-		return par;
-	}
-
-	const cpdoccore::odf_writer::anim_par* GetInnerPar(const cpdoccore::odf_writer::anim_par* par)
-	{
-		using namespace cpdoccore::odf_writer;
-
-		if (!par)
-			return nullptr;
-
-		const anim_par* inner_par = dynamic_cast<anim_par*>(par->anim_par_.get());
-
-		if (!inner_par)
-			return nullptr;
-
-		return inner_par;
-	}
-
-	const cpdoccore::odf_writer::anim_par* GetInnermostPar(const cpdoccore::odf_writer::anim_par* par)
-	{
-		using namespace cpdoccore::odf_writer;
-
-		if (!par)
-			return nullptr;
-
-		const anim_par* innermost = GetInnerPar(par);
-
-		while (innermost->anim_par_)
-		{
-			innermost = dynamic_cast<anim_par*>(innermost->anim_par_.get());
-			if (!innermost)
-				return nullptr;
-		}
-
-		return innermost;
-	}
-
-	template<typename T>
-	const T* GetAnimationBehaviourByIndex(const cpdoccore::odf_writer::anim_par* par, size_t index)
-	{
-		using namespace cpdoccore::odf_writer;
-
-		if (!par)
-			return nullptr;
-
-		T* behaviour = dynamic_cast<T*>(par->content_[index].get());
-		if (!behaviour)
-			return nullptr;
-
-		return behaviour;
-	}
-
-public:
-	const Oox2Odf::Converter* mConverter;
-	cpdoccore::odf_writer::odp_conversion_context* mContext;
 };

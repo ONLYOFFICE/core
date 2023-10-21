@@ -32,6 +32,15 @@
 
 #include "audio.h"
 
+
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+
+#include "Writer/Converter/Converter.h"
+#include "Writer/Converter/PptxConverter.h"
+#include "Writer/Format/office_elements.h"
+
 boost::shared_ptr<cpdoccore::odf_reader::odf_document>		ODP2OOX_AnimationAudioEnvironment::sInputOdf;
 boost::shared_ptr<cpdoccore::oox::pptx_conversion_context>	ODP2OOX_AnimationAudioEnvironment::sConverionContext;
 
@@ -123,4 +132,37 @@ TEST_F(ODP2OOX_AnimationAudioTest, name)
 	const std::wstring nameExp = L"apert.wav";
 
 	EXPECT_EQ(audio->Name.value(), nameExp);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_AudioAnimationEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_AudioAnimationEnvironment::mContext;
+
+OOX2ODP_AudioAnimationEnvironment::OOX2ODP_AudioAnimationEnvironment()
+	: OOX2ODP_AnimationEnvironment(L"audio.pptx", &mConverter, &mContext)
+{
+}
+
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_AudioAnimationEnvironment::GetContext()
+{
+	return mContext;
+}
+
+void OOX2ODP_AudioAnimationTest::SetUp()
+{
+	mContext = OOX2ODP_AudioAnimationEnvironment::GetContext();
+}
+
+TEST_F(OOX2ODP_AudioAnimationTest, a_test)
+{
+	using namespace cpdoccore::odf_writer;
+	using namespace cpdoccore::odf_types;
+
+	const anim_audio* audio = GetAnimationBehaviourByIndex<anim_audio>(GetInnermostPar(GetMainSequenceParByIndex(0)), 1);
+	ASSERT_NE(audio, nullptr);
+
+	const std::wstring xpathExp = L"Media/media1.wav";
+
+	EXPECT_EQ(audio->audio_attlist_.xlink_href_.value(), xpathExp);
 }

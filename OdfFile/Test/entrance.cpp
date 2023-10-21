@@ -642,48 +642,22 @@ TEST_F(ODP2OOX_EntranceAnimationTest, entrance_transition_filter_checker_iris_wi
 //////////////////////////////////////////////////////////////////////////
 // OOX2ODP
 
-boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_EntranceAnimationTestEnvironment::mConverter;
-cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationTestEnvironment::mContext;
+boost::shared_ptr<Oox2Odf::Converter> OOX2ODP_EntranceAnimationEnvironment::mConverter;
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationEnvironment::mContext;
 
-void OOX2ODP_EntranceAnimationTestEnvironment::SetUp()
+OOX2ODP_EntranceAnimationEnvironment::OOX2ODP_EntranceAnimationEnvironment()
+	: OOX2ODP_AnimationEnvironment(L"entrance.pptx", &mConverter, &mContext)
 {
-	sExampleFilename = L"entrance.pptx";
-
-	std::wstring rootDir = NSFile::GetProcessDirectory() + CH_DIR("..");
-	std::wstring sExampleFilesDirectory = rootDir + CH_DIR("ExampleFiles");
-
-	sFrom = sExampleFilesDirectory + FILE_SEPARATOR_STR + sExampleFilename;
-	sTemp = rootDir + CH_DIR("OOX2ODP_EntranceAnimationTestEnvironment_tmp");
-	sTempUnpackedOox = sTemp + CH_DIR("pptx_unpacked");
-
-	NSDirectory::CreateDirectory(sTemp);
-	NSDirectory::CreateDirectory(sTempUnpackedOox);
-
-	COfficeUtils oCOfficeUtils(NULL);
-	if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOox, NULL, 0))
-	{
-		mConverter = boost::make_shared<Oox2Odf::Converter>(sTempUnpackedOox, _T("presentation"), L"", false, sTemp);
-
-		try
-		{
-			mConverter->convert();
-			mContext = dynamic_cast<cpdoccore::odf_writer::odp_conversion_context*>(mConverter->get_ooxConverter()->odf_context());
-		}
-		catch (...)
-		{
-			_CP_LOG << L"[ error ]: Failed to setup OOX2ODP_EntranceAnimationTestEnvironment";
-		}
-	}
 }
 
-void OOX2ODP_EntranceAnimationTestEnvironment::TearDown()
+cpdoccore::odf_writer::odp_conversion_context* OOX2ODP_EntranceAnimationEnvironment::GetContext()
 {
-	NSDirectory::DeleteDirectory(sTemp);
+	return mContext;
 }
 
 void OOX2ODP_EntranceAnimationTest::SetUp()
 {
-	mContext = OOX2ODP_EntranceAnimationTestEnvironment::GetContext();
+	mContext = OOX2ODP_EntranceAnimationEnvironment::GetContext();
 }
 
 TEST_F(OOX2ODP_EntranceAnimationTest, timing_root_node_type)

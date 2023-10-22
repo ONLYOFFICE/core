@@ -103,6 +103,9 @@ public:
 	std::vector<office_element_ptr>	transactions;
 
 	void start_timing();
+		void start_anim_level(const std::wstring& ns, const std::wstring& name);
+		void end_anim_level();
+
 		void start_timing_par();
 		void end_timing_par();
 

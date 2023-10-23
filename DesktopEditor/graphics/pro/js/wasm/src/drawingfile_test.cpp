@@ -667,25 +667,6 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
 		oFrame.ClearNoAttack();
 		RELEASEARRAYOBJECTS(res);
-
-		int nTextSize = READ_INT(pWidgetsAP + i);
-		i += 4;
-		for (int k = 0; k < nTextSize; ++k)
-		{
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
-		}
 	}
 	std::cout << std::endl;
 }

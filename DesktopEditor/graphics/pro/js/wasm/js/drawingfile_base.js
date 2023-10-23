@@ -598,17 +598,6 @@
 			let np2 = reader.readInt();
 			// this memory needs to be deleted
 			APi["retValue"] = np2 << 32 | np1;
-			let k = reader.readInt();
-			if (k != 0)
-				APi["fontInfo"] = [];
-			for (let j = 0; j < k; ++j)
-			{
-				let fontInfo = {};
-				fontInfo["text"] = reader.readString();
-				fontInfo["fontName"] = reader.readString();
-				fontInfo["fontSize"] = reader.readDouble();
-				APi["fontInfo"].push(fontInfo);
-			}
 		}
 	}
 

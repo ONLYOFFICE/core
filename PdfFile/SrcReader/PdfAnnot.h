@@ -129,7 +129,6 @@ private:
 		std::string sAPName;
 		std::string sASName;
 		BYTE* pAP;
-		BYTE* pText;
 	};
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);
 

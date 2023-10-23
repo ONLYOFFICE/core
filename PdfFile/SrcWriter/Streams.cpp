@@ -311,7 +311,7 @@ namespace PdfWriter
 		{
 			BYTE nChar = (BYTE)*sTxt++;
 
-			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar)))
+			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE_STR(nChar)))
 			{
 				sBuf[nIndex++] = '\\';
 				sBuf[nIndex++] = 0x30 + (nChar >> 6);

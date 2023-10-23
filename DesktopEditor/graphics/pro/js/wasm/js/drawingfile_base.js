@@ -902,7 +902,7 @@
 	// optional bBase64   - true/false base64 result
 	// optional nWidget ...
 	// optional sIconView - icon - I/RI/IX
-	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, nWidget, bBase64, sIconView)
+	CFile.prototype["getButtonIcons"] = function(pageIndex, width, height, backgroundColor, bBase64, nWidget, sIconView)
 	{
 		let nView = -1;
 		if (sIconView)
@@ -916,7 +916,7 @@
 		}
 
 		let res = {};
-		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, nWidget === undefined ? -1 : nWidget, bBase64 === undefined ? false : bBase64, nView);
+		let ext = Module["_GetButtonIcons"](this.nativeFile, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor, pageIndex, bBase64 ? 1 : 0, nWidget === undefined ? -1 : nWidget, nView);
 		if (ext == 0)
 			return res;
 

@@ -1025,23 +1025,39 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 						if (oImDict->lookup("Length", &oLength)->isInt())
 							nLength = oLength.getInt();
 						oLength.free();
+						if (oImDict->lookup("DL", &oLength)->isInt())
+							nLength = oLength.getInt();
+						oLength.free();
 
-						// TODO используется размер закодированного потока, а необходим размер после декодирования, и DecodeLength есть не всегда
-						BYTE* pBuffer = new BYTE[nLength];
-						BYTE* pBufferPtr = pBuffer;
-
+						bool bNew = false;
+						BYTE* pBuffer = NULL;
 						Stream* pImage = oIm.getStream()->getUndecodedStream();
-						for (int nI = 0; nI < nLength; ++nI)
-							*pBufferPtr++ = (BYTE)pImage->getChar();
+						MemStream* pMemory = dynamic_cast<MemStream*>(pImage);
+						if (pImage->getKind() == strWeird && pMemory)
+						{
+							if (pMemory->getBufPtr() + nLength == pMemory->getBufEnd())
+								pBuffer = (BYTE*)pMemory->getBufPtr();
+							else
+								nLength = 0;
+						}
+						else
+						{
+							bNew = true;
+							pBuffer = new BYTE[nLength];
+							BYTE* pBufferPtr = pBuffer;
+							for (int nI = 0; nI < nLength; ++nI)
+								*pBufferPtr++ = (BYTE)pImage->getChar();
+						}
 
 						char* cData64 = NULL;
 						int nData64Dst = 0;
-						NSFile::CBase64Converter::Encode(pBuffer, nLength, cData64, nData64Dst);
+						NSFile::CBase64Converter::Encode(pBuffer, nLength, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
 						oRes.WriteString((BYTE*)cData64, nData64Dst);
 
 						nMKLength++;
-						RELEASEARRAYOBJECTS(pBuffer);
+						if (bNew)
+							RELEASEARRAYOBJECTS(pBuffer);
 						RELEASEARRAYOBJECTS(cData64);
 						continue;
 					}
@@ -1276,7 +1292,7 @@ BYTE* CPdfReader::GetButtonIcon(int nRasterW, int nRasterH, int nBackgroundColor
 
 				char* cData64 = NULL;
 				int nData64Dst = 0;
-				NSFile::CBase64Converter::Encode(pPngBuffer, nPngSize, cData64, nData64Dst);
+				NSFile::CBase64Converter::Encode(pPngBuffer, nPngSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
 				oRes.WriteString((BYTE*)cData64, nData64Dst);
 

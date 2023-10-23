@@ -915,7 +915,7 @@ int main(int argc, char* argv[])
 		if (pWidgetsAP)
 			free(pWidgetsAP);
 
-		bool bBase64 = true;
+		int bBase64 = 1;
 		BYTE* pWidgetsMK = GetButtonIcons(pGrFile, nWidth, nHeight, 0xFFFFFF, nTestPage, bBase64, -1, -1);
 		nLength = READ_INT(pWidgetsMK);
 		i = 4;

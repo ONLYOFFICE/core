@@ -836,14 +836,6 @@ namespace PdfWriter
 			Add("MK", m_pMK);
 		}
 	}
-	void CWidgetAnnotation::CheckAA()
-	{
-		if (!m_pAA)
-		{
-			m_pAA = new CDictObject();
-			Add("AA", m_pAA);
-		}
-	}
 	void CWidgetAnnotation::SetQ(const BYTE& nQ)
 	{
 		Add("Q", (int)nQ);
@@ -914,7 +906,27 @@ namespace PdfWriter
 	{
 		if (!pAction)
 			return;
-		CheckAA();
+
+		if (pAction->m_sType == "A")
+		{
+			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
+			if (!pOwner)
+				pOwner = m_pParent ? m_pParent : this;
+
+			pOwner->Add(pAction->m_sType.c_str(), pAction);
+			return;
+		}
+
+		if (!m_pAA)
+		{
+			CDictObject* pOwner = GetObjOwnValue("AA");
+			if (!pOwner)
+			{
+				Add("AA", new CDictObject());
+				pOwner = this;
+			}
+			m_pAA = (CDictObject*)pOwner->Get("AA");
+		}
 
 		m_pAA->Add(pAction->m_sType.c_str(), pAction);
 	}
@@ -1203,9 +1215,13 @@ namespace PdfWriter
 
 		m_pStream->WriteStr(" re W n BT ");
 
-		CStringObject* pDA = (CStringObject*)pAnnot->Get("DA");
-		if (pDA)
-			m_pStream->WriteStr((const char*)pDA->GetString());
+		CDictObject* pOwner = pAnnot->GetObjOwnValue("DA");
+		if (pOwner)
+		{
+			CStringObject* pDA = dynamic_cast<CStringObject*>(pOwner->Get("DA"));
+			if (pDA)
+				m_pStream->WriteStr((const char*)pDA->GetString());
+		}
 
 		// TODO возможно потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
 		m_pStream->WriteStr(" 2 6.548 Td (");
@@ -1218,6 +1234,7 @@ namespace PdfWriter
 	CAction::CAction(CXref* pXref)
 	{
 		pXref->Add(this);
+		Add("Type", "Action");
 	}
 	void CAction::SetType(const std::wstring& wsType)
 	{
@@ -1245,5 +1262,14 @@ namespace PdfWriter
 			std::string sValue = U_TO_UTF8(A);
 			pArray->Add(new CStringObject(sValue.c_str()));
 		}
+	}
+	CActionJavaScript::CActionJavaScript(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "JavaScript");
+	}
+	void CActionJavaScript::SetJS(const std::wstring& wsJS)
+	{
+		std::string sValue = U_TO_UTF8(wsJS);
+		Add("JS", new CStringObject(sValue.c_str()));
 	}
 }

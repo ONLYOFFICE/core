@@ -511,139 +511,182 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			pPr->SetRT(pReader->ReadByte());
 		if (nFlags & (1 << 7))
 			pPr->SetSubj(pReader->ReadString());
-	}
 
-	if (IsText())
-	{
-		CAnnotFieldInfo::CTextAnnotPr* pPr = GetTextAnnotPr();
-
-		pPr->SetOpen(nFlags & (1 << 15));
-		if (nFlags & (1 << 16))
-			pPr->SetName(pReader->ReadByte());
-		if (nFlags & (1 << 17))
-			pPr->SetStateModel(pReader->ReadByte());
-		if (nFlags & (1 << 18))
-			pPr->SetState(pReader->ReadByte());
-	}
-	else if (IsInk())
-	{
-		CAnnotFieldInfo::CInkAnnotPr* pPr = GetInkAnnotPr();
-
-		int n = pReader->ReadInt();
-		std::vector< std::vector<double> > arrInkList;
-		for (int i = 0; i < n; ++i)
+		if (IsText())
 		{
-			std::vector<double> arrLine;
-			int m = pReader->ReadInt();
-			for (int j = 0; j < m; ++j)
-				arrLine.push_back(pReader->ReadDouble());
-			if (!arrLine.empty())
-				arrInkList.push_back(arrLine);
+			CAnnotFieldInfo::CTextAnnotPr* pPr = GetTextAnnotPr();
+
+			pPr->SetOpen(nFlags & (1 << 15));
+			if (nFlags & (1 << 16))
+				pPr->SetName(pReader->ReadByte());
+			if (nFlags & (1 << 17))
+				pPr->SetStateModel(pReader->ReadByte());
+			if (nFlags & (1 << 18))
+				pPr->SetState(pReader->ReadByte());
 		}
-		pPr->SetInkList(arrInkList);
-	}
-	else if (IsLine())
-	{
-		CAnnotFieldInfo::CLineAnnotPr* pPr = GetLineAnnotPr();
-
-		double dLX1 = pReader->ReadDouble();
-		double dLY1 = pReader->ReadDouble();
-		double dLX2 = pReader->ReadDouble();
-		double dLY2 = pReader->ReadDouble();
-		pPr->SetL(dLX1, dLY1, dLX2, dLY2);
-
-		if (nFlags & (1 << 15))
+		else if (IsInk())
 		{
-			BYTE nLE1 = pReader->ReadByte();
-			BYTE nLE2 = pReader->ReadByte();
-			pPr->SetLE(nLE1, nLE2);
-		}
-		if (nFlags & (1 << 16))
-		{
+			CAnnotFieldInfo::CInkAnnotPr* pPr = GetInkAnnotPr();
+
 			int n = pReader->ReadInt();
-			std::vector<double> arrIC;
+			std::vector< std::vector<double> > arrInkList;
 			for (int i = 0; i < n; ++i)
-				arrIC.push_back(pReader->ReadDouble());
-			pPr->SetIC(arrIC);
+			{
+				std::vector<double> arrLine;
+				int m = pReader->ReadInt();
+				for (int j = 0; j < m; ++j)
+					arrLine.push_back(pReader->ReadDouble());
+				if (!arrLine.empty())
+					arrInkList.push_back(arrLine);
+			}
+			pPr->SetInkList(arrInkList);
 		}
-		if (nFlags & (1 << 17))
-			pPr->SetLL(pReader->ReadDouble());
-		if (nFlags & (1 << 18))
-			pPr->SetLLE(pReader->ReadDouble());
-		pPr->SetCap(nFlags & (1 << 19));
-		if (nFlags & (1 << 20))
-			pPr->SetIT(pReader->ReadByte());
-		if (nFlags & (1 << 21))
-			pPr->SetLLO(pReader->ReadDouble());
-		if (nFlags & (1 << 22))
-			pPr->SetCP(pReader->ReadByte());
-		if (nFlags & (1 << 23))
+		else if (IsLine())
 		{
-			double dCO1 = pReader->ReadDouble();
-			double dCO2 = pReader->ReadDouble();
-			pPr->SetCO(dCO1, dCO2);
-		}
-	}
-	else if (IsTextMarkup())
-	{
-		CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = GetTextMarkupAnnotPr();
+			CAnnotFieldInfo::CLineAnnotPr* pPr = GetLineAnnotPr();
 
-		pPr->SetSubtype(nType);
-		std::vector<double> arrQuadPoints;
-		int n = pReader->ReadInt();
-		for (int i = 0; i < n; ++i)
-			arrQuadPoints.push_back(pReader->ReadDouble());
-		pPr->SetQuadPoints(arrQuadPoints);
-	}
-	else if (IsSquareCircle())
-	{
-		CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = GetSquareCircleAnnotPr();
+			double dLX1 = pReader->ReadDouble();
+			double dLY1 = pReader->ReadDouble();
+			double dLX2 = pReader->ReadDouble();
+			double dLY2 = pReader->ReadDouble();
+			pPr->SetL(dLX1, dLY1, dLX2, dLY2);
 
-		pPr->SetSubtype(nType);
-		if (nFlags & (1 << 15))
-		{
-			double dRD1 = pReader->ReadDouble();
-			double dRD2 = pReader->ReadDouble();
-			double dRD3 = pReader->ReadDouble();
-			double dRD4 = pReader->ReadDouble();
-			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+			if (nFlags & (1 << 15))
+			{
+				BYTE nLE1 = pReader->ReadByte();
+				BYTE nLE2 = pReader->ReadByte();
+				pPr->SetLE(nLE1, nLE2);
+			}
+			if (nFlags & (1 << 16))
+			{
+				int n = pReader->ReadInt();
+				std::vector<double> arrIC;
+				for (int i = 0; i < n; ++i)
+					arrIC.push_back(pReader->ReadDouble());
+				pPr->SetIC(arrIC);
+			}
+			if (nFlags & (1 << 17))
+				pPr->SetLL(pReader->ReadDouble());
+			if (nFlags & (1 << 18))
+				pPr->SetLLE(pReader->ReadDouble());
+			pPr->SetCap(nFlags & (1 << 19));
+			if (nFlags & (1 << 20))
+				pPr->SetIT(pReader->ReadByte());
+			if (nFlags & (1 << 21))
+				pPr->SetLLO(pReader->ReadDouble());
+			if (nFlags & (1 << 22))
+				pPr->SetCP(pReader->ReadByte());
+			if (nFlags & (1 << 23))
+			{
+				double dCO1 = pReader->ReadDouble();
+				double dCO2 = pReader->ReadDouble();
+				pPr->SetCO(dCO1, dCO2);
+			}
 		}
-		if (nFlags & (1 << 16))
+		else if (IsTextMarkup())
 		{
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = GetTextMarkupAnnotPr();
+
+			pPr->SetSubtype(nType);
+			std::vector<double> arrQuadPoints;
 			int n = pReader->ReadInt();
-			std::vector<double> arrIC;
 			for (int i = 0; i < n; ++i)
-				arrIC.push_back(pReader->ReadDouble());
-			pPr->SetIC(arrIC);
+				arrQuadPoints.push_back(pReader->ReadDouble());
+			pPr->SetQuadPoints(arrQuadPoints);
 		}
-	}
-	else if (IsPolygonLine())
-	{
-		CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = GetPolygonLineAnnotPr();
-
-		int n = pReader->ReadInt();
-		std::vector<double> arrVertices;
-		for (int i = 0; i < n; ++i)
-			arrVertices.push_back(pReader->ReadDouble());
-		pPr->SetVertices(arrVertices);
-
-		pPr->SetSubtype(nType);
-		if (nFlags & (1 << 15))
+		else if (IsSquareCircle())
 		{
-			BYTE nLE1 = pReader->ReadByte();
-			BYTE nLE2 = pReader->ReadByte();
-			pPr->SetLE(nLE1, nLE2);
+			CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = GetSquareCircleAnnotPr();
+
+			pPr->SetSubtype(nType);
+			if (nFlags & (1 << 15))
+			{
+				double dRD1 = pReader->ReadDouble();
+				double dRD2 = pReader->ReadDouble();
+				double dRD3 = pReader->ReadDouble();
+				double dRD4 = pReader->ReadDouble();
+				pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+			{
+				int n = pReader->ReadInt();
+				std::vector<double> arrIC;
+				for (int i = 0; i < n; ++i)
+					arrIC.push_back(pReader->ReadDouble());
+				pPr->SetIC(arrIC);
+			}
 		}
-		if (nFlags & (1 << 16))
+		else if (IsPolygonLine())
 		{
+			CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = GetPolygonLineAnnotPr();
+
 			int n = pReader->ReadInt();
-			std::vector<double> arrIC;
+			std::vector<double> arrVertices;
 			for (int i = 0; i < n; ++i)
-				arrIC.push_back(pReader->ReadDouble());
-			pPr->SetIC(arrIC);
+				arrVertices.push_back(pReader->ReadDouble());
+			pPr->SetVertices(arrVertices);
+
+			pPr->SetSubtype(nType);
+			if (nFlags & (1 << 15))
+			{
+				BYTE nLE1 = pReader->ReadByte();
+				BYTE nLE2 = pReader->ReadByte();
+				pPr->SetLE(nLE1, nLE2);
+			}
+			if (nFlags & (1 << 16))
+			{
+				int n = pReader->ReadInt();
+				std::vector<double> arrIC;
+				for (int i = 0; i < n; ++i)
+					arrIC.push_back(pReader->ReadDouble());
+				pPr->SetIC(arrIC);
+			}
+			if (nFlags & (1 << 20))
+				pPr->SetIT(pReader->ReadByte());
 		}
-		if (nFlags & (1 << 20))
-			pPr->SetIT(pReader->ReadByte());
+		else if (IsFreeText())
+		{
+			CAnnotFieldInfo::CFreeTextAnnotPr* pPr = GetFreeTextAnnotPr();
+
+			pPr->SetQ(pReader->ReadByte());
+			if (nFlags & (1 << 15))
+			{
+				double dRD1 = pReader->ReadDouble();
+				double dRD2 = pReader->ReadDouble();
+				double dRD3 = pReader->ReadDouble();
+				double dRD4 = pReader->ReadDouble();
+				pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+			{
+				int n = pReader->ReadInt();
+				std::vector<double> arrCL;
+				for (int i = 0; i < n; ++i)
+					arrCL.push_back(pReader->ReadDouble());
+				pPr->SetCL(arrCL);
+			}
+			if (nFlags & (1 << 17))
+				pPr->SetDS(pReader->ReadString());
+			if (nFlags & (1 << 18))
+				pPr->SetLE(pReader->ReadByte());
+			if (nFlags & (1 << 20))
+				pPr->SetIT(pReader->ReadByte());
+		}
+		else if (IsCaret())
+		{
+			CAnnotFieldInfo::CCaretAnnotPr* pPr = GetCaretAnnotPr();
+
+			if (nFlags & (1 << 15))
+			{
+				double dRD1 = pReader->ReadDouble();
+				double dRD2 = pReader->ReadDouble();
+				double dRD3 = pReader->ReadDouble();
+				double dRD4 = pReader->ReadDouble();
+				pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
+			}
+			if (nFlags & (1 << 16))
+				pPr->SetSy(pReader->ReadByte());
+		}
 	}
 	else if (IsPopup())
 	{
@@ -655,51 +698,7 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		if (nFlags & (1 << 1))
 			pPr->SetParentID(pReader->ReadInt());
 	}
-	else if (IsFreeText())
-	{
-		CAnnotFieldInfo::CFreeTextAnnotPr* pPr = GetFreeTextAnnotPr();
-
-		pPr->SetQ(pReader->ReadByte());
-		if (nFlags & (1 << 15))
-		{
-			double dRD1 = pReader->ReadDouble();
-			double dRD2 = pReader->ReadDouble();
-			double dRD3 = pReader->ReadDouble();
-			double dRD4 = pReader->ReadDouble();
-			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
-		}
-		if (nFlags & (1 << 16))
-		{
-			int n = pReader->ReadInt();
-			std::vector<double> arrCL;
-			for (int i = 0; i < n; ++i)
-				arrCL.push_back(pReader->ReadDouble());
-			pPr->SetCL(arrCL);
-		}
-		if (nFlags & (1 << 17))
-			pPr->SetDS(pReader->ReadString());
-		if (nFlags & (1 << 18))
-			pPr->SetLE(pReader->ReadByte());
-		if (nFlags & (1 << 20))
-			pPr->SetIT(pReader->ReadByte());
-	}
-	else if (IsCaret())
-	{
-		CAnnotFieldInfo::CCaretAnnotPr* pPr = GetCaretAnnotPr();
-
-		if (nFlags & (1 << 15))
-		{
-			double dRD1 = pReader->ReadDouble();
-			double dRD2 = pReader->ReadDouble();
-			double dRD3 = pReader->ReadDouble();
-			double dRD4 = pReader->ReadDouble();
-			pPr->SetRD(dRD1, dRD2, dRD3, dRD4);
-		}
-		if (nFlags & (1 << 16))
-			pPr->SetSy(pReader->ReadByte());
-	}
-
-	if (IsWidget())
+	else if (IsWidget())
 	{
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = GetWidgetAnnotPr();
 

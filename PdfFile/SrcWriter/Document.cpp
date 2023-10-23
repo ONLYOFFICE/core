@@ -642,6 +642,7 @@ namespace PdfWriter
 		switch (nType)
 		{
 		case 12: return new CActionResetForm(m_pXref);
+		case 14: return new CActionJavaScript(m_pXref);
 		}
 
 		return NULL;

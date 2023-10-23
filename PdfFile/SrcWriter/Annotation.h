@@ -111,6 +111,13 @@ namespace PdfWriter
 		void SetFlags(int nFlag);
 		void SetFields(const std::vector<std::wstring>& arrFileds);
 	};
+	class CActionJavaScript : public CAction
+	{
+	public:
+		CActionJavaScript(CXref* pXref);
+
+		void SetJS(const std::wstring& wsJS);
+	};
 
 	class CAnnotation : public CDictObject
 	{
@@ -338,15 +345,14 @@ namespace PdfWriter
 		CDictObject* m_pA;
 		CDocument* m_pDocument;
 
-		CDictObject* GetObjOwnValue(const std::string& sV);
 		void CheckMK();
-		void CheckAA();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
 
 		void SetDocument(CDocument* pDocument);
 		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC);
+		CDictObject* GetObjOwnValue(const std::string& sV);
 
 		void SetQ(const BYTE& nQ);
 		void SetH(const BYTE& nH);

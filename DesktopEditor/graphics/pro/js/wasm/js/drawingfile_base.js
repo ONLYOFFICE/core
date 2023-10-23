@@ -669,12 +669,15 @@
 			// Annot
 			readAnnot(reader, rec);
 			// Widget
+			rec["font"] = {};
+			rec["font"]["name"] = reader.readString();
+			rec["font"]["size"] = reader.readDouble();
 			let tc = reader.readInt();
 			if (tc)
 			{
-				rec["textColor"] = [];
+				rec["font"]["color"] = [];
 				for (let i = 0; i < tc; ++i)
-					rec["textColor"].push(reader.readDouble());
+					rec["font"]["color"].push(reader.readDouble());
 			}
 			// 0 - left-justified, 1 - centered, 2 - right-justified
 			rec["alignment"] = reader.readByte();

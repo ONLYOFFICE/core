@@ -340,24 +340,34 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		std::string sType = arrAnnots[nPathLength];
 		std::cout << "Widget type " << sType << ", ";
 
-			   // Annot
+		// Annot
 
 		ReadAnnot(pWidgets, i);
 
-			   // Widget
+		// Widget
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "Font: name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "size " << (double)nPathLength / 100.0 << ", ";
 
 		int nTCLength = READ_INT(pWidgets + i);
 		i += 4;
 		if (nTCLength)
-			std::cout << "Text Color: ";
-		for (int j = 0; j < nTCLength; ++j)
 		{
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << (double)nPathLength / 100.0 << " ";
-		}
-		if (nTCLength)
+			std::cout << "color";
+			for (int j = 0; j < nTCLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << (double)nPathLength / 100.0;
+			}
 			std::cout << ", ";
+		}
 
 		std::string arrQ[] = {"left-justified", "centered", "right-justified"};
 		nPathLength = READ_BYTE(pWidgets + i);

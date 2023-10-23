@@ -676,6 +676,22 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	oObj.fetch(xref, &oField);
 	oObj.free();
 
+	// Шрифт и размер шрифта - из DA
+	Ref fontID;
+	pField->getFont(&fontID, &m_dFontSize);
+	if (fontID.num > 0)
+	{
+		Object oFont, oFontRef;
+		oFontRef.initRef(fontID.num, fontID.gen);
+		oFontRef.fetch(xref, &oFont);
+		oFontRef.free();
+
+		Object oFontName;
+		if (oFont.isDict() && oFont.dictLookup("Name", &oFontName)->isName())
+			m_sFontName = oFontName.getName();
+		oFontName.free(); oFont.free();
+	}
+
 	// Цвет текста - из DA
 	int nSpace;
 	GList *arrColors = pField->getColorSpace(&nSpace);
@@ -2234,6 +2250,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 
 	CAnnot::ToWASM(oRes);
 
+	oRes.WriteString(m_sFontName);
+	oRes.AddDouble(m_dFontSize);
 	oRes.AddInt(m_arrTC.size());
 	for (int i = 0; i < m_arrTC.size(); ++i)
 		oRes.AddDouble(m_arrTC[i]);

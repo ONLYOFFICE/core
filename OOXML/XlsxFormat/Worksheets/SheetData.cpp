@@ -440,7 +440,7 @@ namespace OOX
 
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
-		_UINT32 CFormulaXLSB::getXLSBSize() const
+		_UINT32 CFormulaXLSB::getXLSBSize()
 		{
 			_UINT32 nLen = 2+4+4;
 			if(m_bIsInit)

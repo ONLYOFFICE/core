@@ -55,13 +55,13 @@ namespace SVG
 		return bResult;
 	}
 
-	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromString(const std::wstring &wsContentent, CGraphicsContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (wsContent.empty() || NULL == pFile)
+		if (wsContentent.empty() || NULL == pFile)
 			return false;
 
 		XmlUtils::CXmlNode oXml;
-		if (!oXml.FromXmlString(wsContent))
+		if (!oXml.FromXmlString(wsContentent))
 			return false;
 
 		ScanStyles(oXml, pFile);

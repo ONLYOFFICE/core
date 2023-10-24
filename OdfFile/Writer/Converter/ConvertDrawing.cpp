@@ -2574,7 +2574,6 @@ void OoxConverter::convert(PPTX::Logic::MoveTo *oox_geom_path)
 void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style)
 {
 	if (!oox_list_style) return;
-	if (oox_list_style->IsListStyleEmpty()) return;
 
 	_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
 

@@ -1569,9 +1569,16 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 
 			if (pShape.IsInit())
 			{
-				std::wstring bOriginText = pShape->txBody.IsInit() ? pShape->txBody->GetText(false) : L"";
+				std::wstring bOriginText;
+				PPTX::Logic::TextListStyle* shapeListStyle = NULL;
+
+				if (pShape->txBody.IsInit())
+				{
+					bOriginText = pShape->txBody->GetText(false);
+					shapeListStyle = pShape->txBody->lstStyle.GetPointer();
+				}
 				bool bTextPresent = (bOriginText.empty() == false); 
-				
+
 				PPTX::Logic::Shape update_shape;
 				
 				if (listMasterStyle)
@@ -1584,6 +1591,14 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 					{
 						if(listMasterStyle->levels[i].is_init())
 							listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
+					}
+					if (shapeListStyle)
+					{
+						for (int i = 0; i < 10; i++)
+						{
+							if (shapeListStyle->levels[i].is_init())
+								shapeListStyle->levels[i]->Merge(newListStyle->levels[i]);
+						}
 					}
 					update_shape.txBody->lstStyle.reset(newListStyle);
 				}

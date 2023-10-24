@@ -63,7 +63,8 @@ namespace BinDocxRW
 
 		bool unpackage(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
 		{
-			m_sDestPath = sDstPath;
+			OOX::CPath path(sDstPath);
+			m_sDestPath = path.GetPath();
 
 			XmlUtils::CXmlLiteReader oReader;
 
@@ -157,7 +158,6 @@ namespace BinDocxRW
 			if (name.empty()) return;
 			
 			OOX::CPath path(m_sDestPath + name);
-
 			std::wstring fileName = path.GetPath();
 
 			if (std::wstring::npos == fileName.find(m_sDestPath))

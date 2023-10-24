@@ -129,7 +129,7 @@ namespace OOX
 				sResult += L" relId=\"" + m_oRelId->ToString() + L"\"";
 			}
 			sResult += L" minVer=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\"/>";
-			
+
 			return sResult;
 		}
 		EElementType CDataModelExt::getType() const
@@ -214,7 +214,7 @@ namespace OOX
 										*m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}" ||
 										*m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}" ||
 										*m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}" ||
-										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||	
+										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||
 										*m_sUri == L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}" ||
 										*m_sUri == L"{FCE6A71B-6B00-49CD-AB44-F6B1AE7CDE65}" ||
 										*m_sUri == L"{56B9EC1D-385E-4148-901F-78D8002777C0}" ||
@@ -248,7 +248,7 @@ namespace OOX
 							OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
 							*pConditionalFormatting = oReader;
 							m_arrConditionalFormatting.push_back(pConditionalFormatting);
-						} 
+						}
 					}
 					else if (sName == L"dataValidations")
 					{
@@ -507,7 +507,7 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				writer.StartNode(L"externalReference");
 				writer.StartAttributes();
-				
+
 				if (m_oFileKey.IsInit()) writer.WriteAttribute(L"fileKey", *m_oFileKey);
 				if (m_oInstanceId.IsInit()) writer.WriteAttribute(L"instanceId", *m_oInstanceId);
 
@@ -624,7 +624,7 @@ namespace OOX
 			}
 
 			pWriter->WriteNodeEnd(ns + L"extLst");
-		}	
+		}
 		std::wstring COfficeArtExtensionList::toXML() const
 		{
 			return toXMLWithNS(L"a:");
@@ -886,6 +886,7 @@ namespace OOX
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri = L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}";
+                        oExt->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
                         oExt->m_oPivotCacheDefinitionExt = ptr->m_PCD14;
 
                         if (oExt)

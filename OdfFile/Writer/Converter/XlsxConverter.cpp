@@ -1700,16 +1700,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFileSharing *oox_file_sharing)
 {
 	if (!oox_file_sharing) return;
 
-	ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
-
 	if (oox_file_sharing->m_oReadOnlyRecommended.get_value_or(false))
 	{
+		ods_context->settings_context()->add_config_content_item(L"IsDocumentShared", L"boolean", L"true");
 		ods_context->settings_context()->add_config_content_item(L"LoadReadonly", L"boolean", L"true");
-	}
-	if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() && 
-		oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
-	{
-		ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+	
+		if (oox_file_sharing->m_oHashValue.IsInit() && oox_file_sharing->m_oAlgorithmName.IsInit() &&
+			oox_file_sharing->m_oSaltValue.IsInit() && oox_file_sharing->m_oSpinCount.IsInit())
+		{
+			ods_context->settings_context()->set_modify_info(oox_file_sharing->m_oAlgorithmName->ToString(), *oox_file_sharing->m_oSaltValue, *oox_file_sharing->m_oHashValue, oox_file_sharing->m_oSpinCount->GetValue());
+		}
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
@@ -2067,7 +2067,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 ///Column///////////////////////////////////////////////////////////////////////////////////////
 	ods_context->styles_context()->create_style(L"", odf_types::style_family::TableColumn, true, false, -1);		
 	{	
-		double width = 8.1; // из приложния MS Office 2010
+		double defaut_column_width_sym_ = 9.08984375;
+		bool padding = false;
+
 		//в xlsx необязательно задавать ширину (колонок) - дефолтное по приложению. в oo - обязательно
 		odf_writer::style* style = dynamic_cast<odf_writer::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
@@ -2078,19 +2080,23 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				column_properties->attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
-					width = *oox_sheet_format_pr->m_oDefaultColWidth;
-					width = ods_context->convert_symbol_width(width) + 5 * 3 / 4.;
-					//defaultColWidth = baseColumnWidth + {margin padding (2 pixels on each side, totalling 4 pixels)} + {gridline (1pixel)}
+					defaut_column_width_sym_ = *oox_sheet_format_pr->m_oDefaultColWidth;
 				}
 				else if (oox_sheet_format_pr->m_oBaseColWidth.IsInit())
 				{
-					width = ods_context->convert_symbol_width(*oox_sheet_format_pr->m_oBaseColWidth);
+					defaut_column_width_sym_ = *oox_sheet_format_pr->m_oBaseColWidth;
 				}
 				else
 				{
-					width = ods_context->convert_symbol_width(8.43) + 5 * 3 / 4.;
+					padding = true;
+					defaut_column_width_sym_ = 8.6640;
 				}
+				double width = ods_context->convert_symbol_width(defaut_column_width_sym_, padding);
+				
+				ods_context->current_table()->defaut_column_width_sym_ = defaut_column_width_sym_;
 				ods_context->current_table()->defaut_column_width_ = width;//pt
+				
+				column_properties->attlist_.loext_column_width_sym_ = defaut_column_width_sym_;
 				column_properties->attlist_.style_column_width_ = odf_types::length(odf_types::length(width,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);
 			}
 		}
@@ -2159,7 +2165,7 @@ void XlsxConverter::convert_styles()
 	}	
 
 ////////////стили условного форматирования 
-	for (size_t i=0; xlsx_styles->m_oDxfs.IsInit() && i < xlsx_styles->m_oDxfs->m_arrItems.size(); i++)
+	for (size_t i = 0; xlsx_styles->m_oDxfs.IsInit() && i < xlsx_styles->m_oDxfs->m_arrItems.size(); i++)
 	{
 		convert(xlsx_styles->m_oDxfs->m_arrItems[i], i); 
 	}
@@ -2382,7 +2388,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	_CP_OPT(odf_types::length) indent;
 	if (aligment->m_oIndent.IsInit())
 	{
-		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent), odf_types::length::pt);
+		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent, true), odf_types::length::pt);
 	}
 	if(aligment->m_oHorizontal.IsInit())
 	{

@@ -85,7 +85,7 @@ HyphenDict* hnj_hyphen_load_stream(std::istream &in)
 		for (i = 0; i < MAX_NAME; i++)
 			dict[k]->cset[i]= 0;
 
-		if (in >> buf)
+		if (in >> dict[k]->cset)
 		{
 			for (i = 0; i < MAX_NAME; i++)
 				if ((dict[k]->cset[i] == '\r') || (dict[k]->cset[i] == '\n'))

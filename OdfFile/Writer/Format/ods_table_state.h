@@ -491,6 +491,7 @@ public:
     int dimension_columns;
     int dimension_row;
 
+	double defaut_column_width_sym_ = 0;
 	double defaut_column_width_;
 	double defaut_row_height_;
 

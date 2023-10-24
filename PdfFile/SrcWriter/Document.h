@@ -180,7 +180,9 @@ namespace PdfWriter
 		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
-		bool              EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID);
+		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
+		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
+		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
@@ -199,6 +201,7 @@ namespace PdfWriter
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
 		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
+		bool              EditXref(CXref* pXref);
 
 	private:
 
@@ -266,6 +269,7 @@ namespace PdfWriter
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
 		std::map<std::string, CFieldBase*> m_mFields;
 		std::map<int, CAnnotation*>        m_mAnnotations;
+		std::map<int, CDictObject*>        m_mParents;
 		std::map<int, CPage*>              m_mEditPages;
 
 		friend class CFontCidTrueType;

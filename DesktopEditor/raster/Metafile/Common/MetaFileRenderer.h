@@ -216,6 +216,11 @@ namespace MetaFile
 			CheckEndPath();
 		}
 
+		void NeedUpdateClip()
+		{
+			m_bUpdatedClip = false;
+		}
+		
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
 		{
 			if (!pBuffer || 0 == unWidth || 0 == unHeight)
@@ -785,15 +790,11 @@ namespace MetaFile
 		}
 		void ResetClip()
 		{
-			m_bUpdatedClip = false;
-
 			m_pRenderer->BeginCommand(c_nResetClipType);
 			m_pRenderer->EndCommand(c_nResetClipType);
 		}
 		void IntersectClip(const TRectD& oClip)
 		{
-			m_bUpdatedClip = false;
-
 			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
 			m_pRenderer->BeginCommand(c_nClipType);
@@ -815,8 +816,6 @@ namespace MetaFile
 		}
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB)
 		{
-			m_bUpdatedClip = false;
-
 			StartClipPath(RGN_AND, ALTERNATE);
 
 			MoveTo(oClip.Left,  oClip.Top);
@@ -835,8 +834,6 @@ namespace MetaFile
 		}
 		void PathClip(const CPath& oPath, int nClipMode, TXForm *pTransform = NULL)
 		{
-			m_bUpdatedClip = false;
-
 			double dM11, dM12, dM21, dM22, dX, dY;
 
 			if (NULL != pTransform)
@@ -1127,6 +1124,9 @@ namespace MetaFile
 		}
 		void UpdateClip()
 		{
+			if (m_bUpdatedClip)
+				return;
+			
 			CClip *pClip = m_pFile->GetClip();
 			
 			if (NULL == pClip)

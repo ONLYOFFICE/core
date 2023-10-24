@@ -555,18 +555,22 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateTextAnnot()
 	{
-		return new CTextAnnotation(m_pXref);
+		CTextAnnotation* pNew = new CTextAnnotation(m_pXref);
+		pNew->SetC({ 1.0, 0.8, 0.0 });
+		return pNew;
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
 		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, pDest);
 		pAnnot->SetRect(oRect);
+		m_pXref->Add(pAnnot);
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateUriLinkAnnot(const TRect& oRect, const char* sUrl)
 	{
 		CAnnotation* pAnnot = new CUriLinkAnnotation(m_pXref, sUrl);
 		pAnnot->SetRect(oRect);
+		m_pXref->Add(pAnnot);
 		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateInkAnnot()
@@ -611,7 +615,9 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
-		return new CTextWidget(m_pXref);
+		CAnnotation* pNew = new CTextWidget(m_pXref);
+		pNew->Add("FT", "Tx");
+		return pNew;
 	}
 	CAnnotation* CDocument::CreateChoiceWidget()
 	{
@@ -623,6 +629,7 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
+		m_pXref->Add(pAnnot);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
@@ -1168,15 +1175,13 @@ namespace PdfWriter
 	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
-		if (!pXref || !pPageTree)
+		if (!pPageTree || !EditXref(pXref))
 			return false;
 
 		if (!m_pPageTree)
 			m_pPageTree = pPageTree;
 		else
 			m_pPageTree->Join(pPageTree);
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
 
 		return true;
 	}
@@ -1242,7 +1247,7 @@ namespace PdfWriter
 	}
 	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex)
 	{
-		if (!pXref || !pPage)
+		if (!pPage || !EditXref(pXref))
 			return false;
 
 		pPage->AddContents(m_pXref);
@@ -1251,8 +1256,6 @@ namespace PdfWriter
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
 		m_pCurPage  = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
@@ -1260,14 +1263,45 @@ namespace PdfWriter
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
 	{
-		if (!pXref || !pAnnot)
+		if (!pAnnot || !EditXref(pXref))
+			return false;
+
+		m_mAnnotations[nID] = pAnnot;
+
+		return true;
+	}
+	bool CDocument::EditParent(CXref* pXref, CDictObject* pParent, int nID)
+	{
+		if (!pParent || !EditXref(pXref))
+			return false;
+
+		m_mParents[nID] = pParent;
+
+		return true;
+	}
+	bool CDocument::EditXref(CXref* pXref)
+	{
+		if (!pXref)
 			return false;
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
-		m_mAnnotations[nID] = pAnnot;
 
 		return true;
+	}
+	bool CDocument::DeleteAnnot(int nObjNum, int nObjGen)
+	{
+		if (m_pCurPage && m_pCurPage->DeleteAnnotation(nObjNum))
+		{
+			CXref* pXref = new CXref(this, nObjNum, nObjGen);
+			if (!pXref)
+				return false;
+
+			pXref->SetPrev(m_pLastXref);
+			m_pLastXref = pXref;
+			return true;
+		}
+		return false;
 	}
 	CAnnotation* CDocument::GetAnnot(int nID)
 	{
@@ -1316,7 +1350,7 @@ namespace PdfWriter
 	}
 	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
-		if (!pTrailer || !pInfoXref || !pInfo || m_wsFilePath.empty())
+		if (!pTrailer || m_wsFilePath.empty())
 			return false;
 
 		CFileStream* pStream = new CFileStream();
@@ -1331,6 +1365,8 @@ namespace PdfWriter
 
 		m_pTrailer = pTrailer;
 		m_pInfo = pInfo;
+		if (!m_pInfo)
+			m_pInfo = new PdfWriter::CInfoDict(m_pXref);
 
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())
@@ -1346,8 +1382,12 @@ namespace PdfWriter
 		m_pInfo->SetInfo(InfoCreator, cCreator ? cCreator : sCreatorA.c_str());
 		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
 
-		pInfoXref->SetPrev(m_pLastXref);
-		pXref->SetPrev(pInfoXref);
+		if (pInfoXref)
+		{
+			pInfoXref->SetPrev(m_pLastXref);
+			m_pLastXref = pInfoXref;
+		}
+		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
 		// Вторая часть идентификатора должна обновляться
@@ -1443,14 +1483,14 @@ namespace PdfWriter
 			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
 			if (pXrefCatalog)
 			{
-				pXrefCatalog->Add(m_pCatalog->Copy());
+				pXrefCatalog->Add(m_pCatalog->Copy(), m_pCatalog->GetGenNo());
 				pXrefCatalog->SetPrev(m_pXref);
 			}
 
 			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
 			if (pXrefPage)
 			{
-				pXrefPage->Add(m_vSignatures[i].pPage->Copy());
+				pXrefPage->Add(m_vSignatures[i].pPage->Copy(), m_vSignatures[i].pPage->GetGenNo());
 				pXrefPage->SetPrev(pXrefCatalog);
 			}
 

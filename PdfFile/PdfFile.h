@@ -98,7 +98,7 @@ public:
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
 	bool EditAnnot  (int nPageIndex, int nID);
-	bool DeleteAnnot(int nPageIndex, int nID);
+	bool DeleteAnnot(int nID);
 #endif
 
 	// --- READER ---
@@ -126,6 +126,7 @@ public:
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
 	int GetRotate(int nPageIndex);
+	int GetMaxRefID();
 	BYTE* GetWidgets();
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);

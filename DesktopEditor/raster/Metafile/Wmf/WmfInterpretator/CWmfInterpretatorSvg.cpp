@@ -501,17 +501,17 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)

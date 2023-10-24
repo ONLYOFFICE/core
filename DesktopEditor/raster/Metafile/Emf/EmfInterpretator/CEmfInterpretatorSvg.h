@@ -132,7 +132,7 @@ namespace MetaFile
 
 		// 2.3.3 Control Record Types
 		void HANDLE_EMFPLUS_ENDOFFILE() override;
-		void HANDLE_EMFPLUS_GETDC() override {};
+		void HANDLE_EMFPLUS_GETDC() override;
 		void HANDLE_EMFPLUS_HEADER(unsigned int unEmfPlusFlags, unsigned int m_unLogicalDpiX, unsigned int m_unLogicalDpiY) override {};
 
 		// 2.3.4 Drawing Record Types
@@ -176,7 +176,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_BEGINCONTAINER(short, const TEmfPlusRectF&, const TEmfPlusRectF&, unsigned int) override {};
 		void HANDLE_EMFPLUS_BEGINCONTAINERNOPARAMS(unsigned int) override {};
 		void HANDLE_EMFPLUS_ENDCONTAINER(unsigned int) override {};
-		void HANDLE_EMFPLUS_RESTORE(unsigned int) override {};
+		void HANDLE_EMFPLUS_RESTORE(unsigned int) override;
 		void HANDLE_EMFPLUS_SAVE(unsigned int) override {};
 
 		// 2.3.8 Terminal Server Record Types

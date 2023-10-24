@@ -73,6 +73,7 @@ namespace PdfWriter
 	{
 	public:
 		CInfoDict(CXref* pXref);
+		CInfoDict() {}
 		void        SetInfo(EInfoType eType, const char* sValue);
 		const char* GetInfo(EInfoType eType);
 		void        SetInfo(EInfoType eType, const TDate& oDate);

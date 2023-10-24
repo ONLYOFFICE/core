@@ -510,7 +510,7 @@ void xlsx_conversion_context::end_table()
 					CP_XML_ATTR(L"min", cMin);
 					//CP_XML_ATTR(L"style", 0);
 					CP_XML_ATTR(L"width", lastWidht);
-					CP_XML_ATTR(L"customWidth", 0);
+					CP_XML_ATTR(L"customWidth", 1);
 				}
 			}
 		}

@@ -33,6 +33,7 @@
 #include "Pages.h"
 #include "Utils.h"
 #include "ResourcesDictionary.h"
+#include "Streams.h"
 
 #include "../../DesktopEditor/common/File.h"
 
@@ -75,19 +76,12 @@ namespace PdfWriter
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
 		m_pXref = pXref;
-		pXref->Add(this);
-
-		m_nID = 0;
 
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
 
 		// Для PDFA нужно, чтобы 0, 1, 4 биты были выключены, а второй включен
 		Add("F", 4);
-	}
-	void CAnnotation::SetHeight(double dHeight)
-	{
-		m_dPageHeight = dHeight;
 	}
 	void CAnnotation::SetRect(const TRect& oRect)
 	{
@@ -146,10 +140,6 @@ namespace PdfWriter
 		case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
 	}
-	void CAnnotation::SetID(const int& nID)
-	{
-		m_nID = nID;
-	}
 	void CAnnotation::SetAnnotFlag(const int& nAnnotFlag)
 	{
 		Add("F", nAnnotFlag);
@@ -157,6 +147,8 @@ namespace PdfWriter
 	void CAnnotation::SetPage(CPage* pPage)
 	{
 		Add("P", pPage);
+		m_dPageWidth  = pPage->GetWidth();
+		m_dPageHeight = pPage->GetHeight();
 	}
 	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
@@ -181,7 +173,10 @@ namespace PdfWriter
 	void CAnnotation::SetContents(const std::wstring& wsText)
 	{
 		std::string sValue = U_TO_UTF8(wsText);
-		Add("Contents", new CStringObject(sValue.c_str()));
+		Add("Contents", new CStringObject(sValue.c_str(), true));
+
+		// TODO
+		Remove("RC");
 	}
 	void CAnnotation::SetNM(const std::wstring& wsNM)
 	{
@@ -208,12 +203,15 @@ namespace PdfWriter
 	{
 		AddToVectorD(this, "C", arrC);
 	}
+	void CAnnotation::CreateAP()
+	{
+
+	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
 	//----------------------------------------------------------------------------------------
 	CMarkupAnnotation::CMarkupAnnotation(CXref* pXref, EAnnotType eType) : CAnnotation(pXref, eType)
 	{
-		m_nIRTID = 0;
 	}
 	void CMarkupAnnotation::SetRT(const BYTE& nRT)
 	{
@@ -222,21 +220,20 @@ namespace PdfWriter
 	CPopupAnnotation* CMarkupAnnotation::CreatePopup()
 	{
 		CPopupAnnotation* pAnnot = new CPopupAnnotation(m_pXref);
+		m_pXref->Add(pAnnot);
 		Add("Popup", pAnnot);
 
 		pAnnot->SetOpen(false);
 		pAnnot->SetParentID(this);
+		pAnnot->SetAnnotFlag(28);
 
 		TRect oRect = m_oRect;
+		oRect.fLeft = m_dPageWidth - 100 - (oRect.fRight - oRect.fLeft);
 		oRect.fBottom -= 100;
-		oRect.fRight += 100;
+		oRect.fRight = m_dPageWidth;
 		pAnnot->SetRect(oRect);
 
 		return pAnnot;
-	}
-	void CMarkupAnnotation::SetIRTID(const int& nIRTID)
-	{
-		m_nIRTID = nIRTID;
 	}
 	void CMarkupAnnotation::SetCA(const double& dCA)
 	{
@@ -245,12 +242,12 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetT(const std::wstring& wsT)
 	{
 		std::string sValue = U_TO_UTF8(wsT);
-		Add("T", new CStringObject(sValue.c_str()));
+		Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetRC(const std::wstring& wsRC)
 	{
 		std::string sValue = U_TO_UTF8(wsRC);
-		Add("RC", new CStringObject(sValue.c_str()));
+		Add("RC", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetCD(const std::wstring& wsCD)
 	{
@@ -260,11 +257,15 @@ namespace PdfWriter
 	void CMarkupAnnotation::SetSubj(const std::wstring& wsSubj)
 	{
 		std::string sValue = U_TO_UTF8(wsSubj);
-		Add("Subj", new CStringObject(sValue.c_str()));
+		Add("Subj", new CStringObject(sValue.c_str(), true));
 	}
 	void CMarkupAnnotation::SetIRTID(CAnnotation* pAnnot)
 	{
 		Add("IRT", pAnnot);
+	}
+	void CMarkupAnnotation::CreateAP()
+	{
+
 	}
 	//----------------------------------------------------------------------------------------
 	// CLinkAnnotation
@@ -314,6 +315,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CTextAnnotation::CTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotText)
 	{
+		m_nName = 10;
 		Add("Name", "Comment");
 	}
 	void CTextAnnotation::SetOpen(bool bOpen)
@@ -322,6 +324,7 @@ namespace PdfWriter
 	}
 	void CTextAnnotation::SetName(BYTE nName)
 	{
+		m_nName = nName;
 		Add("Name", c_sAnnotIconNames[nName]);
 	}
 	void CTextAnnotation::SetState(BYTE nState)
@@ -346,6 +349,8 @@ namespace PdfWriter
 		}
 
 		Add("State", new CStringObject(sValue.c_str()));
+		if (!Get("C"))
+			SetC({ 1.0, 0.8, 0.0 });
 	}
 	void CTextAnnotation::SetStateModel(BYTE nStateModel)
 	{
@@ -359,6 +364,25 @@ namespace PdfWriter
 		}
 
 		Add("StateModel", new CStringObject(sValue.c_str()));
+	}
+	void CTextAnnotation::CreateAP()
+	{
+		switch (m_nName)
+		{
+		case 3:
+		{
+			CAnnotationAppearance* pAP = new CAnnotationAppearance(m_pXref, {0, 0, 20, 20});
+			Add("AP", pAP);
+
+			pAP->DrawTextComment();
+			break;
+		}
+		case 10:
+		default:
+		{
+			break;
+		}
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CUriLinkAnnotation
@@ -402,7 +426,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CLineAnnotation::CLineAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotLine)
 	{
-
 	}
 	void CLineAnnotation::SetCap(bool bCap)
 	{
@@ -519,15 +542,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPopupAnnotation::CPopupAnnotation(CXref* pXref) : CAnnotation(pXref, AnnotPopup)
 	{
-		m_nParentID = 0;
 	}
 	void CPopupAnnotation::SetOpen(bool bOpen)
 	{
 		Add("Open", new CBoolObject(bOpen));
-	}
-	void CPopupAnnotation::SetParentID(const int& nParentID)
-	{
-		m_nParentID = nParentID;
 	}
 	void CPopupAnnotation::SetParentID(CAnnotation* pAnnot)
 	{
@@ -538,7 +556,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFreeTextAnnotation::CFreeTextAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotFreeText)
 	{
-
 	}
 	void CFreeTextAnnotation::SetQ(const BYTE& nQ)
 	{
@@ -568,18 +585,22 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsDS);
 		Add("DS", new CStringObject(sValue.c_str()));
 	}
-	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	void AddRD(CDictObject* pObj, const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
 
-		Add("RD", pArray);
+		pObj->Add("RD", pArray);
 
 		pArray->Add(dRD1);
 		pArray->Add(dRD2);
 		pArray->Add(dRD3);
 		pArray->Add(dRD4);
+	}
+	void CFreeTextAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
+	{
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CFreeTextAnnotation::SetCL(const std::vector<double>& arrCL)
 	{
@@ -647,16 +668,7 @@ namespace PdfWriter
 	}
 	void CSquareCircleAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CSquareCircleAnnotation::SetIC(const std::vector<double>& arrIC)
 	{
@@ -727,20 +739,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCaretAnnotation::CCaretAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotCaret)
 	{
-
 	}
 	void CCaretAnnotation::SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4)
 	{
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		Add("RD", pArray);
-
-		pArray->Add(dRD1);
-		pArray->Add(dRD2);
-		pArray->Add(dRD3);
-		pArray->Add(dRD4);
+		AddRD(this, dRD1, dRD2, dRD3, dRD4);
 	}
 	void CCaretAnnotation::SetSy(const BYTE& nSy)
 	{
@@ -803,6 +805,23 @@ namespace PdfWriter
 
 		Add("DA", new CStringObject(sDA.c_str(), false, true));
 	}
+	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
+	{
+		if (Get(sV))
+			return this;
+		CDictObject* pParent = m_pParent;
+		while (pParent)
+		{
+			if (pParent->Get(sV))
+				return pParent;
+			CObjectBase* pParent2 = pParent->Get("Parent");
+			if (pParent2 && pParent2->GetType() == object_type_DICT)
+				pParent = (CDictObject*)pParent2;
+			else
+				return NULL;
+		}
+		return NULL;
+	}
 	void CWidgetAnnotation::CheckMK()
 	{
 		if (!m_pMK)
@@ -842,9 +861,12 @@ namespace PdfWriter
 	{
 		Add("Ff", nFlag);
 	}
-	void CWidgetAnnotation::SetParentID(const int& nParentID)
+	void CWidgetAnnotation::SetParent(CDictObject* pParent)
 	{
-
+		if (!pParent)
+			return;
+		m_pParent = pParent;
+		Add("Parent", pParent);
 	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
@@ -895,8 +917,22 @@ namespace PdfWriter
 	}
 	void CButtonWidget::SetV(bool bV)
 	{
-		Add("V", (bV ? "Yes" : "Off"));
-		Add("AS", (bV ? "Yes" : "Off"));
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+		{
+			if (m_pParent)
+			{
+				if (bV)
+					m_pParent->Add("V", m_sAP_N_Yes.c_str());
+			}
+			else
+				Add("V", (bV ? m_sAP_N_Yes.c_str() : "Off"));
+		}
+		else if (bV)
+			pOwner->Add("V", m_sAP_N_Yes.c_str());
+
+		// TODO
+		// Add("AS", (bV ? m_sAP_N_Yes.c_str() : "Off"));
 	}
 	void CButtonWidget::SetDV(const std::wstring& wsDV)
 	{
@@ -1006,20 +1042,14 @@ namespace PdfWriter
 	}
 	void CButtonWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
-		CNameObject* pV = (CNameObject*)Get("V");
-		if (pV && 0 == StrCmp(pV->Get(), "Yes"))
-		{
-			std::string sValue = U_TO_UTF8(wsAP_N_Yes);
-			Add("V", new CStringObject(sValue.c_str()));
-			Add("AS", new CStringObject(sValue.c_str()));
-		}
+		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
+		m_sAP_N_Yes = sValue;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget
 	//----------------------------------------------------------------------------------------
 	CTextWidget::CTextWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		Add("FT", "Tx");
 	}
 	void CTextWidget::SetMaxLen(const int& nMaxLen)
 	{
@@ -1034,7 +1064,12 @@ namespace PdfWriter
 	void CTextWidget::SetV(const std::wstring& wsV)
 	{
 		std::string sValue = U_TO_UTF8(wsV);
-		Add("V", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = GetObjOwnValue("FT");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("V", new CStringObject(sValue.c_str()));
 	}
 	void CTextWidget::SetRV(const std::wstring& wsRV)
 	{
@@ -1055,7 +1090,12 @@ namespace PdfWriter
 	void CChoiceWidget::SetV(const std::wstring& wsV)
 	{
 		std::string sValue = U_TO_UTF8(wsV);
-		Add("V", new CStringObject(sValue.c_str()));
+		CDictObject* pOwner = GetObjOwnValue("V");
+		if (!pOwner)
+			pOwner = GetObjOwnValue("FT");
+		if (!pOwner)
+			pOwner = this;
+		pOwner->Add("V", new CStringObject(sValue.c_str()));
 	}
 	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
 	{
@@ -1090,5 +1130,32 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CSignatureWidget::CSignatureWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
+	}
+	//----------------------------------------------------------------------------------------
+	// CAnnotationAppearance
+	//----------------------------------------------------------------------------------------
+	CAnnotationAppearance::CAnnotationAppearance(CXref* pXref, const TRect& oRect)
+	{
+		m_pXref   = pXref;
+		m_pStream = new CMemoryStream();
+
+		SetStream(m_pXref, m_pStream);
+
+		Add("Type", "XObject");
+		Add("Subtype", "Form");
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("BBox", pArray);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(oRect.fRight - oRect.fLeft);
+		pArray->Add(oRect.fBottom - oRect.fTop);
+	}
+	void CAnnotationAppearance::DrawTextComment()
+	{
+		m_pStream->WriteStr("");
 	}
 }

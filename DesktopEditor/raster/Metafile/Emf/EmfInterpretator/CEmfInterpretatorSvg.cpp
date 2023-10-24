@@ -128,31 +128,26 @@ namespace MetaFile
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TRectL &oClip)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TRectL &oClip)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_ANGLEARC(const TPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)
@@ -1029,33 +1024,36 @@ namespace MetaFile
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_OFFSETCLIP(double dX, double dY)
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_RESETCLIP()
 	{
 		m_bUpdatedClip = false;
-//		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPPATH(short unShFlags, const CEmfPlusPath *pPath)
 	{
-//		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPRECT(short shCM, const TEmfPlusRectF &oRect)
 	{
-//		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_SETCLIPREGION(short shObjectIndex, short shCM, const CEmfPlusRegion *pRegion)
 	{
-//		CInterpretatorSvgBase::ResetClip();
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_ENDOFFILE()
 	{
-//		CInterpretatorSvgBase::ResetClip();
+		CloseClip();
+	}
+	
+	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_GETDC()
+	{
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB &oARGB)
@@ -1412,7 +1410,12 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_FILLREGION(short shOgjectIndex, unsigned int unBrushId)
 	{
-
+		
+	}
+	
+	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_RESTORE(unsigned int)
+	{
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)

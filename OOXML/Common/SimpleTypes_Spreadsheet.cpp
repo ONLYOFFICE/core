@@ -2666,7 +2666,7 @@ namespace SimpleTypes
 			case axisCol:		return L"axisCol";
 			case axisPage:		return L"axisPage";
 			case axisRow:		return L"axisRow";
-			case axisValues:	return L"countNums";
+            case axisValues:	return L"axisValues";
 			default :			return L"";
 			}
 		}

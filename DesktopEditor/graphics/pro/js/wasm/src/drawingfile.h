@@ -73,6 +73,12 @@ public:
 	{
 		return pReader->GetPagesCount();
 	}
+	int GetMaxRefID()
+	{
+		if (nType == 0)
+			return ((CPdfFile*)pReader)->GetMaxRefID();
+		return 0;
+	}
 	void GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX, int& nRotate)
 	{
 		double dPageDpiX, dPageDpiY;

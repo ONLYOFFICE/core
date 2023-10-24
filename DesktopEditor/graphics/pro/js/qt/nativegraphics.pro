@@ -164,7 +164,6 @@ SOURCES += \
 	\
 	../../../../raster/JBig2/source/JBig2File.cpp \
 	\
-	../../../../raster/Metafile/StarView/SvmClip.cpp \
 	../../../../raster/Metafile/StarView/SvmFile.cpp \
 	../../../../raster/Metafile/StarView/SvmObjects.cpp \
 	../../../../raster/Metafile/StarView/SvmPlayer.cpp
@@ -675,4 +674,5 @@ SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 HEADERS += \
 	../wasm/src/drawingfile.h \
 	../wasm/src/serialize.h
-SOURCES += ../wasm/src/drawingfile.cpp
+
+SOURCES += ../wasm/src/drawingfile_test.cpp

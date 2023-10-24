@@ -444,10 +444,10 @@ public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
-	virtual void SetType(int nType);
+	void SetType(int nType);
 	bool IsValid() const;
 
-	virtual void SetBounds(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
+	void SetBounds(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	void SetBorder(BYTE nType, double dWidth, double dDashesAlternating, double dGaps);
 	void SetFlag(const int& nFlag)           { m_nFlag      = nFlag; }
 	void SetID(const int& nID)               { m_nID        = nID; }
@@ -459,7 +459,7 @@ public:
 	void SetContents(const std::wstring& wsContents) { m_wsContents = wsContents; }
 	void SetC(const std::vector<double>& arrC)       { m_arrC       = arrC; }
 
-	virtual void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const;
+	void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2) const;
 	void   GetBorder(BYTE& nType, double& dWidth, double& dDashesAlternating, double& dGaps);
 	int    GetFlag()      const { return m_nFlag; }
 	int    GetID()        const { return m_nID; }
@@ -501,14 +501,12 @@ public:
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
-protected:
+private:
 	int          m_nType;
 	double       m_dX1;
 	double       m_dY1;
 	double       m_dX2;
 	double       m_dY2;
-
-private:
 	int          m_nFlag;
 	int          m_nID;
 	int          m_nAnnotFlag;
@@ -531,6 +529,20 @@ private:
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
+};
+
+class GRAPHICS_DECL CAnnotFieldDelete : public IAdvancedCommand
+{
+public:
+	CAnnotFieldDelete();
+	virtual ~CAnnotFieldDelete() {}
+
+	int GetID() { return m_nID; }
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	int m_nID;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

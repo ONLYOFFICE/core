@@ -161,7 +161,7 @@ namespace _graphics_utils_
 	std::pair<float,float> calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts)
 	{
 		if (name.empty())
-			name = L"Arial";
+			name = L"Calibri";
 
 		std::pair<float,float> val = cpdoccore::utils::GetMaxDigitSizePixels(name, size, 96., 0 , appFonts);
 

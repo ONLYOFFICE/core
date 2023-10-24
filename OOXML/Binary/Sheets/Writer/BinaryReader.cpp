@@ -38,6 +38,7 @@
 
 #include "../../../../DesktopEditor/common/Path.h"
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #include "../Writer/CSVWriter.h"
 #include "BinaryCommonReader.h"
@@ -7361,7 +7362,11 @@ int BinaryOtherTableReader::ReadMediaItem(BYTE type, long length, void* poResult
 		}
 		else if (NSFile::CFileBinary::Exists(sImageSrc))
 		{
-			ReadMediaItemSaveFilePath(sImageSrc);
+			CImageFileFormatChecker checker;
+			if (checker.isImageFile(sImageSrc))
+			{
+				ReadMediaItemSaveFilePath(sImageSrc);
+			}
 			if (bAddToDelete)
 				NSFile::CFileBinary::Remove(sImageSrc);
 		}
@@ -7394,12 +7399,18 @@ void BinaryOtherTableReader::ReadMediaItemSaveFileFILE(FILE* pFile)
 		DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, size, pFile);
 		if (dwSizeRead > 0)
 		{
-            std::wstring sNewImagePath = ReadMediaItemSaveFileGetNewPath(L"1.jpg");
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(sNewImagePath);
-			oFile.WriteFile(pData, dwSizeRead);
-			oFile.CloseFile();
-			m_sCurSrc = sNewImagePath;
+			CImageFileFormatChecker checker;
+			std::wstring sExt = checker.DetectFormatByData(pData, dwSizeRead);
+
+			if (false == sExt.empty())
+			{
+				std::wstring sNewImagePath = ReadMediaItemSaveFileGetNewPath(L"1.jpg"); //todooo add true sExt
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sNewImagePath);
+				oFile.WriteFile(pData, dwSizeRead);
+				oFile.CloseFile();
+				m_sCurSrc = sNewImagePath;
+			}
 		}
 		RELEASEARRAYOBJECTS(pData);
 	}

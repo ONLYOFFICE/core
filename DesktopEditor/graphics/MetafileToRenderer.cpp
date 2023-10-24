@@ -923,10 +923,23 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctFormField:
 			case ctAnnotField:
+			case ctAnnotFieldDelete:
 			{
+				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
+				switch (eCommand)
+				{
+				case ctFormField:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::FormField;   break;
+				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotaion;   break;
+				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
+				default:
+					break;
+				}
+
 				BYTE* cur = oReader.GetCurrentBuffer();
 				int nLen = oReader.ReadInt();
-				if (S_OK == pRenderer->IsSupportAdvancedCommand(IAdvancedCommand::AdvancedCommandType::Annotaion))
+
+				if ((IAdvancedCommand::AdvancedCommandType::Undefined != eAdvancedCommandType) &&
+					(S_OK == pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType)))
 				{
 					IAdvancedCommand* pCommand = oReader.Read(eCommand, pCorrector);
 					if (pCommand)
@@ -941,10 +954,12 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			default:
 			{
+				BYTE* cur = oReader.GetCurrentBuffer();
+				oReader.SetCurrentBuffer(cur + oReader.ReadInt());
 				break;
 			}
 			}; // switch (eCommand)
-		} // while (curindex < len)
+		}
 
 		return true;
 	}
@@ -1234,13 +1249,11 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctFormField:
 			case ctAnnotField:
+			case ctAnnotFieldDelete:
+			default:
 			{
 				BYTE* cur = oReader.GetCurrentBuffer();
 				oReader.SetCurrentBuffer(cur + oReader.ReadInt());
-				break;
-			}			
-			default:
-			{
 				break;
 			}
 			}; // switch (eCommand)

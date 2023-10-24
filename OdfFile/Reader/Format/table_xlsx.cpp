@@ -545,6 +545,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 								width = *prop->attlist_.loext_column_width_sym_;
 
 								CP_XML_ATTR(L"width", *width);
+								CP_XML_ATTR(L"customWidth", true);
 								Context.table_column_last_width(*width);
 							}
 							else if (prop->attlist_.style_column_width_)
@@ -745,9 +746,9 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             instances.push_back(cellStyle);
     }
 
-    text_format_properties_ptr	textFormatProperties	= calc_text_properties_content		(instances);          
-	paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content	(instances);
-    style_table_cell_properties_attlist cellFormatProperties	= calc_table_cell_properties		(instances);
+    text_format_properties_ptr textFormatProperties	= calc_text_properties_content (instances);          
+	paragraph_format_properties parFormatProperties = calc_paragraph_properties_content (instances);
+    style_table_cell_properties_attlist cellFormatProperties = calc_table_cell_properties (instances);
 //-------------------------------------------------------------------------------------------------------------------------------
 	std::wstring			num_format;
 	office_value_type::type num_format_type = office_value_type::Custom;

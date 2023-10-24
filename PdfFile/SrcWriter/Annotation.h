@@ -118,6 +118,35 @@ namespace PdfWriter
 
 		void SetJS(const std::wstring& wsJS);
 	};
+	class CActionGoTo : public CAction
+	{
+	public:
+		CActionGoTo(CXref* pXref);
+
+		void SetDestination(CDestination* pDest);
+	};
+	class CActionURI : public CAction
+	{
+	public:
+		CActionURI(CXref* pXref);
+
+		void SetURI(const std::wstring& wsURI);
+	};
+	class CActionHide : public CAction
+	{
+	public:
+		CActionHide(CXref* pXref);
+
+		void SetH(BYTE nH);
+		void SetT(const std::vector<std::wstring>& arrT);
+	};
+	class CActionNamed : public CAction
+	{
+	public:
+		CActionNamed(CXref* pXref);
+
+		void SetN(const std::wstring& wsN);
+	};
 
 	class CAnnotation : public CDictObject
 	{
@@ -128,6 +157,7 @@ namespace PdfWriter
 		TRect  m_oRect;
 		double m_dPageWidth  = 0;
 		double m_dPageHeight = 0;
+		CDocument* m_pDocument;
 
 	public:
 		EDictType GetDictType() const
@@ -157,6 +187,8 @@ namespace PdfWriter
 		virtual void CreateAP();
 		TRect GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
+		void SetDocument(CDocument* pDocument);
+		CDocument* GetDocument();
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -343,15 +375,14 @@ namespace PdfWriter
 		CDictObject* m_pParent;
 		CDictObject* m_pAA;
 		CDictObject* m_pA;
-		CDocument* m_pDocument;
+		std::string m_sDAforAP;
 
 		void CheckMK();
 
 	public:
 		CWidgetAnnotation(CXref* pXref, EAnnotType eType);
 
-		void SetDocument(CDocument* pDocument);
-		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC);
+		void SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC);
 		CDictObject* GetObjOwnValue(const std::string& sV);
 
 		void SetQ(const BYTE& nQ);
@@ -366,6 +397,8 @@ namespace PdfWriter
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
+
+		std::string GetDAforAP() { return m_sDAforAP; }
 	};
 	class CButtonWidget : public CWidgetAnnotation
 	{
@@ -448,14 +481,15 @@ namespace PdfWriter
 	class CAnnotationAppearance : public CDictObject
 	{
 	public:
-		CAnnotationAppearance(CXref* pXref, const TRect& oRect);
+		CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot);
 
 		void DrawTextComment();
-		void DrawTextWidget(CTextWidget* pAnnot);
+		void DrawTextWidget();
 
 	private:
 		CXref*   m_pXref;
 		CStream* m_pStream;
+		CAnnotation* m_pAnnot;
 	};
 }
 #endif // _PDF_WRITER_SRC_ANNOTATION_H

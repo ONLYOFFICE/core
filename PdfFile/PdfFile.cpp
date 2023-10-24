@@ -413,6 +413,7 @@ PdfWriter::CDictObject* GetAcroForm(Object* oAcroForm)
 		if (strcmp("DR", chKey) == 0)
 		{
 			oAcroForm->dictGetVal(nIndex, &oTemp2);
+			/*
 			if (!oTemp2.isDict())
 			{
 				oTemp2.free();
@@ -427,8 +428,10 @@ PdfWriter::CDictObject* GetAcroForm(Object* oAcroForm)
 			}
 			oTemp2.free();
 			continue;
+			*/
 		}
-		oAcroForm->dictGetValNF(nIndex, &oTemp2);
+		else
+			oAcroForm->dictGetValNF(nIndex, &oTemp2);
 		DictToCDictObject(&oTemp2, pAcroForm, false, chKey);
 		oTemp2.free();
 	}

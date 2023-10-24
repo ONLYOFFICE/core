@@ -416,7 +416,7 @@ CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* ReadAction(NSOnlineOfficeBinToPd
 	}
 	case 9: // Hide
 	{
-		pRes->nInt1 = pReader->ReadInt();
+		pRes->nKind = pReader->ReadByte();
 		int n = pReader->ReadInt();
 		for (int i = 0; i < n; ++i)
 			pRes->arrStr.push_back(pReader->ReadString());
@@ -704,6 +704,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 
 		pPr->SetFontName(pReader->ReadString());
 		pPr->SetFontSize(pReader->ReadDouble());
+		pPr->SetFontSizeAP(pReader->ReadDouble());
+		pPr->SetFontStyle(pReader->ReadInt());
 
 		int n = pReader->ReadInt();
 		std::vector<double> arrTC;

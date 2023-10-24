@@ -75,6 +75,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CAnnotation::CAnnotation(CXref* pXref, EAnnotType eType)
 	{
+		m_pDocument = NULL;
 		m_pXref = pXref;
 
 		Add("Type", "Annot");
@@ -205,6 +206,14 @@ namespace PdfWriter
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		AddToVectorD(this, "C", arrC);
+	}
+	void CAnnotation::SetDocument(CDocument* pDocument)
+	{
+		m_pDocument = pDocument;
+	}
+	CDocument* CAnnotation::GetDocument()
+	{
+		return m_pDocument;
 	}
 	void CAnnotation::CreateAP()
 	{
@@ -374,7 +383,7 @@ namespace PdfWriter
 		{
 		case 3:
 		{
-			CAnnotationAppearance* pAP = new CAnnotationAppearance(m_pXref, {0, 0, 20, 20});
+			CAnnotationAppearance* pAP = new CAnnotationAppearance(m_pXref, this);
 			Add("AP", pAP);
 
 			pAP->DrawTextComment();
@@ -769,18 +778,12 @@ namespace PdfWriter
 
 		m_pMK = NULL;
 		m_pParent = NULL;
-		m_pDocument = NULL;
 		m_pAA = NULL;
 		m_pA = NULL;
 	}
-	void CWidgetAnnotation::SetDocument(CDocument* pDocument)
-	{
-		m_pDocument = pDocument;
-	}
-	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrTC)
+	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
 		std::string sDA;
@@ -805,11 +808,13 @@ namespace PdfWriter
 		}
 
 		sDA.append(" ");
+		m_sDAforAP = sDA;
 		sDA.append(std::to_string(dFontSize));
+		m_sDAforAP.append(std::to_string(dFontSizeAP));
 		sDA.append(" Tf");
+		m_sDAforAP.append(" Tf");
 
-		// TODO
-		// Add("DA", new CStringObject(sDA.c_str(), false, true));
+		Add("DA", new CStringObject(sDA.c_str()));
 	}
 	CDictObject* CWidgetAnnotation::GetObjOwnValue(const std::string& sV)
 	{
@@ -1112,14 +1117,14 @@ namespace PdfWriter
 	}
 	void CTextWidget::CreateAP()
 	{
-		CAnnotationAppearance* pAPN = new CAnnotationAppearance(m_pXref, m_oRect);
+		CAnnotationAppearance* pAPN = new CAnnotationAppearance(m_pXref, this);
 
 		CDictObject* pAP = new CDictObject();
 		pAP->Add("N", pAPN);
 
 		Add("AP", pAP);
 
-		pAPN->DrawTextWidget(this);
+		pAPN->DrawTextWidget();
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceWidget
@@ -1179,16 +1184,21 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotationAppearance
 	//----------------------------------------------------------------------------------------
-	CAnnotationAppearance::CAnnotationAppearance(CXref* pXref, const TRect& oRect)
+	CAnnotationAppearance::CAnnotationAppearance(CXref* pXref, CAnnotation* pAnnot)
 	{
 		m_pXref   = pXref;
 		m_pStream = new CMemoryStream();
+		m_pAnnot = pAnnot;
 
 		SetStream(m_pXref, m_pStream);
 
 		Add("Type", "XObject");
 		Add("Subtype", "Form");
 
+		Add("Resources", pAnnot->GetDocument()->GetFieldsResources());
+	}
+	void CAnnotationAppearance::DrawTextComment()
+	{
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
@@ -1196,37 +1206,61 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(oRect.fRight - oRect.fLeft);
-		pArray->Add(oRect.fTop - oRect.fBottom);
-	}
-	void CAnnotationAppearance::DrawTextComment()
-	{
+		pArray->Add(20);
+		pArray->Add(20);
+
 		m_pStream->WriteStr("");
 	}
-	void CAnnotationAppearance::DrawTextWidget(CTextWidget* pAnnot)
+	void CAnnotationAppearance::DrawTextWidget()
 	{
-		m_pStream->WriteStr("q 1 1 ");
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
 
-		TRect oRect = pAnnot->GetRect();
-		std::string sSize = std::to_string(oRect.fRight - oRect.fLeft - 2);
-		sSize += " ";
-		sSize += std::to_string(oRect.fTop - oRect.fBottom - 2);
-		m_pStream->WriteStr(sSize.c_str());
+		TRect oRect = m_pAnnot->GetRect();
 
-		m_pStream->WriteStr(" re W n BT ");
+		Add("BBox", pArray);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(oRect.fRight - oRect.fLeft);
+		pArray->Add(oRect.fTop - oRect.fBottom);
 
-		CDictObject* pOwner = pAnnot->GetObjOwnValue("DA");
-		if (pOwner)
+		CTextWidget* pAnnot = (CTextWidget*)m_pAnnot;
+		m_pStream->WriteStr("Tx BMC\012");
+		// TODO если имеется фоновый цвет
+		double dBorderSize = 0;
+		double dBorderSize2  = 0;
+		// TODO если имеется граница
+		m_pStream->WriteStr("q\012");
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+
+		m_pStream->WriteReal(std::max(oRect.fRight - oRect.fLeft - dBorderSize2, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(oRect.fTop - oRect.fBottom - dBorderSize2, 0.0));
+		m_pStream->WriteStr(" re\012W\012n\012BT\012");
+
+		std::string sFontInfo = pAnnot->GetDAforAP();
+		if (sFontInfo.empty())
 		{
-			CStringObject* pDA = dynamic_cast<CStringObject*>(pOwner->Get("DA"));
-			if (pDA)
-				m_pStream->WriteStr((const char*)pDA->GetString());
+			CDictObject* pOwner = pAnnot->GetObjOwnValue("DA");
+			if (pOwner)
+			{
+				CStringObject* pDA = dynamic_cast<CStringObject*>(pOwner->Get("DA"));
+				if (pDA)
+					sFontInfo = std::string((const char*)pDA->GetString());
+			}
 		}
+		if (!sFontInfo.empty())
+			m_pStream->WriteStr(sFontInfo.c_str());
 
-		// TODO возможно потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
+		// TODO потребуется смещение Y-координаты в зависимости от размеров области и размеров шрифта
+		// TODO требуется запись юникод значений, т.е необходимо писать по глифам
 		m_pStream->WriteStr(" 2 6.548 Td (");
 		m_pStream->WriteStr(pAnnot->GetV().c_str());
-		m_pStream->WriteStr(") Tj ET Q");
+		m_pStream->WriteStr(") Tj ET\012Q\012EMC\012");
 	}
 	//----------------------------------------------------------------------------------------
 	// CAction
@@ -1240,6 +1274,7 @@ namespace PdfWriter
 	{
 		m_sType = U_TO_UTF8(wsType);
 	}
+	//----------------------------------------------------------------------------------------
 	CActionResetForm::CActionResetForm(CXref* pXref) : CAction(pXref)
 	{
 		Add("S", "ResetForm");
@@ -1263,6 +1298,7 @@ namespace PdfWriter
 			pArray->Add(new CStringObject(sValue.c_str()));
 		}
 	}
+	//----------------------------------------------------------------------------------------
 	CActionJavaScript::CActionJavaScript(CXref* pXref) : CAction(pXref)
 	{
 		Add("S", "JavaScript");
@@ -1271,5 +1307,47 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsJS);
 		Add("JS", new CStringObject(sValue.c_str()));
+	}
+	//----------------------------------------------------------------------------------------
+	CActionGoTo::CActionGoTo(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "GoTo");
+	}
+	void CActionGoTo::SetDestination(CDestination* pDest)
+	{
+		Add("D", pDest);
+	}
+	//----------------------------------------------------------------------------------------
+	CActionURI::CActionURI(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "URI");
+	}
+	void CActionURI::SetURI(const std::wstring& wsURI)
+	{
+		std::string sValue = U_TO_UTF8(wsURI);
+		Add("URI", new CStringObject(sValue.c_str(), true));
+	}
+	//----------------------------------------------------------------------------------------
+	CActionHide::CActionHide(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "Hide");
+	}
+	void CActionHide::SetH(BYTE nH)
+	{
+		Add("H", !!nH);
+	}
+	void CActionHide::SetT(const std::vector<std::wstring>& arrT)
+	{
+
+	}
+	//----------------------------------------------------------------------------------------
+	CActionNamed::CActionNamed(CXref* pXref) : CAction(pXref)
+	{
+		Add("S", "Named");
+	}
+	void CActionNamed::SetN(const std::wstring& wsN)
+	{
+		std::string sValue = U_TO_UTF8(wsN);
+		Add("N", sValue.c_str());
 	}
 }

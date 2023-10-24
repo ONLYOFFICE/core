@@ -641,6 +641,10 @@ namespace PdfWriter
 	{
 		switch (nType)
 		{
+		case 1:  return new CActionGoTo(m_pXref);
+		case 6:  return new CActionURI(m_pXref);
+		case 9:  return new CActionHide(m_pXref);
+		case 10: return new CActionNamed(m_pXref);
 		case 12: return new CActionResetForm(m_pXref);
 		case 14: return new CActionJavaScript(m_pXref);
 		}
@@ -1235,7 +1239,11 @@ namespace PdfWriter
 		{
 			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
 			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
-				m_pFieldsResources = (CResourcesDict*)pFieldsResources;
+			{
+				// TODO необходимо перенести текущие поля DR
+				m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
+				m_pAcroForm->Add("DR", m_pFieldsResources);
+			}
 		}
 
 		if (pEncrypt)

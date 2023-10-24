@@ -465,7 +465,7 @@
 		}
 		else if (SType == 9)
 		{
-			rec["H"] = reader.readInt();
+			rec["H"] = reader.readByte();
 			let m = reader.readInt();
 		    rec["T"] = [];
 			// array of annotation names - rec["name"]

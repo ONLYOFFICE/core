@@ -1996,8 +1996,20 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = oInfo.GetWidgetAnnotPr();
 		PdfWriter::CWidgetAnnotation* pWidgetAnnot = (PdfWriter::CWidgetAnnotation*)pAnnot;
 
+		put_FontName(pPr->GetFontName());
+		put_FontStyle(pPr->GetFontStyle());
+
+		if (m_bNeedUpdateTextFont)
+			UpdateFont();
+
+		// TODO почему важно добавить CFontTrueType, а не CFontCidTrueType
+		PdfWriter::CFontTrueType* pFontTT = NULL;
+		if (m_pFont)
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+
 		pWidgetAnnot->SetDocument(m_pDocument);
-		pWidgetAnnot->SetDA(NULL, 0, pPr->GetTC());
+		pWidgetAnnot->SetDA(pFontTT, pPr->GetFontSize(), pPr->GetFontSizeAP(), pPr->GetTC());
+
 		pWidgetAnnot->SetQ(pPr->GetQ());
 		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetFlag(nWidgetFlag);

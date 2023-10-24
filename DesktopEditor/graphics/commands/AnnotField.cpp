@@ -702,6 +702,9 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	{
 		CAnnotFieldInfo::CWidgetAnnotPr* pPr = GetWidgetAnnotPr();
 
+		pPr->SetFontName(pReader->ReadString());
+		pPr->SetFontSize(pReader->ReadDouble());
+
 		int n = pReader->ReadInt();
 		std::vector<double> arrTC;
 		for (int i = 0; i < n; ++i)

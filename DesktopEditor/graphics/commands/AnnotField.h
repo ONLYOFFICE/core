@@ -158,10 +158,12 @@ public:
 		void SetFlag    (const int& nFlag)     { m_nFlag     = nFlag; }
 		void SetFlags   (const int& nFlags)    { m_nFlags    = nFlags; }
 		void SetParentID(const int& nParentID) { m_nParentID = nParentID; }
+		void SetFontSize(const double& dFS) { m_dFS = dFS; }
 		void SetTU(const std::wstring& wsTU) { m_wsTU = wsTU; }
 		void SetDS(const std::wstring& wsDS) { m_wsDS = wsDS; }
 		void SetDV(const std::wstring& wsDV) { m_wsDV = wsDV; }
 		void SetT (const std::wstring& wsT)  { m_wsT  = wsT; }
+		void SetFontName(const std::wstring& wsFN)   { m_wsFN  = wsFN; }
 		void SetTC(const std::vector<double>& arrTC) { m_arrTC = arrTC; }
 		void SetBC(const std::vector<double>& arrBC) { m_arrBC = arrBC; }
 		void SetBG(const std::vector<double>& arrBG) { m_arrBG = arrBG; }
@@ -174,10 +176,12 @@ public:
 		int  GetFlag()     const { return m_nFlag; }
 		int  GetFlags()    const { return m_nFlags; }
 		int  GetParentID() const { return m_nParentID; }
+		double GetFontSize() const { return m_dFS; }
 		const std::wstring& GetTU() const { return m_wsTU; }
 		const std::wstring& GetDS() const { return m_wsDS; }
 		const std::wstring& GetDV() const { return m_wsDV; }
 		const std::wstring& GetT()  const { return m_wsT; }
+		const std::wstring& GetFontName()  const { return m_wsFN; }
 		const std::vector<double>& GetTC() const { return m_arrTC; }
 		const std::vector<double>& GetBC() const { return m_arrBC; }
 		const std::vector<double>& GetBG() const { return m_arrBG; }
@@ -196,10 +200,12 @@ public:
 		int m_nFlag;
 		int m_nFlags;
 		int m_nParentID;
+		double m_dFS;
 		std::wstring m_wsTU;
 		std::wstring m_wsDS;
 		std::wstring m_wsDV;
 		std::wstring m_wsT;
+		std::wstring m_wsFN;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;

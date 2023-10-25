@@ -431,7 +431,9 @@ void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring 
 		if (p)
 		{
 			is_present_hyperlink_ = p->paragraph_.is_present_hyperlink_;
-		}
+            if (content_.elements_.size() > 1)
+                is_AligmentWrap_ = true;
+        }
 	}
 }
 

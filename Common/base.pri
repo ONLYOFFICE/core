@@ -180,6 +180,9 @@ core_mac {
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
+    # xcode15 add new linker
+	QMAKE_LFLAGS += -Wl,-ld_classic
+
 	QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 
 	greaterThan(QT_MAJOR_VERSION, 5) {

@@ -67,10 +67,17 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 	for (size_t i = 0 ; i < elements_.size(); i++)
     {
         elements_[i]->xlsx_convert(Context);
+		if ((i < elements_.size() - 1) && (elements_[i + 1]->get_type() == typeTextP))
+		{
+			Context.get_text_context().start_paragraph(L"");
+			Context.get_text_context().start_span(L"");
+			Context.get_text_context().add_text(L"\n");
+			Context.get_text_context().end_span();
+			Context.get_text_context().end_paragraph();
+		}
 	}
    
 	const int sharedStrId = Context.get_table_context().end_cell_content(need_cache);
-
     return sharedStrId;
 }
 
@@ -927,8 +934,12 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (cell_repeated_max >= 1024 && cellStyleName.empty() && last_cell_ && !is_data_visible)
 	{//Book 24.ods
 		return;
+	}  
+	if (is_AligmentWrap_)
+	{
+		is_style_visible = true;
+		cellFormatProperties.fo_wrap_option_ = odf_types::wrap_option::Wrap;
 	}
-    
 	size_t	xfId_last_set = 0;
 	if (is_style_visible)
 	{

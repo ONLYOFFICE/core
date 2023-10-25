@@ -1921,6 +1921,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::FormField:
 	case IAdvancedCommand::AdvancedCommandType::Annotaion:
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:
+	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
 		return S_OK;
 	default:
 		break;
@@ -1974,7 +1975,13 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		if (m_pInternal->bEdit && m_pInternal->bEditPage)
 			DeleteAnnot(pCommand->GetID());
 #endif
-		return true;
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::WidgetsInfo:
+	{
+		CWidgetsInfo* pCommand = (CWidgetsInfo*)command;
+
+		return S_OK;
 	}
 	default:
 		break;

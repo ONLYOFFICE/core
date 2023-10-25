@@ -31,6 +31,7 @@
  */
 
 #include "PdfAnnot.h"
+#include "RendererOutputDev.h"
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"
@@ -686,10 +687,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		oFontRef.fetch(xref, &oFont);
 		oFontRef.free();
 
-		Object oFontName;
-		if (oFont.isDict() && oFont.dictLookup("Name", &oFontName)->isName())
-			m_sFontName = oFontName.getName();
-		oFontName.free(); oFont.free();
+		oFont.free();
 	}
 
 	// Цвет текста - из DA
@@ -852,6 +850,14 @@ CAnnotWidget::~CAnnotWidget()
 {
 	for (int i = 0; i < m_arrAction.size(); ++i)
 		RELEASEOBJECT(m_arrAction[i]);
+}
+
+void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+{
+	std::wstring wsFileName, wsFontName;
+	GetFont(pdfDoc->getXRef(), pFontManager, pFontList, NULL, wsFileName, wsFontName);
+
+	m_sFontName = U_TO_UTF8(wsFileName);
 }
 
 //------------------------------------------------------------------------
@@ -1364,7 +1370,7 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CM
 // Annots
 //------------------------------------------------------------------------
 
-CAnnots::CAnnots(PDFDoc* pdfDoc)
+CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 {
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
@@ -1406,7 +1412,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
-		CAnnot* pAnnot = NULL;
+		CAnnotWidget* pAnnot = NULL;
 		AcroFormFieldType oType = pField->getAcroFormFieldType();
 		switch (oType)
 		{
@@ -1440,7 +1446,10 @@ CAnnots::CAnnots(PDFDoc* pdfDoc)
 			break;
 		}
 		if (pAnnot)
+		{
+			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
 			m_arrAnnots.push_back(pAnnot);
+		}
 	}
 }
 

@@ -213,6 +213,8 @@ class CAnnotWidget : public CAnnot
 public:
 	virtual ~CAnnotWidget();
 
+	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
+
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField);
 
@@ -481,7 +483,7 @@ private:
 class CAnnots
 {
 public:
-	CAnnots(PDFDoc* pdfDoc);
+	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CFontList *pFontList);
 	~CAnnots();
 
 	void ToWASM(NSWasm::CData& oRes);
@@ -510,7 +512,7 @@ private:
 
 	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
-	std::vector<CAnnot*> m_arrAnnots;
+	std::vector<CAnnotWidget*> m_arrAnnots;
 };
 
 }

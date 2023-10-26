@@ -214,6 +214,12 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.end_page_notes();
 	}  
 }
+
+std::wstring draw_page::get_draw_name() const
+{
+	return attlist_.draw_name_.get_value_or(L"");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * presentation_footer_decl::ns = L"presentation";
 const wchar_t * presentation_footer_decl::name = L"footer-decl";

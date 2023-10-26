@@ -505,6 +505,12 @@ void pptx_slide_context::start_action(std::wstring action)
 		impl_->object_description_.action_.typeRels = typeHyperlink;
 		impl_->object_description_.action_.highlightClick = true;
 	}
+	else if (action == L"show")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinksldjump";
+		impl_->object_description_.action_.typeRels = typeSlide;
+		impl_->object_description_.action_.highlightClick = true;
+	}
 }
 void pptx_slide_context::set_link(std::wstring link, _rels_type typeRels)
 {

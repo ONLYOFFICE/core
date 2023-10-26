@@ -33,6 +33,8 @@
 #include "office_event_listeners.h"
 #include "serialize_elements.h"
 
+#include "boost/algorithm/string.hpp"
+
 #include <xml/xmlchar.h>
 
 namespace cpdoccore { 
@@ -100,7 +102,25 @@ void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Co
 	Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
 	
 	if (attlist_.xlink_attlist_.href_)
-		Context.get_slide_context().set_link(*attlist_.xlink_attlist_.href_);
+	{
+		std::wstring href = *attlist_.xlink_attlist_.href_;
+		if (boost::algorithm::starts_with(href, L"#"))
+			href = href.substr(1); // Remove '#' character
+
+		const std::vector<std::wstring>& page_names = Context.get_page_names();
+		
+		for (size_t i = 0; i < page_names.size(); i++)
+		{
+			if (href == page_names[i])
+			{
+				std::wstring pptx_slide_name = L"slides/slide" + std::to_wstring(i + 1) + L".xml";
+
+				Context.get_slide_context().set_link(pptx_slide_name, oox::_rels_type::typeSlide);
+				break;
+			}
+		}
+	}
+		
 
 	if (presentation_sound_)
 	{

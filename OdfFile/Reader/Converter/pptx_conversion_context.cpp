@@ -86,6 +86,16 @@ void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 	pptx_slide_context_.get_mediaitems()->set_font_directory(pathFonts);
 }
 
+void pptx_conversion_context::add_page_name(const std::wstring& page_name)
+{
+	page_names_.push_back(page_name);
+}
+
+const std::vector<std::wstring>& pptx_conversion_context::get_page_names() const
+{
+	return page_names_;
+}
+
 void pptx_conversion_context::process_layouts()
 {
 	odf_reader::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();

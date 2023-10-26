@@ -186,6 +186,30 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 
 	return false;
 }
+bool scanAPfonts(Object* oAnnot, PDFDoc *pDoc, const std::vector<std::string>& arrCMap)
+{
+	Object oAP;
+	if (oAnnot->dictLookup("AP", &oAP)->isDict())
+	{
+		Object oAPi, oRes;
+
+#define SCAN_AP_VIEW(sName)\
+{\
+if (oAP.dictLookup(sName, &oAPi)->isStream() && oAPi.streamGetDict()->lookup("Resources", &oRes)->isDict() && scanFonts(oRes.getDict(), pDoc, arrCMap, 0))\
+{\
+	oAPi.free(); oAP.free(); oRes.free();\
+	return true;\
+}\
+oAPi.free(); oRes.free();\
+}
+
+		SCAN_AP_VIEW("N");
+		SCAN_AP_VIEW("D");
+		SCAN_AP_VIEW("R");
+	}
+	oAP.free();
+	return false;
+}
 bool CPdfReader::IsNeedCMap()
 {
 	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
@@ -217,7 +241,77 @@ bool CPdfReader::IsNeedCMap()
 		Dict* pResources = pPage->getResourceDict();
 		if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap, 0))
 			return true;
+
+		Object oAnnots;
+		if (pPage->getAnnots(&oAnnots)->isArray())
+		{
+			for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+			{
+				Object oAnnot;
+				if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+				{
+					oAnnot.free();
+					continue;
+				}
+
+				Object oDR;
+				if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), m_pPDFDocument, arrCMap, 0))
+				{
+					oDR.free(); oAnnot.free(); oAnnots.free();
+					return true;
+				}
+				oDR.free();
+
+				if (scanAPfonts(&oAnnot, m_pPDFDocument, arrCMap))
+				{
+					oAnnot.free(); oAnnots.free();
+					return true;
+				}
+
+				oAnnot.free();
+			}
+		}
+		oAnnots.free();
 	}
+
+	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	if (pAcroForms)
+	{
+		Object oDR;
+		Object* oAcroForm = pAcroForms->getAcroFormObj();
+		if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), m_pPDFDocument, arrCMap, 0))
+		{
+			oDR.free();
+			return true;
+		}
+		oDR.free();
+
+		for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+		{
+			AcroFormField* pField = pAcroForms->getField(i);
+
+			Object oDR;
+			if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), m_pPDFDocument, arrCMap, 0))
+			{
+				oDR.free();
+				return true;
+			}
+			oDR.free();
+
+			Object oWidgetRef, oWidget;
+			pField->getFieldRef(&oWidgetRef);
+			oWidgetRef.fetch(m_pPDFDocument->getXRef(), &oWidget);
+			oWidgetRef.free();
+
+			if (scanAPfonts(&oWidget, m_pPDFDocument, arrCMap))
+			{
+				oWidget.free();
+				return true;
+			}
+			oWidget.free();
+		}
+	}
+
 	return false;
 }
 void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)

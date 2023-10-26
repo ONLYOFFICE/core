@@ -66,14 +66,7 @@ namespace OOX
 		}
 		LONG CStringXLSB::getUTF16Size()
 		{
-			if (sizeof(wchar_t) == 4)
-			{
-				return NSFile::CUtf8Converter::GetUtf16SizeFromUnicode_4bytes(m_sBuffer, m_nLen);
-			}
-			else
-			{
-				return 2 * m_nLen;
-			}
+			return NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(m_sBuffer, m_nLen);
 		}
 		void CStringXLSB::checkBufferSize(_UINT32 nRequired)
 		{

@@ -1270,7 +1270,11 @@ namespace OOX
 		_UINT32 CRPr::getXLSBSize() const
 		{
 			_UINT32 nLen = 2 + 2 + 2 + 2 + 1 + 1 + 1 + 1 + 1 + 1 + 2 + 4 + 1;
-			nLen += 4 + 2 * (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal->length() : 0);
+			nLen += 4;
+			if (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
+			{
+				nLen += NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(m_oRFont->m_sVal->c_str(), m_oRFont->m_sVal->length());
+			}
 			return nLen;
 		}
 		void CRPr::fromFont(CFont* font)

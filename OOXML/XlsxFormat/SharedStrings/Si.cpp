@@ -290,7 +290,7 @@ namespace OOX
 						if(OOX::et_x_t == we->getType())
 						{
 							OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(we);
-							nLen += 4 + 2 * pText->m_sText.length();
+							nLen += 4 + NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(pText->m_sText.c_str(), pText->m_sText.length());
 						}
 						else
 						{
@@ -301,7 +301,7 @@ namespace OOX
 				else if(OOX::et_x_t == we->getType())
 				{
 					OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(we);
-					nLen += 4 + 2 * pText->m_sText.length();
+					nLen += 4 + NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(pText->m_sText.c_str(), pText->m_sText.length());
 				}
 			}
 			return nLen;

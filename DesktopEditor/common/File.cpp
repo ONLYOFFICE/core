@@ -886,11 +886,11 @@ namespace NSFile
 		}
 		return sizeUtf16;
 	}
-	static long GetUtf16SizeFromUnicode(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM = false)
+    long  CUtf8Converter::GetUtf16SizeFromUnicode(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM)
 	{
 		if (sizeof(wchar_t) == 4)
 		{
-			return GetUtf16SizeFromUnicode_4bytes(pUnicodes, lCount, bIsBOM);
+            return GetUtf16SizeFromUnicode_4bytes(pUnicodes, lCount, bIsBOM);
 		}
 		else
 		{

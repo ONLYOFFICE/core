@@ -2996,7 +2996,7 @@ void odf_drawing_context::start_action(std::wstring value)
 		}
 		else if (std::wstring::npos != value.find(L"hlinksldjump"))
 		{
-			event_->attlist_.presentation_action_ = L"previous-page";
+			event_->attlist_.presentation_action_ = L"show";
 		}
 		else if (std::wstring::npos != value.find(L"macro"))
 		{

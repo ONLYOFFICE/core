@@ -1743,8 +1743,18 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
 					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
-					
-					odf_context()->drawing_context()->add_link(hlink);	
+					odf_context()->drawing_context()->add_link(hlink);
+
+					smart_ptr<OOX::File> file = find_file_by_id(oox_cnvPr->hlinkClick->id.get());
+					OOX::HyperLink* hyperlink = dynamic_cast<OOX::HyperLink*>(file.GetPointer());
+
+					if (hyperlink)
+					{
+						odf_context()->add_hyperlink(
+							odf_context()->drawing_context()->get_current_element(),
+							hyperlink->Uri().GetBasename()
+						);
+					}
 				}
 			odf_context()->drawing_context()->end_action();
 		}

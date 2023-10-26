@@ -234,6 +234,9 @@ private:
 
 		std::wstring convert_animation_formula(std::wstring formula);
 		std::wstring convert_animation_scale_values(int x, int y);
+
+		std::wstring get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type);
+		void fill_in_deferred_hyperlinks();
 		
 //--------------------------------------------------------------------------------
 	};

@@ -83,6 +83,7 @@
 
 #include "../Format/odf_text_context.h"
 #include "../Format/odf_drawing_context.h"
+#include "../Format/office_event_listeners.h"
 
 #include "../Format/styles.h"
 #include "../Format/style_presentation.h"
@@ -1211,6 +1212,45 @@ std::wstring PptxConverter::convert_animation_scale_values(int x, int y)
 	return ss.str();
 }
 
+std::wstring PptxConverter::get_page_name(PPTX::Logic::CSld* oox_slide, _typePages type)
+{
+	if (!oox_slide)
+		return std::wstring();
+
+	std::wstring page_name;
+	if (oox_slide->attrName.IsInit())
+		page_name = oox_slide->attrName.get();
+
+	if (page_name.empty())
+	{
+		if (type == Slide)
+			page_name = L"Slide_" + std::to_wstring((int)odp_context->get_pages_count());
+	}
+
+	return page_name;
+}
+
+void PptxConverter::fill_in_deferred_hyperlinks()
+{
+	for (auto hyperlink : odp_context->get_deferred_hyperlinks())
+	{
+		cpdoccore::odf_writer::presentation_event_listener* event_listener = dynamic_cast<cpdoccore::odf_writer::presentation_event_listener*>(hyperlink.first.get());
+		const std::wstring& slidename = hyperlink.second;
+
+		if (!event_listener)
+			continue;
+
+		auto hrefIt = odp_context->map_slidenames_.find(slidename);
+		if (hrefIt == odp_context->map_slidenames_.end())
+			continue;
+
+		event_listener->attlist_.common_xlink_attlist_.href_ = std::wstring(L"#") + hrefIt->second;
+		event_listener->attlist_.common_xlink_attlist_.type_ = xlink_type::Simple;
+		event_listener->attlist_.common_xlink_attlist_.show_ = xlink_show::Embed;
+		event_listener->attlist_.common_xlink_attlist_.actuate_ = xlink_actuate::OnRequest;
+	}
+}
+
 void PptxConverter::convert_slides()
 {
 	for (size_t i = 0; i < presentation->sldIdLst.size(); ++i)
@@ -1325,7 +1365,8 @@ void PptxConverter::convert_slides()
 		
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
-		
+
+		odp_context->add_page_name(get_page_name(slide->cSld.GetPointer(), Slide));
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
 		convert			(slide->comments.GetPointer());
 		convert			(slide->Note.GetPointer());
@@ -1336,6 +1377,8 @@ void PptxConverter::convert_slides()
 
 		odp_context->end_slide();
 	}
+
+	fill_in_deferred_hyperlinks();
 }
 void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 {
@@ -2415,16 +2458,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 	if (current_theme && current_clrMap)
 		current_theme->SetColorMap(*current_clrMap);
 
-	std::wstring page_name;
-	if (oox_slide->attrName.IsInit())
-		page_name = oox_slide->attrName.get();
-	
-
-	if (page_name.empty())
-	{
-		if (type == Slide)
-			page_name = L"Slide_" + std::to_wstring((int)odp_context->get_pages_count());
-	}
+	std::wstring page_name = get_page_name(oox_slide, type);
 	odp_context->current_slide().set_page_name(page_name);
 
 	if (type != Notes && type != NotesMaster)

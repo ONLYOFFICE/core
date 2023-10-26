@@ -384,7 +384,7 @@ namespace SVG
 		if (!ISZERO(dModuleM22) && (dModuleM22 < 0.05 || dModuleM22 > 100))
 			dYScale /= dModuleM22;
 
-		if (1. == dXScale && 1. == dYScale)
+		if (Equals(1., dXScale) && Equals(1., dYScale))
 			return;
 
 		dX          /= dXScale;

@@ -9,8 +9,6 @@
 
 namespace SVG
 {
-	#define ADD_COLOR( COLOR, R, G, B ) m_Table.insert(std::pair<std::wstring, unsigned int>( L##COLOR, ( R << 0 ) | ( G << 8 ) | ( B << 16 ) ))
-
 	enum Metrics
 	{
 		EM,
@@ -26,6 +24,11 @@ namespace SVG
 
 		UNDEFINED
 	};
+
+	inline bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON)
+	{
+		return std::abs(dFirst - dSecond) <= dEpsilon;
+	}
 
 	namespace StrUtils
 	{

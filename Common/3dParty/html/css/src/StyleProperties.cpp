@@ -174,7 +174,7 @@ namespace NSCSS
 
 	bool CDigit::Zero() const
 	{
-		return 0. == m_oValue;
+		return (std::abs(m_oValue) <= DBL_EPSILON);
 	}
 
 	void CDigit::Clear()
@@ -239,6 +239,16 @@ namespace NSCSS
 	UnitMeasure CDigit::GetUnitMeasure() const
 	{
 		return m_enUnitMeasure;
+	}
+
+	bool CDigit::operator==(const double &oValue) const
+	{
+		return (std::abs(oValue - m_oValue) <= DBL_EPSILON);
+	}
+
+	bool CDigit::operator==(const CDigit &oDigit) const
+	{
+		return (std::abs(oDigit.m_oValue - m_oValue) <= DBL_EPSILON);
 	}
 
 	CDigit CDigit::operator+(const CDigit &oDigit) const

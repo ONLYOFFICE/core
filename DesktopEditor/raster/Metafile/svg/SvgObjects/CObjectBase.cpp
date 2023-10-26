@@ -344,7 +344,7 @@ namespace SVG
 
 		double dStrokeWidth = pStroke->m_oWidth.ToDouble(NSCSS::Pixel);
 
-		if (0. == dStrokeWidth)
+		if (Equals(0., dStrokeWidth))
 			dStrokeWidth = 1.;
 
 		int nColor = (pStroke->m_oColor.Empty() || NSCSS::NSProperties::ColorType::ColorNone == pStroke->m_oColor.GetType()) ? 0 : pStroke->m_oColor.ToInt();

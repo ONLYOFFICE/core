@@ -269,7 +269,7 @@ namespace SVG
 
 	std::vector<IPathElement *> CCBezierElement::CreateFromArc(std::vector<double> &arValues, bool bRelativeCoordinate, IPathElement *pPrevElement)
 	{
-		if (arValues.size() < 7 || 0. == arValues[0] || 0. ==  arValues[1])
+		if (arValues.size() < 7 || Equals(0., arValues[0]) || Equals(0.,  arValues[1]))
 			return std::vector<IPathElement *>();
 
 		Point oTranslatePoint{0., 0.};
@@ -292,7 +292,7 @@ namespace SVG
 		Point oCenter{0, 0};
 		double dAngle = 0, dSweep = 0;
 
-		CalculateArcData(oSrartPoint, oSecondPoint, oRadius, oCenter, arValues[2], (1 == arValues[3]) ? true : false, (1 == arValues[4]) ? true : false, dAngle, dSweep);
+		CalculateArcData(oSrartPoint, oSecondPoint, oRadius, oCenter, arValues[2],  Equals(1., arValues[3]) ? true : false, Equals(1., arValues[4]) ? true : false, dAngle, dSweep);
 
 		double dStartAngle = dAngle;
 		double dEndAngle;

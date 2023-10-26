@@ -4398,7 +4398,14 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatFrom)
 			{
-				nRes = doc2docx_dir(sFrom, sDocxDir, sTemp, params);
+				if (params.m_bMacro)
+				{
+					nRes = doc2docm_dir(sFrom, sDocxDir, sTemp, params);
+				}
+				else
+				{
+					nRes = doc2docx_dir(sFrom, sDocxDir, sTemp, params);
+				}
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatFrom)
 			{
@@ -4729,7 +4736,14 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
 			{
-				nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+				if (params.m_bMacro)
+				{
+					nRes = xls2xlsm_dir(sFrom, sXlsxDir, sTemp, params);
+				}
+				else
+				{
+					nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+				}
 			}
 			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT == nFormatFrom)
 			{
@@ -4977,7 +4991,14 @@ namespace NExtractTools
 		}
 		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatFrom)
 		{
-			nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
+			if (params.m_bMacro)
+			{
+				nRes = ppt2pptm_dir(sFrom, sPptxDir, sTemp, params);
+			}
+			else
+			{
+				nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
+			}
 		}
 		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
 		{
@@ -6008,16 +6029,20 @@ namespace NExtractTools
 		break;
 		case TCD_DOCUMENT2:
 		{
+			oInputParams.m_bMacro = (nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM || nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM);
 			result = fromDocument(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;
 		case TCD_SPREADSHEET2:
 		{
+			oInputParams.m_bMacro = (nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM || nFormatTo == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM);
 			result = fromSpreadsheet(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;
 		case TCD_PRESENTATION2:
 		{
+			oInputParams.m_bMacro = (	nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM || nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM ||
+										nFormatTo == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM);
 			result = fromPresentation(sFileFrom, nFormatFrom, sTempDir, oInputParams);
 		}
 		break;

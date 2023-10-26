@@ -35,6 +35,7 @@
 #include "../lib/xpdf/TextString.h"
 #include "../lib/xpdf/Link.h"
 #include "../lib/xpdf/Annot.h"
+#include "../lib/xpdf/GfxFont.h"
 #include "../lib/goo/GList.h"
 
 #include "../../DesktopEditor/common/Types.h"
@@ -677,19 +678,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	oObj.fetch(xref, &oField);
 	oObj.free();
 
-	// Шрифт и размер шрифта - из DA
-	Ref fontID;
-	pField->getFont(&fontID, &m_dFontSize);
-	if (fontID.num > 0)
-	{
-		Object oFont, oFontRef;
-		oFontRef.initRef(fontID.num, fontID.gen);
-		oFontRef.fetch(xref, &oFont);
-		oFontRef.free();
-
-		oFont.free();
-	}
-
 	// Цвет текста - из DA
 	int nSpace;
 	GList *arrColors = pField->getColorSpace(&nSpace);
@@ -854,10 +842,90 @@ CAnnotWidget::~CAnnotWidget()
 
 void CAnnotWidget::SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 {
+	GfxFont* gfxFont = NULL;
+	GfxFontDict *gfxFontDict = NULL;
+
+	// Шрифт и размер шрифта - из DA
+	Ref fontID;
+	pField->getFont(&fontID, &m_dFontSize);
+	if (fontID.num > 0)
+	{
+		Object oObj, oField, oFont;
+		XRef* xref = pdfDoc->getXRef();
+		pField->getFieldRef(&oObj);
+		oObj.fetch(xref, &oField);
+		oObj.free();
+
+		bool bFindResources = false;
+
+		if (oField.dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+		{
+			for (int i = 0; i < oFont.dictGetLength(); ++i)
+			{
+				Object oFontRef;
+				if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+				{
+					bFindResources = true;
+					oFontRef.free();
+					break;
+				}
+				oFontRef.free();
+			}
+		}
+		oFont.free(); oField.free();
+
+		if (!bFindResources)
+		{
+			oObj.free();
+			AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+			Object* oAcroForm = pAcroForms->getAcroFormObj();
+			if (oAcroForm->isDict() && oAcroForm->dictLookup("DR", &oObj)->isDict() && oObj.dictLookup("Font", &oFont)->isDict())
+			{
+				for (int i = 0; i < oFont.dictGetLength(); ++i)
+				{
+					Object oFontRef;
+					if (oFont.dictGetValNF(i, &oFontRef)->isRef() && oFontRef.getRef() == fontID)
+					{
+						bFindResources = true;
+						oFontRef.free();
+						break;
+					}
+					oFontRef.free();
+				}
+			}
+			oFont.free();
+		}
+
+		if (bFindResources)
+		{
+			Object oFontRef;
+			if (oObj.dictLookupNF("Font", &oFontRef)->isRef())
+			{
+				if (oFontRef.fetch(xref, &oFont)->isDict())
+				{
+					Ref r = oFontRef.getRef();
+					gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), &r, oFont.getDict());
+					gfxFont = gfxFontDict->lookupByRef(fontID);
+				}
+				oFont.free();
+			}
+			else if (oFontRef.isDict())
+			{
+				gfxFontDict = new GfxFontDict(pdfDoc->getXRef(), NULL, oFontRef.getDict());
+				gfxFont = gfxFontDict->lookupByRef(fontID);
+			}
+			oFontRef.free();
+		}
+		oObj.free();
+	}
+
 	std::wstring wsFileName, wsFontName;
-	GetFont(pdfDoc->getXRef(), pFontManager, pFontList, NULL, wsFileName, wsFontName);
+	if (gfxFont)
+		GetFont(pdfDoc->getXRef(), pFontManager, pFontList, gfxFont, wsFileName, wsFontName);
 
 	m_sFontName = U_TO_UTF8(wsFileName);
+
+	RELEASEOBJECT(gfxFontDict);
 }
 
 //------------------------------------------------------------------------

@@ -189,7 +189,7 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
 
 bool operator==(const Ref &a, const Ref &b)
 {
-    return a.gen == b.gen && a.num == b.gen;
+	return a.gen == b.gen && a.num == b.num;
 }
 
 bool operator<(const Ref &a, const Ref &b)

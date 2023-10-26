@@ -59,6 +59,7 @@
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
 #else
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "FontsWasm.h"
 #define FONTS_USE_ONLY_MEMORY_STREAMS
 #endif
@@ -880,7 +881,7 @@ namespace PdfReader
 	{
 
 	}
-	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont *pFont, std::wstring& wsFileName, std::wstring& wsFontName)
+	void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName)
 	{
 		wsFileName = L"";
 		wsFontName = L"";

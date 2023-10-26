@@ -512,7 +512,7 @@ private:
 
 	std::vector<std::string> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
-	std::vector<CAnnotWidget*> m_arrAnnots;
+	std::vector<CAnnot*> m_arrAnnots;
 };
 
 }

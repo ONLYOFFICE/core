@@ -261,7 +261,8 @@ namespace BinXlsxRW
 		int ReadCT_FromTo				(BYTE type, long length, void* poResult);
 		int ReadCT_Ext					(BYTE type, long length, void* poResult);
 		
-		int ReadCT_Xlsx					(BYTE *pData, long length, NSCommon::smart_ptr<OOX::Media> & file);
+		int ReadCT_XlsxBin				(BYTE *pData, long length, NSCommon::smart_ptr<OOX::Media> & file);
+		int ReadCT_XlsxZip				(BYTE* pData, long length, NSCommon::smart_ptr<OOX::Media>& file);
 
 		int ReadCT_ChartExFileContent	(BYTE type, long length, void* poResult);
 		int ReadCT_ChartExChart			(BYTE type, long length, void* poResult);

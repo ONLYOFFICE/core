@@ -5561,6 +5561,8 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
 		}
 
+		NSFile::CFileBinary::SetTempPath(sTempDir);
+
 		if (!oInputParams.checkInputLimits())
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
